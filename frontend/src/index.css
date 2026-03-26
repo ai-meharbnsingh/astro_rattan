@@ -1,0 +1,667 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========================================
+   🕌 SACRED GOLD THEME - AstroVedic
+   Traditional Indian Astrology Colors
+   ======================================== */
+
+@layer base {
+  :root {
+    /* Sacred Color Palette */
+    --sacred-cream: #FAF6F0;
+    --sacred-gold: #D4AF37;
+    --sacred-gold-dark: #B8860B;
+    --sacred-gold-light: #F4D03F;
+    --sacred-saffron: #FF9933;
+    --sacred-saffron-dark: #E67300;
+    --sacred-saffron-light: #FFB366;
+    --sacred-maroon: #800000;
+    --sacred-brown: #4A3728;
+    --sacred-text: #2C1810;
+    --sacred-text-secondary: #5C4033;
+    
+    /* shadcn/ui Theme Variables */
+    --background: 35 30% 95%;
+    --foreground: 30 50% 15%;
+    --card: 35 30% 98%;
+    --card-foreground: 30 50% 15%;
+    --popover: 35 30% 98%;
+    --popover-foreground: 30 50% 15%;
+    --primary: 35 90% 45%;
+    --primary-foreground: 35 30% 95%;
+    --secondary: 35 40% 90%;
+    --secondary-foreground: 30 50% 15%;
+    --muted: 35 20% 88%;
+    --muted-foreground: 30 30% 40%;
+    --accent: 25 85% 53%;
+    --accent-foreground: 35 30% 95%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 35 30% 80%;
+    --input: 35 30% 85%;
+    --ring: 35 90% 45%;
+    --radius: 0.5rem;
+    
+    /* Chart Colors */
+    --chart-1: 43 74% 66%;
+    --chart-2: 30 60% 55%;
+    --chart-3: 30 50% 45%;
+    --chart-4: 0 50% 30%;
+    --chart-5: 0 60% 25%;
+    --chart-6: 43 60% 52%;
+    
+    /* Sidebar */
+    --sidebar: 35 30% 92%;
+    --sidebar-foreground: 30 50% 15%;
+    --sidebar-primary: 35 90% 45%;
+    --sidebar-primary-foreground: 35 30% 95%;
+    --sidebar-accent: 35 40% 88%;
+    --sidebar-accent-foreground: 30 50% 15%;
+    --sidebar-border: 35 30% 80%;
+    --sidebar-ring: 35 90% 45%;
+  }
+
+  .dark {
+    --background: 30 30% 8%;
+    --foreground: 35 30% 95%;
+    --card: 30 25% 12%;
+    --card-foreground: 35 30% 95%;
+    --popover: 30 25% 12%;
+    --popover-foreground: 35 30% 95%;
+    --primary: 43 74% 66%;
+    --primary-foreground: 30 50% 10%;
+    --secondary: 30 20% 18%;
+    --secondary-foreground: 35 30% 95%;
+    --muted: 30 20% 20%;
+    --muted-foreground: 35 20% 60%;
+    --accent: 25 85% 53%;
+    --accent-foreground: 35 30% 95%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 30 20% 20%;
+    --input: 30 20% 20%;
+    --ring: 43 74% 66%;
+    
+    --sidebar: 30 25% 10%;
+    --sidebar-foreground: 35 30% 95%;
+    --sidebar-primary: 43 74% 66%;
+    --sidebar-primary-foreground: 30 50% 10%;
+    --sidebar-accent: 30 20% 18%;
+    --sidebar-accent-foreground: 35 30% 95%;
+    --sidebar-border: 30 20% 20%;
+    --sidebar-ring: 43 74% 66%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    background: var(--sacred-cream);
+    color: var(--sacred-text);
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* ========================================
+   SACRED GOLD TYPOGRAPHY
+   ======================================== */
+
+.font-sacred {
+  font-family: 'Cinzel', 'Playfair Display', Georgia, serif;
+}
+
+.font-mantra {
+  font-family: 'Sanskrit Text', 'Noto Serif Devanagari', Georgia, serif;
+}
+
+/* Sacred Heading Styles */
+.heading-sacred {
+  font-family: 'Cinzel', 'Playfair Display', Georgia, serif;
+  color: var(--sacred-brown);
+  background: linear-gradient(135deg, var(--sacred-brown) 0%, var(--sacred-gold-dark) 50%, var(--sacred-maroon) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.heading-gold {
+  color: var(--sacred-gold-dark);
+  text-shadow: 1px 1px 2px rgba(212, 175, 55, 0.3);
+}
+
+/* ========================================
+   SACRED GOLD BUTTONS
+   ======================================== */
+
+.btn-sacred {
+  background: linear-gradient(135deg, var(--sacred-gold) 0%, var(--sacred-gold-dark) 100%);
+  color: white;
+  border: 1px solid var(--sacred-gold-dark);
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-sacred:hover {
+  background: linear-gradient(135deg, var(--sacred-gold-light) 0%, var(--sacred-gold) 100%);
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-saffron {
+  background: linear-gradient(135deg, var(--sacred-saffron) 0%, var(--sacred-saffron-dark) 100%);
+  color: white;
+  border: 1px solid var(--sacred-saffron-dark);
+  box-shadow: 0 2px 8px rgba(255, 153, 51, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-saffron:hover {
+  background: linear-gradient(135deg, var(--sacred-saffron-light) 0%, var(--sacred-saffron) 100%);
+  box-shadow: 0 4px 16px rgba(255, 153, 51, 0.4);
+}
+
+.btn-maroon {
+  background: linear-gradient(135deg, var(--sacred-maroon) 0%, #5C0000 100%);
+  color: white;
+  border: 1px solid #5C0000;
+  transition: all 0.3s ease;
+}
+
+.btn-maroon:hover {
+  background: linear-gradient(135deg, #A00000 0%, var(--sacred-maroon) 100%);
+  box-shadow: 0 4px 16px rgba(128, 0, 0, 0.3);
+}
+
+/* ========================================
+   SACRED GOLD CARDS
+   ======================================== */
+
+.card-sacred {
+  background: linear-gradient(145deg, #FFFBF5 0%, var(--sacred-cream) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  box-shadow: 
+    0 4px 20px rgba(74, 55, 40, 0.08),
+    0 1px 3px rgba(212, 175, 55, 0.1);
+}
+
+.card-sacred:hover {
+  border-color: rgba(212, 175, 55, 0.5);
+  box-shadow: 
+    0 8px 30px rgba(74, 55, 40, 0.12),
+    0 2px 8px rgba(212, 175, 55, 0.15);
+}
+
+.card-gold-border {
+  border: 2px solid transparent;
+  background: linear-gradient(var(--sacred-cream), var(--sacred-cream)) padding-box,
+              linear-gradient(135deg, var(--sacred-gold), var(--sacred-saffron)) border-box;
+}
+
+/* ========================================
+   SACRED GOLD GRADIENTS
+   ======================================== */
+
+.bg-sacred-gradient {
+  background: linear-gradient(135deg, var(--sacred-cream) 0%, #F5EFE6 50%, var(--sacred-cream) 100%);
+}
+
+.bg-gold-gradient {
+  background: linear-gradient(135deg, var(--sacred-gold) 0%, var(--sacred-saffron) 50%, var(--sacred-gold-dark) 100%);
+}
+
+.bg-saffron-gradient {
+  background: linear-gradient(135deg, var(--sacred-saffron-light) 0%, var(--sacred-saffron) 50%, var(--sacred-saffron-dark) 100%);
+}
+
+.bg-maroon-gradient {
+  background: linear-gradient(135deg, var(--sacred-maroon) 0%, #5C0000 100%);
+}
+
+.bg-divine-gradient {
+  background: linear-gradient(180deg, 
+    var(--sacred-cream) 0%, 
+    #F8F1E8 30%,
+    #FDF8F0 70%,
+    var(--sacred-cream) 100%);
+}
+
+/* ========================================
+   SACRED GOLD TEXT EFFECTS
+   ======================================== */
+
+.text-gradient-gold {
+  background: linear-gradient(135deg, var(--sacred-gold-dark) 0%, var(--sacred-gold) 50%, var(--sacred-saffron) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-saffron {
+  background: linear-gradient(135deg, var(--sacred-saffron-dark) 0%, var(--sacred-saffron) 50%, var(--sacred-gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-sacred-brown {
+  color: var(--sacred-brown);
+}
+
+.text-sacred-gold {
+  color: var(--sacred-gold-dark);
+}
+
+.text-sacred-saffron {
+  color: var(--sacred-saffron-dark);
+}
+
+.text-sacred-maroon {
+  color: var(--sacred-maroon);
+}
+
+/* ========================================
+   SACRED GOLD BACKGROUNDS
+   ======================================== */
+
+.bg-sacred-cream {
+  background-color: var(--sacred-cream);
+}
+
+.bg-sacred-gold {
+  background-color: var(--sacred-gold);
+}
+
+.bg-sacred-saffron {
+  background-color: var(--sacred-saffron);
+}
+
+.bg-sacred-brown {
+  background-color: var(--sacred-brown);
+}
+
+.bg-sacred-maroon {
+  background-color: var(--sacred-maroon);
+}
+
+/* ========================================
+   SACRED GOLD DECORATIVE ELEMENTS
+   ======================================== */
+
+/* Om Symbol Decorations */
+.om-symbol::before {
+  content: "ॐ";
+  color: var(--sacred-gold);
+  opacity: 0.3;
+  font-size: 3rem;
+  position: absolute;
+  top: -1rem;
+  right: -1rem;
+}
+
+/* Sacred Divider */
+.divider-sacred {
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    var(--sacred-gold) 20%, 
+    var(--sacred-saffron) 50%, 
+    var(--sacred-gold) 80%, 
+    transparent 100%);
+  margin: 2rem 0;
+}
+
+.divider-sacred-vertical {
+  width: 2px;
+  background: linear-gradient(180deg, 
+    transparent 0%, 
+    var(--sacred-gold) 20%, 
+    var(--sacred-saffron) 50%, 
+    var(--sacred-gold) 80%, 
+    transparent 100%);
+}
+
+/* Sacred Border */
+.border-sacred {
+  border: 1px solid rgba(212, 175, 55, 0.4);
+}
+
+.border-sacred-gold {
+  border-color: var(--sacred-gold);
+}
+
+.border-sacred-saffron {
+  border-color: var(--sacred-saffron);
+}
+
+/* Sacred Glow Effects */
+.glow-gold {
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.3), 0 0 40px rgba(212, 175, 55, 0.1);
+}
+
+.glow-saffron {
+  box-shadow: 0 0 20px rgba(255, 153, 51, 0.3), 0 0 40px rgba(255, 153, 51, 0.1);
+}
+
+/* ========================================
+   SACRED GOLD SCROLLBAR
+   ======================================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--sacred-cream);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--sacred-gold), var(--sacred-saffron));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--sacred-saffron), var(--sacred-gold));
+}
+
+/* ========================================
+   SACRED GOLD SELECTION
+   ======================================== */
+
+::selection {
+  background: rgba(212, 175, 55, 0.3);
+  color: var(--sacred-text);
+}
+
+::-moz-selection {
+  background: rgba(212, 175, 55, 0.3);
+  color: var(--sacred-text);
+}
+
+/* ========================================
+   SACRED GOLD NAVIGATION
+   ======================================== */
+
+.nav-sacred {
+  background: linear-gradient(180deg, var(--sacred-cream) 0%, rgba(250, 246, 240, 0.95) 100%);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.nav-link-sacred {
+  color: var(--sacred-brown);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.nav-link-sacred:hover {
+  color: var(--sacred-gold-dark);
+}
+
+.nav-link-sacred::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--sacred-gold), var(--sacred-saffron));
+  transition: width 0.3s ease;
+}
+
+.nav-link-sacred:hover::after {
+  width: 100%;
+}
+
+/* ========================================
+   SACRED GOLD FORMS
+   ======================================== */
+
+.input-sacred {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  color: var(--sacred-text);
+  transition: all 0.3s ease;
+}
+
+.input-sacred:focus {
+  border-color: var(--sacred-gold);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+  outline: none;
+}
+
+.input-sacred::placeholder {
+  color: var(--sacred-text-secondary);
+  opacity: 0.6;
+}
+
+/* ========================================
+   SACRED GOLD ANIMATIONS
+   ======================================== */
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, 
+    var(--sacred-cream) 0%, 
+    rgba(212, 175, 55, 0.1) 50%, 
+    var(--sacred-cream) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes pulse-gold {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 15px rgba(212, 175, 55, 0);
+  }
+}
+
+.animate-pulse-gold {
+  animation: pulse-gold 2s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* ========================================
+   SACRED GOLD MANDALA BACKGROUND
+   ======================================== */
+
+.bg-mandala {
+  background-image: 
+    radial-gradient(circle at 20% 80%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 153, 51, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(128, 0, 0, 0.03) 0%, transparent 40%);
+}
+
+/* ========================================
+   HERO SECTION SACRED STYLES
+   ======================================== */
+
+.hero-sacred {
+  background: linear-gradient(135deg, 
+    var(--sacred-cream) 0%, 
+    #F8F1E8 30%,
+    #FDF8F0 60%,
+    var(--sacred-cream) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-sacred::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 10% 90%, rgba(212, 175, 55, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 90% 10%, rgba(255, 153, 51, 0.06) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+/* ========================================
+   KUNDLI CHART SACRED STYLES
+   ======================================== */
+
+.kundli-sacred {
+  background: linear-gradient(145deg, #FFFBF5 0%, #F8F1E8 100%);
+  border: 2px solid var(--sacred-gold);
+  box-shadow: 
+    inset 0 0 30px rgba(212, 175, 55, 0.1),
+    0 4px 20px rgba(74, 55, 40, 0.1);
+}
+
+.kundli-house {
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.kundli-house:nth-child(odd) {
+  background: rgba(212, 175, 55, 0.05);
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out;
+  }
+  
+  .animate-slide-down {
+    animation: slideDown 0.3s ease-out;
+  }
+  
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out;
+  }
+  
+  .animate-spin-slow {
+    animation: spin 8s linear infinite;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ========================================
+   FOCUS VISIBLE
+   ======================================== */
+
+:focus-visible {
+  outline: 2px solid var(--sacred-gold);
+  outline-offset: 2px;
+}
+
+/* ========================================
+   DISABLED STATES
+   ======================================== */
+
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ========================================
+   LOADING STATES
+   ======================================== */
+
+.loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}

@@ -1,0 +1,295 @@
+"""Pydantic request/response models for AstroVedic API."""
+from pydantic import BaseModel, EmailStr, Field, field_validator
+from typing import Optional, List
+from enum import Enum
+
+
+# ============================================================
+# Enums
+# ============================================================
+class UserRole(str, Enum):
+    user = "user"
+    astrologer = "astrologer"
+    admin = "admin"
+
+class ZodiacSign(str, Enum):
+    aries = "aries"; taurus = "taurus"; gemini = "gemini"; cancer = "cancer"
+    leo = "leo"; virgo = "virgo"; libra = "libra"; scorpio = "scorpio"
+    sagittarius = "sagittarius"; capricorn = "capricorn"; aquarius = "aquarius"; pisces = "pisces"
+
+class HoroscopePeriod(str, Enum):
+    daily = "daily"; weekly = "weekly"; monthly = "monthly"; yearly = "yearly"
+
+class ProductCategory(str, Enum):
+    gemstone = "gemstone"; rudraksha = "rudraksha"; bracelet = "bracelet"
+    yantra = "yantra"; vastu = "vastu"
+
+class OrderStatus(str, Enum):
+    placed = "placed"; confirmed = "confirmed"; shipped = "shipped"
+    delivered = "delivered"; cancelled = "cancelled"
+
+class PaymentMethod(str, Enum):
+    cod = "cod"; razorpay = "razorpay"; stripe = "stripe"
+
+class ConsultationType(str, Enum):
+    chat = "chat"; call = "call"; video = "video"
+
+class PrashnavaliType(str, Enum):
+    ram_shalaka = "ram_shalaka"; hanuman_prashna = "hanuman_prashna"
+    ramcharitmanas = "ramcharitmanas"; gita = "gita"
+
+class ContentCategory(str, Enum):
+    gita = "gita"; aarti = "aarti"; mantra = "mantra"; pooja = "pooja"
+    vrat_katha = "vrat_katha"; chalisa = "chalisa"; festival = "festival"
+
+class ReportType(str, Enum):
+    full_kundli = "full_kundli"; marriage = "marriage"; career = "career"
+    health = "health"; yearly = "yearly"
+
+class TarotSpread(str, Enum):
+    single = "single"; three = "three"; celtic_cross = "celtic_cross"
+
+
+# ============================================================
+# Auth
+# ============================================================
+class GenderEnum(str, Enum):
+    male = "male"
+    female = "female"
+    other = "other"
+
+
+class UserRegister(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=6)
+    name: str = Field(min_length=1)
+    phone: Optional[str] = None
+    date_of_birth: Optional[str] = None  # YYYY-MM-DD
+    gender: Optional[str] = None  # male/female/other
+    city: Optional[str] = None
+
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+class UserResponse(BaseModel):
+    id: str
+    email: str
+    name: str
+    role: str
+    phone: Optional[str] = None
+    date_of_birth: Optional[str] = None
+    gender: Optional[str] = None
+    city: Optional[str] = None
+    avatar_url: Optional[str] = None
+    created_at: str
+
+class TokenResponse(BaseModel):
+    user: UserResponse
+    token: str
+
+
+class UserProfileUpdate(BaseModel):
+    name: Optional[str] = Field(default=None, min_length=1)
+    phone: Optional[str] = None
+    date_of_birth: Optional[str] = None  # YYYY-MM-DD
+    gender: Optional[str] = None  # male/female/other
+    city: Optional[str] = None
+    avatar_url: Optional[str] = None
+
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str = Field(min_length=6)
+
+
+class AdminUserCreate(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=6)
+    name: str = Field(min_length=1)
+    role: UserRole
+    phone: Optional[str] = None
+
+
+# ============================================================
+# Kundli
+# ============================================================
+class KundliRequest(BaseModel):
+    person_name: str = Field(min_length=1)
+    birth_date: str  # ISO date YYYY-MM-DD
+    birth_time: str  # HH:MM:SS
+    birth_place: str
+    latitude: float = Field(ge=-90, le=90)
+    longitude: float = Field(ge=-180, le=180)
+    timezone_offset: float = Field(ge=-12, le=14)
+    ayanamsa: str = "lahiri"
+
+class KundliMatchRequest(BaseModel):
+    kundli_id_1: str
+    kundli_id_2: str
+
+class DivisionalChartRequest(BaseModel):
+    chart_type: str = "D9"  # D9, D10, etc.
+
+
+# ============================================================
+# AI
+# ============================================================
+class AIInterpretRequest(BaseModel):
+    kundli_id: str
+
+class AIAskRequest(BaseModel):
+    question: str = Field(min_length=1)
+    kundli_id: Optional[str] = None
+
+class AIGitaRequest(BaseModel):
+    question: str = Field(min_length=1)
+
+class AIOracleRequest(BaseModel):
+    question: str = Field(min_length=1)
+    mode: str = "yes_no"  # yes_no or tarot
+
+
+# ============================================================
+# Prashnavali
+# ============================================================
+class RamShalakaRequest(BaseModel):
+    row: int = Field(ge=1, le=15)
+    col: int = Field(ge=1, le=15)
+
+class PrashnavaliRequest(BaseModel):
+    question: str = Field(min_length=1)
+
+
+# ============================================================
+# E-Commerce
+# ============================================================
+class ProductCreate(BaseModel):
+    name: str = Field(min_length=1)
+    description: str
+    category: ProductCategory
+    price: float = Field(gt=0)
+    compare_price: Optional[float] = None
+    image_url: Optional[str] = None
+    weight: Optional[str] = None
+    planet: Optional[str] = None
+    properties: Optional[str] = None
+    stock: int = Field(ge=0)
+
+class CartAddRequest(BaseModel):
+    product_id: str
+    quantity: int = Field(ge=1, default=1)
+
+class CartUpdateRequest(BaseModel):
+    quantity: int = Field(ge=1)
+
+class OrderCreateRequest(BaseModel):
+    shipping_address: str = Field(min_length=10)
+    payment_method: PaymentMethod
+
+class PaymentInitiateRequest(BaseModel):
+    order_id: str
+    provider: PaymentMethod
+
+
+class ReportPaymentInitiateRequest(BaseModel):
+    report_id: str
+    provider: PaymentMethod
+
+
+# ============================================================
+# Consultation
+# ============================================================
+class ConsultationBookRequest(BaseModel):
+    astrologer_id: str
+    type: ConsultationType
+    scheduled_at: Optional[str] = None
+
+class AstrologerProfileUpdate(BaseModel):
+    bio: Optional[str] = None
+    specializations: Optional[str] = None
+    per_minute_rate: Optional[float] = Field(default=None, gt=0)
+    languages: Optional[str] = None
+
+class AstrologerAvailability(BaseModel):
+    is_available: bool
+
+
+# ============================================================
+# Reports
+# ============================================================
+class ReportRequest(BaseModel):
+    kundli_id: str
+    report_type: ReportType
+
+
+# ============================================================
+# Admin
+# ============================================================
+class AdminUserUpdate(BaseModel):
+    role: Optional[UserRole] = None
+    is_active: Optional[bool] = None
+
+class AdminOrderUpdate(BaseModel):
+    status: Optional[OrderStatus] = None
+    tracking_number: Optional[str] = None
+
+class ContentCreate(BaseModel):
+    category: ContentCategory
+    title: str = Field(min_length=1)
+    title_hindi: Optional[str] = None
+    content: str
+    audio_url: Optional[str] = None
+    chapter: Optional[int] = None
+    verse: Optional[int] = None
+    sanskrit_text: Optional[str] = None
+    translation: Optional[str] = None
+    commentary: Optional[str] = None
+    sort_order: int = 0
+
+
+class BlogPostCreate(BaseModel):
+    title: str = Field(min_length=3)
+    excerpt: str = Field(min_length=20)
+    content: str = Field(min_length=50)
+    cover_image_url: Optional[str] = None
+    tags: List[str] = Field(default_factory=list)
+    author_name: str = "AstroVedic Editorial"
+    seo_title: Optional[str] = None
+    seo_description: Optional[str] = None
+    slug: Optional[str] = None
+    is_published: bool = True
+
+
+class BlogPostUpdate(BaseModel):
+    title: Optional[str] = Field(default=None, min_length=3)
+    excerpt: Optional[str] = Field(default=None, min_length=20)
+    content: Optional[str] = Field(default=None, min_length=50)
+    cover_image_url: Optional[str] = None
+    tags: Optional[List[str]] = None
+    author_name: Optional[str] = None
+    seo_title: Optional[str] = None
+    seo_description: Optional[str] = None
+    slug: Optional[str] = None
+    is_published: Optional[bool] = None
+
+
+# ============================================================
+# Numerology + Tarot
+# ============================================================
+class NumerologyRequest(BaseModel):
+    name: str = Field(min_length=1)
+    birth_date: str  # YYYY-MM-DD
+
+class TarotDrawRequest(BaseModel):
+    spread: TarotSpread = TarotSpread.single
+    question: Optional[str] = None
+
+
+# ============================================================
+# Panchang
+# ============================================================
+class MuhuratType(str, Enum):
+    marriage = "marriage"; griha_pravesh = "griha_pravesh"
+    business_start = "business_start"; travel = "travel"
+    naming_ceremony = "naming_ceremony"; mundan = "mundan"
