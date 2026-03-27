@@ -1,6 +1,7 @@
 import { useEffect, useRef, lazy, Suspense, Component, type ReactNode } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { I18nProvider } from './lib/i18n';
+import { AuthProvider } from './hooks/useAuth';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -87,6 +88,7 @@ function HomePage() {
 
 function App() {
   return (
+    <AuthProvider>
     <I18nProvider>
     <div className="min-h-screen bg-cosmic-bg text-cosmic-text overflow-x-hidden">
       <div className="relative">
@@ -130,6 +132,7 @@ function App() {
       <WhatsAppWidget />
     </div>
     </I18nProvider>
+    </AuthProvider>
   );
 }
 

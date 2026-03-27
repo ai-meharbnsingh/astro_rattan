@@ -109,7 +109,7 @@ const normalizeDashboardStats = (data: any): DashboardStats => ({
 });
 
 export default function AdminDashboard() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [orders, setOrders] = useState<AdminOrder[]>([]);
@@ -361,6 +361,14 @@ export default function AdminDashboard() {
       setProducts((prev) => prev.filter((p) => p.id !== productId));
     } catch { /* empty */ }
   };
+
+  if (authLoading) {
+    return (
+      <div className="max-w-4xl mx-auto py-24 px-4 text-center">
+        <Loader2 className="w-8 h-8 text-sacred-gold mx-auto animate-spin" />
+      </div>
+    );
+  }
 
   if (user?.role !== 'admin') {
     return (
