@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { I18nProvider } from './lib/i18n';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Navigation from './sections/Navigation';
@@ -23,6 +24,7 @@ import AstrologerDashboard from './sections/AstrologerDashboard';
 import PrashnavaliPage from './sections/PrashnavaliPage';
 import NumerologyTarot from './sections/NumerologyTarot';
 import UserProfile from './sections/UserProfile';
+import Dashboard from './sections/Dashboard';
 import ReportMarketplace from './sections/ReportMarketplace';
 import PalmistryPage from './sections/PalmistryPage';
 import BlogPage from './sections/BlogPage';
@@ -68,6 +70,7 @@ function HomePage() {
 
 function App() {
   return (
+    <I18nProvider>
     <div className="min-h-screen bg-cosmic-bg text-cosmic-text overflow-x-hidden">
       <Navigation />
 
@@ -87,6 +90,7 @@ function App() {
           <Route path="/astrologer-dashboard" element={<AstrologerDashboard />} />
           <Route path="/prashnavali" element={<PrashnavaliPage />} />
           <Route path="/numerology" element={<NumerologyTarot />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/reports" element={<ReportMarketplace />} />
           <Route path="/palmistry" element={<PalmistryPage />} />
@@ -97,6 +101,7 @@ function App() {
 
       <Footer />
     </div>
+    </I18nProvider>
   );
 }
 

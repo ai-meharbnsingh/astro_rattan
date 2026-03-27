@@ -10,7 +10,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
 from app.config import APP_NAME, APP_VERSION, CORS_ORIGINS, RATE_LIMIT_PER_MINUTE
-from app.database import init_db, migrate_users_table
+from app.database import init_db, migrate_users_table, migrate_referral_tables
 from app.migrations import run_migrations
 from app.rate_limit import request_rate_limit_key
 from app.seed_data import seed_all
@@ -31,6 +31,7 @@ async def lifespan(app: FastAPI):
     """Initialize database, run migrations, seed data, and generate horoscopes on startup."""
     init_db()
     migrate_users_table()
+    migrate_referral_tables()
     run_migrations()
     seed_all()
     generate_daily_horoscopes()

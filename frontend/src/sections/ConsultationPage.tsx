@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Users, Star, Clock, Phone, Video, MessageSquare, Loader2, Calendar, Globe } from 'lucide-react';
+import { Users, Star, Clock, Phone, Video, MessageSquare, Loader2, Calendar, Globe, VideoIcon, CircleDot } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import VideoSessionPanel from '@/components/consultations/VideoSessionPanel';
@@ -41,6 +41,8 @@ interface VideoSessionState {
   roomName: string;
   videoLink: string;
 }
+
+type VideoCallStatus = 'waiting' | 'active' | 'ended' | null;
 
 const statusColors: Record<string, string> = {
   requested: 'bg-yellow-100 text-yellow-700',
@@ -107,6 +109,55 @@ export default function ConsultationPage() {
   const [availFilter, setAvailFilter] = useState('all');
   const [joiningVideoId, setJoiningVideoId] = useState<string | null>(null);
   const [activeVideoSession, setActiveVideoSession] = useState<VideoSessionState | null>(null);
+  const [videoStatuses, setVideoStatuses] = useState<Record<string, VideoCallStatus>>({});
+  const [startingVideoId, setStartingVideoId] = useState<string | null>(null);
+
+  /** Poll video-status for all accepted/active video consultations */
+  const fetchVideoStatuses = useCallback(async (items: Consultation[]) => {
+    const videoItems = items.filter(
+      (c) => c.type === 'video' && ['accepted', 'active', 'requested'].includes(c.status),
+    );
+    const statuses: Record<string, VideoCallStatus> = {};
+    await Promise.allSettled(
+      videoItems.map(async (c) => {
+        try {
+          const res = await api.get(`/api/consultation/${c.id}/video-status`);
+          statuses[c.id] = (res.status as VideoCallStatus) ?? null;
+        } catch {
+          statuses[c.id] = null;
+        }
+      }),
+    );
+    setVideoStatuses((prev) => ({ ...prev, ...statuses }));
+  }, []);
+
+  /** Start a video call via the new start-video endpoint */
+  const handleStartVideo = useCallback(async (consultation: Consultation) => {
+    setStartingVideoId(consultation.id);
+    try {
+      const res = await api.post(`/api/consultation/${consultation.id}/start-video`, {});
+      const roomUrl = String(res.room_url ?? '');
+      const updatedStatus = String(res.status ?? 'active');
+
+      // Update consultation in local state
+      setConsultations((prev) =>
+        prev.map((item) =>
+          item.id === consultation.id
+            ? { ...item, status: updatedStatus, video_link: roomUrl }
+            : item,
+        ),
+      );
+      setVideoStatuses((prev) => ({ ...prev, [consultation.id]: 'active' }));
+
+      // Open the video room URL in a new tab
+      if (roomUrl) {
+        window.open(roomUrl, '_blank', 'noopener,noreferrer');
+      }
+    } catch {
+      /* empty */
+    }
+    setStartingVideoId(null);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;

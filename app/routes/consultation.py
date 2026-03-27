@@ -1,5 +1,6 @@
 """Consultation booking and astrologer listing routes."""
 import sqlite3
+import time
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
 from app.auth import get_current_user, require_role
@@ -343,3 +344,144 @@ def generate_video_link(
     db.commit()
 
     return VideoLinkResponse(video_link=video_link, room_name=room_name, status=updated_status)
+
+
+# ============================================================
+# Video Consultation — Start Video & Status
+# ============================================================
+
+class StartVideoResponse(BaseModel):
+    room_url: str
+    status: str
+    consultation_id: str
+
+
+class VideoStatusResponse(BaseModel):
+    room_url: str | None
+    status: str  # waiting | active | ended
+    consultation_id: str
+
+
+@router.post(
+    "/api/consultation/{consultation_id}/start-video",
+    response_model=StartVideoResponse,
+)
+def start_video(
+    consultation_id: str,
+    user: dict = Depends(get_current_user),
+    db: sqlite3.Connection = Depends(get_db),
+):
+    """Generate a video room URL for a consultation. Requires JWT (participant only)."""
+    user_id = user.get("sub")
+
+    consultation = db.execute(
+        """
+        SELECT c.id, c.user_id, c.astrologer_id, c.type, c.status, c.notes,
+               a.user_id as astrologer_user_id
+        FROM consultations c
+        JOIN astrologers a ON a.id = c.astrologer_id
+        WHERE c.id = ?
+        """,
+        (consultation_id,),
+    ).fetchone()
+
+    if consultation is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Consultation not found"
+        )
+
+    if user_id not in (consultation["user_id"], consultation["astrologer_user_id"]):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Not a participant"
+        )
+
+    if consultation["type"] != "video":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Video is only available for video-type consultations",
+        )
+
+    if consultation["status"] not in ("accepted", "active"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Video room becomes available after the consultation is accepted",
+        )
+
+    # Generate a deterministic room URL using consultation_id + timestamp
+    timestamp = int(time.time())
+    room_url = f"https://meet.astrovedic.com/room/{consultation_id}_{timestamp}"
+
+    updated_status = "active" if consultation["status"] == "accepted" else consultation["status"]
+    db.execute(
+        """
+        UPDATE consultations
+        SET notes = ?, status = ?, started_at = COALESCE(started_at, datetime('now'))
+        WHERE id = ?
+        """,
+        (room_url, updated_status, consultation_id),
+    )
+    db.commit()
+
+    return StartVideoResponse(
+        room_url=room_url,
+        status=updated_status,
+        consultation_id=consultation_id,
+    )
+
+
+@router.get(
+    "/api/consultation/{consultation_id}/video-status",
+    response_model=VideoStatusResponse,
+)
+def video_status(
+    consultation_id: str,
+    user: dict = Depends(get_current_user),
+    db: sqlite3.Connection = Depends(get_db),
+):
+    """Get current video room URL and status for a consultation. Requires JWT (participant only)."""
+    user_id = user.get("sub")
+
+    consultation = db.execute(
+        """
+        SELECT c.id, c.user_id, c.astrologer_id, c.type, c.status, c.notes,
+               a.user_id as astrologer_user_id
+        FROM consultations c
+        JOIN astrologers a ON a.id = c.astrologer_id
+        WHERE c.id = ?
+        """,
+        (consultation_id,),
+    ).fetchone()
+
+    if consultation is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Consultation not found"
+        )
+
+    if user_id not in (consultation["user_id"], consultation["astrologer_user_id"]):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Not a participant"
+        )
+
+    # Derive video-specific status
+    c_status = consultation["status"]
+    if c_status in ("requested", "accepted"):
+        video_stat = "waiting"
+    elif c_status == "active":
+        video_stat = "active"
+    else:
+        video_stat = "ended"
+
+    # Extract room URL from notes if it matches our pattern
+    notes = consultation["notes"]
+    room_url = None
+    if isinstance(notes, str) and (
+        notes.startswith("https://meet.astrovedic.com/room/")
+        or notes.startswith("https://meet.jit.si/")
+    ):
+        room_url = notes
+
+    return VideoStatusResponse(
+        room_url=room_url,
+        status=video_stat,
+        consultation_id=consultation_id,
+    )

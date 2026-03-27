@@ -293,6 +293,27 @@ CREATE TABLE IF NOT EXISTS festivals (
 );
 CREATE INDEX IF NOT EXISTS idx_festivals_date ON festivals(date);
 
+-- Product Bundles
+CREATE TABLE IF NOT EXISTS product_bundles (
+    id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+    name TEXT NOT NULL,
+    description TEXT,
+    bundle_type TEXT NOT NULL CHECK(bundle_type IN ('consultation_product','multi_product')),
+    discount_percent REAL NOT NULL CHECK(discount_percent >= 0 AND discount_percent <= 100),
+    is_active INTEGER NOT NULL DEFAULT 1,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_bundles_active ON product_bundles(is_active);
+
+CREATE TABLE IF NOT EXISTS bundle_items (
+    id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+    bundle_id TEXT NOT NULL REFERENCES product_bundles(id),
+    product_id TEXT REFERENCES products(id),
+    consultation_type TEXT CHECK(consultation_type IN ('chat','call','video')),
+    quantity INTEGER NOT NULL DEFAULT 1 CHECK(quantity > 0)
+);
+CREATE INDEX IF NOT EXISTS idx_bundle_items_bundle ON bundle_items(bundle_id);
+
 -- H-01: Audit Log
 CREATE TABLE IF NOT EXISTS audit_log (
     id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
@@ -306,6 +327,35 @@ CREATE TABLE IF NOT EXISTS audit_log (
 );
 CREATE INDEX IF NOT EXISTS idx_audit_log_user ON audit_log(user_id);
 CREATE INDEX IF NOT EXISTS idx_audit_log_action ON audit_log(action);
+
+-- Referral / Affiliate System
+CREATE TABLE IF NOT EXISTS referral_codes (
+    id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+    code TEXT UNIQUE NOT NULL,
+    user_id TEXT UNIQUE NOT NULL REFERENCES users(id),
+    discount_percent REAL NOT NULL DEFAULT 5.0,
+    commission_percent REAL NOT NULL DEFAULT 10.0,
+    uses_count INTEGER NOT NULL DEFAULT 0,
+    max_uses INTEGER,
+    is_active INTEGER NOT NULL DEFAULT 1,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_referral_codes_code ON referral_codes(code);
+CREATE INDEX IF NOT EXISTS idx_referral_codes_user ON referral_codes(user_id);
+
+CREATE TABLE IF NOT EXISTS referral_earnings (
+    id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+    referrer_id TEXT NOT NULL REFERENCES users(id),
+    referred_id TEXT NOT NULL REFERENCES users(id),
+    order_id TEXT NOT NULL REFERENCES orders(id),
+    amount REAL NOT NULL,
+    commission REAL NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','paid')),
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_referral_earnings_referrer ON referral_earnings(referrer_id);
+CREATE INDEX IF NOT EXISTS idx_referral_earnings_referred ON referral_earnings(referred_id);
 """
 
 # H-11: FTS5 setup — run separately since CREATE VIRTUAL TABLE can't be in executescript with IF NOT EXISTS checks
@@ -395,6 +445,44 @@ def migrate_users_table(db_path: str = None):
     ]:
         if col not in existing:
             conn.execute(sql)
+    conn.commit()
+    conn.close()
+
+
+def migrate_referral_tables(db_path: str = None):
+    """Create referral_codes and referral_earnings tables if they don't exist (safe for re-runs)."""
+    path = db_path or DB_PATH
+    conn = sqlite3.connect(path)
+    conn.execute("PRAGMA foreign_keys=ON")
+    conn.executescript("""
+        CREATE TABLE IF NOT EXISTS referral_codes (
+            id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+            code TEXT UNIQUE NOT NULL,
+            user_id TEXT UNIQUE NOT NULL REFERENCES users(id),
+            discount_percent REAL NOT NULL DEFAULT 5.0,
+            commission_percent REAL NOT NULL DEFAULT 10.0,
+            uses_count INTEGER NOT NULL DEFAULT 0,
+            max_uses INTEGER,
+            is_active INTEGER NOT NULL DEFAULT 1,
+            created_at TEXT NOT NULL DEFAULT (datetime('now')),
+            updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+        );
+        CREATE INDEX IF NOT EXISTS idx_referral_codes_code ON referral_codes(code);
+        CREATE INDEX IF NOT EXISTS idx_referral_codes_user ON referral_codes(user_id);
+
+        CREATE TABLE IF NOT EXISTS referral_earnings (
+            id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+            referrer_id TEXT NOT NULL REFERENCES users(id),
+            referred_id TEXT NOT NULL REFERENCES users(id),
+            order_id TEXT NOT NULL REFERENCES orders(id),
+            amount REAL NOT NULL,
+            commission REAL NOT NULL,
+            status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','paid')),
+            created_at TEXT NOT NULL DEFAULT (datetime('now'))
+        );
+        CREATE INDEX IF NOT EXISTS idx_referral_earnings_referrer ON referral_earnings(referrer_id);
+        CREATE INDEX IF NOT EXISTS idx_referral_earnings_referred ON referral_earnings(referred_id);
+    """)
     conn.commit()
     conn.close()
 

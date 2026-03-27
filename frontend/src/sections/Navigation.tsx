@@ -3,21 +3,24 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Stars, Menu, X, Sparkles, MessageCircle, ShoppingCart, User, Shield, Star } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from '@/lib/i18n';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 const navLinks = [
-  { name: 'Kundli', href: '/kundli' },
-  { name: 'Horoscope', href: '/horoscope' },
-  { name: 'Panchang', href: '/panchang' },
-  { name: 'Prashnavali', href: '/prashnavali' },
-  { name: 'Numerology', href: '/numerology' },
-  { name: 'Palmistry', href: '/palmistry' },
-  { name: 'Library', href: '/library' },
-  { name: 'Blog', href: '/blog' },
-  { name: 'Shop', href: '/shop' },
+  { key: 'nav.kundli', href: '/kundli' },
+  { key: 'nav.horoscope', href: '/horoscope' },
+  { key: 'nav.panchang', href: '/panchang' },
+  { key: 'nav.prashnavali', href: '/prashnavali' },
+  { key: 'nav.numerology', href: '/numerology' },
+  { key: 'nav.palmistry', href: '/palmistry' },
+  { key: 'nav.library', href: '/library' },
+  { key: 'nav.blog', href: '/blog' },
+  { key: 'nav.shop', href: '/shop' },
 ];
 
 export default function Navigation() {
   const { user, isAuthenticated } = useAuth();
+  const { t } = useTranslation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -40,29 +43,30 @@ export default function Navigation() {
             </Link>
             <div className="hidden lg:flex items-center gap-1">
               {navLinks.map((link) => (
-                <Link key={link.name} to={link.href} className="px-4 py-2 text-sm nav-link-sacred font-medium">
-                  {link.name}
+                <Link key={link.key} to={link.href} className="px-4 py-2 text-sm nav-link-sacred font-medium">
+                  {t(link.key)}
                 </Link>
               ))}
             </div>
             <div className="hidden lg:flex items-center gap-3">
+              <LanguageSwitcher />
               {isAuthenticated && user?.role === 'admin' && (
                 <Button variant="ghost" size="sm" asChild>
                   <Link to="/admin" className="text-sacred-brown hover:text-sacred-gold-dark">
-                    <Shield className="w-4 h-4 mr-2" />Admin
+                    <Shield className="w-4 h-4 mr-2" />{t('nav.admin')}
                   </Link>
                 </Button>
               )}
               {isAuthenticated && user?.role === 'astrologer' && (
                 <Button variant="ghost" size="sm" asChild>
                   <Link to="/astrologer-dashboard" className="text-sacred-brown hover:text-sacred-gold-dark">
-                    <Star className="w-4 h-4 mr-2" />Dashboard
+                    <Star className="w-4 h-4 mr-2" />{t('nav.dashboard')}
                   </Link>
                 </Button>
               )}
               <Button variant="ghost" size="sm" asChild>
                 <Link to="/ai-chat" className="text-sacred-brown hover:text-sacred-gold-dark">
-                  <MessageCircle className="w-4 h-4 mr-2" />Ask AI
+                  <MessageCircle className="w-4 h-4 mr-2" />{t('nav.askAI')}
                 </Link>
               </Button>
               {isAuthenticated && (
@@ -75,13 +79,13 @@ export default function Navigation() {
               {isAuthenticated ? (
                 <Button variant="ghost" size="sm" asChild>
                   <Link to="/profile" className="text-sacred-brown hover:text-sacred-gold-dark">
-                    <User className="w-4 h-4 mr-2" />Profile
+                    <User className="w-4 h-4 mr-2" />{t('nav.profile')}
                   </Link>
                 </Button>
               ) : (
                 <Button size="sm" asChild className="btn-sacred">
                   <Link to="/login">
-                    <Sparkles className="w-4 h-4 mr-2" />Sign In
+                    <Sparkles className="w-4 h-4 mr-2" />{t('auth.signIn')}
                   </Link>
                 </Button>
               )}
@@ -97,8 +101,8 @@ export default function Navigation() {
         <div className={`absolute top-20 left-4 right-4 card-sacred rounded-2xl p-6 transition-all duration-500 ${isMobileMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}`}>
           <div className="space-y-4">
             {navLinks.map((link) => (
-              <Link key={link.name} to={link.href} onClick={() => setIsMobileMenuOpen(false)} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-sacred-gold/10 text-left transition-colors">
-                <span className="text-sacred-brown font-medium">{link.name}</span>
+              <Link key={link.key} to={link.href} onClick={() => setIsMobileMenuOpen(false)} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-sacred-gold/10 text-left transition-colors">
+                <span className="text-sacred-brown font-medium">{t(link.key)}</span>
               </Link>
             ))}
             <div className="pt-4 border-t border-sacred-gold/30 space-y-3">

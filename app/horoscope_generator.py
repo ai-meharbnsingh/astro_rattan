@@ -1,8 +1,9 @@
 """H-09: Horoscope Content Generation Pipeline — seeds daily & weekly horoscopes."""
+import json
 import random
 import sqlite3
 from datetime import date, timedelta
-from typing import List
+from typing import Dict, List, Optional
 
 from app.config import DB_PATH
 
@@ -206,3 +207,173 @@ def seed_weekly_horoscopes(db_path: str = None):
     conn.commit()
     conn.close()
     print(f"[horoscope] Seeded weekly horoscopes for week of {week_date}")
+
+
+# ---------------------------------------------------------------------------
+# AI-personalized horoscope generation
+# ---------------------------------------------------------------------------
+
+_SECTIONS = ("general", "love", "career", "finance", "health")
+
+
+def _build_ai_horoscope_prompt(
+    sign: str,
+    period: str,
+    birth_data: Optional[Dict] = None,
+) -> tuple:
+    """Return (system_prompt, user_prompt) for AI-personalized horoscope."""
+    ruler = _RULERS[sign]
+    element = _ELEMENTS[sign]
+
+    system_prompt = (
+        "You are an expert Vedic astrologer (Jyotishi) who writes personalized horoscopes. "
+        "Generate a horoscope with EXACTLY these five sections: General, Love, Career, Finance, Health. "
+        "Format your response as valid JSON with keys: general, love, career, finance, health. "
+        "Each value should be a string of 2-4 sentences. "
+        "Use Vedic astrology concepts (transits, nakshatras, planetary influences). "
+        "Be warm, encouraging, and specific. Do not include markdown formatting."
+    )
+
+    birth_context = ""
+    if birth_data:
+        parts = []
+        if birth_data.get("birth_date"):
+            parts.append(f"born on {birth_data['birth_date']}")
+        if birth_data.get("birth_time"):
+            parts.append(f"at {birth_data['birth_time']}")
+        if birth_data.get("birth_place"):
+            parts.append(f"in {birth_data['birth_place']}")
+        if parts:
+            birth_context = (
+                f" The native was {', '.join(parts)}. "
+                "Personalize the reading based on this birth information."
+            )
+
+    user_prompt = (
+        f"Generate a {period} horoscope for {sign.title()} "
+        f"(a {element} sign ruled by {ruler}). "
+        f"Consider current planetary transits and {ruler}'s influence on this sign.{birth_context} "
+        f"Respond ONLY with a JSON object having keys: general, love, career, finance, health."
+    )
+
+    return system_prompt, user_prompt
+
+
+def _parse_ai_sections(response: str) -> Optional[Dict[str, str]]:
+    """Try to extract the five horoscope sections from AI response JSON."""
+    try:
+        # Strip potential markdown code fences
+        text = response.strip()
+        if text.startswith("```"):
+            text = text.split("\n", 1)[1] if "\n" in text else text[3:]
+            if text.endswith("```"):
+                text = text[:-3]
+            text = text.strip()
+            if text.startswith("json"):
+                text = text[4:].strip()
+
+        data = json.loads(text)
+        if isinstance(data, dict) and all(k in data for k in _SECTIONS):
+            return {k: str(data[k]) for k in _SECTIONS}
+    except (json.JSONDecodeError, TypeError, KeyError):
+        pass
+
+    # Fallback: try to find a JSON object within the response
+    try:
+        start = response.find("{")
+        end = response.rfind("}") + 1
+        if start >= 0 and end > start:
+            data = json.loads(response[start:end])
+            if isinstance(data, dict) and all(k in data for k in _SECTIONS):
+                return {k: str(data[k]) for k in _SECTIONS}
+    except (json.JSONDecodeError, TypeError, KeyError):
+        pass
+
+    return None
+
+
+def _template_fallback_sections(sign: str) -> Dict[str, str]:
+    """Generate template-based horoscope sections as a fallback."""
+    ruler = _RULERS[sign]
+    element = _ELEMENTS[sign]
+
+    intro_templates = [
+        f"{ruler}'s influence brings transformative energy to {sign.title()} today.",
+        f"As a {element} sign ruled by {ruler}, you feel a surge of clarity and purpose.",
+        f"The cosmic alignment favors {sign.title()} — {ruler} empowers your natural strengths.",
+    ]
+
+    return {
+        "general": random.choice(intro_templates) + " " + random.choice(_SPIRITUAL),
+        "love": random.choice(_LOVE),
+        "career": random.choice(_CAREER),
+        "finance": random.choice([
+            "Financial matters look favorable; consider long-term investments.",
+            "Avoid impulsive spending — plan carefully and save for the future.",
+            "Unexpected income or a financial opportunity may present itself.",
+            "Review your budget and focus on financial stability this period.",
+        ]),
+        "health": random.choice(_HEALTH),
+    }
+
+
+def generate_ai_horoscope(
+    sign: str,
+    period: str = "daily",
+    birth_data: Optional[Dict] = None,
+) -> Dict:
+    """
+    Generate an AI-personalized horoscope with sectioned content.
+
+    Uses the AI engine for personalized horoscope generation based on
+    current planetary transits, the sign's ruling planet and element.
+    Falls back to template-based generation if AI is unavailable.
+
+    Args:
+        sign: Zodiac sign (lowercase, e.g. "aries").
+        period: One of "daily", "weekly", "monthly", "yearly".
+        birth_data: Optional dict with keys birth_date, birth_time, birth_place.
+
+    Returns:
+        Dict with keys: sign, period, sections (dict of 5 sections),
+        source ("ai" or "template"), and personalized (bool).
+    """
+    sign = sign.lower()
+    if sign not in SIGNS:
+        raise ValueError(f"Invalid zodiac sign: {sign}")
+    if period not in ("daily", "weekly", "monthly", "yearly"):
+        raise ValueError(f"Invalid period: {period}")
+
+    ruler = _RULERS[sign]
+    element = _ELEMENTS[sign]
+
+    # Attempt AI generation
+    sections = None
+    source = "template"
+
+    try:
+        from app.ai_engine import _call_ai
+
+        system_prompt, user_prompt = _build_ai_horoscope_prompt(sign, period, birth_data)
+        response = _call_ai(system_prompt, user_prompt, temperature=0.7)
+
+        if response:
+            sections = _parse_ai_sections(response)
+            if sections:
+                source = "ai"
+    except Exception:
+        pass
+
+    # Fallback to template-based generation
+    if sections is None:
+        sections = _template_fallback_sections(sign)
+
+    return {
+        "sign": sign,
+        "period": period,
+        "ruling_planet": ruler,
+        "element": element,
+        "sections": sections,
+        "source": source,
+        "personalized": birth_data is not None and source == "ai",
+    }

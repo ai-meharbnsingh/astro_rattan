@@ -293,3 +293,101 @@ class MuhuratType(str, Enum):
     marriage = "marriage"; griha_pravesh = "griha_pravesh"
     business_start = "business_start"; travel = "travel"
     naming_ceremony = "naming_ceremony"; mundan = "mundan"
+
+
+class ReferralEarningStatus(str, Enum):
+    pending = "pending"
+    paid = "paid"
+
+
+# ============================================================
+# Referral / Affiliate
+# ============================================================
+class ReferralCode(BaseModel):
+    code: str
+    user_id: str
+    discount_percent: float = 5.0
+    commission_percent: float = 10.0
+    uses_count: int = 0
+    max_uses: Optional[int] = None
+    is_active: bool = True
+
+
+class ReferralEarning(BaseModel):
+    id: str
+    referrer_id: str
+    referred_id: str
+    order_id: str
+    amount: float
+    commission: float
+    status: ReferralEarningStatus = ReferralEarningStatus.pending
+
+
+class ReferralStats(BaseModel):
+    total_referrals: int = 0
+    total_earnings: float = 0.0
+    pending_earnings: float = 0.0
+    paid_earnings: float = 0.0
+
+
+class ApplyReferralRequest(BaseModel):
+    code: str = Field(min_length=1)
+
+
+# ============================================================
+# Product Bundles
+# ============================================================
+class BundleType(str, Enum):
+    consultation_product = "consultation_product"
+    multi_product = "multi_product"
+
+
+class BundleItemCreate(BaseModel):
+    product_id: Optional[str] = None
+    consultation_type: Optional[str] = None  # chat, call, video
+    quantity: int = Field(ge=1, default=1)
+
+    @field_validator("consultation_type")
+    @classmethod
+    def validate_consultation_type(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None and v not in ("chat", "call", "video"):
+            raise ValueError("consultation_type must be chat, call, or video")
+        return v
+
+
+class BundleCreate(BaseModel):
+    name: str = Field(min_length=1)
+    description: Optional[str] = None
+    bundle_type: BundleType
+    discount_percent: float = Field(ge=0, le=100)
+    items: List[BundleItemCreate] = Field(min_length=1)
+
+
+class BundleUpdate(BaseModel):
+    name: Optional[str] = Field(default=None, min_length=1)
+    description: Optional[str] = None
+    discount_percent: Optional[float] = Field(default=None, ge=0, le=100)
+    is_active: Optional[bool] = None
+
+
+class BundleItemResponse(BaseModel):
+    id: str
+    product_id: Optional[str] = None
+    consultation_type: Optional[str] = None
+    quantity: int
+    product_name: Optional[str] = None
+    product_price: Optional[float] = None
+
+
+class BundleResponse(BaseModel):
+    id: str
+    name: str
+    description: Optional[str] = None
+    bundle_type: str
+    discount_percent: float
+    is_active: bool
+    created_at: str
+    items: List[BundleItemResponse] = []
+    original_price: float = 0.0
+    discounted_price: float = 0.0
+    savings: float = 0.0
