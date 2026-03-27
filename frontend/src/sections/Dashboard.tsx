@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,6 +19,15 @@ import {
   User,
   Hash,
   Palette,
+  Flame,
+  Award,
+  Zap,
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  CheckCircle,
+  Gift,
+  Bell,
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
@@ -59,6 +68,49 @@ interface ActivitySummary {
   order_count: number;
   consultation_count: number;
   ai_chats: number;
+}
+
+interface DashaPeriod {
+  planet: string;
+  start_date: string;
+  end_date: string;
+  interpretation?: string;
+}
+
+interface DashaData {
+  mahadasha?: DashaPeriod;
+  antardasha?: DashaPeriod;
+}
+
+interface TransitData {
+  planet: string;
+  house: number;
+  sign: string;
+  impact: 'positive' | 'challenging' | 'neutral';
+  interpretation: string;
+}
+
+interface KarmaProfile {
+  streak: number;
+  total_points: number;
+  level: number;
+  level_progress: number;
+  next_level_points: number;
+  badges: { name: string; icon: string; earned_at: string }[];
+  checked_in_today: boolean;
+}
+
+interface CosmicCalendarEvent {
+  name: string;
+  date: string;
+  type: string;
+  description?: string;
+}
+
+interface Recommendation {
+  text: string;
+  icon: 'business' | 'caution' | 'spiritual' | 'remedy';
+  color: string;
 }
 
 const zodiacSigns = [
@@ -124,6 +176,13 @@ export default function Dashboard() {
   const [activity, setActivity] = useState<ActivitySummary>({ kundli_count: 0, order_count: 0, consultation_count: 0, ai_chats: 0 });
   const [userProfile, setUserProfile] = useState<{ date_of_birth?: string }>({});
   const [loading, setLoading] = useState(true);
+  const [dashaData, setDashaData] = useState<DashaData | null>(null);
+  const [transits, setTransits] = useState<TransitData[]>([]);
+  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
+  const [karmaProfile, setKarmaProfile] = useState<KarmaProfile | null>(null);
+  const [checkingIn, setCheckingIn] = useState(false);
+  const [cosmicEvents, setCosmicEvents] = useState<CosmicCalendarEvent[]>([]);
+  const [nextMuhurat, setNextMuhurat] = useState<{ event: string; date: string } | null>(null);
 
   const today = new Date();
   const todayStr = today.toISOString().split('T')[0];
@@ -137,6 +196,62 @@ export default function Dashboard() {
   const userSign = getZodiacSign(userProfile.date_of_birth);
   const luckyNumbers = horoscope.lucky_numbers || [3, 7, 11];
   const luckyColor = horoscope.lucky_color || 'Gold';
+
+  const generateRecommendations = useCallback((transitList: TransitData[], dasha: DashaData | null): Recommendation[] => {
+    const recs: Recommendation[] = [];
+    const hasPositiveJupiter = transitList.some(t => t.planet.toLowerCase().includes('jupiter') && t.impact === 'positive');
+    const hasChallengingSaturn = transitList.some(t => t.planet.toLowerCase().includes('saturn') && t.impact === 'challenging');
+    const hasPositiveVenus = transitList.some(t => t.planet.toLowerCase().includes('venus') && t.impact === 'positive');
+    const hasChallengingMars = transitList.some(t => t.planet.toLowerCase().includes('mars') && t.impact === 'challenging');
+    const hasRahu = transitList.some(t => t.planet.toLowerCase().includes('rahu'));
+
+    if (hasPositiveJupiter) {
+      recs.push({ text: 'Good day for business decisions and financial growth', icon: 'business', color: 'text-green-400' });
+    }
+    if (hasChallengingSaturn) {
+      recs.push({ text: 'Avoid major purchases today — Saturn advises patience', icon: 'caution', color: 'text-amber-400' });
+    }
+    if (hasRahu) {
+      recs.push({ text: 'Meditation recommended during Rahu Kaal for mental clarity', icon: 'spiritual', color: 'text-purple-400' });
+    }
+    if (hasPositiveVenus) {
+      recs.push({ text: 'Favorable day for relationships and creative pursuits', icon: 'remedy', color: 'text-pink-400' });
+    }
+    if (hasChallengingMars) {
+      recs.push({ text: 'Channel energy into exercise — avoid confrontations', icon: 'caution', color: 'text-red-400' });
+    }
+    if (dasha?.mahadasha?.planet?.toLowerCase().includes('jupiter')) {
+      recs.push({ text: 'Wear yellow for Jupiter\'s blessing during your Mahadasha', icon: 'remedy', color: 'text-sacred-gold' });
+    }
+
+    // Ensure at least some recommendations
+    if (recs.length === 0) {
+      recs.push(
+        { text: 'Stay mindful and observe planetary energies today', icon: 'spiritual', color: 'text-purple-400' },
+        { text: 'A balanced day — focus on routine tasks', icon: 'business', color: 'text-green-400' },
+        { text: 'Light a lamp during evening for positive vibrations', icon: 'remedy', color: 'text-sacred-gold' },
+      );
+    }
+
+    return recs.slice(0, 4);
+  }, []);
+
+  const handleCheckIn = async () => {
+    setCheckingIn(true);
+    try {
+      const res = await api.post('/api/karma/checkin', {});
+      setKarmaProfile(prev => prev ? {
+        ...prev,
+        streak: res.streak ?? (prev.streak + 1),
+        total_points: res.total_points ?? (prev.total_points + 10),
+        checked_in_today: true,
+      } : prev);
+    } catch {
+      // silently handle
+    } finally {
+      setCheckingIn(false);
+    }
+  };
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -216,6 +331,55 @@ export default function Dashboard() {
           consultation_count: h.consultations?.count ?? 0,
           ai_chats: h.ai_chats?.count ?? 0,
         });
+      }
+
+      // Fetch saved kundli list for dasha data
+      const savedList = kundliRes.status === 'fulfilled'
+        ? (Array.isArray(kundliRes.value) ? kundliRes.value : kundliRes.value?.kundlis || [])
+        : [];
+
+      // Second wave: dasha, transits, karma, cosmic calendar
+      const firstKundliId = savedList.length > 0 ? savedList[0].id : null;
+
+      const [dashaRes, transitRes, karmaRes, cosmicRes] = await Promise.allSettled([
+        firstKundliId ? api.get(`/api/kundli/${firstKundliId}/dasha`) : Promise.reject('no kundli'),
+        api.get('/api/cosmic-calendar/today'),
+        api.get('/api/karma/profile'),
+        api.get('/api/cosmic-calendar/upcoming'),
+      ]);
+
+      if (cancelled) return;
+
+      let fetchedDasha: DashaData | null = null;
+      if (dashaRes.status === 'fulfilled' && dashaRes.value) {
+        const d = dashaRes.value;
+        fetchedDasha = {
+          mahadasha: d.mahadasha || d.current_mahadasha || null,
+          antardasha: d.antardasha || d.current_antardasha || null,
+        };
+        setDashaData(fetchedDasha);
+      }
+
+      let fetchedTransits: TransitData[] = [];
+      if (transitRes.status === 'fulfilled' && transitRes.value) {
+        const t = transitRes.value;
+        fetchedTransits = Array.isArray(t.transits) ? t.transits : Array.isArray(t) ? t : [];
+        setTransits(fetchedTransits);
+      }
+
+      // Generate recommendations from transits and dasha
+      setRecommendations(generateRecommendations(fetchedTransits, fetchedDasha));
+
+      if (karmaRes.status === 'fulfilled' && karmaRes.value) {
+        setKarmaProfile(karmaRes.value);
+      }
+
+      if (cosmicRes.status === 'fulfilled' && cosmicRes.value) {
+        const events = Array.isArray(cosmicRes.value) ? cosmicRes.value : cosmicRes.value?.events || [];
+        setCosmicEvents(events.slice(0, 3));
+        // Check for upcoming muhurat
+        const muhurat = events.find((e: CosmicCalendarEvent) => e.type === 'muhurat');
+        if (muhurat) setNextMuhurat({ event: muhurat.name, date: muhurat.date });
       }
 
       setLoading(false);

@@ -370,6 +370,130 @@ class BundleUpdate(BaseModel):
     is_active: Optional[bool] = None
 
 
+# ============================================================
+# Gamification
+# ============================================================
+class KarmaActionType(str, Enum):
+    daily_login = "daily_login"
+    kundli_generated = "kundli_generated"
+    ai_chat = "ai_chat"
+    panchang_viewed = "panchang_viewed"
+    shop_purchase = "shop_purchase"
+    consultation_completed = "consultation_completed"
+    library_read = "library_read"
+    prashnavali_used = "prashnavali_used"
+    learning_completed = "learning_completed"
+
+
+class LearningCategory(str, Enum):
+    basics = "basics"
+    kundli = "kundli"
+    panchang = "panchang"
+    doshas = "doshas"
+    remedies = "remedies"
+    advanced = "advanced"
+
+
+class KarmaProfile(BaseModel):
+    user_id: str
+    total_points: int = 0
+    current_streak: int = 0
+    longest_streak: int = 0
+    last_activity_date: Optional[str] = None
+    level: int = 1
+    badges: List[dict] = []
+
+
+class KarmaTransaction(BaseModel):
+    id: str
+    user_id: str
+    points: int
+    action_type: str
+    description: Optional[str] = None
+    created_at: str
+
+
+class Badge(BaseModel):
+    id: str
+    name: str
+    description: str
+    icon: str
+    earned: bool = False
+    earned_at: Optional[str] = None
+
+
+class LearningModule(BaseModel):
+    id: str
+    title: str
+    description: Optional[str] = None
+    category: str
+    order_index: int = 0
+    content_json: Optional[str] = None
+    points_reward: int = 50
+    completed: bool = False
+
+
+class LearningProgress(BaseModel):
+    id: str
+    user_id: str
+    module_id: str
+    completed_at: str
+
+
+# ============================================================
+# Forum / Community
+# ============================================================
+class ForumCategory(BaseModel):
+    id: str
+    name: str
+    description: Optional[str] = None
+    icon: Optional[str] = None
+    order_index: int = 0
+    is_active: bool = True
+    thread_count: int = 0
+
+
+class ThreadCreate(BaseModel):
+    category_id: str
+    title: str = Field(min_length=3)
+    content: str = Field(min_length=10)
+
+
+class ThreadResponse(BaseModel):
+    id: str
+    category_id: str
+    user_id: str
+    title: str
+    content: str
+    is_pinned: bool = False
+    is_locked: bool = False
+    views_count: int = 0
+    replies_count: int = 0
+    created_at: str
+    updated_at: str
+    author_name: Optional[str] = None
+    author_avatar: Optional[str] = None
+    category_name: Optional[str] = None
+
+
+class ReplyCreate(BaseModel):
+    content: str = Field(min_length=1)
+
+
+class ReplyResponse(BaseModel):
+    id: str
+    thread_id: str
+    user_id: str
+    content: str
+    is_best_answer: bool = False
+    likes_count: int = 0
+    created_at: str
+    updated_at: str
+    author_name: Optional[str] = None
+    author_avatar: Optional[str] = None
+    liked_by_me: bool = False
+
+
 class BundleItemResponse(BaseModel):
     id: str
     product_id: Optional[str] = None

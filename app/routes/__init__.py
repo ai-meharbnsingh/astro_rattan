@@ -22,6 +22,7 @@ from app.routes.search import router as search_router
 from app.routes.blog import router as blog_router
 from app.routes.referral import router as referral_router
 from app.routes.bundles import router as bundles_router
+from app.routes.forum import router as forum_router
 
 # Admin sub-routers (H-03 split)
 from app.routes.admin_users import router as admin_users_router
@@ -61,4 +62,5 @@ all_routers = [
     search_router,
     referral_router,
     bundles_router,
+    forum_router,
 ]
