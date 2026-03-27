@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
+import { Canvas } from '@react-three/fiber';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Sparkles, Star, ChevronRight, Calendar, MapPin, Clock } from 'lucide-react';
+import { Sparkles, ChevronRight, Calendar, MapPin, Clock } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
+import ArmillarySphere from '@/components/three/ArmillarySphere';
 
 export default function Hero() {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -85,31 +87,12 @@ export default function Hero() {
             </div>
           </div>
           <div className="hidden lg:flex items-center justify-center">
-            <div className="relative w-[420px] h-[420px]">
-              {/* Outer cosmic glow */}
-              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-sacred-purple/40 to-sacred-gold/10 animate-pulse-gold blur-xl" />
-              {/* Zodiac ring */}
-              <div className="absolute inset-4 rounded-full border-2 border-sacred-gold/30 animate-spin-slow" />
-              <div className="absolute inset-12 rounded-full border border-sacred-gold/20" />
-              {/* Inner circle with star */}
-              <div className="absolute inset-20 rounded-full bg-gradient-to-br from-sacred-purple/60 to-cosmic-bg border border-sacred-gold/40 flex items-center justify-center shadow-glow-gold">
-                <div className="relative">
-                  <Star className="w-20 h-20 text-sacred-gold" fill="currentColor" />
-                  <div className="absolute inset-0 animate-pulse-gold rounded-full" />
-                </div>
-              </div>
-              {/* Zodiac symbols positioned around the ring */}
-              {['\u2648','\u2649','\u264A','\u264B','\u264C','\u264D','\u264E','\u264F','\u2650','\u2651','\u2652','\u2653'].map((symbol, i) => {
-                const angle = (i * 30 - 90) * (Math.PI / 180);
-                const radius = 185;
-                const x = Math.cos(angle) * radius;
-                const y = Math.sin(angle) * radius;
-                return (
-                  <span key={i} className="absolute text-sacred-gold/60 text-lg font-bold" style={{ left: `calc(50% + ${x}px - 10px)`, top: `calc(50% + ${y}px - 10px)` }}>
-                    {symbol}
-                  </span>
-                );
-              })}
+            <div className="relative w-[500px] h-[500px]">
+              <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
+                <ambientLight intensity={0.3} />
+                <pointLight position={[5, 5, 5]} intensity={0.5} />
+                <ArmillarySphere interactive scale={1} />
+              </Canvas>
             </div>
           </div>
         </div>

@@ -3,6 +3,8 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Button } from '@/components/ui/button';
 import { Sparkles, Star, ChevronRight, Users, Award, Globe } from 'lucide-react';
+import { Canvas } from '@react-three/fiber';
+import { FloatingPlanet } from '@/components/three';
 
 gsap.registerPlugin(ScrollTrigger);
 

@@ -2,10 +2,12 @@ import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Canvas } from '@react-three/fiber';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Brain, Star, Calendar, BookOpen, Sparkles, ChevronRight, Compass } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
+import { ZodiacWheel } from '@/components/three';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -33,6 +35,11 @@ export default function Features() {
 
   return (
     <section ref={sectionRef} id="features" className="relative py-24 bg-cosmic-bg bg-mandala">
+      <div className="absolute inset-0 z-0 opacity-30 pointer-events-none">
+        <Canvas camera={{ position: [0, 0, 5], fov: 50 }} gl={{ alpha: true }}>
+          <ZodiacWheel size={1.8} tilt={0.6} rotationSpeed={0.05} />
+        </Canvas>
+      </div>
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="features-title text-center mb-16">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-sacred font-bold text-cosmic-text mb-4">

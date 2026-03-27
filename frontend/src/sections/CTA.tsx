@@ -4,6 +4,8 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Button } from '@/components/ui/button';
 import { Sparkles, Phone, ChevronRight, Star } from 'lucide-react';
+import { Canvas } from '@react-three/fiber';
+import { FloatingPlanet } from '@/components/three';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,6 +22,13 @@ export default function CTA() {
 
   return (
     <section ref={sectionRef} className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-cosmic-bg bg-mandala bg-cosmic-stars">
+      <div className="absolute inset-0 z-0 opacity-30 pointer-events-none">
+        <Canvas camera={{ position: [0, 0, 8], fov: 50 }} gl={{ alpha: true }}>
+          <FloatingPlanet color="#ffd700" size={0.4} position={[-4, 2, -2]} hasRing rotationSpeed={0.2} />
+          <FloatingPlanet color="#7c3aed" size={0.25} position={[4.5, -1.5, -3]} rotationSpeed={0.35} />
+          <FloatingPlanet color="#f97316" size={0.3} position={[3, 3, -4]} hasRing orbitRadius={1.5} rotationSpeed={0.15} />
+        </Canvas>
+      </div>
       <div className="absolute inset-0 z-0">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-sacred-purple/20 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-sacred-gold/5 rounded-full blur-3xl" />
