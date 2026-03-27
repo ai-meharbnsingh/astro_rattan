@@ -57,7 +57,7 @@ export default function Features() {
         </div>
         <div className="features-title mt-16 text-center">
           <Button onClick={() => navigate('/ai-chat')} className="btn-sacred">
-            <Brain className="w-5 h-5 mr-2" />Chat with AI Astrologer<ChevronRight className="w-5 h-5 ml-2" />
+            <Brain className="w-5 h-5 mr-2" />{t('features.chatWithAI')}<ChevronRight className="w-5 h-5 ml-2" />
           </Button>
         </div>
       </div>
