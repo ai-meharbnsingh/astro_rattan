@@ -106,34 +106,35 @@ export default function Navigation() {
               </Link>
             ))}
             <div className="pt-4 border-t border-sacred-gold/30 space-y-3">
+              <LanguageSwitcher />
               <Button className="w-full btn-sacred" asChild>
                 <Link to="/ai-chat" onClick={() => setIsMobileMenuOpen(false)}>
-                  <MessageCircle className="w-4 h-4 mr-2" />Ask AI Astrologer
+                  <MessageCircle className="w-4 h-4 mr-2" />{t('nav.askAIAstrologer')}
                 </Link>
               </Button>
               {isAuthenticated && (
                 <>
                   <Button variant="outline" className="w-full border-sacred-gold text-sacred-brown hover:bg-sacred-gold/10" asChild>
                     <Link to="/cart" onClick={() => setIsMobileMenuOpen(false)}>
-                      <ShoppingCart className="w-4 h-4 mr-2" />Cart
+                      <ShoppingCart className="w-4 h-4 mr-2" />{t('nav.cart')}
                     </Link>
                   </Button>
                   <Button variant="outline" className="w-full border-sacred-gold text-sacred-brown hover:bg-sacred-gold/10" asChild>
                     <Link to="/profile" onClick={() => setIsMobileMenuOpen(false)}>
-                      <User className="w-4 h-4 mr-2" />Profile
+                      <User className="w-4 h-4 mr-2" />{t('nav.profile')}
                     </Link>
                   </Button>
                   {user?.role === 'admin' && (
                     <Button variant="outline" className="w-full border-sacred-gold text-sacred-brown hover:bg-sacred-gold/10" asChild>
                       <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)}>
-                        <Shield className="w-4 h-4 mr-2" />Admin
+                        <Shield className="w-4 h-4 mr-2" />{t('nav.admin')}
                       </Link>
                     </Button>
                   )}
                   {user?.role === 'astrologer' && (
                     <Button variant="outline" className="w-full border-sacred-gold text-sacred-brown hover:bg-sacred-gold/10" asChild>
                       <Link to="/astrologer-dashboard" onClick={() => setIsMobileMenuOpen(false)}>
-                        <Star className="w-4 h-4 mr-2" />Astrologer Dashboard
+                        <Star className="w-4 h-4 mr-2" />{t('nav.astrologerDashboard')}
                       </Link>
                     </Button>
                   )}
@@ -142,7 +143,7 @@ export default function Navigation() {
               {!isAuthenticated && (
                 <Button variant="outline" className="w-full border-sacred-gold text-sacred-brown hover:bg-sacred-gold/10" asChild>
                   <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                    <Sparkles className="w-4 h-4 mr-2" />Sign In
+                    <Sparkles className="w-4 h-4 mr-2" />{t('auth.signIn')}
                   </Link>
                 </Button>
               )}

@@ -175,7 +175,9 @@ export default function ConsultationPage() {
           const data = await api.get('/api/consultations');
           if (!cancelled) {
             const list = Array.isArray(data) ? data : data.consultations || [];
-            setConsultations(list.map((item: Record<string, unknown>) => normalizeConsultation(item)));
+            const normalized = list.map((item: Record<string, unknown>) => normalizeConsultation(item));
+            setConsultations(normalized);
+            fetchVideoStatuses(normalized);
           }
         } catch { /* empty */ }
       }
@@ -365,15 +367,42 @@ export default function ConsultationPage() {
                           <Badge className={statusColors[c.status] || 'bg-cosmic-surface text-cosmic-text-secondary'}>
                             {c.status}
                           </Badge>
+                          {/* Video call status indicator */}
+                          {c.type === 'video' && videoStatuses[c.id] && (
+                            <Badge className={
+                              videoStatuses[c.id] === 'active'
+                                ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                                : videoStatuses[c.id] === 'waiting'
+                                ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                                : 'bg-cosmic-surface text-cosmic-text-secondary'
+                            }>
+                              <CircleDot className="w-3 h-3 mr-1" />
+                              {videoStatuses[c.id] === 'active' ? 'In Progress' : videoStatuses[c.id] === 'waiting' ? 'Waiting' : 'Ended'}
+                            </Badge>
+                          )}
+                          {/* Join Video Call button — uses start-video endpoint */}
                           {c.type === 'video' && (c.status === 'accepted' || c.status === 'active') && (
                             <Button
                               size="sm"
+                              onClick={() => handleStartVideo(c)}
+                              disabled={startingVideoId === c.id}
+                              className="bg-sacred-gold text-white hover:bg-sacred-gold-dark border border-sacred-gold/20"
+                            >
+                              {startingVideoId === c.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <VideoIcon className="mr-2 h-4 w-4" />}
+                              Join Video Call
+                            </Button>
+                          )}
+                          {/* Existing embedded session button */}
+                          {c.type === 'video' && (c.status === 'accepted' || c.status === 'active') && (
+                            <Button
+                              size="sm"
+                              variant="outline"
                               onClick={() => openVideoSession(c)}
                               disabled={joiningVideoId === c.id}
-                              className="bg-sacred-gold text-white hover:bg-sacred-gold-dark"
+                              className="border-sacred-gold/20 text-cosmic-text hover:bg-sacred-gold/10"
                             >
                               {joiningVideoId === c.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Video className="mr-2 h-4 w-4" />}
-                              {c.video_link ? 'Rejoin Session' : 'Join Session'}
+                              {c.video_link ? 'Rejoin Embedded' : 'Embed Session'}
                             </Button>
                           )}
                         </div>
