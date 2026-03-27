@@ -45,9 +45,9 @@ interface VideoSessionState {
 const statusColors: Record<string, string> = {
   requested: 'bg-yellow-100 text-yellow-700',
   accepted: 'bg-blue-100 text-blue-700',
-  active: 'bg-green-100 text-green-700',
-  completed: 'bg-minimal-gray-100 text-minimal-gray-600',
-  cancelled: 'bg-red-100 text-red-600',
+  active: 'bg-green-500/20 text-green-700',
+  completed: 'bg-cosmic-surface text-cosmic-text-secondary',
+  cancelled: 'bg-red-500/20 text-red-400',
 };
 
 const typeIcons: Record<string, React.ReactNode> = {
@@ -182,7 +182,7 @@ export default function ConsultationPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <Loader2 className="w-10 h-10 text-minimal-indigo animate-spin" />
+        <Loader2 className="w-10 h-10 text-sacred-gold animate-spin" />
       </div>
     );
   }
@@ -190,26 +190,26 @@ export default function ConsultationPage() {
   return (
     <section className="max-w-6xl mx-auto py-24 px-4">
       <div className="text-center mb-10">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-minimal-indigo/10 text-minimal-indigo text-sm font-medium mb-4">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold/10 text-sacred-gold text-sm font-medium mb-4">
           <Users className="w-4 h-4" />Consultations
         </div>
-        <h2 className="text-3xl sm:text-4xl font-display font-bold text-minimal-gray-900 mb-2">
+        <h2 className="text-3xl sm:text-4xl font-display font-bold text-cosmic-text mb-2">
           Consult with <span className="text-gradient-indigo">Expert Astrologers</span>
         </h2>
-        <p className="text-minimal-gray-500">Book a personalized session via chat, call, or video</p>
+        <p className="text-cosmic-text-secondary">Book a personalized session via chat, call, or video</p>
       </div>
 
       <Tabs defaultValue="astrologers" className="w-full">
-        <TabsList className="grid grid-cols-2 bg-minimal-gray-100 mb-8 max-w-xs mx-auto">
-          <TabsTrigger value="astrologers" className="data-[state=active]:bg-minimal-indigo data-[state=active]:text-white">Astrologers</TabsTrigger>
-          <TabsTrigger value="my" className="data-[state=active]:bg-minimal-indigo data-[state=active]:text-white">My Bookings</TabsTrigger>
+        <TabsList className="grid grid-cols-2 bg-cosmic-surface mb-8 max-w-xs mx-auto">
+          <TabsTrigger value="astrologers" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white">Astrologers</TabsTrigger>
+          <TabsTrigger value="my" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white">My Bookings</TabsTrigger>
         </TabsList>
 
         <TabsContent value="astrologers">
           {/* Filters */}
           <div className="flex flex-wrap gap-3 mb-6">
             <Select value={specFilter} onValueChange={setSpecFilter}>
-              <SelectTrigger className="w-48 bg-white border-minimal-gray-200">
+              <SelectTrigger className="w-48 bg-white border-sacred-gold/15">
                 <SelectValue placeholder="Specialization" />
               </SelectTrigger>
               <SelectContent>
@@ -220,7 +220,7 @@ export default function ConsultationPage() {
               </SelectContent>
             </Select>
             <Select value={availFilter} onValueChange={setAvailFilter}>
-              <SelectTrigger className="w-40 bg-white border-minimal-gray-200">
+              <SelectTrigger className="w-40 bg-white border-sacred-gold/15">
                 <SelectValue placeholder="Availability" />
               </SelectTrigger>
               <SelectContent>
@@ -231,28 +231,28 @@ export default function ConsultationPage() {
           </div>
 
           {filtered.length === 0 ? (
-            <div className="text-center py-12 text-minimal-gray-500">No astrologers found matching your filters.</div>
+            <div className="text-center py-12 text-cosmic-text-secondary">No astrologers found matching your filters.</div>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filtered.map((astrologer) => (
-                <Card key={astrologer.id} className="bg-white border-0 shadow-soft hover:shadow-soft-lg transition-all">
+                <Card key={astrologer.id} className="bg-cosmic-card border-0 shadow-soft hover:shadow-soft-lg transition-all">
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between mb-3">
-                      <div className="w-12 h-12 rounded-full bg-minimal-indigo/10 flex items-center justify-center text-minimal-indigo font-bold text-lg">
+                      <div className="w-12 h-12 rounded-full bg-sacred-gold/10 flex items-center justify-center text-sacred-gold font-bold text-lg">
                         {astrologer.name.charAt(0)}
                       </div>
-                      <Badge className={astrologer.is_available ? 'bg-green-100 text-green-700' : 'bg-minimal-gray-100 text-minimal-gray-500'}>
+                      <Badge className={astrologer.is_available ? 'bg-green-500/20 text-green-700' : 'bg-cosmic-surface text-cosmic-text-secondary'}>
                         {astrologer.is_available ? 'Available' : 'Busy'}
                       </Badge>
                     </div>
-                    <h3 className="font-display font-semibold text-minimal-gray-900 text-lg">{astrologer.name}</h3>
-                    <p className="text-sm text-minimal-gray-500 mt-1 line-clamp-2">{astrologer.bio}</p>
-                    <div className="flex items-center gap-3 mt-3 text-sm text-minimal-gray-600">
+                    <h3 className="font-display font-semibold text-cosmic-text text-lg">{astrologer.name}</h3>
+                    <p className="text-sm text-cosmic-text-secondary mt-1 line-clamp-2">{astrologer.bio}</p>
+                    <div className="flex items-center gap-3 mt-3 text-sm text-cosmic-text-secondary">
                       <span className="flex items-center gap-1"><Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />{astrologer.rating.toFixed(1)}</span>
                       <span className="flex items-center gap-1"><Clock className="w-4 h-4" />{formatPrice(astrologer.rate)}/min</span>
                     </div>
                     {astrologer.languages && astrologer.languages.length > 0 && (
-                      <div className="flex items-center gap-1 mt-2 text-xs text-minimal-gray-400">
+                      <div className="flex items-center gap-1 mt-2 text-xs text-cosmic-text-muted">
                         <Globe className="w-3 h-3" />{astrologer.languages.join(', ')}
                       </div>
                     )}
@@ -264,7 +264,7 @@ export default function ConsultationPage() {
                     {isAuthenticated && astrologer.is_available && (
                       <div className="mt-4 flex gap-2">
                         <Select value={bookingType} onValueChange={setBookingType}>
-                          <SelectTrigger className="flex-1 bg-minimal-gray-50 border-minimal-gray-200" size="sm">
+                          <SelectTrigger className="flex-1 bg-cosmic-card border-sacred-gold/15" size="sm">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -273,7 +273,7 @@ export default function ConsultationPage() {
                             <SelectItem value="video"><span className="flex items-center gap-1"><Video className="w-3 h-3" />Video</span></SelectItem>
                           </SelectContent>
                         </Select>
-                        <Button size="sm" onClick={() => handleBook(astrologer.id)} disabled={booking === astrologer.id} className="bg-minimal-indigo text-white hover:bg-minimal-violet">
+                        <Button size="sm" onClick={() => handleBook(astrologer.id)} disabled={booking === astrologer.id} className="bg-sacred-gold text-white hover:bg-sacred-gold-dark">
                           {booking === astrologer.id ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Book'}
                         </Button>
                       </div>
@@ -287,31 +287,31 @@ export default function ConsultationPage() {
 
         <TabsContent value="my">
           {!isAuthenticated ? (
-            <div className="text-center py-12 text-minimal-gray-500">Please sign in to view your consultations.</div>
+            <div className="text-center py-12 text-cosmic-text-secondary">Please sign in to view your consultations.</div>
           ) : consultations.length === 0 ? (
             <div className="text-center py-12">
-              <Calendar className="w-12 h-12 text-minimal-gray-300 mx-auto mb-3" />
-              <p className="text-minimal-gray-500">No consultations yet. Book one above!</p>
+              <Calendar className="w-12 h-12 text-cosmic-text-muted mx-auto mb-3" />
+              <p className="text-cosmic-text-secondary">No consultations yet. Book one above!</p>
             </div>
           ) : (
             <div className="space-y-4">
               {consultations.map((c) => (
-                <Card key={c.id} className="bg-white border-0 shadow-soft">
+                <Card key={c.id} className="bg-cosmic-card border-0 shadow-soft">
                   <CardContent className="p-4">
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-minimal-indigo/10 flex items-center justify-center text-minimal-indigo">
+                        <div className="w-10 h-10 rounded-full bg-sacred-gold/10 flex items-center justify-center text-sacred-gold">
                           {typeIcons[c.type] || <MessageSquare className="w-4 h-4" />}
                         </div>
                         <div>
-                          <p className="font-medium text-minimal-gray-900">{c.astrologer_name}</p>
-                          <p className="text-sm text-minimal-gray-500 capitalize">{c.type} consultation</p>
-                          {c.scheduled_at && <p className="text-xs text-minimal-gray-400">{new Date(c.scheduled_at).toLocaleString()}</p>}
+                          <p className="font-medium text-cosmic-text">{c.astrologer_name}</p>
+                          <p className="text-sm text-cosmic-text-secondary capitalize">{c.type} consultation</p>
+                          {c.scheduled_at && <p className="text-xs text-cosmic-text-muted">{new Date(c.scheduled_at).toLocaleString()}</p>}
                         </div>
                       </div>
                       <div>
                         <div className="flex flex-wrap items-center justify-end gap-3">
-                          <Badge className={statusColors[c.status] || 'bg-minimal-gray-100 text-minimal-gray-600'}>
+                          <Badge className={statusColors[c.status] || 'bg-cosmic-surface text-cosmic-text-secondary'}>
                             {c.status}
                           </Badge>
                           {c.type === 'video' && (c.status === 'accepted' || c.status === 'active') && (
@@ -319,7 +319,7 @@ export default function ConsultationPage() {
                               size="sm"
                               onClick={() => openVideoSession(c)}
                               disabled={joiningVideoId === c.id}
-                              className="bg-minimal-indigo text-white hover:bg-minimal-violet"
+                              className="bg-sacred-gold text-white hover:bg-sacred-gold-dark"
                             >
                               {joiningVideoId === c.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Video className="mr-2 h-4 w-4" />}
                               {c.video_link ? 'Rejoin Session' : 'Join Session'}
@@ -327,7 +327,7 @@ export default function ConsultationPage() {
                           )}
                         </div>
                         {c.type === 'video' && c.status === 'requested' && (
-                          <p className="mt-2 text-xs text-minimal-gray-400">Video room unlocks after the astrologer accepts the booking.</p>
+                          <p className="mt-2 text-xs text-cosmic-text-muted">Video room unlocks after the astrologer accepts the booking.</p>
                         )}
                       </div>
                     </div>

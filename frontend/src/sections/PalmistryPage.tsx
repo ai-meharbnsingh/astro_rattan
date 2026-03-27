@@ -246,48 +246,48 @@ export default function PalmistryPage() {
   return (
     <section className="max-w-5xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
       <div className="text-center mb-10">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-minimal-indigo/10 text-minimal-indigo text-sm font-medium mb-4">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold/10 text-sacred-gold text-sm font-medium mb-4">
           <Hand className="w-4 h-4" />Chiromancy
         </div>
-        <h1 className="text-3xl sm:text-4xl font-display font-bold text-minimal-gray-900 mb-3">
+        <h1 className="text-3xl sm:text-4xl font-display font-bold text-cosmic-text mb-3">
           Palmistry <span className="text-gradient-indigo">Reading</span>
         </h1>
-        <p className="text-minimal-gray-500 max-w-2xl mx-auto">
+        <p className="text-cosmic-text-secondary max-w-2xl mx-auto">
           Upload a palm photo for image-driven analysis or refine the reading manually with guided palm markers.
         </p>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full max-w-md mx-auto grid-cols-3 mb-8">
-          <TabsTrigger value="analysis" className="data-[state=active]:bg-minimal-indigo data-[state=active]:text-white">
+          <TabsTrigger value="analysis" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white">
             <Sparkles className="w-4 h-4 mr-2" />Analysis
           </TabsTrigger>
-          <TabsTrigger value="guide" className="data-[state=active]:bg-minimal-indigo data-[state=active]:text-white">
+          <TabsTrigger value="guide" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white">
             <BookOpen className="w-4 h-4 mr-2" />Guide
           </TabsTrigger>
-          <TabsTrigger value="results" disabled={!reading} className="data-[state=active]:bg-minimal-indigo data-[state=active]:text-white">
+          <TabsTrigger value="results" disabled={!reading} className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white">
             <Star className="w-4 h-4 mr-2" />Results
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="analysis" className="space-y-6">
-          <Card className="border-0 shadow-soft bg-gradient-to-br from-minimal-indigo/5 to-minimal-violet/5">
+          <Card className="border-0 shadow-soft bg-gradient-to-br from-sacred-gold/5 to-sacred-gold-dark/5">
             <CardContent className="p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-xl bg-minimal-indigo text-white flex items-center justify-center">
+                <div className="w-12 h-12 rounded-xl bg-sacred-gold text-white flex items-center justify-center">
                   <Camera className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-display font-semibold text-minimal-gray-900">Photo Reading</h3>
-                  <p className="text-sm text-minimal-gray-500">Upload one clear palm image with fingers visible.</p>
+                  <h3 className="text-lg font-display font-semibold text-cosmic-text">Photo Reading</h3>
+                  <p className="text-sm text-cosmic-text-secondary">Upload one clear palm image with fingers visible.</p>
                 </div>
               </div>
               <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-6">
                 <div className="space-y-4">
-                  <label className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-minimal-indigo/30 bg-white/80 px-6 py-8 text-center cursor-pointer hover:border-minimal-indigo transition-colors">
-                    <Upload className="w-8 h-8 text-minimal-indigo mb-3" />
-                    <p className="font-medium text-minimal-gray-900">Select palm photo</p>
-                    <p className="text-sm text-minimal-gray-500 mt-1">PNG, JPG, or WEBP up to 5 MB</p>
+                  <label className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-sacred-gold/30 bg-white/80 px-6 py-8 text-center cursor-pointer hover:border-sacred-gold transition-colors">
+                    <Upload className="w-8 h-8 text-sacred-gold mb-3" />
+                    <p className="font-medium text-cosmic-text">Select palm photo</p>
+                    <p className="text-sm text-cosmic-text-secondary mt-1">PNG, JPG, or WEBP up to 5 MB</p>
                     <input
                       type="file"
                       accept="image/png,image/jpeg,image/webp"
@@ -301,7 +301,7 @@ export default function PalmistryPage() {
                   <Button
                     onClick={handleImageAnalyze}
                     disabled={imageAnalyzing || !selectedImage}
-                    className="w-full bg-minimal-indigo text-white hover:bg-minimal-violet"
+                    className="w-full bg-sacred-gold text-white hover:bg-sacred-gold-dark"
                   >
                     {imageAnalyzing ? (
                       <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Analyzing photo...</>
@@ -310,13 +310,13 @@ export default function PalmistryPage() {
                     )}
                   </Button>
                 </div>
-                <div className="rounded-2xl bg-white/80 border border-minimal-gray-200 overflow-hidden min-h-56 flex items-center justify-center">
+                <div className="rounded-2xl bg-white/80 border border-sacred-gold/15 overflow-hidden min-h-56 flex items-center justify-center">
                   {displayedImage ? (
                     <img src={displayedImage} alt="Palm preview" className="w-full h-full object-cover" />
                   ) : (
                     <div className="text-center px-6">
-                      <Hand className="w-10 h-10 text-minimal-gray-300 mx-auto mb-3" />
-                      <p className="text-sm text-minimal-gray-500">Your uploaded palm preview appears here.</p>
+                      <Hand className="w-10 h-10 text-cosmic-text-muted mx-auto mb-3" />
+                      <p className="text-sm text-cosmic-text-secondary">Your uploaded palm preview appears here.</p>
                     </div>
                   )}
                 </div>
@@ -326,7 +326,7 @@ export default function PalmistryPage() {
 
           <Card className="border-0 shadow-soft">
             <CardContent className="p-6">
-              <h3 className="text-lg font-display font-semibold text-minimal-gray-900 mb-4">Dominant Hand</h3>
+              <h3 className="text-lg font-display font-semibold text-cosmic-text mb-4">Dominant Hand</h3>
               <div className="flex gap-4">
                 {['right', 'left'].map((hand) => (
                   <button
@@ -334,12 +334,12 @@ export default function PalmistryPage() {
                     onClick={() => setDominantHand(hand)}
                     className={`flex-1 p-4 rounded-xl border-2 capitalize transition-all ${
                       dominantHand === hand
-                        ? 'border-minimal-indigo bg-minimal-indigo/5'
-                        : 'border-minimal-gray-200 hover:border-minimal-gray-300'
+                        ? 'border-sacred-gold bg-sacred-gold/5'
+                        : 'border-sacred-gold/15 hover:border-minimal-gray-300'
                     }`}
                   >
                     <Hand className={`w-6 h-6 mb-2 ${hand === 'right' ? 'rotate-0' : 'scale-x-[-1]'}`} />
-                    <p className="font-medium text-minimal-gray-900">{hand} Hand</p>
+                    <p className="font-medium text-cosmic-text">{hand} Hand</p>
                   </button>
                 ))}
               </div>
@@ -350,11 +350,11 @@ export default function PalmistryPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between gap-4 mb-4">
                 <div>
-                  <h3 className="text-lg font-display font-semibold text-minimal-gray-900">Hand Shape</h3>
-                  <p className="text-sm text-minimal-gray-500">Use the photo-derived selections or refine them manually.</p>
+                  <h3 className="text-lg font-display font-semibold text-cosmic-text">Hand Shape</h3>
+                  <p className="text-sm text-cosmic-text-secondary">Use the photo-derived selections or refine them manually.</p>
                 </div>
                 {imageAnalysis && (
-                  <div className="text-sm text-minimal-indigo">
+                  <div className="text-sm text-sacred-gold">
                     Photo confidence: <span className="font-semibold capitalize">{imageAnalysis.confidence}</span>
                   </div>
                 )}
@@ -366,13 +366,13 @@ export default function PalmistryPage() {
                     onClick={() => setHandShape(shape.id)}
                     className={`p-4 rounded-xl border-2 text-left transition-all ${
                       handShape === shape.id
-                        ? 'border-minimal-indigo bg-minimal-indigo/5'
-                        : 'border-minimal-gray-200 hover:border-minimal-gray-300'
+                        ? 'border-sacred-gold bg-sacred-gold/5'
+                        : 'border-sacred-gold/15 hover:border-minimal-gray-300'
                     }`}
                   >
                     <span className="text-2xl mb-2 block">{shape.icon}</span>
-                    <p className="font-medium text-minimal-gray-900 text-sm">{shape.name}</p>
-                    <p className="text-xs text-minimal-gray-500">{shape.features}</p>
+                    <p className="font-medium text-cosmic-text text-sm">{shape.name}</p>
+                    <p className="text-xs text-cosmic-text-secondary">{shape.features}</p>
                   </button>
                 ))}
               </div>
@@ -388,7 +388,7 @@ export default function PalmistryPage() {
             ].map(({ title, icon: Icon, iconClass, selectedClass, key, value, setter }) => (
               <Card key={title} className="border-0 shadow-soft">
                 <CardContent className="p-6">
-                  <h3 className="text-lg font-display font-semibold text-minimal-gray-900 mb-4 flex items-center gap-2">
+                  <h3 className="text-lg font-display font-semibold text-cosmic-text mb-4 flex items-center gap-2">
                     <Icon className={`w-5 h-5 ${iconClass}`} />
                     {title}
                   </h3>
@@ -400,11 +400,11 @@ export default function PalmistryPage() {
                         className={`w-full p-3 rounded-lg border text-left transition-all ${
                           value === option.id
                             ? selectedClass
-                            : 'border-minimal-gray-200 hover:border-minimal-gray-300'
+                            : 'border-sacred-gold/15 hover:border-minimal-gray-300'
                         }`}
                       >
-                        <p className="font-medium text-minimal-gray-900 text-sm">{option.label}</p>
-                        <p className="text-xs text-minimal-gray-500">{option.desc}</p>
+                        <p className="font-medium text-cosmic-text text-sm">{option.label}</p>
+                        <p className="text-xs text-cosmic-text-secondary">{option.desc}</p>
                       </button>
                     ))}
                   </div>
@@ -415,7 +415,7 @@ export default function PalmistryPage() {
 
           <Card className="border-0 shadow-soft">
             <CardContent className="p-6">
-              <h3 className="text-lg font-display font-semibold text-minimal-gray-900 mb-4">Sun Line (Optional)</h3>
+              <h3 className="text-lg font-display font-semibold text-cosmic-text mb-4">Sun Line (Optional)</h3>
               <div className="grid md:grid-cols-3 gap-3">
                 {LINE_OPTIONS.sun.map((option) => (
                   <button
@@ -423,12 +423,12 @@ export default function PalmistryPage() {
                     onClick={() => setSunLine(option.id === sunLine ? '' : option.id)}
                     className={`p-3 rounded-lg border text-left transition-all ${
                       sunLine === option.id
-                        ? 'border-minimal-indigo bg-minimal-indigo/5'
-                        : 'border-minimal-gray-200 hover:border-minimal-gray-300'
+                        ? 'border-sacred-gold bg-sacred-gold/5'
+                        : 'border-sacred-gold/15 hover:border-minimal-gray-300'
                     }`}
                   >
-                    <p className="font-medium text-minimal-gray-900 text-sm">{option.label}</p>
-                    <p className="text-xs text-minimal-gray-500">{option.desc}</p>
+                    <p className="font-medium text-cosmic-text text-sm">{option.label}</p>
+                    <p className="text-xs text-cosmic-text-secondary">{option.desc}</p>
                   </button>
                 ))}
               </div>
@@ -437,7 +437,7 @@ export default function PalmistryPage() {
 
           <Card className="border-0 shadow-soft">
             <CardContent className="p-6">
-              <h3 className="text-lg font-display font-semibold text-minimal-gray-900 mb-4">
+              <h3 className="text-lg font-display font-semibold text-cosmic-text mb-4">
                 Prominent Mounts (Select all that apply)
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -447,15 +447,15 @@ export default function PalmistryPage() {
                     onClick={() => toggleMount(mount.id)}
                     className={`p-3 rounded-lg border text-left transition-all ${
                       prominentMounts.includes(mount.id)
-                        ? 'border-minimal-indigo bg-minimal-indigo/5'
-                        : 'border-minimal-gray-200 hover:border-minimal-gray-300'
+                        ? 'border-sacred-gold bg-sacred-gold/5'
+                        : 'border-sacred-gold/15 hover:border-minimal-gray-300'
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      {prominentMounts.includes(mount.id) && <Check className="w-4 h-4 text-minimal-indigo" />}
+                      {prominentMounts.includes(mount.id) && <Check className="w-4 h-4 text-sacred-gold" />}
                       <div>
-                        <p className="font-medium text-minimal-gray-900 text-sm">{mount.name}</p>
-                        <p className="text-xs text-minimal-gray-500">{mount.meaning}</p>
+                        <p className="font-medium text-cosmic-text text-sm">{mount.name}</p>
+                        <p className="text-xs text-cosmic-text-secondary">{mount.meaning}</p>
                       </div>
                     </div>
                   </button>
@@ -471,7 +471,7 @@ export default function PalmistryPage() {
           <Button
             onClick={handleAnalyze}
             disabled={analyzing || !handShape || !heartLine || !headLine || !lifeLine}
-            className="w-full bg-minimal-indigo text-white hover:bg-minimal-violet py-6 text-lg"
+            className="w-full bg-sacred-gold text-white hover:bg-sacred-gold-dark py-6 text-lg"
           >
             {analyzing ? (
               <><Loader2 className="w-5 h-5 mr-2 animate-spin" />Analyzing...</>
@@ -486,13 +486,13 @@ export default function PalmistryPage() {
             <>
               <Card className="border-0 shadow-soft">
                 <CardContent className="p-6">
-                  <h3 className="text-lg font-display font-semibold text-minimal-gray-900 mb-4">Hand Shapes</h3>
+                  <h3 className="text-lg font-display font-semibold text-cosmic-text mb-4">Hand Shapes</h3>
                   <div className="grid md:grid-cols-2 gap-4">
                     {guide.shapes.map((shape) => (
-                      <div key={shape.name} className="p-4 bg-minimal-gray-50 rounded-xl">
-                        <p className="font-semibold text-minimal-gray-900">{shape.name}</p>
-                        <p className="text-sm text-minimal-gray-500">{shape.features}</p>
-                        <p className="text-sm text-minimal-gray-600 mt-2">{shape.meaning}</p>
+                      <div key={shape.name} className="p-4 bg-cosmic-card rounded-xl">
+                        <p className="font-semibold text-cosmic-text">{shape.name}</p>
+                        <p className="text-sm text-cosmic-text-secondary">{shape.features}</p>
+                        <p className="text-sm text-cosmic-text-secondary mt-2">{shape.meaning}</p>
                       </div>
                     ))}
                   </div>
@@ -501,13 +501,13 @@ export default function PalmistryPage() {
 
               <Card className="border-0 shadow-soft">
                 <CardContent className="p-6">
-                  <h3 className="text-lg font-display font-semibold text-minimal-gray-900 mb-4">Major Lines</h3>
+                  <h3 className="text-lg font-display font-semibold text-cosmic-text mb-4">Major Lines</h3>
                   <div className="space-y-4">
                     {guide.lines.map((line) => (
-                      <div key={line.name} className="p-4 bg-minimal-gray-50 rounded-xl">
-                        <p className="font-semibold text-minimal-gray-900">{line.name}</p>
-                        <p className="text-sm text-minimal-gray-500 mb-2">{line.location}</p>
-                        <ul className="text-sm text-minimal-gray-600 space-y-1">
+                      <div key={line.name} className="p-4 bg-cosmic-card rounded-xl">
+                        <p className="font-semibold text-cosmic-text">{line.name}</p>
+                        <p className="text-sm text-cosmic-text-secondary mb-2">{line.location}</p>
+                        <ul className="text-sm text-cosmic-text-secondary space-y-1">
                           {Object.entries(line.meanings).map(([key, meaning]) => (
                             <li key={key}>• <span className="capitalize">{key.replace(/_/g, ' ')}</span>: {meaning}</li>
                           ))}
@@ -520,13 +520,13 @@ export default function PalmistryPage() {
 
               <Card className="border-0 shadow-soft">
                 <CardContent className="p-6">
-                  <h3 className="text-lg font-display font-semibold text-minimal-gray-900 mb-4">Mounts of the Palm</h3>
+                  <h3 className="text-lg font-display font-semibold text-cosmic-text mb-4">Mounts of the Palm</h3>
                   <div className="grid md:grid-cols-2 gap-4">
                     {guide.mounts.map((mount) => (
-                      <div key={mount.name} className="p-4 bg-minimal-gray-50 rounded-xl">
-                        <p className="font-semibold text-minimal-gray-900">{mount.name}</p>
-                        <p className="text-sm text-minimal-gray-500">{mount.location} • Planet: {mount.planet}</p>
-                        <p className="text-sm text-minimal-gray-600 mt-1">{mount.meaning}</p>
+                      <div key={mount.name} className="p-4 bg-cosmic-card rounded-xl">
+                        <p className="font-semibold text-cosmic-text">{mount.name}</p>
+                        <p className="text-sm text-cosmic-text-secondary">{mount.location} • Planet: {mount.planet}</p>
+                        <p className="text-sm text-cosmic-text-secondary mt-1">{mount.meaning}</p>
                       </div>
                     ))}
                   </div>
@@ -535,7 +535,7 @@ export default function PalmistryPage() {
             </>
           ) : (
             <div className="flex items-center justify-center py-16">
-              <Loader2 className="w-8 h-8 text-minimal-indigo animate-spin" />
+              <Loader2 className="w-8 h-8 text-sacred-gold animate-spin" />
             </div>
           )}
         </TabsContent>
@@ -543,20 +543,20 @@ export default function PalmistryPage() {
         <TabsContent value="results" className="space-y-6">
           {reading && (
             <>
-              <Card className="border-0 shadow-soft bg-gradient-to-br from-minimal-indigo/5 to-minimal-violet/5">
+              <Card className="border-0 shadow-soft bg-gradient-to-br from-sacred-gold/5 to-sacred-gold-dark/5">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-full bg-minimal-indigo text-white flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-full bg-sacred-gold text-white flex items-center justify-center">
                       <Sparkles className="w-6 h-6" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-display font-bold text-minimal-gray-900">Your Palm Reading</h3>
-                      <p className="text-sm text-minimal-gray-500">
+                      <h3 className="text-xl font-display font-bold text-cosmic-text">Your Palm Reading</h3>
+                      <p className="text-sm text-cosmic-text-secondary">
                         {imageAnalysis ? 'Photo-derived interpretation with guided palm markers' : 'Guided palm analysis'}
                       </p>
                     </div>
                   </div>
-                  <p className="text-minimal-gray-700 leading-relaxed">{reading.overall}</p>
+                  <p className="text-cosmic-text leading-relaxed">{reading.overall}</p>
                 </CardContent>
               </Card>
 
@@ -566,42 +566,42 @@ export default function PalmistryPage() {
                     <div className="grid lg:grid-cols-[0.9fr_1.1fr] gap-6">
                       <div className="space-y-4">
                         {displayedImage && (
-                          <img src={displayedImage} alt="Analyzed palm" className="w-full rounded-2xl border border-minimal-gray-200 object-cover" />
+                          <img src={displayedImage} alt="Analyzed palm" className="w-full rounded-2xl border border-sacred-gold/15 object-cover" />
                         )}
                         <div className="grid grid-cols-3 gap-3 text-center">
-                          <div className="rounded-xl bg-minimal-gray-50 p-3">
-                            <p className="text-xs text-minimal-gray-500">Quality</p>
-                            <p className="font-semibold capitalize text-minimal-gray-900">{imageAnalysis.image_quality}</p>
+                          <div className="rounded-xl bg-cosmic-card p-3">
+                            <p className="text-xs text-cosmic-text-secondary">Quality</p>
+                            <p className="font-semibold capitalize text-cosmic-text">{imageAnalysis.image_quality}</p>
                           </div>
-                          <div className="rounded-xl bg-minimal-gray-50 p-3">
-                            <p className="text-xs text-minimal-gray-500">Confidence</p>
-                            <p className="font-semibold capitalize text-minimal-gray-900">{imageAnalysis.confidence}</p>
+                          <div className="rounded-xl bg-cosmic-card p-3">
+                            <p className="text-xs text-cosmic-text-secondary">Confidence</p>
+                            <p className="font-semibold capitalize text-cosmic-text">{imageAnalysis.confidence}</p>
                           </div>
-                          <div className="rounded-xl bg-minimal-gray-50 p-3">
-                            <p className="text-xs text-minimal-gray-500">Edge Density</p>
-                            <p className="font-semibold text-minimal-gray-900">{imageAnalysis.metrics.edge_density}</p>
+                          <div className="rounded-xl bg-cosmic-card p-3">
+                            <p className="text-xs text-cosmic-text-secondary">Edge Density</p>
+                            <p className="font-semibold text-cosmic-text">{imageAnalysis.metrics.edge_density}</p>
                           </div>
                         </div>
                       </div>
                       <div className="space-y-4">
                         <div>
-                          <h4 className="font-display font-semibold text-minimal-gray-900 mb-2">Detected Traits</h4>
+                          <h4 className="font-display font-semibold text-cosmic-text mb-2">Detected Traits</h4>
                           <div className="flex flex-wrap gap-2">
                             {[imageAnalysis.derived_traits.hand_shape, imageAnalysis.derived_traits.finger_length, imageAnalysis.derived_traits.heart_line, imageAnalysis.derived_traits.head_line, imageAnalysis.derived_traits.life_line]
                               .filter(Boolean)
                               .map((trait) => (
-                                <span key={trait} className="px-3 py-1 rounded-full bg-minimal-indigo/10 text-minimal-indigo text-sm capitalize">
+                                <span key={trait} className="px-3 py-1 rounded-full bg-sacred-gold/10 text-sacred-gold text-sm capitalize">
                                   {toLabel(trait)}
                                 </span>
                               ))}
                           </div>
                         </div>
                         <div>
-                          <h4 className="font-display font-semibold text-minimal-gray-900 mb-2">Visual Observations</h4>
-                          <ul className="space-y-2 text-sm text-minimal-gray-600">
+                          <h4 className="font-display font-semibold text-cosmic-text mb-2">Visual Observations</h4>
+                          <ul className="space-y-2 text-sm text-cosmic-text-secondary">
                             {imageAnalysis.visual_observations.map((observation) => (
                               <li key={observation} className="flex gap-2">
-                                <Check className="w-4 h-4 text-minimal-indigo mt-0.5" />
+                                <Check className="w-4 h-4 text-sacred-gold mt-0.5" />
                                 <span>{observation}</span>
                               </li>
                             ))}
@@ -616,53 +616,53 @@ export default function PalmistryPage() {
               <div className="grid md:grid-cols-2 gap-6">
                 <Card className="border-0 shadow-soft">
                   <CardContent className="p-6">
-                    <h4 className="font-display font-semibold text-minimal-gray-900 mb-3 flex items-center gap-2">
-                      <Hand className="w-5 h-5 text-minimal-indigo" />
+                    <h4 className="font-display font-semibold text-cosmic-text mb-3 flex items-center gap-2">
+                      <Hand className="w-5 h-5 text-sacred-gold" />
                       Hand Type
                     </h4>
-                    <p className="text-minimal-gray-700">{reading.hand_type.meaning}</p>
+                    <p className="text-cosmic-text">{reading.hand_type.meaning}</p>
                   </CardContent>
                 </Card>
 
                 <Card className="border-0 shadow-soft">
                   <CardContent className="p-6">
-                    <h4 className="font-display font-semibold text-minimal-gray-900 mb-3 flex items-center gap-2">
+                    <h4 className="font-display font-semibold text-cosmic-text mb-3 flex items-center gap-2">
                       <Brain className="w-5 h-5 text-blue-500" />
                       Mental Approach
                     </h4>
-                    <p className="text-minimal-gray-700">{reading.personality.mental_approach}</p>
+                    <p className="text-cosmic-text">{reading.personality.mental_approach}</p>
                   </CardContent>
                 </Card>
 
                 <Card className="border-0 shadow-soft">
                   <CardContent className="p-6">
-                    <h4 className="font-display font-semibold text-minimal-gray-900 mb-3 flex items-center gap-2">
+                    <h4 className="font-display font-semibold text-cosmic-text mb-3 flex items-center gap-2">
                       <Heart className="w-5 h-5 text-rose-500" />
                       Relationships
                     </h4>
-                    <p className="text-minimal-gray-700">{reading.relationships.emotional_style}</p>
+                    <p className="text-cosmic-text">{reading.relationships.emotional_style}</p>
                   </CardContent>
                 </Card>
 
                 <Card className="border-0 shadow-soft">
                   <CardContent className="p-6">
-                    <h4 className="font-display font-semibold text-minimal-gray-900 mb-3 flex items-center gap-2">
+                    <h4 className="font-display font-semibold text-cosmic-text mb-3 flex items-center gap-2">
                       <Activity className="w-5 h-5 text-green-500" />
                       Life Energy
                     </h4>
-                    <p className="text-minimal-gray-700">{reading.life_path.vitality}</p>
+                    <p className="text-cosmic-text">{reading.life_path.vitality}</p>
                   </CardContent>
                 </Card>
 
                 <Card className="border-0 shadow-soft">
                   <CardContent className="p-6">
-                    <h4 className="font-display font-semibold text-minimal-gray-900 mb-3 flex items-center gap-2">
+                    <h4 className="font-display font-semibold text-cosmic-text mb-3 flex items-center gap-2">
                       <Briefcase className="w-5 h-5 text-amber-500" />
                       Career Path
                     </h4>
-                    <p className="text-minimal-gray-700">{reading.career.destiny}</p>
+                    <p className="text-cosmic-text">{reading.career.destiny}</p>
                     {reading.career.success && (
-                      <p className="text-minimal-gray-600 mt-2">{reading.career.success}</p>
+                      <p className="text-cosmic-text-secondary mt-2">{reading.career.success}</p>
                     )}
                   </CardContent>
                 </Card>
@@ -670,13 +670,13 @@ export default function PalmistryPage() {
                 {reading.strengths.length > 0 && (
                   <Card className="border-0 shadow-soft">
                     <CardContent className="p-6">
-                      <h4 className="font-display font-semibold text-minimal-gray-900 mb-3 flex items-center gap-2">
+                      <h4 className="font-display font-semibold text-cosmic-text mb-3 flex items-center gap-2">
                         <Star className="w-5 h-5 text-yellow-500" />
                         Key Strengths
                       </h4>
                       <ul className="space-y-1">
                         {reading.strengths.map((strength) => (
-                          <li key={strength} className="text-minimal-gray-700 flex items-center gap-2">
+                          <li key={strength} className="text-cosmic-text flex items-center gap-2">
                             <Check className="w-4 h-4 text-green-500" /> {strength}
                           </li>
                         ))}
@@ -689,13 +689,13 @@ export default function PalmistryPage() {
               {reading.challenges.length > 0 && (
                 <Card className="border-0 shadow-soft border-l-4 border-l-amber-500">
                   <CardContent className="p-6">
-                    <h4 className="font-display font-semibold text-minimal-gray-900 mb-3 flex items-center gap-2">
+                    <h4 className="font-display font-semibold text-cosmic-text mb-3 flex items-center gap-2">
                       <AlertTriangle className="w-5 h-5 text-amber-500" />
                       Growth Areas
                     </h4>
                     <ul className="space-y-1">
                       {reading.challenges.map((challenge) => (
-                        <li key={challenge} className="text-minimal-gray-700">• {challenge}</li>
+                        <li key={challenge} className="text-cosmic-text">• {challenge}</li>
                       ))}
                     </ul>
                   </CardContent>

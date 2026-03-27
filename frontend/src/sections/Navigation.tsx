@@ -93,7 +93,7 @@ export default function Navigation() {
         </div>
       </nav>
       <div className={`fixed inset-0 z-40 lg:hidden transition-all duration-500 ${isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
-        <div className="absolute inset-0 bg-sacred-cream/95 backdrop-blur-xl" onClick={() => setIsMobileMenuOpen(false)} />
+        <div className="absolute inset-0 bg-cosmic-bg/95 backdrop-blur-xl" onClick={() => setIsMobileMenuOpen(false)} />
         <div className={`absolute top-20 left-4 right-4 card-sacred rounded-2xl p-6 transition-all duration-500 ${isMobileMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}`}>
           <div className="space-y-4">
             {navLinks.map((link) => (

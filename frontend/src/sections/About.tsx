@@ -15,7 +15,7 @@ const stats = [
 
 export default function About() {
   const sectionRef = useRef<HTMLDivElement>(null);
-  
+
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.fromTo('.about-content', { x: -50, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8, ease: 'power3.out', scrollTrigger: { trigger: sectionRef.current, start: 'top 70%' } });
@@ -24,31 +24,31 @@ export default function About() {
     }, sectionRef);
     return () => ctx.revert();
   }, []);
-  
+
   return (
-    <section ref={sectionRef} id="about" className="relative py-24 bg-minimal-gray-50">
+    <section ref={sectionRef} id="about" className="relative py-24 bg-cosmic-bg-light bg-mandala">
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           <div className="about-content">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-minimal-indigo/10 text-minimal-indigo text-sm font-medium mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold/10 text-sacred-gold text-sm font-medium mb-6 border border-sacred-gold/30">
               <Sparkles className="w-4 h-4" />Our Story
             </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-minimal-gray-900 mb-6">
-              Bridging Ancient Wisdom with<span className="text-gradient-indigo"> Modern Technology</span>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-sacred font-bold text-cosmic-text mb-6">
+              Bridging Ancient Wisdom with<span className="text-gradient-gold"> Modern Technology</span>
             </h2>
-            <div className="space-y-4 text-minimal-gray-500 mb-8">
-              <p>AstroMitra was born from a profound respect for Vedic astrology and a vision to make this ancient wisdom accessible to everyone.</p>
+            <div className="space-y-4 text-cosmic-text-secondary mb-8">
+              <p>AstroVedic was born from a profound respect for Vedic astrology and a vision to make this ancient wisdom accessible to everyone.</p>
               <p>We believe that understanding your cosmic blueprint empowers you to make better decisions and navigate life&apos;s challenges.</p>
             </div>
-            <Button className="bg-minimal-indigo text-white hover:bg-minimal-violet">
+            <Button className="btn-sacred">
               Learn More About Us<ChevronRight className="w-5 h-5 ml-2" />
             </Button>
           </div>
           <div className="about-image relative">
             <div className="relative aspect-square max-w-lg mx-auto">
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-minimal-indigo/10 to-minimal-violet/10" />
-              <div className="absolute inset-8 rounded-2xl bg-white shadow-soft flex items-center justify-center">
-                <Star className="w-32 h-32 text-minimal-indigo" />
+              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-sacred-purple/30 to-sacred-gold/10 border border-sacred-gold/20" />
+              <div className="absolute inset-8 rounded-2xl card-sacred flex items-center justify-center">
+                <Star className="w-32 h-32 text-sacred-gold/50" />
               </div>
             </div>
           </div>
@@ -57,12 +57,12 @@ export default function About() {
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
-              <div key={index} className="stat-item bg-white rounded-2xl p-6 text-center shadow-soft">
-                <div className="w-12 h-12 rounded-xl bg-minimal-indigo/10 flex items-center justify-center mx-auto mb-4">
-                  <Icon className="w-6 h-6 text-minimal-indigo" />
+              <div key={index} className="stat-item card-sacred rounded-2xl p-6 text-center">
+                <div className="w-12 h-12 rounded-xl bg-sacred-gold/10 flex items-center justify-center mx-auto mb-4 border border-sacred-gold/20">
+                  <Icon className="w-6 h-6 text-sacred-gold" />
                 </div>
-                <p className="text-3xl font-display font-bold text-gradient-indigo mb-1">{stat.value}</p>
-                <p className="text-sm text-minimal-gray-500">{stat.label}</p>
+                <p className="text-3xl font-sacred font-bold text-gradient-gold mb-1">{stat.value}</p>
+                <p className="text-sm text-cosmic-text-secondary">{stat.label}</p>
               </div>
             );
           })}

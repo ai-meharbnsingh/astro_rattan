@@ -250,9 +250,9 @@ export default function AdminDashboard() {
   if (user?.role !== 'admin') {
     return (
       <div className="max-w-4xl mx-auto py-24 px-4 text-center">
-        <Shield className="w-16 h-16 text-minimal-gray-300 mx-auto mb-4" />
-        <h2 className="text-2xl font-display font-bold text-minimal-gray-900 mb-2">Admin Access Required</h2>
-        <p className="text-minimal-gray-500">You need admin privileges to view this page.</p>
+        <Shield className="w-16 h-16 text-cosmic-text-muted mx-auto mb-4" />
+        <h2 className="text-2xl font-display font-bold text-cosmic-text mb-2">Admin Access Required</h2>
+        <p className="text-cosmic-text-secondary">You need admin privileges to view this page.</p>
       </div>
     );
   }
@@ -260,14 +260,14 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <Loader2 className="w-10 h-10 text-minimal-indigo animate-spin" />
+        <Loader2 className="w-10 h-10 text-sacred-gold animate-spin" />
       </div>
     );
   }
 
   const statCards = [
-    { label: 'Total Users', value: stats?.total_users ?? 0, icon: Users, color: 'bg-blue-100 text-blue-600' },
-    { label: 'Total Orders', value: stats?.total_orders ?? 0, icon: ShoppingCart, color: 'bg-green-100 text-green-600' },
+    { label: 'Total Users', value: stats?.total_users ?? 0, icon: Users, color: 'bg-blue-500/20 text-blue-600' },
+    { label: 'Total Orders', value: stats?.total_orders ?? 0, icon: ShoppingCart, color: 'bg-green-500/20 text-green-600' },
     { label: 'Revenue', value: formatPrice(stats?.total_revenue ?? 0), icon: IndianRupee, color: 'bg-purple-100 text-purple-600' },
     { label: 'Pending', value: stats?.pending_orders ?? 0, icon: Package, color: 'bg-yellow-100 text-yellow-600' },
   ];
@@ -275,37 +275,37 @@ export default function AdminDashboard() {
   return (
     <section className="max-w-7xl mx-auto py-24 px-4">
       <div className="flex items-center gap-3 mb-8">
-        <div className="w-10 h-10 rounded-full bg-minimal-indigo flex items-center justify-center">
+        <div className="w-10 h-10 rounded-full bg-sacred-gold flex items-center justify-center">
           <Shield className="w-5 h-5 text-white" />
         </div>
         <div>
-          <h2 className="text-2xl font-display font-bold text-minimal-gray-900">Admin Dashboard</h2>
-          <p className="text-sm text-minimal-gray-500">Manage users, orders, products, and content</p>
+          <h2 className="text-2xl font-display font-bold text-cosmic-text">Admin Dashboard</h2>
+          <p className="text-sm text-cosmic-text-secondary">Manage users, orders, products, and content</p>
         </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="bg-minimal-gray-100 mb-6 flex-wrap">
-          <TabsTrigger value="overview" className="data-[state=active]:bg-minimal-indigo data-[state=active]:text-white">Overview</TabsTrigger>
-          <TabsTrigger value="users" className="data-[state=active]:bg-minimal-indigo data-[state=active]:text-white">Users</TabsTrigger>
-          <TabsTrigger value="orders" className="data-[state=active]:bg-minimal-indigo data-[state=active]:text-white">Orders</TabsTrigger>
-          <TabsTrigger value="products" className="data-[state=active]:bg-minimal-indigo data-[state=active]:text-white">Products</TabsTrigger>
-          <TabsTrigger value="content" className="data-[state=active]:bg-minimal-indigo data-[state=active]:text-white">Content</TabsTrigger>
-          <TabsTrigger value="blog" className="data-[state=active]:bg-minimal-indigo data-[state=active]:text-white">Blog</TabsTrigger>
-          <TabsTrigger value="ai-logs" className="data-[state=active]:bg-minimal-indigo data-[state=active]:text-white">AI Logs</TabsTrigger>
+        <TabsList className="bg-cosmic-surface mb-6 flex-wrap">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white">Overview</TabsTrigger>
+          <TabsTrigger value="users" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white">Users</TabsTrigger>
+          <TabsTrigger value="orders" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white">Orders</TabsTrigger>
+          <TabsTrigger value="products" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white">Products</TabsTrigger>
+          <TabsTrigger value="content" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white">Content</TabsTrigger>
+          <TabsTrigger value="blog" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white">Blog</TabsTrigger>
+          <TabsTrigger value="ai-logs" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white">AI Logs</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {statCards.map((s) => (
-              <Card key={s.label} className="bg-white border-0 shadow-soft">
+              <Card key={s.label} className="bg-cosmic-card border-0 shadow-soft">
                 <CardContent className="p-5 flex items-center gap-4">
                   <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${s.color}`}>
                     <s.icon className="w-6 h-6" />
                   </div>
                   <div>
-                    <p className="text-sm text-minimal-gray-500">{s.label}</p>
-                    <p className="text-2xl font-bold text-minimal-gray-900">{s.value}</p>
+                    <p className="text-sm text-cosmic-text-secondary">{s.label}</p>
+                    <p className="text-2xl font-bold text-cosmic-text">{s.value}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -314,7 +314,7 @@ export default function AdminDashboard() {
         </TabsContent>
 
         <TabsContent value="users">
-          <Card className="bg-white border-0 shadow-soft">
+          <Card className="bg-cosmic-card border-0 shadow-soft">
             <CardContent className="p-4">
               <Table>
                 <TableHeader>
@@ -329,17 +329,17 @@ export default function AdminDashboard() {
                 <TableBody>
                   {users.map((u) => (
                     <TableRow key={u.id}>
-                      <TableCell className="font-medium text-minimal-gray-900">{u.name}</TableCell>
-                      <TableCell className="text-minimal-gray-500">{u.email}</TableCell>
+                      <TableCell className="font-medium text-cosmic-text">{u.name}</TableCell>
+                      <TableCell className="text-cosmic-text-secondary">{u.email}</TableCell>
                       <TableCell><Badge variant="outline">{u.role}</Badge></TableCell>
                       <TableCell>
-                        <Badge className={u.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}>
+                        <Badge className={u.is_active ? 'bg-green-500/20 text-green-700' : 'bg-red-500/20 text-red-400'}>
                           {u.is_active ? 'Active' : 'Inactive'}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         {u.is_active && u.role !== 'admin' && (
-                          <Button variant="outline" size="sm" onClick={() => deactivateUser(u.id)} className="text-red-500 hover:text-red-700">
+                          <Button variant="outline" size="sm" onClick={() => deactivateUser(u.id)} className="text-red-400 hover:text-red-700">
                             Deactivate
                           </Button>
                         )}
@@ -353,7 +353,7 @@ export default function AdminDashboard() {
         </TabsContent>
 
         <TabsContent value="orders">
-          <Card className="bg-white border-0 shadow-soft">
+          <Card className="bg-cosmic-card border-0 shadow-soft">
             <CardContent className="p-4">
               <Table>
                 <TableHeader>
@@ -368,17 +368,17 @@ export default function AdminDashboard() {
                 <TableBody>
                   {orders.map((o) => (
                     <TableRow key={o.id}>
-                      <TableCell className="font-medium text-minimal-gray-900">{o.order_number || `#${o.id}`}</TableCell>
-                      <TableCell className="text-minimal-gray-500">{o.user_name}</TableCell>
-                      <TableCell className="font-semibold text-minimal-indigo">{formatPrice(o.total)}</TableCell>
+                      <TableCell className="font-medium text-cosmic-text">{o.order_number || `#${o.id}`}</TableCell>
+                      <TableCell className="text-cosmic-text-secondary">{o.user_name}</TableCell>
+                      <TableCell className="font-semibold text-sacred-gold">{formatPrice(o.total)}</TableCell>
                       <TableCell><Badge variant="outline">{o.status}</Badge></TableCell>
                       <TableCell>
                         {o.tracking_number ? (
-                          <span className="text-sm text-minimal-gray-600">{o.tracking_number}</span>
+                          <span className="text-sm text-cosmic-text-secondary">{o.tracking_number}</span>
                         ) : (
                           <div className="flex gap-1">
-                            <Input placeholder="Tracking #" value={trackingUpdate[o.id] || ''} onChange={(e) => setTrackingUpdate((prev) => ({ ...prev, [o.id]: e.target.value }))} className="h-8 w-28 text-xs bg-minimal-gray-50" />
-                            <Button size="sm" onClick={() => updateTracking(o.id)} className="h-8 bg-minimal-indigo text-white hover:bg-minimal-violet text-xs">Set</Button>
+                            <Input placeholder="Tracking #" value={trackingUpdate[o.id] || ''} onChange={(e) => setTrackingUpdate((prev) => ({ ...prev, [o.id]: e.target.value }))} className="h-8 w-28 text-xs bg-cosmic-card" />
+                            <Button size="sm" onClick={() => updateTracking(o.id)} className="h-8 bg-sacred-gold text-white hover:bg-sacred-gold-dark text-xs">Set</Button>
                           </div>
                         )}
                       </TableCell>
@@ -391,7 +391,7 @@ export default function AdminDashboard() {
         </TabsContent>
 
         <TabsContent value="products">
-          <Card className="bg-white border-0 shadow-soft">
+          <Card className="bg-cosmic-card border-0 shadow-soft">
             <CardContent className="p-4">
               <Table>
                 <TableHeader>
@@ -407,12 +407,12 @@ export default function AdminDashboard() {
                 <TableBody>
                   {products.map((p) => (
                     <TableRow key={p.id}>
-                      <TableCell className="font-medium text-minimal-gray-900">{p.name}</TableCell>
-                      <TableCell className="text-minimal-gray-500 capitalize">{p.category}</TableCell>
-                      <TableCell className="text-minimal-indigo font-semibold">{formatPrice(p.price)}</TableCell>
+                      <TableCell className="font-medium text-cosmic-text">{p.name}</TableCell>
+                      <TableCell className="text-cosmic-text-secondary capitalize">{p.category}</TableCell>
+                      <TableCell className="text-sacred-gold font-semibold">{formatPrice(p.price)}</TableCell>
                       <TableCell>{p.stock}</TableCell>
                       <TableCell>
-                        <Badge className={p.is_active ? 'bg-green-100 text-green-700' : 'bg-minimal-gray-100 text-minimal-gray-500'}>
+                        <Badge className={p.is_active ? 'bg-green-500/20 text-green-700' : 'bg-cosmic-surface text-cosmic-text-secondary'}>
                           {p.is_active ? 'Active' : 'Hidden'}
                         </Badge>
                       </TableCell>
@@ -431,15 +431,15 @@ export default function AdminDashboard() {
 
         <TabsContent value="content">
           <div className="flex justify-end mb-4">
-            <Button onClick={() => setContentDialogOpen(true)} className="bg-minimal-indigo text-white hover:bg-minimal-violet">
+            <Button onClick={() => setContentDialogOpen(true)} className="bg-sacred-gold text-white hover:bg-sacred-gold-dark">
               <Plus className="w-4 h-4 mr-2" />Add Content
             </Button>
           </div>
-          <Card className="bg-white border-0 shadow-soft">
+          <Card className="bg-cosmic-card border-0 shadow-soft">
             <CardContent className="p-4">
               {content.length === 0 ? (
-                <div className="text-center py-8 text-minimal-gray-500">
-                  <FileText className="w-10 h-10 mx-auto mb-2 text-minimal-gray-300" />
+                <div className="text-center py-8 text-cosmic-text-secondary">
+                  <FileText className="w-10 h-10 mx-auto mb-2 text-cosmic-text-muted" />
                   No content items yet.
                 </div>
               ) : (
@@ -455,10 +455,10 @@ export default function AdminDashboard() {
                   <TableBody>
                     {content.map((c) => (
                       <TableRow key={c.id}>
-                        <TableCell className="font-medium text-minimal-gray-900">{c.title}</TableCell>
+                        <TableCell className="font-medium text-cosmic-text">{c.title}</TableCell>
                         <TableCell><Badge variant="outline">{c.category}</Badge></TableCell>
                         <TableCell><Badge variant="outline">{c.status}</Badge></TableCell>
-                        <TableCell className="text-sm text-minimal-gray-500">{new Date(c.created_at).toLocaleDateString()}</TableCell>
+                        <TableCell className="text-sm text-cosmic-text-secondary">{new Date(c.created_at).toLocaleDateString()}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -472,9 +472,9 @@ export default function AdminDashboard() {
                   <DialogTitle>Add New Content</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-3 py-2">
-                  <Input placeholder="Title" value={newContent.title} onChange={(e) => setNewContent({ ...newContent, title: e.target.value })} className="bg-minimal-gray-50 border-minimal-gray-200" />
+                  <Input placeholder="Title" value={newContent.title} onChange={(e) => setNewContent({ ...newContent, title: e.target.value })} className="bg-cosmic-card border-sacred-gold/15" />
                 <Select value={newContent.category} onValueChange={(v) => setNewContent({ ...newContent, category: v })}>
-                  <SelectTrigger className="w-full bg-minimal-gray-50 border-minimal-gray-200">
+                  <SelectTrigger className="w-full bg-cosmic-card border-sacred-gold/15">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -485,11 +485,11 @@ export default function AdminDashboard() {
                     ))}
                   </SelectContent>
                 </Select>
-                <Textarea placeholder="Content" value={newContent.content} onChange={(e) => setNewContent({ ...newContent, content: e.target.value })} className="bg-minimal-gray-50 border-minimal-gray-200 min-h-24" />
+                <Textarea placeholder="Content" value={newContent.content} onChange={(e) => setNewContent({ ...newContent, content: e.target.value })} className="bg-cosmic-card border-sacred-gold/15 min-h-24" />
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setContentDialogOpen(false)}>Cancel</Button>
-                <Button onClick={addContent} disabled={!newContent.title || !newContent.content} className="bg-minimal-indigo text-white hover:bg-minimal-violet">Create</Button>
+                <Button onClick={addContent} disabled={!newContent.title || !newContent.content} className="bg-sacred-gold text-white hover:bg-sacred-gold-dark">Create</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -497,15 +497,15 @@ export default function AdminDashboard() {
 
         <TabsContent value="blog">
           <div className="flex justify-end mb-4">
-            <Button onClick={() => setBlogDialogOpen(true)} className="bg-minimal-indigo text-white hover:bg-minimal-violet">
+            <Button onClick={() => setBlogDialogOpen(true)} className="bg-sacred-gold text-white hover:bg-sacred-gold-dark">
               <Plus className="w-4 h-4 mr-2" />Add Blog Post
             </Button>
           </div>
-          <Card className="bg-white border-0 shadow-soft">
+          <Card className="bg-cosmic-card border-0 shadow-soft">
             <CardContent className="p-4">
               {blogPosts.length === 0 ? (
-                <div className="text-center py-8 text-minimal-gray-500">
-                  <FileText className="w-10 h-10 mx-auto mb-2 text-minimal-gray-300" />
+                <div className="text-center py-8 text-cosmic-text-secondary">
+                  <FileText className="w-10 h-10 mx-auto mb-2 text-cosmic-text-muted" />
                   No blog posts yet.
                 </div>
               ) : (
@@ -522,15 +522,15 @@ export default function AdminDashboard() {
                   <TableBody>
                     {blogPosts.map((post) => (
                       <TableRow key={post.id}>
-                        <TableCell className="font-medium text-minimal-gray-900">{post.title}</TableCell>
-                        <TableCell className="text-minimal-gray-500">{post.slug}</TableCell>
-                        <TableCell className="text-minimal-gray-500">{post.author_name}</TableCell>
+                        <TableCell className="font-medium text-cosmic-text">{post.title}</TableCell>
+                        <TableCell className="text-cosmic-text-secondary">{post.slug}</TableCell>
+                        <TableCell className="text-cosmic-text-secondary">{post.author_name}</TableCell>
                         <TableCell>
-                          <Badge className={post.is_published ? 'bg-green-100 text-green-700' : 'bg-minimal-gray-100 text-minimal-gray-500'}>
+                          <Badge className={post.is_published ? 'bg-green-500/20 text-green-700' : 'bg-cosmic-surface text-cosmic-text-secondary'}>
                             {post.is_published ? 'Published' : 'Draft'}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-sm text-minimal-gray-500">{new Date(post.published_at).toLocaleDateString()}</TableCell>
+                        <TableCell className="text-sm text-cosmic-text-secondary">{new Date(post.published_at).toLocaleDateString()}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -544,18 +544,18 @@ export default function AdminDashboard() {
                 <DialogTitle>Add Blog Post</DialogTitle>
               </DialogHeader>
               <div className="space-y-3 py-2">
-                <Input placeholder="Title" value={newBlogPost.title} onChange={(e) => setNewBlogPost({ ...newBlogPost, title: e.target.value })} className="bg-minimal-gray-50 border-minimal-gray-200" />
-                <Input placeholder="Excerpt" value={newBlogPost.excerpt} onChange={(e) => setNewBlogPost({ ...newBlogPost, excerpt: e.target.value })} className="bg-minimal-gray-50 border-minimal-gray-200" />
-                <Input placeholder="Author" value={newBlogPost.author_name} onChange={(e) => setNewBlogPost({ ...newBlogPost, author_name: e.target.value })} className="bg-minimal-gray-50 border-minimal-gray-200" />
-                <Input placeholder="Tags (comma separated)" value={newBlogPost.tags} onChange={(e) => setNewBlogPost({ ...newBlogPost, tags: e.target.value })} className="bg-minimal-gray-50 border-minimal-gray-200" />
-                <Textarea placeholder="Article content" value={newBlogPost.content} onChange={(e) => setNewBlogPost({ ...newBlogPost, content: e.target.value })} className="bg-minimal-gray-50 border-minimal-gray-200 min-h-40" />
+                <Input placeholder="Title" value={newBlogPost.title} onChange={(e) => setNewBlogPost({ ...newBlogPost, title: e.target.value })} className="bg-cosmic-card border-sacred-gold/15" />
+                <Input placeholder="Excerpt" value={newBlogPost.excerpt} onChange={(e) => setNewBlogPost({ ...newBlogPost, excerpt: e.target.value })} className="bg-cosmic-card border-sacred-gold/15" />
+                <Input placeholder="Author" value={newBlogPost.author_name} onChange={(e) => setNewBlogPost({ ...newBlogPost, author_name: e.target.value })} className="bg-cosmic-card border-sacred-gold/15" />
+                <Input placeholder="Tags (comma separated)" value={newBlogPost.tags} onChange={(e) => setNewBlogPost({ ...newBlogPost, tags: e.target.value })} className="bg-cosmic-card border-sacred-gold/15" />
+                <Textarea placeholder="Article content" value={newBlogPost.content} onChange={(e) => setNewBlogPost({ ...newBlogPost, content: e.target.value })} className="bg-cosmic-card border-sacred-gold/15 min-h-40" />
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setBlogDialogOpen(false)}>Cancel</Button>
                 <Button
                   onClick={addBlogPost}
                   disabled={!newBlogPost.title || !newBlogPost.excerpt || !newBlogPost.content}
-                  className="bg-minimal-indigo text-white hover:bg-minimal-violet"
+                  className="bg-sacred-gold text-white hover:bg-sacred-gold-dark"
                 >
                   Publish
                 </Button>
@@ -565,11 +565,11 @@ export default function AdminDashboard() {
         </TabsContent>
 
         <TabsContent value="ai-logs">
-          <Card className="bg-white border-0 shadow-soft">
+          <Card className="bg-cosmic-card border-0 shadow-soft">
             <CardContent className="p-4">
               {aiLogs.length === 0 ? (
-                <div className="text-center py-8 text-minimal-gray-500">
-                  <Brain className="w-10 h-10 mx-auto mb-2 text-minimal-gray-300" />
+                <div className="text-center py-8 text-cosmic-text-secondary">
+                  <Brain className="w-10 h-10 mx-auto mb-2 text-cosmic-text-muted" />
                   No AI logs yet.
                 </div>
               ) : (
@@ -585,10 +585,10 @@ export default function AdminDashboard() {
                   <TableBody>
                     {aiLogs.map((log) => (
                       <TableRow key={log.id}>
-                        <TableCell className="font-medium text-minimal-gray-900">{log.user_name}</TableCell>
-                        <TableCell className="text-minimal-gray-600 max-w-xs truncate">{log.question}</TableCell>
+                        <TableCell className="font-medium text-cosmic-text">{log.user_name}</TableCell>
+                        <TableCell className="text-cosmic-text-secondary max-w-xs truncate">{log.question}</TableCell>
                         <TableCell><Badge variant="outline" className="text-xs">{log.endpoint}</Badge></TableCell>
-                        <TableCell className="text-sm text-minimal-gray-500">{new Date(log.created_at).toLocaleString()}</TableCell>
+                        <TableCell className="text-sm text-cosmic-text-secondary">{new Date(log.created_at).toLocaleString()}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

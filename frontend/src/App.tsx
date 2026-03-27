@@ -68,7 +68,7 @@ function HomePage() {
 
 function App() {
   return (
-    <div className="min-h-screen bg-minimal-white text-minimal-gray-800 overflow-x-hidden">
+    <div className="min-h-screen bg-cosmic-bg text-cosmic-text overflow-x-hidden">
       <Navigation />
 
       <main>

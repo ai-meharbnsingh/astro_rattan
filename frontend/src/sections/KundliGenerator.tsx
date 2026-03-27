@@ -292,7 +292,7 @@ export default function KundliGenerator() {
                       <td className="p-4 text-sacred-text-secondary">{planet.house}</td>
                       <td className="p-4 text-sacred-text-secondary">{planet.nakshatra || '—'}</td>
                       <td className="p-4">
-                        <span className={`text-xs px-2 py-1 rounded-full ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-100 text-green-600' : 'bg-minimal-gray-200 text-sacred-text-secondary'}`}>
+                        <span className={`text-xs px-2 py-1 rounded-full ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-500/20 text-green-400' : 'bg-cosmic-surface text-sacred-text-secondary'}`}>
                           {planet.status}
                         </span>
                       </td>
@@ -309,28 +309,28 @@ export default function KundliGenerator() {
               <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-sacred-text-secondary">Analyzing doshas...</span></div>
             ) : doshaDisplay ? (
               <div className="grid gap-4">
-                <div className={`bg-sacred-cream rounded-xl p-4 border ${doshaDisplay.mangal.has_dosha ? 'border-red-200' : 'border-green-200'}`}>
+                <div className={`bg-sacred-cream rounded-xl p-4 border ${doshaDisplay.mangal.has_dosha ? 'border-red-500/30' : 'border-green-500/30'}`}>
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="font-display font-semibold text-sacred-brown">Mangal Dosha</h4>
-                    <span className={`text-xs px-2 py-1 rounded-full ${doshaDisplay.mangal.has_dosha ? 'bg-red-100 text-red-500' : 'bg-green-100 text-green-600'}`}>
+                    <span className={`text-xs px-2 py-1 rounded-full ${doshaDisplay.mangal.has_dosha ? 'bg-red-900/200/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}>
                       {doshaDisplay.mangal.has_dosha ? `Present (${doshaDisplay.mangal.severity})` : 'Not Present'}
                     </span>
                   </div>
                   <p className="text-sm text-sacred-text-secondary">{doshaDisplay.mangal.description}</p>
                 </div>
-                <div className={`bg-sacred-cream rounded-xl p-4 border ${doshaDisplay.kaalsarp.has_dosha ? 'border-red-200' : 'border-green-200'}`}>
+                <div className={`bg-sacred-cream rounded-xl p-4 border ${doshaDisplay.kaalsarp.has_dosha ? 'border-red-500/30' : 'border-green-500/30'}`}>
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="font-display font-semibold text-sacred-brown">Kaal Sarp Dosha</h4>
-                    <span className={`text-xs px-2 py-1 rounded-full ${doshaDisplay.kaalsarp.has_dosha ? 'bg-red-100 text-red-500' : 'bg-green-100 text-green-600'}`}>
+                    <span className={`text-xs px-2 py-1 rounded-full ${doshaDisplay.kaalsarp.has_dosha ? 'bg-red-900/200/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}>
                       {doshaDisplay.kaalsarp.has_dosha ? 'Present' : 'Not Present'}
                     </span>
                   </div>
                   <p className="text-sm text-sacred-text-secondary">{doshaDisplay.kaalsarp.description}</p>
                 </div>
-                <div className={`bg-sacred-cream rounded-xl p-4 border ${doshaDisplay.sadesati.has_sade_sati ? 'border-orange-200' : 'border-green-200'}`}>
+                <div className={`bg-sacred-cream rounded-xl p-4 border ${doshaDisplay.sadesati.has_sade_sati ? 'border-orange-200' : 'border-green-500/30'}`}>
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="font-display font-semibold text-sacred-brown">Shani Sade Sati</h4>
-                    <span className={`text-xs px-2 py-1 rounded-full ${doshaDisplay.sadesati.has_sade_sati ? 'bg-orange-100 text-orange-600' : 'bg-green-100 text-green-600'}`}>
+                    <span className={`text-xs px-2 py-1 rounded-full ${doshaDisplay.sadesati.has_sade_sati ? 'bg-orange-100 text-orange-600' : 'bg-green-500/20 text-green-400'}`}>
                       {doshaDisplay.sadesati.has_sade_sati ? `Active — ${doshaDisplay.sadesati.phase}` : 'Not Active'}
                     </span>
                   </div>
@@ -390,14 +390,14 @@ export default function KundliGenerator() {
 
                 {/* Suppressed atom */}
                 {iogitaData.basin.top_negative && (
-                  <div className="bg-red-50 rounded-xl p-5 border border-red-200">
+                  <div className="bg-red-900/20 rounded-xl p-5 border border-red-500/30">
                     <h4 className="font-display font-semibold text-red-700 mb-2">Most Suppressed Force</h4>
                     <div className="flex items-center gap-3">
-                      <span className="text-sm font-medium text-red-600">{iogitaData.basin.top_negative[0]}</span>
-                      <div className="flex-1 bg-red-100 rounded-full h-3 overflow-hidden">
+                      <span className="text-sm font-medium text-red-400">{iogitaData.basin.top_negative[0]}</span>
+                      <div className="flex-1 bg-red-900/200/20 rounded-full h-3 overflow-hidden">
                         <div className="bg-red-400 h-full rounded-full" style={{ width: `${Math.abs(iogitaData.basin.top_negative[1]) * 100}%` }} />
                       </div>
-                      <span className="text-sm text-red-600">{iogitaData.basin.top_negative[1].toFixed(3)}</span>
+                      <span className="text-sm text-red-400">{iogitaData.basin.top_negative[1].toFixed(3)}</span>
                     </div>
                   </div>
                 )}
@@ -468,7 +468,7 @@ export default function KundliGenerator() {
         </Tabs>
 
         <div className="mt-8 text-center">
-          <Button onClick={() => { setStep('form'); setResult(null); setDoshaData(null); setIogitaData(null); setDashaData(null); }} variant="outline" className="border-minimal-gray-300 text-minimal-gray-700">
+          <Button onClick={() => { setStep('form'); setResult(null); setDoshaData(null); setIogitaData(null); setDashaData(null); }} variant="outline" className="border-cosmic-text-muted text-cosmic-text">
             Generate Another Kundli
           </Button>
         </div>
@@ -491,29 +491,29 @@ export default function KundliGenerator() {
           <ArrowLeft className="w-4 h-4 mr-2" />Back to My Kundlis ({savedKundlis.length})
         </Button>
       )}
-      {error && <div className="mb-4 p-3 rounded-xl bg-red-50 text-red-600 text-sm">{error}</div>}
+      {error && <div className="mb-4 p-3 rounded-xl bg-red-900/20 text-red-400 text-sm">{error}</div>}
       <div className="space-y-4">
         <div className="relative">
           <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold-dark" />
-          <Input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Full Name" className="pl-10 bg-sacred-cream border-minimal-gray-200 text-sacred-brown" />
+          <Input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Full Name" className="pl-10 bg-sacred-cream border-sacred-gold/15 text-sacred-brown" />
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <button onClick={() => setFormData({ ...formData, gender: 'male' })} className={`p-3 rounded-xl border transition-colors ${formData.gender === 'male' ? 'border-minimal-indigo bg-minimal-indigo/10 text-sacred-gold-dark' : 'border-minimal-gray-200 text-sacred-text-secondary'}`}>Male</button>
-          <button onClick={() => setFormData({ ...formData, gender: 'female' })} className={`p-3 rounded-xl border transition-colors ${formData.gender === 'female' ? 'border-minimal-indigo bg-minimal-indigo/10 text-sacred-gold-dark' : 'border-minimal-gray-200 text-sacred-text-secondary'}`}>Female</button>
+          <button onClick={() => setFormData({ ...formData, gender: 'male' })} className={`p-3 rounded-xl border transition-colors ${formData.gender === 'male' ? 'border-sacred-gold bg-sacred-gold/10 text-sacred-gold-dark' : 'border-sacred-gold/15 text-sacred-text-secondary'}`}>Male</button>
+          <button onClick={() => setFormData({ ...formData, gender: 'female' })} className={`p-3 rounded-xl border transition-colors ${formData.gender === 'female' ? 'border-sacred-gold bg-sacred-gold/10 text-sacred-gold-dark' : 'border-sacred-gold/15 text-sacred-text-secondary'}`}>Female</button>
         </div>
         <div className="relative">
-          <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-minimal-gray-400" />
-          <Input type="date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} className="pl-10 bg-sacred-cream border-minimal-gray-200 text-sacred-brown" />
+          <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-cosmic-text-muted" />
+          <Input type="date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} className="pl-10 bg-sacred-cream border-sacred-gold/15 text-sacred-brown" />
         </div>
         <div className="relative">
-          <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-minimal-gray-400" />
-          <Input type="time" value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} className="pl-10 bg-sacred-cream border-minimal-gray-200 text-sacred-brown" />
+          <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-cosmic-text-muted" />
+          <Input type="time" value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} className="pl-10 bg-sacred-cream border-sacred-gold/15 text-sacred-brown" />
         </div>
         <div className="relative">
-          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-minimal-gray-400" />
-          <Input type="text" value={formData.place} onChange={(e) => setFormData({ ...formData, place: e.target.value })} placeholder="Birth Place" className="pl-10 bg-sacred-cream border-minimal-gray-200 text-sacred-brown" />
+          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-cosmic-text-muted" />
+          <Input type="text" value={formData.place} onChange={(e) => setFormData({ ...formData, place: e.target.value })} placeholder="Birth Place" className="pl-10 bg-sacred-cream border-sacred-gold/15 text-sacred-brown" />
         </div>
-        <Button onClick={handleGenerate} disabled={!formData.name || !formData.date || !formData.time || !formData.place} className="w-full btn-sacred font-semibold hover:bg-minimal-violet disabled:opacity-50">
+        <Button onClick={handleGenerate} disabled={!formData.name || !formData.date || !formData.time || !formData.place} className="w-full btn-sacred font-semibold hover:bg-sacred-gold-dark disabled:opacity-50">
           <Sparkles className="w-5 h-5 mr-2" />Generate Kundli<ChevronRight className="w-5 h-5 ml-2" />
         </Button>
       </div>

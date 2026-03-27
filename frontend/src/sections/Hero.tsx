@@ -37,43 +37,43 @@ export default function Hero() {
   };
 
   return (
-    <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden hero-sacred bg-mandala">
+    <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden hero-sacred bg-mandala bg-cosmic-stars">
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold/10 text-sacred-gold-dark text-sm font-medium mb-6 border border-sacred-gold/30">
-              <Sparkles className="w-4 h-4" />Vedic Astrology
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold/10 text-sacred-gold text-sm font-medium mb-6 border border-sacred-gold/30">
+              <Sparkles className="w-4 h-4" />Sidereal Astrology
             </div>
-            <div className="overflow-hidden mb-4">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-sacred font-bold text-sacred-brown">
-                <span className="hero-word inline-block">Discover</span>{' '}
-                <span className="hero-word inline-block">Your</span>
+            <div className="overflow-hidden mb-2">
+              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-sacred font-bold tracking-wider">
+                <span className="hero-word inline-block text-cosmic-text-secondary uppercase">Know Your</span>
               </h1>
             </div>
-            <div className="overflow-hidden mb-4">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-sacred font-bold">
-                <span className="hero-word inline-block text-gradient-gold">Cosmic</span>{' '}
-                <span className="hero-word inline-block text-sacred-saffron-dark">Path</span>
+            <div className="overflow-hidden mb-6">
+              <h1 className="text-5xl sm:text-6xl lg:text-8xl font-sacred font-bold tracking-wide">
+                <span className="hero-word inline-block text-gradient-gold uppercase">Destiny</span>
               </h1>
             </div>
-            <p className="hero-subtitle text-lg text-sacred-text-secondary max-w-xl mx-auto lg:mx-0 mb-8">
-              Unlock Vedic astrology wisdom with AI-powered insights. Get personalized predictions and spiritual guidance.
-            </p>
-            <div className="hero-form card-sacred rounded-2xl p-6 max-w-md mx-auto lg:mx-0">
-              <h3 className="text-lg font-sacred font-semibold text-sacred-brown mb-4 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-sacred-gold-dark" />Generate Free Kundli
+            <div className="hero-form">
+              <Button onClick={() => navigate('/kundli')} size="lg" className="btn-sacred text-lg px-8 py-6 rounded-full tracking-wider uppercase">
+                Get Free Kundli
+              </Button>
+            </div>
+            <div className="hero-form mt-8 card-sacred rounded-2xl p-6 max-w-md mx-auto lg:mx-0">
+              <h3 className="text-lg font-sacred font-semibold text-sacred-gold mb-4 flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-sacred-gold" />Quick Kundli
               </h3>
               <div className="space-y-4">
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold-dark" />
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold" />
                   <Input type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} className="pl-10 input-sacred" />
                 </div>
                 <div className="relative">
-                  <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold-dark" />
+                  <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold" />
                   <Input type="time" value={birthTime} onChange={(e) => setBirthTime(e.target.value)} className="pl-10 input-sacred" />
                 </div>
                 <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold-dark" />
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold" />
                   <Input type="text" value={birthPlace} onChange={(e) => setBirthPlace(e.target.value)} placeholder="Birth Place" className="pl-10 input-sacred" />
                 </div>
                 <Button onClick={handleGenerateKundli} className="w-full btn-sacred font-medium">
@@ -81,19 +81,33 @@ export default function Hero() {
                 </Button>
               </div>
             </div>
-            <div className="hero-form flex flex-wrap justify-center lg:justify-start gap-4 mt-6">
-              <Button variant="outline" onClick={() => navigate('/ai-chat')} className="border-sacred-gold/50 text-sacred-brown hover:bg-sacred-gold/10 hover:border-sacred-gold">
-                <Sparkles className="w-4 h-4 mr-2 text-sacred-saffron" />Ask AI Astrologer
-              </Button>
-            </div>
           </div>
           <div className="hidden lg:flex items-center justify-center">
-            <div className="relative w-[400px] h-[400px]">
-              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-sacred-gold/10 to-sacred-saffron/10 animate-pulse-gold" />
-              <div className="absolute inset-8 rounded-full bg-gradient-to-br from-sacred-gold/20 to-sacred-saffron/20" />
-              <div className="absolute inset-16 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center shadow-lg">
-                <Star className="w-24 h-24 text-white" />
+            <div className="relative w-[420px] h-[420px]">
+              {/* Outer cosmic glow */}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-sacred-purple/40 to-sacred-gold/10 animate-pulse-gold blur-xl" />
+              {/* Zodiac ring */}
+              <div className="absolute inset-4 rounded-full border-2 border-sacred-gold/30 animate-spin-slow" />
+              <div className="absolute inset-12 rounded-full border border-sacred-gold/20" />
+              {/* Inner circle with star */}
+              <div className="absolute inset-20 rounded-full bg-gradient-to-br from-sacred-purple/60 to-cosmic-bg border border-sacred-gold/40 flex items-center justify-center shadow-glow-gold">
+                <div className="relative">
+                  <Star className="w-20 h-20 text-sacred-gold" fill="currentColor" />
+                  <div className="absolute inset-0 animate-pulse-gold rounded-full" />
+                </div>
               </div>
+              {/* Zodiac symbols positioned around the ring */}
+              {['\u2648','\u2649','\u264A','\u264B','\u264C','\u264D','\u264E','\u264F','\u2650','\u2651','\u2652','\u2653'].map((symbol, i) => {
+                const angle = (i * 30 - 90) * (Math.PI / 180);
+                const radius = 185;
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
+                return (
+                  <span key={i} className="absolute text-sacred-gold/60 text-lg font-bold" style={{ left: `calc(50% + ${x}px - 10px)`, top: `calc(50% + ${y}px - 10px)` }}>
+                    {symbol}
+                  </span>
+                );
+              })}
             </div>
           </div>
         </div>

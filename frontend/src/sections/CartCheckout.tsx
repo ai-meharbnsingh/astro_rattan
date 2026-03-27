@@ -112,9 +112,9 @@ export default function CartCheckout() {
   if (!isAuthenticated) {
     return (
       <div className="max-w-4xl mx-auto py-24 px-4 text-center">
-        <ShoppingCart className="w-16 h-16 text-minimal-gray-300 mx-auto mb-4" />
-        <h2 className="text-2xl font-display font-bold text-minimal-gray-900 mb-2">Sign in to view your cart</h2>
-        <p className="text-minimal-gray-500">Please log in to manage your shopping cart.</p>
+        <ShoppingCart className="w-16 h-16 text-cosmic-text-muted mx-auto mb-4" />
+        <h2 className="text-2xl font-display font-bold text-cosmic-text mb-2">Sign in to view your cart</h2>
+        <p className="text-cosmic-text-secondary">Please log in to manage your shopping cart.</p>
       </div>
     );
   }
@@ -122,7 +122,7 @@ export default function CartCheckout() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <Loader2 className="w-10 h-10 text-minimal-indigo animate-spin" />
+        <Loader2 className="w-10 h-10 text-sacred-gold animate-spin" />
       </div>
     );
   }
@@ -130,10 +130,10 @@ export default function CartCheckout() {
   return (
     <section className="max-w-5xl mx-auto py-24 px-4">
       <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-minimal-indigo/10 text-minimal-indigo text-sm font-medium mb-4">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold/10 text-sacred-gold text-sm font-medium mb-4">
           <ShoppingCart className="w-4 h-4" />Checkout
         </div>
-        <h2 className="text-3xl font-display font-bold text-minimal-gray-900">
+        <h2 className="text-3xl font-display font-bold text-cosmic-text">
           Your <span className="text-gradient-indigo">Cart</span>
         </h2>
       </div>
@@ -142,10 +142,10 @@ export default function CartCheckout() {
       <div className="flex items-center justify-center gap-2 mb-10">
         {(['cart', 'shipping', 'payment', 'confirmation'] as Step[]).map((s, idx) => (
           <div key={s} className="flex items-center gap-2">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${step === s || idx < ['cart', 'shipping', 'payment', 'confirmation'].indexOf(step) ? 'bg-minimal-indigo text-white' : 'bg-minimal-gray-100 text-minimal-gray-400'}`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${step === s || idx < ['cart', 'shipping', 'payment', 'confirmation'].indexOf(step) ? 'bg-sacred-gold text-white' : 'bg-cosmic-surface text-cosmic-text-muted'}`}>
               {idx + 1}
             </div>
-            <span className="hidden sm:inline text-sm text-minimal-gray-600 capitalize">{s}</span>
+            <span className="hidden sm:inline text-sm text-cosmic-text-secondary capitalize">{s}</span>
             {idx < 3 && <div className="w-8 h-px bg-minimal-gray-200" />}
           </div>
         ))}
@@ -153,12 +153,12 @@ export default function CartCheckout() {
 
       {/* Cart Step */}
       {step === 'cart' && (
-        <Card className="bg-white border-0 shadow-soft">
+        <Card className="bg-cosmic-card border-0 shadow-soft">
           <CardContent className="p-6">
             {items.length === 0 ? (
               <div className="text-center py-12">
-                <Package className="w-16 h-16 text-minimal-gray-300 mx-auto mb-4" />
-                <p className="text-minimal-gray-500">Your cart is empty</p>
+                <Package className="w-16 h-16 text-cosmic-text-muted mx-auto mb-4" />
+                <p className="text-cosmic-text-secondary">Your cart is empty</p>
               </div>
             ) : (
               <>
@@ -175,7 +175,7 @@ export default function CartCheckout() {
                   <TableBody>
                     {items.map((item) => (
                       <TableRow key={item.id}>
-                        <TableCell className="font-medium text-minimal-gray-900">{item.name}</TableCell>
+                        <TableCell className="font-medium text-cosmic-text">{item.name}</TableCell>
                         <TableCell>{formatPrice(item.price)}</TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
@@ -188,9 +188,9 @@ export default function CartCheckout() {
                             </Button>
                           </div>
                         </TableCell>
-                        <TableCell className="font-semibold text-minimal-indigo">{formatPrice(item.price * item.quantity)}</TableCell>
+                        <TableCell className="font-semibold text-sacred-gold">{formatPrice(item.price * item.quantity)}</TableCell>
                         <TableCell>
-                          <Button variant="ghost" size="sm" onClick={() => removeItem(item.id)} className="text-red-500 hover:text-red-700">
+                          <Button variant="ghost" size="sm" onClick={() => removeItem(item.id)} className="text-red-400 hover:text-red-700">
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </TableCell>
@@ -198,11 +198,11 @@ export default function CartCheckout() {
                     ))}
                   </TableBody>
                 </Table>
-                <div className="mt-6 flex flex-col items-end gap-2 border-t border-minimal-gray-100 pt-4">
-                  <div className="text-sm text-minimal-gray-500">Subtotal: {formatPrice(subtotal)}</div>
-                  <div className="text-sm text-minimal-gray-500">Shipping: {shipping === 0 ? 'Free' : formatPrice(shipping)}</div>
-                  <div className="text-lg font-bold text-minimal-gray-900">Total: {formatPrice(total)}</div>
-                  <Button onClick={() => setStep('shipping')} className="bg-minimal-indigo text-white hover:bg-minimal-violet mt-2">
+                <div className="mt-6 flex flex-col items-end gap-2 border-t border-sacred-gold/10 pt-4">
+                  <div className="text-sm text-cosmic-text-secondary">Subtotal: {formatPrice(subtotal)}</div>
+                  <div className="text-sm text-cosmic-text-secondary">Shipping: {shipping === 0 ? 'Free' : formatPrice(shipping)}</div>
+                  <div className="text-lg font-bold text-cosmic-text">Total: {formatPrice(total)}</div>
+                  <Button onClick={() => setStep('shipping')} className="bg-sacred-gold text-white hover:bg-sacred-gold-dark mt-2">
                     <Truck className="w-4 h-4 mr-2" />Proceed to Shipping
                   </Button>
                 </div>
@@ -214,27 +214,27 @@ export default function CartCheckout() {
 
       {/* Shipping Step */}
       {step === 'shipping' && (
-        <Card className="bg-white border-0 shadow-soft max-w-xl mx-auto">
+        <Card className="bg-cosmic-card border-0 shadow-soft max-w-xl mx-auto">
           <CardContent className="p-6">
-            <h3 className="text-lg font-display font-semibold text-minimal-gray-900 mb-4 flex items-center gap-2">
-              <Truck className="w-5 h-5 text-minimal-indigo" />Shipping Address
+            <h3 className="text-lg font-display font-semibold text-cosmic-text mb-4 flex items-center gap-2">
+              <Truck className="w-5 h-5 text-sacred-gold" />Shipping Address
             </h3>
             <div className="space-y-3">
-              <Input placeholder="Full Name" value={address.name} onChange={(e) => setAddress({ ...address, name: e.target.value })} className="bg-minimal-gray-50 border-minimal-gray-200" />
-              <Input placeholder="Address Line 1" value={address.line1} onChange={(e) => setAddress({ ...address, line1: e.target.value })} className="bg-minimal-gray-50 border-minimal-gray-200" />
-              <Input placeholder="Address Line 2 (optional)" value={address.line2} onChange={(e) => setAddress({ ...address, line2: e.target.value })} className="bg-minimal-gray-50 border-minimal-gray-200" />
+              <Input placeholder="Full Name" value={address.name} onChange={(e) => setAddress({ ...address, name: e.target.value })} className="bg-cosmic-card border-sacred-gold/15" />
+              <Input placeholder="Address Line 1" value={address.line1} onChange={(e) => setAddress({ ...address, line1: e.target.value })} className="bg-cosmic-card border-sacred-gold/15" />
+              <Input placeholder="Address Line 2 (optional)" value={address.line2} onChange={(e) => setAddress({ ...address, line2: e.target.value })} className="bg-cosmic-card border-sacred-gold/15" />
               <div className="grid grid-cols-2 gap-3">
-                <Input placeholder="City" value={address.city} onChange={(e) => setAddress({ ...address, city: e.target.value })} className="bg-minimal-gray-50 border-minimal-gray-200" />
-                <Input placeholder="State" value={address.state} onChange={(e) => setAddress({ ...address, state: e.target.value })} className="bg-minimal-gray-50 border-minimal-gray-200" />
+                <Input placeholder="City" value={address.city} onChange={(e) => setAddress({ ...address, city: e.target.value })} className="bg-cosmic-card border-sacred-gold/15" />
+                <Input placeholder="State" value={address.state} onChange={(e) => setAddress({ ...address, state: e.target.value })} className="bg-cosmic-card border-sacred-gold/15" />
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <Input placeholder="Pincode" value={address.pincode} onChange={(e) => setAddress({ ...address, pincode: e.target.value })} className="bg-minimal-gray-50 border-minimal-gray-200" />
-                <Input placeholder="Phone" value={address.phone} onChange={(e) => setAddress({ ...address, phone: e.target.value })} className="bg-minimal-gray-50 border-minimal-gray-200" />
+                <Input placeholder="Pincode" value={address.pincode} onChange={(e) => setAddress({ ...address, pincode: e.target.value })} className="bg-cosmic-card border-sacred-gold/15" />
+                <Input placeholder="Phone" value={address.phone} onChange={(e) => setAddress({ ...address, phone: e.target.value })} className="bg-cosmic-card border-sacred-gold/15" />
               </div>
             </div>
             <div className="flex gap-3 mt-6">
               <Button variant="outline" onClick={() => setStep('cart')}>Back</Button>
-              <Button onClick={() => setStep('payment')} disabled={!address.name || !address.line1 || !address.city || !address.pincode || !address.phone} className="flex-1 bg-minimal-indigo text-white hover:bg-minimal-violet">
+              <Button onClick={() => setStep('payment')} disabled={!address.name || !address.line1 || !address.city || !address.pincode || !address.phone} className="flex-1 bg-sacred-gold text-white hover:bg-sacred-gold-dark">
                 <CreditCard className="w-4 h-4 mr-2" />Continue to Payment
               </Button>
             </div>
@@ -244,13 +244,13 @@ export default function CartCheckout() {
 
       {/* Payment Step */}
       {step === 'payment' && (
-        <Card className="bg-white border-0 shadow-soft max-w-xl mx-auto">
+        <Card className="bg-cosmic-card border-0 shadow-soft max-w-xl mx-auto">
           <CardContent className="p-6">
-            <h3 className="text-lg font-display font-semibold text-minimal-gray-900 mb-4 flex items-center gap-2">
-              <CreditCard className="w-5 h-5 text-minimal-indigo" />Payment Method
+            <h3 className="text-lg font-display font-semibold text-cosmic-text mb-4 flex items-center gap-2">
+              <CreditCard className="w-5 h-5 text-sacred-gold" />Payment Method
             </h3>
             <Select value={paymentMethod} onValueChange={setPaymentMethod}>
-              <SelectTrigger className="w-full bg-minimal-gray-50 border-minimal-gray-200">
+              <SelectTrigger className="w-full bg-cosmic-card border-sacred-gold/15">
                 <SelectValue placeholder="Select payment method" />
               </SelectTrigger>
               <SelectContent>
@@ -259,20 +259,20 @@ export default function CartCheckout() {
                 <SelectItem value="stripe">Stripe</SelectItem>
               </SelectContent>
             </Select>
-            <div className="mt-6 p-4 bg-minimal-gray-50 rounded-xl">
-              <div className="flex justify-between text-sm text-minimal-gray-600 mb-1">
+            <div className="mt-6 p-4 bg-cosmic-card rounded-xl">
+              <div className="flex justify-between text-sm text-cosmic-text-secondary mb-1">
                 <span>Subtotal</span><span>{formatPrice(subtotal)}</span>
               </div>
-              <div className="flex justify-between text-sm text-minimal-gray-600 mb-1">
+              <div className="flex justify-between text-sm text-cosmic-text-secondary mb-1">
                 <span>Shipping</span><span>{shipping === 0 ? 'Free' : formatPrice(shipping)}</span>
               </div>
-              <div className="flex justify-between text-lg font-bold text-minimal-gray-900 mt-2 pt-2 border-t border-minimal-gray-200">
-                <span>Total</span><span className="text-minimal-indigo">{formatPrice(total)}</span>
+              <div className="flex justify-between text-lg font-bold text-cosmic-text mt-2 pt-2 border-t border-sacred-gold/15">
+                <span>Total</span><span className="text-sacred-gold">{formatPrice(total)}</span>
               </div>
             </div>
             <div className="flex gap-3 mt-6">
               <Button variant="outline" onClick={() => setStep('shipping')}>Back</Button>
-              <Button onClick={placeOrder} disabled={placing} className="flex-1 bg-minimal-indigo text-white hover:bg-minimal-violet">
+              <Button onClick={placeOrder} disabled={placing} className="flex-1 bg-sacred-gold text-white hover:bg-sacred-gold-dark">
                 {placing ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Placing Order...</> : 'Place Order'}
               </Button>
             </div>
@@ -282,20 +282,20 @@ export default function CartCheckout() {
 
       {/* Confirmation Step */}
       {step === 'confirmation' && order && (
-        <Card className="bg-white border-0 shadow-soft max-w-xl mx-auto text-center">
+        <Card className="bg-cosmic-card border-0 shadow-soft max-w-xl mx-auto text-center">
           <CardContent className="p-8">
             <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-            <h3 className="text-2xl font-display font-bold text-minimal-gray-900 mb-2">Order Placed!</h3>
-            <p className="text-minimal-gray-500 mb-4">Your order has been placed successfully.</p>
+            <h3 className="text-2xl font-display font-bold text-cosmic-text mb-2">Order Placed!</h3>
+            <p className="text-cosmic-text-secondary mb-4">Your order has been placed successfully.</p>
             <div className="space-y-2 text-sm">
               {order.order_number && <p>Order Number: <Badge variant="outline">{order.order_number}</Badge></p>}
-              <p>Total: <span className="font-bold text-minimal-indigo">{formatPrice(order.total)}</span></p>
-              <p>Status: <Badge className="bg-minimal-indigo/10 text-minimal-indigo">{order.status}</Badge></p>
+              <p>Total: <span className="font-bold text-sacred-gold">{formatPrice(order.total)}</span></p>
+              <p>Status: <Badge className="bg-sacred-gold/10 text-sacred-gold">{order.status}</Badge></p>
               {order.razorpay_key_id && (
-                <div className="mt-4 p-3 bg-minimal-gray-50 rounded-lg text-left">
-                  <p className="font-medium text-minimal-gray-700 mb-1">Razorpay Payment</p>
-                  <p className="text-xs text-minimal-gray-500">Key ID: {order.razorpay_key_id}</p>
-                  {order.razorpay_order_id && <p className="text-xs text-minimal-gray-500">Order ID: {order.razorpay_order_id}</p>}
+                <div className="mt-4 p-3 bg-cosmic-card rounded-lg text-left">
+                  <p className="font-medium text-cosmic-text mb-1">Razorpay Payment</p>
+                  <p className="text-xs text-cosmic-text-secondary">Key ID: {order.razorpay_key_id}</p>
+                  {order.razorpay_order_id && <p className="text-xs text-cosmic-text-secondary">Order ID: {order.razorpay_order_id}</p>}
                 </div>
               )}
             </div>

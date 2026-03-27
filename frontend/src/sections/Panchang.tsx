@@ -7,31 +7,10 @@ import { api } from '@/lib/api';
 
 gsap.registerPlugin(ScrollTrigger);
 
-interface PanchangInfo {
-  tithi: string;
-  nakshatra: string;
-  yoga: string;
-  karana: string;
-  sunrise: string;
-  sunset: string;
-}
+interface PanchangInfo { tithi: string; nakshatra: string; yoga: string; karana: string; sunrise: string; sunset: string; }
+interface ChoghadiyaPeriod { name: string; quality: string; start: string; end: string; }
 
-interface ChoghadiyaPeriod {
-  name: string;
-  quality: string;
-  start: string;
-  end: string;
-}
-
-const fallbackPanchang: PanchangInfo = {
-  tithi: 'Shukla Paksha - Pratipada',
-  nakshatra: 'Ashwini',
-  yoga: 'Vriddhi',
-  karana: 'Bava',
-  sunrise: '06:45 AM',
-  sunset: '05:52 PM',
-};
-
+const fallbackPanchang: PanchangInfo = { tithi: 'Shukla Paksha - Pratipada', nakshatra: 'Ashwini', yoga: 'Vriddhi', karana: 'Bava', sunrise: '06:45 AM', sunset: '05:52 PM' };
 const fallbackChoghadiya: ChoghadiyaPeriod[] = [
   { name: 'Amrit', start: '06:00', end: '07:30', quality: 'good' },
   { name: 'Kaal', start: '07:30', end: '09:00', quality: 'bad' },
@@ -77,104 +56,98 @@ export default function Panchang() {
         if (!cancelled && choghadiyaRes) {
           setChoghadiya(Array.isArray(choghadiyaRes.periods) && choghadiyaRes.periods.length > 0 ? choghadiyaRes.periods : fallbackChoghadiya);
         }
-      } catch {
-        // fallback already set
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
+      } catch { /* fallback already set */ } finally { if (!cancelled) setLoading(false); }
     };
     fetchPanchang();
     return () => { cancelled = true; };
   }, [todayStr]);
 
   return (
-    <section ref={sectionRef} id="panchang" className="relative py-24 bg-sacred-cream bg-mandala">
+    <section ref={sectionRef} id="panchang" className="relative py-24 bg-cosmic-bg bg-mandala">
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="panchang-title text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-saffron/10 text-sacred-saffron-dark text-sm font-medium mb-6 border border-sacred-saffron/30">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-saffron/10 text-sacred-saffron text-sm font-medium mb-6 border border-sacred-saffron/30">
             <Calendar className="w-4 h-4" />Daily Panchang
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-sacred font-bold text-sacred-brown mb-4">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-sacred font-bold text-cosmic-text mb-4">
             Cosmic Timekeeping with<span className="text-gradient-saffron"> Panchang</span>
           </h2>
         </div>
-        <div className="bg-white rounded-2xl p-4 mb-8 flex flex-wrap items-center justify-between gap-4 shadow-sacred card-gold-border">
+        <div className="card-gold-border rounded-2xl p-4 mb-8 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-sacred-gold/10 flex items-center justify-center">
-              <Calendar className="w-6 h-6 text-sacred-gold-dark" />
+            <div className="w-12 h-12 rounded-xl bg-sacred-gold/10 flex items-center justify-center border border-sacred-gold/20">
+              <Calendar className="w-6 h-6 text-sacred-gold" />
             </div>
             <div>
-              <p className="text-sm text-sacred-text-secondary">Today</p>
-              <p className="text-lg font-sacred font-semibold text-sacred-brown">{dateDisplay}</p>
+              <p className="text-sm text-cosmic-text-secondary">Today</p>
+              <p className="text-lg font-sacred font-semibold text-cosmic-text">{dateDisplay}</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-sacred-saffron/10 flex items-center justify-center">
-              <Clock className="w-6 h-6 text-sacred-saffron-dark" />
+            <div className="w-12 h-12 rounded-xl bg-sacred-saffron/10 flex items-center justify-center border border-sacred-saffron/20">
+              <Clock className="w-6 h-6 text-sacred-saffron" />
             </div>
             <div>
-              <p className="text-sm text-sacred-text-secondary">Current Time</p>
-              <p className="text-lg font-sacred font-semibold text-sacred-brown">{currentTime.toLocaleTimeString('en-IN')}</p>
+              <p className="text-sm text-cosmic-text-secondary">Current Time</p>
+              <p className="text-lg font-sacred font-semibold text-cosmic-text">{currentTime.toLocaleTimeString('en-IN')}</p>
             </div>
           </div>
         </div>
         {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-10 h-10 text-sacred-gold animate-spin" />
-          </div>
+          <div className="flex items-center justify-center py-20"><Loader2 className="w-10 h-10 text-sacred-gold animate-spin" /></div>
         ) : (
           <div className="grid lg:grid-cols-3 gap-6">
-            <Card className="card-sacred border-0">
+            <Card className="card-sacred border-sacred-gold/20">
               <CardContent className="p-6">
-                <h3 className="text-xl font-sacred font-semibold text-sacred-brown mb-6 flex items-center gap-2">
-                  <Star className="w-5 h-5 text-sacred-gold-dark" />Today&apos;s Panchang
+                <h3 className="text-xl font-sacred font-semibold text-cosmic-text mb-6 flex items-center gap-2">
+                  <Star className="w-5 h-5 text-sacred-gold" />Today&apos;s Panchang
                 </h3>
                 <div className="space-y-4">
                   {(['tithi', 'nakshatra', 'yoga', 'karana'] as const).map((key) => (
-                    <div key={key} className="p-4 rounded-xl bg-sacred-cream border border-sacred-gold/20">
-                      <p className="text-sm text-sacred-text-secondary capitalize">{key}</p>
-                      <p className="text-sacred-brown font-medium">{panchang[key]}</p>
+                    <div key={key} className="p-4 rounded-xl bg-cosmic-card border border-sacred-gold/10">
+                      <p className="text-sm text-cosmic-text-secondary capitalize">{key}</p>
+                      <p className="text-cosmic-text font-medium">{panchang[key]}</p>
                     </div>
                   ))}
                 </div>
               </CardContent>
             </Card>
-            <Card className="card-sacred border-0">
+            <Card className="card-sacred border-sacred-gold/20">
               <CardContent className="p-6">
-                <h3 className="text-xl font-sacred font-semibold text-sacred-brown mb-6">Choghadiya</h3>
+                <h3 className="text-xl font-sacred font-semibold text-cosmic-text mb-6">Choghadiya</h3>
                 <div className="space-y-2">
                   {choghadiya.map((item, index) => (
-                    <div key={index} className={`flex items-center justify-between p-3 rounded-xl ${item.quality === 'good' ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
+                    <div key={index} className={`flex items-center justify-between p-3 rounded-xl border ${item.quality === 'good' ? 'bg-green-900/20 border-green-500/30' : 'bg-red-900/20 border-red-500/30'}`}>
                       <div>
-                        <p className={`text-sm font-medium ${item.quality === 'good' ? 'text-green-600' : 'text-red-500'}`}>{item.name}</p>
-                        <p className="text-xs text-sacred-text-secondary">{item.start} - {item.end}</p>
+                        <p className={`text-sm font-medium ${item.quality === 'good' ? 'text-green-400' : 'text-red-400'}`}>{item.name}</p>
+                        <p className="text-xs text-cosmic-text-secondary">{item.start} - {item.end}</p>
                       </div>
-                      <span className={`text-xs px-2 py-1 rounded-full ${item.quality === 'good' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-500'}`}>{item.quality === 'good' ? 'Good' : 'Avoid'}</span>
+                      <span className={`text-xs px-2 py-1 rounded-full ${item.quality === 'good' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>{item.quality === 'good' ? 'Good' : 'Avoid'}</span>
                     </div>
                   ))}
                 </div>
               </CardContent>
             </Card>
-            <Card className="card-sacred border-0">
+            <Card className="card-sacred border-sacred-gold/20">
               <CardContent className="p-6">
-                <h3 className="text-xl font-sacred font-semibold text-sacred-brown mb-6">Sun Times</h3>
+                <h3 className="text-xl font-sacred font-semibold text-cosmic-text mb-6">Sun Times</h3>
                 <div className="space-y-4">
-                  <div className="flex items-center gap-4 p-4 rounded-xl bg-sacred-cream border border-sacred-gold/20">
+                  <div className="flex items-center gap-4 p-4 rounded-xl bg-cosmic-card border border-sacred-gold/10">
                     <div className="w-10 h-10 rounded-xl bg-sacred-gold/10 flex items-center justify-center">
-                      <Sunrise className="w-5 h-5 text-sacred-gold-dark" />
+                      <Sunrise className="w-5 h-5 text-sacred-gold" />
                     </div>
                     <div>
-                      <p className="text-sm text-sacred-text-secondary">Sunrise</p>
-                      <p className="text-sacred-brown font-medium">{panchang.sunrise}</p>
+                      <p className="text-sm text-cosmic-text-secondary">Sunrise</p>
+                      <p className="text-cosmic-text font-medium">{panchang.sunrise}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 p-4 rounded-xl bg-sacred-cream border border-sacred-gold/20">
+                  <div className="flex items-center gap-4 p-4 rounded-xl bg-cosmic-card border border-sacred-saffron/10">
                     <div className="w-10 h-10 rounded-xl bg-sacred-saffron/10 flex items-center justify-center">
-                      <Sunset className="w-5 h-5 text-sacred-saffron-dark" />
+                      <Sunset className="w-5 h-5 text-sacred-saffron" />
                     </div>
                     <div>
-                      <p className="text-sm text-sacred-text-secondary">Sunset</p>
-                      <p className="text-sacred-brown font-medium">{panchang.sunset}</p>
+                      <p className="text-sm text-cosmic-text-secondary">Sunset</p>
+                      <p className="text-cosmic-text font-medium">{panchang.sunset}</p>
                     </div>
                   </div>
                 </div>
