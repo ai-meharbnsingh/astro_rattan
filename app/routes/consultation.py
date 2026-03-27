@@ -278,7 +278,7 @@ def _stored_jitsi_link(value: str | None) -> str | None:
 
 
 @router.post(
-    "/api/consultations/{consultation_id}/video-link",
+    "/api/consultation/{consultation_id}/video-link",
     response_model=VideoLinkResponse,
 )
 def generate_video_link(

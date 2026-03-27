@@ -28,6 +28,9 @@ import Dashboard from './sections/Dashboard';
 import ReportMarketplace from './sections/ReportMarketplace';
 import PalmistryPage from './sections/PalmistryPage';
 import BlogPage from './sections/BlogPage';
+import ReferralPage from './sections/ReferralPage';
+import KPLalkitabPage from './sections/KPLalkitabPage';
+import MessagesPage from './sections/MessagesPage';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -96,6 +99,9 @@ function App() {
           <Route path="/palmistry" element={<PalmistryPage />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:slug" element={<BlogPage />} />
+          <Route path="/referral" element={<ReferralPage />} />
+          <Route path="/kp-lalkitab" element={<KPLalkitabPage />} />
+          <Route path="/messages" element={<MessagesPage />} />
         </Routes>
       </main>
 

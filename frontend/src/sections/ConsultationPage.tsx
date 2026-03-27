@@ -211,7 +211,7 @@ export default function ConsultationPage() {
   const openVideoSession = async (consultation: Consultation) => {
     setJoiningVideoId(consultation.id);
     try {
-      const response = await api.post(`/api/consultations/${consultation.id}/video-link`, {});
+      const response = await api.post(`/api/consultation/${consultation.id}/video-link`, {});
       const videoLink = String(response.video_link ?? consultation.video_link ?? '');
       const roomName = String(response.room_name ?? videoLink.split('/').pop() ?? `AstroVedic-${consultation.id}`);
       const status = typeof response.status === 'string' ? response.status : consultation.status;

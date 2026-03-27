@@ -5,6 +5,7 @@ import { Stars, Menu, X, Sparkles, MessageCircle, ShoppingCart, User, Shield, St
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/lib/i18n';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import SearchBar from '@/components/SearchBar';
 
 const navLinks = [
   { key: 'nav.kundli', href: '/kundli' },
@@ -49,6 +50,7 @@ export default function Navigation() {
               ))}
             </div>
             <div className="hidden lg:flex items-center gap-3">
+              <SearchBar />
               <LanguageSwitcher />
               {isAuthenticated && user?.role === 'admin' && (
                 <Button variant="ghost" size="sm" asChild>
