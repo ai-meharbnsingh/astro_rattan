@@ -21,7 +21,14 @@ export default function CTA() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-cosmic-bg bg-mandala bg-cosmic-stars">
+    <section ref={sectionRef} className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-cosmic-bg">
+      {/* Dark nebula background */}
+      <div
+        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/images/hero-bg.jpg')" }}
+      />
+      {/* Heavier dark overlay for premium CTA feel */}
+      <div className="absolute inset-0 z-0 bg-gradient-to-b from-[#0a0a0a]/80 via-[#0d0d1a]/70 to-[#0a0a0a]/90" />
       <div className="absolute inset-0 z-0 opacity-30 pointer-events-none">
         <Canvas camera={{ position: [0, 0, 8], fov: 50 }} gl={{ alpha: true }}>
           <FloatingPlanet color="#ffd700" size={0.4} position={[-4, 2, -2]} hasRing rotationSpeed={0.2} />
@@ -30,7 +37,7 @@ export default function CTA() {
         </Canvas>
       </div>
       <div className="absolute inset-0 z-0">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-sacred-purple/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#d4af37]/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-sacred-gold/5 rounded-full blur-3xl" />
       </div>
       <div className="relative z-10 cta-content max-w-4xl mx-auto px-4 text-center">

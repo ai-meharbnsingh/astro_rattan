@@ -9,7 +9,7 @@ import { api, resolveApiUrl } from '@/lib/api';
 interface BlogPostSummary { id: string; slug: string; title: string; excerpt: string; cover_image_url?: string | null; tags: string[]; author_name: string; seo_title?: string | null; seo_description?: string | null; published_at: string; }
 interface BlogPost extends BlogPostSummary { content: string; }
 
-const DEFAULT_TITLE = 'AstroVedic Blog - Practical Astrology, Panchang, Remedies';
+const DEFAULT_TITLE = 'Astro Rattan Blog - Practical Astrology, Panchang, Remedies';
 const DEFAULT_DESCRIPTION = 'Editorial guides on Panchang, Kundli, remedies, spiritual practices, and practical astrology decisions.';
 
 function updateHead(post?: BlogPost | null) {
@@ -48,8 +48,8 @@ function updateHead(post?: BlogPost | null) {
   script.id = 'blog-jsonld';
   script.type = 'application/ld+json';
   script.text = JSON.stringify(
-    post ? { '@context': 'https://schema.org', '@type': 'BlogPosting', headline: post.title, description, datePublished: post.published_at, dateModified: post.published_at, author: { '@type': 'Person', name: post.author_name }, mainEntityOfPage: url, publisher: { '@type': 'Organization', name: 'AstroVedic' } }
-      : { '@context': 'https://schema.org', '@type': 'Blog', name: 'AstroVedic Blog', description: DEFAULT_DESCRIPTION, url }
+    post ? { '@context': 'https://schema.org', '@type': 'BlogPosting', headline: post.title, description, datePublished: post.published_at, dateModified: post.published_at, author: { '@type': 'Person', name: post.author_name }, mainEntityOfPage: url, publisher: { '@type': 'Organization', name: 'Astro Rattan' } }
+      : { '@context': 'https://schema.org', '@type': 'Blog', name: 'Astro Rattan Blog', description: DEFAULT_DESCRIPTION, url }
   );
   document.head.appendChild(script);
 
@@ -140,7 +140,7 @@ export default function BlogPage() {
           <BookOpenText className="w-4 h-4" />Editorial
         </div>
         <h1 className="text-3xl sm:text-4xl font-sacred font-bold text-cosmic-text mb-3">
-          AstroVedic <span className="text-gradient-gold">Blog</span>
+          Astro Rattan <span className="text-gradient-gold">Blog</span>
         </h1>
         <p className="text-cosmic-text-secondary max-w-2xl mx-auto">
           Practical astrology guides for Panchang timing, Kundli decisions, remedies, and spiritual routines.

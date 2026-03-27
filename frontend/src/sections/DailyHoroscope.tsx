@@ -82,17 +82,36 @@ export default function DailyHoroscope() {
         </div>
         <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-12 gap-3 mb-12">
           {zodiacSigns.map((sign, index) => (
-            <button key={index} onClick={() => setSelectedSign(sign)} className={`p-3 rounded-xl transition-all duration-300 ${selectedSign.name === sign.name ? 'bg-sacred-gold text-cosmic-bg shadow-glow-gold' : 'bg-cosmic-card hover:bg-sacred-gold/10 text-cosmic-text border border-sacred-gold/20'}`}>
-              <span className="text-2xl block mb-1">{sign.symbol}</span>
-              <span className="text-xs">{sign.name}</span>
+            <button key={index} onClick={() => setSelectedSign(sign)} className={`relative p-3 rounded-xl transition-all duration-300 overflow-hidden ${selectedSign.name === sign.name ? 'ring-2 ring-sacred-gold shadow-glow-gold' : 'border border-sacred-gold/20 hover:border-sacred-gold/40'}`}>
+              <div className="absolute inset-0 z-0">
+                <img
+                  src={`/images/zodiac-${sign.name.toLowerCase()}.jpg`}
+                  alt={sign.name}
+                  className="w-full h-full object-cover opacity-40"
+                />
+                <div className={`absolute inset-0 ${selectedSign.name === sign.name ? 'bg-sacred-gold/40' : 'bg-[#0a0a0a]/60'}`} />
+              </div>
+              <span className="relative z-10 text-2xl block mb-1">{sign.symbol}</span>
+              <span className="relative z-10 text-xs text-cosmic-text">{sign.name}</span>
             </button>
           ))}
         </div>
         <div className="grid lg:grid-cols-3 gap-8">
           <Card className="lg:col-span-1 card-sacred border-sacred-gold/20">
             <CardContent className="p-6 text-center">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center mx-auto mb-4 shadow-glow-gold">
-                <span className="text-5xl text-cosmic-bg">{selectedSign.symbol}</span>
+              <div className="relative w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 shadow-glow-gold border-2 border-sacred-gold/40">
+                <img
+                  src={`/images/zodiac-${selectedSign.name.toLowerCase()}.jpg`}
+                  alt={selectedSign.name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).style.display = 'none';
+                    (e.currentTarget.nextElementSibling as HTMLElement | null)?.classList.remove('hidden');
+                  }}
+                />
+                <div className="hidden absolute inset-0 bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center">
+                  <span className="text-5xl text-cosmic-bg">{selectedSign.symbol}</span>
+                </div>
               </div>
               <h3 className="text-2xl font-sacred font-bold text-cosmic-text mb-1">{selectedSign.name}</h3>
               <p className="text-sm text-cosmic-text-secondary mb-4">{selectedSign.date}</p>

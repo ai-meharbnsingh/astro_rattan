@@ -28,7 +28,13 @@ export default function About() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="about" className="relative py-24 bg-cosmic-bg-light bg-mandala">
+    <section ref={sectionRef} id="about" className="relative py-24 bg-cosmic-bg-light bg-mandala overflow-hidden">
+      {/* Subtle nebula texture overlay */}
+      <div
+        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-10 pointer-events-none"
+        style={{ backgroundImage: "url('/images/hero-bg.jpg')" }}
+      />
+      <div className="absolute inset-0 z-0 bg-gradient-to-b from-[#0d0d1a]/80 via-transparent to-[#0d0d1a]/80 pointer-events-none" />
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           <div className="about-content">
@@ -39,7 +45,7 @@ export default function About() {
               Bridging Ancient Wisdom with<span className="text-gradient-gold"> Modern Technology</span>
             </h2>
             <div className="space-y-4 text-cosmic-text-secondary mb-8">
-              <p>AstroVedic was born from a profound respect for Vedic astrology and a vision to make this ancient wisdom accessible to everyone.</p>
+              <p>Astro Rattan was born from a profound respect for Vedic astrology and a vision to make this ancient wisdom accessible to everyone.</p>
               <p>We believe that understanding your cosmic blueprint empowers you to make better decisions and navigate life&apos;s challenges.</p>
             </div>
             <Button className="btn-sacred">

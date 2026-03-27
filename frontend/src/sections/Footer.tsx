@@ -47,7 +47,7 @@ export default function Footer() {
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center shadow-glow-gold">
                 <Stars className="w-7 h-7 text-cosmic-bg" />
               </div>
-              <span className="font-sacred font-bold text-2xl text-cosmic-text">AstroVedic</span>
+              <span className="font-sacred font-bold text-2xl text-cosmic-text">Astro Rattan</span>
             </Link>
             <p className="text-cosmic-text-secondary mb-6 max-w-sm">Bridging ancient Vedic wisdom with modern AI technology to guide you through life&apos;s journey.</p>
             <div className="space-y-3 mb-6">
@@ -82,7 +82,7 @@ export default function Footer() {
           ))}
         </div>
         <div className="py-6 border-t border-sacred-gold/10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-cosmic-text-muted">&copy; {new Date().getFullYear()} AstroVedic. Made with <Heart className="w-4 h-4 inline text-sacred-saffron fill-sacred-saffron" /> in India</p>
+          <p className="text-sm text-cosmic-text-muted">&copy; {new Date().getFullYear()} Astro Rattan. Made with <Heart className="w-4 h-4 inline text-sacred-saffron fill-sacred-saffron" /> in India</p>
           <div className="flex gap-6">
             {['Privacy Policy', 'Terms of Service', 'Refund Policy'].map((item, i) => (
               <a key={i} href="#" className="text-sm text-cosmic-text-muted hover:text-sacred-gold transition-colors">{item}</a>

@@ -41,7 +41,9 @@ export default function Hero() {
   };
 
   return (
-    <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden hero-sacred bg-mandala bg-cosmic-stars">
+    <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0a0a1a]">
+      {/* Subtle star-field dots */}
+      <div className="absolute inset-0 z-0 opacity-30" style={{ backgroundImage: 'radial-gradient(1px 1px at 20% 30%, #d4af37 0.5px, transparent 0), radial-gradient(1px 1px at 60% 15%, #fff 0.5px, transparent 0), radial-gradient(1px 1px at 80% 70%, #d4af37 0.5px, transparent 0), radial-gradient(1px 1px at 10% 80%, #fff 0.5px, transparent 0), radial-gradient(1px 1px at 45% 55%, #d4af37 0.5px, transparent 0), radial-gradient(1px 1px at 90% 40%, #fff 0.5px, transparent 0)' }} />
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="text-center lg:text-left">
@@ -87,10 +89,17 @@ export default function Hero() {
             </div>
           </div>
           <div className="hidden lg:flex items-center justify-center">
-            <div className="relative w-[500px] h-[500px]">
-              <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
-                <ambientLight intensity={0.3} />
-                <pointLight position={[5, 5, 5]} intensity={0.5} />
+            <div className="relative w-[500px] h-[500px]" style={{ background: 'none' }}>
+              <Canvas
+                camera={{ position: [0, 0, 5], fov: 50 }}
+                gl={{ alpha: true, premultipliedAlpha: false }}
+                scene={{ background: null } as any}
+                style={{ background: 'transparent', mixBlendMode: 'screen' }}
+                onCreated={({ gl, scene }) => { gl.setClearColor(0x000000, 0); scene.background = null; }}
+              >
+                <ambientLight intensity={0.5} />
+                <pointLight position={[5, 5, 5]} intensity={0.8} color="#d4af37" />
+                <pointLight position={[-3, -3, 3]} intensity={0.3} color="#f0e6d3" />
                 <ArmillarySphere interactive scale={1} />
               </Canvas>
             </div>

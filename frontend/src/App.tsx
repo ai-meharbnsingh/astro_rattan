@@ -89,13 +89,7 @@ function App() {
   return (
     <I18nProvider>
     <div className="min-h-screen bg-cosmic-bg text-cosmic-text overflow-x-hidden">
-      <ThreeErrorBoundary>
-        <Suspense fallback={null}>
-          <CosmicBackground />
-        </Suspense>
-      </ThreeErrorBoundary>
-
-      <div className="relative z-10">
+      <div className="relative">
       <Navigation />
 
       <main>

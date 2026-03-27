@@ -254,7 +254,7 @@ export default function PreferencesPage() {
               <Settings className="w-8 h-8 text-sacred-gold" />
               Preferences
             </h1>
-            <p className="text-cosmic-text-secondary mt-1">Customize your AstroVedic experience</p>
+            <p className="text-cosmic-text-secondary mt-1">Customize your Astro Rattan experience</p>
           </div>
         </div>
 

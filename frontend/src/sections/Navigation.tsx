@@ -59,10 +59,10 @@ export default function Navigation() {
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 shrink-0">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#d4af37] to-[#9d4edd] flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#d4af37] to-[#b8860b] flex items-center justify-center">
                 <Stars className="w-5 h-5 text-[#0a0a0a]" />
               </div>
-              <span className="font-sacred font-bold text-xl text-[#d4af37] hidden sm:block">AstroVedic</span>
+              <span className="font-decorative font-bold text-xl text-[#d4af37] hidden sm:block">Astro Rattan</span>
             </Link>
 
             {/* Desktop Navigation */}
@@ -71,7 +71,7 @@ export default function Navigation() {
                 <Link
                   key={link.key}
                   to={link.href}
-                  className="text-sm text-[#f0f0f0]/80 hover:text-[#d4af37] transition-colors font-sacred tracking-wide"
+                  className="text-sm text-[#f0f0f0]/80 hover:text-[#d4af37] transition-colors font-cinzel tracking-wide uppercase text-[13px]"
                 >
                   {t(link.key)}
                 </Link>
@@ -81,7 +81,7 @@ export default function Navigation() {
               <div ref={moreRef} className="relative">
                 <button
                   onClick={() => setIsMoreOpen(!isMoreOpen)}
-                  className="text-sm text-[#f0f0f0]/80 hover:text-[#d4af37] transition-colors font-sacred tracking-wide flex items-center gap-1"
+                  className="text-sm text-[#f0f0f0]/80 hover:text-[#d4af37] transition-colors font-cinzel tracking-wide uppercase text-[13px] flex items-center gap-1"
                 >
                   More
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isMoreOpen ? 'rotate-180' : ''}`} />

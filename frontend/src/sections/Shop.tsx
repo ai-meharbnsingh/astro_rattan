@@ -28,6 +28,14 @@ const fallbackProducts: Product[] = [
 
 const categories = ['all', 'gemstone', 'rudraksha', 'bracelet', 'yantra', 'vastu'];
 
+const categoryImages: Record<string, string> = {
+  gemstone: '/images/product-gemstones.jpg',
+  rudraksha: '/images/product-rudraksha.jpg',
+  bracelet: '/images/product-mala.jpg',
+  yantra: '/images/product-yantra.jpg',
+  vastu: '/images/product-pyramid.jpg',
+};
+
 export default function Shop() {
   const { isAuthenticated } = useAuth();
   const [products, setProducts] = useState<Product[]>(fallbackProducts);
@@ -151,9 +159,27 @@ export default function Shop() {
                 {products.map((product) => (
                   <Card key={product.id} className="group card-sacred border-sacred-gold/15 hover:border-sacred-gold/40 transition-all hover:-translate-y-1">
                     <CardContent className="p-0">
-                      <div className="relative aspect-square bg-cosmic-card flex items-center justify-center rounded-t-lg border-b border-sacred-gold/10">
-                        <Gem className="w-12 h-12 text-sacred-gold/50" />
-                        {product.badge && <Badge className="absolute top-3 left-3 bg-sacred-saffron text-cosmic-bg font-bold">{product.badge}</Badge>}
+                      <div className="relative aspect-square bg-cosmic-card flex items-center justify-center rounded-t-lg border-b border-sacred-gold/10 overflow-hidden">
+                        {(product.image_url || categoryImages[product.category]) ? (
+                          <>
+                            <img
+                              src={product.image_url || categoryImages[product.category]}
+                              alt={product.name}
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                              onError={(e) => {
+                                (e.currentTarget as HTMLImageElement).style.display = 'none';
+                                (e.currentTarget.nextElementSibling as HTMLElement | null)?.classList.remove('hidden');
+                              }}
+                            />
+                            <div className="hidden absolute inset-0 flex items-center justify-center bg-cosmic-card">
+                              <Gem className="w-12 h-12 text-sacred-gold/50" />
+                            </div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                          </>
+                        ) : (
+                          <Gem className="w-12 h-12 text-sacred-gold/50" />
+                        )}
+                        {product.badge && <Badge className="absolute top-3 left-3 bg-sacred-saffron text-cosmic-bg font-bold z-10">{product.badge}</Badge>}
                       </div>
                       <div className="p-4">
                         <p className="text-xs text-cosmic-text-muted mb-1 uppercase tracking-wide">{product.category}</p>

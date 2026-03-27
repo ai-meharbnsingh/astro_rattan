@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* ========================================
-   COSMIC DARK THEME - AstroVedic
+   COSMIC DARK THEME - Astro Rattan
    Dark Mystical Astrology Design
    ======================================== */
 
@@ -26,9 +26,9 @@
     --sacred-saffron: #FF9933;
     --sacred-saffron-dark: #E67300;
     --sacred-saffron-light: #FFB366;
-    --sacred-purple: #2d1b69;
-    --sacred-purple-light: #4a2c8a;
-    --sacred-violet: #7c3aed;
+    --sacred-purple: #1a1a2e;
+    --sacred-purple-light: #2a2a3e;
+    --sacred-violet: #d4af37;
 
     --background: 240 30% 6%;
     --foreground: 35 30% 92%;

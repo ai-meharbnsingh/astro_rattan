@@ -96,8 +96,10 @@ module.exports = {
       },
       fontFamily: {
         display: ['Cinzel', 'Playfair Display', 'Georgia', 'serif'],
-        body: ['Inter', 'sans-serif'],
+        body: ['Barlow', 'Inter', 'sans-serif'],
         sacred: ['Cinzel', 'Playfair Display', 'Georgia', 'serif'],
+        decorative: ['Cinzel Decorative', 'Cinzel', 'serif'],
+        cinzel: ['Cinzel', 'serif'],
         mantra: ['Sanskrit Text', 'Noto Serif Devanagari', 'Georgia', 'serif'],
       },
       borderRadius: {

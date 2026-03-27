@@ -37,7 +37,7 @@ export default function AuthPage() {
           <div className="w-16 h-16 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center mx-auto mb-4 shadow-glow-gold">
             <Stars className="w-8 h-8 text-cosmic-bg" />
           </div>
-          <h2 className="text-2xl sm:text-3xl font-sacred font-bold text-cosmic-text mb-2">Welcome to AstroVedic</h2>
+          <h2 className="text-2xl sm:text-3xl font-sacred font-bold text-cosmic-text mb-2">Welcome to Astro Rattan</h2>
           <p className="text-cosmic-text-secondary">Sign in to access personalized cosmic insights</p>
         </div>
         {error && <div className="mb-4 p-3 rounded-xl bg-red-900/30 border border-red-500/30 text-red-400 text-sm text-center">{error}</div>}

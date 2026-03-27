@@ -213,7 +213,7 @@ export default function ConsultationPage() {
     try {
       const response = await api.post(`/api/consultation/${consultation.id}/video-link`, {});
       const videoLink = String(response.video_link ?? consultation.video_link ?? '');
-      const roomName = String(response.room_name ?? videoLink.split('/').pop() ?? `AstroVedic-${consultation.id}`);
+      const roomName = String(response.room_name ?? videoLink.split('/').pop() ?? `AstroRattan-${consultation.id}`);
       const status = typeof response.status === 'string' ? response.status : consultation.status;
 
       setConsultations((prev) => prev.map((item) => (
