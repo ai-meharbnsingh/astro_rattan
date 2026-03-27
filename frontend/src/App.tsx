@@ -5,6 +5,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 const CosmicBackground = lazy(() => import('./components/three/CosmicBackground'));
+import WhatsAppWidget from './components/WhatsAppWidget';
 import Navigation from './sections/Navigation';
 import Hero from './sections/Hero';
 import Features from './sections/Features';
@@ -34,6 +35,11 @@ import ReferralPage from './sections/ReferralPage';
 import KPLalkitabPage from './sections/KPLalkitabPage';
 import MessagesPage from './sections/MessagesPage';
 import PlanetaryTransitsPage from './sections/PlanetaryTransitsPage';
+import CommunityPage from './sections/CommunityPage';
+import GamificationPage from './sections/GamificationPage';
+import CosmicCalendarPage from './sections/CosmicCalendarPage';
+import PreferencesPage from './sections/PreferencesPage';
+import WhatsAppWidget from './components/WhatsAppWidget';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -111,11 +117,16 @@ function App() {
           <Route path="/kp-lalkitab" element={<KPLalkitabPage />} />
           <Route path="/messages" element={<MessagesPage />} />
           <Route path="/transits" element={<PlanetaryTransitsPage />} />
+          <Route path="/community" element={<CommunityPage />} />
+          <Route path="/journey" element={<GamificationPage />} />
+          <Route path="/cosmic-calendar" element={<CosmicCalendarPage />} />
+          <Route path="/preferences" element={<PreferencesPage />} />
         </Routes>
       </main>
 
       <Footer />
       </div>
+      <WhatsAppWidget />
     </div>
     </I18nProvider>
   );

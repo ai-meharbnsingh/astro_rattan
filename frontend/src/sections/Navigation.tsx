@@ -17,6 +17,8 @@ const navLinks = [
   { key: 'nav.library', href: '/library' },
   { key: 'nav.blog', href: '/blog' },
   { key: 'nav.shop', href: '/shop' },
+  { key: 'nav.community', href: '/community' },
+  { key: 'nav.consultation', href: '/consultation' },
 ];
 
 export default function Navigation() {
