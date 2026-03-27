@@ -31,6 +31,7 @@ import BlogPage from './sections/BlogPage';
 import ReferralPage from './sections/ReferralPage';
 import KPLalkitabPage from './sections/KPLalkitabPage';
 import MessagesPage from './sections/MessagesPage';
+import PlanetaryTransitsPage from './sections/PlanetaryTransitsPage';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -102,6 +103,7 @@ function App() {
           <Route path="/referral" element={<ReferralPage />} />
           <Route path="/kp-lalkitab" element={<KPLalkitabPage />} />
           <Route path="/messages" element={<MessagesPage />} />
+          <Route path="/transits" element={<PlanetaryTransitsPage />} />
         </Routes>
       </main>
 

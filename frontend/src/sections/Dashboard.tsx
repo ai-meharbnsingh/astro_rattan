@@ -614,6 +614,372 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Current Dasha Period + Today's Transit Impact */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+
+          {/* Current Dasha Period Card */}
+          <Card className="card-sacred border border-sacred-gold/20">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-sacred text-xl font-bold text-gradient-gold flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-sacred-gold" />
+                  Current Dasha Period
+                </h2>
+                {savedKundlis.length > 0 && (
+                  <Link to="/kundli">
+                    <Button variant="ghost" size="sm" className="text-sacred-gold hover:text-sacred-gold/80">
+                      Full Chart <ArrowRight className="w-4 h-4 ml-1" />
+                    </Button>
+                  </Link>
+                )}
+              </div>
+              {dashaData?.mahadasha ? (
+                <div className="space-y-4">
+                  {/* Mahadasha */}
+                  <div className="p-3 bg-cosmic-bg/50 rounded-xl border border-sacred-gold/10">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sacred-gold font-medium text-sm">Mahadasha</span>
+                      <Badge variant="outline" className="border-sacred-gold/30 text-sacred-gold text-xs">
+                        {dashaData.mahadasha.planet}
+                      </Badge>
+                    </div>
+                    <p className="text-cosmic-text-secondary text-xs mb-2">
+                      {dashaData.mahadasha.start_date && new Date(dashaData.mahadasha.start_date).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
+                      {' - '}
+                      {dashaData.mahadasha.end_date && new Date(dashaData.mahadasha.end_date).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
+                    </p>
+                    {/* Progress bar */}
+                    {(() => {
+                      const start = new Date(dashaData.mahadasha.start_date).getTime();
+                      const end = new Date(dashaData.mahadasha.end_date).getTime();
+                      const now = Date.now();
+                      const progress = Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100));
+                      return (
+                        <div className="w-full bg-cosmic-bg rounded-full h-2">
+                          <div
+                            className="bg-gradient-to-r from-sacred-gold to-sacred-saffron h-2 rounded-full transition-all"
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                      );
+                    })()}
+                    {dashaData.mahadasha.interpretation && (
+                      <p className="text-cosmic-text-secondary text-xs mt-2 leading-relaxed">{dashaData.mahadasha.interpretation}</p>
+                    )}
+                  </div>
+                  {/* Antardasha */}
+                  {dashaData.antardasha && (
+                    <div className="p-3 bg-cosmic-bg/50 rounded-xl border border-purple-500/10">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-purple-400 font-medium text-sm">Antardasha</span>
+                        <Badge variant="outline" className="border-purple-500/30 text-purple-400 text-xs">
+                          {dashaData.antardasha.planet}
+                        </Badge>
+                      </div>
+                      <p className="text-cosmic-text-secondary text-xs mb-2">
+                        {dashaData.antardasha.start_date && new Date(dashaData.antardasha.start_date).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
+                        {' - '}
+                        {dashaData.antardasha.end_date && new Date(dashaData.antardasha.end_date).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
+                      </p>
+                      {(() => {
+                        const start = new Date(dashaData.antardasha.start_date).getTime();
+                        const end = new Date(dashaData.antardasha.end_date).getTime();
+                        const now = Date.now();
+                        const progress = Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100));
+                        return (
+                          <div className="w-full bg-cosmic-bg rounded-full h-1.5">
+                            <div
+                              className="bg-gradient-to-r from-purple-500 to-purple-400 h-1.5 rounded-full transition-all"
+                              style={{ width: `${progress}%` }}
+                            />
+                          </div>
+                        );
+                      })()}
+                      {dashaData.antardasha.interpretation && (
+                        <p className="text-cosmic-text-secondary text-xs mt-2 leading-relaxed">{dashaData.antardasha.interpretation}</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-6">
+                  <Zap className="w-10 h-10 text-cosmic-text-muted mx-auto mb-2" />
+                  <p className="text-cosmic-text-secondary text-sm mb-3">Generate a Kundli to see your Dasha periods</p>
+                  <Link to="/kundli">
+                    <Button size="sm" className="btn-sacred">Generate Kundli</Button>
+                  </Link>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Today's Transit Impact */}
+          <Card className="card-sacred border border-sacred-gold/20">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-sacred text-xl font-bold text-gradient-gold flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-sacred-gold" />
+                  Today&apos;s Transit Impact
+                </h2>
+              </div>
+              {transits.length > 0 ? (
+                <div className="space-y-2 max-h-[320px] overflow-y-auto pr-1">
+                  {transits.map((transit, idx) => {
+                    const impactIcon = transit.impact === 'positive'
+                      ? <TrendingUp className="w-4 h-4 text-green-400" />
+                      : transit.impact === 'challenging'
+                        ? <TrendingDown className="w-4 h-4 text-red-400" />
+                        : <Minus className="w-4 h-4 text-amber-400" />;
+                    const impactBorder = transit.impact === 'positive'
+                      ? 'border-green-500/20'
+                      : transit.impact === 'challenging'
+                        ? 'border-red-500/20'
+                        : 'border-amber-500/20';
+                    const impactBg = transit.impact === 'positive'
+                      ? 'bg-green-500/5'
+                      : transit.impact === 'challenging'
+                        ? 'bg-red-500/5'
+                        : 'bg-amber-500/5';
+                    return (
+                      <div key={idx} className={`flex items-start gap-3 p-3 rounded-xl border ${impactBorder} ${impactBg}`}>
+                        <div className="mt-0.5 shrink-0">{impactIcon}</div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-0.5">
+                            <span className="text-cosmic-text font-medium text-sm">{transit.planet}</span>
+                            <span className="text-cosmic-text-secondary text-xs">in House {transit.house}</span>
+                            {transit.sign && (
+                              <Badge variant="outline" className="border-sacred-gold/20 text-cosmic-text-secondary text-xs px-1.5 py-0">
+                                {transit.sign}
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-cosmic-text-secondary text-xs leading-relaxed">{transit.interpretation}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-6">
+                  <TrendingUp className="w-10 h-10 text-cosmic-text-muted mx-auto mb-2" />
+                  <p className="text-cosmic-text-secondary text-sm">Transit data will appear when your chart is generated</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Personalized Recommendations */}
+        {recommendations.length > 0 && (
+          <div className="mb-8">
+            <Card className="card-sacred border border-sacred-gold/20">
+              <CardContent className="p-6">
+                <h2 className="font-sacred text-xl font-bold text-gradient-gold mb-4 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-sacred-gold" />
+                  Personalized Recommendations
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {recommendations.map((rec, idx) => {
+                    const recIcon = rec.icon === 'business'
+                      ? <TrendingUp className={`w-5 h-5 ${rec.color}`} />
+                      : rec.icon === 'caution'
+                        ? <Bell className={`w-5 h-5 ${rec.color}`} />
+                        : rec.icon === 'spiritual'
+                          ? <Eye className={`w-5 h-5 ${rec.color}`} />
+                          : <Gift className={`w-5 h-5 ${rec.color}`} />;
+                    return (
+                      <div key={idx} className="flex items-start gap-3 p-4 bg-cosmic-bg/50 rounded-xl border border-sacred-gold/10">
+                        <div className="w-10 h-10 rounded-lg bg-sacred-gold/5 flex items-center justify-center shrink-0">
+                          {recIcon}
+                        </div>
+                        <p className="text-cosmic-text text-sm leading-relaxed pt-2">{rec.text}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Karma & Streak Widget + Upcoming Events Widget */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+
+          {/* Karma & Streak Widget */}
+          <Card className="card-sacred border border-sacred-gold/20">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-sacred text-xl font-bold text-gradient-gold flex items-center gap-2">
+                  <Flame className="w-5 h-5 text-orange-400" />
+                  Karma &amp; Streak
+                </h2>
+              </div>
+              {karmaProfile ? (
+                <div className="space-y-4">
+                  {/* Streak & Points row */}
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="bg-cosmic-bg/50 rounded-xl p-3 text-center border border-orange-500/10">
+                      <Flame className="w-5 h-5 text-orange-400 mx-auto mb-1" />
+                      <p className="text-2xl font-bold text-cosmic-text">{karmaProfile.streak}</p>
+                      <p className="text-xs text-cosmic-text-secondary">Day Streak</p>
+                    </div>
+                    <div className="bg-cosmic-bg/50 rounded-xl p-3 text-center border border-sacred-gold/10">
+                      <Award className="w-5 h-5 text-sacred-gold mx-auto mb-1" />
+                      <p className="text-2xl font-bold text-cosmic-text">{karmaProfile.total_points}</p>
+                      <p className="text-xs text-cosmic-text-secondary">Karma Points</p>
+                    </div>
+                    <div className="bg-cosmic-bg/50 rounded-xl p-3 text-center border border-purple-500/10">
+                      <Star className="w-5 h-5 text-purple-400 mx-auto mb-1" />
+                      <p className="text-2xl font-bold text-cosmic-text">Lv. {karmaProfile.level}</p>
+                      <p className="text-xs text-cosmic-text-secondary">Level</p>
+                    </div>
+                  </div>
+                  {/* Level progress bar */}
+                  <div>
+                    <div className="flex justify-between text-xs text-cosmic-text-secondary mb-1">
+                      <span>Level {karmaProfile.level}</span>
+                      <span>{karmaProfile.level_progress}%</span>
+                    </div>
+                    <div className="w-full bg-cosmic-bg rounded-full h-2">
+                      <div
+                        className="bg-gradient-to-r from-sacred-gold to-orange-400 h-2 rounded-full transition-all"
+                        style={{ width: `${karmaProfile.level_progress}%` }}
+                      />
+                    </div>
+                    {karmaProfile.next_level_points > 0 && (
+                      <p className="text-xs text-cosmic-text-secondary mt-1">{karmaProfile.next_level_points - karmaProfile.total_points} points to next level</p>
+                    )}
+                  </div>
+                  {/* Check In button */}
+                  <Button
+                    className={`w-full ${karmaProfile.checked_in_today ? 'bg-green-600/20 border border-green-500/30 text-green-400 cursor-default' : 'btn-sacred'}`}
+                    onClick={karmaProfile.checked_in_today ? undefined : handleCheckIn}
+                    disabled={karmaProfile.checked_in_today || checkingIn}
+                  >
+                    {checkingIn ? (
+                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    ) : karmaProfile.checked_in_today ? (
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                    ) : (
+                      <Flame className="w-4 h-4 mr-2" />
+                    )}
+                    {karmaProfile.checked_in_today ? 'Checked In Today' : 'Daily Check In'}
+                  </Button>
+                  {/* Badge gallery */}
+                  {karmaProfile.badges && karmaProfile.badges.length > 0 && (
+                    <div>
+                      <p className="text-xs text-cosmic-text-secondary mb-2">Recent Badges</p>
+                      <div className="flex gap-2">
+                        {karmaProfile.badges.slice(-3).map((badge, idx) => (
+                          <div key={idx} className="flex items-center gap-1.5 px-3 py-1.5 bg-sacred-gold/10 border border-sacred-gold/20 rounded-full">
+                            <span className="text-sm">{badge.icon}</span>
+                            <span className="text-xs text-sacred-gold font-medium">{badge.name}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-6">
+                  <Flame className="w-10 h-10 text-cosmic-text-muted mx-auto mb-2" />
+                  <p className="text-cosmic-text-secondary text-sm mb-3">Start your spiritual journey and earn karma</p>
+                  <Button size="sm" className="btn-sacred" onClick={handleCheckIn} disabled={checkingIn}>
+                    {checkingIn ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Flame className="w-4 h-4 mr-2" />}
+                    First Check In
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Upcoming Events Widget */}
+          <Card className="card-sacred border border-sacred-gold/20">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-sacred text-xl font-bold text-gradient-gold flex items-center gap-2">
+                  <Calendar className="w-5 h-5 text-sacred-gold" />
+                  Upcoming Events
+                </h2>
+              </div>
+              <div className="space-y-3">
+                {/* Cosmic Calendar Events */}
+                {cosmicEvents.length > 0 ? (
+                  cosmicEvents.map((evt, idx) => (
+                    <div key={idx} className="flex items-center gap-3 p-3 bg-cosmic-bg/50 rounded-xl border border-sacred-gold/10">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${
+                        evt.type === 'festival' ? 'bg-amber-500/10' : evt.type === 'muhurat' ? 'bg-green-500/10' : 'bg-purple-500/10'
+                      }`}>
+                        {evt.type === 'festival' ? (
+                          <Gift className="w-5 h-5 text-amber-400" />
+                        ) : evt.type === 'muhurat' ? (
+                          <CheckCircle className="w-5 h-5 text-green-400" />
+                        ) : (
+                          <Calendar className="w-5 h-5 text-purple-400" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-cosmic-text font-medium text-sm truncate">{evt.name}</p>
+                        <p className="text-cosmic-text-secondary text-xs">
+                          {new Date(evt.date).toLocaleDateString('en-IN', { weekday: 'short', month: 'short', day: 'numeric' })}
+                          {evt.description && ` - ${evt.description}`}
+                        </p>
+                      </div>
+                      <Badge variant="outline" className="border-sacred-gold/20 text-cosmic-text-secondary text-xs capitalize shrink-0">
+                        {evt.type}
+                      </Badge>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-4">
+                    <Calendar className="w-8 h-8 text-cosmic-text-muted mx-auto mb-2" />
+                    <p className="text-cosmic-text-secondary text-sm">No upcoming events</p>
+                  </div>
+                )}
+
+                {/* Next Consultation */}
+                {consultations.length > 0 && (
+                  <div className="flex items-center gap-3 p-3 bg-cosmic-bg/50 rounded-xl border border-blue-500/10">
+                    <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
+                      <Clock className="w-5 h-5 text-blue-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-cosmic-text font-medium text-sm truncate">
+                        Consultation with {consultations[0].astrologer_name || 'Astrologer'}
+                      </p>
+                      <p className="text-cosmic-text-secondary text-xs">
+                        {consultations[0].date ? new Date(consultations[0].date).toLocaleDateString('en-IN', { weekday: 'short', month: 'short', day: 'numeric' }) : 'TBD'}
+                        {consultations[0].time && ` at ${consultations[0].time}`}
+                      </p>
+                    </div>
+                    <Badge variant="outline" className="border-blue-500/30 text-blue-400 text-xs shrink-0">
+                      Consultation
+                    </Badge>
+                  </div>
+                )}
+
+                {/* Personalized Muhurat */}
+                {nextMuhurat && (
+                  <div className="flex items-center gap-3 p-3 bg-cosmic-bg/50 rounded-xl border border-green-500/10">
+                    <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center shrink-0">
+                      <CheckCircle className="w-5 h-5 text-green-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-cosmic-text font-medium text-sm truncate">{nextMuhurat.event}</p>
+                      <p className="text-cosmic-text-secondary text-xs">
+                        {new Date(nextMuhurat.date).toLocaleDateString('en-IN', { weekday: 'short', month: 'short', day: 'numeric' })}
+                      </p>
+                    </div>
+                    <Badge variant="outline" className="border-green-500/30 text-green-400 text-xs shrink-0">
+                      Muhurat
+                    </Badge>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Upcoming Consultations + Saved Kundlis */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 

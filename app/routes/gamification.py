@@ -1,12 +1,12 @@
 """Gamification routes — karma points, streaks, badges, and learning paths."""
-import json
 import sqlite3
-from datetime import date, datetime, timedelta
+from datetime import date
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.auth import get_current_user
 from app.database import get_db
+from app.models import Badge, KarmaTransaction, LearningModule
 
 router = APIRouter(prefix="/api", tags=["gamification"])
 
@@ -28,30 +28,28 @@ POINTS_MAP = {
 
 LEVEL_THRESHOLDS = [0, 100, 300, 600, 1000, 2000, 3500, 5000, 7500, 10000]
 
-ALL_BADGES = [
-    {"id": "first_kundli", "name": "First Kundli", "description": "Generated your first birth chart", "icon": "chart"},
-    {"id": "ai_explorer", "name": "AI Explorer", "description": "Had your first AI consultation", "icon": "brain"},
-    {"id": "panchang_regular", "name": "Panchang Regular", "description": "Viewed Panchang 7 times", "icon": "calendar"},
-    {"id": "streak_7", "name": "7-Day Streak", "description": "Logged in 7 days in a row", "icon": "fire"},
-    {"id": "streak_30", "name": "30-Day Streak", "description": "Logged in 30 days in a row", "icon": "flame"},
-    {"id": "spiritual_scholar", "name": "Spiritual Scholar", "description": "Read 10 library items", "icon": "book"},
-    {"id": "shop_champion", "name": "Shop Champion", "description": "Made your first purchase", "icon": "cart"},
-    {"id": "consultation_seeker", "name": "Consultation Seeker", "description": "Completed your first consultation", "icon": "users"},
-    {"id": "prashnavali_master", "name": "Prashnavali Master", "description": "Used Prashnavali 10 times", "icon": "dice"},
+BADGES = [
+    {"id": "first_kundli", "name": "First Kundli", "description": "Generated your first birth chart", "icon": "scroll"},
+    {"id": "ai_explorer", "name": "AI Explorer", "description": "Had your first AI astrology chat", "icon": "bot"},
+    {"id": "panchang_regular", "name": "Panchang Regular", "description": "Viewed Panchang 10 times", "icon": "calendar"},
+    {"id": "streak_7", "name": "7-Day Streak", "description": "Logged in for 7 consecutive days", "icon": "flame"},
+    {"id": "streak_30", "name": "30-Day Streak", "description": "Logged in for 30 consecutive days", "icon": "fire"},
+    {"id": "spiritual_scholar", "name": "Spiritual Scholar", "description": "Completed 5 learning modules", "icon": "book-open"},
+    {"id": "shop_champion", "name": "Shop Champion", "description": "Made your first purchase", "icon": "shopping-bag"},
+    {"id": "consultation_seeker", "name": "Consultation Seeker", "description": "Completed your first consultation", "icon": "phone"},
+    {"id": "prashnavali_master", "name": "Prashnavali Master", "description": "Used Prashnavali 10 times", "icon": "sparkles"},
     {"id": "numerology_novice", "name": "Numerology Novice", "description": "Explored numerology readings", "icon": "hash"},
-    {"id": "tarot_reader", "name": "Tarot Reader", "description": "Drew your first tarot spread", "icon": "cards"},
-    {"id": "cosmic_guru", "name": "Cosmic Guru (Level 10)", "description": "Reached the highest level of cosmic wisdom", "icon": "star"},
+    {"id": "tarot_reader", "name": "Tarot Reader", "description": "Drew your first tarot spread", "icon": "layers"},
+    {"id": "cosmic_guru", "name": "Cosmic Guru (Level 10)", "description": "Reached the highest karma level", "icon": "crown"},
 ]
 
-BADGE_MAP = {b["id"]: b for b in ALL_BADGES}
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
-
 def _calculate_level(total_points: int) -> int:
-    """Return level 1-10 based on total points."""
+    """Return the level (1-10) based on total karma points."""
     level = 1
     for i, threshold in enumerate(LEVEL_THRESHOLDS):
         if total_points >= threshold:
@@ -59,11 +57,9 @@ def _calculate_level(total_points: int) -> int:
     return min(level, 10)
 
 
-def _ensure_karma_profile(db: sqlite3.Connection, user_id: str):
+def _ensure_karma_row(db: sqlite3.Connection, user_id: str):
     """Create a user_karma row if it doesn't exist yet."""
-    existing = db.execute(
-        "SELECT 1 FROM user_karma WHERE user_id = ?", (user_id,)
-    ).fetchone()
+    existing = db.execute("SELECT 1 FROM user_karma WHERE user_id = ?", (user_id,)).fetchone()
     if not existing:
         db.execute(
             "INSERT INTO user_karma (user_id, total_points, current_streak, longest_streak, level) "
@@ -73,111 +69,138 @@ def _ensure_karma_profile(db: sqlite3.Connection, user_id: str):
         db.commit()
 
 
-def _award_points(
-    db: sqlite3.Connection,
-    user_id: str,
-    action_type: str,
-    description: str | None = None,
-) -> int:
-    """Award points for an action. Returns points awarded."""
+def _award_points(db: sqlite3.Connection, user_id: str, action_type: str, description: str | None = None):
+    """Award karma points for an action, update level, and return the new totals."""
+    _ensure_karma_row(db, user_id)
     points = POINTS_MAP.get(action_type, 0)
     if points == 0:
-        return 0
+        return
 
-    _ensure_karma_profile(db, user_id)
-
+    # Insert transaction
     db.execute(
-        "INSERT INTO karma_transactions (user_id, points, action_type, description) "
-        "VALUES (?, ?, ?, ?)",
+        "INSERT INTO karma_transactions (user_id, points, action_type, description) VALUES (?, ?, ?, ?)",
         (user_id, points, action_type, description),
     )
 
+    # Update total & level
     db.execute(
-        "UPDATE user_karma SET total_points = total_points + ? WHERE user_id = ?",
+        "UPDATE user_karma SET total_points = total_points + ?, "
+        "last_activity_date = date('now') WHERE user_id = ?",
         (points, user_id),
     )
-
-    # Recalculate level
-    row = db.execute(
-        "SELECT total_points FROM user_karma WHERE user_id = ?", (user_id,)
-    ).fetchone()
-    new_level = _calculate_level(row["total_points"])
-    db.execute(
-        "UPDATE user_karma SET level = ? WHERE user_id = ?",
-        (new_level, user_id),
-    )
-
     db.commit()
 
-    # Check for Cosmic Guru badge at level 10
+    # Recalculate level
+    row = db.execute("SELECT total_points FROM user_karma WHERE user_id = ?", (user_id,)).fetchone()
+    new_level = _calculate_level(row["total_points"])
+    db.execute("UPDATE user_karma SET level = ? WHERE user_id = ?", (new_level, user_id))
+    db.commit()
+
+    # Check badge for cosmic guru
     if new_level >= 10:
         _try_award_badge(db, user_id, "cosmic_guru")
 
-    return points
 
-
-def _try_award_badge(db: sqlite3.Connection, user_id: str, badge_id: str) -> bool:
-    """Award a badge if not already earned. Returns True if newly awarded."""
+def _try_award_badge(db: sqlite3.Connection, user_id: str, badge_id: str):
+    """Award a badge if the user doesn't already have it."""
     existing = db.execute(
         "SELECT 1 FROM user_badges WHERE user_id = ? AND badge_id = ?",
         (user_id, badge_id),
     ).fetchone()
-    if existing:
-        return False
-    db.execute(
-        "INSERT INTO user_badges (user_id, badge_id) VALUES (?, ?)",
-        (user_id, badge_id),
-    )
-    db.commit()
-    return True
+    if not existing:
+        db.execute(
+            "INSERT INTO user_badges (user_id, badge_id) VALUES (?, ?)",
+            (user_id, badge_id),
+        )
+        db.commit()
+
+
+def _check_action_badges(db: sqlite3.Connection, user_id: str):
+    """Evaluate and award action-based badges by checking transaction history."""
+    counts: dict[str, int] = {}
+    rows = db.execute(
+        "SELECT action_type, COUNT(*) as cnt FROM karma_transactions WHERE user_id = ? GROUP BY action_type",
+        (user_id,),
+    ).fetchall()
+    for r in rows:
+        counts[r["action_type"]] = r["cnt"]
+
+    if counts.get("kundli_generated", 0) >= 1:
+        _try_award_badge(db, user_id, "first_kundli")
+    if counts.get("ai_chat", 0) >= 1:
+        _try_award_badge(db, user_id, "ai_explorer")
+    if counts.get("panchang_viewed", 0) >= 10:
+        _try_award_badge(db, user_id, "panchang_regular")
+    if counts.get("shop_purchase", 0) >= 1:
+        _try_award_badge(db, user_id, "shop_champion")
+    if counts.get("consultation_completed", 0) >= 1:
+        _try_award_badge(db, user_id, "consultation_seeker")
+    if counts.get("prashnavali_used", 0) >= 10:
+        _try_award_badge(db, user_id, "prashnavali_master")
+
+    # Learning modules completed
+    completed_modules = db.execute(
+        "SELECT COUNT(*) as cnt FROM learning_progress WHERE user_id = ?", (user_id,)
+    ).fetchone()["cnt"]
+    if completed_modules >= 5:
+        _try_award_badge(db, user_id, "spiritual_scholar")
+
+    # Streak badges
+    karma_row = db.execute(
+        "SELECT longest_streak FROM user_karma WHERE user_id = ?", (user_id,)
+    ).fetchone()
+    if karma_row:
+        if karma_row["longest_streak"] >= 7:
+            _try_award_badge(db, user_id, "streak_7")
+        if karma_row["longest_streak"] >= 30:
+            _try_award_badge(db, user_id, "streak_30")
 
 
 # ---------------------------------------------------------------------------
-# Karma Routes
+# Routes — Karma
 # ---------------------------------------------------------------------------
-
 
 @router.get("/karma/profile")
 def get_karma_profile(
     current_user: dict = Depends(get_current_user),
     db: sqlite3.Connection = Depends(get_db),
 ):
-    """Get the authenticated user's karma profile with badges."""
-    user_id = current_user["id"]
-    _ensure_karma_profile(db, user_id)
+    """Get the authenticated user's karma profile including points, streak, level, and badges."""
+    user_id = current_user["sub"]
+    _ensure_karma_row(db, user_id)
 
     row = db.execute(
-        "SELECT * FROM user_karma WHERE user_id = ?", (user_id,)
+        "SELECT user_id, total_points, current_streak, longest_streak, last_activity_date, level, created_at "
+        "FROM user_karma WHERE user_id = ?",
+        (user_id,),
     ).fetchone()
 
-    earned_badges = db.execute(
+    # Fetch earned badges
+    earned_rows = db.execute(
         "SELECT badge_id, earned_at FROM user_badges WHERE user_id = ?", (user_id,)
     ).fetchall()
-    earned_map = {b["badge_id"]: b["earned_at"] for b in earned_badges}
+    earned_map = {r["badge_id"]: r["earned_at"] for r in earned_rows}
 
     badges = []
-    for b in ALL_BADGES:
+    for b in BADGES:
         badges.append({
-            **b,
+            "id": b["id"],
+            "name": b["name"],
+            "description": b["description"],
+            "icon": b["icon"],
             "earned": b["id"] in earned_map,
             "earned_at": earned_map.get(b["id"]),
         })
 
-    next_level_points = (
-        LEVEL_THRESHOLDS[row["level"]]
-        if row["level"] < 10
-        else LEVEL_THRESHOLDS[-1]
-    )
-
     return {
-        "user_id": user_id,
+        "user_id": row["user_id"],
         "total_points": row["total_points"],
         "current_streak": row["current_streak"],
         "longest_streak": row["longest_streak"],
         "last_activity_date": row["last_activity_date"],
         "level": row["level"],
-        "next_level_points": next_level_points,
         "badges": badges,
+        "next_level_points": LEVEL_THRESHOLDS[row["level"]] if row["level"] < 10 else None,
     }
 
 
@@ -186,252 +209,279 @@ def daily_checkin(
     current_user: dict = Depends(get_current_user),
     db: sqlite3.Connection = Depends(get_db),
 ):
-    """Daily check-in: awards points and updates streak."""
-    user_id = current_user["id"]
-    _ensure_karma_profile(db, user_id)
-
+    """Daily check-in: awards points and updates the login streak."""
+    user_id = current_user["sub"]
+    _ensure_karma_row(db, user_id)
     today = date.today().isoformat()
+
     row = db.execute(
-        "SELECT * FROM user_karma WHERE user_id = ?", (user_id,)
+        "SELECT last_activity_date, current_streak, longest_streak FROM user_karma WHERE user_id = ?",
+        (user_id,),
     ).fetchone()
 
-    last_activity = row["last_activity_date"]
+    last_date = row["last_activity_date"]
+    current_streak = row["current_streak"]
+    longest_streak = row["longest_streak"]
 
-    # Prevent double check-in
-    if last_activity == today:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Already checked in today",
-        )
+    # Already checked in today
+    if last_date == today:
+        return {
+            "message": "Already checked in today",
+            "points_awarded": 0,
+            "current_streak": current_streak,
+            "total_points": db.execute(
+                "SELECT total_points FROM user_karma WHERE user_id = ?", (user_id,)
+            ).fetchone()["total_points"],
+        }
 
     # Calculate streak
-    yesterday = (date.today() - timedelta(days=1)).isoformat()
-    if last_activity == yesterday:
-        new_streak = row["current_streak"] + 1
+    if last_date:
+        last = date.fromisoformat(last_date)
+        diff = (date.today() - last).days
+        if diff == 1:
+            current_streak += 1
+        else:
+            current_streak = 1
     else:
-        new_streak = 1
+        current_streak = 1
 
-    longest = max(row["longest_streak"], new_streak)
+    if current_streak > longest_streak:
+        longest_streak = current_streak
 
+    # Update streak
     db.execute(
-        "UPDATE user_karma SET current_streak = ?, longest_streak = ?, last_activity_date = ? "
-        "WHERE user_id = ?",
-        (new_streak, longest, today, user_id),
+        "UPDATE user_karma SET current_streak = ?, longest_streak = ?, last_activity_date = ? WHERE user_id = ?",
+        (current_streak, longest_streak, today, user_id),
     )
     db.commit()
 
-    points = _award_points(db, user_id, "daily_login", "Daily check-in")
+    # Award points
+    _award_points(db, user_id, "daily_login", "Daily check-in")
 
-    # Streak badges
-    if new_streak >= 7:
-        _try_award_badge(db, user_id, "streak_7")
-    if new_streak >= 30:
-        _try_award_badge(db, user_id, "streak_30")
+    # Check streak badges
+    _check_action_badges(db, user_id)
+
+    total = db.execute("SELECT total_points FROM user_karma WHERE user_id = ?", (user_id,)).fetchone()["total_points"]
 
     return {
-        "points_awarded": points,
-        "current_streak": new_streak,
-        "longest_streak": longest,
-        "total_points": db.execute(
-            "SELECT total_points FROM user_karma WHERE user_id = ?", (user_id,)
-        ).fetchone()["total_points"],
+        "message": "Check-in successful!",
+        "points_awarded": POINTS_MAP["daily_login"],
+        "current_streak": current_streak,
+        "total_points": total,
     }
 
 
 @router.get("/karma/transactions")
 def list_transactions(
+    page: int = Query(1, ge=1),
+    per_page: int = Query(20, ge=1, le=100),
     current_user: dict = Depends(get_current_user),
     db: sqlite3.Connection = Depends(get_db),
-    limit: int = 50,
-    offset: int = 0,
 ):
-    """List the user's karma point history."""
-    user_id = current_user["id"]
+    """List the authenticated user's karma point history with pagination."""
+    user_id = current_user["sub"]
+    offset = (page - 1) * per_page
+
+    total = db.execute(
+        "SELECT COUNT(*) as cnt FROM karma_transactions WHERE user_id = ?", (user_id,)
+    ).fetchone()["cnt"]
+
     rows = db.execute(
         "SELECT id, user_id, points, action_type, description, created_at "
         "FROM karma_transactions WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?",
-        (user_id, limit, offset),
+        (user_id, per_page, offset),
     ).fetchall()
 
-    return [dict(r) for r in rows]
+    transactions = [
+        KarmaTransaction(
+            id=r["id"], user_id=r["user_id"], points=r["points"],
+            action_type=r["action_type"], description=r["description"],
+            created_at=r["created_at"],
+        ).model_dump()
+        for r in rows
+    ]
+
+    return {
+        "transactions": transactions,
+        "total": total,
+        "page": page,
+        "per_page": per_page,
+        "total_pages": (total + per_page - 1) // per_page if total > 0 else 0,
+    }
 
 
 @router.get("/karma/leaderboard")
-def leaderboard(
+def get_leaderboard(
     db: sqlite3.Connection = Depends(get_db),
 ):
-    """Top 10 users by karma points."""
+    """Return top 10 users by karma points."""
     rows = db.execute(
         "SELECT uk.user_id, uk.total_points, uk.level, uk.current_streak, u.name "
-        "FROM user_karma uk JOIN users u ON uk.user_id = u.id "
-        "ORDER BY uk.total_points DESC LIMIT 10"
+        "FROM user_karma uk "
+        "JOIN users u ON u.id = uk.user_id "
+        "ORDER BY uk.total_points DESC LIMIT 10",
     ).fetchall()
 
-    return [
-        {
-            "rank": i + 1,
+    leaderboard = []
+    for rank, r in enumerate(rows, 1):
+        leaderboard.append({
+            "rank": rank,
             "user_id": r["user_id"],
             "name": r["name"],
             "total_points": r["total_points"],
             "level": r["level"],
             "current_streak": r["current_streak"],
-        }
-        for i, r in enumerate(rows)
-    ]
+        })
+
+    return {"leaderboard": leaderboard}
 
 
 # ---------------------------------------------------------------------------
-# Badge Routes
+# Routes — Badges
 # ---------------------------------------------------------------------------
-
 
 @router.get("/badges")
 def list_badges(
     current_user: dict = Depends(get_current_user),
     db: sqlite3.Connection = Depends(get_db),
 ):
-    """List all available badges with earned status for the current user."""
-    user_id = current_user["id"]
-    earned = db.execute(
+    """List all available badges with earned status for the authenticated user."""
+    user_id = current_user["sub"]
+
+    # Re-evaluate badges
+    _check_action_badges(db, user_id)
+
+    earned_rows = db.execute(
         "SELECT badge_id, earned_at FROM user_badges WHERE user_id = ?", (user_id,)
     ).fetchall()
-    earned_map = {b["badge_id"]: b["earned_at"] for b in earned}
+    earned_map = {r["badge_id"]: r["earned_at"] for r in earned_rows}
 
-    return [
-        {
-            **b,
-            "earned": b["id"] in earned_map,
-            "earned_at": earned_map.get(b["id"]),
-        }
-        for b in ALL_BADGES
-    ]
+    badges = []
+    for b in BADGES:
+        badges.append(Badge(
+            id=b["id"],
+            name=b["name"],
+            description=b["description"],
+            icon=b["icon"],
+            earned=b["id"] in earned_map,
+            earned_at=earned_map.get(b["id"]),
+        ).model_dump())
+
+    return {"badges": badges}
 
 
 # ---------------------------------------------------------------------------
-# Learning Routes
+# Routes — Learning Paths
 # ---------------------------------------------------------------------------
-
 
 @router.get("/learning/modules")
-def list_modules(
+def list_learning_modules(
     current_user: dict = Depends(get_current_user),
     db: sqlite3.Connection = Depends(get_db),
-    category: str | None = None,
 ):
-    """List learning path modules with completion status."""
-    user_id = current_user["id"]
+    """List all learning path modules with completion status."""
+    user_id = current_user["sub"]
 
-    if category:
-        modules = db.execute(
-            "SELECT * FROM learning_modules WHERE category = ? ORDER BY order_index",
-            (category,),
-        ).fetchall()
-    else:
-        modules = db.execute(
-            "SELECT * FROM learning_modules ORDER BY category, order_index"
-        ).fetchall()
+    rows = db.execute(
+        "SELECT id, title, description, category, order_index, content_json, points_reward "
+        "FROM learning_modules ORDER BY order_index ASC",
+    ).fetchall()
 
-    completed = db.execute(
+    # Completed module IDs
+    completed_rows = db.execute(
         "SELECT module_id FROM learning_progress WHERE user_id = ?", (user_id,)
     ).fetchall()
-    completed_ids = {r["module_id"] for r in completed}
+    completed_ids = {r["module_id"] for r in completed_rows}
 
-    return [
-        {
-            "id": m["id"],
-            "title": m["title"],
-            "description": m["description"],
-            "category": m["category"],
-            "order_index": m["order_index"],
-            "points_reward": m["points_reward"],
-            "completed": m["id"] in completed_ids,
-        }
-        for m in modules
-    ]
+    modules = []
+    for r in rows:
+        modules.append(LearningModule(
+            id=r["id"],
+            title=r["title"],
+            description=r["description"],
+            category=r["category"],
+            order_index=r["order_index"],
+            content_json=r["content_json"],
+            points_reward=r["points_reward"],
+            completed=r["id"] in completed_ids,
+        ).model_dump())
+
+    return {"modules": modules, "total_completed": len(completed_ids), "total_modules": len(rows)}
 
 
 @router.get("/learning/module/{module_id}")
-def get_module(
+def get_learning_module(
     module_id: str,
     current_user: dict = Depends(get_current_user),
     db: sqlite3.Connection = Depends(get_db),
 ):
-    """Get full module content."""
-    module = db.execute(
-        "SELECT * FROM learning_modules WHERE id = ?", (module_id,)
+    """Get a specific learning module's content."""
+    user_id = current_user["sub"]
+
+    row = db.execute(
+        "SELECT id, title, description, category, order_index, content_json, points_reward "
+        "FROM learning_modules WHERE id = ?",
+        (module_id,),
     ).fetchone()
-    if not module:
-        raise HTTPException(status_code=404, detail="Module not found")
+
+    if not row:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Learning module not found")
 
     completed = db.execute(
         "SELECT 1 FROM learning_progress WHERE user_id = ? AND module_id = ?",
-        (current_user["id"], module_id),
+        (user_id, module_id),
     ).fetchone()
 
-    content = module["content_json"]
-    try:
-        content = json.loads(content) if content else {}
-    except json.JSONDecodeError:
-        content = {}
-
-    return {
-        "id": module["id"],
-        "title": module["title"],
-        "description": module["description"],
-        "category": module["category"],
-        "order_index": module["order_index"],
-        "content": content,
-        "points_reward": module["points_reward"],
-        "completed": completed is not None,
-    }
+    return LearningModule(
+        id=row["id"],
+        title=row["title"],
+        description=row["description"],
+        category=row["category"],
+        order_index=row["order_index"],
+        content_json=row["content_json"],
+        points_reward=row["points_reward"],
+        completed=completed is not None,
+    ).model_dump()
 
 
 @router.post("/learning/complete/{module_id}")
-def complete_module(
+def complete_learning_module(
     module_id: str,
     current_user: dict = Depends(get_current_user),
     db: sqlite3.Connection = Depends(get_db),
 ):
-    """Mark a learning module as complete and award points."""
-    user_id = current_user["id"]
+    """Mark a learning module as complete and award karma points."""
+    user_id = current_user["sub"]
 
+    # Verify module exists
     module = db.execute(
-        "SELECT * FROM learning_modules WHERE id = ?", (module_id,)
+        "SELECT id, title, points_reward FROM learning_modules WHERE id = ?", (module_id,)
     ).fetchone()
     if not module:
-        raise HTTPException(status_code=404, detail="Module not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Learning module not found")
 
+    # Check if already completed
     already = db.execute(
         "SELECT 1 FROM learning_progress WHERE user_id = ? AND module_id = ?",
         (user_id, module_id),
     ).fetchone()
     if already:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Module already completed",
-        )
+        return {"message": "Module already completed", "points_awarded": 0}
 
+    # Mark complete
     db.execute(
         "INSERT INTO learning_progress (user_id, module_id) VALUES (?, ?)",
         (user_id, module_id),
     )
     db.commit()
 
-    points = _award_points(
-        db, user_id, "learning_completed",
-        f"Completed: {module['title']}",
-    )
+    # Award points
+    _award_points(db, user_id, "learning_completed", f"Completed: {module['title']}")
 
-    # Check for Spiritual Scholar badge (completed 10+ modules)
-    total_completed = db.execute(
-        "SELECT COUNT(*) as cnt FROM learning_progress WHERE user_id = ?",
-        (user_id,),
-    ).fetchone()["cnt"]
-    if total_completed >= 10:
-        _try_award_badge(db, user_id, "spiritual_scholar")
+    # Check badges
+    _check_action_badges(db, user_id)
 
     return {
-        "points_awarded": points,
-        "module_id": module_id,
-        "total_completed": total_completed,
+        "message": "Module completed! Points awarded.",
+        "points_awarded": module["points_reward"],
     }

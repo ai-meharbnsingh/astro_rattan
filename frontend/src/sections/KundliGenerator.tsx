@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Sparkles, Calendar, Clock, MapPin, User, ChevronRight, Download, Share2, FileText, Heart, Briefcase, Activity, ArrowLeft, Loader2 } from 'lucide-react';
+import { Sparkles, Calendar, Clock, MapPin, User, ChevronRight, Download, Share2, FileText, Heart, Briefcase, Activity, ArrowLeft, Loader2, X } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
+import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
 
 export default function KundliGenerator() {
   const { isAuthenticated } = useAuth();
@@ -29,6 +30,42 @@ export default function KundliGenerator() {
   const [loadingIogita, setLoadingIogita] = useState(false);
   const [loadingDasha, setLoadingDasha] = useState(false);
   const [error, setError] = useState('');
+  const [sidePanel, setSidePanel] = useState<{
+    type: 'planet' | 'house';
+    planet?: PlanetData;
+    house?: number;
+    sign?: string;
+    planets?: PlanetData[];
+  } | null>(null);
+
+  const HOUSE_SIGNIFICANCE: Record<number, string> = {
+    1: 'Self, Personality, Appearance',
+    2: 'Wealth, Family, Speech',
+    3: 'Courage, Siblings, Communication',
+    4: 'Home, Mother, Comfort',
+    5: 'Children, Education, Creativity',
+    6: 'Health, Enemies, Service',
+    7: 'Marriage, Partnership, Business',
+    8: 'Longevity, Transformation, Occult',
+    9: 'Fortune, Dharma, Higher Learning',
+    10: 'Career, Status, Authority',
+    11: 'Gains, Aspirations, Friends',
+    12: 'Losses, Moksha, Foreign Lands',
+  };
+
+  const PLANET_ASPECTS: Record<string, number[]> = {
+    Sun: [7], Moon: [7], Mercury: [7], Venus: [7],
+    Mars: [4, 7, 8], Jupiter: [5, 7, 9], Saturn: [3, 7, 10],
+    Rahu: [5, 7, 9], Ketu: [5, 7, 9],
+  };
+
+  const handlePlanetClick = useCallback((planet: PlanetData) => {
+    setSidePanel({ type: 'planet', planet });
+  }, []);
+
+  const handleHouseClick = useCallback((house: number, sign: string, planets: PlanetData[]) => {
+    setSidePanel({ type: 'house', house, sign, planets });
+  }, []);
 
   // On mount: load existing kundlis if logged in
   useEffect(() => {
@@ -271,35 +308,171 @@ export default function KundliGenerator() {
             <TabsTrigger value="dasha" onClick={fetchDasha}>Dasha</TabsTrigger>
           </TabsList>
 
-          {/* PLANETS TAB */}
+          {/* PLANETS TAB - Interactive Kundli Chart + Side Panel */}
           <TabsContent value="planets">
-            <div className="overflow-x-auto rounded-xl border border-sacred-gold/20">
-              <table className="w-full">
-                <thead className="bg-sacred-cream">
-                  <tr>
-                    <th className="text-left p-4 text-sacred-gold-dark font-medium">Planet</th>
-                    <th className="text-left p-4 text-sacred-gold-dark font-medium">Sign</th>
-                    <th className="text-left p-4 text-sacred-gold-dark font-medium">House</th>
-                    <th className="text-left p-4 text-sacred-gold-dark font-medium">Nakshatra</th>
-                    <th className="text-left p-4 text-sacred-gold-dark font-medium">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {planets.map((planet: any, index: number) => (
-                    <tr key={index} className="border-t border-sacred-gold/20">
-                      <td className="p-4 text-sacred-brown font-medium">{planet.planet}</td>
-                      <td className="p-4 text-sacred-text-secondary">{planet.sign}</td>
-                      <td className="p-4 text-sacred-text-secondary">{planet.house}</td>
-                      <td className="p-4 text-sacred-text-secondary">{planet.nakshatra || '—'}</td>
-                      <td className="p-4">
-                        <span className={`text-xs px-2 py-1 rounded-full ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-500/20 text-green-400' : 'bg-cosmic-surface text-sacred-text-secondary'}`}>
-                          {planet.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="flex flex-col lg:flex-row gap-6">
+              {/* Interactive Chart */}
+              <div className="flex-shrink-0 flex justify-center">
+                <InteractiveKundli
+                  chartData={{ planets, houses: result.chart_data?.houses } as ChartData}
+                  onPlanetClick={handlePlanetClick}
+                  onHouseClick={handleHouseClick}
+                />
+              </div>
+
+              {/* Side Panel - shown when planet or house is clicked */}
+              <div className="flex-1 min-w-0">
+                {sidePanel ? (
+                  <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-5 animate-in fade-in slide-in-from-right-4 duration-300">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="font-display font-bold text-sacred-brown text-lg">
+                        {sidePanel.type === 'planet'
+                          ? `${sidePanel.planet?.planet} Details`
+                          : `House ${sidePanel.house} Details`}
+                      </h4>
+                      <button
+                        onClick={() => setSidePanel(null)}
+                        className="text-sacred-text-secondary hover:text-sacred-brown transition-colors"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    {sidePanel.type === 'planet' && sidePanel.planet && (() => {
+                      const p = sidePanel.planet;
+                      const status = p.status?.toLowerCase() || '';
+                      const strengthLabel = status.includes('exalted') ? 'Exalted' : status.includes('debilitated') ? 'Debilitated' : status.includes('own') ? 'Own Sign' : p.status || 'Transiting';
+                      const strengthColor = status.includes('exalted') ? 'text-green-500' : status.includes('debilitated') ? 'text-red-500' : status.includes('own') ? 'text-blue-500' : 'text-sacred-text-secondary';
+                      const aspects = (PLANET_ASPECTS[p.planet] || [7]).map((offset) => {
+                        const targetHouse = ((p.house - 1 + offset) % 12) + 1;
+                        return `House ${targetHouse}`;
+                      });
+
+                      return (
+                        <div className="space-y-3">
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="bg-cosmic-card/60 rounded-lg p-3">
+                              <p className="text-xs text-sacred-text-secondary">Sign</p>
+                              <p className="font-semibold text-sacred-brown">{p.sign}</p>
+                            </div>
+                            <div className="bg-cosmic-card/60 rounded-lg p-3">
+                              <p className="text-xs text-sacred-text-secondary">Degree</p>
+                              <p className="font-semibold text-sacred-brown">{p.sign_degree?.toFixed(1)}&deg;</p>
+                            </div>
+                            <div className="bg-cosmic-card/60 rounded-lg p-3">
+                              <p className="text-xs text-sacred-text-secondary">House</p>
+                              <p className="font-semibold text-sacred-brown">{p.house}</p>
+                            </div>
+                            <div className="bg-cosmic-card/60 rounded-lg p-3">
+                              <p className="text-xs text-sacred-text-secondary">Nakshatra</p>
+                              <p className="font-semibold text-sacred-brown">{p.nakshatra || 'N/A'}</p>
+                            </div>
+                          </div>
+                          <div className="bg-cosmic-card/60 rounded-lg p-3">
+                            <p className="text-xs text-sacred-text-secondary">Strength</p>
+                            <p className={`font-semibold ${strengthColor}`}>{strengthLabel}</p>
+                          </div>
+                          <div className="bg-cosmic-card/60 rounded-lg p-3">
+                            <p className="text-xs text-sacred-text-secondary">Aspects</p>
+                            <p className="font-semibold text-sacred-brown text-sm">{aspects.join(', ')}</p>
+                          </div>
+                          <div className="bg-cosmic-card/60 rounded-lg p-3">
+                            <p className="text-xs text-sacred-text-secondary">House Placement</p>
+                            <p className="text-sm text-sacred-brown">
+                              {p.planet} in House {p.house} ({HOUSE_SIGNIFICANCE[p.house] || 'Unknown'})
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })()}
+
+                    {sidePanel.type === 'house' && (
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="bg-cosmic-card/60 rounded-lg p-3">
+                            <p className="text-xs text-sacred-text-secondary">House Number</p>
+                            <p className="font-semibold text-sacred-brown">{sidePanel.house}</p>
+                          </div>
+                          <div className="bg-cosmic-card/60 rounded-lg p-3">
+                            <p className="text-xs text-sacred-text-secondary">Sign</p>
+                            <p className="font-semibold text-sacred-brown">{sidePanel.sign}</p>
+                          </div>
+                        </div>
+                        <div className="bg-cosmic-card/60 rounded-lg p-3">
+                          <p className="text-xs text-sacred-text-secondary">Significance</p>
+                          <p className="font-semibold text-sacred-brown">
+                            {HOUSE_SIGNIFICANCE[sidePanel.house || 0] || 'Unknown'}
+                          </p>
+                        </div>
+                        <div className="bg-cosmic-card/60 rounded-lg p-3">
+                          <p className="text-xs text-sacred-text-secondary mb-2">Planets in this House</p>
+                          {(sidePanel.planets || []).length > 0 ? (
+                            <div className="space-y-1">
+                              {(sidePanel.planets || []).map((p) => (
+                                <button
+                                  key={p.planet}
+                                  className="w-full text-left text-sm text-sacred-brown hover:text-sacred-gold transition-colors flex items-center gap-2"
+                                  onClick={() => setSidePanel({ type: 'planet', planet: p })}
+                                >
+                                  <span className="w-2 h-2 rounded-full bg-sacred-gold" />
+                                  {p.planet} ({p.sign} {p.sign_degree?.toFixed(1)}&deg;)
+                                </button>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-sm text-sacred-text-secondary">No planets in this house</p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="bg-sacred-cream/50 rounded-xl border border-dashed border-sacred-gold/20 p-8 flex flex-col items-center justify-center h-full min-h-[200px]">
+                    <Sparkles className="w-8 h-8 text-sacred-gold/40 mb-3" />
+                    <p className="text-sacred-text-secondary text-sm text-center">
+                      Click on any planet or house in the chart to see detailed information
+                    </p>
+                  </div>
+                )}
+
+                {/* Planet table below the side panel */}
+                <div className="mt-6 overflow-x-auto rounded-xl border border-sacred-gold/20">
+                  <table className="w-full">
+                    <thead className="bg-sacred-cream">
+                      <tr>
+                        <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">Planet</th>
+                        <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">Sign</th>
+                        <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">House</th>
+                        <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">Nakshatra</th>
+                        <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {planets.map((planet: any, index: number) => (
+                        <tr
+                          key={index}
+                          className={`border-t border-sacred-gold/20 cursor-pointer transition-colors ${
+                            sidePanel?.type === 'planet' && sidePanel.planet?.planet === planet.planet
+                              ? 'bg-sacred-gold/10'
+                              : 'hover:bg-sacred-gold/5'
+                          }`}
+                          onClick={() => handlePlanetClick(planet)}
+                        >
+                          <td className="p-3 text-sacred-brown font-medium text-sm">{planet.planet}</td>
+                          <td className="p-3 text-sacred-text-secondary text-sm">{planet.sign}</td>
+                          <td className="p-3 text-sacred-text-secondary text-sm">{planet.house}</td>
+                          <td className="p-3 text-sacred-text-secondary text-sm">{planet.nakshatra || '\u2014'}</td>
+                          <td className="p-3">
+                            <span className={`text-xs px-2 py-1 rounded-full ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-500/20 text-green-400' : 'bg-cosmic-surface text-sacred-text-secondary'}`}>
+                              {planet.status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </TabsContent>
 
