@@ -5,21 +5,23 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Brain, Star, Calendar, BookOpen, Sparkles, ChevronRight, Compass } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const features = [
-  { icon: Star, title: 'Kundli', description: 'Detailed Birth Charts', action: 'Generate Kundli', route: '/kundli' },
-  { icon: Calendar, title: 'Panchang', description: 'Daily Auspicious Times', action: 'View Panchang', route: '/panchang' },
-  { icon: Brain, title: 'AI Astrologer', description: 'Instant Cosmic Guidance', action: 'Ask AI', route: '/ai-chat' },
-  { icon: BookOpen, title: 'Shop', description: 'Astrological Products', action: 'Explore', route: '/shop' },
-  { icon: Sparkles, title: 'Dosha Analysis', description: 'Personalized Remedies', action: 'Check Dosha', route: '/kundli' },
-  { icon: Compass, title: 'Muhurat Finder', description: 'Perfect Timing for Events', action: 'Find Muhurat', route: '/panchang' },
+  { icon: Star, titleKey: 'features.kundli.title', descKey: 'features.kundli.description', route: '/kundli' },
+  { icon: Calendar, titleKey: 'features.panchang.title', descKey: 'features.panchang.description', route: '/panchang' },
+  { icon: Brain, titleKey: 'features.aiAstrologer.title', descKey: 'features.aiAstrologer.description', route: '/ai-chat' },
+  { icon: BookOpen, titleKey: 'features.shop.title', descKey: 'features.shop.description', route: '/shop' },
+  { icon: Sparkles, titleKey: 'features.dosha.title', descKey: 'features.dosha.description', route: '/kundli' },
+  { icon: Compass, titleKey: 'features.muhurat.title', descKey: 'features.muhurat.description', route: '/panchang' },
 ];
 
 export default function Features() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -34,7 +36,7 @@ export default function Features() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="features-title text-center mb-16">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-sacred font-bold text-cosmic-text mb-4">
-            Unlock the Secrets of<span className="text-gradient-gold"> Vedic Astrology</span>
+            {t('features.heading')}<span className="text-gradient-gold">{t('features.headingHighlight')}</span>
           </h2>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -46,8 +48,8 @@ export default function Features() {
                   <div className="w-16 h-16 rounded-xl flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform bg-sacred-gold/10 border border-sacred-gold/20">
                     <Icon className="w-8 h-8 text-sacred-gold" />
                   </div>
-                  <h3 className="text-xl font-sacred font-semibold text-cosmic-text mb-2 uppercase tracking-wide">{feature.title}</h3>
-                  <p className="text-sm text-cosmic-text-secondary">{feature.description}</p>
+                  <h3 className="text-xl font-sacred font-semibold text-cosmic-text mb-2 uppercase tracking-wide">{t(feature.titleKey)}</h3>
+                  <p className="text-sm text-cosmic-text-secondary">{t(feature.descKey)}</p>
                 </CardContent>
               </Card>
             );

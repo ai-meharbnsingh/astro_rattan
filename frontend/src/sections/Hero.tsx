@@ -79,7 +79,7 @@ export default function Hero() {
                   <Input type="text" value={birthPlace} onChange={(e) => setBirthPlace(e.target.value)} placeholder={t('hero.birthPlace')} className="pl-10 input-sacred" />
                 </div>
                 <Button onClick={handleGenerateKundli} className="w-full btn-sacred font-medium">
-                  Generate Kundli<ChevronRight className="w-5 h-5 ml-2" />
+                  {t('hero.generateKundli')}<ChevronRight className="w-5 h-5 ml-2" />
                 </Button>
               </div>
             </div>
