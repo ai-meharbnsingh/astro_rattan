@@ -49,8 +49,12 @@ export default function About() {
           <div className="about-image relative">
             <div className="relative aspect-square max-w-lg mx-auto">
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-sacred-purple/30 to-sacred-gold/10 border border-sacred-gold/20" />
-              <div className="absolute inset-8 rounded-2xl card-sacred flex items-center justify-center">
-                <Star className="w-32 h-32 text-sacred-gold/50" />
+              <div className="absolute inset-8 rounded-2xl card-sacred flex items-center justify-center overflow-hidden">
+                <div className="absolute inset-0 z-0 opacity-30 pointer-events-none">
+                  <Canvas camera={{ position: [0, 0, 4], fov: 50 }} gl={{ alpha: true }}>
+                    <FloatingPlanet color="#ffd700" size={0.6} position={[0, 0, 0]} hasRing rotationSpeed={0.25} />
+                  </Canvas>
+                </div>
               </div>
             </div>
           </div>
