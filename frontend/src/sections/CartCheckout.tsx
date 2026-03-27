@@ -146,7 +146,7 @@ export default function CartCheckout() {
               {idx + 1}
             </div>
             <span className="hidden sm:inline text-sm text-cosmic-text-secondary capitalize">{s}</span>
-            {idx < 3 && <div className="w-8 h-px bg-minimal-gray-200" />}
+            {idx < 3 && <div className="w-8 h-px bg-cosmic-surface" />}
           </div>
         ))}
       </div>

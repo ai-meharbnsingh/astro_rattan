@@ -177,7 +177,7 @@ export default function UserProfile() {
   const activityCards = [
     { label: 'Kundli Generated', value: activity.kundli_count, icon: Star, color: 'bg-purple-100 text-purple-600' },
     { label: 'Orders', value: activity.order_count, icon: ShoppingBag, color: 'bg-blue-500/20 text-blue-600' },
-    { label: 'Consultations', value: activity.consultation_count, icon: Activity, color: 'bg-green-100 text-green-400' },
+    { label: 'Consultations', value: activity.consultation_count, icon: Activity, color: 'bg-green-500/20 text-green-400' },
     { label: 'AI Chats', value: activity.ai_chats, icon: Activity, color: 'bg-yellow-100 text-yellow-600' },
   ];
 

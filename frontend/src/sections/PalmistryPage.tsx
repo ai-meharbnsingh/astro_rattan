@@ -284,7 +284,7 @@ export default function PalmistryPage() {
               </div>
               <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-6">
                 <div className="space-y-4">
-                  <label className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-sacred-gold/30 bg-white/80 px-6 py-8 text-center cursor-pointer hover:border-sacred-gold transition-colors">
+                  <label className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-sacred-gold/30 bg-cosmic-card/80 px-6 py-8 text-center cursor-pointer hover:border-sacred-gold transition-colors">
                     <Upload className="w-8 h-8 text-sacred-gold mb-3" />
                     <p className="font-medium text-cosmic-text">Select palm photo</p>
                     <p className="text-sm text-cosmic-text-secondary mt-1">PNG, JPG, or WEBP up to 5 MB</p>
@@ -296,7 +296,7 @@ export default function PalmistryPage() {
                     />
                   </label>
                   {imageError && (
-                    <p className="text-sm text-red-600">{imageError}</p>
+                    <p className="text-sm text-red-400">{imageError}</p>
                   )}
                   <Button
                     onClick={handleImageAnalyze}
@@ -310,7 +310,7 @@ export default function PalmistryPage() {
                     )}
                   </Button>
                 </div>
-                <div className="rounded-2xl bg-white/80 border border-sacred-gold/15 overflow-hidden min-h-56 flex items-center justify-center">
+                <div className="rounded-2xl bg-cosmic-card/80 border border-sacred-gold/15 overflow-hidden min-h-56 flex items-center justify-center">
                   {displayedImage ? (
                     <img src={displayedImage} alt="Palm preview" className="w-full h-full object-cover" />
                   ) : (
@@ -335,7 +335,7 @@ export default function PalmistryPage() {
                     className={`flex-1 p-4 rounded-xl border-2 capitalize transition-all ${
                       dominantHand === hand
                         ? 'border-sacred-gold bg-sacred-gold/5'
-                        : 'border-sacred-gold/15 hover:border-minimal-gray-300'
+                        : 'border-sacred-gold/15 hover:border-sacred-gold/30'
                     }`}
                   >
                     <Hand className={`w-6 h-6 mb-2 ${hand === 'right' ? 'rotate-0' : 'scale-x-[-1]'}`} />
@@ -367,7 +367,7 @@ export default function PalmistryPage() {
                     className={`p-4 rounded-xl border-2 text-left transition-all ${
                       handShape === shape.id
                         ? 'border-sacred-gold bg-sacred-gold/5'
-                        : 'border-sacred-gold/15 hover:border-minimal-gray-300'
+                        : 'border-sacred-gold/15 hover:border-sacred-gold/30'
                     }`}
                   >
                     <span className="text-2xl mb-2 block">{shape.icon}</span>
@@ -383,7 +383,7 @@ export default function PalmistryPage() {
             {[
               { title: 'Heart Line', icon: Heart, iconClass: 'text-rose-500', selectedClass: 'border-rose-500 bg-rose-50', key: 'heart', value: heartLine, setter: setHeartLine },
               { title: 'Head Line', icon: Brain, iconClass: 'text-blue-500', selectedClass: 'border-blue-500 bg-blue-50', key: 'head', value: headLine, setter: setHeadLine },
-              { title: 'Life Line', icon: Activity, iconClass: 'text-green-500', selectedClass: 'border-green-500 bg-green-50', key: 'life', value: lifeLine, setter: setLifeLine },
+              { title: 'Life Line', icon: Activity, iconClass: 'text-green-500', selectedClass: 'border-green-500 bg-green-900/20', key: 'life', value: lifeLine, setter: setLifeLine },
               { title: 'Fate Line (Optional)', icon: Briefcase, iconClass: 'text-amber-500', selectedClass: 'border-amber-500 bg-amber-50', key: 'fate', value: fateLine, setter: setFateLine },
             ].map(({ title, icon: Icon, iconClass, selectedClass, key, value, setter }) => (
               <Card key={title} className="border-0 shadow-soft">
@@ -400,7 +400,7 @@ export default function PalmistryPage() {
                         className={`w-full p-3 rounded-lg border text-left transition-all ${
                           value === option.id
                             ? selectedClass
-                            : 'border-sacred-gold/15 hover:border-minimal-gray-300'
+                            : 'border-sacred-gold/15 hover:border-sacred-gold/30'
                         }`}
                       >
                         <p className="font-medium text-cosmic-text text-sm">{option.label}</p>
@@ -424,7 +424,7 @@ export default function PalmistryPage() {
                     className={`p-3 rounded-lg border text-left transition-all ${
                       sunLine === option.id
                         ? 'border-sacred-gold bg-sacred-gold/5'
-                        : 'border-sacred-gold/15 hover:border-minimal-gray-300'
+                        : 'border-sacred-gold/15 hover:border-sacred-gold/30'
                     }`}
                   >
                     <p className="font-medium text-cosmic-text text-sm">{option.label}</p>
@@ -448,7 +448,7 @@ export default function PalmistryPage() {
                     className={`p-3 rounded-lg border text-left transition-all ${
                       prominentMounts.includes(mount.id)
                         ? 'border-sacred-gold bg-sacred-gold/5'
-                        : 'border-sacred-gold/15 hover:border-minimal-gray-300'
+                        : 'border-sacred-gold/15 hover:border-sacred-gold/30'
                     }`}
                   >
                     <div className="flex items-center gap-2">
@@ -465,7 +465,7 @@ export default function PalmistryPage() {
           </Card>
 
           {manualError && (
-            <p className="text-sm text-red-600">{manualError}</p>
+            <p className="text-sm text-red-400">{manualError}</p>
           )}
 
           <Button

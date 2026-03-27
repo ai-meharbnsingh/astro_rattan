@@ -209,7 +209,7 @@ export default function ConsultationPage() {
           {/* Filters */}
           <div className="flex flex-wrap gap-3 mb-6">
             <Select value={specFilter} onValueChange={setSpecFilter}>
-              <SelectTrigger className="w-48 bg-white border-sacred-gold/15">
+              <SelectTrigger className="w-48 bg-cosmic-card border-sacred-gold/15">
                 <SelectValue placeholder="Specialization" />
               </SelectTrigger>
               <SelectContent>
@@ -220,7 +220,7 @@ export default function ConsultationPage() {
               </SelectContent>
             </Select>
             <Select value={availFilter} onValueChange={setAvailFilter}>
-              <SelectTrigger className="w-40 bg-white border-sacred-gold/15">
+              <SelectTrigger className="w-40 bg-cosmic-card border-sacred-gold/15">
                 <SelectValue placeholder="Availability" />
               </SelectTrigger>
               <SelectContent>

@@ -161,7 +161,7 @@ export default function NumerologyTarot() {
             </CardContent>
           </Card>
           {numResult && (
-            <Card className="mt-6 bg-white border-0 shadow-soft-lg max-w-xl mx-auto">
+            <Card className="mt-6 bg-cosmic-card border-0 shadow-soft-lg max-w-xl mx-auto">
               <CardContent className="p-6">
                 <h4 className="font-display font-semibold text-cosmic-text mb-4 text-center">Your Numerology Report</h4>
                 <div className="grid grid-cols-2 gap-4 mb-4">

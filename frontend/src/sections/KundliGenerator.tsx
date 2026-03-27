@@ -253,7 +253,7 @@ export default function KundliGenerator() {
               { icon: Briefcase, name: 'Career', price: '₹799' },
               { icon: Activity, name: 'Health', price: '₹699' },
             ].map(({ icon: Icon, name, price }) => (
-              <button key={name} className="bg-white/60 rounded-xl p-3 border border-sacred-gold/20 hover:border-sacred-gold/50 transition-colors text-left">
+              <button key={name} className="bg-cosmic-card/60 rounded-xl p-3 border border-sacred-gold/20 hover:border-sacred-gold/50 transition-colors text-left">
                 <Icon className="w-5 h-5 text-sacred-gold mb-2" />
                 <p className="text-sm font-medium text-sacred-brown">{name}</p>
                 <p className="text-xs text-sacred-gold-dark">{price}</p>
@@ -361,11 +361,11 @@ export default function KundliGenerator() {
                   </div>
                   <p className="text-sacred-text-secondary mb-4">{iogitaData.basin.description}</p>
                   <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div className="bg-white/60 rounded-lg p-3">
+                    <div className="bg-cosmic-card/60 rounded-lg p-3">
                       <p className="text-sacred-text-secondary">Escape Possible</p>
                       <p className="font-semibold text-sacred-brown">{iogitaData.basin.escape_possible ? 'Yes — phase transition likely' : 'No — basin is stable'}</p>
                     </div>
-                    <div className="bg-white/60 rounded-lg p-3">
+                    <div className="bg-cosmic-card/60 rounded-lg p-3">
                       <p className="text-sacred-text-secondary">Trajectory Steps</p>
                       <p className="font-semibold text-sacred-brown">{iogitaData.basin.trajectory_steps} steps</p>
                     </div>
