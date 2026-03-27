@@ -1,5 +1,5 @@
 """Admin dashboard routes — stats, AI logs, astrologer approval."""
-import sqlite3
+from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from app.auth import require_role
 from app.database import get_db
@@ -10,7 +10,7 @@ router = APIRouter()
 @router.get("/api/admin/dashboard")
 def admin_dashboard(
     user: dict = Depends(require_role("admin")),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Admin dashboard summary with key metrics."""
     total_users = db.execute("SELECT COUNT(*) as c FROM users").fetchone()["c"]
@@ -46,7 +46,7 @@ def list_ai_logs(
     page: int = Query(1, ge=1),
     limit: int = Query(50, ge=1, le=200),
     user: dict = Depends(require_role("admin")),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """List AI chat logs for monitoring and audit."""
     offset = (page - 1) * limit
@@ -57,7 +57,7 @@ def list_ai_logs(
         SELECT al.*, u.name as user_name, u.email as user_email
         FROM ai_chat_logs al
         JOIN users u ON u.id = al.user_id
-        ORDER BY al.created_at DESC LIMIT ? OFFSET ?
+        ORDER BY al.created_at DESC LIMIT %s OFFSET %s
         """,
         (limit, offset),
     ).fetchall()
@@ -72,11 +72,11 @@ def list_ai_logs(
 def approve_astrologer(
     astrologer_id: str,
     user: dict = Depends(require_role("admin")),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Approve an astrologer profile."""
     astrologer = db.execute(
-        "SELECT id FROM astrologers WHERE id = ?", (astrologer_id,)
+        "SELECT id FROM astrologers WHERE id = %s", (astrologer_id,)
     ).fetchone()
 
     if astrologer is None:
@@ -85,11 +85,11 @@ def approve_astrologer(
         )
 
     db.execute(
-        "UPDATE astrologers SET is_approved = 1 WHERE id = ?", (astrologer_id,)
+        "UPDATE astrologers SET is_approved = 1 WHERE id = %s", (astrologer_id,)
     )
     db.commit()
 
     updated = db.execute(
-        "SELECT * FROM astrologers WHERE id = ?", (astrologer_id,)
+        "SELECT * FROM astrologers WHERE id = %s", (astrologer_id,)
     ).fetchone()
     return dict(updated)

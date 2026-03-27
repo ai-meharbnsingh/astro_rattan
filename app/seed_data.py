@@ -1,10 +1,10 @@
 """Seed the database with initial spiritual content, festivals, and products."""
 import json
-import sqlite3
 import uuid
+import psycopg2
+import psycopg2.extras
 
-from app.database import get_db, init_db
-from app.config import DB_PATH
+from app.database import init_db, DATABASE_URL, PgConnection
 
 
 def _uid() -> str:
@@ -13,19 +13,20 @@ def _uid() -> str:
 
 def seed_all(db_path: str = None):
     """Seed all initial data. Skips if content_library already has rows."""
-    path = db_path or DB_PATH
 
     # Ensure schema exists
-    init_db(path)
+    init_db()
 
-    conn = sqlite3.connect(path)
-    conn.execute("PRAGMA foreign_keys=ON")
+    raw = psycopg2.connect(DATABASE_URL)
+    raw.autocommit = False
+    conn = PgConnection(raw)
 
     try:
-        count = conn.execute("SELECT COUNT(*) FROM content_library").fetchone()[0]
+        row = conn.execute("SELECT COUNT(*) as c FROM content_library").fetchone()
+        count = row["c"]
         if count > 0:
             print(f"[seed] content_library already has {count} rows — skipping seed.")
-            conn.close()
+            raw.close()
             return
 
         print("[seed] Seeding database...")
@@ -111,7 +112,7 @@ def seed_all(db_path: str = None):
         for ch_num, name, subtitle, verse_count, summary in gita_chapters:
             conn.execute(
                 "INSERT INTO content_library (id, category, title, title_hindi, content, chapter, translation, sort_order) "
-                "VALUES (?, 'gita', ?, NULL, ?, ?, ?, ?)",
+                "VALUES (%s, 'gita', %s, NULL, %s, %s, %s, %s)",
                 (_uid(), f"Chapter {ch_num}: {name} ({subtitle})", summary, ch_num, f"{verse_count} verses", ch_num),
             )
 
@@ -186,7 +187,7 @@ def seed_all(db_path: str = None):
             conn.execute(
                 "INSERT INTO content_library (id, category, title, content, chapter, verse, "
                 "sanskrit_text, translation, commentary, sort_order) "
-                "VALUES (?, 'gita', ?, ?, ?, ?, ?, ?, ?, ?)",
+                "VALUES (%s, 'gita', %s, %s, %s, %s, %s, %s, %s, %s)",
                 (_uid(), f"BG {ch}.{verse}", f"Bhagavad Gita Chapter {ch}, Verse {verse}",
                  ch, verse, sanskrit, translation, commentary, 100 + ch * 100 + verse),
             )
@@ -248,7 +249,7 @@ def seed_all(db_path: str = None):
         for sort_idx, (title, content, translation, commentary) in enumerate(mantras, start=1):
             conn.execute(
                 "INSERT INTO content_library (id, category, title, content, translation, commentary, sort_order) "
-                "VALUES (?, 'mantra', ?, ?, ?, ?, ?)",
+                "VALUES (%s, 'mantra', %s, %s, %s, %s, %s)",
                 (_uid(), title, content, translation, commentary, sort_idx),
             )
 
@@ -292,7 +293,7 @@ def seed_all(db_path: str = None):
         for sort_idx, (title, content, translation, commentary) in enumerate(aartis, start=1):
             conn.execute(
                 "INSERT INTO content_library (id, category, title, content, translation, commentary, sort_order) "
-                "VALUES (?, 'aarti', ?, ?, ?, ?, ?)",
+                "VALUES (%s, 'aarti', %s, %s, %s, %s, %s)",
                 (_uid(), title, content, translation, commentary, sort_idx),
             )
 
@@ -344,7 +345,7 @@ def seed_all(db_path: str = None):
         for sort_idx, (title, content, translation, commentary) in enumerate(chalisas, start=1):
             conn.execute(
                 "INSERT INTO content_library (id, category, title, content, translation, commentary, sort_order) "
-                "VALUES (?, 'chalisa', ?, ?, ?, ?, ?)",
+                "VALUES (%s, 'chalisa', %s, %s, %s, %s, %s)",
                 (_uid(), title, content, translation, commentary, sort_idx),
             )
 
@@ -450,7 +451,7 @@ def seed_all(db_path: str = None):
         for name, name_hindi, date, description, rituals, category in festivals:
             conn.execute(
                 "INSERT INTO festivals (id, name, name_hindi, date, description, rituals, category, year) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?, 2026)",
+                "VALUES (%s, %s, %s, %s, %s, %s, %s, 2026)",
                 (_uid(), name, name_hindi, date, description, rituals, category),
             )
 
@@ -521,25 +522,25 @@ def seed_all(db_path: str = None):
         for name, description, category, price, planet, properties in products:
             conn.execute(
                 "INSERT INTO products (id, name, description, category, price, planet, properties, stock, is_active) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?, 50, 1)",
+                "VALUES (%s, %s, %s, %s, %s, %s, %s, 50, 1)",
                 (_uid(), name, description, category, price, planet, properties),
             )
 
         conn.commit()
 
         # Print summary counts
-        content_count = conn.execute("SELECT COUNT(*) FROM content_library").fetchone()[0]
-        festival_count = conn.execute("SELECT COUNT(*) FROM festivals").fetchone()[0]
-        product_count = conn.execute("SELECT COUNT(*) FROM products").fetchone()[0]
+        content_count = conn.execute("SELECT COUNT(*) as c FROM content_library").fetchone()["c"]
+        festival_count = conn.execute("SELECT COUNT(*) as c FROM festivals").fetchone()["c"]
+        product_count = conn.execute("SELECT COUNT(*) as c FROM products").fetchone()["c"]
 
         print(f"[seed] Done! content_library={content_count}, festivals={festival_count}, products={product_count}")
 
     except Exception as e:
-        conn.rollback()
+        raw.rollback()
         print(f"[seed] ERROR: {e}")
         raise
     finally:
-        conn.close()
+        raw.close()
 
 
 if __name__ == "__main__":

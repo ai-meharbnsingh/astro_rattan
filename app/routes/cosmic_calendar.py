@@ -3,7 +3,7 @@ import calendar
 import hashlib
 import json
 import math
-import sqlite3
+from typing import Any
 from datetime import date, datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -234,7 +234,7 @@ def get_month_calendar(
     latitude: float = Query(default=28.6139),
     longitude: float = Query(default=77.2090),
     credentials=Depends(security),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Return calendar data for a month with festivals, panchang, muhurats, and personalized events."""
     today = date.today()
@@ -250,7 +250,7 @@ def get_month_calendar(
     month_start = f"{target_year}-{target_month:02d}-01"
     month_end = f"{target_year}-{target_month:02d}-{days_in_month:02d}"
     festival_rows = db.execute(
-        "SELECT name, date, description, category FROM festivals WHERE date >= ? AND date <= ? ORDER BY date",
+        "SELECT name, date, description, category FROM festivals WHERE date >= %s AND date <= %s ORDER BY date",
         (month_start, month_end),
     ).fetchall()
 
@@ -272,7 +272,7 @@ def get_month_calendar(
         user_id = user.get("sub")
         if user_id:
             kundli_row = db.execute(
-                "SELECT chart_data FROM kundlis WHERE user_id = ? ORDER BY created_at DESC LIMIT 1",
+                "SELECT chart_data FROM kundlis WHERE user_id = %s ORDER BY created_at DESC LIMIT 1",
                 (user_id,),
             ).fetchone()
             if kundli_row and kundli_row["chart_data"]:
@@ -347,7 +347,7 @@ def get_today_snapshot(
     latitude: float = Query(default=28.6139),
     longitude: float = Query(default=77.2090),
     credentials=Depends(security),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Today's personalized cosmic snapshot with planets, panchang, transits, lucky attributes."""
     today_str = date.today().isoformat()
@@ -375,7 +375,7 @@ def get_today_snapshot(
 
     # Festivals today
     festival_rows = db.execute(
-        "SELECT name, description, category FROM festivals WHERE date = ?",
+        "SELECT name, description, category FROM festivals WHERE date = %s",
         (today_str,),
     ).fetchall()
     festivals = [{"name": f["name"], "description": f["description"], "category": f["category"]} for f in festival_rows]
@@ -409,7 +409,7 @@ def get_today_snapshot(
         user_id = user.get("sub")
         if user_id:
             kundli_row = db.execute(
-                "SELECT chart_data FROM kundlis WHERE user_id = ? ORDER BY created_at DESC LIMIT 1",
+                "SELECT chart_data FROM kundlis WHERE user_id = %s ORDER BY created_at DESC LIMIT 1",
                 (user_id,),
             ).fetchone()
             if kundli_row and kundli_row["chart_data"]:
@@ -428,14 +428,14 @@ def get_upcoming_transits(
     kundli_id: str = Query(...),
     days: int = Query(default=30, ge=1, le=90),
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Get upcoming major transits for a user's chart over the next N days (default 30)."""
     user_id = current_user["sub"]
 
     # Fetch the kundli
     kundli_row = db.execute(
-        "SELECT chart_data FROM kundlis WHERE id = ? AND user_id = ?",
+        "SELECT chart_data FROM kundlis WHERE id = %s AND user_id = %s",
         (kundli_id, user_id),
     ).fetchone()
 

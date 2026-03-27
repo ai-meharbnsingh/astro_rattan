@@ -1,6 +1,6 @@
 """Auth routes — register, login, get current user, profile management."""
 import json
-import sqlite3
+from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
 from slowapi import Limiter
@@ -30,25 +30,25 @@ limiter = Limiter(key_func=request_rate_limit_key)
 def register(
     body: UserRegister,
     background_tasks: BackgroundTasks,
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Register a new user account."""
     # Check if email already exists
-    row = db.execute("SELECT id FROM users WHERE email = ?", (body.email,)).fetchone()
+    row = db.execute("SELECT id FROM users WHERE email = %s", (body.email,)).fetchone()
     if row:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already registered")
 
     pw_hash = hash_password(body.password)
-    cur = db.execute(
+    db.execute(
         """INSERT INTO users (email, password_hash, name, phone, date_of_birth, gender, city)
-           VALUES (?, ?, ?, ?, ?, ?, ?)""",
+           VALUES (%s, %s, %s, %s, %s, %s, %s)""",
         (body.email, pw_hash, body.name, body.phone, body.date_of_birth, body.gender, body.city),
     )
     db.commit()
 
     user_row = db.execute(
         """SELECT id, email, name, role, phone, date_of_birth, gender, city, avatar_url, created_at
-           FROM users WHERE email = ?""",
+           FROM users WHERE email = %s""",
         (body.email,),
     ).fetchone()
 
@@ -71,12 +71,12 @@ def register(
 
 @router.post("/login", status_code=status.HTTP_200_OK, response_model=TokenResponse)
 @limiter.limit(LOGIN_RATE_LIMIT)
-def login(request: Request, body: LoginRequest, db: sqlite3.Connection = Depends(get_db)):
+def login(request: Request, body: LoginRequest, db: Any = Depends(get_db)):
     """Authenticate and return JWT token."""
     row = db.execute(
         """SELECT id, email, password_hash, name, role, phone, date_of_birth, gender, city,
                   avatar_url, created_at, is_active
-           FROM users WHERE email = ?""",
+           FROM users WHERE email = %s""",
         (body.email,),
     ).fetchone()
     if not row:
@@ -108,12 +108,12 @@ def login(request: Request, body: LoginRequest, db: sqlite3.Connection = Depends
 @router.get("/me", status_code=status.HTTP_200_OK, response_model=UserResponse)
 def get_me(
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Return the currently authenticated user's profile."""
     row = db.execute(
         """SELECT id, email, name, role, phone, date_of_birth, gender, city, avatar_url, created_at
-           FROM users WHERE id = ?""",
+           FROM users WHERE id = %s""",
         (current_user["sub"],),
     ).fetchone()
     if not row:
@@ -137,7 +137,7 @@ def get_me(
 def update_profile(
     body: UserProfileUpdate,
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Update the current user's profile (name, phone, DOB, gender, city, avatar)."""
     user_id = current_user["sub"]
@@ -146,13 +146,13 @@ def update_profile(
     params = []
 
     if body.name is not None:
-        updates.append("name = ?")
+        updates.append("name = %s")
         params.append(body.name)
     if body.phone is not None:
-        updates.append("phone = ?")
+        updates.append("phone = %s")
         params.append(body.phone)
     if body.date_of_birth is not None:
-        updates.append("date_of_birth = ?")
+        updates.append("date_of_birth = %s")
         params.append(body.date_of_birth)
     if body.gender is not None:
         if body.gender not in ("male", "female", "other"):
@@ -160,13 +160,13 @@ def update_profile(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="gender must be male, female, or other",
             )
-        updates.append("gender = ?")
+        updates.append("gender = %s")
         params.append(body.gender)
     if body.city is not None:
-        updates.append("city = ?")
+        updates.append("city = %s")
         params.append(body.city)
     if body.avatar_url is not None:
-        updates.append("avatar_url = ?")
+        updates.append("avatar_url = %s")
         params.append(body.avatar_url)
 
     if not updates:
@@ -174,16 +174,16 @@ def update_profile(
             status_code=status.HTTP_400_BAD_REQUEST, detail="No fields to update"
         )
 
-    updates.append("updated_at = datetime('now')")
+    updates.append("updated_at = to_char(NOW(), 'YYYY-MM-DD\"T\"HH24:MI:SS')")
     params.append(user_id)
 
-    db.execute(f"UPDATE users SET {', '.join(updates)} WHERE id = ?", params)
+    db.execute(f"UPDATE users SET {', '.join(updates)} WHERE id = %s", params)
     db.commit()
 
     row = db.execute(
         """SELECT id, email, name, role, phone, avatar_url,
                   date_of_birth, gender, city, is_active, created_at, updated_at
-           FROM users WHERE id = ?""",
+           FROM users WHERE id = %s""",
         (user_id,),
     ).fetchone()
 
@@ -194,13 +194,13 @@ def update_profile(
 def change_password(
     body: ChangePasswordRequest,
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Change the current user's password."""
     user_id = current_user["sub"]
 
     row = db.execute(
-        "SELECT password_hash FROM users WHERE id = ?", (user_id,)
+        "SELECT password_hash FROM users WHERE id = %s", (user_id,)
     ).fetchone()
     if not row:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
@@ -212,7 +212,7 @@ def change_password(
 
     new_hash = hash_password(body.new_password)
     db.execute(
-        "UPDATE users SET password_hash = ?, updated_at = datetime('now') WHERE id = ?",
+        "UPDATE users SET password_hash = %s, updated_at = to_char(NOW(), 'YYYY-MM-DD\"T\"HH24:MI:SS') WHERE id = %s",
         (new_hash, user_id),
     )
     db.commit()
@@ -223,49 +223,49 @@ def change_password(
 @router.get("/history", status_code=status.HTTP_200_OK)
 def user_history(
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Return the current user's complete activity history."""
     user_id = current_user["sub"]
 
     # Kundlis
     kundli_count = db.execute(
-        "SELECT COUNT(*) as c FROM kundlis WHERE user_id = ?", (user_id,)
+        "SELECT COUNT(*) as c FROM kundlis WHERE user_id = %s", (user_id,)
     ).fetchone()["c"]
     kundlis = db.execute(
-        "SELECT id, person_name, birth_date, birth_place, created_at FROM kundlis WHERE user_id = ? ORDER BY created_at DESC",
+        "SELECT id, person_name, birth_date, birth_place, created_at FROM kundlis WHERE user_id = %s ORDER BY created_at DESC",
         (user_id,),
     ).fetchall()
 
     # Orders
     order_count = db.execute(
-        "SELECT COUNT(*) as c FROM orders WHERE user_id = ?", (user_id,)
+        "SELECT COUNT(*) as c FROM orders WHERE user_id = %s", (user_id,)
     ).fetchone()["c"]
     recent_orders = db.execute(
-        "SELECT id, status, total, payment_status, created_at FROM orders WHERE user_id = ? ORDER BY created_at DESC LIMIT 10",
+        "SELECT id, status, total, payment_status, created_at FROM orders WHERE user_id = %s ORDER BY created_at DESC LIMIT 10",
         (user_id,),
     ).fetchall()
 
     # Consultations
     consultation_count = db.execute(
-        "SELECT COUNT(*) as c FROM consultations WHERE user_id = ?", (user_id,)
+        "SELECT COUNT(*) as c FROM consultations WHERE user_id = %s", (user_id,)
     ).fetchone()["c"]
     recent_consultations = db.execute(
-        "SELECT id, type, status, scheduled_at, created_at FROM consultations WHERE user_id = ? ORDER BY created_at DESC LIMIT 10",
+        "SELECT id, type, status, scheduled_at, created_at FROM consultations WHERE user_id = %s ORDER BY created_at DESC LIMIT 10",
         (user_id,),
     ).fetchall()
 
     # AI chats
     ai_chat_count = db.execute(
-        "SELECT COUNT(*) as c FROM ai_chat_logs WHERE user_id = ?", (user_id,)
+        "SELECT COUNT(*) as c FROM ai_chat_logs WHERE user_id = %s", (user_id,)
     ).fetchone()["c"]
 
     # Reports
     report_count = db.execute(
-        "SELECT COUNT(*) as c FROM reports WHERE user_id = ?", (user_id,)
+        "SELECT COUNT(*) as c FROM reports WHERE user_id = %s", (user_id,)
     ).fetchone()["c"]
     reports = db.execute(
-        "SELECT id, report_type, status, price, created_at FROM reports WHERE user_id = ? ORDER BY created_at DESC",
+        "SELECT id, report_type, status, price, created_at FROM reports WHERE user_id = %s ORDER BY created_at DESC",
         (user_id,),
     ).fetchall()
 

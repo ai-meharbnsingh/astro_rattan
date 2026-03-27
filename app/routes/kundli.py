@@ -1,6 +1,6 @@
 """Kundli routes — generate, retrieve, list, iogita analysis, match, dosha, dasha, divisional, ashtakvarga."""
 import json
-import sqlite3
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
@@ -19,10 +19,10 @@ router = APIRouter(prefix="/api/kundli", tags=["kundli"])
 
 
 # ── helpers ──────────────────────────────────────────────────
-def _fetch_kundli(db: sqlite3.Connection, kundli_id: str, user_id: str) -> dict:
+def _fetch_kundli(db: Any, kundli_id: str, user_id: str) -> dict:
     """Fetch a kundli row or raise 404. Returns dict(row)."""
     row = db.execute(
-        "SELECT * FROM kundlis WHERE id = ? AND user_id = ?",
+        "SELECT * FROM kundlis WHERE id = %s AND user_id = %s",
         (kundli_id, user_id),
     ).fetchone()
     if not row:
@@ -41,7 +41,7 @@ def _chart_data(row: dict) -> dict:
 def generate_kundli(
     body: KundliRequest,
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Generate a new Vedic birth chart (kundli) and store it."""
     chart_data = calculate_planet_positions(
@@ -57,7 +57,7 @@ def generate_kundli(
         """INSERT INTO kundlis
            (user_id, person_name, birth_date, birth_time, birth_place,
             latitude, longitude, timezone_offset, ayanamsa, chart_data)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
         (
             current_user["sub"],
             body.person_name,
@@ -74,7 +74,7 @@ def generate_kundli(
     db.commit()
 
     row = db.execute(
-        "SELECT * FROM kundlis WHERE user_id = ? ORDER BY created_at DESC LIMIT 1",
+        "SELECT * FROM kundlis WHERE user_id = %s ORDER BY created_at DESC LIMIT 1",
         (current_user["sub"],),
     ).fetchone()
 
@@ -92,12 +92,12 @@ def generate_kundli(
 @router.get("/list", status_code=status.HTTP_200_OK)
 def list_kundlis(
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """List all kundlis for the current user."""
     rows = db.execute(
         "SELECT id, person_name, birth_date, birth_time, birth_place, created_at "
-        "FROM kundlis WHERE user_id = ? ORDER BY created_at DESC",
+        "FROM kundlis WHERE user_id = %s ORDER BY created_at DESC",
         (current_user["sub"],),
     ).fetchall()
 
@@ -118,7 +118,7 @@ def list_kundlis(
 def get_kundli(
     kundli_id: str,
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Retrieve a single kundli by ID."""
     row = _fetch_kundli(db, kundli_id, current_user["sub"])
@@ -142,7 +142,7 @@ def get_kundli(
 def run_iogita_analysis(
     kundli_id: str,
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Run io-gita atom engine analysis on a kundli."""
     row = _fetch_kundli(db, kundli_id, current_user["sub"])
@@ -164,7 +164,7 @@ def run_iogita_analysis(
     # Store analysis on the kundli row
     analysis_json = json.dumps(analysis, default=str)
     db.execute(
-        "UPDATE kundlis SET iogita_analysis = ? WHERE id = ?",
+        "UPDATE kundlis SET iogita_analysis = %s WHERE id = %s",
         (analysis_json, kundli_id),
     )
     db.commit()
@@ -176,7 +176,7 @@ def run_iogita_analysis(
 def match_kundlis(
     body: KundliMatchRequest,
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Ashtakoota Gun Milan — match two kundlis for compatibility."""
     row1 = _fetch_kundli(db, body.kundli_id_1, current_user["sub"])
@@ -198,7 +198,7 @@ def match_kundlis(
 def check_doshas(
     kundli_id: str,
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Check Mangal Dosha, Kaal Sarp Dosha, and Sade Sati."""
     row = _fetch_kundli(db, kundli_id, current_user["sub"])
@@ -236,7 +236,7 @@ def check_doshas(
 def get_dasha(
     kundli_id: str,
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Calculate Vimshottari Dasha periods for a kundli."""
     row = _fetch_kundli(db, kundli_id, current_user["sub"])
@@ -254,7 +254,7 @@ def get_divisional_chart(
     kundli_id: str,
     body: DivisionalChartRequest,
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Calculate a divisional (varga) chart for a kundli."""
     row = _fetch_kundli(db, kundli_id, current_user["sub"])
@@ -289,7 +289,7 @@ def get_divisional_chart(
 def get_ashtakvarga(
     kundli_id: str,
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Calculate Ashtakvarga point system for a kundli."""
     row = _fetch_kundli(db, kundli_id, current_user["sub"])

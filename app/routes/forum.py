@@ -1,5 +1,5 @@
 """Community Forum routes — categories, threads, replies, likes, search."""
-import sqlite3
+from typing import Any
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -22,7 +22,7 @@ router = APIRouter(prefix="/api/forum", tags=["forum"])
 # ---------------------------------------------------------------------------
 
 def _optional_user(
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Return None — used as a placeholder; real optional auth handled inline."""
     return None
@@ -34,7 +34,7 @@ def _optional_user(
 
 @router.get("/categories")
 def list_categories(
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """List all active forum categories with thread counts."""
     rows = db.execute(
@@ -71,7 +71,7 @@ def list_threads(
     category_id: Optional[str] = Query(None),
     page: int = Query(1, ge=1),
     per_page: int = Query(20, ge=1, le=100),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """List threads optionally filtered by category, paginated, newest first.
     Pinned threads always come first."""
@@ -79,7 +79,7 @@ def list_threads(
     params: list = []
     where = ""
     if category_id:
-        where = "WHERE ft.category_id = ?"
+        where = "WHERE ft.category_id = %s"
         params.append(category_id)
 
     # Total count
@@ -97,7 +97,7 @@ def list_threads(
         JOIN forum_categories fc ON fc.id = ft.category_id
         {where}
         ORDER BY ft.is_pinned DESC, ft.updated_at DESC
-        LIMIT ? OFFSET ?
+        LIMIT %s OFFSET %s
         """,
         params + [per_page, offset],
     ).fetchall()
@@ -131,7 +131,7 @@ def list_threads(
 @router.get("/thread/{thread_id}")
 def get_thread(
     thread_id: str,
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Get a single thread with all its replies. Increments view count."""
     row = db.execute(
@@ -141,7 +141,7 @@ def get_thread(
         FROM forum_threads ft
         JOIN users u ON u.id = ft.user_id
         JOIN forum_categories fc ON fc.id = ft.category_id
-        WHERE ft.id = ?
+        WHERE ft.id = %s
         """,
         (thread_id,),
     ).fetchone()
@@ -150,7 +150,7 @@ def get_thread(
 
     # Increment views
     db.execute(
-        "UPDATE forum_threads SET views_count = views_count + 1 WHERE id = ?",
+        "UPDATE forum_threads SET views_count = views_count + 1 WHERE id = %s",
         (thread_id,),
     )
     db.commit()
@@ -177,7 +177,7 @@ def get_thread(
         SELECT fr.*, u.name AS author_name, u.avatar_url AS author_avatar
         FROM forum_replies fr
         JOIN users u ON u.id = fr.user_id
-        WHERE fr.thread_id = ?
+        WHERE fr.thread_id = %s
         ORDER BY fr.is_best_answer DESC, fr.created_at ASC
         """,
         (thread_id,),
@@ -210,12 +210,12 @@ def get_thread(
 def create_thread(
     body: ThreadCreate,
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Create a new forum thread (auth required)."""
     # Verify category exists
     cat = db.execute(
-        "SELECT id FROM forum_categories WHERE id = ? AND is_active = 1",
+        "SELECT id FROM forum_categories WHERE id = %s AND is_active = 1",
         (body.category_id,),
     ).fetchone()
     if not cat:
@@ -224,14 +224,14 @@ def create_thread(
     cursor = db.execute(
         """
         INSERT INTO forum_threads (category_id, user_id, title, content)
-        VALUES (?, ?, ?, ?)
+        VALUES (%s, %s, %s, %s)
+        RETURNING id
         """,
         (body.category_id, current_user["id"], body.title, body.content),
     )
+    thread_id = cursor.fetchone()["id"]
     db.commit()
 
-    thread_id = cursor.lastrowid
-    # Fetch the created thread by rowid
     row = db.execute(
         """
         SELECT ft.*, u.name AS author_name, u.avatar_url AS author_avatar,
@@ -239,7 +239,7 @@ def create_thread(
         FROM forum_threads ft
         JOIN users u ON u.id = ft.user_id
         JOIN forum_categories fc ON fc.id = ft.category_id
-        WHERE ft.rowid = ?
+        WHERE ft.id = %s
         """,
         (thread_id,),
     ).fetchone()
@@ -271,11 +271,11 @@ def create_reply(
     thread_id: str,
     body: ReplyCreate,
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Add a reply to a thread (auth required)."""
     thread = db.execute(
-        "SELECT id, is_locked FROM forum_threads WHERE id = ?", (thread_id,)
+        "SELECT id, is_locked FROM forum_threads WHERE id = %s", (thread_id,)
     ).fetchone()
     if not thread:
         raise HTTPException(status_code=404, detail="Thread not found")
@@ -283,14 +283,15 @@ def create_reply(
         raise HTTPException(status_code=403, detail="Thread is locked")
 
     cursor = db.execute(
-        "INSERT INTO forum_replies (thread_id, user_id, content) VALUES (?, ?, ?)",
+        "INSERT INTO forum_replies (thread_id, user_id, content) VALUES (%s, %s, %s) RETURNING id",
         (thread_id, current_user["id"], body.content),
     )
+    reply_id = cursor.fetchone()["id"]
     db.execute(
         """
         UPDATE forum_threads
-        SET replies_count = replies_count + 1, updated_at = datetime('now')
-        WHERE id = ?
+        SET replies_count = replies_count + 1, updated_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+        WHERE id = %s
         """,
         (thread_id,),
     )
@@ -301,9 +302,9 @@ def create_reply(
         SELECT fr.*, u.name AS author_name, u.avatar_url AS author_avatar
         FROM forum_replies fr
         JOIN users u ON u.id = fr.user_id
-        WHERE fr.rowid = ?
+        WHERE fr.id = %s
         """,
-        (cursor.lastrowid,),
+        (reply_id,),
     ).fetchone()
 
     return ReplyResponse(
@@ -328,35 +329,35 @@ def create_reply(
 def toggle_like(
     reply_id: str,
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Toggle like on a reply (auth required). Returns new like state."""
     reply = db.execute(
-        "SELECT id FROM forum_replies WHERE id = ?", (reply_id,)
+        "SELECT id FROM forum_replies WHERE id = %s", (reply_id,)
     ).fetchone()
     if not reply:
         raise HTTPException(status_code=404, detail="Reply not found")
 
     existing = db.execute(
-        "SELECT id FROM forum_likes WHERE user_id = ? AND reply_id = ?",
+        "SELECT id FROM forum_likes WHERE user_id = %s AND reply_id = %s",
         (current_user["id"], reply_id),
     ).fetchone()
 
     if existing:
-        db.execute("DELETE FROM forum_likes WHERE id = ?", (existing["id"],))
+        db.execute("DELETE FROM forum_likes WHERE id = %s", (existing["id"],))
         db.execute(
-            "UPDATE forum_replies SET likes_count = MAX(likes_count - 1, 0) WHERE id = ?",
+            "UPDATE forum_replies SET likes_count = MAX(likes_count - 1, 0) WHERE id = %s",
             (reply_id,),
         )
         db.commit()
         return {"liked": False}
     else:
         db.execute(
-            "INSERT INTO forum_likes (user_id, reply_id) VALUES (?, ?)",
+            "INSERT INTO forum_likes (user_id, reply_id) VALUES (%s, %s)",
             (current_user["id"], reply_id),
         )
         db.execute(
-            "UPDATE forum_replies SET likes_count = likes_count + 1 WHERE id = ?",
+            "UPDATE forum_replies SET likes_count = likes_count + 1 WHERE id = %s",
             (reply_id,),
         )
         db.commit()
@@ -371,11 +372,11 @@ def toggle_like(
 def mark_best_answer(
     reply_id: str,
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Mark/unmark a reply as best answer (thread owner only)."""
     reply = db.execute(
-        "SELECT fr.*, ft.user_id AS thread_owner_id FROM forum_replies fr JOIN forum_threads ft ON ft.id = fr.thread_id WHERE fr.id = ?",
+        "SELECT fr.*, ft.user_id AS thread_owner_id FROM forum_replies fr JOIN forum_threads ft ON ft.id = fr.thread_id WHERE fr.id = %s",
         (reply_id,),
     ).fetchone()
     if not reply:
@@ -387,12 +388,12 @@ def mark_best_answer(
 
     # Clear any existing best answer on this thread, then set new one
     db.execute(
-        "UPDATE forum_replies SET is_best_answer = 0 WHERE thread_id = ?",
+        "UPDATE forum_replies SET is_best_answer = 0 WHERE thread_id = %s",
         (reply["thread_id"],),
     )
     if new_state:
         db.execute(
-            "UPDATE forum_replies SET is_best_answer = 1 WHERE id = ?",
+            "UPDATE forum_replies SET is_best_answer = 1 WHERE id = %s",
             (reply_id,),
         )
     db.commit()
@@ -409,14 +410,14 @@ def search_threads(
     q: str = Query(..., min_length=2),
     page: int = Query(1, ge=1),
     per_page: int = Query(20, ge=1, le=100),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Search threads by title or content."""
     offset = (page - 1) * per_page
     like = f"%{q}%"
 
     count_row = db.execute(
-        "SELECT COUNT(*) FROM forum_threads WHERE title LIKE ? OR content LIKE ?",
+        "SELECT COUNT(*) FROM forum_threads WHERE title LIKE %s OR content LIKE %s",
         (like, like),
     ).fetchone()
     total = count_row[0] if count_row else 0
@@ -428,9 +429,9 @@ def search_threads(
         FROM forum_threads ft
         JOIN users u ON u.id = ft.user_id
         JOIN forum_categories fc ON fc.id = ft.category_id
-        WHERE ft.title LIKE ? OR ft.content LIKE ?
+        WHERE ft.title LIKE %s OR ft.content LIKE %s
         ORDER BY ft.updated_at DESC
-        LIMIT ? OFFSET ?
+        LIMIT %s OFFSET %s
         """,
         (like, like, per_page, offset),
     ).fetchall()

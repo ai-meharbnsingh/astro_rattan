@@ -1,5 +1,5 @@
 """Notification routes — list, mark-read, preferences."""
-import sqlite3
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
@@ -28,23 +28,23 @@ def list_notifications(
     page: int = Query(default=1, ge=1),
     limit: int = Query(default=20, ge=1, le=100),
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """List user notifications, paginated, newest first."""
     user_id = current_user["sub"]
     offset = (page - 1) * limit
 
     total = db.execute(
-        "SELECT COUNT(*) as cnt FROM user_notifications WHERE user_id = ?",
+        "SELECT COUNT(*) as cnt FROM user_notifications WHERE user_id = %s",
         (user_id,),
     ).fetchone()["cnt"]
 
     rows = db.execute(
         """SELECT id, type, title, message, is_read, link, created_at
            FROM user_notifications
-           WHERE user_id = ?
+           WHERE user_id = %s
            ORDER BY created_at DESC
-           LIMIT ? OFFSET ?""",
+           LIMIT %s OFFSET %s""",
         (user_id, limit, offset),
     ).fetchall()
 
@@ -70,12 +70,12 @@ def list_notifications(
 @router.get("/unread-count", status_code=status.HTTP_200_OK)
 def unread_count(
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Count of unread notifications."""
     user_id = current_user["sub"]
     row = db.execute(
-        "SELECT COUNT(*) as cnt FROM user_notifications WHERE user_id = ? AND is_read = 0",
+        "SELECT COUNT(*) as cnt FROM user_notifications WHERE user_id = %s AND is_read = 0",
         (user_id,),
     ).fetchone()
     return {"unread_count": row["cnt"]}
@@ -85,19 +85,19 @@ def unread_count(
 def mark_as_read(
     notification_id: str,
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Mark a single notification as read."""
     user_id = current_user["sub"]
     row = db.execute(
-        "SELECT id FROM user_notifications WHERE id = ? AND user_id = ?",
+        "SELECT id FROM user_notifications WHERE id = %s AND user_id = %s",
         (notification_id, user_id),
     ).fetchone()
     if not row:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Notification not found")
 
     db.execute(
-        "UPDATE user_notifications SET is_read = 1 WHERE id = ? AND user_id = ?",
+        "UPDATE user_notifications SET is_read = 1 WHERE id = %s AND user_id = %s",
         (notification_id, user_id),
     )
     db.commit()
@@ -107,12 +107,12 @@ def mark_as_read(
 @router.patch("/read-all", status_code=status.HTTP_200_OK)
 def mark_all_read(
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Mark all notifications as read."""
     user_id = current_user["sub"]
     db.execute(
-        "UPDATE user_notifications SET is_read = 1 WHERE user_id = ? AND is_read = 0",
+        "UPDATE user_notifications SET is_read = 1 WHERE user_id = %s AND is_read = 0",
         (user_id,),
     )
     db.commit()
@@ -122,12 +122,12 @@ def mark_all_read(
 @router.get("/preferences", status_code=status.HTTP_200_OK)
 def get_preferences(
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Get notification preferences for the current user."""
     user_id = current_user["sub"]
     row = db.execute(
-        "SELECT * FROM notification_preferences WHERE user_id = ?",
+        "SELECT * FROM notification_preferences WHERE user_id = %s",
         (user_id,),
     ).fetchone()
 
@@ -154,13 +154,13 @@ def get_preferences(
 def update_preferences(
     body: NotificationPreferencesUpdate,
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Update notification preferences for the current user."""
     user_id = current_user["sub"]
 
     existing = db.execute(
-        "SELECT user_id FROM notification_preferences WHERE user_id = ?",
+        "SELECT user_id FROM notification_preferences WHERE user_id = %s",
         (user_id,),
     ).fetchone()
 
@@ -168,7 +168,7 @@ def update_preferences(
         # Insert defaults first
         db.execute(
             """INSERT INTO notification_preferences (user_id, transit_alerts, muhurat_alerts, festival_alerts, daily_digest, email_notifications)
-               VALUES (?, 1, 1, 1, 1, 0)""",
+               VALUES (%s, 1, 1, 1, 1, 0)""",
             (user_id,),
         )
         db.commit()
@@ -186,17 +186,17 @@ def update_preferences(
         updates["email_notifications"] = int(body.email_notifications)
 
     if updates:
-        set_clause = ", ".join(f"{k} = ?" for k in updates)
+        set_clause = ", ".join(f"{k} = %s" for k in updates)
         values = list(updates.values()) + [user_id]
         db.execute(
-            f"UPDATE notification_preferences SET {set_clause} WHERE user_id = ?",
+            f"UPDATE notification_preferences SET {set_clause} WHERE user_id = %s",
             values,
         )
         db.commit()
 
     # Return updated preferences
     row = db.execute(
-        "SELECT * FROM notification_preferences WHERE user_id = ?",
+        "SELECT * FROM notification_preferences WHERE user_id = %s",
         (user_id,),
     ).fetchone()
 

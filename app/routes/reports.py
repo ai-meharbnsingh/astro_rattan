@@ -4,7 +4,7 @@ C-05: PDF generation via fpdf2 with paywall enforcement.
 """
 import json
 import os
-import sqlite3
+from typing import Any
 import uuid
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from app.auth import get_current_user
@@ -168,13 +168,13 @@ def generate_kundli_pdf(kundli_data: dict, person_name: str, report_type: str) -
 @router.get("/api/reports", status_code=status.HTTP_200_OK)
 def list_my_reports(
     user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """List all reports for the current user."""
     user_id = user.get("sub")
     rows = db.execute(
         "SELECT r.id, r.kundli_id, r.report_type, r.status, r.price, r.created_at, k.person_name as kundli_name "
-        "FROM reports r LEFT JOIN kundlis k ON k.id = r.kundli_id WHERE r.user_id = ? ORDER BY r.created_at DESC",
+        "FROM reports r LEFT JOIN kundlis k ON k.id = r.kundli_id WHERE r.user_id = %s ORDER BY r.created_at DESC",
         (user_id,),
     ).fetchall()
     reports = []
@@ -189,15 +189,17 @@ def list_my_reports(
     return {"reports": reports}
 
 
-def _background_generate_pdf(report_id: str, kundli_id: str, report_type: str, db_path: str):
+def _background_generate_pdf(report_id: str, kundli_id: str, report_type: str, db_path: str = None):
     """H-05: Background task — generate PDF and update report status to 'ready'."""
-    conn = sqlite3.connect(db_path)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA foreign_keys=ON")
+    from app.database import DATABASE_URL, PgConnection
+    import psycopg2
+    raw = psycopg2.connect(DATABASE_URL)
+    raw.autocommit = False
+    conn = PgConnection(raw)
     try:
-        kundli = conn.execute("SELECT * FROM kundlis WHERE id = ?", (kundli_id,)).fetchone()
+        kundli = conn.execute("SELECT * FROM kundlis WHERE id = %s", (kundli_id,)).fetchone()
         if kundli is None:
-            conn.execute("UPDATE reports SET status = 'failed' WHERE id = ?", (report_id,))
+            conn.execute("UPDATE reports SET status = 'failed' WHERE id = %s", (report_id,))
             conn.commit()
             return
 
@@ -207,24 +209,24 @@ def _background_generate_pdf(report_id: str, kundli_id: str, report_type: str, d
         if pdf_filename:
             pdf_url = f"/static/reports/{pdf_filename}"
             conn.execute(
-                "UPDATE reports SET status = 'ready', pdf_url = ? WHERE id = ?",
+                "UPDATE reports SET status = 'ready', pdf_url = %s WHERE id = %s",
                 (pdf_url, report_id),
             )
             report_row = conn.execute(
                 """SELECT r.*, u.email as user_email
                    FROM reports r
                    JOIN users u ON u.id = r.user_id
-                   WHERE r.id = ?""",
+                   WHERE r.id = %s""",
                 (report_id,),
             ).fetchone()
             if report_row and report_row["user_email"]:
                 send_report_ready(dict(report_row), report_row["user_email"])
         else:
             # fpdf2 not installed — mark as failed
-            conn.execute("UPDATE reports SET status = 'failed' WHERE id = ?", (report_id,))
+            conn.execute("UPDATE reports SET status = 'failed' WHERE id = %s", (report_id,))
         conn.commit()
     except Exception:
-        conn.execute("UPDATE reports SET status = 'failed' WHERE id = ?", (report_id,))
+        conn.execute("UPDATE reports SET status = 'failed' WHERE id = %s", (report_id,))
         conn.commit()
     finally:
         conn.close()
@@ -235,7 +237,7 @@ def request_report(
     req: ReportRequest,
     background_tasks: BackgroundTasks,
     user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Request a paid astrology report. Requires JWT.
 
@@ -247,7 +249,7 @@ def request_report(
 
     # Verify kundli exists and belongs to user
     kundli = db.execute(
-        "SELECT * FROM kundlis WHERE id = ? AND user_id = ?",
+        "SELECT * FROM kundlis WHERE id = %s AND user_id = %s",
         (req.kundli_id, user_id),
     ).fetchone()
 
@@ -261,21 +263,17 @@ def request_report(
     cursor = db.execute(
         """
         INSERT INTO reports (user_id, kundli_id, report_type, status, price)
-        VALUES (?, ?, ?, 'pending', ?)
+        VALUES (%s, %s, %s, 'pending', %s)
+        RETURNING id
         """,
         (user_id, req.kundli_id, req.report_type.value, price),
     )
-    rowid = cursor.lastrowid
-    report = db.execute(
-        "SELECT id, status, price, created_at FROM reports WHERE rowid = ?", (rowid,)
-    ).fetchone()
+    report_id = cursor.fetchone()["id"]
     db.commit()
-
-    report_id = report["id"]
 
     # Return immediately with status='pending' - PDF will be generated after payment
     full_report = db.execute(
-        "SELECT * FROM reports WHERE id = ?", (report_id,)
+        "SELECT * FROM reports WHERE id = %s", (report_id,)
     ).fetchone()
     return {
         "report": dict(full_report),
@@ -287,7 +285,7 @@ def request_report(
 def get_report(
     report_id: str,
     user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Get a report by ID. Must belong to current user.
 
@@ -298,7 +296,7 @@ def get_report(
     user_id = user.get("sub")
 
     report = db.execute(
-        "SELECT * FROM reports WHERE id = ? AND user_id = ?",
+        "SELECT * FROM reports WHERE id = %s AND user_id = %s",
         (report_id, user_id),
     ).fetchone()
 
@@ -324,7 +322,7 @@ def get_report(
 def generate_report_pdf(
     report_id: str,
     user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Trigger PDF generation for a paid report.
 
@@ -333,7 +331,7 @@ def generate_report_pdf(
     user_id = user.get("sub")
 
     report = db.execute(
-        "SELECT * FROM reports WHERE id = ? AND user_id = ?",
+        "SELECT * FROM reports WHERE id = %s AND user_id = %s",
         (report_id, user_id),
     ).fetchone()
 
@@ -347,7 +345,7 @@ def generate_report_pdf(
 
     # Check payment -- must be paid or have a completed payment
     payment = db.execute(
-        "SELECT id FROM payments WHERE report_id = ? AND status = 'completed'",
+        "SELECT id FROM payments WHERE report_id = %s AND status = 'completed'",
         (report_id,),
     ).fetchone()
 
@@ -359,7 +357,7 @@ def generate_report_pdf(
 
     # Fetch kundli data for generation
     kundli = db.execute(
-        "SELECT * FROM kundlis WHERE id = ?", (report["kundli_id"],)
+        "SELECT * FROM kundlis WHERE id = %s", (report["kundli_id"],)
     ).fetchone()
 
     if kundli is None:
@@ -380,7 +378,7 @@ def generate_report_pdf(
 
     pdf_url = f"/static/reports/{pdf_filename}"
     db.execute(
-        "UPDATE reports SET status = 'ready', pdf_url = ? WHERE id = ?",
+        "UPDATE reports SET status = 'ready', pdf_url = %s WHERE id = %s",
         (pdf_url, report_id),
     )
     db.commit()

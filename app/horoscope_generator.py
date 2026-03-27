@@ -1,11 +1,12 @@
 """H-09: Horoscope Content Generation Pipeline — seeds daily & weekly horoscopes."""
 import json
 import random
-import sqlite3
+import psycopg2
+import psycopg2.extras
 from datetime import date, timedelta
 from typing import Dict, List, Optional
 
-from app.config import DB_PATH
+from app.database import DATABASE_URL
 
 # The 12 zodiac signs
 SIGNS: List[str] = [
@@ -121,27 +122,29 @@ def _try_ai_horoscope(sign: str, period_date: str) -> str:
 
 def generate_daily_horoscopes(db_path: str = None):
     """Generate daily horoscopes for all 12 signs for today. Skips if already exist."""
-    path = db_path or DB_PATH
-    conn = sqlite3.connect(path)
-    conn.execute("PRAGMA foreign_keys=ON")
+    conn = psycopg2.connect(DATABASE_URL)
+    conn.autocommit = False
 
     today = date.today().isoformat()
 
-    existing = conn.execute(
-        "SELECT COUNT(*) FROM horoscopes WHERE period_type = 'daily' AND period_date = ?",
-        (today,),
-    ).fetchone()[0]
+    with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+        cur.execute(
+            "SELECT COUNT(*) as c FROM horoscopes WHERE period_type = 'daily' AND period_date = %s",
+            (today,),
+        )
+        existing = cur.fetchone()["c"]
 
     if existing >= 12:
         conn.close()
         return
 
     for sign in SIGNS:
-        # Check if this specific sign already has today's horoscope
-        row = conn.execute(
-            "SELECT id FROM horoscopes WHERE sign = ? AND period_type = 'daily' AND period_date = ?",
-            (sign, today),
-        ).fetchone()
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(
+                "SELECT id FROM horoscopes WHERE sign = %s AND period_type = 'daily' AND period_date = %s",
+                (sign, today),
+            )
+            row = cur.fetchone()
         if row:
             continue
 
@@ -150,10 +153,11 @@ def generate_daily_horoscopes(db_path: str = None):
         if not content:
             content = _generate_template_horoscope(sign)
 
-        conn.execute(
-            "INSERT INTO horoscopes (sign, period_type, period_date, content) VALUES (?, ?, ?, ?)",
-            (sign, "daily", today, content),
-        )
+        with conn.cursor() as cur:
+            cur.execute(
+                "INSERT INTO horoscopes (sign, period_type, period_date, content) VALUES (%s, %s, %s, %s)",
+                (sign, "daily", today, content),
+            )
 
     conn.commit()
     conn.close()
@@ -162,29 +166,32 @@ def generate_daily_horoscopes(db_path: str = None):
 
 def seed_weekly_horoscopes(db_path: str = None):
     """Seed 12 weekly horoscopes as initial content."""
-    path = db_path or DB_PATH
-    conn = sqlite3.connect(path)
-    conn.execute("PRAGMA foreign_keys=ON")
+    conn = psycopg2.connect(DATABASE_URL)
+    conn.autocommit = False
 
     # Monday of current week
     today = date.today()
     monday = today - timedelta(days=today.weekday())
     week_date = monday.isoformat()
 
-    existing = conn.execute(
-        "SELECT COUNT(*) FROM horoscopes WHERE period_type = 'weekly' AND period_date = ?",
-        (week_date,),
-    ).fetchone()[0]
+    with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+        cur.execute(
+            "SELECT COUNT(*) as c FROM horoscopes WHERE period_type = 'weekly' AND period_date = %s",
+            (week_date,),
+        )
+        existing = cur.fetchone()["c"]
 
     if existing >= 12:
         conn.close()
         return
 
     for sign in SIGNS:
-        row = conn.execute(
-            "SELECT id FROM horoscopes WHERE sign = ? AND period_type = 'weekly' AND period_date = ?",
-            (sign, week_date),
-        ).fetchone()
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(
+                "SELECT id FROM horoscopes WHERE sign = %s AND period_type = 'weekly' AND period_date = %s",
+                (sign, week_date),
+            )
+            row = cur.fetchone()
         if row:
             continue
 
@@ -199,10 +206,11 @@ def seed_weekly_horoscopes(db_path: str = None):
             f"Stay grounded and trust the cosmic timing."
         )
 
-        conn.execute(
-            "INSERT INTO horoscopes (sign, period_type, period_date, content) VALUES (?, ?, ?, ?)",
-            (sign, "weekly", week_date, content),
-        )
+        with conn.cursor() as cur:
+            cur.execute(
+                "INSERT INTO horoscopes (sign, period_type, period_date, content) VALUES (%s, %s, %s, %s)",
+                (sign, "weekly", week_date, content),
+            )
 
     conn.commit()
     conn.close()

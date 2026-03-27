@@ -1,8 +1,7 @@
 """Seed data and shared helpers for editorial blog content."""
 import json
 import re
-import sqlite3
-from typing import Iterable
+from typing import Any, Iterable
 
 
 DEFAULT_BLOG_POSTS = [
@@ -80,9 +79,10 @@ def slugify(value: str) -> str:
     return slug or "post"
 
 
-def seed_blog_posts(conn: sqlite3.Connection, posts: Iterable[dict] = DEFAULT_BLOG_POSTS):
+def seed_blog_posts(conn: Any, posts: Iterable[dict] = DEFAULT_BLOG_POSTS):
     """Seed starter blog posts once."""
-    existing = conn.execute("SELECT COUNT(*) FROM blog_posts").fetchone()[0]
+    row = conn.execute("SELECT COUNT(*) as c FROM blog_posts").fetchone()
+    existing = row["c"] if isinstance(row, dict) else row[0]
     if existing:
         return
 
@@ -92,7 +92,7 @@ def seed_blog_posts(conn: sqlite3.Connection, posts: Iterable[dict] = DEFAULT_BL
             INSERT INTO blog_posts
                 (slug, title, excerpt, content, cover_image_url, tags, author_name,
                  seo_title, seo_description, is_published)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 1)
             """,
             (
                 post["slug"],

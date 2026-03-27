@@ -1,6 +1,6 @@
 """Panchang routes — daily panchang, choghadiya, muhurat, sunrise, and festivals."""
 import json
-import sqlite3
+from typing import Any
 from datetime import date, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -32,7 +32,7 @@ def get_panchang(
     date_str: str = Query(default=None, alias="date"),
     latitude: float = Query(default=28.6139),   # Delhi default
     longitude: float = Query(default=77.2090),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Calculate Panchang for a given date and location."""
     target_date = date_str or _today()
@@ -40,7 +40,7 @@ def get_panchang(
 
     # Check cache first
     cached = db.execute(
-        "SELECT * FROM panchang_cache WHERE date = ? AND latitude = ? AND longitude = ?",
+        "SELECT * FROM panchang_cache WHERE date = %s AND latitude = %s AND longitude = %s",
         (target_date, latitude, longitude),
     ).fetchone()
 
@@ -101,7 +101,7 @@ def get_panchang(
         """INSERT OR IGNORE INTO panchang_cache
            (date, latitude, longitude, tithi, nakshatra, yoga, karana,
             rahu_kaal, choghadiya, sunrise, sunset, moonrise, moonset)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
         (
             target_date, latitude, longitude,
             tithi_str, nak_str, yoga_str, karana_str,
@@ -173,7 +173,7 @@ def get_muhurat(
     month: int = Query(default=None),
     latitude: float = Query(default=28.6139),
     longitude: float = Query(default=77.2090),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Get auspicious muhurat dates for a given type and period.
     Contract response: {dates: [{date, time_range, quality}]}
@@ -184,7 +184,7 @@ def get_muhurat(
 
     # Check cache
     cached = db.execute(
-        "SELECT results FROM muhurat_cache WHERE muhurat_type = ? AND year = ? AND month = ? AND latitude = ? AND longitude = ?",
+        "SELECT results FROM muhurat_cache WHERE muhurat_type = %s AND year = %s AND month = %s AND latitude = %s AND longitude = %s",
         (muhurat_type, target_year, target_month, latitude, longitude),
     ).fetchone()
 
@@ -226,7 +226,7 @@ def get_muhurat(
     db.execute(
         """INSERT OR IGNORE INTO muhurat_cache
            (muhurat_type, year, month, latitude, longitude, results)
-           VALUES (?, ?, ?, ?, ?, ?)""",
+           VALUES (%s, %s, %s, %s, %s, %s)""",
         (muhurat_type, target_year, target_month, latitude, longitude, results_json),
     )
     db.commit()
@@ -346,19 +346,19 @@ def get_sunrise(
 def list_festivals(
     year: int = Query(default=None),
     category: str = Query(default=None),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """List festivals for a given year, optionally filtered by category."""
     target_year = year or date.today().year
 
     if category:
         rows = db.execute(
-            "SELECT * FROM festivals WHERE year = ? AND category = ? ORDER BY date",
+            "SELECT * FROM festivals WHERE year = %s AND category = %s ORDER BY date",
             (target_year, category),
         ).fetchall()
     else:
         rows = db.execute(
-            "SELECT * FROM festivals WHERE year = ? ORDER BY date",
+            "SELECT * FROM festivals WHERE year = %s ORDER BY date",
             (target_year,),
         ).fetchall()
 

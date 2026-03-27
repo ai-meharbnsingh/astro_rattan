@@ -1,6 +1,6 @@
 """WebSocket route for consultation chat messages."""
 import json
-import sqlite3
+from typing import Any
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query
 from app.auth import decode_token
 from app.database import get_db
@@ -19,7 +19,7 @@ async def consultation_ws(
 ):
     """
     WebSocket endpoint for real-time consultation messages.
-    Auth via JWT token in query param: /ws/consultation/{id}?token=<jwt>
+    Auth via JWT token in query param: /ws/consultation/{id}%stoken=<jwt>
     """
     # Authenticate via query param
     if not token:
@@ -44,7 +44,7 @@ async def consultation_ws(
                    a.user_id as astrologer_user_id
             FROM consultations c
             JOIN astrologers a ON a.id = c.astrologer_id
-            WHERE c.id = ?
+            WHERE c.id = %s
             """,
             (consultation_id,),
         ).fetchone()
@@ -68,7 +68,7 @@ async def consultation_ws(
         # Mark as active if currently accepted
         if consultation["status"] == "accepted":
             db.execute(
-                "UPDATE consultations SET status = 'active', started_at = datetime('now') WHERE id = ?",
+                "UPDATE consultations SET status = 'active', started_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS') WHERE id = %s",
                 (consultation_id,),
             )
             db.commit()
@@ -110,14 +110,12 @@ async def consultation_ws(
                 cursor = db2.execute(
                     """
                     INSERT INTO messages (consultation_id, sender_id, content, message_type)
-                    VALUES (?, ?, ?, ?)
+                    VALUES (%s, %s, %s, %s)
+                    RETURNING id, created_at
                     """,
                     (consultation_id, user_id, content, message_type),
                 )
-                rowid = cursor.lastrowid
-                msg_row = db2.execute(
-                    "SELECT id, created_at FROM messages WHERE rowid = ?", (rowid,)
-                ).fetchone()
+                msg_row = cursor.fetchone()
                 db2.commit()
 
                 outgoing = {

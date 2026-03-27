@@ -1,6 +1,6 @@
 """Admin CRUD routes for editorial blog content."""
 import json
-import sqlite3
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
@@ -12,7 +12,7 @@ from app.models import BlogPostCreate, BlogPostUpdate
 router = APIRouter(tags=["admin-blog"])
 
 
-def _serialize_post(row: sqlite3.Row) -> dict:
+def _serialize_post(row) -> dict:
     try:
         tags = json.loads(row["tags"] or "[]")
     except json.JSONDecodeError:
@@ -36,13 +36,13 @@ def _serialize_post(row: sqlite3.Row) -> dict:
     }
 
 
-def _unique_slug(db: sqlite3.Connection, desired_slug: str, post_id: str | None = None) -> str:
+def _unique_slug(db: Any, desired_slug: str, post_id: str | None = None) -> str:
     base_slug = slugify(desired_slug)
     candidate = base_slug
     counter = 2
     while True:
         row = db.execute(
-            "SELECT id FROM blog_posts WHERE slug = ?",
+            "SELECT id FROM blog_posts WHERE slug = %s",
             (candidate,),
         ).fetchone()
         if row is None or row["id"] == post_id:
@@ -54,7 +54,7 @@ def _unique_slug(db: sqlite3.Connection, desired_slug: str, post_id: str | None 
 @router.get("/api/admin/blog")
 def list_admin_blog(
     user: dict = Depends(require_role("admin")),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """List all blog posts for admin review."""
     rows = db.execute(
@@ -72,7 +72,7 @@ def list_admin_blog(
 def create_blog_post(
     req: BlogPostCreate,
     user: dict = Depends(require_role("admin")),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Create a blog post with a unique slug."""
     slug = _unique_slug(db, req.slug or req.title)
@@ -81,7 +81,8 @@ def create_blog_post(
         INSERT INTO blog_posts
             (slug, title, excerpt, content, cover_image_url, tags, author_name,
              seo_title, seo_description, is_published, published_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS'), to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS'))
+        RETURNING id
         """,
         (
             slug,
@@ -96,16 +97,17 @@ def create_blog_post(
             int(req.is_published),
         ),
     )
+    new_id = cursor.fetchone()["id"]
+    db.commit()
     row = db.execute(
         """
         SELECT id, slug, title, excerpt, content, cover_image_url, tags, author_name,
                seo_title, seo_description, is_published, published_at, created_at, updated_at
         FROM blog_posts
-        WHERE rowid = ?
+        WHERE id = %s
         """,
-        (cursor.lastrowid,),
+        (new_id,),
     ).fetchone()
-    db.commit()
     return _serialize_post(row)
 
 
@@ -114,7 +116,7 @@ def update_blog_post(
     post_id: str,
     req: BlogPostUpdate,
     user: dict = Depends(require_role("admin")),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Update blog post fields."""
     existing = db.execute(
@@ -122,7 +124,7 @@ def update_blog_post(
         SELECT id, slug, title, excerpt, content, cover_image_url, tags, author_name,
                seo_title, seo_description, is_published, published_at, created_at, updated_at
         FROM blog_posts
-        WHERE id = ?
+        WHERE id = %s
         """,
         (post_id,),
     ).fetchone()
@@ -144,10 +146,10 @@ def update_blog_post(
     db.execute(
         """
         UPDATE blog_posts
-        SET slug = ?, title = ?, excerpt = ?, content = ?, cover_image_url = ?, tags = ?,
-            author_name = ?, seo_title = ?, seo_description = ?, is_published = ?,
-            updated_at = datetime('now')
-        WHERE id = ?
+        SET slug = %s, title = %s, excerpt = %s, content = %s, cover_image_url = %s, tags = %s,
+            author_name = %s, seo_title = %s, seo_description = %s, is_published = %s,
+            updated_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+        WHERE id = %s
         """,
         (
             payload["slug"],
@@ -169,7 +171,7 @@ def update_blog_post(
         SELECT id, slug, title, excerpt, content, cover_image_url, tags, author_name,
                seo_title, seo_description, is_published, published_at, created_at, updated_at
         FROM blog_posts
-        WHERE id = ?
+        WHERE id = %s
         """,
         (post_id,),
     ).fetchone()
@@ -180,12 +182,12 @@ def update_blog_post(
 def delete_blog_post(
     post_id: str,
     user: dict = Depends(require_role("admin")),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Delete a blog post."""
-    existing = db.execute("SELECT id FROM blog_posts WHERE id = ?", (post_id,)).fetchone()
+    existing = db.execute("SELECT id FROM blog_posts WHERE id = %s", (post_id,)).fetchone()
     if existing is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Blog post not found")
-    db.execute("DELETE FROM blog_posts WHERE id = ?", (post_id,))
+    db.execute("DELETE FROM blog_posts WHERE id = %s", (post_id,))
     db.commit()
     return None

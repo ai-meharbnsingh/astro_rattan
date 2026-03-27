@@ -1,7 +1,7 @@
 """Admin product management routes — CRUD, stock update, toggle, image upload."""
 import os
 import uuid
-import sqlite3
+from typing import Any
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 from app.auth import require_role
 from app.database import get_db
@@ -20,22 +20,22 @@ def admin_list_products(
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
     user: dict = Depends(require_role("admin")),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """List all products with optional category filter (admin view includes inactive)."""
     offset = (page - 1) * limit
     if category:
         count = db.execute(
-            "SELECT COUNT(*) as c FROM products WHERE category = ?", (category,)
+            "SELECT COUNT(*) as c FROM products WHERE category = %s", (category,)
         ).fetchone()["c"]
         rows = db.execute(
-            "SELECT * FROM products WHERE category = ? ORDER BY created_at DESC LIMIT ? OFFSET ?",
+            "SELECT * FROM products WHERE category = %s ORDER BY created_at DESC LIMIT %s OFFSET %s",
             (category, limit, offset),
         ).fetchall()
     else:
         count = db.execute("SELECT COUNT(*) as c FROM products").fetchone()["c"]
         rows = db.execute(
-            "SELECT * FROM products ORDER BY created_at DESC LIMIT ? OFFSET ?",
+            "SELECT * FROM products ORDER BY created_at DESC LIMIT %s OFFSET %s",
             (limit, offset),
         ).fetchall()
 
@@ -46,23 +46,24 @@ def admin_list_products(
 def admin_create_product(
     req: ProductCreate,
     user: dict = Depends(require_role("admin")),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Create a new product."""
-    product_id = db.execute(
+    cursor = db.execute(
         """INSERT INTO products (name, description, category, price, compare_price,
            image_url, weight, planet, properties, stock)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+           RETURNING id""",
         (
             req.name, req.description, req.category.value, req.price,
             req.compare_price, req.image_url, req.weight, req.planet,
             req.properties, req.stock,
         ),
-    ).lastrowid
-
+    )
+    product_id = cursor.fetchone()["id"]
     db.commit()
 
-    row = db.execute("SELECT * FROM products WHERE rowid = ?", (product_id,)).fetchone()
+    row = db.execute("SELECT * FROM products WHERE id = %s", (product_id,)).fetchone()
     return dict(row)
 
 
@@ -70,10 +71,10 @@ def admin_create_product(
 def admin_update_product(
     product_id: str,
     user: dict = Depends(require_role("admin")),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Update a product (name, description, price, stock, is_active, etc.)."""
-    existing = db.execute("SELECT id FROM products WHERE id = ?", (product_id,)).fetchone()
+    existing = db.execute("SELECT id FROM products WHERE id = %s", (product_id,)).fetchone()
     if existing is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
 
@@ -85,17 +86,17 @@ def admin_replace_product(
     product_id: str,
     req: ProductCreate,
     user: dict = Depends(require_role("admin")),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Replace a product entirely."""
-    existing = db.execute("SELECT id FROM products WHERE id = ?", (product_id,)).fetchone()
+    existing = db.execute("SELECT id FROM products WHERE id = %s", (product_id,)).fetchone()
     if existing is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
 
     db.execute(
-        """UPDATE products SET name=?, description=?, category=?, price=?,
-           compare_price=?, image_url=?, weight=?, planet=?, properties=?,
-           stock=?, updated_at=datetime('now') WHERE id=?""",
+        """UPDATE products SET name=%s, description=%s, category=%s, price=%s,
+           compare_price=%s, image_url=%s, weight=%s, planet=%s, properties=%s,
+           stock=%s, updated_at=to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS') WHERE id=%s""",
         (
             req.name, req.description, req.category.value, req.price,
             req.compare_price, req.image_url, req.weight, req.planet,
@@ -104,7 +105,7 @@ def admin_replace_product(
     )
     db.commit()
 
-    row = db.execute("SELECT * FROM products WHERE id = ?", (product_id,)).fetchone()
+    row = db.execute("SELECT * FROM products WHERE id = %s", (product_id,)).fetchone()
     return dict(row)
 
 
@@ -113,15 +114,15 @@ def admin_update_stock(
     product_id: str,
     stock: int = Query(..., ge=0),
     user: dict = Depends(require_role("admin")),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Quick stock update for a product."""
-    existing = db.execute("SELECT id FROM products WHERE id = ?", (product_id,)).fetchone()
+    existing = db.execute("SELECT id FROM products WHERE id = %s", (product_id,)).fetchone()
     if existing is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
 
     db.execute(
-        "UPDATE products SET stock = ?, updated_at = datetime('now') WHERE id = ?",
+        "UPDATE products SET stock = %s, updated_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS') WHERE id = %s",
         (stock, product_id),
     )
     db.commit()
@@ -132,16 +133,16 @@ def admin_update_stock(
 def admin_toggle_product(
     product_id: str,
     user: dict = Depends(require_role("admin")),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Toggle product active/inactive."""
-    row = db.execute("SELECT id, is_active FROM products WHERE id = ?", (product_id,)).fetchone()
+    row = db.execute("SELECT id, is_active FROM products WHERE id = %s", (product_id,)).fetchone()
     if row is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
 
     new_status = 0 if row["is_active"] else 1
     db.execute(
-        "UPDATE products SET is_active = ?, updated_at = datetime('now') WHERE id = ?",
+        "UPDATE products SET is_active = %s, updated_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS') WHERE id = %s",
         (new_status, product_id),
     )
     db.commit()

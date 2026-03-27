@@ -1,6 +1,6 @@
 """Referral / Affiliate routes — generate codes, track earnings, apply discounts."""
 import secrets
-import sqlite3
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
@@ -19,12 +19,12 @@ router = APIRouter(prefix="/api/referral", tags=["referral"])
 # Helpers
 # ---------------------------------------------------------------------------
 
-def _generate_unique_code(db: sqlite3.Connection) -> str:
+def _generate_unique_code(db: Any) -> str:
     """Generate a unique 8-character alphanumeric referral code."""
     for _ in range(10):
         code = secrets.token_urlsafe(6).replace("-", "").replace("_", "")[:8].upper()
         existing = db.execute(
-            "SELECT 1 FROM referral_codes WHERE code = ?", (code,)
+            "SELECT 1 FROM referral_codes WHERE code = %s", (code,)
         ).fetchone()
         if not existing:
             return code
@@ -41,7 +41,7 @@ def _generate_unique_code(db: sqlite3.Connection) -> str:
 @router.post("/generate", status_code=status.HTTP_201_CREATED)
 def generate_referral_code(
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Generate a unique referral code for the authenticated user.
 
@@ -53,7 +53,7 @@ def generate_referral_code(
     # Check if user already has a code
     existing = db.execute(
         "SELECT code, user_id, discount_percent, commission_percent, uses_count, max_uses, is_active "
-        "FROM referral_codes WHERE user_id = ?",
+        "FROM referral_codes WHERE user_id = %s",
         (user_id,),
     ).fetchone()
 
@@ -73,7 +73,7 @@ def generate_referral_code(
 
     code = _generate_unique_code(db)
     db.execute(
-        "INSERT INTO referral_codes (code, user_id) VALUES (?, ?)",
+        "INSERT INTO referral_codes (code, user_id) VALUES (%s, %s)",
         (code, user_id),
     )
     db.commit()
@@ -90,13 +90,13 @@ def generate_referral_code(
 @router.get("/my-code")
 def get_my_referral_code(
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Return the authenticated user's referral code, if one exists."""
     user_id = current_user["sub"]
     row = db.execute(
         "SELECT code, user_id, discount_percent, commission_percent, uses_count, max_uses, is_active "
-        "FROM referral_codes WHERE user_id = ?",
+        "FROM referral_codes WHERE user_id = %s",
         (user_id,),
     ).fetchone()
 
@@ -122,13 +122,13 @@ def get_my_referral_code(
 @router.get("/stats", response_model=ReferralStats)
 def get_referral_stats(
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Return referral statistics for the authenticated user."""
     user_id = current_user["sub"]
 
     total_referrals = db.execute(
-        "SELECT COUNT(DISTINCT referred_id) as cnt FROM referral_earnings WHERE referrer_id = ?",
+        "SELECT COUNT(DISTINCT referred_id) as cnt FROM referral_earnings WHERE referrer_id = %s",
         (user_id,),
     ).fetchone()["cnt"]
 
@@ -137,7 +137,7 @@ def get_referral_stats(
         "  COALESCE(SUM(commission), 0) as total_earnings, "
         "  COALESCE(SUM(CASE WHEN status = 'pending' THEN commission ELSE 0 END), 0) as pending_earnings, "
         "  COALESCE(SUM(CASE WHEN status = 'paid' THEN commission ELSE 0 END), 0) as paid_earnings "
-        "FROM referral_earnings WHERE referrer_id = ?",
+        "FROM referral_earnings WHERE referrer_id = %s",
         (user_id,),
     ).fetchone()
 
@@ -154,14 +154,14 @@ def list_referral_earnings(
     page: int = Query(1, ge=1),
     per_page: int = Query(20, ge=1, le=100),
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """List all referral earnings for the authenticated user with pagination."""
     user_id = current_user["sub"]
     offset = (page - 1) * per_page
 
     total = db.execute(
-        "SELECT COUNT(*) as cnt FROM referral_earnings WHERE referrer_id = ?",
+        "SELECT COUNT(*) as cnt FROM referral_earnings WHERE referrer_id = %s",
         (user_id,),
     ).fetchone()["cnt"]
 
@@ -170,8 +170,8 @@ def list_referral_earnings(
         "  re.commission, re.status, re.created_at, u.name as referred_name "
         "FROM referral_earnings re "
         "LEFT JOIN users u ON u.id = re.referred_id "
-        "WHERE re.referrer_id = ? "
-        "ORDER BY re.created_at DESC LIMIT ? OFFSET ?",
+        "WHERE re.referrer_id = %s "
+        "ORDER BY re.created_at DESC LIMIT %s OFFSET %s",
         (user_id, per_page, offset),
     ).fetchall()
 
@@ -203,7 +203,7 @@ def list_referral_earnings(
 def apply_referral_code(
     body: ApplyReferralRequest,
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Apply a referral code during/after registration to link the referred user to a referrer.
 
@@ -216,7 +216,7 @@ def apply_referral_code(
     # Look up the referral code
     ref_row = db.execute(
         "SELECT id, code, user_id, discount_percent, commission_percent, uses_count, max_uses, is_active "
-        "FROM referral_codes WHERE code = ?",
+        "FROM referral_codes WHERE code = %s",
         (code,),
     ).fetchone()
 
@@ -235,7 +235,7 @@ def apply_referral_code(
 
     # Check if user has already been referred
     already = db.execute(
-        "SELECT 1 FROM referral_earnings WHERE referred_id = ?", (user_id,)
+        "SELECT 1 FROM referral_earnings WHERE referred_id = %s", (user_id,)
     ).fetchone()
     if already:
         raise HTTPException(
@@ -245,7 +245,7 @@ def apply_referral_code(
 
     # Increment uses_count
     db.execute(
-        "UPDATE referral_codes SET uses_count = uses_count + 1, updated_at = datetime('now') WHERE id = ?",
+        "UPDATE referral_codes SET uses_count = uses_count + 1, updated_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS') WHERE id = %s",
         (ref_row["id"],),
     )
     db.commit()
@@ -260,7 +260,7 @@ def apply_referral_code(
 @router.post("/validate/{code}")
 def validate_referral_code(
     code: str,
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Validate whether a referral code exists and is currently active.
 
@@ -271,7 +271,7 @@ def validate_referral_code(
 
     ref_row = db.execute(
         "SELECT code, user_id, discount_percent, is_active, uses_count, max_uses "
-        "FROM referral_codes WHERE code = ?",
+        "FROM referral_codes WHERE code = %s",
         (code,),
     ).fetchone()
 
@@ -286,7 +286,7 @@ def validate_referral_code(
 
     # Fetch referrer name for display
     referrer = db.execute(
-        "SELECT name FROM users WHERE id = ?", (ref_row["user_id"],)
+        "SELECT name FROM users WHERE id = %s", (ref_row["user_id"],)
     ).fetchone()
 
     return {

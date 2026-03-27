@@ -1,5 +1,5 @@
 """Horoscope routes — daily/weekly/monthly/yearly horoscope by zodiac sign."""
-import sqlite3
+from typing import Any
 from datetime import date
 from typing import Optional
 
@@ -82,13 +82,13 @@ def get_ai_horoscope(
 def get_horoscope(
     sign: ZodiacSign,
     period: HoroscopePeriod = Query(default=HoroscopePeriod.daily),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Get horoscope for a zodiac sign and period (daily/weekly/monthly/yearly)."""
     period_date = _current_period_date(period.value)
 
     row = db.execute(
-        "SELECT * FROM horoscopes WHERE sign = ? AND period_type = ? AND period_date = ?",
+        "SELECT * FROM horoscopes WHERE sign = %s AND period_type = %s AND period_date = %s",
         (sign.value, period.value, period_date),
     ).fetchone()
 

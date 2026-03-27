@@ -1,5 +1,5 @@
 """Order management routes — all require JWT auth."""
-import sqlite3
+from typing import Any
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from app.auth import get_current_user
 from app.database import get_db
@@ -14,7 +14,7 @@ def create_order(
     req: OrderCreateRequest,
     background_tasks: BackgroundTasks,
     user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """
     Create an order from the current user's cart.
@@ -29,7 +29,7 @@ def create_order(
                p.name, p.price, p.stock
         FROM cart_items ci
         JOIN products p ON p.id = ci.product_id
-        WHERE ci.user_id = ?
+        WHERE ci.user_id = %s
         """,
         (user_id,),
     ).fetchall()
@@ -41,7 +41,7 @@ def create_order(
 
     cart_items = [dict(row) for row in cart_rows]
     user_row = db.execute(
-        "SELECT email FROM users WHERE id = ?",
+        "SELECT email FROM users WHERE id = %s",
         (user_id,),
     ).fetchone()
 
@@ -60,39 +60,34 @@ def create_order(
     cursor = db.execute(
         """
         INSERT INTO orders (user_id, total, shipping_address, payment_method)
-        VALUES (?, ?, ?, ?)
+        VALUES (%s, %s, %s, %s)
+        RETURNING id
         """,
         (user_id, round(total, 2), req.shipping_address, req.payment_method.value),
     )
-    order_id = cursor.lastrowid
-
-    # Fetch the generated id (since it's a TEXT primary key via randomblob)
-    order_row = db.execute(
-        "SELECT id FROM orders WHERE rowid = ?", (order_id,)
-    ).fetchone()
-    order_id = order_row["id"]
+    order_id = cursor.fetchone()["id"]
 
     # Create order items and reduce stock
     for item in cart_items:
         db.execute(
             """
             INSERT INTO order_items (order_id, product_id, quantity, price, product_name)
-            VALUES (?, ?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s, %s)
             """,
             (order_id, item["product_id"], item["quantity"], item["price"], item["name"]),
         )
         db.execute(
-            "UPDATE products SET stock = stock - ? WHERE id = ?",
+            "UPDATE products SET stock = stock - %s WHERE id = %s",
             (item["quantity"], item["product_id"]),
         )
 
     # Clear cart
-    db.execute("DELETE FROM cart_items WHERE user_id = ?", (user_id,))
+    db.execute("DELETE FROM cart_items WHERE user_id = %s", (user_id,))
     db.commit()
 
     # Return the full order per contract: {order}
     order_full = db.execute(
-        "SELECT * FROM orders WHERE id = ?", (order_id,)
+        "SELECT * FROM orders WHERE id = %s", (order_id,)
     ).fetchone()
     order_payload = {**dict(order_full), "items": cart_items}
     if user_row and user_row["email"]:
@@ -104,7 +99,7 @@ def create_order(
 @router.get("/api/orders")
 def list_orders(
     user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """List all orders for the current user."""
     user_id = user.get("sub")
@@ -114,7 +109,7 @@ def list_orders(
         SELECT id, status, total, shipping_address, payment_method,
                payment_status, tracking_number, created_at, updated_at
         FROM orders
-        WHERE user_id = ?
+        WHERE user_id = %s
         ORDER BY created_at DESC
         """,
         (user_id,),
@@ -133,13 +128,13 @@ def list_orders(
 def get_order(
     order_id: str,
     user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Get a single order with its items. Must belong to current user."""
     user_id = user.get("sub")
 
     order = db.execute(
-        "SELECT * FROM orders WHERE id = ? AND user_id = ?", (order_id, user_id)
+        "SELECT * FROM orders WHERE id = %s AND user_id = %s", (order_id, user_id)
     ).fetchone()
 
     if order is None:
@@ -148,7 +143,7 @@ def get_order(
         )
 
     items = db.execute(
-        "SELECT * FROM order_items WHERE order_id = ?", (order_id,)
+        "SELECT * FROM order_items WHERE order_id = %s", (order_id,)
     ).fetchall()
 
     return {

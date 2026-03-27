@@ -1,5 +1,5 @@
 """Astrologer dashboard and profile management routes."""
-import sqlite3
+from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.auth import require_role
 from app.database import get_db
@@ -8,10 +8,10 @@ from app.models import AstrologerProfileUpdate, AstrologerAvailability
 router = APIRouter()
 
 
-def _get_astrologer_record(user_id: str, db: sqlite3.Connection):
+def _get_astrologer_record(user_id: str, db: Any):
     """Fetch astrologer record by user_id or raise 403."""
     row = db.execute(
-        "SELECT * FROM astrologers WHERE user_id = ?", (user_id,)
+        "SELECT * FROM astrologers WHERE user_id = %s", (user_id,)
     ).fetchone()
 
     if row is None:
@@ -25,7 +25,7 @@ def _get_astrologer_record(user_id: str, db: sqlite3.Connection):
 @router.get("/api/astrologer/dashboard")
 def astrologer_dashboard(
     user: dict = Depends(require_role("astrologer")),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Astrologer dashboard with consultation stats and earnings."""
     user_id = user.get("sub")
@@ -33,27 +33,27 @@ def astrologer_dashboard(
     astrologer_id = astrologer["id"]
 
     total_consultations = db.execute(
-        "SELECT COUNT(*) as c FROM consultations WHERE astrologer_id = ?",
+        "SELECT COUNT(*) as c FROM consultations WHERE astrologer_id = %s",
         (astrologer_id,),
     ).fetchone()["c"]
 
     pending = db.execute(
-        "SELECT COUNT(*) as c FROM consultations WHERE astrologer_id = ? AND status = 'requested'",
+        "SELECT COUNT(*) as c FROM consultations WHERE astrologer_id = %s AND status = 'requested'",
         (astrologer_id,),
     ).fetchone()["c"]
 
     active = db.execute(
-        "SELECT COUNT(*) as c FROM consultations WHERE astrologer_id = ? AND status = 'active'",
+        "SELECT COUNT(*) as c FROM consultations WHERE astrologer_id = %s AND status = 'active'",
         (astrologer_id,),
     ).fetchone()["c"]
 
     completed = db.execute(
-        "SELECT COUNT(*) as c FROM consultations WHERE astrologer_id = ? AND status = 'completed'",
+        "SELECT COUNT(*) as c FROM consultations WHERE astrologer_id = %s AND status = 'completed'",
         (astrologer_id,),
     ).fetchone()["c"]
 
     total_earnings = db.execute(
-        "SELECT COALESCE(SUM(total_charge), 0) as c FROM consultations WHERE astrologer_id = ? AND status = 'completed'",
+        "SELECT COALESCE(SUM(total_charge), 0) as c FROM consultations WHERE astrologer_id = %s AND status = 'completed'",
         (astrologer_id,),
     ).fetchone()["c"]
 
@@ -68,7 +68,7 @@ def astrologer_dashboard(
 @router.get("/api/astrologer/profile")
 def astrologer_profile(
     user: dict = Depends(require_role("astrologer")),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Return the current astrologer's profile."""
     user_id = user.get("sub")
@@ -79,7 +79,7 @@ def astrologer_profile(
 @router.get("/api/astrologer/consultations")
 def astrologer_consultations(
     user: dict = Depends(require_role("astrologer")),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """List all consultations for this astrologer."""
     user_id = user.get("sub")
@@ -96,7 +96,7 @@ def astrologer_consultations(
                u.email as client_email
         FROM consultations c
         JOIN users u ON u.id = c.user_id
-        WHERE c.astrologer_id = ?
+        WHERE c.astrologer_id = %s
         ORDER BY c.created_at DESC
         """,
         (astrologer["id"],),
@@ -109,7 +109,7 @@ def astrologer_consultations(
 def update_profile(
     req: AstrologerProfileUpdate,
     user: dict = Depends(require_role("astrologer")),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Update astrologer profile fields."""
     user_id = user.get("sub")
@@ -119,16 +119,16 @@ def update_profile(
     params = []
 
     if req.bio is not None:
-        updates.append("bio = ?")
+        updates.append("bio = %s")
         params.append(req.bio)
     if req.specializations is not None:
-        updates.append("specializations = ?")
+        updates.append("specializations = %s")
         params.append(req.specializations)
     if req.per_minute_rate is not None:
-        updates.append("per_minute_rate = ?")
+        updates.append("per_minute_rate = %s")
         params.append(req.per_minute_rate)
     if req.languages is not None:
-        updates.append("languages = ?")
+        updates.append("languages = %s")
         params.append(req.languages)
 
     if not updates:
@@ -138,13 +138,13 @@ def update_profile(
 
     params.append(astrologer["id"])
     db.execute(
-        f"UPDATE astrologers SET {', '.join(updates)} WHERE id = ?", params
+        f"UPDATE astrologers SET {', '.join(updates)} WHERE id = %s", params
     )
     db.commit()
 
     # Return updated profile per contract: {profile}
     updated = db.execute(
-        "SELECT * FROM astrologers WHERE id = ?", (astrologer["id"],)
+        "SELECT * FROM astrologers WHERE id = %s", (astrologer["id"],)
     ).fetchone()
     return dict(updated)
 
@@ -153,20 +153,20 @@ def update_profile(
 def update_availability(
     req: AstrologerAvailability,
     user: dict = Depends(require_role("astrologer")),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Toggle astrologer availability."""
     user_id = user.get("sub")
     astrologer = _get_astrologer_record(user_id, db)
 
     db.execute(
-        "UPDATE astrologers SET is_available = ? WHERE id = ?",
+        "UPDATE astrologers SET is_available = %s WHERE id = %s",
         (1 if req.is_available else 0, astrologer["id"]),
     )
     db.commit()
 
     # Return updated profile per contract: {profile}
     updated = db.execute(
-        "SELECT * FROM astrologers WHERE id = ?", (astrologer["id"],)
+        "SELECT * FROM astrologers WHERE id = %s", (astrologer["id"],)
     ).fetchone()
     return dict(updated)

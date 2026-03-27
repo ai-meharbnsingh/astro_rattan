@@ -1,5 +1,5 @@
 """Product bundle routes — consultation + product bundling with discounts."""
-import sqlite3
+from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from app.auth import get_current_user, require_role
 from app.database import get_db
@@ -17,7 +17,7 @@ CONSULTATION_PRICES = {
 }
 
 
-def _build_bundle_response(bundle_row: dict, items: list, db: sqlite3.Connection) -> dict:
+def _build_bundle_response(bundle_row: dict, items: list, db: Any) -> dict:
     """Build a full bundle response dict with calculated prices."""
     bundle_items = []
     original_price = 0.0
@@ -29,7 +29,7 @@ def _build_bundle_response(bundle_row: dict, items: list, db: sqlite3.Connection
 
         if item_dict.get("product_id"):
             product = db.execute(
-                "SELECT name, price FROM products WHERE id = ?",
+                "SELECT name, price FROM products WHERE id = %s",
                 (item_dict["product_id"],),
             ).fetchone()
             if product:
@@ -79,7 +79,7 @@ def _build_bundle_response(bundle_row: dict, items: list, db: sqlite3.Connection
 def list_bundles(
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """List all active bundles with calculated prices."""
     offset = (page - 1) * limit
@@ -91,14 +91,14 @@ def list_bundles(
 
     rows = db.execute(
         "SELECT * FROM product_bundles WHERE is_active = 1 "
-        "ORDER BY created_at DESC LIMIT ? OFFSET ?",
+        "ORDER BY created_at DESC LIMIT %s OFFSET %s",
         (limit, offset),
     ).fetchall()
 
     bundles = []
     for row in rows:
         items = db.execute(
-            "SELECT * FROM bundle_items WHERE bundle_id = ?", (row["id"],)
+            "SELECT * FROM bundle_items WHERE bundle_id = %s", (row["id"],)
         ).fetchall()
         bundles.append(_build_bundle_response(dict(row), items, db))
 
@@ -106,10 +106,10 @@ def list_bundles(
 
 
 @router.get("/api/bundles/{bundle_id}")
-def get_bundle(bundle_id: str, db: sqlite3.Connection = Depends(get_db)):
+def get_bundle(bundle_id: str, db: Any = Depends(get_db)):
     """Get a single bundle with full details and calculated savings."""
     row = db.execute(
-        "SELECT * FROM product_bundles WHERE id = ? AND is_active = 1",
+        "SELECT * FROM product_bundles WHERE id = %s AND is_active = 1",
         (bundle_id,),
     ).fetchone()
 
@@ -119,7 +119,7 @@ def get_bundle(bundle_id: str, db: sqlite3.Connection = Depends(get_db)):
         )
 
     items = db.execute(
-        "SELECT * FROM bundle_items WHERE bundle_id = ?", (bundle_id,)
+        "SELECT * FROM bundle_items WHERE bundle_id = %s", (bundle_id,)
     ).fetchall()
 
     return _build_bundle_response(dict(row), items, db)
@@ -132,7 +132,7 @@ def get_bundle(bundle_id: str, db: sqlite3.Connection = Depends(get_db)):
 def create_bundle(
     req: BundleCreate,
     user: dict = Depends(require_role("admin")),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Create a new product bundle (admin only)."""
     # Validate items — each must have product_id or consultation_type
@@ -150,7 +150,7 @@ def create_bundle(
         # Verify product exists if product_id given
         if item.product_id:
             product = db.execute(
-                "SELECT id FROM products WHERE id = ? AND is_active = 1",
+                "SELECT id FROM products WHERE id = %s AND is_active = 1",
                 (item.product_id,),
             ).fetchone()
             if product is None:
@@ -162,20 +162,16 @@ def create_bundle(
     # Insert bundle
     cursor = db.execute(
         "INSERT INTO product_bundles (name, description, bundle_type, discount_percent) "
-        "VALUES (?, ?, ?, ?)",
+        "VALUES (%s, %s, %s, %s) RETURNING id",
         (req.name, req.description, req.bundle_type.value, req.discount_percent),
     )
-    # Retrieve the generated id
-    bundle_row = db.execute(
-        "SELECT * FROM product_bundles WHERE rowid = ?", (cursor.lastrowid,)
-    ).fetchone()
-    bundle_id = bundle_row["id"]
+    bundle_id = cursor.fetchone()["id"]
 
     # Insert bundle items
     for item in req.items:
         db.execute(
             "INSERT INTO bundle_items (bundle_id, product_id, consultation_type, quantity) "
-            "VALUES (?, ?, ?, ?)",
+            "VALUES (%s, %s, %s, %s)",
             (bundle_id, item.product_id, item.consultation_type, item.quantity),
         )
 
@@ -183,10 +179,10 @@ def create_bundle(
 
     # Return full bundle response
     bundle_row = db.execute(
-        "SELECT * FROM product_bundles WHERE id = ?", (bundle_id,)
+        "SELECT * FROM product_bundles WHERE id = %s", (bundle_id,)
     ).fetchone()
     items = db.execute(
-        "SELECT * FROM bundle_items WHERE bundle_id = ?", (bundle_id,)
+        "SELECT * FROM bundle_items WHERE bundle_id = %s", (bundle_id,)
     ).fetchall()
 
     return _build_bundle_response(dict(bundle_row), items, db)
@@ -197,11 +193,11 @@ def update_bundle(
     bundle_id: str,
     req: BundleUpdate,
     user: dict = Depends(require_role("admin")),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Update an existing bundle (admin only)."""
     existing = db.execute(
-        "SELECT * FROM product_bundles WHERE id = ?", (bundle_id,)
+        "SELECT * FROM product_bundles WHERE id = %s", (bundle_id,)
     ).fetchone()
 
     if existing is None:
@@ -220,18 +216,18 @@ def update_bundle(
         updates["is_active"] = 1 if req.is_active else 0
 
     if updates:
-        set_clause = ", ".join(f"{k} = ?" for k in updates)
+        set_clause = ", ".join(f"{k} = %s" for k in updates)
         values = list(updates.values()) + [bundle_id]
         db.execute(
-            f"UPDATE product_bundles SET {set_clause} WHERE id = ?", values
+            f"UPDATE product_bundles SET {set_clause} WHERE id = %s", values
         )
         db.commit()
 
     bundle_row = db.execute(
-        "SELECT * FROM product_bundles WHERE id = ?", (bundle_id,)
+        "SELECT * FROM product_bundles WHERE id = %s", (bundle_id,)
     ).fetchone()
     items = db.execute(
-        "SELECT * FROM bundle_items WHERE bundle_id = ?", (bundle_id,)
+        "SELECT * FROM bundle_items WHERE bundle_id = %s", (bundle_id,)
     ).fetchall()
 
     return _build_bundle_response(dict(bundle_row), items, db)
@@ -241,11 +237,11 @@ def update_bundle(
 def deactivate_bundle(
     bundle_id: str,
     user: dict = Depends(require_role("admin")),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Soft-delete a bundle by marking it inactive (admin only)."""
     existing = db.execute(
-        "SELECT id FROM product_bundles WHERE id = ?", (bundle_id,)
+        "SELECT id FROM product_bundles WHERE id = %s", (bundle_id,)
     ).fetchone()
 
     if existing is None:
@@ -254,7 +250,7 @@ def deactivate_bundle(
         )
 
     db.execute(
-        "UPDATE product_bundles SET is_active = 0 WHERE id = ?", (bundle_id,)
+        "UPDATE product_bundles SET is_active = 0 WHERE id = %s", (bundle_id,)
     )
     db.commit()
 
@@ -268,7 +264,7 @@ def deactivate_bundle(
 def add_bundle_to_cart(
     bundle_id: str,
     user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """
     Add all products from a bundle to the user's cart with the bundle discount applied.
@@ -277,7 +273,7 @@ def add_bundle_to_cart(
     user_id = user.get("sub")
 
     bundle = db.execute(
-        "SELECT * FROM product_bundles WHERE id = ? AND is_active = 1",
+        "SELECT * FROM product_bundles WHERE id = %s AND is_active = 1",
         (bundle_id,),
     ).fetchone()
 
@@ -287,7 +283,7 @@ def add_bundle_to_cart(
         )
 
     items = db.execute(
-        "SELECT * FROM bundle_items WHERE bundle_id = ?", (bundle_id,)
+        "SELECT * FROM bundle_items WHERE bundle_id = %s", (bundle_id,)
     ).fetchall()
 
     if not items:
@@ -303,7 +299,7 @@ def add_bundle_to_cart(
         if item["product_id"]:
             # Verify product is active and in stock
             product = db.execute(
-                "SELECT id, stock, is_active, name, price FROM products WHERE id = ?",
+                "SELECT id, stock, is_active, name, price FROM products WHERE id = %s",
                 (item["product_id"],),
             ).fetchone()
 
@@ -317,7 +313,7 @@ def add_bundle_to_cart(
 
             # Check existing cart item
             existing = db.execute(
-                "SELECT id, quantity FROM cart_items WHERE user_id = ? AND product_id = ?",
+                "SELECT id, quantity FROM cart_items WHERE user_id = %s AND product_id = %s",
                 (user_id, item["product_id"]),
             ).fetchone()
 
@@ -333,12 +329,12 @@ def add_bundle_to_cart(
 
             if existing:
                 db.execute(
-                    "UPDATE cart_items SET quantity = ? WHERE id = ?",
+                    "UPDATE cart_items SET quantity = %s WHERE id = %s",
                     (new_qty, existing["id"]),
                 )
             else:
                 db.execute(
-                    "INSERT INTO cart_items (user_id, product_id, quantity) VALUES (?, ?, ?)",
+                    "INSERT INTO cart_items (user_id, product_id, quantity) VALUES (%s, %s, %s)",
                     (user_id, item["product_id"], qty),
                 )
 
@@ -369,7 +365,7 @@ def add_bundle_to_cart(
                p.name, p.price, p.image_url, p.stock, p.category
         FROM cart_items ci
         JOIN products p ON p.id = ci.product_id
-        WHERE ci.user_id = ?
+        WHERE ci.user_id = %s
         ORDER BY ci.created_at DESC
         """,
         (user_id,),

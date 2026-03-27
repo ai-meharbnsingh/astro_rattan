@@ -9,7 +9,7 @@ import hashlib
 import hmac
 import json
 import os
-import sqlite3
+from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from app.auth import get_current_user
 from app.config import (
@@ -23,19 +23,18 @@ from app.models import PaymentInitiateRequest, ReportPaymentInitiateRequest
 from app.config import DB_PATH as _DEFAULT_DB_PATH
 
 
-def _get_webhook_db() -> sqlite3.Connection:
-    """Create a thread-local DB connection for async webhook handlers.
+def _get_webhook_db():
+    """Create a psycopg2 connection for async webhook handlers.
 
     Webhook endpoints are async (need await request.body()), so they run
-    in the event loop thread. Depends(get_db) creates connections in a
-    threadpool thread, causing SQLite cross-thread errors. This helper
-    creates the connection in the calling thread instead.
+    in the event loop thread. This helper creates a direct psycopg2 connection
+    wrapped in PgConnection for sqlite3-like API compatibility.
     """
-    db_path = os.getenv("DB_PATH", _DEFAULT_DB_PATH)
-    conn = sqlite3.connect(db_path)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA foreign_keys=ON")
-    return conn
+    from app.database import DATABASE_URL, PgConnection
+    import psycopg2
+    raw = psycopg2.connect(DATABASE_URL)
+    raw.autocommit = False
+    return PgConnection(raw)
 
 router = APIRouter()
 
@@ -44,7 +43,7 @@ router = APIRouter()
 def initiate_payment(
     req: PaymentInitiateRequest,
     user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """
     Initiate a payment for an order. Creates a pending payment record.
@@ -54,7 +53,7 @@ def initiate_payment(
 
     # Verify order exists and belongs to user
     order = db.execute(
-        "SELECT id, total, payment_status FROM orders WHERE id = ? AND user_id = ?",
+        "SELECT id, total, payment_status FROM orders WHERE id = %s AND user_id = %s",
         (req.order_id, user_id),
     ).fetchone()
 
@@ -70,7 +69,7 @@ def initiate_payment(
 
     # Check for existing pending payment (idempotent)
     existing = db.execute(
-        "SELECT id FROM payments WHERE order_id = ? AND provider = ? AND status = 'pending'",
+        "SELECT id FROM payments WHERE order_id = %s AND provider = %s AND status = 'pending'",
         (req.order_id, req.provider.value),
     ).fetchone()
 
@@ -128,8 +127,8 @@ def initiate_payment(
                         "quantity": 1,
                     }],
                     mode="payment",
-                    success_url=f"{FRONTEND_URL}/orders/{req.order_id}?payment=success",
-                    cancel_url=f"{FRONTEND_URL}/orders/{req.order_id}?payment=cancelled",
+                    success_url=f"{FRONTEND_URL}/orders/{req.order_id}%spayment=success",
+                    cancel_url=f"{FRONTEND_URL}/orders/{req.order_id}%spayment=cancelled",
                     metadata={"order_id": req.order_id},
                 )
                 provider_payment_id = session.id
@@ -142,17 +141,15 @@ def initiate_payment(
     # Create payment record
     cursor = db.execute(
         """INSERT INTO payments (order_id, provider, provider_payment_id, amount, currency, status)
-           VALUES (?, ?, ?, ?, 'INR', 'pending')""",
+           VALUES (%s, %s, %s, %s, 'INR', 'pending')
+           RETURNING id""",
         (req.order_id, provider, provider_payment_id, amount),
     )
-    payment_rowid = cursor.lastrowid
-    payment_row = db.execute(
-        "SELECT id FROM payments WHERE rowid = ?", (payment_rowid,)
-    ).fetchone()
+    payment_id = cursor.fetchone()["id"]
     db.commit()
 
     result = {
-        "payment_id": payment_row["id"],
+        "payment_id": payment_id,
         "order_id": req.order_id,
         "amount": amount,
         "currency": "INR",
@@ -171,7 +168,7 @@ def initiate_payment(
 def initiate_report_payment(
     req: ReportPaymentInitiateRequest,
     user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """
     Initiate a payment for a report. Creates a pending payment record.
@@ -181,7 +178,7 @@ def initiate_report_payment(
 
     # Verify report exists and belongs to user
     report = db.execute(
-        "SELECT id, price, status FROM reports WHERE id = ? AND user_id = ?",
+        "SELECT id, price, status FROM reports WHERE id = %s AND user_id = %s",
         (req.report_id, user_id),
     ).fetchone()
 
@@ -197,7 +194,7 @@ def initiate_report_payment(
 
     # Check for existing pending payment (idempotent)
     existing = db.execute(
-        "SELECT id FROM payments WHERE report_id = ? AND provider = ? AND status = 'pending'",
+        "SELECT id FROM payments WHERE report_id = %s AND provider = %s AND status = 'pending'",
         (req.report_id, req.provider.value),
     ).fetchone()
 
@@ -254,8 +251,8 @@ def initiate_report_payment(
                         "quantity": 1,
                     }],
                     mode="payment",
-                    success_url=f"{FRONTEND_URL}/profile?report_payment=success&report_id={req.report_id}",
-                    cancel_url=f"{FRONTEND_URL}/profile?report_payment=cancelled",
+                    success_url=f"{FRONTEND_URL}/profile%sreport_payment=success&report_id={req.report_id}",
+                    cancel_url=f"{FRONTEND_URL}/profile%sreport_payment=cancelled",
                     metadata={"report_id": req.report_id, "user_id": user_id},
                 )
                 provider_payment_id = session.id
@@ -268,17 +265,15 @@ def initiate_report_payment(
     # Create payment record
     cursor = db.execute(
         """INSERT INTO payments (report_id, provider, provider_payment_id, amount, currency, status)
-           VALUES (?, ?, ?, ?, 'INR', 'pending')""",
+           VALUES (%s, %s, %s, %s, 'INR', 'pending')
+           RETURNING id""",
         (req.report_id, provider, provider_payment_id, amount),
     )
-    payment_rowid = cursor.lastrowid
-    payment_row = db.execute(
-        "SELECT id FROM payments WHERE rowid = ?", (payment_rowid,)
-    ).fetchone()
+    payment_id = cursor.fetchone()["id"]
     db.commit()
 
     result = {
-        "payment_id": payment_row["id"],
+        "payment_id": payment_id,
         "report_id": req.report_id,
         "amount": amount,
         "currency": "INR",
@@ -336,7 +331,7 @@ async def razorpay_webhook(request: Request):
     try:
         # Idempotent: check if already processed
         existing = db.execute(
-            "SELECT id, status FROM payments WHERE order_id = ? AND provider = 'razorpay' AND provider_payment_id = ?",
+            "SELECT id, status FROM payments WHERE order_id = %s AND provider = 'razorpay' AND provider_payment_id = %s",
             (order_id, razorpay_payment_id),
         ).fetchone()
 
@@ -349,21 +344,21 @@ async def razorpay_webhook(request: Request):
                 # Update payment record
                 db.execute(
                     """
-                    UPDATE payments SET status = 'completed', provider_payment_id = ?,
-                           metadata = ? WHERE report_id = ? AND provider = 'razorpay' AND status = 'pending'
+                    UPDATE payments SET status = 'completed', provider_payment_id = %s,
+                           metadata = %s WHERE report_id = %s AND provider = 'razorpay' AND status = 'pending'
                     """,
                     (razorpay_payment_id, json.dumps(payment_entity), report_id),
                 )
                 # Update report status and trigger PDF generation
                 db.execute(
-                    "UPDATE reports SET status = 'paid', updated_at = datetime('now') WHERE id = ?",
+                    "UPDATE reports SET status = 'paid', updated_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS') WHERE id = %s",
                     (report_id,),
                 )
                 db.commit()
                 
                 # Trigger PDF generation in background
                 report_row = db.execute(
-                    "SELECT kundli_id, report_type FROM reports WHERE id = ?", (report_id,)
+                    "SELECT kundli_id, report_type FROM reports WHERE id = %s", (report_id,)
                 ).fetchone()
                 if report_row:
                     from app.routes.reports import _background_generate_pdf
@@ -378,8 +373,8 @@ async def razorpay_webhook(request: Request):
             elif event == "payment.failed":
                 db.execute(
                     """
-                    UPDATE payments SET status = 'failed', provider_payment_id = ?,
-                           metadata = ? WHERE report_id = ? AND provider = 'razorpay' AND status = 'pending'
+                    UPDATE payments SET status = 'failed', provider_payment_id = %s,
+                           metadata = %s WHERE report_id = %s AND provider = 'razorpay' AND status = 'pending'
                     """,
                     (razorpay_payment_id, json.dumps(payment_entity), report_id),
                 )
@@ -392,15 +387,15 @@ async def razorpay_webhook(request: Request):
             # Update payment record
             db.execute(
                 """
-                UPDATE payments SET status = 'completed', provider_payment_id = ?,
-                       metadata = ? WHERE order_id = ? AND provider = 'razorpay' AND status = 'pending'
+                UPDATE payments SET status = 'completed', provider_payment_id = %s,
+                       metadata = %s WHERE order_id = %s AND provider = 'razorpay' AND status = 'pending'
                 """,
                 (razorpay_payment_id, json.dumps(payment_entity), order_id),
             )
             # Update order payment status
             db.execute(
                 "UPDATE orders SET payment_status = 'paid', status = 'confirmed', "
-                "updated_at = datetime('now') WHERE id = ?",
+                "updated_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS') WHERE id = %s",
                 (order_id,),
             )
             db.commit()
@@ -409,13 +404,13 @@ async def razorpay_webhook(request: Request):
         elif event == "payment.failed":
             db.execute(
                 """
-                UPDATE payments SET status = 'failed', provider_payment_id = ?,
-                       metadata = ? WHERE order_id = ? AND provider = 'razorpay' AND status = 'pending'
+                UPDATE payments SET status = 'failed', provider_payment_id = %s,
+                       metadata = %s WHERE order_id = %s AND provider = 'razorpay' AND status = 'pending'
                 """,
                 (razorpay_payment_id, json.dumps(payment_entity), order_id),
             )
             db.execute(
-                "UPDATE orders SET payment_status = 'failed', updated_at = datetime('now') WHERE id = ?",
+                "UPDATE orders SET payment_status = 'failed', updated_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS') WHERE id = %s",
                 (order_id,),
             )
             db.commit()
@@ -504,7 +499,7 @@ async def stripe_webhook(request: Request):
     try:
         # Idempotent: check if already processed
         existing = db.execute(
-            "SELECT id, status FROM payments WHERE order_id = ? AND provider = 'stripe' AND provider_payment_id = ?",
+            "SELECT id, status FROM payments WHERE order_id = %s AND provider = 'stripe' AND provider_payment_id = %s",
             (order_id, stripe_payment_id),
         ).fetchone()
 
@@ -516,20 +511,20 @@ async def stripe_webhook(request: Request):
             if event_type in ("checkout.session.completed", "payment_intent.succeeded"):
                 db.execute(
                     """
-                    UPDATE payments SET status = 'completed', provider_payment_id = ?,
-                           metadata = ? WHERE report_id = ? AND provider = 'stripe' AND status = 'pending'
+                    UPDATE payments SET status = 'completed', provider_payment_id = %s,
+                           metadata = %s WHERE report_id = %s AND provider = 'stripe' AND status = 'pending'
                     """,
                     (stripe_payment_id, json.dumps(data_object), report_id),
                 )
                 db.execute(
-                    "UPDATE reports SET status = 'paid', updated_at = datetime('now') WHERE id = ?",
+                    "UPDATE reports SET status = 'paid', updated_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS') WHERE id = %s",
                     (report_id,),
                 )
                 db.commit()
                 
                 # Trigger PDF generation in background
                 report_row = db.execute(
-                    "SELECT kundli_id, report_type FROM reports WHERE id = ?", (report_id,)
+                    "SELECT kundli_id, report_type FROM reports WHERE id = %s", (report_id,)
                 ).fetchone()
                 if report_row:
                     from app.routes.reports import _background_generate_pdf
@@ -544,8 +539,8 @@ async def stripe_webhook(request: Request):
             elif event_type == "payment_intent.payment_failed":
                 db.execute(
                     """
-                    UPDATE payments SET status = 'failed', provider_payment_id = ?,
-                           metadata = ? WHERE report_id = ? AND provider = 'stripe' AND status = 'pending'
+                    UPDATE payments SET status = 'failed', provider_payment_id = %s,
+                           metadata = %s WHERE report_id = %s AND provider = 'stripe' AND status = 'pending'
                     """,
                     (stripe_payment_id, json.dumps(data_object), report_id),
                 )
@@ -557,14 +552,14 @@ async def stripe_webhook(request: Request):
         if event_type in ("checkout.session.completed", "payment_intent.succeeded"):
             db.execute(
                 """
-                UPDATE payments SET status = 'completed', provider_payment_id = ?,
-                       metadata = ? WHERE order_id = ? AND provider = 'stripe' AND status = 'pending'
+                UPDATE payments SET status = 'completed', provider_payment_id = %s,
+                       metadata = %s WHERE order_id = %s AND provider = 'stripe' AND status = 'pending'
                 """,
                 (stripe_payment_id, json.dumps(data_object), order_id),
             )
             db.execute(
                 "UPDATE orders SET payment_status = 'paid', status = 'confirmed', "
-                "updated_at = datetime('now') WHERE id = ?",
+                "updated_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS') WHERE id = %s",
                 (order_id,),
             )
             db.commit()
@@ -573,13 +568,13 @@ async def stripe_webhook(request: Request):
         elif event_type == "payment_intent.payment_failed":
             db.execute(
                 """
-                UPDATE payments SET status = 'failed', provider_payment_id = ?,
-                       metadata = ? WHERE order_id = ? AND provider = 'stripe' AND status = 'pending'
+                UPDATE payments SET status = 'failed', provider_payment_id = %s,
+                       metadata = %s WHERE order_id = %s AND provider = 'stripe' AND status = 'pending'
                 """,
                 (stripe_payment_id, json.dumps(data_object), order_id),
             )
             db.execute(
-                "UPDATE orders SET payment_status = 'failed', updated_at = datetime('now') WHERE id = ?",
+                "UPDATE orders SET payment_status = 'failed', updated_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS') WHERE id = %s",
                 (order_id,),
             )
             db.commit()

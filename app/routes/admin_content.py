@@ -1,5 +1,5 @@
 """Admin content management routes — CRUD for spiritual content library."""
-import sqlite3
+from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from app.auth import require_role
 from app.database import get_db
@@ -12,14 +12,14 @@ router = APIRouter()
 def list_content(
     category: str = Query(None, description="Filter by content category"),
     user: dict = Depends(require_role("admin")),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """List all content entries with optional category filter."""
     if category:
         rows = db.execute(
             """SELECT id, category, title, title_hindi, content, audio_url,
                chapter, verse, sanskrit_text, translation, commentary, sort_order, created_at
-               FROM content_library WHERE category = ? ORDER BY sort_order, created_at DESC""",
+               FROM content_library WHERE category = %s ORDER BY sort_order, created_at DESC""",
             (category,),
         ).fetchall()
     else:
@@ -35,7 +35,7 @@ def list_content(
 def create_content(
     req: ContentCreate,
     user: dict = Depends(require_role("admin")),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Create a new spiritual content entry."""
     cursor = db.execute(
@@ -43,7 +43,8 @@ def create_content(
         INSERT INTO content_library
             (category, title, title_hindi, content, audio_url,
              chapter, verse, sanskrit_text, translation, commentary, sort_order)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        RETURNING id, category, title, created_at
         """,
         (
             req.category.value, req.title, req.title_hindi, req.content,
@@ -51,11 +52,7 @@ def create_content(
             req.translation, req.commentary, req.sort_order,
         ),
     )
-    rowid = cursor.lastrowid
-    content_row = db.execute(
-        "SELECT id, category, title, created_at FROM content_library WHERE rowid = ?",
-        (rowid,),
-    ).fetchone()
+    content_row = cursor.fetchone()
     db.commit()
 
     return dict(content_row)
@@ -66,11 +63,11 @@ def update_content(
     content_id: str,
     req: ContentCreate,
     user: dict = Depends(require_role("admin")),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Update an existing content entry (full replace of provided fields)."""
     existing = db.execute(
-        "SELECT id FROM content_library WHERE id = ?", (content_id,)
+        "SELECT id FROM content_library WHERE id = %s", (content_id,)
     ).fetchone()
 
     if existing is None:
@@ -81,10 +78,10 @@ def update_content(
     db.execute(
         """
         UPDATE content_library SET
-            category = ?, title = ?, title_hindi = ?, content = ?,
-            audio_url = ?, chapter = ?, verse = ?, sanskrit_text = ?,
-            translation = ?, commentary = ?, sort_order = ?
-        WHERE id = ?
+            category = %s, title = %s, title_hindi = %s, content = %s,
+            audio_url = %s, chapter = %s, verse = %s, sanskrit_text = %s,
+            translation = %s, commentary = %s, sort_order = %s
+        WHERE id = %s
         """,
         (
             req.category.value, req.title, req.title_hindi, req.content,
@@ -95,7 +92,7 @@ def update_content(
     db.commit()
 
     updated = db.execute(
-        "SELECT * FROM content_library WHERE id = ?", (content_id,)
+        "SELECT * FROM content_library WHERE id = %s", (content_id,)
     ).fetchone()
     return dict(updated)
 
@@ -104,11 +101,11 @@ def update_content(
 def delete_content(
     content_id: str,
     user: dict = Depends(require_role("admin")),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Delete a content entry."""
     existing = db.execute(
-        "SELECT id FROM content_library WHERE id = ?", (content_id,)
+        "SELECT id FROM content_library WHERE id = %s", (content_id,)
     ).fetchone()
 
     if existing is None:
@@ -116,7 +113,7 @@ def delete_content(
             status_code=status.HTTP_404_NOT_FOUND, detail="Content not found"
         )
 
-    db.execute("DELETE FROM content_library WHERE id = ?", (content_id,))
+    db.execute("DELETE FROM content_library WHERE id = %s", (content_id,))
     db.commit()
 
     return None

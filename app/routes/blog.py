@@ -1,6 +1,6 @@
 """Public blog routes and sitemap generation for editorial SEO."""
 import json
-import sqlite3
+from typing import Any
 from xml.sax.saxutils import escape
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
@@ -20,7 +20,7 @@ def _normalize_tags(raw_tags: str) -> list[str]:
         return []
 
 
-def _serialize_post(row: sqlite3.Row, include_content: bool = False) -> dict:
+def _serialize_post(row, include_content: bool = False) -> dict:
     payload = {
         "id": row["id"],
         "slug": row["slug"],
@@ -42,7 +42,7 @@ def _serialize_post(row: sqlite3.Row, include_content: bool = False) -> dict:
 
 
 @router.get("/api/blog/posts", status_code=status.HTTP_200_OK)
-def list_blog_posts(db: sqlite3.Connection = Depends(get_db)):
+def list_blog_posts(db: Any = Depends(get_db)):
     """Return published editorial posts for the public blog."""
     rows = db.execute(
         """
@@ -58,14 +58,14 @@ def list_blog_posts(db: sqlite3.Connection = Depends(get_db)):
 
 
 @router.get("/api/blog/posts/{slug}", status_code=status.HTTP_200_OK)
-def get_blog_post(slug: str, db: sqlite3.Connection = Depends(get_db)):
+def get_blog_post(slug: str, db: Any = Depends(get_db)):
     """Return a single published post by slug."""
     row = db.execute(
         """
         SELECT id, slug, title, excerpt, content, cover_image_url, tags, author_name,
                seo_title, seo_description, is_published, published_at, created_at, updated_at
         FROM blog_posts
-        WHERE slug = ? AND is_published = 1
+        WHERE slug = %s AND is_published = 1
         """,
         (slug,),
     ).fetchone()
@@ -75,7 +75,7 @@ def get_blog_post(slug: str, db: sqlite3.Connection = Depends(get_db)):
 
 
 @router.get("/sitemap.xml", include_in_schema=False)
-def dynamic_sitemap(db: sqlite3.Connection = Depends(get_db)):
+def dynamic_sitemap(db: Any = Depends(get_db)):
     """Return a runtime sitemap including current published blog posts."""
     base_url = SITE_URL.rstrip("/")
     rows = db.execute(
@@ -104,7 +104,7 @@ def dynamic_sitemap(db: sqlite3.Connection = Depends(get_db)):
         )
 
     xml = (
-        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<%sxml version="1.0" encoding="UTF-8"%s>\n'
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         + "\n".join(urls)
         + "\n</urlset>\n"

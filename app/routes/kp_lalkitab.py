@@ -1,6 +1,6 @@
 """KP Astrology and Lal Kitab Remedies routes."""
 import json
-import sqlite3
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
@@ -13,7 +13,7 @@ router = APIRouter()
 
 
 @router.post("/api/kp/cuspal")
-def kp_cuspal(payload: dict, user: dict = Depends(get_current_user), db: sqlite3.Connection = Depends(get_db)):
+def kp_cuspal(payload: dict, user: dict = Depends(get_current_user), db: Any = Depends(get_db)):
     """
     Calculate KP cuspal chart with star lords, sub lords, and significators.
 
@@ -28,7 +28,7 @@ def kp_cuspal(payload: dict, user: dict = Depends(get_current_user), db: sqlite3
         )
 
     row = db.execute(
-        "SELECT * FROM kundlis WHERE id = ? AND user_id = ?",
+        "SELECT * FROM kundlis WHERE id = %s AND user_id = %s",
         (kundli_id, user["sub"]),
     ).fetchone()
 
@@ -77,7 +77,7 @@ def kp_cuspal(payload: dict, user: dict = Depends(get_current_user), db: sqlite3
 
 
 @router.post("/api/lalkitab/remedies")
-def lalkitab_remedies(payload: dict, user: dict = Depends(get_current_user), db: sqlite3.Connection = Depends(get_db)):
+def lalkitab_remedies(payload: dict, user: dict = Depends(get_current_user), db: Any = Depends(get_db)):
     """
     Get Lal Kitab remedies for weak or afflicted planets.
 
@@ -92,7 +92,7 @@ def lalkitab_remedies(payload: dict, user: dict = Depends(get_current_user), db:
         )
 
     row = db.execute(
-        "SELECT * FROM kundlis WHERE id = ? AND user_id = ?",
+        "SELECT * FROM kundlis WHERE id = %s AND user_id = %s",
         (kundli_id, user["sub"]),
     ).fetchone()
 

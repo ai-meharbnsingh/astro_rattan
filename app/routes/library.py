@@ -1,5 +1,5 @@
 """Library routes — Gita chapters/verses and spiritual content library."""
-import sqlite3
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
@@ -11,7 +11,7 @@ router = APIRouter(tags=["library"])
 # -- Gita -------------------------------------------------------
 
 @router.get("/api/gita/chapters", status_code=status.HTTP_200_OK)
-def list_gita_chapters(db: sqlite3.Connection = Depends(get_db)):
+def list_gita_chapters(db: Any = Depends(get_db)):
     """List all Bhagavad Gita chapters with verse counts.
     Contract response: [{chapter, title, verses_count, summary}]
     """
@@ -42,7 +42,7 @@ def list_gita_chapters(db: sqlite3.Connection = Depends(get_db)):
 
 
 @router.get("/api/gita/chapter/{ch}", status_code=status.HTTP_200_OK)
-def get_gita_chapter(ch: int, db: sqlite3.Connection = Depends(get_db)):
+def get_gita_chapter(ch: int, db: Any = Depends(get_db)):
     """Get all verses for a specific Gita chapter.
     Contract response: {chapter, title, verses}
     """
@@ -55,7 +55,7 @@ def get_gita_chapter(ch: int, db: sqlite3.Connection = Depends(get_db)):
     rows = db.execute(
         """SELECT id, chapter, verse, title, sanskrit_text, translation, commentary, content
            FROM content_library
-           WHERE category = 'gita' AND chapter = ?
+           WHERE category = 'gita' AND chapter = %s
            ORDER BY verse""",
         (ch,),
     ).fetchall()
@@ -86,14 +86,14 @@ def get_gita_chapter(ch: int, db: sqlite3.Connection = Depends(get_db)):
 
 
 @router.get("/api/gita/verse/{ch}/{v}", status_code=status.HTTP_200_OK)
-def get_gita_verse(ch: int, v: int, db: sqlite3.Connection = Depends(get_db)):
+def get_gita_verse(ch: int, v: int, db: Any = Depends(get_db)):
     """Get a specific Gita verse by chapter and verse number.
     Contract response: {sanskrit, translation, commentary}
     """
     row = db.execute(
         """SELECT id, chapter, verse, title, sanskrit_text, translation, commentary, content, audio_url
            FROM content_library
-           WHERE category = 'gita' AND chapter = ? AND verse = ?""",
+           WHERE category = 'gita' AND chapter = %s AND verse = %s""",
         (ch, v),
     ).fetchone()
 
@@ -113,13 +113,13 @@ def get_gita_verse(ch: int, v: int, db: sqlite3.Connection = Depends(get_db)):
 # -- Spiritual Content Library ----------------------------------
 
 @router.get("/api/library/item/{item_id}", status_code=status.HTTP_200_OK)
-def get_library_item(item_id: str, db: sqlite3.Connection = Depends(get_db)):
+def get_library_item(item_id: str, db: Any = Depends(get_db)):
     """Get a specific library item by ID with full content."""
     row = db.execute(
         """SELECT id, category, title, title_hindi, content, audio_url,
                   chapter, verse, sanskrit_text, translation, commentary, sort_order
            FROM content_library
-           WHERE id = ?""",
+           WHERE id = %s""",
         (item_id,),
     ).fetchone()
 
@@ -145,7 +145,7 @@ def get_library_item(item_id: str, db: sqlite3.Connection = Depends(get_db)):
 
 
 @router.get("/api/library/{category}", status_code=status.HTTP_200_OK)
-def list_library_items(category: str, db: sqlite3.Connection = Depends(get_db)):
+def list_library_items(category: str, db: Any = Depends(get_db)):
     """List all items in a content category.
     Contract response: [{id, title, content_preview}]
     """
@@ -159,7 +159,7 @@ def list_library_items(category: str, db: sqlite3.Connection = Depends(get_db)):
     rows = db.execute(
         """SELECT id, title, title_hindi, content
            FROM content_library
-           WHERE category = ?
+           WHERE category = %s
            ORDER BY sort_order, title""",
         (category,),
     ).fetchall()

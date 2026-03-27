@@ -1,5 +1,5 @@
 """Product catalog routes — public, no auth required."""
-import sqlite3
+from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from app.database import get_db
 
@@ -11,7 +11,7 @@ def list_products(
     category: str = Query(None, description="Filter by product category"),
     page: int = Query(1, ge=1, description="Page number"),
     limit: int = Query(20, ge=1, le=100, description="Items per page"),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """
     List active products with optional category filter and pagination.
@@ -22,12 +22,12 @@ def list_products(
     # Build query dynamically based on optional category filter
     if category:
         count_row = db.execute(
-            "SELECT COUNT(*) as total FROM products WHERE is_active = 1 AND category = ?",
+            "SELECT COUNT(*) as total FROM products WHERE is_active = 1 AND category = %s",
             (category,),
         ).fetchone()
         rows = db.execute(
-            "SELECT * FROM products WHERE is_active = 1 AND category = ? "
-            "ORDER BY created_at DESC LIMIT ? OFFSET ?",
+            "SELECT * FROM products WHERE is_active = 1 AND category = %s "
+            "ORDER BY created_at DESC LIMIT %s OFFSET %s",
             (category, limit, offset),
         ).fetchall()
     else:
@@ -36,7 +36,7 @@ def list_products(
         ).fetchone()
         rows = db.execute(
             "SELECT * FROM products WHERE is_active = 1 "
-            "ORDER BY created_at DESC LIMIT ? OFFSET ?",
+            "ORDER BY created_at DESC LIMIT %s OFFSET %s",
             (limit, offset),
         ).fetchall()
 
@@ -51,13 +51,13 @@ def list_products(
 
 
 @router.get("/api/products/{product_id}")
-def get_product(product_id: str, db: sqlite3.Connection = Depends(get_db)):
+def get_product(product_id: str, db: Any = Depends(get_db)):
     """
     Get a single product by ID. No authentication required.
     Contract response: {product detail} — returned directly, no wrapper.
     """
     row = db.execute(
-        "SELECT * FROM products WHERE id = ? AND is_active = 1", (product_id,)
+        "SELECT * FROM products WHERE id = %s AND is_active = 1", (product_id,)
     ).fetchone()
 
     if row is None:

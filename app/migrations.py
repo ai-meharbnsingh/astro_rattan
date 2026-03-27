@@ -1,8 +1,9 @@
 """H-02: Database Migration System — tracks and applies schema migrations in order."""
-import sqlite3
-from typing import List, Tuple
+import psycopg2
+import psycopg2.extras
+from typing import List, Tuple, Any
 
-from app.config import DB_PATH
+from app.database import DATABASE_URL
 
 # Each migration: (version, description, sql)
 MIGRATIONS: List[Tuple[int, str, str]] = [
@@ -11,14 +12,14 @@ MIGRATIONS: List[Tuple[int, str, str]] = [
         "Add audit_log table",
         """
         CREATE TABLE IF NOT EXISTS audit_log (
-            id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+            id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
             user_id TEXT,
             action TEXT NOT NULL,
             resource TEXT,
             resource_id TEXT,
             details TEXT,
             ip_address TEXT,
-            created_at TEXT NOT NULL DEFAULT (datetime('now'))
+            created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
         );
         CREATE INDEX IF NOT EXISTS idx_audit_log_user ON audit_log(user_id);
         CREATE INDEX IF NOT EXISTS idx_audit_log_action ON audit_log(action);
@@ -28,8 +29,6 @@ MIGRATIONS: List[Tuple[int, str, str]] = [
         2,
         "Add date_of_birth, gender, city, is_active columns to users",
         """
-        -- These columns may already exist from migrate_users_table; ALTER TABLE is idempotent
-        -- via the safe_alter helper below. This migration is a no-op if columns exist.
         SELECT 1;
         """,
     ),
@@ -38,7 +37,7 @@ MIGRATIONS: List[Tuple[int, str, str]] = [
         "Add blog_posts table and seed starter editorial content",
         """
         CREATE TABLE IF NOT EXISTS blog_posts (
-            id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+            id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
             slug TEXT NOT NULL UNIQUE,
             title TEXT NOT NULL,
             excerpt TEXT NOT NULL,
@@ -49,9 +48,9 @@ MIGRATIONS: List[Tuple[int, str, str]] = [
             seo_title TEXT,
             seo_description TEXT,
             is_published INTEGER NOT NULL DEFAULT 1,
-            published_at TEXT NOT NULL DEFAULT (datetime('now')),
-            created_at TEXT NOT NULL DEFAULT (datetime('now')),
-            updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+            published_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS'),
+            created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS'),
+            updated_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
         );
         CREATE INDEX IF NOT EXISTS idx_blog_posts_slug ON blog_posts(slug);
         CREATE INDEX IF NOT EXISTS idx_blog_posts_published ON blog_posts(is_published, published_at DESC);
@@ -60,37 +59,47 @@ MIGRATIONS: List[Tuple[int, str, str]] = [
 ]
 
 
-def _ensure_migration_table(conn: sqlite3.Connection):
+def _ensure_migration_table(conn):
     """Create the applied_migrations table if it does not exist."""
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS applied_migrations (
-            version INTEGER PRIMARY KEY,
-            description TEXT NOT NULL,
-            applied_at TEXT NOT NULL DEFAULT (datetime('now'))
-        )
-    """)
+    with conn.cursor() as cur:
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS applied_migrations (
+                version INTEGER PRIMARY KEY,
+                description TEXT NOT NULL,
+                applied_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+            )
+        """)
     conn.commit()
 
 
-def _safe_alter(conn: sqlite3.Connection, table: str, column: str, col_def: str):
+def _safe_alter(conn, table: str, column: str, col_def: str):
     """Add a column only if it doesn't already exist."""
-    existing = [row[1] for row in conn.execute(f"PRAGMA table_info({table})").fetchall()]
-    if column not in existing:
-        conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {col_def}")
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            SELECT column_name FROM information_schema.columns
+            WHERE table_name = %s AND column_name = %s
+            """,
+            (table, column),
+        )
+        exists = cur.fetchone()
+    if not exists:
+        with conn.cursor() as cur:
+            cur.execute(f"ALTER TABLE {table} ADD COLUMN {column} {col_def}")
+        conn.commit()
 
 
 def run_migrations(db_path: str = None):
-    """Check applied_migrations table and run any pending migrations in order."""
-    path = db_path or DB_PATH
-    conn = sqlite3.connect(path)
-    conn.execute("PRAGMA foreign_keys=ON")
+    """Check applied_migrations table and run any pending migrations in order.
+    db_path parameter is kept for API compatibility but ignored (uses DATABASE_URL)."""
+    conn = psycopg2.connect(DATABASE_URL)
+    conn.autocommit = False
 
     _ensure_migration_table(conn)
 
-    applied = {
-        row[0]
-        for row in conn.execute("SELECT version FROM applied_migrations").fetchall()
-    }
+    with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+        cur.execute("SELECT version FROM applied_migrations")
+        applied = {row["version"] for row in cur.fetchall()}
 
     for version, description, sql in MIGRATIONS:
         if version in applied:
@@ -104,16 +113,38 @@ def run_migrations(db_path: str = None):
             _safe_alter(conn, "users", "is_active", "INTEGER DEFAULT 1")
         elif version == 3:
             from app.blog_seed import seed_blog_posts
-
-            conn.executescript(sql)
-            seed_blog_posts(conn)
+            # Execute each statement in the SQL block
+            stmts = [s.strip() for s in sql.split(';') if s.strip()]
+            with conn.cursor() as cur:
+                for stmt in stmts:
+                    try:
+                        cur.execute(stmt)
+                    except Exception:
+                        conn.rollback()
+            conn.commit()
+            # Use a PgConnection-like wrapper for seed_blog_posts
+            from app.database import PgConnection
+            import psycopg2 as pg2
+            raw = pg2.connect(DATABASE_URL)
+            pg = PgConnection(raw)
+            seed_blog_posts(pg)
+            raw.commit()
+            raw.close()
         else:
-            conn.executescript(sql)
+            stmts = [s.strip() for s in sql.split(';') if s.strip()]
+            with conn.cursor() as cur:
+                for stmt in stmts:
+                    try:
+                        cur.execute(stmt)
+                    except Exception:
+                        conn.rollback()
+            conn.commit()
 
-        conn.execute(
-            "INSERT INTO applied_migrations (version, description) VALUES (?, ?)",
-            (version, description),
-        )
+        with conn.cursor() as cur:
+            cur.execute(
+                "INSERT INTO applied_migrations (version, description) VALUES (%s, %s)",
+                (version, description),
+            )
         conn.commit()
         print(f"[migration] Applied v{version}: {description}")
 

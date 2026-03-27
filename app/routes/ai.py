@@ -1,6 +1,6 @@
 """AI routes — kundli interpretation, Q&A, Gita wisdom, remedies, oracle."""
 import json
-import sqlite3
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
@@ -17,20 +17,20 @@ def ai_chat_history(
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Return the current user's AI chat history with pagination."""
     user_id = current_user["sub"]
     offset = (page - 1) * limit
 
     total = db.execute(
-        "SELECT COUNT(*) as c FROM ai_chat_logs WHERE user_id = ?", (user_id,)
+        "SELECT COUNT(*) as c FROM ai_chat_logs WHERE user_id = %s", (user_id,)
     ).fetchone()["c"]
 
     rows = db.execute(
         """SELECT id, chat_type, kundli_id, user_message, ai_response, model_used, tokens_used, rating, created_at
-           FROM ai_chat_logs WHERE user_id = ?
-           ORDER BY created_at DESC LIMIT ? OFFSET ?""",
+           FROM ai_chat_logs WHERE user_id = %s
+           ORDER BY created_at DESC LIMIT %s OFFSET %s""",
         (user_id, limit, offset),
     ).fetchall()
 
@@ -41,11 +41,11 @@ def ai_chat_history(
 def interpret_kundli(
     body: AIInterpretRequest,
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """AI interpretation of a kundli chart. Contract input: {kundli_id}."""
     row = db.execute(
-        "SELECT * FROM kundlis WHERE id = ? AND user_id = ?",
+        "SELECT * FROM kundlis WHERE id = %s AND user_id = %s",
         (body.kundli_id, current_user["sub"]),
     ).fetchone()
     if not row:
@@ -57,7 +57,7 @@ def interpret_kundli(
     # Log the AI interaction
     db.execute(
         """INSERT INTO ai_chat_logs (user_id, chat_type, kundli_id, user_message, ai_response, model_used)
-           VALUES (?, ?, ?, ?, ?, ?)""",
+           VALUES (%s, %s, %s, %s, %s, %s)""",
         (
             current_user["sub"],
             "kundli_interpretation",
@@ -76,13 +76,13 @@ def interpret_kundli(
 def ask_question(
     body: AIAskRequest,
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Ask any astrology-related question, optionally with chart context."""
     chart_data = None
     if body.kundli_id:
         row = db.execute(
-            "SELECT chart_data FROM kundlis WHERE id = ? AND user_id = ?",
+            "SELECT chart_data FROM kundlis WHERE id = %s AND user_id = %s",
             (body.kundli_id, current_user["sub"]),
         ).fetchone()
         if row:
@@ -92,7 +92,7 @@ def ask_question(
 
     db.execute(
         """INSERT INTO ai_chat_logs (user_id, chat_type, kundli_id, user_message, ai_response, model_used)
-           VALUES (?, ?, ?, ?, ?, ?)""",
+           VALUES (%s, %s, %s, %s, %s, %s)""",
         (
             current_user["sub"],
             "ask_question",
@@ -117,7 +117,7 @@ def gita_answer(body: AIGitaRequest):
 def get_remedies(
     body: AIAskRequest,
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Get personalized Vedic remedies based on kundli chart data."""
     if not body.kundli_id:
@@ -127,7 +127,7 @@ def get_remedies(
         )
 
     row = db.execute(
-        "SELECT chart_data FROM kundlis WHERE id = ? AND user_id = ?",
+        "SELECT chart_data FROM kundlis WHERE id = %s AND user_id = %s",
         (body.kundli_id, current_user["sub"]),
     ).fetchone()
     if not row:
@@ -138,7 +138,7 @@ def get_remedies(
 
     db.execute(
         """INSERT INTO ai_chat_logs (user_id, chat_type, kundli_id, user_message, ai_response, model_used)
-           VALUES (?, ?, ?, ?, ?, ?)""",
+           VALUES (%s, %s, %s, %s, %s, %s)""",
         (
             current_user["sub"],
             "remedies",

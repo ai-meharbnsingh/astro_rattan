@@ -1,5 +1,5 @@
 """Consultation booking and astrologer listing routes."""
-import sqlite3
+from typing import Any
 import time
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
@@ -18,7 +18,7 @@ router = APIRouter()
 def list_astrologers(
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """List all approved and available astrologers. No auth required."""
     offset = (page - 1) * limit
@@ -35,7 +35,7 @@ def list_astrologers(
         FROM astrologers a
         WHERE a.is_approved = 1
         ORDER BY a.rating DESC, a.total_consultations DESC
-        LIMIT ? OFFSET ?
+        LIMIT %s OFFSET %s
         """,
         (limit, offset),
     ).fetchall()
@@ -44,7 +44,7 @@ def list_astrologers(
 
 
 @router.get("/api/astrologers/{astrologer_id}")
-def get_astrologer(astrologer_id: str, db: sqlite3.Connection = Depends(get_db)):
+def get_astrologer(astrologer_id: str, db: Any = Depends(get_db)):
     """Get a single astrologer profile. No auth required."""
     row = db.execute(
         """
@@ -52,7 +52,7 @@ def get_astrologer(astrologer_id: str, db: sqlite3.Connection = Depends(get_db))
                a.experience_years, a.per_minute_rate, a.languages,
                a.rating, a.total_consultations, a.is_available
         FROM astrologers a
-        WHERE a.id = ? AND a.is_approved = 1
+        WHERE a.id = %s AND a.is_approved = 1
         """,
         (astrologer_id,),
     ).fetchone()
@@ -73,14 +73,14 @@ def get_astrologer(astrologer_id: str, db: sqlite3.Connection = Depends(get_db))
 def book_consultation(
     req: ConsultationBookRequest,
     user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Book a consultation with an astrologer. Requires JWT."""
     user_id = user.get("sub")
 
     # Verify astrologer exists, is approved and available
     astrologer = db.execute(
-        "SELECT id, is_available, is_approved FROM astrologers WHERE id = ?",
+        "SELECT id, is_available, is_approved FROM astrologers WHERE id = %s",
         (req.astrologer_id,),
     ).fetchone()
 
@@ -102,19 +102,17 @@ def book_consultation(
     cursor = db.execute(
         """
         INSERT INTO consultations (user_id, astrologer_id, type, scheduled_at)
-        VALUES (?, ?, ?, ?)
+        VALUES (%s, %s, %s, %s)
+        RETURNING id
         """,
         (user_id, req.astrologer_id, req.type.value, req.scheduled_at),
     )
-    rowid = cursor.lastrowid
-    consultation = db.execute(
-        "SELECT id FROM consultations WHERE rowid = ?", (rowid,)
-    ).fetchone()
+    consultation_id = cursor.fetchone()["id"]
     db.commit()
 
     # Return full consultation record per contract: {consultation}
     full = db.execute(
-        "SELECT * FROM consultations WHERE id = ?", (consultation["id"],)
+        "SELECT * FROM consultations WHERE id = %s", (consultation_id,)
     ).fetchone()
     return dict(full)
 
@@ -122,7 +120,7 @@ def book_consultation(
 @router.get("/api/consultations")
 def list_consultations(
     user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """List the current user's consultations. Requires JWT."""
     user_id = user.get("sub")
@@ -137,7 +135,7 @@ def list_consultations(
                a.display_name as astrologer_name
         FROM consultations c
         JOIN astrologers a ON a.id = c.astrologer_id
-        WHERE c.user_id = ?
+        WHERE c.user_id = %s
         ORDER BY c.created_at DESC
         """,
         (user_id,),
@@ -154,14 +152,14 @@ def list_consultations(
 def accept_consultation(
     consultation_id: str,
     user: dict = Depends(require_role("astrologer")),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Astrologer accepts a consultation request."""
     user_id = user.get("sub")
 
     # Find the astrologer record for this user
     astrologer = db.execute(
-        "SELECT id FROM astrologers WHERE user_id = ?", (user_id,)
+        "SELECT id FROM astrologers WHERE user_id = %s", (user_id,)
     ).fetchone()
 
     if astrologer is None:
@@ -170,7 +168,7 @@ def accept_consultation(
         )
 
     consultation = db.execute(
-        "SELECT id, status, astrologer_id FROM consultations WHERE id = ?",
+        "SELECT id, status, astrologer_id FROM consultations WHERE id = %s",
         (consultation_id,),
     ).fetchone()
 
@@ -191,14 +189,14 @@ def accept_consultation(
         )
 
     db.execute(
-        "UPDATE consultations SET status = 'accepted' WHERE id = ?",
+        "UPDATE consultations SET status = 'accepted' WHERE id = %s",
         (consultation_id,),
     )
     db.commit()
 
     # Return updated consultation per contract: {consultation}
     updated = db.execute(
-        "SELECT * FROM consultations WHERE id = ?", (consultation_id,)
+        "SELECT * FROM consultations WHERE id = %s", (consultation_id,)
     ).fetchone()
     return dict(updated)
 
@@ -207,13 +205,13 @@ def accept_consultation(
 def complete_consultation(
     consultation_id: str,
     user: dict = Depends(require_role("astrologer")),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Astrologer marks a consultation as completed."""
     user_id = user.get("sub")
 
     astrologer = db.execute(
-        "SELECT id FROM astrologers WHERE user_id = ?", (user_id,)
+        "SELECT id FROM astrologers WHERE user_id = %s", (user_id,)
     ).fetchone()
 
     if astrologer is None:
@@ -222,7 +220,7 @@ def complete_consultation(
         )
 
     consultation = db.execute(
-        "SELECT id, status, astrologer_id FROM consultations WHERE id = ?",
+        "SELECT id, status, astrologer_id FROM consultations WHERE id = %s",
         (consultation_id,),
     ).fetchone()
 
@@ -243,19 +241,19 @@ def complete_consultation(
         )
 
     db.execute(
-        "UPDATE consultations SET status = 'completed', ended_at = datetime('now') WHERE id = ?",
+        "UPDATE consultations SET status = 'completed', ended_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS') WHERE id = %s",
         (consultation_id,),
     )
     # Increment astrologer's total_consultations
     db.execute(
-        "UPDATE astrologers SET total_consultations = total_consultations + 1 WHERE id = ?",
+        "UPDATE astrologers SET total_consultations = total_consultations + 1 WHERE id = %s",
         (astrologer["id"],),
     )
     db.commit()
 
     # Return updated consultation per contract: {consultation}
     updated = db.execute(
-        "SELECT * FROM consultations WHERE id = ?", (consultation_id,)
+        "SELECT * FROM consultations WHERE id = %s", (consultation_id,)
     ).fetchone()
     return dict(updated)
 
@@ -284,7 +282,7 @@ def _stored_jitsi_link(value: str | None) -> str | None:
 def generate_video_link(
     consultation_id: str,
     user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Generate a Jitsi Meet video link for a consultation. Requires JWT (participant only)."""
     user_id = user.get("sub")
@@ -296,7 +294,7 @@ def generate_video_link(
                a.user_id as astrologer_user_id
         FROM consultations c
         JOIN astrologers a ON a.id = c.astrologer_id
-        WHERE c.id = ?
+        WHERE c.id = %s
         """,
         (consultation_id,),
     ).fetchone()
@@ -336,8 +334,8 @@ def generate_video_link(
     db.execute(
         """
         UPDATE consultations
-        SET notes = ?, status = ?, started_at = COALESCE(started_at, datetime('now'))
-        WHERE id = ?
+        SET notes = %s, status = %s, started_at = COALESCE(started_at, to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS'))
+        WHERE id = %s
         """,
         (video_link, updated_status, consultation_id),
     )
@@ -369,7 +367,7 @@ class VideoStatusResponse(BaseModel):
 def start_video(
     consultation_id: str,
     user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Generate a video room URL for a consultation. Requires JWT (participant only)."""
     user_id = user.get("sub")
@@ -380,7 +378,7 @@ def start_video(
                a.user_id as astrologer_user_id
         FROM consultations c
         JOIN astrologers a ON a.id = c.astrologer_id
-        WHERE c.id = ?
+        WHERE c.id = %s
         """,
         (consultation_id,),
     ).fetchone()
@@ -415,8 +413,8 @@ def start_video(
     db.execute(
         """
         UPDATE consultations
-        SET notes = ?, status = ?, started_at = COALESCE(started_at, datetime('now'))
-        WHERE id = ?
+        SET notes = %s, status = %s, started_at = COALESCE(started_at, to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS'))
+        WHERE id = %s
         """,
         (room_url, updated_status, consultation_id),
     )
@@ -436,7 +434,7 @@ def start_video(
 def video_status(
     consultation_id: str,
     user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Get current video room URL and status for a consultation. Requires JWT (participant only)."""
     user_id = user.get("sub")
@@ -447,7 +445,7 @@ def video_status(
                a.user_id as astrologer_user_id
         FROM consultations c
         JOIN astrologers a ON a.id = c.astrologer_id
-        WHERE c.id = ?
+        WHERE c.id = %s
         """,
         (consultation_id,),
     ).fetchone()

@@ -1,5 +1,5 @@
 """Gamification routes — karma points, streaks, badges, and learning paths."""
-import sqlite3
+from typing import Any
 from datetime import date
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -57,19 +57,19 @@ def _calculate_level(total_points: int) -> int:
     return min(level, 10)
 
 
-def _ensure_karma_row(db: sqlite3.Connection, user_id: str):
+def _ensure_karma_row(db: Any, user_id: str):
     """Create a user_karma row if it doesn't exist yet."""
-    existing = db.execute("SELECT 1 FROM user_karma WHERE user_id = ?", (user_id,)).fetchone()
+    existing = db.execute("SELECT 1 FROM user_karma WHERE user_id = %s", (user_id,)).fetchone()
     if not existing:
         db.execute(
             "INSERT INTO user_karma (user_id, total_points, current_streak, longest_streak, level) "
-            "VALUES (?, 0, 0, 0, 1)",
+            "VALUES (%s, 0, 0, 0, 1)",
             (user_id,),
         )
         db.commit()
 
 
-def _award_points(db: sqlite3.Connection, user_id: str, action_type: str, description: str | None = None):
+def _award_points(db: Any, user_id: str, action_type: str, description: str | None = None):
     """Award karma points for an action, update level, and return the new totals."""
     _ensure_karma_row(db, user_id)
     points = POINTS_MAP.get(action_type, 0)
@@ -78,22 +78,22 @@ def _award_points(db: sqlite3.Connection, user_id: str, action_type: str, descri
 
     # Insert transaction
     db.execute(
-        "INSERT INTO karma_transactions (user_id, points, action_type, description) VALUES (?, ?, ?, ?)",
+        "INSERT INTO karma_transactions (user_id, points, action_type, description) VALUES (%s, %s, %s, %s)",
         (user_id, points, action_type, description),
     )
 
     # Update total & level
     db.execute(
-        "UPDATE user_karma SET total_points = total_points + ?, "
-        "last_activity_date = date('now') WHERE user_id = ?",
+        "UPDATE user_karma SET total_points = total_points + %s, "
+        "last_activity_date = date('now') WHERE user_id = %s",
         (points, user_id),
     )
     db.commit()
 
     # Recalculate level
-    row = db.execute("SELECT total_points FROM user_karma WHERE user_id = ?", (user_id,)).fetchone()
+    row = db.execute("SELECT total_points FROM user_karma WHERE user_id = %s", (user_id,)).fetchone()
     new_level = _calculate_level(row["total_points"])
-    db.execute("UPDATE user_karma SET level = ? WHERE user_id = ?", (new_level, user_id))
+    db.execute("UPDATE user_karma SET level = %s WHERE user_id = %s", (new_level, user_id))
     db.commit()
 
     # Check badge for cosmic guru
@@ -101,25 +101,25 @@ def _award_points(db: sqlite3.Connection, user_id: str, action_type: str, descri
         _try_award_badge(db, user_id, "cosmic_guru")
 
 
-def _try_award_badge(db: sqlite3.Connection, user_id: str, badge_id: str):
+def _try_award_badge(db: Any, user_id: str, badge_id: str):
     """Award a badge if the user doesn't already have it."""
     existing = db.execute(
-        "SELECT 1 FROM user_badges WHERE user_id = ? AND badge_id = ?",
+        "SELECT 1 FROM user_badges WHERE user_id = %s AND badge_id = %s",
         (user_id, badge_id),
     ).fetchone()
     if not existing:
         db.execute(
-            "INSERT INTO user_badges (user_id, badge_id) VALUES (?, ?)",
+            "INSERT INTO user_badges (user_id, badge_id) VALUES (%s, %s)",
             (user_id, badge_id),
         )
         db.commit()
 
 
-def _check_action_badges(db: sqlite3.Connection, user_id: str):
+def _check_action_badges(db: Any, user_id: str):
     """Evaluate and award action-based badges by checking transaction history."""
     counts: dict[str, int] = {}
     rows = db.execute(
-        "SELECT action_type, COUNT(*) as cnt FROM karma_transactions WHERE user_id = ? GROUP BY action_type",
+        "SELECT action_type, COUNT(*) as cnt FROM karma_transactions WHERE user_id = %s GROUP BY action_type",
         (user_id,),
     ).fetchall()
     for r in rows:
@@ -140,14 +140,14 @@ def _check_action_badges(db: sqlite3.Connection, user_id: str):
 
     # Learning modules completed
     completed_modules = db.execute(
-        "SELECT COUNT(*) as cnt FROM learning_progress WHERE user_id = ?", (user_id,)
+        "SELECT COUNT(*) as cnt FROM learning_progress WHERE user_id = %s", (user_id,)
     ).fetchone()["cnt"]
     if completed_modules >= 5:
         _try_award_badge(db, user_id, "spiritual_scholar")
 
     # Streak badges
     karma_row = db.execute(
-        "SELECT longest_streak FROM user_karma WHERE user_id = ?", (user_id,)
+        "SELECT longest_streak FROM user_karma WHERE user_id = %s", (user_id,)
     ).fetchone()
     if karma_row:
         if karma_row["longest_streak"] >= 7:
@@ -163,7 +163,7 @@ def _check_action_badges(db: sqlite3.Connection, user_id: str):
 @router.get("/karma/profile")
 def get_karma_profile(
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Get the authenticated user's karma profile including points, streak, level, and badges."""
     user_id = current_user["sub"]
@@ -171,13 +171,13 @@ def get_karma_profile(
 
     row = db.execute(
         "SELECT user_id, total_points, current_streak, longest_streak, last_activity_date, level, created_at "
-        "FROM user_karma WHERE user_id = ?",
+        "FROM user_karma WHERE user_id = %s",
         (user_id,),
     ).fetchone()
 
     # Fetch earned badges
     earned_rows = db.execute(
-        "SELECT badge_id, earned_at FROM user_badges WHERE user_id = ?", (user_id,)
+        "SELECT badge_id, earned_at FROM user_badges WHERE user_id = %s", (user_id,)
     ).fetchall()
     earned_map = {r["badge_id"]: r["earned_at"] for r in earned_rows}
 
@@ -207,7 +207,7 @@ def get_karma_profile(
 @router.post("/karma/checkin")
 def daily_checkin(
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Daily check-in: awards points and updates the login streak."""
     user_id = current_user["sub"]
@@ -215,7 +215,7 @@ def daily_checkin(
     today = date.today().isoformat()
 
     row = db.execute(
-        "SELECT last_activity_date, current_streak, longest_streak FROM user_karma WHERE user_id = ?",
+        "SELECT last_activity_date, current_streak, longest_streak FROM user_karma WHERE user_id = %s",
         (user_id,),
     ).fetchone()
 
@@ -230,7 +230,7 @@ def daily_checkin(
             "points_awarded": 0,
             "current_streak": current_streak,
             "total_points": db.execute(
-                "SELECT total_points FROM user_karma WHERE user_id = ?", (user_id,)
+                "SELECT total_points FROM user_karma WHERE user_id = %s", (user_id,)
             ).fetchone()["total_points"],
         }
 
@@ -250,7 +250,7 @@ def daily_checkin(
 
     # Update streak
     db.execute(
-        "UPDATE user_karma SET current_streak = ?, longest_streak = ?, last_activity_date = ? WHERE user_id = ?",
+        "UPDATE user_karma SET current_streak = %s, longest_streak = %s, last_activity_date = %s WHERE user_id = %s",
         (current_streak, longest_streak, today, user_id),
     )
     db.commit()
@@ -261,7 +261,7 @@ def daily_checkin(
     # Check streak badges
     _check_action_badges(db, user_id)
 
-    total = db.execute("SELECT total_points FROM user_karma WHERE user_id = ?", (user_id,)).fetchone()["total_points"]
+    total = db.execute("SELECT total_points FROM user_karma WHERE user_id = %s", (user_id,)).fetchone()["total_points"]
 
     return {
         "message": "Check-in successful!",
@@ -276,19 +276,19 @@ def list_transactions(
     page: int = Query(1, ge=1),
     per_page: int = Query(20, ge=1, le=100),
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """List the authenticated user's karma point history with pagination."""
     user_id = current_user["sub"]
     offset = (page - 1) * per_page
 
     total = db.execute(
-        "SELECT COUNT(*) as cnt FROM karma_transactions WHERE user_id = ?", (user_id,)
+        "SELECT COUNT(*) as cnt FROM karma_transactions WHERE user_id = %s", (user_id,)
     ).fetchone()["cnt"]
 
     rows = db.execute(
         "SELECT id, user_id, points, action_type, description, created_at "
-        "FROM karma_transactions WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?",
+        "FROM karma_transactions WHERE user_id = %s ORDER BY created_at DESC LIMIT %s OFFSET %s",
         (user_id, per_page, offset),
     ).fetchall()
 
@@ -312,7 +312,7 @@ def list_transactions(
 
 @router.get("/karma/leaderboard")
 def get_leaderboard(
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Return top 10 users by karma points."""
     rows = db.execute(
@@ -343,7 +343,7 @@ def get_leaderboard(
 @router.get("/badges")
 def list_badges(
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """List all available badges with earned status for the authenticated user."""
     user_id = current_user["sub"]
@@ -352,7 +352,7 @@ def list_badges(
     _check_action_badges(db, user_id)
 
     earned_rows = db.execute(
-        "SELECT badge_id, earned_at FROM user_badges WHERE user_id = ?", (user_id,)
+        "SELECT badge_id, earned_at FROM user_badges WHERE user_id = %s", (user_id,)
     ).fetchall()
     earned_map = {r["badge_id"]: r["earned_at"] for r in earned_rows}
 
@@ -377,7 +377,7 @@ def list_badges(
 @router.get("/learning/modules")
 def list_learning_modules(
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """List all learning path modules with completion status."""
     user_id = current_user["sub"]
@@ -389,7 +389,7 @@ def list_learning_modules(
 
     # Completed module IDs
     completed_rows = db.execute(
-        "SELECT module_id FROM learning_progress WHERE user_id = ?", (user_id,)
+        "SELECT module_id FROM learning_progress WHERE user_id = %s", (user_id,)
     ).fetchall()
     completed_ids = {r["module_id"] for r in completed_rows}
 
@@ -413,14 +413,14 @@ def list_learning_modules(
 def get_learning_module(
     module_id: str,
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Get a specific learning module's content."""
     user_id = current_user["sub"]
 
     row = db.execute(
         "SELECT id, title, description, category, order_index, content_json, points_reward "
-        "FROM learning_modules WHERE id = ?",
+        "FROM learning_modules WHERE id = %s",
         (module_id,),
     ).fetchone()
 
@@ -428,7 +428,7 @@ def get_learning_module(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Learning module not found")
 
     completed = db.execute(
-        "SELECT 1 FROM learning_progress WHERE user_id = ? AND module_id = ?",
+        "SELECT 1 FROM learning_progress WHERE user_id = %s AND module_id = %s",
         (user_id, module_id),
     ).fetchone()
 
@@ -448,21 +448,21 @@ def get_learning_module(
 def complete_learning_module(
     module_id: str,
     current_user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Mark a learning module as complete and award karma points."""
     user_id = current_user["sub"]
 
     # Verify module exists
     module = db.execute(
-        "SELECT id, title, points_reward FROM learning_modules WHERE id = ?", (module_id,)
+        "SELECT id, title, points_reward FROM learning_modules WHERE id = %s", (module_id,)
     ).fetchone()
     if not module:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Learning module not found")
 
     # Check if already completed
     already = db.execute(
-        "SELECT 1 FROM learning_progress WHERE user_id = ? AND module_id = ?",
+        "SELECT 1 FROM learning_progress WHERE user_id = %s AND module_id = %s",
         (user_id, module_id),
     ).fetchone()
     if already:
@@ -470,7 +470,7 @@ def complete_learning_module(
 
     # Mark complete
     db.execute(
-        "INSERT INTO learning_progress (user_id, module_id) VALUES (?, ?)",
+        "INSERT INTO learning_progress (user_id, module_id) VALUES (%s, %s)",
         (user_id, module_id),
     )
     db.commit()

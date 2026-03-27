@@ -1,5 +1,5 @@
 """Shopping cart routes — all require JWT auth."""
-import sqlite3
+from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.auth import get_current_user
 from app.database import get_db
@@ -9,7 +9,7 @@ router = APIRouter()
 
 
 @router.get("/api/cart")
-def get_cart(user: dict = Depends(get_current_user), db: sqlite3.Connection = Depends(get_db)):
+def get_cart(user: dict = Depends(get_current_user), db: Any = Depends(get_db)):
     """Get the current user's cart with product details."""
     user_id = user.get("sub")
 
@@ -19,7 +19,7 @@ def get_cart(user: dict = Depends(get_current_user), db: sqlite3.Connection = De
                p.name, p.price, p.image_url, p.stock, p.category
         FROM cart_items ci
         JOIN products p ON p.id = ci.product_id
-        WHERE ci.user_id = ?
+        WHERE ci.user_id = %s
         ORDER BY ci.created_at DESC
         """,
         (user_id,),
@@ -35,14 +35,14 @@ def get_cart(user: dict = Depends(get_current_user), db: sqlite3.Connection = De
 def add_to_cart(
     req: CartAddRequest,
     user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Add a product to the cart. Checks stock availability."""
     user_id = user.get("sub")
 
     # Verify product exists and is active
     product = db.execute(
-        "SELECT id, stock, is_active FROM products WHERE id = ?", (req.product_id,)
+        "SELECT id, stock, is_active FROM products WHERE id = %s", (req.product_id,)
     ).fetchone()
 
     if product is None or not product["is_active"]:
@@ -52,7 +52,7 @@ def add_to_cart(
 
     # Check if already in cart
     existing = db.execute(
-        "SELECT id, quantity FROM cart_items WHERE user_id = ? AND product_id = ?",
+        "SELECT id, quantity FROM cart_items WHERE user_id = %s AND product_id = %s",
         (user_id, req.product_id),
     ).fetchone()
 
@@ -69,12 +69,12 @@ def add_to_cart(
 
     if existing:
         db.execute(
-            "UPDATE cart_items SET quantity = ? WHERE id = ?",
+            "UPDATE cart_items SET quantity = %s WHERE id = %s",
             (new_qty, existing["id"]),
         )
     else:
         db.execute(
-            "INSERT INTO cart_items (user_id, product_id, quantity) VALUES (?, ?, ?)",
+            "INSERT INTO cart_items (user_id, product_id, quantity) VALUES (%s, %s, %s)",
             (user_id, req.product_id, req.quantity),
         )
 
@@ -88,7 +88,7 @@ def add_to_cart(
                p.name, p.price, p.image_url, p.stock, p.category
         FROM cart_items ci
         JOIN products p ON p.id = ci.product_id
-        WHERE ci.user_id = ?
+        WHERE ci.user_id = %s
         ORDER BY ci.created_at DESC
         """,
         (user_id,),
@@ -103,13 +103,13 @@ def update_cart_item(
     item_id: str,
     req: CartUpdateRequest,
     user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Update quantity of a cart item. Must belong to current user."""
     user_id = user.get("sub")
 
     item = db.execute(
-        "SELECT ci.id, ci.product_id FROM cart_items ci WHERE ci.id = ? AND ci.user_id = ?",
+        "SELECT ci.id, ci.product_id FROM cart_items ci WHERE ci.id = %s AND ci.user_id = %s",
         (item_id, user_id),
     ).fetchone()
 
@@ -120,7 +120,7 @@ def update_cart_item(
 
     # Check stock
     product = db.execute(
-        "SELECT stock FROM products WHERE id = ?", (item["product_id"],)
+        "SELECT stock FROM products WHERE id = %s", (item["product_id"],)
     ).fetchone()
 
     if product and req.quantity > product["stock"]:
@@ -129,7 +129,7 @@ def update_cart_item(
             detail=f"Insufficient stock. Available: {product['stock']}",
         )
 
-    db.execute("UPDATE cart_items SET quantity = ? WHERE id = ?", (req.quantity, item_id))
+    db.execute("UPDATE cart_items SET quantity = %s WHERE id = %s", (req.quantity, item_id))
     db.commit()
 
     # Return updated cart per contract: {cart}
@@ -139,7 +139,7 @@ def update_cart_item(
                p.name, p.price, p.image_url, p.stock, p.category
         FROM cart_items ci
         JOIN products p ON p.id = ci.product_id
-        WHERE ci.user_id = ?
+        WHERE ci.user_id = %s
         ORDER BY ci.created_at DESC
         """,
         (user_id,),
@@ -153,13 +153,13 @@ def update_cart_item(
 def remove_cart_item(
     item_id: str,
     user: dict = Depends(get_current_user),
-    db: sqlite3.Connection = Depends(get_db),
+    db: Any = Depends(get_db),
 ):
     """Remove an item from the cart. Must belong to current user."""
     user_id = user.get("sub")
 
     item = db.execute(
-        "SELECT id FROM cart_items WHERE id = ? AND user_id = ?",
+        "SELECT id FROM cart_items WHERE id = %s AND user_id = %s",
         (item_id, user_id),
     ).fetchone()
 
@@ -168,7 +168,7 @@ def remove_cart_item(
             status_code=status.HTTP_404_NOT_FOUND, detail="Cart item not found"
         )
 
-    db.execute("DELETE FROM cart_items WHERE id = ?", (item_id,))
+    db.execute("DELETE FROM cart_items WHERE id = %s", (item_id,))
     db.commit()
 
     # Return updated cart per contract: {cart}
@@ -178,7 +178,7 @@ def remove_cart_item(
                p.name, p.price, p.image_url, p.stock, p.category
         FROM cart_items ci
         JOIN products p ON p.id = ci.product_id
-        WHERE ci.user_id = ?
+        WHERE ci.user_id = %s
         ORDER BY ci.created_at DESC
         """,
         (user_id,),
