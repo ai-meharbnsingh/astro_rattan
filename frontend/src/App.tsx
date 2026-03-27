@@ -1,11 +1,16 @@
-import { useEffect, useRef, lazy, Suspense } from 'react';
+import { useEffect, useRef, lazy, Suspense, Component, type ReactNode } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { I18nProvider } from './lib/i18n';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 const CosmicBackground = lazy(() => import('./components/three/CosmicBackground'));
-import WhatsAppWidget from './components/WhatsAppWidget';
+
+class ThreeErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+  state = { hasError: false };
+  static getDerivedStateFromError() { return { hasError: true }; }
+  render() { return this.state.hasError ? null : this.props.children; }
+}
 import Navigation from './sections/Navigation';
 import Hero from './sections/Hero';
 import Features from './sections/Features';
@@ -84,9 +89,11 @@ function App() {
   return (
     <I18nProvider>
     <div className="min-h-screen bg-cosmic-bg text-cosmic-text overflow-x-hidden">
-      <Suspense fallback={null}>
-        <CosmicBackground />
-      </Suspense>
+      <ThreeErrorBoundary>
+        <Suspense fallback={null}>
+          <CosmicBackground />
+        </Suspense>
+      </ThreeErrorBoundary>
 
       <div className="relative z-10">
       <Navigation />
