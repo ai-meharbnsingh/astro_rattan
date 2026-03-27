@@ -70,7 +70,7 @@ export default function DailyHoroscope() {
   }, [selectedSign]);
 
   return (
-    <section ref={sectionRef} id="horoscope" className="relative py-24 bg-cosmic-bg bg-mandala bg-cosmic-stars">
+    <section ref={sectionRef} id="horoscope" className="relative py-24 bg-transparent">
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="horoscope-title text-center mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-saffron/10 text-sacred-saffron text-sm font-medium mb-6 border border-sacred-saffron/30">
@@ -82,36 +82,36 @@ export default function DailyHoroscope() {
         </div>
         <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-12 gap-3 mb-12">
           {zodiacSigns.map((sign, index) => (
-            <button key={index} onClick={() => setSelectedSign(sign)} className={`relative p-3 rounded-xl transition-all duration-300 overflow-hidden ${selectedSign.name === sign.name ? 'ring-2 ring-sacred-gold shadow-glow-gold' : 'border border-sacred-gold/20 hover:border-sacred-gold/40'}`}>
-              <div className="absolute inset-0 z-0">
-                <img
-                  src={`/images/zodiac-${sign.name.toLowerCase()}.jpg`}
-                  alt={sign.name}
-                  className="w-full h-full object-cover opacity-40"
-                />
-                <div className={`absolute inset-0 ${selectedSign.name === sign.name ? 'bg-sacred-gold/40' : 'bg-[#0a0a0a]/60'}`} />
+            <button key={index} onClick={() => setSelectedSign(sign)} className={`group relative aspect-square rounded-xl transition-all duration-300 overflow-hidden ${selectedSign.name === sign.name ? 'ring-2 ring-[#d4af37] shadow-[0_0_20px_rgba(212,175,55,0.3)]' : 'border border-[#d4af37]/20 hover:border-[#d4af37]/50'}`}>
+              {/* Background Image */}
+              <img
+                src={`/images/zodiac-${sign.name.toLowerCase()}.jpg`}
+                alt={sign.name}
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+              {/* Dark Gradient Overlay - darker at bottom for text */}
+              <div className={`absolute inset-0 transition-all duration-300 bg-gradient-to-t from-black/80 via-black/30 to-transparent ${selectedSign.name === sign.name ? 'opacity-70' : 'opacity-90 group-hover:opacity-80'}`} />
+              {/* Content - Name at bottom */}
+              <div className="absolute bottom-0 left-0 right-0 z-10 p-2 text-center">
+                <span className="text-xs sm:text-sm font-medium text-white tracking-wide drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{sign.name}</span>
               </div>
-              <span className="relative z-10 text-2xl block mb-1">{sign.symbol}</span>
-              <span className="relative z-10 text-xs text-cosmic-text">{sign.name}</span>
+              {/* Selected Indicator */}
+              {selectedSign.name === sign.name && (
+                <div className="absolute inset-0 border-2 border-[#d4af37] rounded-xl pointer-events-none" />
+              )}
             </button>
           ))}
         </div>
         <div className="grid lg:grid-cols-3 gap-8">
           <Card className="lg:col-span-1 card-sacred border-sacred-gold/20">
             <CardContent className="p-6 text-center">
-              <div className="relative w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 shadow-glow-gold border-2 border-sacred-gold/40">
+              <div className="relative w-28 h-28 rounded-full overflow-hidden mx-auto mb-4 shadow-[0_0_30px_rgba(212,175,55,0.3)] border-2 border-[#d4af37]/50">
                 <img
                   src={`/images/zodiac-${selectedSign.name.toLowerCase()}.jpg`}
                   alt={selectedSign.name}
                   className="w-full h-full object-cover"
-                  onError={(e) => {
-                    (e.currentTarget as HTMLImageElement).style.display = 'none';
-                    (e.currentTarget.nextElementSibling as HTMLElement | null)?.classList.remove('hidden');
-                  }}
                 />
-                <div className="hidden absolute inset-0 bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center">
-                  <span className="text-5xl text-cosmic-bg">{selectedSign.symbol}</span>
-                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
               </div>
               <h3 className="text-2xl font-sacred font-bold text-cosmic-text mb-1">{selectedSign.name}</h3>
               <p className="text-sm text-cosmic-text-secondary mb-4">{selectedSign.date}</p>

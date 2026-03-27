@@ -28,13 +28,9 @@ export default function About() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="about" className="relative py-24 bg-cosmic-bg-light bg-mandala overflow-hidden">
-      {/* Subtle nebula texture overlay */}
-      <div
-        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-10 pointer-events-none"
-        style={{ backgroundImage: "url('/images/hero-bg.jpg')" }}
-      />
-      <div className="absolute inset-0 z-0 bg-gradient-to-b from-[#0d0d1a]/80 via-transparent to-[#0d0d1a]/80 pointer-events-none" />
+    <section ref={sectionRef} id="about" className="relative py-24 bg-black overflow-hidden">
+      {/* Observatory theme - pure black with gold accents */}
+      <div className="absolute inset-0 z-0 bg-gradient-to-b from-black via-transparent to-black pointer-events-none" />
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           <div className="about-content">
@@ -54,7 +50,7 @@ export default function About() {
           </div>
           <div className="about-image relative">
             <div className="relative aspect-square max-w-lg mx-auto">
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-sacred-purple/30 to-sacred-gold/10 border border-sacred-gold/20" />
+              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-[#d4af37]/10 to-transparent border border-[#d4af37]/20" />
               <div className="absolute inset-8 rounded-2xl card-sacred flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 z-0 opacity-30 pointer-events-none">
                   <Canvas camera={{ position: [0, 0, 4], fov: 50 }} gl={{ alpha: true }}>

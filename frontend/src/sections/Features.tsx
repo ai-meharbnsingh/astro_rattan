@@ -2,12 +2,10 @@ import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Canvas } from '@react-three/fiber';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Brain, Star, Calendar, BookOpen, Sparkles, ChevronRight, Compass } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
-import { ZodiacWheel } from '@/components/three';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -34,40 +32,55 @@ export default function Features() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="features" className="relative py-24 bg-cosmic-bg bg-mandala">
-      <div className="absolute inset-0 z-0 opacity-30 pointer-events-none">
-        <Canvas camera={{ position: [0, 0, 5], fov: 50 }} gl={{ alpha: true }}>
-          <ZodiacWheel size={1.8} tilt={0.6} rotationSpeed={0.05} />
-        </Canvas>
-      </div>
+    <section ref={sectionRef} id="features" className="relative py-24 bg-black">
+      {/* Gold gradient line at top */}
+      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#d4af37]/50 to-transparent" />
+      
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="features-title text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-sacred font-bold text-cosmic-text mb-4">
-            {t('features.heading')}<span className="text-gradient-gold">{t('features.headingHighlight')}</span>
+          <p className="text-[#ffaa33] text-sm tracking-[4px] uppercase mb-4 font-['Cinzel']">The Celestial Houses</p>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-['Cinzel_Decorative'] text-white mb-4">
+            Cosmic <span className="text-[#ffd700]">Services</span>
           </h2>
         </div>
+        
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
-              <Card key={index} className="feature-card group relative card-sacred border-sacred-gold/20 hover:border-sacred-gold/50 transition-all duration-300 hover:-translate-y-1 cursor-pointer" onClick={() => navigate(feature.route)}>
+              <Card 
+                key={index} 
+                className="feature-card group relative bg-black border border-[#d4af37]/20 hover:border-[#d4af37]/50 transition-all duration-300 hover:-translate-y-1 cursor-pointer" 
+                onClick={() => navigate(feature.route)}
+              >
                 <CardContent className="relative p-6 text-center">
-                  <div className="w-16 h-16 rounded-xl flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform bg-sacred-gold/10 border border-sacred-gold/20">
-                    <Icon className="w-8 h-8 text-sacred-gold" />
+                  <div className="w-16 h-16 flex items-center justify-center mb-4 mx-auto bg-[#d4af37]/10 border border-[#d4af37]/20 group-hover:scale-110 transition-transform">
+                    <Icon className="w-8 h-8 text-[#ffd700]" />
                   </div>
-                  <h3 className="text-xl font-sacred font-semibold text-cosmic-text mb-2 uppercase tracking-wide">{t(feature.titleKey)}</h3>
-                  <p className="text-sm text-cosmic-text-secondary">{t(feature.descKey)}</p>
+                  <h3 className="text-xl font-['Cinzel'] font-semibold text-white mb-2 uppercase tracking-wide">
+                    {t(feature.titleKey)}
+                  </h3>
+                  <p className="text-sm text-white/60">{t(feature.descKey)}</p>
                 </CardContent>
               </Card>
             );
           })}
         </div>
+        
         <div className="features-title mt-16 text-center">
-          <Button onClick={() => navigate('/ai-chat')} className="btn-sacred">
-            <Brain className="w-5 h-5 mr-2" />{t('features.chatWithAI')}<ChevronRight className="w-5 h-5 ml-2" />
+          <Button 
+            onClick={() => navigate('/ai-chat')} 
+            className="bg-transparent border border-[#d4af37] text-[#d4af37] hover:bg-[#d4af37] hover:text-black transition-all px-8 py-6 text-base font-['Cinzel'] tracking-wider"
+          >
+            <Brain className="w-5 h-5 mr-2" />
+            {t('features.chatWithAI')}
+            <ChevronRight className="w-5 h-5 ml-2" />
           </Button>
         </div>
       </div>
+      
+      {/* Gold gradient line at bottom */}
+      <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#d4af37]/30 to-transparent" />
     </section>
   );
 }

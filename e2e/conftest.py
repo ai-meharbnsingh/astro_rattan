@@ -86,23 +86,13 @@ def start_server(e2e_db_path):
 
 @pytest.fixture(scope="session")
 def start_frontend(start_server):
-    """Build the frontend and serve the production preview."""
+    """Serve the frontend with Vite dev server for browser E2E."""
     frontend_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
     env = os.environ.copy()
     env["VITE_API_URL"] = start_server
     frontend_log = open(FRONTEND_LOG_PATH, "w")
-    subprocess.run(
-        ["npm", "run", "build"],
-        cwd=frontend_dir,
-        check=True,
-        env=env,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-    )
-
     preview = subprocess.Popen(
-        ["npm", "run", "preview", "--", "--host", "127.0.0.1", "--port", str(FRONTEND_PORT)],
+        ["npm", "run", "dev", "--", "--host", "127.0.0.1", "--port", str(FRONTEND_PORT)],
         cwd=frontend_dir,
         env=env,
         stdout=frontend_log,
@@ -147,7 +137,9 @@ def playwright_instance():
 @pytest.fixture(scope="session")
 def browser(playwright_instance, start_frontend):
     """Shared Chromium browser for browser smoke tests."""
-    browser = playwright_instance.chromium.launch(headless=True)
+    headless = os.getenv("E2E_HEADLESS", "1") not in ("0", "false", "False")
+    slow_mo = int(os.getenv("E2E_SLOWMO_MS", "0"))
+    browser = playwright_instance.chromium.launch(headless=headless, slow_mo=slow_mo)
     yield browser
     browser.close()
 

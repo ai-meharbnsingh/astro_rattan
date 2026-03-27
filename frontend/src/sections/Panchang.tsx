@@ -141,7 +141,7 @@ export default function Panchang() {
   }, [todayStr]);
 
   return (
-    <section ref={sectionRef} id="panchang" className="relative py-24 bg-cosmic-bg bg-mandala">
+    <section ref={sectionRef} id="panchang" className="relative py-24 bg-transparent">
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="panchang-title text-center mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-saffron/10 text-sacred-saffron text-sm font-medium mb-6 border border-sacred-saffron/30">

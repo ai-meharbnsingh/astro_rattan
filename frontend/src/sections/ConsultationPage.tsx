@@ -241,7 +241,7 @@ export default function ConsultationPage() {
   }
 
   return (
-    <section className="max-w-6xl mx-auto py-24 px-4">
+    <section className="max-w-6xl mx-auto py-24 px-4 bg-transparent">
       <div className="text-center mb-10">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold/10 text-sacred-gold text-sm font-medium mb-4">
           <Users className="w-4 h-4" />Consultations

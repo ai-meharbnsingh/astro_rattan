@@ -181,7 +181,7 @@ export default function KundliGenerator() {
   // --- MY KUNDLIS LIST ---
   if (step === 'list') {
     return (
-      <div className="max-w-2xl mx-auto py-24 px-4">
+      <div className="max-w-2xl mx-auto py-24 px-4 bg-transparent">
         <div className="text-center mb-8">
           <div className="w-16 h-16 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center mx-auto mb-4">
             <Sparkles className="w-8 h-8 text-white" />
@@ -249,7 +249,7 @@ export default function KundliGenerator() {
     } : null;
 
     return (
-      <div className="max-w-4xl mx-auto py-24 px-4">
+      <div className="max-w-4xl mx-auto py-24 px-4 bg-transparent">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             {savedKundlis.length > 0 && (
@@ -651,7 +651,7 @@ export default function KundliGenerator() {
 
   // --- FORM VIEW ---
   return (
-    <div className="max-w-md mx-auto py-24 px-4">
+    <div className="max-w-md mx-auto py-24 px-4 bg-transparent">
       <div className="text-center mb-8">
         <div className="w-16 h-16 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center mx-auto mb-4">
           <Sparkles className="w-8 h-8 text-white" />

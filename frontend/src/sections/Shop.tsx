@@ -116,7 +116,7 @@ export default function Shop() {
   }, [activeTab]);
 
   return (
-    <section id="shop" className="relative py-24 bg-cosmic-bg bg-mandala">
+    <section id="shop" className="relative py-24 bg-transparent">
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold/10 text-sacred-gold text-sm font-medium mb-6 border border-sacred-gold/30">

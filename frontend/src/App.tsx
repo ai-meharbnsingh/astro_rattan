@@ -1,17 +1,11 @@
-import { useEffect, useRef, lazy, Suspense, Component, type ReactNode } from 'react';
+import { useEffect, useRef, lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { I18nProvider } from './lib/i18n';
 import { AuthProvider } from './hooks/useAuth';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-const CosmicBackground = lazy(() => import('./components/three/CosmicBackground'));
-
-class ThreeErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
-  state = { hasError: false };
-  static getDerivedStateFromError() { return { hasError: true }; }
-  render() { return this.state.hasError ? null : this.props.children; }
-}
+const CosmicBackground = lazy(() => import('./components/CosmicBackground'));
 import Navigation from './sections/Navigation';
 import Hero from './sections/Hero';
 import Features from './sections/Features';
@@ -25,6 +19,7 @@ import SpiritualLibrary from './sections/SpiritualLibrary';
 import Shop from './sections/Shop';
 import AIChat from './sections/AIChat';
 import KundliGenerator from './sections/KundliGenerator';
+const Kundli3D = lazy(() => import('./sections/Kundli3D'));
 import AuthPage from './sections/AuthPage';
 import CartCheckout from './sections/CartCheckout';
 import ConsultationPage from './sections/ConsultationPage';
@@ -90,7 +85,10 @@ function App() {
   return (
     <AuthProvider>
     <I18nProvider>
-    <div className="min-h-screen bg-cosmic-bg text-cosmic-text overflow-x-hidden">
+    <div className="min-h-screen bg-[#000000] text-white overflow-x-hidden">
+      <Suspense fallback={null}>
+          <CosmicBackground />
+        </Suspense>
       <div className="relative">
       <Navigation />
 
@@ -98,6 +96,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/kundli" element={<KundliGenerator />} />
+          <Route path="/kundli-3d" element={<Kundli3D />} />
           <Route path="/horoscope" element={<DailyHoroscope />} />
           <Route path="/panchang" element={<Panchang />} />
           <Route path="/ai-chat" element={<AIChat />} />

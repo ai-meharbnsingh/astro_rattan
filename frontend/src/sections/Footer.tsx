@@ -38,42 +38,57 @@ const footerLinks = {
 
 export default function Footer() {
   return (
-    <footer className="relative bg-cosmic-bg-light overflow-hidden border-t border-sacred-gold/10">
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-sacred-gold/50 to-transparent" />
+    <footer className="relative bg-black overflow-hidden border-t border-[#d4af37]/20">
+      {/* Top gold line */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#d4af37]/50 to-transparent" />
+      
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="py-16 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
           <div className="col-span-2 md:col-span-3 lg:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-6">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center shadow-glow-gold">
-                <Stars className="w-7 h-7 text-cosmic-bg" />
+              <div className="w-12 h-12 bg-[#d4af37] flex items-center justify-center">
+                <Stars className="w-7 h-7 text-black" />
               </div>
-              <span className="font-sacred font-bold text-2xl text-cosmic-text">Astro Rattan</span>
+              <span className="font-['Cinzel'] font-bold text-2xl text-white">Astro Rattan</span>
             </Link>
-            <p className="text-cosmic-text-secondary mb-6 max-w-sm">Bridging ancient Vedic wisdom with modern AI technology to guide you through life&apos;s journey.</p>
+            <p className="text-white/60 mb-6 max-w-sm">
+              Bridging ancient Vedic wisdom with modern AI technology to guide you through life&apos;s journey.
+            </p>
             <div className="space-y-3 mb-6">
-              <a href="mailto:support@astrovedic.com" className="flex items-center gap-3 text-cosmic-text-secondary hover:text-sacred-gold transition-colors">
-                <Mail className="w-5 h-5" /><span className="text-sm">support@astrovedic.com</span>
+              <a href="mailto:support@astrovedic.com" className="flex items-center gap-3 text-white/60 hover:text-[#ffd700] transition-colors">
+                <Mail className="w-5 h-5" />
+                <span className="text-sm">support@astrovedic.com</span>
               </a>
-              <a href="tel:+919876543210" className="flex items-center gap-3 text-cosmic-text-secondary hover:text-sacred-gold transition-colors">
-                <Phone className="w-5 h-5" /><span className="text-sm">+91 98765 43210</span>
+              <a href="tel:+919876543210" className="flex items-center gap-3 text-white/60 hover:text-[#ffd700] transition-colors">
+                <Phone className="w-5 h-5" />
+                <span className="text-sm">+91 98765 43210</span>
               </a>
             </div>
             <div className="flex gap-3">
               {[Facebook, Twitter, Instagram, Youtube].map((Icon, i) => (
-                <a key={i} href="#" className="w-10 h-10 rounded-full bg-sacred-gold/10 border border-sacred-gold/20 flex items-center justify-center text-cosmic-text-secondary hover:text-sacred-gold hover:border-sacred-gold/40 transition-all">
+                <a 
+                  key={i} 
+                  href="#" 
+                  className="w-10 h-10 bg-[#d4af37]/10 border border-[#d4af37]/20 flex items-center justify-center text-white/60 hover:text-[#ffd700] hover:border-[#d4af37]/40 transition-all"
+                >
                   <Icon className="w-5 h-5" />
                 </a>
               ))}
             </div>
           </div>
+          
           {Object.entries(footerLinks).map(([title, links]) => (
             <div key={title}>
-              <h4 className="font-sacred font-semibold text-sacred-gold mb-4 capitalize">{title}</h4>
+              <h4 className="font-['Cinzel'] font-semibold text-[#d4af37] mb-4 capitalize">{title}</h4>
               <ul className="space-y-2">
                 {links.map((link, i) => (
                   <li key={i}>
-                    <Link to={link.href} className="text-sm text-cosmic-text-secondary hover:text-sacred-gold transition-colors flex items-center gap-1">
-                      <ChevronRight className="w-3 h-3" />{link.label}
+                    <Link 
+                      to={link.href} 
+                      className="text-sm text-white/60 hover:text-[#ffd700] transition-colors flex items-center gap-1"
+                    >
+                      <ChevronRight className="w-3 h-3" />
+                      {link.label}
                     </Link>
                   </li>
                 ))}
@@ -81,11 +96,20 @@ export default function Footer() {
             </div>
           ))}
         </div>
-        <div className="py-6 border-t border-sacred-gold/10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-cosmic-text-muted">&copy; {new Date().getFullYear()} Astro Rattan. Made with <Heart className="w-4 h-4 inline text-sacred-saffron fill-sacred-saffron" /> in India</p>
+        
+        <div className="py-6 border-t border-[#d4af37]/10 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-white/40">
+            &copy; {new Date().getFullYear()} Astro Rattan. Made with <Heart className="w-4 h-4 inline text-[#ffaa33]" /> in India
+          </p>
           <div className="flex gap-6">
             {['Privacy Policy', 'Terms of Service', 'Refund Policy'].map((item, i) => (
-              <a key={i} href="#" className="text-sm text-cosmic-text-muted hover:text-sacred-gold transition-colors">{item}</a>
+              <a 
+                key={i} 
+                href="#" 
+                className="text-sm text-white/40 hover:text-[#ffd700] transition-colors"
+              >
+                {item}
+              </a>
             ))}
           </div>
         </div>

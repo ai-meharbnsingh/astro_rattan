@@ -419,7 +419,7 @@ export default function Dashboard() {
   }
 
   return (
-    <section className="relative py-24 bg-cosmic-bg min-h-screen">
+    <section className="relative py-24 bg-transparent min-h-screen">
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Welcome Banner */}

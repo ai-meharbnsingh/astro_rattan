@@ -16,7 +16,9 @@ def list_gita_chapters(db: Any = Depends(get_db)):
     Contract response: [{chapter, title, verses_count, summary}]
     """
     rows = db.execute(
-        """SELECT chapter, COUNT(*) as verses_count, MIN(title) as title
+        """SELECT chapter,
+                  SUM(CASE WHEN verse IS NOT NULL THEN 1 ELSE 0 END) as verses_count,
+                  COALESCE(MIN(CASE WHEN verse IS NULL THEN title END), MIN(title)) as title
            FROM content_library
            WHERE category = 'gita' AND chapter IS NOT NULL
            GROUP BY chapter
@@ -53,9 +55,9 @@ def get_gita_chapter(ch: int, db: Any = Depends(get_db)):
         )
 
     rows = db.execute(
-        """SELECT id, chapter, verse, title, sanskrit_text, translation, commentary, content
+        """SELECT id, chapter, verse, title, sanskrit_text, translation, commentary, content, audio_url
            FROM content_library
-           WHERE category = 'gita' AND chapter = %s
+           WHERE category = 'gita' AND chapter = %s AND verse IS NOT NULL
            ORDER BY verse""",
         (ch,),
     ).fetchall()
@@ -79,6 +81,7 @@ def get_gita_chapter(ch: int, db: Any = Depends(get_db)):
                 "translation": r["translation"],
                 "commentary": r["commentary"],
                 "content": r["content"],
+                "audio_url": r["audio_url"],
             }
             for r in rows
         ],
@@ -104,9 +107,12 @@ def get_gita_verse(ch: int, v: int, db: Any = Depends(get_db)):
         )
 
     return {
+        "chapter": ch,
+        "verse": v,
         "sanskrit": row["sanskrit_text"],
         "translation": row["translation"],
         "commentary": row["commentary"],
+        "audio_url": row["audio_url"],
     }
 
 
@@ -157,7 +163,7 @@ def list_library_items(category: str, db: Any = Depends(get_db)):
         )
 
     rows = db.execute(
-        """SELECT id, title, title_hindi, content
+        """SELECT id, title, title_hindi, content, audio_url
            FROM content_library
            WHERE category = %s
            ORDER BY sort_order, title""",
@@ -170,6 +176,7 @@ def list_library_items(category: str, db: Any = Depends(get_db)):
             "title": r["title"],
             "title_hindi": r["title_hindi"],
             "content_preview": (r["content"] or "")[:200],
+            "audio_url": r["audio_url"],
         }
         for r in rows
     ]

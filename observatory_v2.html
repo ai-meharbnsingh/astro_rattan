@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Observatory — Cosmic Intelligence</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cinzel+Decorative:wght@400;700&family=Inter:wght@300;400;500&family=Space+Mono:wght@400&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --void: #000000;
+            --gold: #d4af37;
+            --gold-bright: #ffd700;
+            --amber: #ffaa33;
+        }
+
+        body {
+            background: var(--void);
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            overflow-x: hidden;
+        }
+
+        #universe {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .grain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            z-index: 1;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.8) 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 30px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .nav-logo {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 14px;
+            letter-spacing: 4px;
+            color: var(--gold);
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .section {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 100px 40px;
+        }
+
+        .hero-content {
+            text-align: center;
+            max-width: 800px;
+        }
+
+        .hero-shloka {
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            letter-spacing: 5px;
+            color: var(--amber);
+            margin-bottom: 25px;
+            text-shadow: 0 0 10px rgba(255, 170, 51, 0.3);
+        }
+
+        .hero-title {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: clamp(36px, 8vw, 80px);
+            line-height: 0.95;
+            margin-bottom: 15px;
+            color: #ffffff;
+            text-shadow: 0 0 60px rgba(255, 215, 0, 0.15);
+        }
+
+        .hero-title span {
+            display: block;
+            font-size: 0.35em;
+            letter-spacing: 12px;
+            color: var(--gold);
+            margin-top: 10px;
+        }
+
+        .hero-equation {
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            color: var(--gold);
+            letter-spacing: 1px;
+            padding: 10px 20px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            background: rgba(0,0,0,0.4);
+            margin-bottom: 25px;
+            display: inline-block;
+        }
+
+        .hero-desc {
+            font-size: 14px;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 500px;
+            margin: 0 auto 30px;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: var(--gold);
+            color: #000;
+            border: none;
+            padding: 14px 28px;
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: var(--gold-bright);
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: rgba(255,255,255,0.8);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 14px 28px;
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .scroll-line {
+            width: 1px;
+            height: 50px;
+            background: linear-gradient(to bottom, var(--gold), transparent);
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            nav { padding: 20px; }
+            .hero-cta { flex-direction: column; }
+            .btn-primary, .btn-secondary { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="universe"></canvas>
+    <div class="grain"></div>
+    <div class="vignette"></div>
+
+    <nav>
+        <div class="nav-logo">⚜ THE OBSERVATORY</div>
+    </nav>
+
+    <section class="section">
+        <div class="hero-content">
+            <div class="hero-shloka">ज्योतिषम् अयम् ब्रह्म — Astrology is the Supreme</div>
+            <h1 class="hero-title">
+                THE OBSERVATORY
+                <span>Of Destiny</span>
+            </h1>
+            <div class="hero-equation">L = Asc + (S × 30°) + (N × 3°20')</div>
+            <p class="hero-desc">
+                The universe does not hide its secrets. It writes them in light,
+                across twelve houses, waiting for those who know how to read.
+            </p>
+            <div class="hero-cta">
+                <button class="btn-primary">Get Free Kundli</button>
+                <button class="btn-secondary">Consult Expert</button>
+            </div>
+            <div class="scroll-line"></div>
+        </div>
+    </section>
+
+    <script>
+        // ============================================
+        // THREE.JS - SCATTERED COSMIC SYMBOLS (Real glyphs)
+        // ============================================
+        const canvas = document.getElementById('universe');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        // Real cosmic symbols
+        const cosmicGlyphs = [
+            '♈', '♉', '♊', '♋', '♌', '♍',
+            '♎', '♏', '♐', '♑', '♒', '♓',
+            '☉', '☽', '☿', '♀', '♂', '♃',
+            '♄', '♅', '♆', '☊', '☋',
+            '✦', '✧', '✪', '✯'
+        ];
+
+        // Create text sprites for symbols
+        function createSymbolSprite(glyph, opacity) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+            
+            ctx.clearRect(0, 0, 256, 256);
+            
+            // Glow effect
+            ctx.shadowColor = '#d4af37';
+            ctx.shadowBlur = 30;
+            
+            // Draw symbol
+            ctx.font = '160px serif';
+            ctx.fillStyle = `rgba(212, 175, 55, ${opacity})`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(glyph, 128, 128);
+            
+            const texture = new THREE.CanvasTexture(canvas);
+            return texture;
+        }
+
+        // SCATTERED COSMIC SYMBOLS
+        const symbolGroup = new THREE.Group();
+        
+        for (let i = 0; i < 30; i++) {
+            // TRULY RANDOM scatter - not in center
+            const angle = Math.random() * Math.PI * 2;
+            const radius = 15 + Math.random() * 55; // 15 to 70 units
+            
+            const x = Math.cos(angle) * radius * (0.6 + Math.random() * 0.8);
+            const y = (Math.random() - 0.5) * 60; // Full height
+            const z = -8 - Math.random() * 40;
+            
+            const glyph = cosmicGlyphs[i % cosmicGlyphs.length];
+            const opacity = 0.2 + Math.random() * 0.3;
+            const scale = 0.8 + Math.random() * 1.2;
+            
+            const texture = createSymbolSprite(glyph, opacity);
+            const material = new THREE.SpriteMaterial({ 
+                map: texture, 
+                transparent: true,
+                opacity: opacity
+            });
+            
+            const sprite = new THREE.Sprite(material);
+            sprite.position.set(x, y, z);
+            sprite.scale.set(scale * 2, scale * 2, 1);
+            
+            sprite.userData = {
+                originalY: y,
+                floatSpeed: 0.2 + Math.random() * 0.3,
+                floatOffset: Math.random() * Math.PI * 2
+            };
+            
+            symbolGroup.add(sprite);
+        }
+        
+        scene.add(symbolGroup);
+
+        // FEW STARS - Scattered
+        const starsGeometry = new THREE.BufferGeometry();
+        const starsCount = 200;
+        const posArray = new Float32Array(starsCount * 3);
+
+        for(let i = 0; i < starsCount * 3; i+=3) {
+            const angle = Math.random() * Math.PI * 2;
+            const radius = 10 + Math.random() * 70;
+            
+            posArray[i] = Math.cos(angle) * radius;
+            posArray[i+1] = (Math.random() - 0.5) * 80;
+            posArray[i+2] = -15 - Math.random() * 40;
+        }
+
+        starsGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+        const starsMaterial = new THREE.PointsMaterial({
+            size: 0.12,
+            color: 0xd4af37,
+            transparent: true,
+            opacity: 0.5,
+            sizeAttenuation: true
+        });
+
+        const stars = new THREE.Points(starsGeometry, starsMaterial);
+        scene.add(stars);
+
+        camera.position.z = 30;
+
+        // Mouse
+        let mouseX = 0, mouseY = 0;
+        let targetX = 0, targetY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        // Animation
+        let time = 0;
+        function animate() {
+            requestAnimationFrame(animate);
+            time += 0.01;
+
+            targetX += (mouseX - targetX) * 0.03;
+            targetY += (mouseY - targetY) * 0.03;
+
+            stars.rotation.y += 0.0001;
+
+            // Animate scattered symbols - gentle floating
+            symbolGroup.children.forEach((child) => {
+                if (child.userData) {
+                    const floatY = Math.sin(time * child.userData.floatSpeed + child.userData.floatOffset) * 0.3;
+                    child.position.y = child.userData.originalY + floatY;
+                }
+            });
+
+            camera.position.x = targetX * 1.5;
+            camera.position.y = targetY * 1;
+            camera.lookAt(0, 0, 0);
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+
+</body>
+</html>

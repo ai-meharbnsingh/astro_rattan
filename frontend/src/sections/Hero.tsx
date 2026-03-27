@@ -1,12 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
-import { Canvas } from '@react-three/fiber';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Sparkles, ChevronRight, Calendar, MapPin, Clock } from 'lucide-react';
+import { Calendar, MapPin, Clock } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
-import ArmillarySphere from '@/components/three/ArmillarySphere';
 
 export default function Hero() {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -18,17 +16,40 @@ export default function Hero() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.fromTo('.hero-word',
-        { y: 100, opacity: 0 },
-        { y: 0, opacity: 1, duration: 1, stagger: 0.1, ease: 'power3.out', delay: 0.5 }
+      // Shloka fade in
+      gsap.fromTo('.hero-shloka',
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 1, delay: 0.3, ease: 'power3.out' }
       );
-      gsap.fromTo('.hero-subtitle',
-        { y: 30, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.8, delay: 1, ease: 'power3.out' }
+      
+      // Title animation
+      gsap.fromTo('.hero-title-main',
+        { opacity: 0, y: 50 },
+        { opacity: 1, y: 0, duration: 1.2, delay: 0.5, ease: 'power3.out' }
       );
+      
+      // Subtitle
+      gsap.fromTo('.hero-subtitle-text',
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.8, delay: 0.8, ease: 'power3.out' }
+      );
+      
+      // Equation box
+      gsap.fromTo('.hero-equation',
+        { opacity: 0, scale: 0.9 },
+        { opacity: 1, scale: 1, duration: 0.8, delay: 1, ease: 'power3.out' }
+      );
+      
+      // CTA Buttons
+      gsap.fromTo('.hero-cta',
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.8, delay: 1.2, ease: 'power3.out' }
+      );
+      
+      // Form
       gsap.fromTo('.hero-form',
-        { y: 50, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.8, delay: 1.2, ease: 'power3.out' }
+        { opacity: 0, y: 50 },
+        { opacity: 1, y: 0, duration: 0.8, delay: 1.4, ease: 'power3.out' }
       );
     }, heroRef);
     return () => ctx.revert();
@@ -41,69 +62,141 @@ export default function Hero() {
   };
 
   return (
-    <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0a0a1a]">
-      {/* Subtle star-field dots */}
-      <div className="absolute inset-0 z-0 opacity-30" style={{ backgroundImage: 'radial-gradient(1px 1px at 20% 30%, #d4af37 0.5px, transparent 0), radial-gradient(1px 1px at 60% 15%, #fff 0.5px, transparent 0), radial-gradient(1px 1px at 80% 70%, #d4af37 0.5px, transparent 0), radial-gradient(1px 1px at 10% 80%, #fff 0.5px, transparent 0), radial-gradient(1px 1px at 45% 55%, #d4af37 0.5px, transparent 0), radial-gradient(1px 1px at 90% 40%, #fff 0.5px, transparent 0)' }} />
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div className="text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold/10 text-sacred-gold text-sm font-medium mb-6 border border-sacred-gold/30">
-              <Sparkles className="w-4 h-4" />{t('hero.badge')}
-            </div>
-            <div className="overflow-hidden mb-2">
-              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-sacred font-bold tracking-wider">
-                <span className="hero-word inline-block text-cosmic-text-secondary uppercase">{t('hero.knowYour')}</span>
-              </h1>
-            </div>
-            <div className="overflow-hidden mb-6">
-              <h1 className="text-5xl sm:text-6xl lg:text-8xl font-sacred font-bold tracking-wide">
-                <span className="hero-word inline-block text-gradient-gold uppercase">{t('hero.destiny')}</span>
-              </h1>
-            </div>
-            <div className="hero-form">
-              <Button onClick={() => navigate('/kundli')} size="lg" className="btn-sacred text-lg px-8 py-6 rounded-full tracking-wider uppercase">
-                {t('hero.getFreeKundli')}
+    <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Grain overlay */}
+      <div className="absolute inset-0 z-[1] opacity-[0.03] pointer-events-none"
+        style={{ 
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")` 
+        }} 
+      />
+      
+      {/* Vignette */}
+      <div className="absolute inset-0 z-[2] pointer-events-none"
+        style={{ 
+          background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.6) 100%)' 
+        }} 
+      />
+      
+      <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+        {/* Sanskrit Shloka */}
+        <div className="hero-shloka opacity-0 mb-8">
+          <p className="font-['Cinzel'] text-xs md:text-sm tracking-[6px] text-[#ffaa33] uppercase"
+            style={{ textShadow: '0 0 15px rgba(255, 170, 51, 0.4)' }}>
+            ज्योतिषम् अयम् ब्रह्म — Astrology is the Supreme
+          </p>
+        </div>
+
+        {/* Main Title */}
+        <div className="hero-title-main opacity-0 mb-6">
+          <h1 className="font-['Cinzel_Decorative'] text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white leading-[0.95] tracking-wide"
+            style={{ textShadow: '0 0 60px rgba(255, 215, 0, 0.15)' }}>
+            THE OBSERVATORY
+          </h1>
+          <p className="font-['Cinzel'] text-sm md:text-base tracking-[12px] text-[#d4af37] mt-4 uppercase">
+            Of Destiny
+          </p>
+        </div>
+
+        {/* Equation */}
+        <div className="hero-equation opacity-0 mb-8 inline-block">
+          <div className="px-5 py-2 border border-[#d4af37]/30 bg-black/40 backdrop-blur-sm">
+            <code className="font-['Space_Mono'] text-xs md:text-sm text-[#d4af37] tracking-wider">
+              L = Asc + (S × 30°) + (N × 3°20')
+            </code>
+          </div>
+        </div>
+
+        {/* Subtitle */}
+        <div className="hero-subtitle-text opacity-0 mb-10 max-w-xl mx-auto">
+          <p className="text-sm md:text-base text-white/70 leading-relaxed font-light">
+            The universe does not hide its secrets. It writes them in light,<br className="hidden md:block" />
+            across twelve houses, waiting for those who know how to read.
+          </p>
+        </div>
+
+        {/* CTA Buttons - Elegant Style */}
+        <div className="hero-cta opacity-0 mb-12 flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <Button 
+            onClick={() => navigate('/kundli')} 
+            className="bg-[#d4af37] text-black hover:bg-[#ffd700] transition-all duration-300 
+                       text-xs tracking-[3px] uppercase font-['Cinzel'] font-semibold
+                       px-8 py-5 rounded-none border-none"
+            style={{ boxShadow: '0 0 30px rgba(212, 175, 55, 0.3)' }}
+          >
+            {t('hero.getFreeKundli')}
+          </Button>
+          
+          <Button 
+            onClick={() => navigate('/consultation')}
+            variant="outline"
+            className="bg-transparent border border-white/30 text-white/80 hover:border-[#d4af37] hover:text-[#d4af37] 
+                       transition-all duration-300 text-xs tracking-[3px] uppercase font-['Cinzel']
+                       px-8 py-5 rounded-none"
+          >
+            Consult an Expert
+          </Button>
+        </div>
+
+        {/* Quick Kundli Form */}
+        <div className="hero-form opacity-0 max-w-md mx-auto">
+          <div className="border border-[#d4af37]/20 bg-black/50 backdrop-blur-sm p-5 relative">
+            {/* Corner decorations */}
+            <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-[#d4af37]" />
+            <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-[#d4af37]" />
+            <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-[#d4af37]" />
+            <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-[#d4af37]" />
+            
+            <p className="text-[#d4af37] text-xs tracking-[3px] uppercase mb-4 font-['Cinzel']">
+              Calculate Your Birth Chart
+            </p>
+            
+            <div className="space-y-3">
+              <div className="relative">
+                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#d4af37]/70" />
+                <Input 
+                  type="date" 
+                  value={birthDate} 
+                  onChange={(e) => setBirthDate(e.target.value)} 
+                  className="pl-9 bg-transparent border-white/10 text-white text-sm
+                             focus:border-[#d4af37] rounded-none h-10"
+                />
+              </div>
+              <div className="relative">
+                <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#d4af37]/70" />
+                <Input 
+                  type="time" 
+                  value={birthTime} 
+                  onChange={(e) => setBirthTime(e.target.value)} 
+                  className="pl-9 bg-transparent border-white/10 text-white text-sm
+                             focus:border-[#d4af37] rounded-none h-10"
+                />
+              </div>
+              <div className="relative">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#d4af37]/70" />
+                <Input 
+                  type="text" 
+                  value={birthPlace} 
+                  onChange={(e) => setBirthPlace(e.target.value)} 
+                  placeholder={t('hero.birthPlace')} 
+                  className="pl-9 bg-transparent border-white/10 text-white text-sm placeholder:text-white/30
+                             focus:border-[#d4af37] rounded-none h-10"
+                />
+              </div>
+              <Button 
+                onClick={handleGenerateKundli} 
+                className="w-full bg-transparent border border-[#d4af37] text-[#d4af37] 
+                           hover:bg-[#d4af37] hover:text-black transition-all duration-300
+                           font-['Cinzel'] text-xs tracking-[2px] uppercase h-10 rounded-none"
+              >
+                {t('hero.generateKundli')}
               </Button>
             </div>
-            <div className="hero-form mt-8 card-sacred rounded-2xl p-6 max-w-md mx-auto lg:mx-0">
-              <h3 className="text-lg font-sacred font-semibold text-sacred-gold mb-4 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-sacred-gold" />{t('hero.quickKundli')}
-              </h3>
-              <div className="space-y-4">
-                <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold" />
-                  <Input type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} className="pl-10 input-sacred" />
-                </div>
-                <div className="relative">
-                  <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold" />
-                  <Input type="time" value={birthTime} onChange={(e) => setBirthTime(e.target.value)} className="pl-10 input-sacred" />
-                </div>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold" />
-                  <Input type="text" value={birthPlace} onChange={(e) => setBirthPlace(e.target.value)} placeholder={t('hero.birthPlace')} className="pl-10 input-sacred" />
-                </div>
-                <Button onClick={handleGenerateKundli} className="w-full btn-sacred font-medium">
-                  {t('hero.generateKundli')}<ChevronRight className="w-5 h-5 ml-2" />
-                </Button>
-              </div>
-            </div>
           </div>
-          <div className="hidden lg:flex items-center justify-center">
-            <div className="relative w-[500px] h-[500px]" style={{ background: 'none' }}>
-              <Canvas
-                camera={{ position: [0, 0, 5], fov: 50 }}
-                gl={{ alpha: true, premultipliedAlpha: false }}
-                scene={{ background: null } as any}
-                style={{ background: 'transparent', mixBlendMode: 'screen' }}
-                onCreated={({ gl, scene }) => { gl.setClearColor(0x000000, 0); scene.background = null; }}
-              >
-                <ambientLight intensity={0.5} />
-                <pointLight position={[5, 5, 5]} intensity={0.8} color="#d4af37" />
-                <pointLight position={[-3, -3, 3]} intensity={0.3} color="#f0e6d3" />
-                <ArmillarySphere interactive scale={1} />
-              </Canvas>
-            </div>
-          </div>
+        </div>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50">
+          <div className="w-[1px] h-12 bg-gradient-to-b from-[#d4af37] to-transparent" />
         </div>
       </div>
     </section>
