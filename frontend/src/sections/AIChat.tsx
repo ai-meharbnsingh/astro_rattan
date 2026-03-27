@@ -55,8 +55,8 @@ export default function AIChat() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-24 px-4">
-      <div className="flex flex-col h-[70vh] card-sacred rounded-2xl overflow-hidden border border-sacred-gold/20">
+    <div className="fixed inset-0 pt-16 pb-0 px-4 flex flex-col z-30 bg-cosmic-bg">
+      <div className="flex flex-col flex-1 min-h-0 max-w-4xl mx-auto w-full card-sacred rounded-t-2xl overflow-hidden border border-sacred-gold/20 border-b-0">
         <div className="flex items-center gap-3 p-4 border-b border-sacred-gold/15">
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center shadow-glow-gold">
             <Sparkles className="w-5 h-5 text-cosmic-bg" />

@@ -671,7 +671,7 @@ def get_db(db_path: str = None):
     """Yield a database connection. Use as dependency in FastAPI."""
     import os
     path = db_path or os.getenv("DB_PATH", DB_PATH)
-    conn = sqlite3.connect(path)
+    conn = sqlite3.connect(path, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys=ON")
     try:

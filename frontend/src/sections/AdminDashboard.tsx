@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Shield, Users, Package, ShoppingCart, IndianRupee, Loader2, Brain, FileText, Plus } from 'lucide-react';
+import { Shield, Users, Package, ShoppingCart, IndianRupee, Loader2, Brain, FileText, Plus, Pencil, Trash2, ImageIcon } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -41,11 +41,36 @@ interface AdminOrder {
 interface AdminProduct {
   id: number;
   name: string;
+  description?: string;
   category: string;
   price: number;
+  compare_price?: number;
   stock: number;
   is_active: boolean;
+  image_url?: string;
+  planet?: string;
+  weight?: string;
 }
+
+const PRODUCT_CATEGORIES = [
+  { value: 'gemstone', label: 'Gemstone' },
+  { value: 'rudraksha', label: 'Rudraksha' },
+  { value: 'bracelet', label: 'Bracelet' },
+  { value: 'yantra', label: 'Yantra' },
+  { value: 'vastu', label: 'Vastu' },
+];
+
+const emptyProductForm = {
+  name: '',
+  description: '',
+  category: 'gemstone',
+  price: '',
+  compare_price: '',
+  stock: '',
+  planet: '',
+  weight: '',
+  image_url: '',
+};
 
 interface ContentItem {
   id: number;
@@ -96,6 +121,11 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   const [contentDialogOpen, setContentDialogOpen] = useState(false);
   const [blogDialogOpen, setBlogDialogOpen] = useState(false);
+  const [productDialogOpen, setProductDialogOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<AdminProduct | null>(null);
+  const [productForm, setProductForm] = useState({ ...emptyProductForm });
+  const [imageUploading, setImageUploading] = useState(false);
+  const [productSaving, setProductSaving] = useState(false);
   const [newContent, setNewContent] = useState({ title: '', category: 'gita', content: '' });
   const [newBlogPost, setNewBlogPost] = useState({
     title: '',
@@ -247,6 +277,91 @@ export default function AdminDashboard() {
     } catch { /* empty */ }
   };
 
+  const openAddProduct = () => {
+    setEditingProduct(null);
+    setProductForm({ ...emptyProductForm });
+    setProductDialogOpen(true);
+  };
+
+  const openEditProduct = (p: AdminProduct) => {
+    setEditingProduct(p);
+    setProductForm({
+      name: p.name,
+      description: p.description ?? '',
+      category: p.category,
+      price: String(p.price),
+      compare_price: p.compare_price != null ? String(p.compare_price) : '',
+      stock: String(p.stock),
+      planet: p.planet ?? '',
+      weight: p.weight ?? '',
+      image_url: p.image_url ?? '',
+    });
+    setProductDialogOpen(true);
+  };
+
+  const handleImageUpload = async (file: File) => {
+    setImageUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const data = await api.postForm('/api/admin/upload-image', formData);
+      setProductForm((prev) => ({ ...prev, image_url: data.url }));
+    } catch { /* empty */ }
+    setImageUploading(false);
+  };
+
+  const saveProduct = async () => {
+    setProductSaving(true);
+    try {
+      const payload = {
+        name: productForm.name,
+        description: productForm.description,
+        category: productForm.category,
+        price: parseFloat(productForm.price) || 0,
+        compare_price: productForm.compare_price ? parseFloat(productForm.compare_price) : undefined,
+        stock: parseInt(productForm.stock, 10) || 0,
+        planet: productForm.planet || undefined,
+        weight: productForm.weight || undefined,
+        image_url: productForm.image_url || undefined,
+      };
+      if (editingProduct) {
+        const data = await api.put(`/api/admin/products/${editingProduct.id}`, payload);
+        setProducts((prev) => prev.map((p) =>
+          p.id === editingProduct.id
+            ? { ...p, ...payload, id: editingProduct.id, is_active: p.is_active, image_url: data?.image_url ?? payload.image_url }
+            : p
+        ));
+      } else {
+        const data = await api.post('/api/admin/products', payload);
+        setProducts((prev) => [{
+          id: data.id,
+          name: payload.name,
+          description: payload.description,
+          category: payload.category,
+          price: payload.price,
+          compare_price: payload.compare_price,
+          stock: payload.stock,
+          is_active: true,
+          image_url: data.image_url ?? payload.image_url,
+          planet: payload.planet,
+          weight: payload.weight,
+        }, ...prev]);
+      }
+      setProductDialogOpen(false);
+      setProductForm({ ...emptyProductForm });
+      setEditingProduct(null);
+    } catch { /* empty */ }
+    setProductSaving(false);
+  };
+
+  const deleteProduct = async (productId: number) => {
+    if (!window.confirm('Delete this product? This cannot be undone.')) return;
+    try {
+      await api.delete(`/api/admin/products/${productId}`);
+      setProducts((prev) => prev.filter((p) => p.id !== productId));
+    } catch { /* empty */ }
+  };
+
   if (user?.role !== 'admin') {
     return (
       <div className="max-w-4xl mx-auto py-24 px-4 text-center">
@@ -391,6 +506,11 @@ export default function AdminDashboard() {
         </TabsContent>
 
         <TabsContent value="products">
+          <div className="flex justify-end mb-4">
+            <Button onClick={openAddProduct} className="bg-sacred-gold text-white hover:bg-sacred-gold-dark">
+              <Plus className="w-4 h-4 mr-2" />Add Product
+            </Button>
+          </div>
           <Card className="bg-cosmic-card border-0 shadow-soft">
             <CardContent className="p-4">
               <Table>
@@ -407,7 +527,14 @@ export default function AdminDashboard() {
                 <TableBody>
                   {products.map((p) => (
                     <TableRow key={p.id}>
-                      <TableCell className="font-medium text-cosmic-text">{p.name}</TableCell>
+                      <TableCell className="font-medium text-cosmic-text">
+                        <div className="flex items-center gap-2">
+                          {p.image_url && (
+                            <img src={p.image_url} alt={p.name} className="w-8 h-8 rounded object-cover border border-sacred-gold/20" />
+                          )}
+                          {p.name}
+                        </div>
+                      </TableCell>
                       <TableCell className="text-cosmic-text-secondary capitalize">{p.category}</TableCell>
                       <TableCell className="text-sacred-gold font-semibold">{formatPrice(p.price)}</TableCell>
                       <TableCell>{p.stock}</TableCell>
@@ -417,9 +544,17 @@ export default function AdminDashboard() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <Button variant="outline" size="sm" onClick={() => toggleProduct(p.id, p.is_active)}>
-                          {p.is_active ? 'Hide' : 'Show'}
-                        </Button>
+                        <div className="flex items-center gap-1">
+                          <Button variant="outline" size="sm" onClick={() => toggleProduct(p.id, p.is_active)} className="text-xs">
+                            {p.is_active ? 'Hide' : 'Show'}
+                          </Button>
+                          <Button variant="outline" size="sm" onClick={() => openEditProduct(p)} className="text-sacred-gold hover:text-sacred-gold border-sacred-gold/30 hover:border-sacred-gold/60">
+                            <Pencil className="w-3.5 h-3.5" />
+                          </Button>
+                          <Button variant="outline" size="sm" onClick={() => deleteProduct(p.id)} className="text-red-400 hover:text-red-600 border-red-400/30 hover:border-red-400/60">
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -427,6 +562,147 @@ export default function AdminDashboard() {
               </Table>
             </CardContent>
           </Card>
+
+          <Dialog open={productDialogOpen} onOpenChange={(open) => { setProductDialogOpen(open); if (!open) { setEditingProduct(null); setProductForm({ ...emptyProductForm }); } }}>
+            <DialogContent className="sm:max-w-2xl bg-cosmic-card border-sacred-gold/20">
+              <DialogHeader>
+                <DialogTitle className="text-cosmic-text font-display">
+                  {editingProduct ? 'Edit Product' : 'Add New Product'}
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-3 py-2 max-h-[65vh] overflow-y-auto pr-1">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="col-span-2">
+                    <label className="text-xs text-cosmic-text-secondary mb-1 block">Name *</label>
+                    <Input
+                      placeholder="Product name"
+                      value={productForm.name}
+                      onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
+                      className="bg-cosmic-surface border-sacred-gold/15 text-cosmic-text"
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <label className="text-xs text-cosmic-text-secondary mb-1 block">Description</label>
+                    <Textarea
+                      placeholder="Product description"
+                      value={productForm.description}
+                      onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
+                      className="bg-cosmic-surface border-sacred-gold/15 text-cosmic-text min-h-20"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-cosmic-text-secondary mb-1 block">Category *</label>
+                    <Select value={productForm.category} onValueChange={(v) => setProductForm({ ...productForm, category: v })}>
+                      <SelectTrigger className="w-full bg-cosmic-surface border-sacred-gold/15 text-cosmic-text">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {PRODUCT_CATEGORIES.map((cat) => (
+                          <SelectItem key={cat.value} value={cat.value}>{cat.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-xs text-cosmic-text-secondary mb-1 block">Stock *</label>
+                    <Input
+                      type="number"
+                      min="0"
+                      placeholder="0"
+                      value={productForm.stock}
+                      onChange={(e) => setProductForm({ ...productForm, stock: e.target.value })}
+                      className="bg-cosmic-surface border-sacred-gold/15 text-cosmic-text"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-cosmic-text-secondary mb-1 block">Price (₹) *</label>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="0.00"
+                      value={productForm.price}
+                      onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
+                      className="bg-cosmic-surface border-sacred-gold/15 text-cosmic-text"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-cosmic-text-secondary mb-1 block">Compare Price (₹)</label>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="Optional MRP"
+                      value={productForm.compare_price}
+                      onChange={(e) => setProductForm({ ...productForm, compare_price: e.target.value })}
+                      className="bg-cosmic-surface border-sacred-gold/15 text-cosmic-text"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-cosmic-text-secondary mb-1 block">Planet</label>
+                    <Input
+                      placeholder="e.g. Sun, Moon, Saturn"
+                      value={productForm.planet}
+                      onChange={(e) => setProductForm({ ...productForm, planet: e.target.value })}
+                      className="bg-cosmic-surface border-sacred-gold/15 text-cosmic-text"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-cosmic-text-secondary mb-1 block">Weight</label>
+                    <Input
+                      placeholder="e.g. 10g, 5 carats"
+                      value={productForm.weight}
+                      onChange={(e) => setProductForm({ ...productForm, weight: e.target.value })}
+                      className="bg-cosmic-surface border-sacred-gold/15 text-cosmic-text"
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <label className="text-xs text-cosmic-text-secondary mb-1 block">Product Image</label>
+                    <div className="flex items-center gap-3">
+                      <label className="cursor-pointer">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => { const f = e.target.files?.[0]; if (f) handleImageUpload(f); }}
+                        />
+                        <div className="flex items-center gap-2 px-3 py-2 rounded-md border border-sacred-gold/30 bg-cosmic-surface hover:border-sacred-gold/60 transition-colors text-sm text-cosmic-text-secondary hover:text-cosmic-text">
+                          {imageUploading ? <Loader2 className="w-4 h-4 animate-spin text-sacred-gold" /> : <ImageIcon className="w-4 h-4 text-sacred-gold" />}
+                          {imageUploading ? 'Uploading…' : 'Upload Image'}
+                        </div>
+                      </label>
+                      {productForm.image_url && (
+                        <div className="flex items-center gap-2">
+                          <img src={productForm.image_url} alt="Preview" className="w-14 h-14 rounded-lg object-cover border border-sacred-gold/30" />
+                          <button
+                            type="button"
+                            onClick={() => setProductForm({ ...productForm, image_url: '' })}
+                            className="text-xs text-red-400 hover:text-red-600"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    {productForm.image_url && !productForm.image_url.startsWith('blob') && (
+                      <p className="text-xs text-cosmic-text-muted mt-1 truncate">{productForm.image_url}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setProductDialogOpen(false)} className="border-sacred-gold/20">Cancel</Button>
+                <Button
+                  onClick={saveProduct}
+                  disabled={!productForm.name || !productForm.price || !productForm.stock || productSaving || imageUploading}
+                  className="bg-sacred-gold text-white hover:bg-sacred-gold-dark"
+                >
+                  {productSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                  {editingProduct ? 'Save Changes' : 'Create Product'}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </TabsContent>
 
         <TabsContent value="content">
