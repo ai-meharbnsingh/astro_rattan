@@ -1,7 +1,16 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, lazy, Suspense, Component, type ReactNode } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { I18nProvider } from './lib/i18n';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+const CosmicBackground = lazy(() => import('./components/three/CosmicBackground'));
+
+class ThreeErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+  state = { hasError: false };
+  static getDerivedStateFromError() { return { hasError: true }; }
+  render() { return this.state.hasError ? null : this.props.children; }
+}
 import Navigation from './sections/Navigation';
 import Hero from './sections/Hero';
 import Features from './sections/Features';
@@ -23,9 +32,19 @@ import AstrologerDashboard from './sections/AstrologerDashboard';
 import PrashnavaliPage from './sections/PrashnavaliPage';
 import NumerologyTarot from './sections/NumerologyTarot';
 import UserProfile from './sections/UserProfile';
+import Dashboard from './sections/Dashboard';
 import ReportMarketplace from './sections/ReportMarketplace';
 import PalmistryPage from './sections/PalmistryPage';
 import BlogPage from './sections/BlogPage';
+import ReferralPage from './sections/ReferralPage';
+import KPLalkitabPage from './sections/KPLalkitabPage';
+import MessagesPage from './sections/MessagesPage';
+import PlanetaryTransitsPage from './sections/PlanetaryTransitsPage';
+import CommunityPage from './sections/CommunityPage';
+import GamificationPage from './sections/GamificationPage';
+import CosmicCalendarPage from './sections/CosmicCalendarPage';
+import PreferencesPage from './sections/PreferencesPage';
+import WhatsAppWidget from './components/WhatsAppWidget';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -68,7 +87,15 @@ function HomePage() {
 
 function App() {
   return (
-    <div className="min-h-screen bg-minimal-white text-minimal-gray-800 overflow-x-hidden">
+    <I18nProvider>
+    <div className="min-h-screen bg-cosmic-bg text-cosmic-text overflow-x-hidden">
+      <ThreeErrorBoundary>
+        <Suspense fallback={null}>
+          <CosmicBackground />
+        </Suspense>
+      </ThreeErrorBoundary>
+
+      <div className="relative z-10">
       <Navigation />
 
       <main>
@@ -87,16 +114,28 @@ function App() {
           <Route path="/astrologer-dashboard" element={<AstrologerDashboard />} />
           <Route path="/prashnavali" element={<PrashnavaliPage />} />
           <Route path="/numerology" element={<NumerologyTarot />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/reports" element={<ReportMarketplace />} />
           <Route path="/palmistry" element={<PalmistryPage />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:slug" element={<BlogPage />} />
+          <Route path="/referral" element={<ReferralPage />} />
+          <Route path="/kp-lalkitab" element={<KPLalkitabPage />} />
+          <Route path="/messages" element={<MessagesPage />} />
+          <Route path="/transits" element={<PlanetaryTransitsPage />} />
+          <Route path="/community" element={<CommunityPage />} />
+          <Route path="/journey" element={<GamificationPage />} />
+          <Route path="/cosmic-calendar" element={<CosmicCalendarPage />} />
+          <Route path="/preferences" element={<PreferencesPage />} />
         </Routes>
       </main>
 
       <Footer />
+      </div>
+      <WhatsAppWidget />
     </div>
+    </I18nProvider>
   );
 }
 

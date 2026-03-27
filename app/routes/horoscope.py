@@ -1,10 +1,12 @@
 """Horoscope routes — daily/weekly/monthly/yearly horoscope by zodiac sign."""
 import sqlite3
 from datetime import date
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.database import get_db
+from app.horoscope_generator import generate_ai_horoscope
 from app.models import ZodiacSign, HoroscopePeriod
 
 router = APIRouter(prefix="/api/horoscope", tags=["horoscope"])
@@ -41,6 +43,39 @@ _DEFAULT_HOROSCOPES = {
     "aquarius": "Innovation and originality are favored. Uranus sparks your visionary ideas.",
     "pisces": "Intuition is your guide. Neptune enhances your creativity and spiritual awareness.",
 }
+
+
+@router.get("/ai/{sign}", status_code=status.HTTP_200_OK)
+def get_ai_horoscope(
+    sign: ZodiacSign,
+    period: HoroscopePeriod = Query(default=HoroscopePeriod.daily),
+    birth_date: Optional[str] = Query(default=None, description="Birth date (YYYY-MM-DD)"),
+    birth_time: Optional[str] = Query(default=None, description="Birth time (HH:MM)"),
+    birth_place: Optional[str] = Query(default=None, description="Birth place"),
+):
+    """Get AI-personalized horoscope for a zodiac sign with sectioned content.
+
+    Returns personalized horoscope with sections: general, love, career, finance, health.
+    Falls back to template-based generation if AI is unavailable.
+    """
+    birth_data = None
+    if birth_date or birth_time or birth_place:
+        birth_data = {
+            "birth_date": birth_date,
+            "birth_time": birth_time,
+            "birth_place": birth_place,
+        }
+
+    try:
+        result = generate_ai_horoscope(
+            sign=sign.value,
+            period=period.value,
+            birth_data=birth_data,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc))
+
+    return result
 
 
 @router.get("/{sign}", status_code=status.HTTP_200_OK)

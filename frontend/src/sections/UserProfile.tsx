@@ -159,9 +159,9 @@ export default function UserProfile() {
   if (!isAuthenticated) {
     return (
       <div className="max-w-4xl mx-auto py-24 px-4 text-center">
-        <User className="w-16 h-16 text-minimal-gray-300 mx-auto mb-4" />
-        <h2 className="text-2xl font-display font-bold text-minimal-gray-900 mb-2">Sign In Required</h2>
-        <p className="text-minimal-gray-500">Please log in to view your profile.</p>
+        <User className="w-16 h-16 text-cosmic-text-muted mx-auto mb-4" />
+        <h2 className="text-2xl font-display font-bold text-cosmic-text mb-2">Sign In Required</h2>
+        <p className="text-cosmic-text-secondary">Please log in to view your profile.</p>
       </div>
     );
   }
@@ -169,109 +169,109 @@ export default function UserProfile() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <Loader2 className="w-10 h-10 text-minimal-indigo animate-spin" />
+        <Loader2 className="w-10 h-10 text-sacred-gold animate-spin" />
       </div>
     );
   }
 
   const activityCards = [
     { label: 'Kundli Generated', value: activity.kundli_count, icon: Star, color: 'bg-purple-100 text-purple-600' },
-    { label: 'Orders', value: activity.order_count, icon: ShoppingBag, color: 'bg-blue-100 text-blue-600' },
-    { label: 'Consultations', value: activity.consultation_count, icon: Activity, color: 'bg-green-100 text-green-600' },
+    { label: 'Orders', value: activity.order_count, icon: ShoppingBag, color: 'bg-blue-500/20 text-blue-600' },
+    { label: 'Consultations', value: activity.consultation_count, icon: Activity, color: 'bg-green-500/20 text-green-400' },
     { label: 'AI Chats', value: activity.ai_chats, icon: Activity, color: 'bg-yellow-100 text-yellow-600' },
   ];
 
   return (
     <section className="max-w-4xl mx-auto py-24 px-4">
       <div className="flex items-center gap-3 mb-8">
-        <div className="w-12 h-12 rounded-full bg-minimal-indigo flex items-center justify-center text-white font-bold text-xl">
+        <div className="w-12 h-12 rounded-full bg-sacred-gold flex items-center justify-center text-white font-bold text-xl">
           {(user?.name || 'U').charAt(0).toUpperCase()}
         </div>
         <div>
-          <h2 className="text-2xl font-display font-bold text-minimal-gray-900">{profile.name || 'My Profile'}</h2>
-          <p className="text-sm text-minimal-gray-500">{profile.email}</p>
+          <h2 className="text-2xl font-display font-bold text-cosmic-text">{profile.name || 'My Profile'}</h2>
+          <p className="text-sm text-cosmic-text-secondary">{profile.email}</p>
         </div>
       </div>
 
       {/* Activity summary */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
         {activityCards.map((a) => (
-          <Card key={a.label} className="bg-white border-0 shadow-soft">
+          <Card key={a.label} className="bg-cosmic-card border-0 shadow-soft">
             <CardContent className="p-4 text-center">
               <div className={`w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-2 ${a.color}`}>
                 <a.icon className="w-5 h-5" />
               </div>
-              <p className="text-2xl font-bold text-minimal-gray-900">{a.value}</p>
-              <p className="text-xs text-minimal-gray-500">{a.label}</p>
+              <p className="text-2xl font-bold text-cosmic-text">{a.value}</p>
+              <p className="text-xs text-cosmic-text-secondary">{a.label}</p>
             </CardContent>
           </Card>
         ))}
       </div>
 
       <Tabs defaultValue="profile">
-        <TabsList className="bg-minimal-gray-100 mb-6">
-          <TabsTrigger value="profile" className="data-[state=active]:bg-minimal-indigo data-[state=active]:text-white">Profile</TabsTrigger>
-          <TabsTrigger value="password" className="data-[state=active]:bg-minimal-indigo data-[state=active]:text-white">Password</TabsTrigger>
-          <TabsTrigger value="orders" className="data-[state=active]:bg-minimal-indigo data-[state=active]:text-white">Orders</TabsTrigger>
-          <TabsTrigger value="reports" className="data-[state=active]:bg-minimal-indigo data-[state=active]:text-white">Reports</TabsTrigger>
+        <TabsList className="bg-cosmic-surface mb-6">
+          <TabsTrigger value="profile" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white">Profile</TabsTrigger>
+          <TabsTrigger value="password" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white">Password</TabsTrigger>
+          <TabsTrigger value="orders" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white">Orders</TabsTrigger>
+          <TabsTrigger value="reports" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white">Reports</TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile">
-          <Card className="bg-white border-0 shadow-soft">
+          <Card className="bg-cosmic-card border-0 shadow-soft">
             <CardContent className="p-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="font-display font-semibold text-minimal-gray-900">Personal Information</h3>
+                <h3 className="font-display font-semibold text-cosmic-text">Personal Information</h3>
                 {!editing ? (
                   <Button variant="outline" size="sm" onClick={() => setEditing(true)}>Edit</Button>
                 ) : (
-                  <Button size="sm" onClick={saveProfile} disabled={saving} className="bg-minimal-indigo text-white hover:bg-minimal-violet">
+                  <Button size="sm" onClick={saveProfile} disabled={saving} className="bg-sacred-gold text-white hover:bg-sacred-gold-dark">
                     <Save className="w-4 h-4 mr-1" />{saving ? 'Saving...' : 'Save'}
                   </Button>
                 )}
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-minimal-gray-700 mb-1 block">Name</label>
+                  <label className="text-sm font-medium text-cosmic-text mb-1 block">Name</label>
                   {editing ? (
-                    <Input value={profile.name} onChange={(e) => setProfile({ ...profile, name: e.target.value })} className="bg-minimal-gray-50 border-minimal-gray-200" />
+                    <Input value={profile.name} onChange={(e) => setProfile({ ...profile, name: e.target.value })} className="bg-cosmic-card border-sacred-gold/15" />
                   ) : (
-                    <p className="text-minimal-gray-600">{profile.name}</p>
+                    <p className="text-cosmic-text-secondary">{profile.name}</p>
                   )}
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-minimal-gray-700 mb-1 block">Email</label>
-                  <p className="text-minimal-gray-600">{profile.email}</p>
+                  <label className="text-sm font-medium text-cosmic-text mb-1 block">Email</label>
+                  <p className="text-cosmic-text-secondary">{profile.email}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-minimal-gray-700 mb-1 block">Date of Birth</label>
+                  <label className="text-sm font-medium text-cosmic-text mb-1 block">Date of Birth</label>
                   {editing ? (
-                    <Input type="date" value={profile.date_of_birth || ''} onChange={(e) => setProfile({ ...profile, date_of_birth: e.target.value })} className="bg-minimal-gray-50 border-minimal-gray-200" />
+                    <Input type="date" value={profile.date_of_birth || ''} onChange={(e) => setProfile({ ...profile, date_of_birth: e.target.value })} className="bg-cosmic-card border-sacred-gold/15" />
                   ) : (
-                    <p className="text-minimal-gray-600">{profile.date_of_birth || 'Not set'}</p>
+                    <p className="text-cosmic-text-secondary">{profile.date_of_birth || 'Not set'}</p>
                   )}
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-minimal-gray-700 mb-1 block">Gender</label>
+                  <label className="text-sm font-medium text-cosmic-text mb-1 block">Gender</label>
                   {editing ? (
-                    <Input value={profile.gender || ''} onChange={(e) => setProfile({ ...profile, gender: e.target.value })} placeholder="Male / Female / Other" className="bg-minimal-gray-50 border-minimal-gray-200" />
+                    <Input value={profile.gender || ''} onChange={(e) => setProfile({ ...profile, gender: e.target.value })} placeholder="Male / Female / Other" className="bg-cosmic-card border-sacred-gold/15" />
                   ) : (
-                    <p className="text-minimal-gray-600">{profile.gender || 'Not set'}</p>
+                    <p className="text-cosmic-text-secondary">{profile.gender || 'Not set'}</p>
                   )}
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-minimal-gray-700 mb-1 block">City</label>
+                  <label className="text-sm font-medium text-cosmic-text mb-1 block">City</label>
                   {editing ? (
-                    <Input value={profile.city || ''} onChange={(e) => setProfile({ ...profile, city: e.target.value })} className="bg-minimal-gray-50 border-minimal-gray-200" />
+                    <Input value={profile.city || ''} onChange={(e) => setProfile({ ...profile, city: e.target.value })} className="bg-cosmic-card border-sacred-gold/15" />
                   ) : (
-                    <p className="text-minimal-gray-600">{profile.city || 'Not set'}</p>
+                    <p className="text-cosmic-text-secondary">{profile.city || 'Not set'}</p>
                   )}
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-minimal-gray-700 mb-1 block">Phone</label>
+                  <label className="text-sm font-medium text-cosmic-text mb-1 block">Phone</label>
                   {editing ? (
-                    <Input value={profile.phone || ''} onChange={(e) => setProfile({ ...profile, phone: e.target.value })} className="bg-minimal-gray-50 border-minimal-gray-200" />
+                    <Input value={profile.phone || ''} onChange={(e) => setProfile({ ...profile, phone: e.target.value })} className="bg-cosmic-card border-sacred-gold/15" />
                   ) : (
-                    <p className="text-minimal-gray-600">{profile.phone || 'Not set'}</p>
+                    <p className="text-cosmic-text-secondary">{profile.phone || 'Not set'}</p>
                   )}
                 </div>
               </div>
@@ -280,21 +280,21 @@ export default function UserProfile() {
         </TabsContent>
 
         <TabsContent value="password">
-          <Card className="bg-white border-0 shadow-soft max-w-md">
+          <Card className="bg-cosmic-card border-0 shadow-soft max-w-md">
             <CardContent className="p-6">
-              <h3 className="font-display font-semibold text-minimal-gray-900 mb-4 flex items-center gap-2">
-                <Lock className="w-5 h-5 text-minimal-indigo" />Change Password
+              <h3 className="font-display font-semibold text-cosmic-text mb-4 flex items-center gap-2">
+                <Lock className="w-5 h-5 text-sacred-gold" />Change Password
               </h3>
               {passwordMsg && (
-                <div className={`mb-4 p-3 rounded-xl text-sm text-center ${passwordMsg.includes('success') ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
+                <div className={`mb-4 p-3 rounded-xl text-sm text-center ${passwordMsg.includes('success') ? 'bg-green-900/20 text-green-400' : 'bg-red-900/20 text-red-400'}`}>
                   {passwordMsg}
                 </div>
               )}
               <div className="space-y-3">
-                <Input type="password" placeholder="Current Password" value={passwordForm.current_password} onChange={(e) => setPasswordForm({ ...passwordForm, current_password: e.target.value })} className="bg-minimal-gray-50 border-minimal-gray-200" />
-                <Input type="password" placeholder="New Password" value={passwordForm.new_password} onChange={(e) => setPasswordForm({ ...passwordForm, new_password: e.target.value })} className="bg-minimal-gray-50 border-minimal-gray-200" />
-                <Input type="password" placeholder="Confirm New Password" value={passwordForm.confirm_password} onChange={(e) => setPasswordForm({ ...passwordForm, confirm_password: e.target.value })} className="bg-minimal-gray-50 border-minimal-gray-200" />
-                <Button onClick={changePassword} disabled={changingPassword || !passwordForm.current_password || !passwordForm.new_password} className="w-full bg-minimal-indigo text-white hover:bg-minimal-violet">
+                <Input type="password" placeholder="Current Password" value={passwordForm.current_password} onChange={(e) => setPasswordForm({ ...passwordForm, current_password: e.target.value })} className="bg-cosmic-card border-sacred-gold/15" />
+                <Input type="password" placeholder="New Password" value={passwordForm.new_password} onChange={(e) => setPasswordForm({ ...passwordForm, new_password: e.target.value })} className="bg-cosmic-card border-sacred-gold/15" />
+                <Input type="password" placeholder="Confirm New Password" value={passwordForm.confirm_password} onChange={(e) => setPasswordForm({ ...passwordForm, confirm_password: e.target.value })} className="bg-cosmic-card border-sacred-gold/15" />
+                <Button onClick={changePassword} disabled={changingPassword || !passwordForm.current_password || !passwordForm.new_password} className="w-full bg-sacred-gold text-white hover:bg-sacred-gold-dark">
                   {changingPassword ? 'Changing...' : 'Change Password'}
                 </Button>
               </div>
@@ -303,12 +303,12 @@ export default function UserProfile() {
         </TabsContent>
 
         <TabsContent value="orders">
-          <Card className="bg-white border-0 shadow-soft">
+          <Card className="bg-cosmic-card border-0 shadow-soft">
             <CardContent className="p-4">
               {orders.length === 0 ? (
                 <div className="text-center py-8">
-                  <ShoppingBag className="w-10 h-10 text-minimal-gray-300 mx-auto mb-2" />
-                  <p className="text-minimal-gray-500">No orders yet.</p>
+                  <ShoppingBag className="w-10 h-10 text-cosmic-text-muted mx-auto mb-2" />
+                  <p className="text-cosmic-text-secondary">No orders yet.</p>
                 </div>
               ) : (
                 <Table>
@@ -323,10 +323,10 @@ export default function UserProfile() {
                   <TableBody>
                     {orders.map((o) => (
                       <TableRow key={o.id}>
-                        <TableCell className="font-medium text-minimal-gray-900">{o.order_number || `#${o.id}`}</TableCell>
-                        <TableCell className="text-minimal-indigo font-semibold">{formatPrice(o.total)}</TableCell>
+                        <TableCell className="font-medium text-cosmic-text">{o.order_number || `#${o.id}`}</TableCell>
+                        <TableCell className="text-sacred-gold font-semibold">{formatPrice(o.total)}</TableCell>
                         <TableCell><Badge variant="outline">{o.status}</Badge></TableCell>
-                        <TableCell className="text-sm text-minimal-gray-500">{new Date(o.created_at).toLocaleDateString()}</TableCell>
+                        <TableCell className="text-sm text-cosmic-text-secondary">{new Date(o.created_at).toLocaleDateString()}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -337,24 +337,24 @@ export default function UserProfile() {
         </TabsContent>
 
         <TabsContent value="reports">
-          <Card className="bg-white border-0 shadow-soft">
+          <Card className="bg-cosmic-card border-0 shadow-soft">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="font-display font-semibold text-minimal-gray-900">My Reports</h3>
+                <h3 className="font-display font-semibold text-cosmic-text">My Reports</h3>
                 <Link to="/reports">
-                  <Button size="sm" className="bg-minimal-indigo text-white">
+                  <Button size="sm" className="bg-sacred-gold text-white">
                     <Sparkles className="w-4 h-4 mr-2" />Get New Report
                   </Button>
                 </Link>
               </div>
               
               {reports.length === 0 ? (
-                <div className="text-center py-12 bg-minimal-gray-50 rounded-xl">
-                  <FileText className="w-12 h-12 text-minimal-gray-300 mx-auto mb-3" />
-                  <p className="text-minimal-gray-600 mb-2">No reports yet</p>
-                  <p className="text-sm text-minimal-gray-500 mb-4">Unlock deep insights with personalized PDF reports</p>
+                <div className="text-center py-12 bg-cosmic-card rounded-xl">
+                  <FileText className="w-12 h-12 text-cosmic-text-muted mx-auto mb-3" />
+                  <p className="text-cosmic-text-secondary mb-2">No reports yet</p>
+                  <p className="text-sm text-cosmic-text-secondary mb-4">Unlock deep insights with personalized PDF reports</p>
                   <Link to="/reports">
-                    <Button className="bg-minimal-indigo text-white">
+                    <Button className="bg-sacred-gold text-white">
                       Browse Reports
                     </Button>
                   </Link>
@@ -362,14 +362,14 @@ export default function UserProfile() {
               ) : (
                 <div className="space-y-3">
                   {reports.map((r) => (
-                    <div key={r.id} className="flex items-center justify-between p-4 bg-minimal-gray-50 rounded-xl">
+                    <div key={r.id} className="flex items-center justify-between p-4 bg-cosmic-card rounded-xl">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-minimal-indigo/10 flex items-center justify-center">
-                          <FileText className="w-5 h-5 text-minimal-indigo" />
+                        <div className="w-10 h-10 rounded-lg bg-sacred-gold/10 flex items-center justify-center">
+                          <FileText className="w-5 h-5 text-sacred-gold" />
                         </div>
                         <div>
-                          <p className="font-medium text-minimal-gray-900">{r.title}</p>
-                          <div className="flex items-center gap-2 text-sm text-minimal-gray-500">
+                          <p className="font-medium text-cosmic-text">{r.title}</p>
+                          <div className="flex items-center gap-2 text-sm text-cosmic-text-secondary">
                             <Badge variant="outline" className="text-xs">{r.type}</Badge>
                             <span>•</span>
                             <span>{new Date(r.created_at).toLocaleDateString()}</span>
@@ -383,7 +383,7 @@ export default function UserProfile() {
                             target="_blank" 
                             rel="noopener noreferrer"
                           >
-                            <Button size="sm" variant="outline" className="border-green-500 text-green-600 hover:bg-green-50">
+                            <Button size="sm" variant="outline" className="border-green-500/30 text-green-400 hover:bg-green-900/20">
                               <Download className="w-4 h-4 mr-1" />Download
                             </Button>
                           </a>
@@ -392,9 +392,9 @@ export default function UserProfile() {
                             <Loader2 className="w-3 h-3 mr-1 animate-spin" />Generating
                           </Badge>
                         ) : r.status === 'paid' ? (
-                          <Badge className="bg-blue-100 text-blue-700">Processing</Badge>
+                          <Badge className="bg-blue-500/20 text-blue-700">Processing</Badge>
                         ) : (
-                          <Badge className="bg-minimal-gray-100 text-minimal-gray-600">{r.status}</Badge>
+                          <Badge className="bg-cosmic-surface text-cosmic-text-secondary">{r.status}</Badge>
                         )}
                       </div>
                     </div>

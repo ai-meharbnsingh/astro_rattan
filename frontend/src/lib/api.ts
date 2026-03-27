@@ -30,6 +30,7 @@ export const api = {
   get: (url: string) => apiFetch(url),
   post: (url: string, data: unknown) => apiFetch(url, { method: 'POST', body: JSON.stringify(data) }),
   postForm: (url: string, data: FormData) => apiFetch(url, { method: 'POST', body: data }),
+  put: (url: string, data: unknown) => apiFetch(url, { method: 'PUT', body: JSON.stringify(data) }),
   patch: (url: string, data: unknown) => apiFetch(url, { method: 'PATCH', body: JSON.stringify(data) }),
   delete: (url: string) => apiFetch(url, { method: 'DELETE' }),
 };

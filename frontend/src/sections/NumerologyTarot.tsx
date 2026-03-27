@@ -124,67 +124,67 @@ export default function NumerologyTarot() {
   return (
     <section className="max-w-4xl mx-auto py-24 px-4">
       <div className="text-center mb-10">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-minimal-indigo/10 text-minimal-indigo text-sm font-medium mb-4">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold/10 text-sacred-gold text-sm font-medium mb-4">
           <Sparkles className="w-4 h-4" />Divination Tools
         </div>
-        <h2 className="text-3xl sm:text-4xl font-display font-bold text-minimal-gray-900 mb-2">
+        <h2 className="text-3xl sm:text-4xl font-display font-bold text-cosmic-text mb-2">
           Numerology, Tarot &<span className="text-gradient-indigo"> Palmistry</span>
         </h2>
-        <p className="text-minimal-gray-500">Explore numbers, cards, and lines of destiny</p>
+        <p className="text-cosmic-text-secondary">Explore numbers, cards, and lines of destiny</p>
       </div>
 
       <Tabs defaultValue="numerology">
-        <TabsList className="grid grid-cols-3 bg-minimal-gray-100 mb-8 max-w-md mx-auto">
-          <TabsTrigger value="numerology" className="data-[state=active]:bg-minimal-indigo data-[state=active]:text-white">
+        <TabsList className="grid grid-cols-3 bg-cosmic-surface mb-8 max-w-md mx-auto">
+          <TabsTrigger value="numerology" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white">
             <Hash className="w-4 h-4 mr-1" />Numerology
           </TabsTrigger>
-          <TabsTrigger value="tarot" className="data-[state=active]:bg-minimal-indigo data-[state=active]:text-white">
+          <TabsTrigger value="tarot" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white">
             <Eye className="w-4 h-4 mr-1" />Tarot
           </TabsTrigger>
-          <TabsTrigger value="palmistry" onClick={loadPalmistry} className="data-[state=active]:bg-minimal-indigo data-[state=active]:text-white">
+          <TabsTrigger value="palmistry" onClick={loadPalmistry} className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white">
             <Hand className="w-4 h-4 mr-1" />Palmistry
           </TabsTrigger>
         </TabsList>
 
         {/* Numerology Tab */}
         <TabsContent value="numerology">
-          <Card className="bg-white border-0 shadow-soft max-w-xl mx-auto">
+          <Card className="bg-cosmic-card border-0 shadow-soft max-w-xl mx-auto">
             <CardContent className="p-6">
-              <h3 className="font-display font-semibold text-minimal-gray-900 mb-4 text-center">Calculate Your Numbers</h3>
+              <h3 className="font-display font-semibold text-cosmic-text mb-4 text-center">Calculate Your Numbers</h3>
               <div className="space-y-3">
-                <Input placeholder="Full Name" value={numName} onChange={(e) => setNumName(e.target.value)} className="bg-minimal-gray-50 border-minimal-gray-200" />
-                <Input type="date" value={numDob} onChange={(e) => setNumDob(e.target.value)} className="bg-minimal-gray-50 border-minimal-gray-200" />
-                <Button onClick={calculateNumerology} disabled={numLoading || !numName.trim() || !numDob} className="w-full bg-minimal-indigo text-white hover:bg-minimal-violet">
+                <Input placeholder="Full Name" value={numName} onChange={(e) => setNumName(e.target.value)} className="bg-cosmic-card border-sacred-gold/15" />
+                <Input type="date" value={numDob} onChange={(e) => setNumDob(e.target.value)} className="bg-cosmic-card border-sacred-gold/15" />
+                <Button onClick={calculateNumerology} disabled={numLoading || !numName.trim() || !numDob} className="w-full bg-sacred-gold text-white hover:bg-sacred-gold-dark">
                   {numLoading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Calculating...</> : <><Hash className="w-4 h-4 mr-2" />Calculate</>}
                 </Button>
               </div>
             </CardContent>
           </Card>
           {numResult && (
-            <Card className="mt-6 bg-white border-0 shadow-soft-lg max-w-xl mx-auto">
+            <Card className="mt-6 bg-cosmic-card border-0 shadow-soft-lg max-w-xl mx-auto">
               <CardContent className="p-6">
-                <h4 className="font-display font-semibold text-minimal-gray-900 mb-4 text-center">Your Numerology Report</h4>
+                <h4 className="font-display font-semibold text-cosmic-text mb-4 text-center">Your Numerology Report</h4>
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   {[
                     { label: 'Life Path', value: numResult.life_path, color: 'bg-purple-100 text-purple-700' },
                     { label: 'Expression', value: numResult.expression, color: 'bg-blue-100 text-blue-700' },
-                    { label: 'Soul Urge', value: numResult.soul_urge, color: 'bg-green-100 text-green-700' },
+                    { label: 'Soul Urge', value: numResult.soul_urge, color: 'bg-green-500/20 text-green-700' },
                     { label: 'Personality', value: numResult.personality, color: 'bg-yellow-100 text-yellow-700' },
                   ].map((n) => (
-                    <div key={n.label} className="text-center p-3 rounded-xl bg-minimal-gray-50">
-                      <p className="text-xs text-minimal-gray-500 mb-1">{n.label}</p>
+                    <div key={n.label} className="text-center p-3 rounded-xl bg-cosmic-card">
+                      <p className="text-xs text-cosmic-text-secondary mb-1">{n.label}</p>
                       <Badge className={`text-lg px-3 py-1 ${n.color}`}>{n.value}</Badge>
                     </div>
                   ))}
                 </div>
-                {numResult.summary && <p className="text-sm text-minimal-gray-600 text-center">{numResult.summary}</p>}
+                {numResult.summary && <p className="text-sm text-cosmic-text-secondary text-center">{numResult.summary}</p>}
                 {numResult.predictions && numResult.predictions.length > 0 && (
                   <div className="mt-4">
-                    <p className="text-sm font-medium text-minimal-gray-700 mb-2">Predictions:</p>
+                    <p className="text-sm font-medium text-cosmic-text mb-2">Predictions:</p>
                     <ul className="space-y-1">
                       {numResult.predictions.map((p, i) => (
-                        <li key={i} className="text-sm text-minimal-gray-600 flex gap-2">
-                          <Sparkles className="w-4 h-4 text-minimal-indigo shrink-0 mt-0.5" />{p}
+                        <li key={i} className="text-sm text-cosmic-text-secondary flex gap-2">
+                          <Sparkles className="w-4 h-4 text-sacred-gold shrink-0 mt-0.5" />{p}
                         </li>
                       ))}
                     </ul>
@@ -197,12 +197,12 @@ export default function NumerologyTarot() {
 
         {/* Tarot Tab */}
         <TabsContent value="tarot">
-          <Card className="bg-white border-0 shadow-soft max-w-xl mx-auto">
+          <Card className="bg-cosmic-card border-0 shadow-soft max-w-xl mx-auto">
             <CardContent className="p-6">
-              <h3 className="font-display font-semibold text-minimal-gray-900 mb-4 text-center">Draw Tarot Cards</h3>
+              <h3 className="font-display font-semibold text-cosmic-text mb-4 text-center">Draw Tarot Cards</h3>
               <div className="space-y-3">
                 <Select value={tarotSpread} onValueChange={setTarotSpread}>
-                  <SelectTrigger className="w-full bg-minimal-gray-50 border-minimal-gray-200">
+                  <SelectTrigger className="w-full bg-cosmic-card border-sacred-gold/15">
                     <SelectValue placeholder="Select spread" />
                   </SelectTrigger>
                   <SelectContent>
@@ -211,8 +211,8 @@ export default function NumerologyTarot() {
                     <SelectItem value="celtic_cross">Celtic Cross (10 cards)</SelectItem>
                   </SelectContent>
                 </Select>
-                <Input placeholder="Your question (optional)" value={tarotQuestion} onChange={(e) => setTarotQuestion(e.target.value)} className="bg-minimal-gray-50 border-minimal-gray-200" />
-                <Button onClick={drawTarot} disabled={tarotLoading} className="w-full bg-minimal-indigo text-white hover:bg-minimal-violet">
+                <Input placeholder="Your question (optional)" value={tarotQuestion} onChange={(e) => setTarotQuestion(e.target.value)} className="bg-cosmic-card border-sacred-gold/15" />
+                <Button onClick={drawTarot} disabled={tarotLoading} className="w-full bg-sacred-gold text-white hover:bg-sacred-gold-dark">
                   {tarotLoading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Drawing...</> : <><Eye className="w-4 h-4 mr-2" />Draw Cards</>}
                 </Button>
               </div>
@@ -222,23 +222,23 @@ export default function NumerologyTarot() {
             <div className="mt-6 space-y-4">
               <div className={`grid gap-4 max-w-3xl mx-auto ${tarotResult.cards.length === 1 ? 'grid-cols-1 max-w-xs' : tarotResult.cards.length <= 3 ? 'grid-cols-3 max-w-xl' : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-5'}`}>
                 {tarotResult.cards.map((card, i) => (
-                  <Card key={i} className="bg-white border-0 shadow-soft text-center">
+                  <Card key={i} className="bg-cosmic-card border-0 shadow-soft text-center">
                     <CardContent className="p-4">
-                      <div className="w-full aspect-[2/3] bg-gradient-to-b from-minimal-indigo/10 to-minimal-violet/10 rounded-lg flex items-center justify-center mb-3">
-                        <Eye className="w-8 h-8 text-minimal-indigo" />
+                      <div className="w-full aspect-[2/3] bg-gradient-to-b from-sacred-gold/10 to-sacred-gold-dark/10 rounded-lg flex items-center justify-center mb-3">
+                        <Eye className="w-8 h-8 text-sacred-gold" />
                       </div>
-                      {card.position && <p className="text-xs text-minimal-gray-400 mb-1">{card.position}</p>}
-                      <p className="font-display font-semibold text-minimal-gray-900 text-sm">{card.name}</p>
-                      {card.is_reversed && <Badge className="mt-1 bg-red-100 text-red-600 text-xs">Reversed</Badge>}
-                      <p className="text-xs text-minimal-gray-500 mt-2">{card.meaning}</p>
+                      {card.position && <p className="text-xs text-cosmic-text-muted mb-1">{card.position}</p>}
+                      <p className="font-display font-semibold text-cosmic-text text-sm">{card.name}</p>
+                      {card.is_reversed && <Badge className="mt-1 bg-red-500/20 text-red-400 text-xs">Reversed</Badge>}
+                      <p className="text-xs text-cosmic-text-secondary mt-2">{card.meaning}</p>
                     </CardContent>
                   </Card>
                 ))}
               </div>
               {(tarotResult.interpretation || tarotResult.summary) && (
-                <Card className="bg-white border-0 shadow-soft max-w-xl mx-auto">
+                <Card className="bg-cosmic-card border-0 shadow-soft max-w-xl mx-auto">
                   <CardContent className="p-4 text-center">
-                    <p className="text-sm text-minimal-gray-600">{tarotResult.interpretation || tarotResult.summary}</p>
+                    <p className="text-sm text-cosmic-text-secondary">{tarotResult.interpretation || tarotResult.summary}</p>
                   </CardContent>
                 </Card>
               )}
@@ -250,17 +250,17 @@ export default function NumerologyTarot() {
         <TabsContent value="palmistry">
           {palmLoading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 text-minimal-indigo animate-spin" />
+              <Loader2 className="w-8 h-8 text-sacred-gold animate-spin" />
             </div>
           ) : palmGuide ? (
             <div className="space-y-6 max-w-2xl mx-auto">
-              <Card className="bg-gradient-to-br from-minimal-indigo/5 to-minimal-violet/5 border-0 shadow-soft">
+              <Card className="bg-gradient-to-br from-sacred-gold/5 to-sacred-gold-dark/5 border-0 shadow-soft">
                 <CardContent className="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div>
-                    <h3 className="font-display font-semibold text-minimal-gray-900">Need a deeper palm reading?</h3>
-                    <p className="text-sm text-minimal-gray-600 mt-1">Use the dedicated palmistry page for photo-based analysis and guided line selection.</p>
+                    <h3 className="font-display font-semibold text-cosmic-text">Need a deeper palm reading?</h3>
+                    <p className="text-sm text-cosmic-text-secondary mt-1">Use the dedicated palmistry page for photo-based analysis and guided line selection.</p>
                   </div>
-                  <Button asChild className="bg-minimal-indigo text-white hover:bg-minimal-violet">
+                  <Button asChild className="bg-sacred-gold text-white hover:bg-sacred-gold-dark">
                     <Link to="/palmistry">
                       <Hand className="w-4 h-4 mr-2" />Open Palmistry
                     </Link>
@@ -268,22 +268,22 @@ export default function NumerologyTarot() {
                 </CardContent>
               </Card>
               {palmGuide.introduction && (
-                <Card className="bg-white border-0 shadow-soft">
+                <Card className="bg-cosmic-card border-0 shadow-soft">
                   <CardContent className="p-6 text-center">
-                    <Hand className="w-8 h-8 text-minimal-indigo mx-auto mb-2" />
-                    <p className="text-sm text-minimal-gray-600">{palmGuide.introduction}</p>
+                    <Hand className="w-8 h-8 text-sacred-gold mx-auto mb-2" />
+                    <p className="text-sm text-cosmic-text-secondary">{palmGuide.introduction}</p>
                   </CardContent>
                 </Card>
               )}
               {palmGuide.lines && palmGuide.lines.length > 0 && (
                 <div>
-                  <h3 className="font-display font-semibold text-minimal-gray-900 mb-3">Palm Lines</h3>
+                  <h3 className="font-display font-semibold text-cosmic-text mb-3">Palm Lines</h3>
                   <div className="grid sm:grid-cols-2 gap-3">
                     {palmGuide.lines.map((line) => (
-                      <Card key={line.name} className="bg-white border-0 shadow-soft">
+                      <Card key={line.name} className="bg-cosmic-card border-0 shadow-soft">
                         <CardContent className="p-4">
-                          <Badge className="bg-minimal-indigo/10 text-minimal-indigo mb-2">{line.name}</Badge>
-                          <p className="text-sm text-minimal-gray-600">{line.description}</p>
+                          <Badge className="bg-sacred-gold/10 text-sacred-gold mb-2">{line.name}</Badge>
+                          <p className="text-sm text-cosmic-text-secondary">{line.description}</p>
                         </CardContent>
                       </Card>
                     ))}
@@ -292,13 +292,13 @@ export default function NumerologyTarot() {
               )}
               {palmGuide.mounts && palmGuide.mounts.length > 0 && (
                 <div>
-                  <h3 className="font-display font-semibold text-minimal-gray-900 mb-3">Mounts</h3>
+                  <h3 className="font-display font-semibold text-cosmic-text mb-3">Mounts</h3>
                   <div className="grid sm:grid-cols-2 gap-3">
                     {palmGuide.mounts.map((mount) => (
-                      <Card key={mount.name} className="bg-white border-0 shadow-soft">
+                      <Card key={mount.name} className="bg-cosmic-card border-0 shadow-soft">
                         <CardContent className="p-4">
                           <Badge className="bg-purple-100 text-purple-700 mb-2">{mount.name}</Badge>
-                          <p className="text-sm text-minimal-gray-600">{mount.description}</p>
+                          <p className="text-sm text-cosmic-text-secondary">{mount.description}</p>
                         </CardContent>
                       </Card>
                     ))}
@@ -307,13 +307,13 @@ export default function NumerologyTarot() {
               )}
               {palmGuide.hand_shapes && palmGuide.hand_shapes.length > 0 && (
                 <div>
-                  <h3 className="font-display font-semibold text-minimal-gray-900 mb-3">Hand Shapes</h3>
+                  <h3 className="font-display font-semibold text-cosmic-text mb-3">Hand Shapes</h3>
                   <div className="grid sm:grid-cols-2 gap-3">
                     {palmGuide.hand_shapes.map((shape) => (
-                      <Card key={shape.name} className="bg-white border-0 shadow-soft">
+                      <Card key={shape.name} className="bg-cosmic-card border-0 shadow-soft">
                         <CardContent className="p-4">
-                          <Badge className="bg-green-100 text-green-700 mb-2">{shape.name}</Badge>
-                          <p className="text-sm text-minimal-gray-600">{shape.description}</p>
+                          <Badge className="bg-green-500/20 text-green-700 mb-2">{shape.name}</Badge>
+                          <p className="text-sm text-cosmic-text-secondary">{shape.description}</p>
                         </CardContent>
                       </Card>
                     ))}
@@ -323,9 +323,9 @@ export default function NumerologyTarot() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <Hand className="w-12 h-12 text-minimal-gray-300 mx-auto mb-3" />
-              <p className="text-minimal-gray-500 mb-4">Click to load the palmistry guide</p>
-              <Button onClick={loadPalmistry} className="bg-minimal-indigo text-white hover:bg-minimal-violet">
+              <Hand className="w-12 h-12 text-cosmic-text-muted mx-auto mb-3" />
+              <p className="text-cosmic-text-secondary mb-4">Click to load the palmistry guide</p>
+              <Button onClick={loadPalmistry} className="bg-sacred-gold text-white hover:bg-sacred-gold-dark">
                 <Hand className="w-4 h-4 mr-2" />Load Guide
               </Button>
             </div>

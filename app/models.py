@@ -293,3 +293,225 @@ class MuhuratType(str, Enum):
     marriage = "marriage"; griha_pravesh = "griha_pravesh"
     business_start = "business_start"; travel = "travel"
     naming_ceremony = "naming_ceremony"; mundan = "mundan"
+
+
+class ReferralEarningStatus(str, Enum):
+    pending = "pending"
+    paid = "paid"
+
+
+# ============================================================
+# Referral / Affiliate
+# ============================================================
+class ReferralCode(BaseModel):
+    code: str
+    user_id: str
+    discount_percent: float = 5.0
+    commission_percent: float = 10.0
+    uses_count: int = 0
+    max_uses: Optional[int] = None
+    is_active: bool = True
+
+
+class ReferralEarning(BaseModel):
+    id: str
+    referrer_id: str
+    referred_id: str
+    order_id: str
+    amount: float
+    commission: float
+    status: ReferralEarningStatus = ReferralEarningStatus.pending
+
+
+class ReferralStats(BaseModel):
+    total_referrals: int = 0
+    total_earnings: float = 0.0
+    pending_earnings: float = 0.0
+    paid_earnings: float = 0.0
+
+
+class ApplyReferralRequest(BaseModel):
+    code: str = Field(min_length=1)
+
+
+# ============================================================
+# Product Bundles
+# ============================================================
+class BundleType(str, Enum):
+    consultation_product = "consultation_product"
+    multi_product = "multi_product"
+
+
+class BundleItemCreate(BaseModel):
+    product_id: Optional[str] = None
+    consultation_type: Optional[str] = None  # chat, call, video
+    quantity: int = Field(ge=1, default=1)
+
+    @field_validator("consultation_type")
+    @classmethod
+    def validate_consultation_type(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None and v not in ("chat", "call", "video"):
+            raise ValueError("consultation_type must be chat, call, or video")
+        return v
+
+
+class BundleCreate(BaseModel):
+    name: str = Field(min_length=1)
+    description: Optional[str] = None
+    bundle_type: BundleType
+    discount_percent: float = Field(ge=0, le=100)
+    items: List[BundleItemCreate] = Field(min_length=1)
+
+
+class BundleUpdate(BaseModel):
+    name: Optional[str] = Field(default=None, min_length=1)
+    description: Optional[str] = None
+    discount_percent: Optional[float] = Field(default=None, ge=0, le=100)
+    is_active: Optional[bool] = None
+
+
+# ============================================================
+# Gamification
+# ============================================================
+class KarmaActionType(str, Enum):
+    daily_login = "daily_login"
+    kundli_generated = "kundli_generated"
+    ai_chat = "ai_chat"
+    panchang_viewed = "panchang_viewed"
+    shop_purchase = "shop_purchase"
+    consultation_completed = "consultation_completed"
+    library_read = "library_read"
+    prashnavali_used = "prashnavali_used"
+    learning_completed = "learning_completed"
+
+
+class LearningCategory(str, Enum):
+    basics = "basics"
+    kundli = "kundli"
+    panchang = "panchang"
+    doshas = "doshas"
+    remedies = "remedies"
+    advanced = "advanced"
+
+
+class KarmaProfile(BaseModel):
+    user_id: str
+    total_points: int = 0
+    current_streak: int = 0
+    longest_streak: int = 0
+    last_activity_date: Optional[str] = None
+    level: int = 1
+    badges: List[dict] = []
+
+
+class KarmaTransaction(BaseModel):
+    id: str
+    user_id: str
+    points: int
+    action_type: str
+    description: Optional[str] = None
+    created_at: str
+
+
+class Badge(BaseModel):
+    id: str
+    name: str
+    description: str
+    icon: str
+    earned: bool = False
+    earned_at: Optional[str] = None
+
+
+class LearningModule(BaseModel):
+    id: str
+    title: str
+    description: Optional[str] = None
+    category: str
+    order_index: int = 0
+    content_json: Optional[str] = None
+    points_reward: int = 50
+    completed: bool = False
+
+
+class LearningProgress(BaseModel):
+    id: str
+    user_id: str
+    module_id: str
+    completed_at: str
+
+
+# ============================================================
+# Forum / Community
+# ============================================================
+class ForumCategory(BaseModel):
+    id: str
+    name: str
+    description: Optional[str] = None
+    icon: Optional[str] = None
+    order_index: int = 0
+    is_active: bool = True
+    thread_count: int = 0
+
+
+class ThreadCreate(BaseModel):
+    category_id: str
+    title: str = Field(min_length=3)
+    content: str = Field(min_length=10)
+
+
+class ThreadResponse(BaseModel):
+    id: str
+    category_id: str
+    user_id: str
+    title: str
+    content: str
+    is_pinned: bool = False
+    is_locked: bool = False
+    views_count: int = 0
+    replies_count: int = 0
+    created_at: str
+    updated_at: str
+    author_name: Optional[str] = None
+    author_avatar: Optional[str] = None
+    category_name: Optional[str] = None
+
+
+class ReplyCreate(BaseModel):
+    content: str = Field(min_length=1)
+
+
+class ReplyResponse(BaseModel):
+    id: str
+    thread_id: str
+    user_id: str
+    content: str
+    is_best_answer: bool = False
+    likes_count: int = 0
+    created_at: str
+    updated_at: str
+    author_name: Optional[str] = None
+    author_avatar: Optional[str] = None
+    liked_by_me: bool = False
+
+
+class BundleItemResponse(BaseModel):
+    id: str
+    product_id: Optional[str] = None
+    consultation_type: Optional[str] = None
+    quantity: int
+    product_name: Optional[str] = None
+    product_price: Optional[float] = None
+
+
+class BundleResponse(BaseModel):
+    id: str
+    name: str
+    description: Optional[str] = None
+    bundle_type: str
+    discount_percent: float
+    is_active: bool
+    created_at: str
+    items: List[BundleItemResponse] = []
+    original_price: float = 0.0
+    discounted_price: float = 0.0
+    savings: float = 0.0

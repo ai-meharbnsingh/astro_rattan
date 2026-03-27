@@ -51,7 +51,7 @@ const REPORT_TYPES: ReportType[] = [
       'io-gita basin analysis',
       'Life predictions'
     ],
-    color: 'bg-minimal-indigo'
+    color: 'bg-sacred-gold'
   },
   {
     id: 'marriage',
@@ -224,10 +224,10 @@ export default function ReportMarketplace() {
   if (!isAuthenticated) {
     return (
       <div className="max-w-4xl mx-auto py-24 px-4 text-center">
-        <Lock className="w-16 h-16 text-minimal-gray-300 mx-auto mb-4" />
-        <h2 className="text-2xl font-display font-bold text-minimal-gray-900 mb-2">Sign In Required</h2>
-        <p className="text-minimal-gray-500 mb-6">Please log in to purchase personalized reports.</p>
-        <Button onClick={() => navigate('/login')} className="bg-minimal-indigo text-white">
+        <Lock className="w-16 h-16 text-cosmic-text-muted mx-auto mb-4" />
+        <h2 className="text-2xl font-display font-bold text-cosmic-text mb-2">Sign In Required</h2>
+        <p className="text-cosmic-text-secondary mb-6">Please log in to purchase personalized reports.</p>
+        <Button onClick={() => navigate('/login')} className="bg-sacred-gold text-white">
           Sign In
         </Button>
       </div>
@@ -237,7 +237,7 @@ export default function ReportMarketplace() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <Loader2 className="w-10 h-10 text-minimal-indigo animate-spin" />
+        <Loader2 className="w-10 h-10 text-sacred-gold animate-spin" />
       </div>
     );
   }
@@ -245,10 +245,10 @@ export default function ReportMarketplace() {
   if (kundlis.length === 0) {
     return (
       <div className="max-w-4xl mx-auto py-24 px-4 text-center">
-        <FileText className="w-16 h-16 text-minimal-gray-300 mx-auto mb-4" />
-        <h2 className="text-2xl font-display font-bold text-minimal-gray-900 mb-2">No Kundlis Found</h2>
-        <p className="text-minimal-gray-500 mb-6">Generate a kundli first to purchase personalized reports.</p>
-        <Button onClick={() => navigate('/kundli')} className="bg-minimal-indigo text-white">
+        <FileText className="w-16 h-16 text-cosmic-text-muted mx-auto mb-4" />
+        <h2 className="text-2xl font-display font-bold text-cosmic-text mb-2">No Kundlis Found</h2>
+        <p className="text-cosmic-text-secondary mb-6">Generate a kundli first to purchase personalized reports.</p>
+        <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold text-white">
           Generate Kundli <ArrowRight className="w-4 h-4 ml-2" />
         </Button>
       </div>
@@ -259,22 +259,22 @@ export default function ReportMarketplace() {
     <section className="max-w-6xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="text-center mb-12">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-minimal-indigo/10 text-minimal-indigo text-sm font-medium mb-4">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold/10 text-sacred-gold text-sm font-medium mb-4">
           <Sparkles className="w-4 h-4" />Premium Reports
         </div>
-        <h1 className="text-3xl sm:text-4xl font-display font-bold text-minimal-gray-900 mb-3">
+        <h1 className="text-3xl sm:text-4xl font-display font-bold text-cosmic-text mb-3">
           Personalized <span className="text-gradient-indigo">Astrology Reports</span>
         </h1>
-        <p className="text-minimal-gray-500 max-w-2xl mx-auto">
+        <p className="text-cosmic-text-secondary max-w-2xl mx-auto">
           Unlock deep insights with our comprehensive PDF reports. Generated using advanced Vedic astrology 
           and the io-gita analysis engine.
         </p>
       </div>
 
       {/* Kundli Selector */}
-      <Card className="mb-8 border-0 shadow-soft bg-minimal-gray-50">
+      <Card className="mb-8 border-0 shadow-soft bg-cosmic-card">
         <CardContent className="p-6">
-          <label className="text-sm font-medium text-minimal-gray-700 mb-3 block">
+          <label className="text-sm font-medium text-cosmic-text mb-3 block">
             Select Kundli for Report
           </label>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
@@ -284,13 +284,13 @@ export default function ReportMarketplace() {
                 onClick={() => setSelectedKundli(kundli.id)}
                 className={`p-4 rounded-xl border-2 text-left transition-all ${
                   selectedKundli === kundli.id 
-                    ? 'border-minimal-indigo bg-minimal-indigo/5' 
-                    : 'border-minimal-gray-200 hover:border-minimal-gray-300'
+                    ? 'border-sacred-gold bg-sacred-gold/5' 
+                    : 'border-sacred-gold/15 hover:border-cosmic-text-muted'
                 }`}
               >
-                <p className="font-semibold text-minimal-gray-900">{kundli.person_name}</p>
-                <p className="text-sm text-minimal-gray-500">{kundli.birth_date}</p>
-                <p className="text-xs text-minimal-gray-400">{kundli.birth_place}</p>
+                <p className="font-semibold text-cosmic-text">{kundli.person_name}</p>
+                <p className="text-sm text-cosmic-text-secondary">{kundli.birth_date}</p>
+                <p className="text-xs text-cosmic-text-muted">{kundli.birth_place}</p>
               </button>
             ))}
           </div>
@@ -298,7 +298,7 @@ export default function ReportMarketplace() {
       </Card>
 
       {error && (
-        <div className="mb-6 p-4 rounded-xl bg-red-50 text-red-600 text-sm text-center">
+        <div className="mb-6 p-4 rounded-xl bg-red-900/20 text-red-400 text-sm text-center">
           {error}
         </div>
       )}
@@ -314,23 +314,23 @@ export default function ReportMarketplace() {
                   {report.icon}
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-minimal-gray-900">{formatPrice(report.price)}</p>
+                  <p className="text-2xl font-bold text-cosmic-text">{formatPrice(report.price)}</p>
                   <Badge variant="outline" className="text-xs">PDF Download</Badge>
                 </div>
               </div>
 
               {/* Title & Description */}
-              <h3 className="text-lg font-display font-semibold text-minimal-gray-900 mb-2">
+              <h3 className="text-lg font-display font-semibold text-cosmic-text mb-2">
                 {report.name}
               </h3>
-              <p className="text-sm text-minimal-gray-500 mb-4 flex-1">
+              <p className="text-sm text-cosmic-text-secondary mb-4 flex-1">
                 {report.description}
               </p>
 
               {/* Features */}
               <ul className="space-y-2 mb-6">
                 {report.features.map((feature, idx) => (
-                  <li key={idx} className="flex items-start gap-2 text-sm text-minimal-gray-600">
+                  <li key={idx} className="flex items-start gap-2 text-sm text-cosmic-text-secondary">
                     <Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
                     {feature}
                   </li>
@@ -357,20 +357,20 @@ export default function ReportMarketplace() {
       {/* Trust Badges */}
       <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
         <div className="p-4">
-          <p className="text-2xl font-bold text-minimal-indigo">30+</p>
-          <p className="text-sm text-minimal-gray-500">Pages per report</p>
+          <p className="text-2xl font-bold text-sacred-gold">30+</p>
+          <p className="text-sm text-cosmic-text-secondary">Pages per report</p>
         </div>
         <div className="p-4">
-          <p className="text-2xl font-bold text-minimal-indigo">100%</p>
-          <p className="text-sm text-minimal-gray-500">Personalized</p>
+          <p className="text-2xl font-bold text-sacred-gold">100%</p>
+          <p className="text-sm text-cosmic-text-secondary">Personalized</p>
         </div>
         <div className="p-4">
-          <p className="text-2xl font-bold text-minimal-indigo">PDF</p>
-          <p className="text-sm text-minimal-gray-500">Instant download</p>
+          <p className="text-2xl font-bold text-sacred-gold">PDF</p>
+          <p className="text-sm text-cosmic-text-secondary">Instant download</p>
         </div>
         <div className="p-4">
-          <p className="text-2xl font-bold text-minimal-indigo">24/7</p>
-          <p className="text-sm text-minimal-gray-500">Available</p>
+          <p className="text-2xl font-bold text-sacred-gold">24/7</p>
+          <p className="text-sm text-cosmic-text-secondary">Available</p>
         </div>
       </div>
     </section>

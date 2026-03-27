@@ -70,36 +70,36 @@ export default function DailyHoroscope() {
   }, [selectedSign]);
 
   return (
-    <section ref={sectionRef} id="horoscope" className="relative py-24 bg-white bg-mandala">
+    <section ref={sectionRef} id="horoscope" className="relative py-24 bg-cosmic-bg bg-mandala bg-cosmic-stars">
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="horoscope-title text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-saffron/10 text-sacred-saffron-dark text-sm font-medium mb-6 border border-sacred-saffron/30">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-saffron/10 text-sacred-saffron text-sm font-medium mb-6 border border-sacred-saffron/30">
             <Sun className="w-4 h-4" />Daily Guidance
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-sacred font-bold text-sacred-brown mb-4">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-sacred font-bold text-cosmic-text mb-4">
             Your Daily<span className="text-gradient-saffron"> Horoscope</span>
           </h2>
         </div>
         <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-12 gap-3 mb-12">
           {zodiacSigns.map((sign, index) => (
-            <button key={index} onClick={() => setSelectedSign(sign)} className={`p-3 rounded-xl transition-all duration-300 ${selectedSign.name === sign.name ? 'bg-sacred-gold text-white shadow-sacred' : 'bg-sacred-cream hover:bg-sacred-gold/10 text-sacred-brown border border-sacred-gold/20'}`}>
+            <button key={index} onClick={() => setSelectedSign(sign)} className={`p-3 rounded-xl transition-all duration-300 ${selectedSign.name === sign.name ? 'bg-sacred-gold text-cosmic-bg shadow-glow-gold' : 'bg-cosmic-card hover:bg-sacred-gold/10 text-cosmic-text border border-sacred-gold/20'}`}>
               <span className="text-2xl block mb-1">{sign.symbol}</span>
               <span className="text-xs">{sign.name}</span>
             </button>
           ))}
         </div>
         <div className="grid lg:grid-cols-3 gap-8">
-          <Card className="lg:col-span-1 card-sacred border-0">
+          <Card className="lg:col-span-1 card-sacred border-sacred-gold/20">
             <CardContent className="p-6 text-center">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center mx-auto mb-4 shadow-sacred">
-                <span className="text-5xl text-white">{selectedSign.symbol}</span>
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center mx-auto mb-4 shadow-glow-gold">
+                <span className="text-5xl text-cosmic-bg">{selectedSign.symbol}</span>
               </div>
-              <h3 className="text-2xl font-sacred font-bold text-sacred-brown mb-1">{selectedSign.name}</h3>
-              <p className="text-sm text-sacred-text-secondary mb-4">{selectedSign.date}</p>
-              <span className="px-3 py-1 rounded-full bg-sacred-saffron/10 text-sacred-saffron-dark text-sm border border-sacred-saffron/30">{selectedSign.element}</span>
+              <h3 className="text-2xl font-sacred font-bold text-cosmic-text mb-1">{selectedSign.name}</h3>
+              <p className="text-sm text-cosmic-text-secondary mb-4">{selectedSign.date}</p>
+              <span className="px-3 py-1 rounded-full bg-sacred-saffron/10 text-sacred-saffron text-sm border border-sacred-saffron/30">{selectedSign.element}</span>
             </CardContent>
           </Card>
-          <Card className="lg:col-span-2 card-sacred border-0">
+          <Card className="lg:col-span-2 card-sacred border-sacred-gold/20">
             <CardContent className="p-6">
               {loading ? (
                 <div className="flex items-center justify-center py-12">
@@ -107,14 +107,14 @@ export default function DailyHoroscope() {
                 </div>
               ) : (
                 <Tabs defaultValue="general">
-                  <TabsList className="grid grid-cols-5 bg-sacred-cream mb-6">
+                  <TabsList className="grid grid-cols-5 bg-cosmic-card mb-6 border border-sacred-gold/10">
                     {['general', 'love', 'career', 'finance', 'health'].map((tab) => (
-                      <TabsTrigger key={tab} value={tab} className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white capitalize text-sacred-brown">{tab}</TabsTrigger>
+                      <TabsTrigger key={tab} value={tab} className="data-[state=active]:bg-sacred-gold data-[state=active]:text-cosmic-bg capitalize text-cosmic-text-secondary">{tab}</TabsTrigger>
                     ))}
                   </TabsList>
                   {Object.entries(horoscopeData).map(([key, content]) => (
                     <TabsContent key={key} value={key} className="mt-0">
-                      <p className="text-sacred-text-secondary leading-relaxed">{content}</p>
+                      <p className="text-cosmic-text-secondary leading-relaxed">{content}</p>
                     </TabsContent>
                   ))}
                 </Tabs>

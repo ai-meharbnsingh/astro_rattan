@@ -46,9 +46,9 @@ interface AstrologerProfile {
 
 const statusColors: Record<string, string> = {
   requested: 'bg-yellow-100 text-yellow-700',
-  accepted: 'bg-blue-100 text-blue-700',
-  active: 'bg-green-100 text-green-700',
-  completed: 'bg-minimal-gray-100 text-minimal-gray-600',
+  accepted: 'bg-blue-500/20 text-blue-700',
+  active: 'bg-green-500/20 text-green-700',
+  completed: 'bg-cosmic-surface text-cosmic-text-secondary',
 };
 
 const formatPrice = (price: number) =>
@@ -131,7 +131,7 @@ export default function AstrologerDashboard() {
   const joinVideoSession = async (consultation: AstrologerConsultation) => {
     setJoiningVideoId(consultation.id);
     try {
-      const response = await api.post(`/api/consultations/${consultation.id}/video-link`, {});
+      const response = await api.post(`/api/consultation/${consultation.id}/video-link`, {});
       const videoLink = String(response.video_link ?? consultation.video_link ?? '');
       const roomName = String(response.room_name ?? videoLink.split('/').pop() ?? `AstroVedic-${consultation.id}`);
       const status = typeof response.status === 'string' ? response.status : consultation.status;
@@ -179,9 +179,9 @@ export default function AstrologerDashboard() {
   if (user?.role !== 'astrologer') {
     return (
       <div className="max-w-4xl mx-auto py-24 px-4 text-center">
-        <Star className="w-16 h-16 text-minimal-gray-300 mx-auto mb-4" />
-        <h2 className="text-2xl font-display font-bold text-minimal-gray-900 mb-2">Astrologer Access Required</h2>
-        <p className="text-minimal-gray-500">This dashboard is only accessible to verified astrologers.</p>
+        <Star className="w-16 h-16 text-cosmic-text-muted mx-auto mb-4" />
+        <h2 className="text-2xl font-display font-bold text-cosmic-text mb-2">Astrologer Access Required</h2>
+        <p className="text-cosmic-text-secondary">This dashboard is only accessible to verified astrologers.</p>
       </div>
     );
   }
@@ -189,14 +189,14 @@ export default function AstrologerDashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <Loader2 className="w-10 h-10 text-minimal-indigo animate-spin" />
+        <Loader2 className="w-10 h-10 text-sacred-gold animate-spin" />
       </div>
     );
   }
 
   const statCards = [
-    { label: 'Earnings', value: formatPrice(stats?.earnings ?? 0), icon: IndianRupee, color: 'bg-green-100 text-green-600' },
-    { label: 'Consultations', value: stats?.consultations ?? 0, icon: Users, color: 'bg-blue-100 text-blue-600' },
+    { label: 'Earnings', value: formatPrice(stats?.earnings ?? 0), icon: IndianRupee, color: 'bg-green-500/20 text-green-600' },
+    { label: 'Consultations', value: stats?.consultations ?? 0, icon: Users, color: 'bg-blue-500/20 text-blue-600' },
     { label: 'Rating', value: (stats?.rating ?? 0).toFixed(1), icon: Star, color: 'bg-yellow-100 text-yellow-600' },
     { label: 'Pending', value: stats?.upcoming ?? 0, icon: Clock, color: 'bg-purple-100 text-purple-600' },
   ];
@@ -205,15 +205,15 @@ export default function AstrologerDashboard() {
     <section className="max-w-6xl mx-auto py-24 px-4">
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-minimal-indigo flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full bg-sacred-gold flex items-center justify-center">
             <Star className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h2 className="text-2xl font-display font-bold text-minimal-gray-900">Astrologer Dashboard</h2>
-            <p className="text-sm text-minimal-gray-500">Manage your consultations and profile</p>
+            <h2 className="text-2xl font-display font-bold text-cosmic-text">Astrologer Dashboard</h2>
+            <p className="text-sm text-cosmic-text-secondary">Manage your consultations and profile</p>
           </div>
         </div>
-        <Button onClick={toggleAvailability} variant="outline" className={profile.is_available ? 'border-green-300 text-green-700' : 'border-minimal-gray-300 text-minimal-gray-500'}>
+        <Button onClick={toggleAvailability} variant="outline" className={profile.is_available ? 'border-green-300 text-green-700' : 'border-cosmic-text-muted text-cosmic-text-secondary'}>
           {profile.is_available ? <ToggleRight className="w-5 h-5 mr-2" /> : <ToggleLeft className="w-5 h-5 mr-2" />}
           {profile.is_available ? 'Available' : 'Unavailable'}
         </Button>
@@ -221,14 +221,14 @@ export default function AstrologerDashboard() {
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {statCards.map((s) => (
-          <Card key={s.label} className="bg-white border-0 shadow-soft">
+          <Card key={s.label} className="bg-cosmic-card border-0 shadow-soft">
             <CardContent className="p-5 flex items-center gap-4">
               <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${s.color}`}>
                 <s.icon className="w-6 h-6" />
               </div>
               <div>
-                <p className="text-sm text-minimal-gray-500">{s.label}</p>
-                <p className="text-2xl font-bold text-minimal-gray-900">{s.value}</p>
+                <p className="text-sm text-cosmic-text-secondary">{s.label}</p>
+                <p className="text-2xl font-bold text-cosmic-text">{s.value}</p>
               </div>
             </CardContent>
           </Card>
@@ -236,39 +236,39 @@ export default function AstrologerDashboard() {
       </div>
 
       <Tabs defaultValue="consultations" className="w-full">
-        <TabsList className="bg-minimal-gray-100 mb-6">
-          <TabsTrigger value="consultations" className="data-[state=active]:bg-minimal-indigo data-[state=active]:text-white">Consultations</TabsTrigger>
-          <TabsTrigger value="profile" className="data-[state=active]:bg-minimal-indigo data-[state=active]:text-white">Profile</TabsTrigger>
+        <TabsList className="bg-cosmic-surface mb-6">
+          <TabsTrigger value="consultations" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white">Consultations</TabsTrigger>
+          <TabsTrigger value="profile" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white">Profile</TabsTrigger>
         </TabsList>
 
         <TabsContent value="consultations">
           {consultations.length === 0 ? (
             <div className="text-center py-12">
-              <Calendar className="w-12 h-12 text-minimal-gray-300 mx-auto mb-3" />
-              <p className="text-minimal-gray-500">No consultations yet.</p>
+              <Calendar className="w-12 h-12 text-cosmic-text-muted mx-auto mb-3" />
+              <p className="text-cosmic-text-secondary">No consultations yet.</p>
             </div>
           ) : (
             <div className="space-y-3">
               {consultations.map((c) => (
-                <Card key={c.id} className="bg-white border-0 shadow-soft">
+                <Card key={c.id} className="bg-cosmic-card border-0 shadow-soft">
                   <CardContent className="p-4">
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                       <div>
-                        <p className="font-medium text-minimal-gray-900">{c.client_name}</p>
-                        <p className="text-sm text-minimal-gray-500 capitalize">{c.type} consultation</p>
-                        {c.scheduled_at && <p className="text-xs text-minimal-gray-400">{new Date(c.scheduled_at).toLocaleString()}</p>}
+                        <p className="font-medium text-cosmic-text">{c.client_name}</p>
+                        <p className="text-sm text-cosmic-text-secondary capitalize">{c.type} consultation</p>
+                        {c.scheduled_at && <p className="text-xs text-cosmic-text-muted">{new Date(c.scheduled_at).toLocaleString()}</p>}
                       </div>
                       <div className="flex flex-wrap items-center gap-3">
-                        <Badge className={statusColors[c.status] || 'bg-minimal-gray-100 text-minimal-gray-600'}>{c.status}</Badge>
+                        <Badge className={statusColors[c.status] || 'bg-cosmic-surface text-cosmic-text-secondary'}>{c.status}</Badge>
                         {c.status === 'requested' && (
-                          <Button size="sm" onClick={() => acceptConsultation(c.id)} className="bg-minimal-indigo text-white hover:bg-minimal-violet">Accept</Button>
+                          <Button size="sm" onClick={() => acceptConsultation(c.id)} className="bg-sacred-gold text-white hover:bg-sacred-gold-dark">Accept</Button>
                         )}
                         {c.type === 'video' && (c.status === 'accepted' || c.status === 'active') && (
                           <Button
                             size="sm"
                             onClick={() => joinVideoSession(c)}
                             disabled={joiningVideoId === c.id}
-                            className="bg-minimal-indigo text-white hover:bg-minimal-violet"
+                            className="bg-sacred-gold text-white hover:bg-sacred-gold-dark"
                           >
                             {joiningVideoId === c.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Video className="mr-1 h-4 w-4" />}
                             {c.video_link ? 'Rejoin' : 'Join'}
@@ -300,54 +300,54 @@ export default function AstrologerDashboard() {
         </TabsContent>
 
         <TabsContent value="profile">
-          <Card className="bg-white border-0 shadow-soft max-w-xl">
+          <Card className="bg-cosmic-card border-0 shadow-soft max-w-xl">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-display font-semibold text-minimal-gray-900">My Profile</h3>
+                <h3 className="font-display font-semibold text-cosmic-text">My Profile</h3>
                 {!editingProfile ? (
                   <Button variant="outline" size="sm" onClick={() => setEditingProfile(true)}>
                     <Edit className="w-4 h-4 mr-1" />Edit
                   </Button>
                 ) : (
-                  <Button size="sm" onClick={saveProfile} disabled={saving} className="bg-minimal-indigo text-white hover:bg-minimal-violet">
+                  <Button size="sm" onClick={saveProfile} disabled={saving} className="bg-sacred-gold text-white hover:bg-sacred-gold-dark">
                     <Save className="w-4 h-4 mr-1" />{saving ? 'Saving...' : 'Save'}
                   </Button>
                 )}
               </div>
               <div className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium text-minimal-gray-700 mb-1 block">Bio</label>
+                  <label className="text-sm font-medium text-cosmic-text mb-1 block">Bio</label>
                   {editingProfile ? (
-                    <Textarea value={profile.bio} onChange={(e) => setProfile({ ...profile, bio: e.target.value })} className="bg-minimal-gray-50 border-minimal-gray-200" />
+                    <Textarea value={profile.bio} onChange={(e) => setProfile({ ...profile, bio: e.target.value })} className="bg-cosmic-card border-sacred-gold/15" />
                   ) : (
-                    <p className="text-minimal-gray-600 text-sm">{profile.bio || 'No bio set'}</p>
+                    <p className="text-cosmic-text-secondary text-sm">{profile.bio || 'No bio set'}</p>
                   )}
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-minimal-gray-700 mb-1 block">Rate per minute (INR)</label>
+                  <label className="text-sm font-medium text-cosmic-text mb-1 block">Rate per minute (INR)</label>
                   {editingProfile ? (
-                    <Input type="number" value={profile.per_minute_rate} onChange={(e) => setProfile({ ...profile, per_minute_rate: Number(e.target.value) })} className="bg-minimal-gray-50 border-minimal-gray-200" />
+                    <Input type="number" value={profile.per_minute_rate} onChange={(e) => setProfile({ ...profile, per_minute_rate: Number(e.target.value) })} className="bg-cosmic-card border-sacred-gold/15" />
                   ) : (
-                    <p className="text-minimal-gray-600 text-sm">{formatPrice(profile.per_minute_rate)}</p>
+                    <p className="text-cosmic-text-secondary text-sm">{formatPrice(profile.per_minute_rate)}</p>
                   )}
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-minimal-gray-700 mb-1 block">Specializations (comma-separated)</label>
+                  <label className="text-sm font-medium text-cosmic-text mb-1 block">Specializations (comma-separated)</label>
                   {editingProfile ? (
-                    <Input value={specsInput} onChange={(e) => setSpecsInput(e.target.value)} placeholder="Vedic, Nadi, KP" className="bg-minimal-gray-50 border-minimal-gray-200" />
+                    <Input value={specsInput} onChange={(e) => setSpecsInput(e.target.value)} placeholder="Vedic, Nadi, KP" className="bg-cosmic-card border-sacred-gold/15" />
                   ) : (
                     <div className="flex flex-wrap gap-1">
                       {profile.specializations.split(',').map((s) => s.trim()).filter(Boolean).map((s) => <Badge key={s} variant="outline">{s}</Badge>)}
-                      {!profile.specializations.trim() && <p className="text-sm text-minimal-gray-400">None set</p>}
+                      {!profile.specializations.trim() && <p className="text-sm text-cosmic-text-muted">None set</p>}
                     </div>
                   )}
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-minimal-gray-700 mb-1 block">Languages (comma-separated)</label>
+                  <label className="text-sm font-medium text-cosmic-text mb-1 block">Languages (comma-separated)</label>
                   {editingProfile ? (
-                    <Input value={langsInput} onChange={(e) => setLangsInput(e.target.value)} placeholder="Hindi, English, Sanskrit" className="bg-minimal-gray-50 border-minimal-gray-200" />
+                    <Input value={langsInput} onChange={(e) => setLangsInput(e.target.value)} placeholder="Hindi, English, Sanskrit" className="bg-cosmic-card border-sacred-gold/15" />
                   ) : (
-                    <p className="text-minimal-gray-600 text-sm">{profile.languages.trim() || 'None set'}</p>
+                    <p className="text-cosmic-text-secondary text-sm">{profile.languages.trim() || 'None set'}</p>
                   )}
                 </div>
               </div>

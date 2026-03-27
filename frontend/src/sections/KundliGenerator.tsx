@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Sparkles, Calendar, Clock, MapPin, User, ChevronRight, Download, Share2, FileText, Heart, Briefcase, Activity, ArrowLeft, Loader2 } from 'lucide-react';
+import { Sparkles, Calendar, Clock, MapPin, User, ChevronRight, Download, Share2, FileText, Heart, Briefcase, Activity, ArrowLeft, Loader2, X } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
+import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
 
 export default function KundliGenerator() {
   const { isAuthenticated } = useAuth();
@@ -29,6 +30,42 @@ export default function KundliGenerator() {
   const [loadingIogita, setLoadingIogita] = useState(false);
   const [loadingDasha, setLoadingDasha] = useState(false);
   const [error, setError] = useState('');
+  const [sidePanel, setSidePanel] = useState<{
+    type: 'planet' | 'house';
+    planet?: PlanetData;
+    house?: number;
+    sign?: string;
+    planets?: PlanetData[];
+  } | null>(null);
+
+  const HOUSE_SIGNIFICANCE: Record<number, string> = {
+    1: 'Self, Personality, Appearance',
+    2: 'Wealth, Family, Speech',
+    3: 'Courage, Siblings, Communication',
+    4: 'Home, Mother, Comfort',
+    5: 'Children, Education, Creativity',
+    6: 'Health, Enemies, Service',
+    7: 'Marriage, Partnership, Business',
+    8: 'Longevity, Transformation, Occult',
+    9: 'Fortune, Dharma, Higher Learning',
+    10: 'Career, Status, Authority',
+    11: 'Gains, Aspirations, Friends',
+    12: 'Losses, Moksha, Foreign Lands',
+  };
+
+  const PLANET_ASPECTS: Record<string, number[]> = {
+    Sun: [7], Moon: [7], Mercury: [7], Venus: [7],
+    Mars: [4, 7, 8], Jupiter: [5, 7, 9], Saturn: [3, 7, 10],
+    Rahu: [5, 7, 9], Ketu: [5, 7, 9],
+  };
+
+  const handlePlanetClick = useCallback((planet: PlanetData) => {
+    setSidePanel({ type: 'planet', planet });
+  }, []);
+
+  const handleHouseClick = useCallback((house: number, sign: string, planets: PlanetData[]) => {
+    setSidePanel({ type: 'house', house, sign, planets });
+  }, []);
 
   // On mount: load existing kundlis if logged in
   useEffect(() => {
@@ -253,7 +290,7 @@ export default function KundliGenerator() {
               { icon: Briefcase, name: 'Career', price: '₹799' },
               { icon: Activity, name: 'Health', price: '₹699' },
             ].map(({ icon: Icon, name, price }) => (
-              <button key={name} className="bg-white/60 rounded-xl p-3 border border-sacred-gold/20 hover:border-sacred-gold/50 transition-colors text-left">
+              <button key={name} className="bg-cosmic-card/60 rounded-xl p-3 border border-sacred-gold/20 hover:border-sacred-gold/50 transition-colors text-left">
                 <Icon className="w-5 h-5 text-sacred-gold mb-2" />
                 <p className="text-sm font-medium text-sacred-brown">{name}</p>
                 <p className="text-xs text-sacred-gold-dark">{price}</p>
@@ -271,35 +308,171 @@ export default function KundliGenerator() {
             <TabsTrigger value="dasha" onClick={fetchDasha}>Dasha</TabsTrigger>
           </TabsList>
 
-          {/* PLANETS TAB */}
+          {/* PLANETS TAB - Interactive Kundli Chart + Side Panel */}
           <TabsContent value="planets">
-            <div className="overflow-x-auto rounded-xl border border-sacred-gold/20">
-              <table className="w-full">
-                <thead className="bg-sacred-cream">
-                  <tr>
-                    <th className="text-left p-4 text-sacred-gold-dark font-medium">Planet</th>
-                    <th className="text-left p-4 text-sacred-gold-dark font-medium">Sign</th>
-                    <th className="text-left p-4 text-sacred-gold-dark font-medium">House</th>
-                    <th className="text-left p-4 text-sacred-gold-dark font-medium">Nakshatra</th>
-                    <th className="text-left p-4 text-sacred-gold-dark font-medium">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {planets.map((planet: any, index: number) => (
-                    <tr key={index} className="border-t border-sacred-gold/20">
-                      <td className="p-4 text-sacred-brown font-medium">{planet.planet}</td>
-                      <td className="p-4 text-sacred-text-secondary">{planet.sign}</td>
-                      <td className="p-4 text-sacred-text-secondary">{planet.house}</td>
-                      <td className="p-4 text-sacred-text-secondary">{planet.nakshatra || '—'}</td>
-                      <td className="p-4">
-                        <span className={`text-xs px-2 py-1 rounded-full ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-100 text-green-600' : 'bg-minimal-gray-200 text-sacred-text-secondary'}`}>
-                          {planet.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="flex flex-col lg:flex-row gap-6">
+              {/* Interactive Chart */}
+              <div className="flex-shrink-0 flex justify-center">
+                <InteractiveKundli
+                  chartData={{ planets, houses: result.chart_data?.houses } as ChartData}
+                  onPlanetClick={handlePlanetClick}
+                  onHouseClick={handleHouseClick}
+                />
+              </div>
+
+              {/* Side Panel - shown when planet or house is clicked */}
+              <div className="flex-1 min-w-0">
+                {sidePanel ? (
+                  <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-5 animate-in fade-in slide-in-from-right-4 duration-300">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="font-display font-bold text-sacred-brown text-lg">
+                        {sidePanel.type === 'planet'
+                          ? `${sidePanel.planet?.planet} Details`
+                          : `House ${sidePanel.house} Details`}
+                      </h4>
+                      <button
+                        onClick={() => setSidePanel(null)}
+                        className="text-sacred-text-secondary hover:text-sacred-brown transition-colors"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    {sidePanel.type === 'planet' && sidePanel.planet && (() => {
+                      const p = sidePanel.planet;
+                      const status = p.status?.toLowerCase() || '';
+                      const strengthLabel = status.includes('exalted') ? 'Exalted' : status.includes('debilitated') ? 'Debilitated' : status.includes('own') ? 'Own Sign' : p.status || 'Transiting';
+                      const strengthColor = status.includes('exalted') ? 'text-green-500' : status.includes('debilitated') ? 'text-red-500' : status.includes('own') ? 'text-blue-500' : 'text-sacred-text-secondary';
+                      const aspects = (PLANET_ASPECTS[p.planet] || [7]).map((offset) => {
+                        const targetHouse = ((p.house - 1 + offset) % 12) + 1;
+                        return `House ${targetHouse}`;
+                      });
+
+                      return (
+                        <div className="space-y-3">
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="bg-cosmic-card/60 rounded-lg p-3">
+                              <p className="text-xs text-sacred-text-secondary">Sign</p>
+                              <p className="font-semibold text-sacred-brown">{p.sign}</p>
+                            </div>
+                            <div className="bg-cosmic-card/60 rounded-lg p-3">
+                              <p className="text-xs text-sacred-text-secondary">Degree</p>
+                              <p className="font-semibold text-sacred-brown">{p.sign_degree?.toFixed(1)}&deg;</p>
+                            </div>
+                            <div className="bg-cosmic-card/60 rounded-lg p-3">
+                              <p className="text-xs text-sacred-text-secondary">House</p>
+                              <p className="font-semibold text-sacred-brown">{p.house}</p>
+                            </div>
+                            <div className="bg-cosmic-card/60 rounded-lg p-3">
+                              <p className="text-xs text-sacred-text-secondary">Nakshatra</p>
+                              <p className="font-semibold text-sacred-brown">{p.nakshatra || 'N/A'}</p>
+                            </div>
+                          </div>
+                          <div className="bg-cosmic-card/60 rounded-lg p-3">
+                            <p className="text-xs text-sacred-text-secondary">Strength</p>
+                            <p className={`font-semibold ${strengthColor}`}>{strengthLabel}</p>
+                          </div>
+                          <div className="bg-cosmic-card/60 rounded-lg p-3">
+                            <p className="text-xs text-sacred-text-secondary">Aspects</p>
+                            <p className="font-semibold text-sacred-brown text-sm">{aspects.join(', ')}</p>
+                          </div>
+                          <div className="bg-cosmic-card/60 rounded-lg p-3">
+                            <p className="text-xs text-sacred-text-secondary">House Placement</p>
+                            <p className="text-sm text-sacred-brown">
+                              {p.planet} in House {p.house} ({HOUSE_SIGNIFICANCE[p.house] || 'Unknown'})
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })()}
+
+                    {sidePanel.type === 'house' && (
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="bg-cosmic-card/60 rounded-lg p-3">
+                            <p className="text-xs text-sacred-text-secondary">House Number</p>
+                            <p className="font-semibold text-sacred-brown">{sidePanel.house}</p>
+                          </div>
+                          <div className="bg-cosmic-card/60 rounded-lg p-3">
+                            <p className="text-xs text-sacred-text-secondary">Sign</p>
+                            <p className="font-semibold text-sacred-brown">{sidePanel.sign}</p>
+                          </div>
+                        </div>
+                        <div className="bg-cosmic-card/60 rounded-lg p-3">
+                          <p className="text-xs text-sacred-text-secondary">Significance</p>
+                          <p className="font-semibold text-sacred-brown">
+                            {HOUSE_SIGNIFICANCE[sidePanel.house || 0] || 'Unknown'}
+                          </p>
+                        </div>
+                        <div className="bg-cosmic-card/60 rounded-lg p-3">
+                          <p className="text-xs text-sacred-text-secondary mb-2">Planets in this House</p>
+                          {(sidePanel.planets || []).length > 0 ? (
+                            <div className="space-y-1">
+                              {(sidePanel.planets || []).map((p) => (
+                                <button
+                                  key={p.planet}
+                                  className="w-full text-left text-sm text-sacred-brown hover:text-sacred-gold transition-colors flex items-center gap-2"
+                                  onClick={() => setSidePanel({ type: 'planet', planet: p })}
+                                >
+                                  <span className="w-2 h-2 rounded-full bg-sacred-gold" />
+                                  {p.planet} ({p.sign} {p.sign_degree?.toFixed(1)}&deg;)
+                                </button>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-sm text-sacred-text-secondary">No planets in this house</p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="bg-sacred-cream/50 rounded-xl border border-dashed border-sacred-gold/20 p-8 flex flex-col items-center justify-center h-full min-h-[200px]">
+                    <Sparkles className="w-8 h-8 text-sacred-gold/40 mb-3" />
+                    <p className="text-sacred-text-secondary text-sm text-center">
+                      Click on any planet or house in the chart to see detailed information
+                    </p>
+                  </div>
+                )}
+
+                {/* Planet table below the side panel */}
+                <div className="mt-6 overflow-x-auto rounded-xl border border-sacred-gold/20">
+                  <table className="w-full">
+                    <thead className="bg-sacred-cream">
+                      <tr>
+                        <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">Planet</th>
+                        <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">Sign</th>
+                        <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">House</th>
+                        <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">Nakshatra</th>
+                        <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {planets.map((planet: any, index: number) => (
+                        <tr
+                          key={index}
+                          className={`border-t border-sacred-gold/20 cursor-pointer transition-colors ${
+                            sidePanel?.type === 'planet' && sidePanel.planet?.planet === planet.planet
+                              ? 'bg-sacred-gold/10'
+                              : 'hover:bg-sacred-gold/5'
+                          }`}
+                          onClick={() => handlePlanetClick(planet)}
+                        >
+                          <td className="p-3 text-sacred-brown font-medium text-sm">{planet.planet}</td>
+                          <td className="p-3 text-sacred-text-secondary text-sm">{planet.sign}</td>
+                          <td className="p-3 text-sacred-text-secondary text-sm">{planet.house}</td>
+                          <td className="p-3 text-sacred-text-secondary text-sm">{planet.nakshatra || '\u2014'}</td>
+                          <td className="p-3">
+                            <span className={`text-xs px-2 py-1 rounded-full ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-500/20 text-green-400' : 'bg-cosmic-surface text-sacred-text-secondary'}`}>
+                              {planet.status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </TabsContent>
 
@@ -309,28 +482,28 @@ export default function KundliGenerator() {
               <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-sacred-text-secondary">Analyzing doshas...</span></div>
             ) : doshaDisplay ? (
               <div className="grid gap-4">
-                <div className={`bg-sacred-cream rounded-xl p-4 border ${doshaDisplay.mangal.has_dosha ? 'border-red-200' : 'border-green-200'}`}>
+                <div className={`bg-sacred-cream rounded-xl p-4 border ${doshaDisplay.mangal.has_dosha ? 'border-red-500/30' : 'border-green-500/30'}`}>
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="font-display font-semibold text-sacred-brown">Mangal Dosha</h4>
-                    <span className={`text-xs px-2 py-1 rounded-full ${doshaDisplay.mangal.has_dosha ? 'bg-red-100 text-red-500' : 'bg-green-100 text-green-600'}`}>
+                    <span className={`text-xs px-2 py-1 rounded-full ${doshaDisplay.mangal.has_dosha ? 'bg-red-900/200/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}>
                       {doshaDisplay.mangal.has_dosha ? `Present (${doshaDisplay.mangal.severity})` : 'Not Present'}
                     </span>
                   </div>
                   <p className="text-sm text-sacred-text-secondary">{doshaDisplay.mangal.description}</p>
                 </div>
-                <div className={`bg-sacred-cream rounded-xl p-4 border ${doshaDisplay.kaalsarp.has_dosha ? 'border-red-200' : 'border-green-200'}`}>
+                <div className={`bg-sacred-cream rounded-xl p-4 border ${doshaDisplay.kaalsarp.has_dosha ? 'border-red-500/30' : 'border-green-500/30'}`}>
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="font-display font-semibold text-sacred-brown">Kaal Sarp Dosha</h4>
-                    <span className={`text-xs px-2 py-1 rounded-full ${doshaDisplay.kaalsarp.has_dosha ? 'bg-red-100 text-red-500' : 'bg-green-100 text-green-600'}`}>
+                    <span className={`text-xs px-2 py-1 rounded-full ${doshaDisplay.kaalsarp.has_dosha ? 'bg-red-900/200/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}>
                       {doshaDisplay.kaalsarp.has_dosha ? 'Present' : 'Not Present'}
                     </span>
                   </div>
                   <p className="text-sm text-sacred-text-secondary">{doshaDisplay.kaalsarp.description}</p>
                 </div>
-                <div className={`bg-sacred-cream rounded-xl p-4 border ${doshaDisplay.sadesati.has_sade_sati ? 'border-orange-200' : 'border-green-200'}`}>
+                <div className={`bg-sacred-cream rounded-xl p-4 border ${doshaDisplay.sadesati.has_sade_sati ? 'border-orange-200' : 'border-green-500/30'}`}>
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="font-display font-semibold text-sacred-brown">Shani Sade Sati</h4>
-                    <span className={`text-xs px-2 py-1 rounded-full ${doshaDisplay.sadesati.has_sade_sati ? 'bg-orange-100 text-orange-600' : 'bg-green-100 text-green-600'}`}>
+                    <span className={`text-xs px-2 py-1 rounded-full ${doshaDisplay.sadesati.has_sade_sati ? 'bg-orange-100 text-orange-600' : 'bg-green-500/20 text-green-400'}`}>
                       {doshaDisplay.sadesati.has_sade_sati ? `Active — ${doshaDisplay.sadesati.phase}` : 'Not Active'}
                     </span>
                   </div>
@@ -361,11 +534,11 @@ export default function KundliGenerator() {
                   </div>
                   <p className="text-sacred-text-secondary mb-4">{iogitaData.basin.description}</p>
                   <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div className="bg-white/60 rounded-lg p-3">
+                    <div className="bg-cosmic-card/60 rounded-lg p-3">
                       <p className="text-sacred-text-secondary">Escape Possible</p>
                       <p className="font-semibold text-sacred-brown">{iogitaData.basin.escape_possible ? 'Yes — phase transition likely' : 'No — basin is stable'}</p>
                     </div>
-                    <div className="bg-white/60 rounded-lg p-3">
+                    <div className="bg-cosmic-card/60 rounded-lg p-3">
                       <p className="text-sacred-text-secondary">Trajectory Steps</p>
                       <p className="font-semibold text-sacred-brown">{iogitaData.basin.trajectory_steps} steps</p>
                     </div>
@@ -390,14 +563,14 @@ export default function KundliGenerator() {
 
                 {/* Suppressed atom */}
                 {iogitaData.basin.top_negative && (
-                  <div className="bg-red-50 rounded-xl p-5 border border-red-200">
+                  <div className="bg-red-900/20 rounded-xl p-5 border border-red-500/30">
                     <h4 className="font-display font-semibold text-red-700 mb-2">Most Suppressed Force</h4>
                     <div className="flex items-center gap-3">
-                      <span className="text-sm font-medium text-red-600">{iogitaData.basin.top_negative[0]}</span>
-                      <div className="flex-1 bg-red-100 rounded-full h-3 overflow-hidden">
+                      <span className="text-sm font-medium text-red-400">{iogitaData.basin.top_negative[0]}</span>
+                      <div className="flex-1 bg-red-900/200/20 rounded-full h-3 overflow-hidden">
                         <div className="bg-red-400 h-full rounded-full" style={{ width: `${Math.abs(iogitaData.basin.top_negative[1]) * 100}%` }} />
                       </div>
-                      <span className="text-sm text-red-600">{iogitaData.basin.top_negative[1].toFixed(3)}</span>
+                      <span className="text-sm text-red-400">{iogitaData.basin.top_negative[1].toFixed(3)}</span>
                     </div>
                   </div>
                 )}
@@ -468,7 +641,7 @@ export default function KundliGenerator() {
         </Tabs>
 
         <div className="mt-8 text-center">
-          <Button onClick={() => { setStep('form'); setResult(null); setDoshaData(null); setIogitaData(null); setDashaData(null); }} variant="outline" className="border-minimal-gray-300 text-minimal-gray-700">
+          <Button onClick={() => { setStep('form'); setResult(null); setDoshaData(null); setIogitaData(null); setDashaData(null); }} variant="outline" className="border-cosmic-text-muted text-cosmic-text">
             Generate Another Kundli
           </Button>
         </div>
@@ -491,29 +664,29 @@ export default function KundliGenerator() {
           <ArrowLeft className="w-4 h-4 mr-2" />Back to My Kundlis ({savedKundlis.length})
         </Button>
       )}
-      {error && <div className="mb-4 p-3 rounded-xl bg-red-50 text-red-600 text-sm">{error}</div>}
+      {error && <div className="mb-4 p-3 rounded-xl bg-red-900/20 text-red-400 text-sm">{error}</div>}
       <div className="space-y-4">
         <div className="relative">
           <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold-dark" />
-          <Input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Full Name" className="pl-10 bg-sacred-cream border-minimal-gray-200 text-sacred-brown" />
+          <Input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Full Name" className="pl-10 bg-sacred-cream border-sacred-gold/15 text-sacred-brown" />
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <button onClick={() => setFormData({ ...formData, gender: 'male' })} className={`p-3 rounded-xl border transition-colors ${formData.gender === 'male' ? 'border-minimal-indigo bg-minimal-indigo/10 text-sacred-gold-dark' : 'border-minimal-gray-200 text-sacred-text-secondary'}`}>Male</button>
-          <button onClick={() => setFormData({ ...formData, gender: 'female' })} className={`p-3 rounded-xl border transition-colors ${formData.gender === 'female' ? 'border-minimal-indigo bg-minimal-indigo/10 text-sacred-gold-dark' : 'border-minimal-gray-200 text-sacred-text-secondary'}`}>Female</button>
+          <button onClick={() => setFormData({ ...formData, gender: 'male' })} className={`p-3 rounded-xl border transition-colors ${formData.gender === 'male' ? 'border-sacred-gold bg-sacred-gold/10 text-sacred-gold-dark' : 'border-sacred-gold/15 text-sacred-text-secondary'}`}>Male</button>
+          <button onClick={() => setFormData({ ...formData, gender: 'female' })} className={`p-3 rounded-xl border transition-colors ${formData.gender === 'female' ? 'border-sacred-gold bg-sacred-gold/10 text-sacred-gold-dark' : 'border-sacred-gold/15 text-sacred-text-secondary'}`}>Female</button>
         </div>
         <div className="relative">
-          <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-minimal-gray-400" />
-          <Input type="date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} className="pl-10 bg-sacred-cream border-minimal-gray-200 text-sacred-brown" />
+          <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-cosmic-text-muted" />
+          <Input type="date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} className="pl-10 bg-sacred-cream border-sacred-gold/15 text-sacred-brown" />
         </div>
         <div className="relative">
-          <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-minimal-gray-400" />
-          <Input type="time" value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} className="pl-10 bg-sacred-cream border-minimal-gray-200 text-sacred-brown" />
+          <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-cosmic-text-muted" />
+          <Input type="time" value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} className="pl-10 bg-sacred-cream border-sacred-gold/15 text-sacred-brown" />
         </div>
         <div className="relative">
-          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-minimal-gray-400" />
-          <Input type="text" value={formData.place} onChange={(e) => setFormData({ ...formData, place: e.target.value })} placeholder="Birth Place" className="pl-10 bg-sacred-cream border-minimal-gray-200 text-sacred-brown" />
+          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-cosmic-text-muted" />
+          <Input type="text" value={formData.place} onChange={(e) => setFormData({ ...formData, place: e.target.value })} placeholder="Birth Place" className="pl-10 bg-sacred-cream border-sacred-gold/15 text-sacred-brown" />
         </div>
-        <Button onClick={handleGenerate} disabled={!formData.name || !formData.date || !formData.time || !formData.place} className="w-full btn-sacred font-semibold hover:bg-minimal-violet disabled:opacity-50">
+        <Button onClick={handleGenerate} disabled={!formData.name || !formData.date || !formData.time || !formData.place} className="w-full btn-sacred font-semibold hover:bg-sacred-gold-dark disabled:opacity-50">
           <Sparkles className="w-5 h-5 mr-2" />Generate Kundli<ChevronRight className="w-5 h-5 ml-2" />
         </Button>
       </div>
