@@ -79,9 +79,11 @@ app.mount("/static", StaticFiles(directory=_static_dir), name="static")
 def health():
     """Health check endpoint."""
     from app.ai_engine import get_ai_status
+    from app.astro_engine import _HAS_SWE
     return {
         "status": "ok",
         "version": APP_VERSION,
         "uptime": round(time.time() - _start_time, 2),
         "ai": get_ai_status(),
+        "swisseph": _HAS_SWE,
     }
