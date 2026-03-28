@@ -178,6 +178,8 @@ def calculate_planet_positions(
     if _HAS_SWE:
         result = _calculate_swe(dt_local, latitude, longitude)
         result["_engine"] = "swisseph"
+        result["_debug_jd"] = result.get("julian_day")
+        result["_debug_ayanamsa"] = result.get("ayanamsa")
         return result
     else:
         result = _calculate_fallback(dt_local, latitude, longitude)
@@ -231,6 +233,8 @@ def _datetime_to_jd(dt_utc: datetime) -> float:
 
 def _calculate_swe(dt_utc: datetime, lat: float, lon: float) -> Dict[str, Any]:
     """Full calculation using Swiss Ephemeris."""
+    # Ensure Lahiri ayanamsa is set (may be reset between requests)
+    swe.set_sid_mode(swe.SIDM_LAHIRI)
     jd = _datetime_to_jd(dt_utc)
 
     # Ayanamsa for sidereal
