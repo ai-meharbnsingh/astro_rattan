@@ -365,6 +365,9 @@ export default function KundliGenerator() {
       setAvakhadaData(null);
       setExtendedDashaData(null);
       setYogaDoshaData(null);
+      setDivisionalData(null);
+      setAshtakvargaData(null);
+      setShadbalaData(null);
       setStep('result');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate kundli');
@@ -515,6 +518,9 @@ export default function KundliGenerator() {
             <TabsTrigger value="dosha" onClick={fetchDosha}>  {t('kundli.dosha')}</TabsTrigger>
             <TabsTrigger value="iogita" onClick={fetchIogita}>io-gita</TabsTrigger>
             <TabsTrigger value="dasha" onClick={() => { fetchDasha(); fetchExtendedDasha(); }}>  {t('kundli.dasha')}</TabsTrigger>
+            <TabsTrigger value="divisional" onClick={() => fetchDivisional()}>{t('kundli.divisional')}</TabsTrigger>
+            <TabsTrigger value="ashtakvarga" onClick={fetchAshtakvarga}>{t('kundli.ashtakvarga')}</TabsTrigger>
+            <TabsTrigger value="shadbala" onClick={fetchShadbala}>{t('kundli.shadbala')}</TabsTrigger>
             <TabsTrigger value="avakhada" onClick={fetchAvakhada}>{t('avakhada.title')}</TabsTrigger>
             <TabsTrigger value="yoga-dosha" onClick={fetchYogaDosha}>{t('yoga.title').split(' ')[0]}</TabsTrigger>
             <TabsTrigger value="predictions" onClick={fetchPredictions}>{t('kundli.predictions')}</TabsTrigger>
@@ -1041,6 +1047,305 @@ export default function KundliGenerator() {
             )}
           </TabsContent>
 
+          {/* DIVISIONAL CHARTS TAB */}
+          <TabsContent value="divisional">
+            <div className="space-y-6">
+              <div className="flex items-center gap-4 mb-4">
+                <label className="text-sm font-medium text-sacred-brown">{t('kundli.selectChart')}:</label>
+                <select
+                  value={selectedDivision}
+                  onChange={(e) => {
+                    setSelectedDivision(e.target.value);
+                    setDivisionalData(null);
+                    fetchDivisional(e.target.value);
+                  }}
+                  className="bg-sacred-cream border border-sacred-gold/30 rounded-lg px-3 py-2 text-sacred-brown text-sm focus:border-sacred-gold focus:outline-none"
+                >
+                  {[
+                    { code: 'D1', name: 'Rashi (D1)' },
+                    { code: 'D2', name: 'Hora (D2)' },
+                    { code: 'D3', name: 'Drekkana (D3)' },
+                    { code: 'D4', name: 'Chaturthamsha (D4)' },
+                    { code: 'D7', name: 'Saptamsha (D7)' },
+                    { code: 'D9', name: 'Navamsha (D9)' },
+                    { code: 'D10', name: 'Dashamsha (D10)' },
+                    { code: 'D12', name: 'Dwadashamsha (D12)' },
+                    { code: 'D16', name: 'Shodashamsha (D16)' },
+                    { code: 'D20', name: 'Vimshamsha (D20)' },
+                    { code: 'D24', name: 'Chaturvimshamsha (D24)' },
+                    { code: 'D27', name: 'Bhamsha (D27)' },
+                    { code: 'D30', name: 'Trimshamsha (D30)' },
+                    { code: 'D40', name: 'Khavedamsha (D40)' },
+                    { code: 'D45', name: 'Akshavedamsha (D45)' },
+                    { code: 'D60', name: 'Shashtiamsha (D60)' },
+                  ].map((c) => (
+                    <option key={c.code} value={c.code}>{c.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              {loadingDivisional ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
+                  <span className="ml-2 text-sacred-text-secondary">{t('kundli.loadingDivisional')}</span>
+                </div>
+              ) : divisionalData ? (
+                <div className="space-y-6">
+                  <div className="bg-gradient-to-r from-sacred-cream to-sacred-gold/10 rounded-xl p-4 border border-sacred-gold/20">
+                    <h4 className="font-display font-bold text-sacred-brown text-lg">{divisionalData.chart_name || divisionalData.chart_type}</h4>
+                    <p className="text-sm text-sacred-text-secondary">Division: {divisionalData.division}</p>
+                  </div>
+
+                  {/* Divisional chart using InteractiveKundli */}
+                  {divisionalData.planet_positions && (
+                    <div className="flex justify-center">
+                      <InteractiveKundli
+                        chartData={{
+                          planets: divisionalData.planet_positions.map((p: any) => ({
+                            planet: p.planet,
+                            sign: p.sign,
+                            house: p.house,
+                            nakshatra: p.nakshatra || '',
+                            sign_degree: p.sign_degree || 0,
+                            status: '',
+                          })),
+                          houses: Array.from({ length: 12 }, (_, i) => ({
+                            number: i + 1,
+                            sign: ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'][i],
+                          })),
+                        } as ChartData}
+                        onPlanetClick={handlePlanetClick}
+                        onHouseClick={handleHouseClick}
+                      />
+                    </div>
+                  )}
+
+                  {/* Planet positions table */}
+                  <div className="overflow-x-auto rounded-xl border border-sacred-gold/20">
+                    <table className="w-full">
+                      <thead className="bg-sacred-cream">
+                        <tr>
+                          <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">Planet</th>
+                          <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">{t('kundli.sign')}</th>
+                          <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">{t('kundli.degree')}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {Object.entries(divisionalData.planet_signs || {}).map(([planet, sign]: [string, any]) => {
+                          const posData = (divisionalData.planet_positions || []).find((p: any) => p.planet === planet);
+                          return (
+                            <tr key={planet} className="border-t border-sacred-gold/20 hover:bg-sacred-gold/5">
+                              <td className="p-3 text-sacred-brown font-medium text-sm">{planet}</td>
+                              <td className="p-3 text-sacred-text-secondary text-sm">{sign as string}</td>
+                              <td className="p-3 text-sacred-text-secondary text-sm">{posData?.sign_degree?.toFixed(1) || '--'}&deg;</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-center text-sacred-text-secondary py-8">Select a chart type and click the tab to load</p>
+              )}
+            </div>
+          </TabsContent>
+
+          {/* ASHTAKVARGA TAB */}
+          <TabsContent value="ashtakvarga">
+            {loadingAshtakvarga ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
+                <span className="ml-2 text-sacred-text-secondary">{t('kundli.loadingAshtakvarga')}</span>
+              </div>
+            ) : ashtakvargaData ? (
+              <div className="space-y-6">
+                {/* SAV Bar Chart */}
+                <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/20">
+                  <h4 className="font-display font-semibold text-sacred-brown mb-4">{t('kundli.sarvashtakvarga')}</h4>
+                  <div className="flex items-end gap-2 h-48">
+                    {['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'].map((sign) => {
+                      const points = ashtakvargaData.sarvashtakvarga?.[sign] || 0;
+                      const maxPoints = 56;
+                      const heightPct = Math.round((points / maxPoints) * 100);
+                      const isStrong = points >= 28;
+                      return (
+                        <div key={sign} className="flex-1 flex flex-col items-center gap-1">
+                          <span className="text-xs font-medium text-sacred-brown">{points}</span>
+                          <div className="w-full bg-sacred-gold/10 rounded-t-md relative" style={{ height: '140px' }}>
+                            <div
+                              className="absolute bottom-0 w-full rounded-t-md transition-all"
+                              style={{
+                                height: `${heightPct}%`,
+                                backgroundColor: isStrong ? '#B8860B' : '#8B7355',
+                              }}
+                            />
+                          </div>
+                          <span className="text-[10px] text-sacred-text-secondary truncate w-full text-center" title={sign}>
+                            {sign.slice(0, 3)}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="flex items-center gap-4 mt-3 text-xs text-sacred-text-secondary">
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 rounded" style={{ backgroundColor: '#B8860B' }} />
+                      <span>{t('kundli.strong')} (&ge;28)</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 rounded" style={{ backgroundColor: '#8B7355' }} />
+                      <span>{t('kundli.weak')} (&lt;28)</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* BAV Table */}
+                <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/20">
+                  <h4 className="font-display font-semibold text-sacred-brown mb-4">{t('kundli.bhinnashtakvarga')}</h4>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-sacred-gold/20">
+                          <th className="text-left p-2 text-sacred-gold-dark font-medium">Planet</th>
+                          {['Ari', 'Tau', 'Gem', 'Can', 'Leo', 'Vir', 'Lib', 'Sco', 'Sag', 'Cap', 'Aqu', 'Pis'].map((s) => (
+                            <th key={s} className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{s}</th>
+                          ))}
+                          <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('kundli.total')}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
+                          const bindus = ashtakvargaData.planet_bindus?.[planet] || {};
+                          const signs = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
+                          const total = signs.reduce((sum, s) => sum + (bindus[s] || 0), 0);
+                          return (
+                            <tr key={planet} className="border-t border-sacred-gold/10 hover:bg-sacred-gold/5">
+                              <td className="p-2 text-sacred-brown font-medium">{planet}</td>
+                              {signs.map((s) => {
+                                const val = bindus[s] || 0;
+                                return (
+                                  <td key={s} className="text-center p-2">
+                                    <span className={`inline-block w-6 h-6 rounded text-xs leading-6 ${val >= 5 ? 'bg-[#B8860B]/20 text-[#B8860B] font-bold' : val <= 2 ? 'bg-[#8B2332]/10 text-[#8B2332]' : 'text-sacred-text-secondary'}`}>
+                                      {val}
+                                    </span>
+                                  </td>
+                                );
+                              })}
+                              <td className="text-center p-2 font-semibold text-sacred-brown">{total}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <p className="text-center text-sacred-text-secondary py-8">Click the Ashtakvarga tab to calculate</p>
+            )}
+          </TabsContent>
+
+          {/* SHADBALA TAB */}
+          <TabsContent value="shadbala">
+            {loadingShadbala ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
+                <span className="ml-2 text-sacred-text-secondary">{t('kundli.loadingShadbala')}</span>
+              </div>
+            ) : shadbalaData?.planets ? (
+              <div className="space-y-6">
+                {/* Summary bar chart: Total vs Required */}
+                <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/20">
+                  <h4 className="font-display font-semibold text-sacred-brown mb-4">{t('kundli.shadbalaTitle')}</h4>
+                  <div className="space-y-3">
+                    {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
+                      const data = shadbalaData.planets[planet];
+                      if (!data) return null;
+                      const pct = Math.min((data.total / data.required) * 100, 150);
+                      const barColor = data.is_strong ? '#B8860B' : '#8B2332';
+                      return (
+                        <div key={planet} className="flex items-center gap-3">
+                          <span className="w-16 text-sm font-medium text-sacred-brown">{planet}</span>
+                          <div className="flex-1 relative">
+                            <div className="bg-sacred-gold/10 rounded-full h-5 overflow-hidden">
+                              <div
+                                className="h-full rounded-full transition-all"
+                                style={{ width: `${Math.min(pct, 100)}%`, backgroundColor: barColor }}
+                              />
+                            </div>
+                            {/* Required marker */}
+                            <div
+                              className="absolute top-0 h-5 border-r-2 border-dashed border-sacred-brown/40"
+                              style={{ left: `${Math.min((data.required / (data.required * 1.5)) * 100, 100)}%` }}
+                              title={`Required: ${data.required}`}
+                            />
+                          </div>
+                          <span className={`text-sm w-20 text-right font-medium ${data.is_strong ? 'text-[#B8860B]' : 'text-[#8B2332]'}`}>
+                            {data.total} / {data.required}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="flex items-center gap-4 mt-3 text-xs text-sacred-text-secondary">
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 rounded" style={{ backgroundColor: '#B8860B' }} />
+                      <span>{t('kundli.strong')}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 rounded" style={{ backgroundColor: '#8B2332' }} />
+                      <span>{t('kundli.weak')}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Detailed breakdown table */}
+                <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/20">
+                  <h4 className="font-display font-semibold text-sacred-brown mb-4">Detailed Breakdown</h4>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-sacred-gold/20">
+                          <th className="text-left p-2 text-sacred-gold-dark font-medium">Planet</th>
+                          <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('kundli.sthana')}</th>
+                          <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('kundli.dig')}</th>
+                          <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('kundli.kala')}</th>
+                          <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('kundli.cheshta')}</th>
+                          <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('kundli.naisargika')}</th>
+                          <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('kundli.drik')}</th>
+                          <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('kundli.total')}</th>
+                          <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('kundli.ratio')}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
+                          const d = shadbalaData.planets[planet];
+                          if (!d) return null;
+                          return (
+                            <tr key={planet} className={`border-t border-sacred-gold/10 ${d.is_strong ? '' : 'bg-[#8B2332]/5'}`}>
+                              <td className="p-2 text-sacred-brown font-medium">{planet}</td>
+                              <td className="text-center p-2 text-sacred-text-secondary">{d.sthana}</td>
+                              <td className="text-center p-2 text-sacred-text-secondary">{d.dig}</td>
+                              <td className="text-center p-2 text-sacred-text-secondary">{d.kala}</td>
+                              <td className="text-center p-2 text-sacred-text-secondary">{d.cheshta}</td>
+                              <td className="text-center p-2 text-sacred-text-secondary">{d.naisargika}</td>
+                              <td className="text-center p-2 text-sacred-text-secondary">{d.drik}</td>
+                              <td className={`text-center p-2 font-semibold ${d.is_strong ? 'text-[#B8860B]' : 'text-[#8B2332]'}`}>{d.total}</td>
+                              <td className={`text-center p-2 font-medium ${d.ratio >= 1 ? 'text-[#B8860B]' : 'text-[#8B2332]'}`}>{d.ratio}x</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <p className="text-center text-sacred-text-secondary py-8">Click the Shadbala tab to calculate</p>
+            )}
+          </TabsContent>
+
           {/* AVAKHADA CHAKRA TAB */}
           <TabsContent value="avakhada">
             {loadingAvakhada ? (
@@ -1220,7 +1525,7 @@ export default function KundliGenerator() {
         </Tabs>
 
         <div className="mt-8 text-center">
-          <Button onClick={() => { setStep('form'); setResult(null); setDoshaData(null); setIogitaData(null); setDashaData(null); setPredictionsData(null); setAvakhadaData(null); setExtendedDashaData(null); setYogaDoshaData(null); }} variant="outline" className="border-cosmic-text-muted text-cosmic-text">
+          <Button onClick={() => { setStep('form'); setResult(null); setDoshaData(null); setIogitaData(null); setDashaData(null); setPredictionsData(null); setAvakhadaData(null); setExtendedDashaData(null); setYogaDoshaData(null); setDivisionalData(null); setAshtakvargaData(null); setShadbalaData(null); }} variant="outline" className="border-cosmic-text-muted text-cosmic-text">
             Generate Another Kundli
           </Button>
         </div>
