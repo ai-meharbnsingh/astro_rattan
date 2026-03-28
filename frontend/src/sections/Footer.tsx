@@ -103,15 +103,28 @@ export default function Footer() {
           </p>
           <div className="flex gap-6">
             {['Privacy Policy', 'Terms of Service', 'Refund Policy'].map((item, i) => (
-              <a 
-                key={i} 
-                href="#" 
+              <a
+                key={i}
+                href="#"
                 className="text-sm text-[#1a1a2e]/40 hover:text-[#B8860B] transition-colors"
               >
                 {item}
               </a>
             ))}
           </div>
+        </div>
+        <div className="pb-4 text-center">
+          <p className="text-xs text-[#8B7355]/60" style={{ fontFamily: "'IM Fell English', serif" }}>
+            Powered by{' '}
+            <a
+              href="https://adaptive-mind.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#B8860B] hover:text-[#8B2332] transition-colors underline underline-offset-2"
+            >
+              Semantic Gravity
+            </a>
+          </p>
         </div>
       </div>
     </footer>
