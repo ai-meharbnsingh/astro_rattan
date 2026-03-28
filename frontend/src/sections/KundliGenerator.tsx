@@ -6,10 +6,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Sparkles, Calendar, Clock, MapPin, User, ChevronRight, Download, Share2, FileText, Heart, Briefcase, Activity, ArrowLeft, Loader2, X } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from '@/lib/i18n';
 import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
 
 export default function KundliGenerator() {
   const { isAuthenticated } = useAuth();
+  const { t } = useTranslation();
   const location = useLocation();
   const prefill = (location.state as { birthDate?: string; birthTime?: string; birthPlace?: string }) || {};
 
@@ -39,18 +41,18 @@ export default function KundliGenerator() {
   } | null>(null);
 
   const HOUSE_SIGNIFICANCE: Record<number, string> = {
-    1: 'Self, Personality, Appearance',
-    2: 'Wealth, Family, Speech',
-    3: 'Courage, Siblings, Communication',
-    4: 'Home, Mother, Comfort',
-    5: 'Children, Education, Creativity',
-    6: 'Health, Enemies, Service',
-    7: 'Marriage, Partnership, Business',
-    8: 'Longevity, Transformation, Occult',
-    9: 'Fortune, Dharma, Higher Learning',
-    10: 'Career, Status, Authority',
-    11: 'Gains, Aspirations, Friends',
-    12: 'Losses, Moksha, Foreign Lands',
+    1: t('kundli.house1'),
+    2: t('kundli.house2'),
+    3: t('kundli.house3'),
+    4: t('kundli.house4'),
+    5: t('kundli.house5'),
+    6: t('kundli.house6'),
+    7: t('kundli.house7'),
+    8: t('kundli.house8'),
+    9: t('kundli.house9'),
+    10: t('kundli.house10'),
+    11: t('kundli.house11'),
+    12: t('kundli.house12'),
   };
 
   const PLANET_ASPECTS: Record<string, number[]> = {
@@ -277,11 +279,11 @@ export default function KundliGenerator() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h4 className="font-display font-bold text-sacred-brown flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-sacred-gold" />Get Detailed PDF Reports
+                <Sparkles className="w-5 h-5 text-sacred-gold" />{t('kundli.pdfReports')}
               </h4>
-              <p className="text-sm text-sacred-text-secondary">Unlock 30+ page personalized reports with in-depth analysis</p>
+              <p className="text-sm text-sacred-text-secondary">{t('kundli.pdfSubtitle')}</p>
             </div>
-            <Button variant="outline" className="border-sacred-gold text-sacred-gold-dark">View All Reports</Button>
+            <Button variant="outline" className="border-sacred-gold text-sacred-gold-dark">  {t('kundli.viewReports')}</Button>
           </div>
           <div className="grid grid-cols-4 gap-3">
             {[
@@ -302,10 +304,10 @@ export default function KundliGenerator() {
         {/* Tabs: Planets | Dosha | io-gita | Dasha */}
         <Tabs defaultValue="planets" className="w-full">
           <TabsList className="mb-6 bg-sacred-cream">
-            <TabsTrigger value="planets">Planets</TabsTrigger>
-            <TabsTrigger value="dosha" onClick={fetchDosha}>Dosha</TabsTrigger>
+            <TabsTrigger value="planets">  {t('kundli.planets')}</TabsTrigger>
+            <TabsTrigger value="dosha" onClick={fetchDosha}>  {t('kundli.dosha')}</TabsTrigger>
             <TabsTrigger value="iogita" onClick={fetchIogita}>io-gita</TabsTrigger>
-            <TabsTrigger value="dasha" onClick={fetchDasha}>Dasha</TabsTrigger>
+            <TabsTrigger value="dasha" onClick={fetchDasha}>  {t('kundli.dasha')}</TabsTrigger>
           </TabsList>
 
           {/* PLANETS TAB - Interactive Kundli Chart + Side Panel */}
@@ -328,7 +330,7 @@ export default function KundliGenerator() {
                       <h4 className="font-display font-bold text-sacred-brown text-lg">
                         {sidePanel.type === 'planet'
                           ? `${sidePanel.planet?.planet} Details`
-                          : `House ${sidePanel.house} Details`}
+                          : `{t('kundli.houseDetails')}`}
                       </h4>
                       <button
                         onClick={() => setSidePanel(null)}
@@ -352,7 +354,7 @@ export default function KundliGenerator() {
                         <div className="space-y-3">
                           <div className="grid grid-cols-2 gap-3">
                             <div className="bg-cosmic-card/60 rounded-lg p-3">
-                              <p className="text-xs text-sacred-text-secondary">Sign</p>
+                              <p className="text-xs text-sacred-text-secondary">  {t('kundli.sign')}</p>
                               <p className="font-semibold text-sacred-brown">{p.sign}</p>
                             </div>
                             <div className="bg-cosmic-card/60 rounded-lg p-3">
@@ -390,22 +392,22 @@ export default function KundliGenerator() {
                       <div className="space-y-3">
                         <div className="grid grid-cols-2 gap-3">
                           <div className="bg-cosmic-card/60 rounded-lg p-3">
-                            <p className="text-xs text-sacred-text-secondary">House Number</p>
+                            <p className="text-xs text-sacred-text-secondary">  {t('kundli.houseNumber')}</p>
                             <p className="font-semibold text-sacred-brown">{sidePanel.house}</p>
                           </div>
                           <div className="bg-cosmic-card/60 rounded-lg p-3">
-                            <p className="text-xs text-sacred-text-secondary">Sign</p>
+                            <p className="text-xs text-sacred-text-secondary">  {t('kundli.sign')}</p>
                             <p className="font-semibold text-sacred-brown">{sidePanel.sign}</p>
                           </div>
                         </div>
                         <div className="bg-cosmic-card/60 rounded-lg p-3">
-                          <p className="text-xs text-sacred-text-secondary">Significance</p>
+                          <p className="text-xs text-sacred-text-secondary">  {t('kundli.significance')}</p>
                           <p className="font-semibold text-sacred-brown">
                             {HOUSE_SIGNIFICANCE[sidePanel.house || 0] || 'Unknown'}
                           </p>
                         </div>
                         <div className="bg-cosmic-card/60 rounded-lg p-3">
-                          <p className="text-xs text-sacred-text-secondary mb-2">Planets in this House</p>
+                          <p className="text-xs text-sacred-text-secondary mb-2">{t('kundli.planetsInHouse')}</p>
                           {(sidePanel.planets || []).length > 0 ? (
                             <div className="space-y-1">
                               {(sidePanel.planets || []).map((p) => (
@@ -420,7 +422,7 @@ export default function KundliGenerator() {
                               ))}
                             </div>
                           ) : (
-                            <p className="text-sm text-sacred-text-secondary">No planets in this house</p>
+                            <p className="text-sm text-sacred-text-secondary">{t('kundli.noPlanets')}</p>
                           )}
                         </div>
                       </div>
@@ -430,7 +432,7 @@ export default function KundliGenerator() {
                   <div className="bg-sacred-cream/50 rounded-xl border border-dashed border-sacred-gold/20 p-8 flex flex-col items-center justify-center h-full min-h-[200px]">
                     <Sparkles className="w-8 h-8 text-sacred-gold/40 mb-3" />
                     <p className="text-sacred-text-secondary text-sm text-center">
-                      Click on any planet or house in the chart to see detailed information
+                      {t('kundli.clickInfo')}
                     </p>
                   </div>
                 )}
@@ -441,7 +443,7 @@ export default function KundliGenerator() {
                     <thead className="bg-sacred-cream">
                       <tr>
                         <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">Planet</th>
-                        <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">Sign</th>
+                        <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">  {t('kundli.sign')}</th>
                         <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">House</th>
                         <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">Nakshatra</th>
                         <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">Status</th>

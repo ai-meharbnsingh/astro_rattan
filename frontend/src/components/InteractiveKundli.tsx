@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
+import { useTranslation } from '@/lib/i18n';
 
 // --- Data types ---
 export interface PlanetData {
@@ -572,6 +573,7 @@ function PlanetBadge({
 
 
 export default function InteractiveKundli({ chartData, onPlanetClick, onHouseClick }: InteractiveKundliProps) {
+  const { t } = useTranslation();
   const [hoveredHouse, setHoveredHouse] = useState<number | null>(null);
   const [hoveredPlanet, setHoveredPlanet] = useState<string | null>(null);
   const [tooltip, setTooltip] = useState<{ x: number; y: number; content: React.ReactNode } | null>(null);
@@ -1024,7 +1026,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
             borderColor: '#B8860B',
           }}
         >
-          North Indian
+          {t('kundli.northIndian')}
         </button>
         <button
           onClick={() => setChartStyle('south')}
@@ -1036,7 +1038,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
             borderColor: '#B8860B',
           }}
         >
-          South Indian
+          {t('kundli.southIndian')}
         </button>
       </div>
 
