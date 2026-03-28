@@ -194,7 +194,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
   const svgHeight = CELL_SIZE * 4 + GRID_PADDING * 2;
 
   return (
-    <div className="relative inline-block">
+    <div className="relative w-full max-w-[600px]">
       {/* Cosmic glow effect behind chart */}
       <div
         className="absolute inset-0 rounded-2xl opacity-40 blur-xl pointer-events-none"
@@ -206,7 +206,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
 
       <svg
         viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-        className="w-full max-w-[480px] h-auto relative z-10"
+        className="w-full h-auto relative z-10"
         style={{ filter: 'drop-shadow(0 0 12px rgba(212,175,55,0.25))' }}
       >
         <defs>
@@ -251,7 +251,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           width={CELL_SIZE * 4}
           height={CELL_SIZE * 4}
           rx={4}
-          fill="#0F0A1E"
+          fill="#E8E0D4"
           opacity={0.95}
         />
 
@@ -391,7 +391,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                       x={px}
                       y={py + 3.5}
                       textAnchor="middle"
-                      fill={isHoveredPlanet ? '#0F0A1E' : color}
+                      fill={isHoveredPlanet ? '#E8E0D4' : color}
                       fontSize={9}
                       fontWeight="bold"
                       fontFamily="sans-serif"

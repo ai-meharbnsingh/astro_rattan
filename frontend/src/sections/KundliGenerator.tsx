@@ -310,9 +310,9 @@ export default function KundliGenerator() {
 
           {/* PLANETS TAB - Interactive Kundli Chart + Side Panel */}
           <TabsContent value="planets">
-            <div className="flex flex-col lg:flex-row gap-6">
-              {/* Interactive Chart */}
-              <div className="flex-shrink-0 flex justify-center">
+            <div className="flex flex-col xl:flex-row gap-8">
+              {/* Interactive Chart — full width on mobile, large on desktop */}
+              <div className="w-full xl:w-[600px] xl:flex-shrink-0 flex justify-center">
                 <InteractiveKundli
                   chartData={{ planets, houses: result.chart_data?.houses } as ChartData}
                   onPlanetClick={handlePlanetClick}
