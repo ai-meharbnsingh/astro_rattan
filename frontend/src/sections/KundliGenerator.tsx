@@ -31,6 +31,8 @@ export default function KundliGenerator() {
   const [loadingDosha, setLoadingDosha] = useState(false);
   const [loadingIogita, setLoadingIogita] = useState(false);
   const [loadingDasha, setLoadingDasha] = useState(false);
+  const [predictionsData, setPredictionsData] = useState<any>(null);
+  const [loadingPredictions, setLoadingPredictions] = useState(false);
   const [error, setError] = useState('');
   const [sidePanel, setSidePanel] = useState<{
     type: 'planet' | 'house';
@@ -59,6 +61,55 @@ export default function KundliGenerator() {
     Sun: [7], Moon: [7], Mercury: [7], Venus: [7],
     Mars: [4, 7, 8], Jupiter: [5, 7, 9], Saturn: [3, 7, 10],
     Rahu: [5, 7, 9], Ketu: [5, 7, 9],
+  };
+
+  // Sign → Lord mapping
+  const SIGN_LORD: Record<string, string> = {
+    Aries: 'Mars', Taurus: 'Venus', Gemini: 'Mercury', Cancer: 'Moon',
+    Leo: 'Sun', Virgo: 'Mercury', Libra: 'Venus', Scorpio: 'Mars',
+    Sagittarius: 'Jupiter', Capricorn: 'Saturn', Aquarius: 'Saturn', Pisces: 'Jupiter',
+  };
+
+  // Sign → Element
+  const SIGN_ELEMENT: Record<string, string> = {
+    Aries: 'Fire', Leo: 'Fire', Sagittarius: 'Fire',
+    Taurus: 'Earth', Virgo: 'Earth', Capricorn: 'Earth',
+    Gemini: 'Air', Libra: 'Air', Aquarius: 'Air',
+    Cancer: 'Water', Scorpio: 'Water', Pisces: 'Water',
+  };
+
+  // Sign → Sign Type
+  const SIGN_TYPE: Record<string, string> = {
+    Aries: 'Moveable', Cancer: 'Moveable', Libra: 'Moveable', Capricorn: 'Moveable',
+    Taurus: 'Fixed', Leo: 'Fixed', Scorpio: 'Fixed', Aquarius: 'Fixed',
+    Gemini: 'Dual', Virgo: 'Dual', Sagittarius: 'Dual', Pisces: 'Dual',
+  };
+
+  // Planet nature
+  const PLANET_NATURE: Record<string, string> = {
+    Sun: 'Malefic', Moon: 'Benefic', Mars: 'Malefic', Mercury: 'Benefic',
+    Jupiter: 'Benefic', Venus: 'Benefic', Saturn: 'Malefic', Rahu: 'Malefic', Ketu: 'Malefic',
+  };
+
+  // Dignity calculation
+  const getDignity = (planet: string, sign: string): string => {
+    const dignityMap: Record<string, { exalted: string[]; debilitated: string[]; own: string[] }> = {
+      Sun: { exalted: ['Aries'], debilitated: ['Libra'], own: ['Leo'] },
+      Moon: { exalted: ['Taurus'], debilitated: ['Scorpio'], own: ['Cancer'] },
+      Mars: { exalted: ['Capricorn'], debilitated: ['Cancer'], own: ['Aries', 'Scorpio'] },
+      Mercury: { exalted: ['Virgo'], debilitated: ['Pisces'], own: ['Gemini', 'Virgo'] },
+      Jupiter: { exalted: ['Cancer'], debilitated: ['Capricorn'], own: ['Sagittarius', 'Pisces'] },
+      Venus: { exalted: ['Pisces'], debilitated: ['Virgo'], own: ['Taurus', 'Libra'] },
+      Saturn: { exalted: ['Libra'], debilitated: ['Aries'], own: ['Capricorn', 'Aquarius'] },
+      Rahu: { exalted: ['Gemini', 'Taurus'], debilitated: ['Sagittarius', 'Scorpio'], own: [] },
+      Ketu: { exalted: ['Sagittarius', 'Scorpio'], debilitated: ['Gemini', 'Taurus'], own: [] },
+    };
+    const d = dignityMap[planet];
+    if (!d) return t('kundli.neutral');
+    if (d.exalted.includes(sign)) return t('kundli.exalted');
+    if (d.debilitated.includes(sign)) return t('kundli.debilitated');
+    if (d.own.includes(sign)) return t('kundli.ownSign');
+    return t('kundli.neutral');
   };
 
   const handlePlanetClick = useCallback((planet: PlanetData) => {
@@ -103,6 +154,7 @@ export default function KundliGenerator() {
       setDoshaData(null);
       setIogitaData(null);
       setDashaData(null);
+      setPredictionsData(null);
       setStep('result');
     } catch {
       setError('Failed to load kundli');
@@ -142,6 +194,57 @@ export default function KundliGenerator() {
     setLoadingDasha(false);
   };
 
+  // Fetch AI predictions
+  const fetchPredictions = async () => {
+    if (!result?.id || predictionsData) return;
+    setLoadingPredictions(true);
+    try {
+      const data = await api.post('/api/ai/interpret', { kundli_id: result.id });
+      setPredictionsData(data);
+    } catch { /* fallback handled in UI */ }
+    setLoadingPredictions(false);
+  };
+
+  // Prashna Kundli — generate for current moment
+  const handlePrashnaKundli = async () => {
+    if (!isAuthenticated) {
+      setError('Sign in is required to generate and save a kundli.');
+      return;
+    }
+    const now = new Date();
+    const dateStr = now.toISOString().split('T')[0];
+    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:00`;
+    setFormData({
+      name: `Prashna ${dateStr}`,
+      date: dateStr,
+      time: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
+      place: 'Delhi',
+      gender: 'male',
+    });
+    setStep('generating');
+    setError('');
+    try {
+      const data = await api.post('/api/kundli/generate', {
+        person_name: `Prashna ${dateStr}`,
+        birth_date: dateStr,
+        birth_time: timeStr,
+        birth_place: 'Delhi',
+        latitude: 28.6139,
+        longitude: 77.2090,
+        timezone_offset: 5.5,
+      });
+      setResult(data);
+      setDoshaData(null);
+      setIogitaData(null);
+      setDashaData(null);
+      setPredictionsData(null);
+      setStep('result');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to generate Prashna Kundli');
+      setStep('form');
+    }
+  };
+
   const handleGenerate = async () => {
     if (!formData.name || !formData.date || !formData.time || !formData.place) return;
     if (!isAuthenticated) {
@@ -164,6 +267,7 @@ export default function KundliGenerator() {
       setDoshaData(null);
       setIogitaData(null);
       setDashaData(null);
+      setPredictionsData(null);
       setStep('result');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate kundli');
@@ -207,6 +311,10 @@ export default function KundliGenerator() {
         </div>
         <Button onClick={() => setStep('form')} className="w-full btn-sacred">
           <Sparkles className="w-5 h-5 mr-2" />Generate New Kundli
+        </Button>
+        <Button onClick={handlePrashnaKundli} variant="outline" className="w-full mt-3 border-sacred-gold/50 text-sacred-brown hover:bg-sacred-gold/10">
+          <Clock className="w-5 h-5 mr-2 text-sacred-gold" />{t('kundli.prashnaKundli')}
+          <span className="ml-2 text-xs text-sacred-text-secondary">{t('kundli.prashnaSubtitle')}</span>
         </Button>
       </div>
     );
@@ -303,11 +411,14 @@ export default function KundliGenerator() {
 
         {/* Tabs: Planets | Dosha | io-gita | Dasha */}
         <Tabs defaultValue="planets" className="w-full">
-          <TabsList className="mb-6 bg-sacred-cream">
+          <TabsList className="mb-6 bg-sacred-cream flex-wrap">
             <TabsTrigger value="planets">  {t('kundli.planets')}</TabsTrigger>
+            <TabsTrigger value="details">{t('kundli.details')}</TabsTrigger>
+            <TabsTrigger value="lordships">{t('kundli.lordships')}</TabsTrigger>
             <TabsTrigger value="dosha" onClick={fetchDosha}>  {t('kundli.dosha')}</TabsTrigger>
             <TabsTrigger value="iogita" onClick={fetchIogita}>io-gita</TabsTrigger>
             <TabsTrigger value="dasha" onClick={fetchDasha}>  {t('kundli.dasha')}</TabsTrigger>
+            <TabsTrigger value="predictions" onClick={fetchPredictions}>{t('kundli.predictions')}</TabsTrigger>
           </TabsList>
 
           {/* PLANETS TAB - Interactive Kundli Chart + Side Panel */}
@@ -478,6 +589,110 @@ export default function KundliGenerator() {
             </div>
           </TabsContent>
 
+          {/* DETAILS TAB — Birth Details Table */}
+          <TabsContent value="details">
+            <div className="space-y-4">
+              <h4 className="font-sacred text-lg font-bold text-[#1a1a2e]">{t('kundli.birthDetailsTable')}</h4>
+              <div className="overflow-x-auto rounded-xl border" style={{ borderColor: 'rgba(139,115,85,0.2)' }}>
+                <table className="w-full text-sm">
+                  <thead style={{ backgroundColor: '#E8E0D4' }}>
+                    <tr>
+                      <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>Planet</th>
+                      <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>{t('kundli.sign')}</th>
+                      <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>{t('kundli.degree')}</th>
+                      <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>{t('kundli.nakshatra')}</th>
+                      <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>{t('kundli.house')}</th>
+                      <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>{t('kundli.dignity')}</th>
+                      <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>{t('kundli.signType')}</th>
+                      <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>{t('kundli.element')}</th>
+                      <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>{t('kundli.nature')}</th>
+                      <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>{t('kundli.retrograde')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {planets.map((p: any, idx: number) => {
+                      const dignity = getDignity(p.planet, p.sign);
+                      const signType = SIGN_TYPE[p.sign] || '—';
+                      const element = SIGN_ELEMENT[p.sign] || '—';
+                      const nature = PLANET_NATURE[p.planet] || '—';
+                      const isRetro = (p.status || '').toLowerCase().includes('retrograde') || (p.status || '').toLowerCase().includes(' r');
+                      const dignityColor = dignity === t('kundli.exalted') ? '#16a34a' : dignity === t('kundli.debilitated') ? '#dc2626' : dignity === t('kundli.ownSign') ? '#2563eb' : '#8B7355';
+                      const nakshatraParts = (p.nakshatra || '').split(' Pada ');
+                      const nakshatraName = nakshatraParts[0] || p.nakshatra || '—';
+                      const pada = nakshatraParts[1] || '—';
+
+                      return (
+                        <tr key={idx} className="border-t" style={{ borderColor: 'rgba(139,115,85,0.2)', backgroundColor: idx % 2 === 0 ? '#F5F0E8' : '#FDFBF7' }}>
+                          <td className="p-3 font-medium" style={{ color: '#1a1a2e', fontFamily: 'serif' }}>{p.planet}</td>
+                          <td className="p-3" style={{ color: '#1a1a2e' }}>{p.sign}</td>
+                          <td className="p-3" style={{ color: '#1a1a2e' }}>{p.sign_degree != null ? `${Number(p.sign_degree).toFixed(2)}°` : '—'}</td>
+                          <td className="p-3" style={{ color: '#1a1a2e' }}>{nakshatraName}{pada !== '—' ? ` (${t('kundli.pada')} ${pada})` : ''}</td>
+                          <td className="p-3" style={{ color: '#1a1a2e' }}>{p.house}</td>
+                          <td className="p-3 font-medium" style={{ color: dignityColor }}>{dignity}</td>
+                          <td className="p-3" style={{ color: '#8B7355' }}>{signType}</td>
+                          <td className="p-3" style={{ color: '#8B7355' }}>{element}</td>
+                          <td className="p-3">
+                            <span className={`text-xs px-2 py-0.5 rounded-full ${nature === 'Benefic' || nature === t('kundli.benefic') ? 'bg-green-500/15 text-green-600' : 'bg-red-500/15 text-red-600'}`}>
+                              {nature}
+                            </span>
+                          </td>
+                          <td className="p-3" style={{ color: isRetro ? '#dc2626' : '#8B7355' }}>
+                            {isRetro ? `${t('common.yes')} ℞` : t('common.no')}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* LORDSHIPS TAB — House Lordships */}
+          <TabsContent value="lordships">
+            <div className="space-y-4">
+              <h4 className="font-sacred text-lg font-bold text-[#1a1a2e]">{t('kundli.houseLordships')}</h4>
+              <div className="overflow-x-auto rounded-xl border" style={{ borderColor: 'rgba(139,115,85,0.2)' }}>
+                <table className="w-full text-sm">
+                  <thead style={{ backgroundColor: '#E8E0D4' }}>
+                    <tr>
+                      <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>{t('kundli.house')}</th>
+                      <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>{t('kundli.sign')}</th>
+                      <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>{t('kundli.lord')}</th>
+                      <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>{t('kundli.placedIn')}</th>
+                      <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>{t('kundli.significance')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Array.from({ length: 12 }, (_, i) => {
+                      const houseNum = i + 1;
+                      const houses = result.chart_data?.houses || {};
+                      // Houses can be an array or object
+                      const houseData = Array.isArray(houses) ? houses[i] : houses[houseNum] || houses[String(houseNum)];
+                      const houseSign = houseData?.sign || (Array.isArray(houses) ? houseData : '—');
+                      const signName = typeof houseSign === 'string' ? houseSign : '—';
+                      const lord = SIGN_LORD[signName] || '—';
+
+                      // Find which house the lord sits in
+                      const lordPlanet = planets.find((p: any) => p.planet === lord);
+                      const lordPlacedIn = lordPlanet ? `House ${lordPlanet.house}` : '—';
+
+                      return (
+                        <tr key={houseNum} className="border-t" style={{ borderColor: 'rgba(139,115,85,0.2)', backgroundColor: houseNum % 2 === 1 ? '#F5F0E8' : '#FDFBF7' }}>
+                          <td className="p-3 font-medium" style={{ color: '#1a1a2e', fontFamily: 'serif' }}>{houseNum}</td>
+                          <td className="p-3" style={{ color: '#1a1a2e' }}>{signName}</td>
+                          <td className="p-3 font-medium" style={{ color: '#B8860B' }}>{lord}</td>
+                          <td className="p-3" style={{ color: '#1a1a2e' }}>{lordPlacedIn}</td>
+                          <td className="p-3" style={{ color: '#8B7355' }}>{HOUSE_SIGNIFICANCE[houseNum] || '—'}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </TabsContent>
+
           {/* DOSHA TAB — wired to real API */}
           <TabsContent value="dosha">
             {loadingDosha ? (
@@ -640,10 +855,49 @@ export default function KundliGenerator() {
               <p className="text-center text-sacred-text-secondary py-8">Click the Dasha tab to calculate periods</p>
             )}
           </TabsContent>
+
+          {/* PREDICTIONS TAB — AI-powered */}
+          <TabsContent value="predictions">
+            {loadingPredictions ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
+                <span className="ml-2 text-sacred-text-secondary">{t('kundli.loadingPredictions')}</span>
+              </div>
+            ) : predictionsData ? (
+              <div className="space-y-4">
+                <div className="rounded-2xl p-6 border" style={{ backgroundColor: '#F5F0E8', borderColor: 'rgba(139,115,85,0.2)' }}>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(184,134,11,0.15)' }}>
+                      <Sparkles className="w-5 h-5" style={{ color: '#B8860B' }} />
+                    </div>
+                    <h4 className="font-sacred font-bold text-xl" style={{ color: '#1a1a2e' }}>{t('kundli.aiPredictions')}</h4>
+                  </div>
+                  <div className="prose prose-sm max-w-none" style={{ color: '#1a1a2e' }}>
+                    {(predictionsData.interpretation || predictionsData.response || predictionsData.text || JSON.stringify(predictionsData))
+                      .split('\n')
+                      .filter((line: string) => line.trim())
+                      .map((paragraph: string, idx: number) => (
+                        <p key={idx} className="mb-3 leading-relaxed" style={{ fontFamily: 'serif', color: '#1a1a2e' }}>
+                          {paragraph}
+                        </p>
+                      ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <Sparkles className="w-10 h-10 mx-auto mb-3" style={{ color: 'rgba(184,134,11,0.4)' }} />
+                <p className="text-sacred-text-secondary mb-4">{t('kundli.getPredictions')}</p>
+                <Button onClick={fetchPredictions} className="btn-sacred">
+                  <Sparkles className="w-4 h-4 mr-2" />{t('kundli.predictions')}
+                </Button>
+              </div>
+            )}
+          </TabsContent>
         </Tabs>
 
         <div className="mt-8 text-center">
-          <Button onClick={() => { setStep('form'); setResult(null); setDoshaData(null); setIogitaData(null); setDashaData(null); }} variant="outline" className="border-cosmic-text-muted text-cosmic-text">
+          <Button onClick={() => { setStep('form'); setResult(null); setDoshaData(null); setIogitaData(null); setDashaData(null); setPredictionsData(null); }} variant="outline" className="border-cosmic-text-muted text-cosmic-text">
             Generate Another Kundli
           </Button>
         </div>
@@ -666,6 +920,10 @@ export default function KundliGenerator() {
           <ArrowLeft className="w-4 h-4 mr-2" />Back to My Kundlis ({savedKundlis.length})
         </Button>
       )}
+      <Button onClick={handlePrashnaKundli} variant="outline" className="w-full mb-4 border-sacred-gold/50 text-sacred-brown hover:bg-sacred-gold/10">
+        <Clock className="w-5 h-5 mr-2 text-sacred-gold" />{t('kundli.prashnaKundli')}
+        <span className="ml-2 text-xs text-sacred-text-secondary">{t('kundli.prashnaSubtitle')}</span>
+      </Button>
       {error && <div className="mb-4 p-3 rounded-xl bg-red-900/20 text-red-400 text-sm">{error}</div>}
       <div className="space-y-4">
         <div className="relative">
