@@ -69,9 +69,9 @@ export default function Footer() {
                 <Mail className="w-5 h-5" />
                 <span className="text-sm">support@astrovedic.com</span>
               </a>
-              <a href="tel:+919876543210" className="flex items-center gap-3 text-[#1a1a2e]/60 hover:text-[#B8860B] transition-colors">
+              <a href="tel:+919911760060" className="flex items-center gap-3 text-[#1a1a2e]/60 hover:text-[#B8860B] transition-colors">
                 <Phone className="w-5 h-5" />
-                <span className="text-sm">+91 98765 43210</span>
+                <span className="text-sm">+91 99117 60060</span>
               </a>
             </div>
             <div className="flex gap-3">
