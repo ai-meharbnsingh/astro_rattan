@@ -90,10 +90,10 @@ export default function Hero() {
         <div className="hero-title-main opacity-0 mb-6">
           <h1 className="font-['Cinzel_Decorative'] text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#1a1a2e] leading-[0.95] tracking-wide"
             style={{ textShadow: '0 0 60px rgba(184, 134, 11, 0.15)' }}>
-            THE OBSERVATORY
+            {t('hero.observatory')}
           </h1>
           <p className="font-['Cinzel'] text-sm md:text-base tracking-[12px] text-[#9A7B0A] mt-4 uppercase">
-            Of Destiny
+            {t('hero.ofDestiny')}
           </p>
         </div>
 
@@ -133,7 +133,7 @@ export default function Hero() {
                        transition-all duration-300 text-xs tracking-[3px] uppercase font-['Cinzel']
                        px-8 py-5 rounded-none"
           >
-            Consult an Expert
+            {t('hero.consultExpert')}
           </Button>
         </div>
 
@@ -147,7 +147,7 @@ export default function Hero() {
             <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-[#9A7B0A]" />
             
             <p className="text-[#9A7B0A] text-xs tracking-[3px] uppercase mb-4 font-['Cinzel']">
-              Calculate Your Birth Chart
+              {t('hero.calculateChart')}
             </p>
             
             <div className="space-y-3">

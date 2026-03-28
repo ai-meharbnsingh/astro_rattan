@@ -21,6 +21,8 @@ interface InteractiveKundliProps {
   onHouseClick?: (house: number, sign: string, planets: PlanetData[]) => void;
 }
 
+type ChartStyle = 'north' | 'south';
+
 // --- Constants ---
 const ZODIAC_SIGNS = [
   'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
@@ -104,10 +106,476 @@ const HOUSE_GRID: { house: number; row: number; col: number }[] = [
 const CELL_SIZE = 100;
 const GRID_PADDING = 8;
 
+/*
+ * North Indian kundli layout -- diamond (rotated square) inside a square.
+ *
+ * The outer square has midpoints on each side. Lines connect adjacent midpoints
+ * to form an inner diamond. Additional lines from corners to the center of the
+ * opposite diamond edge create the 12 triangular house regions.
+ *
+ * Standard North Indian numbering (counter-clockwise from top):
+ *   House 1  = top center triangle (Lagna -- always here)
+ *   House 12 = upper-left triangle
+ *   House 11 = left-upper triangle
+ *   House 10 = left triangle (corner)
+ *   House 9  = lower-left triangle
+ *   House 8  = bottom-left triangle
+ *   House 7  = bottom center triangle
+ *   House 6  = bottom-right triangle
+ *   House 5  = lower-right triangle
+ *   House 4  = right triangle (corner)
+ *   House 3  = right-upper triangle
+ *   House 2  = upper-right triangle
+ *
+ * Coordinate system: 416x416 viewBox, origin at top-left.
+ */
+const NI_SIZE = 416;
+const NI_PAD = 8;
+const NI_INNER = NI_SIZE - NI_PAD * 2; // 400
+const NI_HALF = NI_INNER / 2; // 200
+
+// Key points (relative to padding origin)
+// Corners of outer square
+const TL = { x: NI_PAD, y: NI_PAD };
+const TR = { x: NI_PAD + NI_INNER, y: NI_PAD };
+const BL = { x: NI_PAD, y: NI_PAD + NI_INNER };
+const BR = { x: NI_PAD + NI_INNER, y: NI_PAD + NI_INNER };
+
+// Midpoints of sides (diamond vertices)
+const MT = { x: NI_PAD + NI_HALF, y: NI_PAD };           // mid top
+const MR = { x: NI_PAD + NI_INNER, y: NI_PAD + NI_HALF }; // mid right
+const MB = { x: NI_PAD + NI_HALF, y: NI_PAD + NI_INNER }; // mid bottom
+const ML = { x: NI_PAD, y: NI_PAD + NI_HALF };           // mid left
+
+// Center
+const CC = { x: NI_PAD + NI_HALF, y: NI_PAD + NI_HALF };
+
+/*
+ * Each house is a polygon (triangle or quadrilateral). We store:
+ *   - house number
+ *   - polygon points as SVG path string
+ *   - centroid for placing house number, sign symbol, and planets
+ */
+interface NorthHouse {
+  house: number;
+  points: string; // SVG polygon points attribute
+  cx: number;     // centroid x
+  cy: number;     // centroid y
+}
+
+function pts(...coords: { x: number; y: number }[]): string {
+  return coords.map((c) => `${c.x},${c.y}`).join(' ');
+}
+
+function centroid(...coords: { x: number; y: number }[]): { x: number; y: number } {
+  const n = coords.length;
+  return {
+    x: coords.reduce((s, c) => s + c.x, 0) / n,
+    y: coords.reduce((s, c) => s + c.y, 0) / n,
+  };
+}
+
+const NORTH_HOUSES: NorthHouse[] = (() => {
+  // House 1: top center triangle -- MT, CC split into top diamond triangle
+  // The top diamond region is the triangle: MT -> CC -> (need to split into two)
+  // Actually the standard layout:
+  //   - The diamond edges connect MT-MR-MB-ML.
+  //   - Lines from each corner (TL, TR, BR, BL) to the CENTER (CC) divide the
+  //     corner regions. But the standard North Indian chart draws lines from
+  //     corners to the center, AND the diamond edges.
+  //
+  // The 12 regions:
+  //   Top section (above MT-to-MT horizontal through diamond top edge):
+  //     House 1:  triangle MT -> CC (via top-right diamond edge direction)
+  //               Actually: triangle formed by MT, midpoint-of-MT-MR...
+  //
+  // Let me use the CORRECT standard layout:
+  // Lines drawn:
+  //   1) Outer square: TL-TR-BR-BL
+  //   2) Diamond: MT-MR-MB-ML
+  //   3) Diagonals: TL-BR and TR-BL (these pass through CC)
+  //
+  // This creates exactly 12 regions:
+
+  // Top side houses (between top edge and diamond top edges):
+  // House 12: triangle TL, MT, CC  (but CC is where diagonals meet)
+  //   Actually TL to MT to where TL-BR diagonal meets MT...
+  //
+  // Simpler approach -- the standard North Indian chart has these exact triangles:
+  //
+  // The square is divided by:
+  //   - Two diagonals: TL-BR and TR-BL (crossing at CC)
+  //   - Four diamond edges: MT-MR, MR-MB, MB-ML, ML-MT
+  //
+  // This yields 12 triangular regions:
+
+  const houses: NorthHouse[] = [];
+
+  // House 1 (top center): MT, TR-BL line intersection at CC...
+  // No -- the diagonals TL-BR and TR-BL both pass through CC.
+  // The diamond edges also pass through... no, MT-MR connects midpoints.
+  //
+  // Let me just define the 12 triangles explicitly:
+
+  // Top quadrant (above horizontal center line, between diamond edges and top border):
+  //   House 1:  MT, CC, ... The top diamond region is triangle MT-MR-ML
+  //             but that's the entire top half of diamond.
+  //
+  // OK, I'll use the definitive geometry:
+  //
+  // The diagonals (TL-BR, TR-BL) divide the square into 4 triangles.
+  // Each triangle is then subdivided by a diamond edge into 3 sub-triangles.
+  // Wait, each large triangle gets split into 3? No -- 2 sub-regions each
+  // from the diamond edge, but with 4 large triangles that's only 8.
+  // Actually each large triangle is split into 3 by TWO diamond edges passing
+  // through it.
+  //
+  // Let me just list the 12 triangles by their 3 vertices:
+  //
+  // TOP large triangle (TL, TR, CC -- wait no, the diagonal TL-BR and TR-BL
+  // create 4 triangles with vertices at CC):
+  //   Top:    TL, TR, CC
+  //   Right:  TR, BR, CC
+  //   Bottom: BR, BL, CC
+  //   Left:   BL, TL, CC
+  //
+  // Now each is subdivided by diamond edges:
+  //   Top triangle (TL, TR, CC) has MT on segment TL-TR.
+  //     Diamond edges from MT go to ML and MR.
+  //     ML is on segment TL-BL (left side), MR is on TR-BR (right side).
+  //     But within triangle TL-TR-CC, the edge MT-ML exits via TL-CC side?
+  //     No: ML is on the left edge of the square, not inside this triangle.
+  //
+  //     Within triangle TL-TR-CC:
+  //       MT is on edge TL-TR.
+  //       The diamond edge MT-MR: MR is on edge TR-BR, which is NOT an edge
+  //       of this triangle. But the line MT-MR passes through interior.
+  //       Similarly MT-ML: ML is on edge TL-BL, NOT an edge of this triangle.
+  //       The line MT-ML passes through interior too.
+  //
+  //     So triangle TL-TR-CC is split by lines MT-MR and MT-ML?
+  //     No, only one of those stays inside this triangle region.
+  //
+  //     Actually MT-MR goes from top-mid to right-mid. In triangle TL-TR-CC,
+  //     this line enters at MT (on TL-TR edge) and exits at... where does it
+  //     cross edge TR-CC or TL-CC?
+  //
+  //     TR = (408, 8), CC = (208, 208). The line TR-CC has slope
+  //     (208-8)/(208-408) = 200/(-200) = -1. Equation: y - 8 = -(x - 408),
+  //     so y = -x + 416.
+  //
+  //     MT = (208, 8), MR = (408, 208). Line MT-MR: slope = (208-8)/(408-208) = 1.
+  //     Equation: y - 8 = (x - 208), so y = x - 200.
+  //
+  //     Intersection of y = -x + 416 and y = x - 200:
+  //     -x + 416 = x - 200 => 616 = 2x => x = 308, y = 108.
+  //     So MT-MR crosses TR-CC at (308, 108).
+  //
+  //     Similarly MT-ML goes from (208, 8) to (8, 208). Slope = (208-8)/(8-208) = -1.
+  //     Equation: y - 8 = -(x - 208), so y = -x + 216.
+  //     Line TL-CC: TL=(8,8), CC=(208,208). Slope = 1. y - 8 = x - 8, so y = x.
+  //     Intersection: -x + 216 = x => 216 = 2x => x = 108, y = 108.
+  //     So MT-ML crosses TL-CC at (108, 108).
+  //
+  // So triangle TL-TR-CC is divided into 3 sub-triangles:
+  //   1. TL, MT, (108,108)         -- House 12
+  //   2. MT, (308,108), (108,108)  -- House 1
+  //   3. (308,108), TR, (108,108)  -- wait, that doesn't work.
+  //
+  // Let me re-examine. The two cutting lines within triangle TL-TR-CC are:
+  //   MT to (108,108)  [portion of MT-ML inside this triangle]
+  //   MT to (308,108)  [portion of MT-MR inside this triangle]
+  //
+  // These two lines emanate from MT and go to points on TL-CC and TR-CC respectively.
+  // This creates 3 sub-triangles:
+  //   Sub-tri A: TL, MT, P1=(108,108)              -- this is House 12
+  //   Sub-tri B: MT, P2=(308,108), P1=(108,108)    -- wait, P1 and P2 are on different
+  //              edges. The region between the two cut lines is: MT, P2, CC, P1? No...
+  //
+  //   Actually the 3 sub-triangles from vertex MT with cuts to P1 and P2:
+  //   Sub-tri A: TL, MT, P1         -- between edge TL-MT and cut MT-P1
+  //   Sub-tri B: MT, P2, P1         -- between the two cuts (this is wrong, P1 and P2
+  //              are not connected by an edge of the original triangle)
+  //
+  // Hmm, I need to think about this differently. Within triangle TL-TR-CC:
+  //   - P1 = (108, 108) is on edge TL-CC
+  //   - P2 = (308, 108) is on edge TR-CC
+  //   - Both cut lines go to MT on edge TL-TR
+  //
+  //   The three sub-regions are:
+  //   A: polygon TL, MT, P1              (triangle)  -- House 12
+  //   B: polygon MT, TR, P2              (triangle)  -- House 2
+  //   C: polygon P1, MT, P2 (+ the CC vertex? No, P1-P2 is a straight line cutting
+  //      off the bottom. But P1 and P2 are connected to CC via the original edges.)
+  //      Actually: polygon MT, P2, CC, P1  -- this is wrong because MT,P2,CC,P1
+  //      would include area outside.
+  //
+  //   No wait: P1 is on TL-CC, P2 is on TR-CC. The region below both cuts (closer to CC)
+  //   is: P1, P2, CC. And the region between cut MT-P1 and the left edge TL-P1 is
+  //   triangle TL, MT, P1. The region between cut MT-P2 and right edge TR-P2 is
+  //   triangle MT, TR, P2. The middle region is quadrilateral P1, MT, P2, CC?
+  //   No: from P1, going along cut to MT, then along cut to P2, then along edge P2-CC,
+  //   then along edge CC-P1. That's a quadrilateral P1-MT-P2-CC with vertices at
+  //   (108,108), (208,8), (308,108), (208,208). But wait, is CC=(208,208) inside
+  //   the original triangle TL-TR-CC? Yes, CC is a vertex of it.
+  //
+  //   So the three sub-regions of triangle TL(8,8)-TR(408,8)-CC(208,208):
+  //   A: TL(8,8), MT(208,8), P1(108,108)                    -- House 12
+  //   B: MT(208,8), TR(408,8), P2(308,108)                   -- House 2
+  //   C: P1(108,108), MT(208,8), P2(308,108), CC(208,208)    -- House 1
+  //
+  // House 1 is the top-center trapezoid (actually a rhombus/kite). Perfect!
+  // This matches the standard North Indian chart where Lagna is the
+  // top-center diamond shape.
+
+  // Let me compute all intersection points:
+  const P_TL_CC_x_MT_ML = { x: NI_PAD + NI_HALF / 2, y: NI_PAD + NI_HALF / 2 };
+  // = (108, 108)
+  const P_TR_CC_x_MT_MR = { x: NI_PAD + NI_HALF + NI_HALF / 2, y: NI_PAD + NI_HALF / 2 };
+  // = (308, 108)
+  const P_TR_CC_x_MR_MB = { x: NI_PAD + NI_HALF + NI_HALF / 2, y: NI_PAD + NI_HALF + NI_HALF / 2 };
+  // = (308, 308)
+  const P_BL_CC_x_MB_ML = { x: NI_PAD + NI_HALF / 2, y: NI_PAD + NI_HALF + NI_HALF / 2 };
+  // = (108, 308)
+
+  // Shorthand aliases:
+  const P1 = P_TL_CC_x_MT_ML;  // (108, 108) -- on TL-CC diagonal, where MT-ML crosses
+  const P2 = P_TR_CC_x_MT_MR;  // (308, 108) -- on TR-CC diagonal, where MT-MR crosses
+  const P3 = P_TR_CC_x_MR_MB;  // (308, 308) -- on TR-CC diagonal (lower), where MR-MB crosses
+  // Wait, P_TR_CC is the line from TR to CC. But MR-MB crosses... let me recalc.
+  //
+  // Actually for the right large triangle (TR, BR, CC):
+  //   MR is on edge TR-BR. Diamond edges from MR go to MT and MB.
+  //   Line MR-MT: already computed, crosses TR-CC at P2=(308,108).
+  //   Line MR-MB: MR=(408,208), MB=(208,408). Slope=(408-208)/(208-408)=-1.
+  //     y - 208 = -(x - 408), y = -x + 616.
+  //   Line TR-CC: y = -x + 416. Intersection: -x+616 = -x+416 => 616=416, no solution!
+  //   These are parallel (both slope -1). So MR-MB does NOT cross TR-CC.
+  //
+  //   Instead, MR-MB crosses BR-CC.
+  //   Line BR-CC: BR=(408,408), CC=(208,208). Slope = (208-408)/(208-408) = 1.
+  //     y - 408 = (x - 408), y = x.
+  //   Line MR-MB: y = -x + 616. Intersection: x = -x + 616 => 2x = 616 => x = 308, y = 308.
+  //   So MR-MB crosses BR-CC at (308, 308).
+  //
+  // For the right large triangle TR(408,8)-BR(408,408)-CC(208,208):
+  //   MR(408,208) is on edge TR-BR.
+  //   Cut 1: MR to P2(308,108) -- portion of MR-MT line inside this triangle, hitting TR-CC
+  //   Cut 2: MR to (308,308) -- portion of MR-MB line inside this triangle, hitting BR-CC
+  //
+  //   Sub-regions:
+  //   A: TR(408,8), MR(408,208), P2(308,108)           -- House 3 (was 2? Let me check)
+  //   B: P2(308,108), MR(408,208), (308,308), CC(208,208) -- House 4 (center-right trapezoid)
+  //   C: MR(408,208), BR(408,408), (308,308)            -- House 5
+
+  // Let me recalculate P3 and P4 properly:
+  const iP3 = { x: NI_PAD + NI_HALF + NI_HALF / 2, y: NI_PAD + NI_HALF + NI_HALF / 2 };
+  // = (308, 308) -- on BR-CC diagonal, where MR-MB crosses
+
+  // For bottom large triangle BR(408,408)-BL(8,408)-CC(208,208):
+  //   MB(208,408) is on edge BR-BL.
+  //   Line MB-MR: already computed, crosses BR-CC at (308,308).
+  //   Line MB-ML: MB=(208,408), ML=(8,208). Slope=(208-408)/(8-208)=(-200)/(-200)=1.
+  //     y - 408 = (x - 208), y = x + 200.
+  //   Line BL-CC: BL=(8,408), CC=(208,208). Slope=(208-408)/(208-8)=(-200)/(200)=-1.
+  //     y - 408 = -(x - 8), y = -x + 416.
+  //   Intersection: x + 200 = -x + 416 => 2x = 216 => x = 108, y = 308.
+  //   So MB-ML crosses BL-CC at (108, 308).
+
+  const iP4 = { x: NI_PAD + NI_HALF / 2, y: NI_PAD + NI_HALF + NI_HALF / 2 };
+  // = (108, 308) -- on BL-CC diagonal, where MB-ML crosses
+
+  // For left large triangle BL(8,408)-TL(8,8)-CC(208,208):
+  //   ML(8,208) is on edge BL-TL.
+  //   Line ML-MB: crosses BL-CC at (108,308) = iP4.
+  //   Line ML-MT: crosses TL-CC at (108,108) = P1.
+  //
+  //   Sub-regions:
+  //   A: TL(8,8), ML(8,208), P1(108,108)                    -- House 11
+  //   B: P1(108,108), ML(8,208), iP4(108,308), CC(208,208)  -- House 10 (center-left)
+  //   C: ML(8,208), BL(8,408), iP4(108,308)                 -- House 9
+
+  // Summary of all 12 houses (counter-clockwise from top):
+  // House 1:  P1(108,108), MT(208,8), P2(308,108), CC(208,208)     -- top center (Lagna)
+  // House 12: TL(8,8), MT(208,8), P1(108,108)                       -- top-left triangle
+  // House 11: TL(8,8), P1(108,108), ML(8,208)                       -- upper-left triangle
+  //   Wait, I had House 11 as TL, ML, P1. Let me reorder.
+  //   The left large triangle is BL-TL-CC. Sub-regions:
+  //   Going from TL down: TL(8,8)-ML(8,208)-P1(108,108) is closest to TL.
+  //
+  //   Actually, I need to be more careful about which house number goes where.
+  //   Standard North Indian (counter-clockwise from House 1 at top):
+  //     1  = top center
+  //     12 = top-left (between 1 and the left corner)
+  //     11 = left-top (between left corner and the left side)
+  //     10 = left center
+  //     9  = left-bottom
+  //     8  = bottom-left
+  //     7  = bottom center
+  //     6  = bottom-right
+  //     5  = right-bottom
+  //     4  = right center
+  //     3  = right-top
+  //     2  = top-right
+
+  // Top large triangle (TL, TR, CC) subdivisions:
+  //   House 12: TL, MT, P1           (top-left corner triangle)
+  //   House 1:  P1, MT, P2, CC       (top center trapezoid -- Lagna)
+  //   House 2:  MT, TR, P2           (top-right corner triangle)
+
+  // Right large triangle (TR, BR, CC) subdivisions:
+  //   House 3:  TR, MR, P2           (right-top corner triangle)
+  //   House 4:  P2, MR, iP3, CC      (right center trapezoid)
+  //   House 5:  MR, BR, iP3          (right-bottom corner triangle)
+
+  // Bottom large triangle (BR, BL, CC) subdivisions:
+  //   House 6:  BR, MB, iP3          (bottom-right corner triangle)
+  //   House 7:  iP3, MB, iP4, CC     (bottom center trapezoid)
+  //   House 8:  MB, BL, iP4          (bottom-left corner triangle)
+
+  // Left large triangle (BL, TL, CC) subdivisions:
+  //   House 9:  BL, ML, iP4          (left-bottom corner triangle)
+  //   House 10: iP4, ML, P1, CC      (left center trapezoid)
+  //   House 11: ML, TL, P1           (left-top corner triangle)
+
+  const makeTri = (h: number, a: {x:number;y:number}, b: {x:number;y:number}, c: {x:number;y:number}): NorthHouse => {
+    const cen = centroid(a, b, c);
+    return { house: h, points: pts(a, b, c), cx: cen.x, cy: cen.y };
+  };
+
+  const makeQuad = (h: number, a: {x:number;y:number}, b: {x:number;y:number}, c: {x:number;y:number}, d: {x:number;y:number}): NorthHouse => {
+    const cen = centroid(a, b, c, d);
+    return { house: h, points: pts(a, b, c, d), cx: cen.x, cy: cen.y };
+  };
+
+  // Top
+  houses.push(makeTri(12, TL, MT, P1));
+  houses.push(makeQuad(1, P1, MT, P2, CC));
+  houses.push(makeTri(2, MT, TR, P2));
+
+  // Right
+  houses.push(makeTri(3, TR, MR, P2));
+  houses.push(makeQuad(4, P2, MR, iP3, CC));
+  houses.push(makeTri(5, MR, BR, iP3));
+
+  // Bottom
+  houses.push(makeTri(6, BR, MB, iP3));
+  houses.push(makeQuad(7, iP3, MB, iP4, CC));
+  houses.push(makeTri(8, MB, BL, iP4));
+
+  // Left
+  houses.push(makeTri(9, BL, ML, iP4));
+  houses.push(makeQuad(10, iP4, ML, P1, CC));
+  houses.push(makeTri(11, ML, TL, P1));
+
+  return houses;
+})();
+
+
+// --- Shared SVG Defs ---
+function SvgDefs() {
+  return (
+    <defs>
+      <linearGradient id="kundli-border-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#9A7B0A" />
+        <stop offset="50%" stopColor="#B8860B" />
+        <stop offset="100%" stopColor="#B8860B" />
+      </linearGradient>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="2" result="blur" />
+        <feMerge>
+          <feMergeNode in="blur" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+      <filter id="planet-glow">
+        <feGaussianBlur stdDeviation="1.5" result="blur" />
+        <feMerge>
+          <feMergeNode in="blur" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+    </defs>
+  );
+}
+
+
+// --- Planet rendering (shared between both styles) ---
+interface PlanetBadgeProps {
+  planet: PlanetData;
+  px: number;
+  py: number;
+  hoveredPlanet: string | null;
+  setHoveredPlanet: (p: string | null) => void;
+  showPlanetTooltip: (p: PlanetData, x: number, y: number) => void;
+  hideTooltip: () => void;
+  onPlanetClick?: (p: PlanetData) => void;
+}
+
+function PlanetBadge({
+  planet: p,
+  px,
+  py,
+  hoveredPlanet,
+  setHoveredPlanet,
+  showPlanetTooltip,
+  hideTooltip,
+  onPlanetClick,
+}: PlanetBadgeProps) {
+  const color = getPlanetColor(p.planet);
+  const isHovered = hoveredPlanet === p.planet;
+  const abbr = PLANET_ABBREVIATIONS[p.planet] || p.planet.slice(0, 2);
+
+  return (
+    <g
+      style={{ cursor: 'pointer' }}
+      onMouseEnter={(e) => {
+        e.stopPropagation();
+        setHoveredPlanet(p.planet);
+        const rect = (e.target as SVGElement).closest('svg')?.getBoundingClientRect();
+        if (rect) showPlanetTooltip(p, e.clientX - rect.left, e.clientY - rect.top);
+      }}
+      onMouseLeave={() => {
+        setHoveredPlanet(null);
+        hideTooltip();
+      }}
+      onClick={(e) => {
+        e.stopPropagation();
+        onPlanetClick?.(p);
+      }}
+    >
+      <circle
+        cx={px}
+        cy={py}
+        r={isHovered ? 13 : 11}
+        fill={isHovered ? color : '#F5F0E8'}
+        stroke={color}
+        strokeWidth={2}
+        filter={isHovered ? 'url(#planet-glow)' : undefined}
+        style={{ transition: 'all 0.2s ease' }}
+      />
+      <text
+        x={px}
+        y={py + 4}
+        textAnchor="middle"
+        fill={isHovered ? '#F5F0E8' : color}
+        fontSize={11}
+        fontWeight="bold"
+        fontFamily="serif"
+        style={{ pointerEvents: 'none', transition: 'fill 0.2s ease' }}
+      >
+        {abbr}
+      </text>
+    </g>
+  );
+}
+
+
 export default function InteractiveKundli({ chartData, onPlanetClick, onHouseClick }: InteractiveKundliProps) {
   const [hoveredHouse, setHoveredHouse] = useState<number | null>(null);
   const [hoveredPlanet, setHoveredPlanet] = useState<string | null>(null);
   const [tooltip, setTooltip] = useState<{ x: number; y: number; content: React.ReactNode } | null>(null);
+  const [chartStyle, setChartStyle] = useState<ChartStyle>('north');
 
   const planets = chartData.planets || [];
 
@@ -190,46 +658,18 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
     setHoveredPlanet(null);
   }, []);
 
-  const svgWidth = CELL_SIZE * 4 + GRID_PADDING * 2;
-  const svgHeight = CELL_SIZE * 4 + GRID_PADDING * 2;
+  // --- South Indian Chart ---
+  const renderSouthIndian = () => {
+    const svgWidth = CELL_SIZE * 4 + GRID_PADDING * 2;
+    const svgHeight = CELL_SIZE * 4 + GRID_PADDING * 2;
 
-  return (
-    <div className="relative w-full max-w-[600px]">
-      {/* Cosmic glow effect behind chart */}
-      <div
-        className="absolute inset-0 rounded-2xl opacity-40 blur-xl pointer-events-none"
-        style={{
-          background: 'radial-gradient(circle, rgba(212,175,55,0.3) 0%, rgba(128,0,128,0.15) 50%, transparent 70%)',
-          transform: 'scale(1.1)',
-        }}
-      />
-
+    return (
       <svg
         viewBox={`0 0 ${svgWidth} ${svgHeight}`}
         className="w-full h-auto relative z-10"
         style={{ filter: 'drop-shadow(0 0 12px rgba(212,175,55,0.25))' }}
       >
-        <defs>
-          <linearGradient id="kundli-border-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#9A7B0A" />
-            <stop offset="50%" stopColor="#B8860B" />
-            <stop offset="100%" stopColor="#B8860B" />
-          </linearGradient>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="2" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-          <filter id="planet-glow">
-            <feGaussianBlur stdDeviation="1.5" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
+        <SvgDefs />
 
         {/* Outer gold border */}
         <rect
@@ -356,52 +796,19 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                 const spacing = CELL_SIZE / (cols + 1);
                 const px = x + spacing * (pCol + 1);
                 const py = y + 28 + pRow * 22;
-                const color = getPlanetColor(p.planet);
-                const isHoveredPlanet = hoveredPlanet === p.planet;
-                const abbr = PLANET_ABBREVIATIONS[p.planet] || p.planet.slice(0, 2);
 
                 return (
-                  <g
+                  <PlanetBadge
                     key={p.planet}
-                    style={{ cursor: 'pointer' }}
-                    onMouseEnter={(e) => {
-                      e.stopPropagation();
-                      setHoveredPlanet(p.planet);
-                      const rect = (e.target as SVGElement).closest('svg')?.getBoundingClientRect();
-                      if (rect) showPlanetTooltip(p, e.clientX - rect.left, e.clientY - rect.top);
-                    }}
-                    onMouseLeave={() => {
-                      setHoveredPlanet(null);
-                      hideTooltip();
-                    }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onPlanetClick?.(p);
-                    }}
-                  >
-                    <circle
-                      cx={px}
-                      cy={py}
-                      r={isHoveredPlanet ? 13 : 11}
-                      fill={isHoveredPlanet ? color : '#F5F0E8'}
-                      stroke={color}
-                      strokeWidth={2}
-                      filter={isHoveredPlanet ? 'url(#planet-glow)' : undefined}
-                      style={{ transition: 'all 0.2s ease' }}
-                    />
-                    <text
-                      x={px}
-                      y={py + 4}
-                      textAnchor="middle"
-                      fill={isHoveredPlanet ? '#F5F0E8' : color}
-                      fontSize={11}
-                      fontWeight="bold"
-                      fontFamily="serif"
-                      style={{ pointerEvents: 'none', transition: 'fill 0.2s ease' }}
-                    >
-                      {abbr}
-                    </text>
-                  </g>
+                    planet={p}
+                    px={px}
+                    py={py}
+                    hoveredPlanet={hoveredPlanet}
+                    setHoveredPlanet={setHoveredPlanet}
+                    showPlanetTooltip={showPlanetTooltip}
+                    hideTooltip={hideTooltip}
+                    onPlanetClick={onPlanetClick}
+                  />
                 );
               })}
             </g>
@@ -430,6 +837,219 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           </g>
         ))}
       </svg>
+    );
+  };
+
+  // --- North Indian Chart ---
+  const renderNorthIndian = () => {
+    const svgSize = NI_SIZE;
+
+    return (
+      <svg
+        viewBox={`0 0 ${svgSize} ${svgSize}`}
+        className="w-full h-auto relative z-10"
+        style={{ filter: 'drop-shadow(0 0 12px rgba(212,175,55,0.25))' }}
+      >
+        <SvgDefs />
+
+        {/* Outer gold border */}
+        <rect
+          x={NI_PAD - 2}
+          y={NI_PAD - 2}
+          width={NI_INNER + 4}
+          height={NI_INNER + 4}
+          rx={6}
+          fill="none"
+          stroke="url(#kundli-border-grad)"
+          strokeWidth={2.5}
+          filter="url(#glow)"
+        />
+
+        {/* Background fill */}
+        <rect
+          x={NI_PAD}
+          y={NI_PAD}
+          width={NI_INNER}
+          height={NI_INNER}
+          rx={4}
+          fill="#E8E0D4"
+          opacity={0.95}
+        />
+
+        {/* Structural lines: outer border */}
+        <rect
+          x={NI_PAD}
+          y={NI_PAD}
+          width={NI_INNER}
+          height={NI_INNER}
+          fill="none"
+          stroke="rgba(139,115,85,0.3)"
+          strokeWidth={1}
+        />
+
+        {/* Structural lines: diamond */}
+        <polygon
+          points={pts(MT, MR, MB, ML)}
+          fill="none"
+          stroke="rgba(139,115,85,0.3)"
+          strokeWidth={1}
+        />
+
+        {/* Structural lines: diagonals */}
+        <line x1={TL.x} y1={TL.y} x2={BR.x} y2={BR.y} stroke="rgba(139,115,85,0.3)" strokeWidth={1} />
+        <line x1={TR.x} y1={TR.y} x2={BL.x} y2={BL.y} stroke="rgba(139,115,85,0.3)" strokeWidth={1} />
+
+        {/* Center label */}
+        <text
+          x={CC.x}
+          y={CC.y - 6}
+          textAnchor="middle"
+          fill="#9A7B0A"
+          fontSize={11}
+          fontFamily="serif"
+          opacity={0.6}
+        >
+          Rasi Chart
+        </text>
+        <text
+          x={CC.x}
+          y={CC.y + 10}
+          textAnchor="middle"
+          fill="#9A7B0A"
+          fontSize={9}
+          fontFamily="serif"
+          opacity={0.4}
+        >
+          North Indian
+        </text>
+
+        {/* House regions (interactive polygons) */}
+        {NORTH_HOUSES.map((nh) => {
+          const sign = houseSign(nh.house);
+          const isHovered = hoveredHouse === nh.house;
+          const housePlanets = planetsByHouse[nh.house] || [];
+          const isCorner = [2, 4, 6, 8, 12, 3, 5, 9, 11].includes(nh.house);
+          const isTrapezoid = [1, 4, 7, 10].includes(nh.house);
+
+          return (
+            <g
+              key={nh.house}
+              style={{ cursor: 'pointer' }}
+              onMouseEnter={(e) => {
+                setHoveredHouse(nh.house);
+                const rect = (e.target as SVGElement).closest('svg')?.getBoundingClientRect();
+                if (rect) showHouseTooltip(nh.house, e.clientX - rect.left, e.clientY - rect.top);
+              }}
+              onMouseLeave={hideTooltip}
+              onClick={() => onHouseClick?.(nh.house, sign, housePlanets)}
+            >
+              {/* House polygon (hover highlight) */}
+              <polygon
+                points={nh.points}
+                fill={isHovered ? 'rgba(184,134,11,0.08)' : 'transparent'}
+                stroke="none"
+                style={{ transition: 'fill 0.2s ease' }}
+              />
+
+              {/* House number */}
+              <text
+                x={nh.cx}
+                y={nh.cy - (isTrapezoid ? 14 : 8) - (housePlanets.length > 0 ? 6 : 0)}
+                textAnchor="middle"
+                fill="rgba(139,115,85,0.6)"
+                fontSize={isCorner ? 11 : 13}
+                fontWeight="600"
+                fontFamily="monospace"
+              >
+                {nh.house}
+              </text>
+
+              {/* Zodiac symbol */}
+              <text
+                x={nh.cx}
+                y={nh.cy - (isTrapezoid ? 0 : -4) - (housePlanets.length > 0 ? 6 : 0)}
+                textAnchor="middle"
+                fill="#B8860B"
+                fontSize={isCorner ? 14 : 16}
+                opacity={0.5}
+              >
+                {ZODIAC_SYMBOLS[sign] || ''}
+              </text>
+
+              {/* Planets in this house */}
+              {housePlanets.map((p, idx) => {
+                // Arrange planets in a compact layout within the house region
+                const maxCols = isTrapezoid ? 3 : 2;
+                const cols = Math.min(housePlanets.length, maxCols);
+                const pRow = Math.floor(idx / cols);
+                const pCol = idx % cols;
+                const spacing = isTrapezoid ? 26 : 24;
+                const startX = nh.cx - ((cols - 1) * spacing) / 2;
+                const px = startX + pCol * spacing;
+                const baseY = nh.cy + (isTrapezoid ? 10 : 6) - (housePlanets.length > 0 ? 2 : 0);
+                const py = baseY + pRow * 22;
+
+                return (
+                  <PlanetBadge
+                    key={p.planet}
+                    planet={p}
+                    px={px}
+                    py={py}
+                    hoveredPlanet={hoveredPlanet}
+                    setHoveredPlanet={setHoveredPlanet}
+                    showPlanetTooltip={showPlanetTooltip}
+                    hideTooltip={hideTooltip}
+                    onPlanetClick={onPlanetClick}
+                  />
+                );
+              })}
+            </g>
+          );
+        })}
+      </svg>
+    );
+  };
+
+  return (
+    <div className="relative w-full max-w-[600px]">
+      {/* Chart Style Toggle */}
+      <div className="flex justify-center gap-1 mb-3 relative z-20">
+        <button
+          onClick={() => setChartStyle('north')}
+          className="px-4 py-1.5 text-xs font-semibold rounded-l-md border transition-all duration-200"
+          style={{
+            fontFamily: 'serif',
+            background: chartStyle === 'north' ? '#B8860B' : '#E8E0D4',
+            color: chartStyle === 'north' ? '#F5F0E8' : '#8B7355',
+            borderColor: '#B8860B',
+          }}
+        >
+          North Indian
+        </button>
+        <button
+          onClick={() => setChartStyle('south')}
+          className="px-4 py-1.5 text-xs font-semibold rounded-r-md border transition-all duration-200"
+          style={{
+            fontFamily: 'serif',
+            background: chartStyle === 'south' ? '#B8860B' : '#E8E0D4',
+            color: chartStyle === 'south' ? '#F5F0E8' : '#8B7355',
+            borderColor: '#B8860B',
+          }}
+        >
+          South Indian
+        </button>
+      </div>
+
+      {/* Cosmic glow effect behind chart */}
+      <div
+        className="absolute inset-0 rounded-2xl opacity-40 blur-xl pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle, rgba(212,175,55,0.3) 0%, rgba(128,0,128,0.15) 50%, transparent 70%)',
+          transform: 'scale(1.1)',
+        }}
+      />
+
+      {chartStyle === 'north' ? renderNorthIndian() : renderSouthIndian()}
 
       {/* Tooltip overlay */}
       {tooltip && (

@@ -4,12 +4,14 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Button } from '@/components/ui/button';
 import { Sparkles, Phone, ChevronRight, Star } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n';
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function CTA() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -37,11 +39,11 @@ export default function CTA() {
         </div>
         
         <h2 className="text-4xl sm:text-5xl lg:text-6xl font-['Cinzel_Decorative'] text-[#1a1a2e] mb-6">
-          Ready to Meet Your <span className="text-[#B8860B]">Future?</span>
+          {t('cta.heading')}
         </h2>
-        
+
         <p className="text-lg text-[#1a1a2e]/70 max-w-2xl mx-auto mb-10">
-          Unlock the secrets of your destiny with AI-powered Vedic astrology.
+          {t('cta.subtitle2')}
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
@@ -51,7 +53,7 @@ export default function CTA() {
             className="bg-transparent border border-[#ffaa33] text-[#ffaa33] hover:bg-[#ffaa33] hover:text-[#1a1a2e] transition-all text-lg px-8 py-6 font-['Cinzel']"
           >
             <Sparkles className="w-5 h-5 mr-2" />
-            Chat with AI Astrologer
+            {t('cta.chatAI')}
             <ChevronRight className="w-5 h-5 ml-2" />
           </Button>
           
@@ -61,7 +63,7 @@ export default function CTA() {
             className="border-[#9A7B0A]/50 text-[#1a1a2e] text-lg px-8 py-6 hover:bg-[#9A7B0A]/10 hover:border-[#9A7B0A] bg-transparent font-['Cinzel']"
           >
             <Phone className="w-5 h-5 mr-2" />
-            Talk to Expert
+            {t('cta.talkExpert')}
           </Button>
         </div>
         

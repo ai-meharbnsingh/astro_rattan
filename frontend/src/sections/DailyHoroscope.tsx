@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Sun, Loader2 } from 'lucide-react';
 import { api } from '@/lib/api';
+import { useTranslation } from '@/lib/i18n';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -33,6 +34,7 @@ const fallbackData: Record<string, string> = {
 
 export default function DailyHoroscope() {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
   const [selectedSign, setSelectedSign] = useState(zodiacSigns[0]);
   const [horoscopeData, setHoroscopeData] = useState<Record<string, string>>(fallbackData);
   const [loading, setLoading] = useState(false);
@@ -74,10 +76,10 @@ export default function DailyHoroscope() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="horoscope-title text-center mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-saffron/10 text-sacred-saffron text-sm font-medium mb-6 border border-sacred-saffron/30">
-            <Sun className="w-4 h-4" />Daily Guidance
+            <Sun className="w-4 h-4" />{t('horoscope.title')}
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-sacred font-bold text-cosmic-text mb-4">
-            Your Daily<span className="text-gradient-saffron"> Horoscope</span>
+            {t('horoscope.title')}
           </h2>
         </div>
         <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-12 gap-3 mb-12">

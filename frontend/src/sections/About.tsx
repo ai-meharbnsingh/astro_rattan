@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Sparkles, Star, ChevronRight, Users, Award, Globe } from 'lucide-react';
 import { Canvas } from '@react-three/fiber';
 import { FloatingPlanet } from '@/components/three';
+import { useTranslation } from '@/lib/i18n';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -17,6 +18,7 @@ const stats = [
 
 export default function About() {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -35,17 +37,17 @@ export default function About() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           <div className="about-content">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold/10 text-sacred-gold text-sm font-medium mb-6 border border-sacred-gold/30">
-              <Sparkles className="w-4 h-4" />Our Story
+              <Sparkles className="w-4 h-4" />{t('about.ourStory')}
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-sacred font-bold text-cosmic-text mb-6">
-              Bridging Ancient Wisdom with<span className="text-gradient-gold"> Modern Technology</span>
+              {t('about.heading')}
             </h2>
             <div className="space-y-4 text-cosmic-text-secondary mb-8">
-              <p>Astro Rattan was born from a profound respect for Vedic astrology and a vision to make this ancient wisdom accessible to everyone.</p>
-              <p>We believe that understanding your cosmic blueprint empowers you to make better decisions and navigate life&apos;s challenges.</p>
+              <p>{t('about.p1')}</p>
+              <p>{t('about.p2')}</p>
             </div>
             <Button className="btn-sacred">
-              Learn More About Us<ChevronRight className="w-5 h-5 ml-2" />
+              {t('about.learnMore')}<ChevronRight className="w-5 h-5 ml-2" />
             </Button>
           </div>
           <div className="about-image relative">

@@ -85,7 +85,7 @@ export default function Navigation() {
                   onClick={() => setIsMoreOpen(!isMoreOpen)}
                   className="text-sm text-[#1a1a2e]/70 hover:text-[#B8860B] transition-colors font-cinzel tracking-wide uppercase text-[13px] flex items-center gap-1"
                 >
-                  More
+                  {t('common.viewAll')}
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isMoreOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {isMoreOpen && (
@@ -145,7 +145,7 @@ export default function Navigation() {
               ) : (
                 <Link to="/login" className="ml-2 px-4 py-2 bg-transparent border border-[#9A7B0A] text-[#9A7B0A] text-sm font-medium hover:bg-[#9A7B0A] hover:text-[#1a1a2e] transition-all hidden sm:flex items-center gap-1.5">
                   <Sparkles className="w-4 h-4" />
-                  Sign In
+                  {t('auth.signIn')}
                 </Link>
               )}
 

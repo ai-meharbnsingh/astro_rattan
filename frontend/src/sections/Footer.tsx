@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Stars, Mail, Phone, Facebook, Twitter, Instagram, Youtube, ChevronRight, Heart } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n';
 
 const footerLinks = {
   services: [
@@ -37,6 +38,15 @@ const footerLinks = {
 };
 
 export default function Footer() {
+  const { t } = useTranslation();
+
+  const sectionTitleKeys: Record<string, string> = {
+    services: 'footer.services',
+    spiritual: 'footer.spiritual',
+    shop: 'footer.shop',
+    company: 'footer.company',
+  };
+
   return (
     <footer className="relative bg-[#F5F0E8] overflow-hidden border-t border-[#9A7B0A]/20">
       {/* Top gold line */}
@@ -52,7 +62,7 @@ export default function Footer() {
               <span className="font-['Cinzel'] font-bold text-2xl text-[#1a1a2e]">Astro Rattan</span>
             </Link>
             <p className="text-[#1a1a2e]/60 mb-6 max-w-sm">
-              Bridging ancient Vedic wisdom with modern AI technology to guide you through life&apos;s journey.
+              {t('footer.tagline')}
             </p>
             <div className="space-y-3 mb-6">
               <a href="mailto:support@astrovedic.com" className="flex items-center gap-3 text-[#1a1a2e]/60 hover:text-[#B8860B] transition-colors">
@@ -79,7 +89,7 @@ export default function Footer() {
           
           {Object.entries(footerLinks).map(([title, links]) => (
             <div key={title}>
-              <h4 className="font-['Cinzel'] font-semibold text-[#9A7B0A] mb-4 capitalize">{title}</h4>
+              <h4 className="font-['Cinzel'] font-semibold text-[#9A7B0A] mb-4 capitalize">{t(sectionTitleKeys[title] || title)}</h4>
               <ul className="space-y-2">
                 {links.map((link, i) => (
                   <li key={i}>
@@ -99,7 +109,7 @@ export default function Footer() {
         
         <div className="py-6 border-t border-[#9A7B0A]/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-[#1a1a2e]/40">
-            &copy; {new Date().getFullYear()} Astro Rattan. Made with <Heart className="w-4 h-4 inline text-[#ffaa33]" /> in India
+            &copy; {new Date().getFullYear()} Astro Rattan. {t('footer.madeWith')} <Heart className="w-4 h-4 inline text-[#ffaa33]" /> in India
           </p>
           <div className="flex gap-6">
             {['Privacy Policy', 'Terms of Service', 'Refund Policy'].map((item, i) => (
@@ -115,7 +125,7 @@ export default function Footer() {
         </div>
         <div className="pb-4 text-center">
           <p className="text-xs text-[#8B7355]/60" style={{ fontFamily: "'IM Fell English', serif" }}>
-            Powered by{' '}
+            {t('footer.poweredBy')}{' '}
             <a
               href="https://adaptive-mind.com"
               target="_blank"

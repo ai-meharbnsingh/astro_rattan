@@ -30,6 +30,8 @@ const translations: Record<Language, TranslationMap> = {
     'nav.profile': 'Profile',
 
     // Auth
+    'auth.welcome': 'Welcome to Astro Rattan',
+    'auth.subtitle': 'Sign in to access personalized cosmic insights',
     'auth.signIn': 'Sign In',
     'auth.signUp': 'Sign Up',
     'auth.signOut': 'Sign Out',
@@ -80,11 +82,17 @@ const translations: Record<Language, TranslationMap> = {
     'hero.knowYour': 'Know Your',
     'hero.destiny': 'Destiny',
     'hero.getFreeKundli': 'Get Free Kundli',
+    'hero.observatory': 'THE OBSERVATORY',
+    'hero.ofDestiny': 'Of Destiny',
+    'hero.consultExpert': 'Consult an Expert',
+    'hero.calculateChart': 'Calculate Your Birth Chart',
     'hero.quickKundli': 'Quick Kundli',
     'hero.birthPlace': 'Birth Place',
     'hero.generateKundli': 'Generate Kundli',
 
     // Features Section
+    'features.celestialHouses': 'The Celestial Houses',
+    'features.cosmicServices': 'Cosmic Services',
     'features.heading': 'Unlock the Secrets of',
     'features.headingHighlight': ' Vedic Astrology',
     'features.kundli.title': 'Kundli',
@@ -142,13 +150,23 @@ const translations: Record<Language, TranslationMap> = {
     'shop.books': 'Books',
 
     // About / CTA
+    'about.ourStory': 'Our Story',
+    'about.heading': 'Bridging Ancient Wisdom with Modern Technology',
+    'about.p1': 'Astro Rattan was born from a profound respect for Vedic astrology and a vision to make this ancient wisdom accessible to everyone.',
+    'about.p2': 'We believe that understanding your cosmic blueprint empowers you to make better decisions and navigate life\'s challenges.',
+    'about.learnMore': 'Learn More About Us',
     'about.title': 'Ancient Wisdom, Modern Technology',
     'about.subtitle': 'Bridging the gap between traditional Vedic astrology and cutting-edge AI',
+    'cta.heading': 'Ready to Meet Your Future?',
+    'cta.subtitle2': 'Unlock the secrets of your destiny with AI-powered Vedic astrology.',
+    'cta.chatAI': 'Chat with AI Astrologer',
+    'cta.talkExpert': 'Talk to Expert',
     'cta.title': 'Begin Your Cosmic Journey',
     'cta.subtitle': 'Discover the wisdom of the stars and unlock your true potential',
     'cta.button': 'Get Started Free',
 
     // Testimonials
+    'testimonials.heading': 'What Our Users Say',
     'testimonials.title': 'What Our Users Say',
     'testimonials.subtitle': 'Trusted by thousands of astrology enthusiasts',
 
@@ -156,6 +174,9 @@ const translations: Record<Language, TranslationMap> = {
     'footer.tagline': 'Bridging ancient Vedic wisdom with modern technology',
     'footer.quickLinks': 'Quick Links',
     'footer.services': 'Services',
+    'footer.spiritual': 'Spiritual',
+    'footer.shop': 'Shop',
+    'footer.company': 'Company',
     'footer.resources': 'Resources',
     'footer.contact': 'Contact Us',
     'footer.privacy': 'Privacy Policy',
@@ -163,6 +184,7 @@ const translations: Record<Language, TranslationMap> = {
     'footer.copyright': 'All rights reserved',
     'footer.madeWith': 'Made with',
     'footer.forSeekers': 'for spiritual seekers',
+    'footer.poweredBy': 'Powered by',
 
     // Consultation
     'consultation.title': 'Consult an Astrologer',
@@ -221,6 +243,8 @@ const translations: Record<Language, TranslationMap> = {
     'nav.profile': 'प्रोफ़ाइल',
 
     // Auth
+    'auth.welcome': 'एस्ट्रो रत्तन में आपका स्वागत है',
+    'auth.subtitle': 'व्यक्तिगत ब्रह्मांडीय अंतर्दृष्टि के लिए साइन इन करें',
     'auth.signIn': 'साइन इन',
     'auth.signUp': 'साइन अप',
     'auth.signOut': 'साइन आउट',
@@ -271,11 +295,17 @@ const translations: Record<Language, TranslationMap> = {
     'hero.knowYour': 'जानें अपना',
     'hero.destiny': 'भाग्य',
     'hero.getFreeKundli': 'मुफ़्त कुंडली पाएं',
+    'hero.observatory': 'वेधशाला',
+    'hero.ofDestiny': 'भाग्य की',
+    'hero.consultExpert': 'विशेषज्ञ से परामर्श',
+    'hero.calculateChart': 'अपनी जन्म कुंडली बनाएं',
     'hero.quickKundli': 'त्वरित कुंडली',
     'hero.birthPlace': 'जन्म स्थान',
     'hero.generateKundli': 'कुंडली बनाएं',
 
     // Features Section
+    'features.celestialHouses': 'खगोलीय भाव',
+    'features.cosmicServices': 'ब्रह्मांडीय सेवाएं',
     'features.heading': 'खोलें रहस्य',
     'features.headingHighlight': ' वैदिक ज्योतिष के',
     'features.kundli.title': 'कुंडली',
@@ -333,13 +363,23 @@ const translations: Record<Language, TranslationMap> = {
     'shop.books': 'पुस्तकें',
 
     // About / CTA
+    'about.ourStory': 'हमारी कहानी',
+    'about.heading': 'प्राचीन ज्ञान को आधुनिक तकनीक से जोड़ना',
+    'about.p1': 'एस्ट्रो रत्तन वैदिक ज्योतिष के प्रति गहरे सम्मान और इस प्राचीन ज्ञान को सभी के लिए सुलभ बनाने की दृष्टि से बना है।',
+    'about.p2': 'हम मानते हैं कि आपकी ब्रह्मांडीय रूपरेखा को समझना आपको बेहतर निर्णय लेने और जीवन की चुनौतियों का सामना करने में सशक्त बनाता है।',
+    'about.learnMore': 'हमारे बारे में और जानें',
     'about.title': 'प्राचीन ज्ञान, आधुनिक तकनीक',
     'about.subtitle': 'पारंपरिक वैदिक ज्योतिष और अत्याधुनिक AI के बीच सेतु',
+    'cta.heading': 'अपने भविष्य से मिलने के लिए तैयार?',
+    'cta.subtitle2': 'AI-संचालित वैदिक ज्योतिष से अपने भाग्य के रहस्य खोलें।',
+    'cta.chatAI': 'AI ज्योतिषी से बात करें',
+    'cta.talkExpert': 'विशेषज्ञ से बात करें',
     'cta.title': 'अपनी ब्रह्मांडीय यात्रा शुरू करें',
     'cta.subtitle': 'सितारों का ज्ञान खोजें और अपनी सच्ची क्षमता को जागृत करें',
     'cta.button': 'मुफ़्त शुरू करें',
 
     // Testimonials
+    'testimonials.heading': 'हमारे उपयोगकर्ता क्या कहते हैं',
     'testimonials.title': 'हमारे उपयोगकर्ता क्या कहते हैं',
     'testimonials.subtitle': 'हजारों ज्योतिष प्रेमियों द्वारा विश्वसनीय',
 
@@ -347,6 +387,9 @@ const translations: Record<Language, TranslationMap> = {
     'footer.tagline': 'प्राचीन वैदिक ज्ञान को आधुनिक तकनीक से जोड़ना',
     'footer.quickLinks': 'त्वरित लिंक',
     'footer.services': 'सेवाएं',
+    'footer.spiritual': 'आध्यात्मिक',
+    'footer.shop': 'दुकान',
+    'footer.company': 'कंपनी',
     'footer.resources': 'संसाधन',
     'footer.contact': 'संपर्क करें',
     'footer.privacy': 'गोपनीयता नीति',
@@ -354,6 +397,7 @@ const translations: Record<Language, TranslationMap> = {
     'footer.copyright': 'सर्वाधिकार सुरक्षित',
     'footer.madeWith': 'बनाया गया',
     'footer.forSeekers': 'आध्यात्मिक साधकों के लिए',
+    'footer.poweredBy': 'संचालित',
 
     // Consultation
     'consultation.title': 'ज्योतिषी से परामर्श करें',

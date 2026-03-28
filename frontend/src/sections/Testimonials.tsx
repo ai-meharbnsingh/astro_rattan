@@ -3,6 +3,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Card, CardContent } from '@/components/ui/card';
 import { Star, Quote } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -15,6 +16,7 @@ const testimonials = [
 
 export default function Testimonials() {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -28,10 +30,10 @@ export default function Testimonials() {
       <div className="relative z-10">
         <div className="testimonials-title text-center mb-16 px-4">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold/10 text-sacred-gold text-sm font-medium mb-6 border border-sacred-gold/30">
-            <Star className="w-4 h-4" />Testimonials
+            <Star className="w-4 h-4" />{t('testimonials.heading')}
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-sacred font-bold text-cosmic-text mb-4">
-            What Our Users<span className="text-gradient-gold"> Say</span>
+            {t('testimonials.heading')}
           </h2>
         </div>
         <div className="relative overflow-hidden">
