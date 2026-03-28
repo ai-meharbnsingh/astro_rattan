@@ -25,6 +25,7 @@ import CartCheckout from './sections/CartCheckout';
 import ConsultationPage from './sections/ConsultationPage';
 import AdminDashboard from './sections/AdminDashboard';
 import AstrologerDashboard from './sections/AstrologerDashboard';
+import AstrologerPanel from './sections/AstrologerPanel';
 import PrashnavaliPage from './sections/PrashnavaliPage';
 import NumerologyTarot from './sections/NumerologyTarot';
 import UserProfile from './sections/UserProfile';
@@ -107,6 +108,7 @@ function App() {
           <Route path="/consultation" element={<ConsultationPage />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/astrologer-dashboard" element={<AstrologerDashboard />} />
+          <Route path="/astrologer-panel" element={<AstrologerPanel />} />
           <Route path="/prashnavali" element={<PrashnavaliPage />} />
           <Route path="/numerology" element={<NumerologyTarot />} />
           <Route path="/dashboard" element={<Dashboard />} />

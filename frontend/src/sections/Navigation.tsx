@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Stars, Menu, X, MessageCircle, ShoppingCart, User, Search, ChevronDown, Shield, Star, Sparkles } from 'lucide-react';
+import { Stars, Menu, X, MessageCircle, ShoppingCart, User, Search, ChevronDown, Shield, Star, Sparkles, Users } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/lib/i18n';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
@@ -132,9 +132,14 @@ export default function Navigation() {
                 </Link>
               )}
 
-              {isAuthenticated && user?.role === 'astrologer' && (
-                <Link to="/astrologer-dashboard" className="p-2.5 text-[#1a1a2e]/70 hover:text-[#B8860B] transition-colors hidden lg:block">
+              {isAuthenticated && (user?.role === 'astrologer' || user?.role === 'admin') && (
+                <Link to="/astrologer-dashboard" className="p-2.5 text-[#1a1a2e]/70 hover:text-[#B8860B] transition-colors hidden lg:block" title="Dashboard">
                   <Star className="w-5 h-5" />
+                </Link>
+              )}
+              {isAuthenticated && (user?.role === 'astrologer' || user?.role === 'admin') && (
+                <Link to="/astrologer-panel" className="p-2.5 text-[#1a1a2e]/70 hover:text-[#B8860B] transition-colors hidden lg:block" title="Clients">
+                  <Users className="w-5 h-5" />
                 </Link>
               )}
 
@@ -177,6 +182,26 @@ export default function Navigation() {
               </Link>
             ))}
             <div className="pt-4 mt-4 border-t border-[#9A7B0A]/20 space-y-3">
+              {isAuthenticated && (user?.role === 'astrologer' || user?.role === 'admin') && (
+                <>
+                  <Link
+                    to="/astrologer-dashboard"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-2 w-full px-4 py-3 border border-[#9A7B0A] text-[#9A7B0A] font-medium justify-center hover:bg-[#9A7B0A]/10 transition-colors"
+                  >
+                    <Star className="w-4 h-4" />
+                    {t('nav.astrologerDashboard')}
+                  </Link>
+                  <Link
+                    to="/astrologer-panel"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-2 w-full px-4 py-3 border border-[#9A7B0A] text-[#9A7B0A] font-medium justify-center hover:bg-[#9A7B0A]/10 transition-colors"
+                  >
+                    <Users className="w-4 h-4" />
+                    {t('astrologer.clients')}
+                  </Link>
+                </>
+              )}
               <LanguageSwitcher />
               <Link
                 to="/ai-chat"

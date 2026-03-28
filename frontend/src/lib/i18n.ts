@@ -382,6 +382,21 @@ const translations: Record<Language, TranslationMap> = {
     'kp.subLord': 'Sub Lord',
     'kp.significators': 'House Significators',
 
+    // Astrologer Panel
+    'astrologer.panel': 'Astrologer Panel',
+    'astrologer.clients': 'My Clients',
+    'astrologer.addClient': 'Add New Client',
+    'astrologer.searchClients': 'Search by name or phone...',
+    'astrologer.clientName': 'Client Name',
+    'astrologer.clientPhone': 'Phone',
+    'astrologer.clientEmail': 'Email',
+    'astrologer.notes': 'Notes',
+    'astrologer.generateSave': 'Generate & Save',
+    'astrologer.viewKundli': 'Client Kundli',
+    'astrologer.backToClients': 'Back to Clients',
+    'astrologer.noClients': 'No clients yet',
+    'astrologer.registerAsAstrologer': 'Register as Astrologer',
+
     // Miscellaneous
     'misc.language': 'Language',
     'misc.english': 'English',
@@ -768,6 +783,21 @@ const translations: Record<Language, TranslationMap> = {
     'kp.starLord': 'नक्षत्र स्वामी',
     'kp.subLord': 'उप स्वामी',
     'kp.significators': 'भाव कारक',
+
+    // Astrologer Panel
+    'astrologer.panel': 'ज्योतिषी पैनल',
+    'astrologer.clients': 'मेरे ग्राहक',
+    'astrologer.addClient': 'नया ग्राहक जोड़ें',
+    'astrologer.searchClients': 'नाम या फोन से खोजें...',
+    'astrologer.clientName': 'ग्राहक का नाम',
+    'astrologer.clientPhone': 'फोन',
+    'astrologer.clientEmail': 'ईमेल',
+    'astrologer.notes': 'टिप्पणियां',
+    'astrologer.generateSave': 'कुंडली बनाएं और सहेजें',
+    'astrologer.viewKundli': 'ग्राहक कुंडली',
+    'astrologer.backToClients': 'ग्राहकों पर वापस',
+    'astrologer.noClients': 'अभी तक कोई ग्राहक नहीं',
+    'astrologer.registerAsAstrologer': 'ज्योतिषी के रूप में पंजीकरण',
 
     // Miscellaneous
     'misc.language': 'भाषा',

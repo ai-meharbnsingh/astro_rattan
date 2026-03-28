@@ -215,6 +215,46 @@ class AstrologerAvailability(BaseModel):
     is_available: bool
 
 
+class AstrologerClientCreate(BaseModel):
+    client_name: str = Field(min_length=1)
+    client_phone: Optional[str] = None
+    client_email: Optional[str] = None
+    birth_date: Optional[str] = None  # YYYY-MM-DD
+    birth_time: Optional[str] = None  # HH:MM:SS
+    birth_place: Optional[str] = None
+    latitude: Optional[float] = Field(default=None, ge=-90, le=90)
+    longitude: Optional[float] = Field(default=None, ge=-180, le=180)
+    timezone_offset: Optional[float] = Field(default=5.5, ge=-12, le=14)
+    gender: Optional[str] = "male"
+    notes: Optional[str] = None
+
+
+class AstrologerClientUpdate(BaseModel):
+    client_name: Optional[str] = Field(default=None, min_length=1)
+    client_phone: Optional[str] = None
+    client_email: Optional[str] = None
+    birth_date: Optional[str] = None
+    birth_time: Optional[str] = None
+    birth_place: Optional[str] = None
+    latitude: Optional[float] = Field(default=None, ge=-90, le=90)
+    longitude: Optional[float] = Field(default=None, ge=-180, le=180)
+    timezone_offset: Optional[float] = Field(default=None, ge=-12, le=14)
+    gender: Optional[str] = None
+    notes: Optional[str] = None
+
+
+class AstrologerRegisterRequest(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=6)
+    name: str = Field(min_length=1)
+    phone: Optional[str] = None
+    display_name: Optional[str] = None
+    specializations: str = "Vedic"
+    experience_years: int = Field(default=0, ge=0)
+    per_minute_rate: float = Field(default=10.0, gt=0)
+    languages: str = '["English"]'
+
+
 # ============================================================
 # Reports
 # ============================================================

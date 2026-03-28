@@ -15,6 +15,7 @@ from app.models import (
     TokenResponse,
     UserProfileUpdate,
     ChangePasswordRequest,
+    AstrologerRegisterRequest,
 )
 
 from app.config import LOGIN_RATE_LIMIT
@@ -51,6 +52,63 @@ def register(
            FROM users WHERE email = %s""",
         (body.email,),
     ).fetchone()
+
+    user = UserResponse(
+        id=user_row["id"],
+        email=user_row["email"],
+        name=user_row["name"],
+        role=user_row["role"],
+        phone=user_row["phone"],
+        date_of_birth=user_row["date_of_birth"],
+        gender=user_row["gender"],
+        city=user_row["city"],
+        avatar_url=user_row["avatar_url"],
+        created_at=user_row["created_at"],
+    )
+    token = create_token({"sub": user.id, "email": user.email, "role": user.role})
+    background_tasks.add_task(send_registration_welcome, body.name, body.email)
+    return TokenResponse(user=user, token=token)
+
+
+@router.post("/register-astrologer", status_code=status.HTTP_201_CREATED, response_model=TokenResponse)
+def register_astrologer(
+    body: AstrologerRegisterRequest,
+    background_tasks: BackgroundTasks,
+    db: Any = Depends(get_db),
+):
+    """Register a new astrologer account — creates user with role='astrologer' and astrologer profile."""
+    row = db.execute("SELECT id FROM users WHERE email = %s", (body.email,)).fetchone()
+    if row:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already registered")
+
+    pw_hash = hash_password(body.password)
+    db.execute(
+        """INSERT INTO users (email, password_hash, name, role, phone)
+           VALUES (%s, %s, %s, 'astrologer', %s)""",
+        (body.email, pw_hash, body.name, body.phone),
+    )
+    db.commit()
+
+    user_row = db.execute(
+        """SELECT id, email, name, role, phone, date_of_birth, gender, city, avatar_url, created_at
+           FROM users WHERE email = %s""",
+        (body.email,),
+    ).fetchone()
+
+    # Create astrologer profile entry
+    db.execute(
+        """INSERT INTO astrologers (user_id, display_name, specializations, experience_years, per_minute_rate, languages)
+           VALUES (%s, %s, %s, %s, %s, %s)""",
+        (
+            user_row["id"],
+            body.display_name or body.name,
+            body.specializations,
+            body.experience_years,
+            body.per_minute_rate,
+            body.languages,
+        ),
+    )
+    db.commit()
 
     user = UserResponse(
         id=user_row["id"],

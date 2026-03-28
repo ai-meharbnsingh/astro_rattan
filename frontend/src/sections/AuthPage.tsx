@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Stars, Mail, Lock, User, ChevronRight } from 'lucide-react';
+import { Stars, Mail, Lock, User, ChevronRight, Star } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/lib/i18n';
+import { api } from '@/lib/api';
 
 export default function AuthPage() {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ export default function AuthPage() {
   const { t } = useTranslation();
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
   const [registerForm, setRegisterForm] = useState({ name: '', email: '', password: '' });
+  const [isAstrologer, setIsAstrologer] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -27,7 +29,22 @@ export default function AuthPage() {
   const handleRegister = async () => {
     if (!registerForm.name || !registerForm.email || !registerForm.password) return;
     setLoading(true); setError('');
-    try { await register(registerForm.email, registerForm.password, registerForm.name); navigate('/'); }
+    try {
+      if (isAstrologer) {
+        // Use astrologer registration endpoint
+        const data = await api.post('/api/auth/register-astrologer', {
+          email: registerForm.email,
+          password: registerForm.password,
+          name: registerForm.name,
+        });
+        localStorage.setItem('astrovedic_token', data.token);
+        // Force reload to pick up the new user
+        window.location.href = '/astrologer-panel';
+      } else {
+        await register(registerForm.email, registerForm.password, registerForm.name);
+        navigate('/');
+      }
+    }
     catch (err) { setError(err instanceof Error ? err.message : 'Registration failed'); }
     finally { setLoading(false); }
   };
@@ -77,8 +94,23 @@ export default function AuthPage() {
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold" />
                 <Input type="password" value={registerForm.password} onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })} placeholder={t('auth.password')} onKeyDown={(e) => e.key === 'Enter' && handleRegister()} className="pl-10 input-sacred" />
               </div>
+              {/* Astrologer toggle */}
+              <button
+                onClick={() => setIsAstrologer(!isAstrologer)}
+                className={`w-full flex items-center gap-3 p-3 border transition-colors rounded-lg ${
+                  isAstrologer
+                    ? 'border-sacred-gold bg-sacred-gold/10 text-sacred-gold'
+                    : 'border-sacred-gold/20 text-cosmic-text-secondary hover:border-sacred-gold/40'
+                }`}
+              >
+                <Star className={`w-5 h-5 ${isAstrologer ? 'text-sacred-gold' : 'text-cosmic-text-muted'}`} />
+                <span className="text-sm font-medium">{t('astrologer.registerAsAstrologer')}</span>
+                <div className={`ml-auto w-10 h-5 rounded-full transition-colors ${isAstrologer ? 'bg-sacred-gold' : 'bg-cosmic-surface'}`}>
+                  <div className={`w-4 h-4 rounded-full bg-white shadow-sm transform transition-transform mt-0.5 ${isAstrologer ? 'translate-x-5.5 ml-[22px]' : 'ml-0.5'}`} />
+                </div>
+              </button>
               <Button onClick={handleRegister} disabled={loading || !registerForm.name || !registerForm.email || !registerForm.password} className="w-full btn-sacred disabled:opacity-50">
-                {loading ? t('common.loading') : t('auth.signUp')}<ChevronRight className="w-5 h-5 ml-2" />
+                {loading ? t('common.loading') : (isAstrologer ? t('astrologer.registerAsAstrologer') : t('auth.signUp'))}<ChevronRight className="w-5 h-5 ml-2" />
               </Button>
             </div>
           </TabsContent>

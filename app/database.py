@@ -542,6 +542,28 @@ CREATE TABLE IF NOT EXISTS forum_likes (
 CREATE INDEX IF NOT EXISTS idx_forum_likes_reply ON forum_likes(reply_id);
 CREATE INDEX IF NOT EXISTS idx_forum_likes_user ON forum_likes(user_id);
 
+-- Astrologer Client Management
+CREATE TABLE IF NOT EXISTS astrologer_clients (
+    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+    astrologer_user_id TEXT NOT NULL REFERENCES users(id),
+    client_name TEXT NOT NULL,
+    client_phone TEXT,
+    client_email TEXT,
+    birth_date TEXT,
+    birth_time TEXT,
+    birth_place TEXT,
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION,
+    timezone_offset DOUBLE PRECISION DEFAULT 5.5,
+    gender TEXT DEFAULT 'male',
+    notes TEXT,
+    kundli_id TEXT REFERENCES kundlis(id),
+    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS'),
+    updated_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+);
+CREATE INDEX IF NOT EXISTS idx_astrologer_clients_astrologer ON astrologer_clients(astrologer_user_id);
+CREATE INDEX IF NOT EXISTS idx_astrologer_clients_name ON astrologer_clients(client_name);
+
 -- Applied Migrations Tracker
 CREATE TABLE IF NOT EXISTS applied_migrations (
     version INTEGER PRIMARY KEY,
