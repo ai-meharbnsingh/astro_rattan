@@ -494,6 +494,23 @@ _SIGN_ORDER = [
 ]
 
 
+def _sanitize_text(text: str) -> str:
+    """Replace Unicode characters that Helvetica doesn't support."""
+    return (str(text)
+        .replace("\u2014", "-")   # em-dash
+        .replace("\u2013", "-")   # en-dash
+        .replace("\u2018", "'")   # left single quote
+        .replace("\u2019", "'")   # right single quote
+        .replace("\u201c", '"')   # left double quote
+        .replace("\u201d", '"')   # right double quote
+        .replace("\u2022", "*")   # bullet
+        .replace("\u2026", "...")  # ellipsis
+        .replace("\u00b0", "deg") # degree symbol
+        .replace("\u2265", ">=")  # >=
+        .replace("\u2264", "<=")  # <=
+    )
+
+
 def _build_kundli_pdf(row: dict, chart: dict) -> bytes:
     """Build a comprehensive, professional Kundli PDF report and return raw bytes.
 
@@ -562,10 +579,16 @@ def _build_kundli_pdf(row: dict, chart: dict) -> bytes:
     footer_text = f"Powered by Semantic Gravity | astrovedic-web.vercel.app | Generated on {generated_date}"
 
     class KundliPDF(FPDF):
+        def cell(self, w=0, h=0, txt="", *args, **kwargs):
+            return super().cell(w, h, _sanitize_text(txt), *args, **kwargs)
+
+        def multi_cell(self, w, h=0, txt="", *args, **kwargs):
+            return super().multi_cell(w, h, _sanitize_text(txt), *args, **kwargs)
+
         def header(self):
             self.set_font("Helvetica", "B", 14)
             self.set_text_color(*GOLD)
-            self.cell(0, 8, "Astro Rattan  --  Vedic Birth Chart Report", align="C", new_x="LMARGIN", new_y="NEXT")
+            super().cell(0, 8, "Astro Rattan -- Vedic Birth Chart Report", align="C", new_x="LMARGIN", new_y="NEXT")
             self.set_text_color(0, 0, 0)
             self.ln(2)
 
@@ -573,7 +596,7 @@ def _build_kundli_pdf(row: dict, chart: dict) -> bytes:
             self.set_y(-12)
             self.set_font("Helvetica", "I", 7)
             self.set_text_color(120, 120, 120)
-            self.cell(0, 8, f"Page {self.page_no()}  |  {footer_text}", align="C")
+            super().cell(0, 8, _sanitize_text(f"Page {self.page_no()}  |  {footer_text}"), align="C")
             self.set_text_color(0, 0, 0)
 
         def section_title(self, title: str):
