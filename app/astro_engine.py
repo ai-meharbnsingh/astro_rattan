@@ -176,9 +176,13 @@ def calculate_planet_positions(
     dt_local = _parse_datetime(birth_date, birth_time, tz_offset)
 
     if _HAS_SWE:
-        return _calculate_swe(dt_local, latitude, longitude)
+        result = _calculate_swe(dt_local, latitude, longitude)
+        result["_engine"] = "swisseph"
+        return result
     else:
-        return _calculate_fallback(dt_local, latitude, longitude)
+        result = _calculate_fallback(dt_local, latitude, longitude)
+        result["_engine"] = "fallback"
+        return result
 
 
 # ============================================================
