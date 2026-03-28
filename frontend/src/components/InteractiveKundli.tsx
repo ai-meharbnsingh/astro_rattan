@@ -754,18 +754,6 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                 style={{ transition: 'all 0.2s ease' }}
               />
 
-              {/* House number */}
-              <text
-                x={x + 8}
-                y={y + 16}
-                fill="rgba(139,115,85,0.6)"
-                fontSize={13}
-                fontWeight="600"
-                fontFamily="monospace"
-              >
-                {house}
-              </text>
-
               {/* Zodiac symbol */}
               <text
                 x={x + CELL_SIZE - 8}
@@ -952,19 +940,6 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                 stroke="none"
                 style={{ transition: 'fill 0.2s ease' }}
               />
-
-              {/* House number */}
-              <text
-                x={nh.cx}
-                y={nh.cy - (isTrapezoid ? 14 : 8) - (housePlanets.length > 0 ? 6 : 0)}
-                textAnchor="middle"
-                fill="rgba(139,115,85,0.6)"
-                fontSize={isCorner ? 11 : 13}
-                fontWeight="600"
-                fontFamily="monospace"
-              >
-                {nh.house}
-              </text>
 
               {/* Zodiac symbol */}
               <text

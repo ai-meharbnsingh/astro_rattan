@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Stars, Menu, X, MessageCircle, ShoppingCart, User, Search, ChevronDown, Shield, Star, Sparkles, Users } from 'lucide-react';
+import { Stars, Menu, X, MessageCircle, ShoppingCart, User, Search, ChevronDown, Shield, Star, Sparkles, Users, LogOut } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/lib/i18n';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
@@ -25,7 +25,7 @@ const moreLinks = [
 const allLinks = [...primaryLinks, ...moreLinks];
 
 export default function Navigation() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const { t } = useTranslation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -144,9 +144,18 @@ export default function Navigation() {
               )}
 
               {isAuthenticated ? (
-                <Link to="/profile" className="p-2.5 text-[#1a1a2e]/70 hover:text-[#B8860B] transition-colors">
-                  <User className="w-5 h-5" />
-                </Link>
+                <>
+                  <Link to="/profile" className="p-2.5 text-[#1a1a2e]/70 hover:text-[#B8860B] transition-colors">
+                    <User className="w-5 h-5" />
+                  </Link>
+                  <button
+                    onClick={logout}
+                    className="p-2.5 text-[#1a1a2e]/70 hover:text-[#B8860B] transition-colors hidden sm:block"
+                    title={t('auth.signOut')}
+                  >
+                    <LogOut className="w-4.5 h-4.5" />
+                  </button>
+                </>
               ) : (
                 <Link to="/login" className="ml-2 px-4 py-2 bg-transparent border border-[#9A7B0A] text-[#9A7B0A] text-sm font-medium hover:bg-[#9A7B0A] hover:text-[#1a1a2e] transition-all hidden sm:flex items-center gap-1.5">
                   <Sparkles className="w-4 h-4" />
@@ -211,7 +220,15 @@ export default function Navigation() {
                 <MessageCircle className="w-4 h-4" />
                 {t('nav.askAIAstrologer')}
               </Link>
-              {!isAuthenticated && (
+              {isAuthenticated ? (
+                <button
+                  onClick={() => { logout(); setIsMobileMenuOpen(false); }}
+                  className="flex items-center gap-2 w-full px-4 py-3 border border-[#9A7B0A] text-[#9A7B0A] font-medium text-center justify-center hover:bg-[#9A7B0A]/10 transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  {t('auth.signOut')}
+                </button>
+              ) : (
                 <Link
                   to="/login"
                   onClick={() => setIsMobileMenuOpen(false)}

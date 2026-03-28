@@ -402,6 +402,9 @@ const translations: Record<Language, TranslationMap> = {
     'kundli.downloadPDF': 'Download PDF',
     'kundli.printReport': 'Print Report',
     'kundli.consolidatedReport': 'Consolidated Birth Chart Report',
+    'kundli.viewFullReport': 'View Full Report',
+    'kundli.gochar': 'Gochar (Current)',
+    'kundli.d10': 'Dashamsha (D10)',
 
     // Miscellaneous
     'misc.language': 'Language',
@@ -810,6 +813,9 @@ const translations: Record<Language, TranslationMap> = {
     'kundli.downloadPDF': 'PDF डाउनलोड',
     'kundli.printReport': 'रिपोर्ट प्रिंट करें',
     'kundli.consolidatedReport': 'समेकित जन्म कुंडली रिपोर्ट',
+    'kundli.viewFullReport': 'पूरी रिपोर्ट देखें',
+    'kundli.gochar': 'गोचर (वर्तमान)',
+    'kundli.d10': 'दशमांश (D10)',
 
     // Miscellaneous
     'misc.language': 'भाषा',

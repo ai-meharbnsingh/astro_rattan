@@ -14,6 +14,7 @@ import KundliList from '@/components/kundli/KundliList';
 import BirthDetailsTab from '@/components/kundli/BirthDetailsTab';
 import LordshipsTab from '@/components/kundli/LordshipsTab';
 import PredictionsTab from '@/components/kundli/PredictionsTab';
+import ConsolidatedReport from '@/components/kundli/ConsolidatedReport';
 
 export default function KundliGenerator() {
   const { isAuthenticated } = useAuth();
@@ -59,6 +60,7 @@ export default function KundliGenerator() {
   const [transitData, setTransitData] = useState<any>(null);
   const [loadingTransit, setLoadingTransit] = useState(false);
   const [error, setError] = useState('');
+  const [reportOpen, setReportOpen] = useState(false);
   const [sidePanel, setSidePanel] = useState<{
     type: 'planet' | 'house';
     planet?: PlanetData;
@@ -536,6 +538,41 @@ export default function KundliGenerator() {
           {/* REPORT TAB — Consolidated single-page view */}
           <TabsContent value="report">
             <div className="space-y-6">
+              {/* View Full Report button */}
+              <div className="flex justify-center">
+                <Button
+                  size="lg"
+                  className="btn-sacred px-8"
+                  onClick={() => {
+                    fetchTransit();
+                    setReportOpen(true);
+                  }}
+                >
+                  <ScrollText className="w-5 h-5 mr-2" />
+                  {t('kundli.viewFullReport')}
+                </Button>
+              </div>
+
+              {/* Consolidated Report Popup */}
+              <ConsolidatedReport
+                open={reportOpen}
+                onOpenChange={setReportOpen}
+                result={result}
+                planets={planets}
+                dashaData={dashaData}
+                avakhadaData={avakhadaData}
+                yogaDoshaData={yogaDoshaData}
+                ashtakvargaData={ashtakvargaData}
+                shadbalaData={shadbalaData}
+                divisionalData={divisionalData}
+                loadingDasha={loadingDasha}
+                loadingAvakhada={loadingAvakhada}
+                loadingYogaDosha={loadingYogaDosha}
+                loadingAshtakvarga={loadingAshtakvarga}
+                loadingShadbala={loadingShadbala}
+                loadingDivisional={loadingDivisional}
+              />
+
               {/* Action bar */}
               <div className="flex flex-wrap gap-3 justify-end">
                 <Button size="sm" className="btn-sacred" onClick={async () => {
