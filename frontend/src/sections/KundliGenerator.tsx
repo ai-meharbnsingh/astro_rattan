@@ -15,6 +15,7 @@ import BirthDetailsTab from '@/components/kundli/BirthDetailsTab';
 import LordshipsTab from '@/components/kundli/LordshipsTab';
 import PredictionsTab from '@/components/kundli/PredictionsTab';
 import ConsolidatedReport from '@/components/kundli/ConsolidatedReport';
+import KundliSummaryModal from '@/components/KundliSummaryModal';
 
 export default function KundliGenerator() {
   const { isAuthenticated } = useAuth();
@@ -61,6 +62,7 @@ export default function KundliGenerator() {
   const [loadingTransit, setLoadingTransit] = useState(false);
   const [error, setError] = useState('');
   const [reportOpen, setReportOpen] = useState(false);
+  const [summaryOpen, setSummaryOpen] = useState(false);
   const [sidePanel, setSidePanel] = useState<{
     type: 'planet' | 'house';
     planet?: PlanetData;
@@ -538,18 +540,27 @@ export default function KundliGenerator() {
           {/* REPORT TAB — Consolidated single-page view */}
           <TabsContent value="report">
             <div className="space-y-6">
-              {/* View Full Report button */}
-              <div className="flex justify-center">
+              {/* View Report Buttons */}
+              <div className="flex justify-center gap-4">
                 <Button
                   size="lg"
-                  className="btn-sacred px-8"
+                  className="bg-[#d4af37] text-black hover:bg-[#ffd700] px-8"
+                  onClick={() => setSummaryOpen(true)}
+                >
+                  <ScrollText className="w-5 h-5 mr-2" />
+                  View Summary
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-[#d4af37]/50 text-[#d4af37] hover:bg-[#d4af37]/10 px-8"
                   onClick={() => {
                     fetchTransit();
                     setReportOpen(true);
                   }}
                 >
                   <ScrollText className="w-5 h-5 mr-2" />
-                  {t('kundli.viewFullReport')}
+                  View Full Report
                 </Button>
               </div>
 
@@ -1901,6 +1912,25 @@ export default function KundliGenerator() {
             Generate Another Kundli
           </Button>
         </div>
+
+        {/* Summary Modal - Clean Landscape View */}
+        <KundliSummaryModal
+          isOpen={summaryOpen}
+          onClose={() => setSummaryOpen(false)}
+          data={{
+            name: formData.name,
+            date: formData.date,
+            time: formData.time,
+            place: formData.place,
+            latitude: formData.latitude.toString(),
+            longitude: formData.longitude.toString(),
+            timezone: 'IST'
+          }}
+          onViewFullReport={() => {
+            setSummaryOpen(false);
+            // Scroll to top or show full report tabs
+          }}
+        />
       </div>
     );
   }
