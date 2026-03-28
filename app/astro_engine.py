@@ -240,22 +240,31 @@ def _calculate_swe(dt_utc: datetime, lat: float, lon: float) -> Dict[str, Any]:
     # Ayanamsa for sidereal
     ayanamsa = swe.get_ayanamsa(jd)
 
-    # Ascendant + houses (Placidus)
+    # Ascendant (use Placidus just for Ascendant degree, then Whole Sign houses)
     cusps, ascmc = swe.houses(jd, lat, lon, b"P")
     asc_sid = (ascmc[0] - ayanamsa) % 360.0
 
+    # Whole Sign house system (Vedic standard): House 1 = Ascendant's sign
+    asc_sign_index = int(asc_sid // 30)
     houses = []
     for i in range(12):
-        cusp_sid = (cusps[i] - ayanamsa) % 360.0
+        sign_index = (asc_sign_index + i) % 12
+        sign_degree = float(sign_index * 30)
         houses.append(
             {
                 "number": i + 1,
-                "sign": get_sign_from_longitude(cusp_sid),
-                "degree": round(cusp_sid, 4),
+                "sign": _SIGN_NAMES[sign_index],
+                "degree": round(sign_degree, 4),
             }
         )
 
-    # Planets
+    # Store Placidus cusps for KP system (needs unequal cusps)
+    placidus_cusps = []
+    for i in range(12):
+        cusp_sid = (cusps[i] - ayanamsa) % 360.0
+        placidus_cusps.append(round(cusp_sid, 4))
+
+    # Planets — use Whole Sign house assignment
     planets_result: Dict[str, Dict[str, Any]] = {}
     for pname, pid in PLANETS.items():
         pos, _ret = swe.calc_ut(jd, pid)
@@ -266,7 +275,9 @@ def _calculate_swe(dt_utc: datetime, lat: float, lon: float) -> Dict[str, Any]:
         nak = get_nakshatra_from_longitude(sid_lon)
         sign = get_sign_from_longitude(sid_lon)
         sign_deg = sid_lon % 30.0
-        house = _find_house(sid_lon, [h["degree"] for h in houses])
+        # Whole Sign house: planet's sign index relative to ascendant sign
+        planet_sign_index = int(sid_lon // 30)
+        house = ((planet_sign_index - asc_sign_index) % 12) + 1
 
         # Retrograde: negative daily speed means the planet appears to move backward
         # Rahu (mean node) is always retrograde by nature
@@ -294,7 +305,7 @@ def _calculate_swe(dt_utc: datetime, lat: float, lon: float) -> Dict[str, Any]:
         "sign_degree": round(ketu_lon % 30.0, 4),
         "nakshatra": nak_k["name"],
         "nakshatra_pada": nak_k["pada"],
-        "house": _find_house(ketu_lon, [h["degree"] for h in houses]),
+        "house": ((int(ketu_lon // 30) - asc_sign_index) % 12) + 1,
         "retrograde": True,
         "status": _build_status("Ketu", ketu_sign, True),
     }
@@ -306,6 +317,7 @@ def _calculate_swe(dt_utc: datetime, lat: float, lon: float) -> Dict[str, Any]:
             "sign": get_sign_from_longitude(asc_sid),
         },
         "houses": houses,
+        "placidus_cusps": placidus_cusps,
     }
 
 
