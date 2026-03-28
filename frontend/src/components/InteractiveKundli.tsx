@@ -65,7 +65,7 @@ const PLANET_ASPECTS: Record<string, number[]> = {
 
 function getPlanetColor(planet: string): string {
   if (BENEFIC_PLANETS.includes(planet)) return '#9A7B0A'; // gold
-  if (MALEFIC_PLANETS.includes(planet)) return '#9B59B6'; // purple
+  if (MALEFIC_PLANETS.includes(planet)) return '#8B2332'; // wax red
   return '#C0C0C0'; // silver
 }
 
@@ -305,8 +305,8 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                 y={y + 1}
                 width={CELL_SIZE - 2}
                 height={CELL_SIZE - 2}
-                fill={isHovered ? 'rgba(212,175,55,0.12)' : 'rgba(15,10,30,0.6)'}
-                stroke={isHovered ? '#9A7B0A' : 'rgba(212,175,55,0.2)'}
+                fill={isHovered ? 'rgba(184,134,11,0.08)' : 'rgba(232,224,212,0.5)'}
+                stroke={isHovered ? '#B8860B' : 'rgba(139,115,85,0.3)'}
                 strokeWidth={isHovered ? 1.5 : 0.5}
                 rx={2}
                 style={{ transition: 'all 0.2s ease' }}
@@ -315,9 +315,10 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
               {/* House number */}
               <text
                 x={x + 8}
-                y={y + 14}
-                fill="rgba(212,175,55,0.5)"
-                fontSize={9}
+                y={y + 16}
+                fill="rgba(139,115,85,0.6)"
+                fontSize={13}
+                fontWeight="600"
                 fontFamily="monospace"
               >
                 {house}
@@ -326,10 +327,11 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
               {/* Zodiac symbol */}
               <text
                 x={x + CELL_SIZE - 8}
-                y={y + 14}
+                y={y + 18}
                 textAnchor="end"
-                fill="rgba(212,175,55,0.4)"
-                fontSize={13}
+                fill="#B8860B"
+                fontSize={18}
+                opacity={0.5}
               >
                 {ZODIAC_SYMBOLS[sign] || ''}
               </text>
@@ -337,11 +339,11 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
               {/* Zodiac sign name */}
               <text
                 x={x + CELL_SIZE / 2}
-                y={y + CELL_SIZE - 8}
+                y={y + CELL_SIZE - 6}
                 textAnchor="middle"
-                fill="rgba(212,175,55,0.35)"
-                fontSize={8}
-                fontFamily="sans-serif"
+                fill="rgba(139,115,85,0.5)"
+                fontSize={11}
+                fontFamily="serif"
               >
                 {sign}
               </text>
@@ -380,21 +382,21 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                     <circle
                       cx={px}
                       cy={py}
-                      r={isHoveredPlanet ? 11 : 9}
-                      fill={isHoveredPlanet ? color : 'rgba(15,10,30,0.8)'}
+                      r={isHoveredPlanet ? 13 : 11}
+                      fill={isHoveredPlanet ? color : '#F5F0E8'}
                       stroke={color}
-                      strokeWidth={1.5}
+                      strokeWidth={2}
                       filter={isHoveredPlanet ? 'url(#planet-glow)' : undefined}
                       style={{ transition: 'all 0.2s ease' }}
                     />
                     <text
                       x={px}
-                      y={py + 3.5}
+                      y={py + 4}
                       textAnchor="middle"
-                      fill={isHoveredPlanet ? '#E8E0D4' : color}
-                      fontSize={9}
+                      fill={isHoveredPlanet ? '#F5F0E8' : color}
+                      fontSize={11}
                       fontWeight="bold"
-                      fontFamily="sans-serif"
+                      fontFamily="serif"
                       style={{ pointerEvents: 'none', transition: 'fill 0.2s ease' }}
                     >
                       {abbr}
@@ -414,7 +416,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
               y1={GRID_PADDING}
               x2={GRID_PADDING + i * CELL_SIZE}
               y2={GRID_PADDING + CELL_SIZE * 4}
-              stroke="rgba(212,175,55,0.15)"
+              stroke="rgba(139,115,85,0.25)"
               strokeWidth={0.5}
             />
             <line
@@ -422,7 +424,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
               y1={GRID_PADDING + i * CELL_SIZE}
               x2={GRID_PADDING + CELL_SIZE * 4}
               y2={GRID_PADDING + i * CELL_SIZE}
-              stroke="rgba(212,175,55,0.15)"
+              stroke="rgba(139,115,85,0.25)"
               strokeWidth={0.5}
             />
           </g>
