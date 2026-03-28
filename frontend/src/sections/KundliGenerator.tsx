@@ -427,7 +427,7 @@ export default function KundliGenerator() {
     } : null;
 
     return (
-      <div className="max-w-4xl mx-auto py-24 px-4 bg-transparent">
+      <div className="max-w-4xl mx-auto pt-24 pb-32 px-4 bg-transparent">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             {savedKundlis.length > 0 && (
@@ -1454,7 +1454,7 @@ export default function KundliGenerator() {
           </TabsContent>
         </Tabs>
 
-        <div className="mt-8 text-center">
+        <div className="mt-8 mb-16 text-center">
           <Button onClick={() => { setStep('form'); setResult(null); resetTabData(); }} variant="outline" className="border-cosmic-text-muted text-cosmic-text">
             Generate Another Kundli
           </Button>
