@@ -181,6 +181,14 @@ def calculate_kp_cuspal(
     """
     from app.astro_engine import get_sign_from_longitude
 
+    # Sign rulers for sign_lord determination
+    _SIGN_LORD: Dict[str, str] = {
+        "Aries": "Mars", "Taurus": "Venus", "Gemini": "Mercury",
+        "Cancer": "Moon", "Leo": "Sun", "Virgo": "Mercury",
+        "Libra": "Venus", "Scorpio": "Mars", "Sagittarius": "Jupiter",
+        "Capricorn": "Saturn", "Aquarius": "Saturn", "Pisces": "Jupiter",
+    }
+
     # Cusp analysis
     cusps_result: List[Dict[str, Any]] = []
     for i, cusp_lon in enumerate(house_cusps):
@@ -190,6 +198,7 @@ def calculate_kp_cuspal(
         cusps_result.append({
             "house": i + 1,
             "sign": sign,
+            "sign_lord": _SIGN_LORD.get(sign, ""),
             "degree": round(cusp_lon, 4),
             "star_lord": sub_info["star_lord"],
             "sub_lord": sub_info["sub_lord"],
@@ -200,8 +209,11 @@ def calculate_kp_cuspal(
     for pname, plon in planet_longitudes.items():
         plon = plon % 360.0
         sub_info = get_sub_lord(plon)
+        sign = get_sign_from_longitude(plon)
         planets_result[pname] = {
             "longitude": round(plon, 4),
+            "sign": sign,
+            "sign_lord": _SIGN_LORD.get(sign, ""),
             "star_lord": sub_info["star_lord"],
             "sub_lord": sub_info["sub_lord"],
         }

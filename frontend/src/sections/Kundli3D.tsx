@@ -1,9 +1,50 @@
-import { useState, useRef, Suspense, lazy } from 'react';
-import { User, Calendar, Clock, MapPin, Sparkles, ChevronRight } from 'lucide-react';
+import { useState, useRef, useEffect, Suspense, lazy } from 'react';
+import { User, Calendar, Clock, MapPin, Sparkles, ChevronRight, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { api } from '@/lib/api';
 
 const ZodiacScene = lazy(() => import('@/components/three/ZodiacScene'));
+
+// ── Geocode types & hook ────────────────────────────────────
+interface GeocodeResult {
+  name: string;
+  lat: number;
+  lon: number;
+}
+
+function useGeocodeAutocomplete() {
+  const [suggestions, setSuggestions] = useState<GeocodeResult[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const search = (query: string) => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (query.length < 3) {
+      setSuggestions([]);
+      setShowDropdown(false);
+      return;
+    }
+    timerRef.current = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const results = await api.get(`/api/kundli/geocode?query=${encodeURIComponent(query)}`);
+        setSuggestions(Array.isArray(results) ? results : []);
+        setShowDropdown(true);
+      } catch {
+        setSuggestions([]);
+      }
+      setLoading(false);
+    }, 300);
+  };
+
+  const close = () => {
+    setShowDropdown(false);
+  };
+
+  return { suggestions, showDropdown, loading, search, close };
+}
 
 // 3D Tilt Card Component
 function TiltCard({ children, className = '' }: { children: React.ReactNode; className?: string }) {
@@ -47,9 +88,24 @@ export default function Kundli3D() {
     date: '',
     time: '',
     place: '',
+    latitude: 28.6139,
+    longitude: 77.2090,
     gender: 'male'
   });
   const [loading, setLoading] = useState(false);
+  const geocode = useGeocodeAutocomplete();
+  const placeWrapperRef = useRef<HTMLDivElement>(null);
+
+  // Close geocode dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (placeWrapperRef.current && !placeWrapperRef.current.contains(e.target as Node)) {
+        geocode.close();
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [geocode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -181,16 +237,47 @@ export default function Kundli3D() {
                       </div>
                     </div>
 
-                    {/* Birth Place */}
-                    <div className="relative">
-                      <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9A7B0A]" />
+                    {/* Birth Place with Geocode Autocomplete */}
+                    <div className="relative" ref={placeWrapperRef}>
+                      <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9A7B0A] z-10" />
                       <Input
                         type="text"
-                        placeholder="Birth Place (City)"
+                        placeholder="Birth Place (type to search)"
                         value={formData.place}
-                        onChange={(e) => setFormData({ ...formData, place: e.target.value })}
+                        onChange={(e) => {
+                          setFormData({ ...formData, place: e.target.value });
+                          geocode.search(e.target.value);
+                        }}
                         className="pl-12 h-14 bg-white/5 border-[#8B7355]/10 text-[#1a1a2e] placeholder:text-[#1a1a2e]/40 focus:border-[#9A7B0A] text-lg"
+                        autoComplete="off"
                       />
+                      {geocode.loading && (
+                        <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 animate-spin text-[#9A7B0A]" />
+                      )}
+                      {geocode.showDropdown && geocode.suggestions.length > 0 && (
+                        <div className="absolute z-50 left-0 right-0 top-full mt-1 bg-[#F5F0E8] border border-[#B8860B]/30 rounded-2xl shadow-lg max-h-60 overflow-y-auto">
+                          {geocode.suggestions.map((s, i) => (
+                            <button
+                              key={i}
+                              type="button"
+                              onClick={() => {
+                                setFormData({ ...formData, place: s.name.split(',')[0], latitude: s.lat, longitude: s.lon });
+                                geocode.close();
+                              }}
+                              className="w-full text-left px-4 py-3 hover:bg-[#E8E0D4] transition-colors border-b border-[#B8860B]/10 last:border-b-0"
+                            >
+                              <p className="text-sm font-medium text-[#1a1a2e] truncate">{s.name}</p>
+                              <p className="text-xs text-[#1a1a2e]/50">{s.lat.toFixed(4)}, {s.lon.toFixed(4)}</p>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Coordinates display */}
+                    <div className="flex items-center gap-2 text-xs text-[#1a1a2e]/50 px-1 -mt-2">
+                      <MapPin className="w-3 h-3 text-[#B8860B]" />
+                      <span>Lat: {formData.latitude.toFixed(4)}, Lon: {formData.longitude.toFixed(4)}</span>
                     </div>
 
                     {/* Submit Button */}

@@ -252,12 +252,17 @@ def _calculate_swe(dt_utc: datetime, lat: float, lon: float) -> Dict[str, Any]:
     for pname, pid in PLANETS.items():
         pos, _ret = swe.calc_ut(jd, pid)
         trop_lon = pos[0]
+        daily_speed = pos[3]  # daily speed in longitude
         sid_lon = (trop_lon - ayanamsa) % 360.0
 
         nak = get_nakshatra_from_longitude(sid_lon)
         sign = get_sign_from_longitude(sid_lon)
         sign_deg = sid_lon % 30.0
         house = _find_house(sid_lon, [h["degree"] for h in houses])
+
+        # Retrograde: negative daily speed means the planet appears to move backward
+        # Rahu (mean node) is always retrograde by nature
+        is_retrograde = daily_speed < 0 or pname == "Rahu"
 
         planets_result[pname] = {
             "longitude": round(sid_lon, 4),
@@ -266,19 +271,24 @@ def _calculate_swe(dt_utc: datetime, lat: float, lon: float) -> Dict[str, Any]:
             "nakshatra": nak["name"],
             "nakshatra_pada": nak["pada"],
             "house": house,
+            "retrograde": is_retrograde,
+            "status": _build_status(pname, sign, is_retrograde),
         }
 
-    # Ketu = Rahu + 180
+    # Ketu = Rahu + 180  (Ketu is always retrograde)
     rahu_lon = planets_result["Rahu"]["longitude"]
     ketu_lon = (rahu_lon + 180.0) % 360.0
+    ketu_sign = get_sign_from_longitude(ketu_lon)
     nak_k = get_nakshatra_from_longitude(ketu_lon)
     planets_result["Ketu"] = {
         "longitude": round(ketu_lon, 4),
-        "sign": get_sign_from_longitude(ketu_lon),
+        "sign": ketu_sign,
         "sign_degree": round(ketu_lon % 30.0, 4),
         "nakshatra": nak_k["name"],
         "nakshatra_pada": nak_k["pada"],
         "house": _find_house(ketu_lon, [h["degree"] for h in houses]),
+        "retrograde": True,
+        "status": _build_status("Ketu", ketu_sign, True),
     }
 
     return {
@@ -466,6 +476,10 @@ def _calculate_fallback(dt_utc: datetime, lat: float, lon: float) -> Dict[str, A
         sign_deg = sid_lon % 30.0
         house = _find_house(sid_lon, [h["degree"] for h in houses])
 
+        # Fallback path cannot determine retrograde from speed;
+        # Rahu is always retrograde by nature, others default to False
+        is_retrograde = pname == "Rahu"
+
         planets_result[pname] = {
             "longitude": round(sid_lon, 4),
             "sign": sign,
@@ -473,19 +487,24 @@ def _calculate_fallback(dt_utc: datetime, lat: float, lon: float) -> Dict[str, A
             "nakshatra": nak["name"],
             "nakshatra_pada": nak["pada"],
             "house": house,
+            "retrograde": is_retrograde,
+            "status": _build_status(pname, sign, is_retrograde),
         }
 
-    # Ketu = Rahu + 180
+    # Ketu = Rahu + 180  (Ketu is always retrograde)
     rahu_lon = planets_result["Rahu"]["longitude"]
     ketu_lon = (rahu_lon + 180.0) % 360.0
+    ketu_sign = get_sign_from_longitude(ketu_lon)
     nak_k = get_nakshatra_from_longitude(ketu_lon)
     planets_result["Ketu"] = {
         "longitude": round(ketu_lon, 4),
-        "sign": get_sign_from_longitude(ketu_lon),
+        "sign": ketu_sign,
         "sign_degree": round(ketu_lon % 30.0, 4),
         "nakshatra": nak_k["name"],
         "nakshatra_pada": nak_k["pada"],
         "house": _find_house(ketu_lon, [h["degree"] for h in houses]),
+        "retrograde": True,
+        "status": _build_status("Ketu", ketu_sign, True),
     }
 
     return {
@@ -496,6 +515,60 @@ def _calculate_fallback(dt_utc: datetime, lat: float, lon: float) -> Dict[str, A
         },
         "houses": houses,
     }
+
+
+# ============================================================
+# INTERNAL: Planetary dignity & status
+# ============================================================
+
+# Exaltation signs for each planet
+_EXALTATION_SIGN: Dict[str, str] = {
+    "Sun": "Aries", "Moon": "Taurus", "Mars": "Capricorn",
+    "Mercury": "Virgo", "Jupiter": "Cancer", "Venus": "Pisces",
+    "Saturn": "Libra", "Rahu": "Gemini", "Ketu": "Sagittarius",
+}
+
+# Debilitation signs (opposite of exaltation)
+_DEBILITATION_SIGN: Dict[str, str] = {
+    "Sun": "Libra", "Moon": "Scorpio", "Mars": "Cancer",
+    "Mercury": "Pisces", "Jupiter": "Capricorn", "Venus": "Virgo",
+    "Saturn": "Aries", "Rahu": "Sagittarius", "Ketu": "Gemini",
+}
+
+# Own signs (Moolatrikona / Swakshetra)
+_OWN_SIGN: Dict[str, List[str]] = {
+    "Sun": ["Leo"],
+    "Moon": ["Cancer"],
+    "Mars": ["Aries", "Scorpio"],
+    "Mercury": ["Gemini", "Virgo"],
+    "Jupiter": ["Sagittarius", "Pisces"],
+    "Venus": ["Taurus", "Libra"],
+    "Saturn": ["Capricorn", "Aquarius"],
+}
+
+
+def _build_status(planet: str, sign: str, is_retrograde: bool) -> str:
+    """
+    Build a human-readable status string combining dignity and retrograde.
+
+    Examples: "Exalted", "Retrograde", "Exalted, Retrograde", "Debilitated, Retrograde"
+    Returns empty string when the planet has no special dignity and is direct.
+    """
+    parts: List[str] = []
+
+    # Check dignity
+    if sign == _EXALTATION_SIGN.get(planet):
+        parts.append("Exalted")
+    elif sign == _DEBILITATION_SIGN.get(planet):
+        parts.append("Debilitated")
+    elif sign in _OWN_SIGN.get(planet, []):
+        parts.append("Own Sign")
+
+    # Retrograde flag
+    if is_retrograde:
+        parts.append("Retrograde")
+
+    return ", ".join(parts)
 
 
 def _find_house(planet_lon: float, cusp_degrees: List[float]) -> int:

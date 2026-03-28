@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,46 @@ import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/lib/i18n';
 import { isPuterAvailable, puterChatStream, VEDIC_SYSTEM_PROMPT } from '@/lib/puter-ai';
 import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
+
+// ── Geocode types & hook ────────────────────────────────────
+interface GeocodeResult {
+  name: string;
+  lat: number;
+  lon: number;
+}
+
+function useGeocodeAutocomplete() {
+  const [suggestions, setSuggestions] = useState<GeocodeResult[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const search = (query: string) => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (query.length < 3) {
+      setSuggestions([]);
+      setShowDropdown(false);
+      return;
+    }
+    timerRef.current = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const results = await api.get(`/api/kundli/geocode?query=${encodeURIComponent(query)}`);
+        setSuggestions(Array.isArray(results) ? results : []);
+        setShowDropdown(true);
+      } catch {
+        setSuggestions([]);
+      }
+      setLoading(false);
+    }, 300);
+  };
+
+  const close = () => {
+    setShowDropdown(false);
+  };
+
+  return { suggestions, showDropdown, loading, search, close };
+}
 
 export default function KundliGenerator() {
   const { isAuthenticated } = useAuth();
@@ -22,8 +62,12 @@ export default function KundliGenerator() {
     date: prefill.birthDate || '',
     time: prefill.birthTime || '',
     place: prefill.birthPlace || '',
+    latitude: 28.6139,
+    longitude: 77.2090,
     gender: 'male' as 'male' | 'female',
   });
+  const geocode = useGeocodeAutocomplete();
+  const placeWrapperRef = useRef<HTMLDivElement>(null);
   const [result, setResult] = useState<any>(null);
   const [savedKundlis, setSavedKundlis] = useState<any[]>([]);
   const [doshaData, setDoshaData] = useState<any>(null);
@@ -49,6 +93,8 @@ export default function KundliGenerator() {
   const [loadingAshtakvarga, setLoadingAshtakvarga] = useState(false);
   const [shadbalaData, setShadbalaData] = useState<any>(null);
   const [loadingShadbala, setLoadingShadbala] = useState(false);
+  const [transitData, setTransitData] = useState<any>(null);
+  const [loadingTransit, setLoadingTransit] = useState(false);
   const [error, setError] = useState('');
   const [sidePanel, setSidePanel] = useState<{
     type: 'planet' | 'house';
@@ -136,6 +182,17 @@ export default function KundliGenerator() {
     setSidePanel({ type: 'house', house, sign, planets });
   }, []);
 
+  // Close geocode dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (placeWrapperRef.current && !placeWrapperRef.current.contains(e.target as Node)) {
+        geocode.close();
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [geocode]);
+
   // On mount: load existing kundlis if logged in
   useEffect(() => {
     if (!isAuthenticated) {
@@ -165,6 +222,8 @@ export default function KundliGenerator() {
         date: full.birth_date || '',
         time: full.birth_time || '',
         place: full.birth_place || '',
+        latitude: full.latitude || 28.6139,
+        longitude: full.longitude || 77.2090,
         gender: 'male',
       });
       setDoshaData(null);
@@ -177,6 +236,7 @@ export default function KundliGenerator() {
       setDivisionalData(null);
       setAshtakvargaData(null);
       setShadbalaData(null);
+      setTransitData(null);
       setStep('result');
     } catch {
       setError('Failed to load kundli');
@@ -283,6 +343,17 @@ export default function KundliGenerator() {
     setLoadingShadbala(false);
   };
 
+  // Fetch transits (Gochara)
+  const fetchTransit = async () => {
+    if (!result?.id || transitData) return;
+    setLoadingTransit(true);
+    try {
+      const data = await api.post(`/api/kundli/${result.id}/transits`, {});
+      setTransitData(data);
+    } catch { /* fallback */ }
+    setLoadingTransit(false);
+  };
+
   // Build a textual summary of chart data for Puter AI prompt
   const buildChartPrompt = (): string => {
     const planetsRaw = result?.chart_data?.planets || {};
@@ -325,12 +396,30 @@ export default function KundliGenerator() {
     setLoadingPredictions(false);
   };
 
-  // Prashna Kundli — generate for current moment
+  // Prashna Kundli — generate for current moment using browser geolocation
   const handlePrashnaKundli = async () => {
     if (!isAuthenticated) {
       setError('Sign in is required to generate and save a kundli.');
       return;
     }
+    setStep('generating');
+    setError('');
+
+    // Try browser geolocation; fall back to Delhi if denied/unavailable
+    let lat = 28.6139;
+    let lon = 77.2090;
+    let placeName = 'Delhi';
+    try {
+      const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
+      });
+      lat = pos.coords.latitude;
+      lon = pos.coords.longitude;
+      placeName = `Current Location (${lat.toFixed(4)}, ${lon.toFixed(4)})`;
+    } catch {
+      // Geolocation denied or unavailable — use Delhi defaults
+    }
+
     const now = new Date();
     const dateStr = now.toISOString().split('T')[0];
     const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:00`;
@@ -338,19 +427,19 @@ export default function KundliGenerator() {
       name: `Prashna ${dateStr}`,
       date: dateStr,
       time: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
-      place: 'Delhi',
+      place: placeName,
+      latitude: lat,
+      longitude: lon,
       gender: 'male',
     });
-    setStep('generating');
-    setError('');
     try {
       const data = await api.post('/api/kundli/generate', {
         person_name: `Prashna ${dateStr}`,
         birth_date: dateStr,
         birth_time: timeStr,
-        birth_place: 'Delhi',
-        latitude: 28.6139,
-        longitude: 77.2090,
+        birth_place: placeName,
+        latitude: lat,
+        longitude: lon,
         timezone_offset: 5.5,
       });
       setResult(data);
@@ -364,6 +453,7 @@ export default function KundliGenerator() {
       setDivisionalData(null);
       setAshtakvargaData(null);
       setShadbalaData(null);
+      setTransitData(null);
       setStep('result');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate Prashna Kundli');
@@ -385,8 +475,8 @@ export default function KundliGenerator() {
         birth_date: formData.date,
         birth_time: formData.time + ':00',
         birth_place: formData.place,
-        latitude: 28.6139,
-        longitude: 77.2090,
+        latitude: formData.latitude,
+        longitude: formData.longitude,
         timezone_offset: 5.5,
       });
       setResult(data);
@@ -400,6 +490,7 @@ export default function KundliGenerator() {
       setDivisionalData(null);
       setAshtakvargaData(null);
       setShadbalaData(null);
+      setTransitData(null);
       setStep('result');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate kundli');
@@ -508,7 +599,31 @@ export default function KundliGenerator() {
             <Button variant="outline" size="sm" className="border-sacred-gold/50 text-sacred-brown">
               <Share2 className="w-4 h-4 mr-1" />Share
             </Button>
-            <Button size="sm" className="btn-sacred">
+            <Button size="sm" className="btn-sacred" onClick={async () => {
+              try {
+                const token = localStorage.getItem('astrovedic_token');
+                const API_BASE = import.meta.env.VITE_API_URL || '';
+                const resp = await fetch(`${API_BASE}/api/kundli/${result.id}/pdf`, {
+                  headers: token ? { Authorization: `Bearer ${token}` } : {},
+                });
+                if (!resp.ok) {
+                  const err = await resp.json().catch(() => ({ detail: resp.statusText }));
+                  throw new Error(err.detail || 'PDF download failed');
+                }
+                const blob = await resp.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `kundli-${result.person_name || 'report'}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+              } catch (e: any) {
+                console.error('PDF download error:', e);
+                alert(e.message || 'Failed to download PDF');
+              }
+            }}>
               <Download className="w-4 h-4 mr-1" />Download
             </Button>
           </div>
@@ -556,6 +671,7 @@ export default function KundliGenerator() {
             <TabsTrigger value="avakhada" onClick={fetchAvakhada}>{t('avakhada.title')}</TabsTrigger>
             <TabsTrigger value="yoga-dosha" onClick={fetchYogaDosha}>{t('yoga.title').split(' ')[0]}</TabsTrigger>
             <TabsTrigger value="predictions" onClick={fetchPredictions}>{t('kundli.predictions')}</TabsTrigger>
+            <TabsTrigger value="transits" onClick={fetchTransit}>{t('transit.title')}</TabsTrigger>
           </TabsList>
 
           {/* PLANETS TAB - Interactive Kundli Chart + Side Panel */}
@@ -1141,7 +1257,7 @@ export default function KundliGenerator() {
                             sign_degree: p.sign_degree || 0,
                             status: '',
                           })),
-                          houses: Array.from({ length: 12 }, (_, i) => ({
+                          houses: divisionalData.houses || Array.from({ length: 12 }, (_, i) => ({
                             number: i + 1,
                             sign: ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'][i],
                           })),
@@ -1563,10 +1679,109 @@ export default function KundliGenerator() {
               </div>
             )}
           </TabsContent>
+
+          {/* TRANSITS (GOCHARA) TAB */}
+          <TabsContent value="transits">
+            {loadingTransit ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
+                <span className="ml-2 text-sacred-text-secondary">{t('transit.loading')}</span>
+              </div>
+            ) : transitData ? (
+              <div className="space-y-6">
+                {/* Header with date and Moon sign */}
+                <div className="rounded-xl p-4 border" style={{ backgroundColor: 'rgba(184,134,11,0.04)', borderColor: 'rgba(139,115,85,0.2)' }}>
+                  <h4 className="font-display font-bold text-lg mb-2" style={{ color: '#1a1a2e' }}>{t('transit.title')}</h4>
+                  <p className="text-sm mb-3" style={{ color: '#8B7355' }}>{t('transit.subtitle')}</p>
+                  <div className="flex flex-wrap gap-4 text-sm">
+                    <span style={{ color: '#1a1a2e' }}><strong>{t('transit.transitDate')}:</strong> {transitData.transit_date}</span>
+                    <span style={{ color: '#1a1a2e' }}><strong>{t('transit.natalMoon')}:</strong> {transitData.natal_moon_sign}</span>
+                  </div>
+                </div>
+
+                {/* Sade Sati Status */}
+                <div
+                  className={`rounded-xl p-4 border ${transitData.sade_sati?.active ? 'border-red-500/40' : 'border-green-500/30'}`}
+                  style={{ backgroundColor: transitData.sade_sati?.active ? 'rgba(139,35,50,0.05)' : 'rgba(34,197,94,0.05)' }}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <h5 className="font-display font-semibold" style={{ color: '#1a1a2e' }}>
+                      <Shield className="w-4 h-4 inline mr-2" />
+                      {t('transit.sadeSati')}
+                    </h5>
+                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${transitData.sade_sati?.active ? 'bg-red-500/20 text-red-600' : 'bg-green-500/20 text-green-600'}`}>
+                      {transitData.sade_sati?.active ? t('transit.sadeSatiActive') : t('transit.sadeSatiInactive')}
+                    </span>
+                  </div>
+                  {transitData.sade_sati?.active && (
+                    <p className="text-xs mb-1" style={{ color: '#B8860B' }}>
+                      <strong>{t('transit.phase')}:</strong> {transitData.sade_sati.phase}
+                    </p>
+                  )}
+                  <p className="text-sm" style={{ color: '#8B7355' }}>{transitData.sade_sati?.description}</p>
+                </div>
+
+                {/* Transit Table */}
+                <div className="rounded-xl border overflow-hidden" style={{ borderColor: 'rgba(139,115,85,0.2)' }}>
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr style={{ backgroundColor: 'rgba(184,134,11,0.08)' }}>
+                        <th className="text-left p-3 font-display font-semibold" style={{ color: '#1a1a2e' }}>{t('transit.planet')}</th>
+                        <th className="text-left p-3 font-display font-semibold" style={{ color: '#1a1a2e' }}>{t('transit.currentSign')}</th>
+                        <th className="text-center p-3 font-display font-semibold" style={{ color: '#1a1a2e' }}>{t('transit.houseFromMoon')}</th>
+                        <th className="text-center p-3 font-display font-semibold" style={{ color: '#1a1a2e' }}>{t('transit.effect')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(transitData.transits || []).map((tr: any, idx: number) => (
+                        <tr
+                          key={idx}
+                          className="border-t"
+                          style={{ borderColor: 'rgba(139,115,85,0.1)', backgroundColor: idx % 2 === 0 ? 'transparent' : 'rgba(184,134,11,0.02)' }}
+                        >
+                          <td className="p-3 font-medium" style={{ color: '#1a1a2e' }}>{tr.planet}</td>
+                          <td className="p-3" style={{ color: '#8B7355' }}>{tr.current_sign}</td>
+                          <td className="p-3 text-center" style={{ color: '#8B7355' }}>{tr.natal_house_from_moon}</td>
+                          <td className="p-3 text-center">
+                            <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full font-medium ${tr.effect === 'favorable' ? 'bg-green-500/20 text-green-700' : 'bg-red-500/20 text-red-600'}`}>
+                              {tr.effect === 'favorable' ? <CheckCircle className="w-3 h-3" /> : <AlertTriangle className="w-3 h-3" />}
+                              {tr.effect === 'favorable' ? t('transit.favorable') : t('transit.unfavorable')}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Detailed descriptions */}
+                <div className="grid gap-3">
+                  {(transitData.transits || []).map((tr: any, idx: number) => (
+                    <div
+                      key={idx}
+                      className={`rounded-xl p-4 border ${tr.effect === 'favorable' ? 'border-green-500/30' : 'border-red-500/30'}`}
+                      style={{ backgroundColor: tr.effect === 'favorable' ? 'rgba(34,197,94,0.03)' : 'rgba(239,68,68,0.03)' }}
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-display font-semibold" style={{ color: '#1a1a2e' }}>{tr.planet}</span>
+                        <span className="text-xs" style={{ color: '#8B7355' }}>in {tr.current_sign}</span>
+                        <span className={`text-xs px-1.5 py-0.5 rounded-full ${tr.effect === 'favorable' ? 'bg-green-500/15 text-green-700' : 'bg-red-500/15 text-red-600'}`}>
+                          {tr.effect === 'favorable' ? t('transit.favorable') : t('transit.unfavorable')}
+                        </span>
+                      </div>
+                      <p className="text-sm" style={{ color: '#8B7355' }}>{tr.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <p className="text-center text-sacred-text-secondary py-8">Click the Transits tab to see current Gochara effects</p>
+            )}
+          </TabsContent>
         </Tabs>
 
         <div className="mt-8 text-center">
-          <Button onClick={() => { setStep('form'); setResult(null); setDoshaData(null); setIogitaData(null); setDashaData(null); setPredictionsData(null); setAvakhadaData(null); setExtendedDashaData(null); setYogaDoshaData(null); setDivisionalData(null); setAshtakvargaData(null); setShadbalaData(null); }} variant="outline" className="border-cosmic-text-muted text-cosmic-text">
+          <Button onClick={() => { setStep('form'); setResult(null); setDoshaData(null); setIogitaData(null); setDashaData(null); setPredictionsData(null); setAvakhadaData(null); setExtendedDashaData(null); setYogaDoshaData(null); setDivisionalData(null); setAshtakvargaData(null); setShadbalaData(null); setTransitData(null); }} variant="outline" className="border-cosmic-text-muted text-cosmic-text">
             Generate Another Kundli
           </Button>
         </div>
@@ -1611,9 +1826,45 @@ export default function KundliGenerator() {
           <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-cosmic-text-muted" />
           <Input type="time" value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} className="pl-10 bg-sacred-cream border-sacred-gold/15 text-sacred-brown" />
         </div>
-        <div className="relative">
-          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-cosmic-text-muted" />
-          <Input type="text" value={formData.place} onChange={(e) => setFormData({ ...formData, place: e.target.value })} placeholder="Birth Place" className="pl-10 bg-sacred-cream border-sacred-gold/15 text-sacred-brown" />
+        <div className="relative" ref={placeWrapperRef}>
+          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-cosmic-text-muted z-10" />
+          <Input
+            type="text"
+            value={formData.place}
+            onChange={(e) => {
+              setFormData({ ...formData, place: e.target.value });
+              geocode.search(e.target.value);
+            }}
+            placeholder="Birth Place (type to search)"
+            className="pl-10 bg-sacred-cream border-sacred-gold/15 text-sacred-brown"
+            autoComplete="off"
+          />
+          {geocode.loading && (
+            <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-sacred-gold" />
+          )}
+          {geocode.showDropdown && geocode.suggestions.length > 0 && (
+            <div className="absolute z-50 left-0 right-0 top-full mt-1 bg-[#F5F0E8] border border-[#B8860B]/30 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+              {geocode.suggestions.map((s, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => {
+                    setFormData({ ...formData, place: s.name.split(',')[0], latitude: s.lat, longitude: s.lon });
+                    geocode.close();
+                  }}
+                  className="w-full text-left px-4 py-3 hover:bg-[#E8E0D4] transition-colors border-b border-[#B8860B]/10 last:border-b-0"
+                >
+                  <p className="text-sm font-medium text-[#1a1a2e] truncate">{s.name}</p>
+                  <p className="text-xs text-[#1a1a2e]/50">{s.lat.toFixed(4)}, {s.lon.toFixed(4)}</p>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        {/* Coordinates display */}
+        <div className="flex items-center gap-2 text-xs text-sacred-text-secondary px-1">
+          <MapPin className="w-3 h-3 text-sacred-gold" />
+          <span>Lat: {formData.latitude.toFixed(4)}, Lon: {formData.longitude.toFixed(4)}</span>
         </div>
         <Button onClick={handleGenerate} disabled={!formData.name || !formData.date || !formData.time || !formData.place} className="w-full btn-sacred font-semibold hover:bg-sacred-gold-dark disabled:opacity-50">
           <Sparkles className="w-5 h-5 mr-2" />Generate Kundli<ChevronRight className="w-5 h-5 ml-2" />

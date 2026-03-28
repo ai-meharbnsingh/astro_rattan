@@ -4,9 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Sparkles, ChevronRight, Loader2, Star, BookOpen, Gem, Hand } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from '@/lib/i18n';
 
 export default function KPLalkitabPage() {
   const { isAuthenticated } = useAuth();
+  const { t } = useTranslation();
   const [kundlis, setKundlis] = useState<any[]>([]);
   const [selectedKundli, setSelectedKundli] = useState('');
   const [loadingKundlis, setLoadingKundlis] = useState(true);
@@ -42,10 +44,10 @@ export default function KPLalkitabPage() {
     setKpError('');
     setKpResult(null);
     try {
-      const data = await api.post('/api/kp/cuspal', { kundli_id: selectedKundli });
+      const data = await api.post(`/api/kundli/${selectedKundli}/kp-analysis`, {});
       setKpResult(data);
     } catch (err) {
-      setKpError(err instanceof Error ? err.message : 'Failed to analyze KP chart');
+      setKpError(err instanceof Error ? err.message : t('kp.error'));
     }
     setKpLoading(false);
   };
@@ -67,7 +69,7 @@ export default function KPLalkitabPage() {
   // Kundli selector shared between tabs
   const KundliSelector = () => (
     <div className="mb-6">
-      <label className="block text-sm font-medium text-sacred-gold mb-2">Select Kundli</label>
+      <label className="block text-sm font-medium text-sacred-gold mb-2">{t('kp.selectKundli')}</label>
       {loadingKundlis ? (
         <div className="flex items-center gap-2 text-cosmic-text">
           <Loader2 className="w-4 h-4 animate-spin text-sacred-gold" />
@@ -102,10 +104,10 @@ export default function KPLalkitabPage() {
             <Star className="w-8 h-8 text-[#1a1a2e]" />
           </div>
           <h1 className="text-3xl sm:text-4xl font-sacred font-bold text-sacred-gold mb-2">
-            KP System & Lal Kitab
+            {t('kp.pageTitle')}
           </h1>
           <p className="text-cosmic-text/70 max-w-lg mx-auto">
-            Explore Krishnamurti Paddhati analysis and traditional Lal Kitab remedies for your birth chart
+            {t('kp.pageSubtitle')}
           </p>
         </div>
 
@@ -113,10 +115,10 @@ export default function KPLalkitabPage() {
         <Tabs defaultValue="kp" className="w-full">
           <TabsList className="mb-8 bg-cosmic-card border border-sacred-gold/20 w-full grid grid-cols-2">
             <TabsTrigger value="kp" className="font-sacred data-[state=active]:bg-sacred-gold/20 data-[state=active]:text-sacred-gold">
-              KP System
+              {t('kp.tabKP')}
             </TabsTrigger>
             <TabsTrigger value="lalkitab" className="font-sacred data-[state=active]:bg-sacred-gold/20 data-[state=active]:text-sacred-gold">
-              Lal Kitab
+              {t('kp.tabLalKitab')}
             </TabsTrigger>
           </TabsList>
 
@@ -125,7 +127,7 @@ export default function KPLalkitabPage() {
             <div className="card-sacred rounded-2xl p-6 border border-sacred-gold/20">
               <div className="flex items-center gap-3 mb-6">
                 <Sparkles className="w-6 h-6 text-sacred-gold" />
-                <h2 className="text-xl font-sacred font-bold text-sacred-gold">KP Cuspal Analysis</h2>
+                <h2 className="text-xl font-sacred font-bold text-sacred-gold">{t('kp.cuspalAnalysis')}</h2>
               </div>
 
               <KundliSelector />
@@ -136,9 +138,9 @@ export default function KPLalkitabPage() {
                 className="btn-sacred w-full sm:w-auto font-semibold disabled:opacity-50"
               >
                 {kpLoading ? (
-                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Analyzing...</>
+                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{t('kp.analyzing')}</>
                 ) : (
-                  <><Sparkles className="w-4 h-4 mr-2" />Analyze KP Chart<ChevronRight className="w-4 h-4 ml-2" /></>
+                  <><Sparkles className="w-4 h-4 mr-2" />{t('kp.analyzeButton')}<ChevronRight className="w-4 h-4 ml-2" /></>
                 )}
               </Button>
 
@@ -148,29 +150,31 @@ export default function KPLalkitabPage() {
 
               {kpResult && (
                 <div className="mt-8 space-y-6">
-                  {/* Cuspal Chart - Cusps */}
-                  {kpResult.cuspal_chart?.cusps && kpResult.cuspal_chart.cusps.length > 0 && (
+                  {/* Planet Table */}
+                  {kpResult.planets && kpResult.planets.length > 0 && (
                     <div>
-                      <h3 className="text-lg font-sacred font-semibold text-sacred-gold mb-4">House Cusps &amp; Sub-Lords</h3>
+                      <h3 className="text-lg font-sacred font-semibold text-sacred-gold mb-4">{t('kp.planetTable')}</h3>
                       <div className="overflow-x-auto rounded-xl border border-sacred-gold/20">
                         <table className="w-full">
                           <thead className="bg-cosmic-card">
                             <tr>
-                              <th className="text-left p-4 text-sacred-gold font-medium text-sm">House</th>
-                              <th className="text-left p-4 text-sacred-gold font-medium text-sm">Cusp Degree</th>
-                              <th className="text-left p-4 text-sacred-gold font-medium text-sm">Sign</th>
-                              <th className="text-left p-4 text-sacred-gold font-medium text-sm">Star Lord</th>
-                              <th className="text-left p-4 text-sacred-gold font-medium text-sm">Sub Lord</th>
+                              <th className="text-left p-4 text-sacred-gold font-medium text-sm">{t('kp.planet')}</th>
+                              <th className="text-left p-4 text-sacred-gold font-medium text-sm">{t('kp.degree')}</th>
+                              <th className="text-left p-4 text-sacred-gold font-medium text-sm">{t('kp.sign')}</th>
+                              <th className="text-left p-4 text-sacred-gold font-medium text-sm">{t('kp.signLord')}</th>
+                              <th className="text-left p-4 text-sacred-gold font-medium text-sm">{t('kp.starLord')}</th>
+                              <th className="text-left p-4 text-sacred-gold font-medium text-sm">{t('kp.subLord')}</th>
                             </tr>
                           </thead>
                           <tbody>
-                            {kpResult.cuspal_chart.cusps.map((cusp: any, i: number) => (
+                            {kpResult.planets.map((p: any, i: number) => (
                               <tr key={i} className="border-t border-sacred-gold/10">
-                                <td className="p-4 text-cosmic-text font-medium">{cusp.house || i + 1}</td>
-                                <td className="p-4 text-cosmic-text/80">{typeof cusp.degree === 'number' ? cusp.degree.toFixed(2) + '\u00B0' : cusp.degree || '--'}</td>
-                                <td className="p-4 text-cosmic-text/80">{cusp.sign || '--'}</td>
-                                <td className="p-4 text-sacred-gold">{cusp.star_lord || '--'}</td>
-                                <td className="p-4 text-sacred-gold">{cusp.sub_lord || '--'}</td>
+                                <td className="p-4 text-cosmic-text font-medium">{p.planet}</td>
+                                <td className="p-4 text-cosmic-text/80">{typeof p.degree === 'number' ? p.degree.toFixed(2) + '\u00B0' : p.degree || '--'}</td>
+                                <td className="p-4 text-cosmic-text/80">{p.sign || '--'}</td>
+                                <td className="p-4 text-cosmic-text/80">{p.sign_lord || '--'}</td>
+                                <td className="p-4 text-sacred-gold">{p.star_lord || '--'}</td>
+                                <td className="p-4 text-sacred-gold font-semibold">{p.sub_lord || '--'}</td>
                               </tr>
                             ))}
                           </tbody>
@@ -179,25 +183,35 @@ export default function KPLalkitabPage() {
                     </div>
                   )}
 
-                  {/* Planet Positions in KP */}
-                  {kpResult.cuspal_chart?.planets && Object.keys(kpResult.cuspal_chart.planets).length > 0 && (
+                  {/* Cusp Table */}
+                  {kpResult.cusps && kpResult.cusps.length > 0 && (
                     <div>
-                      <h3 className="text-lg font-sacred font-semibold text-sacred-gold mb-4">Planet Star &amp; Sub Lords</h3>
-                      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                        {Object.entries(kpResult.cuspal_chart.planets).map(([planet, info]: [string, any]) => (
-                          <div key={planet} className="card-sacred rounded-xl p-4 border border-sacred-gold/20">
-                            <h4 className="font-sacred font-semibold text-sacred-gold mb-2">{planet}</h4>
-                            <div className="space-y-1 text-sm">
-                              {info.degree !== undefined && (
-                                <p className="text-cosmic-text/80">Degree: <span className="text-cosmic-text">{typeof info.degree === 'number' ? info.degree.toFixed(2) + '\u00B0' : info.degree}</span></p>
-                              )}
-                              {info.sign && <p className="text-cosmic-text/80">Sign: <span className="text-cosmic-text">{info.sign}</span></p>}
-                              {info.star_lord && <p className="text-cosmic-text/80">Star Lord: <span className="text-sacred-gold">{info.star_lord}</span></p>}
-                              {info.sub_lord && <p className="text-cosmic-text/80">Sub Lord: <span className="text-sacred-gold">{info.sub_lord}</span></p>}
-                              {info.sub_sub_lord && <p className="text-cosmic-text/80">Sub-Sub Lord: <span className="text-sacred-gold">{info.sub_sub_lord}</span></p>}
-                            </div>
-                          </div>
-                        ))}
+                      <h3 className="text-lg font-sacred font-semibold text-sacred-gold mb-4">{t('kp.cuspTable')}</h3>
+                      <div className="overflow-x-auto rounded-xl border border-sacred-gold/20">
+                        <table className="w-full">
+                          <thead className="bg-cosmic-card">
+                            <tr>
+                              <th className="text-left p-4 text-sacred-gold font-medium text-sm">{t('kp.cusp')}</th>
+                              <th className="text-left p-4 text-sacred-gold font-medium text-sm">{t('kp.degree')}</th>
+                              <th className="text-left p-4 text-sacred-gold font-medium text-sm">{t('kp.sign')}</th>
+                              <th className="text-left p-4 text-sacred-gold font-medium text-sm">{t('kp.signLord')}</th>
+                              <th className="text-left p-4 text-sacred-gold font-medium text-sm">{t('kp.starLord')}</th>
+                              <th className="text-left p-4 text-sacred-gold font-medium text-sm">{t('kp.subLord')}</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {kpResult.cusps.map((cusp: any, i: number) => (
+                              <tr key={i} className="border-t border-sacred-gold/10">
+                                <td className="p-4 text-cosmic-text font-medium">{cusp.house || i + 1}</td>
+                                <td className="p-4 text-cosmic-text/80">{typeof cusp.degree === 'number' ? cusp.degree.toFixed(2) + '\u00B0' : cusp.degree || '--'}</td>
+                                <td className="p-4 text-cosmic-text/80">{cusp.sign || '--'}</td>
+                                <td className="p-4 text-cosmic-text/80">{cusp.sign_lord || '--'}</td>
+                                <td className="p-4 text-sacred-gold">{cusp.star_lord || '--'}</td>
+                                <td className="p-4 text-sacred-gold font-semibold">{cusp.sub_lord || '--'}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                       </div>
                     </div>
                   )}
@@ -205,15 +219,15 @@ export default function KPLalkitabPage() {
                   {/* Significators */}
                   {kpResult.significators && Object.keys(kpResult.significators).length > 0 && (
                     <div>
-                      <h3 className="text-lg font-sacred font-semibold text-sacred-gold mb-4">House Significators</h3>
+                      <h3 className="text-lg font-sacred font-semibold text-sacred-gold mb-4">{t('kp.significators')}</h3>
                       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                        {Object.entries(kpResult.significators).map(([house, planets]: [string, any]) => (
-                          <div key={house} className="card-sacred rounded-xl p-4 border border-sacred-gold/20">
-                            <h4 className="font-sacred font-semibold text-sacred-gold mb-2">House {house}</h4>
+                        {Object.entries(kpResult.significators).map(([planet, houses]: [string, any]) => (
+                          <div key={planet} className="card-sacred rounded-xl p-4 border border-sacred-gold/20">
+                            <h4 className="font-sacred font-semibold text-sacred-gold mb-2">{planet}</h4>
                             <div className="flex flex-wrap gap-2">
-                              {(Array.isArray(planets) ? planets : [planets]).map((p: string, idx: number) => (
+                              {(Array.isArray(houses) ? houses : [houses]).map((h: number, idx: number) => (
                                 <span key={idx} className="text-xs px-2 py-1 rounded-full bg-sacred-gold/10 text-sacred-gold border border-sacred-gold/20">
-                                  {p}
+                                  {t('kp.cusp')} {h}
                                 </span>
                               ))}
                             </div>

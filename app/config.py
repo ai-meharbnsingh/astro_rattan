@@ -21,7 +21,11 @@ def _env_first(*names: str, default: str = "") -> str:
 DB_PATH = os.getenv("DB_PATH", "astrovedic.db")
 
 # Auth
-JWT_SECRET = os.getenv("JWT_SECRET", "astrovedic-dev-secret-change-in-production")
+JWT_SECRET = os.getenv("JWT_SECRET", "")
+if not JWT_SECRET:
+    import secrets
+    JWT_SECRET = secrets.token_hex(32)
+    print("[WARNING] JWT_SECRET not set — using random secret. Sessions will not persist across restarts. Set JWT_SECRET env var for production.")
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRE_HOURS = 24
 

@@ -1,8 +1,11 @@
-"""Kundli routes — generate, retrieve, list, iogita analysis, match, dosha, dasha, divisional, ashtakvarga, avakhada, yogas."""
+"""Kundli routes — generate, retrieve, list, iogita analysis, match, dosha, dasha, divisional, ashtakvarga, avakhada, yogas, geocode, pdf."""
+import io
 import json
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, status
+import httpx
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi.responses import StreamingResponse
 
 from app.auth import get_current_user
 from app.database import get_db
@@ -12,12 +15,44 @@ from app.astro_iogita_engine import run_astro_analysis
 from app.matching_engine import calculate_gun_milan
 from app.dosha_engine import check_mangal_dosha, check_kaal_sarp, check_sade_sati, analyze_yogas_and_doshas
 from app.dasha_engine import calculate_dasha, calculate_extended_dasha
-from app.divisional_charts import calculate_divisional_chart, calculate_divisional_chart_detailed, DIVISIONAL_CHARTS
+from app.divisional_charts import (
+    calculate_divisional_chart,
+    calculate_divisional_chart_detailed,
+    calculate_divisional_houses,
+    DIVISIONAL_CHARTS,
+)
 from app.ashtakvarga_engine import calculate_ashtakvarga
 from app.shadbala_engine import calculate_shadbala
 from app.avakhada_engine import calculate_avakhada
+from app.transit_engine import calculate_transits
+from app.kp_engine import calculate_kp_cuspal
 
 router = APIRouter(prefix="/api/kundli", tags=["kundli"])
+
+
+# ── geocode ─────────────────────────────────────────────────
+
+@router.get("/geocode", status_code=status.HTTP_200_OK)
+async def geocode_place(query: str = Query(..., min_length=2, description="Place name to geocode")):
+    """Geocode a place name using the free Nominatim OpenStreetMap API."""
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.get(
+                "https://nominatim.openstreetmap.org/search",
+                params={"q": query, "format": "json", "limit": 5},
+                headers={"User-Agent": "AstroRattan/1.0"},
+            )
+            resp.raise_for_status()
+            results = resp.json()
+            return [
+                {"name": r["display_name"], "lat": float(r["lat"]), "lon": float(r["lon"])}
+                for r in results
+            ]
+    except httpx.HTTPError:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Geocoding service unavailable. Please enter coordinates manually.",
+        )
 
 
 # ── helpers ──────────────────────────────────────────────────
@@ -297,15 +332,24 @@ def get_divisional_chart(
     # Get detailed result with degree info
     detailed = calculate_divisional_chart_detailed(planet_longitudes, division)
 
+    # Calculate divisional houses relative to divisional ascendant
+    asc_longitude = chart.get("ascendant", {}).get("longitude", 0.0)
+    houses = calculate_divisional_houses(asc_longitude, division)
+
+    # Build a lookup: sign -> house number (for mapping planets to houses)
+    sign_to_house = {h["sign"]: h["number"] for h in houses}
+
     # Build planet data suitable for InteractiveKundli component
     planet_positions = []
     for planet_name, info in detailed.items():
         sign_index = info["sign_index"]
+        # House is relative to divisional ascendant, not absolute sign index
+        house_num = sign_to_house.get(info["sign"], sign_index + 1)
         planet_positions.append({
             "planet": planet_name,
             "sign": info["sign"],
             "sign_degree": info["degree"],
-            "house": sign_index + 1,  # Use sign-as-house for divisional charts
+            "house": house_num,
             "nakshatra": "",
             "longitude": sign_index * 30.0 + info["degree"],
         })
@@ -323,6 +367,7 @@ def get_divisional_chart(
         "division": division,
         "planet_signs": planet_signs,
         "planet_positions": planet_positions,
+        "houses": houses,
     }
 
 
@@ -432,3 +477,285 @@ def get_yogas_and_doshas(
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result
+
+
+# ── PDF Download ────────────────────────────────────────────
+
+# Sign → Lord mapping used for house lordships table
+_SIGN_LORD = {
+    "Aries": "Mars", "Taurus": "Venus", "Gemini": "Mercury", "Cancer": "Moon",
+    "Leo": "Sun", "Virgo": "Mercury", "Libra": "Venus", "Scorpio": "Mars",
+    "Sagittarius": "Jupiter", "Capricorn": "Saturn", "Aquarius": "Saturn", "Pisces": "Jupiter",
+}
+
+_SIGN_ORDER = [
+    "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+    "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces",
+]
+
+
+def _build_kundli_pdf(row: dict, chart: dict) -> bytes:
+    """Build an in-memory Kundli PDF report and return the raw bytes."""
+    from fpdf import FPDF
+
+    class KundliPDF(FPDF):
+        def header(self):
+            self.set_font("Helvetica", "B", 16)
+            self.cell(0, 10, "Astro Rattan - Vedic Birth Chart Report", align="C", new_x="LMARGIN", new_y="NEXT")
+            self.ln(5)
+
+        def footer(self):
+            self.set_y(-15)
+            self.set_font("Helvetica", "I", 8)
+            self.cell(0, 10, f"Page {self.page_no()} | Powered by Semantic Gravity", align="C")
+
+    pdf = KundliPDF()
+    pdf.set_auto_page_break(auto=True, margin=20)
+    pdf.add_page()
+
+    # ── Birth Details ───────────────────────────────────────
+    pdf.set_font("Helvetica", "B", 18)
+    pdf.cell(0, 12, f"{row['person_name']}", align="C", new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(4)
+
+    pdf.set_font("Helvetica", "", 11)
+    birth_date = row.get("birth_date", "N/A")
+    birth_time = row.get("birth_time", "N/A")
+    birth_place = row.get("birth_place", "N/A")
+    pdf.cell(0, 7, f"Date of Birth: {birth_date}", align="C", new_x="LMARGIN", new_y="NEXT")
+    pdf.cell(0, 7, f"Time of Birth: {birth_time}", align="C", new_x="LMARGIN", new_y="NEXT")
+    pdf.cell(0, 7, f"Place of Birth: {birth_place}", align="C", new_x="LMARGIN", new_y="NEXT")
+    ayanamsa = row.get("ayanamsa", "lahiri")
+    pdf.cell(0, 7, f"Ayanamsa: {ayanamsa.title() if isinstance(ayanamsa, str) else ayanamsa}", align="C", new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(8)
+
+    # Ascendant info
+    ascendant = chart.get("ascendant", {})
+    if ascendant:
+        asc_sign = ascendant.get("sign", "N/A")
+        asc_deg = ascendant.get("degree", "")
+        pdf.set_font("Helvetica", "B", 12)
+        pdf.cell(0, 8, f"Ascendant (Lagna): {asc_sign} {asc_deg}\u00b0" if asc_deg else f"Ascendant (Lagna): {asc_sign}", align="C", new_x="LMARGIN", new_y="NEXT")
+        pdf.ln(6)
+
+    # ── Planet Positions Table ──────────────────────────────
+    planets = chart.get("planets", {})
+    if planets:
+        pdf.set_font("Helvetica", "B", 13)
+        pdf.cell(0, 10, "Planet Positions", new_x="LMARGIN", new_y="NEXT")
+        pdf.ln(2)
+
+        # Table header
+        col_widths = [30, 32, 22, 38, 38, 30]
+        headers = ["Planet", "Sign", "House", "Degree", "Nakshatra", "Retro"]
+        pdf.set_font("Helvetica", "B", 9)
+        pdf.set_fill_color(245, 235, 210)
+        for i, h in enumerate(headers):
+            pdf.cell(col_widths[i], 7, h, border=1, align="C", fill=True)
+        pdf.ln()
+
+        # Table rows
+        pdf.set_font("Helvetica", "", 9)
+        for planet_name, info in planets.items():
+            if not isinstance(info, dict):
+                continue
+            sign = info.get("sign", "N/A")
+            house = str(info.get("house", "N/A"))
+            degree = f"{info.get('degree', 'N/A')}\u00b0" if info.get("degree") is not None else "N/A"
+            nakshatra = info.get("nakshatra", "N/A")
+            retro = "R" if info.get("retrograde") else ""
+            vals = [planet_name, sign, house, degree, nakshatra, retro]
+            for i, v in enumerate(vals):
+                pdf.cell(col_widths[i], 6, str(v), border=1, align="C")
+            pdf.ln()
+        pdf.ln(8)
+
+    # ── House Lordships ─────────────────────────────────────
+    asc_sign = chart.get("ascendant", {}).get("sign")
+    if asc_sign and asc_sign in _SIGN_ORDER:
+        pdf.set_font("Helvetica", "B", 13)
+        pdf.cell(0, 10, "House Lordships", new_x="LMARGIN", new_y="NEXT")
+        pdf.ln(2)
+
+        pdf.set_font("Helvetica", "B", 9)
+        pdf.set_fill_color(245, 235, 210)
+        lord_cols = [25, 40, 35]
+        for i, h in enumerate(["House", "Sign", "Lord"]):
+            pdf.cell(lord_cols[i], 7, h, border=1, align="C", fill=True)
+        pdf.ln()
+
+        pdf.set_font("Helvetica", "", 9)
+        asc_idx = _SIGN_ORDER.index(asc_sign)
+        for house_num in range(1, 13):
+            sign = _SIGN_ORDER[(asc_idx + house_num - 1) % 12]
+            lord = _SIGN_LORD.get(sign, "N/A")
+            pdf.cell(lord_cols[0], 6, str(house_num), border=1, align="C")
+            pdf.cell(lord_cols[1], 6, sign, border=1, align="C")
+            pdf.cell(lord_cols[2], 6, lord, border=1, align="C")
+            pdf.ln()
+        pdf.ln(8)
+
+    # ── Yoga / Dosha Summary ────────────────────────────────
+    if planets:
+        yoga_dosha = analyze_yogas_and_doshas(planets)
+
+        yogas = yoga_dosha.get("yogas", [])
+        if yogas:
+            pdf.set_font("Helvetica", "B", 13)
+            pdf.cell(0, 10, "Yogas (Positive Combinations)", new_x="LMARGIN", new_y="NEXT")
+            pdf.ln(2)
+            pdf.set_font("Helvetica", "", 9)
+            for y in yogas:
+                if isinstance(y, dict):
+                    name = y.get("name", y.get("yoga", "Yoga"))
+                    desc = y.get("description", y.get("effect", ""))
+                    pdf.set_font("Helvetica", "B", 9)
+                    pdf.cell(0, 6, f"  {name}", new_x="LMARGIN", new_y="NEXT")
+                    if desc:
+                        pdf.set_font("Helvetica", "", 9)
+                        pdf.multi_cell(0, 5, f"    {desc}")
+                else:
+                    pdf.cell(0, 6, f"  {y}", new_x="LMARGIN", new_y="NEXT")
+            pdf.ln(6)
+
+        doshas = yoga_dosha.get("doshas", [])
+        if doshas:
+            pdf.set_font("Helvetica", "B", 13)
+            pdf.cell(0, 10, "Doshas (Afflictions)", new_x="LMARGIN", new_y="NEXT")
+            pdf.ln(2)
+            pdf.set_font("Helvetica", "", 9)
+            for d in doshas:
+                if isinstance(d, dict):
+                    name = d.get("name", d.get("dosha", "Dosha"))
+                    severity = d.get("severity", "")
+                    desc = d.get("description", d.get("effect", ""))
+                    label = f"  {name}"
+                    if severity:
+                        label += f" [{severity}]"
+                    pdf.set_font("Helvetica", "B", 9)
+                    pdf.cell(0, 6, label, new_x="LMARGIN", new_y="NEXT")
+                    if desc:
+                        pdf.set_font("Helvetica", "", 9)
+                        pdf.multi_cell(0, 5, f"    {desc}")
+                else:
+                    pdf.cell(0, 6, f"  {d}", new_x="LMARGIN", new_y="NEXT")
+            pdf.ln(6)
+
+    # ── io-gita Analysis (if stored) ────────────────────────
+    iogita_raw = row.get("iogita_analysis")
+    if iogita_raw:
+        try:
+            iogita = json.loads(iogita_raw) if isinstance(iogita_raw, str) else iogita_raw
+        except (json.JSONDecodeError, TypeError):
+            iogita = None
+        if iogita and isinstance(iogita, dict):
+            pdf.set_font("Helvetica", "B", 13)
+            pdf.cell(0, 10, "io-gita Semantic Gravity Analysis", new_x="LMARGIN", new_y="NEXT")
+            pdf.ln(2)
+            pdf.set_font("Helvetica", "", 9)
+            for key, val in iogita.items():
+                text = f"{key}: {val}"
+                pdf.multi_cell(0, 5, text)
+            pdf.ln(6)
+
+    # Return raw bytes
+    return pdf.output()
+
+
+@router.get("/{kundli_id}/pdf", status_code=status.HTTP_200_OK)
+def download_kundli_pdf(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Generate and stream a Kundli PDF report for download."""
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+
+    try:
+        pdf_bytes = _build_kundli_pdf(row, chart)
+    except ImportError:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="PDF generation unavailable — fpdf2 not installed",
+        )
+
+    safe_name = (row.get("person_name") or "kundli").replace(" ", "_")
+    filename = f"kundli-{safe_name}.pdf"
+
+    return StreamingResponse(
+        io.BytesIO(pdf_bytes),
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+@router.post("/{kundli_id}/transits", status_code=status.HTTP_200_OK)
+def get_transits(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Calculate current Gochara (transit) predictions for a kundli."""
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    result = calculate_transits(chart)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
+@router.post("/{kundli_id}/kp-analysis", status_code=status.HTTP_200_OK)
+def get_kp_analysis(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """KP (Krishnamurti Paddhati) analysis — sign lord, star lord, sub lord for planets and cusps."""
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+
+    # Extract planet longitudes
+    planet_longitudes = {}
+    for planet_name, info in chart.get("planets", {}).items():
+        planet_longitudes[planet_name] = info.get("longitude", 0.0)
+
+    if not planet_longitudes:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Chart data has no planet longitudes",
+        )
+
+    # Extract house cusps (Placidus from swisseph) or fallback to equal houses
+    house_cusps = chart.get("house_cusps", [])
+    if not house_cusps or len(house_cusps) != 12:
+        asc_lon = chart.get("ascendant", {}).get("longitude", 0.0)
+        house_cusps = [(asc_lon + i * 30.0) % 360.0 for i in range(12)]
+
+    try:
+        kp = calculate_kp_cuspal(planet_longitudes, house_cusps)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"KP calculation error: {str(exc)}",
+        )
+
+    # Shape response: planets as list, cusps as list
+    planets_list = []
+    for pname, pinfo in kp.get("planets", {}).items():
+        planets_list.append({
+            "planet": pname,
+            "sign": pinfo.get("sign", ""),
+            "sign_lord": pinfo.get("sign_lord", ""),
+            "star_lord": pinfo.get("star_lord", ""),
+            "sub_lord": pinfo.get("sub_lord", ""),
+            "degree": pinfo.get("longitude", 0.0),
+        })
+
+    return {
+        "kundli_id": kundli_id,
+        "person_name": row["person_name"],
+        "planets": planets_list,
+        "cusps": kp.get("cusps", []),
+        "significators": kp.get("significators", {}),
+    }

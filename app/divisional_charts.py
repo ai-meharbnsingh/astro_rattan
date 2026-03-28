@@ -379,6 +379,46 @@ def calculate_divisional_chart_detailed(
     return _calculate_generic(planet_longitudes, division)
 
 
+def calculate_divisional_ascendant(
+    ascendant_longitude: float, division: int,
+) -> Dict[str, Any]:
+    """
+    Calculate the divisional chart ascendant by passing the natal ascendant
+    longitude through the same divisional formula used for planets.
+
+    Returns:
+        {sign, sign_index, degree}
+    """
+    detailed = calculate_divisional_chart_detailed(
+        {"_Ascendant": ascendant_longitude}, division,
+    )
+    return detailed["_Ascendant"]
+
+
+def calculate_divisional_houses(
+    ascendant_longitude: float, division: int,
+) -> List[Dict[str, Any]]:
+    """
+    Build the 12-house mapping for a divisional chart, relative to the
+    divisional ascendant.
+
+    The divisional ascendant's sign becomes House 1, the next sign
+    becomes House 2, and so on through all 12 houses.
+
+    Returns:
+        [{number: 1, sign: "Libra"}, {number: 2, sign: "Scorpio"}, ...]
+    """
+    asc_info = calculate_divisional_ascendant(ascendant_longitude, division)
+    asc_sign_index = asc_info["sign_index"]
+    return [
+        {
+            "number": i + 1,
+            "sign": _SIGN_NAMES[(asc_sign_index + i) % 12],
+        }
+        for i in range(12)
+    ]
+
+
 # Backward-compatible named functions
 def calculate_d9_navamsa(planet_longitudes: Dict[str, float]) -> Dict[str, str]:
     """Calculate Navamsa (D9) sign for each planet. Returns {planet: sign}."""

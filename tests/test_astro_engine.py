@@ -181,7 +181,7 @@ class TestCalculatePlanetPositions:
         )
         sun = result["planets"]["Sun"]
         required_fields = {"longitude", "sign", "sign_degree", "nakshatra",
-                           "nakshatra_pada", "house"}
+                           "nakshatra_pada", "house", "retrograde", "status"}
         assert set(sun.keys()) == required_fields
 
     def test_ketu_opposite_rahu(self):
