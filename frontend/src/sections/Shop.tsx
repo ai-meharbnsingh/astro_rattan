@@ -174,7 +174,7 @@ export default function Shop() {
                             <div className="hidden absolute inset-0 flex items-center justify-center bg-cosmic-card">
                               <Gem className="w-12 h-12 text-sacred-gold/50" />
                             </div>
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#F5F0E8]/60 to-transparent" />
                           </>
                         ) : (
                           <Gem className="w-12 h-12 text-sacred-gold/50" />

@@ -30,7 +30,7 @@ export default function About() {
   return (
     <section ref={sectionRef} id="about" className="relative py-24 bg-[#F5F0E8] overflow-hidden">
       {/* Observatory theme - pure black with gold accents */}
-      <div className="absolute inset-0 z-0 bg-gradient-to-b from-black via-transparent to-black pointer-events-none" />
+      <div className="absolute inset-0 z-0 bg-gradient-to-b from-[#F5F0E8] via-transparent to-[#F5F0E8] pointer-events-none" />
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           <div className="about-content">

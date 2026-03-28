@@ -70,7 +70,7 @@ export default function Features() {
         <div className="features-title mt-16 text-center">
           <Button 
             onClick={() => navigate('/ai-chat')} 
-            className="bg-transparent border border-[#9A7B0A] text-[#9A7B0A] hover:bg-[#9A7B0A] hover:text-black transition-all px-8 py-6 text-base font-['Cinzel'] tracking-wider"
+            className="bg-transparent border border-[#9A7B0A] text-[#9A7B0A] hover:bg-[#9A7B0A] hover:text-[#1a1a2e] transition-all px-8 py-6 text-base font-['Cinzel'] tracking-wider"
           >
             <Brain className="w-5 h-5 mr-2" />
             {t('features.chatWithAI')}

@@ -140,7 +140,7 @@ export default function Kundli3D() {
                         onClick={() => setFormData({ ...formData, gender: 'male' })}
                         className={`h-14 rounded-xl border transition-all text-lg ${
                           formData.gender === 'male'
-                            ? 'bg-[#9A7B0A] text-black border-[#9A7B0A]'
+                            ? 'bg-[#9A7B0A] text-[#1a1a2e] border-[#9A7B0A]'
                             : 'bg-white/5 text-[#1a1a2e] border-[#8B7355]/10 hover:border-[#9A7B0A]/50'
                         }`}
                       >
@@ -151,7 +151,7 @@ export default function Kundli3D() {
                         onClick={() => setFormData({ ...formData, gender: 'female' })}
                         className={`h-14 rounded-xl border transition-all text-lg ${
                           formData.gender === 'female'
-                            ? 'bg-[#9A7B0A] text-black border-[#9A7B0A]'
+                            ? 'bg-[#9A7B0A] text-[#1a1a2e] border-[#9A7B0A]'
                             : 'bg-white/5 text-[#1a1a2e] border-[#8B7355]/10 hover:border-[#9A7B0A]/50'
                         }`}
                       >
@@ -197,7 +197,7 @@ export default function Kundli3D() {
                     <Button
                       type="submit"
                       disabled={loading}
-                      className="w-full h-14 bg-gradient-to-r from-[#9A7B0A] to-[#B8860B] text-black font-bold text-lg hover:shadow-lg hover:shadow-[#9A7B0A]/30 transition-all"
+                      className="w-full h-14 bg-gradient-to-r from-[#9A7B0A] to-[#B8860B] text-[#1a1a2e] font-bold text-lg hover:shadow-lg hover:shadow-[#9A7B0A]/30 transition-all"
                     >
                       {loading ? (
                         <span className="flex items-center gap-2">
@@ -247,7 +247,7 @@ export default function Kundli3D() {
       `}</style>
 
       {/* Bottom gradient fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#F5F0E8] to-transparent pointer-events-none" />
     </div>
   );
 }

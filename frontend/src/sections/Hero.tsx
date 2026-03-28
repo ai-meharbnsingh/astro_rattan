@@ -118,7 +118,7 @@ export default function Hero() {
         <div className="hero-cta opacity-0 mb-12 flex flex-col sm:flex-row gap-4 justify-center items-center">
           <Button 
             onClick={() => navigate('/kundli')} 
-            className="bg-[#9A7B0A] text-black hover:bg-[#B8860B] transition-all duration-300 
+            className="bg-[#9A7B0A] text-[#1a1a2e] hover:bg-[#B8860B] transition-all duration-300 
                        text-xs tracking-[3px] uppercase font-['Cinzel'] font-semibold
                        px-8 py-5 rounded-none border-none"
             style={{ boxShadow: '0 0 30px rgba(212, 175, 55, 0.3)' }}
@@ -185,7 +185,7 @@ export default function Hero() {
               <Button 
                 onClick={handleGenerateKundli} 
                 className="w-full bg-transparent border border-[#9A7B0A] text-[#9A7B0A] 
-                           hover:bg-[#9A7B0A] hover:text-black transition-all duration-300
+                           hover:bg-[#9A7B0A] hover:text-[#1a1a2e] transition-all duration-300
                            font-['Cinzel'] text-xs tracking-[2px] uppercase h-10 rounded-none"
               >
                 {t('hero.generateKundli')}

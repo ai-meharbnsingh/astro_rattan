@@ -60,7 +60,7 @@ export default function Navigation() {
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 shrink-0">
               <div className="w-10 h-10 rounded-full bg-[#9A7B0A] flex items-center justify-center">
-                <Stars className="w-5 h-5 text-black" />
+                <Stars className="w-5 h-5 text-[#1a1a2e]" />
               </div>
               <span className="font-decorative font-bold text-xl text-[#9A7B0A] hidden sm:block">
                 Astro Rattan
@@ -122,7 +122,7 @@ export default function Navigation() {
               {isAuthenticated && (
                 <Link to="/cart" className="p-2.5 text-[#1a1a2e]/70 hover:text-[#B8860B] transition-colors relative">
                   <ShoppingCart className="w-5 h-5" />
-                  <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#B8860B] rounded-full text-[10px] text-black flex items-center justify-center font-bold">0</span>
+                  <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#B8860B] rounded-full text-[10px] text-[#1a1a2e] flex items-center justify-center font-bold">0</span>
                 </Link>
               )}
 
@@ -143,7 +143,7 @@ export default function Navigation() {
                   <User className="w-5 h-5" />
                 </Link>
               ) : (
-                <Link to="/login" className="ml-2 px-4 py-2 bg-transparent border border-[#9A7B0A] text-[#9A7B0A] text-sm font-medium hover:bg-[#9A7B0A] hover:text-black transition-all hidden sm:flex items-center gap-1.5">
+                <Link to="/login" className="ml-2 px-4 py-2 bg-transparent border border-[#9A7B0A] text-[#9A7B0A] text-sm font-medium hover:bg-[#9A7B0A] hover:text-[#1a1a2e] transition-all hidden sm:flex items-center gap-1.5">
                   <Sparkles className="w-4 h-4" />
                   Sign In
                 </Link>
@@ -181,7 +181,7 @@ export default function Navigation() {
               <Link
                 to="/ai-chat"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-2 w-full px-4 py-3 bg-[#9A7B0A] text-black font-medium text-center justify-center hover:bg-[#B8860B] transition-colors"
+                className="flex items-center gap-2 w-full px-4 py-3 bg-[#9A7B0A] text-[#1a1a2e] font-medium text-center justify-center hover:bg-[#B8860B] transition-colors"
               >
                 <MessageCircle className="w-4 h-4" />
                 {t('nav.askAIAstrologer')}

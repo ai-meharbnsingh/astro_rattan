@@ -514,7 +514,7 @@ export default function GamificationPage() {
                           <td className="px-5 py-3">
                             <span className={`font-sacred text-lg ${
                               entry.rank === 1 ? 'text-yellow-400' :
-                              entry.rank === 2 ? 'text-gray-300' :
+                              entry.rank === 2 ? 'text-[#8B7355]' :
                               entry.rank === 3 ? 'text-amber-600' :
                               'text-cosmic-text/60'
                             }`}>
