@@ -6,6 +6,12 @@ import os
 
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://localhost/astro_rattan")
 
+# Ensure sslmode=require for cloud databases (Neon, etc.)
+if DATABASE_URL and ("neon.tech" in DATABASE_URL or "amazonaws.com" in DATABASE_URL):
+    if "sslmode" not in DATABASE_URL:
+        sep = "&" if "?" in DATABASE_URL else "?"
+        DATABASE_URL += f"{sep}sslmode=require"
+
 # Thread-safe connection pool
 _pool: psycopg2.pool.ThreadedConnectionPool = None
 
@@ -563,6 +569,12 @@ def init_db():
     conn.autocommit = False
     try:
         with conn.cursor() as cur:
+            # Ensure pgcrypto extension is available for gen_random_bytes
+            try:
+                cur.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto")
+                conn.commit()
+            except Exception:
+                conn.rollback()
             # Split and execute each statement individually
             statements = [s.strip() for s in SCHEMA.split(';') if s.strip()]
             for stmt in statements:
