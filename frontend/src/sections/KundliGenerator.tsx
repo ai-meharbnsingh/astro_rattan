@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Sparkles, ChevronDown, Download, Share2, FileText, Heart, Briefcase, Activity, ArrowLeft, Loader2, X, CheckCircle, AlertTriangle, Shield } from 'lucide-react';
+import { Sparkles, ChevronDown, Download, Share2, FileText, Heart, Briefcase, Activity, ArrowLeft, Loader2, X, CheckCircle, AlertTriangle, Shield, Printer, ScrollText } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/lib/i18n';
@@ -242,6 +242,19 @@ export default function KundliGenerator() {
     } catch { /* fallback */ }
     setLoadingTransit(false);
   };
+
+  // Auto-fetch data for the Report tab when result is loaded
+  useEffect(() => {
+    if (step === 'result' && result?.id) {
+      fetchDasha();
+      fetchAvakhada();
+      fetchYogaDosha();
+      fetchAshtakvarga();
+      fetchShadbala();
+      fetchDivisional('D9');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, result?.id]);
 
   // Build a textual summary of chart data for Puter AI prompt
   const buildChartPrompt = (): string => {
@@ -502,8 +515,9 @@ export default function KundliGenerator() {
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue="planets" className="w-full">
+        <Tabs defaultValue="report" className="w-full">
           <TabsList className="mb-6 bg-sacred-cream flex-wrap">
+            <TabsTrigger value="report" onClick={() => { fetchDasha(); fetchAvakhada(); fetchYogaDosha(); fetchAshtakvarga(); fetchShadbala(); fetchDivisional('D9'); }}><ScrollText className="w-3 h-3 mr-1" />{t('kundli.report')}</TabsTrigger>
             <TabsTrigger value="planets">  {t('kundli.planets')}</TabsTrigger>
             <TabsTrigger value="details">{t('kundli.details')}</TabsTrigger>
             <TabsTrigger value="lordships">{t('kundli.lordships')}</TabsTrigger>
@@ -518,6 +532,331 @@ export default function KundliGenerator() {
             <TabsTrigger value="predictions" onClick={fetchPredictions}>{t('kundli.predictions')}</TabsTrigger>
             <TabsTrigger value="transits" onClick={fetchTransit}>{t('transit.title')}</TabsTrigger>
           </TabsList>
+
+          {/* REPORT TAB — Consolidated single-page view */}
+          <TabsContent value="report">
+            <div className="space-y-6">
+              {/* Action bar */}
+              <div className="flex flex-wrap gap-3 justify-end">
+                <Button size="sm" className="btn-sacred" onClick={async () => {
+                  try {
+                    const token = localStorage.getItem('astrovedic_token');
+                    const API_BASE = import.meta.env.VITE_API_URL || '';
+                    const resp = await fetch(`${API_BASE}/api/kundli/${result.id}/pdf`, {
+                      headers: token ? { Authorization: `Bearer ${token}` } : {},
+                    });
+                    if (!resp.ok) {
+                      const err = await resp.json().catch(() => ({ detail: resp.statusText }));
+                      throw new Error(err.detail || 'PDF download failed');
+                    }
+                    const blob = await resp.blob();
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `kundli-${result.person_name || 'report'}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                  } catch (e: any) {
+                    console.error('PDF download error:', e);
+                    alert(e.message || 'Failed to download PDF');
+                  }
+                }}>
+                  <Download className="w-4 h-4 mr-1" />{t('kundli.downloadPDF')}
+                </Button>
+                <Button size="sm" variant="outline" className="border-sacred-gold/50 text-sacred-brown" onClick={() => window.print()}>
+                  <Printer className="w-4 h-4 mr-1" />{t('kundli.printReport')}
+                </Button>
+              </div>
+
+              {/* Report title */}
+              <div className="bg-gradient-to-r from-sacred-cream to-sacred-gold/10 rounded-2xl p-5 border border-sacred-gold/20 text-center">
+                <h3 className="font-display font-bold text-xl text-sacred-brown">{t('kundli.consolidatedReport')}</h3>
+                <p className="text-sm text-sacred-text-secondary mt-1">{result.person_name} | {result.birth_date} | {result.birth_time} | {result.birth_place}</p>
+              </div>
+
+              {/* Grid layout — 2 columns on desktop, 1 on mobile */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 print:grid-cols-2">
+
+                {/* 1. Birth Chart (Rashi) */}
+                <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+                  <h4 className="font-display font-semibold text-sacred-brown mb-3">Rashi Chart (D1)</h4>
+                  <div className="flex justify-center">
+                    <InteractiveKundli
+                      chartData={{ planets, houses: result.chart_data?.houses } as ChartData}
+                      onPlanetClick={handlePlanetClick}
+                      onHouseClick={handleHouseClick}
+                    />
+                  </div>
+                </div>
+
+                {/* 2. Planet Details Table */}
+                <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+                  <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('kundli.birthDetailsTable')}</h4>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-xs">
+                      <thead className="bg-sacred-gold/10">
+                        <tr>
+                          <th className="text-left p-2 text-sacred-gold-dark font-medium">Planet</th>
+                          <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('kundli.sign')}</th>
+                          <th className="text-center p-2 text-sacred-gold-dark font-medium">House</th>
+                          <th className="text-left p-2 text-sacred-gold-dark font-medium">Nak.</th>
+                          <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('kundli.degree')}</th>
+                          <th className="text-center p-2 text-sacred-gold-dark font-medium">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {planets.map((planet: any, index: number) => (
+                          <tr key={index} className="border-t border-sacred-gold/10 hover:bg-sacred-gold/5">
+                            <td className="p-2 text-sacred-brown font-medium">{planet.planet}</td>
+                            <td className="p-2 text-sacred-text-secondary">{planet.sign}</td>
+                            <td className="p-2 text-center text-sacred-text-secondary">{planet.house}</td>
+                            <td className="p-2 text-sacred-text-secondary">{planet.nakshatra || '\u2014'}</td>
+                            <td className="p-2 text-center text-sacred-text-secondary">{planet.sign_degree?.toFixed(1)}&deg;</td>
+                            <td className="p-2 text-center">
+                              <span className={`text-xs px-1 py-0.5 rounded ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-500/20 text-green-600' : 'text-sacred-text-secondary'}`}>
+                                {planet.status || '\u2014'}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* 3. Navamsha (D9) Chart */}
+                <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+                  <h4 className="font-display font-semibold text-sacred-brown mb-3">Navamsha Chart (D9)</h4>
+                  {loadingDivisional ? (
+                    <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-sacred-gold" /></div>
+                  ) : divisionalData?.planet_positions ? (
+                    <div className="flex justify-center">
+                      <InteractiveKundli
+                        chartData={{
+                          planets: divisionalData.planet_positions.map((p: any) => ({
+                            planet: p.planet,
+                            sign: p.sign,
+                            house: p.house,
+                            nakshatra: p.nakshatra || '',
+                            sign_degree: p.sign_degree || 0,
+                            status: '',
+                          })),
+                          houses: Array.from({ length: 12 }, (_, i) => ({
+                            number: i + 1,
+                            sign: ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'][i],
+                          })),
+                        } as ChartData}
+                        onPlanetClick={handlePlanetClick}
+                        onHouseClick={handleHouseClick}
+                      />
+                    </div>
+                  ) : (
+                    <p className="text-center text-sacred-text-secondary py-8 text-sm">Loading Navamsha...</p>
+                  )}
+                </div>
+
+                {/* 4. Lordships */}
+                <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+                  <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('kundli.houseLordships')}</h4>
+                  <LordshipsTab planets={planets} houses={result.chart_data?.houses || {}} />
+                </div>
+
+                {/* 5. Avakhada Chakra */}
+                <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+                  <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('avakhada.title')}</h4>
+                  {loadingAvakhada ? (
+                    <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-sacred-gold" /></div>
+                  ) : avakhadaData ? (
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { label: t('avakhada.ascendant'), value: avakhadaData.ascendant },
+                        { label: t('avakhada.ascendantLord'), value: avakhadaData.ascendant_lord },
+                        { label: t('avakhada.rashi'), value: avakhadaData.rashi },
+                        { label: t('avakhada.rashiLord'), value: avakhadaData.rashi_lord },
+                        { label: t('avakhada.nakshatra'), value: `${avakhadaData.nakshatra} (P${avakhadaData.nakshatra_pada})` },
+                        { label: t('avakhada.yoga'), value: avakhadaData.yoga },
+                        { label: t('avakhada.karana'), value: avakhadaData.karana },
+                        { label: t('avakhada.yoni'), value: avakhadaData.yoni },
+                        { label: t('avakhada.gana'), value: avakhadaData.gana },
+                        { label: t('avakhada.nadi'), value: avakhadaData.nadi },
+                        { label: t('avakhada.varna'), value: avakhadaData.varna },
+                        { label: t('avakhada.naamakshar'), value: avakhadaData.naamakshar },
+                        { label: t('avakhada.sunSign'), value: avakhadaData.sun_sign },
+                      ].map((item) => (
+                        <div key={item.label} className="rounded-lg p-2 bg-cosmic-card/60">
+                          <p className="text-[10px] text-sacred-text-secondary">{item.label}</p>
+                          <p className="text-xs font-semibold text-sacred-brown">{item.value}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-center text-sacred-text-secondary py-4 text-sm">Loading...</p>
+                  )}
+                </div>
+
+                {/* 6. Vimshottari Dasha */}
+                <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+                  <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('kundli.dasha')}</h4>
+                  {(loadingDasha || loadingExtendedDasha) ? (
+                    <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-sacred-gold" /></div>
+                  ) : dashaData ? (
+                    <div className="space-y-2">
+                      <div className="bg-gradient-to-r from-sacred-gold/5 to-sacred-gold/10 rounded-lg p-3">
+                        <p className="text-xs text-sacred-text-secondary">Current Mahadasha</p>
+                        <p className="text-sm font-display font-bold" style={{ color: '#B8860B' }}>{dashaData.current_dasha}</p>
+                        {dashaData.current_antardasha && <p className="text-xs text-sacred-gold-dark">AD: {dashaData.current_antardasha}</p>}
+                      </div>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-xs">
+                          <thead><tr className="bg-sacred-gold/10">
+                            <th className="text-left p-2 text-sacred-gold-dark font-medium">Planet</th>
+                            <th className="text-left p-2 text-sacred-gold-dark font-medium">Start</th>
+                            <th className="text-left p-2 text-sacred-gold-dark font-medium">End</th>
+                            <th className="text-center p-2 text-sacred-gold-dark font-medium">Yrs</th>
+                          </tr></thead>
+                          <tbody>
+                            {(dashaData.mahadasha_periods || []).map((p: any) => (
+                              <tr key={p.planet} className={`border-t border-sacred-gold/10 ${p.planet === dashaData.current_dasha ? 'bg-sacred-gold/10 font-semibold' : ''}`}>
+                                <td className="p-2 text-sacred-brown">{p.planet}{p.planet === dashaData.current_dasha ? ' \u2190' : ''}</td>
+                                <td className="p-2 text-sacred-text-secondary">{p.start_date}</td>
+                                <td className="p-2 text-sacred-text-secondary">{p.end_date}</td>
+                                <td className="p-2 text-center text-sacred-text-secondary">{p.years}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-center text-sacred-text-secondary py-4 text-sm">Loading Dasha...</p>
+                  )}
+                </div>
+
+                {/* 7. Yoga & Dosha */}
+                <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4 lg:col-span-2">
+                  <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('yoga.title')} & {t('dosha.extended.title')}</h4>
+                  {loadingYogaDosha ? (
+                    <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-sacred-gold" /></div>
+                  ) : yogaDoshaData ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <CheckCircle className="w-4 h-4 text-green-500" />
+                          <h5 className="text-sm font-semibold text-sacred-brown">{t('yoga.title')}</h5>
+                        </div>
+                        <div className="space-y-1">
+                          {(yogaDoshaData.yogas || []).slice(0, 8).map((yoga: any, idx: number) => (
+                            <div key={idx} className={`rounded-lg p-2 text-xs border ${yoga.present ? 'border-green-500/20 bg-green-500/5' : 'border-sacred-gold/10'}`}>
+                              <div className="flex items-center justify-between">
+                                <span className="font-medium text-sacred-brown">{yoga.name}</span>
+                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${yoga.present ? 'bg-green-500/20 text-green-600' : 'bg-gray-200 text-gray-500'}`}>
+                                  {yoga.present ? t('yoga.present') : t('yoga.absent')}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Shield className="w-4 h-4 text-red-500" />
+                          <h5 className="text-sm font-semibold text-sacred-brown">{t('dosha.extended.title')}</h5>
+                        </div>
+                        <div className="space-y-1">
+                          {(yogaDoshaData.doshas || []).slice(0, 8).map((dosha: any, idx: number) => (
+                            <div key={idx} className={`rounded-lg p-2 text-xs border ${dosha.present ? 'border-red-500/20 bg-red-500/5' : 'border-green-500/20 bg-green-500/5'}`}>
+                              <div className="flex items-center justify-between">
+                                <span className="font-medium text-sacred-brown">{dosha.name}</span>
+                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${dosha.present ? 'bg-red-500/20 text-red-600' : 'bg-green-500/20 text-green-600'}`}>
+                                  {dosha.present ? t('dosha.present') : t('dosha.absent')}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-center text-sacred-text-secondary py-4 text-sm">Loading Yoga & Dosha analysis...</p>
+                  )}
+                </div>
+
+                {/* 8. Ashtakvarga SAV bar chart */}
+                <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+                  <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('kundli.sarvashtakvarga')}</h4>
+                  {loadingAshtakvarga ? (
+                    <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-sacred-gold" /></div>
+                  ) : ashtakvargaData ? (
+                    <div>
+                      <div className="flex items-end gap-1 h-36">
+                        {['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'].map((sign) => {
+                          const points = ashtakvargaData.sarvashtakvarga?.[sign] || 0;
+                          const maxPoints = 56;
+                          const heightPct = Math.round((points / maxPoints) * 100);
+                          const isStrong = points >= 28;
+                          return (
+                            <div key={sign} className="flex-1 flex flex-col items-center gap-0.5">
+                              <span className="text-[9px] font-medium text-sacred-brown">{points}</span>
+                              <div className="w-full bg-sacred-gold/10 rounded-t-sm relative" style={{ height: '100px' }}>
+                                <div
+                                  className="absolute bottom-0 w-full rounded-t-sm"
+                                  style={{ height: `${heightPct}%`, backgroundColor: isStrong ? '#B8860B' : '#8B7355' }}
+                                />
+                              </div>
+                              <span className="text-[8px] text-sacred-text-secondary">{sign.slice(0, 3)}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <div className="flex items-center gap-3 mt-2 text-[10px] text-sacred-text-secondary">
+                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#B8860B' }} />Strong</span>
+                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#8B7355' }} />Weak</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-center text-sacred-text-secondary py-4 text-sm">Loading Ashtakvarga...</p>
+                  )}
+                </div>
+
+                {/* 9. Shadbala bar chart */}
+                <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+                  <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('kundli.shadbalaTitle')}</h4>
+                  {loadingShadbala ? (
+                    <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-sacred-gold" /></div>
+                  ) : shadbalaData?.planets ? (
+                    <div className="space-y-2">
+                      {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
+                        const data = shadbalaData.planets[planet];
+                        if (!data) return null;
+                        const pct = Math.min((data.total / data.required) * 100, 150);
+                        const barColor = data.is_strong ? '#B8860B' : '#8B2332';
+                        return (
+                          <div key={planet} className="flex items-center gap-2">
+                            <span className="w-12 text-xs font-medium text-sacred-brown">{planet}</span>
+                            <div className="flex-1 bg-sacred-gold/10 rounded-full h-4 overflow-hidden">
+                              <div className="h-full rounded-full" style={{ width: `${Math.min(pct, 100)}%`, backgroundColor: barColor }} />
+                            </div>
+                            <span className={`text-xs w-16 text-right font-medium ${data.is_strong ? 'text-[#B8860B]' : 'text-[#8B2332]'}`}>
+                              {data.total}/{data.required}
+                            </span>
+                          </div>
+                        );
+                      })}
+                      <div className="flex items-center gap-3 mt-1 text-[10px] text-sacred-text-secondary">
+                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#B8860B' }} />{t('kundli.strong')}</span>
+                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#8B2332' }} />{t('kundli.weak')}</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-center text-sacred-text-secondary py-4 text-sm">Loading Shadbala...</p>
+                  )}
+                </div>
+
+              </div>
+            </div>
+          </TabsContent>
 
           {/* PLANETS TAB - Interactive Kundli Chart + Side Panel */}
           <TabsContent value="planets">

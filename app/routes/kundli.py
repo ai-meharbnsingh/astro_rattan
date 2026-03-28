@@ -495,153 +495,402 @@ _SIGN_ORDER = [
 
 
 def _build_kundli_pdf(row: dict, chart: dict) -> bytes:
-    """Build an in-memory Kundli PDF report and return the raw bytes."""
+    """Build a comprehensive, professional Kundli PDF report and return raw bytes.
+
+    Page 1: Birth details + Planet table (extended) + Lordships
+    Page 2: Vimshottari Dasha + Avakhada Chakra + Yoga/Dosha
+    Page 3: Ashtakvarga (SAV + BAV) + Shadbala + io-gita
+    """
     from fpdf import FPDF
+    from datetime import datetime as _dt
+
+    # ── Astrological reference tables ─────────────────────
+    _SIGN_ELEMENT = {
+        "Aries": "Fire", "Taurus": "Earth", "Gemini": "Air", "Cancer": "Water",
+        "Leo": "Fire", "Virgo": "Earth", "Libra": "Air", "Scorpio": "Water",
+        "Sagittarius": "Fire", "Capricorn": "Earth", "Aquarius": "Air", "Pisces": "Water",
+    }
+    _SIGN_MODALITY = {
+        "Aries": "Moveable", "Taurus": "Fixed", "Gemini": "Dual",
+        "Cancer": "Moveable", "Leo": "Fixed", "Virgo": "Dual",
+        "Libra": "Moveable", "Scorpio": "Fixed", "Sagittarius": "Dual",
+        "Capricorn": "Moveable", "Aquarius": "Fixed", "Pisces": "Dual",
+    }
+    _SIGN_GENDER = {
+        "Aries": "M", "Taurus": "F", "Gemini": "M", "Cancer": "F",
+        "Leo": "M", "Virgo": "F", "Libra": "M", "Scorpio": "F",
+        "Sagittarius": "M", "Capricorn": "F", "Aquarius": "M", "Pisces": "F",
+    }
+    _EXALTATION = {
+        "Sun": "Aries", "Moon": "Taurus", "Mars": "Capricorn",
+        "Mercury": "Virgo", "Jupiter": "Cancer", "Venus": "Pisces",
+        "Saturn": "Libra", "Rahu": "Gemini", "Ketu": "Sagittarius",
+    }
+    _DEBILITATION = {
+        "Sun": "Libra", "Moon": "Scorpio", "Mars": "Cancer",
+        "Mercury": "Pisces", "Jupiter": "Capricorn", "Venus": "Virgo",
+        "Saturn": "Aries", "Rahu": "Sagittarius", "Ketu": "Gemini",
+    }
+    _OWN_SIGNS = {
+        "Sun": ["Leo"], "Moon": ["Cancer"], "Mars": ["Aries", "Scorpio"],
+        "Mercury": ["Gemini", "Virgo"], "Jupiter": ["Sagittarius", "Pisces"],
+        "Venus": ["Taurus", "Libra"], "Saturn": ["Capricorn", "Aquarius"],
+    }
+    _PLANET_NATURE = {
+        "Sun": "Malefic", "Moon": "Benefic", "Mars": "Malefic", "Mercury": "Neutral",
+        "Jupiter": "Benefic", "Venus": "Benefic", "Saturn": "Malefic",
+        "Rahu": "Malefic", "Ketu": "Malefic",
+    }
+
+    def _get_dignity(planet: str, sign: str) -> str:
+        if sign == _EXALTATION.get(planet):
+            return "Exalted"
+        if sign == _DEBILITATION.get(planet):
+            return "Debilitated"
+        if sign in _OWN_SIGNS.get(planet, []):
+            return "Own Sign"
+        return "Neutral"
+
+    # ── Colors ────────────────────────────────────────────
+    GOLD = (184, 134, 11)       # #B8860B
+    GOLD_LIGHT = (245, 235, 210)
+    ALT_ROW = (252, 248, 240)
+    GREEN_MARK = (34, 139, 34)
+    RED_MARK = (178, 34, 34)
+
+    generated_date = _dt.now().strftime("%d %b %Y, %I:%M %p")
+    footer_text = f"Powered by Semantic Gravity | astrovedic-web.vercel.app | Generated on {generated_date}"
 
     class KundliPDF(FPDF):
         def header(self):
-            self.set_font("Helvetica", "B", 16)
-            self.cell(0, 10, "Astro Rattan - Vedic Birth Chart Report", align="C", new_x="LMARGIN", new_y="NEXT")
-            self.ln(5)
+            self.set_font("Helvetica", "B", 14)
+            self.set_text_color(*GOLD)
+            self.cell(0, 8, "Astro Rattan  --  Vedic Birth Chart Report", align="C", new_x="LMARGIN", new_y="NEXT")
+            self.set_text_color(0, 0, 0)
+            self.ln(2)
 
         def footer(self):
-            self.set_y(-15)
-            self.set_font("Helvetica", "I", 8)
-            self.cell(0, 10, f"Page {self.page_no()} | Powered by Semantic Gravity", align="C")
+            self.set_y(-12)
+            self.set_font("Helvetica", "I", 7)
+            self.set_text_color(120, 120, 120)
+            self.cell(0, 8, f"Page {self.page_no()}  |  {footer_text}", align="C")
+            self.set_text_color(0, 0, 0)
+
+        def section_title(self, title: str):
+            self.set_font("Helvetica", "B", 11)
+            self.set_fill_color(*GOLD)
+            self.set_text_color(255, 255, 255)
+            self.cell(0, 7, f"  {title}", fill=True, new_x="LMARGIN", new_y="NEXT")
+            self.set_text_color(0, 0, 0)
+            self.ln(2)
+
+        def table_header(self, cols: list, widths: list):
+            self.set_font("Helvetica", "B", 8)
+            self.set_fill_color(*GOLD_LIGHT)
+            for i, h in enumerate(cols):
+                self.cell(widths[i], 6, h, border=1, align="C", fill=True)
+            self.ln()
+
+        def table_row(self, vals: list, widths: list, row_idx: int = 0):
+            self.set_font("Helvetica", "", 8)
+            if row_idx % 2 == 1:
+                self.set_fill_color(*ALT_ROW)
+                fill = True
+            else:
+                fill = False
+            for i, v in enumerate(vals):
+                self.cell(widths[i], 5, str(v), border=1, align="C", fill=fill)
+            self.ln()
 
     pdf = KundliPDF()
-    pdf.set_auto_page_break(auto=True, margin=20)
+    pdf.set_auto_page_break(auto=True, margin=15)
+
+    # ════════════════════════════════════════════════════════
+    # PAGE 1: Birth Chart + Planet Details + Lordships
+    # ════════════════════════════════════════════════════════
     pdf.add_page()
 
-    # ── Birth Details ───────────────────────────────────────
-    pdf.set_font("Helvetica", "B", 18)
-    pdf.cell(0, 12, f"{row['person_name']}", align="C", new_x="LMARGIN", new_y="NEXT")
-    pdf.ln(4)
-
-    pdf.set_font("Helvetica", "", 11)
+    # Birth details block
+    person_name = row.get("person_name", "N/A")
     birth_date = row.get("birth_date", "N/A")
     birth_time = row.get("birth_time", "N/A")
     birth_place = row.get("birth_place", "N/A")
-    pdf.cell(0, 7, f"Date of Birth: {birth_date}", align="C", new_x="LMARGIN", new_y="NEXT")
-    pdf.cell(0, 7, f"Time of Birth: {birth_time}", align="C", new_x="LMARGIN", new_y="NEXT")
-    pdf.cell(0, 7, f"Place of Birth: {birth_place}", align="C", new_x="LMARGIN", new_y="NEXT")
     ayanamsa = row.get("ayanamsa", "lahiri")
-    pdf.cell(0, 7, f"Ayanamsa: {ayanamsa.title() if isinstance(ayanamsa, str) else ayanamsa}", align="C", new_x="LMARGIN", new_y="NEXT")
-    pdf.ln(8)
 
-    # Ascendant info
-    ascendant = chart.get("ascendant", {})
-    if ascendant:
-        asc_sign = ascendant.get("sign", "N/A")
-        asc_deg = ascendant.get("degree", "")
-        pdf.set_font("Helvetica", "B", 12)
-        pdf.cell(0, 8, f"Ascendant (Lagna): {asc_sign} {asc_deg}\u00b0" if asc_deg else f"Ascendant (Lagna): {asc_sign}", align="C", new_x="LMARGIN", new_y="NEXT")
-        pdf.ln(6)
+    pdf.set_font("Helvetica", "B", 16)
+    pdf.cell(0, 9, person_name, align="C", new_x="LMARGIN", new_y="NEXT")
+    pdf.set_font("Helvetica", "", 9)
+    asc_sign = chart.get("ascendant", {}).get("sign", "N/A")
+    pdf.cell(0, 5, f"DOB: {birth_date}  |  Time: {birth_time}  |  Place: {birth_place}", align="C", new_x="LMARGIN", new_y="NEXT")
+    ayanamsa_str = ayanamsa.title() if isinstance(ayanamsa, str) else str(ayanamsa)
+    pdf.cell(0, 5, f"Ascendant (Lagna): {asc_sign}  |  Ayanamsa: {ayanamsa_str}", align="C", new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(4)
 
-    # ── Planet Positions Table ──────────────────────────────
+    # ── Planet Details Table (extended) ────────────────────
     planets = chart.get("planets", {})
     if planets:
-        pdf.set_font("Helvetica", "B", 13)
-        pdf.cell(0, 10, "Planet Positions", new_x="LMARGIN", new_y="NEXT")
-        pdf.ln(2)
+        pdf.section_title("Planet Positions")
 
-        # Table header
-        col_widths = [30, 32, 22, 38, 38, 30]
-        headers = ["Planet", "Sign", "House", "Degree", "Nakshatra", "Retro"]
-        pdf.set_font("Helvetica", "B", 9)
-        pdf.set_fill_color(245, 235, 210)
-        for i, h in enumerate(headers):
-            pdf.cell(col_widths[i], 7, h, border=1, align="C", fill=True)
-        pdf.ln()
+        p_headers = ["Planet", "Degree", "Sign", "M/F", "Modality", "Element", "Nakshatra", "Dignity", "R*", "Nature", "House"]
+        p_widths = [17, 16, 20, 10, 18, 14, 22, 20, 8, 16, 12]  # sum ~173 fits in ~190 page width
+        pdf.table_header(p_headers, p_widths)
 
-        # Table rows
-        pdf.set_font("Helvetica", "", 9)
-        for planet_name, info in planets.items():
+        for idx, (planet_name, info) in enumerate(planets.items()):
             if not isinstance(info, dict):
                 continue
             sign = info.get("sign", "N/A")
+            degree_val = info.get("sign_degree", info.get("degree", None))
+            degree_str = f"{degree_val:.1f}" if degree_val is not None else "N/A"
             house = str(info.get("house", "N/A"))
-            degree = f"{info.get('degree', 'N/A')}\u00b0" if info.get("degree") is not None else "N/A"
             nakshatra = info.get("nakshatra", "N/A")
             retro = "R" if info.get("retrograde") else ""
-            vals = [planet_name, sign, house, degree, nakshatra, retro]
-            for i, v in enumerate(vals):
-                pdf.cell(col_widths[i], 6, str(v), border=1, align="C")
-            pdf.ln()
-        pdf.ln(8)
+            gender = _SIGN_GENDER.get(sign, "?")
+            modality = _SIGN_MODALITY.get(sign, "?")
+            element = _SIGN_ELEMENT.get(sign, "?")
+            dignity = _get_dignity(planet_name, sign)
+            nature = _PLANET_NATURE.get(planet_name, "?")
+            vals = [planet_name, degree_str, sign, gender, modality, element, nakshatra, dignity, retro, nature, house]
+            pdf.table_row(vals, p_widths, idx)
 
-    # ── House Lordships ─────────────────────────────────────
-    asc_sign = chart.get("ascendant", {}).get("sign")
-    if asc_sign and asc_sign in _SIGN_ORDER:
-        pdf.set_font("Helvetica", "B", 13)
-        pdf.cell(0, 10, "House Lordships", new_x="LMARGIN", new_y="NEXT")
-        pdf.ln(2)
+        pdf.ln(4)
 
-        pdf.set_font("Helvetica", "B", 9)
-        pdf.set_fill_color(245, 235, 210)
-        lord_cols = [25, 40, 35]
-        for i, h in enumerate(["House", "Sign", "Lord"]):
-            pdf.cell(lord_cols[i], 7, h, border=1, align="C", fill=True)
-        pdf.ln()
+    # ── House Lordships Table ──────────────────────────────
+    asc_sign_check = chart.get("ascendant", {}).get("sign")
+    if asc_sign_check and asc_sign_check in _SIGN_ORDER:
+        pdf.section_title("House Lordships")
 
-        pdf.set_font("Helvetica", "", 9)
-        asc_idx = _SIGN_ORDER.index(asc_sign)
+        # Build planet-to-house lookup
+        planet_house_map = {}
+        for pn, pi in planets.items():
+            if isinstance(pi, dict):
+                planet_house_map[pn] = pi.get("house", "?")
+
+        lord_headers = ["House", "Sign", "Lord", "Placed In"]
+        lord_widths = [20, 35, 30, 25]
+        pdf.table_header(lord_headers, lord_widths)
+
+        asc_idx = _SIGN_ORDER.index(asc_sign_check)
         for house_num in range(1, 13):
             sign = _SIGN_ORDER[(asc_idx + house_num - 1) % 12]
             lord = _SIGN_LORD.get(sign, "N/A")
-            pdf.cell(lord_cols[0], 6, str(house_num), border=1, align="C")
-            pdf.cell(lord_cols[1], 6, sign, border=1, align="C")
-            pdf.cell(lord_cols[2], 6, lord, border=1, align="C")
-            pdf.ln()
-        pdf.ln(8)
+            placed_in = str(planet_house_map.get(lord, "?"))
+            pdf.table_row([str(house_num), sign, lord, placed_in], lord_widths, house_num)
 
-    # ── Yoga / Dosha Summary ────────────────────────────────
+        pdf.ln(4)
+
+    # ════════════════════════════════════════════════════════
+    # PAGE 2: Dasha + Avakhada + Yoga/Dosha
+    # ════════════════════════════════════════════════════════
+    pdf.add_page()
+
+    # ── Vimshottari Dasha ──────────────────────────────────
+    moon_nakshatra = planets.get("Moon", {}).get("nakshatra", "Ashwini") if planets else "Ashwini"
+    dasha_result = calculate_dasha(moon_nakshatra, str(birth_date))
+
+    pdf.section_title("Vimshottari Dasha")
+    current_md = dasha_result.get("current_dasha", "Unknown")
+    current_ad = dasha_result.get("current_antardasha", "Unknown")
+    pdf.set_font("Helvetica", "B", 9)
+    pdf.cell(0, 5, f"Current Mahadasha: {current_md}  |  Current Antardasha: {current_ad}", new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(2)
+
+    dasha_headers = ["Planet", "Start Date", "End Date", "Years"]
+    dasha_widths = [30, 45, 45, 20]
+    pdf.table_header(dasha_headers, dasha_widths)
+
+    for idx, period in enumerate(dasha_result.get("mahadasha_periods", [])):
+        planet = period.get("planet", "?")
+        start = period.get("start_date", "?")
+        end = period.get("end_date", "?")
+        years = str(period.get("years", "?"))
+        marker = " <" if planet == current_md else ""
+        pdf.table_row([planet + marker, start, end, years], dasha_widths, idx)
+
+    pdf.ln(4)
+
+    # ── Avakhada Chakra ────────────────────────────────────
+    avakhada = calculate_avakhada(chart)
+
+    pdf.section_title("Avakhada Chakra")
+    avakhada_items = [
+        ("Ascendant", avakhada.get("ascendant", "N/A")),
+        ("Ascendant Lord", avakhada.get("ascendant_lord", "N/A")),
+        ("Rashi (Moon Sign)", avakhada.get("rashi", "N/A")),
+        ("Rashi Lord", avakhada.get("rashi_lord", "N/A")),
+        ("Nakshatra", f"{avakhada.get('nakshatra', 'N/A')} (Pada {avakhada.get('nakshatra_pada', 'N/A')})"),
+        ("Yoga", avakhada.get("yoga", "N/A")),
+        ("Karana", avakhada.get("karana", "N/A")),
+        ("Yoni", avakhada.get("yoni", "N/A")),
+        ("Gana", avakhada.get("gana", "N/A")),
+        ("Nadi", avakhada.get("nadi", "N/A")),
+        ("Varna", avakhada.get("varna", "N/A")),
+        ("Naamakshar", avakhada.get("naamakshar", "N/A")),
+        ("Sun Sign", avakhada.get("sun_sign", "N/A")),
+    ]
+    # Two-column layout
+    pdf.set_font("Helvetica", "", 8)
+    col_w = 48
+    val_w = 45
+    for i in range(0, len(avakhada_items), 2):
+        label1, val1 = avakhada_items[i]
+        pdf.set_font("Helvetica", "B", 8)
+        pdf.cell(col_w, 5, label1 + ":", border=0)
+        pdf.set_font("Helvetica", "", 8)
+        pdf.cell(val_w, 5, str(val1), border=0)
+        if i + 1 < len(avakhada_items):
+            label2, val2 = avakhada_items[i + 1]
+            pdf.set_font("Helvetica", "B", 8)
+            pdf.cell(col_w, 5, label2 + ":", border=0)
+            pdf.set_font("Helvetica", "", 8)
+            pdf.cell(val_w, 5, str(val2), border=0)
+        pdf.ln()
+
+    pdf.ln(4)
+
+    # ── Yoga & Dosha Summary ───────────────────────────────
     if planets:
         yoga_dosha = analyze_yogas_and_doshas(planets)
 
         yogas = yoga_dosha.get("yogas", [])
         if yogas:
-            pdf.set_font("Helvetica", "B", 13)
-            pdf.cell(0, 10, "Yogas (Positive Combinations)", new_x="LMARGIN", new_y="NEXT")
-            pdf.ln(2)
-            pdf.set_font("Helvetica", "", 9)
+            pdf.section_title("Yogas (Positive Combinations)")
+            pdf.set_font("Helvetica", "", 8)
             for y in yogas:
                 if isinstance(y, dict):
                     name = y.get("name", y.get("yoga", "Yoga"))
+                    present = y.get("present", True)
                     desc = y.get("description", y.get("effect", ""))
-                    pdf.set_font("Helvetica", "B", 9)
-                    pdf.cell(0, 6, f"  {name}", new_x="LMARGIN", new_y="NEXT")
+                    if present:
+                        pdf.set_text_color(*GREEN_MARK)
+                    pdf.set_font("Helvetica", "B", 8)
+                    marker = "[+]" if present else "[ ]"
+                    pdf.cell(0, 5, f"  {marker} {name}", new_x="LMARGIN", new_y="NEXT")
+                    pdf.set_text_color(0, 0, 0)
                     if desc:
-                        pdf.set_font("Helvetica", "", 9)
-                        pdf.multi_cell(0, 5, f"    {desc}")
+                        pdf.set_font("Helvetica", "", 7)
+                        pdf.multi_cell(0, 4, f"      {desc}")
                 else:
-                    pdf.cell(0, 6, f"  {y}", new_x="LMARGIN", new_y="NEXT")
-            pdf.ln(6)
+                    pdf.cell(0, 5, f"  {y}", new_x="LMARGIN", new_y="NEXT")
+            pdf.ln(3)
 
         doshas = yoga_dosha.get("doshas", [])
         if doshas:
-            pdf.set_font("Helvetica", "B", 13)
-            pdf.cell(0, 10, "Doshas (Afflictions)", new_x="LMARGIN", new_y="NEXT")
-            pdf.ln(2)
-            pdf.set_font("Helvetica", "", 9)
+            pdf.section_title("Doshas (Afflictions)")
+            pdf.set_font("Helvetica", "", 8)
             for d in doshas:
                 if isinstance(d, dict):
                     name = d.get("name", d.get("dosha", "Dosha"))
                     severity = d.get("severity", "")
+                    present = d.get("present", True)
                     desc = d.get("description", d.get("effect", ""))
                     label = f"  {name}"
                     if severity:
                         label += f" [{severity}]"
-                    pdf.set_font("Helvetica", "B", 9)
-                    pdf.cell(0, 6, label, new_x="LMARGIN", new_y="NEXT")
+                    if present:
+                        pdf.set_text_color(*RED_MARK)
+                    pdf.set_font("Helvetica", "B", 8)
+                    marker = "[!]" if present else "[ ]"
+                    pdf.cell(0, 5, f"  {marker}{label}", new_x="LMARGIN", new_y="NEXT")
+                    pdf.set_text_color(0, 0, 0)
                     if desc:
-                        pdf.set_font("Helvetica", "", 9)
-                        pdf.multi_cell(0, 5, f"    {desc}")
+                        pdf.set_font("Helvetica", "", 7)
+                        pdf.multi_cell(0, 4, f"      {desc}")
                 else:
-                    pdf.cell(0, 6, f"  {d}", new_x="LMARGIN", new_y="NEXT")
-            pdf.ln(6)
+                    pdf.cell(0, 5, f"  {d}", new_x="LMARGIN", new_y="NEXT")
+            pdf.ln(3)
 
-    # ── io-gita Analysis (if stored) ────────────────────────
+    # ════════════════════════════════════════════════════════
+    # PAGE 3: Ashtakvarga + Shadbala + io-gita
+    # ════════════════════════════════════════════════════════
+    pdf.add_page()
+
+    # ── Ashtakvarga ────────────────────────────────────────
+    # Build planet_signs for ashtakvarga engine
+    planet_signs_map = {}
+    for pn, pi in planets.items():
+        if isinstance(pi, dict):
+            planet_signs_map[pn] = pi.get("sign", "Aries")
+    asc_sign_av = chart.get("ascendant", {}).get("sign")
+    if asc_sign_av:
+        planet_signs_map["Ascendant"] = asc_sign_av
+
+    ashtak = calculate_ashtakvarga(planet_signs_map)
+
+    # SAV table
+    pdf.section_title("Sarvashtakvarga (SAV)")
+    sav = ashtak.get("sarvashtakvarga", {})
+    sav_signs_short = ["Ari", "Tau", "Gem", "Can", "Leo", "Vir", "Lib", "Sco", "Sag", "Cap", "Aqu", "Pis"]
+    sav_widths = [15] * 12
+    total_sav = sum(sav.get(s, 0) for s in _SIGN_ORDER)
+    pdf.table_header(sav_signs_short, sav_widths)
+    sav_vals = [str(sav.get(s, 0)) for s in _SIGN_ORDER]
+    pdf.table_row(sav_vals, sav_widths, 0)
+    pdf.set_font("Helvetica", "I", 7)
+    pdf.cell(0, 4, f"Total SAV: {total_sav}  |  28+ per sign = strong", new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(3)
+
+    # BAV table
+    pdf.section_title("Bhinnashtakvarga (BAV)")
+    bav = ashtak.get("planet_bindus", {})
+    bav_headers = ["Planet"] + sav_signs_short + ["Total"]
+    bav_widths_row = [17] + [13] * 12 + [17]
+    pdf.table_header(bav_headers, bav_widths_row)
+    for idx, planet in enumerate(["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]):
+        bindus = bav.get(planet, {})
+        row_vals = [planet]
+        row_total = 0
+        for s in _SIGN_ORDER:
+            v = bindus.get(s, 0)
+            row_total += v
+            row_vals.append(str(v))
+        row_vals.append(str(row_total))
+        pdf.table_row(row_vals, bav_widths_row, idx)
+
+    pdf.ln(4)
+
+    # ── Shadbala ───────────────────────────────────────────
+    planet_houses_map = {}
+    for pn, pi in planets.items():
+        if isinstance(pi, dict):
+            planet_houses_map[pn] = pi.get("house", 1)
+    bt = row.get("birth_time", "12:00:00")
+    try:
+        hr = int(str(bt).split(":")[0])
+    except (ValueError, IndexError):
+        hr = 12
+    is_day = 6 <= hr < 18
+    shadbala = calculate_shadbala(
+        planet_signs=planet_signs_map,
+        planet_houses=planet_houses_map,
+        is_daytime=is_day,
+    )
+
+    pdf.section_title("Shadbala (Six-fold Strength)")
+    sb_headers = ["Planet", "Sthana", "Dig", "Kala", "Cheshta", "Naisargika", "Drik", "Total", "Reqd", "Ratio"]
+    sb_widths = [17, 17, 15, 15, 17, 20, 15, 17, 15, 15]
+    pdf.table_header(sb_headers, sb_widths)
+    sb_planets_data = shadbala.get("planets", {})
+    for idx, planet in enumerate(["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]):
+        d = sb_planets_data.get(planet)
+        if not d:
+            continue
+        vals = [
+            planet,
+            str(d.get("sthana", 0)),
+            str(d.get("dig", 0)),
+            str(d.get("kala", 0)),
+            str(d.get("cheshta", 0)),
+            str(d.get("naisargika", 0)),
+            str(d.get("drik", 0)),
+            str(d.get("total", 0)),
+            str(d.get("required", 0)),
+            f"{d.get('ratio', 0)}x",
+        ]
+        pdf.table_row(vals, sb_widths, idx)
+
+    pdf.ln(4)
+
+    # ── io-gita Analysis (if stored) ──────────────────────
     iogita_raw = row.get("iogita_analysis")
     if iogita_raw:
         try:
@@ -649,14 +898,12 @@ def _build_kundli_pdf(row: dict, chart: dict) -> bytes:
         except (json.JSONDecodeError, TypeError):
             iogita = None
         if iogita and isinstance(iogita, dict):
-            pdf.set_font("Helvetica", "B", 13)
-            pdf.cell(0, 10, "io-gita Semantic Gravity Analysis", new_x="LMARGIN", new_y="NEXT")
-            pdf.ln(2)
-            pdf.set_font("Helvetica", "", 9)
+            pdf.section_title("io-gita Semantic Gravity Analysis")
+            pdf.set_font("Helvetica", "", 8)
             for key, val in iogita.items():
                 text = f"{key}: {val}"
-                pdf.multi_cell(0, 5, text)
-            pdf.ln(6)
+                pdf.multi_cell(0, 4, text)
+            pdf.ln(3)
 
     # Return raw bytes
     return pdf.output()

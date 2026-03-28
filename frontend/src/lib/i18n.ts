@@ -397,6 +397,12 @@ const translations: Record<Language, TranslationMap> = {
     'astrologer.noClients': 'No clients yet',
     'astrologer.registerAsAstrologer': 'Register as Astrologer',
 
+    // Consolidated Report
+    'kundli.report': 'Report',
+    'kundli.downloadPDF': 'Download PDF',
+    'kundli.printReport': 'Print Report',
+    'kundli.consolidatedReport': 'Consolidated Birth Chart Report',
+
     // Miscellaneous
     'misc.language': 'Language',
     'misc.english': 'English',
@@ -798,6 +804,12 @@ const translations: Record<Language, TranslationMap> = {
     'astrologer.backToClients': 'ग्राहकों पर वापस',
     'astrologer.noClients': 'अभी तक कोई ग्राहक नहीं',
     'astrologer.registerAsAstrologer': 'ज्योतिषी के रूप में पंजीकरण',
+
+    // Consolidated Report
+    'kundli.report': 'रिपोर्ट',
+    'kundli.downloadPDF': 'PDF डाउनलोड',
+    'kundli.printReport': 'रिपोर्ट प्रिंट करें',
+    'kundli.consolidatedReport': 'समेकित जन्म कुंडली रिपोर्ट',
 
     // Miscellaneous
     'misc.language': 'भाषा',
