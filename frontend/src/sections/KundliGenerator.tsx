@@ -1028,6 +1028,33 @@ export default function KundliGenerator() {
               </div>
             ) : ashtakvargaData ? (
               <div className="space-y-6">
+                {/* SAV Chart — Visual Kundli with points in each house */}
+                <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/20">
+                  <h4 className="font-display font-semibold text-sacred-brown mb-4">Sarvashtakvarga Chart</h4>
+                  <div className="w-full max-w-[600px] mx-auto">
+                    <InteractiveKundli
+                      chartData={{
+                        planets: (() => {
+                          const signNames = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+                          return signNames.map((sign, i) => ({
+                            planet: `${ashtakvargaData.sarvashtakvarga?.[sign] || 0}`,
+                            sign,
+                            house: i + 1,
+                            nakshatra: 'SAV',
+                            sign_degree: 15,
+                            status: (ashtakvargaData.sarvashtakvarga?.[sign] || 0) >= 28 ? 'Strong' : 'Weak',
+                          }));
+                        })(),
+                        houses: result?.chart_data?.houses,
+                      }}
+                      onPlanetClick={() => {}}
+                      onHouseClick={() => {}}
+                    />
+                  </div>
+                  <p className="text-xs text-center text-sacred-text-secondary mt-2">Numbers show SAV points per sign (28+ = strong)</p>
+                </div>
+
+                {/* SAV Bar Chart */}
                 <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/20">
                   <h4 className="font-display font-semibold text-sacred-brown mb-4">{t('kundli.sarvashtakvarga')}</h4>
                   <div className="flex items-end gap-2 h-48">
@@ -1363,6 +1390,32 @@ export default function KundliGenerator() {
               </div>
             ) : transitData ? (
               <div className="space-y-6">
+                {/* Transit Chart — Current planet positions on Kundli */}
+                <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/20">
+                  <h4 className="font-display font-semibold text-sacred-brown mb-4">Current Transit Chart ({transitData.transit_date})</h4>
+                  <div className="w-full max-w-[600px] mx-auto">
+                    <InteractiveKundli
+                      chartData={{
+                        planets: (transitData.transits || []).map((tr: any) => ({
+                          planet: tr.planet,
+                          sign: tr.current_sign,
+                          house: tr.house_from_moon || 1,
+                          nakshatra: '',
+                          sign_degree: 15,
+                          status: tr.effect === 'favorable' ? 'Benefic' : 'Malefic',
+                        })),
+                        houses: result?.chart_data?.houses,
+                      }}
+                      onPlanetClick={() => {}}
+                      onHouseClick={() => {}}
+                    />
+                  </div>
+                  <div className="flex items-center justify-center gap-4 mt-2 text-xs text-sacred-text-secondary">
+                    <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full" style={{backgroundColor: '#B8860B'}} /> Benefic Transit</span>
+                    <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full" style={{backgroundColor: '#8B2332'}} /> Malefic Transit</span>
+                  </div>
+                </div>
+
                 {/* Header with date and Moon sign */}
                 <div className="rounded-xl p-4 border" style={{ backgroundColor: 'rgba(184,134,11,0.04)', borderColor: 'rgba(139,115,85,0.2)' }}>
                   <h4 className="font-display font-bold text-lg mb-2" style={{ color: '#1a1a2e' }}>{t('transit.title')}</h4>
