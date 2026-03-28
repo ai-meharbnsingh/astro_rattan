@@ -87,3 +87,38 @@ def health():
         "ai": get_ai_status(),
         "swisseph": _HAS_SWE,
     }
+
+
+@app.get("/debug/swe-test")
+def debug_swe_test():
+    """Diagnostic: verify Swiss Ephemeris calculations against known reference."""
+    try:
+        import swisseph as swe
+        swe.set_sid_mode(swe.SIDM_LAHIRI)
+        jd = swe.julday(1950, 9, 17, 5.5)  # Sept 17 1950, 05:30 UTC
+        ayanamsa = swe.get_ayanamsa(jd)
+        sun_pos = swe.calc_ut(jd, swe.SUN)
+        sun_trop = sun_pos[0][0]
+        sun_sid = (sun_trop - ayanamsa) % 360
+        moon_pos = swe.calc_ut(jd, swe.MOON)
+        moon_sid = (moon_pos[0][0] - ayanamsa) % 360
+        cusps, ascmc = swe.houses(jd, 23.7833, 72.6333, b"P")
+        asc_sid = (ascmc[0] - ayanamsa) % 360
+        signs = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces']
+        return {
+            "engine": "swisseph",
+            "version": swe.version,
+            "jd": jd,
+            "ayanamsa": round(ayanamsa, 6),
+            "sun_tropical": round(sun_trop, 4),
+            "sun_sidereal": round(sun_sid, 4),
+            "sun_sign": signs[int(sun_sid // 30)],
+            "sun_degree": round(sun_sid % 30, 4),
+            "moon_sidereal": round(moon_sid, 4),
+            "moon_sign": signs[int(moon_sid // 30)],
+            "ascendant_sidereal": round(asc_sid, 4),
+            "ascendant_sign": signs[int(asc_sid // 30)],
+            "expected": {"sun": "Virgo 0.59", "moon": "Scorpio 8.81", "asc": "Scorpio 1.25"},
+        }
+    except Exception as e:
+        return {"engine": "error", "detail": str(e)}
