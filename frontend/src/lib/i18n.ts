@@ -276,6 +276,8 @@ const translations: Record<Language, TranslationMap> = {
     'kundli.aiPredictions': 'AI Predictions',
     'kundli.getPredictions': 'Get AI Predictions',
     'kundli.predictionsError': 'Could not load predictions. Please try again.',
+    'kundli.poweredByFreeAI': 'Powered by Free AI',
+    'kundli.freeAIFallback': 'Free AI available as backup if server is busy',
 
     // Avakhada Chakra
     'avakhada.title': 'Avakhada Chakra',
@@ -623,6 +625,8 @@ const translations: Record<Language, TranslationMap> = {
     'kundli.aiPredictions': 'AI भविष्यवाणी',
     'kundli.getPredictions': 'AI भविष्यवाणी प्राप्त करें',
     'kundli.predictionsError': 'भविष्यवाणी लोड नहीं हो सकी। कृपया पुनः प्रयास करें।',
+    'kundli.poweredByFreeAI': 'मुफ़्त AI द्वारा संचालित',
+    'kundli.freeAIFallback': 'सर्वर व्यस्त होने पर मुफ़्त AI बैकअप उपलब्ध है',
 
     // Avakhada Chakra
     'avakhada.title': 'अवखड़ा चक्र',

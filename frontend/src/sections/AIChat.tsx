@@ -2,11 +2,12 @@ import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Sparkles, Send, User, Bot, Sun, Heart, Briefcase, Coins, Users, BookOpen } from 'lucide-react';
+import { Sparkles, Send, User, Bot, Sun, Heart, Briefcase, Coins, Users, BookOpen, Zap } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
+import { isPuterAvailable, puterChatStream, VEDIC_SYSTEM_PROMPT } from '@/lib/puter-ai';
 
-interface Message { id: string; type: 'user' | 'ai'; content: string; timestamp: Date; }
+interface Message { id: string; type: 'user' | 'ai'; content: string; timestamp: Date; streaming?: boolean; }
 
 const quickQuestions = [
   { icon: Heart, text: 'Tell me about my love life', category: 'love' },
@@ -26,16 +27,57 @@ export default function AIChat() {
   }]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [aiProvider, setAiProvider] = useState<'puter' | 'backend'>(isPuterAvailable() ? 'puter' : 'backend');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   useEffect(() => scrollToBottom(), [messages]);
 
+  // Re-check Puter availability when switching (in case it loaded late)
+  const toggleProvider = () => {
+    setAiProvider(prev => {
+      if (prev === 'backend' && isPuterAvailable()) return 'puter';
+      if (prev === 'backend') return 'backend'; // Puter not available
+      return 'backend';
+    });
+  };
+
+  /** Try Puter.js streaming first, fall back to backend API. */
+  const sendViaPuter = async (text: string): Promise<boolean> => {
+    if (!isPuterAvailable()) return false;
+    const aiMsgId = (Date.now() + 1).toString();
+    // Insert a placeholder message that will be updated with streamed content
+    setMessages(prev => [...prev, { id: aiMsgId, type: 'ai', content: '', timestamp: new Date(), streaming: true }]);
+    try {
+      const fullText = await puterChatStream(text, VEDIC_SYSTEM_PROMPT, (accumulated) => {
+        setMessages(prev => prev.map(m => m.id === aiMsgId ? { ...m, content: accumulated } : m));
+      });
+      // Mark streaming complete
+      setMessages(prev => prev.map(m => m.id === aiMsgId ? { ...m, content: fullText || 'I appreciate your question. Let me consult the stars for deeper insight.', streaming: false } : m));
+      return true;
+    } catch {
+      // Remove the placeholder on failure so backend can try
+      setMessages(prev => prev.filter(m => m.id !== aiMsgId));
+      return false;
+    }
+  };
+
+  const sendViaBackend = async (text: string, isGita: boolean) => {
+    try {
+      const endpoint = isGita ? '/api/ai/gita' : '/api/ai/ask';
+      const data = await api.post(endpoint, { question: text });
+      const aiContent = data.answer || data.response || data.content || data.text || 'I appreciate your question. Let me consult the stars for deeper insight.';
+      setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), type: 'ai', content: aiContent, timestamp: new Date() }]);
+    } catch {
+      setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), type: 'ai', content: 'I apologize, but I am unable to connect to the cosmic server at the moment. Please try again shortly.', timestamp: new Date() }]);
+    }
+  };
+
   const handleSend = async (text: string = input) => {
     if (!text.trim()) return;
     const lowerText = text.toLowerCase();
     const isGita = lowerText.includes('gita') || lowerText.includes('krishna') || lowerText.includes('dharma');
-    if (!isGita && !isAuthenticated) {
+    if (!isGita && !isAuthenticated && aiProvider === 'backend') {
       setMessages(prev => [...prev, { id: Date.now().toString(), type: 'ai', content: 'Please sign in to use personalized AI astrology chat. Gita wisdom is available without login.', timestamp: new Date() }]);
       setInput('');
       return;
@@ -44,14 +86,17 @@ export default function AIChat() {
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsTyping(true);
-    try {
-      const endpoint = isGita ? '/api/ai/gita' : '/api/ai/ask';
-      const data = await api.post(endpoint, { question: text });
-      const aiContent = data.answer || data.response || data.content || data.text || 'I appreciate your question. Let me consult the stars for deeper insight.';
-      setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), type: 'ai', content: aiContent, timestamp: new Date() }]);
-    } catch {
-      setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), type: 'ai', content: 'I apologize, but I am unable to connect to the cosmic server at the moment. Please try again shortly.', timestamp: new Date() }]);
-    } finally { setIsTyping(false); }
+
+    if (aiProvider === 'puter') {
+      const ok = await sendViaPuter(text);
+      if (!ok) {
+        // Puter failed — fall back to backend
+        await sendViaBackend(text, isGita);
+      }
+    } else {
+      await sendViaBackend(text, isGita);
+    }
+    setIsTyping(false);
   };
 
   return (
@@ -61,13 +106,26 @@ export default function AIChat() {
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center shadow-glow-gold">
             <Sparkles className="w-5 h-5 text-cosmic-bg" />
           </div>
-          <div>
+          <div className="flex-1">
             <h3 className="font-sacred font-semibold text-base sm:text-lg text-cosmic-text">AI Astrologer</h3>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
               <span className="text-xs text-cosmic-text-secondary">Online</span>
             </div>
           </div>
+          <button
+            onClick={toggleProvider}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs border transition-colors"
+            style={{
+              backgroundColor: aiProvider === 'puter' ? 'rgba(184,134,11,0.12)' : 'rgba(139,115,85,0.08)',
+              borderColor: aiProvider === 'puter' ? 'rgba(184,134,11,0.35)' : 'rgba(139,115,85,0.2)',
+              color: aiProvider === 'puter' ? '#B8860B' : '#8B7355',
+            }}
+            title={aiProvider === 'puter' ? 'Using free Puter.js AI (click to switch to backend)' : 'Using backend AI (click to switch to free Puter.js)'}
+          >
+            <Zap className="w-3 h-3" />
+            {aiProvider === 'puter' ? 'Free AI' : 'Backend'}
+          </button>
         </div>
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.map((message) => (
@@ -77,12 +135,12 @@ export default function AIChat() {
               </div>
               <div className={`max-w-[80%] ${message.type === 'user' ? 'text-right' : ''}`}>
                 <div className={`inline-block p-4 rounded-2xl text-left ${message.type === 'user' ? 'bg-sacred-purple/30 border border-sacred-violet/20 text-cosmic-text' : 'bg-cosmic-card border border-sacred-gold/10 text-cosmic-text'}`}>
-                  <div className="whitespace-pre-line text-sm">{message.content}</div>
+                  <div className="whitespace-pre-line text-sm">{message.content}{message.streaming && <span className="inline-block w-1.5 h-4 ml-0.5 bg-sacred-gold animate-pulse align-middle" />}</div>
                 </div>
               </div>
             </div>
           ))}
-          {isTyping && (
+          {isTyping && !messages.some(m => m.streaming) && (
             <div className="flex gap-3">
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center shrink-0">
                 <Bot className="w-4 h-4 text-cosmic-bg" />
@@ -111,9 +169,9 @@ export default function AIChat() {
           </div>
         )}
         <div className="p-4 border-t border-sacred-gold/15">
-          {!isAuthenticated && (
+          {!isAuthenticated && aiProvider === 'backend' && (
             <div className="mb-3 text-xs text-cosmic-text-muted">
-              Personalized astrology chat requires <Link to="/login" className="text-sacred-gold hover:underline">sign in</Link>. Gita Q&A works without login.
+              Backend AI chat requires <Link to="/login" className="text-sacred-gold hover:underline">sign in</Link>. Switch to Free AI or ask about Gita without login.
             </div>
           )}
           <div className="flex gap-3">

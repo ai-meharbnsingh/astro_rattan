@@ -7,6 +7,7 @@ import { Sparkles, Calendar, Clock, MapPin, User, ChevronRight, ChevronDown, Dow
 import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/lib/i18n';
+import { isPuterAvailable, puterChatStream, VEDIC_SYSTEM_PROMPT } from '@/lib/puter-ai';
 import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
 
 export default function KundliGenerator() {
@@ -282,14 +283,45 @@ export default function KundliGenerator() {
     setLoadingShadbala(false);
   };
 
-  // Fetch AI predictions
+  // Build a textual summary of chart data for Puter AI prompt
+  const buildChartPrompt = (): string => {
+    const planetsRaw = result?.chart_data?.planets || {};
+    const planetsList = Array.isArray(planetsRaw)
+      ? planetsRaw.map((p: any) => `${p.planet} in ${p.sign} (House ${p.house}, ${p.sign_degree?.toFixed(1) || '?'}deg, Nakshatra: ${p.nakshatra || 'unknown'})`)
+      : Object.entries(planetsRaw).map(([name, data]: [string, any]) =>
+          `${name} in ${data?.sign || '?'} (House ${data?.house || '?'}, ${data?.sign_degree?.toFixed(1) || '?'}deg, Nakshatra: ${data?.nakshatra || 'unknown'})`);
+    const personName = result?.person_name || formData.name || 'the native';
+    const birthInfo = `Born: ${result?.birth_date || formData.date} at ${result?.birth_time || formData.time}, ${result?.birth_place || formData.place}`;
+    return `Analyze this Vedic birth chart for ${personName} and provide detailed predictions.\n\n${birthInfo}\n\nPlanets:\n${planetsList.join('\n')}\n\nProvide predictions for: Career, Relationships, Health, Finance, Spiritual Growth.\nFormat each category with a heading and 2-3 paragraphs of insight.`;
+  };
+
+  // Fetch AI predictions — backend first, Puter.js fallback
   const fetchPredictions = async () => {
     if (!result?.id || predictionsData) return;
     setLoadingPredictions(true);
     try {
       const data = await api.post('/api/ai/interpret', { kundli_id: result.id });
       setPredictionsData(data);
-    } catch { /* fallback handled in UI */ }
+      setLoadingPredictions(false);
+      return;
+    } catch {
+      // Backend failed (quota exhausted, network error, etc.) — try Puter.js
+    }
+
+    if (isPuterAvailable()) {
+      try {
+        const prompt = buildChartPrompt();
+        // Use streaming so the user sees text appear gradually
+        setPredictionsData({ interpretation: '', _streaming: true });
+        setLoadingPredictions(false);
+        const fullText = await puterChatStream(prompt, VEDIC_SYSTEM_PROMPT, (accumulated) => {
+          setPredictionsData({ interpretation: accumulated, _streaming: true });
+        });
+        setPredictionsData({ interpretation: fullText, _puterFallback: true });
+      } catch {
+        setPredictionsData(null);
+      }
+    }
     setLoadingPredictions(false);
   };
 
@@ -1484,7 +1516,7 @@ export default function KundliGenerator() {
             )}
           </TabsContent>
 
-          {/* PREDICTIONS TAB — AI-powered */}
+          {/* PREDICTIONS TAB — AI-powered with Puter.js fallback */}
           <TabsContent value="predictions">
             {loadingPredictions ? (
               <div className="flex items-center justify-center py-12">
@@ -1499,6 +1531,11 @@ export default function KundliGenerator() {
                       <Sparkles className="w-5 h-5" style={{ color: '#B8860B' }} />
                     </div>
                     <h4 className="font-sacred font-bold text-xl" style={{ color: '#1a1a2e' }}>{t('kundli.aiPredictions')}</h4>
+                    {predictionsData._puterFallback && (
+                      <span className="ml-auto text-xs px-2 py-1 rounded-full" style={{ backgroundColor: 'rgba(184,134,11,0.12)', color: '#B8860B', border: '1px solid rgba(184,134,11,0.3)' }}>
+                        {t('kundli.poweredByFreeAI')}
+                      </span>
+                    )}
                   </div>
                   <div className="prose prose-sm max-w-none" style={{ color: '#1a1a2e' }}>
                     {(predictionsData.interpretation || predictionsData.response || predictionsData.text || JSON.stringify(predictionsData))
@@ -1509,6 +1546,7 @@ export default function KundliGenerator() {
                           {paragraph}
                         </p>
                       ))}
+                    {predictionsData._streaming && <span className="inline-block w-1.5 h-4 ml-0.5 bg-sacred-gold animate-pulse align-middle" />}
                   </div>
                 </div>
               </div>
@@ -1519,6 +1557,9 @@ export default function KundliGenerator() {
                 <Button onClick={fetchPredictions} className="btn-sacred">
                   <Sparkles className="w-4 h-4 mr-2" />{t('kundli.predictions')}
                 </Button>
+                {isPuterAvailable() && (
+                  <p className="text-xs mt-3" style={{ color: '#8B7355' }}>{t('kundli.freeAIFallback')}</p>
+                )}
               </div>
             )}
           </TabsContent>

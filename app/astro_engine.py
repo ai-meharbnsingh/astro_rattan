@@ -21,6 +21,11 @@ try:
     import swisseph as swe
 
     _HAS_SWE = True
+    # Set ephemeris data path if configured (env var EPHE_PATH)
+    import os as _os
+    _ephe_path = _os.getenv("EPHE_PATH", "")
+    if _ephe_path:
+        swe.set_ephe_path(_ephe_path)
     swe.set_sid_mode(swe.SIDM_LAHIRI)  # Lahiri ayanamsa (default for Vedic)
 except ImportError:
     _HAS_SWE = False
