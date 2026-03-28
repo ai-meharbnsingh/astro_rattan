@@ -1,0 +1,260 @@
+"""
+avakhada_engine.py — Avakhada Chakra Calculation Engine
+========================================================
+Computes the comprehensive birth summary table (Avakhada Chakra)
+from chart data: ascendant, Moon position, Sun position, and planet data.
+"""
+import math
+from typing import Any, Dict, List, Optional
+
+# ============================================================
+# CONSTANTS
+# ============================================================
+
+ZODIAC_SIGNS = [
+    "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+    "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces",
+]
+
+# Sign lords (traditional Vedic rulerships)
+SIGN_LORD = {
+    "Aries": "Mars", "Taurus": "Venus", "Gemini": "Mercury",
+    "Cancer": "Moon", "Leo": "Sun", "Virgo": "Mercury",
+    "Libra": "Venus", "Scorpio": "Mars", "Sagittarius": "Jupiter",
+    "Capricorn": "Saturn", "Aquarius": "Saturn", "Pisces": "Jupiter",
+}
+
+# 27 Nakshatras
+NAKSHATRAS = [
+    "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra",
+    "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni",
+    "Uttara Phalguni", "Hasta", "Chitra", "Swati", "Vishakha",
+    "Anuradha", "Jyeshtha", "Mula", "Purva Ashadha", "Uttara Ashadha",
+    "Shravana", "Dhanishta", "Shatabhisha", "Purva Bhadrapada",
+    "Uttara Bhadrapada", "Revati",
+]
+
+NAKSHATRA_SPAN = 360.0 / 27.0  # 13.3333... degrees
+
+# Yoni (animal nature) by nakshatra index
+YONI_BY_NAKSHATRA = [
+    "Horse", "Elephant", "Sheep", "Snake", "Dog", "Cat",
+    "Rat", "Sheep", "Cat", "Rat", "Rat", "Cow",
+    "Buffalo", "Tiger", "Buffalo", "Tiger", "Deer", "Deer",
+    "Dog", "Monkey", "Mongoose", "Monkey", "Lion", "Horse",
+    "Lion", "Cow", "Elephant",
+]
+
+# Gana by nakshatra index
+_DEVA_INDICES = {0, 1, 4, 6, 7, 12, 14, 21, 26}
+_MANUSHYA_INDICES = {2, 3, 5, 10, 11, 16, 17, 19, 22}
+_RAKSHASA_INDICES = {8, 9, 13, 15, 18, 20, 23, 24, 25}
+
+# Nadi by nakshatra index
+_AADI_INDICES = {0, 5, 6, 11, 12, 17, 18, 23, 24}
+_MADHYA_INDICES = {1, 4, 7, 10, 13, 16, 19, 22, 25}
+_ANTYA_INDICES = {2, 3, 8, 9, 14, 15, 20, 21, 26}
+
+# Varna (social class) by Moon sign
+# Fire signs (Aries, Leo, Sagittarius) = Kshatriya
+# Earth signs (Taurus, Virgo, Capricorn) = Vaishya
+# Air signs (Gemini, Libra, Aquarius) = Shudra
+# Water signs (Cancer, Scorpio, Pisces) = Brahmin
+VARNA_BY_SIGN = {
+    "Aries": "Kshatriya", "Taurus": "Vaishya", "Gemini": "Shudra",
+    "Cancer": "Brahmin", "Leo": "Kshatriya", "Virgo": "Vaishya",
+    "Libra": "Shudra", "Scorpio": "Brahmin", "Sagittarius": "Kshatriya",
+    "Capricorn": "Vaishya", "Aquarius": "Shudra", "Pisces": "Brahmin",
+}
+
+# 27 Yogas
+YOGA_NAMES = [
+    "Vishkambha", "Priti", "Ayushman", "Saubhagya", "Shobhana",
+    "Atiganda", "Sukarma", "Dhriti", "Shula", "Ganda",
+    "Vriddhi", "Dhruva", "Vyaghata", "Harshana", "Vajra",
+    "Siddhi", "Vyatipata", "Variyan", "Parigha", "Shiva",
+    "Siddha", "Sadhya", "Shubha", "Shukla", "Brahma",
+    "Indra", "Vaidhriti",
+]
+
+# 11 Karanas
+KARANA_NAMES = [
+    "Bava", "Balava", "Kaulava", "Taitila", "Garija",
+    "Vanija", "Vishti", "Shakuni", "Chatushpada", "Nagava", "Kimstughna",
+]
+
+# Naamakshar (representative first syllable per nakshatra)
+NAAMAKSHAR_BY_NAKSHATRA = [
+    ["Chu", "Che", "Cho", "La"],     # Ashwini
+    ["Li", "Lu", "Le", "Lo"],         # Bharani
+    ["A", "I", "U", "E"],             # Krittika
+    ["O", "Va", "Vi", "Vu"],          # Rohini
+    ["Ve", "Vo", "Ka", "Ki"],         # Mrigashira
+    ["Ku", "Gha", "Ng", "Na"],        # Ardra
+    ["Ke", "Ko", "Ha", "Hi"],         # Punarvasu
+    ["Hu", "He", "Ho", "Da"],         # Pushya
+    ["Di", "Du", "De", "Do"],         # Ashlesha
+    ["Ma", "Mi", "Mu", "Me"],         # Magha
+    ["Mo", "Ta", "Ti", "Tu"],         # Purva Phalguni
+    ["Te", "To", "Pa", "Pi"],         # Uttara Phalguni
+    ["Pu", "Sha", "Na", "Tha"],       # Hasta
+    ["Pe", "Po", "Ra", "Ri"],         # Chitra
+    ["Ru", "Re", "Ro", "Ta"],         # Swati
+    ["Ti", "Tu", "Te", "To"],         # Vishakha
+    ["Na", "Ni", "Nu", "Ne"],         # Anuradha
+    ["No", "Ya", "Yi", "Yu"],         # Jyeshtha
+    ["Ye", "Yo", "Bha", "Bhi"],       # Mula
+    ["Bhu", "Dha", "Pha", "Dha"],     # Purva Ashadha
+    ["Bhe", "Bho", "Ja", "Ji"],       # Uttara Ashadha
+    ["Ju", "Je", "Jo", "Gha"],        # Shravana
+    ["Ga", "Gi", "Gu", "Ge"],         # Dhanishta
+    ["Go", "Sa", "Si", "Su"],         # Shatabhisha
+    ["Se", "So", "Da", "Di"],         # Purva Bhadrapada
+    ["Du", "Tha", "Jha", "Da"],       # Uttara Bhadrapada
+    ["De", "Do", "Cha", "Chi"],       # Revati
+]
+
+# Western Sun signs by degree range
+WESTERN_SIGNS = [
+    (0, 30, "Aries"), (30, 60, "Taurus"), (60, 90, "Gemini"),
+    (90, 120, "Cancer"), (120, 150, "Leo"), (150, 180, "Virgo"),
+    (180, 210, "Libra"), (210, 240, "Scorpio"), (240, 270, "Sagittarius"),
+    (270, 300, "Capricorn"), (300, 330, "Aquarius"), (330, 360, "Pisces"),
+]
+
+
+# ============================================================
+# HELPER FUNCTIONS
+# ============================================================
+
+def _get_nakshatra_index(longitude: float) -> int:
+    """Get nakshatra index (0-26) from sidereal longitude."""
+    return int((longitude % 360.0) / NAKSHATRA_SPAN)
+
+
+def _get_pada(longitude: float) -> int:
+    """Get pada (1-4) from sidereal longitude."""
+    within_nakshatra = (longitude % 360.0) % NAKSHATRA_SPAN
+    pada_span = NAKSHATRA_SPAN / 4.0
+    return int(within_nakshatra / pada_span) + 1
+
+
+def _get_gana(nakshatra_idx: int) -> str:
+    """Get Gana from nakshatra index."""
+    if nakshatra_idx in _DEVA_INDICES:
+        return "Deva"
+    elif nakshatra_idx in _MANUSHYA_INDICES:
+        return "Manushya"
+    else:
+        return "Rakshasa"
+
+
+def _get_nadi(nakshatra_idx: int) -> str:
+    """Get Nadi from nakshatra index."""
+    if nakshatra_idx in _AADI_INDICES:
+        return "Aadi"
+    elif nakshatra_idx in _MADHYA_INDICES:
+        return "Madhya"
+    else:
+        return "Antya"
+
+
+def _get_western_sign(longitude: float) -> str:
+    """Get western zodiac sign from tropical longitude."""
+    # Use the sidereal longitude as approximation (Ayanamsa ~24 degrees)
+    # For simplicity, we map based on degree ranges
+    deg = longitude % 360.0
+    for start, end, sign in WESTERN_SIGNS:
+        if start <= deg < end:
+            return sign
+    return "Pisces"
+
+
+# ============================================================
+# PUBLIC FUNCTION
+# ============================================================
+
+def calculate_avakhada(chart_data: dict) -> dict:
+    """
+    Calculate Avakhada Chakra from chart_data.
+
+    Args:
+        chart_data: The full chart_data dict with 'planets' and 'ascendant' keys.
+
+    Returns:
+        Dict with all Avakhada Chakra components.
+    """
+    planets = chart_data.get("planets", {})
+    ascendant = chart_data.get("ascendant", {})
+
+    # Get Moon data
+    moon = planets.get("Moon", {})
+    moon_longitude = moon.get("longitude", 0.0)
+    moon_sign = moon.get("sign", "Aries")
+
+    # Get Sun data
+    sun = planets.get("Sun", {})
+    sun_longitude = sun.get("longitude", 0.0)
+    sun_sign = sun.get("sign", "Aries")
+
+    # Ascendant
+    asc_sign = ascendant.get("sign", "Aries") if ascendant else "Aries"
+    asc_lord = SIGN_LORD.get(asc_sign, "Unknown")
+
+    # Moon sign lord
+    moon_sign_lord = SIGN_LORD.get(moon_sign, "Unknown")
+
+    # Nakshatra and Pada from Moon
+    nakshatra_idx = _get_nakshatra_index(moon_longitude)
+    nakshatra_name = NAKSHATRAS[nakshatra_idx] if 0 <= nakshatra_idx < 27 else "Unknown"
+    pada = _get_pada(moon_longitude)
+
+    # Yoga: index = floor((sun_long + moon_long) / 13.333) % 27
+    yoga_index = int((sun_longitude + moon_longitude) / NAKSHATRA_SPAN) % 27
+    yoga_name = YOGA_NAMES[yoga_index]
+
+    # Karana: index = floor((moon_long - sun_long) / 6) % 11
+    diff = (moon_longitude - sun_longitude) % 360.0
+    karana_index = int(diff / 6.0) % 11
+    karana_name = KARANA_NAMES[karana_index]
+
+    # Yoni
+    yoni = YONI_BY_NAKSHATRA[nakshatra_idx] if 0 <= nakshatra_idx < 27 else "Unknown"
+
+    # Gana
+    gana = _get_gana(nakshatra_idx)
+
+    # Nadi
+    nadi = _get_nadi(nakshatra_idx)
+
+    # Varna
+    varna = VARNA_BY_SIGN.get(moon_sign, "Unknown")
+
+    # Naamakshar
+    if 0 <= nakshatra_idx < 27 and 1 <= pada <= 4:
+        syllables = NAAMAKSHAR_BY_NAKSHATRA[nakshatra_idx]
+        naamakshar = syllables[pada - 1]
+    else:
+        naamakshar = "N/A"
+
+    # Sun Sign (Western)
+    sun_western_sign = _get_western_sign(sun_longitude)
+
+    return {
+        "ascendant": asc_sign,
+        "ascendant_lord": asc_lord,
+        "rashi": moon_sign,
+        "rashi_lord": moon_sign_lord,
+        "nakshatra": nakshatra_name,
+        "nakshatra_pada": pada,
+        "yoga": yoga_name,
+        "karana": karana_name,
+        "yoni": yoni,
+        "gana": gana,
+        "nadi": nadi,
+        "varna": varna,
+        "naamakshar": naamakshar,
+        "sun_sign": sun_western_sign,
+        "moon_degree": round(moon_longitude % 360.0, 2),
+        "sun_degree": round(sun_longitude % 360.0, 2),
+    }

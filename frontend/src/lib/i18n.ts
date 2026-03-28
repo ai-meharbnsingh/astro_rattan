@@ -277,6 +277,71 @@ const translations: Record<Language, TranslationMap> = {
     'kundli.getPredictions': 'Get AI Predictions',
     'kundli.predictionsError': 'Could not load predictions. Please try again.',
 
+    // Avakhada Chakra
+    'avakhada.title': 'Avakhada Chakra',
+    'avakhada.subtitle': 'Comprehensive Birth Summary',
+    'avakhada.ascendant': 'Ascendant (Lagna)',
+    'avakhada.ascendantLord': 'Lagna Lord',
+    'avakhada.rashi': 'Rashi (Moon Sign)',
+    'avakhada.rashiLord': 'Rashi Lord',
+    'avakhada.nakshatra': 'Nakshatra',
+    'avakhada.pada': 'Pada',
+    'avakhada.yoga': 'Yoga',
+    'avakhada.karana': 'Karana',
+    'avakhada.yoni': 'Yoni',
+    'avakhada.gana': 'Gana',
+    'avakhada.nadi': 'Nadi',
+    'avakhada.varna': 'Varna',
+    'avakhada.naamakshar': 'Naamakshar',
+    'avakhada.sunSign': 'Sun Sign (Western)',
+
+    // Extended Dasha
+    'dasha.mahadasha': 'Mahadasha',
+    'dasha.antardasha': 'Antardasha',
+    'dasha.pratyantar': 'Pratyantar Dasha',
+    'dasha.current': 'Current',
+    'dasha.expandDetails': 'Expand to see sub-periods',
+
+    // Yoga & Dosha
+    'yoga.title': 'Yogas (Positive Combinations)',
+    'yoga.present': 'Present',
+    'yoga.absent': 'Not Present',
+    'dosha.extended.title': 'Doshas (Afflictions)',
+    'dosha.present': 'Present',
+    'dosha.absent': 'Not Present',
+    'dosha.remedies': 'Remedies',
+    'dosha.severity': 'Severity',
+
+    // Divisional Charts
+    'kundli.divisional': 'Divisional',
+    'kundli.divisionalCharts': 'Divisional Charts (Varga)',
+    'kundli.selectChart': 'Select Chart Type',
+    'kundli.loadingDivisional': 'Calculating divisional chart...',
+
+    // Ashtakvarga
+    'kundli.ashtakvarga': 'Ashtakvarga',
+    'kundli.ashtakvargaTitle': 'Ashtakvarga Analysis',
+    'kundli.loadingAshtakvarga': 'Calculating Ashtakvarga...',
+    'kundli.sarvashtakvarga': 'Sarvashtakvarga (SAV)',
+    'kundli.bhinnashtakvarga': 'Bhinnashtakvarga (BAV)',
+    'kundli.strong': 'Strong',
+    'kundli.weak': 'Weak',
+    'kundli.totalPoints': 'Total Points',
+
+    // Shadbala
+    'kundli.shadbala': 'Shadbala',
+    'kundli.shadbalaTitle': 'Shadbala (Six-fold Strength)',
+    'kundli.loadingShadbala': 'Calculating Shadbala...',
+    'kundli.sthana': 'Sthana Bala',
+    'kundli.dig': 'Dig Bala',
+    'kundli.kala': 'Kala Bala',
+    'kundli.cheshta': 'Cheshta Bala',
+    'kundli.naisargika': 'Naisargika Bala',
+    'kundli.drik': 'Drik Bala',
+    'kundli.total': 'Total',
+    'kundli.required': 'Required',
+    'kundli.ratio': 'Ratio',
+
     // Miscellaneous
     'misc.language': 'Language',
     'misc.english': 'English',
@@ -558,6 +623,71 @@ const translations: Record<Language, TranslationMap> = {
     'kundli.aiPredictions': 'AI भविष्यवाणी',
     'kundli.getPredictions': 'AI भविष्यवाणी प्राप्त करें',
     'kundli.predictionsError': 'भविष्यवाणी लोड नहीं हो सकी। कृपया पुनः प्रयास करें।',
+
+    // Avakhada Chakra
+    'avakhada.title': 'अवखड़ा चक्र',
+    'avakhada.subtitle': 'जन्म का व्यापक सारांश',
+    'avakhada.ascendant': 'लग्न',
+    'avakhada.ascendantLord': 'लग्नेश',
+    'avakhada.rashi': 'राशि (चंद्र राशि)',
+    'avakhada.rashiLord': 'राशि स्वामी',
+    'avakhada.nakshatra': 'नक्षत्र',
+    'avakhada.pada': 'पाद',
+    'avakhada.yoga': 'योग',
+    'avakhada.karana': 'करण',
+    'avakhada.yoni': 'योनि',
+    'avakhada.gana': 'गण',
+    'avakhada.nadi': 'नाड़ी',
+    'avakhada.varna': 'वर्ण',
+    'avakhada.naamakshar': 'नामाक्षर',
+    'avakhada.sunSign': 'सूर्य राशि (पश्चिमी)',
+
+    // Extended Dasha
+    'dasha.mahadasha': 'महादशा',
+    'dasha.antardasha': 'अंतर्दशा',
+    'dasha.pratyantar': 'प्रत्यंतर दशा',
+    'dasha.current': 'वर्तमान',
+    'dasha.expandDetails': 'उप-अवधि देखने के लिए विस्तार करें',
+
+    // Yoga & Dosha
+    'yoga.title': 'योग (शुभ संयोग)',
+    'yoga.present': 'उपस्थित',
+    'yoga.absent': 'अनुपस्थित',
+    'dosha.extended.title': 'दोष (अशुभ प्रभाव)',
+    'dosha.present': 'उपस्थित',
+    'dosha.absent': 'अनुपस्थित',
+    'dosha.remedies': 'उपाय',
+    'dosha.severity': 'तीव्रता',
+
+    // Divisional Charts
+    'kundli.divisional': 'वर्ग चार्ट',
+    'kundli.divisionalCharts': 'वर्ग चार्ट (षोडश वर्ग)',
+    'kundli.selectChart': 'चार्ट प्रकार चुनें',
+    'kundli.loadingDivisional': 'वर्ग चार्ट की गणना हो रही है...',
+
+    // Ashtakvarga
+    'kundli.ashtakvarga': 'अष्टकवर्ग',
+    'kundli.ashtakvargaTitle': 'अष्टकवर्ग विश्लेषण',
+    'kundli.loadingAshtakvarga': 'अष्टकवर्ग की गणना हो रही है...',
+    'kundli.sarvashtakvarga': 'सर्वाष्टकवर्ग (SAV)',
+    'kundli.bhinnashtakvarga': 'भिन्नाष्टकवर्ग (BAV)',
+    'kundli.strong': 'बलवान',
+    'kundli.weak': 'दुर्बल',
+    'kundli.totalPoints': 'कुल अंक',
+
+    // Shadbala
+    'kundli.shadbala': 'षड्बल',
+    'kundli.shadbalaTitle': 'षड्बल (छह प्रकार की शक्ति)',
+    'kundli.loadingShadbala': 'षड्बल की गणना हो रही है...',
+    'kundli.sthana': 'स्थान बल',
+    'kundli.dig': 'दिग्बल',
+    'kundli.kala': 'काल बल',
+    'kundli.cheshta': 'चेष्टा बल',
+    'kundli.naisargika': 'नैसर्गिक बल',
+    'kundli.drik': 'दृक् बल',
+    'kundli.total': 'कुल',
+    'kundli.required': 'आवश्यक',
+    'kundli.ratio': 'अनुपात',
 
     // Miscellaneous
     'misc.language': 'भाषा',

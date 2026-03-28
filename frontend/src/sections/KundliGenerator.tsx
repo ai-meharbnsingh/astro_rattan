@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Sparkles, Calendar, Clock, MapPin, User, ChevronRight, Download, Share2, FileText, Heart, Briefcase, Activity, ArrowLeft, Loader2, X } from 'lucide-react';
+import { Sparkles, Calendar, Clock, MapPin, User, ChevronRight, ChevronDown, Download, Share2, FileText, Heart, Briefcase, Activity, ArrowLeft, Loader2, X, CheckCircle, AlertTriangle, Shield } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/lib/i18n';
@@ -33,6 +33,21 @@ export default function KundliGenerator() {
   const [loadingDasha, setLoadingDasha] = useState(false);
   const [predictionsData, setPredictionsData] = useState<any>(null);
   const [loadingPredictions, setLoadingPredictions] = useState(false);
+  const [avakhadaData, setAvakhadaData] = useState<any>(null);
+  const [loadingAvakhada, setLoadingAvakhada] = useState(false);
+  const [extendedDashaData, setExtendedDashaData] = useState<any>(null);
+  const [loadingExtendedDasha, setLoadingExtendedDasha] = useState(false);
+  const [expandedMahadasha, setExpandedMahadasha] = useState<string | null>(null);
+  const [expandedAntardasha, setExpandedAntardasha] = useState<string | null>(null);
+  const [yogaDoshaData, setYogaDoshaData] = useState<any>(null);
+  const [loadingYogaDosha, setLoadingYogaDosha] = useState(false);
+  const [divisionalData, setDivisionalData] = useState<any>(null);
+  const [loadingDivisional, setLoadingDivisional] = useState(false);
+  const [selectedDivision, setSelectedDivision] = useState('D9');
+  const [ashtakvargaData, setAshtakvargaData] = useState<any>(null);
+  const [loadingAshtakvarga, setLoadingAshtakvarga] = useState(false);
+  const [shadbalaData, setShadbalaData] = useState<any>(null);
+  const [loadingShadbala, setLoadingShadbala] = useState(false);
   const [error, setError] = useState('');
   const [sidePanel, setSidePanel] = useState<{
     type: 'planet' | 'house';
@@ -155,6 +170,12 @@ export default function KundliGenerator() {
       setIogitaData(null);
       setDashaData(null);
       setPredictionsData(null);
+      setAvakhadaData(null);
+      setExtendedDashaData(null);
+      setYogaDoshaData(null);
+      setDivisionalData(null);
+      setAshtakvargaData(null);
+      setShadbalaData(null);
       setStep('result');
     } catch {
       setError('Failed to load kundli');
@@ -192,6 +213,73 @@ export default function KundliGenerator() {
       setDashaData(data);
     } catch { /* fallback */ }
     setLoadingDasha(false);
+  };
+
+  // Fetch Avakhada Chakra
+  const fetchAvakhada = async () => {
+    if (!result?.id || avakhadaData) return;
+    setLoadingAvakhada(true);
+    try {
+      const data = await api.get(`/api/kundli/${result.id}/avakhada`);
+      setAvakhadaData(data);
+    } catch { /* fallback handled in UI */ }
+    setLoadingAvakhada(false);
+  };
+
+  // Fetch Extended Dasha (Mahadasha -> Antardasha -> Pratyantar)
+  const fetchExtendedDasha = async () => {
+    if (!result?.id || extendedDashaData) return;
+    setLoadingExtendedDasha(true);
+    try {
+      const data = await api.post(`/api/kundli/${result.id}/extended-dasha`, {});
+      setExtendedDashaData(data);
+    } catch { /* fallback */ }
+    setLoadingExtendedDasha(false);
+  };
+
+  // Fetch Yogas & Doshas
+  const fetchYogaDosha = async () => {
+    if (!result?.id || yogaDoshaData) return;
+    setLoadingYogaDosha(true);
+    try {
+      const data = await api.post(`/api/kundli/${result.id}/yogas-doshas`, {});
+      setYogaDoshaData(data);
+    } catch { /* fallback */ }
+    setLoadingYogaDosha(false);
+  };
+
+  // Fetch divisional chart
+  const fetchDivisional = async (chartType?: string) => {
+    if (!result?.id) return;
+    const ct = chartType || selectedDivision;
+    setLoadingDivisional(true);
+    try {
+      const data = await api.post(`/api/kundli/${result.id}/divisional`, { chart_type: ct });
+      setDivisionalData(data);
+    } catch { /* fallback */ }
+    setLoadingDivisional(false);
+  };
+
+  // Fetch ashtakvarga
+  const fetchAshtakvarga = async () => {
+    if (!result?.id || ashtakvargaData) return;
+    setLoadingAshtakvarga(true);
+    try {
+      const data = await api.post(`/api/kundli/${result.id}/ashtakvarga`, {});
+      setAshtakvargaData(data);
+    } catch { /* fallback */ }
+    setLoadingAshtakvarga(false);
+  };
+
+  // Fetch shadbala
+  const fetchShadbala = async () => {
+    if (!result?.id || shadbalaData) return;
+    setLoadingShadbala(true);
+    try {
+      const data = await api.post(`/api/kundli/${result.id}/shadbala`, {});
+      setShadbalaData(data);
+    } catch { /* fallback */ }
+    setLoadingShadbala(false);
   };
 
   // Fetch AI predictions
@@ -238,6 +326,12 @@ export default function KundliGenerator() {
       setIogitaData(null);
       setDashaData(null);
       setPredictionsData(null);
+      setAvakhadaData(null);
+      setExtendedDashaData(null);
+      setYogaDoshaData(null);
+      setDivisionalData(null);
+      setAshtakvargaData(null);
+      setShadbalaData(null);
       setStep('result');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate Prashna Kundli');
@@ -268,6 +362,9 @@ export default function KundliGenerator() {
       setIogitaData(null);
       setDashaData(null);
       setPredictionsData(null);
+      setAvakhadaData(null);
+      setExtendedDashaData(null);
+      setYogaDoshaData(null);
       setStep('result');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate kundli');
@@ -417,7 +514,9 @@ export default function KundliGenerator() {
             <TabsTrigger value="lordships">{t('kundli.lordships')}</TabsTrigger>
             <TabsTrigger value="dosha" onClick={fetchDosha}>  {t('kundli.dosha')}</TabsTrigger>
             <TabsTrigger value="iogita" onClick={fetchIogita}>io-gita</TabsTrigger>
-            <TabsTrigger value="dasha" onClick={fetchDasha}>  {t('kundli.dasha')}</TabsTrigger>
+            <TabsTrigger value="dasha" onClick={() => { fetchDasha(); fetchExtendedDasha(); }}>  {t('kundli.dasha')}</TabsTrigger>
+            <TabsTrigger value="avakhada" onClick={fetchAvakhada}>{t('avakhada.title')}</TabsTrigger>
+            <TabsTrigger value="yoga-dosha" onClick={fetchYogaDosha}>{t('yoga.title').split(' ')[0]}</TabsTrigger>
             <TabsTrigger value="predictions" onClick={fetchPredictions}>{t('kundli.predictions')}</TabsTrigger>
           </TabsList>
 
@@ -818,10 +917,96 @@ export default function KundliGenerator() {
           </TabsContent>
 
           {/* DASHA TAB */}
+          {/* DASHA TAB — Extended with Mahadasha -> Antardasha -> Pratyantar */}
           <TabsContent value="dasha">
-            {loadingDasha ? (
+            {(loadingDasha || loadingExtendedDasha) ? (
               <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-sacred-text-secondary">Calculating Vimshottari Dasha...</span></div>
+            ) : extendedDashaData ? (
+              <div className="space-y-4">
+                {/* Current period summary */}
+                <div className="bg-gradient-to-r from-sacred-cream to-sacred-gold/10 rounded-xl p-4 border border-sacred-gold/20">
+                  <p className="text-sm text-sacred-text-secondary">{t('dasha.current')} {t('dasha.mahadasha')}</p>
+                  <p className="text-xl font-display font-bold" style={{ color: '#B8860B' }}>{extendedDashaData.current_dasha} {t('dasha.mahadasha')}</p>
+                  <div className="flex gap-4 mt-1">
+                    {extendedDashaData.current_antardasha && extendedDashaData.current_antardasha !== 'Unknown' && (
+                      <p className="text-sm text-sacred-gold-dark">{t('dasha.antardasha')}: {extendedDashaData.current_antardasha}</p>
+                    )}
+                    {extendedDashaData.current_pratyantar && extendedDashaData.current_pratyantar !== 'Unknown' && (
+                      <p className="text-sm text-sacred-text-secondary">{t('dasha.pratyantar')}: {extendedDashaData.current_pratyantar}</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Expandable Mahadasha list */}
+                <div className="space-y-2">
+                  {(extendedDashaData.mahadasha || []).map((md: any) => (
+                    <div key={md.planet} className={`rounded-xl border overflow-hidden ${md.is_current ? 'border-[#B8860B]/50' : 'border-sacred-gold/20'}`}>
+                      {/* Mahadasha header */}
+                      <button
+                        onClick={() => setExpandedMahadasha(expandedMahadasha === md.planet ? null : md.planet)}
+                        className={`w-full flex items-center justify-between p-4 transition-colors ${md.is_current ? 'bg-[#B8860B]/10' : 'bg-sacred-cream hover:bg-sacred-gold/5'}`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <ChevronDown className={`w-4 h-4 text-sacred-gold-dark transition-transform ${expandedMahadasha === md.planet ? 'rotate-180' : ''}`} />
+                          <span className={`font-display font-semibold ${md.is_current ? 'text-[#B8860B]' : 'text-sacred-brown'}`}>
+                            {md.planet} {t('dasha.mahadasha')}
+                          </span>
+                          {md.is_current && <span className="text-xs px-2 py-0.5 rounded-full bg-[#B8860B]/20 text-[#B8860B] font-medium">{t('dasha.current')}</span>}
+                        </div>
+                        <div className="text-right text-sm text-sacred-text-secondary">
+                          <span>{md.start} — {md.end}</span>
+                          <span className="ml-2 text-sacred-gold-dark">({md.years}y)</span>
+                        </div>
+                      </button>
+
+                      {/* Antardasha list (expanded) */}
+                      {expandedMahadasha === md.planet && (
+                        <div className="border-t border-sacred-gold/20">
+                          {(md.antardasha || []).map((ad: any) => (
+                            <div key={`${md.planet}-${ad.planet}`}>
+                              <button
+                                onClick={() => setExpandedAntardasha(expandedAntardasha === `${md.planet}-${ad.planet}` ? null : `${md.planet}-${ad.planet}`)}
+                                className={`w-full flex items-center justify-between px-6 py-3 text-sm transition-colors ${ad.is_current ? 'bg-[#B8860B]/5' : 'hover:bg-sacred-gold/5'}`}
+                              >
+                                <div className="flex items-center gap-2">
+                                  {ad.pratyantar && ad.pratyantar.length > 0 && (
+                                    <ChevronDown className={`w-3 h-3 text-sacred-gold-dark transition-transform ${expandedAntardasha === `${md.planet}-${ad.planet}` ? 'rotate-180' : ''}`} />
+                                  )}
+                                  <span className={`font-medium ${ad.is_current ? 'text-[#B8860B]' : 'text-sacred-brown'}`}>
+                                    {ad.planet} {t('dasha.antardasha')}
+                                  </span>
+                                  {ad.is_current && <span className="text-xs px-1.5 py-0.5 rounded-full bg-[#B8860B]/15 text-[#B8860B]">{t('dasha.current')}</span>}
+                                </div>
+                                <span className="text-sacred-text-secondary">{ad.start} — {ad.end}</span>
+                              </button>
+
+                              {/* Pratyantar list (expanded) */}
+                              {expandedAntardasha === `${md.planet}-${ad.planet}` && ad.pratyantar && ad.pratyantar.length > 0 && (
+                                <div className="bg-sacred-cream/50 border-t border-sacred-gold/10">
+                                  {ad.pratyantar.map((pt: any, idx: number) => (
+                                    <div
+                                      key={idx}
+                                      className={`flex items-center justify-between px-10 py-2 text-xs ${pt.is_current ? 'bg-[#B8860B]/5' : ''}`}
+                                    >
+                                      <span className={`${pt.is_current ? 'text-[#B8860B] font-semibold' : 'text-sacred-text-secondary'}`}>
+                                        {pt.planet} {t('dasha.pratyantar')}
+                                        {pt.is_current && <span className="ml-1 text-[#B8860B]">*</span>}
+                                      </span>
+                                      <span className="text-sacred-text-secondary">{pt.start} — {pt.end}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
             ) : dashaData ? (
+              /* Fallback to simple table if extended data failed */
               <div className="space-y-4">
                 <div className="bg-gradient-to-r from-sacred-cream to-sacred-gold/10 rounded-xl p-4 border border-sacred-gold/20">
                   <p className="text-sm text-sacred-text-secondary">Current Mahadasha</p>
@@ -841,7 +1026,7 @@ export default function KundliGenerator() {
                     <tbody>
                       {(dashaData.mahadasha_periods || []).map((p: any) => (
                         <tr key={p.planet} className={`border-t border-sacred-gold/20 ${p.planet === dashaData.current_dasha ? 'bg-sacred-gold/10 font-semibold' : ''}`}>
-                          <td className="p-3 text-sacred-brown">{p.planet} {p.planet === dashaData.current_dasha ? '←' : ''}</td>
+                          <td className="p-3 text-sacred-brown">{p.planet} {p.planet === dashaData.current_dasha ? '\u2190' : ''}</td>
                           <td className="p-3 text-sacred-text-secondary text-sm">{p.start_date}</td>
                           <td className="p-3 text-sacred-text-secondary text-sm">{p.end_date}</td>
                           <td className="p-3 text-sacred-text-secondary text-sm">{p.years}y</td>
@@ -853,6 +1038,144 @@ export default function KundliGenerator() {
               </div>
             ) : (
               <p className="text-center text-sacred-text-secondary py-8">Click the Dasha tab to calculate periods</p>
+            )}
+          </TabsContent>
+
+          {/* AVAKHADA CHAKRA TAB */}
+          <TabsContent value="avakhada">
+            {loadingAvakhada ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
+                <span className="ml-2 text-sacred-text-secondary">Calculating Avakhada Chakra...</span>
+              </div>
+            ) : avakhadaData ? (
+              <div className="space-y-4">
+                <div className="bg-gradient-to-r from-sacred-cream to-sacred-gold/10 rounded-xl p-4 border border-sacred-gold/20 mb-4">
+                  <h4 className="font-display font-bold text-lg" style={{ color: '#1a1a2e' }}>{t('avakhada.title')}</h4>
+                  <p className="text-sm text-sacred-text-secondary">{t('avakhada.subtitle')}</p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {[
+                    { label: t('avakhada.ascendant'), value: avakhadaData.ascendant },
+                    { label: t('avakhada.ascendantLord'), value: avakhadaData.ascendant_lord },
+                    { label: t('avakhada.rashi'), value: avakhadaData.rashi },
+                    { label: t('avakhada.rashiLord'), value: avakhadaData.rashi_lord },
+                    { label: t('avakhada.nakshatra'), value: `${avakhadaData.nakshatra} (${t('avakhada.pada')} ${avakhadaData.nakshatra_pada})` },
+                    { label: t('avakhada.yoga'), value: avakhadaData.yoga },
+                    { label: t('avakhada.karana'), value: avakhadaData.karana },
+                    { label: t('avakhada.yoni'), value: avakhadaData.yoni },
+                    { label: t('avakhada.gana'), value: avakhadaData.gana },
+                    { label: t('avakhada.nadi'), value: avakhadaData.nadi },
+                    { label: t('avakhada.varna'), value: avakhadaData.varna },
+                    { label: t('avakhada.naamakshar'), value: avakhadaData.naamakshar },
+                    { label: t('avakhada.sunSign'), value: avakhadaData.sun_sign },
+                  ].map((item) => (
+                    <div
+                      key={item.label}
+                      className="rounded-xl p-4 border"
+                      style={{ backgroundColor: '#F5F0E8', borderColor: 'rgba(184,134,11,0.2)' }}
+                    >
+                      <p className="text-xs font-medium mb-1" style={{ color: '#8B7355' }}>{item.label}</p>
+                      <p className="font-display font-semibold text-base" style={{ color: '#1a1a2e' }}>{item.value}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <p className="text-center text-sacred-text-secondary py-8">Click the Avakhada tab to load birth summary</p>
+            )}
+          </TabsContent>
+
+          {/* YOGA & DOSHA TAB */}
+          <TabsContent value="yoga-dosha">
+            {loadingYogaDosha ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
+                <span className="ml-2 text-sacred-text-secondary">Analyzing Yogas and Doshas...</span>
+              </div>
+            ) : yogaDoshaData ? (
+              <div className="space-y-8">
+                {/* Yogas Section */}
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <CheckCircle className="w-5 h-5" style={{ color: '#22c55e' }} />
+                    <h4 className="font-display font-bold text-lg" style={{ color: '#1a1a2e' }}>{t('yoga.title')}</h4>
+                  </div>
+                  <div className="grid gap-3">
+                    {(yogaDoshaData.yogas || []).map((yoga: any, idx: number) => (
+                      <div
+                        key={idx}
+                        className={`rounded-xl p-4 border ${yoga.present ? 'border-green-500/30' : 'border-sacred-gold/15'}`}
+                        style={{ backgroundColor: yoga.present ? 'rgba(34,197,94,0.05)' : '#F5F0E8' }}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <h5 className="font-display font-semibold" style={{ color: '#1a1a2e' }}>{yoga.name}</h5>
+                          <span className={`text-xs px-2 py-1 rounded-full font-medium ${yoga.present ? 'bg-green-500/20 text-green-600' : 'bg-gray-200 text-gray-500'}`}>
+                            {yoga.present ? t('yoga.present') : t('yoga.absent')}
+                          </span>
+                        </div>
+                        <p className="text-sm" style={{ color: '#8B7355' }}>{yoga.description}</p>
+                        {yoga.present && yoga.planets_involved && yoga.planets_involved.length > 0 && (
+                          <div className="mt-2 flex gap-2">
+                            {yoga.planets_involved.map((p: string) => (
+                              <span key={p} className="text-xs px-2 py-0.5 rounded-full bg-green-500/10 text-green-600">{p}</span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Doshas Section */}
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <Shield className="w-5 h-5" style={{ color: '#8B2332' }} />
+                    <h4 className="font-display font-bold text-lg" style={{ color: '#1a1a2e' }}>{t('dosha.extended.title')}</h4>
+                  </div>
+                  <div className="grid gap-3">
+                    {(yogaDoshaData.doshas || []).map((dosha: any, idx: number) => (
+                      <div
+                        key={idx}
+                        className={`rounded-xl p-4 border ${dosha.present ? (dosha.severity === 'high' ? 'border-red-500/40' : 'border-amber-400/40') : 'border-green-500/30'}`}
+                        style={{ backgroundColor: dosha.present ? (dosha.severity === 'high' ? 'rgba(139,35,50,0.05)' : 'rgba(245,158,11,0.05)') : 'rgba(34,197,94,0.05)' }}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <h5 className="font-display font-semibold" style={{ color: '#1a1a2e' }}>{dosha.name}</h5>
+                          <div className="flex items-center gap-2">
+                            {dosha.present && dosha.severity !== 'none' && (
+                              <span className={`text-xs px-2 py-0.5 rounded-full ${dosha.severity === 'high' ? 'bg-red-500/20 text-red-600' : dosha.severity === 'medium' ? 'bg-amber-400/20 text-amber-600' : 'bg-yellow-200 text-yellow-700'}`}>
+                                {dosha.severity}
+                              </span>
+                            )}
+                            <span className={`text-xs px-2 py-1 rounded-full font-medium ${dosha.present ? 'bg-red-500/20 text-red-600' : 'bg-green-500/20 text-green-600'}`}>
+                              {dosha.present ? t('dosha.present') : t('dosha.absent')}
+                            </span>
+                          </div>
+                        </div>
+                        <p className="text-sm" style={{ color: '#8B7355' }}>{dosha.description}</p>
+                        {dosha.present && dosha.remedies && dosha.remedies.length > 0 && (
+                          <div className="mt-3 pt-3 border-t" style={{ borderColor: 'rgba(139,115,85,0.15)' }}>
+                            <p className="text-xs font-semibold mb-2" style={{ color: '#B8860B' }}>
+                              <AlertTriangle className="w-3 h-3 inline mr-1" />{t('dosha.remedies')}:
+                            </p>
+                            <ul className="space-y-1">
+                              {dosha.remedies.map((r: string, ri: number) => (
+                                <li key={ri} className="text-xs flex items-start gap-2" style={{ color: '#8B7355' }}>
+                                  <span className="mt-1 w-1 h-1 rounded-full flex-shrink-0" style={{ backgroundColor: '#B8860B' }} />
+                                  {r}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <p className="text-center text-sacred-text-secondary py-8">Click the Yogas tab to analyze positive and negative combinations</p>
             )}
           </TabsContent>
 
@@ -897,7 +1220,7 @@ export default function KundliGenerator() {
         </Tabs>
 
         <div className="mt-8 text-center">
-          <Button onClick={() => { setStep('form'); setResult(null); setDoshaData(null); setIogitaData(null); setDashaData(null); setPredictionsData(null); }} variant="outline" className="border-cosmic-text-muted text-cosmic-text">
+          <Button onClick={() => { setStep('form'); setResult(null); setDoshaData(null); setIogitaData(null); setDashaData(null); setPredictionsData(null); setAvakhadaData(null); setExtendedDashaData(null); setYogaDoshaData(null); }} variant="outline" className="border-cosmic-text-muted text-cosmic-text">
             Generate Another Kundli
           </Button>
         </div>

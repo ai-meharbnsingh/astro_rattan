@@ -1,4 +1,4 @@
-"""Kundli routes — generate, retrieve, list, iogita analysis, match, dosha, dasha, divisional, ashtakvarga."""
+"""Kundli routes — generate, retrieve, list, iogita analysis, match, dosha, dasha, divisional, ashtakvarga, avakhada, yogas."""
 import json
 from typing import Any
 
@@ -10,10 +10,12 @@ from app.models import KundliRequest, KundliMatchRequest, DivisionalChartRequest
 from app.astro_engine import calculate_planet_positions
 from app.astro_iogita_engine import run_astro_analysis
 from app.matching_engine import calculate_gun_milan
-from app.dosha_engine import check_mangal_dosha, check_kaal_sarp, check_sade_sati
-from app.dasha_engine import calculate_dasha
-from app.divisional_charts import calculate_divisional_chart
+from app.dosha_engine import check_mangal_dosha, check_kaal_sarp, check_sade_sati, analyze_yogas_and_doshas
+from app.dasha_engine import calculate_dasha, calculate_extended_dasha
+from app.divisional_charts import calculate_divisional_chart, calculate_divisional_chart_detailed, DIVISIONAL_CHARTS
 from app.ashtakvarga_engine import calculate_ashtakvarga
+from app.shadbala_engine import calculate_shadbala
+from app.avakhada_engine import calculate_avakhada
 
 router = APIRouter(prefix="/api/kundli", tags=["kundli"])
 
@@ -249,6 +251,23 @@ def get_dasha(
     return result
 
 
+@router.get("/{kundli_id}/divisional-charts", status_code=status.HTTP_200_OK)
+def list_divisional_charts(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """List available divisional chart types."""
+    _fetch_kundli(db, kundli_id, current_user["sub"])  # Validate access
+    return {
+        "kundli_id": kundli_id,
+        "charts": [
+            {"division": d, "name": name, "code": f"D{d}"}
+            for d, name in DIVISIONAL_CHARTS.items()
+        ],
+    }
+
+
 @router.post("/{kundli_id}/divisional", status_code=status.HTTP_200_OK)
 def get_divisional_chart(
     kundli_id: str,
@@ -275,13 +294,35 @@ def get_divisional_chart(
             detail=f"Invalid chart type: {body.chart_type}. Use format 'D9', 'D10', etc.",
         )
 
-    result = calculate_divisional_chart(planet_longitudes, division)
+    # Get detailed result with degree info
+    detailed = calculate_divisional_chart_detailed(planet_longitudes, division)
+
+    # Build planet data suitable for InteractiveKundli component
+    planet_positions = []
+    for planet_name, info in detailed.items():
+        sign_index = info["sign_index"]
+        planet_positions.append({
+            "planet": planet_name,
+            "sign": info["sign"],
+            "sign_degree": info["degree"],
+            "house": sign_index + 1,  # Use sign-as-house for divisional charts
+            "nakshatra": "",
+            "longitude": sign_index * 30.0 + info["degree"],
+        })
+
+    # Simple sign mapping for backward compat
+    planet_signs = {planet: info["sign"] for planet, info in detailed.items()}
+
+    chart_name = DIVISIONAL_CHARTS.get(division, f"D{division}")
+
     return {
         "kundli_id": kundli_id,
         "person_name": row["person_name"],
         "chart_type": chart_type,
+        "chart_name": chart_name,
         "division": division,
-        "planet_signs": result,
+        "planet_signs": planet_signs,
+        "planet_positions": planet_positions,
     }
 
 
@@ -305,6 +346,89 @@ def get_ashtakvarga(
         planet_signs["Ascendant"] = ascendant_sign
 
     result = calculate_ashtakvarga(planet_signs)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
+@router.post("/{kundli_id}/shadbala", status_code=status.HTTP_200_OK)
+def get_shadbala(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Calculate Shadbala (six-fold strength) for a kundli."""
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    planets = chart.get("planets", {})
+
+    # Build planet_signs and planet_houses
+    planet_signs = {}
+    planet_houses = {}
+    for planet_name, info in planets.items():
+        planet_signs[planet_name] = info.get("sign", "Aries")
+        planet_houses[planet_name] = info.get("house", 1)
+
+    # Determine if daytime birth (simplified: hour 6-18 = day)
+    birth_time = row.get("birth_time", "12:00:00")
+    try:
+        hour = int(birth_time.split(":")[0])
+    except (ValueError, IndexError):
+        hour = 12
+    is_daytime = 6 <= hour < 18
+
+    result = calculate_shadbala(
+        planet_signs=planet_signs,
+        planet_houses=planet_houses,
+        is_daytime=is_daytime,
+    )
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
+@router.get("/{kundli_id}/avakhada", status_code=status.HTTP_200_OK)
+def get_avakhada(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Calculate Avakhada Chakra — comprehensive birth summary table."""
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    result = calculate_avakhada(chart)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
+@router.post("/{kundli_id}/extended-dasha", status_code=status.HTTP_200_OK)
+def get_extended_dasha(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Calculate extended Vimshottari Dasha with Mahadasha -> Antardasha -> Pratyantar."""
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    moon_nakshatra = chart.get("planets", {}).get("Moon", {}).get("nakshatra", "Ashwini")
+    result = calculate_extended_dasha(moon_nakshatra, row["birth_date"])
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
+@router.post("/{kundli_id}/yogas-doshas", status_code=status.HTTP_200_OK)
+def get_yogas_and_doshas(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Comprehensive Yoga & Dosha analysis — positive yogas and negative doshas."""
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    planets = chart.get("planets", {})
+    result = analyze_yogas_and_doshas(planets)
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result
