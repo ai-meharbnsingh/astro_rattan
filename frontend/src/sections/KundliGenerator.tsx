@@ -1079,33 +1079,40 @@ export default function KundliGenerator() {
               <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-sacred-text-secondary">Analyzing doshas...</span></div>
             ) : doshaDisplay ? (
               <div className="grid gap-4">
-                <div className={`bg-sacred-cream rounded-xl p-4 border ${doshaDisplay.mangal.has_dosha ? 'border-red-500/30' : 'border-green-500/30'}`}>
+                {doshaDisplay.mangal.has_dosha && (
+                <div className="bg-sacred-cream rounded-xl p-4 border border-red-500/30">
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="font-display font-semibold text-sacred-brown">Mangal Dosha</h4>
-                    <span className={`text-xs px-2 py-1 rounded-full ${doshaDisplay.mangal.has_dosha ? 'bg-red-900/200/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}>
-                      {doshaDisplay.mangal.has_dosha ? `Present (${doshaDisplay.mangal.severity})` : 'Not Present'}
+                    <span className="text-xs px-2 py-1 rounded-full bg-red-500/20 text-red-600">
+                      Present ({doshaDisplay.mangal.severity})
                     </span>
                   </div>
                   <p className="text-sm text-sacred-text-secondary">{doshaDisplay.mangal.description}</p>
                 </div>
-                <div className={`bg-sacred-cream rounded-xl p-4 border ${doshaDisplay.kaalsarp.has_dosha ? 'border-red-500/30' : 'border-green-500/30'}`}>
+                )}
+                {doshaDisplay.kaalsarp.has_dosha && (
+                <div className="bg-sacred-cream rounded-xl p-4 border border-red-500/30">
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="font-display font-semibold text-sacred-brown">Kaal Sarp Dosha</h4>
-                    <span className={`text-xs px-2 py-1 rounded-full ${doshaDisplay.kaalsarp.has_dosha ? 'bg-red-900/200/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}>
-                      {doshaDisplay.kaalsarp.has_dosha ? 'Present' : 'Not Present'}
-                    </span>
+                    <span className="text-xs px-2 py-1 rounded-full bg-red-500/20 text-red-600">Present</span>
                   </div>
                   <p className="text-sm text-sacred-text-secondary">{doshaDisplay.kaalsarp.description}</p>
                 </div>
-                <div className={`bg-sacred-cream rounded-xl p-4 border ${doshaDisplay.sadesati.has_sade_sati ? 'border-orange-200' : 'border-green-500/30'}`}>
+                )}
+                {doshaDisplay.sadesati.has_sade_sati && (
+                <div className="bg-sacred-cream rounded-xl p-4 border border-orange-200">
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="font-display font-semibold text-sacred-brown">Shani Sade Sati</h4>
-                    <span className={`text-xs px-2 py-1 rounded-full ${doshaDisplay.sadesati.has_sade_sati ? 'bg-orange-100 text-orange-600' : 'bg-green-500/20 text-green-400'}`}>
-                      {doshaDisplay.sadesati.has_sade_sati ? `Active \u2014 ${doshaDisplay.sadesati.phase}` : 'Not Active'}
+                    <span className="text-xs px-2 py-1 rounded-full bg-orange-100 text-orange-600">
+                      Active - {doshaDisplay.sadesati.phase}
                     </span>
                   </div>
                   <p className="text-sm text-sacred-text-secondary">{doshaDisplay.sadesati.description}</p>
                 </div>
+                )}
+                {!doshaDisplay.mangal.has_dosha && !doshaDisplay.kaalsarp.has_dosha && !doshaDisplay.sadesati.has_sade_sati && (
+                  <p className="text-sm py-4" style={{ color: '#22c55e' }}>No doshas detected - chart is free from Mangal Dosha, Kaal Sarp Dosha, and Sade Sati.</p>
+                )}
               </div>
             ) : (
               <p className="text-center text-sacred-text-secondary py-8">Click the Dosha tab to load analysis</p>
@@ -1672,20 +1679,23 @@ export default function KundliGenerator() {
                     <h4 className="font-display font-bold text-lg" style={{ color: '#1a1a2e' }}>{t('yoga.title')}</h4>
                   </div>
                   <div className="grid gap-3">
-                    {(yogaDoshaData.yogas || []).map((yoga: any, idx: number) => (
+                    {(yogaDoshaData.yogas || []).filter((y: any) => y.present).length === 0 && (
+                      <p className="text-sm text-sacred-text-secondary py-4">No significant yogas detected in this chart.</p>
+                    )}
+                    {(yogaDoshaData.yogas || []).filter((y: any) => y.present).map((yoga: any, idx: number) => (
                       <div
                         key={idx}
-                        className={`rounded-xl p-4 border ${yoga.present ? 'border-green-500/30' : 'border-sacred-gold/15'}`}
-                        style={{ backgroundColor: yoga.present ? 'rgba(34,197,94,0.05)' : '#F5F0E8' }}
+                        className="rounded-xl p-4 border border-green-500/30"
+                        style={{ backgroundColor: 'rgba(34,197,94,0.05)' }}
                       >
                         <div className="flex items-center justify-between mb-2">
                           <h5 className="font-display font-semibold" style={{ color: '#1a1a2e' }}>{yoga.name}</h5>
-                          <span className={`text-xs px-2 py-1 rounded-full font-medium ${yoga.present ? 'bg-green-500/20 text-green-600' : 'bg-gray-200 text-gray-500'}`}>
-                            {yoga.present ? t('yoga.present') : t('yoga.absent')}
+                          <span className="text-xs px-2 py-1 rounded-full font-medium bg-green-500/20 text-green-600">
+                            {t('yoga.present')}
                           </span>
                         </div>
                         <p className="text-sm" style={{ color: '#8B7355' }}>{yoga.description}</p>
-                        {yoga.present && yoga.planets_involved && yoga.planets_involved.length > 0 && (
+                        {yoga.planets_involved && yoga.planets_involved.length > 0 && (
                           <div className="mt-2 flex gap-2">
                             {yoga.planets_involved.map((p: string) => (
                               <span key={p} className="text-xs px-2 py-0.5 rounded-full bg-green-500/10 text-green-600">{p}</span>
@@ -1703,27 +1713,30 @@ export default function KundliGenerator() {
                     <h4 className="font-display font-bold text-lg" style={{ color: '#1a1a2e' }}>{t('dosha.extended.title')}</h4>
                   </div>
                   <div className="grid gap-3">
-                    {(yogaDoshaData.doshas || []).map((dosha: any, idx: number) => (
+                    {(yogaDoshaData.doshas || []).filter((d: any) => d.present).length === 0 && (
+                      <p className="text-sm py-4" style={{ color: '#22c55e' }}>No doshas detected — chart is free from major afflictions.</p>
+                    )}
+                    {(yogaDoshaData.doshas || []).filter((d: any) => d.present).map((dosha: any, idx: number) => (
                       <div
                         key={idx}
-                        className={`rounded-xl p-4 border ${dosha.present ? (dosha.severity === 'high' ? 'border-red-500/40' : 'border-amber-400/40') : 'border-green-500/30'}`}
-                        style={{ backgroundColor: dosha.present ? (dosha.severity === 'high' ? 'rgba(139,35,50,0.05)' : 'rgba(245,158,11,0.05)') : 'rgba(34,197,94,0.05)' }}
+                        className={`rounded-xl p-4 border ${dosha.severity === 'high' ? 'border-red-500/40' : 'border-amber-400/40'}`}
+                        style={{ backgroundColor: dosha.severity === 'high' ? 'rgba(139,35,50,0.05)' : 'rgba(245,158,11,0.05)' }}
                       >
                         <div className="flex items-center justify-between mb-2">
                           <h5 className="font-display font-semibold" style={{ color: '#1a1a2e' }}>{dosha.name}</h5>
                           <div className="flex items-center gap-2">
-                            {dosha.present && dosha.severity !== 'none' && (
+                            {dosha.severity !== 'none' && (
                               <span className={`text-xs px-2 py-0.5 rounded-full ${dosha.severity === 'high' ? 'bg-red-500/20 text-red-600' : dosha.severity === 'medium' ? 'bg-amber-400/20 text-amber-600' : 'bg-yellow-200 text-yellow-700'}`}>
                                 {dosha.severity}
                               </span>
                             )}
-                            <span className={`text-xs px-2 py-1 rounded-full font-medium ${dosha.present ? 'bg-red-500/20 text-red-600' : 'bg-green-500/20 text-green-600'}`}>
-                              {dosha.present ? t('dosha.present') : t('dosha.absent')}
+                            <span className="text-xs px-2 py-1 rounded-full font-medium bg-red-500/20 text-red-600">
+                              {t('dosha.present')}
                             </span>
                           </div>
                         </div>
                         <p className="text-sm" style={{ color: '#8B7355' }}>{dosha.description}</p>
-                        {dosha.present && dosha.remedies && dosha.remedies.length > 0 && (
+                        {dosha.remedies && dosha.remedies.length > 0 && (
                           <div className="mt-3 pt-3 border-t" style={{ borderColor: 'rgba(139,115,85,0.15)' }}>
                             <p className="text-xs font-semibold mb-2" style={{ color: '#B8860B' }}>
                               <AlertTriangle className="w-3 h-3 inline mr-1" />{t('dosha.remedies')}:
