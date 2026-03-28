@@ -30,7 +30,7 @@ const PLANET_COLORS: Record<string, string> = {
   Moon: '#E8E8E8',
   Mars: '#DC143C',
   Mercury: '#32CD32',
-  Jupiter: '#FFD700',
+  Jupiter: '#B8860B',
   Venus: '#FF69B4',
   Saturn: '#8B8682',
   Rahu: '#4B0082',
@@ -147,8 +147,8 @@ export default function PlanetaryPositions({ planets: propPlanets }: PlanetaryPo
         <circle cx={CX} cy={CY} r={ZODIAC_R + 10} fill="url(#zodiac-bg)" />
 
         {/* Outer zodiac ring */}
-        <circle cx={CX} cy={CY} r={ZODIAC_R} fill="none" stroke="#D4AF37" strokeWidth={1} opacity={0.4} />
-        <circle cx={CX} cy={CY} r={ZODIAC_R - 20} fill="none" stroke="#D4AF37" strokeWidth={0.5} opacity={0.2} />
+        <circle cx={CX} cy={CY} r={ZODIAC_R} fill="none" stroke="#9A7B0A" strokeWidth={1} opacity={0.4} />
+        <circle cx={CX} cy={CY} r={ZODIAC_R - 20} fill="none" stroke="#9A7B0A" strokeWidth={0.5} opacity={0.2} />
 
         {/* Planet orbit circle */}
         <circle cx={CX} cy={CY} r={PLANET_R} fill="none" stroke="rgba(212,175,55,0.1)" strokeWidth={0.5} strokeDasharray="4 4" />
@@ -169,12 +169,12 @@ export default function PlanetaryPositions({ planets: propPlanets }: PlanetaryPo
 
           return (
             <g key={sign}>
-              <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#D4AF37" strokeWidth={0.5} opacity={0.3} />
+              <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#9A7B0A" strokeWidth={0.5} opacity={0.3} />
               <text
                 x={labelX}
                 y={labelY + 4}
                 textAnchor="middle"
-                fill="#D4AF37"
+                fill="#9A7B0A"
                 fontSize={11}
                 opacity={0.6}
               >
@@ -185,10 +185,10 @@ export default function PlanetaryPositions({ planets: propPlanets }: PlanetaryPo
         })}
 
         {/* Center label */}
-        <text x={CX} y={CY - 8} textAnchor="middle" fill="#D4AF37" fontSize={10} opacity={0.5} fontFamily="serif">
+        <text x={CX} y={CY - 8} textAnchor="middle" fill="#9A7B0A" fontSize={10} opacity={0.5} fontFamily="serif">
           Planetary
         </text>
-        <text x={CX} y={CY + 6} textAnchor="middle" fill="#D4AF37" fontSize={10} opacity={0.5} fontFamily="serif">
+        <text x={CX} y={CY + 6} textAnchor="middle" fill="#9A7B0A" fontSize={10} opacity={0.5} fontFamily="serif">
           Positions
         </text>
         <text x={CX} y={CY + 20} textAnchor="middle" fill="#9B59B6" fontSize={8} opacity={0.4} fontFamily="sans-serif">
@@ -197,7 +197,7 @@ export default function PlanetaryPositions({ planets: propPlanets }: PlanetaryPo
 
         {/* Planet trails and dots */}
         {planetPositions.map((p) => {
-          const color = PLANET_COLORS[p.name] || '#D4AF37';
+          const color = PLANET_COLORS[p.name] || '#9A7B0A';
           const isHovered = hoveredPlanet === p.name;
 
           return (
@@ -266,7 +266,7 @@ export default function PlanetaryPositions({ planets: propPlanets }: PlanetaryPo
       {hoveredPlanet && (() => {
         const p = planetPositions.find((pp) => pp.name === hoveredPlanet);
         if (!p) return null;
-        const color = PLANET_COLORS[p.name] || '#D4AF37';
+        const color = PLANET_COLORS[p.name] || '#9A7B0A';
 
         return (
           <div

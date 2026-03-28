@@ -75,25 +75,25 @@ export default function Kundli3D() {
               style={{ animation: 'fadeIn 0.8s ease-out' }}
             >
               <div 
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#d4af37]/10 border border-[#d4af37]/30 mb-6"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#9A7B0A]/10 border border-[#9A7B0A]/30 mb-6"
                 style={{ animation: 'slideUp 0.6s ease-out 0.2s both' }}
               >
-                <Sparkles className="w-4 h-4 text-[#d4af37]" />
-                <span className="text-[#d4af37] text-sm font-medium">3D Experience</span>
+                <Sparkles className="w-4 h-4 text-[#9A7B0A]" />
+                <span className="text-[#9A7B0A] text-sm font-medium">3D Experience</span>
               </div>
 
               <h1 className="text-5xl lg:text-7xl font-bold mb-6" style={{ 
                 fontFamily: 'Cinzel, serif',
                 animation: 'slideUp 0.8s ease-out 0.3s both'
               }}>
-                <span className="text-white">Your</span>
+                <span className="text-[#1a1a2e]">Your</span>
                 <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffd700] to-[#d4af37]">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B8860B] to-[#9A7B0A]">
                   Cosmic Blueprint
                 </span>
               </h1>
 
-              <p className="text-xl text-white/70 mb-8 max-w-lg" style={{ animation: 'slideUp 0.8s ease-out 0.4s both' }}>
+              <p className="text-xl text-[#1a1a2e]/70 mb-8 max-w-lg" style={{ animation: 'slideUp 0.8s ease-out 0.4s both' }}>
                 Discover your destiny through our immersive 3D Vedic birth chart. 
                 The stars align in three dimensions to reveal your true path.
               </p>
@@ -103,7 +103,7 @@ export default function Kundli3D() {
                 {['Natal Chart', 'Dasha Analysis', 'Planetary Positions', 'Life Predictions'].map((feature, i) => (
                   <span
                     key={feature}
-                    className="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white/80 text-sm"
+                    className="px-4 py-2 rounded-full bg-white/5 border border-[#8B7355]/10 text-[#1a1a2e]/80 text-sm"
                     style={{ animation: `scaleIn 0.4s ease-out ${0.5 + i * 0.1}s both` }}
                   >
                     {feature}
@@ -115,21 +115,21 @@ export default function Kundli3D() {
             {/* Right Side - 3D Form Card */}
             <div style={{ animation: 'slideInRight 0.8s ease-out 0.3s both' }}>
               <TiltCard>
-                <div className="bg-black/40 backdrop-blur-xl border border-[#d4af37]/30 rounded-3xl p-8 shadow-2xl shadow-[#d4af37]/10">
-                  <h2 className="text-2xl font-bold text-white mb-6 text-center" style={{ fontFamily: 'Cinzel, serif' }}>
+                <div className="bg-[#F5F0E8]/40 backdrop-blur-xl border border-[#9A7B0A]/30 rounded-3xl p-8 shadow-2xl shadow-[#9A7B0A]/10">
+                  <h2 className="text-2xl font-bold text-[#1a1a2e] mb-6 text-center" style={{ fontFamily: 'Cinzel, serif' }}>
                     Generate Your Kundli
                   </h2>
 
                   <form onSubmit={handleSubmit} className="space-y-5">
                     {/* Name */}
                     <div className="relative">
-                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#d4af37]" />
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9A7B0A]" />
                       <Input
                         type="text"
                         placeholder="Full Name"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="pl-12 h-14 bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-[#d4af37] text-lg"
+                        className="pl-12 h-14 bg-white/5 border-[#8B7355]/10 text-[#1a1a2e] placeholder:text-[#1a1a2e]/40 focus:border-[#9A7B0A] text-lg"
                       />
                     </div>
 
@@ -140,8 +140,8 @@ export default function Kundli3D() {
                         onClick={() => setFormData({ ...formData, gender: 'male' })}
                         className={`h-14 rounded-xl border transition-all text-lg ${
                           formData.gender === 'male'
-                            ? 'bg-[#d4af37] text-black border-[#d4af37]'
-                            : 'bg-white/5 text-white border-white/10 hover:border-[#d4af37]/50'
+                            ? 'bg-[#9A7B0A] text-black border-[#9A7B0A]'
+                            : 'bg-white/5 text-[#1a1a2e] border-[#8B7355]/10 hover:border-[#9A7B0A]/50'
                         }`}
                       >
                         Male
@@ -151,8 +151,8 @@ export default function Kundli3D() {
                         onClick={() => setFormData({ ...formData, gender: 'female' })}
                         className={`h-14 rounded-xl border transition-all text-lg ${
                           formData.gender === 'female'
-                            ? 'bg-[#d4af37] text-black border-[#d4af37]'
-                            : 'bg-white/5 text-white border-white/10 hover:border-[#d4af37]/50'
+                            ? 'bg-[#9A7B0A] text-black border-[#9A7B0A]'
+                            : 'bg-white/5 text-[#1a1a2e] border-[#8B7355]/10 hover:border-[#9A7B0A]/50'
                         }`}
                       >
                         Female
@@ -162,34 +162,34 @@ export default function Kundli3D() {
                     {/* Date & Time */}
                     <div className="grid grid-cols-2 gap-3">
                       <div className="relative">
-                        <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#d4af37]" />
+                        <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9A7B0A]" />
                         <Input
                           type="date"
                           value={formData.date}
                           onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                          className="pl-12 h-14 bg-white/5 border-white/10 text-white focus:border-[#d4af37] text-lg"
+                          className="pl-12 h-14 bg-white/5 border-[#8B7355]/10 text-[#1a1a2e] focus:border-[#9A7B0A] text-lg"
                         />
                       </div>
                       <div className="relative">
-                        <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#d4af37]" />
+                        <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9A7B0A]" />
                         <Input
                           type="time"
                           value={formData.time}
                           onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                          className="pl-12 h-14 bg-white/5 border-white/10 text-white focus:border-[#d4af37] text-lg"
+                          className="pl-12 h-14 bg-white/5 border-[#8B7355]/10 text-[#1a1a2e] focus:border-[#9A7B0A] text-lg"
                         />
                       </div>
                     </div>
 
                     {/* Birth Place */}
                     <div className="relative">
-                      <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#d4af37]" />
+                      <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9A7B0A]" />
                       <Input
                         type="text"
                         placeholder="Birth Place (City)"
                         value={formData.place}
                         onChange={(e) => setFormData({ ...formData, place: e.target.value })}
-                        className="pl-12 h-14 bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-[#d4af37] text-lg"
+                        className="pl-12 h-14 bg-white/5 border-[#8B7355]/10 text-[#1a1a2e] placeholder:text-[#1a1a2e]/40 focus:border-[#9A7B0A] text-lg"
                       />
                     </div>
 
@@ -197,7 +197,7 @@ export default function Kundli3D() {
                     <Button
                       type="submit"
                       disabled={loading}
-                      className="w-full h-14 bg-gradient-to-r from-[#d4af37] to-[#ffd700] text-black font-bold text-lg hover:shadow-lg hover:shadow-[#d4af37]/30 transition-all"
+                      className="w-full h-14 bg-gradient-to-r from-[#9A7B0A] to-[#B8860B] text-black font-bold text-lg hover:shadow-lg hover:shadow-[#9A7B0A]/30 transition-all"
                     >
                       {loading ? (
                         <span className="flex items-center gap-2">
@@ -214,7 +214,7 @@ export default function Kundli3D() {
                   </form>
 
                   {/* Trust badges */}
-                  <div className="mt-6 pt-6 border-t border-white/10 flex items-center justify-center gap-6 text-sm text-white/50">
+                  <div className="mt-6 pt-6 border-t border-[#8B7355]/10 flex items-center justify-center gap-6 text-sm text-[#1a1a2e]/50">
                     <span>🔒 Secure</span>
                     <span>⚡ Instant</span>
                     <span>🎯 Accurate</span>

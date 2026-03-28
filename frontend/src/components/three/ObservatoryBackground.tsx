@@ -104,7 +104,7 @@ function SymbolSprite({
     ctx.clearRect(0, 0, 128, 128);
     
     // Draw glow
-    ctx.shadowColor = '#d4af37';
+    ctx.shadowColor = '#9A7B0A';
     ctx.shadowBlur = 20;
     
     // Draw symbol
@@ -167,7 +167,7 @@ function StarField() {
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        color="#d4af37"
+        color="#9A7B0A"
         size={0.1}
         sizeAttenuation
         transparent
@@ -210,7 +210,7 @@ function ConstellationLines() {
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[linePositions, 3]} />
       </bufferGeometry>
-      <lineBasicMaterial color="#d4af37" transparent opacity={0.06} />
+      <lineBasicMaterial color="#9A7B0A" transparent opacity={0.06} />
     </lineSegments>
   );
 }

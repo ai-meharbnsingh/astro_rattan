@@ -206,7 +206,7 @@ export default function AstrologerDashboard() {
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-sacred-gold flex items-center justify-center">
-            <Star className="w-5 h-5 text-white" />
+            <Star className="w-5 h-5 text-[#1a1a2e]" />
           </div>
           <div>
             <h2 className="text-2xl font-display font-bold text-cosmic-text">Astrologer Dashboard</h2>
@@ -237,8 +237,8 @@ export default function AstrologerDashboard() {
 
       <Tabs defaultValue="consultations" className="w-full">
         <TabsList className="bg-cosmic-surface mb-6">
-          <TabsTrigger value="consultations" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white">Consultations</TabsTrigger>
-          <TabsTrigger value="profile" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white">Profile</TabsTrigger>
+          <TabsTrigger value="consultations" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e]">Consultations</TabsTrigger>
+          <TabsTrigger value="profile" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e]">Profile</TabsTrigger>
         </TabsList>
 
         <TabsContent value="consultations">
@@ -261,14 +261,14 @@ export default function AstrologerDashboard() {
                       <div className="flex flex-wrap items-center gap-3">
                         <Badge className={statusColors[c.status] || 'bg-cosmic-surface text-cosmic-text-secondary'}>{c.status}</Badge>
                         {c.status === 'requested' && (
-                          <Button size="sm" onClick={() => acceptConsultation(c.id)} className="bg-sacred-gold text-white hover:bg-sacred-gold-dark">Accept</Button>
+                          <Button size="sm" onClick={() => acceptConsultation(c.id)} className="bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark">Accept</Button>
                         )}
                         {c.type === 'video' && (c.status === 'accepted' || c.status === 'active') && (
                           <Button
                             size="sm"
                             onClick={() => joinVideoSession(c)}
                             disabled={joiningVideoId === c.id}
-                            className="bg-sacred-gold text-white hover:bg-sacred-gold-dark"
+                            className="bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark"
                           >
                             {joiningVideoId === c.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Video className="mr-1 h-4 w-4" />}
                             {c.video_link ? 'Rejoin' : 'Join'}
@@ -309,7 +309,7 @@ export default function AstrologerDashboard() {
                     <Edit className="w-4 h-4 mr-1" />Edit
                   </Button>
                 ) : (
-                  <Button size="sm" onClick={saveProfile} disabled={saving} className="bg-sacred-gold text-white hover:bg-sacred-gold-dark">
+                  <Button size="sm" onClick={saveProfile} disabled={saving} className="bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark">
                     <Save className="w-4 h-4 mr-1" />{saving ? 'Saving...' : 'Save'}
                   </Button>
                 )}

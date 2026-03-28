@@ -135,13 +135,13 @@ export default function NumerologyTarot() {
 
       <Tabs defaultValue="numerology">
         <TabsList className="grid grid-cols-3 bg-cosmic-surface mb-8 max-w-md mx-auto">
-          <TabsTrigger value="numerology" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white">
+          <TabsTrigger value="numerology" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e]">
             <Hash className="w-4 h-4 mr-1" />Numerology
           </TabsTrigger>
-          <TabsTrigger value="tarot" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white">
+          <TabsTrigger value="tarot" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e]">
             <Eye className="w-4 h-4 mr-1" />Tarot
           </TabsTrigger>
-          <TabsTrigger value="palmistry" onClick={loadPalmistry} className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white">
+          <TabsTrigger value="palmistry" onClick={loadPalmistry} className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e]">
             <Hand className="w-4 h-4 mr-1" />Palmistry
           </TabsTrigger>
         </TabsList>
@@ -154,7 +154,7 @@ export default function NumerologyTarot() {
               <div className="space-y-3">
                 <Input placeholder="Full Name" value={numName} onChange={(e) => setNumName(e.target.value)} className="bg-cosmic-card border-sacred-gold/15" />
                 <Input type="date" value={numDob} onChange={(e) => setNumDob(e.target.value)} className="bg-cosmic-card border-sacred-gold/15" />
-                <Button onClick={calculateNumerology} disabled={numLoading || !numName.trim() || !numDob} className="w-full bg-sacred-gold text-white hover:bg-sacred-gold-dark">
+                <Button onClick={calculateNumerology} disabled={numLoading || !numName.trim() || !numDob} className="w-full bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark">
                   {numLoading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Calculating...</> : <><Hash className="w-4 h-4 mr-2" />Calculate</>}
                 </Button>
               </div>
@@ -212,7 +212,7 @@ export default function NumerologyTarot() {
                   </SelectContent>
                 </Select>
                 <Input placeholder="Your question (optional)" value={tarotQuestion} onChange={(e) => setTarotQuestion(e.target.value)} className="bg-cosmic-card border-sacred-gold/15" />
-                <Button onClick={drawTarot} disabled={tarotLoading} className="w-full bg-sacred-gold text-white hover:bg-sacred-gold-dark">
+                <Button onClick={drawTarot} disabled={tarotLoading} className="w-full bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark">
                   {tarotLoading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Drawing...</> : <><Eye className="w-4 h-4 mr-2" />Draw Cards</>}
                 </Button>
               </div>
@@ -260,7 +260,7 @@ export default function NumerologyTarot() {
                     <h3 className="font-display font-semibold text-cosmic-text">Need a deeper palm reading?</h3>
                     <p className="text-sm text-cosmic-text-secondary mt-1">Use the dedicated palmistry page for photo-based analysis and guided line selection.</p>
                   </div>
-                  <Button asChild className="bg-sacred-gold text-white hover:bg-sacred-gold-dark">
+                  <Button asChild className="bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark">
                     <Link to="/palmistry">
                       <Hand className="w-4 h-4 mr-2" />Open Palmistry
                     </Link>
@@ -325,7 +325,7 @@ export default function NumerologyTarot() {
             <div className="text-center py-12">
               <Hand className="w-12 h-12 text-cosmic-text-muted mx-auto mb-3" />
               <p className="text-cosmic-text-secondary mb-4">Click to load the palmistry guide</p>
-              <Button onClick={loadPalmistry} className="bg-sacred-gold text-white hover:bg-sacred-gold-dark">
+              <Button onClick={loadPalmistry} className="bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark">
                 <Hand className="w-4 h-4 mr-2" />Load Guide
               </Button>
             </div>

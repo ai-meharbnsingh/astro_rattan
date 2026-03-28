@@ -142,7 +142,7 @@ export default function CartCheckout() {
       <div className="flex items-center justify-center gap-2 mb-10">
         {(['cart', 'shipping', 'payment', 'confirmation'] as Step[]).map((s, idx) => (
           <div key={s} className="flex items-center gap-2">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${step === s || idx < ['cart', 'shipping', 'payment', 'confirmation'].indexOf(step) ? 'bg-sacred-gold text-white' : 'bg-cosmic-surface text-cosmic-text-muted'}`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${step === s || idx < ['cart', 'shipping', 'payment', 'confirmation'].indexOf(step) ? 'bg-sacred-gold text-[#1a1a2e]' : 'bg-cosmic-surface text-cosmic-text-muted'}`}>
               {idx + 1}
             </div>
             <span className="hidden sm:inline text-sm text-cosmic-text-secondary capitalize">{s}</span>
@@ -202,7 +202,7 @@ export default function CartCheckout() {
                   <div className="text-sm text-cosmic-text-secondary">Subtotal: {formatPrice(subtotal)}</div>
                   <div className="text-sm text-cosmic-text-secondary">Shipping: {shipping === 0 ? 'Free' : formatPrice(shipping)}</div>
                   <div className="text-lg font-bold text-cosmic-text">Total: {formatPrice(total)}</div>
-                  <Button onClick={() => setStep('shipping')} className="bg-sacred-gold text-white hover:bg-sacred-gold-dark mt-2">
+                  <Button onClick={() => setStep('shipping')} className="bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark mt-2">
                     <Truck className="w-4 h-4 mr-2" />Proceed to Shipping
                   </Button>
                 </div>
@@ -234,7 +234,7 @@ export default function CartCheckout() {
             </div>
             <div className="flex gap-3 mt-6">
               <Button variant="outline" onClick={() => setStep('cart')}>Back</Button>
-              <Button onClick={() => setStep('payment')} disabled={!address.name || !address.line1 || !address.city || !address.pincode || !address.phone} className="flex-1 bg-sacred-gold text-white hover:bg-sacred-gold-dark">
+              <Button onClick={() => setStep('payment')} disabled={!address.name || !address.line1 || !address.city || !address.pincode || !address.phone} className="flex-1 bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark">
                 <CreditCard className="w-4 h-4 mr-2" />Continue to Payment
               </Button>
             </div>
@@ -272,7 +272,7 @@ export default function CartCheckout() {
             </div>
             <div className="flex gap-3 mt-6">
               <Button variant="outline" onClick={() => setStep('shipping')}>Back</Button>
-              <Button onClick={placeOrder} disabled={placing} className="flex-1 bg-sacred-gold text-white hover:bg-sacred-gold-dark">
+              <Button onClick={placeOrder} disabled={placing} className="flex-1 bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark">
                 {placing ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Placing Order...</> : 'Place Order'}
               </Button>
             </div>

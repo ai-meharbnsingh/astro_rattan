@@ -30,7 +30,7 @@ const PLANET_COLORS: Record<string, string> = {
   Moon: '#E8E8E8',
   Mars: '#DC143C',
   Mercury: '#32CD32',
-  Jupiter: '#FFD700',
+  Jupiter: '#B8860B',
   Venus: '#FF69B4',
   Saturn: '#8B8682',
   Rahu: '#4B0082',
@@ -173,7 +173,7 @@ export default function PlanetaryTransitsPage() {
                         <div className="flex items-center gap-2">
                           <span
                             className="w-2.5 h-2.5 rounded-full"
-                            style={{ backgroundColor: PLANET_COLORS[p.name] || '#D4AF37' }}
+                            style={{ backgroundColor: PLANET_COLORS[p.name] || '#9A7B0A' }}
                           />
                           <span className="text-cosmic-text font-medium text-sm">{p.name}</span>
                         </div>
@@ -213,7 +213,7 @@ export default function PlanetaryTransitsPage() {
             <div className="flex items-center gap-3 mb-3">
               <span
                 className="w-4 h-4 rounded-full"
-                style={{ backgroundColor: PLANET_COLORS[selectedPlanet] || '#D4AF37' }}
+                style={{ backgroundColor: PLANET_COLORS[selectedPlanet] || '#9A7B0A' }}
               />
               <h3 className="font-display font-bold text-sacred-gold text-lg">
                 {selectedPlanet} Transit Effect
@@ -290,7 +290,7 @@ export default function PlanetaryTransitsPage() {
                       <div className="flex items-center gap-2">
                         <span
                           className="w-2.5 h-2.5 rounded-full"
-                          style={{ backgroundColor: PLANET_COLORS[event.planet] || '#D4AF37' }}
+                          style={{ backgroundColor: PLANET_COLORS[event.planet] || '#9A7B0A' }}
                         />
                         <span className="text-cosmic-text font-medium text-sm">{event.planet}</span>
                       </div>

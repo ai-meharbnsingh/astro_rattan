@@ -28,7 +28,7 @@ export default function About() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="about" className="relative py-24 bg-black overflow-hidden">
+    <section ref={sectionRef} id="about" className="relative py-24 bg-[#F5F0E8] overflow-hidden">
       {/* Observatory theme - pure black with gold accents */}
       <div className="absolute inset-0 z-0 bg-gradient-to-b from-black via-transparent to-black pointer-events-none" />
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -50,11 +50,11 @@ export default function About() {
           </div>
           <div className="about-image relative">
             <div className="relative aspect-square max-w-lg mx-auto">
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-[#d4af37]/10 to-transparent border border-[#d4af37]/20" />
+              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-[#9A7B0A]/10 to-transparent border border-[#9A7B0A]/20" />
               <div className="absolute inset-8 rounded-2xl card-sacred flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 z-0 opacity-30 pointer-events-none">
                   <Canvas camera={{ position: [0, 0, 4], fov: 50 }} gl={{ alpha: true }}>
-                    <FloatingPlanet color="#ffd700" size={0.6} position={[0, 0, 0]} hasRing rotationSpeed={0.25} />
+                    <FloatingPlanet color="#B8860B" size={0.6} position={[0, 0, 0]} hasRing rotationSpeed={0.25} />
                   </Canvas>
                 </div>
               </div>

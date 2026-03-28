@@ -32,15 +32,15 @@ export default function Features() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="features" className="relative py-24 bg-black">
+    <section ref={sectionRef} id="features" className="relative py-24 bg-[#F5F0E8]">
       {/* Gold gradient line at top */}
-      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#d4af37]/50 to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#9A7B0A]/50 to-transparent" />
       
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="features-title text-center mb-16">
           <p className="text-[#ffaa33] text-sm tracking-[4px] uppercase mb-4 font-['Cinzel']">The Celestial Houses</p>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-['Cinzel_Decorative'] text-white mb-4">
-            Cosmic <span className="text-[#ffd700]">Services</span>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-['Cinzel_Decorative'] text-[#1a1a2e] mb-4">
+            Cosmic <span className="text-[#B8860B]">Services</span>
           </h2>
         </div>
         
@@ -50,17 +50,17 @@ export default function Features() {
             return (
               <Card 
                 key={index} 
-                className="feature-card group relative bg-black border border-[#d4af37]/20 hover:border-[#d4af37]/50 transition-all duration-300 hover:-translate-y-1 cursor-pointer" 
+                className="feature-card group relative bg-[#F5F0E8] border border-[#9A7B0A]/20 hover:border-[#9A7B0A]/50 transition-all duration-300 hover:-translate-y-1 cursor-pointer" 
                 onClick={() => navigate(feature.route)}
               >
                 <CardContent className="relative p-6 text-center">
-                  <div className="w-16 h-16 flex items-center justify-center mb-4 mx-auto bg-[#d4af37]/10 border border-[#d4af37]/20 group-hover:scale-110 transition-transform">
-                    <Icon className="w-8 h-8 text-[#ffd700]" />
+                  <div className="w-16 h-16 flex items-center justify-center mb-4 mx-auto bg-[#9A7B0A]/10 border border-[#9A7B0A]/20 group-hover:scale-110 transition-transform">
+                    <Icon className="w-8 h-8 text-[#B8860B]" />
                   </div>
-                  <h3 className="text-xl font-['Cinzel'] font-semibold text-white mb-2 uppercase tracking-wide">
+                  <h3 className="text-xl font-['Cinzel'] font-semibold text-[#1a1a2e] mb-2 uppercase tracking-wide">
                     {t(feature.titleKey)}
                   </h3>
-                  <p className="text-sm text-white/60">{t(feature.descKey)}</p>
+                  <p className="text-sm text-[#1a1a2e]/60">{t(feature.descKey)}</p>
                 </CardContent>
               </Card>
             );
@@ -70,7 +70,7 @@ export default function Features() {
         <div className="features-title mt-16 text-center">
           <Button 
             onClick={() => navigate('/ai-chat')} 
-            className="bg-transparent border border-[#d4af37] text-[#d4af37] hover:bg-[#d4af37] hover:text-black transition-all px-8 py-6 text-base font-['Cinzel'] tracking-wider"
+            className="bg-transparent border border-[#9A7B0A] text-[#9A7B0A] hover:bg-[#9A7B0A] hover:text-black transition-all px-8 py-6 text-base font-['Cinzel'] tracking-wider"
           >
             <Brain className="w-5 h-5 mr-2" />
             {t('features.chatWithAI')}
@@ -80,7 +80,7 @@ export default function Features() {
       </div>
       
       {/* Gold gradient line at bottom */}
-      <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#d4af37]/30 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#9A7B0A]/30 to-transparent" />
     </section>
   );
 }

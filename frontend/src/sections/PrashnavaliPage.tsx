@@ -66,10 +66,10 @@ export default function PrashnavaliPage() {
 
       <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v); clearResult(); }}>
         <TabsList className="grid grid-cols-4 bg-cosmic-surface mb-8 max-w-lg mx-auto">
-          <TabsTrigger value="ram-shalaka" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white text-xs sm:text-sm">Ram Shalaka</TabsTrigger>
-          <TabsTrigger value="hanuman" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white text-xs sm:text-sm">Hanuman</TabsTrigger>
-          <TabsTrigger value="gita" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white text-xs sm:text-sm">Gita</TabsTrigger>
-          <TabsTrigger value="ramcharitmanas" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-white text-xs sm:text-sm">Ramcharitmanas</TabsTrigger>
+          <TabsTrigger value="ram-shalaka" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e] text-xs sm:text-sm">Ram Shalaka</TabsTrigger>
+          <TabsTrigger value="hanuman" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e] text-xs sm:text-sm">Hanuman</TabsTrigger>
+          <TabsTrigger value="gita" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e] text-xs sm:text-sm">Gita</TabsTrigger>
+          <TabsTrigger value="ramcharitmanas" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e] text-xs sm:text-sm">Ramcharitmanas</TabsTrigger>
         </TabsList>
 
         {/* Ram Shalaka - clickable grid */}
@@ -115,7 +115,7 @@ export default function PrashnavaliPage() {
                   placeholder="Type your question..."
                   className="flex-1 bg-cosmic-card border-sacred-gold/15"
                 />
-                <Button onClick={() => handleOracle('/api/prashnavali/hanuman')} disabled={loading || !question.trim()} className="bg-sacred-gold text-white hover:bg-sacred-gold-dark">
+                <Button onClick={() => handleOracle('/api/prashnavali/hanuman')} disabled={loading || !question.trim()} className="bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark">
                   {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
                 </Button>
               </div>
@@ -137,7 +137,7 @@ export default function PrashnavaliPage() {
                   placeholder="Type your question..."
                   className="flex-1 bg-cosmic-card border-sacred-gold/15"
                 />
-                <Button onClick={() => handleOracle('/api/prashnavali/gita')} disabled={loading || !question.trim()} className="bg-sacred-gold text-white hover:bg-sacred-gold-dark">
+                <Button onClick={() => handleOracle('/api/prashnavali/gita')} disabled={loading || !question.trim()} className="bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark">
                   {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
                 </Button>
               </div>
@@ -159,7 +159,7 @@ export default function PrashnavaliPage() {
                   placeholder="Type your question..."
                   className="flex-1 bg-cosmic-card border-sacred-gold/15"
                 />
-                <Button onClick={() => handleOracle('/api/prashnavali/ramcharitmanas')} disabled={loading || !question.trim()} className="bg-sacred-gold text-white hover:bg-sacred-gold-dark">
+                <Button onClick={() => handleOracle('/api/prashnavali/ramcharitmanas')} disabled={loading || !question.trim()} className="bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark">
                   {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
                 </Button>
               </div>

@@ -85,7 +85,7 @@ function App() {
   return (
     <AuthProvider>
     <I18nProvider>
-    <div className="min-h-screen bg-[#000000] text-white overflow-x-hidden">
+    <div className="min-h-screen bg-[#F5F0E8] text-[#1a1a2e] overflow-x-hidden">
       <Suspense fallback={null}>
           <CosmicBackground />
         </Suspense>

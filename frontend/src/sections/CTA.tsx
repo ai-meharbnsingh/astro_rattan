@@ -19,28 +19,28 @@ export default function CTA() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-black">
+    <section ref={sectionRef} className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-[#F5F0E8]">
       {/* Gold gradient lines */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#d4af37]/30 to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#9A7B0A]/30 to-transparent" />
       
       {/* Subtle glow effects */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#d4af37]/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#d4af37]/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#9A7B0A]/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#9A7B0A]/5 rounded-full blur-3xl" />
       </div>
       
       <div className="relative z-10 cta-content max-w-4xl mx-auto px-4 text-center">
         <div className="flex justify-center gap-2 mb-6">
           {[...Array(5)].map((_, i) => (
-            <Star key={i} className="w-6 h-6 text-[#d4af37]" fill="currentColor" />
+            <Star key={i} className="w-6 h-6 text-[#9A7B0A]" fill="currentColor" />
           ))}
         </div>
         
-        <h2 className="text-4xl sm:text-5xl lg:text-6xl font-['Cinzel_Decorative'] text-white mb-6">
-          Ready to Meet Your <span className="text-[#ffd700]">Future?</span>
+        <h2 className="text-4xl sm:text-5xl lg:text-6xl font-['Cinzel_Decorative'] text-[#1a1a2e] mb-6">
+          Ready to Meet Your <span className="text-[#B8860B]">Future?</span>
         </h2>
         
-        <p className="text-lg text-white/70 max-w-2xl mx-auto mb-10">
+        <p className="text-lg text-[#1a1a2e]/70 max-w-2xl mx-auto mb-10">
           Unlock the secrets of your destiny with AI-powered Vedic astrology.
         </p>
         
@@ -58,17 +58,17 @@ export default function CTA() {
           <Button 
             variant="outline" 
             size="lg" 
-            className="border-[#d4af37]/50 text-white text-lg px-8 py-6 hover:bg-[#d4af37]/10 hover:border-[#d4af37] bg-transparent font-['Cinzel']"
+            className="border-[#9A7B0A]/50 text-[#1a1a2e] text-lg px-8 py-6 hover:bg-[#9A7B0A]/10 hover:border-[#9A7B0A] bg-transparent font-['Cinzel']"
           >
             <Phone className="w-5 h-5 mr-2" />
             Talk to Expert
           </Button>
         </div>
         
-        <div className="flex flex-wrap justify-center gap-6 text-sm text-white/60">
+        <div className="flex flex-wrap justify-center gap-6 text-sm text-[#1a1a2e]/60">
           {['Free Kundli', '24/7 Support', '100% Accurate', 'Expert Astrologers'].map((item, i) => (
             <div key={i} className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-[#d4af37]" />
+              <div className="w-2 h-2 bg-[#9A7B0A]" />
               <span>{item}</span>
             </div>
           ))}
@@ -76,7 +76,7 @@ export default function CTA() {
       </div>
       
       {/* Bottom gold line */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#d4af37]/30 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#9A7B0A]/30 to-transparent" />
     </section>
   );
 }

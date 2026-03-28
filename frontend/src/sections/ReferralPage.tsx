@@ -177,7 +177,7 @@ export default function ReferralPage() {
                 </div>
                 <Button
                   onClick={copyCode}
-                  className="bg-sacred-gold text-white hover:bg-sacred-gold-dark shrink-0"
+                  className="bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark shrink-0"
                 >
                   {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
                 </Button>
@@ -209,7 +209,7 @@ export default function ReferralPage() {
               <Button
                 onClick={generateCode}
                 disabled={generating}
-                className="bg-sacred-gold text-white hover:bg-sacred-gold-dark"
+                className="bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark"
               >
                 {generating ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
                 {generating ? 'Generating...' : 'Generate My Code'}
@@ -330,7 +330,7 @@ export default function ReferralPage() {
             <Button
               onClick={validateAndApply}
               disabled={validating || !applyCode.trim()}
-              className="bg-sacred-gold text-white hover:bg-sacred-gold-dark shrink-0"
+              className="bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark shrink-0"
             >
               {validating ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
               {validating ? 'Validating...' : 'Validate & Apply'}

@@ -38,28 +38,28 @@ const footerLinks = {
 
 export default function Footer() {
   return (
-    <footer className="relative bg-black overflow-hidden border-t border-[#d4af37]/20">
+    <footer className="relative bg-[#F5F0E8] overflow-hidden border-t border-[#9A7B0A]/20">
       {/* Top gold line */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#d4af37]/50 to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#9A7B0A]/50 to-transparent" />
       
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="py-16 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
           <div className="col-span-2 md:col-span-3 lg:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-6">
-              <div className="w-12 h-12 bg-[#d4af37] flex items-center justify-center">
+              <div className="w-12 h-12 bg-[#9A7B0A] flex items-center justify-center">
                 <Stars className="w-7 h-7 text-black" />
               </div>
-              <span className="font-['Cinzel'] font-bold text-2xl text-white">Astro Rattan</span>
+              <span className="font-['Cinzel'] font-bold text-2xl text-[#1a1a2e]">Astro Rattan</span>
             </Link>
-            <p className="text-white/60 mb-6 max-w-sm">
+            <p className="text-[#1a1a2e]/60 mb-6 max-w-sm">
               Bridging ancient Vedic wisdom with modern AI technology to guide you through life&apos;s journey.
             </p>
             <div className="space-y-3 mb-6">
-              <a href="mailto:support@astrovedic.com" className="flex items-center gap-3 text-white/60 hover:text-[#ffd700] transition-colors">
+              <a href="mailto:support@astrovedic.com" className="flex items-center gap-3 text-[#1a1a2e]/60 hover:text-[#B8860B] transition-colors">
                 <Mail className="w-5 h-5" />
                 <span className="text-sm">support@astrovedic.com</span>
               </a>
-              <a href="tel:+919876543210" className="flex items-center gap-3 text-white/60 hover:text-[#ffd700] transition-colors">
+              <a href="tel:+919876543210" className="flex items-center gap-3 text-[#1a1a2e]/60 hover:text-[#B8860B] transition-colors">
                 <Phone className="w-5 h-5" />
                 <span className="text-sm">+91 98765 43210</span>
               </a>
@@ -69,7 +69,7 @@ export default function Footer() {
                 <a 
                   key={i} 
                   href="#" 
-                  className="w-10 h-10 bg-[#d4af37]/10 border border-[#d4af37]/20 flex items-center justify-center text-white/60 hover:text-[#ffd700] hover:border-[#d4af37]/40 transition-all"
+                  className="w-10 h-10 bg-[#9A7B0A]/10 border border-[#9A7B0A]/20 flex items-center justify-center text-[#1a1a2e]/60 hover:text-[#B8860B] hover:border-[#9A7B0A]/40 transition-all"
                 >
                   <Icon className="w-5 h-5" />
                 </a>
@@ -79,13 +79,13 @@ export default function Footer() {
           
           {Object.entries(footerLinks).map(([title, links]) => (
             <div key={title}>
-              <h4 className="font-['Cinzel'] font-semibold text-[#d4af37] mb-4 capitalize">{title}</h4>
+              <h4 className="font-['Cinzel'] font-semibold text-[#9A7B0A] mb-4 capitalize">{title}</h4>
               <ul className="space-y-2">
                 {links.map((link, i) => (
                   <li key={i}>
                     <Link 
                       to={link.href} 
-                      className="text-sm text-white/60 hover:text-[#ffd700] transition-colors flex items-center gap-1"
+                      className="text-sm text-[#1a1a2e]/60 hover:text-[#B8860B] transition-colors flex items-center gap-1"
                     >
                       <ChevronRight className="w-3 h-3" />
                       {link.label}
@@ -97,8 +97,8 @@ export default function Footer() {
           ))}
         </div>
         
-        <div className="py-6 border-t border-[#d4af37]/10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-white/40">
+        <div className="py-6 border-t border-[#9A7B0A]/10 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-[#1a1a2e]/40">
             &copy; {new Date().getFullYear()} Astro Rattan. Made with <Heart className="w-4 h-4 inline text-[#ffaa33]" /> in India
           </p>
           <div className="flex gap-6">
@@ -106,7 +106,7 @@ export default function Footer() {
               <a 
                 key={i} 
                 href="#" 
-                className="text-sm text-white/40 hover:text-[#ffd700] transition-colors"
+                className="text-sm text-[#1a1a2e]/40 hover:text-[#B8860B] transition-colors"
               >
                 {item}
               </a>

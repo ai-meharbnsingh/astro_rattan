@@ -64,7 +64,7 @@ const PLANET_ASPECTS: Record<string, number[]> = {
 };
 
 function getPlanetColor(planet: string): string {
-  if (BENEFIC_PLANETS.includes(planet)) return '#D4AF37'; // gold
+  if (BENEFIC_PLANETS.includes(planet)) return '#9A7B0A'; // gold
   if (MALEFIC_PLANETS.includes(planet)) return '#9B59B6'; // purple
   return '#C0C0C0'; // silver
 }
@@ -211,8 +211,8 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
       >
         <defs>
           <linearGradient id="kundli-border-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#D4AF37" />
-            <stop offset="50%" stopColor="#FFD700" />
+            <stop offset="0%" stopColor="#9A7B0A" />
+            <stop offset="50%" stopColor="#B8860B" />
             <stop offset="100%" stopColor="#B8860B" />
           </linearGradient>
           <filter id="glow">
@@ -260,7 +260,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           x={svgWidth / 2}
           y={svgHeight / 2 - 6}
           textAnchor="middle"
-          fill="#D4AF37"
+          fill="#9A7B0A"
           fontSize={11}
           fontFamily="serif"
           opacity={0.6}
@@ -271,7 +271,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           x={svgWidth / 2}
           y={svgHeight / 2 + 10}
           textAnchor="middle"
-          fill="#D4AF37"
+          fill="#9A7B0A"
           fontSize={9}
           fontFamily="serif"
           opacity={0.4}
@@ -306,7 +306,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                 width={CELL_SIZE - 2}
                 height={CELL_SIZE - 2}
                 fill={isHovered ? 'rgba(212,175,55,0.12)' : 'rgba(15,10,30,0.6)'}
-                stroke={isHovered ? '#D4AF37' : 'rgba(212,175,55,0.2)'}
+                stroke={isHovered ? '#9A7B0A' : 'rgba(212,175,55,0.2)'}
                 strokeWidth={isHovered ? 1.5 : 0.5}
                 rx={2}
                 style={{ transition: 'all 0.2s ease' }}

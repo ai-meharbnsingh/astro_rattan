@@ -19,7 +19,7 @@ function StarField() {
 
     const palette = [
       new THREE.Color('#ffffff'),
-      new THREE.Color('#D4AF37'),
+      new THREE.Color('#9A7B0A'),
       new THREE.Color('#aac8ff'),
     ];
 
@@ -179,7 +179,7 @@ function CosmicDust() {
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        color="#D4AF37"
+        color="#9A7B0A"
         size={0.008}
         sizeAttenuation
         transparent
@@ -264,12 +264,12 @@ function ShootingStar() {
     <>
       <mesh ref={meshRef} visible={false}>
         <sphereGeometry args={[0.04, 8, 8]} />
-        <meshBasicMaterial color="#D4AF37" transparent opacity={0.9} />
+        <meshBasicMaterial color="#9A7B0A" transparent opacity={0.9} />
       </mesh>
       <mesh ref={trailRef} visible={false}>
         <cylinderGeometry args={[0.01, 0.03, 1.5, 6]} />
         <meshBasicMaterial
-          color="#D4AF37"
+          color="#9A7B0A"
           transparent
           opacity={0.5}
           depthWrite={false}
