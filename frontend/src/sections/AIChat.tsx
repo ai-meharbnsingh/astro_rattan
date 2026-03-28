@@ -99,8 +99,15 @@ export default function AIChat() {
     setIsTyping(false);
   };
 
+  // Hide WhatsApp widget on AI chat page
+  useEffect(() => {
+    const widgets = document.querySelectorAll('.ai-chat-hide');
+    widgets.forEach(w => (w as HTMLElement).style.display = 'none');
+    return () => { widgets.forEach(w => (w as HTMLElement).style.display = ''); };
+  }, []);
+
   return (
-    <div className="fixed inset-0 pt-16 pb-0 px-4 flex flex-col z-30 bg-cosmic-bg">
+    <div className="fixed inset-0 pt-16 pb-0 px-2 sm:px-4 flex flex-col z-30 bg-cosmic-bg">
       <div className="flex flex-col flex-1 min-h-0 max-w-4xl mx-auto w-full card-sacred rounded-t-2xl overflow-hidden border border-sacred-gold/20 border-b-0">
         <div className="flex items-center gap-3 p-4 border-b border-sacred-gold/15">
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center shadow-glow-gold">
@@ -168,15 +175,15 @@ export default function AIChat() {
             </div>
           </div>
         )}
-        <div className="p-4 border-t border-sacred-gold/15">
+        <div className="p-3 sm:p-4 border-t border-sacred-gold/15 pb-safe">
           {!isAuthenticated && aiProvider === 'backend' && (
-            <div className="mb-3 text-xs text-cosmic-text-muted">
-              Backend AI chat requires <Link to="/login" className="text-sacred-gold hover:underline">sign in</Link>. Switch to Free AI or ask about Gita without login.
+            <div className="mb-2 text-xs text-cosmic-text-muted">
+              Backend AI requires <Link to="/login" className="text-sacred-gold hover:underline">sign in</Link>. Switch to Free AI or ask about Gita.
             </div>
           )}
-          <div className="flex gap-3">
-            <Input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSend()} placeholder="Ask anything about astrology..." className="flex-1 input-sacred" />
-            <Button onClick={() => handleSend()} disabled={!input.trim() || isTyping} className="btn-sacred disabled:opacity-50">
+          <div className="flex gap-2">
+            <Input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && !isTyping && handleSend()} placeholder="Ask about astrology..." className="flex-1 input-sacred text-base" style={{ fontSize: '16px' }} />
+            <Button onClick={() => handleSend()} disabled={!input.trim() || isTyping} className="btn-sacred disabled:opacity-50 shrink-0 w-12 h-12 p-0 flex items-center justify-center rounded-xl" style={{ backgroundColor: input.trim() && !isTyping ? '#B8860B' : undefined, color: input.trim() && !isTyping ? '#F5F0E8' : undefined }}>
               <Send className="w-5 h-5" />
             </Button>
           </div>

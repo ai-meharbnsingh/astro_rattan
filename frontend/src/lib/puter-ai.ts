@@ -64,16 +64,25 @@ export async function puterChatStream(
   if (systemPrompt) messages.push({ role: 'system', content: systemPrompt });
   messages.push({ role: 'user', content: prompt });
 
-  const resp = await window.puter!.ai.chat(messages, {
-    model: 'gpt-4o',
-    stream: true,
-  });
+  try {
+    const resp = await window.puter!.ai.chat(messages, {
+      model: 'claude-3-5-sonnet',
+      stream: true,
+    });
 
-  let full = '';
-  for await (const part of resp) {
-    const text = part?.text || '';
-    full += text;
-    onChunk?.(full);
+    let full = '';
+    for await (const part of resp) {
+      const text = part?.text || '';
+      full += text;
+      onChunk?.(full);
+    }
+    return full;
+  } catch (streamErr) {
+    // Fallback: try non-streaming if stream fails
+    console.warn('Puter stream failed, trying non-streaming:', streamErr);
+    const response = await window.puter!.ai.chat(messages, { model: 'claude-3-5-sonnet' });
+    const text = response?.message?.content || response?.text || '';
+    onChunk?.(text);
+    return text;
   }
-  return full;
 }

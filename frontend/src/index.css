@@ -326,6 +326,11 @@
   pointer-events: none;
 }
 
+/* Mobile safe area padding */
+.pb-safe {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0.75rem));
+}
+
 /* Scrollbar — parchment track, gold thumb */
 ::-webkit-scrollbar {
   width: 8px;
