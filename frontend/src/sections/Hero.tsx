@@ -73,7 +73,7 @@ export default function Hero() {
       {/* Vignette */}
       <div className="absolute inset-0 z-[2] pointer-events-none"
         style={{ 
-          background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.6) 100%)' 
+          background: 'radial-gradient(ellipse at center, transparent 30%, rgba(139,69,19,0.06) 100%)' 
         }} 
       />
       

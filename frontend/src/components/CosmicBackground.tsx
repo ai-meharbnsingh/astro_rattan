@@ -166,7 +166,7 @@ export default function CosmicBackground() {
       <div 
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.9) 100%)'
+          background: 'radial-gradient(ellipse at center, transparent 0%, rgba(139,69,19,0.03) 60%, rgba(139,69,19,0.08) 100%)'
         }}
       />
 
