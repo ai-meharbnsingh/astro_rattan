@@ -36,13 +36,35 @@ NAKSHATRAS = [
 
 NAKSHATRA_SPAN = 360.0 / 27.0  # 13.3333... degrees
 
-# Yoni (animal nature) by nakshatra index
+# Yoni (animal nature) by nakshatra index — standard Vedic reference
 YONI_BY_NAKSHATRA = [
-    "Horse", "Elephant", "Sheep", "Snake", "Dog", "Cat",
-    "Rat", "Sheep", "Cat", "Rat", "Rat", "Cow",
-    "Buffalo", "Tiger", "Buffalo", "Tiger", "Deer", "Deer",
-    "Dog", "Monkey", "Mongoose", "Monkey", "Lion", "Horse",
-    "Lion", "Cow", "Elephant",
+    "Horse (Ashwa)",      # 0  Ashwini
+    "Elephant (Gaja)",    # 1  Bharani
+    "Sheep (Mesha)",      # 2  Krittika
+    "Serpent (Sarpa)",    # 3  Rohini
+    "Serpent (Sarpa)",    # 4  Mrigashira
+    "Dog (Shwan)",        # 5  Ardra
+    "Cat (Marjar)",       # 6  Punarvasu
+    "Sheep (Mesha)",      # 7  Pushya
+    "Cat (Marjar)",       # 8  Ashlesha
+    "Rat (Mushak)",       # 9  Magha
+    "Rat (Mushak)",       # 10 Purva Phalguni
+    "Cow (Gau)",          # 11 Uttara Phalguni
+    "Buffalo (Mahish)",   # 12 Hasta
+    "Tiger (Vyaghra)",    # 13 Chitra
+    "Buffalo (Mahish)",   # 14 Swati
+    "Tiger (Vyaghra)",    # 15 Vishakha
+    "Deer (Mrig)",        # 16 Anuradha
+    "Deer (Mrig)",        # 17 Jyeshtha
+    "Dog (Shwan)",        # 18 Mula
+    "Monkey (Vanar)",     # 19 Purva Ashadha
+    "Mongoose (Nakul)",   # 20 Uttara Ashadha
+    "Monkey (Vanar)",     # 21 Shravana
+    "Lion (Simha)",       # 22 Dhanishta
+    "Horse (Ashwa)",      # 23 Shatabhisha
+    "Lion (Simha)",       # 24 Purva Bhadrapada
+    "Cow (Gau)",          # 25 Uttara Bhadrapada
+    "Elephant (Gaja)",    # 26 Revati
 ]
 
 # Gana by nakshatra index
@@ -77,11 +99,11 @@ YOGA_NAMES = [
     "Indra", "Vaidhriti",
 ]
 
-# 11 Karanas
-KARANA_NAMES = [
-    "Bava", "Balava", "Kaulava", "Taitila", "Garija",
-    "Vanija", "Vishti", "Shakuni", "Chatushpada", "Nagava", "Kimstughna",
+# 11 Karanas — 7 moveable (Chara) + 4 fixed (Sthira)
+MOVEABLE_KARANAS = [
+    "Bava", "Balava", "Kaulava", "Taitila", "Garaja", "Vanija", "Vishti",
 ]
+FIXED_KARANAS = ["Shakuni", "Chatushpada", "Nagava", "Kimstughna"]
 
 # Naamakshar (representative first syllable per nakshatra)
 NAAMAKSHAR_BY_NAKSHATRA = [
@@ -90,7 +112,7 @@ NAAMAKSHAR_BY_NAKSHATRA = [
     ["A", "I", "U", "E"],             # Krittika
     ["O", "Va", "Vi", "Vu"],          # Rohini
     ["Ve", "Vo", "Ka", "Ki"],         # Mrigashira
-    ["Ku", "Gha", "Ng", "Na"],        # Ardra
+    ["Ku", "Gha", "Ng", "Chha"],      # Ardra
     ["Ke", "Ko", "Ha", "Hi"],         # Punarvasu
     ["Hu", "He", "Ho", "Da"],         # Pushya
     ["Di", "Du", "De", "Do"],         # Ashlesha
@@ -106,7 +128,7 @@ NAAMAKSHAR_BY_NAKSHATRA = [
     ["Ye", "Yo", "Bha", "Bhi"],       # Mula
     ["Bhu", "Dha", "Pha", "Dha"],     # Purva Ashadha
     ["Bhe", "Bho", "Ja", "Ji"],       # Uttara Ashadha
-    ["Ju", "Je", "Jo", "Gha"],        # Shravana
+    ["Ju/Khi", "Je/Khu", "Jo/Khe", "Gha/Kho"],  # Shravana
     ["Ga", "Gi", "Gu", "Ge"],         # Dhanishta
     ["Go", "Sa", "Si", "Su"],         # Shatabhisha
     ["Se", "So", "Da", "Di"],         # Purva Bhadrapada
@@ -213,10 +235,16 @@ def calculate_avakhada(chart_data: dict) -> dict:
     yoga_index = int((sun_longitude + moon_longitude) / NAKSHATRA_SPAN) % 27
     yoga_name = YOGA_NAMES[yoga_index]
 
-    # Karana: index = floor((moon_long - sun_long) / 6) % 11
+    # Karana: each karana = 6 degrees of Moon-Sun elongation, 60 karanas per cycle
+    # Index 0 = Kimstughna, indices 1-56 = 7 moveable karanas cycling, 57-59 = fixed
     diff = (moon_longitude - sun_longitude) % 360.0
-    karana_index = int(diff / 6.0) % 11
-    karana_name = KARANA_NAMES[karana_index]
+    karana_index = int(diff / 6.0) % 60
+    if karana_index == 0:
+        karana_name = "Kimstughna"
+    elif karana_index <= 56:
+        karana_name = MOVEABLE_KARANAS[(karana_index - 1) % 7]
+    else:
+        karana_name = FIXED_KARANAS[karana_index - 57]
 
     # Yoni
     yoni = YONI_BY_NAKSHATRA[nakshatra_idx] if 0 <= nakshatra_idx < 27 else "Unknown"
