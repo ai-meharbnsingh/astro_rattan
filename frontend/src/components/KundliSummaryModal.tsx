@@ -46,6 +46,22 @@ const sampleDasha: DashaPeriod[] = [
   { planet: 'Rahu', startDate: '04-04-2043', endDate: '04-04-2061', years: 18 },
 ];
 
+// Only PRESENT Yogas (not showing absent ones)
+const presentYogas = [
+  { name: 'Gajakesari Yoga', planets: 'Moon-Jupiter', effect: 'Wealth & Wisdom', strength: 'Strong' },
+  { name: 'Budha-Aditya Yoga', planets: 'Sun-Mercury', effect: 'Intelligence', strength: 'Medium' },
+  { name: 'Viparita Raja Yoga', planets: '6th-8th-12th lords', effect: 'Success through obstacles', strength: 'Strong' },
+];
+
+// Only PRESENT Doshas (not showing absent ones)
+const presentDoshas = [
+  { name: 'Manglik Dosha', planet: 'Mars', effect: 'Delay in marriage', remedy: 'Hanuman puja', severity: 'Medium' },
+];
+
+// Empty arrays would mean no yogas/doshas present
+// const presentYogas: any[] = []; // Example: No yogas
+// const presentDoshas: any[] = []; // Example: No doshas
+
 interface KundliSummaryModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -337,7 +353,7 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
               </div>
 
               {/* Quick Stats */}
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2 mb-4">
                 <div className="bg-[#111] rounded-lg border border-[#d4af37]/10 p-2 text-center">
                   <p className="text-xs text-white/50">Gana</p>
                   <p className="text-sm font-semibold text-white">Manushya</p>
@@ -355,6 +371,62 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
                   <p className="text-sm font-semibold text-white">Kshatriya</p>
                 </div>
               </div>
+
+              {/* PRESENT Yogas Only - Not showing absent ones */}
+              {presentYogas.length > 0 && (
+                <div className="bg-[#111] rounded-xl border border-green-500/20 p-3 mb-4">
+                  <h3 className="text-sm font-semibold text-green-400 mb-2 flex items-center gap-2" style={{ fontFamily: 'Cinzel, serif' }}>
+                    <span>✦</span> Present Yogas ({presentYogas.length})
+                  </h3>
+                  <div className="space-y-2">
+                    {presentYogas.map((yoga, idx) => (
+                      <div key={idx} className="p-2 rounded bg-green-500/5 border border-green-500/10 text-xs">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-semibold text-white">{yoga.name}</span>
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] ${
+                            yoga.strength === 'Strong' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
+                          }`}>
+                            {yoga.strength}
+                          </span>
+                        </div>
+                        <p className="text-green-400/70">{yoga.planets} • {yoga.effect}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* PRESENT Doshas Only - Not showing absent ones */}
+              {presentDoshas.length > 0 && (
+                <div className="bg-[#111] rounded-xl border border-red-500/20 p-3">
+                  <h3 className="text-sm font-semibold text-red-400 mb-2 flex items-center gap-2" style={{ fontFamily: 'Cinzel, serif' }}>
+                    <span>⚠</span> Present Doshas ({presentDoshas.length})
+                  </h3>
+                  <div className="space-y-2">
+                    {presentDoshas.map((dosha, idx) => (
+                      <div key={idx} className="p-2 rounded bg-red-500/5 border border-red-500/10 text-xs">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-semibold text-white">{dosha.name}</span>
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] ${
+                            dosha.severity === 'High' ? 'bg-red-500/20 text-red-400' : 'bg-yellow-500/20 text-yellow-400'
+                          }`}>
+                            {dosha.severity}
+                          </span>
+                        </div>
+                        <p className="text-red-400/70 mb-1">{dosha.planet} • {dosha.effect}</p>
+                        <p className="text-[10px] text-white/50">💡 Remedy: {dosha.remedy}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* No Yogas/Doshas Message */}
+              {presentYogas.length === 0 && presentDoshas.length === 0 && (
+                <div className="bg-[#111] rounded-xl border border-[#d4af37]/10 p-3 text-center">
+                  <p className="text-xs text-white/50">No significant Yogas or Doshas detected</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
