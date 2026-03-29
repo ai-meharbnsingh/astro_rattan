@@ -551,6 +551,109 @@ def check_panch_mahapurusha(planets: dict) -> list:
     return results
 
 
+def check_sun_in_own_sign(planets: dict) -> dict:
+    """Check if Sun is in its own sign (Leo)."""
+    sun = planets.get("Sun", {})
+    if sun.get("sign") == "Leo":
+        return {
+            "name": "Surya in Swa Rashi (Sun in Own Sign)",
+            "present": True,
+            "description": f"Sun in its own sign Leo in house {sun.get('house')}. Grants authority, leadership qualities, government favors, and strong vitality. Native has commanding presence and administrative abilities.",
+            "planets_involved": ["Sun"],
+        }
+    return {
+        "name": "Surya in Swa Rashi (Sun in Own Sign)",
+        "present": False,
+        "description": "Sun is not in its own sign.",
+        "planets_involved": [],
+    }
+
+
+def check_saturn_exalted(planets: dict) -> dict:
+    """Check if Saturn is exalted (in Libra)."""
+    saturn = planets.get("Saturn", {})
+    if saturn.get("sign") == "Libra":
+        return {
+            "name": "Shani Uchcha (Saturn Exalted)",
+            "present": True,
+            "description": f"Saturn is exalted in Libra in house {saturn.get('house')}. Grants discipline, hard work, organizational abilities, and success through perseverance. Even without Shasha Yoga, this is a very favorable position for career and longevity.",
+            "planets_involved": ["Saturn"],
+        }
+    return {
+        "name": "Shani Uchcha (Saturn Exalted)",
+        "present": False,
+        "description": "Saturn is not exalted.",
+        "planets_involved": [],
+    }
+
+
+def check_neecha_bhanga(planets: dict) -> dict:
+    """
+    Check for Neecha Bhanga Raj Yoga - cancellation of debilitation.
+    If a planet is debilitated but its dispositor is in kendra from Moon or Lagna,
+    or the debilitated planet is conjunct with/aspected by its dispositor.
+    """
+    neecha_planets = []
+    debilitation_signs = {
+        "Sun": "Libra",
+        "Moon": "Scorpio",
+        "Mars": "Cancer",
+        "Mercury": "Pisces",
+        "Jupiter": "Capricorn",
+        "Venus": "Virgo",
+        "Saturn": "Aries",
+    }
+    
+    # Sign lords (dispositors)
+    sign_lords = {
+        "Aries": "Mars", "Taurus": "Venus", "Gemini": "Mercury",
+        "Cancer": "Moon", "Leo": "Sun", "Virgo": "Mercury",
+        "Libra": "Venus", "Scorpio": "Mars", "Sagittarius": "Jupiter",
+        "Capricorn": "Saturn", "Aquarius": "Saturn", "Pisces": "Jupiter",
+    }
+    
+    for planet_name, deb_sign in debilitation_signs.items():
+        p = planets.get(planet_name, {})
+        if p.get("sign") == deb_sign:
+            # Planet is debilitated, check for cancellation
+            deb_house = p.get("house", 0)
+            dispositor_sign = deb_sign
+            dispositor = sign_lords.get(dispositor_sign)
+            
+            if dispositor and dispositor in planets:
+                disp_house = planets[dispositor].get("house", 0)
+                moon_house = planets.get("Moon", {}).get("house", 0)
+                
+                # Check if dispositor is in kendra from debilitated planet or Moon
+                kendra_from_deb = ((deb_house - disp_house) % 12) in [0, 3, 6, 9]
+                kendra_from_moon = ((moon_house - disp_house) % 12) in [0, 3, 6, 9]
+                
+                if kendra_from_deb or kendra_from_moon:
+                    neecha_planets.append({
+                        "planet": planet_name,
+                        "sign": deb_sign,
+                        "house": deb_house,
+                        "dispositor": dispositor,
+                        "cancelled": True
+                    })
+    
+    if neecha_planets:
+        planet_names = [p["planet"] for p in neecha_planets]
+        return {
+            "name": "Neecha Bhanga Raj Yoga",
+            "present": True,
+            "description": f"Debilitation cancelled for: {', '.join(planet_names)}. The negative effects of debilitation are nullified, and the planet(s) can give excellent results like a king. Native overcomes early struggles and rises to prominence.",
+            "planets_involved": planet_names,
+        }
+    
+    return {
+        "name": "Neecha Bhanga Raj Yoga",
+        "present": False,
+        "description": "No debilitated planets with cancellation found.",
+        "planets_involved": [],
+    }
+
+
 def analyze_yogas_and_doshas(planets: dict) -> dict:
     """
     Comprehensive Yoga & Dosha analysis.
@@ -570,6 +673,9 @@ def analyze_yogas_and_doshas(planets: dict) -> dict:
     yogas.append(check_budhaditya_yoga(planets))
     yogas.append(check_chandra_mangal_yoga(planets))
     yogas.extend(check_panch_mahapurusha(planets))
+    yogas.append(check_sun_in_own_sign(planets))
+    yogas.append(check_saturn_exalted(planets))
+    yogas.append(check_neecha_bhanga(planets))
 
     # ── Doshas ──
     doshas = []
