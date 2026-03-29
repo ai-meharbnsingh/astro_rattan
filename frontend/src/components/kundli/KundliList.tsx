@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Sparkles, ChevronRight, Clock, Trash2, AlertTriangle, X } from 'lucide-react';
+import { Sparkles, ChevronRight, Clock, Trash2, AlertTriangle } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
 
@@ -32,8 +32,8 @@ export default function KundliList({
     try {
       await api.delete(`/api/kundli/${kundliId}`);
       onDeleteKundli?.();
-    } catch (err) {
-      alert('Failed to delete kundli');
+    } catch (err: any) {
+      alert('Failed to delete: ' + (err.message || 'Unknown error'));
     } finally {
       setDeletingId(null);
     }
@@ -45,39 +45,39 @@ export default function KundliList({
       await api.delete('/api/kundli/user/all');
       setShowDeleteAllConfirm(false);
       onDeleteKundli?.();
-    } catch (err) {
-      alert('Failed to delete kundlis');
+    } catch (err: any) {
+      alert('Failed to delete: ' + (err.message || 'Unknown error'));
     } finally {
       setDeleteLoading(false);
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto py-24 px-4 bg-transparent">
+    <div className="max-w-2xl mx-auto py-24 px-4">
       <div className="text-center mb-8">
-        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#d4af37] to-[#ffd700] flex items-center justify-center mx-auto mb-4">
-          <Sparkles className="w-8 h-8 text-black" />
+        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center mx-auto mb-4">
+          <Sparkles className="w-8 h-8 text-[#1a1a2e]" />
         </div>
-        <h3 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'Cinzel, serif' }}>My Kundlis</h3>
-        <p className="text-white/60">Your saved birth charts</p>
+        <h3 className="text-2xl font-display font-bold text-sacred-brown mb-2">My Kundlis</h3>
+        <p className="text-sacred-text-secondary">Your saved birth charts</p>
       </div>
 
       {/* Delete All Confirmation Modal */}
       {showDeleteAllConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80">
-          <div className="bg-[#111] rounded-xl border border-red-500/30 p-6 max-w-md w-full">
-            <div className="flex items-center gap-3 mb-4 text-red-400">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-xl border border-red-200 p-6 max-w-md w-full shadow-xl">
+            <div className="flex items-center gap-3 mb-4 text-red-600">
               <AlertTriangle className="w-8 h-8" />
               <h4 className="text-lg font-bold">Delete All Kundlis?</h4>
             </div>
-            <p className="text-white/70 mb-6">
+            <p className="text-gray-600 mb-6">
               This will permanently delete all {savedKundlis.length} saved kundlis. This action cannot be undone.
             </p>
             <div className="flex gap-3">
               <Button
                 variant="outline"
                 onClick={() => setShowDeleteAllConfirm(false)}
-                className="flex-1 border-white/20 text-white"
+                className="flex-1"
               >
                 Cancel
               </Button>
@@ -97,15 +97,15 @@ export default function KundliList({
         {savedKundlis.map((k: any) => (
           <div
             key={k.id}
-            className="group relative p-4 bg-[#0a0a0a] rounded-xl border border-[#d4af37]/20 hover:border-[#d4af37]/50 transition-all"
+            className="group relative p-4 bg-sacred-cream rounded-xl border border-sacred-gold/20 hover:border-sacred-gold/50 transition-all"
           >
             <button onClick={() => onLoadKundli(k)} className="w-full text-left">
               <div className="flex items-center justify-between pr-10">
                 <div>
-                  <h4 className="font-semibold text-white" style={{ fontFamily: 'Cinzel, serif' }}>{k.person_name}</h4>
-                  <p className="text-sm text-white/50">{k.birth_date} | {k.birth_time} | {k.birth_place}</p>
+                  <h4 className="font-display font-semibold text-sacred-brown">{k.person_name}</h4>
+                  <p className="text-sm text-sacred-text-secondary">{k.birth_date} | {k.birth_time} | {k.birth_place}</p>
                 </div>
-                <ChevronRight className="w-5 h-5 text-[#d4af37]" />
+                <ChevronRight className="w-5 h-5 text-sacred-gold" />
               </div>
             </button>
             
@@ -113,11 +113,11 @@ export default function KundliList({
             <button
               onClick={(e) => handleDelete(k.id, e)}
               disabled={deletingId === k.id}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 flex items-center justify-center text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-red-50 hover:bg-red-100 border border-red-200 flex items-center justify-center text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
               title="Delete Kundli"
             >
               {deletingId === k.id ? (
-                <div className="w-4 h-4 border-2 border-red-400/30 border-t-red-400 rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-red-300 border-t-red-500 rounded-full animate-spin" />
               ) : (
                 <Trash2 className="w-4 h-4" />
               )}
@@ -126,7 +126,7 @@ export default function KundliList({
         ))}
 
         {savedKundlis.length === 0 && (
-          <p className="text-center text-white/40 py-8">No saved kundlis yet</p>
+          <p className="text-center text-sacred-text-secondary py-8">No saved kundlis yet</p>
         )}
       </div>
 
@@ -134,20 +134,20 @@ export default function KundliList({
       {savedKundlis.length > 0 && (
         <button
           onClick={() => setShowDeleteAllConfirm(true)}
-          className="w-full mb-4 p-3 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-colors text-sm flex items-center justify-center gap-2"
+          className="w-full mb-4 p-3 rounded-xl border border-red-300 text-red-600 hover:bg-red-50 transition-colors text-sm flex items-center justify-center gap-2"
         >
           <Trash2 className="w-4 h-4" />
           Delete All Kundlis ({savedKundlis.length})
         </button>
       )}
 
-      <Button onClick={onNewKundli} className="w-full bg-[#d4af37] text-black hover:bg-[#ffd700]">
+      <Button onClick={onNewKundli} className="w-full btn-sacred">
         <Sparkles className="w-5 h-5 mr-2" />Generate New Kundli
       </Button>
       
-      <Button onClick={onPrashnaKundli} variant="outline" className="w-full mt-3 border-[#d4af37]/50 text-[#d4af37] hover:bg-[#d4af37]/10">
-        <Clock className="w-5 h-5 mr-2" />{t('kundli.prashnaKundli')}
-        <span className="ml-2 text-xs text-white/50">{t('kundli.prashnaSubtitle')}</span>
+      <Button onClick={onPrashnaKundli} variant="outline" className="w-full mt-3 border-sacred-gold/50 text-sacred-brown hover:bg-sacred-gold/10">
+        <Clock className="w-5 h-5 mr-2 text-sacred-gold" />{t('kundli.prashnaKundli')}
+        <span className="ml-2 text-xs text-sacred-text-secondary">{t('kundli.prashnaSubtitle')}</span>
       </Button>
     </div>
   );
