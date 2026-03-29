@@ -136,6 +136,17 @@ export default function KundliGenerator() {
     }
   };
 
+  // Refresh saved kundlis list
+  const fetchSavedKundlis = async () => {
+    if (!isAuthenticated) return;
+    try {
+      const data = await api.get('/api/kundli');
+      setSavedKundlis(data || []);
+    } catch {
+      setSavedKundlis([]);
+    }
+  };
+
   // Fetch dosha for current kundli
   const fetchDosha = async () => {
     if (!result?.id || doshaData) return;
@@ -401,6 +412,7 @@ export default function KundliGenerator() {
         onLoadKundli={loadKundli}
         onNewKundli={() => setStep('form')}
         onPrashnaKundli={handlePrashnaKundli}
+        onDeleteKundli={fetchSavedKundlis}
       />
     );
   }

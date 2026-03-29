@@ -1029,3 +1029,62 @@ def get_kp_analysis(
         "cusps": kp.get("cusps", []),
         "significators": kp.get("significators", {}),
     }
+
+
+# ── delete kundli ─────────────────────────────────────────────────
+
+@router.delete("/{kundli_id}", status_code=status.HTTP_200_OK)
+async def delete_kundli(
+    kundli_id: str,
+    db=Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    """Delete a kundli (only if owned by current user or admin)."""
+    # Check if kundli exists and belongs to user
+    row = db.execute(
+        "SELECT user_id FROM kundlis WHERE id = ?",
+        (kundli_id,)
+    ).fetchone()
+    
+    if not row:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Kundli not found"
+        )
+    
+    # Check ownership (allow admin to delete any)
+    if row["user_id"] != current_user["id"] and current_user.get("role") != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to delete this kundli"
+        )
+    
+    # Delete the kundli
+    db.execute("DELETE FROM kundlis WHERE id = ?", (kundli_id,))
+    db.commit()
+    
+    return {"message": "Kundli deleted successfully", "kundli_id": kundli_id}
+
+
+@router.delete("/user/all", status_code=status.HTTP_200_OK)
+async def delete_all_my_kundlis(
+    db=Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    """Delete all kundlis for the current user."""
+    # Get count before deletion
+    count_row = db.execute(
+        "SELECT COUNT(*) as count FROM kundlis WHERE user_id = ?",
+        (current_user["id"],)
+    ).fetchone()
+    
+    deleted_count = count_row["count"] if count_row else 0
+    
+    # Delete all kundlis for this user
+    db.execute("DELETE FROM kundlis WHERE user_id = ?", (current_user["id"],))
+    db.commit()
+    
+    return {
+        "message": f"All kundlis deleted successfully",
+        "deleted_count": deleted_count
+    }
