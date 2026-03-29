@@ -89,6 +89,18 @@ def health():
     }
 
 
+
+
+@app.get("/debug/cors-test")
+def cors_test():
+    """Test endpoint for CORS."""
+    return {"message": "CORS test"}
+
+@app.delete("/debug/delete-test")
+def delete_test():
+    """Test DELETE without auth."""
+    return {"message": "DELETE test"}
+
 @app.get("/debug/swe-test")
 def debug_swe_test():
     """Diagnostic: verify Swiss Ephemeris calculations against known reference."""

@@ -1040,21 +1040,11 @@ async def delete_all_my_kundlis(
     current_user=Depends(get_current_user),
 ):
     """Delete all kundlis for the current user."""
-    # Get count before deletion
-    count_row = db.execute(
-        "SELECT COUNT(*) as count FROM kundlis WHERE user_id = ?",
-        (current_user["id"],)
-    ).fetchone()
-    
-    deleted_count = count_row["count"] if count_row else 0
-    
-    # Delete all kundlis for this user
-    db.execute("DELETE FROM kundlis WHERE user_id = ?", (current_user["id"],))
-    db.commit()
-    
+    # DEBUG: Just return test response
     return {
-        "message": f"All kundlis deleted successfully",
-        "deleted_count": deleted_count
+        "message": "Test delete all",
+        "user": current_user.get("email", "no-email"),
+        "sub": current_user.get("sub", "no-sub")
     }
 
 
@@ -1065,27 +1055,35 @@ async def delete_kundli(
     current_user=Depends(get_current_user),
 ):
     """Delete a kundli (only if owned by current user or admin)."""
-    # Check if kundli exists and belongs to user
-    row = db.execute(
-        "SELECT user_id FROM kundlis WHERE id = ?",
-        (kundli_id,)
-    ).fetchone()
-    
-    if not row:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Kundli not found"
-        )
-    
-    # Check ownership (allow admin to delete any)
-    if row["user_id"] != current_user["id"] and current_user.get("role") != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized to delete this kundli"
-        )
-    
-    # Delete the kundli
-    db.execute("DELETE FROM kundlis WHERE id = ?", (kundli_id,))
-    db.commit()
-    
-    return {"message": "Kundli deleted successfully", "kundli_id": kundli_id}
+    try:
+        # Check if kundli exists and belongs to user
+        row = db.execute(
+            "SELECT user_id FROM kundlis WHERE id = ?",
+            (kundli_id,)
+        ).fetchone()
+        
+        if not row:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Kundli not found"
+            )
+        
+        # Check ownership (allow admin to delete any)
+        if row["user_id"] != current_user["sub"] and current_user.get("role") != "admin":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not authorized to delete this kundli"
+            )
+        
+        # Delete the kundli
+        db.execute("DELETE FROM kundlis WHERE id = ?", (kundli_id,))
+        db.commit()
+        
+        return {"message": "Kundli deleted successfully", "kundli_id": kundli_id}
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        print(f"ERROR in delete_kundli: {e}")
+        print(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=str(e))

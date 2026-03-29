@@ -61,7 +61,18 @@ TESTING = _env_first("TESTING", default="").lower() in {"1", "true", "yes", "on"
 
 # CORS - Allow localhost for dev and Vercel production domains
 _default_cors = f"http://localhost:{FRONTEND_PORT},https://astrovedic-web.vercel.app,https://*.vercel.app"
-CORS_ORIGINS = os.getenv("CORS_ORIGINS", _default_cors).split(",")
+_env_cors = os.getenv("CORS_ORIGINS", _default_cors)
+CORS_ORIGINS = _env_cors.split(",")
+
+# Always ensure production URLs are included (in case env var is missing them)
+_production_urls = [
+    "https://astrovedic-web.vercel.app",
+    "https://*.vercel.app",
+    f"http://localhost:{FRONTEND_PORT}"
+]
+for url in _production_urls:
+    if url not in CORS_ORIGINS:
+        CORS_ORIGINS.append(url)
 
 # Swiss Ephemeris
 EPHE_PATH = os.getenv("EPHE_PATH", "")  # Path to ephemeris data files

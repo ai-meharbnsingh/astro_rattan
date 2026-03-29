@@ -227,7 +227,7 @@ def create_thread(
         VALUES (%s, %s, %s, %s)
         RETURNING id
         """,
-        (body.category_id, current_user["id"], body.title, body.content),
+        (body.category_id, current_user["sub"], body.title, body.content),
     )
     thread_id = cursor.fetchone()["id"]
     db.commit()
@@ -284,7 +284,7 @@ def create_reply(
 
     cursor = db.execute(
         "INSERT INTO forum_replies (thread_id, user_id, content) VALUES (%s, %s, %s) RETURNING id",
-        (thread_id, current_user["id"], body.content),
+        (thread_id, current_user["sub"], body.content),
     )
     reply_id = cursor.fetchone()["id"]
     db.execute(
@@ -340,7 +340,7 @@ def toggle_like(
 
     existing = db.execute(
         "SELECT id FROM forum_likes WHERE user_id = %s AND reply_id = %s",
-        (current_user["id"], reply_id),
+        (current_user["sub"], reply_id),
     ).fetchone()
 
     if existing:
@@ -354,7 +354,7 @@ def toggle_like(
     else:
         db.execute(
             "INSERT INTO forum_likes (user_id, reply_id) VALUES (%s, %s)",
-            (current_user["id"], reply_id),
+            (current_user["sub"], reply_id),
         )
         db.execute(
             "UPDATE forum_replies SET likes_count = likes_count + 1 WHERE id = %s",
@@ -381,7 +381,7 @@ def mark_best_answer(
     ).fetchone()
     if not reply:
         raise HTTPException(status_code=404, detail="Reply not found")
-    if reply["thread_owner_id"] != current_user["id"]:
+    if reply["thread_owner_id"] != current_user["sub"]:
         raise HTTPException(status_code=403, detail="Only the thread owner can mark best answer")
 
     new_state = 0 if reply["is_best_answer"] else 1
