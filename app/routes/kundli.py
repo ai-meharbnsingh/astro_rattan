@@ -1040,11 +1040,21 @@ async def delete_all_my_kundlis(
     current_user=Depends(get_current_user),
 ):
     """Delete all kundlis for the current user."""
-    # DEBUG: Just return test response
+    # Get count before deletion
+    count_row = db.execute(
+        "SELECT COUNT(*) as count FROM kundlis WHERE user_id = %s",
+        (current_user["sub"],)
+    ).fetchone()
+    
+    deleted_count = count_row["count"] if count_row else 0
+    
+    # Delete all kundlis for this user
+    db.execute("DELETE FROM kundlis WHERE user_id = %s", (current_user["sub"],))
+    db.commit()
+    
     return {
-        "message": "Test delete all",
-        "user": current_user.get("email", "no-email"),
-        "sub": current_user.get("sub", "no-sub")
+        "message": f"All kundlis deleted successfully",
+        "deleted_count": deleted_count
     }
 
 
@@ -1058,7 +1068,7 @@ async def delete_kundli(
     try:
         # Check if kundli exists and belongs to user
         row = db.execute(
-            "SELECT user_id FROM kundlis WHERE id = ?",
+            "SELECT user_id FROM kundlis WHERE id = %s",
             (kundli_id,)
         ).fetchone()
         
@@ -1076,7 +1086,7 @@ async def delete_kundli(
             )
         
         # Delete the kundli
-        db.execute("DELETE FROM kundlis WHERE id = ?", (kundli_id,))
+        db.execute("DELETE FROM kundlis WHERE id = %s", (kundli_id,))
         db.commit()
         
         return {"message": "Kundli deleted successfully", "kundli_id": kundli_id}
