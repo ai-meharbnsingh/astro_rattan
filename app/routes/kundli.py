@@ -1032,6 +1032,31 @@ def get_kp_analysis(
 
 
 # ── delete kundli ─────────────────────────────────────────────────
+# NOTE: More specific routes must come BEFORE dynamic routes like /{kundli_id}
+
+@router.delete("/user/all", status_code=status.HTTP_200_OK)
+async def delete_all_my_kundlis(
+    db=Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    """Delete all kundlis for the current user."""
+    # Get count before deletion
+    count_row = db.execute(
+        "SELECT COUNT(*) as count FROM kundlis WHERE user_id = ?",
+        (current_user["id"],)
+    ).fetchone()
+    
+    deleted_count = count_row["count"] if count_row else 0
+    
+    # Delete all kundlis for this user
+    db.execute("DELETE FROM kundlis WHERE user_id = ?", (current_user["id"],))
+    db.commit()
+    
+    return {
+        "message": f"All kundlis deleted successfully",
+        "deleted_count": deleted_count
+    }
+
 
 @router.delete("/{kundli_id}", status_code=status.HTTP_200_OK)
 async def delete_kundli(
@@ -1064,27 +1089,3 @@ async def delete_kundli(
     db.commit()
     
     return {"message": "Kundli deleted successfully", "kundli_id": kundli_id}
-
-
-@router.delete("/user/all", status_code=status.HTTP_200_OK)
-async def delete_all_my_kundlis(
-    db=Depends(get_db),
-    current_user=Depends(get_current_user),
-):
-    """Delete all kundlis for the current user."""
-    # Get count before deletion
-    count_row = db.execute(
-        "SELECT COUNT(*) as count FROM kundlis WHERE user_id = ?",
-        (current_user["id"],)
-    ).fetchone()
-    
-    deleted_count = count_row["count"] if count_row else 0
-    
-    # Delete all kundlis for this user
-    db.execute("DELETE FROM kundlis WHERE user_id = ?", (current_user["id"],))
-    db.commit()
-    
-    return {
-        "message": f"All kundlis deleted successfully",
-        "deleted_count": deleted_count
-    }
