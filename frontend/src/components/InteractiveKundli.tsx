@@ -30,16 +30,24 @@ const ZODIAC_SIGNS = [
   'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces',
 ];
 
-const ZODIAC_SYMBOLS: Record<string, string> = {
-  Aries: '\u2648', Taurus: '\u2649', Gemini: '\u264A', Cancer: '\u264B',
-  Leo: '\u264C', Virgo: '\u264D', Libra: '\u264E', Scorpio: '\u264F',
-  Sagittarius: '\u2650', Capricorn: '\u2651', Aquarius: '\u2652', Pisces: '\u2653',
+// Zodiac numbers instead of symbols (1-12)
+const ZODIAC_NUMBERS: Record<string, number> = {
+  Aries: 1, Taurus: 2, Gemini: 3, Cancer: 4,
+  Leo: 5, Virgo: 6, Libra: 7, Scorpio: 8,
+  Sagittarius: 9, Capricorn: 10, Aquarius: 11, Pisces: 12,
 };
 
 const PLANET_ABBREVIATIONS: Record<string, string> = {
   Sun: 'Su', Moon: 'Mo', Mars: 'Ma', Mercury: 'Me', Jupiter: 'Ju',
   Venus: 'Ve', Saturn: 'Sa', Rahu: 'Ra', Ketu: 'Ke',
   Ascendant: 'As', Lagna: 'As',
+  Uranus: 'Ur', Neptune: 'Ne', Pluto: 'Pl',
+};
+
+const ZODIAC_ABBREVIATIONS: Record<string, string> = {
+  Aries: 'Ari', Taurus: 'Tau', Gemini: 'Gem', Cancer: 'Can',
+  Leo: 'Leo', Virgo: 'Vir', Libra: 'Lib', Scorpio: 'Sco',
+  Sagittarius: 'Sag', Capricorn: 'Cap', Aquarius: 'Aqu', Pisces: 'Pis',
 };
 
 const BENEFIC_PLANETS = ['Jupiter', 'Venus', 'Moon', 'Mercury'];
@@ -82,12 +90,18 @@ function getStrength(status: string): { label: string; color: string } {
 
 /*
  * South Indian kundli layout -- 4x4 grid with 12 outer cells.
- * The house positions in the grid (row, col) for South Indian style:
- *
+ * 
+ * In South Indian charts, House 1 (Lagna) position depends on the ascendant sign.
+ * The chart is a fixed 4x4 grid where houses are arranged anti-clockwise.
+ * 
+ * Standard arrangement (House 1 can be in any of the 4 corner/edge positions):
  *   [12] [ 1] [ 2] [ 3]
  *   [11] [  ] [  ] [ 4]
  *   [10] [  ] [  ] [ 5]
  *   [ 9] [ 8] [ 7] [ 6]
+ * 
+ * House 1 is at top-center (row 0, col 1), then moving anti-clockwise:
+ * 1->2 (left), 2->3 (left-down), 3->4 (down), etc.
  */
 const HOUSE_GRID: { house: number; row: number; col: number }[] = [
   { house: 12, row: 0, col: 0 },
@@ -114,19 +128,19 @@ const GRID_PADDING = 8;
  * to form an inner diamond. Additional lines from corners to the center of the
  * opposite diamond edge create the 12 triangular house regions.
  *
- * Standard North Indian numbering (counter-clockwise from top):
- *   House 1  = top center triangle (Lagna -- always here)
- *   House 12 = upper-left triangle
- *   House 11 = left-upper triangle
- *   House 10 = left triangle (corner)
- *   House 9  = lower-left triangle
- *   House 8  = bottom-left triangle
- *   House 7  = bottom center triangle
- *   House 6  = bottom-right triangle
- *   House 5  = lower-right triangle
- *   House 4  = right triangle (corner)
- *   House 3  = right-upper triangle
+ * ANTI-CLOCKWISE arrangement:
+ *   House 1  = top center (Lagna -- always here)
  *   House 2  = upper-right triangle
+ *   House 3  = right-upper triangle
+ *   House 4  = right center
+ *   House 5  = right-bottom triangle
+ *   House 6  = bottom-right triangle
+ *   House 7  = bottom center
+ *   House 8  = bottom-left triangle
+ *   House 9  = left-bottom triangle
+ *   House 10 = left center
+ *   House 11 = left-upper triangle
+ *   House 12 = upper-left triangle
  *
  * Coordinate system: 416x416 viewBox, origin at top-left.
  */
@@ -396,28 +410,20 @@ const NORTH_HOUSES: NorthHouse[] = (() => {
   //   B: P1(108,108), ML(8,208), iP4(108,308), CC(208,208)  -- House 10 (center-left)
   //   C: ML(8,208), BL(8,408), iP4(108,308)                 -- House 9
 
-  // Summary of all 12 houses (counter-clockwise from top):
-  // House 1:  P1(108,108), MT(208,8), P2(308,108), CC(208,208)     -- top center (Lagna)
-  // House 12: TL(8,8), MT(208,8), P1(108,108)                       -- top-left triangle
-  // House 11: TL(8,8), P1(108,108), ML(8,208)                       -- upper-left triangle
-  //   Wait, I had House 11 as TL, ML, P1. Let me reorder.
-  //   The left large triangle is BL-TL-CC. Sub-regions:
-  //   Going from TL down: TL(8,8)-ML(8,208)-P1(108,108) is closest to TL.
-  //
-  //   Actually, I need to be more careful about which house number goes where.
-  //   Standard North Indian (counter-clockwise from House 1 at top):
+  // Summary of all 12 houses (ANTI-clockwise from top):
+  // Standard North Indian (ANTI-clockwise from House 1 at top):
   //     1  = top center
-  //     12 = top-left (between 1 and the left corner)
-  //     11 = left-top (between left corner and the left side)
-  //     10 = left center
-  //     9  = left-bottom
-  //     8  = bottom-left
-  //     7  = bottom center
-  //     6  = bottom-right
-  //     5  = right-bottom
-  //     4  = right center
-  //     3  = right-top
   //     2  = top-right
+  //     3  = right-top
+  //     4  = right center
+  //     5  = right-bottom
+  //     6  = bottom-right
+  //     7  = bottom center
+  //     8  = bottom-left
+  //     9  = left-bottom
+  //     10 = left center
+  //     11 = left-top
+  //     12 = top-left
 
   // Top large triangle (TL, TR, CC) subdivisions:
   //   House 12: TL, MT, P1           (top-left corner triangle)
@@ -449,25 +455,44 @@ const NORTH_HOUSES: NorthHouse[] = (() => {
     return { house: h, points: pts(a, b, c, d), cx: cen.x, cy: cen.y };
   };
 
-  // Top
-  houses.push(makeTri(12, TL, MT, P1));
-  houses.push(makeQuad(1, P1, MT, P2, CC));
-  houses.push(makeTri(2, MT, TR, P2));
+  /*
+   * ANTI-CLOCKWISE arrangement for North Indian Chart
+   * House 1 at top center, then anti-clockwise: 1 -> 2 -> 3 -> 4...
+   * 
+   *   House Positions (Anti-clockwise from House 1):
+   *   Top-Left:     House 12
+   *   Top-Center:   House 1 (Lagna)
+   *   Top-Right:    House 2
+   *   Right-Top:    House 3
+   *   Right-Center: House 4
+   *   Right-Bottom: House 5
+   *   Bottom-Right: House 6
+   *   Bottom-Center:House 7
+   *   Bottom-Left:  House 8
+   *   Left-Bottom:  House 9
+   *   Left-Center:  House 10
+   *   Left-Top:     House 11
+   */
 
-  // Right
-  houses.push(makeTri(3, TR, MR, P2));
-  houses.push(makeQuad(4, P2, MR, iP3, CC));
-  houses.push(makeTri(5, MR, BR, iP3));
+  // TOP row (left to right: 12, 1, 2)
+  houses.push(makeTri(12, TL, MT, P1));      // Top-left triangle
+  houses.push(makeQuad(1, P1, MT, P2, CC));  // Top-center (Lagna)
+  houses.push(makeTri(2, MT, TR, P2));       // Top-right triangle
 
-  // Bottom
-  houses.push(makeTri(6, BR, MB, iP3));
-  houses.push(makeQuad(7, iP3, MB, iP4, CC));
-  houses.push(makeTri(8, MB, BL, iP4));
+  // RIGHT side (top to bottom: 3, 4, 5)
+  houses.push(makeTri(3, TR, MR, P2));           // Right-top triangle
+  houses.push(makeQuad(4, P2, MR, iP3, CC));     // Right-center
+  houses.push(makeTri(5, MR, BR, iP3));          // Right-bottom triangle
 
-  // Left
-  houses.push(makeTri(9, BL, ML, iP4));
-  houses.push(makeQuad(10, iP4, ML, P1, CC));
-  houses.push(makeTri(11, ML, TL, P1));
+  // BOTTOM row (right to left: 6, 7, 8)
+  houses.push(makeTri(6, BR, MB, iP3));          // Bottom-right triangle
+  houses.push(makeQuad(7, iP3, MB, iP4, CC));    // Bottom-center
+  houses.push(makeTri(8, MB, BL, iP4));          // Bottom-left triangle
+
+  // LEFT side (bottom to top: 9, 10, 11)
+  houses.push(makeTri(9, BL, ML, iP4));          // Left-bottom triangle
+  houses.push(makeQuad(10, iP4, ML, P1, CC));    // Left-center
+  houses.push(makeTri(11, ML, TL, P1));          // Left-top triangle
 
   return houses;
 })();
@@ -622,7 +647,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
         <div className="space-y-1.5">
           <div className="font-display font-bold text-sacred-gold text-sm">{p.planet}</div>
           <div className="text-xs text-cosmic-text">
-            {ZODIAC_SYMBOLS[p.sign] || ''} {p.sign} {p.sign_degree?.toFixed(1)}&deg;
+            {ZODIAC_NUMBERS[p.sign] || ''} {p.sign} {p.sign_degree?.toFixed(1)}&deg;
           </div>
           <div className="text-xs text-cosmic-text-muted">Nakshatra: {p.nakshatra || 'N/A'}</div>
           <div className="text-xs text-cosmic-text-muted">House: {p.house}</div>
@@ -641,7 +666,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
       content: (
         <div className="space-y-1.5">
           <div className="font-display font-bold text-sacred-gold text-sm">
-            House {house} {ZODIAC_SYMBOLS[sign] || ''} {sign}
+            House {house}
           </div>
           <div className="text-xs text-cosmic-text-muted">{HOUSE_SIGNIFICANCE[house] || ''}</div>
           {housePlanets.length > 0 && (
@@ -754,28 +779,17 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                 style={{ transition: 'all 0.2s ease' }}
               />
 
-              {/* Zodiac symbol */}
-              <text
-                x={x + CELL_SIZE - 8}
-                y={y + 18}
-                textAnchor="end"
-                fill="#B8860B"
-                fontSize={18}
-                opacity={0.5}
-              >
-                {ZODIAC_SYMBOLS[sign] || ''}
-              </text>
-
-              {/* Zodiac sign name */}
+              {/* House Number - Large */}
               <text
                 x={x + CELL_SIZE / 2}
-                y={y + CELL_SIZE - 6}
+                y={y + CELL_SIZE / 2 + 6}
                 textAnchor="middle"
-                fill="rgba(139,115,85,0.5)"
-                fontSize={11}
-                fontFamily="serif"
+                fill="#B8860B"
+                fontSize={28}
+                fontWeight="bold"
+                opacity={0.8}
               >
-                {sign}
+                {house}
               </text>
 
               {/* Planets in this house */}
@@ -873,45 +887,27 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           width={NI_INNER}
           height={NI_INNER}
           fill="none"
-          stroke="rgba(139,115,85,0.3)"
-          strokeWidth={1}
+          stroke="#8B2332"
+          strokeWidth={2}
         />
 
         {/* Structural lines: diamond */}
         <polygon
           points={pts(MT, MR, MB, ML)}
           fill="none"
-          stroke="rgba(139,115,85,0.3)"
-          strokeWidth={1}
+          stroke="#8B2332"
+          strokeWidth={1.5}
         />
 
         {/* Structural lines: diagonals */}
-        <line x1={TL.x} y1={TL.y} x2={BR.x} y2={BR.y} stroke="rgba(139,115,85,0.3)" strokeWidth={1} />
-        <line x1={TR.x} y1={TR.y} x2={BL.x} y2={BL.y} stroke="rgba(139,115,85,0.3)" strokeWidth={1} />
+        <line x1={TL.x} y1={TL.y} x2={BR.x} y2={BR.y} stroke="#8B2332" strokeWidth={1.5} />
+        <line x1={TR.x} y1={TR.y} x2={BL.x} y2={BL.y} stroke="#8B2332" strokeWidth={1.5} />
 
-        {/* Center label */}
-        <text
-          x={CC.x}
-          y={CC.y - 6}
-          textAnchor="middle"
-          fill="#9A7B0A"
-          fontSize={11}
-          fontFamily="serif"
-          opacity={0.6}
-        >
-          Rasi Chart
-        </text>
-        <text
-          x={CC.x}
-          y={CC.y + 10}
-          textAnchor="middle"
-          fill="#9A7B0A"
-          fontSize={9}
-          fontFamily="serif"
-          opacity={0.4}
-        >
-          North Indian
-        </text>
+        {/* Center dots (like traditional kundli) */}
+        <circle cx={CC.x - 4} cy={CC.y} r={2} fill="#8B2332" opacity={0.5} />
+        <circle cx={CC.x + 4} cy={CC.y} r={2} fill="#8B2332" opacity={0.5} />
+        <circle cx={CC.x} cy={CC.y - 4} r={2} fill="#8B2332" opacity={0.5} />
+        <circle cx={CC.x} cy={CC.y + 4} r={2} fill="#8B2332" opacity={0.5} />
 
         {/* House regions (interactive polygons) */}
         {NORTH_HOUSES.map((nh) => {
@@ -941,16 +937,31 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                 style={{ transition: 'fill 0.2s ease' }}
               />
 
-              {/* Zodiac symbol */}
+              {/* Rashi Number (zodiac sign number) */}
               <text
-                x={nh.cx}
-                y={nh.cy - (isTrapezoid ? 0 : -4) - (housePlanets.length > 0 ? 6 : 0)}
+                x={nh.cx - (isCorner ? 6 : 10)}
+                y={nh.cy - (housePlanets.length > 0 ? 8 : 2) + 5}
                 textAnchor="middle"
-                fill="#B8860B"
-                fontSize={isCorner ? 14 : 16}
-                opacity={0.5}
+                fill="#8B2332"
+                fontSize={isCorner ? 16 : 18}
+                fontWeight="bold"
+                fontFamily="serif"
+                opacity={0.9}
               >
-                {ZODIAC_SYMBOLS[sign] || ''}
+                {ZODIAC_NUMBERS[sign] || ''}
+              </text>
+
+              {/* Rashi Name (abbreviated) */}
+              <text
+                x={nh.cx + (isCorner ? 10 : 14)}
+                y={nh.cy - (housePlanets.length > 0 ? 8 : 2) + 5}
+                textAnchor="middle"
+                fill="#8B2332"
+                fontSize={isCorner ? 10 : 12}
+                fontFamily="serif"
+                opacity={0.7}
+              >
+                {ZODIAC_ABBREVIATIONS[sign] || sign?.slice(0, 3)}
               </text>
 
               {/* Planets in this house */}
@@ -963,7 +974,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                 const spacing = isTrapezoid ? 26 : 24;
                 const startX = nh.cx - ((cols - 1) * spacing) / 2;
                 const px = startX + pCol * spacing;
-                const baseY = nh.cy + (isTrapezoid ? 10 : 6) - (housePlanets.length > 0 ? 2 : 0);
+                const baseY = nh.cy + (isTrapezoid ? 12 : 8) - (housePlanets.length > 0 ? 2 : 0);
                 const py = baseY + pRow * 22;
 
                 return (

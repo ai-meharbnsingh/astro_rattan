@@ -807,16 +807,19 @@ export default function KundliGenerator() {
                           <h5 className="text-sm font-semibold text-sacred-brown">{t('yoga.title')}</h5>
                         </div>
                         <div className="space-y-1">
-                          {(yogaDoshaData.yogas || []).slice(0, 8).map((yoga: any, idx: number) => (
-                            <div key={idx} className={`rounded-lg p-2 text-xs border ${yoga.present ? 'border-green-500/20 bg-green-500/5' : 'border-sacred-gold/10'}`}>
+                          {(yogaDoshaData.yogas || []).filter((y: any) => y.present).slice(0, 8).map((yoga: any, idx: number) => (
+                            <div key={idx} className="rounded-lg p-2 text-xs border border-green-500/20 bg-green-500/5">
                               <div className="flex items-center justify-between">
                                 <span className="font-medium text-sacred-brown">{yoga.name}</span>
-                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${yoga.present ? 'bg-green-500/20 text-green-600' : 'bg-gray-200 text-gray-500'}`}>
-                                  {yoga.present ? t('yoga.present') : t('yoga.absent')}
+                                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-600">
+                                  {t('yoga.present')}
                                 </span>
                               </div>
                             </div>
                           ))}
+                          {(yogaDoshaData.yogas || []).filter((y: any) => y.present).length === 0 && (
+                            <p className="text-sm text-sacred-text-secondary py-2">No yogas detected</p>
+                          )}
                         </div>
                       </div>
                       <div>
@@ -825,16 +828,19 @@ export default function KundliGenerator() {
                           <h5 className="text-sm font-semibold text-sacred-brown">{t('dosha.extended.title')}</h5>
                         </div>
                         <div className="space-y-1">
-                          {(yogaDoshaData.doshas || []).slice(0, 8).map((dosha: any, idx: number) => (
-                            <div key={idx} className={`rounded-lg p-2 text-xs border ${dosha.present ? 'border-red-500/20 bg-red-500/5' : 'border-green-500/20 bg-green-500/5'}`}>
+                          {(yogaDoshaData.doshas || []).filter((d: any) => d.present).slice(0, 8).map((dosha: any, idx: number) => (
+                            <div key={idx} className="rounded-lg p-2 text-xs border border-red-500/20 bg-red-500/5">
                               <div className="flex items-center justify-between">
                                 <span className="font-medium text-sacred-brown">{dosha.name}</span>
-                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${dosha.present ? 'bg-red-500/20 text-red-600' : 'bg-green-500/20 text-green-600'}`}>
-                                  {dosha.present ? t('dosha.present') : t('dosha.absent')}
+                                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-500/20 text-red-600">
+                                  {t('dosha.present')}
                                 </span>
                               </div>
                             </div>
                           ))}
+                          {(yogaDoshaData.doshas || []).filter((d: any) => d.present).length === 0 && (
+                            <p className="text-sm text-green-600 py-2">No doshas detected</p>
+                          )}
                         </div>
                       </div>
                     </div>
