@@ -1011,14 +1011,16 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
         </button>
       </div>}
 
-      {/* Cosmic glow effect behind chart */}
-      <div
-        className="absolute inset-0 rounded-2xl opacity-40 blur-xl pointer-events-none"
-        style={{
-          background: 'radial-gradient(circle, rgba(212,175,55,0.3) 0%, rgba(128,0,128,0.15) 50%, transparent 70%)',
-          transform: 'scale(1.1)',
-        }}
-      />
+      {/* Cosmic glow effect behind chart — hidden in compact mode */}
+      {!compact && (
+        <div
+          className="absolute inset-0 rounded-2xl opacity-40 blur-xl pointer-events-none"
+          style={{
+            background: 'radial-gradient(circle, rgba(212,175,55,0.3) 0%, rgba(128,0,128,0.15) 50%, transparent 70%)',
+            transform: 'scale(1.1)',
+          }}
+        />
+      )}
 
       {chartStyle === 'north' ? renderNorthIndian() : renderSouthIndian()}
 
