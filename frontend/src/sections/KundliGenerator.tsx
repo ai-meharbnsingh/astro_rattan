@@ -597,14 +597,12 @@ export default function KundliGenerator() {
                 </Button>
               </div>
 
-              {/* JHora-style Summary Popup */}
-              <Dialog open={jhoraOpen} onOpenChange={setJhoraOpen}>
-                <DialogContent className="fixed inset-0 max-w-none max-h-none w-screen h-screen p-0 overflow-hidden border-none rounded-none m-0 translate-x-0 translate-y-0" showCloseButton={false}>
-                  <DialogTitle className="sr-only">JHora Kundli View</DialogTitle>
-                  <div className="w-screen h-screen overflow-hidden relative">
-                    <button onClick={() => setJhoraOpen(false)} className="absolute top-1 right-1 z-10 p-1 hover:bg-gray-200 rounded text-gray-600">
-                      <X className="w-4 h-4" />
-                    </button>
+              {/* JHora-style Fullscreen Overlay */}
+              {jhoraOpen && (
+                <div className="fixed inset-0 z-[9999] bg-[#FDF8F0]" style={{ width: '100vw', height: '100vh' }}>
+                  <button onClick={() => setJhoraOpen(false)} className="absolute top-2 right-3 z-10 p-1.5 hover:bg-black/10 rounded text-[#5D4037] text-sm font-bold" title="Close">
+                    <X className="w-5 h-5" />
+                  </button>
                     <JHoraKundliView
                       result={result}
                       planets={planets}
@@ -628,9 +626,8 @@ export default function KundliGenerator() {
                       onBack={() => setJhoraOpen(false)}
                       onDownloadPDF={async () => {}}
                     />
-                  </div>
-                </DialogContent>
-              </Dialog>
+                </div>
+              )}
 
               {/* Consolidated Report Popup */}
               <ConsolidatedReport
