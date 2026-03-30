@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Loader2 } from 'lucide-react';
 import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
-import { SIGN_LORD, SIGN_ELEMENT, SIGN_TYPE, PLANET_NATURE } from '@/components/kundli/kundli-utils';
+import { SIGN_LORD } from '@/components/kundli/kundli-utils';
 import { calculateJaiminiKarakas, getPlanetColor } from '@/components/kundli/jhora-utils';
 
 interface JHoraKundliViewProps {
@@ -13,7 +13,7 @@ interface JHoraKundliViewProps {
   yogaDoshaData?: any;
   ashtakvargaData?: any;
   shadbalaData: any;
-  divisionalData: any; // D9
+  divisionalData: any;
   d10Data: any;
   transitData: any;
   loadingDasha: boolean;
@@ -28,69 +28,41 @@ interface JHoraKundliViewProps {
   onDownloadPDF: () => void;
 }
 
-const MONO = "'Courier New', monospace";
-const F9 = { fontFamily: MONO, fontSize: '9px', lineHeight: '12px' };
-const BORDER = '1px solid #999';
-const THIN_BORDER = '1px solid #ccc';
+// ─── Design Tokens ──────────────────────────────────────────────────
+const BG = '#FDF8F0';
+const SERIF = "'Georgia', 'Times New Roman', serif";
+const BORDER_COLOR = '#D4C5A9';
+const BORDER = `1px solid ${BORDER_COLOR}`;
+const HEADER_BG = '#EDE8DB';
+const HEADER_COLOR = '#5D4037';
+const ALT_ROW = '#FAF6EE';
+const MUTED = '#78716C';
+
+// Planet color map per spec
+const PLANET_COLOR_MAP: Record<string, string> = {
+  Sun: '#B22222',
+  Moon: '#1E3A8A',
+  Mars: '#DC2626',
+  Mercury: '#15803D',
+  Jupiter: '#D97706',
+  Venus: '#DB2777',
+  Saturn: '#1E40AF',
+  Rahu: '#6B7280',
+  Ketu: '#78350F',
+  Ascendant: '#5D4037',
+  Lagna: '#5D4037',
+};
+
+function planetColor(planet: string): string {
+  return PLANET_COLOR_MAP[planet] || getPlanetColor(planet) || '#666';
+}
 
 const ZODIAC_SIGNS = [
   'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
   'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces',
 ];
 
-// Odd signs = Male, Even = Female
-function getGender(sign: string): string {
-  const idx = ZODIAC_SIGNS.indexOf(sign);
-  if (idx < 0) return '-';
-  return (idx + 1) % 2 === 1 ? 'M' : 'F';
-}
-
-// Modality by sign number: 1,4,7,10=Mov; 2,5,8,11=Fix; 3,6,9,12=Dual
-function getModality(sign: string): string {
-  return SIGN_TYPE[sign] || '-';
-}
-
-// Element
-function getElement(sign: string): string {
-  return SIGN_ELEMENT[sign] || '-';
-}
-
-// Functional nature
-function getFunctionalNature(planet: string): string {
-  return PLANET_NATURE[planet] || '-';
-}
-
-// Dignity color
-function getDignityColor(status: string): string {
-  if (!status) return '#999';
-  const s = status.toLowerCase();
-  if (s.includes('exalted')) return '#2e7d32';
-  if (s.includes('own')) return '#1565C0';
-  if (s.includes('friend')) return '#4caf50';
-  if (s.includes('debilitated')) return '#c62828';
-  if (s.includes('enemy')) return '#e53935';
-  return '#999';
-}
-
-// Placement assessment
-function getPlacement(status: string): { label: string; color: string } {
-  if (!status) return { label: '-', color: '#999' };
-  const s = status.toLowerCase();
-  if (s.includes('exalted') || s.includes('own') || s.includes('friend'))
-    return { label: 'Good', color: '#2e7d32' };
-  if (s.includes('debilitated') || s.includes('enemy'))
-    return { label: 'Bad', color: '#c62828' };
-  return { label: '-', color: '#999' };
-}
-
-// Planet abbreviations for compact display
-const PLANET_ABBR: Record<string, string> = {
-  Sun: 'Su', Moon: 'Mo', Mars: 'Ma', Mercury: 'Me', Jupiter: 'Ju',
-  Venus: 'Ve', Saturn: 'Sa', Rahu: 'Ra', Ketu: 'Ke',
-  Ascendant: 'As', Lagna: 'As',
-};
-
-// Build chart data from divisional response
+// ─── Helper: build ChartData from divisional API response ───────────
 function buildDivisionalChartData(data: any): ChartData | null {
   if (!data?.planet_positions) return null;
   return {
@@ -109,7 +81,7 @@ function buildDivisionalChartData(data: any): ChartData | null {
   };
 }
 
-// Build transit chart data
+// ─── Helper: build ChartData from transit API response ──────────────
 function buildTransitChartData(transitData: any): ChartData | null {
   if (!transitData?.transits) return null;
   return {
@@ -124,15 +96,51 @@ function buildTransitChartData(transitData: any): ChartData | null {
   };
 }
 
-// Compact loading spinner
-function MiniLoader() {
+// ─── Section header ─────────────────────────────────────────────────
+function SectionHeader({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 0' }}>
-      <Loader2 className="w-3 h-3 animate-spin" style={{ color: '#4a7c59' }} />
+    <div style={{
+      fontFamily: SERIF,
+      fontSize: '12px',
+      fontWeight: 600,
+      color: HEADER_COLOR,
+      padding: '4px 8px',
+      borderBottom: BORDER,
+      background: HEADER_BG,
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+    }}>
+      {children}
     </div>
   );
 }
 
+// ─── Loading spinner ────────────────────────────────────────────────
+function MiniLoader() {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px 0' }}>
+      <Loader2 className="w-4 h-4 animate-spin" style={{ color: HEADER_COLOR }} />
+    </div>
+  );
+}
+
+// ─── Status color helper ────────────────────────────────────────────
+function statusColor(status: string): string {
+  if (!status) return MUTED;
+  const s = status.toLowerCase();
+  if (s.includes('exalted') || s.includes('own')) return '#15803D';
+  if (s.includes('debilitated')) return '#DC2626';
+  return MUTED;
+}
+
+// ─── Degree formatter ───────────────────────────────────────────────
+function fmtDegree(deg: number | undefined): string {
+  if (deg === undefined || deg === null) return '-';
+  return `${deg.toFixed(1)}\u00B0`;
+}
+
+// ─── Main Component ─────────────────────────────────────────────────
 export default function JHoraKundliView({
   result,
   planets,
@@ -140,105 +148,16 @@ export default function JHoraKundliView({
   extendedDashaData,
   avakhadaData,
   shadbalaData,
-  divisionalData,
-  d10Data,
-  transitData,
   loadingDasha,
   loadingAvakhada,
   loadingShadbala,
-  loadingDivisional,
-  loadingD10,
-  loadingTransit,
   onBack,
   onDownloadPDF,
 }: JHoraKundliViewProps) {
 
-  const d9ChartData = useMemo(() => buildDivisionalChartData(divisionalData), [divisionalData]);
-  const d10ChartData = useMemo(() => buildDivisionalChartData(d10Data), [d10Data]);
-  const transitChartData = useMemo(() => buildTransitChartData(transitData), [transitData]);
-  const jaiminiKarakas = useMemo(() => calculateJaiminiKarakas(planets), [planets]);
   const dasha = extendedDashaData || dashaData;
 
-  // Compute Jaimini karaka reverse map: planet -> karaka name
-  const karakaByPlanet = useMemo(() => {
-    const m: Record<string, string> = {};
-    Object.entries(jaiminiKarakas).forEach(([planet, karaka]) => {
-      m[planet] = karaka;
-    });
-    return m;
-  }, [jaiminiKarakas]);
-
-  // Format degree as DD:MM
-  const fmtDeg = (deg: number | undefined): string => {
-    if (deg === undefined || deg === null) return '-';
-    const d = Math.floor(deg);
-    const m = Math.round((deg - d) * 60);
-    return `${String(d).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-  };
-
-  // Retrograde check (simple heuristic from status)
-  const isRetrograde = (p: PlanetData): string => {
-    if (p.status?.toLowerCase().includes('retro')) return 'R';
-    return '';
-  };
-
-  // Get short sign abbreviation
-  const signAbbr = (sign: string): string => {
-    const map: Record<string, string> = {
-      Aries: 'Ari', Taurus: 'Tau', Gemini: 'Gem', Cancer: 'Can',
-      Leo: 'Leo', Virgo: 'Vir', Libra: 'Lib', Scorpio: 'Sco',
-      Sagittarius: 'Sag', Capricorn: 'Cap', Aquarius: 'Aqu', Pisces: 'Pis',
-    };
-    return map[sign] || sign.slice(0, 3);
-  };
-
-  // Build dasha periods for MD-AD-PD display
-  const dashaPeriods = useMemo(() => {
-    if (!dasha) return [];
-    const periods: { label: string; date: string; isCurrent: boolean }[] = [];
-    const mahadashas = dasha.mahadasha_periods || dasha.mahadasha || [];
-    const currentMD = dasha.current_dasha;
-    const currentAD = dasha.current_antardasha;
-
-    for (const md of mahadashas) {
-      const mdName = PLANET_ABBR[md.planet] || md.planet?.slice(0, 2) || '??';
-      const isMDCurrent = md.planet === currentMD;
-
-      // If there are antardasha sub-periods
-      if (md.antardashas && Array.isArray(md.antardashas)) {
-        for (const ad of md.antardashas) {
-          const adName = PLANET_ABBR[ad.planet] || ad.planet?.slice(0, 2) || '??';
-          const isADCurrent = isMDCurrent && ad.planet === currentAD;
-
-          if (ad.pratyantardashas && Array.isArray(ad.pratyantardashas)) {
-            for (const pd of ad.pratyantardashas) {
-              const pdName = PLANET_ABBR[pd.planet] || pd.planet?.slice(0, 2) || '??';
-              periods.push({
-                label: `${mdName}-${adName}-${pdName}`,
-                date: pd.start_date || pd.start || '',
-                isCurrent: isADCurrent,
-              });
-            }
-          } else {
-            periods.push({
-              label: `${mdName}-${adName}`,
-              date: ad.start_date || ad.start || '',
-              isCurrent: isADCurrent,
-            });
-          }
-        }
-      } else {
-        periods.push({
-          label: mdName,
-          date: md.start_date || md.start || '',
-          isCurrent: isMDCurrent,
-        });
-      }
-    }
-    return periods;
-  }, [dasha]);
-
-  // Lordship data
+  // Lordship rows
   const lordships = useMemo(() => {
     const rows: { houseNum: number; signName: string; lord: string; lordHouse: number | string }[] = [];
     for (let i = 0; i < 12; i++) {
@@ -253,42 +172,103 @@ export default function JHoraKundliView({
     return rows;
   }, [result, planets]);
 
-  // Cell style helper
-  const cellS = (extra?: React.CSSProperties): React.CSSProperties => ({
-    ...F9,
-    padding: '1px 3px',
-    whiteSpace: 'nowrap' as const,
-    borderBottom: '1px solid #ddd',
-    ...extra,
-  });
+  // Sign abbreviation
+  const signAbbr = (sign: string): string => {
+    const map: Record<string, string> = {
+      Aries: 'Ari', Taurus: 'Tau', Gemini: 'Gem', Cancer: 'Can',
+      Leo: 'Leo', Virgo: 'Vir', Libra: 'Lib', Scorpio: 'Sco',
+      Sagittarius: 'Sag', Capricorn: 'Cap', Aquarius: 'Aqu', Pisces: 'Pis',
+    };
+    return map[sign] || sign?.slice(0, 3) || '-';
+  };
 
-  const thS = (extra?: React.CSSProperties): React.CSSProperties => ({
-    ...cellS(extra),
-    fontWeight: 'bold',
-    background: '#f5f5f5',
-    borderBottom: '1px solid #bbb',
-  });
+  // Mahadasha periods
+  const mahadashaPeriods = useMemo(() => {
+    if (!dasha) return [];
+    const periods = dasha.mahadasha_periods || dasha.mahadasha || [];
+    const currentMD = dasha.current_dasha;
+    return periods.map((md: any) => ({
+      planet: md.planet || '?',
+      start: md.start_date || md.start || '',
+      end: md.end_date || md.end || '',
+      years: md.years || md.duration || '',
+      isCurrent: md.planet === currentMD,
+    }));
+  }, [dasha]);
+
+  // Table cell base style
+  const cellBase: React.CSSProperties = {
+    fontFamily: SERIF,
+    fontSize: '11px',
+    padding: '3px 6px',
+    borderBottom: `1px solid ${BORDER_COLOR}`,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  };
+
+  const cellCompact: React.CSSProperties = {
+    ...cellBase,
+    fontSize: '10px',
+    padding: '2px 5px',
+  };
+
+  const thBase: React.CSSProperties = {
+    ...cellBase,
+    fontWeight: 600,
+    background: HEADER_BG,
+    color: HEADER_COLOR,
+    borderBottom: BORDER,
+  };
+
+  const thCompact: React.CSSProperties = {
+    ...thBase,
+    fontSize: '10px',
+    padding: '2px 5px',
+  };
 
   return (
     <div style={{
       width: '100%',
       height: '100%',
       overflow: 'hidden',
-      background: '#fff',
-      fontFamily: MONO,
-      fontSize: '9px',
+      background: BG,
+      fontFamily: SERIF,
+      fontSize: '11px',
       display: 'grid',
-      gridTemplateRows: '48% 30% 22%',
+      gridTemplateRows: '60% 40%',
       gridTemplateColumns: '1fr',
       boxSizing: 'border-box',
     }}>
 
-      {/* === ROW 1 (50%): D1 Chart (35%) | Planet Table (65%) === */}
-      <div style={{ display: 'grid', gridTemplateColumns: '35% 65%', overflow: 'hidden', borderBottom: BORDER }}>
+      {/* ═══════════ ROW 1 (60%): D1 Chart | Planet Positions Table ═══════════ */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '38% 62%',
+        overflow: 'hidden',
+        borderBottom: BORDER,
+      }}>
 
-        {/* D1 Birth Chart */}
-        <div style={{ borderRight: BORDER, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-          <div style={{ width: '100%', maxWidth: '300px', padding: '4px' }}>
+        {/* ── Left: Birth Chart (D1) ── */}
+        <div style={{
+          borderRight: BORDER,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'hidden',
+          padding: '8px',
+        }}>
+          <div style={{
+            fontFamily: SERIF,
+            fontSize: '12px',
+            color: HEADER_COLOR,
+            fontWeight: 600,
+            marginBottom: '4px',
+          }}>
+            Birth Chart (D1)
+          </div>
+          <div style={{ width: '100%', maxWidth: '380px' }}>
             <InteractiveKundli
               chartData={{ planets, houses: result?.chart_data?.houses } as ChartData}
               compact
@@ -296,167 +276,153 @@ export default function JHoraKundliView({
           </div>
         </div>
 
-        {/* Planet Table with ALL columns */}
+        {/* ── Right: Planet Positions Table ── */}
         <div style={{ overflow: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
-                {['Planet', 'Degree', 'RC', 'Rashi', 'M/F', 'Mod', 'Elem', 'Nakshatra', 'Dignity', 'Hemmed', 'Karaka', 'Func', 'In', 'Placement'].map((h) => (
-                  <th key={h} style={thS({ textAlign: h === 'Planet' || h === 'Rashi' || h === 'Nakshatra' ? 'left' : 'center' })}>{h}</th>
+                {['Planet', 'Sign', 'House', 'Degree', 'Nakshatra', 'Status'].map((h) => (
+                  <th key={h} style={{
+                    ...thBase,
+                    textAlign: h === 'House' ? 'center' : h === 'Degree' ? 'right' : 'left',
+                  }}>
+                    {h}
+                  </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {planets.map((p, i) => {
-                const placement = getPlacement(p.status);
-                const dignityStatus = p.status || '-';
-                return (
-                  <tr key={i} style={{ background: i % 2 === 0 ? '#fff' : '#fafafa' }}>
-                    <td style={cellS({ color: getPlanetColor(p.planet), fontWeight: 'bold', textAlign: 'left' })}>
-                      {PLANET_ABBR[p.planet] || p.planet.slice(0, 2)}
-                    </td>
-                    <td style={cellS({ textAlign: 'center' })}>{fmtDeg(p.sign_degree)}</td>
-                    <td style={cellS({ textAlign: 'center', color: '#c62828' })}>{isRetrograde(p)}</td>
-                    <td style={cellS({ textAlign: 'left' })}>{signAbbr(p.sign)}</td>
-                    <td style={cellS({ textAlign: 'center' })}>{getGender(p.sign)}</td>
-                    <td style={cellS({ textAlign: 'center' })}>{getModality(p.sign)?.slice(0, 3)}</td>
-                    <td style={cellS({ textAlign: 'center' })}>{getElement(p.sign)?.slice(0, 4)}</td>
-                    <td style={cellS({ textAlign: 'left' })}>{p.nakshatra || '-'}</td>
-                    <td style={cellS({ textAlign: 'center', color: getDignityColor(dignityStatus), fontWeight: 'bold' })}>
-                      {dignityStatus !== '-' && dignityStatus ? dignityStatus : '-'}
-                    </td>
-                    <td style={cellS({ textAlign: 'center', color: '#999' })}>-</td>
-                    <td style={cellS({ textAlign: 'center', color: '#555' })}>{karakaByPlanet[p.planet] || '-'}</td>
-                    <td style={cellS({ textAlign: 'center' })}>{getFunctionalNature(p.planet)?.slice(0, 3)}</td>
-                    <td style={cellS({ textAlign: 'center' })}>{p.house || '-'}</td>
-                    <td style={cellS({ textAlign: 'center', color: placement.color, fontWeight: 'bold' })}>{placement.label}</td>
-                  </tr>
-                );
-              })}
+              {planets.map((p, i) => (
+                <tr key={i} style={{ background: i % 2 === 0 ? 'transparent' : ALT_ROW }}>
+                  <td style={{
+                    ...cellBase,
+                    color: planetColor(p.planet),
+                    fontWeight: 600,
+                    textAlign: 'left',
+                  }}>
+                    {p.planet}
+                  </td>
+                  <td style={{ ...cellBase, textAlign: 'left' }}>
+                    {p.sign}
+                  </td>
+                  <td style={{ ...cellBase, textAlign: 'center' }}>
+                    {p.house || '-'}
+                  </td>
+                  <td style={{ ...cellBase, textAlign: 'right' }}>
+                    {fmtDegree(p.sign_degree)}
+                  </td>
+                  <td style={{ ...cellBase, textAlign: 'left' }}>
+                    {p.nakshatra || '-'}
+                  </td>
+                  <td style={{
+                    ...cellBase,
+                    textAlign: 'left',
+                    color: statusColor(p.status),
+                    fontWeight: (p.status?.toLowerCase().includes('exalted') || p.status?.toLowerCase().includes('debilitated')) ? 600 : 400,
+                  }}>
+                    {p.status || '-'}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* === ROW 2 (30%): 3 small charts (35%) | Vimshottari (30%) | Lordships (35%) === */}
-      <div style={{ display: 'grid', gridTemplateColumns: '35% 30% 35%', overflow: 'hidden', borderBottom: BORDER }}>
+      {/* ═══════════ ROW 2 (40%): Dasha | Lordships | Avakhada | Shadbala ═══════════ */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '25% 25% 25% 25%',
+        overflow: 'hidden',
+      }}>
 
-        {/* Three small charts side by side */}
-        <div style={{ borderRight: BORDER, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', overflow: 'hidden' }}>
-          {/* Transit */}
-          <div style={{ borderRight: THIN_BORDER, display: 'flex', flexDirection: 'column', alignItems: 'center', overflow: 'hidden' }}>
-            <div style={{ ...F9, fontWeight: 'bold', textAlign: 'center', padding: '1px 0', borderBottom: THIN_BORDER, width: '100%' }}>Today</div>
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2px' }}>
-              {loadingTransit ? <MiniLoader /> : transitChartData ? (
-                <div style={{ width: '100%', maxWidth: '130px' }}>
-                  <InteractiveKundli chartData={transitChartData} compact />
-                </div>
-              ) : <span style={{ ...F9, color: '#999' }}>--</span>}
-            </div>
-          </div>
-          {/* D9 */}
-          <div style={{ borderRight: THIN_BORDER, display: 'flex', flexDirection: 'column', alignItems: 'center', overflow: 'hidden' }}>
-            <div style={{ ...F9, fontWeight: 'bold', textAlign: 'center', padding: '1px 0', borderBottom: THIN_BORDER, width: '100%' }}>D9</div>
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2px' }}>
-              {loadingDivisional ? <MiniLoader /> : d9ChartData ? (
-                <div style={{ width: '100%', maxWidth: '130px' }}>
-                  <InteractiveKundli chartData={d9ChartData} compact />
-                </div>
-              ) : <span style={{ ...F9, color: '#999' }}>--</span>}
-            </div>
-          </div>
-          {/* D10 */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', overflow: 'hidden' }}>
-            <div style={{ ...F9, fontWeight: 'bold', textAlign: 'center', padding: '1px 0', borderBottom: THIN_BORDER, width: '100%' }}>D10</div>
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2px' }}>
-              {loadingD10 ? <MiniLoader /> : d10ChartData ? (
-                <div style={{ width: '100%', maxWidth: '130px' }}>
-                  <InteractiveKundli chartData={d10ChartData} compact />
-                </div>
-              ) : <span style={{ ...F9, color: '#999' }}>--</span>}
-            </div>
-          </div>
-        </div>
-
-        {/* Vimshottari Dasha (MD-AD-PD with dates) */}
-        <div style={{ borderRight: BORDER, overflow: 'auto' }}>
-          <div style={{ ...F9, fontWeight: 'bold', textAlign: 'center', padding: '1px 0', borderBottom: THIN_BORDER }}>Vimshottari Dasha</div>
+        {/* ── Col 1: Vimshottari Dasha ── */}
+        <div style={{ borderRight: BORDER, overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
+          <SectionHeader>Vimshottari Dasha</SectionHeader>
           {loadingDasha ? <MiniLoader /> : dasha ? (
-            <div style={{ padding: 0 }}>
-              {dashaPeriods.length > 0 ? (
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <tbody>
-                    {dashaPeriods.slice(0, 30).map((dp, i) => (
-                      <tr key={i} style={{ background: dp.isCurrent ? '#fff0f0' : (i % 2 === 0 ? '#fff' : '#fafafa') }}>
-                        <td style={cellS({
-                          color: dp.isCurrent ? '#c62828' : '#333',
-                          fontWeight: dp.isCurrent ? 'bold' : 'normal',
-                        })}>{dp.label}</td>
-                        <td style={cellS({
-                          color: dp.isCurrent ? '#c62828' : '#555',
-                          textAlign: 'right',
-                        })}>{dp.date}</td>
-                      </tr>
+            <div style={{ flex: 1, overflow: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr>
+                    {['Planet', 'Start', 'End', 'Yrs'].map((h) => (
+                      <th key={h} style={thCompact}>{h}</th>
                     ))}
-                  </tbody>
-                </table>
-              ) : (
-                /* Fallback: show mahadasha list */
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <tbody>
-                    {(dasha.mahadasha_periods || dasha.mahadasha || []).map((p: any, i: number) => {
-                      const isCurrent = p.planet === dasha.current_dasha;
-                      return (
-                        <tr key={i} style={{ background: isCurrent ? '#fff0f0' : (i % 2 === 0 ? '#fff' : '#fafafa') }}>
-                          <td style={cellS({ color: isCurrent ? '#c62828' : getPlanetColor(p.planet), fontWeight: 'bold' })}>
-                            {PLANET_ABBR[p.planet] || p.planet?.slice(0, 2)}{isCurrent ? ' *' : ''}
-                          </td>
-                          <td style={cellS({ color: '#555' })}>{p.start_date || p.start}</td>
-                          <td style={cellS({ color: '#555' })}>{p.end_date || p.end}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              )}
+                  </tr>
+                </thead>
+                <tbody>
+                  {mahadashaPeriods.map((md: any, i: number) => (
+                    <tr key={i} style={{
+                      background: md.isCurrent ? '#FEF3C7' : (i % 2 === 0 ? 'transparent' : ALT_ROW),
+                    }}>
+                      <td style={{
+                        ...cellCompact,
+                        color: planetColor(md.planet),
+                        fontWeight: 600,
+                      }}>
+                        {md.planet}
+                      </td>
+                      <td style={cellCompact}>
+                        {md.start ? md.start.slice(0, 10) : '-'}
+                      </td>
+                      <td style={cellCompact}>
+                        {md.end ? md.end.slice(0, 10) : '-'}
+                      </td>
+                      <td style={{ ...cellCompact, textAlign: 'center' }}>
+                        {md.years || '-'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          ) : <span style={{ ...F9, color: '#999', display: 'block', textAlign: 'center', padding: '8px' }}>--</span>}
+          ) : (
+            <div style={{ padding: '8px', color: MUTED, textAlign: 'center', fontSize: '10px' }}>--</div>
+          )}
         </div>
 
-        {/* Lordships */}
-        <div style={{ overflow: 'auto' }}>
-          <div style={{ ...F9, fontWeight: 'bold', textAlign: 'center', padding: '1px 0', borderBottom: THIN_BORDER }}>Lordships</div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', padding: 0 }}>
-            {/* Left column: houses 1-6 */}
-            <div style={{ borderRight: THIN_BORDER }}>
-              {lordships.slice(0, 6).map((l) => (
-                <div key={l.houseNum} style={{ ...F9, padding: '1px 3px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between' }}>
-                  <span>Lrd.{String(l.houseNum).padStart(2, ' ')} in {l.lordHouse}</span>
-                  <span style={{ color: getPlanetColor(l.lord), fontWeight: 'bold' }}>{PLANET_ABBR[l.lord] || l.lord.slice(0, 2)}</span>
-                </div>
-              ))}
-            </div>
-            {/* Right column: houses 7-12 */}
-            <div>
-              {lordships.slice(6, 12).map((l) => (
-                <div key={l.houseNum} style={{ ...F9, padding: '1px 3px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between' }}>
-                  <span>L{String(l.houseNum).padStart(2, ' ')} in {l.lordHouse}</span>
-                  <span style={{ color: getPlanetColor(l.lord), fontWeight: 'bold' }}>{PLANET_ABBR[l.lord] || l.lord.slice(0, 2)}</span>
-                </div>
-              ))}
-            </div>
+        {/* ── Col 2: House Lordships ── */}
+        <div style={{ borderRight: BORDER, overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
+          <SectionHeader>Lordships</SectionHeader>
+          <div style={{ flex: 1, overflow: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr>
+                  {['H', 'Sign', 'Lord', 'In H'].map((h) => (
+                    <th key={h} style={thCompact}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {lordships.map((l, i) => (
+                  <tr key={l.houseNum} style={{ background: i % 2 === 0 ? 'transparent' : ALT_ROW }}>
+                    <td style={{ ...cellCompact, textAlign: 'center', fontWeight: 600 }}>
+                      {l.houseNum}
+                    </td>
+                    <td style={cellCompact}>
+                      {signAbbr(l.signName)}
+                    </td>
+                    <td style={{
+                      ...cellCompact,
+                      color: planetColor(l.lord),
+                      fontWeight: 600,
+                    }}>
+                      {l.lord}
+                    </td>
+                    <td style={{ ...cellCompact, textAlign: 'center' }}>
+                      {l.lordHouse}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
-      </div>
 
-      {/* === ROW 3 (20%): Avakhada (25%) | Jeeva/Deha + Jaimini (25%) | Shadbala (50%) === */}
-      <div style={{ display: 'grid', gridTemplateColumns: '25% 25% 50%', overflow: 'hidden' }}>
-
-        {/* Avakhada Chakra */}
-        <div style={{ borderRight: BORDER, overflow: 'auto' }}>
-          <div style={{ ...F9, fontWeight: 'bold', textAlign: 'center', padding: '1px 0', borderBottom: THIN_BORDER }}>Avakhada Chakra</div>
+        {/* ── Col 3: Avakhada Chakra ── */}
+        <div style={{ borderRight: BORDER, overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
+          <SectionHeader>Avakhada Chakra</SectionHeader>
           {loadingAvakhada ? <MiniLoader /> : avakhadaData ? (
-            <div style={{ padding: 0 }}>
+            <div style={{ flex: 1, overflow: 'auto', padding: '2px 0' }}>
               {[
                 { k: 'Asc', v: avakhadaData.ascendant },
                 { k: 'Asc Lord', v: avakhadaData.ascendant_lord },
@@ -468,90 +434,86 @@ export default function JHoraKundliView({
                 { k: 'Yoni', v: avakhadaData.yoni },
                 { k: 'Gana', v: avakhadaData.gana },
                 { k: 'Nadi', v: avakhadaData.nadi },
-                { k: 'Varna', v: avakhadaData.varna },
-                { k: 'Naamakshar', v: avakhadaData.naamakshar },
               ].map((item) => (
-                <div key={item.k} style={{ ...F9, display: 'flex', justifyContent: 'space-between', padding: '0px 3px', borderBottom: '1px solid #eee' }}>
-                  <span style={{ color: '#888' }}>{item.k}</span>
-                  <span style={{ color: '#333', fontWeight: 500 }}>{item.v || '-'}</span>
+                <div key={item.k} style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  padding: '2px 8px',
+                  borderBottom: `1px solid ${BORDER_COLOR}`,
+                  fontFamily: SERIF,
+                  fontSize: '10px',
+                }}>
+                  <span style={{ color: MUTED }}>{item.k}</span>
+                  <span style={{ color: HEADER_COLOR, fontWeight: 600 }}>{item.v || '-'}</span>
                 </div>
               ))}
             </div>
-          ) : <span style={{ ...F9, color: '#999', display: 'block', textAlign: 'center', padding: '8px' }}>--</span>}
+          ) : (
+            <div style={{ padding: '8px', color: MUTED, textAlign: 'center', fontSize: '10px' }}>--</div>
+          )}
         </div>
 
-        {/* Jeeva/Deha + Jaimini Karakas */}
-        <div style={{ borderRight: BORDER, overflow: 'auto' }}>
-          <div style={{ ...F9, fontWeight: 'bold', textAlign: 'center', padding: '1px 0', borderBottom: THIN_BORDER }}>Jaimini Karakas</div>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr>
-                <th style={thS({ textAlign: 'left' })}>Karaka</th>
-                <th style={thS({ textAlign: 'left' })}>Planet</th>
-                <th style={thS({ textAlign: 'center' })}>Deg</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.entries(jaiminiKarakas).map(([planet, karaka], i) => {
-                const pData = planets.find((p) => p.planet === planet);
-                return (
-                  <tr key={planet} style={{ background: i % 2 === 0 ? '#fff' : '#fafafa' }}>
-                    <td style={cellS({ fontWeight: 'bold', color: '#555' })}>{karaka}</td>
-                    <td style={cellS({ color: getPlanetColor(planet), fontWeight: 'bold' })}>{PLANET_ABBR[planet] || planet.slice(0, 2)}</td>
-                    <td style={cellS({ textAlign: 'center', color: '#777' })}>{fmtDeg(pData?.sign_degree)}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-          {/* Legend */}
-          <div style={{ padding: '2px 3px', borderTop: '1px solid #ddd' }}>
-            {[
-              ['AK', 'Atmakaraka'],
-              ['AmK', 'Amatyakaraka'],
-              ['BK', 'Bhratrukaraka'],
-              ['MK', 'Matrukaraka'],
-              ['PiK', 'Pitrukaraka'],
-              ['GnK', 'Gnatikaraka'],
-              ['DK', 'Darakaraka'],
-            ].map(([abbr, full]) => (
-              <div key={abbr} style={{ ...F9, fontSize: '7px', color: '#aaa' }}>
-                <strong>{abbr}</strong>={full}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Shadbala — horizontal green bar chart */}
-        <div style={{ overflow: 'auto' }}>
-          <div style={{ ...F9, fontWeight: 'bold', textAlign: 'center', padding: '1px 0', borderBottom: THIN_BORDER }}>Shadbala</div>
+        {/* ── Col 4: Shadbala ── */}
+        <div style={{ overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
+          <SectionHeader>Shadbala</SectionHeader>
           {loadingShadbala ? <MiniLoader /> : shadbalaData?.planets ? (
-            <div style={{ padding: '2px 4px' }}>
+            <div style={{ flex: 1, overflow: 'auto', padding: '4px 8px' }}>
               {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
                 const data = shadbalaData.planets[planet];
                 if (!data) return null;
                 const ratio = data.total / data.required;
                 const pct = Math.min(ratio * 100, 100);
                 return (
-                  <div key={planet} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '1px 0' }}>
-                    <span style={{ ...F9, fontWeight: 'bold', width: '24px', flexShrink: 0, color: getPlanetColor(planet) }}>
-                      {PLANET_ABBR[planet] || planet.slice(0, 2)}
+                  <div key={planet} style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '3px 0',
+                    fontFamily: SERIF,
+                    fontSize: '10px',
+                  }}>
+                    <span style={{
+                      width: '52px',
+                      flexShrink: 0,
+                      color: planetColor(planet),
+                      fontWeight: 600,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}>
+                      {planet}
                     </span>
-                    <div style={{ flex: 1, height: '10px', background: '#eee', position: 'relative' }}>
+                    <div style={{
+                      flex: 1,
+                      height: '12px',
+                      background: '#E8E0D0',
+                      borderRadius: '2px',
+                      overflow: 'hidden',
+                    }}>
                       <div style={{
                         height: '100%',
                         width: `${pct}%`,
-                        background: '#4caf50',
+                        background: '#4CAF50',
+                        borderRadius: '2px',
+                        transition: 'width 0.3s ease',
                       }} />
                     </div>
-                    <span style={{ ...F9, width: '36px', textAlign: 'right', flexShrink: 0, color: ratio >= 1 ? '#4caf50' : '#e53935' }}>
+                    <span style={{
+                      width: '32px',
+                      flexShrink: 0,
+                      textAlign: 'right',
+                      color: ratio >= 1 ? '#4CAF50' : '#DC2626',
+                      fontWeight: 600,
+                    }}>
                       {ratio.toFixed(2)}
                     </span>
                   </div>
                 );
               })}
             </div>
-          ) : <span style={{ ...F9, color: '#999', display: 'block', textAlign: 'center', padding: '8px' }}>--</span>}
+          ) : (
+            <div style={{ padding: '8px', color: MUTED, textAlign: 'center', fontSize: '10px' }}>--</div>
+          )}
         </div>
       </div>
     </div>
