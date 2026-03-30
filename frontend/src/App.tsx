@@ -4,7 +4,6 @@ import { I18nProvider } from './lib/i18n';
 import { AuthProvider } from './hooks/useAuth';
 import './template.css';
 
-const CosmicBackground = lazy(() => import('./components/CosmicBackground'));
 import Navigation from './sections/Navigation';
 import ExactHero from './sections/ExactHero';
 import ExactStats from './sections/ExactStats';
@@ -60,14 +59,10 @@ function App() {
   return (
     <AuthProvider>
     <I18nProvider>
-    <div className="min-h-screen bg-[#F5F0E8] text-[#1a1a2e] overflow-x-hidden">
-      <Suspense fallback={null}>
-          <CosmicBackground />
-        </Suspense>
-      <div className="relative">
       <Navigation />
 
       <main>
+        <Suspense fallback={null}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/kundli" element={<KundliGenerator />} />
@@ -100,12 +95,11 @@ function App() {
           <Route path="/cosmic-calendar" element={<CosmicCalendarPage />} />
           <Route path="/preferences" element={<PreferencesPage />} />
         </Routes>
+        </Suspense>
       </main>
 
       <Footer />
-      </div>
       <WhatsAppWidget />
-    </div>
     </I18nProvider>
     </AuthProvider>
   );

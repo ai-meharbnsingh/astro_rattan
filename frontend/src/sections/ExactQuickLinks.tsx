@@ -9,7 +9,7 @@ export default function ExactQuickLinks() {
         <div className="kicker">Quick Entry Points</div>
         <h2 className="section-title">Choose your starting journey</h2>
         <p className="section-subtitle">
-          Use these clean paths instead of dumping everything on one page.
+          Clean paths to every major feature — no clutter, just clarity.
         </p>
         <div className="tools">
           <div className="tool-card">
@@ -38,7 +38,7 @@ export default function ExactQuickLinks() {
           </div>
           <div className="tool-card">
             <h4>Spiritual Library</h4>
-            <p>Bhagavad Gita, mantra sections, and evergreen content for SEO and retention.</p>
+            <p>Bhagavad Gita, mantra sections, and evergreen spiritual content.</p>
             <div className="spacer-16" />
             <button className="btn btn-primary" onClick={() => navigate('/library')}>
               Open Page

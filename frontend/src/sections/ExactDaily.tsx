@@ -1,4 +1,8 @@
+import { useNavigate } from 'react-router-dom';
+
 export default function ExactDaily() {
+  const navigate = useNavigate();
+
   return (
     <section className="section">
       <div className="container split">
@@ -8,8 +12,8 @@ export default function ExactDaily() {
             Everything important, but not cluttered.
           </h2>
           <p className="section-subtitle" style={{ margin: '0 0 18px', maxWidth: 'none' }}>
-            This template keeps the AstroSage-level feature ambition while presenting it with
-            cleaner cards, softer hierarchy, and separate destination pages.
+            A complete Vedic astrology platform with clean cards, softer hierarchy, and
+            separate destination pages for each feature.
           </p>
           <div className="panel-grid">
             <div>
@@ -17,15 +21,15 @@ export default function ExactDaily() {
                 <h4>Core Modules</h4>
                 <p>
                   Kundli Generation, Horoscope, Dosha Analysis, Matching, Dasha, D9/D10, Panchang,
-                  Muhurat, AI chat, Spiritual Library, Consultation, and Shop.
+                  Muhurat, AI Chat, Spiritual Library, Consultation, and Shop.
                 </p>
               </div>
               <div className="spacer-16" />
               <div className="info-box">
                 <h4>Recommended Stack</h4>
                 <p>
-                  PHP + MySQL + Swiss Ephemeris + OpenAI API. Static template now, backend
-                  integration later.
+                  React + FastAPI + Swiss Ephemeris + Gemini AI. Real-time calculations
+                  with modern architecture.
                 </p>
               </div>
             </div>
@@ -62,7 +66,7 @@ export default function ExactDaily() {
           </div>
         </div>
         <div className="mockup">
-          <img src="/assets/asset-pack-2.png" alt="Rishi and phone mockup" />
+          <img src="/assets/sage-rishi-2.png" alt="Vedic sage illustration" />
         </div>
       </div>
     </section>
