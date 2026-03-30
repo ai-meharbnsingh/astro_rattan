@@ -220,6 +220,7 @@ export default function ConsolidatedReport({
               <div className="flex justify-center" style={{ maxWidth: '250px', margin: '0 auto' }}>
                 <InteractiveKundli
                   chartData={{ planets, houses: result?.chart_data?.houses } as ChartData}
+                  compact
                 />
               </div>
             </div>
@@ -233,7 +234,7 @@ export default function ConsolidatedReport({
                 {loadingDivisional ? (
                   <div className="flex items-center justify-center py-12"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
                 ) : d9ChartData ? (
-                  <InteractiveKundli chartData={d9ChartData} />
+                  <InteractiveKundli chartData={d9ChartData} compact />
                 ) : (
                   <p className="text-[10px] text-center py-12 text-[#1a1a2e]/40">Loading...</p>
                 )}
@@ -249,7 +250,7 @@ export default function ConsolidatedReport({
                 {loadingD10 ? (
                   <div className="flex items-center justify-center py-12"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
                 ) : d10ChartData ? (
-                  <InteractiveKundli chartData={d10ChartData} />
+                  <InteractiveKundli chartData={d10ChartData} compact />
                 ) : (
                   <p className="text-[10px] text-center py-12 text-[#1a1a2e]/40">Loading...</p>
                 )}
@@ -265,7 +266,7 @@ export default function ConsolidatedReport({
                 {loadingTransit ? (
                   <div className="flex items-center justify-center py-12"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
                 ) : transitChartData ? (
-                  <InteractiveKundli chartData={transitChartData} />
+                  <InteractiveKundli chartData={transitChartData} compact />
                 ) : (
                   <p className="text-[10px] text-center py-12 text-[#1a1a2e]/40">Loading...</p>
                 )}

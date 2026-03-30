@@ -20,6 +20,7 @@ interface InteractiveKundliProps {
   chartData: ChartData;
   onPlanetClick?: (planet: PlanetData) => void;
   onHouseClick?: (house: number, sign: string, planets: PlanetData[]) => void;
+  compact?: boolean; // Hide North/South toggle, always show North Indian
 }
 
 type ChartStyle = 'north' | 'south';
@@ -592,7 +593,7 @@ function PlanetBadge({
 }
 
 
-export default function InteractiveKundli({ chartData, onPlanetClick, onHouseClick }: InteractiveKundliProps) {
+export default function InteractiveKundli({ chartData, onPlanetClick, onHouseClick, compact }: InteractiveKundliProps) {
   const { t } = useTranslation();
   const [hoveredHouse, setHoveredHouse] = useState<number | null>(null);
   const [hoveredPlanet, setHoveredPlanet] = useState<string | null>(null);
@@ -983,7 +984,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
   return (
     <div className="relative w-full max-w-[600px]">
       {/* Chart Style Toggle */}
-      <div className="flex justify-center gap-1 mb-3 relative z-20">
+      {!compact && <div className="flex justify-center gap-1 mb-3 relative z-20">
         <button
           onClick={() => setChartStyle('north')}
           className="px-4 py-1.5 text-xs font-semibold rounded-l-md border transition-all duration-200"
@@ -1008,7 +1009,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
         >
           {t('kundli.southIndian')}
         </button>
-      </div>
+      </div>}
 
       {/* Cosmic glow effect behind chart */}
       <div
