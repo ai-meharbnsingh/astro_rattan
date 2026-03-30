@@ -212,17 +212,12 @@ const NORTH_HOUSES: NorthHouse[] = (() => {
   //
   // This creates exactly 12 regions:
 
-  // Top side houses (between top edge and diamond top edges):
-  // House 12: triangle TL, MT, CC  (but CC is where diagonals meet)
-  //   Actually TL to MT to where TL-BR diagonal meets MT...
-  //
-  // Simpler approach -- the standard North Indian chart has these exact triangles:
-  //
   // The square is divided by:
   //   - Two diagonals: TL-BR and TR-BL (crossing at CC)
   //   - Four diamond edges: MT-MR, MR-MB, MB-ML, ML-MT
   //
-  // This yields 12 triangular regions:
+  // This yields 12 triangular/trapezoidal regions.
+  // Houses go ANTI-CLOCKWISE: 1(top) → 2(top-left) → 3(left-top) → ... → 12(top-right)
 
   const houses: NorthHouse[] = [];
 
@@ -412,38 +407,38 @@ const NORTH_HOUSES: NorthHouse[] = (() => {
 
   // Summary of all 12 houses (ANTI-clockwise from top):
   // Standard North Indian (ANTI-clockwise from House 1 at top):
-  //     1  = top center
-  //     2  = top-right
-  //     3  = right-top
-  //     4  = right center
-  //     5  = right-bottom
-  //     6  = bottom-right
+  //     1  = top center (Lagna)
+  //     2  = top-left        (anti-clockwise from 1)
+  //     3  = left-top
+  //     4  = left center
+  //     5  = left-bottom
+  //     6  = bottom-left
   //     7  = bottom center
-  //     8  = bottom-left
-  //     9  = left-bottom
-  //     10 = left center
-  //     11 = left-top
-  //     12 = top-left
+  //     8  = bottom-right
+  //     9  = right-bottom
+  //     10 = right center
+  //     11 = right-top
+  //     12 = top-right       (anti-clockwise back to 1)
 
-  // Top large triangle (TL, TR, CC) subdivisions:
-  //   House 12: TL, MT, P1           (top-left corner triangle)
+  // Top large triangle (TL, TR, CC) subdivisions (anti-clockwise):
+  //   House 2:  TL, MT, P1           (top-left corner triangle)
   //   House 1:  P1, MT, P2, CC       (top center trapezoid -- Lagna)
-  //   House 2:  MT, TR, P2           (top-right corner triangle)
+  //   House 12: MT, TR, P2           (top-right corner triangle)
 
   // Right large triangle (TR, BR, CC) subdivisions:
-  //   House 3:  TR, MR, P2           (right-top corner triangle)
-  //   House 4:  P2, MR, iP3, CC      (right center trapezoid)
-  //   House 5:  MR, BR, iP3          (right-bottom corner triangle)
+  //   House 11: TR, MR, P2           (right-top corner triangle)
+  //   House 10: P2, MR, iP3, CC      (right center trapezoid)
+  //   House 9:  MR, BR, iP3          (right-bottom corner triangle)
 
   // Bottom large triangle (BR, BL, CC) subdivisions:
-  //   House 6:  BR, MB, iP3          (bottom-right corner triangle)
+  //   House 8:  BR, MB, iP3          (bottom-right corner triangle)
   //   House 7:  iP3, MB, iP4, CC     (bottom center trapezoid)
-  //   House 8:  MB, BL, iP4          (bottom-left corner triangle)
+  //   House 6:  MB, BL, iP4          (bottom-left corner triangle)
 
   // Left large triangle (BL, TL, CC) subdivisions:
-  //   House 9:  BL, ML, iP4          (left-bottom corner triangle)
-  //   House 10: iP4, ML, P1, CC      (left center trapezoid)
-  //   House 11: ML, TL, P1           (left-top corner triangle)
+  //   House 5:  BL, ML, iP4          (left-bottom corner triangle)
+  //   House 4:  iP4, ML, P1, CC      (left center trapezoid)
+  //   House 3:  ML, TL, P1           (left-top corner triangle)
 
   const makeTri = (h: number, a: {x:number;y:number}, b: {x:number;y:number}, c: {x:number;y:number}): NorthHouse => {
     const cen = centroid(a, b, c);
@@ -460,39 +455,39 @@ const NORTH_HOUSES: NorthHouse[] = (() => {
    * House 1 at top center, then anti-clockwise: 1 -> 2 -> 3 -> 4...
    * 
    *   House Positions (Anti-clockwise from House 1):
-   *   Top-Left:     House 12
+   *   Top-Left:     House 2
    *   Top-Center:   House 1 (Lagna)
-   *   Top-Right:    House 2
-   *   Right-Top:    House 3
-   *   Right-Center: House 4
-   *   Right-Bottom: House 5
-   *   Bottom-Right: House 6
+   *   Top-Right:    House 12
+   *   Right-Top:    House 11
+   *   Right-Center: House 10
+   *   Right-Bottom: House 9
+   *   Bottom-Right: House 8
    *   Bottom-Center:House 7
-   *   Bottom-Left:  House 8
-   *   Left-Bottom:  House 9
-   *   Left-Center:  House 10
-   *   Left-Top:     House 11
+   *   Bottom-Left:  House 6
+   *   Left-Bottom:  House 5
+   *   Left-Center:  House 4
+   *   Left-Top:     House 3
    */
 
-  // TOP row (left to right: 12, 1, 2)
-  houses.push(makeTri(12, TL, MT, P1));      // Top-left triangle
+  // TOP row (left to right: 2, 1, 12) — anti-clockwise from Lagna
+  houses.push(makeTri(2, TL, MT, P1));       // Top-left triangle
   houses.push(makeQuad(1, P1, MT, P2, CC));  // Top-center (Lagna)
-  houses.push(makeTri(2, MT, TR, P2));       // Top-right triangle
+  houses.push(makeTri(12, MT, TR, P2));      // Top-right triangle
 
-  // RIGHT side (top to bottom: 3, 4, 5)
-  houses.push(makeTri(3, TR, MR, P2));           // Right-top triangle
-  houses.push(makeQuad(4, P2, MR, iP3, CC));     // Right-center
-  houses.push(makeTri(5, MR, BR, iP3));          // Right-bottom triangle
+  // RIGHT side (top to bottom: 11, 10, 9)
+  houses.push(makeTri(11, TR, MR, P2));          // Right-top triangle
+  houses.push(makeQuad(10, P2, MR, iP3, CC));   // Right-center
+  houses.push(makeTri(9, MR, BR, iP3));          // Right-bottom triangle
 
-  // BOTTOM row (right to left: 6, 7, 8)
-  houses.push(makeTri(6, BR, MB, iP3));          // Bottom-right triangle
-  houses.push(makeQuad(7, iP3, MB, iP4, CC));    // Bottom-center
-  houses.push(makeTri(8, MB, BL, iP4));          // Bottom-left triangle
+  // BOTTOM row (right to left: 8, 7, 6)
+  houses.push(makeTri(8, BR, MB, iP3));          // Bottom-right triangle
+  houses.push(makeQuad(7, iP3, MB, iP4, CC));   // Bottom-center
+  houses.push(makeTri(6, MB, BL, iP4));          // Bottom-left triangle
 
-  // LEFT side (bottom to top: 9, 10, 11)
-  houses.push(makeTri(9, BL, ML, iP4));          // Left-bottom triangle
-  houses.push(makeQuad(10, iP4, ML, P1, CC));    // Left-center
-  houses.push(makeTri(11, ML, TL, P1));          // Left-top triangle
+  // LEFT side (bottom to top: 5, 4, 3)
+  houses.push(makeTri(5, BL, ML, iP4));          // Left-bottom triangle
+  houses.push(makeQuad(4, iP4, ML, P1, CC));     // Left-center
+  houses.push(makeTri(3, ML, TL, P1));           // Left-top triangle
 
   return houses;
 })();
