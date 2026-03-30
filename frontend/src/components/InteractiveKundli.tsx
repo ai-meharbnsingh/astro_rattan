@@ -75,10 +75,26 @@ const PLANET_ASPECTS: Record<string, number[]> = {
   Rahu: [5, 7, 9], Ketu: [5, 7, 9],
 };
 
+// JHora-style per-planet colors
+const PLANET_COLORS: Record<string, string> = {
+  Sun: '#E65100',      // deep orange
+  Moon: '#1565C0',     // blue
+  Mars: '#C62828',     // red
+  Mercury: '#2E7D32',  // green
+  Jupiter: '#F9A825',  // golden yellow
+  Venus: '#E91E63',    // pink
+  Saturn: '#1565C0',   // blue
+  Rahu: '#616161',     // grey
+  Ketu: '#795548',     // brown
+  Ascendant: '#9A7B0A',
+  Lagna: '#9A7B0A',
+  Uranus: '#00838F',
+  Neptune: '#4527A0',
+  Pluto: '#37474F',
+};
+
 function getPlanetColor(planet: string): string {
-  if (BENEFIC_PLANETS.includes(planet)) return '#9A7B0A'; // gold
-  if (MALEFIC_PLANETS.includes(planet)) return '#8B2332'; // wax red
-  return '#C0C0C0'; // silver
+  return PLANET_COLORS[planet] || '#3D2B1F';
 }
 
 function getStrength(status: string): { label: string; color: string } {
@@ -493,6 +509,29 @@ const NORTH_HOUSES: NorthHouse[] = (() => {
   return houses;
 })();
 
+// JHora visual constants
+const JHORA_BG = '#F5E6B8';       // warm golden background
+const JHORA_LINE = '#3D2B1F';      // dark brown lines
+const JHORA_LINE_W = 2.2;          // line thickness
+const JHORA_CURVE = 28;            // bezier curve inward offset for concave arcs
+
+// Sign name positions for each house — placed at OUTER EDGES near corners/borders
+// house -> { x, y } for the sign label
+const NORTH_SIGN_POSITIONS: Record<number, { x: number; y: number }> = {
+  1:  { x: CC.x,        y: NI_PAD + 16 },              // top center, near top border
+  2:  { x: NI_PAD + 24, y: NI_PAD + 16 },              // top-left corner
+  12: { x: NI_PAD + NI_INNER - 24, y: NI_PAD + 16 },   // top-right corner
+  3:  { x: NI_PAD + 16, y: NI_PAD + NI_HALF / 2 },     // left-top
+  4:  { x: NI_PAD + 16, y: CC.y },                      // left center
+  5:  { x: NI_PAD + 16, y: NI_PAD + NI_HALF + NI_HALF / 2 }, // left-bottom
+  6:  { x: NI_PAD + 24, y: NI_PAD + NI_INNER - 6 },    // bottom-left corner
+  7:  { x: CC.x,        y: NI_PAD + NI_INNER - 6 },    // bottom center
+  8:  { x: NI_PAD + NI_INNER - 24, y: NI_PAD + NI_INNER - 6 }, // bottom-right corner
+  9:  { x: NI_PAD + NI_INNER - 16, y: NI_PAD + NI_HALF + NI_HALF / 2 }, // right-bottom
+  10: { x: NI_PAD + NI_INNER - 16, y: CC.y },           // right center
+  11: { x: NI_PAD + NI_INNER - 16, y: NI_PAD + NI_HALF / 2 }, // right-top
+};
+
 
 // --- Shared SVG Defs ---
 function SvgDefs() {
@@ -843,75 +882,120 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
   // --- North Indian Chart ---
   const renderNorthIndian = () => {
     const svgSize = NI_SIZE;
+    // Curve offset for concave arcs at midpoints
+    const cv = JHORA_CURVE;
+
+    // JHora-style outer border with concave curves at midpoints.
+    // Each side of the outer square has a concave (inward-dipping) arc
+    // where the diamond edge meets the border.
+    // We draw the outer border as a path with quadratic bezier curves.
+    //
+    // Top side: TL -> curve inward at MT -> TR
+    //   Control point for top concave arc: (MT.x, MT.y + cv) — pushes midpoint downward
+    // Right side: TR -> curve inward at MR -> BR
+    //   Control point: (MR.x - cv, MR.y) — pushes midpoint leftward
+    // Bottom side: BR -> curve inward at MB -> BL
+    //   Control point: (MB.x, MB.y - cv) — pushes midpoint upward
+    // Left side: BL -> curve inward at ML -> TL
+    //   Control point: (ML.x + cv, ML.y) — pushes midpoint rightward
+
+    const outerPath = [
+      `M ${TL.x} ${TL.y}`,
+      `Q ${MT.x} ${MT.y + cv} ${TR.x} ${TR.y}`,    // top side: concave arc
+      `Q ${MR.x - cv} ${MR.y} ${BR.x} ${BR.y}`,    // right side: concave arc
+      `Q ${MB.x} ${MB.y - cv} ${BL.x} ${BL.y}`,    // bottom side: concave arc
+      `Q ${ML.x + cv} ${ML.y} ${TL.x} ${TL.y}`,    // left side: concave arc
+      'Z',
+    ].join(' ');
+
+    // Diamond edges with slight concave curves too (subtler effect)
+    const dcv = cv * 0.4; // smaller curve for diamond edges
+    // Diamond: MT -> MR -> MB -> ML -> MT
+    // Each diamond edge curves slightly inward toward center
+    // MT->MR midpoint is at ~(308,108), control goes toward center
+    const diamondPath = [
+      `M ${MT.x} ${MT.y}`,
+      `Q ${(MT.x + MR.x) / 2 - dcv * 0.5} ${(MT.y + MR.y) / 2 + dcv * 0.5} ${MR.x} ${MR.y}`,
+      `Q ${(MR.x + MB.x) / 2 - dcv * 0.5} ${(MR.y + MB.y) / 2 - dcv * 0.5} ${MB.x} ${MB.y}`,
+      `Q ${(MB.x + ML.x) / 2 + dcv * 0.5} ${(MB.y + ML.y) / 2 - dcv * 0.5} ${ML.x} ${ML.y}`,
+      `Q ${(ML.x + MT.x) / 2 + dcv * 0.5} ${(ML.y + MT.y) / 2 + dcv * 0.5} ${MT.x} ${MT.y}`,
+      'Z',
+    ].join(' ');
+
+    // Center box dimensions
+    const cBoxW = 30;
+    const cBoxH = 22;
 
     return (
       <svg
         viewBox={`0 0 ${svgSize} ${svgSize}`}
         className="w-full h-auto relative z-10"
-        style={{ filter: 'drop-shadow(0 0 12px rgba(212,175,55,0.25))' }}
+        style={{ filter: 'drop-shadow(0 2px 8px rgba(61,43,31,0.15))' }}
       >
         <SvgDefs />
 
-        {/* Outer gold border */}
-        <rect
-          x={NI_PAD - 2}
-          y={NI_PAD - 2}
-          width={NI_INNER + 4}
-          height={NI_INNER + 4}
-          rx={6}
-          fill="none"
-          stroke="url(#kundli-border-grad)"
-          strokeWidth={2.5}
-          filter="url(#glow)"
-        />
-
-        {/* Background fill */}
+        {/* Warm golden background fill */}
         <rect
           x={NI_PAD}
           y={NI_PAD}
           width={NI_INNER}
           height={NI_INNER}
-          rx={4}
-          fill="#E8E0D4"
-          opacity={0.95}
+          fill={JHORA_BG}
         />
 
-        {/* Structural lines: outer border */}
+        {/* Outer border with concave curves (JHora signature) */}
+        <path
+          d={outerPath}
+          fill="none"
+          stroke={JHORA_LINE}
+          strokeWidth={JHORA_LINE_W}
+          strokeLinejoin="round"
+        />
+
+        {/* Diamond with subtle concave curves */}
+        <path
+          d={diamondPath}
+          fill="none"
+          stroke={JHORA_LINE}
+          strokeWidth={JHORA_LINE_W}
+          strokeLinejoin="round"
+        />
+
+        {/* Diagonal lines: TL-BR and TR-BL */}
+        <line x1={TL.x} y1={TL.y} x2={BR.x} y2={BR.y} stroke={JHORA_LINE} strokeWidth={JHORA_LINE_W} />
+        <line x1={TR.x} y1={TR.y} x2={BL.x} y2={BL.y} stroke={JHORA_LINE} strokeWidth={JHORA_LINE_W} />
+
+        {/* Center rectangular box with 4 dots (JHora style) */}
         <rect
-          x={NI_PAD}
-          y={NI_PAD}
-          width={NI_INNER}
-          height={NI_INNER}
-          fill="none"
-          stroke="#8B2332"
-          strokeWidth={2}
-        />
-
-        {/* Structural lines: diamond */}
-        <polygon
-          points={pts(MT, MR, MB, ML)}
-          fill="none"
-          stroke="#8B2332"
+          x={CC.x - cBoxW / 2}
+          y={CC.y - cBoxH / 2}
+          width={cBoxW}
+          height={cBoxH}
+          fill={JHORA_BG}
+          stroke={JHORA_LINE}
           strokeWidth={1.5}
+          rx={2}
         />
-
-        {/* Structural lines: diagonals */}
-        <line x1={TL.x} y1={TL.y} x2={BR.x} y2={BR.y} stroke="#8B2332" strokeWidth={1.5} />
-        <line x1={TR.x} y1={TR.y} x2={BL.x} y2={BL.y} stroke="#8B2332" strokeWidth={1.5} />
-
-        {/* Center dots (like traditional kundli) */}
-        <circle cx={CC.x - 4} cy={CC.y} r={2} fill="#8B2332" opacity={0.5} />
-        <circle cx={CC.x + 4} cy={CC.y} r={2} fill="#8B2332" opacity={0.5} />
-        <circle cx={CC.x} cy={CC.y - 4} r={2} fill="#8B2332" opacity={0.5} />
-        <circle cx={CC.x} cy={CC.y + 4} r={2} fill="#8B2332" opacity={0.5} />
+        {/* 4 dots inside center box in a 2x2 pattern */}
+        <circle cx={CC.x - 6} cy={CC.y - 4} r={2} fill={JHORA_LINE} />
+        <circle cx={CC.x + 6} cy={CC.y - 4} r={2} fill={JHORA_LINE} />
+        <circle cx={CC.x - 6} cy={CC.y + 4} r={2} fill={JHORA_LINE} />
+        <circle cx={CC.x + 6} cy={CC.y + 4} r={2} fill={JHORA_LINE} />
 
         {/* House regions (interactive polygons) */}
         {NORTH_HOUSES.map((nh) => {
           const sign = houseSign(nh.house);
           const isHovered = hoveredHouse === nh.house;
           const housePlanets = planetsByHouse[nh.house] || [];
-          const isCorner = [2, 4, 6, 8, 12, 3, 5, 9, 11].includes(nh.house);
           const isTrapezoid = [1, 4, 7, 10].includes(nh.house);
+          const signPos = NORTH_SIGN_POSITIONS[nh.house];
+          const signAbbr = ZODIAC_ABBREVIATIONS[sign] || sign.slice(0, 3);
+          const rashiNum = ZODIAC_NUMBERS[sign] || '';
+
+          // Determine text anchor for sign names based on house position
+          let signAnchor: string = 'middle';
+          if ([3, 4, 5].includes(nh.house)) signAnchor = 'start';       // left side houses
+          if ([9, 10, 11].includes(nh.house)) signAnchor = 'end';       // right side houses
 
           return (
             <g
@@ -928,28 +1012,42 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
               {/* House polygon (hover highlight) */}
               <polygon
                 points={nh.points}
-                fill={isHovered ? 'rgba(184,134,11,0.08)' : 'transparent'}
+                fill={isHovered ? 'rgba(61,43,31,0.06)' : 'transparent'}
                 stroke="none"
                 style={{ transition: 'fill 0.2s ease' }}
               />
 
-              {/* Rashi Number (zodiac sign number) */}
+              {/* Sign name at outer edge */}
+              {signPos && (
+                <text
+                  x={signPos.x}
+                  y={signPos.y}
+                  textAnchor={signAnchor}
+                  fill={JHORA_LINE}
+                  fontSize={9}
+                  fontFamily="serif"
+                  opacity={0.7}
+                >
+                  {signAbbr}
+                </text>
+              )}
+
+              {/* Rashi Number inside house */}
               <text
                 x={nh.cx}
-                y={nh.cy - (housePlanets.length > 0 ? 8 : 0) + 5}
+                y={nh.cy - (housePlanets.length > 0 ? 10 : 0) + 5}
                 textAnchor="middle"
-                fill="#8B2332"
-                fontSize={isCorner ? 16 : 20}
+                fill={JHORA_LINE}
+                fontSize={isTrapezoid ? 16 : 13}
                 fontWeight="bold"
                 fontFamily="serif"
-                opacity={0.9}
+                opacity={0.85}
               >
-                {ZODIAC_NUMBERS[sign] || ''}
+                {rashiNum}
               </text>
 
-              {/* Planets in this house */}
+              {/* Planets in this house — using per-planet colors */}
               {housePlanets.map((p, idx) => {
-                // Arrange planets in a compact layout within the house region
                 const maxCols = isTrapezoid ? 3 : 2;
                 const cols = Math.min(housePlanets.length, maxCols);
                 const pRow = Math.floor(idx / cols);
@@ -957,7 +1055,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                 const spacing = isTrapezoid ? 26 : 24;
                 const startX = nh.cx - ((cols - 1) * spacing) / 2;
                 const px = startX + pCol * spacing;
-                const baseY = nh.cy + (isTrapezoid ? 12 : 8) - (housePlanets.length > 0 ? 2 : 0);
+                const baseY = nh.cy + (isTrapezoid ? 14 : 8) - (housePlanets.length > 0 ? 2 : 0);
                 const py = baseY + pRow * 22;
 
                 return (
