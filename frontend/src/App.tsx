@@ -7,11 +7,12 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 const CosmicBackground = lazy(() => import('./components/CosmicBackground'));
 import Navigation from './sections/Navigation';
-import Hero from './sections/Hero';
-import Features from './sections/Features';
-import About from './sections/About';
-import Testimonials from './sections/Testimonials';
-import CTA from './sections/CTA';
+import ExactHero from './sections/ExactHero';
+import ExactStats from './sections/ExactStats';
+import ExactDaily from './sections/ExactDaily';
+import ExactQuickLinks from './sections/ExactQuickLinks';
+import ExactAIAssistant from './sections/ExactAIAssistant';
+import ExactRecommended from './sections/ExactRecommended';
 import Footer from './sections/Footer';
 import DailyHoroscope from './sections/DailyHoroscope';
 import Panchang from './sections/Panchang';
@@ -72,12 +73,30 @@ function HomePage() {
   }, []);
 
   return (
-    <div ref={mainRef}>
-      <Hero />
-      <Features />
-      <About />
-      <Testimonials />
-      <CTA />
+    <div ref={mainRef} className="space-y-0"
+         style={{
+           background: 'linear-gradient(135deg, #F5E6C8 0%, #EDE0C8 30%, #F0DFC0 60%, #E8D5B0 100%)',
+           backgroundAttachment: 'fixed',
+           position: 'relative',
+         }}>
+      {/* Subtle parchment noise overlay */}
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        pointerEvents: 'none',
+        zIndex: 0,
+        opacity: 0.04,
+        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+        backgroundRepeat: 'repeat',
+      }} />
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <ExactHero />
+        <ExactStats />
+        <ExactDaily />
+        <ExactQuickLinks />
+        <ExactAIAssistant />
+        <ExactRecommended />
+      </div>
     </div>
   );
 }
