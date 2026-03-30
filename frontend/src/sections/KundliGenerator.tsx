@@ -599,9 +599,9 @@ export default function KundliGenerator() {
 
               {/* JHora-style Summary Popup */}
               <Dialog open={jhoraOpen} onOpenChange={setJhoraOpen}>
-                <DialogContent className="max-w-[100vw] max-h-[100vh] w-[100vw] h-[100vh] p-0 overflow-hidden border-none rounded-none m-0" showCloseButton={false}>
+                <DialogContent className="fixed inset-0 max-w-none max-h-none w-screen h-screen p-0 overflow-hidden border-none rounded-none m-0 translate-x-0 translate-y-0" showCloseButton={false}>
                   <DialogTitle className="sr-only">JHora Kundli View</DialogTitle>
-                  <div className="relative">
+                  <div className="w-screen h-screen overflow-hidden relative">
                     <button onClick={() => setJhoraOpen(false)} className="absolute top-1 right-1 z-10 p-1 hover:bg-gray-200 rounded text-gray-600">
                       <X className="w-4 h-4" />
                     </button>

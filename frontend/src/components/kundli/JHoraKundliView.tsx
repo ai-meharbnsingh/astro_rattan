@@ -272,14 +272,15 @@ export default function JHoraKundliView({
   return (
     <div style={{
       width: '100%',
-      height: '100vh',
+      height: '100%',
       overflow: 'hidden',
       background: '#fff',
       fontFamily: MONO,
       fontSize: '9px',
       display: 'grid',
-      gridTemplateRows: '50% 30% 20%',
+      gridTemplateRows: '48% 30% 22%',
       gridTemplateColumns: '1fr',
+      boxSizing: 'border-box',
     }}>
 
       {/* === ROW 1 (50%): D1 Chart (35%) | Planet Table (65%) === */}
