@@ -1046,7 +1046,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                 {rashiNum}
               </text>
 
-              {/* Planets in this house — using per-planet colors */}
+              {/* Planets in this house — JHora plain colored text (no circles) */}
               {housePlanets.map((p, idx) => {
                 const maxCols = isTrapezoid ? 3 : 2;
                 const cols = Math.min(housePlanets.length, maxCols);
@@ -1056,20 +1056,23 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                 const startX = nh.cx - ((cols - 1) * spacing) / 2;
                 const px = startX + pCol * spacing;
                 const baseY = nh.cy + (isTrapezoid ? 14 : 8) - (housePlanets.length > 0 ? 2 : 0);
-                const py = baseY + pRow * 22;
+                const py = baseY + pRow * 18;
 
                 return (
-                  <PlanetBadge
+                  <text
                     key={p.planet}
-                    planet={p}
-                    px={px}
-                    py={py}
-                    hoveredPlanet={hoveredPlanet}
-                    setHoveredPlanet={setHoveredPlanet}
-                    showPlanetTooltip={showPlanetTooltip}
-                    hideTooltip={hideTooltip}
-                    onPlanetClick={onPlanetClick}
-                  />
+                    x={px}
+                    y={py}
+                    textAnchor="middle"
+                    fill={getPlanetColor(p.planet)}
+                    fontSize={11}
+                    fontWeight="bold"
+                    fontFamily="serif"
+                    style={{ cursor: 'pointer' }}
+                    onClick={(e) => { e.stopPropagation(); onPlanetClick?.(p); }}
+                  >
+                    {PLANET_ABBREVIATIONS[p.planet] || p.planet.slice(0, 2)}
+                  </text>
                 );
               })}
             </g>
