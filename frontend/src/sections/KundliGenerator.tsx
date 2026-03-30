@@ -552,31 +552,7 @@ export default function KundliGenerator() {
           {/* REPORT TAB — Consolidated single-page view */}
           <TabsContent value="report">
             <div className="space-y-6">
-              {/* View Report Buttons */}
-              <div className="flex justify-center gap-4">
-                <Button
-                  size="lg"
-                  className="bg-[#d4af37] text-black hover:bg-[#ffd700] px-8"
-                  onClick={() => setSummaryOpen(true)}
-                >
-                  <ScrollText className="w-5 h-5 mr-2" />
-                  View Summary
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-[#d4af37]/50 text-[#d4af37] hover:bg-[#d4af37]/10 px-8"
-                  onClick={() => {
-                    fetchTransit();
-                    setReportOpen(true);
-                  }}
-                >
-                  <ScrollText className="w-5 h-5 mr-2" />
-                  View Full Report
-                </Button>
-              </div>
-
-              {/* Consolidated Report Popup */}
+              {/* Consolidated Report Popup (accessible from PDF/Print actions) */}
               <ConsolidatedReport
                 open={reportOpen}
                 onOpenChange={setReportOpen}
