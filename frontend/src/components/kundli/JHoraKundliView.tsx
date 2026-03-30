@@ -148,14 +148,25 @@ export default function JHoraKundliView({
   extendedDashaData,
   avakhadaData,
   shadbalaData,
+  divisionalData,
+  d10Data,
+  transitData,
   loadingDasha,
   loadingAvakhada,
   loadingShadbala,
+  loadingDivisional,
+  loadingD10,
+  loadingTransit,
   onBack,
   onDownloadPDF,
 }: JHoraKundliViewProps) {
 
   const dasha = extendedDashaData || dashaData;
+
+  // Build divisional chart data from props
+  const d9ChartData = useMemo(() => buildDivisionalChartData(divisionalData), [divisionalData]);
+  const d10ChartData = useMemo(() => buildDivisionalChartData(d10Data), [d10Data]);
+  const transitChartData = useMemo(() => buildTransitChartData(transitData), [transitData]);
 
   // Lordship rows
   const lordships = useMemo(() => {
@@ -227,6 +238,28 @@ export default function JHoraKundliView({
     padding: '2px 5px',
   };
 
+  // Chart cell label style
+  const chartLabel: React.CSSProperties = {
+    fontFamily: SERIF,
+    fontSize: '10px',
+    color: HEADER_COLOR,
+    fontWeight: 600,
+    textAlign: 'center' as const,
+    padding: '2px 0 1px 0',
+    flexShrink: 0,
+  };
+
+  // Chart cell wrapper style
+  const chartCell: React.CSSProperties = {
+    overflow: 'hidden',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    borderBottom: BORDER,
+    padding: '2px',
+    boxSizing: 'border-box',
+  };
+
   return (
     <div style={{
       width: '100%',
@@ -236,39 +269,22 @@ export default function JHoraKundliView({
       fontFamily: SERIF,
       fontSize: '11px',
       display: 'grid',
-      gridTemplateRows: '60% 40%',
-      gridTemplateColumns: '1fr',
+      gridTemplateColumns: '35% 65%',
       boxSizing: 'border-box',
     }}>
 
-      {/* ═══════════ ROW 1 (60%): D1 Chart | Planet Positions Table ═══════════ */}
+      {/* ═══════════ LEFT COLUMN (35%): D1 | Transit | D9 | D10 ═══════════ */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: '38% 62%',
+        gridTemplateRows: '45% 18% 18% 19%',
         overflow: 'hidden',
-        borderBottom: BORDER,
+        borderRight: BORDER,
       }}>
 
-        {/* ── Left: Birth Chart (D1) ── */}
-        <div style={{
-          borderRight: BORDER,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          overflow: 'hidden',
-          padding: '8px',
-        }}>
-          <div style={{
-            fontFamily: SERIF,
-            fontSize: '12px',
-            color: HEADER_COLOR,
-            fontWeight: 600,
-            marginBottom: '4px',
-          }}>
-            Birth Chart (D1)
-          </div>
-          <div style={{ width: '100%', maxWidth: '380px' }}>
+        {/* ── D1 Birth Chart (45%) ── */}
+        <div style={chartCell}>
+          <div style={chartLabel}>Birth Chart (D1)</div>
+          <div style={{ flex: 1, width: '100%', maxWidth: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
             <InteractiveKundli
               chartData={{ planets, houses: result?.chart_data?.houses } as ChartData}
               compact
@@ -276,140 +292,97 @@ export default function JHoraKundliView({
           </div>
         </div>
 
-        {/* ── Right: Planet Positions Table ── */}
-        <div style={{ overflow: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr>
-                {['Planet', 'Sign', 'House', 'Degree', 'Nakshatra', 'Status'].map((h) => (
-                  <th key={h} style={{
-                    ...thBase,
-                    textAlign: h === 'House' ? 'center' : h === 'Degree' ? 'right' : 'left',
-                  }}>
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {planets.map((p, i) => (
-                <tr key={i} style={{ background: i % 2 === 0 ? 'transparent' : ALT_ROW }}>
-                  <td style={{
-                    ...cellBase,
-                    color: planetColor(p.planet),
-                    fontWeight: 600,
-                    textAlign: 'left',
-                  }}>
-                    {p.planet}
-                  </td>
-                  <td style={{ ...cellBase, textAlign: 'left' }}>
-                    {p.sign}
-                  </td>
-                  <td style={{ ...cellBase, textAlign: 'center' }}>
-                    {p.house || '-'}
-                  </td>
-                  <td style={{ ...cellBase, textAlign: 'right' }}>
-                    {fmtDegree(p.sign_degree)}
-                  </td>
-                  <td style={{ ...cellBase, textAlign: 'left' }}>
-                    {p.nakshatra || '-'}
-                  </td>
-                  <td style={{
-                    ...cellBase,
-                    textAlign: 'left',
-                    color: statusColor(p.status),
-                    fontWeight: (p.status?.toLowerCase().includes('exalted') || p.status?.toLowerCase().includes('debilitated')) ? 600 : 400,
-                  }}>
-                    {p.status || '-'}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        {/* ── Transit (18%) ── */}
+        <div style={chartCell}>
+          <div style={chartLabel}>Transit</div>
+          <div style={{ flex: 1, width: '100%', maxWidth: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+            {loadingTransit ? <MiniLoader /> : transitChartData ? (
+              <InteractiveKundli chartData={transitChartData} compact />
+            ) : (
+              <span style={{ color: MUTED, fontSize: '10px' }}>Loading...</span>
+            )}
+          </div>
+        </div>
+
+        {/* ── D9 Navamsha (18%) ── */}
+        <div style={chartCell}>
+          <div style={chartLabel}>Navamsha (D9)</div>
+          <div style={{ flex: 1, width: '100%', maxWidth: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+            {loadingDivisional ? <MiniLoader /> : d9ChartData ? (
+              <InteractiveKundli chartData={d9ChartData} compact />
+            ) : (
+              <span style={{ color: MUTED, fontSize: '10px' }}>--</span>
+            )}
+          </div>
+        </div>
+
+        {/* ── D10 Dashamsha (19%) ── */}
+        <div style={{ ...chartCell, borderBottom: 'none' }}>
+          <div style={chartLabel}>Dashamsha (D10)</div>
+          <div style={{ flex: 1, width: '100%', maxWidth: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+            {loadingD10 ? <MiniLoader /> : d10ChartData ? (
+              <InteractiveKundli chartData={d10ChartData} compact />
+            ) : (
+              <span style={{ color: MUTED, fontSize: '10px' }}>--</span>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* ═══════════ ROW 2 (40%): Dasha | Lordships | Avakhada | Shadbala ═══════════ */}
+      {/* ═══════════ RIGHT COLUMN (65%): Planet Table | Dasha+Lordships | Avakhada+Shadbala ═══════════ */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: '25% 25% 25% 25%',
+        gridTemplateRows: '45% 27% 28%',
         overflow: 'hidden',
       }}>
 
-        {/* ── Col 1: Vimshottari Dasha ── */}
-        <div style={{ borderRight: BORDER, overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
-          <SectionHeader>Vimshottari Dasha</SectionHeader>
-          {loadingDasha ? <MiniLoader /> : dasha ? (
-            <div style={{ flex: 1, overflow: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr>
-                    {['Planet', 'Start', 'End', 'Yrs'].map((h) => (
-                      <th key={h} style={thCompact}>{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {mahadashaPeriods.map((md: any, i: number) => (
-                    <tr key={i} style={{
-                      background: md.isCurrent ? '#FEF3C7' : (i % 2 === 0 ? 'transparent' : ALT_ROW),
-                    }}>
-                      <td style={{
-                        ...cellCompact,
-                        color: planetColor(md.planet),
-                        fontWeight: 600,
-                      }}>
-                        {md.planet}
-                      </td>
-                      <td style={cellCompact}>
-                        {md.start ? md.start.slice(0, 10) : '-'}
-                      </td>
-                      <td style={cellCompact}>
-                        {md.end ? md.end.slice(0, 10) : '-'}
-                      </td>
-                      <td style={{ ...cellCompact, textAlign: 'center' }}>
-                        {md.years || '-'}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div style={{ padding: '8px', color: MUTED, textAlign: 'center', fontSize: '10px' }}>--</div>
-          )}
-        </div>
-
-        {/* ── Col 2: House Lordships ── */}
-        <div style={{ borderRight: BORDER, overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
-          <SectionHeader>Lordships</SectionHeader>
+        {/* ── Row 1: Planet Positions Table (45%) ── */}
+        <div style={{ overflow: 'hidden', borderBottom: BORDER, display: 'flex', flexDirection: 'column' }}>
+          <SectionHeader>Planet Positions</SectionHeader>
           <div style={{ flex: 1, overflow: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr>
-                  {['H', 'Sign', 'Lord', 'In H'].map((h) => (
-                    <th key={h} style={thCompact}>{h}</th>
+                  {['Planet', 'Sign', 'House', 'Degree', 'Nakshatra', 'Status'].map((h) => (
+                    <th key={h} style={{
+                      ...thBase,
+                      textAlign: h === 'House' ? 'center' : h === 'Degree' ? 'right' : 'left',
+                    }}>
+                      {h}
+                    </th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {lordships.map((l, i) => (
-                  <tr key={l.houseNum} style={{ background: i % 2 === 0 ? 'transparent' : ALT_ROW }}>
-                    <td style={{ ...cellCompact, textAlign: 'center', fontWeight: 600 }}>
-                      {l.houseNum}
+                {planets.map((p, i) => (
+                  <tr key={i} style={{ background: i % 2 === 0 ? 'transparent' : ALT_ROW }}>
+                    <td style={{
+                      ...cellBase,
+                      color: planetColor(p.planet),
+                      fontWeight: 600,
+                      textAlign: 'left',
+                    }}>
+                      {p.planet}
                     </td>
-                    <td style={cellCompact}>
-                      {signAbbr(l.signName)}
+                    <td style={{ ...cellBase, textAlign: 'left' }}>
+                      {p.sign}
+                    </td>
+                    <td style={{ ...cellBase, textAlign: 'center' }}>
+                      {p.house || '-'}
+                    </td>
+                    <td style={{ ...cellBase, textAlign: 'right' }}>
+                      {fmtDegree(p.sign_degree)}
+                    </td>
+                    <td style={{ ...cellBase, textAlign: 'left' }}>
+                      {p.nakshatra || '-'}
                     </td>
                     <td style={{
-                      ...cellCompact,
-                      color: planetColor(l.lord),
-                      fontWeight: 600,
+                      ...cellBase,
+                      textAlign: 'left',
+                      color: statusColor(p.status),
+                      fontWeight: (p.status?.toLowerCase().includes('exalted') || p.status?.toLowerCase().includes('debilitated')) ? 600 : 400,
                     }}>
-                      {l.lord}
-                    </td>
-                    <td style={{ ...cellCompact, textAlign: 'center' }}>
-                      {l.lordHouse}
+                      {p.status || '-'}
                     </td>
                   </tr>
                 ))}
@@ -418,102 +391,201 @@ export default function JHoraKundliView({
           </div>
         </div>
 
-        {/* ── Col 3: Avakhada Chakra ── */}
-        <div style={{ borderRight: BORDER, overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
-          <SectionHeader>Avakhada Chakra</SectionHeader>
-          {loadingAvakhada ? <MiniLoader /> : avakhadaData ? (
-            <div style={{ flex: 1, overflow: 'auto', padding: '2px 0' }}>
-              {[
-                { k: 'Asc', v: avakhadaData.ascendant },
-                { k: 'Asc Lord', v: avakhadaData.ascendant_lord },
-                { k: 'Rashi', v: avakhadaData.rashi },
-                { k: 'Rashi Lord', v: avakhadaData.rashi_lord },
-                { k: 'Nakshatra', v: avakhadaData.nakshatra ? `${avakhadaData.nakshatra} P${avakhadaData.nakshatra_pada}` : '-' },
-                { k: 'Yoga', v: avakhadaData.yoga },
-                { k: 'Karana', v: avakhadaData.karana },
-                { k: 'Yoni', v: avakhadaData.yoni },
-                { k: 'Gana', v: avakhadaData.gana },
-                { k: 'Nadi', v: avakhadaData.nadi },
-              ].map((item) => (
-                <div key={item.k} style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  padding: '2px 8px',
-                  borderBottom: `1px solid ${BORDER_COLOR}`,
-                  fontFamily: SERIF,
-                  fontSize: '10px',
-                }}>
-                  <span style={{ color: MUTED }}>{item.k}</span>
-                  <span style={{ color: HEADER_COLOR, fontWeight: 600 }}>{item.v || '-'}</span>
-                </div>
-              ))}
+        {/* ── Row 2: Vimshottari Dasha (50%) | Lordships (50%) — 27% height ── */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: '50% 50%',
+          overflow: 'hidden',
+          borderBottom: BORDER,
+        }}>
+
+          {/* Vimshottari Dasha */}
+          <div style={{ borderRight: BORDER, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <SectionHeader>Vimshottari Dasha</SectionHeader>
+            {loadingDasha ? <MiniLoader /> : dasha ? (
+              <div style={{ flex: 1, overflow: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr>
+                      {['Planet', 'Start', 'End', 'Yrs'].map((h) => (
+                        <th key={h} style={thCompact}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {mahadashaPeriods.map((md: any, i: number) => (
+                      <tr key={i} style={{
+                        background: md.isCurrent ? '#FEF3C7' : (i % 2 === 0 ? 'transparent' : ALT_ROW),
+                      }}>
+                        <td style={{
+                          ...cellCompact,
+                          color: planetColor(md.planet),
+                          fontWeight: 600,
+                        }}>
+                          {md.planet}
+                        </td>
+                        <td style={cellCompact}>
+                          {md.start ? md.start.slice(0, 10) : '-'}
+                        </td>
+                        <td style={cellCompact}>
+                          {md.end ? md.end.slice(0, 10) : '-'}
+                        </td>
+                        <td style={{ ...cellCompact, textAlign: 'center' }}>
+                          {md.years || '-'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div style={{ padding: '8px', color: MUTED, textAlign: 'center', fontSize: '10px' }}>--</div>
+            )}
+          </div>
+
+          {/* Lordships */}
+          <div style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <SectionHeader>Lordships</SectionHeader>
+            <div style={{ flex: 1, overflow: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr>
+                    {['H', 'Sign', 'Lord', 'In H'].map((h) => (
+                      <th key={h} style={thCompact}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {lordships.map((l, i) => (
+                    <tr key={l.houseNum} style={{ background: i % 2 === 0 ? 'transparent' : ALT_ROW }}>
+                      <td style={{ ...cellCompact, textAlign: 'center', fontWeight: 600 }}>
+                        {l.houseNum}
+                      </td>
+                      <td style={cellCompact}>
+                        {signAbbr(l.signName)}
+                      </td>
+                      <td style={{
+                        ...cellCompact,
+                        color: planetColor(l.lord),
+                        fontWeight: 600,
+                      }}>
+                        {l.lord}
+                      </td>
+                      <td style={{ ...cellCompact, textAlign: 'center' }}>
+                        {l.lordHouse}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          ) : (
-            <div style={{ padding: '8px', color: MUTED, textAlign: 'center', fontSize: '10px' }}>--</div>
-          )}
+          </div>
         </div>
 
-        {/* ── Col 4: Shadbala ── */}
-        <div style={{ overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
-          <SectionHeader>Shadbala</SectionHeader>
-          {loadingShadbala ? <MiniLoader /> : shadbalaData?.planets ? (
-            <div style={{ flex: 1, overflow: 'auto', padding: '4px 8px' }}>
-              {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
-                const data = shadbalaData.planets[planet];
-                if (!data) return null;
-                const ratio = data.total / data.required;
-                const pct = Math.min(ratio * 100, 100);
-                return (
-                  <div key={planet} style={{
+        {/* ── Row 3: Avakhada Chakra (50%) | Shadbala (50%) — 28% height ── */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: '50% 50%',
+          overflow: 'hidden',
+        }}>
+
+          {/* Avakhada Chakra */}
+          <div style={{ borderRight: BORDER, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <SectionHeader>Avakhada Chakra</SectionHeader>
+            {loadingAvakhada ? <MiniLoader /> : avakhadaData ? (
+              <div style={{ flex: 1, overflow: 'auto', padding: '2px 0' }}>
+                {[
+                  { k: 'Asc', v: avakhadaData.ascendant },
+                  { k: 'Asc Lord', v: avakhadaData.ascendant_lord },
+                  { k: 'Rashi', v: avakhadaData.rashi },
+                  { k: 'Rashi Lord', v: avakhadaData.rashi_lord },
+                  { k: 'Nakshatra', v: avakhadaData.nakshatra ? `${avakhadaData.nakshatra} P${avakhadaData.nakshatra_pada}` : '-' },
+                  { k: 'Yoga', v: avakhadaData.yoga },
+                  { k: 'Karana', v: avakhadaData.karana },
+                  { k: 'Yoni', v: avakhadaData.yoni },
+                  { k: 'Gana', v: avakhadaData.gana },
+                  { k: 'Nadi', v: avakhadaData.nadi },
+                ].map((item) => (
+                  <div key={item.k} style={{
                     display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    padding: '3px 0',
+                    justifyContent: 'space-between',
+                    padding: '2px 8px',
+                    borderBottom: `1px solid ${BORDER_COLOR}`,
                     fontFamily: SERIF,
                     fontSize: '10px',
                   }}>
-                    <span style={{
-                      width: '52px',
-                      flexShrink: 0,
-                      color: planetColor(planet),
-                      fontWeight: 600,
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                    }}>
-                      {planet}
-                    </span>
-                    <div style={{
-                      flex: 1,
-                      height: '12px',
-                      background: '#E8E0D0',
-                      borderRadius: '2px',
-                      overflow: 'hidden',
-                    }}>
-                      <div style={{
-                        height: '100%',
-                        width: `${pct}%`,
-                        background: '#4CAF50',
-                        borderRadius: '2px',
-                        transition: 'width 0.3s ease',
-                      }} />
-                    </div>
-                    <span style={{
-                      width: '32px',
-                      flexShrink: 0,
-                      textAlign: 'right',
-                      color: ratio >= 1 ? '#4CAF50' : '#DC2626',
-                      fontWeight: 600,
-                    }}>
-                      {ratio.toFixed(2)}
-                    </span>
+                    <span style={{ color: MUTED }}>{item.k}</span>
+                    <span style={{ color: HEADER_COLOR, fontWeight: 600 }}>{item.v || '-'}</span>
                   </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div style={{ padding: '8px', color: MUTED, textAlign: 'center', fontSize: '10px' }}>--</div>
-          )}
+                ))}
+              </div>
+            ) : (
+              <div style={{ padding: '8px', color: MUTED, textAlign: 'center', fontSize: '10px' }}>--</div>
+            )}
+          </div>
+
+          {/* Shadbala */}
+          <div style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <SectionHeader>Shadbala</SectionHeader>
+            {loadingShadbala ? <MiniLoader /> : shadbalaData?.planets ? (
+              <div style={{ flex: 1, overflow: 'auto', padding: '4px 8px' }}>
+                {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
+                  const data = shadbalaData.planets[planet];
+                  if (!data) return null;
+                  const ratio = data.total / data.required;
+                  const pct = Math.min(ratio * 100, 100);
+                  return (
+                    <div key={planet} style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '3px 0',
+                      fontFamily: SERIF,
+                      fontSize: '10px',
+                    }}>
+                      <span style={{
+                        width: '52px',
+                        flexShrink: 0,
+                        color: planetColor(planet),
+                        fontWeight: 600,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}>
+                        {planet}
+                      </span>
+                      <div style={{
+                        flex: 1,
+                        height: '12px',
+                        background: '#E8E0D0',
+                        borderRadius: '2px',
+                        overflow: 'hidden',
+                      }}>
+                        <div style={{
+                          height: '100%',
+                          width: `${pct}%`,
+                          background: '#4CAF50',
+                          borderRadius: '2px',
+                          transition: 'width 0.3s ease',
+                        }} />
+                      </div>
+                      <span style={{
+                        width: '32px',
+                        flexShrink: 0,
+                        textAlign: 'right',
+                        color: ratio >= 1 ? '#4CAF50' : '#DC2626',
+                        fontWeight: 600,
+                      }}>
+                        {ratio.toFixed(2)}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div style={{ padding: '8px', color: MUTED, textAlign: 'center', fontSize: '10px' }}>--</div>
+            )}
+          </div>
         </div>
       </div>
     </div>
