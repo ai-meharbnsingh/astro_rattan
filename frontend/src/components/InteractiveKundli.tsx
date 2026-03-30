@@ -934,29 +934,16 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
 
               {/* Rashi Number (zodiac sign number) */}
               <text
-                x={nh.cx - (isCorner ? 6 : 10)}
-                y={nh.cy - (housePlanets.length > 0 ? 8 : 2) + 5}
+                x={nh.cx}
+                y={nh.cy - (housePlanets.length > 0 ? 8 : 0) + 5}
                 textAnchor="middle"
                 fill="#8B2332"
-                fontSize={isCorner ? 16 : 18}
+                fontSize={isCorner ? 16 : 20}
                 fontWeight="bold"
                 fontFamily="serif"
                 opacity={0.9}
               >
                 {ZODIAC_NUMBERS[sign] || ''}
-              </text>
-
-              {/* Rashi Name (abbreviated) */}
-              <text
-                x={nh.cx + (isCorner ? 10 : 14)}
-                y={nh.cy - (housePlanets.length > 0 ? 8 : 2) + 5}
-                textAnchor="middle"
-                fill="#8B2332"
-                fontSize={isCorner ? 10 : 12}
-                fontFamily="serif"
-                opacity={0.7}
-              >
-                {ZODIAC_ABBREVIATIONS[sign] || sign?.slice(0, 3)}
               </text>
 
               {/* Planets in this house */}
