@@ -1,102 +1,99 @@
-/* Google Fonts - Traditional Indian Style */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Noto+Sans:wght@300;400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ========================================
-   KIMI VEDIC PARCHMENT THEME
-   Exact template from Kimi Agent
+   IO-GITA PARCHMENT THEME — Light + Warm
+   Ancient manuscript · Modern computation
    ======================================== */
 
 @layer base {
   :root {
-    --radius: 0.625rem;
-    --background: #F5E6D3;
-    --foreground: #5D4037;
-    --card: #FFF8E7;
-    --card-foreground: #5D4037;
-    --popover: #FFF8E7;
-    --popover-foreground: #5D4037;
-    --primary: #D2691E;
-    --primary-foreground: #FFFFFF;
-    --secondary: #E8D4BC;
-    --secondary-foreground: #5D4037;
-    --muted: #E8D4BC;
-    --muted-foreground: #8D6E63;
-    --accent: #DAA520;
-    --accent-foreground: #5D4037;
-    --destructive: #DC2626;
-    --border: #D4A574;
-    --input: #E8D4BC;
-    --ring: #D2691E;
+    /* Parchment Light Theme */
+    --parchment: #F5F0E8;
+    --parchment-dark: #E8E0D4;
+    --ink: #1a1a2e;
+    --ink-light: #4a4a5e;
 
-    /* Custom Colors */
-    --color-parchment: #F5E6D3;
-    --color-parchment-dark: #E8D4BC;
-    --color-amber: #D2691E;
-    --color-amber-dark: #8B4513;
-    --color-gold: #DAA520;
-    --color-gold-light: #FFD700;
-    --color-brown: #5D4037;
-    --color-brown-light: #8D6E63;
-    --color-cream: #FFF8E7;
-    --color-saffron: #FF9933;
-    --color-saffron-dark: #E65100;
+    /* Aged Gold Accents */
+    --aged-gold: #B8860B;
+    --aged-gold-dim: #9A7B0A;
+    --aged-gold-light: #D4A052;
 
-    /* Legacy compatibility */
-    --parchment: #F5E6D3;
-    --parchment-dark: #E8D4BC;
-    --ink: #5D4037;
-    --ink-light: #8D6E63;
-    --aged-gold: #DAA520;
-    --aged-gold-dim: #B8860B;
-    --aged-gold-light: #FFD700;
+    /* Wax Red (buttons, seals) */
     --wax-red: #8B2332;
     --wax-red-hover: #A52A2A;
     --wax-red-deep: #8B0000;
-    --brown: #8D6E63;
+
+    /* Warm Browns */
+    --brown: #8B7355;
     --brown-light: rgba(139, 115, 85, 0.2);
     --coffee: rgba(139, 69, 19, 0.1);
-    --text-primary: #5D4037;
-    --text-secondary: #8D6E63;
-    --text-muted: #8D6E63;
-    --cosmic-bg: #F5E6D3;
-    --cosmic-bg-light: #E8D4BC;
-    --cosmic-surface: #F5E6D3;
-    --cosmic-card: rgba(255, 248, 231, 0.6);
-    --cosmic-card-hover: rgba(255, 248, 231, 0.8);
-    --cosmic-border: rgba(212, 165, 116, 0.4);
-    --cosmic-border-hover: rgba(218, 165, 32, 0.4);
-    --cosmic-text: #5D4037;
-    --cosmic-text-secondary: #8D6E63;
-    --cosmic-text-muted: #8D6E63;
-    --sacred-gold: #DAA520;
-    --sacred-gold-dark: #B8860B;
-    --sacred-gold-light: #FFD700;
-    --sacred-saffron: #FF9933;
-    --sacred-saffron-dark: #E65100;
-    --sacred-saffron-light: #FFB74D;
-    --sacred-purple: #F5E6D3;
-    --sacred-purple-light: #E8D4BC;
-    --sacred-violet: #DAA520;
 
-    --chart-1: 25 76% 46%;
-    --chart-2: 43 74% 49%;
-    --chart-3: 25 35% 55%;
-    --chart-4: 16 15% 47%;
-    --chart-5: 16 25% 30%;
-    --chart-6: 25 60% 45%;
+    /* Text Colors */
+    --text-primary: #1a1a2e;
+    --text-secondary: #4a4a5e;
+    --text-muted: #8B7355;
 
-    --sidebar: 30 33% 88%;
-    --sidebar-foreground: 16 25% 30%;
-    --sidebar-primary: 25 76% 46%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 30 33% 82%;
-    --sidebar-accent-foreground: 16 25% 30%;
-    --sidebar-border: 25 35% 55% / 0.2;
-    --sidebar-ring: 25 76% 46%;
+    /* Legacy compatibility */
+    --cosmic-bg: #F5F0E8;
+    --cosmic-bg-light: #E8E0D4;
+    --cosmic-surface: #F5F0E8;
+    --cosmic-card: rgba(245, 240, 232, 0.6);
+    --cosmic-card-hover: rgba(245, 240, 232, 0.8);
+    --cosmic-border: rgba(139, 115, 85, 0.2);
+    --cosmic-border-hover: rgba(184, 134, 11, 0.4);
+    --cosmic-text: #1a1a2e;
+    --cosmic-text-secondary: #4a4a5e;
+    --cosmic-text-muted: #8B7355;
+
+    --sacred-gold: #B8860B;
+    --sacred-gold-dark: #9A7B0A;
+    --sacred-gold-light: #D4A052;
+    --sacred-saffron: #B8860B;
+    --sacred-saffron-dark: #9A7B0A;
+    --sacred-saffron-light: #D4A052;
+    --sacred-purple: #F5F0E8;
+    --sacred-purple-light: #E8E0D4;
+    --sacred-violet: #B8860B;
+
+    /* shadcn HSL tokens — parchment light */
+    --background: 38 33% 93%;
+    --foreground: 240 27% 14%;
+    --card: 38 33% 93%;
+    --card-foreground: 240 27% 14%;
+    --popover: 38 33% 90%;
+    --popover-foreground: 240 27% 14%;
+    --primary: 38 85% 38%;
+    --primary-foreground: 38 33% 93%;
+    --secondary: 32 20% 87%;
+    --secondary-foreground: 240 27% 14%;
+    --muted: 32 20% 87%;
+    --muted-foreground: 30 18% 44%;
+    --accent: 350 62% 34%;
+    --accent-foreground: 38 33% 93%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 30 18% 44% / 0.2;
+    --input: 30 18% 44% / 0.15;
+    --ring: 38 85% 38%;
+    --radius: 0.5rem;
+
+    --chart-1: 38 85% 38%;
+    --chart-2: 350 62% 34%;
+    --chart-3: 30 35% 55%;
+    --chart-4: 30 18% 44%;
+    --chart-5: 240 27% 14%;
+    --chart-6: 38 60% 45%;
+
+    --sidebar: 38 33% 90%;
+    --sidebar-foreground: 240 27% 14%;
+    --sidebar-primary: 38 85% 38%;
+    --sidebar-primary-foreground: 38 33% 93%;
+    --sidebar-accent: 32 20% 87%;
+    --sidebar-accent-foreground: 240 27% 14%;
+    --sidebar-border: 30 18% 44% / 0.2;
+    --sidebar-ring: 38 85% 38%;
   }
 }
 
@@ -104,26 +101,32 @@
   * { @apply border-border; }
   html {
     scroll-behavior: smooth;
-    font-size: 16px;
+    font-size: 18px;
   }
   body {
-    background: #F5E6D3;
-    color: #5D4037;
-    font-family: 'Noto Sans', sans-serif;
+    background: #F5F0E8;
+    color: #1a1a2e;
     font-feature-settings: "rlig" 1, "calt" 1;
     line-height: 1.6;
   }
 
-  /* Selection color */
-  ::selection {
-    background-color: rgba(210, 105, 30, 0.3);
-    color: #5D4037;
+  /* Typography scale */
+  h1 { font-size: 3rem !important; line-height: 1.2 !important; }
+  h2 { font-size: 2.25rem !important; line-height: 1.3 !important; }
+  h3 { font-size: 1.75rem !important; line-height: 1.4 !important; }
+  p, span { font-size: 1.1rem !important; }
+
+  @media (max-width: 768px) {
+    html { font-size: 16px; }
+    h1 { font-size: 2.5rem !important; }
+    h2 { font-size: 2rem !important; }
+    h3 { font-size: 1.5rem !important; }
   }
 
-  /* Focus styles */
-  *:focus-visible {
-    outline: 2px solid #D2691E;
-    outline-offset: 2px;
+  /* Selection color */
+  ::selection {
+    background: rgba(184, 134, 11, 0.3);
+    color: #1a1a2e;
   }
 }
 
@@ -328,380 +331,17 @@
   padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0.75rem));
 }
 
-/* ========================================
-   KIMI TEMPLATE — Exact CSS Classes
-   ======================================== */
-
-/* Parchment Background Texture */
-.parchment-bg {
-  background-color: #F5E6D3;
-  background-image:
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"),
-    linear-gradient(135deg, #F5E6D3 0%, #E8D4BC 50%, #F5E6D3 100%);
-  background-blend-mode: soft-light, normal;
-}
-
-/* Ornamental Border Pattern */
-.ornamental-border {
-  position: relative;
-}
-.ornamental-border::before,
-.ornamental-border::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 20px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20'%3E%3Cpath d='M0,10 Q25,0 50,10 T100,10' fill='none' stroke='%23D4A574' stroke-width='1'/%3E%3C/svg%3E");
-  background-repeat: repeat-x;
-  background-size: 100px 20px;
-}
-.ornamental-border::before { top: 0; }
-.ornamental-border::after { bottom: 0; transform: rotate(180deg); }
-
-/* Decorative Corner Ornaments */
-.corner-ornament {
-  position: absolute;
-  width: 60px;
-  height: 60px;
-  opacity: 0.6;
-}
-.corner-ornament-tl {
-  top: -10px;
-  left: -10px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cpath d='M5,30 Q5,5 30,5 M5,30 Q5,55 30,55' fill='none' stroke='%23D4A574' stroke-width='2'/%3E%3Ccircle cx='15' cy='15' r='3' fill='%23DAA520'/%3E%3Ccircle cx='15' cy='45' r='3' fill='%23DAA520'/%3E%3C/svg%3E") no-repeat center;
-}
-.corner-ornament-tr {
-  top: -10px;
-  right: -10px;
-  transform: rotate(90deg);
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cpath d='M5,30 Q5,5 30,5 M5,30 Q5,55 30,55' fill='none' stroke='%23D4A574' stroke-width='2'/%3E%3Ccircle cx='15' cy='15' r='3' fill='%23DAA520'/%3E%3Ccircle cx='15' cy='45' r='3' fill='%23DAA520'/%3E%3C/svg%3E") no-repeat center;
-}
-.corner-ornament-bl {
-  bottom: -10px;
-  left: -10px;
-  transform: rotate(-90deg);
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cpath d='M5,30 Q5,5 30,5 M5,30 Q5,55 30,55' fill='none' stroke='%23D4A574' stroke-width='2'/%3E%3Ccircle cx='15' cy='15' r='3' fill='%23DAA520'/%3E%3Ccircle cx='15' cy='45' r='3' fill='%23DAA520'/%3E%3C/svg%3E") no-repeat center;
-}
-.corner-ornament-br {
-  bottom: -10px;
-  right: -10px;
-  transform: rotate(180deg);
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cpath d='M5,30 Q5,5 30,5 M5,30 Q5,55 30,55' fill='none' stroke='%23D4A574' stroke-width='2'/%3E%3Ccircle cx='15' cy='15' r='3' fill='%23DAA520'/%3E%3Ccircle cx='15' cy='45' r='3' fill='%23DAA520'/%3E%3C/svg%3E") no-repeat center;
-}
-
-/* Vedic Card Styles */
-.vedic-card {
-  background: linear-gradient(145deg, #FFF8E7 0%, #F5E6D3 100%);
-  border: 2px solid #D4A574;
-  border-radius: 16px;
-  box-shadow:
-    0 4px 6px -1px rgba(139, 69, 19, 0.1),
-    0 2px 4px -1px rgba(139, 69, 19, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  position: relative;
-  overflow: hidden;
-}
-.vedic-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #D2691E, #DAA520, #D2691E);
-}
-.vedic-card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.vedic-card:hover {
-  box-shadow:
-    0 10px 15px -3px rgba(139, 69, 19, 0.15),
-    0 4px 6px -2px rgba(139, 69, 19, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-}
-
-/* Vedic Button Styles */
-.btn-vedic {
-  background: linear-gradient(145deg, #D2691E 0%, #8B4513 100%);
-  color: white;
-  border: none;
-  border-radius: 24px;
-  padding: 10px 24px;
-  font-family: 'Noto Sans', sans-serif;
-  font-weight: 500;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(139, 69, 19, 0.2);
-  position: relative;
-  overflow: hidden;
-}
-.btn-vedic:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(139, 69, 19, 0.3);
-  background: linear-gradient(145deg, #E67E22 0%, #A0522D 100%);
-}
-.btn-vedic::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  transition: width 0.3s, height 0.3s;
-}
-.btn-vedic:active::after {
-  width: 200%;
-  height: 200%;
-}
-
-.btn-vedic-outline {
-  background: transparent;
-  color: #8B4513;
-  border: 2px solid #D4A574;
-  border-radius: 24px;
-  padding: 8px 20px;
-  font-family: 'Noto Sans', sans-serif;
-  font-weight: 500;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-.btn-vedic-outline:hover {
-  background: rgba(210, 105, 30, 0.1);
-  border-color: #D2691E;
-}
-.btn-vedic-outline::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  transition: width 0.3s, height 0.3s;
-}
-.btn-vedic-outline:active::after {
-  width: 200%;
-  height: 200%;
-}
-
-/* Section Title Styles */
-.section-title {
-  font-family: 'Cinzel', serif;
-  font-weight: 600;
-  font-size: 1.5rem;
-  color: #5D4037;
-  text-align: center;
-  position: relative;
-  display: inline-block;
-}
-.section-title::after {
-  content: '';
-  position: absolute;
-  bottom: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60px;
-  height: 3px;
-  background: linear-gradient(90deg, transparent, #DAA520, transparent);
-}
-
-/* Star Decoration */
-.star-decoration {
-  color: #DAA520;
-  font-size: 0.8em;
-  animation: sparkle 2s ease-in-out infinite;
-}
-
-@keyframes sparkle {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(1.1); }
-}
-
-/* Stats Counter */
-.stat-number {
-  font-family: 'Cinzel', serif;
-  font-weight: 700;
-  font-size: 1.75rem;
-  color: #8B4513;
-}
-.stat-label {
-  font-family: 'Noto Sans', sans-serif;
-  font-size: 0.75rem;
-  color: #8D6E63;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-/* Phone Mockup */
-.phone-mockup {
-  background: #1a1a1a;
-  border-radius: 40px;
-  padding: 12px;
-  box-shadow:
-    0 25px 50px -12px rgba(0, 0, 0, 0.5),
-    0 0 0 2px #333;
-}
-.phone-screen {
-  background: #FFF8E7;
-  border-radius: 32px;
-  overflow: hidden;
-  height: 100%;
-}
-
-/* Chat Bubble */
-.chat-bubble {
-  border-radius: 18px;
-  padding: 12px 16px;
-  max-width: 85%;
-  font-size: 13px;
-  line-height: 1.5;
-  animation: fadeInUp 0.3s ease forwards;
-  opacity: 0;
-  transform: translateY(10px);
-}
-.chat-bubble:nth-child(1) { animation-delay: 0.1s; }
-.chat-bubble:nth-child(2) { animation-delay: 0.2s; }
-.chat-bubble:nth-child(3) { animation-delay: 0.3s; }
-.chat-bubble:nth-child(4) { animation-delay: 0.4s; }
-
-@keyframes fadeInUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.chat-bubble-user {
-  background: #D2691E;
-  color: white;
-  border-bottom-right-radius: 4px;
-  align-self: flex-end;
-}
-.chat-bubble-bot {
-  background: #E8D4BC;
-  color: #5D4037;
-  border-bottom-left-radius: 4px;
-  align-self: flex-start;
-}
-
-/* Icon Container */
-.icon-container {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(145deg, #FFF8E7, #E8D4BC);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #D4A574;
-}
-
-/* Star Rating */
-.star-rating { color: #DAA520; }
-
-/* Zodiac Wheel Background */
-.zodiac-wheel-bg {
-  position: absolute;
-  opacity: 0.05;
-  pointer-events: none;
-}
-
-/* Vedic Tab Styles */
-.vedic-tab {
-  background: transparent;
-  border: none;
-  color: #8D6E63;
-  font-family: 'Noto Sans', sans-serif;
-  font-weight: 500;
-  font-size: 14px;
-  padding: 8px 16px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.vedic-tab:hover {
-  color: #D2691E;
-  background: rgba(210, 105, 30, 0.1);
-}
-.vedic-tab.active {
-  color: #D2691E;
-  background: rgba(210, 105, 30, 0.15);
-}
-
-/* Floating animation */
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-
-/* Shimmer effect */
-.animate-shimmer {
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-  background-size: 200% 100%;
-  animation: shimmer 2s infinite;
-}
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-/* Image hover zoom */
-.group:hover img {
-  transform: scale(1.05);
-}
-.group img {
-  transition: transform 0.3s ease;
-}
-
-/* Scrollbar — Kimi parchment style */
+/* Scrollbar — parchment track, gold thumb */
 ::-webkit-scrollbar {
   width: 8px;
-  height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #E8D4BC;
-  border-radius: 4px;
+  background: #E8E0D4;
 }
 ::-webkit-scrollbar-thumb {
-  background: #D4A574;
+  background: #B8860B;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #D2691E;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .section-title { font-size: 1.25rem; }
-  .stat-number { font-size: 1.25rem; }
-  .vedic-card { border-radius: 12px; }
-  .phone-mockup { width: 260px; }
-}
-
-/* Print styles */
-@media print {
-  .parchment-bg { background: white !important; }
-  .vedic-card { box-shadow: none !important; border: 1px solid #ccc !important; }
-}
-
-/* Dark mode overrides - keeping light theme for this design */
-.dark {
-  --background: #F5E6D3;
-  --foreground: #5D4037;
+  background: #9A7B0A;
 }
