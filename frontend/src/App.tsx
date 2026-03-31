@@ -1,13 +1,13 @@
 import { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { I18nProvider } from './lib/i18n';
-import { AuthProvider } from './hooks/useAuth';
+import { AuthProvider, useAuth } from './hooks/useAuth';
 
 const CosmicBackground = lazy(() => import('./components/CosmicBackground'));
 import Navigation from './sections/Navigation';
 import Footer from './sections/Footer';
 
-/* Kimi Exact Template Sections */
+/* Kimi Exact Template Sections (landing page — before login) */
 import ServiceCards from './sections/ServiceCards';
 import StatsBar from './sections/StatsBar';
 import DailyInsights from './sections/DailyInsights';
@@ -15,6 +15,7 @@ import CategoryTabs from './sections/CategoryTabs';
 import AiAstrologyAssistant from './sections/AiAstrologyAssistant';
 import RecommendedSection from './sections/RecommendedSection';
 import ShopSection from './sections/ShopSection';
+
 import DailyHoroscope from './sections/DailyHoroscope';
 import Panchang from './sections/Panchang';
 import SpiritualLibrary from './sections/SpiritualLibrary';
@@ -45,7 +46,8 @@ import CosmicCalendarPage from './sections/CosmicCalendarPage';
 import PreferencesPage from './sections/PreferencesPage';
 import WhatsAppWidget from './components/WhatsAppWidget';
 
-function HomePage() {
+/* Landing page — Kimi template for visitors (not logged in) */
+function LandingPage() {
   return (
     <div className="min-h-screen parchment-bg">
       {/* Decorative Background Pattern */}
@@ -91,6 +93,15 @@ function HomePage() {
       </main>
     </div>
   );
+}
+
+/* Home route — Kimi template if visitor, Dashboard if logged in */
+function HomePage() {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) return null;
+
+  return isAuthenticated ? <Dashboard /> : <LandingPage />;
 }
 
 function App() {
