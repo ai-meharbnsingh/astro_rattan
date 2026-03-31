@@ -1,18 +1,20 @@
-import { useEffect, useRef, lazy, Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { I18nProvider } from './lib/i18n';
 import { AuthProvider } from './hooks/useAuth';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 const CosmicBackground = lazy(() => import('./components/CosmicBackground'));
 import Navigation from './sections/Navigation';
-import Hero from './sections/Hero';
-import Features from './sections/Features';
-import About from './sections/About';
-import Testimonials from './sections/Testimonials';
-import CTA from './sections/CTA';
 import Footer from './sections/Footer';
+
+/* Kimi Exact Template Sections */
+import ServiceCards from './sections/ServiceCards';
+import StatsBar from './sections/StatsBar';
+import DailyInsights from './sections/DailyInsights';
+import CategoryTabs from './sections/CategoryTabs';
+import AiAstrologyAssistant from './sections/AiAstrologyAssistant';
+import RecommendedSection from './sections/RecommendedSection';
+import ShopSection from './sections/ShopSection';
 import DailyHoroscope from './sections/DailyHoroscope';
 import Panchang from './sections/Panchang';
 import SpiritualLibrary from './sections/SpiritualLibrary';
@@ -43,41 +45,50 @@ import CosmicCalendarPage from './sections/CosmicCalendarPage';
 import PreferencesPage from './sections/PreferencesPage';
 import WhatsAppWidget from './components/WhatsAppWidget';
 
-gsap.registerPlugin(ScrollTrigger);
-
 function HomePage() {
-  const mainRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.utils.toArray<HTMLElement>('.animate-section').forEach((section) => {
-        gsap.fromTo(section,
-          { opacity: 0, y: 50 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.8,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: section,
-              start: 'top 80%',
-              toggleActions: 'play none none reverse'
-            }
-          }
-        );
-      });
-    }, mainRef);
-
-    return () => ctx.revert();
-  }, []);
-
   return (
-    <div ref={mainRef}>
-      <Hero />
-      <Features />
-      <About />
-      <Testimonials />
-      <CTA />
+    <div className="min-h-screen parchment-bg">
+      {/* Decorative Background Pattern */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <svg
+          className="absolute -right-40 -top-40 w-96 h-96 opacity-5"
+          viewBox="0 0 200 200"
+        >
+          <circle cx="100" cy="100" r="90" fill="none" stroke="#8B4513" strokeWidth="1" />
+          <circle cx="100" cy="100" r="70" fill="none" stroke="#8B4513" strokeWidth="1" />
+          <circle cx="100" cy="100" r="50" fill="none" stroke="#8B4513" strokeWidth="1" />
+          {[...Array(12)].map((_, i) => (
+            <line
+              key={i}
+              x1="100"
+              y1="10"
+              x2="100"
+              y2="30"
+              stroke="#8B4513"
+              strokeWidth="1"
+              transform={`rotate(${i * 30} 100 100)`}
+            />
+          ))}
+        </svg>
+        <svg
+          className="absolute -left-20 bottom-20 w-64 h-64 opacity-5"
+          viewBox="0 0 200 200"
+        >
+          <circle cx="100" cy="100" r="90" fill="none" stroke="#8B4513" strokeWidth="1" />
+          <circle cx="100" cy="100" r="70" fill="none" stroke="#8B4513" strokeWidth="1" />
+        </svg>
+      </div>
+
+      {/* Main Content */}
+      <main className="relative z-10">
+        <ServiceCards />
+        <StatsBar />
+        <DailyInsights />
+        <CategoryTabs />
+        <AiAstrologyAssistant />
+        <RecommendedSection />
+        <ShopSection />
+      </main>
     </div>
   );
 }
@@ -86,7 +97,7 @@ function App() {
   return (
     <AuthProvider>
     <I18nProvider>
-    <div className="min-h-screen bg-[#F5F0E8] text-[#1a1a2e] overflow-x-hidden">
+    <div className="min-h-screen bg-[#F5E6D3] text-[#5D4037] overflow-x-hidden">
       <Suspense fallback={null}>
           <CosmicBackground />
         </Suspense>

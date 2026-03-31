@@ -1,42 +1,157 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* App-specific styles — Kimi Exact Template */
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* Custom selection color */
+::selection {
+  background-color: rgba(210, 105, 30, 0.3);
+  color: #5D4037;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
+/* Focus styles */
+*:focus-visible {
+  outline: 2px solid #D2691E;
+  outline-offset: 2px;
+}
+
+/* Button hover lift effect */
+.btn-vedic,
+.btn-vedic-outline {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-vedic::after,
+.btn-vedic-outline::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s;
+}
+
+.btn-vedic:active::after,
+.btn-vedic-outline:active::after {
+  width: 200%;
+  height: 200%;
+}
+
+/* Card hover effects */
+.vedic-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.vedic-card:hover {
+  box-shadow:
+    0 10px 15px -3px rgba(139, 69, 19, 0.15),
+    0 4px 6px -2px rgba(139, 69, 19, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+/* Image hover zoom */
+.group:hover img {
+  transform: scale(1.05);
+}
+
+.group img {
+  transition: transform 0.3s ease;
+}
+
+/* Phone mockup shadow */
+.phone-mockup {
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    0 0 0 2px #333,
+    0 0 0 4px #1a1a1a;
+}
+
+/* Chat bubble animations */
+.chat-bubble {
+  animation: fadeInUp 0.3s ease forwards;
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.chat-bubble:nth-child(1) { animation-delay: 0.1s; }
+.chat-bubble:nth-child(2) { animation-delay: 0.2s; }
+.chat-bubble:nth-child(3) { animation-delay: 0.3s; }
+.chat-bubble:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes fadeInUp {
   to {
-    transform: rotate(360deg);
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+/* Star sparkle animation */
+.star-decoration {
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.1); }
+}
+
+/* Floating animation for decorative elements */
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Shimmer effect for loading states */
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .phone-mockup {
+    width: 260px;
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+  }
+
+  .stat-number {
+    font-size: 1.25rem;
   }
 }
 
-.card {
-  padding: 2em;
-}
+/* Print styles */
+@media print {
+  .parchment-bg {
+    background: white !important;
+  }
 
-.read-the-docs {
-  color: #888;
+  .vedic-card {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+  }
 }
