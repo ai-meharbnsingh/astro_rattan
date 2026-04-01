@@ -454,16 +454,46 @@ export default function KundliGenerator() {
 
   // --- RESULT VIEW ---
   if (step === 'result' && result) {
+    // Dignity map for calculating planet status
+    const dignityMap: Record<string, { exalted: string[]; debilitated: string[]; own: string[] }> = {
+      Sun: { exalted: ['Aries'], debilitated: ['Libra'], own: ['Leo'] },
+      Moon: { exalted: ['Taurus'], debilitated: ['Scorpio'], own: ['Cancer'] },
+      Mars: { exalted: ['Capricorn'], debilitated: ['Cancer'], own: ['Aries', 'Scorpio'] },
+      Mercury: { exalted: ['Virgo'], debilitated: ['Pisces'], own: ['Gemini', 'Virgo'] },
+      Jupiter: { exalted: ['Cancer'], debilitated: ['Capricorn'], own: ['Sagittarius', 'Pisces'] },
+      Venus: { exalted: ['Pisces'], debilitated: ['Virgo'], own: ['Taurus', 'Libra'] },
+      Saturn: { exalted: ['Libra'], debilitated: ['Aries'], own: ['Capricorn', 'Aquarius'] },
+      Rahu: { exalted: ['Gemini', 'Taurus'], debilitated: ['Sagittarius', 'Scorpio'], own: [] },
+      Ketu: { exalted: ['Sagittarius', 'Scorpio'], debilitated: ['Gemini', 'Taurus'], own: [] },
+    };
+    const calcDignity = (planet: string, sign: string): string => {
+      const d = dignityMap[planet];
+      if (!d) return 'Neutral';
+      if (d.exalted.includes(sign)) return 'Exalted';
+      if (d.debilitated.includes(sign)) return 'Debilitated';
+      if (d.own.includes(sign)) return 'Own Sign';
+      return 'Neutral';
+    };
+
     const planetsRaw = result.chart_data?.planets || {};
     const planets = Array.isArray(planetsRaw)
-      ? planetsRaw
+      ? planetsRaw.map((p: any) => ({
+          ...p,
+          status: p.status && !['Transiting', 'Entering', 'Leaving'].includes(p.status) ? p.status : calcDignity(p.planet, p.sign),
+          is_retrograde: p.is_retrograde || p.retrograde || (p.status?.toLowerCase()?.includes('retrograde')),
+          is_combust: p.is_combust || p.combust || (p.status?.toLowerCase()?.includes('combust')),
+          is_vargottama: p.is_vargottama || p.vargottama || (p.status?.toLowerCase()?.includes('vargottama')),
+        }))
       : Object.entries(planetsRaw).map(([name, data]: [string, any]) => ({
           planet: name,
           sign: data?.sign || 'Unknown',
           house: data?.house || 0,
           nakshatra: data?.nakshatra || '',
           sign_degree: data?.sign_degree || 0,
-          status: data?.sign_degree < 5 ? 'Entering' : data?.sign_degree > 25 ? 'Leaving' : 'Transiting',
+          status: data?.status && !['Transiting', 'Entering', 'Leaving'].includes(data.status) ? data.status : calcDignity(name, data?.sign || ''),
+          is_retrograde: data?.is_retrograde || data?.retrograde || false,
+          is_combust: data?.is_combust || data?.combust || false,
+          is_vargottama: data?.is_vargottama || data?.vargottama || false,
         }));
 
     // Dosha display data
