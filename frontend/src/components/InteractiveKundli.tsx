@@ -1034,20 +1034,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                 style={{ transition: 'fill 0.2s ease' }}
               />
 
-              {/* Sign name at outer edge */}
-              {signPos && (
-                <text
-                  x={signPos.x}
-                  y={signPos.y}
-                  textAnchor={signAnchor}
-                  fill={JHORA_LINE}
-                  fontSize={11}
-                  fontFamily="serif"
-                  opacity={0.7}
-                >
-                  {signAbbr}
-                </text>
-              )}
+              {/* Sign name hidden — only house numbers shown */}
 
               {/* Rashi Number inside house */}
               <text
