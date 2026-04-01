@@ -9,6 +9,9 @@ export interface PlanetData {
   nakshatra: string;
   sign_degree: number;
   status: string;
+  is_retrograde?: boolean;
+  is_combust?: boolean;
+  is_vargottama?: boolean;
 }
 
 export interface ChartData {
@@ -95,6 +98,20 @@ const PLANET_COLORS: Record<string, string> = {
 
 function getPlanetColor(planet: string): string {
   return PLANET_COLORS[planet] || '#3D2B1F';
+}
+
+// Build planet label with status symbols (AstroSage style)
+// * Retrograde  ^ Combust  □ Vargottama  ↑ Exalted  ↓ Debilitated
+function getPlanetLabel(p: PlanetData): string {
+  const abbr = PLANET_ABBREVIATIONS[p.planet] || p.planet.slice(0, 2);
+  let suffix = '';
+  const s = p.status?.toLowerCase() || '';
+  if (p.is_retrograde || s.includes('retrograde')) suffix += '*';
+  if (p.is_combust || s.includes('combust')) suffix += '^';
+  if (p.is_vargottama || s.includes('vargottama')) suffix += '\u25A1';
+  if (s.includes('exalted')) suffix += '\u2191';
+  if (s.includes('debilitated')) suffix += '\u2193';
+  return abbr + suffix;
 }
 
 function getStrength(status: string): { label: string; color: string } {
@@ -585,7 +602,7 @@ function PlanetBadge({
 }: PlanetBadgeProps) {
   const color = getPlanetColor(p.planet);
   const isHovered = hoveredPlanet === p.planet;
-  const abbr = PLANET_ABBREVIATIONS[p.planet] || p.planet.slice(0, 2);
+  const label = getPlanetLabel(p);
 
   return (
     <g
@@ -625,7 +642,7 @@ function PlanetBadge({
         fontFamily="serif"
         style={{ pointerEvents: 'none', transition: 'fill 0.2s ease' }}
       >
-        {abbr}
+        {label}
       </text>
     </g>
   );
@@ -1046,33 +1063,50 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                 {rashiNum}
               </text>
 
-              {/* Planets in this house — JHora plain colored text (no circles) */}
+              {/* Planets in this house — JHora plain colored text with status symbols */}
               {housePlanets.map((p, idx) => {
                 const maxCols = isTrapezoid ? 3 : 2;
                 const cols = Math.min(housePlanets.length, maxCols);
                 const pRow = Math.floor(idx / cols);
                 const pCol = idx % cols;
-                const spacing = isTrapezoid ? 26 : 24;
+                const spacing = isTrapezoid ? 28 : 26;
                 const startX = nh.cx - ((cols - 1) * spacing) / 2;
                 const px = startX + pCol * spacing;
                 const baseY = nh.cy + (isTrapezoid ? 14 : 8) - (housePlanets.length > 0 ? 2 : 0);
                 const py = baseY + pRow * 18;
+                const label = getPlanetLabel(p);
+                const degreeLabel = Math.round(p.sign_degree || 0);
 
                 return (
-                  <text
-                    key={p.planet}
-                    x={px}
-                    y={py}
-                    textAnchor="middle"
-                    fill={getPlanetColor(p.planet)}
-                    fontSize={11}
-                    fontWeight="bold"
-                    fontFamily="serif"
-                    style={{ cursor: 'pointer' }}
-                    onClick={(e) => { e.stopPropagation(); onPlanetClick?.(p); }}
-                  >
-                    {PLANET_ABBREVIATIONS[p.planet] || p.planet.slice(0, 2)}
-                  </text>
+                  <g key={p.planet}>
+                    {/* Degree superscript */}
+                    <text
+                      x={px}
+                      y={py - 8}
+                      textAnchor="middle"
+                      fill={getPlanetColor(p.planet)}
+                      fontSize={7}
+                      fontFamily="serif"
+                      opacity={0.7}
+                      style={{ pointerEvents: 'none' }}
+                    >
+                      {degreeLabel < 100 ? String(degreeLabel).padStart(2, '0') : degreeLabel}
+                    </text>
+                    {/* Planet abbreviation + status symbols */}
+                    <text
+                      x={px}
+                      y={py}
+                      textAnchor="middle"
+                      fill={getPlanetColor(p.planet)}
+                      fontSize={11}
+                      fontWeight="bold"
+                      fontFamily="serif"
+                      style={{ cursor: 'pointer' }}
+                      onClick={(e) => { e.stopPropagation(); onPlanetClick?.(p); }}
+                    >
+                      {label}
+                    </text>
+                  </g>
                 );
               })}
             </g>
@@ -1140,6 +1174,19 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// Legend component for chart status symbols
+export function ChartLegend() {
+  return (
+    <div className="flex flex-wrap gap-x-4 gap-y-1 justify-center text-xs mt-2 px-2" style={{ color: '#5D4037', fontFamily: 'serif' }}>
+      <span><strong>*</strong> Retrograde</span>
+      <span><strong>^</strong> Combust</span>
+      <span><strong>{'\u25A1'}</strong> Vargottama</span>
+      <span><strong>{'\u2191'}</strong> Exalted</span>
+      <span><strong>{'\u2193'}</strong> Debilitated</span>
     </div>
   );
 }

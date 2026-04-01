@@ -7,7 +7,7 @@ import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/lib/i18n';
 import { isPuterAvailable, puterChatStream, VEDIC_SYSTEM_PROMPT } from '@/lib/puter-ai';
-import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
+import InteractiveKundli, { ChartLegend, type PlanetData, type ChartData } from '@/components/InteractiveKundli';
 import { PLANET_ASPECTS, getHouseSignificance, DIVISIONAL_CHART_OPTIONS } from '@/components/kundli/kundli-utils';
 import KundliForm, { type KundliFormData } from '@/components/kundli/KundliForm';
 import KundliList from '@/components/kundli/KundliList';
@@ -284,6 +284,7 @@ export default function KundliGenerator() {
       fetchAshtakvarga();
       fetchShadbala();
       fetchDivisional('D9');
+      fetchTransit();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, result?.id]);
@@ -689,20 +690,87 @@ export default function KundliGenerator() {
                 <p className="text-sm text-sacred-text-secondary mt-1">{result.person_name} | {result.birth_date} | {result.birth_time} | {result.birth_place}</p>
               </div>
 
-              {/* Grid layout — 2 columns on desktop, 1 on mobile */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 print:grid-cols-2">
-
-                {/* 1. Birth Chart (Rashi) */}
-                <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
-                  <h4 className="font-display font-semibold text-sacred-brown mb-3">Rashi Chart (D1)</h4>
+              {/* Charts row — Lagna, Moon, Gochar side by side */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 print:grid-cols-3">
+                {/* 1. Lagna Chart (D1) */}
+                <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-3">
+                  <h4 className="font-display font-semibold text-sacred-brown mb-2 text-center text-sm">Lagna</h4>
                   <div className="flex justify-center">
                     <InteractiveKundli
                       chartData={{ planets, houses: result.chart_data?.houses } as ChartData}
                       onPlanetClick={handlePlanetClick}
                       onHouseClick={handleHouseClick}
+                      compact
                     />
                   </div>
                 </div>
+
+                {/* 2. Moon Chart — houses shifted so Moon's house = 1 */}
+                <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-3">
+                  <h4 className="font-display font-semibold text-sacred-brown mb-2 text-center text-sm">Moon</h4>
+                  <div className="flex justify-center">
+                    {(() => {
+                      const moonPlanet = planets.find((p: PlanetData) => p.planet === 'Moon');
+                      const moonHouse = moonPlanet?.house || 1;
+                      const shift = moonHouse - 1;
+                      const moonPlanets = planets.map((p: PlanetData) => ({
+                        ...p,
+                        house: ((p.house - 1 - shift + 12) % 12) + 1,
+                      }));
+                      const moonHouses = result.chart_data?.houses
+                        ? result.chart_data.houses.map((h: { number: number; sign: string }) => ({
+                            number: ((h.number - 1 - shift + 12) % 12) + 1,
+                            sign: h.sign,
+                          }))
+                        : undefined;
+                      return (
+                        <InteractiveKundli
+                          chartData={{ planets: moonPlanets, houses: moonHouses } as ChartData}
+                          onPlanetClick={handlePlanetClick}
+                          onHouseClick={handleHouseClick}
+                          compact
+                        />
+                      );
+                    })()}
+                  </div>
+                </div>
+
+                {/* 3. Gochar (Transit) Chart */}
+                <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-3">
+                  <h4 className="font-display font-semibold text-sacred-brown mb-2 text-center text-sm">Gochar {transitData?.transit_date ? `(${transitData.transit_date})` : ''}</h4>
+                  <div className="flex justify-center">
+                    {loadingTransit ? (
+                      <div className="flex items-center justify-center py-12"><Loader2 className="w-5 h-5 animate-spin text-sacred-gold" /></div>
+                    ) : transitData?.transits ? (
+                      <InteractiveKundli
+                        chartData={{
+                          planets: transitData.transits.map((tr: any) => ({
+                            planet: tr.planet,
+                            sign: tr.current_sign || tr.sign || '',
+                            house: tr.current_house || tr.house || 1,
+                            nakshatra: tr.nakshatra || '',
+                            sign_degree: tr.degree || tr.sign_degree || 0,
+                            status: tr.is_retrograde ? 'Retrograde' : '',
+                            is_retrograde: tr.is_retrograde,
+                          })),
+                          houses: result.chart_data?.houses,
+                        } as ChartData}
+                        onPlanetClick={handlePlanetClick}
+                        onHouseClick={handleHouseClick}
+                        compact
+                      />
+                    ) : (
+                      <p className="text-center text-sacred-text-secondary py-12 text-sm">Loading transit...</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Chart Legend */}
+              <ChartLegend />
+
+              {/* Grid layout — 2 columns on desktop, 1 on mobile */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 print:grid-cols-2">
 
                 {/* 2. Planet Details Table */}
                 <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
