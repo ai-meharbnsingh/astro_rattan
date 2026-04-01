@@ -9,8 +9,7 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
   const { t } = useTranslation();
 
   return (
-    <div className="space-y-4">
-      <div className="overflow-x-auto">
+    <div className="overflow-x-auto">
         <table className="w-full text-xs">
           <thead className="bg-sacred-gold/10">
             <tr>
