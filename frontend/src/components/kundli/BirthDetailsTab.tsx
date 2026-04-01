@@ -10,21 +10,20 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
 
   return (
     <div className="space-y-4">
-      <h4 className="font-display text-lg font-semibold text-sacred-brown">{t('kundli.birthDetailsTable')}</h4>
-      <div className="overflow-x-auto rounded-xl border border-sacred-gold/20">
-        <table className="w-full text-sm">
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs">
           <thead className="bg-sacred-gold/10">
             <tr>
-              <th className="text-left p-3 font-medium text-sacred-gold-dark">Planet</th>
-              <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('kundli.sign')}</th>
-              <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('kundli.degree')}</th>
-              <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('kundli.nakshatra')}</th>
-              <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('kundli.house')}</th>
-              <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('kundli.dignity')}</th>
-              <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('kundli.signType')}</th>
-              <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('kundli.element')}</th>
-              <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('kundli.nature')}</th>
-              <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('kundli.retrograde')}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">Planet</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('kundli.sign')}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('kundli.degree')}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('kundli.nakshatra')}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('kundli.house')}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('kundli.dignity')}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('kundli.signType')}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('kundli.element')}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('kundli.nature')}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('kundli.retrograde')}</th>
             </tr>
           </thead>
           <tbody>
@@ -40,21 +39,21 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
               const pada = nakshatraParts[1] || '\u2014';
 
               return (
-                <tr key={idx} className="border-t" style={{ borderColor: 'rgba(139,115,85,0.2)', backgroundColor: idx % 2 === 0 ? '#F5F0E8' : '#FDFBF7' }}>
-                  <td className="p-3 font-medium" style={{ color: '#1a1a2e', fontFamily: 'serif' }}>{p.planet}</td>
-                  <td className="p-3" style={{ color: '#1a1a2e' }}>{p.sign}</td>
-                  <td className="p-3" style={{ color: '#1a1a2e' }}>{p.sign_degree != null ? `${Number(p.sign_degree).toFixed(2)}\u00b0` : '\u2014'}</td>
-                  <td className="p-3" style={{ color: '#1a1a2e' }}>{nakshatraName}{pada !== '\u2014' ? ` (${t('kundli.pada')} ${pada})` : ''}</td>
-                  <td className="p-3" style={{ color: '#1a1a2e' }}>{p.house}</td>
-                  <td className="p-3 font-medium" style={{ color: dignityColor }}>{dignity}</td>
-                  <td className="p-3" style={{ color: '#8B7355' }}>{signType}</td>
-                  <td className="p-3" style={{ color: '#8B7355' }}>{element}</td>
-                  <td className="p-3">
+                <tr key={idx} className={`border-t border-sacred-gold/10 text-xs ${idx % 2 === 0 ? '' : 'bg-sacred-gold/[0.02]'}`}>
+                  <td className="p-2 font-medium text-sacred-brown font-display">{p.planet}</td>
+                  <td className="p-2 text-sacred-brown">{p.sign}</td>
+                  <td className="p-2 text-sacred-brown">{p.sign_degree != null ? `${Number(p.sign_degree).toFixed(2)}\u00b0` : '\u2014'}</td>
+                  <td className="p-2 text-sacred-brown">{nakshatraName}{pada !== '\u2014' ? ` (${t('kundli.pada')} ${pada})` : ''}</td>
+                  <td className="p-2 text-sacred-brown">{p.house}</td>
+                  <td className="p-2 font-medium" style={{ color: dignityColor }}>{dignity}</td>
+                  <td className="p-2 text-sacred-text-secondary">{signType}</td>
+                  <td className="p-2 text-sacred-text-secondary">{element}</td>
+                  <td className="p-2">
                     <span className={`text-xs px-2 py-0.5 rounded-full ${nature === 'Benefic' || nature === t('kundli.benefic') ? 'bg-green-500/15 text-green-600' : 'bg-red-500/15 text-red-600'}`}>
                       {nature}
                     </span>
                   </td>
-                  <td className="p-3" style={{ color: isRetro ? '#dc2626' : '#8B7355' }}>
+                  <td className="p-2" style={{ color: isRetro ? '#dc2626' : '#8B7355' }}>
                     {isRetro ? `${t('common.yes')} \u211e` : t('common.no')}
                   </td>
                 </tr>
@@ -63,6 +62,5 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
           </tbody>
         </table>
       </div>
-    </div>
   );
 }

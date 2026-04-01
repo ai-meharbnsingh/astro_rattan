@@ -11,17 +11,16 @@ export default function LordshipsTab({ planets, houses }: LordshipsTabProps) {
   const HOUSE_SIGNIFICANCE = getHouseSignificance(t);
 
   return (
-    <div className="space-y-4">
-      <h4 className="font-display text-lg font-semibold text-sacred-brown">{t('kundli.houseLordships')}</h4>
-      <div className="overflow-x-auto rounded-xl border border-sacred-gold/20">
-        <table className="w-full text-sm">
+    <div>
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs">
           <thead className="bg-sacred-gold/10">
             <tr>
-              <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('kundli.house')}</th>
-              <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('kundli.sign')}</th>
-              <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('kundli.lord')}</th>
-              <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('kundli.placedIn')}</th>
-              <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('kundli.significance')}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('kundli.house')}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('kundli.sign')}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('kundli.lord')}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('kundli.placedIn')}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('kundli.significance')}</th>
             </tr>
           </thead>
           <tbody>
@@ -38,18 +37,17 @@ export default function LordshipsTab({ planets, houses }: LordshipsTabProps) {
               const lordPlacedIn = lordPlanet ? `House ${lordPlanet.house}` : '\u2014';
 
               return (
-                <tr key={houseNum} className="border-t" style={{ borderColor: 'rgba(139,115,85,0.2)', backgroundColor: houseNum % 2 === 1 ? '#F5F0E8' : '#FDFBF7' }}>
-                  <td className="p-3 font-medium" style={{ color: '#1a1a2e', fontFamily: 'serif' }}>{houseNum}</td>
-                  <td className="p-3" style={{ color: '#1a1a2e' }}>{signName}</td>
-                  <td className="p-3 font-medium" style={{ color: '#B8860B' }}>{lord}</td>
-                  <td className="p-3" style={{ color: '#1a1a2e' }}>{lordPlacedIn}</td>
-                  <td className="p-3" style={{ color: '#8B7355' }}>{HOUSE_SIGNIFICANCE[houseNum] || '\u2014'}</td>
+                <tr key={houseNum} className={`border-t border-sacred-gold/10 text-xs ${houseNum % 2 === 0 ? 'bg-sacred-gold/[0.02]' : ''}`}>
+                  <td className="p-2 font-medium text-sacred-brown font-display">{houseNum}</td>
+                  <td className="p-2 text-sacred-brown">{signName}</td>
+                  <td className="p-2 font-medium text-sacred-gold-dark">{lord}</td>
+                  <td className="p-2 text-sacred-text-secondary">{lordPlacedIn}</td>
+                  <td className="p-2 text-sacred-text-secondary">{HOUSE_SIGNIFICANCE[houseNum] || '\u2014'}</td>
                 </tr>
               );
             })}
           </tbody>
         </table>
-      </div>
     </div>
   );
 }
