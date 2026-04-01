@@ -541,10 +541,10 @@ export default function JHoraKundliView({
                       gap: '6px',
                       padding: '3px 0',
                       fontFamily: SERIF,
-                      fontSize: '10px',
+                      fontSize: '11px',
                     }}>
                       <span style={{
-                        width: '52px',
+                        width: '58px',
                         flexShrink: 0,
                         color: planetColor(planet),
                         fontWeight: 600,
@@ -570,7 +570,7 @@ export default function JHoraKundliView({
                         }} />
                       </div>
                       <span style={{
-                        width: '32px',
+                        width: '36px',
                         flexShrink: 0,
                         textAlign: 'right',
                         color: ratio >= 1 ? '#4CAF50' : '#DC2626',

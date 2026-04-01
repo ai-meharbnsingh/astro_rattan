@@ -1041,7 +1041,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                   y={signPos.y}
                   textAnchor={signAnchor}
                   fill={JHORA_LINE}
-                  fontSize={9}
+                  fontSize={11}
                   fontFamily="serif"
                   opacity={0.7}
                 >
@@ -1052,10 +1052,10 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
               {/* Rashi Number inside house */}
               <text
                 x={nh.cx}
-                y={nh.cy - (housePlanets.length > 0 ? 10 : 0) + 5}
+                y={nh.cy - (housePlanets.length > 0 ? 12 : 0) + 5}
                 textAnchor="middle"
                 fill={JHORA_LINE}
-                fontSize={isTrapezoid ? 16 : 13}
+                fontSize={isTrapezoid ? 20 : 16}
                 fontWeight="bold"
                 fontFamily="serif"
                 opacity={0.85}
@@ -1069,11 +1069,11 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                 const cols = Math.min(housePlanets.length, maxCols);
                 const pRow = Math.floor(idx / cols);
                 const pCol = idx % cols;
-                const spacing = isTrapezoid ? 28 : 26;
+                const spacing = isTrapezoid ? 32 : 30;
                 const startX = nh.cx - ((cols - 1) * spacing) / 2;
                 const px = startX + pCol * spacing;
-                const baseY = nh.cy + (isTrapezoid ? 14 : 8) - (housePlanets.length > 0 ? 2 : 0);
-                const py = baseY + pRow * 18;
+                const baseY = nh.cy + (isTrapezoid ? 16 : 10) - (housePlanets.length > 0 ? 2 : 0);
+                const py = baseY + pRow * 22;
                 const label = getPlanetLabel(p);
                 const degreeLabel = Math.round(p.sign_degree || 0);
 
@@ -1082,10 +1082,10 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                     {/* Degree superscript */}
                     <text
                       x={px}
-                      y={py - 8}
+                      y={py - 10}
                       textAnchor="middle"
                       fill={getPlanetColor(p.planet)}
-                      fontSize={7}
+                      fontSize={9}
                       fontFamily="serif"
                       opacity={0.7}
                       style={{ pointerEvents: 'none' }}
@@ -1098,7 +1098,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                       y={py}
                       textAnchor="middle"
                       fill={getPlanetColor(p.planet)}
-                      fontSize={11}
+                      fontSize={14}
                       fontWeight="bold"
                       fontFamily="serif"
                       style={{ cursor: 'pointer' }}
