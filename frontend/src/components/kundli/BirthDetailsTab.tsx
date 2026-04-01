@@ -10,21 +10,21 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
 
   return (
     <div className="space-y-4">
-      <h4 className="font-sacred text-lg font-bold text-[#1a1a2e]">{t('kundli.birthDetailsTable')}</h4>
-      <div className="overflow-x-auto rounded-xl border" style={{ borderColor: 'rgba(139,115,85,0.2)' }}>
+      <h4 className="font-display text-lg font-semibold text-sacred-brown">{t('kundli.birthDetailsTable')}</h4>
+      <div className="overflow-x-auto rounded-xl border border-sacred-gold/20">
         <table className="w-full text-sm">
-          <thead style={{ backgroundColor: '#E8E0D4' }}>
+          <thead className="bg-sacred-gold/10">
             <tr>
-              <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>Planet</th>
-              <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>{t('kundli.sign')}</th>
-              <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>{t('kundli.degree')}</th>
-              <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>{t('kundli.nakshatra')}</th>
-              <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>{t('kundli.house')}</th>
-              <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>{t('kundli.dignity')}</th>
-              <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>{t('kundli.signType')}</th>
-              <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>{t('kundli.element')}</th>
-              <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>{t('kundli.nature')}</th>
-              <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>{t('kundli.retrograde')}</th>
+              <th className="text-left p-3 font-medium text-sacred-gold-dark">Planet</th>
+              <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('kundli.sign')}</th>
+              <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('kundli.degree')}</th>
+              <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('kundli.nakshatra')}</th>
+              <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('kundli.house')}</th>
+              <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('kundli.dignity')}</th>
+              <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('kundli.signType')}</th>
+              <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('kundli.element')}</th>
+              <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('kundli.nature')}</th>
+              <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('kundli.retrograde')}</th>
             </tr>
           </thead>
           <tbody>

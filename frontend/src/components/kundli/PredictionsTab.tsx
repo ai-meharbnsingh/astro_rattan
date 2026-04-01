@@ -33,7 +33,7 @@ export default function PredictionsTab({
             <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(184,134,11,0.15)' }}>
               <Sparkles className="w-5 h-5" style={{ color: '#B8860B' }} />
             </div>
-            <h4 className="font-sacred font-bold text-xl" style={{ color: '#1a1a2e' }}>{t('kundli.aiPredictions')}</h4>
+            <h4 className="font-display font-semibold text-xl text-sacred-brown">{t('kundli.aiPredictions')}</h4>
             {predictionsData._puterFallback && (
               <span className="ml-auto text-xs px-2 py-1 rounded-full" style={{ backgroundColor: 'rgba(184,134,11,0.12)', color: '#B8860B', border: '1px solid rgba(184,134,11,0.3)' }}>
                 {t('kundli.poweredByFreeAI')}

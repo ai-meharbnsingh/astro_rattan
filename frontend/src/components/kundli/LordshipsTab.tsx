@@ -12,16 +12,16 @@ export default function LordshipsTab({ planets, houses }: LordshipsTabProps) {
 
   return (
     <div className="space-y-4">
-      <h4 className="font-sacred text-lg font-bold text-[#1a1a2e]">{t('kundli.houseLordships')}</h4>
-      <div className="overflow-x-auto rounded-xl border" style={{ borderColor: 'rgba(139,115,85,0.2)' }}>
+      <h4 className="font-display text-lg font-semibold text-sacred-brown">{t('kundli.houseLordships')}</h4>
+      <div className="overflow-x-auto rounded-xl border border-sacred-gold/20">
         <table className="w-full text-sm">
-          <thead style={{ backgroundColor: '#E8E0D4' }}>
+          <thead className="bg-sacred-gold/10">
             <tr>
-              <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>{t('kundli.house')}</th>
-              <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>{t('kundli.sign')}</th>
-              <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>{t('kundli.lord')}</th>
-              <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>{t('kundli.placedIn')}</th>
-              <th className="text-left p-3 font-medium" style={{ color: '#B8860B' }}>{t('kundli.significance')}</th>
+              <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('kundli.house')}</th>
+              <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('kundli.sign')}</th>
+              <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('kundli.lord')}</th>
+              <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('kundli.placedIn')}</th>
+              <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('kundli.significance')}</th>
             </tr>
           </thead>
           <tbody>
