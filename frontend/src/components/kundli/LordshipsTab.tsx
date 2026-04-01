@@ -11,8 +11,7 @@ export default function LordshipsTab({ planets, houses }: LordshipsTabProps) {
   const HOUSE_SIGNIFICANCE = getHouseSignificance(t);
 
   return (
-    <div>
-      <div className="overflow-x-auto">
+    <div className="overflow-x-auto">
         <table className="w-full text-xs">
           <thead className="bg-sacred-gold/10">
             <tr>
