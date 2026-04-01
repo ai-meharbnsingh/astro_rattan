@@ -285,6 +285,7 @@ export default function KundliGenerator() {
       fetchShadbala();
       fetchDivisional('D9');
       fetchTransit();
+      fetchDosha();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, result?.id]);
@@ -997,6 +998,49 @@ export default function KundliGenerator() {
                     </div>
                   ) : (
                     <p className="text-center text-sacred-text-secondary py-4 text-sm">Loading Yoga & Dosha analysis...</p>
+                  )}
+                </div>
+
+                {/* 7b. Mangal / Kaal Sarp / Sade Sati Dosha */}
+                <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4 lg:col-span-2">
+                  <h4 className="font-display font-semibold text-sacred-brown mb-3">Dosha Analysis (Mangal, Kaal Sarp, Sade Sati)</h4>
+                  {loadingDosha ? (
+                    <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-sacred-gold" /></div>
+                  ) : doshaData ? (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      {/* Mangal Dosha */}
+                      <div className={`rounded-lg p-3 border ${doshaData.mangal_dosha?.has_dosha ? 'border-red-500/30 bg-red-500/5' : 'border-green-500/20 bg-green-500/5'}`}>
+                        <div className="flex items-center justify-between mb-1">
+                          <h5 className="text-sm font-semibold text-sacred-brown">Mangal Dosha</h5>
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${doshaData.mangal_dosha?.has_dosha ? 'bg-red-500/20 text-red-600' : 'bg-green-500/20 text-green-600'}`}>
+                            {doshaData.mangal_dosha?.has_dosha ? doshaData.mangal_dosha.severity || 'Present' : 'Absent'}
+                          </span>
+                        </div>
+                        <p className="text-xs text-sacred-text-secondary">{doshaData.mangal_dosha?.description || 'No Mangal Dosha'}</p>
+                      </div>
+                      {/* Kaal Sarp Dosha */}
+                      <div className={`rounded-lg p-3 border ${doshaData.kaal_sarp_dosha?.has_dosha ? 'border-red-500/30 bg-red-500/5' : 'border-green-500/20 bg-green-500/5'}`}>
+                        <div className="flex items-center justify-between mb-1">
+                          <h5 className="text-sm font-semibold text-sacred-brown">Kaal Sarp Dosha</h5>
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${doshaData.kaal_sarp_dosha?.has_dosha ? 'bg-red-500/20 text-red-600' : 'bg-green-500/20 text-green-600'}`}>
+                            {doshaData.kaal_sarp_dosha?.has_dosha ? doshaData.kaal_sarp_dosha.severity || 'Present' : 'Absent'}
+                          </span>
+                        </div>
+                        <p className="text-xs text-sacred-text-secondary">{doshaData.kaal_sarp_dosha?.description || 'No Kaal Sarp Dosha'}</p>
+                      </div>
+                      {/* Sade Sati */}
+                      <div className={`rounded-lg p-3 border ${doshaData.sade_sati?.has_sade_sati ? 'border-orange-500/30 bg-orange-500/5' : 'border-green-500/20 bg-green-500/5'}`}>
+                        <div className="flex items-center justify-between mb-1">
+                          <h5 className="text-sm font-semibold text-sacred-brown">Shani Sade Sati</h5>
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${doshaData.sade_sati?.has_sade_sati ? 'bg-orange-500/20 text-orange-600' : 'bg-green-500/20 text-green-600'}`}>
+                            {doshaData.sade_sati?.has_sade_sati ? `Active - ${doshaData.sade_sati.phase}` : 'Inactive'}
+                          </span>
+                        </div>
+                        <p className="text-xs text-sacred-text-secondary">{doshaData.sade_sati?.description || 'Sade Sati not active'}</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-center text-sacred-text-secondary py-4 text-sm">Loading Dosha analysis...</p>
                   )}
                 </div>
 
