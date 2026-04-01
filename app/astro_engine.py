@@ -16,6 +16,8 @@ import math
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
+from app.divisional_charts import _calculate_d9
+
 # ---------- Try to import Swiss Ephemeris ----------
 try:
     import swisseph as swe
@@ -265,23 +267,45 @@ def _calculate_swe(dt_utc: datetime, lat: float, lon: float) -> Dict[str, Any]:
         placidus_cusps.append(round(cusp_sid, 4))
 
     # Planets — use Whole Sign house assignment
+    # First pass: compute longitudes and retrograde (need Sun longitude for combust)
     planets_result: Dict[str, Dict[str, Any]] = {}
+    planet_longitudes: Dict[str, float] = {}
+    planet_retrograde: Dict[str, bool] = {}
+
     for pname, pid in PLANETS.items():
         pos, _ret = swe.calc_ut(jd, pid)
         trop_lon = pos[0]
         daily_speed = pos[3]  # daily speed in longitude
         sid_lon = (trop_lon - ayanamsa) % 360.0
-
-        nak = get_nakshatra_from_longitude(sid_lon)
-        sign = get_sign_from_longitude(sid_lon)
-        sign_deg = sid_lon % 30.0
-        # Whole Sign house: planet's sign index relative to ascendant sign
-        planet_sign_index = int(sid_lon // 30)
-        house = ((planet_sign_index - asc_sign_index) % 12) + 1
+        planet_longitudes[pname] = sid_lon
 
         # Retrograde: negative daily speed means the planet appears to move backward
         # Rahu (mean node) is always retrograde by nature
         is_retrograde = daily_speed < 0 or pname == "Rahu"
+        planet_retrograde[pname] = is_retrograde
+
+    # Ketu longitude
+    rahu_lon = planet_longitudes["Rahu"]
+    ketu_lon = (rahu_lon + 180.0) % 360.0
+    planet_longitudes["Ketu"] = ketu_lon
+    planet_retrograde["Ketu"] = True
+
+    # Get Sun longitude for combust checks
+    sun_lon = planet_longitudes.get("Sun", 0.0)
+
+    # Second pass: compute combust, vargottama, build full result
+    for pname in list(PLANETS.keys()) + ["Ketu"]:
+        sid_lon = planet_longitudes[pname]
+        is_retrograde = planet_retrograde[pname]
+
+        nak = get_nakshatra_from_longitude(sid_lon)
+        sign = get_sign_from_longitude(sid_lon)
+        sign_deg = sid_lon % 30.0
+        planet_sign_index = int(sid_lon // 30)
+        house = ((planet_sign_index - asc_sign_index) % 12) + 1
+
+        combust = _is_combust(pname, sid_lon, sun_lon, is_retrograde)
+        vargottama = _is_vargottama(sid_lon)
 
         planets_result[pname] = {
             "longitude": round(sid_lon, 4),
@@ -291,30 +315,17 @@ def _calculate_swe(dt_utc: datetime, lat: float, lon: float) -> Dict[str, Any]:
             "nakshatra_pada": nak["pada"],
             "house": house,
             "retrograde": is_retrograde,
-            "status": _build_status(pname, sign, is_retrograde),
+            "is_combust": combust,
+            "is_vargottama": vargottama,
+            "status": _build_status(pname, sign, is_retrograde, combust, vargottama),
         }
-
-    # Ketu = Rahu + 180  (Ketu is always retrograde)
-    rahu_lon = planets_result["Rahu"]["longitude"]
-    ketu_lon = (rahu_lon + 180.0) % 360.0
-    ketu_sign = get_sign_from_longitude(ketu_lon)
-    nak_k = get_nakshatra_from_longitude(ketu_lon)
-    planets_result["Ketu"] = {
-        "longitude": round(ketu_lon, 4),
-        "sign": ketu_sign,
-        "sign_degree": round(ketu_lon % 30.0, 4),
-        "nakshatra": nak_k["name"],
-        "nakshatra_pada": nak_k["pada"],
-        "house": ((int(ketu_lon // 30) - asc_sign_index) % 12) + 1,
-        "retrograde": True,
-        "status": _build_status("Ketu", ketu_sign, True),
-    }
 
     return {
         "planets": planets_result,
         "ascendant": {
             "longitude": round(asc_sid, 4),
             "sign": get_sign_from_longitude(asc_sid),
+            "sign_degree": round(asc_sid % 30.0, 4),
         },
         "houses": houses,
         "placidus_cusps": placidus_cusps,
@@ -486,19 +497,33 @@ def _calculate_fallback(dt_utc: datetime, lat: float, lon: float) -> Dict[str, A
         "Rahu": lambda: _approx_rahu_longitude(jd),
     }
 
-    planets_result: Dict[str, Dict[str, Any]] = {}
+    # First pass: compute all sidereal longitudes
+    planet_lons: Dict[str, float] = {}
     for pname in ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Rahu"]:
         trop_lon = _PLANET_FUNCS[pname]()
-        sid_lon = (trop_lon - ayanamsa) % 360.0
+        planet_lons[pname] = (trop_lon - ayanamsa) % 360.0
+
+    # Ketu = Rahu + 180
+    planet_lons["Ketu"] = (planet_lons["Rahu"] + 180.0) % 360.0
+
+    sun_lon = planet_lons["Sun"]
+    cusp_degrees = [h["degree"] for h in houses]
+
+    planets_result: Dict[str, Dict[str, Any]] = {}
+    for pname in ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Rahu", "Ketu"]:
+        sid_lon = planet_lons[pname]
 
         nak = get_nakshatra_from_longitude(sid_lon)
         sign = get_sign_from_longitude(sid_lon)
         sign_deg = sid_lon % 30.0
-        house = _find_house(sid_lon, [h["degree"] for h in houses])
+        house = _find_house(sid_lon, cusp_degrees)
 
         # Fallback path cannot determine retrograde from speed;
-        # Rahu is always retrograde by nature, others default to False
-        is_retrograde = pname == "Rahu"
+        # Rahu and Ketu are always retrograde by nature, others default to False
+        is_retrograde = pname in ("Rahu", "Ketu")
+
+        combust = _is_combust(pname, sid_lon, sun_lon, is_retrograde)
+        vargottama = _is_vargottama(sid_lon)
 
         planets_result[pname] = {
             "longitude": round(sid_lon, 4),
@@ -508,30 +533,17 @@ def _calculate_fallback(dt_utc: datetime, lat: float, lon: float) -> Dict[str, A
             "nakshatra_pada": nak["pada"],
             "house": house,
             "retrograde": is_retrograde,
-            "status": _build_status(pname, sign, is_retrograde),
+            "is_combust": combust,
+            "is_vargottama": vargottama,
+            "status": _build_status(pname, sign, is_retrograde, combust, vargottama),
         }
-
-    # Ketu = Rahu + 180  (Ketu is always retrograde)
-    rahu_lon = planets_result["Rahu"]["longitude"]
-    ketu_lon = (rahu_lon + 180.0) % 360.0
-    ketu_sign = get_sign_from_longitude(ketu_lon)
-    nak_k = get_nakshatra_from_longitude(ketu_lon)
-    planets_result["Ketu"] = {
-        "longitude": round(ketu_lon, 4),
-        "sign": ketu_sign,
-        "sign_degree": round(ketu_lon % 30.0, 4),
-        "nakshatra": nak_k["name"],
-        "nakshatra_pada": nak_k["pada"],
-        "house": _find_house(ketu_lon, [h["degree"] for h in houses]),
-        "retrograde": True,
-        "status": _build_status("Ketu", ketu_sign, True),
-    }
 
     return {
         "planets": planets_result,
         "ascendant": {
             "longitude": round(asc_sid, 4),
             "sign": get_sign_from_longitude(asc_sid),
+            "sign_degree": round(asc_sid % 30.0, 4),
         },
         "houses": houses,
     }
@@ -567,12 +579,50 @@ _OWN_SIGN: Dict[str, List[str]] = {
 }
 
 
-def _build_status(planet: str, sign: str, is_retrograde: bool) -> str:
-    """
-    Build a human-readable status string combining dignity and retrograde.
+# Combustion orbs — max angular distance from Sun for combustion (degrees)
+# Standard Vedic combustion orbs (planet-specific)
+_COMBUST_ORB: Dict[str, float] = {
+    "Moon": 12.0,
+    "Mars": 17.0,
+    "Mercury": 14.0,   # 12° when retrograde, handled in code
+    "Jupiter": 11.0,
+    "Venus": 10.0,      # 8° when retrograde, handled in code
+    "Saturn": 15.0,
+}
 
-    Examples: "Exalted", "Retrograde", "Exalted, Retrograde", "Debilitated, Retrograde"
-    Returns empty string when the planet has no special dignity and is direct.
+
+def _is_combust(planet: str, planet_lon: float, sun_lon: float, is_retrograde: bool) -> bool:
+    """Check if a planet is combust (too close to the Sun)."""
+    if planet not in _COMBUST_ORB:
+        return False
+    orb = _COMBUST_ORB[planet]
+    # Mercury and Venus have tighter orbs when retrograde
+    if is_retrograde:
+        if planet == "Mercury":
+            orb = 12.0
+        elif planet == "Venus":
+            orb = 8.0
+    # Angular distance on the ecliptic (handle wrap-around)
+    diff = abs(planet_lon - sun_lon)
+    if diff > 180.0:
+        diff = 360.0 - diff
+    return diff <= orb
+
+
+def _is_vargottama(planet_lon: float) -> bool:
+    """Check if a planet is vargottama (same sign in D1 and D9 Navamsha)."""
+    d1_sign_index = int((planet_lon % 360.0) / 30.0)
+    d9_info = _calculate_d9({"-": planet_lon})
+    d9_sign_index = d9_info["-"]["sign_index"]
+    return d1_sign_index == d9_sign_index
+
+
+def _build_status(planet: str, sign: str, is_retrograde: bool, is_combust: bool = False, is_vargottama: bool = False) -> str:
+    """
+    Build a human-readable status string combining dignity, retrograde, combust, vargottama.
+
+    Examples: "Exalted", "Retrograde", "Exalted, Retrograde", "Combust, Vargottama"
+    Returns empty string when the planet has no special status.
     """
     parts: List[str] = []
 
@@ -587,6 +637,14 @@ def _build_status(planet: str, sign: str, is_retrograde: bool) -> str:
     # Retrograde flag
     if is_retrograde:
         parts.append("Retrograde")
+
+    # Combust flag
+    if is_combust:
+        parts.append("Combust")
+
+    # Vargottama flag
+    if is_vargottama:
+        parts.append("Vargottama")
 
     return ", ".join(parts)
 

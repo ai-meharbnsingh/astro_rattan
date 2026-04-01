@@ -728,7 +728,7 @@ export default function KundliGenerator() {
                   <h4 className="font-display font-semibold text-sacred-brown mb-2 text-center text-sm">Lagna</h4>
                   <div className="flex justify-center">
                     <InteractiveKundli
-                      chartData={{ planets, houses: result.chart_data?.houses } as ChartData}
+                      chartData={{ planets, houses: result.chart_data?.houses, ascendant: result.chart_data?.ascendant } as ChartData}
                       onPlanetClick={handlePlanetClick}
                       onHouseClick={handleHouseClick}
                       compact
@@ -1125,7 +1125,7 @@ export default function KundliGenerator() {
               {/* Interactive Chart */}
               <div className="w-full xl:w-[600px] xl:flex-shrink-0 flex justify-center">
                 <InteractiveKundli
-                  chartData={{ planets, houses: result.chart_data?.houses } as ChartData}
+                  chartData={{ planets, houses: result.chart_data?.houses, ascendant: result.chart_data?.ascendant } as ChartData}
                   onPlanetClick={handlePlanetClick}
                   onHouseClick={handleHouseClick}
                 />

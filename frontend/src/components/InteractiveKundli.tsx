@@ -17,6 +17,7 @@ export interface PlanetData {
 export interface ChartData {
   planets: PlanetData[];
   houses?: { number: number; sign: string }[];
+  ascendant?: { longitude: number; sign: string; sign_degree?: number };
 }
 
 interface InteractiveKundliProps {
@@ -658,15 +659,34 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
 
   const planets = chartData.planets || [];
 
+  // Inject Lagna as a pseudo-planet in House 1 if ascendant data is available
+  const planetsWithLagna = useMemo(() => {
+    const list = [...planets];
+    if (chartData.ascendant) {
+      const hasLagna = list.some((p) => p.planet === 'Lagna' || p.planet === 'Ascendant');
+      if (!hasLagna) {
+        list.unshift({
+          planet: 'Lagna',
+          sign: chartData.ascendant.sign,
+          house: 1,
+          nakshatra: '',
+          sign_degree: chartData.ascendant.sign_degree ?? (chartData.ascendant.longitude % 30),
+          status: '',
+        });
+      }
+    }
+    return list;
+  }, [planets, chartData.ascendant]);
+
   const planetsByHouse = useMemo(() => {
     const map: Record<number, PlanetData[]> = {};
     for (let i = 1; i <= 12; i++) map[i] = [];
-    planets.forEach((p) => {
+    planetsWithLagna.forEach((p) => {
       const h = p.house || 1;
       if (map[h]) map[h].push(p);
     });
     return map;
-  }, [planets]);
+  }, [planetsWithLagna]);
 
   const houseSign = useCallback((house: number): string => {
     if (chartData.houses) {
