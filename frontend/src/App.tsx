@@ -5,7 +5,7 @@ import { AuthProvider } from './hooks/useAuth';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-const CosmicBackground = lazy(() => import('./components/CosmicBackground'));
+// Eager imports — used on every page or the landing page
 import Navigation from './sections/Navigation';
 import Hero from './sections/Hero';
 import Features from './sections/Features';
@@ -13,35 +13,38 @@ import About from './sections/About';
 import Testimonials from './sections/Testimonials';
 import CTA from './sections/CTA';
 import Footer from './sections/Footer';
-import DailyHoroscope from './sections/DailyHoroscope';
-import Panchang from './sections/Panchang';
-import SpiritualLibrary from './sections/SpiritualLibrary';
-import Shop from './sections/Shop';
-import AIChat from './sections/AIChat';
-import KundliGenerator from './sections/KundliGenerator';
-const Kundli3D = lazy(() => import('./sections/Kundli3D'));
-import AuthPage from './sections/AuthPage';
-import CartCheckout from './sections/CartCheckout';
-import ConsultationPage from './sections/ConsultationPage';
-import AdminDashboard from './sections/AdminDashboard';
-import AstrologerDashboard from './sections/AstrologerDashboard';
-import AstrologerPanel from './sections/AstrologerPanel';
-import PrashnavaliPage from './sections/PrashnavaliPage';
-import NumerologyTarot from './sections/NumerologyTarot';
-import UserProfile from './sections/UserProfile';
-import Dashboard from './sections/Dashboard';
-import ReportMarketplace from './sections/ReportMarketplace';
-import PalmistryPage from './sections/PalmistryPage';
-import BlogPage from './sections/BlogPage';
-import ReferralPage from './sections/ReferralPage';
-import KPLalkitabPage from './sections/KPLalkitabPage';
-import MessagesPage from './sections/MessagesPage';
-import PlanetaryTransitsPage from './sections/PlanetaryTransitsPage';
-import CommunityPage from './sections/CommunityPage';
-import GamificationPage from './sections/GamificationPage';
-import CosmicCalendarPage from './sections/CosmicCalendarPage';
-import PreferencesPage from './sections/PreferencesPage';
 import WhatsAppWidget from './components/WhatsAppWidget';
+
+// Lazy imports — code-split per route
+const CosmicBackground = lazy(() => import('./components/CosmicBackground'));
+const DailyHoroscope = lazy(() => import('./sections/DailyHoroscope'));
+const Panchang = lazy(() => import('./sections/Panchang'));
+const SpiritualLibrary = lazy(() => import('./sections/SpiritualLibrary'));
+const Shop = lazy(() => import('./sections/Shop'));
+const AIChat = lazy(() => import('./sections/AIChat'));
+const KundliGenerator = lazy(() => import('./sections/KundliGenerator'));
+const Kundli3D = lazy(() => import('./sections/Kundli3D'));
+const AuthPage = lazy(() => import('./sections/AuthPage'));
+const CartCheckout = lazy(() => import('./sections/CartCheckout'));
+const ConsultationPage = lazy(() => import('./sections/ConsultationPage'));
+const AdminDashboard = lazy(() => import('./sections/AdminDashboard'));
+const AstrologerDashboard = lazy(() => import('./sections/AstrologerDashboard'));
+const AstrologerPanel = lazy(() => import('./sections/AstrologerPanel'));
+const PrashnavaliPage = lazy(() => import('./sections/PrashnavaliPage'));
+const NumerologyTarot = lazy(() => import('./sections/NumerologyTarot'));
+const UserProfile = lazy(() => import('./sections/UserProfile'));
+const Dashboard = lazy(() => import('./sections/Dashboard'));
+const ReportMarketplace = lazy(() => import('./sections/ReportMarketplace'));
+const PalmistryPage = lazy(() => import('./sections/PalmistryPage'));
+const BlogPage = lazy(() => import('./sections/BlogPage'));
+const ReferralPage = lazy(() => import('./sections/ReferralPage'));
+const KPLalkitabPage = lazy(() => import('./sections/KPLalkitabPage'));
+const MessagesPage = lazy(() => import('./sections/MessagesPage'));
+const PlanetaryTransitsPage = lazy(() => import('./sections/PlanetaryTransitsPage'));
+const CommunityPage = lazy(() => import('./sections/CommunityPage'));
+const GamificationPage = lazy(() => import('./sections/GamificationPage'));
+const CosmicCalendarPage = lazy(() => import('./sections/CosmicCalendarPage'));
+const PreferencesPage = lazy(() => import('./sections/PreferencesPage'));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -94,6 +97,7 @@ function App() {
       <Navigation />
 
       <main>
+        <Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-600"></div></div>}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/kundli" element={<KundliGenerator />} />
@@ -126,6 +130,7 @@ function App() {
           <Route path="/cosmic-calendar" element={<CosmicCalendarPage />} />
           <Route path="/preferences" element={<PreferencesPage />} />
         </Routes>
+        </Suspense>
       </main>
 
       <Footer />
