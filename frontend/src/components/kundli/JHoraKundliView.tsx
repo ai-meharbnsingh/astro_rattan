@@ -263,36 +263,36 @@ export default function JHoraKundliView({
   return (
     <div style={{
       width: '100%',
-      height: '100%',
+      height: '100vh',
       overflow: 'hidden',
       background: BG,
       fontFamily: SERIF,
       fontSize: '11px',
       display: 'grid',
-      gridTemplateColumns: '35% 65%',
+      gridTemplateColumns: '32% 68%',
       boxSizing: 'border-box',
     }}>
 
-      {/* ═══════════ LEFT COLUMN (35%): D1 | Transit | D9 | D10 ═══════════ */}
+      {/* ═══════════ LEFT COLUMN (32%): D1 | Transit | D9 | D10 ═══════════ */}
       <div style={{
         display: 'grid',
-        gridTemplateRows: '45% 18% 18% 19%',
+        gridTemplateRows: '1fr 1fr 1fr 1fr',
         overflow: 'hidden',
         borderRight: BORDER,
       }}>
 
-        {/* ── D1 Birth Chart (45%) ── */}
+        {/* ── D1 Birth Chart ── */}
         <div style={chartCell}>
           <div style={chartLabel}>Birth Chart (D1)</div>
           <div style={{ flex: 1, width: '100%', maxWidth: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
             <InteractiveKundli
-              chartData={{ planets, houses: result?.chart_data?.houses } as ChartData}
+              chartData={{ planets, houses: result?.chart_data?.houses, ascendant: result?.chart_data?.ascendant } as ChartData}
               compact
             />
           </div>
         </div>
 
-        {/* ── Transit (18%) ── */}
+        {/* ── Transit ── */}
         <div style={chartCell}>
           <div style={chartLabel}>Transit</div>
           <div style={{ flex: 1, width: '100%', maxWidth: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
@@ -304,7 +304,7 @@ export default function JHoraKundliView({
           </div>
         </div>
 
-        {/* ── D9 Navamsha (18%) ── */}
+        {/* ── D9 Navamsha ── */}
         <div style={chartCell}>
           <div style={chartLabel}>Navamsha (D9)</div>
           <div style={{ flex: 1, width: '100%', maxWidth: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
@@ -316,7 +316,7 @@ export default function JHoraKundliView({
           </div>
         </div>
 
-        {/* ── D10 Dashamsha (19%) ── */}
+        {/* ── D10 Dashamsha ── */}
         <div style={{ ...chartCell, borderBottom: 'none' }}>
           <div style={chartLabel}>Dashamsha (D10)</div>
           <div style={{ flex: 1, width: '100%', maxWidth: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
@@ -329,10 +329,10 @@ export default function JHoraKundliView({
         </div>
       </div>
 
-      {/* ═══════════ RIGHT COLUMN (65%): Planet Table | Dasha+Lordships | Avakhada+Shadbala ═══════════ */}
+      {/* ═══════════ RIGHT COLUMN (68%): Planet Table | Dasha+Lordships | Avakhada+Shadbala ═══════════ */}
       <div style={{
         display: 'grid',
-        gridTemplateRows: '45% 27% 28%',
+        gridTemplateRows: '1fr 1fr 1fr',
         overflow: 'hidden',
       }}>
 
