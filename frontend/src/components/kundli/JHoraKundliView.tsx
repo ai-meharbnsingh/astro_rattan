@@ -252,33 +252,22 @@ export default function JHoraKundliView({
   // Chart cell wrapper style — constrains chart to fit within grid cell
   const chartCell: React.CSSProperties = {
     overflow: 'hidden',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
     borderBottom: BORDER,
     padding: '2px',
     boxSizing: 'border-box',
-    minHeight: 0,   // allow grid children to shrink below content size
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: 0,
   };
 
-  // Inner wrapper that contains the actual SVG chart — uses both max-width and max-height
-  // so the square chart fits within whatever space the grid cell provides
+  // Inner wrapper — takes remaining space after label, centers the SVG
   const chartInner: React.CSSProperties = {
     flex: 1,
     minHeight: 0,
-    width: '100%',
+    overflow: 'hidden',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
-  };
-
-  // The chart SVG wrapper — constrains the square SVG to fit
-  const chartSvgWrap: React.CSSProperties = {
-    maxWidth: '100%',
-    maxHeight: '100%',
-    aspectRatio: '1 / 1',
-    overflow: 'hidden',
   };
 
   return (
@@ -307,12 +296,10 @@ export default function JHoraKundliView({
         <div style={{ ...chartCell, borderRight: BORDER }}>
           <div style={chartLabel}>D1</div>
           <div style={chartInner}>
-            <div style={chartSvgWrap}>
-              <InteractiveKundli
-                chartData={{ planets, houses: result?.chart_data?.houses, ascendant: result?.chart_data?.ascendant } as ChartData}
-                compact
-              />
-            </div>
+            <InteractiveKundli
+              chartData={{ planets, houses: result?.chart_data?.houses, ascendant: result?.chart_data?.ascendant } as ChartData}
+              compact
+            />
           </div>
         </div>
 
@@ -321,9 +308,7 @@ export default function JHoraKundliView({
           <div style={chartLabel}>Transit</div>
           <div style={chartInner}>
             {loadingTransit ? <MiniLoader /> : transitChartData ? (
-              <div style={chartSvgWrap}>
-                <InteractiveKundli chartData={transitChartData} compact />
-              </div>
+              <InteractiveKundli chartData={transitChartData} compact />
             ) : (
               <span style={{ color: MUTED, fontSize: '10px' }}>Loading...</span>
             )}
@@ -335,9 +320,7 @@ export default function JHoraKundliView({
           <div style={chartLabel}>D9</div>
           <div style={chartInner}>
             {loadingDivisional ? <MiniLoader /> : d9ChartData ? (
-              <div style={chartSvgWrap}>
-                <InteractiveKundli chartData={d9ChartData} compact />
-              </div>
+              <InteractiveKundli chartData={d9ChartData} compact />
             ) : (
               <span style={{ color: MUTED, fontSize: '10px' }}>--</span>
             )}
@@ -349,9 +332,7 @@ export default function JHoraKundliView({
           <div style={chartLabel}>D10</div>
           <div style={chartInner}>
             {loadingD10 ? <MiniLoader /> : d10ChartData ? (
-              <div style={chartSvgWrap}>
-                <InteractiveKundli chartData={d10ChartData} compact />
-              </div>
+              <InteractiveKundli chartData={d10ChartData} compact />
             ) : (
               <span style={{ color: MUTED, fontSize: '10px' }}>--</span>
             )}

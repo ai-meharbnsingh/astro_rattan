@@ -765,8 +765,11 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
     return (
       <svg
         viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-        className={compact ? "max-w-full max-h-full relative z-10" : "w-full h-auto relative z-10"}
-        style={{ filter: compact ? undefined : 'drop-shadow(0 0 12px rgba(212,175,55,0.25))' }}
+        className="relative z-10"
+        style={compact
+          ? { width: '100%', height: '100%' }
+          : { width: '100%', height: 'auto', filter: 'drop-shadow(0 0 12px rgba(212,175,55,0.25))' }
+        }
       >
         <SvgDefs />
 
@@ -966,8 +969,11 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
     return (
       <svg
         viewBox={`0 0 ${svgSize} ${svgSize}`}
-        className={compact ? "max-w-full max-h-full relative z-10" : "w-full h-auto relative z-10"}
-        style={{ filter: compact ? undefined : 'drop-shadow(0 2px 8px rgba(61,43,31,0.15))' }}
+        className="relative z-10"
+        style={compact
+          ? { width: '100%', height: '100%' }
+          : { width: '100%', height: 'auto', filter: 'drop-shadow(0 2px 8px rgba(61,43,31,0.15))' }
+        }
       >
         <SvgDefs />
 
