@@ -15,6 +15,7 @@ from app.astro_iogita_engine import run_astro_analysis
 from app.matching_engine import calculate_gun_milan
 from app.dosha_engine import check_mangal_dosha, check_kaal_sarp, check_sade_sati, analyze_yogas_and_doshas
 from app.dasha_engine import calculate_dasha, calculate_extended_dasha
+from app.varshphal_engine import calculate_varshphal
 from app.divisional_charts import (
     calculate_divisional_chart,
     calculate_divisional_chart_detailed,
@@ -1038,6 +1039,36 @@ def get_kp_analysis(
         "cusps": kp.get("cusps", []),
         "significators": kp.get("significators", {}),
     }
+
+
+# ── Varshphal (Solar Return / Annual Chart) ──────────────────────
+
+@router.post("/{kundli_id}/varshphal", status_code=status.HTTP_200_OK)
+def get_varshphal(
+    kundli_id: str,
+    body: dict = None,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Calculate Varshphal (annual horoscope) for a given year."""
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+
+    # Default to current year if not specified
+    from datetime import datetime as _dt
+    target_year = (body or {}).get("year", _dt.now().year)
+
+    result = calculate_varshphal(
+        natal_chart_data=chart,
+        target_year=target_year,
+        birth_date=row["birth_date"],
+        latitude=row.get("latitude", 0.0),
+        longitude=row.get("longitude", 0.0),
+        tz_offset=row.get("timezone_offset", 5.5),
+    )
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
 
 
 # ── delete kundli ─────────────────────────────────────────────────

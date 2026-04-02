@@ -65,6 +65,9 @@ export default function KundliGenerator() {
   const [loadingTransit, setLoadingTransit] = useState(false);
   const [d10Data, setD10Data] = useState<any>(null);
   const [loadingD10, setLoadingD10] = useState(false);
+  const [varshphalData, setVarshphalData] = useState<any>(null);
+  const [loadingVarshphal, setLoadingVarshphal] = useState(false);
+  const [varshphalYear, setVarshphalYear] = useState(new Date().getFullYear());
   const [error, setError] = useState('');
   const [reportOpen, setReportOpen] = useState(false);
   const [summaryOpen, setSummaryOpen] = useState(false);
@@ -274,6 +277,17 @@ export default function KundliGenerator() {
       setD10Data(data);
     } catch { /* fallback */ }
     setLoadingD10(false);
+  };
+
+  // Fetch Varshphal
+  const fetchVarshphal = async (year?: number) => {
+    if (!result?.id) return;
+    setLoadingVarshphal(true);
+    try {
+      const data = await api.post(`/api/kundli/${result.id}/varshphal`, { year: year || varshphalYear });
+      setVarshphalData(data);
+    } catch { /* fallback */ }
+    setLoadingVarshphal(false);
   };
 
   // Auto-fetch data for the Report tab when result is loaded
@@ -613,6 +627,7 @@ export default function KundliGenerator() {
             <TabsTrigger value="yoga-dosha" onClick={fetchYogaDosha}>{t('yoga.title').split(' ')[0]}</TabsTrigger>
             <TabsTrigger value="predictions" onClick={fetchPredictions}>{t('kundli.predictions')}</TabsTrigger>
             <TabsTrigger value="transits" onClick={fetchTransit}>{t('transit.title')}</TabsTrigger>
+            <TabsTrigger value="varshphal" onClick={() => fetchVarshphal()}>Varshphal</TabsTrigger>
           </TabsList>
 
           {/* REPORT TAB — Consolidated single-page view */}
@@ -2185,6 +2200,138 @@ export default function KundliGenerator() {
             ) : (
               <p className="text-center text-sacred-text-secondary py-8">Click the Transits tab to see current Gochara effects</p>
             )}
+          </TabsContent>
+
+          {/* VARSHPHAL TAB */}
+          <TabsContent value="varshphal">
+            <div className="space-y-6">
+              {/* Year selector */}
+              <div className="flex items-center gap-4 mb-4">
+                <label className="text-sm font-medium text-sacred-brown">Select Year:</label>
+                <select
+                  value={varshphalYear}
+                  onChange={(e) => {
+                    const yr = Number(e.target.value);
+                    setVarshphalYear(yr);
+                    setVarshphalData(null);
+                    fetchVarshphal(yr);
+                  }}
+                  className="bg-sacred-cream border border-sacred-gold/30 rounded-lg px-3 py-2 text-sacred-brown text-sm focus:border-sacred-gold focus:outline-none"
+                >
+                  {Array.from({ length: 20 }, (_, i) => new Date().getFullYear() - 10 + i).map((yr) => (
+                    <option key={yr} value={yr}>{yr}</option>
+                  ))}
+                </select>
+              </div>
+
+              {loadingVarshphal ? (
+                <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-sacred-text-secondary">Calculating Varshphal...</span></div>
+              ) : varshphalData ? (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Solar Return Info */}
+                  <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+                    <h4 className="font-display font-semibold text-sacred-brown mb-3">Varsha Pravesh (Solar Return)</h4>
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div className="bg-white/50 rounded-lg p-3">
+                        <p className="text-xs text-sacred-text-secondary">Solar Return Date</p>
+                        <p className="font-semibold text-sacred-brown">{varshphalData.solar_return?.date}</p>
+                      </div>
+                      <div className="bg-white/50 rounded-lg p-3">
+                        <p className="text-xs text-sacred-text-secondary">Solar Return Time</p>
+                        <p className="font-semibold text-sacred-brown">{varshphalData.solar_return?.time}</p>
+                      </div>
+                      <div className="bg-white/50 rounded-lg p-3">
+                        <p className="text-xs text-sacred-text-secondary">Year Lord (Varsheshwar)</p>
+                        <p className="font-semibold" style={{ color: '#B8860B' }}>{varshphalData.year_lord}</p>
+                      </div>
+                      <div className="bg-white/50 rounded-lg p-3">
+                        <p className="text-xs text-sacred-text-secondary">Completed Years</p>
+                        <p className="font-semibold text-sacred-brown">{varshphalData.completed_years}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Muntha */}
+                  <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+                    <h4 className="font-display font-semibold text-sacred-brown mb-3">Muntha</h4>
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div className="bg-white/50 rounded-lg p-3">
+                        <p className="text-xs text-sacred-text-secondary">Muntha Sign</p>
+                        <p className="font-semibold text-sacred-brown">{varshphalData.muntha?.sign}</p>
+                      </div>
+                      <div className="bg-white/50 rounded-lg p-3">
+                        <p className="text-xs text-sacred-text-secondary">Muntha House</p>
+                        <p className="font-semibold text-sacred-brown">House {varshphalData.muntha?.house}</p>
+                      </div>
+                      <div className="bg-white/50 rounded-lg p-3">
+                        <p className="text-xs text-sacred-text-secondary">Muntha Lord</p>
+                        <p className="font-semibold" style={{ color: '#B8860B' }}>{varshphalData.muntha?.lord}</p>
+                      </div>
+                      <div className="bg-white/50 rounded-lg p-3">
+                        <p className="text-xs text-sacred-text-secondary">Status</p>
+                        <p className={`font-semibold ${varshphalData.muntha?.favorable ? 'text-green-600' : 'text-red-500'}`}>
+                          {varshphalData.muntha?.favorable ? 'Favorable' : 'Challenging'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Varshphal Chart */}
+                  <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+                    <h4 className="font-display font-semibold text-sacred-brown mb-3">Varshphal Chart ({varshphalYear})</h4>
+                    {varshphalData.chart_data?.planets ? (
+                      <div className="flex justify-center">
+                        <InteractiveKundli
+                          chartData={{
+                            planets: Object.entries(varshphalData.chart_data.planets).map(([name, data]: [string, any]) => ({
+                              planet: name, sign: data?.sign || '', house: data?.house || 1,
+                              nakshatra: data?.nakshatra || '', sign_degree: data?.sign_degree || 0,
+                              status: data?.status || '', is_retrograde: data?.retrograde || false,
+                            })),
+                            houses: varshphalData.chart_data.houses,
+                            ascendant: varshphalData.chart_data.ascendant,
+                          } as ChartData}
+                          onPlanetClick={handlePlanetClick}
+                          onHouseClick={handleHouseClick}
+                        />
+                      </div>
+                    ) : <p className="text-center text-sacred-text-secondary py-4 text-sm">No chart data</p>}
+                  </div>
+
+                  {/* Mudda Dasha */}
+                  <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+                    <h4 className="font-display font-semibold text-sacred-brown mb-3">
+                      Mudda Dasha
+                      {varshphalData.current_mudda_dasha && (
+                        <span className="ml-2 text-xs px-2 py-1 rounded-full bg-sacred-gold/20 text-sacred-gold-dark">
+                          Current: {varshphalData.current_mudda_dasha}
+                        </span>
+                      )}
+                    </h4>
+                    <table className="w-full text-xs">
+                      <thead><tr className="bg-sacred-gold/10">
+                        <th className="text-left p-2 text-sacred-gold-dark font-medium">Planet</th>
+                        <th className="text-left p-2 text-sacred-gold-dark font-medium">Start</th>
+                        <th className="text-left p-2 text-sacred-gold-dark font-medium">End</th>
+                        <th className="text-center p-2 text-sacred-gold-dark font-medium">Days</th>
+                      </tr></thead>
+                      <tbody>
+                        {(varshphalData.mudda_dasha || []).map((md: any) => (
+                          <tr key={md.planet} className={`border-t border-sacred-gold/10 ${md.planet === varshphalData.current_mudda_dasha ? 'bg-sacred-gold/10 font-semibold' : ''}`}>
+                            <td className="p-2 text-sacred-brown">{md.planet}{md.planet === varshphalData.current_mudda_dasha ? ' \u2190' : ''}</td>
+                            <td className="p-2 text-sacred-text-secondary">{md.start_date}</td>
+                            <td className="p-2 text-sacred-text-secondary">{md.end_date}</td>
+                            <td className="p-2 text-center text-sacred-text-secondary">{md.days}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-center text-sacred-text-secondary py-8">Select a year and click the Varshphal tab to calculate</p>
+              )}
+            </div>
           </TabsContent>
         </Tabs>
 
