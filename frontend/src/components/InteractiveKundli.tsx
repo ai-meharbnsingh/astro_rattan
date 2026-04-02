@@ -49,6 +49,13 @@ const PLANET_ABBREVIATIONS: Record<string, string> = {
   Uranus: 'Ur', Neptune: 'Ne', Pluto: 'Pl',
 };
 
+const PLANET_ABBREVIATIONS_HI: Record<string, string> = {
+  Sun: 'सू', Moon: 'चं', Mars: 'मं', Mercury: 'बु', Jupiter: 'गु',
+  Venus: 'शु', Saturn: 'श', Rahu: 'रा', Ketu: 'के',
+  Ascendant: 'ल', Lagna: 'ल',
+  Uranus: 'Ur', Neptune: 'Ne', Pluto: 'Pl',
+};
+
 const ZODIAC_ABBREVIATIONS: Record<string, string> = {
   Aries: 'Ari', Taurus: 'Tau', Gemini: 'Gem', Cancer: 'Can',
   Leo: 'Leo', Virgo: 'Vir', Libra: 'Lib', Scorpio: 'Sco',
@@ -103,8 +110,9 @@ function getPlanetColor(planet: string): string {
 
 // Build planet label with status symbols (AstroSage style)
 // * Retrograde  ^ Combust  □ Vargottama  ↑ Exalted  ↓ Debilitated
-function getPlanetLabel(p: PlanetData): string {
-  const abbr = PLANET_ABBREVIATIONS[p.planet] || p.planet.slice(0, 2);
+function getPlanetLabel(p: PlanetData, lang?: string): string {
+  const abbrMap = lang === 'hi' ? PLANET_ABBREVIATIONS_HI : PLANET_ABBREVIATIONS;
+  const abbr = abbrMap[p.planet] || PLANET_ABBREVIATIONS[p.planet] || p.planet.slice(0, 2);
   let suffix = '';
   const s = p.status?.toLowerCase() || '';
   if (p.is_retrograde || s.includes('retrograde')) suffix += '*';
@@ -601,9 +609,10 @@ function PlanetBadge({
   hideTooltip,
   onPlanetClick,
 }: PlanetBadgeProps) {
+  const { language: lang } = useTranslation();
   const color = getPlanetColor(p.planet);
   const isHovered = hoveredPlanet === p.planet;
-  const label = getPlanetLabel(p);
+  const label = getPlanetLabel(p, lang);
 
   return (
     <g
@@ -651,7 +660,7 @@ function PlanetBadge({
 
 
 export default function InteractiveKundli({ chartData, onPlanetClick, onHouseClick, compact }: InteractiveKundliProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [hoveredHouse, setHoveredHouse] = useState<number | null>(null);
   const [hoveredPlanet, setHoveredPlanet] = useState<string | null>(null);
   const [tooltip, setTooltip] = useState<{ x: number; y: number; content: React.ReactNode } | null>(null);
@@ -1087,7 +1096,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                 const px = startX + pCol * spacing;
                 const baseY = nh.cy + (isTrapezoid ? 16 : 10) - (housePlanets.length > 0 ? 2 : 0);
                 const py = baseY + pRow * 22;
-                const label = getPlanetLabel(p);
+                const label = getPlanetLabel(p, language);
                 const degreeLabel = Math.round(p.sign_degree || 0);
 
                 return (

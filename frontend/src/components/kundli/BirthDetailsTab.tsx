@@ -50,7 +50,7 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
 
               return (
                 <tr key={idx} className={`border-t border-sacred-gold/10 text-xs ${idx % 2 === 0 ? '' : 'bg-sacred-gold/[0.02]'}`}>
-                  <td className="p-2 font-medium text-sacred-brown font-display">{p.planet}</td>
+                  <td className="p-2 font-medium text-sacred-brown font-display">{t(`planet.${p.planet}`) !== `planet.${p.planet}` ? t(`planet.${p.planet}`) : p.planet}</td>
                   <td className="p-2 text-sacred-brown">{p.sign}</td>
                   <td className="p-2 text-sacred-brown">{p.sign_degree != null ? `${Number(p.sign_degree).toFixed(2)}\u00b0` : '\u2014'}</td>
                   <td className="p-2 text-sacred-brown">{nakshatraName}{pada !== '\u2014' ? ` (${t('kundli.pada')} ${pada})` : ''}</td>
