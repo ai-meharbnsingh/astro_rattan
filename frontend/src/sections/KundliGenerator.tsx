@@ -778,7 +778,7 @@ export default function KundliGenerator() {
                           planets: transitData.transits.map((tr: any) => ({
                             planet: tr.planet,
                             sign: tr.current_sign || tr.sign || '',
-                            house: tr.current_house || tr.house || 1,
+                            house: tr.natal_house_from_moon || tr.house || 1,
                             nakshatra: tr.nakshatra || '',
                             sign_degree: tr.degree || tr.sign_degree || 0,
                             status: tr.is_retrograde ? 'Retrograde' : '',
@@ -2012,7 +2012,7 @@ export default function KundliGenerator() {
                         planets: (transitData.transits || []).map((tr: any) => ({
                           planet: tr.planet,
                           sign: tr.current_sign,
-                          house: tr.house_from_moon || 1,
+                          house: tr.natal_house_from_moon || 1,
                           nakshatra: '',
                           sign_degree: 15,
                           status: tr.effect === 'favorable' ? 'Benefic' : 'Malefic',

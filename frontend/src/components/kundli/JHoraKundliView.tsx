@@ -1,8 +1,29 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useCallback, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
 import { SIGN_LORD, SIGN_ELEMENT, SIGN_TYPE } from '@/components/kundli/kundli-utils';
 import { calculateJaiminiKarakas, getPlanetColor } from '@/components/kundli/jhora-utils';
+import { api } from '@/lib/api';
+
+// Available divisional charts
+const DIVISIONAL_OPTIONS = [
+  { value: 'D1', label: 'D1 Rashi' },
+  { value: 'D2', label: 'D2 Hora' },
+  { value: 'D3', label: 'D3 Drekkana' },
+  { value: 'D4', label: 'D4 Chaturthamsha' },
+  { value: 'D7', label: 'D7 Saptamsha' },
+  { value: 'D9', label: 'D9 Navamsha' },
+  { value: 'D10', label: 'D10 Dashamsha' },
+  { value: 'D12', label: 'D12 Dwadashamsha' },
+  { value: 'D16', label: 'D16 Shodashamsha' },
+  { value: 'D20', label: 'D20 Vimshamsha' },
+  { value: 'D24', label: 'D24 Chaturvimshamsha' },
+  { value: 'D27', label: 'D27 Bhamsha' },
+  { value: 'D30', label: 'D30 Trimshamsha' },
+  { value: 'D40', label: 'D40 Khavedamsha' },
+  { value: 'D45', label: 'D45 Akshavedamsha' },
+  { value: 'D60', label: 'D60 Shashtiamsha' },
+];
 
 interface JHoraKundliViewProps {
   result: any;
@@ -88,9 +109,9 @@ function buildTransitChartData(transitData: any): ChartData | null {
     planets: transitData.transits.map((tr: any) => ({
       planet: tr.planet,
       sign: tr.current_sign || tr.sign || 'Aries',
-      house: tr.house_from_moon || tr.house || 1,
+      house: tr.natal_house_from_moon || tr.house_from_moon || tr.house || 1,
       nakshatra: tr.nakshatra || '',
-      sign_degree: tr.degree || 0,
+      sign_degree: tr.degree || tr.sign_degree || 0,
       status: tr.effect || '',
     })),
   };
@@ -177,10 +198,41 @@ export default function JHoraKundliView({
 
   const dasha = extendedDashaData || dashaData;
 
-  // Build divisional chart data from props
-  const d9ChartData = useMemo(() => buildDivisionalChartData(divisionalData), [divisionalData]);
-  const d10ChartData = useMemo(() => buildDivisionalChartData(d10Data), [d10Data]);
+  // Transit chart data
   const transitChartData = useMemo(() => buildTransitChartData(transitData), [transitData]);
+
+  // Divisional chart dropdown state + cache
+  const [leftChart, setLeftChart] = useState('D9');
+  const [rightChart, setRightChart] = useState('D10');
+  const [divCache, setDivCache] = useState<Record<string, any>>({});
+  const [divLoading, setDivLoading] = useState<Record<string, boolean>>({});
+
+  // Seed cache from props
+  useEffect(() => {
+    if (divisionalData) setDivCache(prev => ({ ...prev, D9: divisionalData }));
+  }, [divisionalData]);
+  useEffect(() => {
+    if (d10Data) setDivCache(prev => ({ ...prev, D10: d10Data }));
+  }, [d10Data]);
+
+  const fetchDiv = useCallback(async (chartType: string) => {
+    if (divCache[chartType] || divLoading[chartType] || !result?.id) return;
+    setDivLoading(prev => ({ ...prev, [chartType]: true }));
+    try {
+      const data = await api.post(`/api/kundli/${result.id}/divisional`, { chart_type: chartType });
+      setDivCache(prev => ({ ...prev, [chartType]: data }));
+    } catch { /* ignore */ }
+    setDivLoading(prev => ({ ...prev, [chartType]: false }));
+  }, [divCache, divLoading, result?.id]);
+
+  // Fetch when dropdown changes
+  useEffect(() => { if (leftChart !== 'D9') fetchDiv(leftChart); }, [leftChart, fetchDiv]);
+  useEffect(() => { if (rightChart !== 'D10') fetchDiv(rightChart); }, [rightChart, fetchDiv]);
+
+  const leftChartData = useMemo(() => buildDivisionalChartData(divCache[leftChart]), [divCache, leftChart]);
+  const rightChartData = useMemo(() => buildDivisionalChartData(divCache[rightChart]), [divCache, rightChart]);
+  const leftLoading = leftChart === 'D9' ? loadingDivisional : !!divLoading[leftChart];
+  const rightLoading = rightChart === 'D10' ? loadingD10 : !!divLoading[rightChart];
 
   // Lordship rows
   const lordships = useMemo(() => {
@@ -334,24 +386,42 @@ export default function JHoraKundliView({
           </div>
         </div>
 
-        {/* ── D9 Navamsha (bottom-left) ── */}
+        {/* ── Bottom-left: selectable divisional chart ── */}
         <div style={{ ...chartCell, borderRight: BORDER, borderBottom: 'none' }}>
-          <div style={chartLabel}>D9</div>
+          <select
+            value={leftChart}
+            onChange={(e) => setLeftChart(e.target.value)}
+            style={{
+              ...chartLabel, background: HEADER_BG, border: 'none', cursor: 'pointer',
+              borderBottom: BORDER, width: '100%', outline: 'none',
+            }}
+          >
+            {DIVISIONAL_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+          </select>
           <div style={chartInner}>
-            {loadingDivisional ? <MiniLoader /> : d9ChartData ? (
-              <InteractiveKundli chartData={d9ChartData} compact />
+            {leftLoading ? <MiniLoader /> : leftChartData ? (
+              <InteractiveKundli chartData={leftChartData} compact />
             ) : (
               <span style={{ color: MUTED, fontSize: '10px' }}>--</span>
             )}
           </div>
         </div>
 
-        {/* ── D10 Dashamsha (bottom-right) ── */}
+        {/* ── Bottom-right: selectable divisional chart ── */}
         <div style={{ ...chartCell, borderBottom: 'none' }}>
-          <div style={chartLabel}>D10</div>
+          <select
+            value={rightChart}
+            onChange={(e) => setRightChart(e.target.value)}
+            style={{
+              ...chartLabel, background: HEADER_BG, border: 'none', cursor: 'pointer',
+              borderBottom: BORDER, width: '100%', outline: 'none',
+            }}
+          >
+            {DIVISIONAL_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+          </select>
           <div style={chartInner}>
-            {loadingD10 ? <MiniLoader /> : d10ChartData ? (
-              <InteractiveKundli chartData={d10ChartData} compact />
+            {rightLoading ? <MiniLoader /> : rightChartData ? (
+              <InteractiveKundli chartData={rightChartData} compact />
             ) : (
               <span style={{ color: MUTED, fontSize: '10px' }}>--</span>
             )}
