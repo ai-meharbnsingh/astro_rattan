@@ -940,82 +940,78 @@ export default function KundliGenerator() {
                   )}
                 </div>
 
-                {/* 6. Vimshottari Dasha + Jaimini Karakas */}
+                {/* 6. Vimshottari Dasha */}
                 <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
-                  <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4">
-                    {/* Dasha Table */}
-                    <div>
-                      <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('kundli.dasha')}</h4>
-                      {(loadingDasha || loadingExtendedDasha) ? (
-                        <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-sacred-gold" /></div>
-                      ) : dashaData ? (
-                        <div className="space-y-2">
-                          <div className="bg-gradient-to-r from-sacred-gold/5 to-sacred-gold/10 rounded-lg p-3">
-                            <p className="text-xs text-sacred-text-secondary">Current Mahadasha</p>
-                            <p className="text-sm font-display font-bold" style={{ color: '#B8860B' }}>{dashaData.current_dasha}</p>
-                            {dashaData.current_antardasha && <p className="text-xs text-sacred-gold-dark">AD: {dashaData.current_antardasha}</p>}
-                          </div>
-                          <div className="overflow-x-auto">
-                            <table className="w-full text-xs">
-                              <thead><tr className="bg-sacred-gold/10">
-                                <th className="text-left p-2 text-sacred-gold-dark font-medium">Planet</th>
-                                <th className="text-left p-2 text-sacred-gold-dark font-medium">Start</th>
-                                <th className="text-left p-2 text-sacred-gold-dark font-medium">End</th>
-                                <th className="text-center p-2 text-sacred-gold-dark font-medium">Yrs</th>
-                              </tr></thead>
-                              <tbody>
-                                {(dashaData.mahadasha_periods || []).map((p: any) => (
-                                  <tr key={p.planet} className={`border-t border-sacred-gold/10 ${p.planet === dashaData.current_dasha ? 'bg-sacred-gold/10 font-semibold' : ''}`}>
-                                    <td className="p-2 text-sacred-brown">{p.planet}{p.planet === dashaData.current_dasha ? ' \u2190' : ''}</td>
-                                    <td className="p-2 text-sacred-text-secondary">{p.start_date}</td>
-                                    <td className="p-2 text-sacred-text-secondary">{p.end_date}</td>
-                                    <td className="p-2 text-center text-sacred-text-secondary">{p.years}</td>
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-                      ) : (
-                        <p className="text-center text-sacred-text-secondary py-4 text-sm">Loading Dasha...</p>
-                      )}
+                  <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('kundli.dasha')}</h4>
+                  {(loadingDasha || loadingExtendedDasha) ? (
+                    <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-sacred-gold" /></div>
+                  ) : dashaData ? (
+                    <div className="space-y-2">
+                      <div className="bg-gradient-to-r from-sacred-gold/5 to-sacred-gold/10 rounded-lg p-3">
+                        <p className="text-xs text-sacred-text-secondary">Current Mahadasha</p>
+                        <p className="text-sm font-display font-bold" style={{ color: '#B8860B' }}>{dashaData.current_dasha}</p>
+                        {dashaData.current_antardasha && <p className="text-xs text-sacred-gold-dark">AD: {dashaData.current_antardasha}</p>}
+                      </div>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-xs">
+                          <thead><tr className="bg-sacred-gold/10">
+                            <th className="text-left p-2 text-sacred-gold-dark font-medium">Planet</th>
+                            <th className="text-left p-2 text-sacred-gold-dark font-medium">Start</th>
+                            <th className="text-left p-2 text-sacred-gold-dark font-medium">End</th>
+                            <th className="text-center p-2 text-sacred-gold-dark font-medium">Yrs</th>
+                          </tr></thead>
+                          <tbody>
+                            {(dashaData.mahadasha_periods || []).map((p: any) => (
+                              <tr key={p.planet} className={`border-t border-sacred-gold/10 ${p.planet === dashaData.current_dasha ? 'bg-sacred-gold/10 font-semibold' : ''}`}>
+                                <td className="p-2 text-sacred-brown">{p.planet}{p.planet === dashaData.current_dasha ? ' \u2190' : ''}</td>
+                                <td className="p-2 text-sacred-text-secondary">{p.start_date}</td>
+                                <td className="p-2 text-sacred-text-secondary">{p.end_date}</td>
+                                <td className="p-2 text-center text-sacred-text-secondary">{p.years}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
-                    {/* Jaimini Karakas */}
-                    <div className="md:border-l md:border-sacred-gold/20 md:pl-4 min-w-[180px]">
-                      <h4 className="font-display font-semibold text-sacred-brown mb-3">Jaimini Karakas</h4>
-                      {(() => {
-                        const karakas = calculateJaiminiKarakas(planets);
-                        const karakaOrder = [
-                          { key: 'AK', name: 'Atmakaraka' },
-                          { key: 'AmK', name: 'Amatyakaraka' },
-                          { key: 'BK', name: 'Bhratrikaraka' },
-                          { key: 'MK', name: 'Matrikaraka' },
-                          { key: 'PiK', name: 'Pitrikaraka' },
-                          { key: 'GnK', name: 'Gnatikaraka' },
-                          { key: 'DK', name: 'Darakaraka' },
-                        ];
-                        return (
-                          <table className="w-full text-xs">
-                            <thead><tr className="bg-sacred-gold/10">
-                              <th className="text-left p-2 text-sacred-gold-dark font-medium">Karaka</th>
-                              <th className="text-left p-2 text-sacred-gold-dark font-medium">Planet</th>
-                            </tr></thead>
-                            <tbody>
-                              {karakaOrder.map(({ key, name }) => {
-                                const planet = Object.entries(karakas).find(([, v]) => v === key)?.[0] || '-';
-                                return (
-                                  <tr key={key} className="border-t border-sacred-gold/10">
-                                    <td className="p-2 text-sacred-brown"><span className="font-semibold">{key}</span> <span className="text-[10px] text-sacred-text-secondary">({name})</span></td>
-                                    <td className="p-2 font-semibold" style={{ color: '#B8860B' }}>{planet}</td>
-                                  </tr>
-                                );
-                              })}
-                            </tbody>
-                          </table>
-                        );
-                      })()}
-                    </div>
-                  </div>
+                  ) : (
+                    <p className="text-center text-sacred-text-secondary py-4 text-sm">Loading Dasha...</p>
+                  )}
+                </div>
+
+                {/* 6b. Jaimini Karakas — separate card */}
+                <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+                  <h4 className="font-display font-semibold text-sacred-brown mb-3">Jaimini Karakas</h4>
+                  {(() => {
+                    const karakas = calculateJaiminiKarakas(planets);
+                    const karakaOrder = [
+                      { key: 'AK', name: 'Atmakaraka' },
+                      { key: 'AmK', name: 'Amatyakaraka' },
+                      { key: 'BK', name: 'Bhratrikaraka' },
+                      { key: 'MK', name: 'Matrikaraka' },
+                      { key: 'PiK', name: 'Pitrikaraka' },
+                      { key: 'GnK', name: 'Gnatikaraka' },
+                      { key: 'DK', name: 'Darakaraka' },
+                    ];
+                    return (
+                      <table className="w-full text-xs">
+                        <thead><tr className="bg-sacred-gold/10">
+                          <th className="text-left p-2 text-sacred-gold-dark font-medium">Karaka</th>
+                          <th className="text-left p-2 text-sacred-gold-dark font-medium">Planet</th>
+                        </tr></thead>
+                        <tbody>
+                          {karakaOrder.map(({ key, name }) => {
+                            const planet = Object.entries(karakas).find(([, v]) => v === key)?.[0] || '-';
+                            return (
+                              <tr key={key} className="border-t border-sacred-gold/10">
+                                <td className="p-2 text-sacred-brown"><span className="font-semibold">{key}</span> <span className="text-[10px] text-sacred-text-secondary">({name})</span></td>
+                                <td className="p-2 font-semibold" style={{ color: '#B8860B' }}>{planet}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    );
+                  })()}
                 </div>
 
                 {/* 7. Yoga & Dosha */}
