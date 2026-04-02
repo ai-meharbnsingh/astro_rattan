@@ -473,7 +473,8 @@ def get_yogas_and_doshas(
     row = _fetch_kundli(db, kundli_id, current_user["sub"])
     chart = _chart_data(row)
     planets = chart.get("planets", {})
-    result = analyze_yogas_and_doshas(planets)
+    asc_sign = chart.get("ascendant", {}).get("sign", "")
+    result = analyze_yogas_and_doshas(planets, asc_sign)
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result
@@ -772,7 +773,7 @@ def _build_kundli_pdf(row: dict, chart: dict) -> bytes:
 
     # ── Yoga & Dosha Summary ───────────────────────────────
     if planets:
-        yoga_dosha = analyze_yogas_and_doshas(planets)
+        yoga_dosha = analyze_yogas_and_doshas(planets, chart.get("ascendant", {}).get("sign", ""))
 
         yogas = yoga_dosha.get("yogas", [])
         if yogas:

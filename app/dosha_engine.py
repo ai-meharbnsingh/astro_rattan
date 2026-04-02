@@ -654,7 +654,402 @@ def check_neecha_bhanga(planets: dict) -> dict:
     }
 
 
-def analyze_yogas_and_doshas(planets: dict) -> dict:
+# ============================================================
+# Sign lords (dispositors) — needed for Raja Yoga, Dhana Yoga
+# ============================================================
+SIGN_LORDS = {
+    "Aries": "Mars", "Taurus": "Venus", "Gemini": "Mercury",
+    "Cancer": "Moon", "Leo": "Sun", "Virgo": "Mercury",
+    "Libra": "Venus", "Scorpio": "Mars", "Sagittarius": "Jupiter",
+    "Capricorn": "Saturn", "Aquarius": "Saturn", "Pisces": "Jupiter",
+}
+
+TRIKONA_HOUSES = {1, 5, 9}
+TRIK_HOUSES = {6, 8, 12}
+BENEFICS = {"Jupiter", "Venus", "Mercury", "Moon"}
+
+
+def _h(planet_name: str, planets: dict) -> int:
+    """Get house of a planet (0 if missing)."""
+    return planets.get(planet_name, {}).get("house", 0)
+
+
+def _sign(planet_name: str, planets: dict) -> str:
+    """Get sign of a planet."""
+    return planets.get(planet_name, {}).get("sign", "")
+
+
+def _conjunct(p1: str, p2: str, planets: dict) -> bool:
+    """Check if two planets are in the same house."""
+    h1, h2 = _h(p1, planets), _h(p2, planets)
+    return h1 > 0 and h1 == h2
+
+
+def _house_lord(house_num: int, asc_sign: str) -> str:
+    """Get lord of a house given ascendant sign."""
+    asc_idx = ZODIAC_INDEX.get(asc_sign, 0)
+    sign_on_house = ZODIAC_SIGNS[(asc_idx + house_num - 1) % 12]
+    return SIGN_LORDS.get(sign_on_house, "")
+
+
+# ============================================================
+# NEW YOGAS
+# ============================================================
+
+def check_sunapha_yoga(planets: dict) -> dict:
+    """Sunapha Yoga: Any planet (excl. Sun, Rahu, Ketu) in 2nd from Moon."""
+    moon_h = _h("Moon", planets)
+    if moon_h == 0:
+        return {"name": "Sunapha Yoga", "present": False, "description": "Moon data missing.", "planets_involved": []}
+    h2 = (moon_h % 12) + 1
+    found = [p for p in ["Mars", "Mercury", "Jupiter", "Venus", "Saturn"] if _h(p, planets) == h2]
+    if found:
+        return {"name": "Sunapha Yoga", "present": True,
+                "description": f"{', '.join(found)} in 2nd from Moon (house {h2}). Grants self-earned wealth, intelligence, and good reputation.",
+                "planets_involved": ["Moon"] + found}
+    return {"name": "Sunapha Yoga", "present": False, "description": "No planets in 2nd from Moon.", "planets_involved": []}
+
+
+def check_anapha_yoga(planets: dict) -> dict:
+    """Anapha Yoga: Any planet (excl. Sun, Rahu, Ketu) in 12th from Moon."""
+    moon_h = _h("Moon", planets)
+    if moon_h == 0:
+        return {"name": "Anapha Yoga", "present": False, "description": "Moon data missing.", "planets_involved": []}
+    h12 = ((moon_h - 2) % 12) + 1
+    found = [p for p in ["Mars", "Mercury", "Jupiter", "Venus", "Saturn"] if _h(p, planets) == h12]
+    if found:
+        return {"name": "Anapha Yoga", "present": True,
+                "description": f"{', '.join(found)} in 12th from Moon (house {h12}). Grants good health, comfort, and a pleasant personality.",
+                "planets_involved": ["Moon"] + found}
+    return {"name": "Anapha Yoga", "present": False, "description": "No planets in 12th from Moon.", "planets_involved": []}
+
+
+def check_durudhara_yoga(planets: dict) -> dict:
+    """Durudhara Yoga: Planets in both 2nd AND 12th from Moon."""
+    moon_h = _h("Moon", planets)
+    if moon_h == 0:
+        return {"name": "Durudhara Yoga", "present": False, "description": "Moon data missing.", "planets_involved": []}
+    h2 = (moon_h % 12) + 1
+    h12 = ((moon_h - 2) % 12) + 1
+    check = ["Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
+    in_2 = [p for p in check if _h(p, planets) == h2]
+    in_12 = [p for p in check if _h(p, planets) == h12]
+    if in_2 and in_12:
+        return {"name": "Durudhara Yoga", "present": True,
+                "description": f"Planets in 2nd ({', '.join(in_2)}) and 12th ({', '.join(in_12)}) from Moon. Grants wealth, vehicles, generosity, and a comfortable life.",
+                "planets_involved": ["Moon"] + in_2 + in_12}
+    return {"name": "Durudhara Yoga", "present": False, "description": "Planets not on both sides of Moon.", "planets_involved": []}
+
+
+def check_shakata_yoga(planets: dict) -> dict:
+    """Shakata Yoga: Moon in 6th or 8th from Jupiter — inauspicious."""
+    moon_h, jup_h = _h("Moon", planets), _h("Jupiter", planets)
+    if moon_h == 0 or jup_h == 0:
+        return {"name": "Shakata Yoga", "present": False, "description": "Data missing.", "planets_involved": []}
+    dist = (moon_h - jup_h) % 12
+    if dist in {5, 7}:  # 6th or 8th
+        return {"name": "Shakata Yoga", "present": True,
+                "description": f"Moon in {'6th' if dist == 5 else '8th'} from Jupiter. Causes fluctuating fortune — periods of prosperity followed by sudden setbacks.",
+                "planets_involved": ["Moon", "Jupiter"]}
+    return {"name": "Shakata Yoga", "present": False, "description": "Moon not in 6th/8th from Jupiter.", "planets_involved": []}
+
+
+def check_adhi_yoga(planets: dict) -> dict:
+    """Adhi Yoga: Benefics in 6th, 7th, 8th from Moon."""
+    moon_h = _h("Moon", planets)
+    if moon_h == 0:
+        return {"name": "Adhi Yoga", "present": False, "description": "Moon data missing.", "planets_involved": []}
+    h6 = ((moon_h + 4) % 12) + 1
+    h7 = ((moon_h + 5) % 12) + 1
+    h8 = ((moon_h + 6) % 12) + 1
+    found = []
+    for p in ["Jupiter", "Venus", "Mercury"]:
+        ph = _h(p, planets)
+        if ph in {h6, h7, h8}:
+            found.append(p)
+    if found:
+        return {"name": "Adhi Yoga", "present": True,
+                "description": f"{', '.join(found)} in 6th/7th/8th from Moon. Grants power, authority, leadership, and command over others.",
+                "planets_involved": ["Moon"] + found}
+    return {"name": "Adhi Yoga", "present": False, "description": "No benefics in 6/7/8 from Moon.", "planets_involved": []}
+
+
+def check_amala_yoga(planets: dict) -> dict:
+    """Amala Yoga: A natural benefic in 10th from Lagna or Moon."""
+    found = []
+    for p in ["Jupiter", "Venus", "Mercury", "Moon"]:
+        if _h(p, planets) == 10:
+            found.append(p)
+    if found:
+        return {"name": "Amala Yoga", "present": True,
+                "description": f"{', '.join(found)} in 10th house. Grants spotless reputation, fame, and virtuous conduct in career.",
+                "planets_involved": found}
+    return {"name": "Amala Yoga", "present": False, "description": "No benefic in 10th house.", "planets_involved": []}
+
+
+def check_vesi_yoga(planets: dict) -> dict:
+    """Vesi Yoga: Any planet (excl. Moon, Rahu, Ketu) in 2nd from Sun."""
+    sun_h = _h("Sun", planets)
+    if sun_h == 0:
+        return {"name": "Vesi Yoga", "present": False, "description": "Sun data missing.", "planets_involved": []}
+    h2 = (sun_h % 12) + 1
+    found = [p for p in ["Mars", "Mercury", "Jupiter", "Venus", "Saturn"] if _h(p, planets) == h2]
+    if found:
+        return {"name": "Vesi Yoga", "present": True,
+                "description": f"{', '.join(found)} in 2nd from Sun (house {h2}). Grants wealth, status, and truthful nature.",
+                "planets_involved": ["Sun"] + found}
+    return {"name": "Vesi Yoga", "present": False, "description": "No planets in 2nd from Sun.", "planets_involved": []}
+
+
+def check_vasi_yoga(planets: dict) -> dict:
+    """Vasi Yoga: Any planet (excl. Moon, Rahu, Ketu) in 12th from Sun."""
+    sun_h = _h("Sun", planets)
+    if sun_h == 0:
+        return {"name": "Vasi Yoga", "present": False, "description": "Sun data missing.", "planets_involved": []}
+    h12 = ((sun_h - 2) % 12) + 1
+    found = [p for p in ["Mars", "Mercury", "Jupiter", "Venus", "Saturn"] if _h(p, planets) == h12]
+    if found:
+        return {"name": "Vasi Yoga", "present": True,
+                "description": f"{', '.join(found)} in 12th from Sun (house {h12}). Grants generous nature, prosperity, and charitable disposition.",
+                "planets_involved": ["Sun"] + found}
+    return {"name": "Vasi Yoga", "present": False, "description": "No planets in 12th from Sun.", "planets_involved": []}
+
+
+def check_ubhayachari_yoga(planets: dict) -> dict:
+    """Ubhayachari Yoga: Planets in both 2nd AND 12th from Sun."""
+    sun_h = _h("Sun", planets)
+    if sun_h == 0:
+        return {"name": "Ubhayachari Yoga", "present": False, "description": "Sun data missing.", "planets_involved": []}
+    h2 = (sun_h % 12) + 1
+    h12 = ((sun_h - 2) % 12) + 1
+    check = ["Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
+    in_2 = [p for p in check if _h(p, planets) == h2]
+    in_12 = [p for p in check if _h(p, planets) == h12]
+    if in_2 and in_12:
+        return {"name": "Ubhayachari Yoga", "present": True,
+                "description": f"Planets in 2nd ({', '.join(in_2)}) and 12th ({', '.join(in_12)}) from Sun. Grants eloquence, wealth, kingly status, and influential personality.",
+                "planets_involved": ["Sun"] + in_2 + in_12}
+    return {"name": "Ubhayachari Yoga", "present": False, "description": "Planets not on both sides of Sun.", "planets_involved": []}
+
+
+def check_viparita_raja_yoga(planets: dict, asc_sign: str) -> list:
+    """Viparita Raja Yoga: Lord of 6th in 8th/12th, lord of 8th in 6th/12th, lord of 12th in 6th/8th."""
+    results = []
+    if not asc_sign:
+        return results
+    trik_map = {6: {8, 12}, 8: {6, 12}, 12: {6, 8}}
+    names = {6: "Harsha", 8: "Sarala", 12: "Vimala"}
+    for house_num, target_houses in trik_map.items():
+        lord = _house_lord(house_num, asc_sign)
+        if lord:
+            lord_h = _h(lord, planets)
+            if lord_h in target_houses:
+                results.append({
+                    "name": f"{names[house_num]} Viparita Raja Yoga",
+                    "present": True,
+                    "description": f"Lord of {house_num}th house ({lord}) placed in {lord_h}th house. Grants success through adversity, defeat of enemies, and unexpected gains.",
+                    "planets_involved": [lord],
+                })
+    return results
+
+
+def check_dhana_yoga(planets: dict, asc_sign: str) -> dict:
+    """Dhana Yoga: Lords of 2nd and 11th conjunct, or lords of 5th and 9th conjunct."""
+    if not asc_sign:
+        return {"name": "Dhana Yoga", "present": False, "description": "Ascendant data missing.", "planets_involved": []}
+    lord2 = _house_lord(2, asc_sign)
+    lord5 = _house_lord(5, asc_sign)
+    lord9 = _house_lord(9, asc_sign)
+    lord11 = _house_lord(11, asc_sign)
+    combos = [
+        (lord2, lord11, "2nd and 11th"),
+        (lord5, lord9, "5th and 9th"),
+        (lord2, lord5, "2nd and 5th"),
+        (lord2, lord9, "2nd and 9th"),
+    ]
+    for la, lb, label in combos:
+        if la and lb and la != lb and _conjunct(la, lb, planets):
+            return {"name": "Dhana Yoga", "present": True,
+                    "description": f"Lords of {label} houses ({la} and {lb}) conjunct in house {_h(la, planets)}. Grants significant wealth and financial prosperity.",
+                    "planets_involved": [la, lb]}
+    # Also: Jupiter in 2, 5, 9, or 11
+    jup_h = _h("Jupiter", planets)
+    if jup_h in {2, 5, 9, 11}:
+        return {"name": "Dhana Yoga", "present": True,
+                "description": f"Jupiter in house {jup_h} — a wealth-giving position. Grants financial stability and growth through righteous means.",
+                "planets_involved": ["Jupiter"]}
+    return {"name": "Dhana Yoga", "present": False, "description": "No Dhana Yoga combinations found.", "planets_involved": []}
+
+
+def check_raja_yoga(planets: dict, asc_sign: str) -> dict:
+    """Parashari Raja Yoga: Lord of any kendra conjunct lord of any trikona."""
+    if not asc_sign:
+        return {"name": "Parashari Raja Yoga", "present": False, "description": "Ascendant data missing.", "planets_involved": []}
+    kendra_lords = {_house_lord(h, asc_sign) for h in KENDRA_HOUSES} - {""}
+    trikona_lords = {_house_lord(h, asc_sign) for h in TRIKONA_HOUSES} - {""}
+    for kl in kendra_lords:
+        for tl in trikona_lords:
+            if kl != tl and _conjunct(kl, tl, planets):
+                return {"name": "Parashari Raja Yoga", "present": True,
+                        "description": f"Kendra lord ({kl}) conjunct trikona lord ({tl}) in house {_h(kl, planets)}. Grants power, authority, fame, and high position in life.",
+                        "planets_involved": [kl, tl]}
+            # Also check mutual kendra placement
+            if kl != tl:
+                dist = (_h(kl, planets) - _h(tl, planets)) % 12
+                if dist in {0, 3, 6, 9} and _h(kl, planets) > 0:
+                    return {"name": "Parashari Raja Yoga", "present": True,
+                            "description": f"Kendra lord ({kl}, H{_h(kl, planets)}) and trikona lord ({tl}, H{_h(tl, planets)}) in mutual kendra. Grants power and high position.",
+                            "planets_involved": [kl, tl]}
+    return {"name": "Parashari Raja Yoga", "present": False, "description": "No kendra-trikona lord association found.", "planets_involved": []}
+
+
+def check_lakshmi_yoga(planets: dict, asc_sign: str) -> dict:
+    """Lakshmi Yoga: Lord of 9th strong (own/exalted) and in kendra or trikona."""
+    if not asc_sign:
+        return {"name": "Lakshmi Yoga", "present": False, "description": "Ascendant data missing.", "planets_involved": []}
+    lord9 = _house_lord(9, asc_sign)
+    if not lord9:
+        return {"name": "Lakshmi Yoga", "present": False, "description": "Cannot determine 9th lord.", "planets_involved": []}
+    lord9_sign = _sign(lord9, planets)
+    lord9_house = _h(lord9, planets)
+    in_own = lord9_sign in OWN_SIGNS.get(lord9, set())
+    in_exalted = lord9_sign == EXALTATION_SIGNS.get(lord9, "")
+    in_good_house = lord9_house in (KENDRA_HOUSES | TRIKONA_HOUSES)
+    if (in_own or in_exalted) and in_good_house:
+        return {"name": "Lakshmi Yoga", "present": True,
+                "description": f"9th lord {lord9} is {'exalted' if in_exalted else 'in own sign'} in house {lord9_house}. Grants immense wealth, fortune, luxury, and divine blessings.",
+                "planets_involved": [lord9]}
+    return {"name": "Lakshmi Yoga", "present": False, "description": "9th lord not strong in kendra/trikona.", "planets_involved": []}
+
+
+def check_saraswati_yoga(planets: dict) -> dict:
+    """Saraswati Yoga: Jupiter, Venus, Mercury all in kendra, trikona, or 2nd house."""
+    good = KENDRA_HOUSES | TRIKONA_HOUSES | {2}
+    all_in = all(_h(p, planets) in good for p in ["Jupiter", "Venus", "Mercury"])
+    if all_in:
+        return {"name": "Saraswati Yoga", "present": True,
+                "description": f"Jupiter (H{_h('Jupiter', planets)}), Venus (H{_h('Venus', planets)}), Mercury (H{_h('Mercury', planets)}) all in kendra/trikona/2nd house. Grants exceptional learning, wisdom, artistic talent, and mastery of scriptures.",
+                "planets_involved": ["Jupiter", "Venus", "Mercury"]}
+    return {"name": "Saraswati Yoga", "present": False, "description": "Jupiter, Venus, Mercury not all in favorable houses.", "planets_involved": []}
+
+
+def check_danda_yoga(planets: dict) -> dict:
+    """Danda Yoga: All planets in 10th, 11th, and 12th houses only (rod-shaped distribution)."""
+    check_planets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
+    houses = {_h(p, planets) for p in check_planets if _h(p, planets) > 0}
+    if houses and houses.issubset({10, 11, 12}):
+        return {"name": "Danda Yoga", "present": True,
+                "description": "All planets concentrated in houses 10, 11, 12 — rod-shaped distribution. Can indicate a life of service, authority, but also potential for isolation or rigidity.",
+                "planets_involved": check_planets}
+    return {"name": "Danda Yoga", "present": False, "description": "Planets not concentrated in 10/11/12.", "planets_involved": []}
+
+
+# ============================================================
+# NEW DOSHAS
+# ============================================================
+
+def check_angarak_dosha(planets: dict) -> dict:
+    """Angarak Dosha: Mars conjunct Rahu or Ketu."""
+    if _conjunct("Mars", "Rahu", planets):
+        h = _h("Mars", planets)
+        sev = "high" if h in TRIK_HOUSES else "medium"
+        return {"name": "Angarak Dosha", "present": True, "severity": sev,
+                "description": f"Mars conjunct Rahu in house {h}. Causes aggression, accidents, legal issues, and financial instability.",
+                "remedies": ["Recite Hanuman Chalisa daily.", "Donate red items on Tuesdays.", "Perform Mangal-Rahu Shanti Puja."]}
+    if _conjunct("Mars", "Ketu", planets):
+        h = _h("Mars", planets)
+        return {"name": "Angarak Dosha", "present": True, "severity": "medium",
+                "description": f"Mars conjunct Ketu in house {h}. Can cause sudden conflicts, surgical issues, and impulsive decisions.",
+                "remedies": ["Recite Hanuman Chalisa daily.", "Donate red items on Tuesdays."]}
+    return {"name": "Angarak Dosha", "present": False, "severity": "none", "description": "Mars not conjunct Rahu or Ketu.", "remedies": []}
+
+
+def check_guru_chandal_dosha(planets: dict) -> dict:
+    """Guru Chandal Dosha: Jupiter conjunct Rahu or Ketu."""
+    if _conjunct("Jupiter", "Rahu", planets):
+        h = _h("Jupiter", planets)
+        return {"name": "Guru Chandal Dosha", "present": True, "severity": "medium",
+                "description": f"Jupiter conjunct Rahu in house {h}. Causes moral confusion, disrespect for tradition, education obstacles, and wrong guidance.",
+                "remedies": ["Worship Lord Vishnu on Thursdays.", "Donate yellow items.", "Perform Guru Graha Shanti Puja."]}
+    if _conjunct("Jupiter", "Ketu", planets):
+        h = _h("Jupiter", planets)
+        return {"name": "Guru Chandal Dosha", "present": True, "severity": "mild",
+                "description": f"Jupiter conjunct Ketu in house {h}. Can give spiritual tendencies but also confusion in worldly matters.",
+                "remedies": ["Worship Lord Vishnu on Thursdays.", "Donate yellow items."]}
+    return {"name": "Guru Chandal Dosha", "present": False, "severity": "none", "description": "Jupiter not conjunct Rahu or Ketu.", "remedies": []}
+
+
+def check_vish_dosha(planets: dict) -> dict:
+    """Vish Dosha: Saturn conjunct Moon."""
+    if _conjunct("Saturn", "Moon", planets):
+        h = _h("Moon", planets)
+        sev = "high" if h in {1, 4, 7, 8} else "medium"
+        return {"name": "Vish Dosha (Vish Yoga)", "present": True, "severity": sev,
+                "description": f"Saturn conjunct Moon in house {h}. Causes depression, chronic anxiety, emotional instability, and pessimistic outlook.",
+                "remedies": ["Perform Shani Shanti and Chandra Puja.", "Donate black items on Saturdays and white items on Mondays.", "Wear a Pearl after consultation."]}
+    return {"name": "Vish Dosha (Vish Yoga)", "present": False, "severity": "none", "description": "Saturn not conjunct Moon.", "remedies": []}
+
+
+def check_shrapit_dosha(planets: dict) -> dict:
+    """Shrapit Dosha: Saturn conjunct Rahu."""
+    if _conjunct("Saturn", "Rahu", planets):
+        h = _h("Saturn", planets)
+        sev = "high" if h in {1, 5, 7, 9} else "medium"
+        return {"name": "Shrapit Dosha", "present": True, "severity": sev,
+                "description": f"Saturn conjunct Rahu in house {h}. Indicates past-life karmic debts, chronic delays, repeated failures, and obstruction in fortune.",
+                "remedies": ["Perform Shani-Rahu Shanti Puja.", "Rudrabhishek on Mondays.", "Donate black items on Saturdays."]}
+    return {"name": "Shrapit Dosha", "present": False, "severity": "none", "description": "Saturn not conjunct Rahu.", "remedies": []}
+
+
+def check_grahan_dosha(planets: dict) -> dict:
+    """Grahan Dosha: Sun or Moon conjunct Rahu/Ketu (eclipse yoga)."""
+    results = []
+    if _conjunct("Sun", "Rahu", planets):
+        results.append(f"Sun conjunct Rahu in H{_h('Sun', planets)} (Surya Grahan)")
+    if _conjunct("Sun", "Ketu", planets):
+        results.append(f"Sun conjunct Ketu in H{_h('Sun', planets)} (Surya Grahan)")
+    if _conjunct("Moon", "Rahu", planets):
+        results.append(f"Moon conjunct Rahu in H{_h('Moon', planets)} (Chandra Grahan)")
+    if _conjunct("Moon", "Ketu", planets):
+        results.append(f"Moon conjunct Ketu in H{_h('Moon', planets)} (Chandra Grahan)")
+    if results:
+        return {"name": "Grahan Dosha", "present": True, "severity": "high",
+                "description": f"Eclipse affliction: {'; '.join(results)}. Weakens the luminary, causing ego/emotional issues, father/mother health concerns.",
+                "remedies": ["Surya Grahan: Surya Namaskar, donate copper.", "Chandra Grahan: Chandra Puja, donate white items.", "Recite Maha Mrityunjaya Mantra."]}
+    return {"name": "Grahan Dosha", "present": False, "severity": "none", "description": "Sun/Moon not eclipsed by Rahu/Ketu.", "remedies": []}
+
+
+def check_ghatak_dosha(planets: dict) -> dict:
+    """Ghatak Yoga/Dosha: Saturn conjunct Mars."""
+    if _conjunct("Saturn", "Mars", planets):
+        h = _h("Mars", planets)
+        sev = "high" if h in {1, 4, 7, 8} else "medium"
+        return {"name": "Ghatak Yoga", "present": True, "severity": sev,
+                "description": f"Saturn conjunct Mars in house {h}. Risk of accidents, injuries, surgical operations, and aggressive tendencies.",
+                "remedies": ["Hanuman Puja on Tuesdays.", "Shani Shanti Puja on Saturdays.", "Avoid risky activities on Tuesdays/Saturdays."]}
+    return {"name": "Ghatak Yoga", "present": False, "severity": "none", "description": "Saturn not conjunct Mars.", "remedies": []}
+
+
+def check_daridra_dosha(planets: dict, asc_sign: str) -> dict:
+    """Daridra Dosha: Lord of 11th in trik house (6/8/12)."""
+    if not asc_sign:
+        return {"name": "Daridra Dosha", "present": False, "severity": "none", "description": "Ascendant data missing.", "remedies": []}
+    lord11 = _house_lord(11, asc_sign)
+    lord2 = _house_lord(2, asc_sign)
+    reasons = []
+    if lord11 and _h(lord11, planets) in TRIK_HOUSES:
+        reasons.append(f"11th lord ({lord11}) in house {_h(lord11, planets)}")
+    if lord2 and _h(lord2, planets) in TRIK_HOUSES:
+        reasons.append(f"2nd lord ({lord2}) in house {_h(lord2, planets)}")
+    if reasons:
+        sev = "high" if len(reasons) > 1 else "medium"
+        return {"name": "Daridra Dosha", "present": True, "severity": sev,
+                "description": f"Wealth house lords afflicted: {'; '.join(reasons)}. Can cause financial difficulties, debts, and poverty cycles.",
+                "remedies": ["Perform Lakshmi Puja on Fridays.", "Donate on Fridays.", "Recite Shri Suktam daily."]}
+    return {"name": "Daridra Dosha", "present": False, "severity": "none", "description": "Wealth lords not in trik houses.", "remedies": []}
+
+
+def analyze_yogas_and_doshas(planets: dict, asc_sign: str = "") -> dict:
     """
     Comprehensive Yoga & Dosha analysis.
 
@@ -669,13 +1064,38 @@ def analyze_yogas_and_doshas(planets: dict) -> dict:
     """
     # ── Yogas ──
     yogas = []
-    yogas.append(check_gajakesari_yoga(planets))
-    yogas.append(check_budhaditya_yoga(planets))
-    yogas.append(check_chandra_mangal_yoga(planets))
+
+    # Panch Mahapurusha Yogas (5)
     yogas.extend(check_panch_mahapurusha(planets))
+
+    # Moon-based Yogas
+    yogas.append(check_gajakesari_yoga(planets))
+    yogas.append(check_sunapha_yoga(planets))
+    yogas.append(check_anapha_yoga(planets))
+    yogas.append(check_durudhara_yoga(planets))
+    yogas.append(check_shakata_yoga(planets))
+    yogas.append(check_adhi_yoga(planets))
+    yogas.append(check_amala_yoga(planets))
+    yogas.append(check_chandra_mangal_yoga(planets))
+
+    # Sun-based Yogas
+    yogas.append(check_budhaditya_yoga(planets))
+    yogas.append(check_vesi_yoga(planets))
+    yogas.append(check_vasi_yoga(planets))
+    yogas.append(check_ubhayachari_yoga(planets))
     yogas.append(check_sun_in_own_sign(planets))
     yogas.append(check_saturn_exalted(planets))
+
+    # Raja Yogas (need ascendant)
     yogas.append(check_neecha_bhanga(planets))
+    yogas.extend(check_viparita_raja_yoga(planets, asc_sign))
+    yogas.append(check_raja_yoga(planets, asc_sign))
+    yogas.append(check_lakshmi_yoga(planets, asc_sign))
+    yogas.append(check_dhana_yoga(planets, asc_sign))
+
+    # Special Yogas
+    yogas.append(check_saraswati_yoga(planets))
+    yogas.append(check_danda_yoga(planets))
 
     # ── Doshas ──
     doshas = []
@@ -709,23 +1129,22 @@ def analyze_yogas_and_doshas(planets: dict) -> dict:
 
     # Pitra Dosha
     pitra = check_pitra_dosha(planets)
-    doshas.append({
-        "name": "Pitra Dosha",
-        "present": pitra["has_dosha"],
-        "description": pitra["description"],
-        "severity": pitra["severity"],
-        "remedies": pitra["remedies"],
-    })
+    doshas.append({"name": "Pitra Dosha", "present": pitra["has_dosha"],
+                   "description": pitra["description"], "severity": pitra["severity"], "remedies": pitra["remedies"]})
 
     # Kemdrum Dosha
     kemdrum = check_kemdrum_dosha(planets)
-    doshas.append({
-        "name": "Kemdrum Dosha",
-        "present": kemdrum["has_dosha"],
-        "description": kemdrum["description"],
-        "severity": kemdrum["severity"],
-        "remedies": kemdrum["remedies"],
-    })
+    doshas.append({"name": "Kemdrum Dosha", "present": kemdrum["has_dosha"],
+                   "description": kemdrum["description"], "severity": kemdrum["severity"], "remedies": kemdrum["remedies"]})
+
+    # NEW Doshas
+    doshas.append(check_angarak_dosha(planets))
+    doshas.append(check_guru_chandal_dosha(planets))
+    doshas.append(check_vish_dosha(planets))
+    doshas.append(check_shrapit_dosha(planets))
+    doshas.append(check_grahan_dosha(planets))
+    doshas.append(check_ghatak_dosha(planets))
+    doshas.append(check_daridra_dosha(planets, asc_sign))
 
     return {
         "yogas": yogas,
