@@ -269,22 +269,23 @@ export default function JHoraKundliView({
       fontFamily: SERIF,
       fontSize: '11px',
       display: 'grid',
-      gridTemplateColumns: '32% 68%',
+      gridTemplateColumns: '55% 45%',
       boxSizing: 'border-box',
     }}>
 
-      {/* ═══════════ LEFT COLUMN (32%): D1 | Transit | D9 | D10 ═══════════ */}
+      {/* ═══════════ LEFT: 2×2 chart grid (D1 | Transit / D9 | D10) ═══════════ */}
       <div style={{
         display: 'grid',
-        gridTemplateRows: '1fr 1fr 1fr 1fr',
+        gridTemplateColumns: '1fr 1fr',
+        gridTemplateRows: '1fr 1fr',
         overflow: 'hidden',
         borderRight: BORDER,
       }}>
 
-        {/* ── D1 Birth Chart ── */}
-        <div style={chartCell}>
-          <div style={chartLabel}>Birth Chart (D1)</div>
-          <div style={{ flex: 1, width: '100%', maxWidth: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+        {/* ── D1 Birth Chart (top-left) ── */}
+        <div style={{ ...chartCell, borderRight: BORDER }}>
+          <div style={chartLabel}>D1</div>
+          <div style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
             <InteractiveKundli
               chartData={{ planets, houses: result?.chart_data?.houses, ascendant: result?.chart_data?.ascendant } as ChartData}
               compact
@@ -292,10 +293,10 @@ export default function JHoraKundliView({
           </div>
         </div>
 
-        {/* ── Transit ── */}
+        {/* ── Transit (top-right) ── */}
         <div style={chartCell}>
           <div style={chartLabel}>Transit</div>
-          <div style={{ flex: 1, width: '100%', maxWidth: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+          <div style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
             {loadingTransit ? <MiniLoader /> : transitChartData ? (
               <InteractiveKundli chartData={transitChartData} compact />
             ) : (
@@ -304,10 +305,10 @@ export default function JHoraKundliView({
           </div>
         </div>
 
-        {/* ── D9 Navamsha ── */}
-        <div style={chartCell}>
-          <div style={chartLabel}>Navamsha (D9)</div>
-          <div style={{ flex: 1, width: '100%', maxWidth: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+        {/* ── D9 Navamsha (bottom-left) ── */}
+        <div style={{ ...chartCell, borderRight: BORDER, borderBottom: 'none' }}>
+          <div style={chartLabel}>D9</div>
+          <div style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
             {loadingDivisional ? <MiniLoader /> : d9ChartData ? (
               <InteractiveKundli chartData={d9ChartData} compact />
             ) : (
@@ -316,10 +317,10 @@ export default function JHoraKundliView({
           </div>
         </div>
 
-        {/* ── D10 Dashamsha ── */}
+        {/* ── D10 Dashamsha (bottom-right) ── */}
         <div style={{ ...chartCell, borderBottom: 'none' }}>
-          <div style={chartLabel}>Dashamsha (D10)</div>
-          <div style={{ flex: 1, width: '100%', maxWidth: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+          <div style={chartLabel}>D10</div>
+          <div style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
             {loadingD10 ? <MiniLoader /> : d10ChartData ? (
               <InteractiveKundli chartData={d10ChartData} compact />
             ) : (
@@ -329,7 +330,7 @@ export default function JHoraKundliView({
         </div>
       </div>
 
-      {/* ═══════════ RIGHT COLUMN (68%): Planet Table | Dasha+Lordships | Avakhada+Shadbala ═══════════ */}
+      {/* ═══════════ RIGHT: Planet Table | Dasha+Lordships | Avakhada+Shadbala ═══════════ */}
       <div style={{
         display: 'grid',
         gridTemplateRows: '1fr 1fr 1fr',
