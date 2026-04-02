@@ -1,5 +1,7 @@
+import { useMemo } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { getDignity, SIGN_TYPE, SIGN_ELEMENT, PLANET_NATURE } from './kundli-utils';
+import { calculateJaiminiKarakas } from './jhora-utils';
 
 interface BirthDetailsTabProps {
   planets: any[];
@@ -7,6 +9,13 @@ interface BirthDetailsTabProps {
 
 export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
   const { t } = useTranslation();
+  const karakas = useMemo(() => calculateJaiminiKarakas(planets), [planets]);
+
+  // Reverse map: planet -> karaka abbreviation
+  const planetKaraka: Record<string, string> = {};
+  for (const [planet, karaka] of Object.entries(karakas)) {
+    planetKaraka[planet] = karaka;
+  }
 
   return (
     <div className="overflow-x-auto">
@@ -23,6 +32,7 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
               <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('kundli.element')}</th>
               <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('kundli.nature')}</th>
               <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('kundli.retrograde')}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">Jaimini</th>
             </tr>
           </thead>
           <tbody>
@@ -36,6 +46,7 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
               const nakshatraParts = (p.nakshatra || '').split(' Pada ');
               const nakshatraName = nakshatraParts[0] || p.nakshatra || '\u2014';
               const pada = nakshatraParts[1] || '\u2014';
+              const karaka = planetKaraka[p.planet] || '\u2014';
 
               return (
                 <tr key={idx} className={`border-t border-sacred-gold/10 text-xs ${idx % 2 === 0 ? '' : 'bg-sacred-gold/[0.02]'}`}>
@@ -54,6 +65,9 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
                   </td>
                   <td className="p-2" style={{ color: isRetro ? '#dc2626' : '#8B7355' }}>
                     {isRetro ? `${t('common.yes')} \u211e` : t('common.no')}
+                  </td>
+                  <td className="p-2 font-semibold" style={{ color: karaka !== '\u2014' ? '#B8860B' : '#8B7355' }}>
+                    {karaka}
                   </td>
                 </tr>
               );
