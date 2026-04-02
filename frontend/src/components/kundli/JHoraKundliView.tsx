@@ -101,15 +101,16 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
   return (
     <div style={{
       fontFamily: SERIF,
-      fontSize: '12px',
+      fontSize: '10px',
       fontWeight: 600,
       color: HEADER_COLOR,
-      padding: '4px 8px',
+      padding: '2px 6px',
       borderBottom: BORDER,
       background: HEADER_BG,
       whiteSpace: 'nowrap',
       overflow: 'hidden',
       textOverflow: 'ellipsis',
+      flexShrink: 0,
     }}>
       {children}
     </div>
@@ -138,6 +139,19 @@ function statusColor(status: string): string {
 function fmtDegree(deg: number | undefined): string {
   if (deg === undefined || deg === null) return '-';
   return `${deg.toFixed(1)}\u00B0`;
+}
+
+// ─── Abbreviate dignity status ──────────────────────────────────────
+function abbrDignity(status: string): string {
+  if (!status) return '-';
+  return status
+    .replace('Debilitated', 'Deb')
+    .replace('Exalted', 'Exl')
+    .replace('Own Sign', 'Own')
+    .replace('Retrograde', 'R')
+    .replace('Combust', 'C')
+    .replace('Vargottama', 'Varg')
+    .replace('Neutral', '-');
 }
 
 // ─── Main Component ─────────────────────────────────────────────────
@@ -210,11 +224,11 @@ export default function JHoraKundliView({
     }));
   }, [dasha]);
 
-  // Table cell base style
+  // Table cell base style — tight padding for compact JHora layout
   const cellBase: React.CSSProperties = {
     fontFamily: SERIF,
-    fontSize: '11px',
-    padding: '3px 6px',
+    fontSize: '10px',
+    padding: '2px 3px',
     borderBottom: `1px solid ${BORDER_COLOR}`,
     whiteSpace: 'nowrap',
     overflow: 'hidden',
@@ -223,8 +237,8 @@ export default function JHoraKundliView({
 
   const cellCompact: React.CSSProperties = {
     ...cellBase,
-    fontSize: '10px',
-    padding: '2px 5px',
+    fontSize: '9px',
+    padding: '1px 3px',
   };
 
   const thBase: React.CSSProperties = {
@@ -237,19 +251,20 @@ export default function JHoraKundliView({
 
   const thCompact: React.CSSProperties = {
     ...thBase,
-    fontSize: '10px',
-    padding: '2px 5px',
+    fontSize: '9px',
+    padding: '1px 3px',
   };
 
   // Chart cell label style
   const chartLabel: React.CSSProperties = {
     fontFamily: SERIF,
-    fontSize: '10px',
+    fontSize: '9px',
     color: HEADER_COLOR,
     fontWeight: 600,
     textAlign: 'center' as const,
-    padding: '2px 0 1px 0',
+    padding: '1px 0 0 0',
     flexShrink: 0,
+    lineHeight: 1,
   };
 
   // Chart cell wrapper style — constrains chart to fit within grid cell
@@ -275,7 +290,7 @@ export default function JHoraKundliView({
 
   return (
     <div style={{
-      width: '100%',
+      width: '100vw',
       height: '100vh',
       overflow: 'hidden',
       background: BG,
@@ -284,6 +299,7 @@ export default function JHoraKundliView({
       display: 'grid',
       gridTemplateColumns: '42% 58%',
       boxSizing: 'border-box',
+      padding: '4px',
     }}>
 
       {/* ═══════════ LEFT: 2×2 chart grid (D1 | Transit / D9 | D10) ═══════════ */}
@@ -389,12 +405,12 @@ export default function JHoraKundliView({
                       <td style={{ ...cellCompact, textAlign: 'center', color: rc.includes('R') ? '#DC2626' : rc.includes('C') ? '#D97706' : MUTED, fontWeight: rc !== '-' ? 600 : 400 }}>
                         {rc}
                       </td>
-                      <td style={{ ...cellCompact }}>{p.sign}</td>
+                      <td style={{ ...cellCompact }}>{signAbbr(p.sign)}</td>
                       <td style={{ ...cellCompact, textAlign: 'center' }}>{modAbbr}</td>
                       <td style={{ ...cellCompact, textAlign: 'center' }}>{elem}</td>
                       <td style={{ ...cellCompact }}>{p.nakshatra || '-'}</td>
                       <td style={{ ...cellCompact, color: statusColor(p.status), fontWeight: p.status ? 600 : 400 }}>
-                        {p.status || 'Neutral'}
+                        {abbrDignity(p.status)}
                       </td>
                       <td style={{ ...cellCompact, fontWeight: 600, color: karaka !== '-' ? '#5D4037' : MUTED }}>
                         {karaka}
