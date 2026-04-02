@@ -10,7 +10,7 @@ Provides:
 """
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List
 
 from app.astro_engine import calculate_planet_positions, _SIGN_NAMES
@@ -129,13 +129,15 @@ def _check_sade_sati(moon_sign: str, saturn_sign: str) -> Dict[str, Any]:
 
 # ── Main transit calculation ──────────────────────────────────
 
-def calculate_transits(natal_chart_data: Dict[str, Any]) -> Dict[str, Any]:
+def calculate_transits(natal_chart_data: Dict[str, Any], latitude: float = 0.0, longitude: float = 0.0) -> Dict[str, Any]:
     """
     Calculate current planetary transits and their Gochara effects on a natal chart.
 
     Args:
         natal_chart_data: The stored chart_data dict from a kundli row,
                           containing planets -> {sign, house, ...} and ascendant.
+        latitude:  Observer latitude for ascendant calculation (default 0.0).
+        longitude: Observer longitude for ascendant calculation (default 0.0).
 
     Returns:
         {
@@ -156,19 +158,23 @@ def calculate_transits(natal_chart_data: Dict[str, Any]) -> Dict[str, Any]:
             "transit_date": str,  # ISO date of transit calculation
         }
     """
-    # Calculate current planetary positions (today, UTC, from a reference location).
-    # The planetary longitudes are essentially the same regardless of observer
-    # location for the outer/slow planets. We use 0,0 as a neutral reference.
-    now = datetime.now(timezone.utc)
-    today_str = now.strftime("%Y-%m-%d")
-    time_str = now.strftime("%H:%M:%S")
+    # Calculate current planetary positions using the birth location for correct ascendant.
+    # Planet longitudes are nearly location-independent, but the ascendant (Lagna)
+    # depends heavily on the observer's latitude and longitude.
+    now_utc = datetime.now(timezone.utc)
+
+    # Approximate timezone offset from longitude (15° per hour)
+    tz_offset = round(longitude / 15.0 * 2) / 2  # round to nearest 0.5
+    local_now = now_utc + timedelta(hours=tz_offset)
+    today_str = local_now.strftime("%Y-%m-%d")
+    time_str = local_now.strftime("%H:%M:%S")
 
     current_positions = calculate_planet_positions(
         birth_date=today_str,
         birth_time=time_str,
-        latitude=0.0,
-        longitude=0.0,
-        tz_offset=0.0,
+        latitude=latitude,
+        longitude=longitude,
+        tz_offset=tz_offset,
     )
 
     # Extract natal Moon sign

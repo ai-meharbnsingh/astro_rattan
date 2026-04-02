@@ -969,7 +969,7 @@ def get_transits(
     """Calculate current Gochara (transit) predictions for a kundli."""
     row = _fetch_kundli(db, kundli_id, current_user["sub"])
     chart = _chart_data(row)
-    result = calculate_transits(chart)
+    result = calculate_transits(chart, latitude=row.get("latitude", 0.0), longitude=row.get("longitude", 0.0))
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result
