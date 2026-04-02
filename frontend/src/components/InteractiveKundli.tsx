@@ -45,7 +45,7 @@ const ZODIAC_NUMBERS: Record<string, number> = {
 const PLANET_ABBREVIATIONS: Record<string, string> = {
   Sun: 'Su', Moon: 'Mo', Mars: 'Ma', Mercury: 'Me', Jupiter: 'Ju',
   Venus: 'Ve', Saturn: 'Sa', Rahu: 'Ra', Ketu: 'Ke',
-  Ascendant: 'As', Lagna: 'As',
+  Ascendant: 'La', Lagna: 'La',
   Uranus: 'Ur', Neptune: 'Ne', Pluto: 'Pl',
 };
 

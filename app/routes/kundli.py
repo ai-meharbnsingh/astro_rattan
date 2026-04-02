@@ -255,10 +255,18 @@ def check_doshas(
             planet_houses[p] = planets[p].get("house", 1)
     kaal_sarp = check_kaal_sarp(rahu_house, ketu_house, planet_houses)
 
-    # Sade Sati (use Moon sign + Saturn sign from chart)
+    # Sade Sati — uses CURRENT TRANSIT Saturn position (not natal Saturn)
     moon_sign = planets.get("Moon", {}).get("sign", "Aries")
-    saturn_sign = planets.get("Saturn", {}).get("sign", "Capricorn")
-    sade_sati = check_sade_sati(moon_sign, saturn_sign)
+    # Calculate current Saturn position for transit-based Sade Sati check
+    from datetime import datetime, timezone as _tz
+    _now = datetime.now(_tz.utc)
+    _today_positions = calculate_planet_positions(
+        _now.strftime("%Y-%m-%d"), _now.strftime("%H:%M:%S"),
+        latitude=row.get("latitude", 0.0), longitude=row.get("longitude", 0.0),
+        tz_offset=round(row.get("longitude", 0.0) / 15.0 * 2) / 2,
+    )
+    saturn_transit_sign = _today_positions.get("planets", {}).get("Saturn", {}).get("sign", "Capricorn")
+    sade_sati = check_sade_sati(moon_sign, saturn_transit_sign)
 
     return {
         "kundli_id": kundli_id,
