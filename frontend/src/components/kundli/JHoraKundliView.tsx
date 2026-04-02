@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Loader2 } from 'lucide-react';
 import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
-import { SIGN_LORD } from '@/components/kundli/kundli-utils';
+import { SIGN_LORD, SIGN_ELEMENT, SIGN_TYPE } from '@/components/kundli/kundli-utils';
 import { calculateJaiminiKarakas, getPlanetColor } from '@/components/kundli/jhora-utils';
 
 interface JHoraKundliViewProps {
@@ -183,6 +183,9 @@ export default function JHoraKundliView({
     return rows;
   }, [result, planets]);
 
+  // Jaimini Karakas (AK, AmK, BK, etc.)
+  const karakas = useMemo(() => calculateJaiminiKarakas(planets), [planets]);
+
   // Sign abbreviation
   const signAbbr = (sign: string): string => {
     const map: Record<string, string> = {
@@ -279,7 +282,7 @@ export default function JHoraKundliView({
       fontFamily: SERIF,
       fontSize: '11px',
       display: 'grid',
-      gridTemplateColumns: '55% 45%',
+      gridTemplateColumns: '42% 58%',
       boxSizing: 'border-box',
     }}>
 
@@ -340,24 +343,24 @@ export default function JHoraKundliView({
         </div>
       </div>
 
-      {/* ═══════════ RIGHT: Planet Table | Dasha+Lordships | Avakhada+Shadbala ═══════════ */}
+      {/* ═══════════ RIGHT: Planet Table | Dasha+Lordships | Avakhada+Karakas+Shadbala ═══════════ */}
       <div style={{
         display: 'grid',
         gridTemplateRows: '1fr 1fr 1fr',
         overflow: 'hidden',
       }}>
 
-        {/* ── Row 1: Planet Positions Table (45%) ── */}
-        <div style={{ overflow: 'hidden', borderBottom: BORDER, display: 'flex', flexDirection: 'column' }}>
-          <SectionHeader>Planet Positions</SectionHeader>
-          <div style={{ flex: 1, overflow: 'auto' }}>
+        {/* ── Row 1: Planet Positions Table ── */}
+        <div style={{ overflow: 'hidden', borderBottom: BORDER, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+          <SectionHeader>Birth Chart</SectionHeader>
+          <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr>
-                  {['Planet', 'Sign', 'House', 'Degree', 'Nakshatra', 'Status'].map((h) => (
+                  {['Planet', 'Degree', 'R/C', 'Sign', 'Mod', 'Elem', 'Nakshatra', 'Dignity', 'Karaka'].map((h) => (
                     <th key={h} style={{
-                      ...thBase,
-                      textAlign: h === 'House' ? 'center' : h === 'Degree' ? 'right' : 'left',
+                      ...thCompact,
+                      textAlign: h === 'Degree' ? 'right' : h === 'R/C' || h === 'Mod' || h === 'Elem' ? 'center' : 'left',
                     }}>
                       {h}
                     </th>
@@ -365,56 +368,57 @@ export default function JHoraKundliView({
                 </tr>
               </thead>
               <tbody>
-                {planets.map((p, i) => (
-                  <tr key={i} style={{ background: i % 2 === 0 ? 'transparent' : ALT_ROW }}>
-                    <td style={{
-                      ...cellBase,
-                      color: planetColor(p.planet),
-                      fontWeight: 600,
-                      textAlign: 'left',
-                    }}>
-                      {p.planet}
-                    </td>
-                    <td style={{ ...cellBase, textAlign: 'left' }}>
-                      {p.sign}
-                    </td>
-                    <td style={{ ...cellBase, textAlign: 'center' }}>
-                      {p.house || '-'}
-                    </td>
-                    <td style={{ ...cellBase, textAlign: 'right' }}>
-                      {fmtDegree(p.sign_degree)}
-                    </td>
-                    <td style={{ ...cellBase, textAlign: 'left' }}>
-                      {p.nakshatra || '-'}
-                    </td>
-                    <td style={{
-                      ...cellBase,
-                      textAlign: 'left',
-                      color: statusColor(p.status),
-                      fontWeight: (p.status?.toLowerCase().includes('exalted') || p.status?.toLowerCase().includes('debilitated')) ? 600 : 400,
-                    }}>
-                      {p.status || '-'}
-                    </td>
-                  </tr>
-                ))}
+                {planets.filter(p => p.planet !== 'Lagna').map((p, i) => {
+                  const rc = [
+                    p.is_retrograde ? 'R' : '',
+                    p.is_combust ? 'C' : '',
+                    p.is_vargottama ? 'V' : '',
+                  ].filter(Boolean).join(',') || '-';
+                  const mod = SIGN_TYPE[p.sign] || '-';
+                  const modAbbr = mod === 'Moveable' ? 'Mov' : mod === 'Fixed' ? 'Fix' : mod === 'Dual' ? 'Dual' : '-';
+                  const elem = SIGN_ELEMENT[p.sign] || '-';
+                  const karaka = karakas[p.planet] || '-';
+                  return (
+                    <tr key={i} style={{ background: i % 2 === 0 ? 'transparent' : ALT_ROW }}>
+                      <td style={{ ...cellCompact, color: planetColor(p.planet), fontWeight: 600 }}>
+                        {p.planet}
+                      </td>
+                      <td style={{ ...cellCompact, textAlign: 'right' }}>
+                        {fmtDegree(p.sign_degree)}
+                      </td>
+                      <td style={{ ...cellCompact, textAlign: 'center', color: rc.includes('R') ? '#DC2626' : rc.includes('C') ? '#D97706' : MUTED, fontWeight: rc !== '-' ? 600 : 400 }}>
+                        {rc}
+                      </td>
+                      <td style={{ ...cellCompact }}>{p.sign}</td>
+                      <td style={{ ...cellCompact, textAlign: 'center' }}>{modAbbr}</td>
+                      <td style={{ ...cellCompact, textAlign: 'center' }}>{elem}</td>
+                      <td style={{ ...cellCompact }}>{p.nakshatra || '-'}</td>
+                      <td style={{ ...cellCompact, color: statusColor(p.status), fontWeight: p.status ? 600 : 400 }}>
+                        {p.status || 'Neutral'}
+                      </td>
+                      <td style={{ ...cellCompact, fontWeight: 600, color: karaka !== '-' ? '#5D4037' : MUTED }}>
+                        {karaka}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         </div>
 
-        {/* ── Row 2: Vimshottari Dasha (50%) | Lordships (50%) — 27% height ── */}
+        {/* ── Row 2: Vimshottari Dasha | Lordships ── */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: '50% 50%',
           overflow: 'hidden',
           borderBottom: BORDER,
         }}>
-
           {/* Vimshottari Dasha */}
-          <div style={{ borderRight: BORDER, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ borderRight: BORDER, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
             <SectionHeader>Vimshottari Dasha</SectionHeader>
             {loadingDasha ? <MiniLoader /> : dasha ? (
-              <div style={{ flex: 1, overflow: 'auto' }}>
+              <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
                     <tr>
@@ -428,22 +432,12 @@ export default function JHoraKundliView({
                       <tr key={i} style={{
                         background: md.isCurrent ? '#FEF3C7' : (i % 2 === 0 ? 'transparent' : ALT_ROW),
                       }}>
-                        <td style={{
-                          ...cellCompact,
-                          color: planetColor(md.planet),
-                          fontWeight: 600,
-                        }}>
+                        <td style={{ ...cellCompact, color: planetColor(md.planet), fontWeight: 600 }}>
                           {md.planet}
                         </td>
-                        <td style={cellCompact}>
-                          {md.start ? md.start.slice(0, 10) : '-'}
-                        </td>
-                        <td style={cellCompact}>
-                          {md.end ? md.end.slice(0, 10) : '-'}
-                        </td>
-                        <td style={{ ...cellCompact, textAlign: 'center' }}>
-                          {md.years || '-'}
-                        </td>
+                        <td style={cellCompact}>{md.start ? md.start.slice(0, 10) : '-'}</td>
+                        <td style={cellCompact}>{md.end ? md.end.slice(0, 10) : '-'}</td>
+                        <td style={{ ...cellCompact, textAlign: 'center' }}>{md.years || '-'}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -455,9 +449,9 @@ export default function JHoraKundliView({
           </div>
 
           {/* Lordships */}
-          <div style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
             <SectionHeader>Lordships</SectionHeader>
-            <div style={{ flex: 1, overflow: 'auto' }}>
+            <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr>
@@ -469,22 +463,10 @@ export default function JHoraKundliView({
                 <tbody>
                   {lordships.map((l, i) => (
                     <tr key={l.houseNum} style={{ background: i % 2 === 0 ? 'transparent' : ALT_ROW }}>
-                      <td style={{ ...cellCompact, textAlign: 'center', fontWeight: 600 }}>
-                        {l.houseNum}
-                      </td>
-                      <td style={cellCompact}>
-                        {signAbbr(l.signName)}
-                      </td>
-                      <td style={{
-                        ...cellCompact,
-                        color: planetColor(l.lord),
-                        fontWeight: 600,
-                      }}>
-                        {l.lord}
-                      </td>
-                      <td style={{ ...cellCompact, textAlign: 'center' }}>
-                        {l.lordHouse}
-                      </td>
+                      <td style={{ ...cellCompact, textAlign: 'center', fontWeight: 600 }}>{l.houseNum}</td>
+                      <td style={cellCompact}>{signAbbr(l.signName)}</td>
+                      <td style={{ ...cellCompact, color: planetColor(l.lord), fontWeight: 600 }}>{l.lord}</td>
+                      <td style={{ ...cellCompact, textAlign: 'center' }}>{l.lordHouse}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -493,40 +475,32 @@ export default function JHoraKundliView({
           </div>
         </div>
 
-        {/* ── Row 3: Avakhada Chakra (50%) | Shadbala (50%) — 28% height ── */}
+        {/* ── Row 3: Avakhada Chakra | Jaimini Karakas | Shadbala ── */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: '50% 50%',
+          gridTemplateColumns: '35% 30% 35%',
           overflow: 'hidden',
         }}>
-
           {/* Avakhada Chakra */}
-          <div style={{ borderRight: BORDER, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ borderRight: BORDER, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
             <SectionHeader>Avakhada Chakra</SectionHeader>
             {loadingAvakhada ? <MiniLoader /> : avakhadaData ? (
-              <div style={{ flex: 1, overflow: 'auto', padding: '2px 0' }}>
+              <div style={{ flex: 1, overflow: 'auto', minHeight: 0, padding: '1px 0' }}>
                 {[
-                  { k: 'Asc', v: avakhadaData.ascendant },
-                  { k: 'Asc Lord', v: avakhadaData.ascendant_lord },
-                  { k: 'Rashi', v: avakhadaData.rashi },
-                  { k: 'Rashi Lord', v: avakhadaData.rashi_lord },
-                  { k: 'Nakshatra', v: avakhadaData.nakshatra ? `${avakhadaData.nakshatra} P${avakhadaData.nakshatra_pada}` : '-' },
-                  { k: 'Yoga', v: avakhadaData.yoga },
-                  { k: 'Karana', v: avakhadaData.karana },
-                  { k: 'Yoni', v: avakhadaData.yoni },
-                  { k: 'Gana', v: avakhadaData.gana },
-                  { k: 'Nadi', v: avakhadaData.nadi },
+                  { k: 'Ascendant/Lord', v: `${avakhadaData.ascendant || '-'}/${avakhadaData.ascendant_lord || '-'}` },
+                  { k: 'Sign/Lord', v: `${avakhadaData.rashi || '-'}/${avakhadaData.rashi_lord || '-'}` },
+                  { k: 'Nakshatra/Pada', v: avakhadaData.nakshatra ? `${avakhadaData.nakshatra}/${avakhadaData.nakshatra_pada}` : '-' },
+                  { k: 'Yoga/Karana', v: `${avakhadaData.yoga || '-'}/${avakhadaData.karana || '-'}` },
+                  { k: 'Yoni/Gana', v: `${avakhadaData.yoni || '-'}/${avakhadaData.gana || '-'}` },
+                  { k: 'Nadi/Varna', v: avakhadaData.nadi || '-' },
                 ].map((item) => (
                   <div key={item.k} style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    padding: '2px 8px',
-                    borderBottom: `1px solid ${BORDER_COLOR}`,
-                    fontFamily: SERIF,
-                    fontSize: '10px',
+                    display: 'flex', justifyContent: 'space-between',
+                    padding: '2px 6px', borderBottom: `1px solid ${BORDER_COLOR}`,
+                    fontFamily: SERIF, fontSize: '9px',
                   }}>
                     <span style={{ color: MUTED }}>{item.k}</span>
-                    <span style={{ color: HEADER_COLOR, fontWeight: 600 }}>{item.v || '-'}</span>
+                    <span style={{ color: HEADER_COLOR, fontWeight: 600 }}>{item.v}</span>
                   </div>
                 ))}
               </div>
@@ -535,11 +509,41 @@ export default function JHoraKundliView({
             )}
           </div>
 
+          {/* Jaimini Karakas */}
+          <div style={{ borderRight: BORDER, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+            <SectionHeader>Jaimini Karakas</SectionHeader>
+            <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr>
+                    <th style={thCompact}>Karaka</th>
+                    <th style={thCompact}>Planet</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {['AK', 'AmK', 'BK', 'MK', 'PiK', 'GnK', 'DK'].map((k, i) => {
+                    const planet = Object.entries(karakas).find(([, v]) => v === k)?.[0] || '-';
+                    const karakaNames: Record<string, string> = {
+                      AK: 'Atma', AmK: 'Amatya', BK: 'Bhratri', MK: 'Matri',
+                      PiK: 'Pitri', GnK: 'Gnati', DK: 'Dara',
+                    };
+                    return (
+                      <tr key={k} style={{ background: i % 2 === 0 ? 'transparent' : ALT_ROW }}>
+                        <td style={{ ...cellCompact, fontWeight: 600 }}>{k} ({karakaNames[k]})</td>
+                        <td style={{ ...cellCompact, color: planetColor(planet), fontWeight: 600 }}>{planet}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
           {/* Shadbala */}
-          <div style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
             <SectionHeader>Shadbala</SectionHeader>
             {loadingShadbala ? <MiniLoader /> : shadbalaData?.planets ? (
-              <div style={{ flex: 1, overflow: 'auto', padding: '4px 8px' }}>
+              <div style={{ flex: 1, overflow: 'auto', minHeight: 0, padding: '2px 6px' }}>
                 {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
                   const data = shadbalaData.planets[planet];
                   if (!data) return null;
@@ -547,46 +551,16 @@ export default function JHoraKundliView({
                   const pct = Math.min(ratio * 100, 100);
                   return (
                     <div key={planet} style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      padding: '3px 0',
-                      fontFamily: SERIF,
-                      fontSize: '11px',
+                      display: 'flex', alignItems: 'center', gap: '4px',
+                      padding: '2px 0', fontFamily: SERIF, fontSize: '10px',
                     }}>
-                      <span style={{
-                        width: '58px',
-                        flexShrink: 0,
-                        color: planetColor(planet),
-                        fontWeight: 600,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}>
+                      <span style={{ width: '42px', flexShrink: 0, color: planetColor(planet), fontWeight: 600 }}>
                         {planet}
                       </span>
-                      <div style={{
-                        flex: 1,
-                        height: '12px',
-                        background: '#E8E0D0',
-                        borderRadius: '2px',
-                        overflow: 'hidden',
-                      }}>
-                        <div style={{
-                          height: '100%',
-                          width: `${pct}%`,
-                          background: '#4CAF50',
-                          borderRadius: '2px',
-                          transition: 'width 0.3s ease',
-                        }} />
+                      <div style={{ flex: 1, height: '10px', background: '#E8E0D0', borderRadius: '2px', overflow: 'hidden' }}>
+                        <div style={{ height: '100%', width: `${pct}%`, background: '#4CAF50', borderRadius: '2px' }} />
                       </div>
-                      <span style={{
-                        width: '36px',
-                        flexShrink: 0,
-                        textAlign: 'right',
-                        color: ratio >= 1 ? '#4CAF50' : '#DC2626',
-                        fontWeight: 600,
-                      }}>
+                      <span style={{ width: '30px', flexShrink: 0, textAlign: 'right', color: ratio >= 1 ? '#4CAF50' : '#DC2626', fontWeight: 600 }}>
                         {ratio.toFixed(2)}
                       </span>
                     </div>
