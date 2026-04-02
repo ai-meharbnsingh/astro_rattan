@@ -838,9 +838,24 @@ export default function KundliGenerator() {
                   </div>
                 </div>
 
-                {/* 3. Navamsha (D9) Chart */}
+                {/* 3. Divisional Chart (D9 default, dropdown for all) */}
                 <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
-                  <h4 className="font-display font-semibold text-sacred-brown mb-3">Navamsha Chart (D9)</h4>
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="font-display font-semibold text-sacred-brown">Divisional Chart</h4>
+                    <select
+                      value={selectedDivision}
+                      onChange={(e) => {
+                        setSelectedDivision(e.target.value);
+                        setDivisionalData(null);
+                        fetchDivisional(e.target.value);
+                      }}
+                      className="bg-white border border-sacred-gold/30 rounded-lg px-3 py-1.5 text-sacred-brown text-sm focus:border-sacred-gold focus:outline-none"
+                    >
+                      {DIVISIONAL_CHART_OPTIONS.map((c) => (
+                        <option key={c.code} value={c.code}>{c.name}</option>
+                      ))}
+                    </select>
+                  </div>
                   {loadingDivisional ? (
                     <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-sacred-gold" /></div>
                   ) : divisionalData?.planet_positions ? (
@@ -855,7 +870,7 @@ export default function KundliGenerator() {
                             sign_degree: p.sign_degree || 0,
                             status: '',
                           })),
-                          houses: Array.from({ length: 12 }, (_, i) => ({
+                          houses: divisionalData.houses || Array.from({ length: 12 }, (_, i) => ({
                             number: i + 1,
                             sign: ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'][i],
                           })),
@@ -865,7 +880,7 @@ export default function KundliGenerator() {
                       />
                     </div>
                   ) : (
-                    <p className="text-center text-sacred-text-secondary py-8 text-sm">Loading Navamsha...</p>
+                    <p className="text-center text-sacred-text-secondary py-8 text-sm">Select a chart...</p>
                   )}
                 </div>
 
