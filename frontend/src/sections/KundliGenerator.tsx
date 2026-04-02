@@ -497,6 +497,22 @@ export default function KundliGenerator() {
           is_vargottama: data?.is_vargottama || data?.vargottama || false,
         }));
 
+    // Inject Lagna as first entry in planets list
+    const asc = result.chart_data?.ascendant;
+    if (asc && !planets.some((p: any) => p.planet === 'Lagna')) {
+      planets.unshift({
+        planet: 'Lagna',
+        sign: asc.sign || '',
+        house: 1,
+        nakshatra: '',
+        sign_degree: asc.sign_degree ?? (asc.longitude % 30),
+        status: '',
+        is_retrograde: false,
+        is_combust: false,
+        is_vargottama: false,
+      });
+    }
+
     // Dosha display data
     const doshaDisplay = doshaData ? {
       mangal: doshaData.mangal_dosha || { has_dosha: false, severity: 'none', description: 'No data' },
