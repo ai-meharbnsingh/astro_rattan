@@ -3,6 +3,33 @@ import { Sparkles, Loader2 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { isPuterAvailable } from '@/lib/puter-ai';
 
+// Simple markdown-to-JSX renderer for prediction text
+function renderMarkdown(text: string) {
+  return text.split('\n').filter(l => l.trim()).map((line, idx) => {
+    // Bold: **text**
+    const parts = line.split(/\*\*(.*?)\*\*/g);
+    const rendered = parts.map((part, i) =>
+      i % 2 === 1 ? <strong key={i} style={{ color: '#5D4037' }}>{part}</strong> : part
+    );
+
+    // Heading lines
+    if (line.startsWith('## ')) {
+      return <h3 key={idx} className="font-display font-bold text-lg mt-4 mb-2" style={{ color: '#3D2B1F' }}>{rendered}</h3>;
+    }
+    // List items
+    if (line.trimStart().startsWith('- ')) {
+      return (
+        <div key={idx} className="flex gap-2 mb-1.5 ml-2" style={{ fontFamily: 'serif', color: '#1a1a2e' }}>
+          <span className="text-sacred-gold mt-0.5">•</span>
+          <span className="leading-relaxed">{rendered}</span>
+        </div>
+      );
+    }
+    // Regular paragraph
+    return <p key={idx} className="mb-3 leading-relaxed" style={{ fontFamily: 'serif', color: '#1a1a2e' }}>{rendered}</p>;
+  });
+}
+
 interface PredictionsTabProps {
   predictionsData: any;
   loadingPredictions: boolean;
@@ -40,15 +67,8 @@ export default function PredictionsTab({
               </span>
             )}
           </div>
-          <div className="prose prose-sm max-w-none" style={{ color: '#1a1a2e' }}>
-            {(predictionsData.interpretation || predictionsData.response || predictionsData.text || JSON.stringify(predictionsData))
-              .split('\n')
-              .filter((line: string) => line.trim())
-              .map((paragraph: string, idx: number) => (
-                <p key={idx} className="mb-3 leading-relaxed" style={{ fontFamily: 'serif', color: '#1a1a2e' }}>
-                  {paragraph}
-                </p>
-              ))}
+          <div className="max-w-none" style={{ color: '#1a1a2e' }}>
+            {renderMarkdown(predictionsData.interpretation || predictionsData.response || predictionsData.text || JSON.stringify(predictionsData))}
             {predictionsData._streaming && <span className="inline-block w-1.5 h-4 ml-0.5 bg-sacred-gold animate-pulse align-middle" />}
           </div>
         </div>
