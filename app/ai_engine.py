@@ -185,6 +185,117 @@ def get_ai_status() -> dict:
 
 
 # ============================================================
+# RULE-BASED INTERPRETATION (fallback when no AI API key)
+# ============================================================
+
+_SIGN_TRAITS = {
+    "Aries": "bold, pioneering, energetic, and competitive",
+    "Taurus": "stable, sensual, determined, and materialistic",
+    "Gemini": "intellectual, communicative, adaptable, and curious",
+    "Cancer": "nurturing, emotional, intuitive, and protective",
+    "Leo": "authoritative, creative, generous, and proud",
+    "Virgo": "analytical, detail-oriented, practical, and service-minded",
+    "Libra": "diplomatic, harmonious, aesthetic, and relationship-oriented",
+    "Scorpio": "intense, transformative, secretive, and powerful",
+    "Sagittarius": "philosophical, adventurous, optimistic, and freedom-loving",
+    "Capricorn": "disciplined, ambitious, structured, and persevering",
+    "Aquarius": "innovative, humanitarian, unconventional, and intellectual",
+    "Pisces": "spiritual, compassionate, imaginative, and intuitive",
+}
+
+_HOUSE_MEANINGS = {
+    1: "personality and physical body", 2: "wealth and family", 3: "courage and siblings",
+    4: "home, mother, and comfort", 5: "children, education, and creativity", 6: "health, enemies, and service",
+    7: "marriage and partnerships", 8: "longevity and transformation", 9: "fortune and higher learning",
+    10: "career and public status", 11: "gains and aspirations", 12: "losses, spirituality, and foreign lands",
+}
+
+
+def _rule_based_interpretation(chart_data: dict) -> dict:
+    """Generate a meaningful interpretation from chart data without any AI API."""
+    from app.dosha_engine import analyze_yogas_and_doshas
+
+    planets = chart_data.get("planets", {})
+    asc = chart_data.get("ascendant", {})
+    asc_sign = asc.get("sign", "Aries")
+
+    lines = []
+    highlights = []
+    warnings = []
+
+    # Ascendant analysis
+    traits = _SIGN_TRAITS.get(asc_sign, "")
+    lines.append(f"**Ascendant (Lagna): {asc_sign}**")
+    lines.append(f"Your rising sign is {asc_sign}, making you {traits}. This sign shapes your outward personality and how others perceive you.\n")
+
+    # Moon sign — mind and emotions
+    moon = planets.get("Moon", {})
+    moon_sign = moon.get("sign", "")
+    moon_nak = moon.get("nakshatra", "")
+    if moon_sign:
+        lines.append(f"**Moon Sign (Rashi): {moon_sign}**")
+        lines.append(f"Your Moon in {moon_sign} ({_SIGN_TRAITS.get(moon_sign, '')}) governs your emotional nature and inner mind. Nakshatra: {moon_nak}.\n")
+
+    # Sun sign — soul and authority
+    sun = planets.get("Sun", {})
+    sun_sign = sun.get("sign", "")
+    if sun_sign:
+        lines.append(f"**Sun Sign: {sun_sign}**")
+        lines.append(f"Your Sun in {sun_sign} in house {sun.get('house', '?')} relates to {_HOUSE_MEANINGS.get(sun.get('house', 1), 'self')}. The Sun represents your soul, vitality, and authority.\n")
+
+    # Key planet placements
+    lines.append("**Key Planetary Placements:**")
+    for pname in ["Mars", "Mercury", "Jupiter", "Venus", "Saturn"]:
+        p = planets.get(pname, {})
+        if p.get("sign") and p.get("house"):
+            status = p.get("status", "")
+            status_note = f" ({status})" if status else ""
+            lines.append(f"- {pname} in {p['sign']}, House {p['house']}{status_note} — influences {_HOUSE_MEANINGS.get(p['house'], 'life areas')}")
+    lines.append("")
+
+    # Rahu-Ketu axis
+    rahu = planets.get("Rahu", {})
+    ketu = planets.get("Ketu", {})
+    if rahu.get("house") and ketu.get("house"):
+        lines.append(f"**Rahu-Ketu Axis:** Rahu in House {rahu['house']} ({rahu.get('sign', '')}) and Ketu in House {ketu['house']} ({ketu.get('sign', '')})")
+        lines.append(f"This axis indicates your karmic direction — Rahu shows where you're heading (material desires in {_HOUSE_MEANINGS.get(rahu['house'], '')}), Ketu shows what you've mastered in past lives ({_HOUSE_MEANINGS.get(ketu['house'], '')}).\n")
+
+    # Yogas and Doshas
+    yd = analyze_yogas_and_doshas(planets, asc_sign)
+
+    present_yogas = [y for y in yd.get("yogas", []) if y.get("present")]
+    present_doshas = [d for d in yd.get("doshas", []) if d.get("present")]
+
+    if present_yogas:
+        lines.append("**Yogas (Positive Combinations) Found:**")
+        for y in present_yogas:
+            lines.append(f"- **{y['name']}**: {y['description']}")
+            highlights.append(y['name'])
+        lines.append("")
+
+    if present_doshas:
+        lines.append("**Doshas (Afflictions) Detected:**")
+        for d in present_doshas:
+            lines.append(f"- **{d['name']}** (Severity: {d.get('severity', 'N/A')}): {d['description']}")
+            if d.get("remedies"):
+                lines.append(f"  Remedies: {'; '.join(d['remedies'][:2])}")
+            warnings.append(f"{d['name']} ({d.get('severity', '')})")
+        lines.append("")
+
+    if not present_yogas:
+        lines.append("No major yogas detected in this chart.\n")
+    if not present_doshas:
+        lines.append("No significant doshas detected — chart is relatively clear of afflictions.\n")
+        highlights.append("No major doshas — clean chart")
+
+    return {
+        "interpretation": "\n".join(lines),
+        "highlights": highlights or ["Review the detailed interpretation above"],
+        "warnings": warnings,
+    }
+
+
+# ============================================================
 # PUBLIC API
 # ============================================================
 
@@ -211,11 +322,8 @@ def ai_interpret_kundli(chart_data: dict) -> dict:
     response = _call_ai(system_prompt, user_prompt, temperature=0.6)
 
     if response is None:
-        return {
-            "interpretation": _fallback_response("kundli interpretation"),
-            "highlights": ["AI features require OPENAI_API_KEY configuration"],
-            "warnings": ["No API key configured — using fallback response"],
-        }
+        # Generate rule-based interpretation from chart data
+        return _rule_based_interpretation(chart_data)
 
     # Parse highlights and warnings from response
     highlights = []
