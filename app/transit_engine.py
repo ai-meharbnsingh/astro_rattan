@@ -204,6 +204,10 @@ def calculate_transits(natal_chart_data: Dict[str, Any]) -> Dict[str, Any]:
         transits.append({
             "planet": planet_name,
             "current_sign": current_sign,
+            "sign_degree": round(planet_info.get("sign_degree", 0.0), 1),
+            "house": planet_info.get("house", 1),
+            "nakshatra": planet_info.get("nakshatra", ""),
+            "is_retrograde": planet_info.get("retrograde", False),
             "natal_house_from_moon": house_from_moon,
             "effect": effect,
             "description": description,
@@ -217,4 +221,8 @@ def calculate_transits(natal_chart_data: Dict[str, Any]) -> Dict[str, Any]:
         "sade_sati": sade_sati,
         "transit_date": today_str,
         "natal_moon_sign": natal_moon_sign,
+        "chart_data": {
+            "ascendant": current_positions.get("ascendant"),
+            "houses": current_positions.get("houses"),
+        },
     }

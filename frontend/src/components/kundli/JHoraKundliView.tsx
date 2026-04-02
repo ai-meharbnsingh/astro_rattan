@@ -109,11 +109,13 @@ function buildTransitChartData(transitData: any): ChartData | null {
     planets: transitData.transits.map((tr: any) => ({
       planet: tr.planet,
       sign: tr.current_sign || tr.sign || 'Aries',
-      house: tr.natal_house_from_moon || tr.house_from_moon || tr.house || 1,
+      house: tr.house || 1,
       nakshatra: tr.nakshatra || '',
-      sign_degree: tr.degree || tr.sign_degree || 0,
-      status: tr.effect || '',
+      sign_degree: tr.sign_degree || tr.degree || 0,
+      status: tr.is_retrograde ? 'Retrograde' : (tr.effect || ''),
     })),
+    houses: transitData.chart_data?.houses,
+    ascendant: transitData.chart_data?.ascendant,
   };
 }
 

@@ -778,13 +778,13 @@ export default function KundliGenerator() {
                           planets: transitData.transits.map((tr: any) => ({
                             planet: tr.planet,
                             sign: tr.current_sign || tr.sign || '',
-                            house: tr.natal_house_from_moon || tr.house || 1,
+                            house: tr.house || 1,
                             nakshatra: tr.nakshatra || '',
-                            sign_degree: tr.degree || tr.sign_degree || 0,
+                            sign_degree: tr.sign_degree || tr.degree || 0,
                             status: tr.is_retrograde ? 'Retrograde' : '',
                             is_retrograde: tr.is_retrograde,
                           })),
-                          houses: result.chart_data?.houses,
+                          houses: transitData.chart_data?.houses || result.chart_data?.houses,
                         } as ChartData}
                         onPlanetClick={handlePlanetClick}
                         onHouseClick={handleHouseClick}
@@ -2012,12 +2012,12 @@ export default function KundliGenerator() {
                         planets: (transitData.transits || []).map((tr: any) => ({
                           planet: tr.planet,
                           sign: tr.current_sign,
-                          house: tr.natal_house_from_moon || 1,
-                          nakshatra: '',
-                          sign_degree: 15,
-                          status: tr.effect === 'favorable' ? 'Benefic' : 'Malefic',
+                          house: tr.house || 1,
+                          nakshatra: tr.nakshatra || '',
+                          sign_degree: tr.sign_degree || 0,
+                          status: tr.is_retrograde ? 'Retrograde' : (tr.effect === 'favorable' ? 'Benefic' : 'Malefic'),
                         })),
-                        houses: result?.chart_data?.houses,
+                        houses: transitData.chart_data?.houses || result?.chart_data?.houses,
                       }}
                       onPlanetClick={() => {}}
                       onHouseClick={() => {}}
