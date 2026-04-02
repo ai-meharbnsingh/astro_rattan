@@ -249,7 +249,7 @@ export default function JHoraKundliView({
     flexShrink: 0,
   };
 
-  // Chart cell wrapper style
+  // Chart cell wrapper style — constrains chart to fit within grid cell
   const chartCell: React.CSSProperties = {
     overflow: 'hidden',
     display: 'flex',
@@ -258,6 +258,27 @@ export default function JHoraKundliView({
     borderBottom: BORDER,
     padding: '2px',
     boxSizing: 'border-box',
+    minHeight: 0,   // allow grid children to shrink below content size
+  };
+
+  // Inner wrapper that contains the actual SVG chart — uses both max-width and max-height
+  // so the square chart fits within whatever space the grid cell provides
+  const chartInner: React.CSSProperties = {
+    flex: 1,
+    minHeight: 0,
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  };
+
+  // The chart SVG wrapper — constrains the square SVG to fit
+  const chartSvgWrap: React.CSSProperties = {
+    maxWidth: '100%',
+    maxHeight: '100%',
+    aspectRatio: '1 / 1',
+    overflow: 'hidden',
   };
 
   return (
@@ -285,20 +306,24 @@ export default function JHoraKundliView({
         {/* ── D1 Birth Chart (top-left) ── */}
         <div style={{ ...chartCell, borderRight: BORDER }}>
           <div style={chartLabel}>D1</div>
-          <div style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-            <InteractiveKundli
-              chartData={{ planets, houses: result?.chart_data?.houses, ascendant: result?.chart_data?.ascendant } as ChartData}
-              compact
-            />
+          <div style={chartInner}>
+            <div style={chartSvgWrap}>
+              <InteractiveKundli
+                chartData={{ planets, houses: result?.chart_data?.houses, ascendant: result?.chart_data?.ascendant } as ChartData}
+                compact
+              />
+            </div>
           </div>
         </div>
 
         {/* ── Transit (top-right) ── */}
         <div style={chartCell}>
           <div style={chartLabel}>Transit</div>
-          <div style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+          <div style={chartInner}>
             {loadingTransit ? <MiniLoader /> : transitChartData ? (
-              <InteractiveKundli chartData={transitChartData} compact />
+              <div style={chartSvgWrap}>
+                <InteractiveKundli chartData={transitChartData} compact />
+              </div>
             ) : (
               <span style={{ color: MUTED, fontSize: '10px' }}>Loading...</span>
             )}
@@ -308,9 +333,11 @@ export default function JHoraKundliView({
         {/* ── D9 Navamsha (bottom-left) ── */}
         <div style={{ ...chartCell, borderRight: BORDER, borderBottom: 'none' }}>
           <div style={chartLabel}>D9</div>
-          <div style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+          <div style={chartInner}>
             {loadingDivisional ? <MiniLoader /> : d9ChartData ? (
-              <InteractiveKundli chartData={d9ChartData} compact />
+              <div style={chartSvgWrap}>
+                <InteractiveKundli chartData={d9ChartData} compact />
+              </div>
             ) : (
               <span style={{ color: MUTED, fontSize: '10px' }}>--</span>
             )}
@@ -320,9 +347,11 @@ export default function JHoraKundliView({
         {/* ── D10 Dashamsha (bottom-right) ── */}
         <div style={{ ...chartCell, borderBottom: 'none' }}>
           <div style={chartLabel}>D10</div>
-          <div style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+          <div style={chartInner}>
             {loadingD10 ? <MiniLoader /> : d10ChartData ? (
-              <InteractiveKundli chartData={d10ChartData} compact />
+              <div style={chartSvgWrap}>
+                <InteractiveKundli chartData={d10ChartData} compact />
+              </div>
             ) : (
               <span style={{ color: MUTED, fontSize: '10px' }}>--</span>
             )}

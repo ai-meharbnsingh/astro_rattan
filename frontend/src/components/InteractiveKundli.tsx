@@ -765,8 +765,8 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
     return (
       <svg
         viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-        className="w-full h-auto relative z-10"
-        style={{ filter: 'drop-shadow(0 0 12px rgba(212,175,55,0.25))' }}
+        className={compact ? "max-w-full max-h-full relative z-10" : "w-full h-auto relative z-10"}
+        style={{ filter: compact ? undefined : 'drop-shadow(0 0 12px rgba(212,175,55,0.25))' }}
       >
         <SvgDefs />
 
@@ -966,8 +966,8 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
     return (
       <svg
         viewBox={`0 0 ${svgSize} ${svgSize}`}
-        className="w-full h-auto relative z-10"
-        style={{ filter: 'drop-shadow(0 2px 8px rgba(61,43,31,0.15))' }}
+        className={compact ? "max-w-full max-h-full relative z-10" : "w-full h-auto relative z-10"}
+        style={{ filter: compact ? undefined : 'drop-shadow(0 2px 8px rgba(61,43,31,0.15))' }}
       >
         <SvgDefs />
 
@@ -1124,7 +1124,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
   };
 
   return (
-    <div className="relative w-full max-w-[600px]">
+    <div className={compact ? "relative w-full h-full" : "relative w-full max-w-[600px]"}>
       {/* Chart Style Toggle */}
       {!compact && <div className="flex justify-center gap-1 mb-3 relative z-20">
         <button
