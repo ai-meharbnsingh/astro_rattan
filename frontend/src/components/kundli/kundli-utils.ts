@@ -48,36 +48,37 @@ const dignityMap: Record<string, { exalted: string[]; debilitated: string[]; own
   Ketu: { exalted: ['Sagittarius', 'Scorpio'], debilitated: ['Gemini', 'Taurus'], own: [] },
 };
 
-export function getDignity(planet: string, sign: string, t: (key: string) => string): string {
+export function getDignity(planet: string, sign: string, _t?: (key: string) => string): string {
   const d = dignityMap[planet];
-  if (!d) return t('kundli.neutral');
-  if (d.exalted.includes(sign)) return t('kundli.exalted');
-  if (d.debilitated.includes(sign)) return t('kundli.debilitated');
-  if (d.own.includes(sign)) return t('kundli.ownSign');
-  return t('kundli.neutral');
+  if (!d) return 'Neutral';
+  if (d.exalted.includes(sign)) return 'Exalted';
+  if (d.debilitated.includes(sign)) return 'Debilitated';
+  if (d.own.includes(sign)) return 'Own Sign';
+  return 'Neutral';
 }
 
-// House significance — needs t() so we return a factory
-export function getHouseSignificance(t: (key: string) => string): Record<number, string> {
+// House significance
+export function getHouseSignificance(_t?: (key: string) => string): Record<number, string> {
   return {
-    1: t('kundli.house1'),
-    2: t('kundli.house2'),
-    3: t('kundli.house3'),
-    4: t('kundli.house4'),
-    5: t('kundli.house5'),
-    6: t('kundli.house6'),
-    7: t('kundli.house7'),
-    8: t('kundli.house8'),
-    9: t('kundli.house9'),
-    10: t('kundli.house10'),
-    11: t('kundli.house11'),
-    12: t('kundli.house12'),
+    1: 'Self, Personality, Appearance',
+    2: 'Wealth, Family, Speech',
+    3: 'Courage, Siblings, Communication',
+    4: 'Home, Mother, Comfort',
+    5: 'Children, Education, Creativity',
+    6: 'Health, Enemies, Service',
+    7: 'Marriage, Partnership, Business',
+    8: 'Longevity, Transformation, Occult',
+    9: 'Fortune, Dharma, Higher Learning',
+    10: 'Career, Status, Authority',
+    11: 'Gains, Aspirations, Friends',
+    12: 'Losses, Moksha, Foreign Lands',
   };
 }
 
 // Divisional chart options
 export const DIVISIONAL_CHART_OPTIONS = [
   { code: 'D1', name: 'Rashi (D1)' },
+  { code: 'Moon', name: 'Moon Chart' },
   { code: 'D2', name: 'Hora (D2)' },
   { code: 'D3', name: 'Drekkana (D3)' },
   { code: 'D4', name: 'Chaturthamsha (D4)' },

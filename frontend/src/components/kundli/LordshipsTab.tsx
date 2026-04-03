@@ -15,11 +15,11 @@ export default function LordshipsTab({ planets, houses }: LordshipsTabProps) {
         <table className="w-full text-xs">
           <thead className="bg-sacred-gold/10">
             <tr>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('kundli.house')}</th>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('kundli.sign')}</th>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('kundli.lord')}</th>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('kundli.placedIn')}</th>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('kundli.significance')}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">House</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">Sign</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">Lord</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">Placed In</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">Significance</th>
             </tr>
           </thead>
           <tbody>

@@ -227,6 +227,26 @@ export default function KundliGenerator() {
   const fetchDivisional = async (chartType?: string) => {
     if (!result?.id) return;
     const ct = chartType || selectedDivision;
+    if (ct === 'Moon') {
+      // Moon chart is computed client-side
+      const moonPlanet = planets.find((p: any) => p.planet === 'Moon');
+      const shift = (moonPlanet?.house || 1) - 1;
+      const moonPositions = planets.map((p: any) => ({
+        planet: p.planet,
+        sign: p.sign,
+        house: ((p.house - 1 - shift + 12) % 12) + 1,
+        nakshatra: p.nakshatra || '',
+        sign_degree: p.sign_degree || 0,
+      }));
+      const moonHouses = result.chart_data?.houses
+        ? result.chart_data.houses.map((h: any) => ({
+            number: ((h.number - 1 - shift + 12) % 12) + 1,
+            sign: h.sign,
+          }))
+        : undefined;
+      setDivisionalData({ planet_positions: moonPositions, houses: moonHouses });
+      return;
+    }
     setLoadingDivisional(true);
     try {
       const data = await api.post(`/api/kundli/${result.id}/divisional`, { chart_type: ct });
@@ -588,11 +608,11 @@ export default function KundliGenerator() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h4 className="font-display font-bold text-sacred-brown flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-sacred-gold" />{t('kundli.pdfReports')}
+                <Sparkles className="w-5 h-5 text-sacred-gold" />Get Detailed PDF Reports
               </h4>
-              <p className="text-sm text-sacred-text-secondary">{t('kundli.pdfSubtitle')}</p>
+              <p className="text-sm text-sacred-text-secondary">Unlock 30+ page personalized reports with in-depth analysis</p>
             </div>
-            <Button variant="outline" className="border-sacred-gold text-sacred-gold-dark">  {t('kundli.viewReports')}</Button>
+            <Button variant="outline" className="border-sacred-gold text-sacred-gold-dark">  View All Reports</Button>
           </div>
           <div className="grid grid-cols-4 gap-3">
             {[
@@ -613,20 +633,20 @@ export default function KundliGenerator() {
         {/* Tabs */}
         <Tabs defaultValue="report" className="w-full">
           <TabsList className="mb-6 bg-sacred-cream flex-wrap">
-            <TabsTrigger value="report" onClick={() => { fetchDasha(); fetchAvakhada(); fetchYogaDosha(); fetchAshtakvarga(); fetchShadbala(); fetchDivisional('D9'); }}><ScrollText className="w-3 h-3 mr-1" />{t('kundli.report')}</TabsTrigger>
-            <TabsTrigger value="planets">  {t('kundli.planets')}</TabsTrigger>
-            <TabsTrigger value="details">{t('kundli.details')}</TabsTrigger>
-            <TabsTrigger value="lordships">{t('kundli.lordships')}</TabsTrigger>
-            <TabsTrigger value="dosha" onClick={fetchDosha}>  {t('kundli.dosha')}</TabsTrigger>
+            <TabsTrigger value="report" onClick={() => { fetchDasha(); fetchAvakhada(); fetchYogaDosha(); fetchAshtakvarga(); fetchShadbala(); fetchDivisional('D9'); }}><ScrollText className="w-3 h-3 mr-1" />Report</TabsTrigger>
+            <TabsTrigger value="planets">Planets</TabsTrigger>
+            <TabsTrigger value="details">Details</TabsTrigger>
+            <TabsTrigger value="lordships">Lordships</TabsTrigger>
+            <TabsTrigger value="dosha" onClick={fetchDosha}>Dosha</TabsTrigger>
             <TabsTrigger value="iogita" onClick={fetchIogita}>io-gita</TabsTrigger>
-            <TabsTrigger value="dasha" onClick={() => { fetchDasha(); fetchExtendedDasha(); }}>  {t('kundli.dasha')}</TabsTrigger>
-            <TabsTrigger value="divisional" onClick={() => fetchDivisional()}>{t('kundli.divisional')}</TabsTrigger>
-            <TabsTrigger value="ashtakvarga" onClick={fetchAshtakvarga}>{t('kundli.ashtakvarga')}</TabsTrigger>
-            <TabsTrigger value="shadbala" onClick={fetchShadbala}>{t('kundli.shadbala')}</TabsTrigger>
-            <TabsTrigger value="avakhada" onClick={fetchAvakhada}>{t('avakhada.title')}</TabsTrigger>
-            <TabsTrigger value="yoga-dosha" onClick={fetchYogaDosha}>{t('yoga.title').split(' ')[0]}</TabsTrigger>
-            <TabsTrigger value="predictions" onClick={fetchPredictions}>{t('kundli.predictions')}</TabsTrigger>
-            <TabsTrigger value="transits" onClick={fetchTransit}>{t('transit.title')}</TabsTrigger>
+            <TabsTrigger value="dasha" onClick={() => { fetchDasha(); fetchExtendedDasha(); }}>Dasha</TabsTrigger>
+            <TabsTrigger value="divisional" onClick={() => fetchDivisional()}>Divisional</TabsTrigger>
+            <TabsTrigger value="ashtakvarga" onClick={fetchAshtakvarga}>Ashtakvarga</TabsTrigger>
+            <TabsTrigger value="shadbala" onClick={fetchShadbala}>Shadbala</TabsTrigger>
+            <TabsTrigger value="avakhada" onClick={fetchAvakhada}>Avakhada</TabsTrigger>
+            <TabsTrigger value="yoga-dosha" onClick={fetchYogaDosha}>Yogas</TabsTrigger>
+            <TabsTrigger value="predictions" onClick={fetchPredictions}>Predictions</TabsTrigger>
+            <TabsTrigger value="transits" onClick={fetchTransit}>Transits</TabsTrigger>
             <TabsTrigger value="varshphal" onClick={() => fetchVarshphal()}>Varshphal</TabsTrigger>
           </TabsList>
 
@@ -740,16 +760,16 @@ export default function KundliGenerator() {
                     alert(e.message || 'Failed to download PDF');
                   }
                 }}>
-                  <Download className="w-4 h-4 mr-1" />{t('kundli.downloadPDF')}
+                  <Download className="w-4 h-4 mr-1" />Download PDF
                 </Button>
                 <Button size="sm" variant="outline" className="border-sacred-gold/50 text-sacred-brown" onClick={() => window.print()}>
-                  <Printer className="w-4 h-4 mr-1" />{t('kundli.printReport')}
+                  <Printer className="w-4 h-4 mr-1" />Print
                 </Button>
               </div>
 
               {/* Report title */}
               <div className="bg-gradient-to-r from-sacred-cream to-sacred-gold/10 rounded-2xl p-5 border border-sacred-gold/20 text-center">
-                <h3 className="font-display font-bold text-xl text-sacred-brown">{t('kundli.consolidatedReport')}</h3>
+                <h3 className="font-display font-bold text-xl text-sacred-brown">Consolidated Report</h3>
                 <p className="text-sm text-sacred-text-secondary mt-1">{result.person_name} | {result.birth_date} | {result.birth_time} | {result.birth_place}</p>
               </div>
 
@@ -837,16 +857,16 @@ export default function KundliGenerator() {
 
                 {/* 2. Planet Details Table */}
                 <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
-                  <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('kundli.birthDetailsTable')}</h4>
+                  <h4 className="font-display font-semibold text-sacred-brown mb-3">Detailed Planet Positions</h4>
                   <div className="overflow-x-auto">
                     <table className="w-full text-xs">
                       <thead className="bg-sacred-gold/10">
                         <tr>
                           <th className="text-left p-2 text-sacred-gold-dark font-medium">Planet</th>
-                          <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('kundli.sign')}</th>
+                          <th className="text-left p-2 text-sacred-gold-dark font-medium">Sign</th>
                           <th className="text-center p-2 text-sacred-gold-dark font-medium">House</th>
                           <th className="text-left p-2 text-sacred-gold-dark font-medium">Nak.</th>
-                          <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('kundli.degree')}</th>
+                          <th className="text-center p-2 text-sacred-gold-dark font-medium">Degree</th>
                           <th className="text-center p-2 text-sacred-gold-dark font-medium">Status</th>
                         </tr>
                       </thead>
@@ -918,31 +938,31 @@ export default function KundliGenerator() {
 
                 {/* 4. Lordships */}
                 <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
-                  <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('kundli.houseLordships')}</h4>
+                  <h4 className="font-display font-semibold text-sacred-brown mb-3">House Lordships</h4>
                   <LordshipsTab planets={planets} houses={result.chart_data?.houses || {}} />
                 </div>
 
                 {/* 5. Avakhada Chakra */}
                 <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
-                  <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('avakhada.title')}</h4>
+                  <h4 className="font-display font-semibold text-sacred-brown mb-3">Avakhada Chakra</h4>
                   {loadingAvakhada ? (
                     <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-sacred-gold" /></div>
                   ) : avakhadaData ? (
                     <div className="grid grid-cols-2 gap-2">
                       {[
-                        { label: t('avakhada.ascendant'), value: avakhadaData.ascendant },
-                        { label: t('avakhada.ascendantLord'), value: avakhadaData.ascendant_lord },
-                        { label: t('avakhada.rashi'), value: avakhadaData.rashi },
-                        { label: t('avakhada.rashiLord'), value: avakhadaData.rashi_lord },
-                        { label: t('avakhada.nakshatra'), value: `${avakhadaData.nakshatra} (P${avakhadaData.nakshatra_pada})` },
-                        { label: t('avakhada.yoga'), value: avakhadaData.yoga },
-                        { label: t('avakhada.karana'), value: avakhadaData.karana },
-                        { label: t('avakhada.yoni'), value: avakhadaData.yoni },
-                        { label: t('avakhada.gana'), value: avakhadaData.gana },
-                        { label: t('avakhada.nadi'), value: avakhadaData.nadi },
-                        { label: t('avakhada.varna'), value: avakhadaData.varna },
-                        { label: t('avakhada.naamakshar'), value: avakhadaData.naamakshar },
-                        { label: t('avakhada.sunSign'), value: avakhadaData.sun_sign },
+                        { label: 'Ascendant (Lagna)', value: avakhadaData.ascendant },
+                        { label: 'Lagna Lord', value: avakhadaData.ascendant_lord },
+                        { label: 'Rashi (Moon Sign)', value: avakhadaData.rashi },
+                        { label: 'Rashi Lord', value: avakhadaData.rashi_lord },
+                        { label: 'Nakshatra', value: `${avakhadaData.nakshatra} (P${avakhadaData.nakshatra_pada})` },
+                        { label: 'Yoga', value: avakhadaData.yoga },
+                        { label: 'Karana', value: avakhadaData.karana },
+                        { label: 'Yoni', value: avakhadaData.yoni },
+                        { label: 'Gana', value: avakhadaData.gana },
+                        { label: 'Nadi', value: avakhadaData.nadi },
+                        { label: 'Varna', value: avakhadaData.varna },
+                        { label: 'Naamakshar', value: avakhadaData.naamakshar },
+                        { label: 'Sun Sign (Western)', value: avakhadaData.sun_sign },
                       ].map((item) => (
                         <div key={item.label} className="rounded-lg p-2 bg-cosmic-card/60">
                           <p className="text-[10px] text-sacred-text-secondary">{item.label}</p>
@@ -957,7 +977,7 @@ export default function KundliGenerator() {
 
                 {/* 6. Vimshottari Dasha */}
                 <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
-                  <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('kundli.dasha')}</h4>
+                  <h4 className="font-display font-semibold text-sacred-brown mb-3">Vimshottari Dasha</h4>
                   {(loadingDasha || loadingExtendedDasha) ? (
                     <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-sacred-gold" /></div>
                   ) : dashaData ? (
@@ -1031,7 +1051,7 @@ export default function KundliGenerator() {
 
                 {/* 7. Yoga & Dosha */}
                 <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4 lg:col-span-2">
-                  <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('yoga.title')} & {t('dosha.extended.title')}</h4>
+                  <h4 className="font-display font-semibold text-sacred-brown mb-3">Yogas & Doshas</h4>
                   {loadingYogaDosha ? (
                     <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-sacred-gold" /></div>
                   ) : yogaDoshaData ? (
@@ -1039,7 +1059,7 @@ export default function KundliGenerator() {
                       <div>
                         <div className="flex items-center gap-2 mb-2">
                           <CheckCircle className="w-4 h-4 text-green-500" />
-                          <h5 className="text-sm font-semibold text-sacred-brown">{t('yoga.title')}</h5>
+                          <h5 className="text-sm font-semibold text-sacred-brown">Yogas (Positive Combinations)</h5>
                         </div>
                         <div className="space-y-1">
                           {(yogaDoshaData.yogas || []).filter((y: any) => y.present).slice(0, 8).map((yoga: any, idx: number) => (
@@ -1047,7 +1067,7 @@ export default function KundliGenerator() {
                               <div className="flex items-center justify-between">
                                 <span className="font-medium text-sacred-brown">{yoga.name}</span>
                                 <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-600">
-                                  {t('yoga.present')}
+                                  Present
                                 </span>
                               </div>
                             </div>
@@ -1060,7 +1080,7 @@ export default function KundliGenerator() {
                       <div>
                         <div className="flex items-center gap-2 mb-2">
                           <Shield className="w-4 h-4 text-red-500" />
-                          <h5 className="text-sm font-semibold text-sacred-brown">{t('dosha.extended.title')}</h5>
+                          <h5 className="text-sm font-semibold text-sacred-brown">Doshas (Afflictions)</h5>
                         </div>
                         <div className="space-y-1">
                           {(yogaDoshaData.doshas || []).filter((d: any) => d.present).slice(0, 8).map((dosha: any, idx: number) => (
@@ -1068,7 +1088,7 @@ export default function KundliGenerator() {
                               <div className="flex items-center justify-between">
                                 <span className="font-medium text-sacred-brown">{dosha.name}</span>
                                 <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-500/20 text-red-600">
-                                  {t('dosha.present')}
+                                  Present
                                 </span>
                               </div>
                             </div>
@@ -1129,7 +1149,7 @@ export default function KundliGenerator() {
 
                 {/* 8. Ashtakvarga SAV bar chart */}
                 <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
-                  <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('kundli.sarvashtakvarga')}</h4>
+                  <h4 className="font-display font-semibold text-sacred-brown mb-3">Sarvashtakvarga</h4>
                   {loadingAshtakvarga ? (
                     <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-sacred-gold" /></div>
                   ) : ashtakvargaData ? (
@@ -1166,7 +1186,7 @@ export default function KundliGenerator() {
 
                 {/* 9. Shadbala bar chart */}
                 <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
-                  <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('kundli.shadbalaTitle')}</h4>
+                  <h4 className="font-display font-semibold text-sacred-brown mb-3">Shadbala Strength</h4>
                   {loadingShadbala ? (
                     <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-sacred-gold" /></div>
                   ) : shadbalaData?.planets ? (
@@ -1189,8 +1209,8 @@ export default function KundliGenerator() {
                         );
                       })}
                       <div className="flex items-center gap-3 mt-1 text-[10px] text-sacred-text-secondary">
-                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#B8860B' }} />{t('kundli.strong')}</span>
-                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#8B2332' }} />{t('kundli.weak')}</span>
+                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#B8860B' }} />Strong</span>
+                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#8B2332' }} />Weak</span>
                       </div>
                     </div>
                   ) : (
@@ -1222,7 +1242,7 @@ export default function KundliGenerator() {
                       <h4 className="font-display font-bold text-sacred-brown text-lg">
                         {sidePanel.type === 'planet'
                           ? `${sidePanel.planet?.planet} Details`
-                          : `{t('kundli.houseDetails')}`}
+                          : 'House Details'}
                       </h4>
                       <button
                         onClick={() => setSidePanel(null)}
@@ -1246,7 +1266,7 @@ export default function KundliGenerator() {
                         <div className="space-y-3">
                           <div className="grid grid-cols-2 gap-3">
                             <div className="bg-cosmic-card/60 rounded-lg p-3">
-                              <p className="text-xs text-sacred-text-secondary">  {t('kundli.sign')}</p>
+                              <p className="text-xs text-sacred-text-secondary">Sign</p>
                               <p className="font-semibold text-sacred-brown">{p.sign}</p>
                             </div>
                             <div className="bg-cosmic-card/60 rounded-lg p-3">
@@ -1284,22 +1304,22 @@ export default function KundliGenerator() {
                       <div className="space-y-3">
                         <div className="grid grid-cols-2 gap-3">
                           <div className="bg-cosmic-card/60 rounded-lg p-3">
-                            <p className="text-xs text-sacred-text-secondary">  {t('kundli.houseNumber')}</p>
+                            <p className="text-xs text-sacred-text-secondary">House Number</p>
                             <p className="font-semibold text-sacred-brown">{sidePanel.house}</p>
                           </div>
                           <div className="bg-cosmic-card/60 rounded-lg p-3">
-                            <p className="text-xs text-sacred-text-secondary">  {t('kundli.sign')}</p>
+                            <p className="text-xs text-sacred-text-secondary">Sign</p>
                             <p className="font-semibold text-sacred-brown">{sidePanel.sign}</p>
                           </div>
                         </div>
                         <div className="bg-cosmic-card/60 rounded-lg p-3">
-                          <p className="text-xs text-sacred-text-secondary">  {t('kundli.significance')}</p>
+                          <p className="text-xs text-sacred-text-secondary">Significance</p>
                           <p className="font-semibold text-sacred-brown">
                             {HOUSE_SIGNIFICANCE[sidePanel.house || 0] || 'Unknown'}
                           </p>
                         </div>
                         <div className="bg-cosmic-card/60 rounded-lg p-3">
-                          <p className="text-xs text-sacred-text-secondary mb-2">{t('kundli.planetsInHouse')}</p>
+                          <p className="text-xs text-sacred-text-secondary mb-2">Planets in this House</p>
                           {(sidePanel.planets || []).length > 0 ? (
                             <div className="space-y-1">
                               {(sidePanel.planets || []).map((p) => (
@@ -1314,7 +1334,7 @@ export default function KundliGenerator() {
                               ))}
                             </div>
                           ) : (
-                            <p className="text-sm text-sacred-text-secondary">{t('kundli.noPlanets')}</p>
+                            <p className="text-sm text-sacred-text-secondary">No planets in this house</p>
                           )}
                         </div>
                       </div>
@@ -1324,7 +1344,7 @@ export default function KundliGenerator() {
                   <div className="bg-sacred-cream/50 rounded-xl border border-dashed border-sacred-gold/20 p-8 flex flex-col items-center justify-center h-full min-h-[200px]">
                     <Sparkles className="w-8 h-8 text-sacred-gold/40 mb-3" />
                     <p className="text-sacred-text-secondary text-sm text-center">
-                      {t('kundli.clickInfo')}
+                      Click on any planet or house in the chart to see detailed information
                     </p>
                   </div>
                 )}
@@ -1335,7 +1355,7 @@ export default function KundliGenerator() {
                     <thead className="bg-sacred-cream">
                       <tr>
                         <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">Planet</th>
-                        <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">  {t('kundli.sign')}</th>
+                        <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">Sign</th>
                         <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">House</th>
                         <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">Nakshatra</th>
                         <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">Status</th>
@@ -1513,14 +1533,14 @@ export default function KundliGenerator() {
             ) : extendedDashaData ? (
               <div className="space-y-4">
                 <div className="bg-gradient-to-r from-sacred-cream to-sacred-gold/10 rounded-xl p-4 border border-sacred-gold/20">
-                  <p className="text-sm text-sacred-text-secondary">{t('dasha.current')} {t('dasha.mahadasha')}</p>
-                  <p className="text-xl font-display font-bold" style={{ color: '#B8860B' }}>{extendedDashaData.current_dasha} {t('dasha.mahadasha')}</p>
+                  <p className="text-sm text-sacred-text-secondary">Current Mahadasha</p>
+                  <p className="text-xl font-display font-bold" style={{ color: '#B8860B' }}>{extendedDashaData.current_dasha} Mahadasha</p>
                   <div className="flex gap-4 mt-1">
                     {extendedDashaData.current_antardasha && extendedDashaData.current_antardasha !== 'Unknown' && (
-                      <p className="text-sm text-sacred-gold-dark">{t('dasha.antardasha')}: {extendedDashaData.current_antardasha}</p>
+                      <p className="text-sm text-sacred-gold-dark">Antardasha: {extendedDashaData.current_antardasha}</p>
                     )}
                     {extendedDashaData.current_pratyantar && extendedDashaData.current_pratyantar !== 'Unknown' && (
-                      <p className="text-sm text-sacred-text-secondary">{t('dasha.pratyantar')}: {extendedDashaData.current_pratyantar}</p>
+                      <p className="text-sm text-sacred-text-secondary">Pratyantar: {extendedDashaData.current_pratyantar}</p>
                     )}
                   </div>
                 </div>
@@ -1535,9 +1555,9 @@ export default function KundliGenerator() {
                         <div className="flex items-center gap-3">
                           <ChevronDown className={`w-4 h-4 text-sacred-gold-dark transition-transform ${expandedMahadasha === md.planet ? 'rotate-180' : ''}`} />
                           <span className={`font-display font-semibold ${md.is_current ? 'text-[#B8860B]' : 'text-sacred-brown'}`}>
-                            {md.planet} {t('dasha.mahadasha')}
+                            {md.planet} Mahadasha
                           </span>
-                          {md.is_current && <span className="text-xs px-2 py-0.5 rounded-full bg-[#B8860B]/20 text-[#B8860B] font-medium">{t('dasha.current')}</span>}
+                          {md.is_current && <span className="text-xs px-2 py-0.5 rounded-full bg-[#B8860B]/20 text-[#B8860B] font-medium">Current</span>}
                         </div>
                         <div className="text-right text-sm text-sacred-text-secondary">
                           <span>{md.start} \u2014 {md.end}</span>
@@ -1558,9 +1578,9 @@ export default function KundliGenerator() {
                                     <ChevronDown className={`w-3 h-3 text-sacred-gold-dark transition-transform ${expandedAntardasha === `${md.planet}-${ad.planet}` ? 'rotate-180' : ''}`} />
                                   )}
                                   <span className={`font-medium ${ad.is_current ? 'text-[#B8860B]' : 'text-sacred-brown'}`}>
-                                    {ad.planet} {t('dasha.antardasha')}
+                                    {ad.planet} Antardasha
                                   </span>
-                                  {ad.is_current && <span className="text-xs px-1.5 py-0.5 rounded-full bg-[#B8860B]/15 text-[#B8860B]">{t('dasha.current')}</span>}
+                                  {ad.is_current && <span className="text-xs px-1.5 py-0.5 rounded-full bg-[#B8860B]/15 text-[#B8860B]">Current</span>}
                                 </div>
                                 <span className="text-sacred-text-secondary">{ad.start} \u2014 {ad.end}</span>
                               </button>
@@ -1573,7 +1593,7 @@ export default function KundliGenerator() {
                                       className={`flex items-center justify-between px-10 py-2 text-xs ${pt.is_current ? 'bg-[#B8860B]/5' : ''}`}
                                     >
                                       <span className={`${pt.is_current ? 'text-[#B8860B] font-semibold' : 'text-sacred-text-secondary'}`}>
-                                        {pt.planet} {t('dasha.pratyantar')}
+                                        {pt.planet} Pratyantar
                                         {pt.is_current && <span className="ml-1 text-[#B8860B]">*</span>}
                                       </span>
                                       <span className="text-sacred-text-secondary">{pt.start} \u2014 {pt.end}</span>
@@ -1628,7 +1648,7 @@ export default function KundliGenerator() {
           <TabsContent value="divisional">
             <div className="space-y-6">
               <div className="flex items-center gap-4 mb-4">
-                <label className="text-sm font-medium text-sacred-brown">{t('kundli.selectChart')}:</label>
+                <label className="text-sm font-medium text-sacred-brown">Select Chart Type:</label>
                 <select
                   value={selectedDivision}
                   onChange={(e) => {
@@ -1647,7 +1667,7 @@ export default function KundliGenerator() {
               {loadingDivisional ? (
                 <div className="flex items-center justify-center py-12">
                   <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
-                  <span className="ml-2 text-sacred-text-secondary">{t('kundli.loadingDivisional')}</span>
+                  <span className="ml-2 text-sacred-text-secondary">Calculating divisional chart...</span>
                 </div>
               ) : divisionalData ? (
                 <div className="space-y-6">
@@ -1684,8 +1704,8 @@ export default function KundliGenerator() {
                       <thead className="bg-sacred-cream">
                         <tr>
                           <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">Planet</th>
-                          <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">{t('kundli.sign')}</th>
-                          <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">{t('kundli.degree')}</th>
+                          <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">Sign</th>
+                          <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">Degree</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1714,7 +1734,7 @@ export default function KundliGenerator() {
             {loadingAshtakvarga ? (
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
-                <span className="ml-2 text-sacred-text-secondary">{t('kundli.loadingAshtakvarga')}</span>
+                <span className="ml-2 text-sacred-text-secondary">Calculating Ashtakvarga...</span>
               </div>
             ) : ashtakvargaData ? (
               <div className="space-y-6">
@@ -1746,7 +1766,7 @@ export default function KundliGenerator() {
 
                 {/* SAV Bar Chart */}
                 <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/20">
-                  <h4 className="font-display font-semibold text-sacred-brown mb-4">{t('kundli.sarvashtakvarga')}</h4>
+                  <h4 className="font-display font-semibold text-sacred-brown mb-4">Sarvashtakvarga</h4>
                   <div className="flex items-end gap-2 h-48">
                     {['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'].map((sign) => {
                       const points = ashtakvargaData.sarvashtakvarga?.[sign] || 0;
@@ -1775,17 +1795,17 @@ export default function KundliGenerator() {
                   <div className="flex items-center gap-4 mt-3 text-xs text-sacred-text-secondary">
                     <div className="flex items-center gap-1">
                       <div className="w-3 h-3 rounded" style={{ backgroundColor: '#B8860B' }} />
-                      <span>{t('kundli.strong')} (&ge;28)</span>
+                      <span>Strong (&ge;28)</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <div className="w-3 h-3 rounded" style={{ backgroundColor: '#8B7355' }} />
-                      <span>{t('kundli.weak')} (&lt;28)</span>
+                      <span>Weak (&lt;28)</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/20">
-                  <h4 className="font-display font-semibold text-sacred-brown mb-4">{t('kundli.bhinnashtakvarga')}</h4>
+                  <h4 className="font-display font-semibold text-sacred-brown mb-4">Bhinnashtakvarga</h4>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
@@ -1794,7 +1814,7 @@ export default function KundliGenerator() {
                           {['Ari', 'Tau', 'Gem', 'Can', 'Leo', 'Vir', 'Lib', 'Sco', 'Sag', 'Cap', 'Aqu', 'Pis'].map((s) => (
                             <th key={s} className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{s}</th>
                           ))}
-                          <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('kundli.total')}</th>
+                          <th className="text-center p-2 text-sacred-gold-dark font-medium">Total</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1834,12 +1854,12 @@ export default function KundliGenerator() {
             {loadingShadbala ? (
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
-                <span className="ml-2 text-sacred-text-secondary">{t('kundli.loadingShadbala')}</span>
+                <span className="ml-2 text-sacred-text-secondary">Calculating Shadbala...</span>
               </div>
             ) : shadbalaData?.planets ? (
               <div className="space-y-6">
                 <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/20">
-                  <h4 className="font-display font-semibold text-sacred-brown mb-4">{t('kundli.shadbalaTitle')}</h4>
+                  <h4 className="font-display font-semibold text-sacred-brown mb-4">Shadbala Strength</h4>
                   <div className="space-y-3">
                     {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
                       const data = shadbalaData.planets[planet];
@@ -1872,11 +1892,11 @@ export default function KundliGenerator() {
                   <div className="flex items-center gap-4 mt-3 text-xs text-sacred-text-secondary">
                     <div className="flex items-center gap-1">
                       <div className="w-3 h-3 rounded" style={{ backgroundColor: '#B8860B' }} />
-                      <span>{t('kundli.strong')}</span>
+                      <span>Strong</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <div className="w-3 h-3 rounded" style={{ backgroundColor: '#8B2332' }} />
-                      <span>{t('kundli.weak')}</span>
+                      <span>Weak</span>
                     </div>
                   </div>
                 </div>
@@ -1888,14 +1908,14 @@ export default function KundliGenerator() {
                       <thead>
                         <tr className="border-b border-sacred-gold/20">
                           <th className="text-left p-2 text-sacred-gold-dark font-medium">Planet</th>
-                          <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('kundli.sthana')}</th>
-                          <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('kundli.dig')}</th>
-                          <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('kundli.kala')}</th>
-                          <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('kundli.cheshta')}</th>
-                          <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('kundli.naisargika')}</th>
-                          <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('kundli.drik')}</th>
-                          <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('kundli.total')}</th>
-                          <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('kundli.ratio')}</th>
+                          <th className="text-center p-2 text-sacred-gold-dark font-medium">Sthana</th>
+                          <th className="text-center p-2 text-sacred-gold-dark font-medium">Dig</th>
+                          <th className="text-center p-2 text-sacred-gold-dark font-medium">Kala</th>
+                          <th className="text-center p-2 text-sacred-gold-dark font-medium">Cheshta</th>
+                          <th className="text-center p-2 text-sacred-gold-dark font-medium">Naisargika</th>
+                          <th className="text-center p-2 text-sacred-gold-dark font-medium">Drik</th>
+                          <th className="text-center p-2 text-sacred-gold-dark font-medium">Total</th>
+                          <th className="text-center p-2 text-sacred-gold-dark font-medium">Ratio</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1936,24 +1956,24 @@ export default function KundliGenerator() {
             ) : avakhadaData ? (
               <div className="space-y-4">
                 <div className="bg-gradient-to-r from-sacred-cream to-sacred-gold/10 rounded-xl p-4 border border-sacred-gold/20 mb-4">
-                  <h4 className="font-display font-bold text-lg" style={{ color: '#1a1a2e' }}>{t('avakhada.title')}</h4>
-                  <p className="text-sm text-sacred-text-secondary">{t('avakhada.subtitle')}</p>
+                  <h4 className="font-display font-bold text-lg" style={{ color: '#1a1a2e' }}>Avakhada Chakra</h4>
+                  <p className="text-sm text-sacred-text-secondary">Comprehensive Birth Summary</p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {[
-                    { label: t('avakhada.ascendant'), value: avakhadaData.ascendant },
-                    { label: t('avakhada.ascendantLord'), value: avakhadaData.ascendant_lord },
-                    { label: t('avakhada.rashi'), value: avakhadaData.rashi },
-                    { label: t('avakhada.rashiLord'), value: avakhadaData.rashi_lord },
-                    { label: t('avakhada.nakshatra'), value: `${avakhadaData.nakshatra} (${t('avakhada.pada')} ${avakhadaData.nakshatra_pada})` },
-                    { label: t('avakhada.yoga'), value: avakhadaData.yoga },
-                    { label: t('avakhada.karana'), value: avakhadaData.karana },
-                    { label: t('avakhada.yoni'), value: avakhadaData.yoni },
-                    { label: t('avakhada.gana'), value: avakhadaData.gana },
-                    { label: t('avakhada.nadi'), value: avakhadaData.nadi },
-                    { label: t('avakhada.varna'), value: avakhadaData.varna },
-                    { label: t('avakhada.naamakshar'), value: avakhadaData.naamakshar },
-                    { label: t('avakhada.sunSign'), value: avakhadaData.sun_sign },
+                    { label: 'Ascendant (Lagna)', value: avakhadaData.ascendant },
+                    { label: 'Lagna Lord', value: avakhadaData.ascendant_lord },
+                    { label: 'Rashi (Moon Sign)', value: avakhadaData.rashi },
+                    { label: 'Rashi Lord', value: avakhadaData.rashi_lord },
+                    { label: 'Nakshatra', value: `${avakhadaData.nakshatra} (Pada ${avakhadaData.nakshatra_pada})` },
+                    { label: 'Yoga', value: avakhadaData.yoga },
+                    { label: 'Karana', value: avakhadaData.karana },
+                    { label: 'Yoni', value: avakhadaData.yoni },
+                    { label: 'Gana', value: avakhadaData.gana },
+                    { label: 'Nadi', value: avakhadaData.nadi },
+                    { label: 'Varna', value: avakhadaData.varna },
+                    { label: 'Naamakshar', value: avakhadaData.naamakshar },
+                    { label: 'Sun Sign (Western)', value: avakhadaData.sun_sign },
                   ].map((item) => (
                     <div
                       key={item.label}
@@ -1983,7 +2003,7 @@ export default function KundliGenerator() {
                 <div>
                   <div className="flex items-center gap-2 mb-4">
                     <CheckCircle className="w-5 h-5" style={{ color: '#22c55e' }} />
-                    <h4 className="font-display font-bold text-lg" style={{ color: '#1a1a2e' }}>{t('yoga.title')}</h4>
+                    <h4 className="font-display font-bold text-lg" style={{ color: '#1a1a2e' }}>Yogas (Positive Combinations)</h4>
                   </div>
                   <div className="grid gap-3">
                     {(yogaDoshaData.yogas || []).filter((y: any) => y.present).length === 0 && (
@@ -1998,7 +2018,7 @@ export default function KundliGenerator() {
                         <div className="flex items-center justify-between mb-2">
                           <h5 className="font-display font-semibold" style={{ color: '#1a1a2e' }}>{yoga.name}</h5>
                           <span className="text-xs px-2 py-1 rounded-full font-medium bg-green-500/20 text-green-600">
-                            {t('yoga.present')}
+                            Present
                           </span>
                         </div>
                         <p className="text-sm" style={{ color: '#8B7355' }}>{yoga.description}</p>
@@ -2017,7 +2037,7 @@ export default function KundliGenerator() {
                 <div>
                   <div className="flex items-center gap-2 mb-4">
                     <Shield className="w-5 h-5" style={{ color: '#8B2332' }} />
-                    <h4 className="font-display font-bold text-lg" style={{ color: '#1a1a2e' }}>{t('dosha.extended.title')}</h4>
+                    <h4 className="font-display font-bold text-lg" style={{ color: '#1a1a2e' }}>Doshas (Afflictions)</h4>
                   </div>
                   <div className="grid gap-3">
                     {(yogaDoshaData.doshas || []).filter((d: any) => d.present).length === 0 && (
@@ -2038,7 +2058,7 @@ export default function KundliGenerator() {
                               </span>
                             )}
                             <span className="text-xs px-2 py-1 rounded-full font-medium bg-red-500/20 text-red-600">
-                              {t('dosha.present')}
+                              Present
                             </span>
                           </div>
                         </div>
@@ -2046,7 +2066,7 @@ export default function KundliGenerator() {
                         {dosha.remedies && dosha.remedies.length > 0 && (
                           <div className="mt-3 pt-3 border-t" style={{ borderColor: 'rgba(139,115,85,0.15)' }}>
                             <p className="text-xs font-semibold mb-2" style={{ color: '#B8860B' }}>
-                              <AlertTriangle className="w-3 h-3 inline mr-1" />{t('dosha.remedies')}:
+                              <AlertTriangle className="w-3 h-3 inline mr-1" />Remedies:
                             </p>
                             <ul className="space-y-1">
                               {dosha.remedies.map((r: string, ri: number) => (
@@ -2082,7 +2102,7 @@ export default function KundliGenerator() {
             {loadingTransit ? (
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
-                <span className="ml-2 text-sacred-text-secondary">{t('transit.loading')}</span>
+                <span className="ml-2 text-sacred-text-secondary">Loading transits...</span>
               </div>
             ) : transitData ? (
               <div className="space-y-6">
@@ -2114,11 +2134,11 @@ export default function KundliGenerator() {
 
                 {/* Header with date and Moon sign */}
                 <div className="rounded-xl p-4 border" style={{ backgroundColor: 'rgba(184,134,11,0.04)', borderColor: 'rgba(139,115,85,0.2)' }}>
-                  <h4 className="font-display font-bold text-lg mb-2" style={{ color: '#1a1a2e' }}>{t('transit.title')}</h4>
-                  <p className="text-sm mb-3" style={{ color: '#8B7355' }}>{t('transit.subtitle')}</p>
+                  <h4 className="font-display font-bold text-lg mb-2" style={{ color: '#1a1a2e' }}>Gochara (Transits)</h4>
+                  <p className="text-sm mb-3" style={{ color: '#8B7355' }}>Current planetary positions and their effects on your birth chart</p>
                   <div className="flex flex-wrap gap-4 text-sm">
-                    <span style={{ color: '#1a1a2e' }}><strong>{t('transit.transitDate')}:</strong> {transitData.transit_date}</span>
-                    <span style={{ color: '#1a1a2e' }}><strong>{t('transit.natalMoon')}:</strong> {transitData.natal_moon_sign}</span>
+                    <span style={{ color: '#1a1a2e' }}><strong>Transit Date:</strong> {transitData.transit_date}</span>
+                    <span style={{ color: '#1a1a2e' }}><strong>Natal Moon:</strong> {transitData.natal_moon_sign}</span>
                   </div>
                 </div>
 
@@ -2130,15 +2150,15 @@ export default function KundliGenerator() {
                   <div className="flex items-center justify-between mb-2">
                     <h5 className="font-display font-semibold" style={{ color: '#1a1a2e' }}>
                       <Shield className="w-4 h-4 inline mr-2" />
-                      {t('transit.sadeSati')}
+                      Sade Sati
                     </h5>
                     <span className={`text-xs px-2 py-1 rounded-full font-medium ${transitData.sade_sati?.active ? 'bg-red-500/20 text-red-600' : 'bg-green-500/20 text-green-600'}`}>
-                      {transitData.sade_sati?.active ? t('transit.sadeSatiActive') : t('transit.sadeSatiInactive')}
+                      {transitData.sade_sati?.active ? 'Active' : 'Not Active'}
                     </span>
                   </div>
                   {transitData.sade_sati?.active && (
                     <p className="text-xs mb-1" style={{ color: '#B8860B' }}>
-                      <strong>{t('transit.phase')}:</strong> {transitData.sade_sati.phase}
+                      <strong>Phase:</strong> {transitData.sade_sati.phase}
                     </p>
                   )}
                   <p className="text-sm" style={{ color: '#8B7355' }}>{transitData.sade_sati?.description}</p>
@@ -2149,10 +2169,10 @@ export default function KundliGenerator() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr style={{ backgroundColor: 'rgba(184,134,11,0.08)' }}>
-                        <th className="text-left p-3 font-display font-semibold" style={{ color: '#1a1a2e' }}>{t('transit.planet')}</th>
-                        <th className="text-left p-3 font-display font-semibold" style={{ color: '#1a1a2e' }}>{t('transit.currentSign')}</th>
-                        <th className="text-center p-3 font-display font-semibold" style={{ color: '#1a1a2e' }}>{t('transit.houseFromMoon')}</th>
-                        <th className="text-center p-3 font-display font-semibold" style={{ color: '#1a1a2e' }}>{t('transit.effect')}</th>
+                        <th className="text-left p-3 font-display font-semibold" style={{ color: '#1a1a2e' }}>Planet</th>
+                        <th className="text-left p-3 font-display font-semibold" style={{ color: '#1a1a2e' }}>Current Sign</th>
+                        <th className="text-center p-3 font-display font-semibold" style={{ color: '#1a1a2e' }}>House from Moon</th>
+                        <th className="text-center p-3 font-display font-semibold" style={{ color: '#1a1a2e' }}>Effect</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -2168,7 +2188,7 @@ export default function KundliGenerator() {
                           <td className="p-3 text-center">
                             <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full font-medium ${tr.effect === 'favorable' ? 'bg-green-500/20 text-green-700' : 'bg-red-500/20 text-red-600'}`}>
                               {tr.effect === 'favorable' ? <CheckCircle className="w-3 h-3" /> : <AlertTriangle className="w-3 h-3" />}
-                              {tr.effect === 'favorable' ? t('transit.favorable') : t('transit.unfavorable')}
+                              {tr.effect === 'favorable' ? 'Favorable' : 'Unfavorable'}
                             </span>
                           </td>
                         </tr>
@@ -2189,7 +2209,7 @@ export default function KundliGenerator() {
                         <span className="font-display font-semibold" style={{ color: '#1a1a2e' }}>{tr.planet}</span>
                         <span className="text-xs" style={{ color: '#8B7355' }}>in {tr.current_sign}</span>
                         <span className={`text-xs px-1.5 py-0.5 rounded-full ${tr.effect === 'favorable' ? 'bg-green-500/15 text-green-700' : 'bg-red-500/15 text-red-600'}`}>
-                          {tr.effect === 'favorable' ? t('transit.favorable') : t('transit.unfavorable')}
+                          {tr.effect === 'favorable' ? 'Favorable' : 'Unfavorable'}
                         </span>
                       </div>
                       <p className="text-sm" style={{ color: '#8B7355' }}>{tr.description}</p>
