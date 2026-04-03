@@ -8,6 +8,7 @@ import { api } from '@/lib/api';
 // Available divisional charts
 const DIVISIONAL_OPTIONS = [
   { value: 'D1', label: 'D1 Rashi' },
+  { value: 'Moon', label: 'Moon Chart' },
   { value: 'D2', label: 'D2 Hora' },
   { value: 'D3', label: 'D3 Drekkana' },
   { value: 'D4', label: 'D4 Chaturthamsha' },
@@ -199,6 +200,8 @@ export default function JHoraKundliView({
 }: JHoraKundliViewProps) {
 
   const dasha = extendedDashaData || dashaData;
+  const [expandedMD, setExpandedMD] = useState<string | null>(null);
+  const [expandedAD, setExpandedAD] = useState<string | null>(null);
 
   // Transit chart data
   const transitChartData = useMemo(() => buildTransitChartData(transitData), [transitData]);
@@ -217,8 +220,27 @@ export default function JHoraKundliView({
     if (d10Data) setDivCache(prev => ({ ...prev, D10: d10Data }));
   }, [d10Data]);
 
+  // Build Moon Chart client-side by shifting houses so Moon's house = 1
+  const moonChartData = useMemo((): ChartData | null => {
+    const moonPlanet = planets.find((p) => p.planet === 'Moon');
+    if (!moonPlanet) return null;
+    const shift = (moonPlanet.house || 1) - 1;
+    return {
+      planets: planets.map((p) => ({
+        ...p,
+        house: ((p.house - 1 - shift + 12) % 12) + 1,
+      })),
+      houses: result?.chart_data?.houses
+        ? result.chart_data.houses.map((h: { number: number; sign: string }) => ({
+            number: ((h.number - 1 - shift + 12) % 12) + 1,
+            sign: h.sign,
+          }))
+        : undefined,
+    };
+  }, [planets, result]);
+
   const fetchDiv = useCallback(async (chartType: string) => {
-    if (divCache[chartType] || divLoading[chartType] || !result?.id) return;
+    if (chartType === 'Moon' || divCache[chartType] || divLoading[chartType] || !result?.id) return;
     setDivLoading(prev => ({ ...prev, [chartType]: true }));
     try {
       const data = await api.post(`/api/kundli/${result.id}/divisional`, { chart_type: chartType });
@@ -228,13 +250,13 @@ export default function JHoraKundliView({
   }, [divCache, divLoading, result?.id]);
 
   // Fetch when dropdown changes
-  useEffect(() => { if (leftChart !== 'D9') fetchDiv(leftChart); }, [leftChart, fetchDiv]);
-  useEffect(() => { if (rightChart !== 'D10') fetchDiv(rightChart); }, [rightChart, fetchDiv]);
+  useEffect(() => { if (leftChart !== 'D9' && leftChart !== 'Moon') fetchDiv(leftChart); }, [leftChart, fetchDiv]);
+  useEffect(() => { if (rightChart !== 'D10' && rightChart !== 'Moon') fetchDiv(rightChart); }, [rightChart, fetchDiv]);
 
-  const leftChartData = useMemo(() => buildDivisionalChartData(divCache[leftChart]), [divCache, leftChart]);
-  const rightChartData = useMemo(() => buildDivisionalChartData(divCache[rightChart]), [divCache, rightChart]);
-  const leftLoading = leftChart === 'D9' ? loadingDivisional : !!divLoading[leftChart];
-  const rightLoading = rightChart === 'D10' ? loadingD10 : !!divLoading[rightChart];
+  const leftChartData = useMemo(() => leftChart === 'Moon' ? moonChartData : buildDivisionalChartData(divCache[leftChart]), [divCache, leftChart, moonChartData]);
+  const rightChartData = useMemo(() => rightChart === 'Moon' ? moonChartData : buildDivisionalChartData(divCache[rightChart]), [divCache, rightChart, moonChartData]);
+  const leftLoading = leftChart === 'Moon' ? false : leftChart === 'D9' ? loadingDivisional : !!divLoading[leftChart];
+  const rightLoading = rightChart === 'Moon' ? false : rightChart === 'D10' ? loadingD10 : !!divLoading[rightChart];
 
   // Lordship rows
   const lordships = useMemo(() => {
@@ -502,34 +524,122 @@ export default function JHoraKundliView({
           overflow: 'hidden',
           borderBottom: BORDER,
         }}>
-          {/* Vimshottari Dasha */}
+          {/* Vimshottari Dasha — Mahadasha > Antardasha > Pratyantara */}
           <div style={{ borderRight: BORDER, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
             <SectionHeader>Vimshottari Dasha</SectionHeader>
             {loadingDasha ? <MiniLoader /> : dasha ? (
               <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead>
-                    <tr>
-                      {['Planet', 'Start', 'End', 'Yrs'].map((h) => (
-                        <th key={h} style={thCompact}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {mahadashaPeriods.map((md: any, i: number) => (
-                      <tr key={i} style={{
-                        background: md.isCurrent ? '#FEF3C7' : (i % 2 === 0 ? 'transparent' : ALT_ROW),
-                      }}>
-                        <td style={{ ...cellCompact, color: planetColor(md.planet), fontWeight: 600 }}>
-                          {md.planet}
-                        </td>
-                        <td style={cellCompact}>{md.start ? md.start.slice(0, 10) : '-'}</td>
-                        <td style={cellCompact}>{md.end ? md.end.slice(0, 10) : '-'}</td>
-                        <td style={{ ...cellCompact, textAlign: 'center' }}>{md.years || '-'}</td>
-                      </tr>
+                {/* Current Dasha Info */}
+                <div style={{ padding: '3px 6px', background: '#FEF3C7', borderBottom: `1px solid ${BORDER_COLOR}`, fontSize: '9px', fontFamily: SERIF }}>
+                  <span style={{ color: HEADER_COLOR, fontWeight: 600 }}>Current: </span>
+                  <span style={{ color: '#B8860B', fontWeight: 700 }}>{dasha.current_dasha}</span>
+                  {dasha.current_antardasha && dasha.current_antardasha !== 'Unknown' && (
+                    <span style={{ color: MUTED }}> / {dasha.current_antardasha}</span>
+                  )}
+                  {dasha.current_pratyantar && dasha.current_pratyantar !== 'Unknown' && (
+                    <span style={{ color: MUTED }}> / {dasha.current_pratyantar}</span>
+                  )}
+                </div>
+
+                {/* Mahadasha list with expandable Antardasha/Pratyantar */}
+                {(extendedDashaData?.mahadasha || []).length > 0 ? (
+                  <div>
+                    {extendedDashaData.mahadasha.map((md: any, i: number) => (
+                      <div key={i}>
+                        {/* Mahadasha row — clickable */}
+                        <div
+                          onClick={() => setExpandedMD(expandedMD === md.planet ? null : md.planet)}
+                          style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                            padding: '2px 4px', cursor: 'pointer',
+                            background: md.is_current ? '#FEF3C7' : (i % 2 === 0 ? 'transparent' : ALT_ROW),
+                            borderBottom: `1px solid ${BORDER_COLOR}`,
+                            fontFamily: SERIF, fontSize: '9px',
+                          }}
+                        >
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                            <span style={{ fontSize: '7px', color: MUTED }}>{expandedMD === md.planet ? '\u25BC' : '\u25B6'}</span>
+                            <span style={{ color: planetColor(md.planet), fontWeight: 600 }}>{md.planet}</span>
+                            {md.is_current && <span style={{ color: '#B8860B', fontSize: '7px' }}>\u2190</span>}
+                          </span>
+                          <span style={{ color: MUTED, fontSize: '8px' }}>
+                            {md.start?.slice(0, 10)} — {md.end?.slice(0, 10)} ({md.years}y)
+                          </span>
+                        </div>
+
+                        {/* Antardasha list (expanded) */}
+                        {expandedMD === md.planet && (md.antardasha || []).map((ad: any, j: number) => (
+                          <div key={j}>
+                            <div
+                              onClick={(e) => { e.stopPropagation(); setExpandedAD(expandedAD === `${md.planet}-${ad.planet}` ? null : `${md.planet}-${ad.planet}`); }}
+                              style={{
+                                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                padding: '1px 4px 1px 16px', cursor: ad.pratyantar?.length ? 'pointer' : 'default',
+                                background: ad.is_current ? 'rgba(184,134,11,0.08)' : 'transparent',
+                                borderBottom: `1px solid rgba(212,197,169,0.5)`,
+                                fontFamily: SERIF, fontSize: '8px',
+                              }}
+                            >
+                              <span style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                {ad.pratyantar?.length > 0 && <span style={{ fontSize: '6px', color: MUTED }}>{expandedAD === `${md.planet}-${ad.planet}` ? '\u25BC' : '\u25B6'}</span>}
+                                <span style={{ color: planetColor(ad.planet), fontWeight: 600 }}>{ad.planet}</span>
+                                <span style={{ color: MUTED }}> AD</span>
+                                {ad.is_current && <span style={{ color: '#B8860B', fontSize: '7px' }}>*</span>}
+                              </span>
+                              <span style={{ color: MUTED, fontSize: '7px' }}>{ad.start?.slice(0, 10)} — {ad.end?.slice(0, 10)}</span>
+                            </div>
+
+                            {/* Pratyantara list (expanded) */}
+                            {expandedAD === `${md.planet}-${ad.planet}` && (ad.pratyantar || []).map((pt: any, k: number) => (
+                              <div
+                                key={k}
+                                style={{
+                                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                  padding: '1px 4px 1px 28px',
+                                  background: pt.is_current ? 'rgba(184,134,11,0.05)' : 'transparent',
+                                  borderBottom: `1px solid rgba(212,197,169,0.3)`,
+                                  fontFamily: SERIF, fontSize: '7px',
+                                }}
+                              >
+                                <span>
+                                  <span style={{ color: planetColor(pt.planet), fontWeight: 600 }}>{pt.planet}</span>
+                                  <span style={{ color: MUTED }}> PD</span>
+                                  {pt.is_current && <span style={{ color: '#B8860B' }}>*</span>}
+                                </span>
+                                <span style={{ color: MUTED }}>{pt.start?.slice(0, 10)} — {pt.end?.slice(0, 10)}</span>
+                              </div>
+                            ))}
+                          </div>
+                        ))}
+                      </div>
                     ))}
-                  </tbody>
-                </table>
+                  </div>
+                ) : (
+                  /* Fallback: simple Mahadasha table when extendedDashaData is not available */
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr>
+                        {['Planet', 'Start', 'End', 'Yrs'].map((h) => (
+                          <th key={h} style={thCompact}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {mahadashaPeriods.map((md: any, i: number) => (
+                        <tr key={i} style={{
+                          background: md.isCurrent ? '#FEF3C7' : (i % 2 === 0 ? 'transparent' : ALT_ROW),
+                        }}>
+                          <td style={{ ...cellCompact, color: planetColor(md.planet), fontWeight: 600 }}>
+                            {md.planet}
+                          </td>
+                          <td style={cellCompact}>{md.start ? md.start.slice(0, 10) : '-'}</td>
+                          <td style={cellCompact}>{md.end ? md.end.slice(0, 10) : '-'}</td>
+                          <td style={{ ...cellCompact, textAlign: 'center' }}>{md.years || '-'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
               </div>
             ) : (
               <div style={{ padding: '8px', color: MUTED, textAlign: 'center', fontSize: '10px' }}>--</div>
@@ -627,33 +737,62 @@ export default function JHoraKundliView({
             </div>
           </div>
 
-          {/* Shadbala */}
+          {/* Shadbala — Vertical bar chart */}
           <div style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
             <SectionHeader>Shadbala</SectionHeader>
             {loadingShadbala ? <MiniLoader /> : shadbalaData?.planets ? (
-              <div style={{ flex: 1, overflow: 'auto', minHeight: 0, padding: '2px 6px' }}>
-                {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
-                  const data = shadbalaData.planets[planet];
-                  if (!data) return null;
-                  const ratio = data.total / data.required;
-                  const pct = Math.min(ratio * 100, 100);
-                  return (
-                    <div key={planet} style={{
-                      display: 'flex', alignItems: 'center', gap: '4px',
-                      padding: '2px 0', fontFamily: SERIF, fontSize: '10px',
-                    }}>
-                      <span style={{ width: '42px', flexShrink: 0, color: planetColor(planet), fontWeight: 600 }}>
-                        {planet}
-                      </span>
-                      <div style={{ flex: 1, height: '10px', background: '#E8E0D0', borderRadius: '2px', overflow: 'hidden' }}>
-                        <div style={{ height: '100%', width: `${pct}%`, background: '#4CAF50', borderRadius: '2px' }} />
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, padding: '4px 6px 2px' }}>
+                {/* Vertical bars */}
+                <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', gap: '3px', minHeight: 0 }}>
+                  {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
+                    const data = shadbalaData.planets[planet];
+                    if (!data) return null;
+                    const ratio = data.total / data.required;
+                    const pct = Math.min(ratio * 100, 100);
+                    const isStrong = ratio >= 1;
+                    return (
+                      <div key={planet} style={{
+                        flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px',
+                        fontFamily: SERIF, fontSize: '8px',
+                      }}>
+                        <span style={{ color: isStrong ? '#4CAF50' : '#DC2626', fontWeight: 600, fontSize: '7px' }}>
+                          {ratio.toFixed(1)}x
+                        </span>
+                        <div style={{
+                          width: '100%', maxWidth: '24px', height: '100%', minHeight: '20px', maxHeight: '80px',
+                          background: '#E8E0D0', borderRadius: '2px 2px 0 0', overflow: 'hidden',
+                          display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
+                          position: 'relative',
+                        }}>
+                          <div style={{
+                            width: '100%',
+                            height: `${pct}%`,
+                            background: isStrong ? '#4CAF50' : '#DC2626',
+                            borderRadius: '2px 2px 0 0',
+                            minHeight: '2px',
+                          }} />
+                          {/* Required threshold line */}
+                          <div style={{
+                            position: 'absolute', bottom: `${Math.min((1 / Math.max(ratio, 1)) * 100, 100)}%`,
+                            width: '100%', borderTop: '1px dashed rgba(93,64,55,0.4)',
+                          }} />
+                        </div>
+                        <span style={{ color: planetColor(planet), fontWeight: 600, fontSize: '7px', lineHeight: 1 }}>
+                          {planet.slice(0, 2)}
+                        </span>
                       </div>
-                      <span style={{ width: '30px', flexShrink: 0, textAlign: 'right', color: ratio >= 1 ? '#4CAF50' : '#DC2626', fontWeight: 600 }}>
-                        {ratio.toFixed(2)}
-                      </span>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
+                {/* Legend */}
+                <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', paddingTop: '2px', fontSize: '7px', color: MUTED }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                    <span style={{ width: '6px', height: '6px', borderRadius: '1px', background: '#4CAF50', display: 'inline-block' }} />Strong
+                  </span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                    <span style={{ width: '6px', height: '6px', borderRadius: '1px', background: '#DC2626', display: 'inline-block' }} />Weak
+                  </span>
+                </div>
               </div>
             ) : (
               <div style={{ padding: '8px', color: MUTED, textAlign: 'center', fontSize: '10px' }}>--</div>

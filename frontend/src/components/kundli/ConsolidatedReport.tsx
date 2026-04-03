@@ -184,14 +184,14 @@ export default function ConsolidatedReport({
         <div className="sticky top-0 z-10 bg-white border-b border-[#E8E0D4] px-6 py-3 flex items-center justify-between no-print">
           <div className="flex items-center gap-3">
             <Button size="sm" onClick={handleDownloadPDF} className="bg-[#B8860B] text-white hover:bg-[#9A7B0A] text-xs h-8">
-              <Download className="w-3.5 h-3.5 mr-1" />{t('kundli.downloadPDF')}
+              <Download className="w-3.5 h-3.5 mr-1" />Download PDF
             </Button>
             <Button size="sm" variant="outline" onClick={() => window.print()} className="border-[#E8E0D4] text-[#1a1a2e] text-xs h-8">
-              <Printer className="w-3.5 h-3.5 mr-1" />{t('kundli.printReport')}
+              <Printer className="w-3.5 h-3.5 mr-1" />Print Report
             </Button>
           </div>
           <DialogTitle className="text-sm font-semibold text-[#B8860B] font-serif">
-            {t('kundli.consolidatedReport')}
+            Consolidated Report
           </DialogTitle>
           <button onClick={() => onOpenChange(false)} className="p-1.5 hover:bg-[#E8E0D4] rounded transition-colors">
             <X className="w-5 h-5 text-[#1a1a2e]" />
@@ -277,19 +277,19 @@ export default function ConsolidatedReport({
           {/* Row 2: Planet Table (full width) */}
           <div className="border border-[#E8E0D4] rounded-lg p-3">
             <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
-              {t('kundli.birthDetailsTable')}
+              Detailed Planet Positions
             </h4>
             <div className="overflow-x-auto">
               <table className="w-full text-[10px]" style={{ borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ backgroundColor: '#B8860B', color: 'white' }}>
                     <th className="text-left p-1.5 font-medium">Planet</th>
-                    <th className="text-left p-1.5 font-medium">{t('kundli.sign')}</th>
-                    <th className="text-center p-1.5 font-medium">{t('kundli.degree')}</th>
-                    <th className="text-left p-1.5 font-medium">{t('kundli.nakshatra')}</th>
+                    <th className="text-left p-1.5 font-medium">Sign</th>
+                    <th className="text-center p-1.5 font-medium">Degree</th>
+                    <th className="text-left p-1.5 font-medium">Nakshatra</th>
                     <th className="text-center p-1.5 font-medium">Status</th>
-                    <th className="text-center p-1.5 font-medium">{t('kundli.nature')}</th>
-                    <th className="text-center p-1.5 font-medium">{t('kundli.house')}</th>
+                    <th className="text-center p-1.5 font-medium">Nature</th>
+                    <th className="text-center p-1.5 font-medium">House</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -314,7 +314,7 @@ export default function ConsolidatedReport({
                         </td>
                         <td className="p-1.5 text-center">
                           <span className={`text-[9px] ${isBenefic ? 'text-green-600' : 'text-red-600'}`}>
-                            {isBenefic ? t('kundli.benefic') : t('kundli.malefic')}
+                            {isBenefic ? 'Benefic' : 'Malefic'}
                           </span>
                         </td>
                         <td className="p-1.5 text-center">{planet.house}</td>
@@ -331,25 +331,25 @@ export default function ConsolidatedReport({
             {/* Avakhada Chakra */}
             <div className="border border-[#E8E0D4] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
-                {t('avakhada.title')}
+                Avakhada Chakra
               </h4>
               {loadingAvakhada ? (
                 <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
               ) : avakhadaData ? (
                 <div className="grid grid-cols-2 gap-1.5">
                   {[
-                    { label: t('avakhada.ascendant'), value: avakhadaData.ascendant },
-                    { label: t('avakhada.ascendantLord'), value: avakhadaData.ascendant_lord },
-                    { label: t('avakhada.rashi'), value: avakhadaData.rashi },
-                    { label: t('avakhada.rashiLord'), value: avakhadaData.rashi_lord },
-                    { label: t('avakhada.nakshatra'), value: `${avakhadaData.nakshatra} (P${avakhadaData.nakshatra_pada})` },
-                    { label: t('avakhada.yoga'), value: avakhadaData.yoga },
-                    { label: t('avakhada.karana'), value: avakhadaData.karana },
-                    { label: t('avakhada.yoni'), value: avakhadaData.yoni },
-                    { label: t('avakhada.gana'), value: avakhadaData.gana },
-                    { label: t('avakhada.nadi'), value: avakhadaData.nadi },
-                    { label: t('avakhada.varna'), value: avakhadaData.varna },
-                    { label: t('avakhada.naamakshar'), value: avakhadaData.naamakshar },
+                    { label: 'Ascendant (Lagna)', value: avakhadaData.ascendant },
+                    { label: 'Lagna Lord', value: avakhadaData.ascendant_lord },
+                    { label: 'Rashi (Moon Sign)', value: avakhadaData.rashi },
+                    { label: 'Rashi Lord', value: avakhadaData.rashi_lord },
+                    { label: 'Nakshatra', value: `${avakhadaData.nakshatra} (P${avakhadaData.nakshatra_pada})` },
+                    { label: 'Yoga', value: avakhadaData.yoga },
+                    { label: 'Karana', value: avakhadaData.karana },
+                    { label: 'Yoni', value: avakhadaData.yoni },
+                    { label: 'Gana', value: avakhadaData.gana },
+                    { label: 'Nadi', value: avakhadaData.nadi },
+                    { label: 'Varna', value: avakhadaData.varna },
+                    { label: 'Naamakshar', value: avakhadaData.naamakshar },
                   ].map((item) => (
                     <div key={item.label} className="bg-[#F5F0E8] rounded px-2 py-1">
                       <p className="text-[9px] text-[#1a1a2e]/50">{item.label}</p>
@@ -365,7 +365,7 @@ export default function ConsolidatedReport({
             {/* Vimshottari Dasha */}
             <div className="border border-[#E8E0D4] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
-                Vimshottari {t('kundli.dasha')}
+                Vimshottari Dasha
               </h4>
               {loadingDasha ? (
                 <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
@@ -414,7 +414,7 @@ export default function ConsolidatedReport({
             <div className="border border-[#E8E0D4] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2 flex items-center gap-1" style={{ color: '#B8860B' }}>
                 <CheckCircle className="w-3 h-3 text-green-500" />
-                {t('yoga.title')}
+                Yogas (Positive Combinations)
               </h4>
               {loadingYogaDosha ? (
                 <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
@@ -438,7 +438,7 @@ export default function ConsolidatedReport({
             <div className="border border-[#E8E0D4] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2 flex items-center gap-1" style={{ color: '#B8860B' }}>
                 <Shield className="w-3 h-3 text-red-500" />
-                {t('dosha.extended.title')}
+                Doshas (Afflictions)
               </h4>
               {loadingYogaDosha ? (
                 <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
@@ -448,7 +448,7 @@ export default function ConsolidatedReport({
                     <div key={idx} className="bg-red-50 border border-red-200 rounded px-2 py-1">
                       <span className="text-[10px] font-medium text-red-800">{dosha.name}</span>
                       {dosha.remedies && (
-                        <p className="text-[9px] text-red-600 mt-0.5">{t('dosha.remedies')}: {dosha.remedies}</p>
+                        <p className="text-[9px] text-red-600 mt-0.5">Remedies: {dosha.remedies}</p>
                       )}
                     </div>
                   ))}
@@ -461,7 +461,7 @@ export default function ConsolidatedReport({
             {/* Lordships */}
             <div className="border border-[#E8E0D4] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
-                {t('kundli.houseLordships')}
+                House Lordships
               </h4>
               <div className="text-[10px]">
                 <LordshipsTab planets={planets} houses={result?.chart_data?.houses || {}} />
@@ -474,7 +474,7 @@ export default function ConsolidatedReport({
             {/* Ashtakvarga SAV */}
             <div className="border border-[#E8E0D4] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
-                {t('kundli.sarvashtakvarga')}
+                Sarvashtakvarga
               </h4>
               {loadingAshtakvarga ? (
                 <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
@@ -501,8 +501,8 @@ export default function ConsolidatedReport({
                     })}
                   </div>
                   <div className="flex items-center gap-3 mt-1 text-[9px] text-[#1a1a2e]/50">
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#B8860B' }} />{t('kundli.strong')}</span>
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#8B7355' }} />{t('kundli.weak')}</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#B8860B' }} />Strong</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#8B7355' }} />Weak</span>
                   </div>
                 </div>
               ) : (
@@ -513,7 +513,7 @@ export default function ConsolidatedReport({
             {/* Shadbala */}
             <div className="border border-[#E8E0D4] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
-                {t('kundli.shadbalaTitle')}
+                Shadbala Strength
               </h4>
               {loadingShadbala ? (
                 <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
@@ -537,8 +537,8 @@ export default function ConsolidatedReport({
                     );
                   })}
                   <div className="flex items-center gap-3 mt-1 text-[9px] text-[#1a1a2e]/50">
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#B8860B' }} />{t('kundli.strong')}</span>
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#8B2332' }} />{t('kundli.weak')}</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#B8860B' }} />Strong</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#8B2332' }} />Weak</span>
                   </div>
                 </div>
               ) : (
