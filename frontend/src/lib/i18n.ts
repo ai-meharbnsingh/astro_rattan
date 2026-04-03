@@ -835,9 +835,7 @@ const translations: Record<Language, TranslationMap> = {
 };
 
 function getStoredLanguage(): Language {
-  if (typeof window === 'undefined') return 'en';
-  const stored = localStorage.getItem('astrovedic-language');
-  if (stored === 'en' || stored === 'hi') return stored;
+  // Force English — Hindi translations disabled
   return 'en';
 }
 
