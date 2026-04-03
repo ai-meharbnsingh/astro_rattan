@@ -52,7 +52,7 @@ def interpret_kundli(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Kundli not found")
 
     chart_data = json.loads(row["chart_data"])
-    result = ai_interpret_kundli(chart_data)
+    result = ai_interpret_kundli(chart_data, prediction_type=body.prediction_type)
 
     # Log the AI interaction
     db.execute(
