@@ -137,6 +137,7 @@ class DivisionalChartRequest(BaseModel):
 # ============================================================
 class AIInterpretRequest(BaseModel):
     kundli_id: str
+    prediction_type: str = "general"  # "general", "daily", "monthly", "yearly"
 
 class AIAskRequest(BaseModel):
     question: str = Field(min_length=1)

@@ -211,13 +211,133 @@ _HOUSE_MEANINGS = {
 }
 
 
-def _rule_based_interpretation(chart_data: dict) -> dict:
+def _rule_based_period_prediction(chart_data: dict, prediction_type: str) -> dict:
+    """Generate rule-based daily/monthly/yearly predictions without AI."""
+    from datetime import date
+    import random
+
+    today = date.today()
+    planets = chart_data.get("planets", {})
+    asc = chart_data.get("ascendant", {})
+    asc_sign = asc.get("sign", "Aries")
+    moon = planets.get("Moon", {})
+    moon_sign = moon.get("sign", asc_sign)
+    sun = planets.get("Sun", {})
+    sun_sign = sun.get("sign", asc_sign)
+
+    # Seed random with date + chart for consistent daily predictions
+    seed_str = f"{today.isoformat()}-{asc_sign}-{moon_sign}-{prediction_type}"
+    rng = random.Random(seed_str)
+
+    _OUTLOOK = ["excellent", "very favorable", "positive", "moderate", "mixed", "challenging but growth-oriented"]
+    _ADVICE_CAREER = [
+        "Focus on completing pending tasks — productivity peaks today.",
+        "A new opportunity may present itself. Stay alert and prepared.",
+        "Teamwork brings the best results. Collaborate with colleagues.",
+        "Avoid making major financial decisions impulsively.",
+        "Your leadership qualities shine — take initiative on projects.",
+        "Focus on skill development and learning new things.",
+    ]
+    _ADVICE_RELATIONSHIP = [
+        "Spend quality time with family. Harmony prevails at home.",
+        "Communication is key today — express your feelings openly.",
+        "A pleasant surprise from a loved one lifts your spirits.",
+        "Be patient with your partner. Understanding resolves conflicts.",
+        "Social connections bring joy — meet old friends if possible.",
+        "Romance is in the air — plan something special.",
+    ]
+    _ADVICE_HEALTH = [
+        "Take care of your digestion — eat light and healthy meals.",
+        "Morning exercise or yoga will boost your energy levels.",
+        "Stay hydrated and avoid excessive stress.",
+        "A good day for meditation and mental wellness practices.",
+        "Pay attention to sleep quality — rest is essential.",
+        "Outdoor activities bring vitality and freshness.",
+    ]
+
+    lines = []
+    highlights = []
+
+    if prediction_type == "daily":
+        outlook = rng.choice(_OUTLOOK)
+        lines.append(f"## Daily Prediction — {today.strftime('%B %d, %Y')}")
+        lines.append(f"\n**Overall Outlook:** {outlook.title()}\n")
+        lines.append(f"With your Moon in {moon_sign} and Ascendant in {asc_sign}, today's planetary alignments bring a {outlook} day.\n")
+        lines.append("## Career & Work")
+        lines.append(f"- {rng.choice(_ADVICE_CAREER)}\n")
+        lines.append("## Relationships")
+        lines.append(f"- {rng.choice(_ADVICE_RELATIONSHIP)}\n")
+        lines.append("## Health & Wellness")
+        lines.append(f"- {rng.choice(_ADVICE_HEALTH)}\n")
+        lucky_num = rng.randint(1, 9)
+        lucky_colors = ["Red", "Blue", "Green", "Yellow", "White", "Orange", "Purple"]
+        lines.append(f"**Lucky Number:** {lucky_num} | **Lucky Color:** {rng.choice(lucky_colors)}\n")
+        highlights = [f"Overall outlook: {outlook}", f"Moon in {moon_sign}"]
+
+    elif prediction_type == "monthly":
+        month_name = today.strftime("%B %Y")
+        lines.append(f"## Monthly Prediction — {month_name}")
+        lines.append(f"\nWith your Ascendant in {asc_sign} and Moon in {moon_sign}, here's what {month_name} holds for you.\n")
+        lines.append("## Career & Finance")
+        lines.append(f"- {rng.choice(_ADVICE_CAREER)}")
+        lines.append(f"- {rng.choice(_ADVICE_CAREER)}\n")
+        lines.append("## Relationships & Family")
+        lines.append(f"- {rng.choice(_ADVICE_RELATIONSHIP)}")
+        lines.append(f"- {rng.choice(_ADVICE_RELATIONSHIP)}\n")
+        lines.append("## Health & Wellness")
+        lines.append(f"- {rng.choice(_ADVICE_HEALTH)}")
+        lines.append(f"- {rng.choice(_ADVICE_HEALTH)}\n")
+        lines.append("## Key Dates to Watch")
+        d1, d2, d3 = rng.sample(range(1, 29), 3)
+        lines.append(f"- **{d1}th**: Favorable for new initiatives")
+        lines.append(f"- **{d2}th**: Focus on financial planning")
+        lines.append(f"- **{d3}th**: Auspicious for important decisions\n")
+        highlights = [f"Monthly forecast for {month_name}", f"Ascendant: {asc_sign}"]
+
+    elif prediction_type == "yearly":
+        year = today.year
+        lines.append(f"## Yearly Prediction — {year}")
+        lines.append(f"\nA comprehensive look at what {year} holds based on your birth chart (Ascendant: {asc_sign}, Moon: {moon_sign}, Sun: {sun_sign}).\n")
+        lines.append("## Overall Theme")
+        themes = ["growth and expansion", "consolidation and stability", "transformation and renewal", "learning and exploration"]
+        lines.append(f"- {year} is a year of **{rng.choice(themes)}** for you.\n")
+        lines.append("## Career & Professional Growth")
+        lines.append(f"- {rng.choice(_ADVICE_CAREER)}")
+        lines.append(f"- {rng.choice(_ADVICE_CAREER)}\n")
+        lines.append("## Financial Outlook")
+        lines.append("- Steady income flow with potential for unexpected gains in the second half.")
+        lines.append("- Avoid risky investments, especially during eclipse periods.\n")
+        lines.append("## Relationships")
+        lines.append(f"- {rng.choice(_ADVICE_RELATIONSHIP)}")
+        lines.append(f"- {rng.choice(_ADVICE_RELATIONSHIP)}\n")
+        lines.append("## Health")
+        lines.append(f"- {rng.choice(_ADVICE_HEALTH)}\n")
+        lines.append("## Quarter-by-Quarter Highlights")
+        lines.append("- **Q1 (Jan-Mar):** Foundation building, planning ahead")
+        lines.append("- **Q2 (Apr-Jun):** Action phase, career momentum picks up")
+        lines.append("- **Q3 (Jul-Sep):** Reflection period, focus on health and family")
+        lines.append("- **Q4 (Oct-Dec):** Harvest phase, results of efforts become visible\n")
+        highlights = [f"Yearly forecast for {year}", f"Theme: growth"]
+
+    return {
+        "interpretation": "\n".join(lines),
+        "highlights": highlights,
+        "warnings": [],
+    }
+
+
+def _rule_based_interpretation(chart_data: dict, prediction_type: str = "general") -> dict:
     """Generate a meaningful interpretation from chart data without any AI API."""
     from app.dosha_engine import analyze_yogas_and_doshas
+    from datetime import date
 
     planets = chart_data.get("planets", {})
     asc = chart_data.get("ascendant", {})
     asc_sign = asc.get("sign", "Aries")
+
+    # Period-specific predictions
+    if prediction_type in ("daily", "monthly", "yearly"):
+        return _rule_based_period_prediction(chart_data, prediction_type)
 
     lines = []
     highlights = []
@@ -299,31 +419,65 @@ def _rule_based_interpretation(chart_data: dict) -> dict:
 # PUBLIC API
 # ============================================================
 
-def ai_interpret_kundli(chart_data: dict) -> dict:
+def ai_interpret_kundli(chart_data: dict, prediction_type: str = "general") -> dict:
     """
     AI interpretation of a Vedic birth chart (kundli).
 
     Args:
         chart_data: Dict with planet positions, dashas, houses, etc.
+        prediction_type: "general", "daily", "monthly", or "yearly"
 
     Returns:
         {interpretation: str, highlights: [str], warnings: [str]}
     """
-    system_prompt = (
+    from datetime import date
+
+    today = date.today()
+
+    _PERIOD_PROMPTS = {
+        "daily": (
+            "You are an expert Vedic astrologer (Jyotishi). Based on the birth chart data provided "
+            "and current planetary transits, give a DAILY prediction for today ({today}). "
+            "Cover: general outlook, career/work, relationships, health, and a lucky tip for the day. "
+            "Keep it concise, practical, and actionable. Use Vedic astrology concepts."
+        ).format(today=today.strftime("%B %d, %Y")),
+        "monthly": (
+            "You are an expert Vedic astrologer (Jyotishi). Based on the birth chart data provided "
+            "and current planetary transits, give a MONTHLY prediction for {month} {year}. "
+            "Cover: career & finance, relationships & family, health & wellness, spiritual growth, "
+            "and key dates to watch. Provide practical guidance for the month ahead."
+        ).format(month=today.strftime("%B"), year=today.year),
+        "yearly": (
+            "You are an expert Vedic astrologer (Jyotishi). Based on the birth chart data provided "
+            "and major planetary transits, give a YEARLY prediction for {year}. "
+            "Cover: overall theme of the year, career growth, financial outlook, relationships, "
+            "health, travel, and spiritual evolution. Mention major transit effects (Saturn, Jupiter, Rahu-Ketu). "
+            "Provide quarter-by-quarter highlights."
+        ).format(year=today.year),
+    }
+
+    system_prompt = _PERIOD_PROMPTS.get(prediction_type, (
         "You are an expert Vedic astrologer (Jyotishi). Analyze the provided birth chart data "
         "and give a comprehensive interpretation. Include personality traits, career guidance, "
         "relationship insights, and spiritual path. Use traditional Vedic astrology concepts "
         "(rashis, nakshatras, dashas, yogas). Be insightful but accessible."
-    )
+    ))
 
     chart_str = json.dumps(chart_data, indent=2, default=str)
-    user_prompt = f"Interpret this Vedic birth chart:\n\n{chart_str}"
+
+    _PERIOD_INSTRUCTIONS = {
+        "daily": f"Give a daily Vedic horoscope prediction for today ({today.strftime('%B %d, %Y')}) based on this birth chart:\n\n{chart_str}",
+        "monthly": f"Give a monthly Vedic prediction for {today.strftime('%B %Y')} based on this birth chart:\n\n{chart_str}",
+        "yearly": f"Give a yearly Vedic prediction for {today.year} based on this birth chart:\n\n{chart_str}",
+    }
+
+    user_prompt = _PERIOD_INSTRUCTIONS.get(prediction_type, f"Interpret this Vedic birth chart:\n\n{chart_str}")
 
     response = _call_ai(system_prompt, user_prompt, temperature=0.6)
 
     if response is None:
         # Generate rule-based interpretation from chart data
-        return _rule_based_interpretation(chart_data)
+        return _rule_based_interpretation(chart_data, prediction_type=prediction_type)
 
     # Parse highlights and warnings from response
     highlights = []

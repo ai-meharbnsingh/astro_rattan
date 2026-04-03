@@ -44,8 +44,9 @@ export default function KundliGenerator() {
   const [loadingDosha, setLoadingDosha] = useState(false);
   const [loadingIogita, setLoadingIogita] = useState(false);
   const [loadingDasha, setLoadingDasha] = useState(false);
-  const [predictionsData, setPredictionsData] = useState<any>(null);
+  const [predictionsData, setPredictionsData] = useState<Record<string, any>>({});
   const [loadingPredictions, setLoadingPredictions] = useState(false);
+  const [activePredictionPeriod, setActivePredictionPeriod] = useState<'general' | 'daily' | 'monthly' | 'yearly'>('general');
   const [avakhadaData, setAvakhadaData] = useState<any>(null);
   const [loadingAvakhada, setLoadingAvakhada] = useState(false);
   const [extendedDashaData, setExtendedDashaData] = useState<any>(null);
@@ -95,7 +96,7 @@ export default function KundliGenerator() {
     setDoshaData(null);
     setIogitaData(null);
     setDashaData(null);
-    setPredictionsData(null);
+    setPredictionsData({});
     setAvakhadaData(null);
     setExtendedDashaData(null);
     setYogaDoshaData(null);
@@ -338,12 +339,15 @@ export default function KundliGenerator() {
   };
 
   // Fetch AI predictions — backend first, Puter.js fallback
-  const fetchPredictions = async () => {
-    if (!result?.id || predictionsData) return;
+  const fetchPredictions = async (period: 'general' | 'daily' | 'monthly' | 'yearly' = 'general') => {
+    if (!result?.id) return;
+    setActivePredictionPeriod(period);
+    // If we already have data for this period, just switch to it
+    if (predictionsData[period]) return;
     setLoadingPredictions(true);
     try {
-      const data = await api.post('/api/ai/interpret', { kundli_id: result.id });
-      setPredictionsData(data);
+      const data = await api.post('/api/ai/interpret', { kundli_id: result.id, prediction_type: period });
+      setPredictionsData(prev => ({ ...prev, [period]: data }));
       setLoadingPredictions(false);
       return;
     } catch {
@@ -352,16 +356,25 @@ export default function KundliGenerator() {
 
     if (isPuterAvailable()) {
       try {
-        const prompt = buildChartPrompt();
+        const periodInstructions: Record<string, string> = {
+          general: 'Provide predictions for: Career, Relationships, Health, Finance, Spiritual Growth.\nFormat each category with a heading and 2-3 paragraphs of insight.',
+          daily: `Provide a DAILY horoscope prediction for today. Cover: general outlook, career, relationships, health, and a lucky tip. Keep it concise and actionable.`,
+          monthly: `Provide a MONTHLY prediction for this month. Cover: career & finance, relationships, health, and key dates to watch.`,
+          yearly: `Provide a YEARLY prediction for this year. Cover: overall theme, career, finance, relationships, health, and quarter-by-quarter highlights.`,
+        };
+        const prompt = buildChartPrompt().replace(
+          'Provide predictions for: Career, Relationships, Health, Finance, Spiritual Growth.\nFormat each category with a heading and 2-3 paragraphs of insight.',
+          periodInstructions[period] || periodInstructions.general
+        );
         // Use streaming so the user sees text appear gradually
-        setPredictionsData({ interpretation: '', _streaming: true });
+        setPredictionsData(prev => ({ ...prev, [period]: { interpretation: '', _streaming: true } }));
         setLoadingPredictions(false);
         const fullText = await puterChatStream(prompt, VEDIC_SYSTEM_PROMPT, (accumulated) => {
-          setPredictionsData({ interpretation: accumulated, _streaming: true });
+          setPredictionsData(prev => ({ ...prev, [period]: { interpretation: accumulated, _streaming: true } }));
         });
-        setPredictionsData({ interpretation: fullText, _puterFallback: true });
+        setPredictionsData(prev => ({ ...prev, [period]: { interpretation: fullText, _puterFallback: true } }));
       } catch {
-        setPredictionsData(null);
+        // Don't clear other periods on failure
       }
     }
     setLoadingPredictions(false);
@@ -645,7 +658,7 @@ export default function KundliGenerator() {
             <TabsTrigger value="shadbala" onClick={fetchShadbala}>Shadbala</TabsTrigger>
             <TabsTrigger value="avakhada" onClick={fetchAvakhada}>Avakhada</TabsTrigger>
             <TabsTrigger value="yoga-dosha" onClick={fetchYogaDosha}>Yogas</TabsTrigger>
-            <TabsTrigger value="predictions" onClick={fetchPredictions}>Predictions</TabsTrigger>
+            <TabsTrigger value="predictions" onClick={() => fetchPredictions()}>Predictions</TabsTrigger>
             <TabsTrigger value="transits" onClick={fetchTransit}>Transits</TabsTrigger>
             <TabsTrigger value="varshphal" onClick={() => fetchVarshphal()}>Varshphal</TabsTrigger>
           </TabsList>
@@ -2093,6 +2106,7 @@ export default function KundliGenerator() {
             <PredictionsTab
               predictionsData={predictionsData}
               loadingPredictions={loadingPredictions}
+              activePeriod={activePredictionPeriod}
               onFetchPredictions={fetchPredictions}
             />
           </TabsContent>
