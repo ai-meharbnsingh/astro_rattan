@@ -99,7 +99,7 @@ export default function Hero() {
 
         {/* Equation */}
         <div className="hero-equation opacity-0 mb-8 inline-block">
-          <div className="px-5 py-2 border border-[#9A7B0A]/30 bg-[#F5F0E8]/40 backdrop-blur-sm">
+          <div className="px-5 py-2 border border-[#9A7B0A]/30 bg-[#22223a]/60 backdrop-blur-sm">
             <code className="font-['Space_Mono'] text-xs md:text-sm text-[#9A7B0A] tracking-wider">
               L = Asc + (S × 30°) + (N × 3°20')
             </code>
@@ -139,7 +139,7 @@ export default function Hero() {
 
         {/* Quick Kundli Form */}
         <div className="hero-form opacity-0 max-w-md mx-auto">
-          <div className="border border-[#9A7B0A]/20 bg-[#F5F0E8]/50 backdrop-blur-sm p-5 relative">
+          <div className="border border-[#9A7B0A]/20 bg-[#22223a]/60 backdrop-blur-sm p-5 relative">
             {/* Corner decorations */}
             <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-[#9A7B0A]" />
             <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-[#9A7B0A]" />

@@ -65,7 +65,7 @@ export default function KundliList({
       {/* Delete All Confirmation Modal */}
       {showDeleteAllConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-xl border border-red-200 p-6 max-w-md w-full shadow-xl">
+          <div className="bg-[#22223a] rounded-xl border border-red-200 p-6 max-w-md w-full shadow-xl">
             <div className="flex items-center gap-3 mb-4 text-red-600">
               <AlertTriangle className="w-8 h-8" />
               <h4 className="text-lg font-bold">Delete All Kundlis?</h4>
@@ -113,7 +113,7 @@ export default function KundliList({
             <button
               onClick={(e) => handleDelete(k.id, e)}
               disabled={deletingId === k.id}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-red-50 hover:bg-red-100 border border-red-200 flex items-center justify-center text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-red-500/10 hover:bg-red-500/20 border border-red-200 flex items-center justify-center text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
               title="Delete Kundli"
             >
               {deletingId === k.id ? (
@@ -134,7 +134,7 @@ export default function KundliList({
       {savedKundlis.length > 0 && (
         <button
           onClick={() => setShowDeleteAllConfirm(true)}
-          className="w-full mb-4 p-3 rounded-xl border border-red-300 text-red-600 hover:bg-red-50 transition-colors text-sm flex items-center justify-center gap-2"
+          className="w-full mb-4 p-3 rounded-xl border border-red-300 text-red-600 hover:bg-red-500/100/10 transition-colors text-sm flex items-center justify-center gap-2"
         >
           <Trash2 className="w-4 h-4" />
           Delete All Kundlis ({savedKundlis.length})

@@ -377,10 +377,10 @@ export default function SpiritualLibrary() {
                 
                 {/* Modal for Chapter Verses */}
                 {isModalOpen && selectedChapter && (
-                  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#F5F0E8]/80 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}>
-                    <div className="relative w-full max-w-4xl max-h-[85vh] bg-[#E8E0D4] rounded-2xl border border-[#9A7B0A]/30 shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1a1a2e]/80 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}>
+                    <div className="relative w-full max-w-4xl max-h-[85vh] bg-[#2a2a4e] rounded-2xl border border-[#9A7B0A]/30 shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
                       {/* Modal Header */}
-                      <div className="sticky top-0 z-10 bg-[#E8E0D4] border-b border-[#9A7B0A]/20 p-6 flex items-center justify-between">
+                      <div className="sticky top-0 z-10 bg-[#2a2a4e] border-b border-[#9A7B0A]/20 p-6 flex items-center justify-between">
                         <div>
                           <h3 className="text-2xl font-sacred font-bold text-[#1a1a2e]">
                             Bhagavad Gita - Chapter {selectedChapter}
@@ -429,7 +429,7 @@ export default function SpiritualLibrary() {
                                   
                                   {/* Sanskrit */}
                                   {v.sanskrit && (
-                                    <div className="mb-5 p-5 bg-[#E8E0D4] rounded-lg border-l-4 border-[#9A7B0A]">
+                                    <div className="mb-5 p-5 bg-[#2a2a4e] rounded-lg border-l-4 border-[#9A7B0A]">
                                       <p className="text-xl text-[#B8860B] leading-relaxed font-medium" style={{ fontFamily: 'serif' }}>
                                         {v.sanskrit}
                                       </p>
@@ -446,7 +446,7 @@ export default function SpiritualLibrary() {
                                   
                                   {/* Commentary */}
                                   {v.commentary && (
-                                    <div className="mt-5 pt-4 border-t border-[#8B7355]/10">
+                                    <div className="mt-5 pt-4 border-t border-[#b8b0a4]/10">
                                       <p className="text-sm text-[#9A7B0A] uppercase tracking-wide mb-2 font-semibold">Commentary</p>
                                       <p className="text-base text-[#1a1a2e]/80 leading-relaxed italic">{v.commentary}</p>
                                     </div>

@@ -166,7 +166,7 @@ export default function ConsolidatedReport({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-[95vw] max-h-[95vh] w-full bg-white overflow-y-auto p-0 border-[#E8E0D4]"
+        className="max-w-[95vw] max-h-[95vh] w-full bg-[#22223a] overflow-y-auto p-0 border-[#2a2a4e]"
         showCloseButton={false}
       >
         {/* Print styles */}
@@ -181,31 +181,31 @@ export default function ConsolidatedReport({
         `}</style>
 
         {/* Header bar */}
-        <div className="sticky top-0 z-10 bg-white border-b border-[#E8E0D4] px-6 py-3 flex items-center justify-between no-print">
+        <div className="sticky top-0 z-10 bg-[#22223a] border-b border-[#2a2a4e] px-6 py-3 flex items-center justify-between no-print">
           <div className="flex items-center gap-3">
             <Button size="sm" onClick={handleDownloadPDF} className="bg-[#B8860B] text-white hover:bg-[#9A7B0A] text-xs h-8">
               <Download className="w-3.5 h-3.5 mr-1" />Download PDF
             </Button>
-            <Button size="sm" variant="outline" onClick={() => window.print()} className="border-[#E8E0D4] text-[#1a1a2e] text-xs h-8">
+            <Button size="sm" variant="outline" onClick={() => window.print()} className="border-[#2a2a4e] text-[#e8e0d4] text-xs h-8">
               <Printer className="w-3.5 h-3.5 mr-1" />Print Report
             </Button>
           </div>
           <DialogTitle className="text-sm font-semibold text-[#B8860B] font-serif">
             Consolidated Report
           </DialogTitle>
-          <button onClick={() => onOpenChange(false)} className="p-1.5 hover:bg-[#E8E0D4] rounded transition-colors">
-            <X className="w-5 h-5 text-[#1a1a2e]" />
+          <button onClick={() => onOpenChange(false)} className="p-1.5 hover:bg-[#2a2a4e] rounded transition-colors">
+            <X className="w-5 h-5 text-[#e8e0d4]" />
           </button>
         </div>
 
         {/* Report content */}
-        <div className="px-6 py-4 space-y-4" style={{ color: '#1a1a2e' }}>
+        <div className="px-6 py-4 space-y-4" style={{ color: '#e8e0d4' }}>
           {/* Title block */}
-          <div className="text-center border-b border-[#E8E0D4] pb-3">
+          <div className="text-center border-b border-[#2a2a4e] pb-3">
             <h2 className="text-lg font-bold font-serif" style={{ color: '#B8860B' }}>
               {result?.person_name}&apos;s Vedic Birth Chart
             </h2>
-            <p className="text-[11px] text-[#1a1a2e]/60 mt-1">
+            <p className="text-[11px] text-[#e8e0d4]/60 mt-1">
               {result?.birth_date} | {result?.birth_time} | {result?.birth_place}
             </p>
           </div>
@@ -213,7 +213,7 @@ export default function ConsolidatedReport({
           {/* Row 1: Four charts */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {/* Birth Chart (D1) */}
-            <div className="border border-[#E8E0D4] rounded-lg p-2">
+            <div className="border border-[#2a2a4e] rounded-lg p-2">
               <h4 className="text-[11px] font-bold text-center mb-1" style={{ color: '#B8860B' }}>
                 Rashi (D1)
               </h4>
@@ -226,7 +226,7 @@ export default function ConsolidatedReport({
             </div>
 
             {/* D9 Navamsha */}
-            <div className="border border-[#E8E0D4] rounded-lg p-2">
+            <div className="border border-[#2a2a4e] rounded-lg p-2">
               <h4 className="text-[11px] font-bold text-center mb-1" style={{ color: '#B8860B' }}>
                 Navamsha (D9)
               </h4>
@@ -236,13 +236,13 @@ export default function ConsolidatedReport({
                 ) : d9ChartData ? (
                   <InteractiveKundli chartData={d9ChartData} compact />
                 ) : (
-                  <p className="text-[10px] text-center py-12 text-[#1a1a2e]/40">Loading...</p>
+                  <p className="text-[10px] text-center py-12 text-[#e8e0d4]/40">Loading...</p>
                 )}
               </div>
             </div>
 
             {/* D10 Dashamsha */}
-            <div className="border border-[#E8E0D4] rounded-lg p-2">
+            <div className="border border-[#2a2a4e] rounded-lg p-2">
               <h4 className="text-[11px] font-bold text-center mb-1" style={{ color: '#B8860B' }}>
                 {t('kundli.d10')}
               </h4>
@@ -252,13 +252,13 @@ export default function ConsolidatedReport({
                 ) : d10ChartData ? (
                   <InteractiveKundli chartData={d10ChartData} compact />
                 ) : (
-                  <p className="text-[10px] text-center py-12 text-[#1a1a2e]/40">Loading...</p>
+                  <p className="text-[10px] text-center py-12 text-[#e8e0d4]/40">Loading...</p>
                 )}
               </div>
             </div>
 
             {/* Gochar (Transit) */}
-            <div className="border border-[#E8E0D4] rounded-lg p-2">
+            <div className="border border-[#2a2a4e] rounded-lg p-2">
               <h4 className="text-[11px] font-bold text-center mb-1" style={{ color: '#B8860B' }}>
                 {t('kundli.gochar')}
               </h4>
@@ -268,14 +268,14 @@ export default function ConsolidatedReport({
                 ) : transitChartData ? (
                   <InteractiveKundli chartData={transitChartData} compact />
                 ) : (
-                  <p className="text-[10px] text-center py-12 text-[#1a1a2e]/40">Loading...</p>
+                  <p className="text-[10px] text-center py-12 text-[#e8e0d4]/40">Loading...</p>
                 )}
               </div>
             </div>
           </div>
 
           {/* Row 2: Planet Table (full width) */}
-          <div className="border border-[#E8E0D4] rounded-lg p-3">
+          <div className="border border-[#2a2a4e] rounded-lg p-3">
             <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
               Detailed Planet Positions
             </h4>
@@ -296,9 +296,9 @@ export default function ConsolidatedReport({
                   {planets.map((planet, index) => {
                     const isBenefic = ['Jupiter', 'Venus', 'Moon', 'Mercury'].includes(planet.planet);
                     return (
-                      <tr key={index} style={{ borderBottom: '1px solid #E8E0D4' }}>
-                        <td className="p-1.5 font-medium" style={{ color: '#1a1a2e' }}>{planet.planet}</td>
-                        <td className="p-1.5" style={{ color: '#1a1a2e' }}>{planet.sign}</td>
+                      <tr key={index} style={{ borderBottom: '1px solid #2a2a4e' }}>
+                        <td className="p-1.5 font-medium" style={{ color: '#e8e0d4' }}>{planet.planet}</td>
+                        <td className="p-1.5" style={{ color: '#e8e0d4' }}>{planet.sign}</td>
                         <td className="p-1.5 text-center">{planet.sign_degree?.toFixed(1)}&deg;</td>
                         <td className="p-1.5">{planet.nakshatra || '\u2014'}</td>
                         <td className="p-1.5 text-center">
@@ -307,7 +307,7 @@ export default function ConsolidatedReport({
                               ? 'bg-green-100 text-green-700'
                               : planet.status === 'Debilitated'
                               ? 'bg-red-100 text-red-700'
-                              : 'text-[#1a1a2e]/60'
+                              : 'text-[#e8e0d4]/60'
                           }`}>
                             {planet.status || '\u2014'}
                           </span>
@@ -329,7 +329,7 @@ export default function ConsolidatedReport({
           {/* Row 3: Avakhada Chakra + Vimshottari Dasha */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {/* Avakhada Chakra */}
-            <div className="border border-[#E8E0D4] rounded-lg p-3">
+            <div className="border border-[#2a2a4e] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
                 Avakhada Chakra
               </h4>
@@ -351,19 +351,19 @@ export default function ConsolidatedReport({
                     { label: 'Varna', value: avakhadaData.varna },
                     { label: 'Naamakshar', value: avakhadaData.naamakshar },
                   ].map((item) => (
-                    <div key={item.label} className="bg-[#F5F0E8] rounded px-2 py-1">
-                      <p className="text-[9px] text-[#1a1a2e]/50">{item.label}</p>
-                      <p className="text-[10px] font-semibold text-[#1a1a2e]">{item.value || '\u2014'}</p>
+                    <div key={item.label} className="bg-[#1a1a2e] rounded px-2 py-1">
+                      <p className="text-[9px] text-[#e8e0d4]/50">{item.label}</p>
+                      <p className="text-[10px] font-semibold text-[#e8e0d4]">{item.value || '\u2014'}</p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-[10px] text-center py-6 text-[#1a1a2e]/40">Loading...</p>
+                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">Loading...</p>
               )}
             </div>
 
             {/* Vimshottari Dasha */}
-            <div className="border border-[#E8E0D4] rounded-lg p-3">
+            <div className="border border-[#2a2a4e] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
                 Vimshottari Dasha
               </h4>
@@ -372,7 +372,7 @@ export default function ConsolidatedReport({
               ) : dashaData ? (
                 <div>
                   <div className="bg-[#B8860B]/10 rounded px-2 py-1.5 mb-2">
-                    <p className="text-[9px] text-[#1a1a2e]/50">Current Mahadasha</p>
+                    <p className="text-[9px] text-[#e8e0d4]/50">Current Mahadasha</p>
                     <p className="text-[11px] font-bold" style={{ color: '#B8860B' }}>{dashaData.current_dasha}</p>
                     {dashaData.current_antardasha && (
                       <p className="text-[9px] text-[#B8860B]">AD: {dashaData.current_antardasha}</p>
@@ -380,7 +380,7 @@ export default function ConsolidatedReport({
                   </div>
                   <table className="w-full text-[10px]" style={{ borderCollapse: 'collapse' }}>
                     <thead>
-                      <tr style={{ backgroundColor: '#F5F0E8' }}>
+                      <tr style={{ backgroundColor: '#1a1a2e' }}>
                         <th className="text-left p-1 font-medium text-[#B8860B]">Planet</th>
                         <th className="text-left p-1 font-medium text-[#B8860B]">Start</th>
                         <th className="text-left p-1 font-medium text-[#B8860B]">End</th>
@@ -390,20 +390,20 @@ export default function ConsolidatedReport({
                     <tbody>
                       {(dashaData.mahadasha_periods || []).map((p: any) => (
                         <tr key={p.planet} style={{
-                          borderBottom: '1px solid #E8E0D4',
+                          borderBottom: '1px solid #2a2a4e',
                           backgroundColor: p.planet === dashaData.current_dasha ? '#B8860B10' : undefined,
                         }}>
                           <td className="p-1 font-medium">{p.planet}{p.planet === dashaData.current_dasha ? ' \u2190' : ''}</td>
-                          <td className="p-1 text-[#1a1a2e]/60">{p.start_date}</td>
-                          <td className="p-1 text-[#1a1a2e]/60">{p.end_date}</td>
-                          <td className="p-1 text-center text-[#1a1a2e]/60">{p.years}</td>
+                          <td className="p-1 text-[#e8e0d4]/60">{p.start_date}</td>
+                          <td className="p-1 text-[#e8e0d4]/60">{p.end_date}</td>
+                          <td className="p-1 text-center text-[#e8e0d4]/60">{p.years}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
               ) : (
-                <p className="text-[10px] text-center py-6 text-[#1a1a2e]/40">Loading...</p>
+                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">Loading...</p>
               )}
             </div>
           </div>
@@ -411,7 +411,7 @@ export default function ConsolidatedReport({
           {/* Row 4: Yogas + Doshas + Lordships */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
             {/* Yogas (present only) */}
-            <div className="border border-[#E8E0D4] rounded-lg p-3">
+            <div className="border border-[#2a2a4e] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2 flex items-center gap-1" style={{ color: '#B8860B' }}>
                 <CheckCircle className="w-3 h-3 text-green-500" />
                 Yogas (Positive Combinations)
@@ -421,7 +421,7 @@ export default function ConsolidatedReport({
               ) : presentYogas.length > 0 ? (
                 <div className="space-y-1">
                   {presentYogas.map((yoga: any, idx: number) => (
-                    <div key={idx} className="bg-green-50 border border-green-200 rounded px-2 py-1">
+                    <div key={idx} className="bg-green-500/10 border border-green-200 rounded px-2 py-1">
                       <span className="text-[10px] font-medium text-green-800">{yoga.name}</span>
                       {yoga.description && (
                         <p className="text-[9px] text-green-600 mt-0.5">{yoga.description}</p>
@@ -430,12 +430,12 @@ export default function ConsolidatedReport({
                   ))}
                 </div>
               ) : (
-                <p className="text-[10px] text-center py-4 text-[#1a1a2e]/40">No yogas detected</p>
+                <p className="text-[10px] text-center py-4 text-[#e8e0d4]/40">No yogas detected</p>
               )}
             </div>
 
             {/* Doshas (present only) */}
-            <div className="border border-[#E8E0D4] rounded-lg p-3">
+            <div className="border border-[#2a2a4e] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2 flex items-center gap-1" style={{ color: '#B8860B' }}>
                 <Shield className="w-3 h-3 text-red-500" />
                 Doshas (Afflictions)
@@ -445,7 +445,7 @@ export default function ConsolidatedReport({
               ) : presentDoshas.length > 0 ? (
                 <div className="space-y-1">
                   {presentDoshas.map((dosha: any, idx: number) => (
-                    <div key={idx} className="bg-red-50 border border-red-200 rounded px-2 py-1">
+                    <div key={idx} className="bg-red-500/10 border border-red-200 rounded px-2 py-1">
                       <span className="text-[10px] font-medium text-red-800">{dosha.name}</span>
                       {dosha.remedies && (
                         <p className="text-[9px] text-red-600 mt-0.5">Remedies: {dosha.remedies}</p>
@@ -459,7 +459,7 @@ export default function ConsolidatedReport({
             </div>
 
             {/* Lordships */}
-            <div className="border border-[#E8E0D4] rounded-lg p-3">
+            <div className="border border-[#2a2a4e] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
                 House Lordships
               </h4>
@@ -472,7 +472,7 @@ export default function ConsolidatedReport({
           {/* Row 5: Ashtakvarga SAV + Shadbala */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {/* Ashtakvarga SAV */}
-            <div className="border border-[#E8E0D4] rounded-lg p-3">
+            <div className="border border-[#2a2a4e] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
                 Sarvashtakvarga
               </h4>
@@ -488,30 +488,30 @@ export default function ConsolidatedReport({
                       const isStrong = points >= 28;
                       return (
                         <div key={sign} className="flex-1 flex flex-col items-center gap-0.5">
-                          <span className="text-[8px] font-medium text-[#1a1a2e]">{points}</span>
-                          <div className="w-full bg-[#E8E0D4] rounded-t-sm relative" style={{ height: '80px' }}>
+                          <span className="text-[8px] font-medium text-[#e8e0d4]">{points}</span>
+                          <div className="w-full bg-[#2a2a4e] rounded-t-sm relative" style={{ height: '80px' }}>
                             <div
                               className="absolute bottom-0 w-full rounded-t-sm"
-                              style={{ height: `${heightPct}%`, backgroundColor: isStrong ? '#B8860B' : '#8B7355' }}
+                              style={{ height: `${heightPct}%`, backgroundColor: isStrong ? '#B8860B' : '#b8b0a4' }}
                             />
                           </div>
-                          <span className="text-[7px] text-[#1a1a2e]/50">{sign.slice(0, 3)}</span>
+                          <span className="text-[7px] text-[#e8e0d4]/50">{sign.slice(0, 3)}</span>
                         </div>
                       );
                     })}
                   </div>
-                  <div className="flex items-center gap-3 mt-1 text-[9px] text-[#1a1a2e]/50">
+                  <div className="flex items-center gap-3 mt-1 text-[9px] text-[#e8e0d4]/50">
                     <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#B8860B' }} />Strong</span>
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#8B7355' }} />Weak</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#b8b0a4' }} />Weak</span>
                   </div>
                 </div>
               ) : (
-                <p className="text-[10px] text-center py-6 text-[#1a1a2e]/40">Loading...</p>
+                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">Loading...</p>
               )}
             </div>
 
             {/* Shadbala */}
-            <div className="border border-[#E8E0D4] rounded-lg p-3">
+            <div className="border border-[#2a2a4e] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
                 Shadbala Strength
               </h4>
@@ -523,33 +523,33 @@ export default function ConsolidatedReport({
                     const data = shadbalaData.planets[planet];
                     if (!data) return null;
                     const pct = Math.min((data.total / data.required) * 100, 150);
-                    const barColor = data.is_strong ? '#B8860B' : '#8B2332';
+                    const barColor = data.is_strong ? '#B8860B' : '#C43E4E';
                     return (
                       <div key={planet} className="flex items-center gap-1.5">
-                        <span className="w-10 text-[10px] font-medium text-[#1a1a2e]">{planet}</span>
-                        <div className="flex-1 bg-[#E8E0D4] rounded-full h-3 overflow-hidden">
+                        <span className="w-10 text-[10px] font-medium text-[#e8e0d4]">{planet}</span>
+                        <div className="flex-1 bg-[#2a2a4e] rounded-full h-3 overflow-hidden">
                           <div className="h-full rounded-full" style={{ width: `${Math.min(pct, 100)}%`, backgroundColor: barColor }} />
                         </div>
-                        <span className={`text-[9px] w-12 text-right font-medium ${data.is_strong ? 'text-[#B8860B]' : 'text-[#8B2332]'}`}>
+                        <span className={`text-[9px] w-12 text-right font-medium ${data.is_strong ? 'text-[#B8860B]' : 'text-[#C43E4E]'}`}>
                           {data.total}/{data.required}
                         </span>
                       </div>
                     );
                   })}
-                  <div className="flex items-center gap-3 mt-1 text-[9px] text-[#1a1a2e]/50">
+                  <div className="flex items-center gap-3 mt-1 text-[9px] text-[#e8e0d4]/50">
                     <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#B8860B' }} />Strong</span>
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#8B2332' }} />Weak</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#C43E4E' }} />Weak</span>
                   </div>
                 </div>
               ) : (
-                <p className="text-[10px] text-center py-6 text-[#1a1a2e]/40">Loading...</p>
+                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">Loading...</p>
               )}
             </div>
           </div>
 
           {/* Footer */}
-          <div className="text-center border-t border-[#E8E0D4] pt-2 pb-1">
-            <p className="text-[9px] text-[#1a1a2e]/40">
+          <div className="text-center border-t border-[#2a2a4e] pt-2 pb-1">
+            <p className="text-[9px] text-[#e8e0d4]/40">
               Generated by Astro Rattan | {new Date().toLocaleDateString()}
             </p>
           </div>

@@ -21,7 +21,7 @@ export default function CTA() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-[#F5F0E8]">
+    <section ref={sectionRef} className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-[#1a1a2e]">
       {/* Gold gradient lines */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#9A7B0A]/30 to-transparent" />
       

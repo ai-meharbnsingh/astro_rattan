@@ -9,7 +9,7 @@ function renderMarkdown(text: string) {
     // Bold: **text**
     const parts = line.split(/\*\*(.*?)\*\*/g);
     const rendered = parts.map((part, i) =>
-      i % 2 === 1 ? <strong key={i} style={{ color: '#5D4037' }}>{part}</strong> : part
+      i % 2 === 1 ? <strong key={i} style={{ color: '#D4A052' }}>{part}</strong> : part
     );
 
     // Heading lines
@@ -19,14 +19,14 @@ function renderMarkdown(text: string) {
     // List items
     if (line.trimStart().startsWith('- ')) {
       return (
-        <div key={idx} className="flex gap-2 mb-1.5 ml-2" style={{ fontFamily: 'serif', color: '#1a1a2e' }}>
+        <div key={idx} className="flex gap-2 mb-1.5 ml-2" style={{ fontFamily: 'serif', color: '#e8e0d4' }}>
           <span className="text-sacred-gold mt-0.5">•</span>
           <span className="leading-relaxed">{rendered}</span>
         </div>
       );
     }
     // Regular paragraph
-    return <p key={idx} className="mb-3 leading-relaxed" style={{ fontFamily: 'serif', color: '#1a1a2e' }}>{rendered}</p>;
+    return <p key={idx} className="mb-3 leading-relaxed" style={{ fontFamily: 'serif', color: '#e8e0d4' }}>{rendered}</p>;
   });
 }
 
@@ -93,7 +93,7 @@ export default function PredictionsTab({
 
       {/* Prediction content */}
       {!loadingPredictions && currentData && (
-        <div className="rounded-2xl p-6 border" style={{ backgroundColor: '#F5F0E8', borderColor: 'rgba(139,115,85,0.2)' }}>
+        <div className="rounded-2xl p-6 border" style={{ backgroundColor: '#1a1a2e', borderColor: 'rgba(184,134,11,0.25)' }}>
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(184,134,11,0.15)' }}>
               <Sparkles className="w-5 h-5" style={{ color: '#B8860B' }} />
@@ -115,7 +115,7 @@ export default function PredictionsTab({
               </span>
             )}
           </div>
-          <div className="max-w-none" style={{ color: '#1a1a2e' }}>
+          <div className="max-w-none" style={{ color: '#e8e0d4' }}>
             {renderMarkdown(currentData.interpretation || currentData.response || currentData.text || 'Generating predictions...')}
             {currentData._streaming && <span className="inline-block w-1.5 h-4 ml-0.5 bg-sacred-gold animate-pulse align-middle" />}
           </div>
@@ -140,7 +140,7 @@ export default function PredictionsTab({
              'Get Predictions'}
           </Button>
           {isPuterAvailable() && (
-            <p className="text-xs mt-3" style={{ color: '#8B7355' }}>Free AI available as backup if server is busy</p>
+            <p className="text-xs mt-3" style={{ color: '#b8b0a4' }}>Free AI available as backup if server is busy</p>
           )}
         </div>
       )}

@@ -92,7 +92,7 @@ export default function DailyHoroscope() {
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               />
               {/* Dark Gradient Overlay - darker at bottom for text */}
-              <div className={`absolute inset-0 transition-all duration-300 bg-gradient-to-t from-[#F5F0E8]/80 via-[#E8E0D4]/30 to-transparent ${selectedSign.name === sign.name ? 'opacity-70' : 'opacity-90 group-hover:opacity-80'}`} />
+              <div className={`absolute inset-0 transition-all duration-300 bg-gradient-to-t from-[#1a1a2e]/80 via-[#2a2a4e]/30 to-transparent ${selectedSign.name === sign.name ? 'opacity-70' : 'opacity-90 group-hover:opacity-80'}`} />
               {/* Content - Name at bottom */}
               <div className="absolute bottom-0 left-0 right-0 z-10 p-2 text-center">
                 <span className="text-xs sm:text-sm font-medium text-[#1a1a2e] tracking-wide drop-shadow-[0_2px_4px_rgba(139,69,19,0.2)]">{sign.name}</span>
@@ -113,7 +113,7 @@ export default function DailyHoroscope() {
                   alt={selectedSign.name}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#F5F0E8]/60 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a2e]/60 via-transparent to-transparent" />
               </div>
               <h3 className="text-2xl font-sacred font-bold text-cosmic-text mb-1">{selectedSign.name}</h3>
               <p className="text-sm text-cosmic-text-secondary mb-4">{selectedSign.date}</p>

@@ -456,7 +456,7 @@ export default function AdminDashboard() {
                       <TableCell className="text-cosmic-text-secondary">{u.email}</TableCell>
                       <TableCell><Badge variant="outline">{u.role}</Badge></TableCell>
                       <TableCell>
-                        <Badge className={u.is_active ? 'bg-green-500/20 text-green-700' : 'bg-red-500/20 text-red-400'}>
+                        <Badge className={u.is_active ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}>
                           {u.is_active ? 'Active' : 'Inactive'}
                         </Badge>
                       </TableCell>
@@ -547,7 +547,7 @@ export default function AdminDashboard() {
                       <TableCell className="text-sacred-gold font-semibold">{formatPrice(p.price)}</TableCell>
                       <TableCell>{p.stock}</TableCell>
                       <TableCell>
-                        <Badge className={p.is_active ? 'bg-green-500/20 text-green-700' : 'bg-cosmic-surface text-cosmic-text-secondary'}>
+                        <Badge className={p.is_active ? 'bg-green-500/20 text-green-400' : 'bg-cosmic-surface text-cosmic-text-secondary'}>
                           {p.is_active ? 'Active' : 'Hidden'}
                         </Badge>
                       </TableCell>
@@ -810,7 +810,7 @@ export default function AdminDashboard() {
                         <TableCell className="text-cosmic-text-secondary">{post.slug}</TableCell>
                         <TableCell className="text-cosmic-text-secondary">{post.author_name}</TableCell>
                         <TableCell>
-                          <Badge className={post.is_published ? 'bg-green-500/20 text-green-700' : 'bg-cosmic-surface text-cosmic-text-secondary'}>
+                          <Badge className={post.is_published ? 'bg-green-500/20 text-green-400' : 'bg-cosmic-surface text-cosmic-text-secondary'}>
                             {post.is_published ? 'Published' : 'Draft'}
                           </Badge>
                         </TableCell>

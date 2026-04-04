@@ -116,7 +116,7 @@ export default function CosmicBackground() {
   }, []);
 
   return (
-    <div ref={containerRef} className="fixed inset-0 z-0 overflow-hidden bg-[#F5F0E8]">
+    <div ref={containerRef} className="fixed inset-0 z-0 overflow-hidden bg-[#1a1a2e]">
       {/* Symbols with floating animation */}
       {symbols.map((s) => (
         <div

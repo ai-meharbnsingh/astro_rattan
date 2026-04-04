@@ -48,7 +48,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="relative bg-[#F5F0E8] overflow-hidden border-t border-[#9A7B0A]/20">
+    <footer className="relative bg-[#1a1a2e] overflow-hidden border-t border-[#9A7B0A]/20">
       {/* Top gold line */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#9A7B0A]/50 to-transparent" />
       
@@ -124,13 +124,13 @@ export default function Footer() {
           </div>
         </div>
         <div className="pb-4 text-center">
-          <p className="text-xs text-[#8B7355]/60" style={{ fontFamily: "'IM Fell English', serif" }}>
+          <p className="text-xs text-[#b8b0a4]/60" style={{ fontFamily: "'IM Fell English', serif" }}>
             {t('footer.poweredBy')}{' '}
             <a
               href="https://adaptive-mind.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#B8860B] hover:text-[#8B2332] transition-colors underline underline-offset-2"
+              className="text-[#B8860B] hover:text-[#C43E4E] transition-colors underline underline-offset-2"
             >
               Semantic Gravity
             </a>

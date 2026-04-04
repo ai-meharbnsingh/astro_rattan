@@ -32,7 +32,7 @@ export default function Features() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="features" className="relative py-24 bg-[#F5F0E8]">
+    <section ref={sectionRef} id="features" className="relative py-24 bg-[#1a1a2e]">
       {/* Gold gradient line at top */}
       <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#9A7B0A]/50 to-transparent" />
       
@@ -50,7 +50,7 @@ export default function Features() {
             return (
               <Card 
                 key={index} 
-                className="feature-card group relative bg-[#F5F0E8] border border-[#9A7B0A]/20 hover:border-[#9A7B0A]/50 transition-all duration-300 hover:-translate-y-1 cursor-pointer" 
+                className="feature-card group relative bg-[#1a1a2e] border border-[#9A7B0A]/20 hover:border-[#9A7B0A]/50 transition-all duration-300 hover:-translate-y-1 cursor-pointer" 
                 onClick={() => navigate(feature.route)}
               >
                 <CardContent className="relative p-6 text-center">

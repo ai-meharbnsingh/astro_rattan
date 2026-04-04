@@ -52,7 +52,7 @@ export default function Navigation() {
     <>
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         isScrolled
-          ? 'bg-[#F5F0E8]/90 backdrop-blur-lg border-b border-[#9A7B0A]/20 py-2'
+          ? 'bg-[#1a1a2e]/90 backdrop-blur-lg border-b border-[#9A7B0A]/20 py-2'
           : 'bg-transparent py-4'
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -89,7 +89,7 @@ export default function Navigation() {
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isMoreOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {isMoreOpen && (
-                  <div className="absolute top-full mt-2 right-0 w-48 bg-[#F5F0E8]/95 backdrop-blur-lg border border-[#9A7B0A]/20 rounded-none py-2 shadow-xl">
+                  <div className="absolute top-full mt-2 right-0 w-48 bg-[#1a1a2e]/95 backdrop-blur-lg border border-[#9A7B0A]/20 rounded-none py-2 shadow-xl">
                     {moreLinks.map((link) => (
                       <Link
                         key={link.key}
@@ -177,8 +177,8 @@ export default function Navigation() {
 
       {/* Mobile Menu */}
       <div className={`fixed inset-0 z-40 lg:hidden transition-all duration-500 ${isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}>
-        <div className="absolute inset-0 bg-[#F5F0E8]/95 backdrop-blur-xl" onClick={() => setIsMobileMenuOpen(false)} />
-        <div className={`absolute top-20 left-4 right-4 bg-[#F5F0E8]/95 backdrop-blur-lg border border-[#9A7B0A]/20 rounded-none p-6 transition-all duration-500 ${isMobileMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}`}>
+        <div className="absolute inset-0 bg-[#1a1a2e]/95 backdrop-blur-xl" onClick={() => setIsMobileMenuOpen(false)} />
+        <div className={`absolute top-20 left-4 right-4 bg-[#1a1a2e]/95 backdrop-blur-lg border border-[#9A7B0A]/20 rounded-none p-6 transition-all duration-500 ${isMobileMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}`}>
           <div className="space-y-1">
             {allLinks.map((link) => (
               <Link

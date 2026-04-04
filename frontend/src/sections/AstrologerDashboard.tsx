@@ -46,8 +46,8 @@ interface AstrologerProfile {
 
 const statusColors: Record<string, string> = {
   requested: 'bg-yellow-100 text-yellow-700',
-  accepted: 'bg-blue-500/20 text-blue-700',
-  active: 'bg-green-500/20 text-green-700',
+  accepted: 'bg-blue-500/20 text-blue-400',
+  active: 'bg-green-500/20 text-green-400',
   completed: 'bg-cosmic-surface text-cosmic-text-secondary',
 };
 
@@ -213,7 +213,7 @@ export default function AstrologerDashboard() {
             <p className="text-sm text-cosmic-text-secondary">Manage your consultations and profile</p>
           </div>
         </div>
-        <Button onClick={toggleAvailability} variant="outline" className={profile.is_available ? 'border-green-300 text-green-700' : 'border-cosmic-text-muted text-cosmic-text-secondary'}>
+        <Button onClick={toggleAvailability} variant="outline" className={profile.is_available ? 'border-green-300 text-green-400' : 'border-cosmic-text-muted text-cosmic-text-secondary'}>
           {profile.is_available ? <ToggleRight className="w-5 h-5 mr-2" /> : <ToggleLeft className="w-5 h-5 mr-2" />}
           {profile.is_available ? 'Available' : 'Unavailable'}
         </Button>
@@ -275,7 +275,7 @@ export default function AstrologerDashboard() {
                           </Button>
                         )}
                         {(c.status === 'accepted' || c.status === 'active') && (
-                          <Button size="sm" onClick={() => completeConsultation(c.id)} variant="outline" className="border-green-300 text-green-700">
+                          <Button size="sm" onClick={() => completeConsultation(c.id)} variant="outline" className="border-green-300 text-green-400">
                             <CheckCircle className="w-4 h-4 mr-1" />Complete
                           </Button>
                         )}
