@@ -88,7 +88,7 @@ export default function Hero() {
 
         {/* Main Title */}
         <div className="hero-title-main opacity-0 mb-6">
-          <h1 className="font-['Cinzel_Decorative'] text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#1a1a2e] leading-[0.95] tracking-wide"
+          <h1 className="font-['Cinzel_Decorative'] text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#e8e0d4] leading-[0.95] tracking-wide"
             style={{ textShadow: '0 0 60px rgba(184, 134, 11, 0.15)' }}>
             {t('hero.observatory')}
           </h1>
@@ -108,7 +108,7 @@ export default function Hero() {
 
         {/* Subtitle */}
         <div className="hero-subtitle-text opacity-0 mb-10 max-w-xl mx-auto">
-          <p className="text-sm md:text-base text-[#1a1a2e]/70 leading-relaxed font-light">
+          <p className="text-sm md:text-base text-[#e8e0d4]/70 leading-relaxed font-light">
             The universe does not hide its secrets. It writes them in light,<br className="hidden md:block" />
             across twelve houses, waiting for those who know how to read.
           </p>
@@ -129,7 +129,7 @@ export default function Hero() {
           <Button 
             onClick={() => navigate('/consultation')}
             variant="outline"
-            className="bg-transparent border border-[#8B7355]/30 text-[#1a1a2e]/80 hover:border-[#9A7B0A] hover:text-[#9A7B0A] 
+            className="bg-transparent border border-[#8B7355]/30 text-[#e8e0d4]/80 hover:border-[#9A7B0A] hover:text-[#9A7B0A] 
                        transition-all duration-300 text-xs tracking-[3px] uppercase font-['Cinzel']
                        px-8 py-5 rounded-none"
           >
@@ -157,7 +157,7 @@ export default function Hero() {
                   type="date" 
                   value={birthDate} 
                   onChange={(e) => setBirthDate(e.target.value)} 
-                  className="pl-9 bg-transparent border-[#8B7355]/10 text-[#1a1a2e] text-sm
+                  className="pl-9 bg-transparent border-[#8B7355]/10 text-[#e8e0d4] text-sm
                              focus:border-[#9A7B0A] rounded-none h-10"
                 />
               </div>
@@ -167,7 +167,7 @@ export default function Hero() {
                   type="time" 
                   value={birthTime} 
                   onChange={(e) => setBirthTime(e.target.value)} 
-                  className="pl-9 bg-transparent border-[#8B7355]/10 text-[#1a1a2e] text-sm
+                  className="pl-9 bg-transparent border-[#8B7355]/10 text-[#e8e0d4] text-sm
                              focus:border-[#9A7B0A] rounded-none h-10"
                 />
               </div>
@@ -178,7 +178,7 @@ export default function Hero() {
                   value={birthPlace} 
                   onChange={(e) => setBirthPlace(e.target.value)} 
                   placeholder={t('hero.birthPlace')} 
-                  className="pl-9 bg-transparent border-[#8B7355]/10 text-[#1a1a2e] text-sm placeholder:text-[#1a1a2e]/30
+                  className="pl-9 bg-transparent border-[#8B7355]/10 text-[#e8e0d4] text-sm placeholder:text-[#e8e0d4]/30
                              focus:border-[#9A7B0A] rounded-none h-10"
                 />
               </div>

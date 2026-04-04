@@ -196,7 +196,7 @@ export default function Kundli3D() {
                         onClick={() => setFormData({ ...formData, gender: 'male' })}
                         className={`h-14 rounded-xl border transition-all text-lg ${
                           formData.gender === 'male'
-                            ? 'bg-[#9A7B0A] text-[#e8e0d4] border-[#9A7B0A]'
+                            ? 'bg-[#9A7B0A] text-[#1a1a2e] border-[#9A7B0A]'
                             : 'bg-white/5 text-[#e8e0d4] border-[#b8b0a4]/10 hover:border-[#9A7B0A]/50'
                         }`}
                       >
@@ -207,7 +207,7 @@ export default function Kundli3D() {
                         onClick={() => setFormData({ ...formData, gender: 'female' })}
                         className={`h-14 rounded-xl border transition-all text-lg ${
                           formData.gender === 'female'
-                            ? 'bg-[#9A7B0A] text-[#e8e0d4] border-[#9A7B0A]'
+                            ? 'bg-[#9A7B0A] text-[#1a1a2e] border-[#9A7B0A]'
                             : 'bg-white/5 text-[#e8e0d4] border-[#b8b0a4]/10 hover:border-[#9A7B0A]/50'
                         }`}
                       >

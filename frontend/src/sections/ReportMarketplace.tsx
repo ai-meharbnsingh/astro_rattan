@@ -310,7 +310,7 @@ export default function ReportMarketplace() {
             <CardContent className="p-6 flex flex-col flex-1">
               {/* Icon & Price */}
               <div className="flex items-start justify-between mb-4">
-                <div className={`w-12 h-12 rounded-xl ${report.color} text-[#1a1a2e] flex items-center justify-center`}>
+                <div className={`w-12 h-12 rounded-xl ${report.color} text-[#e8e0d4] flex items-center justify-center`}>
                   {report.icon}
                 </div>
                 <div className="text-right">
@@ -341,7 +341,7 @@ export default function ReportMarketplace() {
               <Button 
                 onClick={() => handleRequestReport(report.id)}
                 disabled={requesting === report.id || !selectedKundli}
-                className={`w-full ${report.color} text-[#1a1a2e] hover:opacity-90`}
+                className={`w-full ${report.color} text-[#e8e0d4] hover:opacity-90`}
               >
                 {requesting === report.id ? (
                   <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Processing...</>

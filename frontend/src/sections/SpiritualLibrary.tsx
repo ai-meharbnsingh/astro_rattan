@@ -382,7 +382,7 @@ export default function SpiritualLibrary() {
                       {/* Modal Header */}
                       <div className="sticky top-0 z-10 bg-[#2a2a4e] border-b border-[#9A7B0A]/20 p-6 flex items-center justify-between">
                         <div>
-                          <h3 className="text-2xl font-sacred font-bold text-[#1a1a2e]">
+                          <h3 className="text-2xl font-sacred font-bold text-[#e8e0d4]">
                             Bhagavad Gita - Chapter {selectedChapter}
                           </h3>
                           <p className="text-[#9A7B0A]">
@@ -400,7 +400,7 @@ export default function SpiritualLibrary() {
                       {/* Modal Content */}
                       <div className="p-6 overflow-y-auto max-h-[calc(85vh-100px)]">
                         {versesLoading ? (
-                          <div className="flex items-center justify-center gap-3 py-12 text-[#1a1a2e]/60">
+                          <div className="flex items-center justify-center gap-3 py-12 text-[#e8e0d4]/60">
                             <Loader2 className="w-6 h-6 animate-spin text-[#9A7B0A]" />
                             Loading verses...
                           </div>
@@ -422,7 +422,7 @@ export default function SpiritualLibrary() {
                                     <span className="w-10 h-10 rounded-full bg-[#9A7B0A]/20 flex items-center justify-center text-[#9A7B0A] font-bold text-lg">
                                       {v.verse ?? idx + 1}
                                     </span>
-                                    <span className="text-lg font-medium text-[#1a1a2e]/80">
+                                    <span className="text-lg font-medium text-[#e8e0d4]/80">
                                       Verse {v.verse ?? idx + 1}
                                     </span>
                                   </div>
@@ -440,7 +440,7 @@ export default function SpiritualLibrary() {
                                   {v.translation && (
                                     <div className="mb-4">
                                       <p className="text-sm text-[#9A7B0A] uppercase tracking-wide mb-2 font-semibold">Translation</p>
-                                      <p className="text-lg text-[#1a1a2e] leading-relaxed">{v.translation}</p>
+                                      <p className="text-lg text-[#e8e0d4] leading-relaxed">{v.translation}</p>
                                     </div>
                                   )}
                                   
@@ -448,7 +448,7 @@ export default function SpiritualLibrary() {
                                   {v.commentary && (
                                     <div className="mt-5 pt-4 border-t border-[#b8b0a4]/10">
                                       <p className="text-sm text-[#9A7B0A] uppercase tracking-wide mb-2 font-semibold">Commentary</p>
-                                      <p className="text-base text-[#1a1a2e]/80 leading-relaxed italic">{v.commentary}</p>
+                                      <p className="text-base text-[#e8e0d4]/80 leading-relaxed italic">{v.commentary}</p>
                                     </div>
                                   )}
                                   
@@ -466,7 +466,7 @@ export default function SpiritualLibrary() {
                             ))}
                             {(chapterVerses[selectedChapter] || []).length === 0 && (
                               <div className="text-center py-12">
-                                <p className="text-[#1a1a2e]/60 text-lg">No verses available for this chapter.</p>
+                                <p className="text-[#e8e0d4]/60 text-lg">No verses available for this chapter.</p>
                               </div>
                             )}
                           </div>

@@ -60,7 +60,7 @@ export default function Navigation() {
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 shrink-0">
               <div className="w-10 h-10 rounded-full bg-[#9A7B0A] flex items-center justify-center">
-                <Stars className="w-5 h-5 text-[#1a1a2e]" />
+                <Stars className="w-5 h-5 text-[#e8e0d4]" />
               </div>
               <span className="font-decorative font-bold text-xl text-[#9A7B0A] hidden sm:block">
                 Astro Rattan
@@ -73,7 +73,7 @@ export default function Navigation() {
                 <Link
                   key={link.key}
                   to={link.href}
-                  className="text-sm text-[#1a1a2e]/70 hover:text-[#B8860B] transition-colors font-cinzel tracking-wide uppercase text-[13px]"
+                  className="text-sm text-[#e8e0d4]/70 hover:text-[#B8860B] transition-colors font-cinzel tracking-wide uppercase text-[13px]"
                 >
                   {t(link.key)}
                 </Link>
@@ -83,7 +83,7 @@ export default function Navigation() {
               <div ref={moreRef} className="relative">
                 <button
                   onClick={() => setIsMoreOpen(!isMoreOpen)}
-                  className="text-sm text-[#1a1a2e]/70 hover:text-[#B8860B] transition-colors font-cinzel tracking-wide uppercase text-[13px] flex items-center gap-1"
+                  className="text-sm text-[#e8e0d4]/70 hover:text-[#B8860B] transition-colors font-cinzel tracking-wide uppercase text-[13px] flex items-center gap-1"
                 >
                   {t('common.viewAll')}
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isMoreOpen ? 'rotate-180' : ''}`} />
@@ -95,7 +95,7 @@ export default function Navigation() {
                         key={link.key}
                         to={link.href}
                         onClick={() => setIsMoreOpen(false)}
-                        className="block px-4 py-2.5 text-sm text-[#1a1a2e]/70 hover:text-[#B8860B] hover:bg-[#9A7B0A]/10 transition-colors font-sacred"
+                        className="block px-4 py-2.5 text-sm text-[#e8e0d4]/70 hover:text-[#B8860B] hover:bg-[#9A7B0A]/10 transition-colors font-sacred"
                       >
                         {t(link.key)}
                       </Link>
@@ -107,7 +107,7 @@ export default function Navigation() {
 
             {/* Action buttons */}
             <div className="flex items-center gap-1">
-              <button className="p-2.5 text-[#1a1a2e]/70 hover:text-[#B8860B] transition-colors hidden sm:block">
+              <button className="p-2.5 text-[#e8e0d4]/70 hover:text-[#B8860B] transition-colors hidden sm:block">
                 <Search className="w-5 h-5" />
               </button>
 
@@ -115,42 +115,42 @@ export default function Navigation() {
                 <LanguageSwitcher />
               </div>
 
-              <Link to="/ai-chat" className="p-2.5 text-[#1a1a2e]/70 hover:text-[#B8860B] transition-colors hidden sm:block">
+              <Link to="/ai-chat" className="p-2.5 text-[#e8e0d4]/70 hover:text-[#B8860B] transition-colors hidden sm:block">
                 <MessageCircle className="w-5 h-5" />
               </Link>
 
               {isAuthenticated && (
-                <Link to="/cart" className="p-2.5 text-[#1a1a2e]/70 hover:text-[#B8860B] transition-colors relative">
+                <Link to="/cart" className="p-2.5 text-[#e8e0d4]/70 hover:text-[#B8860B] transition-colors relative">
                   <ShoppingCart className="w-5 h-5" />
                   <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#B8860B] rounded-full text-[10px] text-[#1a1a2e] flex items-center justify-center font-bold">0</span>
                 </Link>
               )}
 
               {isAuthenticated && user?.role === 'admin' && (
-                <Link to="/admin" className="p-2.5 text-[#1a1a2e]/70 hover:text-[#B8860B] transition-colors hidden lg:block">
+                <Link to="/admin" className="p-2.5 text-[#e8e0d4]/70 hover:text-[#B8860B] transition-colors hidden lg:block">
                   <Shield className="w-5 h-5" />
                 </Link>
               )}
 
               {isAuthenticated && (user?.role === 'astrologer' || user?.role === 'admin') && (
-                <Link to="/astrologer-dashboard" className="p-2.5 text-[#1a1a2e]/70 hover:text-[#B8860B] transition-colors hidden lg:block" title="Dashboard">
+                <Link to="/astrologer-dashboard" className="p-2.5 text-[#e8e0d4]/70 hover:text-[#B8860B] transition-colors hidden lg:block" title="Dashboard">
                   <Star className="w-5 h-5" />
                 </Link>
               )}
               {isAuthenticated && (user?.role === 'astrologer' || user?.role === 'admin') && (
-                <Link to="/astrologer-panel" className="p-2.5 text-[#1a1a2e]/70 hover:text-[#B8860B] transition-colors hidden lg:block" title="Clients">
+                <Link to="/astrologer-panel" className="p-2.5 text-[#e8e0d4]/70 hover:text-[#B8860B] transition-colors hidden lg:block" title="Clients">
                   <Users className="w-5 h-5" />
                 </Link>
               )}
 
               {isAuthenticated ? (
                 <>
-                  <Link to="/profile" className="p-2.5 text-[#1a1a2e]/70 hover:text-[#B8860B] transition-colors">
+                  <Link to="/profile" className="p-2.5 text-[#e8e0d4]/70 hover:text-[#B8860B] transition-colors">
                     <User className="w-5 h-5" />
                   </Link>
                   <button
                     onClick={logout}
-                    className="p-2.5 text-[#1a1a2e]/70 hover:text-[#B8860B] transition-colors hidden sm:block"
+                    className="p-2.5 text-[#e8e0d4]/70 hover:text-[#B8860B] transition-colors hidden sm:block"
                     title={t('auth.signOut')}
                   >
                     <LogOut className="w-4.5 h-4.5" />
@@ -166,7 +166,7 @@ export default function Navigation() {
               {/* Mobile toggle */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden p-2 text-[#1a1a2e] ml-1"
+                className="lg:hidden p-2 text-[#e8e0d4] ml-1"
               >
                 {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
@@ -185,7 +185,7 @@ export default function Navigation() {
                 key={link.key}
                 to={link.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block py-3 px-3 text-[#1a1a2e]/70 hover:text-[#B8860B] hover:bg-[#9A7B0A]/10 transition-colors font-sacred"
+                className="block py-3 px-3 text-[#e8e0d4]/70 hover:text-[#B8860B] hover:bg-[#9A7B0A]/10 transition-colors font-sacred"
               >
                 {t(link.key)}
               </Link>

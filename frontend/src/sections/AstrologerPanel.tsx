@@ -272,7 +272,7 @@ function AddClientForm({ onSaved, onCancel }: AddClientFormProps) {
         </div>
 
         <Button onClick={handleSave} disabled={saving || !form.client_name.trim()}
-          className="w-full bg-[#B8860B] text-[#e8e0d4] hover:bg-[#9A7B0A] font-semibold py-3 disabled:opacity-50">
+          className="w-full bg-[#B8860B] text-[#1a1a2e] hover:bg-[#9A7B0A] font-semibold py-3 disabled:opacity-50">
           {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
           {t('astrologer.generateSave')}
         </Button>
@@ -382,7 +382,7 @@ function ClientKundliView({ client, onBack, onNotesUpdate }: ClientKundliViewPro
             ) : (
               <div className="flex gap-2">
                 <Button size="sm" onClick={saveNotes} disabled={savingNotes}
-                  className="bg-[#B8860B] text-[#e8e0d4] text-xs">
+                  className="bg-[#B8860B] text-[#1a1a2e] text-xs">
                   {savingNotes ? 'Saving...' : 'Save'}
                 </Button>
                 <Button variant="outline" size="sm" onClick={() => { setEditingNotes(false); setNotes(client.notes || ''); }}
@@ -570,7 +570,7 @@ export default function AstrologerPanel() {
               )}
             </div>
             <Button onClick={() => setView('add')}
-              className="bg-[#B8860B] text-[#e8e0d4] hover:bg-[#9A7B0A] font-semibold shrink-0">
+              className="bg-[#B8860B] text-[#1a1a2e] hover:bg-[#9A7B0A] font-semibold shrink-0">
               <Plus className="w-4 h-4 mr-2" />{t('astrologer.addClient')}
             </Button>
           </div>
@@ -586,7 +586,7 @@ export default function AstrologerPanel() {
               <p className="text-lg text-[#b8b0a4] mb-1">{t('astrologer.noClients')}</p>
               <p className="text-sm text-[#b8b0a4]/70 mb-4">Add your first client to get started</p>
               <Button onClick={() => setView('add')}
-                className="bg-[#B8860B] text-[#e8e0d4] hover:bg-[#9A7B0A]">
+                className="bg-[#B8860B] text-[#1a1a2e] hover:bg-[#9A7B0A]">
                 <Plus className="w-4 h-4 mr-2" />{t('astrologer.addClient')}
               </Button>
             </div>

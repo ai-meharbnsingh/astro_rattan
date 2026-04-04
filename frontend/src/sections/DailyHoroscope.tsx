@@ -95,7 +95,7 @@ export default function DailyHoroscope() {
               <div className={`absolute inset-0 transition-all duration-300 bg-gradient-to-t from-[#1a1a2e]/80 via-[#2a2a4e]/30 to-transparent ${selectedSign.name === sign.name ? 'opacity-70' : 'opacity-90 group-hover:opacity-80'}`} />
               {/* Content - Name at bottom */}
               <div className="absolute bottom-0 left-0 right-0 z-10 p-2 text-center">
-                <span className="text-xs sm:text-sm font-medium text-[#1a1a2e] tracking-wide drop-shadow-[0_2px_4px_rgba(139,69,19,0.2)]">{sign.name}</span>
+                <span className="text-xs sm:text-sm font-medium text-[#e8e0d4] tracking-wide drop-shadow-[0_2px_4px_rgba(139,69,19,0.2)]">{sign.name}</span>
               </div>
               {/* Selected Indicator */}
               {selectedSign.name === sign.name && (

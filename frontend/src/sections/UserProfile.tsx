@@ -184,7 +184,7 @@ export default function UserProfile() {
   return (
     <section className="max-w-4xl mx-auto py-24 px-4">
       <div className="flex items-center gap-3 mb-8">
-        <div className="w-12 h-12 rounded-full bg-sacred-gold flex items-center justify-center text-[#1a1a2e] font-bold text-xl">
+        <div className="w-12 h-12 rounded-full bg-sacred-gold flex items-center justify-center text-[#e8e0d4] font-bold text-xl">
           {(user?.name || 'U').charAt(0).toUpperCase()}
         </div>
         <div>

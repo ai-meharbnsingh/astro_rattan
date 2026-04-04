@@ -206,7 +206,7 @@ export default function AstrologerDashboard() {
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-sacred-gold flex items-center justify-center">
-            <Star className="w-5 h-5 text-[#1a1a2e]" />
+            <Star className="w-5 h-5 text-[#e8e0d4]" />
           </div>
           <div>
             <h2 className="text-2xl font-display font-bold text-cosmic-text">Astrologer Dashboard</h2>

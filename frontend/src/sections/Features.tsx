@@ -39,7 +39,7 @@ export default function Features() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="features-title text-center mb-16">
           <p className="text-[#ffaa33] text-sm tracking-[4px] uppercase mb-4 font-['Cinzel']">{t('features.celestialHouses')}</p>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-['Cinzel_Decorative'] text-[#1a1a2e] mb-4">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-['Cinzel_Decorative'] text-[#e8e0d4] mb-4">
             {t('features.cosmicServices')}
           </h2>
         </div>
@@ -57,10 +57,10 @@ export default function Features() {
                   <div className="w-16 h-16 flex items-center justify-center mb-4 mx-auto bg-[#9A7B0A]/10 border border-[#9A7B0A]/20 group-hover:scale-110 transition-transform">
                     <Icon className="w-8 h-8 text-[#B8860B]" />
                   </div>
-                  <h3 className="text-xl font-['Cinzel'] font-semibold text-[#1a1a2e] mb-2 uppercase tracking-wide">
+                  <h3 className="text-xl font-['Cinzel'] font-semibold text-[#e8e0d4] mb-2 uppercase tracking-wide">
                     {t(feature.titleKey)}
                   </h3>
-                  <p className="text-sm text-[#1a1a2e]/60">{t(feature.descKey)}</p>
+                  <p className="text-sm text-[#e8e0d4]/60">{t(feature.descKey)}</p>
                 </CardContent>
               </Card>
             );
