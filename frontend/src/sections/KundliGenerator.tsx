@@ -674,6 +674,8 @@ export default function KundliGenerator() {
                   onClick={() => {
                     fetchTransit();
                     fetchD10();
+                    fetchDasha();
+                    fetchExtendedDasha();
                     setJhoraOpen(true);
                   }}
                 >
