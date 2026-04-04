@@ -304,16 +304,16 @@ export default function ConsolidatedReport({
                         <td className="p-1.5 text-center">
                           <span className={`text-[9px] px-1 py-0.5 rounded ${
                             planet.status === 'Exalted' || planet.status === 'Own Sign'
-                              ? 'bg-green-100 text-green-700'
+                              ? 'bg-green-500/20 text-green-400'
                               : planet.status === 'Debilitated'
-                              ? 'bg-red-100 text-red-700'
+                              ? 'bg-red-500/20 text-red-400'
                               : 'text-[#e8e0d4]/60'
                           }`}>
                             {planet.status || '\u2014'}
                           </span>
                         </td>
                         <td className="p-1.5 text-center">
-                          <span className={`text-[9px] ${isBenefic ? 'text-green-600' : 'text-red-600'}`}>
+                          <span className={`text-[9px] ${isBenefic ? 'text-green-400' : 'text-red-400'}`}>
                             {isBenefic ? 'Benefic' : 'Malefic'}
                           </span>
                         </td>
@@ -421,10 +421,10 @@ export default function ConsolidatedReport({
               ) : presentYogas.length > 0 ? (
                 <div className="space-y-1">
                   {presentYogas.map((yoga: any, idx: number) => (
-                    <div key={idx} className="bg-green-500/10 border border-green-200 rounded px-2 py-1">
-                      <span className="text-[10px] font-medium text-green-800">{yoga.name}</span>
+                    <div key={idx} className="bg-green-500/10 border border-green-500/30 rounded px-2 py-1">
+                      <span className="text-[10px] font-medium text-green-400">{yoga.name}</span>
                       {yoga.description && (
-                        <p className="text-[9px] text-green-600 mt-0.5">{yoga.description}</p>
+                        <p className="text-[9px] text-green-400 mt-0.5">{yoga.description}</p>
                       )}
                     </div>
                   ))}
@@ -445,16 +445,16 @@ export default function ConsolidatedReport({
               ) : presentDoshas.length > 0 ? (
                 <div className="space-y-1">
                   {presentDoshas.map((dosha: any, idx: number) => (
-                    <div key={idx} className="bg-red-500/10 border border-red-200 rounded px-2 py-1">
-                      <span className="text-[10px] font-medium text-red-800">{dosha.name}</span>
+                    <div key={idx} className="bg-red-500/10 border border-red-500/30 rounded px-2 py-1">
+                      <span className="text-[10px] font-medium text-red-400">{dosha.name}</span>
                       {dosha.remedies && (
-                        <p className="text-[9px] text-red-600 mt-0.5">Remedies: {dosha.remedies}</p>
+                        <p className="text-[9px] text-red-400 mt-0.5">Remedies: {dosha.remedies}</p>
                       )}
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-[10px] text-center py-4 text-green-600">No doshas present</p>
+                <p className="text-[10px] text-center py-4 text-green-400">No doshas present</p>
               )}
             </div>
 

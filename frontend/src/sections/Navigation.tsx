@@ -60,7 +60,7 @@ export default function Navigation() {
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 shrink-0">
               <div className="w-10 h-10 rounded-full bg-[#9A7B0A] flex items-center justify-center">
-                <Stars className="w-5 h-5 text-[#e8e0d4]" />
+                <Stars className="w-5 h-5 text-[#1a1a2e]" />
               </div>
               <span className="font-decorative font-bold text-xl text-[#9A7B0A] hidden sm:block">
                 Astro Rattan

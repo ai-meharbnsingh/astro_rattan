@@ -33,7 +33,7 @@
     /* Text Colors */
     --text-primary: #e8e0d4;
     --text-secondary: #b8b0a4;
-    --text-muted: #8B7355;
+    --text-muted: #b8b0a4;
 
     /* Legacy compatibility */
     --cosmic-bg: #1a1a2e;
@@ -45,7 +45,7 @@
     --cosmic-border-hover: rgba(212, 160, 82, 0.5);
     --cosmic-text: #e8e0d4;
     --cosmic-text-secondary: #b8b0a4;
-    --cosmic-text-muted: #8B7355;
+    --cosmic-text-muted: #b8b0a4;
 
     --sacred-gold: #D4A052;
     --sacred-gold-dark: #B8860B;
@@ -136,7 +136,7 @@
 
 .heading-sacred {
   font-family: 'Cormorant Garamond', 'IM Fell English', Georgia, serif;
-  color: #1a1a2e;
+  color: #e8e0d4;
   font-weight: 300;
   letter-spacing: -0.02em;
 }
@@ -184,11 +184,11 @@
 .btn-maroon {
   background: transparent;
   color: #e8e0d4;
-  border: 1px solid rgba(139, 115, 85, 0.3);
+  border: 1px solid rgba(184, 134, 11, 0.3);
   transition: all 0.3s ease;
 }
 .btn-maroon:hover {
-  background: rgba(0, 0, 0, 0.04);
+  background: rgba(184, 134, 11, 0.08);
   border-color: #B8860B;
 }
 
@@ -242,22 +242,22 @@
 /* Decorative dividers — warm brown gradient */
 .divider-sacred {
   height: 1px;
-  background: linear-gradient(90deg, transparent 0%, #8B7355 20%, #B8860B 50%, #8B7355 80%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, #B8860B 20%, #D4A052 50%, #B8860B 80%, transparent 100%);
   margin: 2rem 0;
 }
 .divider-sacred-vertical {
   width: 1px;
-  background: linear-gradient(180deg, transparent 0%, #8B7355 20%, #B8860B 50%, #8B7355 80%, transparent 100%);
+  background: linear-gradient(180deg, transparent 0%, #B8860B 20%, #D4A052 50%, #B8860B 80%, transparent 100%);
 }
 
-.border-sacred { border: 1px solid rgba(139, 115, 85, 0.2); }
+.border-sacred { border: 1px solid rgba(184, 134, 11, 0.25); }
 
 /* Inputs — bottom-border manuscript style */
 .input-sacred {
   background: transparent;
   border: none;
-  border-bottom: 1px solid rgba(139, 115, 85, 0.3);
-  color: #1a1a2e;
+  border-bottom: 1px solid rgba(184, 134, 11, 0.3);
+  color: #e8e0d4;
   transition: border-color 0.3s;
 }
 .input-sacred:focus {
@@ -265,7 +265,7 @@
   border-bottom-color: #B8860B;
 }
 .input-sacred::placeholder {
-  color: rgba(139, 115, 85, 0.5);
+  color: rgba(184, 134, 11, 0.4);
 }
 
 /* Corner decorations — aged gold */
@@ -295,7 +295,7 @@
 .notebook-lines {
   background-image: repeating-linear-gradient(
     transparent, transparent 31px,
-    #E8E0D4 31px, #E8E0D4 32px
+    #2a2a4e 31px, #2a2a4e 32px
   );
   background-size: 100% 32px;
   line-height: 32px;

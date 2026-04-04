@@ -389,8 +389,8 @@ export default function AdminDashboard() {
   }
 
   const statCards = [
-    { label: 'Total Users', value: stats?.total_users ?? 0, icon: Users, color: 'bg-blue-500/20 text-blue-600' },
-    { label: 'Total Orders', value: stats?.total_orders ?? 0, icon: ShoppingCart, color: 'bg-green-500/20 text-green-600' },
+    { label: 'Total Users', value: stats?.total_users ?? 0, icon: Users, color: 'bg-blue-500/20 text-blue-400' },
+    { label: 'Total Orders', value: stats?.total_orders ?? 0, icon: ShoppingCart, color: 'bg-green-500/20 text-green-400' },
     { label: 'Revenue', value: formatPrice(stats?.total_revenue ?? 0), icon: IndianRupee, color: 'bg-purple-100 text-purple-600' },
     { label: 'Pending', value: stats?.pending_orders ?? 0, icon: Package, color: 'bg-yellow-100 text-yellow-600' },
   ];
@@ -399,7 +399,7 @@ export default function AdminDashboard() {
     <section className="max-w-7xl mx-auto py-24 px-4">
       <div className="flex items-center gap-3 mb-8">
         <div className="w-10 h-10 rounded-full bg-sacred-gold flex items-center justify-center">
-          <Shield className="w-5 h-5 text-[#e8e0d4]" />
+          <Shield className="w-5 h-5 text-[#1a1a2e]" />
         </div>
         <div>
           <h2 className="text-2xl font-display font-bold text-cosmic-text">Admin Dashboard</h2>

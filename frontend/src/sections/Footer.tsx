@@ -57,7 +57,7 @@ export default function Footer() {
           <div className="col-span-2 md:col-span-3 lg:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-6">
               <div className="w-12 h-12 bg-[#9A7B0A] flex items-center justify-center">
-                <Stars className="w-7 h-7 text-[#e8e0d4]" />
+                <Stars className="w-7 h-7 text-[#1a1a2e]" />
               </div>
               <span className="font-['Cinzel'] font-bold text-2xl text-[#e8e0d4]">Astro Rattan</span>
             </Link>

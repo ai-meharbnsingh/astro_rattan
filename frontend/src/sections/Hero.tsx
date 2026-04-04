@@ -129,7 +129,7 @@ export default function Hero() {
           <Button 
             onClick={() => navigate('/consultation')}
             variant="outline"
-            className="bg-transparent border border-[#8B7355]/30 text-[#e8e0d4]/80 hover:border-[#9A7B0A] hover:text-[#9A7B0A] 
+            className="bg-transparent border border-[#B8860B]/30 text-[#e8e0d4]/80 hover:border-[#9A7B0A] hover:text-[#9A7B0A] 
                        transition-all duration-300 text-xs tracking-[3px] uppercase font-['Cinzel']
                        px-8 py-5 rounded-none"
           >
@@ -157,7 +157,7 @@ export default function Hero() {
                   type="date" 
                   value={birthDate} 
                   onChange={(e) => setBirthDate(e.target.value)} 
-                  className="pl-9 bg-transparent border-[#8B7355]/10 text-[#e8e0d4] text-sm
+                  className="pl-9 bg-transparent border-[#B8860B]/10 text-[#e8e0d4] text-sm
                              focus:border-[#9A7B0A] rounded-none h-10"
                 />
               </div>
@@ -167,7 +167,7 @@ export default function Hero() {
                   type="time" 
                   value={birthTime} 
                   onChange={(e) => setBirthTime(e.target.value)} 
-                  className="pl-9 bg-transparent border-[#8B7355]/10 text-[#e8e0d4] text-sm
+                  className="pl-9 bg-transparent border-[#B8860B]/10 text-[#e8e0d4] text-sm
                              focus:border-[#9A7B0A] rounded-none h-10"
                 />
               </div>
@@ -178,7 +178,7 @@ export default function Hero() {
                   value={birthPlace} 
                   onChange={(e) => setBirthPlace(e.target.value)} 
                   placeholder={t('hero.birthPlace')} 
-                  className="pl-9 bg-transparent border-[#8B7355]/10 text-[#e8e0d4] text-sm placeholder:text-[#e8e0d4]/30
+                  className="pl-9 bg-transparent border-[#B8860B]/10 text-[#e8e0d4] text-sm placeholder:text-[#e8e0d4]/30
                              focus:border-[#9A7B0A] rounded-none h-10"
                 />
               </div>

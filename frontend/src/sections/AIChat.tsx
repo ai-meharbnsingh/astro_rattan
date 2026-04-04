@@ -124,9 +124,9 @@ export default function AIChat() {
             onClick={toggleProvider}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs border transition-colors"
             style={{
-              backgroundColor: aiProvider === 'puter' ? 'rgba(184,134,11,0.12)' : 'rgba(139,115,85,0.08)',
-              borderColor: aiProvider === 'puter' ? 'rgba(184,134,11,0.35)' : 'rgba(139,115,85,0.2)',
-              color: aiProvider === 'puter' ? '#B8860B' : '#8B7355',
+              backgroundColor: aiProvider === 'puter' ? 'rgba(184,134,11,0.12)' : 'rgba(184,134,11,0.08)',
+              borderColor: aiProvider === 'puter' ? 'rgba(184,134,11,0.35)' : 'rgba(184,134,11,0.25)',
+              color: aiProvider === 'puter' ? '#B8860B' : '#b8b0a4',
             }}
             title={aiProvider === 'puter' ? 'Using free Puter.js AI (click to switch to backend)' : 'Using backend AI (click to switch to free Puter.js)'}
           >
