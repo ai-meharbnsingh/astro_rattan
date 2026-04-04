@@ -93,7 +93,7 @@ export default function KundliForm({
     <div className="max-w-md mx-auto py-24 px-4 bg-transparent">
       <div className="text-center mb-8">
         <div className="w-16 h-16 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center mx-auto mb-4">
-          <Sparkles className="w-8 h-8 text-[#1a1a2e]" />
+          <Sparkles className="w-8 h-8 text-[#e8e0d4]" />
         </div>
         <h3 className="text-2xl sm:text-3xl font-display font-bold text-sacred-brown mb-2">Generate Your Kundli</h3>
         <p className="text-sacred-text-secondary">Enter your birth details for a personalized Vedic birth chart</p>
@@ -142,7 +142,7 @@ export default function KundliForm({
             <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-sacred-gold" />
           )}
           {geocode.showDropdown && geocode.suggestions.length > 0 && (
-            <div className="absolute z-50 left-0 right-0 top-full mt-1 bg-[#F5F0E8] border border-[#B8860B]/30 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+            <div className="absolute z-50 left-0 right-0 top-full mt-1 bg-[#1a1a2e] border border-[#B8860B]/30 rounded-xl shadow-lg max-h-60 overflow-y-auto">
               {geocode.suggestions.map((s, i) => (
                 <button
                   key={i}
@@ -151,10 +151,10 @@ export default function KundliForm({
                     setFormData({ ...formData, place: s.name.split(',')[0], latitude: s.lat, longitude: s.lon });
                     geocode.close();
                   }}
-                  className="w-full text-left px-4 py-3 hover:bg-[#E8E0D4] transition-colors border-b border-[#B8860B]/10 last:border-b-0"
+                  className="w-full text-left px-4 py-3 hover:bg-[#2a2a4e] transition-colors border-b border-[#B8860B]/10 last:border-b-0"
                 >
-                  <p className="text-sm font-medium text-[#1a1a2e] truncate">{s.name}</p>
-                  <p className="text-xs text-[#1a1a2e]/50">{s.lat.toFixed(4)}, {s.lon.toFixed(4)}</p>
+                  <p className="text-sm font-medium text-[#e8e0d4] truncate">{s.name}</p>
+                  <p className="text-xs text-[#e8e0d4]/50">{s.lat.toFixed(4)}, {s.lon.toFixed(4)}</p>
                 </button>
               ))}
             </div>

@@ -48,7 +48,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="relative bg-[#F5F0E8] overflow-hidden border-t border-[#9A7B0A]/20">
+    <footer className="relative bg-[#1a1a2e] overflow-hidden border-t border-[#9A7B0A]/20">
       {/* Top gold line */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#9A7B0A]/50 to-transparent" />
       
@@ -57,19 +57,19 @@ export default function Footer() {
           <div className="col-span-2 md:col-span-3 lg:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-6">
               <div className="w-12 h-12 bg-[#9A7B0A] flex items-center justify-center">
-                <Stars className="w-7 h-7 text-[#1a1a2e]" />
+                <Stars className="w-7 h-7 text-[#e8e0d4]" />
               </div>
-              <span className="font-['Cinzel'] font-bold text-2xl text-[#1a1a2e]">Astro Rattan</span>
+              <span className="font-['Cinzel'] font-bold text-2xl text-[#e8e0d4]">Astro Rattan</span>
             </Link>
-            <p className="text-[#1a1a2e]/60 mb-6 max-w-sm">
+            <p className="text-[#e8e0d4]/60 mb-6 max-w-sm">
               {t('footer.tagline')}
             </p>
             <div className="space-y-3 mb-6">
-              <a href="mailto:support@astrovedic.com" className="flex items-center gap-3 text-[#1a1a2e]/60 hover:text-[#B8860B] transition-colors">
+              <a href="mailto:support@astrovedic.com" className="flex items-center gap-3 text-[#e8e0d4]/60 hover:text-[#B8860B] transition-colors">
                 <Mail className="w-5 h-5" />
                 <span className="text-sm">support@astrovedic.com</span>
               </a>
-              <a href="tel:+919911760060" className="flex items-center gap-3 text-[#1a1a2e]/60 hover:text-[#B8860B] transition-colors">
+              <a href="tel:+919911760060" className="flex items-center gap-3 text-[#e8e0d4]/60 hover:text-[#B8860B] transition-colors">
                 <Phone className="w-5 h-5" />
                 <span className="text-sm">+91 99117 60060</span>
               </a>
@@ -79,7 +79,7 @@ export default function Footer() {
                 <a 
                   key={i} 
                   href="#" 
-                  className="w-10 h-10 bg-[#9A7B0A]/10 border border-[#9A7B0A]/20 flex items-center justify-center text-[#1a1a2e]/60 hover:text-[#B8860B] hover:border-[#9A7B0A]/40 transition-all"
+                  className="w-10 h-10 bg-[#9A7B0A]/10 border border-[#9A7B0A]/20 flex items-center justify-center text-[#e8e0d4]/60 hover:text-[#B8860B] hover:border-[#9A7B0A]/40 transition-all"
                 >
                   <Icon className="w-5 h-5" />
                 </a>
@@ -95,7 +95,7 @@ export default function Footer() {
                   <li key={i}>
                     <Link 
                       to={link.href} 
-                      className="text-sm text-[#1a1a2e]/60 hover:text-[#B8860B] transition-colors flex items-center gap-1"
+                      className="text-sm text-[#e8e0d4]/60 hover:text-[#B8860B] transition-colors flex items-center gap-1"
                     >
                       <ChevronRight className="w-3 h-3" />
                       {link.label}
@@ -108,7 +108,7 @@ export default function Footer() {
         </div>
         
         <div className="py-6 border-t border-[#9A7B0A]/10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-[#1a1a2e]/40">
+          <p className="text-sm text-[#e8e0d4]/40">
             &copy; {new Date().getFullYear()} Astro Rattan. {t('footer.madeWith')} <Heart className="w-4 h-4 inline text-[#ffaa33]" /> in India
           </p>
           <div className="flex gap-6">
@@ -116,7 +116,7 @@ export default function Footer() {
               <a
                 key={i}
                 href="#"
-                className="text-sm text-[#1a1a2e]/40 hover:text-[#B8860B] transition-colors"
+                className="text-sm text-[#e8e0d4]/40 hover:text-[#B8860B] transition-colors"
               >
                 {item}
               </a>
@@ -124,13 +124,13 @@ export default function Footer() {
           </div>
         </div>
         <div className="pb-4 text-center">
-          <p className="text-xs text-[#8B7355]/60" style={{ fontFamily: "'IM Fell English', serif" }}>
+          <p className="text-xs text-[#b8b0a4]/60" style={{ fontFamily: "'IM Fell English', serif" }}>
             {t('footer.poweredBy')}{' '}
             <a
               href="https://adaptive-mind.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#B8860B] hover:text-[#8B2332] transition-colors underline underline-offset-2"
+              className="text-[#B8860B] hover:text-[#C43E4E] transition-colors underline underline-offset-2"
             >
               Semantic Gravity
             </a>

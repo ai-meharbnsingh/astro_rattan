@@ -47,7 +47,7 @@ type VideoCallStatus = 'waiting' | 'active' | 'ended' | null;
 const statusColors: Record<string, string> = {
   requested: 'bg-yellow-100 text-yellow-700',
   accepted: 'bg-blue-100 text-blue-700',
-  active: 'bg-green-500/20 text-green-700',
+  active: 'bg-green-500/20 text-green-400',
   completed: 'bg-cosmic-surface text-cosmic-text-secondary',
   cancelled: 'bg-red-500/20 text-red-400',
 };
@@ -294,7 +294,7 @@ export default function ConsultationPage() {
                       <div className="w-12 h-12 rounded-full bg-sacred-gold/10 flex items-center justify-center text-sacred-gold font-bold text-lg">
                         {astrologer.name.charAt(0)}
                       </div>
-                      <Badge className={astrologer.is_available ? 'bg-green-500/20 text-green-700' : 'bg-cosmic-surface text-cosmic-text-secondary'}>
+                      <Badge className={astrologer.is_available ? 'bg-green-500/20 text-green-400' : 'bg-cosmic-surface text-cosmic-text-secondary'}>
                         {astrologer.is_available ? 'Available' : 'Busy'}
                       </Badge>
                     </div>

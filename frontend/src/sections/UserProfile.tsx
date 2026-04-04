@@ -176,7 +176,7 @@ export default function UserProfile() {
 
   const activityCards = [
     { label: 'Kundli Generated', value: activity.kundli_count, icon: Star, color: 'bg-purple-100 text-purple-600' },
-    { label: 'Orders', value: activity.order_count, icon: ShoppingBag, color: 'bg-blue-500/20 text-blue-600' },
+    { label: 'Orders', value: activity.order_count, icon: ShoppingBag, color: 'bg-blue-500/20 text-blue-400' },
     { label: 'Consultations', value: activity.consultation_count, icon: Activity, color: 'bg-green-500/20 text-green-400' },
     { label: 'AI Chats', value: activity.ai_chats, icon: Activity, color: 'bg-yellow-100 text-yellow-600' },
   ];
@@ -184,7 +184,7 @@ export default function UserProfile() {
   return (
     <section className="max-w-4xl mx-auto py-24 px-4">
       <div className="flex items-center gap-3 mb-8">
-        <div className="w-12 h-12 rounded-full bg-sacred-gold flex items-center justify-center text-[#1a1a2e] font-bold text-xl">
+        <div className="w-12 h-12 rounded-full bg-sacred-gold flex items-center justify-center text-[#e8e0d4] font-bold text-xl">
           {(user?.name || 'U').charAt(0).toUpperCase()}
         </div>
         <div>
@@ -392,7 +392,7 @@ export default function UserProfile() {
                             <Loader2 className="w-3 h-3 mr-1 animate-spin" />Generating
                           </Badge>
                         ) : r.status === 'paid' ? (
-                          <Badge className="bg-blue-500/20 text-blue-700">Processing</Badge>
+                          <Badge className="bg-blue-500/20 text-blue-400">Processing</Badge>
                         ) : (
                           <Badge className="bg-cosmic-surface text-cosmic-text-secondary">{r.status}</Badge>
                         )}

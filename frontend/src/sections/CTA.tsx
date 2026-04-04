@@ -21,7 +21,7 @@ export default function CTA() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-[#F5F0E8]">
+    <section ref={sectionRef} className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-[#1a1a2e]">
       {/* Gold gradient lines */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#9A7B0A]/30 to-transparent" />
       
@@ -38,11 +38,11 @@ export default function CTA() {
           ))}
         </div>
         
-        <h2 className="text-4xl sm:text-5xl lg:text-6xl font-['Cinzel_Decorative'] text-[#1a1a2e] mb-6">
+        <h2 className="text-4xl sm:text-5xl lg:text-6xl font-['Cinzel_Decorative'] text-[#e8e0d4] mb-6">
           {t('cta.heading')}
         </h2>
 
-        <p className="text-lg text-[#1a1a2e]/70 max-w-2xl mx-auto mb-10">
+        <p className="text-lg text-[#e8e0d4]/70 max-w-2xl mx-auto mb-10">
           {t('cta.subtitle2')}
         </p>
         
@@ -60,14 +60,14 @@ export default function CTA() {
           <Button 
             variant="outline" 
             size="lg" 
-            className="border-[#9A7B0A]/50 text-[#1a1a2e] text-lg px-8 py-6 hover:bg-[#9A7B0A]/10 hover:border-[#9A7B0A] bg-transparent font-['Cinzel']"
+            className="border-[#9A7B0A]/50 text-[#e8e0d4] text-lg px-8 py-6 hover:bg-[#9A7B0A]/10 hover:border-[#9A7B0A] bg-transparent font-['Cinzel']"
           >
             <Phone className="w-5 h-5 mr-2" />
             {t('cta.talkExpert')}
           </Button>
         </div>
         
-        <div className="flex flex-wrap justify-center gap-6 text-sm text-[#1a1a2e]/60">
+        <div className="flex flex-wrap justify-center gap-6 text-sm text-[#e8e0d4]/60">
           {['Free Kundli', '24/7 Support', '100% Accurate', 'Expert Astrologers'].map((item, i) => (
             <div key={i} className="flex items-center gap-2">
               <div className="w-2 h-2 bg-[#9A7B0A]" />

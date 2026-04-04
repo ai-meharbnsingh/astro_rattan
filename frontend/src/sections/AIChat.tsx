@@ -183,7 +183,7 @@ export default function AIChat() {
           )}
           <div className="flex gap-2">
             <Input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && !isTyping && handleSend()} placeholder="Ask about astrology..." className="flex-1 input-sacred text-base" style={{ fontSize: '16px' }} />
-            <Button onClick={() => handleSend()} disabled={!input.trim() || isTyping} className="btn-sacred disabled:opacity-50 shrink-0 w-12 h-12 p-0 flex items-center justify-center rounded-xl" style={{ backgroundColor: input.trim() && !isTyping ? '#B8860B' : undefined, color: input.trim() && !isTyping ? '#F5F0E8' : undefined }}>
+            <Button onClick={() => handleSend()} disabled={!input.trim() || isTyping} className="btn-sacred disabled:opacity-50 shrink-0 w-12 h-12 p-0 flex items-center justify-center rounded-xl" style={{ backgroundColor: input.trim() && !isTyping ? '#B8860B' : undefined, color: input.trim() && !isTyping ? '#1a1a2e' : undefined }}>
               <Send className="w-5 h-5" />
             </Button>
           </div>

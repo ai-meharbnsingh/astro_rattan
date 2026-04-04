@@ -142,14 +142,14 @@ export default function Kundli3D() {
                 fontFamily: 'Cinzel, serif',
                 animation: 'slideUp 0.8s ease-out 0.3s both'
               }}>
-                <span className="text-[#1a1a2e]">Your</span>
+                <span className="text-[#e8e0d4]">Your</span>
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B8860B] to-[#9A7B0A]">
                   Cosmic Blueprint
                 </span>
               </h1>
 
-              <p className="text-xl text-[#1a1a2e]/70 mb-8 max-w-lg" style={{ animation: 'slideUp 0.8s ease-out 0.4s both' }}>
+              <p className="text-xl text-[#e8e0d4]/70 mb-8 max-w-lg" style={{ animation: 'slideUp 0.8s ease-out 0.4s both' }}>
                 Discover your destiny through our immersive 3D Vedic birth chart. 
                 The stars align in three dimensions to reveal your true path.
               </p>
@@ -159,7 +159,7 @@ export default function Kundli3D() {
                 {['Natal Chart', 'Dasha Analysis', 'Planetary Positions', 'Life Predictions'].map((feature, i) => (
                   <span
                     key={feature}
-                    className="px-4 py-2 rounded-full bg-white/5 border border-[#8B7355]/10 text-[#1a1a2e]/80 text-sm"
+                    className="px-4 py-2 rounded-full bg-white/5 border border-[#b8b0a4]/10 text-[#e8e0d4]/80 text-sm"
                     style={{ animation: `scaleIn 0.4s ease-out ${0.5 + i * 0.1}s both` }}
                   >
                     {feature}
@@ -171,8 +171,8 @@ export default function Kundli3D() {
             {/* Right Side - 3D Form Card */}
             <div style={{ animation: 'slideInRight 0.8s ease-out 0.3s both' }}>
               <TiltCard>
-                <div className="bg-[#F5F0E8]/40 backdrop-blur-xl border border-[#9A7B0A]/30 rounded-3xl p-8 shadow-2xl shadow-[#9A7B0A]/10">
-                  <h2 className="text-2xl font-bold text-[#1a1a2e] mb-6 text-center" style={{ fontFamily: 'Cinzel, serif' }}>
+                <div className="bg-[#1a1a2e]/40 backdrop-blur-xl border border-[#9A7B0A]/30 rounded-3xl p-8 shadow-2xl shadow-[#9A7B0A]/10">
+                  <h2 className="text-2xl font-bold text-[#e8e0d4] mb-6 text-center" style={{ fontFamily: 'Cinzel, serif' }}>
                     Generate Your Kundli
                   </h2>
 
@@ -185,7 +185,7 @@ export default function Kundli3D() {
                         placeholder="Full Name"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="pl-12 h-14 bg-white/5 border-[#8B7355]/10 text-[#1a1a2e] placeholder:text-[#1a1a2e]/40 focus:border-[#9A7B0A] text-lg"
+                        className="pl-12 h-14 bg-white/5 border-[#b8b0a4]/10 text-[#e8e0d4] placeholder:text-[#e8e0d4]/40 focus:border-[#9A7B0A] text-lg"
                       />
                     </div>
 
@@ -197,7 +197,7 @@ export default function Kundli3D() {
                         className={`h-14 rounded-xl border transition-all text-lg ${
                           formData.gender === 'male'
                             ? 'bg-[#9A7B0A] text-[#1a1a2e] border-[#9A7B0A]'
-                            : 'bg-white/5 text-[#1a1a2e] border-[#8B7355]/10 hover:border-[#9A7B0A]/50'
+                            : 'bg-white/5 text-[#e8e0d4] border-[#b8b0a4]/10 hover:border-[#9A7B0A]/50'
                         }`}
                       >
                         Male
@@ -208,7 +208,7 @@ export default function Kundli3D() {
                         className={`h-14 rounded-xl border transition-all text-lg ${
                           formData.gender === 'female'
                             ? 'bg-[#9A7B0A] text-[#1a1a2e] border-[#9A7B0A]'
-                            : 'bg-white/5 text-[#1a1a2e] border-[#8B7355]/10 hover:border-[#9A7B0A]/50'
+                            : 'bg-white/5 text-[#e8e0d4] border-[#b8b0a4]/10 hover:border-[#9A7B0A]/50'
                         }`}
                       >
                         Female
@@ -223,7 +223,7 @@ export default function Kundli3D() {
                           type="date"
                           value={formData.date}
                           onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                          className="pl-12 h-14 bg-white/5 border-[#8B7355]/10 text-[#1a1a2e] focus:border-[#9A7B0A] text-lg"
+                          className="pl-12 h-14 bg-white/5 border-[#b8b0a4]/10 text-[#e8e0d4] focus:border-[#9A7B0A] text-lg"
                         />
                       </div>
                       <div className="relative">
@@ -232,7 +232,7 @@ export default function Kundli3D() {
                           type="time"
                           value={formData.time}
                           onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                          className="pl-12 h-14 bg-white/5 border-[#8B7355]/10 text-[#1a1a2e] focus:border-[#9A7B0A] text-lg"
+                          className="pl-12 h-14 bg-white/5 border-[#b8b0a4]/10 text-[#e8e0d4] focus:border-[#9A7B0A] text-lg"
                         />
                       </div>
                     </div>
@@ -248,14 +248,14 @@ export default function Kundli3D() {
                           setFormData({ ...formData, place: e.target.value });
                           geocode.search(e.target.value);
                         }}
-                        className="pl-12 h-14 bg-white/5 border-[#8B7355]/10 text-[#1a1a2e] placeholder:text-[#1a1a2e]/40 focus:border-[#9A7B0A] text-lg"
+                        className="pl-12 h-14 bg-white/5 border-[#b8b0a4]/10 text-[#e8e0d4] placeholder:text-[#e8e0d4]/40 focus:border-[#9A7B0A] text-lg"
                         autoComplete="off"
                       />
                       {geocode.loading && (
                         <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 animate-spin text-[#9A7B0A]" />
                       )}
                       {geocode.showDropdown && geocode.suggestions.length > 0 && (
-                        <div className="absolute z-50 left-0 right-0 top-full mt-1 bg-[#F5F0E8] border border-[#B8860B]/30 rounded-2xl shadow-lg max-h-60 overflow-y-auto">
+                        <div className="absolute z-50 left-0 right-0 top-full mt-1 bg-[#1a1a2e] border border-[#B8860B]/30 rounded-2xl shadow-lg max-h-60 overflow-y-auto">
                           {geocode.suggestions.map((s, i) => (
                             <button
                               key={i}
@@ -264,10 +264,10 @@ export default function Kundli3D() {
                                 setFormData({ ...formData, place: s.name.split(',')[0], latitude: s.lat, longitude: s.lon });
                                 geocode.close();
                               }}
-                              className="w-full text-left px-4 py-3 hover:bg-[#E8E0D4] transition-colors border-b border-[#B8860B]/10 last:border-b-0"
+                              className="w-full text-left px-4 py-3 hover:bg-[#2a2a4e] transition-colors border-b border-[#B8860B]/10 last:border-b-0"
                             >
-                              <p className="text-sm font-medium text-[#1a1a2e] truncate">{s.name}</p>
-                              <p className="text-xs text-[#1a1a2e]/50">{s.lat.toFixed(4)}, {s.lon.toFixed(4)}</p>
+                              <p className="text-sm font-medium text-[#e8e0d4] truncate">{s.name}</p>
+                              <p className="text-xs text-[#e8e0d4]/50">{s.lat.toFixed(4)}, {s.lon.toFixed(4)}</p>
                             </button>
                           ))}
                         </div>
@@ -275,7 +275,7 @@ export default function Kundli3D() {
                     </div>
 
                     {/* Coordinates display */}
-                    <div className="flex items-center gap-2 text-xs text-[#1a1a2e]/50 px-1 -mt-2">
+                    <div className="flex items-center gap-2 text-xs text-[#e8e0d4]/50 px-1 -mt-2">
                       <MapPin className="w-3 h-3 text-[#B8860B]" />
                       <span>Lat: {formData.latitude.toFixed(4)}, Lon: {formData.longitude.toFixed(4)}</span>
                     </div>
@@ -284,7 +284,7 @@ export default function Kundli3D() {
                     <Button
                       type="submit"
                       disabled={loading}
-                      className="w-full h-14 bg-gradient-to-r from-[#9A7B0A] to-[#B8860B] text-[#1a1a2e] font-bold text-lg hover:shadow-lg hover:shadow-[#9A7B0A]/30 transition-all"
+                      className="w-full h-14 bg-gradient-to-r from-[#9A7B0A] to-[#B8860B] text-[#e8e0d4] font-bold text-lg hover:shadow-lg hover:shadow-[#9A7B0A]/30 transition-all"
                     >
                       {loading ? (
                         <span className="flex items-center gap-2">
@@ -301,7 +301,7 @@ export default function Kundli3D() {
                   </form>
 
                   {/* Trust badges */}
-                  <div className="mt-6 pt-6 border-t border-[#8B7355]/10 flex items-center justify-center gap-6 text-sm text-[#1a1a2e]/50">
+                  <div className="mt-6 pt-6 border-t border-[#b8b0a4]/10 flex items-center justify-center gap-6 text-sm text-[#e8e0d4]/50">
                     <span>🔒 Secure</span>
                     <span>⚡ Instant</span>
                     <span>🎯 Accurate</span>
@@ -334,7 +334,7 @@ export default function Kundli3D() {
       `}</style>
 
       {/* Bottom gradient fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#F5F0E8] to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#1a1a2e] to-transparent pointer-events-none" />
     </div>
   );
 }

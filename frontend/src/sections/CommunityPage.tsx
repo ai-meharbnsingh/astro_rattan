@@ -413,7 +413,7 @@ export default function CommunityPage() {
 
             {/* New Thread Modal */}
             {showNewThread && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#F5F0E8]/60 px-4">
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1a1a2e]/60 px-4">
                 <div className="card-sacred border border-sacred-gold/20 rounded-xl p-6 w-full max-w-lg relative">
                   <button
                     onClick={() => setShowNewThread(false)}

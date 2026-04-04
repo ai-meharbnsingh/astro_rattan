@@ -399,7 +399,7 @@ export default function AdminDashboard() {
     <section className="max-w-7xl mx-auto py-24 px-4">
       <div className="flex items-center gap-3 mb-8">
         <div className="w-10 h-10 rounded-full bg-sacred-gold flex items-center justify-center">
-          <Shield className="w-5 h-5 text-[#1a1a2e]" />
+          <Shield className="w-5 h-5 text-[#e8e0d4]" />
         </div>
         <div>
           <h2 className="text-2xl font-display font-bold text-cosmic-text">Admin Dashboard</h2>
@@ -456,7 +456,7 @@ export default function AdminDashboard() {
                       <TableCell className="text-cosmic-text-secondary">{u.email}</TableCell>
                       <TableCell><Badge variant="outline">{u.role}</Badge></TableCell>
                       <TableCell>
-                        <Badge className={u.is_active ? 'bg-green-500/20 text-green-700' : 'bg-red-500/20 text-red-400'}>
+                        <Badge className={u.is_active ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}>
                           {u.is_active ? 'Active' : 'Inactive'}
                         </Badge>
                       </TableCell>
@@ -547,7 +547,7 @@ export default function AdminDashboard() {
                       <TableCell className="text-sacred-gold font-semibold">{formatPrice(p.price)}</TableCell>
                       <TableCell>{p.stock}</TableCell>
                       <TableCell>
-                        <Badge className={p.is_active ? 'bg-green-500/20 text-green-700' : 'bg-cosmic-surface text-cosmic-text-secondary'}>
+                        <Badge className={p.is_active ? 'bg-green-500/20 text-green-400' : 'bg-cosmic-surface text-cosmic-text-secondary'}>
                           {p.is_active ? 'Active' : 'Hidden'}
                         </Badge>
                       </TableCell>
@@ -810,7 +810,7 @@ export default function AdminDashboard() {
                         <TableCell className="text-cosmic-text-secondary">{post.slug}</TableCell>
                         <TableCell className="text-cosmic-text-secondary">{post.author_name}</TableCell>
                         <TableCell>
-                          <Badge className={post.is_published ? 'bg-green-500/20 text-green-700' : 'bg-cosmic-surface text-cosmic-text-secondary'}>
+                          <Badge className={post.is_published ? 'bg-green-500/20 text-green-400' : 'bg-cosmic-surface text-cosmic-text-secondary'}>
                             {post.is_published ? 'Published' : 'Draft'}
                           </Badge>
                         </TableCell>

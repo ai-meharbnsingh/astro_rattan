@@ -39,6 +39,7 @@ interface JHoraKundliViewProps {
   d10Data: any;
   transitData: any;
   loadingDasha: boolean;
+  loadingExtendedDasha?: boolean;
   loadingAvakhada: boolean;
   loadingYogaDosha?: boolean;
   loadingAshtakvarga?: boolean;
@@ -56,7 +57,7 @@ const SERIF = "'Georgia', 'Times New Roman', serif";
 const BORDER_COLOR = '#D4C5A9';
 const BORDER = `1px solid ${BORDER_COLOR}`;
 const HEADER_BG = '#EDE8DB';
-const HEADER_COLOR = '#5D4037';
+const HEADER_COLOR = '#D4A052';
 const ALT_ROW = '#FAF6EE';
 const MUTED = '#78716C';
 
@@ -71,8 +72,8 @@ const PLANET_COLOR_MAP: Record<string, string> = {
   Saturn: '#1E40AF',
   Rahu: '#6B7280',
   Ketu: '#78350F',
-  Ascendant: '#5D4037',
-  Lagna: '#5D4037',
+  Ascendant: '#D4A052',
+  Lagna: '#D4A052',
 };
 
 function planetColor(planet: string): string {
@@ -190,6 +191,7 @@ export default function JHoraKundliView({
   d10Data,
   transitData,
   loadingDasha,
+  loadingExtendedDasha,
   loadingAvakhada,
   loadingShadbala,
   loadingDivisional,
@@ -506,7 +508,7 @@ export default function JHoraKundliView({
                       <td style={{ ...cellCompact, color: statusColor(p.status), fontWeight: p.status ? 600 : 400 }}>
                         {abbrDignity(p.status)}
                       </td>
-                      <td style={{ ...cellCompact, fontWeight: 600, color: karaka !== '-' ? '#5D4037' : MUTED }}>
+                      <td style={{ ...cellCompact, fontWeight: 600, color: karaka !== '-' ? '#D4A052' : MUTED }}>
                         {karaka}
                       </td>
                     </tr>
@@ -527,7 +529,7 @@ export default function JHoraKundliView({
           {/* Vimshottari Dasha — Mahadasha > Antardasha > Pratyantara */}
           <div style={{ borderRight: BORDER, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
             <SectionHeader>Vimshottari Dasha</SectionHeader>
-            {loadingDasha ? <MiniLoader /> : dasha ? (
+            {(loadingDasha || loadingExtendedDasha) ? <MiniLoader /> : dasha ? (
               <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
                 {/* Current Dasha Info */}
                 <div style={{ padding: '3px 6px', background: '#FEF3C7', borderBottom: `1px solid ${BORDER_COLOR}`, fontSize: '9px', fontFamily: SERIF }}>

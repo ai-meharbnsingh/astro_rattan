@@ -36,7 +36,7 @@ export default function VideoSessionPanel({
   };
 
   return (
-    <Card className="bg-white border border-minimal-indigo/10 shadow-soft">
+    <Card className="bg-[#22223a] border border-minimal-indigo/10 shadow-soft">
       <CardContent className="p-4 sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>

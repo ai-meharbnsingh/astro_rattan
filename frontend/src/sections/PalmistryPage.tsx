@@ -382,9 +382,9 @@ export default function PalmistryPage() {
           <div className="grid md:grid-cols-2 gap-6">
             {[
               { title: 'Heart Line', icon: Heart, iconClass: 'text-rose-500', selectedClass: 'border-rose-500 bg-rose-50', key: 'heart', value: heartLine, setter: setHeartLine },
-              { title: 'Head Line', icon: Brain, iconClass: 'text-blue-500', selectedClass: 'border-blue-500 bg-blue-50', key: 'head', value: headLine, setter: setHeadLine },
+              { title: 'Head Line', icon: Brain, iconClass: 'text-blue-500', selectedClass: 'border-blue-500 bg-blue-500/10', key: 'head', value: headLine, setter: setHeadLine },
               { title: 'Life Line', icon: Activity, iconClass: 'text-green-500', selectedClass: 'border-green-500 bg-green-900/20', key: 'life', value: lifeLine, setter: setLifeLine },
-              { title: 'Fate Line (Optional)', icon: Briefcase, iconClass: 'text-amber-500', selectedClass: 'border-amber-500 bg-amber-50', key: 'fate', value: fateLine, setter: setFateLine },
+              { title: 'Fate Line (Optional)', icon: Briefcase, iconClass: 'text-amber-500', selectedClass: 'border-amber-500 bg-amber-500/10', key: 'fate', value: fateLine, setter: setFateLine },
             ].map(({ title, icon: Icon, iconClass, selectedClass, key, value, setter }) => (
               <Card key={title} className="border-0 shadow-soft">
                 <CardContent className="p-6">

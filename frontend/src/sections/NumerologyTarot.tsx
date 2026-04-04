@@ -168,7 +168,7 @@ export default function NumerologyTarot() {
                   {[
                     { label: 'Life Path', value: numResult.life_path, color: 'bg-purple-100 text-purple-700' },
                     { label: 'Expression', value: numResult.expression, color: 'bg-blue-100 text-blue-700' },
-                    { label: 'Soul Urge', value: numResult.soul_urge, color: 'bg-green-500/20 text-green-700' },
+                    { label: 'Soul Urge', value: numResult.soul_urge, color: 'bg-green-500/20 text-green-400' },
                     { label: 'Personality', value: numResult.personality, color: 'bg-yellow-100 text-yellow-700' },
                   ].map((n) => (
                     <div key={n.label} className="text-center p-3 rounded-xl bg-cosmic-card">
@@ -312,7 +312,7 @@ export default function NumerologyTarot() {
                     {palmGuide.hand_shapes.map((shape) => (
                       <Card key={shape.name} className="bg-cosmic-card border-0 shadow-soft">
                         <CardContent className="p-4">
-                          <Badge className="bg-green-500/20 text-green-700 mb-2">{shape.name}</Badge>
+                          <Badge className="bg-green-500/20 text-green-400 mb-2">{shape.name}</Badge>
                           <p className="text-sm text-cosmic-text-secondary">{shape.description}</p>
                         </CardContent>
                       </Card>
