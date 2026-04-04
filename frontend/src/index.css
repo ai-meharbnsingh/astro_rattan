@@ -3,97 +3,97 @@
 @tailwind utilities;
 
 /* ========================================
-   IO-GITA PARCHMENT THEME — Light + Warm
+   IO-GITA DARK THEME — Rich & Mystical
    Ancient manuscript · Modern computation
    ======================================== */
 
 @layer base {
   :root {
-    /* Parchment Light Theme */
-    --parchment: #F5F0E8;
-    --parchment-dark: #E8E0D4;
-    --ink: #1a1a2e;
-    --ink-light: #4a4a5e;
+    /* Dark Theme Base */
+    --parchment: #1a1a2e;
+    --parchment-dark: #16162a;
+    --ink: #e8e0d4;
+    --ink-light: #b8b0a4;
 
     /* Aged Gold Accents */
-    --aged-gold: #B8860B;
-    --aged-gold-dim: #9A7B0A;
-    --aged-gold-light: #D4A052;
+    --aged-gold: #D4A052;
+    --aged-gold-dim: #B8860B;
+    --aged-gold-light: #E8C078;
 
     /* Wax Red (buttons, seals) */
-    --wax-red: #8B2332;
-    --wax-red-hover: #A52A2A;
-    --wax-red-deep: #8B0000;
+    --wax-red: #C43E4E;
+    --wax-red-hover: #D45050;
+    --wax-red-deep: #A52A2A;
 
     /* Warm Browns */
-    --brown: #8B7355;
-    --brown-light: rgba(139, 115, 85, 0.2);
-    --coffee: rgba(139, 69, 19, 0.1);
+    --brown: #A08060;
+    --brown-light: rgba(160, 128, 96, 0.2);
+    --coffee: rgba(139, 69, 19, 0.15);
 
     /* Text Colors */
-    --text-primary: #1a1a2e;
-    --text-secondary: #4a4a5e;
+    --text-primary: #e8e0d4;
+    --text-secondary: #b8b0a4;
     --text-muted: #8B7355;
 
     /* Legacy compatibility */
-    --cosmic-bg: #F5F0E8;
-    --cosmic-bg-light: #E8E0D4;
-    --cosmic-surface: #F5F0E8;
-    --cosmic-card: rgba(245, 240, 232, 0.6);
-    --cosmic-card-hover: rgba(245, 240, 232, 0.8);
-    --cosmic-border: rgba(139, 115, 85, 0.2);
-    --cosmic-border-hover: rgba(184, 134, 11, 0.4);
-    --cosmic-text: #1a1a2e;
-    --cosmic-text-secondary: #4a4a5e;
+    --cosmic-bg: #1a1a2e;
+    --cosmic-bg-light: #22223a;
+    --cosmic-surface: #22223a;
+    --cosmic-card: rgba(34, 34, 58, 0.8);
+    --cosmic-card-hover: rgba(40, 40, 68, 0.9);
+    --cosmic-border: rgba(184, 134, 11, 0.25);
+    --cosmic-border-hover: rgba(212, 160, 82, 0.5);
+    --cosmic-text: #e8e0d4;
+    --cosmic-text-secondary: #b8b0a4;
     --cosmic-text-muted: #8B7355;
 
-    --sacred-gold: #B8860B;
-    --sacred-gold-dark: #9A7B0A;
-    --sacred-gold-light: #D4A052;
-    --sacred-saffron: #B8860B;
-    --sacred-saffron-dark: #9A7B0A;
-    --sacred-saffron-light: #D4A052;
-    --sacred-purple: #F5F0E8;
-    --sacred-purple-light: #E8E0D4;
-    --sacred-violet: #B8860B;
+    --sacred-gold: #D4A052;
+    --sacred-gold-dark: #B8860B;
+    --sacred-gold-light: #E8C078;
+    --sacred-saffron: #D4A052;
+    --sacred-saffron-dark: #B8860B;
+    --sacred-saffron-light: #E8C078;
+    --sacred-purple: #2a2a4e;
+    --sacred-purple-light: #22223a;
+    --sacred-violet: #D4A052;
 
-    /* shadcn HSL tokens — parchment light */
-    --background: 38 33% 93%;
-    --foreground: 240 27% 14%;
-    --card: 38 33% 93%;
-    --card-foreground: 240 27% 14%;
-    --popover: 38 33% 90%;
-    --popover-foreground: 240 27% 14%;
-    --primary: 38 85% 38%;
-    --primary-foreground: 38 33% 93%;
-    --secondary: 32 20% 87%;
-    --secondary-foreground: 240 27% 14%;
-    --muted: 32 20% 87%;
-    --muted-foreground: 30 18% 44%;
-    --accent: 350 62% 34%;
+    /* shadcn HSL tokens — dark theme */
+    --background: 240 27% 14%;
+    --foreground: 38 33% 90%;
+    --card: 240 25% 18%;
+    --card-foreground: 38 33% 90%;
+    --popover: 240 25% 16%;
+    --popover-foreground: 38 33% 90%;
+    --primary: 38 60% 55%;
+    --primary-foreground: 240 27% 14%;
+    --secondary: 240 20% 22%;
+    --secondary-foreground: 38 33% 90%;
+    --muted: 240 20% 22%;
+    --muted-foreground: 30 18% 60%;
+    --accent: 350 55% 45%;
     --accent-foreground: 38 33% 93%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 30 18% 44% / 0.2;
-    --input: 30 18% 44% / 0.15;
-    --ring: 38 85% 38%;
+    --border: 38 40% 30% / 0.3;
+    --input: 38 40% 30% / 0.2;
+    --ring: 38 60% 55%;
     --radius: 0.5rem;
 
-    --chart-1: 38 85% 38%;
-    --chart-2: 350 62% 34%;
+    --chart-1: 38 60% 55%;
+    --chart-2: 350 55% 45%;
     --chart-3: 30 35% 55%;
-    --chart-4: 30 18% 44%;
-    --chart-5: 240 27% 14%;
-    --chart-6: 38 60% 45%;
+    --chart-4: 30 18% 60%;
+    --chart-5: 38 33% 90%;
+    --chart-6: 38 50% 45%;
 
-    --sidebar: 38 33% 90%;
-    --sidebar-foreground: 240 27% 14%;
-    --sidebar-primary: 38 85% 38%;
-    --sidebar-primary-foreground: 38 33% 93%;
-    --sidebar-accent: 32 20% 87%;
-    --sidebar-accent-foreground: 240 27% 14%;
-    --sidebar-border: 30 18% 44% / 0.2;
-    --sidebar-ring: 38 85% 38%;
+    --sidebar: 240 25% 16%;
+    --sidebar-foreground: 38 33% 90%;
+    --sidebar-primary: 38 60% 55%;
+    --sidebar-primary-foreground: 240 27% 14%;
+    --sidebar-accent: 240 20% 22%;
+    --sidebar-accent-foreground: 38 33% 90%;
+    --sidebar-border: 38 40% 30% / 0.3;
+    --sidebar-ring: 38 60% 55%;
   }
 }
 
@@ -104,8 +104,8 @@
     font-size: 18px;
   }
   body {
-    background: #F5F0E8;
-    color: #1a1a2e;
+    background: #1a1a2e;
+    color: #e8e0d4;
     font-feature-settings: "rlig" 1, "calt" 1;
     line-height: 1.6;
   }
@@ -155,20 +155,20 @@
 /* Buttons — wax seal red primary, gold outline secondary */
 .btn-sacred {
   background: transparent;
-  color: #B8860B;
+  color: #D4A052;
   font-weight: 500;
-  border: 1px solid #B8860B;
+  border: 1px solid #D4A052;
   transition: all 0.3s ease;
 }
 .btn-sacred:hover {
-  background: #B8860B;
-  color: #F5F0E8;
+  background: #D4A052;
+  color: #1a1a2e;
   box-shadow: 0 4px 12px rgba(184, 134, 11, 0.2);
 }
 
 .btn-saffron {
-  background: #8B2332;
-  color: #F5F0E8;
+  background: #C43E4E;
+  color: #e8e0d4;
   border: none;
   border-radius: 9999px;
   font-family: 'IM Fell English', serif;
@@ -183,7 +183,7 @@
 
 .btn-maroon {
   background: transparent;
-  color: #1a1a2e;
+  color: #e8e0d4;
   border: 1px solid rgba(139, 115, 85, 0.3);
   transition: all 0.3s ease;
 }
@@ -194,50 +194,50 @@
 
 /* Cards — parchment with aged edges */
 .card-sacred {
-  background: rgba(245, 240, 232, 0.6);
-  border: 1px solid rgba(139, 115, 85, 0.2);
+  background: rgba(34, 34, 58, 0.8);
+  border: 1px solid rgba(184, 134, 11, 0.25);
   backdrop-filter: blur(10px);
 }
 .card-sacred:hover {
-  background: rgba(245, 240, 232, 0.8);
-  border-color: rgba(184, 134, 11, 0.4);
-  box-shadow: inset 0 0 60px rgba(139, 69, 19, 0.08), 0 4px 20px rgba(0, 0, 0, 0.08);
+  background: rgba(40, 40, 68, 0.9);
+  border-color: rgba(212, 160, 82, 0.5);
+  box-shadow: inset 0 0 60px rgba(184, 134, 11, 0.05), 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .card-gold-border {
   border: 1px solid rgba(184, 134, 11, 0.3);
-  background: rgba(245, 240, 232, 0.6);
+  background: rgba(34, 34, 58, 0.8);
 }
 
-/* Gradients — parchment based */
-.bg-sacred-gradient { background: linear-gradient(135deg, #F5F0E8 0%, #E8E0D4 50%, #F5F0E8 100%); }
-.bg-gold-gradient { background: linear-gradient(135deg, #D4A052 0%, #B8860B 50%, #9A7B0A 100%); }
-.bg-saffron-gradient { background: linear-gradient(135deg, #D4A052 0%, #B8860B 100%); }
-.bg-maroon-gradient { background: linear-gradient(145deg, #A52A2A 0%, #8B0000 100%); }
-.bg-divine-gradient { background: linear-gradient(180deg, #F5F0E8 0%, #E8E0D4 50%, #F5F0E8 100%); }
+/* Gradients — dark theme */
+.bg-sacred-gradient { background: linear-gradient(135deg, #1a1a2e 0%, #22223a 50%, #1a1a2e 100%); }
+.bg-gold-gradient { background: linear-gradient(135deg, #E8C078 0%, #D4A052 50%, #B8860B 100%); }
+.bg-saffron-gradient { background: linear-gradient(135deg, #E8C078 0%, #D4A052 100%); }
+.bg-maroon-gradient { background: linear-gradient(145deg, #D45050 0%, #A52A2A 100%); }
+.bg-divine-gradient { background: linear-gradient(180deg, #1a1a2e 0%, #22223a 50%, #1a1a2e 100%); }
 
 /* Text */
 .text-gradient-gold {
-  color: #B8860B;
+  color: #D4A052;
 }
 .text-gradient-saffron {
-  color: #B8860B;
+  color: #D4A052;
 }
 .text-gradient-indigo {
-  color: #1a1a2e;
+  color: #e8e0d4;
 }
 
-.text-sacred-brown { color: #8B7355; }
-.text-sacred-gold { color: #B8860B; }
-.text-sacred-saffron { color: #B8860B; }
-.text-sacred-maroon { color: #8B2332; }
+.text-sacred-brown { color: #D4A052; }
+.text-sacred-gold { color: #D4A052; }
+.text-sacred-saffron { color: #D4A052; }
+.text-sacred-maroon { color: #C43E4E; }
 
 /* Backgrounds */
-.bg-sacred-cream { background-color: #F5F0E8; }
-.bg-sacred-gold { background-color: #B8860B; }
-.bg-sacred-saffron { background-color: #B8860B; }
-.bg-sacred-brown { background-color: #E8E0D4; }
-.bg-sacred-maroon { background-color: #8B2332; }
+.bg-sacred-cream { background-color: #22223a; }
+.bg-sacred-gold { background-color: #D4A052; }
+.bg-sacred-saffron { background-color: #D4A052; }
+.bg-sacred-brown { background-color: #2a2a4e; }
+.bg-sacred-maroon { background-color: #C43E4E; }
 
 /* Decorative dividers — warm brown gradient */
 .divider-sacred {
@@ -330,17 +330,17 @@
   padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0.75rem));
 }
 
-/* Scrollbar — parchment track, gold thumb */
+/* Scrollbar — dark track, gold thumb */
 ::-webkit-scrollbar {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #E8E0D4;
+  background: #16162a;
 }
 ::-webkit-scrollbar-thumb {
   background: #B8860B;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #9A7B0A;
+  background: #D4A052;
 }

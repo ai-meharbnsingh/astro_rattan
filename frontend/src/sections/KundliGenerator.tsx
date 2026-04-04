@@ -1464,80 +1464,111 @@ export default function KundliGenerator() {
           {/* IO-GITA TAB */}
           <TabsContent value="iogita">
             {loadingIogita ? (
-              <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-sacred-text-secondary">Running io-gita attractor analysis...</span></div>
+              <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-sacred-text-secondary">Analyzing your life path...</span></div>
             ) : iogitaData?.basin ? (
               <div className="space-y-6">
-                <div className="bg-gradient-to-r from-sacred-cream to-sacred-gold/10 rounded-2xl p-6 border border-sacred-gold/30">
-                  <div className="flex items-center gap-3 mb-3">
+                {/* Overall Summary Card */}
+                <div className="rounded-2xl p-6 border border-sacred-gold/30" style={{ background: 'linear-gradient(135deg, rgba(184,134,11,0.08) 0%, rgba(34,34,58,0.9) 100%)' }}>
+                  <div className="flex items-center gap-3 mb-4">
                     <div className="w-12 h-12 rounded-full bg-sacred-gold/20 flex items-center justify-center">
                       <Sparkles className="w-6 h-6 text-sacred-gold" />
                     </div>
                     <div>
-                      <h4 className="font-display font-bold text-xl text-sacred-brown">{iogitaData.basin.name}</h4>
-                      <p className="text-sacred-gold-dark text-lg">{iogitaData.basin.hindi}</p>
+                      <h4 className="font-display font-bold text-xl" style={{ color: '#D4A052' }}>Your Life Pattern: {iogitaData.basin.name}</h4>
+                      <p className="text-sm" style={{ color: '#b8b0a4' }}>Based on your planetary positions and current dasha</p>
                     </div>
                   </div>
-                  <p className="text-sacred-text-secondary mb-4">{iogitaData.basin.description}</p>
-                  <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div className="bg-cosmic-card/60 rounded-lg p-3">
-                      <p className="text-sacred-text-secondary">Escape Possible</p>
-                      <p className="font-semibold text-sacred-brown">{iogitaData.basin.escape_possible ? 'Yes \u2014 phase transition likely' : 'No \u2014 basin is stable'}</p>
-                    </div>
-                    <div className="bg-cosmic-card/60 rounded-lg p-3">
-                      <p className="text-sacred-text-secondary">Trajectory Steps</p>
-                      <p className="font-semibold text-sacred-brown">{iogitaData.basin.trajectory_steps} steps</p>
-                    </div>
-                  </div>
+                  <p className="text-sm leading-relaxed mb-4" style={{ color: '#e8e0d4' }}>{iogitaData.basin.description}</p>
                 </div>
 
-                <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/20">
-                  <h4 className="font-display font-semibold text-sacred-brown mb-4">Dominant Atoms (Top 3)</h4>
+                {/* Strengths — Top Forces */}
+                <div className="rounded-xl p-5 border border-sacred-gold/20" style={{ background: 'rgba(34,34,58,0.8)' }}>
+                  <h4 className="font-display font-semibold mb-4" style={{ color: '#D4A052' }}>Your Strongest Qualities</h4>
                   <div className="space-y-3">
-                    {(iogitaData.basin.top_3_atoms || []).map(([name, val]: [string, number]) => (
-                      <div key={name} className="flex items-center gap-3">
-                        <span className="w-20 text-sm font-medium text-sacred-brown">{name}</span>
-                        <div className="flex-1 bg-sacred-gold/10 rounded-full h-4 overflow-hidden">
-                          <div className="bg-gradient-to-r from-sacred-gold to-sacred-saffron h-full rounded-full transition-all" style={{ width: `${Math.abs(val) * 100}%` }} />
+                    {(iogitaData.basin.top_3_atoms || []).map(([name, val]: [string, number], idx: number) => {
+                      const labels: Record<string, string> = {
+                        DHARMA: 'Righteousness & Duty', SATYA: 'Truth & Honesty', TYAGA: 'Selflessness',
+                        AHANKAR: 'Self-Confidence', ATMA: 'Inner Awareness', MOKSHA: 'Spiritual Liberation',
+                        KULA: 'Family & Tradition', RAJYA: 'Leadership & Authority', NYAYA: 'Justice & Fairness',
+                        KRODHA: 'Drive & Determination', NITI: 'Strategy & Wisdom', SHAKTI: 'Power & Energy',
+                        BHAKTI: 'Devotion & Faith', KAAM: 'Desire & Passion', LOBH: 'Ambition', MOH: 'Attachment & Love',
+                      };
+                      const colors = ['#D4A052', '#E8C078', '#B8860B'];
+                      return (
+                        <div key={name} className="flex items-center gap-3">
+                          <span className="text-lg font-bold w-6" style={{ color: colors[idx] }}>{idx + 1}</span>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-sm font-semibold" style={{ color: '#e8e0d4' }}>{labels[name] || name}</span>
+                              <span className="text-xs" style={{ color: '#b8b0a4' }}>{Math.round(Math.abs(val) * 100)}%</span>
+                            </div>
+                            <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(184,134,11,0.15)' }}>
+                              <div className="h-full rounded-full" style={{ width: `${Math.abs(val) * 100}%`, background: colors[idx] }} />
+                            </div>
+                          </div>
                         </div>
-                        <span className="text-sm text-sacred-gold-dark w-14 text-right">{val.toFixed(3)}</span>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 
+                {/* Area to Improve */}
                 {iogitaData.basin.top_negative && (
-                  <div className="bg-red-900/20 rounded-xl p-5 border border-red-500/30">
-                    <h4 className="font-display font-semibold text-red-700 mb-2">Most Suppressed Force</h4>
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm font-medium text-red-400">{iogitaData.basin.top_negative[0]}</span>
-                      <div className="flex-1 bg-red-900/200/20 rounded-full h-3 overflow-hidden">
-                        <div className="bg-red-400 h-full rounded-full" style={{ width: `${Math.abs(iogitaData.basin.top_negative[1]) * 100}%` }} />
-                      </div>
-                      <span className="text-sm text-red-400">{iogitaData.basin.top_negative[1].toFixed(3)}</span>
-                    </div>
+                  <div className="rounded-xl p-5 border border-red-500/20" style={{ background: 'rgba(196,62,78,0.08)' }}>
+                    <h4 className="font-display font-semibold mb-2" style={{ color: '#f87171' }}>Area That Needs Attention</h4>
+                    {(() => {
+                      const negLabels: Record<string, string> = {
+                        DHARMA: 'Following your duty', SATYA: 'Being truthful', TYAGA: 'Letting go of attachments',
+                        KRODHA: 'Managing anger', LOBH: 'Controlling greed', MOH: 'Detaching from illusions',
+                        KAAM: 'Moderating desires', AHANKAR: 'Ego management',
+                        BHAKTI: 'Developing devotion', SHAKTI: 'Building inner strength',
+                        MOKSHA: 'Spiritual growth', ATMA: 'Self-awareness',
+                      };
+                      const name = iogitaData.basin.top_negative[0];
+                      return <p className="text-sm" style={{ color: '#fca5a5' }}>{negLabels[name] || name} — this area is suppressed in your chart. Focus on developing it for a more balanced life.</p>;
+                    })()}
                   </div>
                 )}
 
-                <div className="bg-amber-50 rounded-xl p-5 border border-amber-200">
-                  <h4 className="font-display font-semibold text-amber-700 mb-2">Warning</h4>
-                  <p className="text-sm text-amber-600">{iogitaData.basin.warning}</p>
-                </div>
-                <div className="bg-blue-50 rounded-xl p-5 border border-blue-200">
-                  <h4 className="font-display font-semibold text-blue-700 mb-2">Escape Trigger</h4>
-                  <p className="text-sm text-blue-600">{iogitaData.basin.escape_trigger}</p>
+                {/* Guidance Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="rounded-xl p-5 border border-amber-500/20" style={{ background: 'rgba(245,158,11,0.08)' }}>
+                    <h4 className="font-display font-semibold mb-2" style={{ color: '#fbbf24' }}>Be Mindful Of</h4>
+                    <p className="text-sm leading-relaxed" style={{ color: '#fde68a' }}>{iogitaData.basin.warning}</p>
+                  </div>
+                  <div className="rounded-xl p-5 border border-emerald-500/20" style={{ background: 'rgba(16,185,129,0.08)' }}>
+                    <h4 className="font-display font-semibold mb-2" style={{ color: '#34d399' }}>Path to Growth</h4>
+                    <p className="text-sm leading-relaxed" style={{ color: '#6ee7b7' }}>{iogitaData.basin.escape_trigger}</p>
+                  </div>
                 </div>
 
+                {/* Overall Insight */}
                 {iogitaData.iogita_insight && (
-                  <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/20">
-                    <h4 className="font-display font-semibold text-sacred-brown mb-2">io-gita Combined Insight</h4>
-                    <p className="text-sm text-sacred-text-secondary leading-relaxed">{iogitaData.iogita_insight}</p>
+                  <div className="rounded-xl p-5 border border-sacred-gold/20" style={{ background: 'rgba(34,34,58,0.8)' }}>
+                    <h4 className="font-display font-semibold mb-3" style={{ color: '#D4A052' }}>Overall Life Reading</h4>
+                    <p className="text-sm leading-relaxed" style={{ color: '#e8e0d4' }}>{iogitaData.iogita_insight}</p>
+                  </div>
+                )}
+
+                {/* Normal Astrology Insights */}
+                {iogitaData.normal_astrology && iogitaData.normal_astrology.length > 0 && (
+                  <div className="rounded-xl p-5 border border-sacred-gold/20" style={{ background: 'rgba(34,34,58,0.8)' }}>
+                    <h4 className="font-display font-semibold mb-3" style={{ color: '#D4A052' }}>Kundli Summary</h4>
+                    <div className="space-y-2">
+                      {iogitaData.normal_astrology.map((point: string, idx: number) => (
+                        <div key={idx} className="flex gap-2 text-sm" style={{ color: '#e8e0d4' }}>
+                          <span style={{ color: '#D4A052' }}>•</span>
+                          <span className="leading-relaxed">{point}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
             ) : iogitaData ? (
-              <p className="text-center text-sacred-text-secondary py-8">io-gita analysis returned partial data. Try again.</p>
+              <p className="text-center py-8" style={{ color: '#b8b0a4' }}>Analysis returned partial data. Try again.</p>
             ) : (
-              <p className="text-center text-sacred-text-secondary py-8">Click the io-gita tab to run attractor analysis</p>
+              <p className="text-center py-8" style={{ color: '#b8b0a4' }}>Click the io-gita tab to run your life pattern analysis</p>
             )}
           </TabsContent>
 
