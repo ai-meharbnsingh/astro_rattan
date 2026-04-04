@@ -208,8 +208,14 @@ export default function KundliGenerator() {
     setLoadingExtendedDasha(true);
     try {
       const data = await api.post(`/api/kundli/${result.id}/extended-dasha`, {});
-      setExtendedDashaData(data);
-    } catch { /* fallback */ }
+      if (data?.mahadasha) {
+        setExtendedDashaData(data);
+      } else {
+        console.warn('Extended dasha response missing mahadasha:', data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch extended dasha:', err);
+    }
     setLoadingExtendedDasha(false);
   };
 

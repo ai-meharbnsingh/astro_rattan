@@ -195,7 +195,7 @@ def run_iogita_analysis(
     moon_info = chart.get("planets", {}).get("Moon", {})
     moon_nakshatra = moon_info.get("nakshatra", "Ashwini")
     moon_lon = moon_info.get("longitude", None)
-    dasha_result = calculate_dasha(moon_nakshatra, row["birth_date"], moon_longitude=moon_lon)
+    dasha_result = calculate_dasha(moon_nakshatra, str(row["birth_date"]), moon_longitude=moon_lon)
     current_dasha = dasha_result.get("current_dasha", "Venus")
 
     analysis = run_astro_analysis(planet_positions, current_dasha, row["person_name"])
@@ -292,7 +292,7 @@ def get_dasha(
     moon_info = chart.get("planets", {}).get("Moon", {})
     moon_nakshatra = moon_info.get("nakshatra", "Ashwini")
     moon_longitude = moon_info.get("longitude", None)
-    result = calculate_dasha(moon_nakshatra, row["birth_date"], moon_longitude=moon_longitude)
+    result = calculate_dasha(moon_nakshatra, str(row["birth_date"]), moon_longitude=moon_longitude)
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result
@@ -471,7 +471,7 @@ def get_extended_dasha(
     moon_info = chart.get("planets", {}).get("Moon", {})
     moon_nakshatra = moon_info.get("nakshatra", "Ashwini")
     moon_longitude = moon_info.get("longitude", None)
-    result = calculate_extended_dasha(moon_nakshatra, row["birth_date"], moon_longitude=moon_longitude)
+    result = calculate_extended_dasha(moon_nakshatra, str(row["birth_date"]), moon_longitude=moon_longitude)
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result
