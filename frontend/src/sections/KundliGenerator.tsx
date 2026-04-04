@@ -315,6 +315,7 @@ export default function KundliGenerator() {
   useEffect(() => {
     if (step === 'result' && result?.id) {
       fetchDasha();
+      fetchExtendedDasha();
       fetchAvakhada();
       fetchYogaDosha();
       fetchAshtakvarga();
@@ -646,7 +647,7 @@ export default function KundliGenerator() {
         {/* Tabs */}
         <Tabs defaultValue="report" className="w-full">
           <TabsList className="mb-6 bg-sacred-cream flex-wrap">
-            <TabsTrigger value="report" onClick={() => { fetchDasha(); fetchAvakhada(); fetchYogaDosha(); fetchAshtakvarga(); fetchShadbala(); fetchDivisional('D9'); }}><ScrollText className="w-3 h-3 mr-1" />Report</TabsTrigger>
+            <TabsTrigger value="report" onClick={() => { fetchDasha(); fetchExtendedDasha(); fetchAvakhada(); fetchYogaDosha(); fetchAshtakvarga(); fetchShadbala(); fetchDivisional('D9'); }}><ScrollText className="w-3 h-3 mr-1" />Report</TabsTrigger>
             <TabsTrigger value="planets">Planets</TabsTrigger>
             <TabsTrigger value="details">Details</TabsTrigger>
             <TabsTrigger value="lordships">Lordships</TabsTrigger>
@@ -715,6 +716,7 @@ export default function KundliGenerator() {
                       d10Data={d10Data}
                       transitData={transitData}
                       loadingDasha={loadingDasha}
+                      loadingExtendedDasha={loadingExtendedDasha}
                       loadingAvakhada={loadingAvakhada}
                       loadingYogaDosha={loadingYogaDosha}
                       loadingAshtakvarga={loadingAshtakvarga}
@@ -990,41 +992,108 @@ export default function KundliGenerator() {
                   )}
                 </div>
 
-                {/* 6. Vimshottari Dasha */}
+                {/* 6. Vimshottari Dasha — with expandable AD/PD */}
                 <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
                   <h4 className="font-display font-semibold text-sacred-brown mb-3">Vimshottari Dasha</h4>
                   {(loadingDasha || loadingExtendedDasha) ? (
                     <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-sacred-gold" /></div>
-                  ) : dashaData ? (
+                  ) : (extendedDashaData || dashaData) ? (
                     <div className="space-y-2">
-                      <div className="bg-gradient-to-r from-sacred-gold/5 to-sacred-gold/10 rounded-lg p-3">
-                        <p className="text-xs text-sacred-text-secondary">Current Mahadasha</p>
-                        <p className="text-sm font-display font-bold" style={{ color: '#B8860B' }}>{dashaData.current_dasha}</p>
-                        {dashaData.current_antardasha && <p className="text-xs text-sacred-gold-dark">AD: {dashaData.current_antardasha}</p>}
+                      {/* Current dasha info */}
+                      <div className="rounded-lg p-3" style={{ background: 'rgba(184,134,11,0.1)' }}>
+                        <p className="text-xs" style={{ color: '#b8b0a4' }}>Current Mahadasha</p>
+                        <p className="text-sm font-display font-bold" style={{ color: '#D4A052' }}>
+                          {(extendedDashaData || dashaData).current_dasha}
+                        </p>
+                        {(extendedDashaData || dashaData).current_antardasha && (extendedDashaData || dashaData).current_antardasha !== 'Unknown' && (
+                          <p className="text-xs" style={{ color: '#D4A052' }}>
+                            AD: {(extendedDashaData || dashaData).current_antardasha}
+                            {extendedDashaData?.current_pratyantar && extendedDashaData.current_pratyantar !== 'Unknown' && ` / PD: ${extendedDashaData.current_pratyantar}`}
+                          </p>
+                        )}
                       </div>
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-xs">
-                          <thead><tr className="bg-sacred-gold/10">
-                            <th className="text-left p-2 text-sacred-gold-dark font-medium">Planet</th>
-                            <th className="text-left p-2 text-sacred-gold-dark font-medium">Start</th>
-                            <th className="text-left p-2 text-sacred-gold-dark font-medium">End</th>
-                            <th className="text-center p-2 text-sacred-gold-dark font-medium">Yrs</th>
-                          </tr></thead>
-                          <tbody>
-                            {(dashaData.mahadasha_periods || []).map((p: any) => (
-                              <tr key={p.planet} className={`border-t border-sacred-gold/10 ${p.planet === dashaData.current_dasha ? 'bg-sacred-gold/10 font-semibold' : ''}`}>
-                                <td className="p-2 text-sacred-brown">{p.planet}{p.planet === dashaData.current_dasha ? ' \u2190' : ''}</td>
-                                <td className="p-2 text-sacred-text-secondary">{p.start_date}</td>
-                                <td className="p-2 text-sacred-text-secondary">{p.end_date}</td>
-                                <td className="p-2 text-center text-sacred-text-secondary">{p.years}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
+
+                      {/* Expandable Mahadasha list */}
+                      {extendedDashaData?.mahadasha ? (
+                        <div className="space-y-1">
+                          {extendedDashaData.mahadasha.map((md: any) => (
+                            <div key={md.planet} className="border border-sacred-gold/10 rounded-lg overflow-hidden">
+                              <button
+                                onClick={() => setExpandedMahadasha(expandedMahadasha === md.planet ? null : md.planet)}
+                                className="w-full flex items-center justify-between p-2 text-xs transition-colors"
+                                style={{ background: md.is_current ? 'rgba(184,134,11,0.12)' : 'transparent' }}
+                              >
+                                <span className="flex items-center gap-1.5">
+                                  <ChevronDown className={`w-3 h-3 transition-transform ${expandedMahadasha === md.planet ? 'rotate-180' : ''}`} style={{ color: '#D4A052' }} />
+                                  <span className="font-semibold" style={{ color: md.is_current ? '#D4A052' : '#e8e0d4' }}>
+                                    {md.planet} {md.is_current ? '←' : ''}
+                                  </span>
+                                </span>
+                                <span style={{ color: '#b8b0a4' }}>{md.start?.slice(0,10)} — {md.end?.slice(0,10)} ({md.years}y)</span>
+                              </button>
+
+                              {expandedMahadasha === md.planet && (md.antardasha || []).length > 0 && (
+                                <div className="border-t border-sacred-gold/10">
+                                  {md.antardasha.map((ad: any) => (
+                                    <div key={`${md.planet}-${ad.planet}`}>
+                                      <button
+                                        onClick={() => setExpandedAntardasha(expandedAntardasha === `${md.planet}-${ad.planet}` ? null : `${md.planet}-${ad.planet}`)}
+                                        className="w-full flex items-center justify-between px-4 py-1.5 text-xs"
+                                        style={{ background: ad.is_current ? 'rgba(184,134,11,0.06)' : 'transparent' }}
+                                      >
+                                        <span className="flex items-center gap-1">
+                                          {ad.pratyantar?.length > 0 && <ChevronDown className={`w-2.5 h-2.5 transition-transform ${expandedAntardasha === `${md.planet}-${ad.planet}` ? 'rotate-180' : ''}`} style={{ color: '#b8b0a4' }} />}
+                                          <span style={{ color: ad.is_current ? '#D4A052' : '#e8e0d4' }}>{ad.planet} AD {ad.is_current ? '*' : ''}</span>
+                                        </span>
+                                        <span style={{ color: '#b8b0a4', fontSize: '10px' }}>{ad.start?.slice(0,10)} — {ad.end?.slice(0,10)}</span>
+                                      </button>
+
+                                      {expandedAntardasha === `${md.planet}-${ad.planet}` && (ad.pratyantar || []).length > 0 && (
+                                        <div className="border-t border-sacred-gold/5">
+                                          {ad.pratyantar.map((pt: any, idx: number) => (
+                                            <div key={idx} className="flex items-center justify-between px-8 py-1 text-xs"
+                                              style={{ background: pt.is_current ? 'rgba(184,134,11,0.04)' : 'transparent' }}>
+                                              <span style={{ color: pt.is_current ? '#D4A052' : '#b8b0a4' }}>
+                                                {pt.planet} PD {pt.is_current ? '*' : ''}
+                                              </span>
+                                              <span style={{ color: '#b8b0a4', fontSize: '10px' }}>{pt.start?.slice(0,10)} — {pt.end?.slice(0,10)}</span>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        /* Fallback: simple table when extendedDashaData unavailable */
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-xs">
+                            <thead><tr style={{ background: 'rgba(184,134,11,0.1)' }}>
+                              <th className="text-left p-2 font-medium" style={{ color: '#D4A052' }}>Planet</th>
+                              <th className="text-left p-2 font-medium" style={{ color: '#D4A052' }}>Start</th>
+                              <th className="text-left p-2 font-medium" style={{ color: '#D4A052' }}>End</th>
+                              <th className="text-center p-2 font-medium" style={{ color: '#D4A052' }}>Yrs</th>
+                            </tr></thead>
+                            <tbody>
+                              {(dashaData.mahadasha_periods || []).map((p: any) => (
+                                <tr key={p.planet} className="border-t border-sacred-gold/10" style={{ background: p.planet === dashaData.current_dasha ? 'rgba(184,134,11,0.1)' : 'transparent' }}>
+                                  <td className="p-2" style={{ color: '#e8e0d4' }}>{p.planet}{p.planet === dashaData.current_dasha ? ' ←' : ''}</td>
+                                  <td className="p-2" style={{ color: '#b8b0a4' }}>{p.start_date}</td>
+                                  <td className="p-2" style={{ color: '#b8b0a4' }}>{p.end_date}</td>
+                                  <td className="p-2 text-center" style={{ color: '#b8b0a4' }}>{p.years}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
                     </div>
                   ) : (
-                    <p className="text-center text-sacred-text-secondary py-4 text-sm">Loading Dasha...</p>
+                    <p className="text-center py-4 text-sm" style={{ color: '#b8b0a4' }}>Loading Dasha...</p>
                   )}
                 </div>
 

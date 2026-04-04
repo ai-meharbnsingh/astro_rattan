@@ -39,6 +39,7 @@ interface JHoraKundliViewProps {
   d10Data: any;
   transitData: any;
   loadingDasha: boolean;
+  loadingExtendedDasha?: boolean;
   loadingAvakhada: boolean;
   loadingYogaDosha?: boolean;
   loadingAshtakvarga?: boolean;
@@ -190,6 +191,7 @@ export default function JHoraKundliView({
   d10Data,
   transitData,
   loadingDasha,
+  loadingExtendedDasha,
   loadingAvakhada,
   loadingShadbala,
   loadingDivisional,
@@ -527,7 +529,7 @@ export default function JHoraKundliView({
           {/* Vimshottari Dasha — Mahadasha > Antardasha > Pratyantara */}
           <div style={{ borderRight: BORDER, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
             <SectionHeader>Vimshottari Dasha</SectionHeader>
-            {loadingDasha ? <MiniLoader /> : dasha ? (
+            {(loadingDasha || loadingExtendedDasha) ? <MiniLoader /> : dasha ? (
               <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
                 {/* Current Dasha Info */}
                 <div style={{ padding: '3px 6px', background: '#FEF3C7', borderBottom: `1px solid ${BORDER_COLOR}`, fontSize: '9px', fontFamily: SERIF }}>
