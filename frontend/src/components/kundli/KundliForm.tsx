@@ -93,7 +93,7 @@ export default function KundliForm({
     <div className="max-w-md mx-auto py-24 px-4 bg-transparent">
       <div className="text-center mb-8">
         <div className="w-16 h-16 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center mx-auto mb-4">
-          <Sparkles className="w-8 h-8 text-[#e8e0d4]" />
+          <Sparkles className="w-8 h-8 text-[#1a1a2e]" />
         </div>
         <h3 className="text-2xl sm:text-3xl font-display font-bold text-sacred-brown mb-2">Generate Your Kundli</h3>
         <p className="text-sacred-text-secondary">Enter your birth details for a personalized Vedic birth chart</p>

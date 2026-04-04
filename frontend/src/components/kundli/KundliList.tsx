@@ -56,7 +56,7 @@ export default function KundliList({
     <div className="max-w-2xl mx-auto py-24 px-4">
       <div className="text-center mb-8">
         <div className="w-16 h-16 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center mx-auto mb-4">
-          <Sparkles className="w-8 h-8 text-[#e8e0d4]" />
+          <Sparkles className="w-8 h-8 text-[#1a1a2e]" />
         </div>
         <h3 className="text-2xl font-display font-bold text-sacred-brown mb-2">My Kundlis</h3>
         <p className="text-sacred-text-secondary">Your saved birth charts</p>
@@ -65,12 +65,12 @@ export default function KundliList({
       {/* Delete All Confirmation Modal */}
       {showDeleteAllConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-[#22223a] rounded-xl border border-red-200 p-6 max-w-md w-full shadow-xl">
-            <div className="flex items-center gap-3 mb-4 text-red-600">
+          <div className="bg-[#22223a] rounded-xl border border-red-500/30 p-6 max-w-md w-full shadow-xl">
+            <div className="flex items-center gap-3 mb-4 text-red-400">
               <AlertTriangle className="w-8 h-8" />
               <h4 className="text-lg font-bold">Delete All Kundlis?</h4>
             </div>
-            <p className="text-gray-600 mb-6">
+            <p className="text-[#b8b0a4] mb-6">
               This will permanently delete all {savedKundlis.length} saved kundlis. This action cannot be undone.
             </p>
             <div className="flex gap-3">
@@ -113,11 +113,11 @@ export default function KundliList({
             <button
               onClick={(e) => handleDelete(k.id, e)}
               disabled={deletingId === k.id}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-red-500/10 hover:bg-red-500/20 border border-red-200 flex items-center justify-center text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 flex items-center justify-center text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
               title="Delete Kundli"
             >
               {deletingId === k.id ? (
-                <div className="w-4 h-4 border-2 border-red-300 border-t-red-500 rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-red-500/30 border-t-red-400 rounded-full animate-spin" />
               ) : (
                 <Trash2 className="w-4 h-4" />
               )}
@@ -134,7 +134,7 @@ export default function KundliList({
       {savedKundlis.length > 0 && (
         <button
           onClick={() => setShowDeleteAllConfirm(true)}
-          className="w-full mb-4 p-3 rounded-xl border border-red-300 text-red-600 hover:bg-red-500/100/10 transition-colors text-sm flex items-center justify-center gap-2"
+          className="w-full mb-4 p-3 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/100/10 transition-colors text-sm flex items-center justify-center gap-2"
         >
           <Trash2 className="w-4 h-4" />
           Delete All Kundlis ({savedKundlis.length})

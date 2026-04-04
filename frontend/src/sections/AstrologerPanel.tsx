@@ -152,7 +152,7 @@ function AddClientForm({ onSaved, onCancel }: AddClientFormProps) {
         <h3 className="text-xl font-display font-bold text-[#e8e0d4]">{t('astrologer.addClient')}</h3>
       </div>
 
-      {error && <div className="mb-4 p-3 bg-red-500/10 border border-red-200 text-red-700 text-sm rounded">{error}</div>}
+      {error && <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 text-red-400 text-sm rounded">{error}</div>}
 
       <div className="space-y-4">
         {/* Name */}

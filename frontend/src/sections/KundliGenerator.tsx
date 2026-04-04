@@ -2162,13 +2162,13 @@ export default function KundliGenerator() {
                       <div
                         key={idx}
                         className={`rounded-xl p-4 border ${dosha.severity === 'high' ? 'border-red-500/40' : 'border-amber-400/40'}`}
-                        style={{ backgroundColor: dosha.severity === 'high' ? 'rgba(139,35,50,0.05)' : 'rgba(245,158,11,0.05)' }}
+                        style={{ backgroundColor: dosha.severity === 'high' ? 'rgba(196,62,78,0.08)' : 'rgba(245,158,11,0.05)' }}
                       >
                         <div className="flex items-center justify-between mb-2">
                           <h5 className="font-display font-semibold" style={{ color: '#e8e0d4' }}>{dosha.name}</h5>
                           <div className="flex items-center gap-2">
                             {dosha.severity !== 'none' && (
-                              <span className={`text-xs px-2 py-0.5 rounded-full ${dosha.severity === 'high' ? 'bg-red-500/20 text-red-400' : dosha.severity === 'medium' ? 'bg-amber-400/20 text-amber-600' : 'bg-yellow-200 text-yellow-700'}`}>
+                              <span className={`text-xs px-2 py-0.5 rounded-full ${dosha.severity === 'high' ? 'bg-red-500/20 text-red-400' : dosha.severity === 'medium' ? 'bg-amber-400/20 text-amber-600' : 'bg-yellow-500/20 text-yellow-400'}`}>
                                 {dosha.severity}
                               </span>
                             )}
@@ -2179,7 +2179,7 @@ export default function KundliGenerator() {
                         </div>
                         <p className="text-sm" style={{ color: '#b8b0a4' }}>{dosha.description}</p>
                         {dosha.remedies && dosha.remedies.length > 0 && (
-                          <div className="mt-3 pt-3 border-t" style={{ borderColor: 'rgba(139,115,85,0.15)' }}>
+                          <div className="mt-3 pt-3 border-t" style={{ borderColor: 'rgba(184,134,11,0.2)' }}>
                             <p className="text-xs font-semibold mb-2" style={{ color: '#B8860B' }}>
                               <AlertTriangle className="w-3 h-3 inline mr-1" />Remedies:
                             </p>
@@ -2261,7 +2261,7 @@ export default function KundliGenerator() {
                 {/* Sade Sati Status */}
                 <div
                   className={`rounded-xl p-4 border ${transitData.sade_sati?.active ? 'border-red-500/40' : 'border-green-500/30'}`}
-                  style={{ backgroundColor: transitData.sade_sati?.active ? 'rgba(139,35,50,0.05)' : 'rgba(34,197,94,0.05)' }}
+                  style={{ backgroundColor: transitData.sade_sati?.active ? 'rgba(196,62,78,0.08)' : 'rgba(34,197,94,0.05)' }}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <h5 className="font-display font-semibold" style={{ color: '#e8e0d4' }}>

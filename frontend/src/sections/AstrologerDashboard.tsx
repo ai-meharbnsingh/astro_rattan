@@ -195,8 +195,8 @@ export default function AstrologerDashboard() {
   }
 
   const statCards = [
-    { label: 'Earnings', value: formatPrice(stats?.earnings ?? 0), icon: IndianRupee, color: 'bg-green-500/20 text-green-600' },
-    { label: 'Consultations', value: stats?.consultations ?? 0, icon: Users, color: 'bg-blue-500/20 text-blue-600' },
+    { label: 'Earnings', value: formatPrice(stats?.earnings ?? 0), icon: IndianRupee, color: 'bg-green-500/20 text-green-400' },
+    { label: 'Consultations', value: stats?.consultations ?? 0, icon: Users, color: 'bg-blue-500/20 text-blue-400' },
     { label: 'Rating', value: (stats?.rating ?? 0).toFixed(1), icon: Star, color: 'bg-yellow-100 text-yellow-600' },
     { label: 'Pending', value: stats?.upcoming ?? 0, icon: Clock, color: 'bg-purple-100 text-purple-600' },
   ];
@@ -206,7 +206,7 @@ export default function AstrologerDashboard() {
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-sacred-gold flex items-center justify-center">
-            <Star className="w-5 h-5 text-[#e8e0d4]" />
+            <Star className="w-5 h-5 text-[#1a1a2e]" />
           </div>
           <div>
             <h2 className="text-2xl font-display font-bold text-cosmic-text">Astrologer Dashboard</h2>
