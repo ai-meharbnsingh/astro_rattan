@@ -3,7 +3,8 @@ dasha_engine.py — Vimshottari Dasha Calculation Engine
 =======================================================
 Computes Mahadasha, Antardasha, and Pratyantar Dasha periods based on
 birth nakshatra. Vimshottari total = 120 years. Order starts from birth
-nakshatra lord.
+nakshatra lord. The balance of the first dasha is calculated based on
+the Moon's position within the nakshatra at birth.
 """
 from datetime import datetime, timedelta
 
@@ -62,13 +63,68 @@ NAKSHATRA_LORD = {
     "Revati": "Mercury",
 }
 
+# Nakshatra order for computing Moon's position within nakshatra
+NAKSHATRA_ORDER = [
+    "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra",
+    "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni",
+    "Uttara Phalguni", "Hasta", "Chitra", "Swati", "Vishakha",
+    "Anuradha", "Jyeshtha", "Mula", "Purva Ashadha", "Uttara Ashadha",
+    "Shravana", "Dhanishta", "Shatabhisha", "Purva Bhadrapada",
+    "Uttara Bhadrapada", "Revati",
+]
+
 VIMSHOTTARI_TOTAL = 120  # years
+NAKSHATRA_SPAN = 13 + 20.0 / 60.0  # 13°20' = 13.3333°
 
 
 def _get_dasha_sequence(starting_lord: str) -> list:
     """Return the 9-planet dasha sequence starting from a given lord."""
     start_idx = DASHA_ORDER.index(starting_lord)
     return DASHA_ORDER[start_idx:] + DASHA_ORDER[:start_idx]
+
+
+def _calculate_dasha_balance(birth_nakshatra: str, moon_longitude: float = None) -> float:
+    """
+    Calculate the balance (remaining fraction) of the first Mahadasha at birth.
+
+    In Vimshottari Dasha, the first dasha's remaining period depends on how far
+    the Moon has traversed through its birth nakshatra. If the Moon is at the
+    START of a nakshatra, the full dasha period remains. If at the END, almost
+    none remains and the next dasha starts.
+
+    Args:
+        birth_nakshatra: Name of Moon's birth nakshatra
+        moon_longitude: Moon's sidereal longitude in degrees (0-360).
+                       If None, returns 1.0 (full balance — legacy behavior).
+
+    Returns:
+        Float between 0.0 and 1.0 representing the remaining fraction of the
+        first dasha at birth.
+    """
+    if moon_longitude is None:
+        return 1.0  # Legacy fallback: full dasha from birth
+
+    # Find nakshatra index
+    try:
+        nak_index = NAKSHATRA_ORDER.index(birth_nakshatra)
+    except ValueError:
+        return 1.0
+
+    # Nakshatra start longitude = index * 13.3333°
+    nak_start = nak_index * NAKSHATRA_SPAN
+
+    # How far Moon has traversed this nakshatra
+    traversed = moon_longitude - nak_start
+    if traversed < 0:
+        traversed += 360.0
+    if traversed > NAKSHATRA_SPAN:
+        traversed = NAKSHATRA_SPAN  # clamp
+
+    # Remaining fraction = how much of the nakshatra is LEFT
+    remaining_fraction = (NAKSHATRA_SPAN - traversed) / NAKSHATRA_SPAN
+
+    # Clamp between 0 and 1
+    return max(0.0, min(1.0, remaining_fraction))
 
 
 def _parse_date(date_str: str) -> datetime:
@@ -144,13 +200,18 @@ def _build_antardasha_periods(
     return antardasha_periods
 
 
-def calculate_dasha(birth_nakshatra: str, birth_date: str) -> dict:
+def calculate_dasha(birth_nakshatra: str, birth_date: str, moon_longitude: float = None) -> dict:
     """
     Calculate Vimshottari Dasha periods from birth nakshatra and birth date.
+
+    The first dasha's balance is calculated from the Moon's position within
+    the nakshatra. Only the REMAINING portion of the first dasha applies
+    from birth — the elapsed portion is excluded.
 
     Args:
         birth_nakshatra: One of 27 nakshatras (e.g. "Ashwini", "Rohini")
         birth_date: Birth date as "YYYY-MM-DD"
+        moon_longitude: Moon's sidereal longitude in degrees (0-360)
 
     Returns:
         {
@@ -172,18 +233,26 @@ def calculate_dasha(birth_nakshatra: str, birth_date: str) -> dict:
     birth_dt = _parse_date(birth_date)
     now = datetime.now()
 
+    # Calculate balance of first dasha at birth
+    balance = _calculate_dasha_balance(birth_nakshatra, moon_longitude)
+
     # Build mahadasha periods
     mahadasha_periods = []
     current_start = birth_dt
 
-    for planet in sequence:
-        years = DASHA_YEARS[planet]
-        end_dt = current_start + timedelta(days=years * 365.25)
+    for i, planet in enumerate(sequence):
+        full_years = DASHA_YEARS[planet]
+        # First planet gets only the remaining balance
+        if i == 0:
+            effective_years = round(full_years * balance, 2)
+        else:
+            effective_years = full_years
+        end_dt = current_start + timedelta(days=effective_years * 365.25)
         mahadasha_periods.append({
             "planet": planet,
             "start_date": current_start.strftime("%Y-%m-%d"),
             "end_date": end_dt.strftime("%Y-%m-%d"),
-            "years": years,
+            "years": effective_years,
         })
         current_start = end_dt
 
@@ -231,13 +300,17 @@ def calculate_dasha(birth_nakshatra: str, birth_date: str) -> dict:
     }
 
 
-def calculate_extended_dasha(birth_nakshatra: str, birth_date: str) -> dict:
+def calculate_extended_dasha(birth_nakshatra: str, birth_date: str, moon_longitude: float = None) -> dict:
     """
     Calculate extended Vimshottari Dasha with Mahadasha -> Antardasha -> Pratyantar.
+
+    The first dasha's balance is calculated from the Moon's position within
+    the nakshatra at birth.
 
     Args:
         birth_nakshatra: One of 27 nakshatras (e.g. "Ashwini", "Rohini")
         birth_date: Birth date as "YYYY-MM-DD"
+        moon_longitude: Moon's sidereal longitude in degrees (0-360)
 
     Returns:
         {
@@ -261,15 +334,20 @@ def calculate_extended_dasha(birth_nakshatra: str, birth_date: str) -> dict:
     birth_dt = _parse_date(birth_date)
     now = datetime.now()
 
+    # Calculate balance of first dasha at birth
+    balance = _calculate_dasha_balance(birth_nakshatra, moon_longitude)
+
     mahadasha_list = []
     current_start = birth_dt
     current_dasha = "Unknown"
     current_antardasha = "Unknown"
     current_pratyantar = "Unknown"
 
-    for planet in sequence:
-        years = DASHA_YEARS[planet]
-        end_dt = current_start + timedelta(days=years * 365.25)
+    for i, planet in enumerate(sequence):
+        full_years = DASHA_YEARS[planet]
+        # First planet gets only the remaining balance
+        effective_years = round(full_years * balance, 2) if i == 0 else full_years
+        end_dt = current_start + timedelta(days=effective_years * 365.25)
         is_current = (current_start <= now <= end_dt)
 
         if is_current:
@@ -277,7 +355,7 @@ def calculate_extended_dasha(birth_nakshatra: str, birth_date: str) -> dict:
 
         # Build antardasha for every mahadasha (but pratyantar only for current)
         antardasha = _build_antardasha_periods(
-            planet, years, current_start, now
+            planet, effective_years, current_start, now
         )
 
         # Find current antardasha and pratyantar
@@ -295,7 +373,7 @@ def calculate_extended_dasha(birth_nakshatra: str, birth_date: str) -> dict:
             "planet": planet,
             "start": current_start.strftime("%Y-%m-%d"),
             "end": end_dt.strftime("%Y-%m-%d"),
-            "years": years,
+            "years": effective_years,
             "is_current": is_current,
             "antardasha": antardasha,
         })

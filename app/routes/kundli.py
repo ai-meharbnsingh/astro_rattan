@@ -194,7 +194,8 @@ def run_iogita_analysis(
     # Need dasha to determine current mahadasha lord
     moon_info = chart.get("planets", {}).get("Moon", {})
     moon_nakshatra = moon_info.get("nakshatra", "Ashwini")
-    dasha_result = calculate_dasha(moon_nakshatra, row["birth_date"])
+    moon_lon = moon_info.get("longitude", None)
+    dasha_result = calculate_dasha(moon_nakshatra, row["birth_date"], moon_longitude=moon_lon)
     current_dasha = dasha_result.get("current_dasha", "Venus")
 
     analysis = run_astro_analysis(planet_positions, current_dasha, row["person_name"])
@@ -288,8 +289,10 @@ def get_dasha(
     row = _fetch_kundli(db, kundli_id, current_user["sub"])
     chart = _chart_data(row)
 
-    moon_nakshatra = chart.get("planets", {}).get("Moon", {}).get("nakshatra", "Ashwini")
-    result = calculate_dasha(moon_nakshatra, row["birth_date"])
+    moon_info = chart.get("planets", {}).get("Moon", {})
+    moon_nakshatra = moon_info.get("nakshatra", "Ashwini")
+    moon_longitude = moon_info.get("longitude", None)
+    result = calculate_dasha(moon_nakshatra, row["birth_date"], moon_longitude=moon_longitude)
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result
@@ -465,8 +468,10 @@ def get_extended_dasha(
     """Calculate extended Vimshottari Dasha with Mahadasha -> Antardasha -> Pratyantar."""
     row = _fetch_kundli(db, kundli_id, current_user["sub"])
     chart = _chart_data(row)
-    moon_nakshatra = chart.get("planets", {}).get("Moon", {}).get("nakshatra", "Ashwini")
-    result = calculate_extended_dasha(moon_nakshatra, row["birth_date"])
+    moon_info = chart.get("planets", {}).get("Moon", {})
+    moon_nakshatra = moon_info.get("nakshatra", "Ashwini")
+    moon_longitude = moon_info.get("longitude", None)
+    result = calculate_extended_dasha(moon_nakshatra, row["birth_date"], moon_longitude=moon_longitude)
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result
@@ -717,8 +722,10 @@ def _build_kundli_pdf(row: dict, chart: dict) -> bytes:
     pdf.add_page()
 
     # ── Vimshottari Dasha ──────────────────────────────────
-    moon_nakshatra = planets.get("Moon", {}).get("nakshatra", "Ashwini") if planets else "Ashwini"
-    dasha_result = calculate_dasha(moon_nakshatra, str(birth_date))
+    moon_pdf_info = planets.get("Moon", {}) if planets else {}
+    moon_nakshatra = moon_pdf_info.get("nakshatra", "Ashwini")
+    moon_pdf_lon = moon_pdf_info.get("longitude", None)
+    dasha_result = calculate_dasha(moon_nakshatra, str(birth_date), moon_longitude=moon_pdf_lon)
 
     pdf.section_title("Vimshottari Dasha")
     current_md = dasha_result.get("current_dasha", "Unknown")
