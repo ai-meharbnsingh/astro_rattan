@@ -1,15 +1,19 @@
 """Vercel serverless entry point — exposes the FastAPI app."""
 import traceback
+from fastapi import FastAPI
+
+app = None
+_startup_error = None
 
 try:
-    from app.main import app  # noqa: F401
+    from app.main import app as _real_app
+    app = _real_app
 except Exception:
-    # If the main app fails to load, serve a diagnostic app so we can see the error
-    from fastapi import FastAPI
-    app = FastAPI()
+    _startup_error = traceback.format_exc()
 
-    _error = traceback.format_exc()
+if app is None:
+    app = FastAPI()
 
     @app.get("/{path:path}")
     def diagnostic(path: str = ""):
-        return {"error": "App failed to start", "traceback": _error}
+        return {"error": "App failed to start", "traceback": _startup_error}
