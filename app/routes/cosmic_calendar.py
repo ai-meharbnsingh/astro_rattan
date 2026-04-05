@@ -423,6 +423,97 @@ def get_today_snapshot(
     return result
 
 
+@router.get("/upcoming", status_code=status.HTTP_200_OK)
+def get_upcoming_events(
+    days: int = Query(default=14, ge=1, le=90),
+    latitude: float = Query(default=28.6139),
+    longitude: float = Query(default=77.2090),
+    db: Any = Depends(get_db),
+):
+    """Return the next upcoming cosmic events — festivals, eclipses, retrogrades, and major transits.
+
+    This is a public endpoint (no auth required) so the Dashboard can call
+    it without a token for the cosmic-events widget.
+    """
+    today = date.today()
+    end_date = today + timedelta(days=days)
+    today_str = today.isoformat()
+    end_str = end_date.isoformat()
+
+    events: list[dict] = []
+
+    # 1. Upcoming festivals from the database
+    festival_rows = db.execute(
+        "SELECT name, date, description, category FROM festivals WHERE date >= %s AND date <= %s ORDER BY date LIMIT 20",
+        (today_str, end_str),
+    ).fetchall()
+    for f in festival_rows:
+        events.append({
+            "type": "festival",
+            "name": f["name"],
+            "date": f["date"],
+            "description": f["description"],
+            "category": f["category"],
+        })
+
+    # 2. Approximate retrograde / sign-change events based on planetary motion
+    #    We sample planet positions daily and flag sign changes.
+    slow_planets = ["Jupiter", "Saturn", "Mars"]
+    prev_signs: dict[str, str] = {}
+    for day_offset in range(days + 1):
+        d = today + timedelta(days=day_offset)
+        d_str = d.isoformat()
+        positions = _get_current_planet_positions(d_str)
+
+        for planet in slow_planets:
+            info = positions.get(planet)
+            if not info:
+                continue
+            current_sign = info["sign"]
+            if planet in prev_signs and prev_signs[planet] != current_sign:
+                events.append({
+                    "type": "transit",
+                    "name": f"{planet} enters {current_sign}",
+                    "date": d_str,
+                    "description": f"{planet} moves from {prev_signs[planet]} to {current_sign}.",
+                    "category": "transit",
+                })
+            prev_signs[planet] = current_sign
+
+    # 3. Eclipses — simple rule: new-moon / full-moon near Rahu/Ketu axis
+    for day_offset in range(days + 1):
+        d = today + timedelta(days=day_offset)
+        d_str = d.isoformat()
+        panchang = calculate_panchang(d_str, latitude, longitude)
+        tithi_name = panchang["tithi"].get("name", "")
+        if tithi_name in ("Amavasya", "Purnima"):
+            positions = _get_current_planet_positions(d_str)
+            moon_lon = positions.get("Moon", {}).get("longitude", 0)
+            rahu_lon = positions.get("Rahu", {}).get("longitude", 0)
+            diff = abs(moon_lon - rahu_lon)
+            if diff > 180:
+                diff = 360 - diff
+            if diff < 18:  # within 18 degrees of Rahu/Ketu axis
+                eclipse_type = "Solar Eclipse" if tithi_name == "Amavasya" else "Lunar Eclipse"
+                events.append({
+                    "type": "eclipse",
+                    "name": f"Possible {eclipse_type}",
+                    "date": d_str,
+                    "description": f"{eclipse_type} indication — Moon near Rahu/Ketu axis on {tithi_name}.",
+                    "category": "eclipse",
+                })
+
+    # Sort all events by date
+    events.sort(key=lambda e: e["date"])
+
+    return {
+        "from_date": today_str,
+        "to_date": end_str,
+        "total": len(events),
+        "events": events,
+    }
+
+
 @router.get("/transits", status_code=status.HTTP_200_OK)
 def get_upcoming_transits(
     kundli_id: str = Query(...),

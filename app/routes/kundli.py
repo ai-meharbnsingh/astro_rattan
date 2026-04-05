@@ -279,14 +279,9 @@ def check_doshas(
     }
 
 
-@router.post("/{kundli_id}/dasha", status_code=status.HTTP_200_OK)
-def get_dasha(
-    kundli_id: str,
-    current_user: dict = Depends(get_current_user),
-    db: Any = Depends(get_db),
-):
-    """Calculate Vimshottari Dasha periods for a kundli."""
-    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+def _compute_dasha(db: Any, kundli_id: str, user_id: str) -> dict:
+    """Shared logic for computing Vimshottari Dasha periods."""
+    row = _fetch_kundli(db, kundli_id, user_id)
     chart = _chart_data(row)
 
     moon_info = chart.get("planets", {}).get("Moon", {})
@@ -296,6 +291,26 @@ def get_dasha(
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result
+
+
+@router.get("/{kundli_id}/dasha", status_code=status.HTTP_200_OK)
+def get_dasha_via_get(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Calculate Vimshottari Dasha periods for a kundli (GET — no request body needed)."""
+    return _compute_dasha(db, kundli_id, current_user["sub"])
+
+
+@router.post("/{kundli_id}/dasha", status_code=status.HTTP_200_OK)
+def get_dasha(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Calculate Vimshottari Dasha periods for a kundli (POST — kept for backward compatibility)."""
+    return _compute_dasha(db, kundli_id, current_user["sub"])
 
 
 @router.get("/{kundli_id}/divisional-charts", status_code=status.HTTP_200_OK)

@@ -109,6 +109,25 @@ def admin_replace_product(
     return dict(row)
 
 
+@router.delete("/api/admin/products/{product_id}", status_code=status.HTTP_200_OK)
+def admin_delete_product(
+    product_id: str,
+    user: dict = Depends(require_role("admin")),
+    db: Any = Depends(get_db),
+):
+    """Soft-delete a product by setting is_active = 0."""
+    existing = db.execute("SELECT id FROM products WHERE id = %s", (product_id,)).fetchone()
+    if existing is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
+
+    db.execute(
+        "UPDATE products SET is_active = 0, updated_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS') WHERE id = %s",
+        (product_id,),
+    )
+    db.commit()
+    return {"message": "Product deactivated", "product_id": product_id}
+
+
 @router.patch("/api/admin/products/{product_id}/stock")
 def admin_update_stock(
     product_id: str,

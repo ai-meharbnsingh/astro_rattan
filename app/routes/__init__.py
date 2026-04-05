@@ -28,6 +28,7 @@ from app.routes.notifications import router as notifications_router
 from app.routes.cosmic_calendar import router as cosmic_calendar_router
 from app.routes.whatsapp import router as whatsapp_router
 from app.routes.astrologer_clients import router as astrologer_clients_router
+from app.routes.preferences import router as preferences_router
 
 # Admin sub-routers (H-03 split)
 from app.routes.admin_users import router as admin_users_router
@@ -73,4 +74,5 @@ all_routers = [
     cosmic_calendar_router,
     whatsapp_router,
     astrologer_clients_router,
+    preferences_router,
 ]

@@ -1,14 +1,90 @@
-"""WebSocket route for consultation chat messages."""
+"""WebSocket and REST routes for consultation chat messages."""
 import json
 from typing import Any
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query
-from app.auth import decode_token
+from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect, Query, status
+from app.auth import decode_token, get_current_user
 from app.database import get_db
 
 router = APIRouter()
 
 # In-memory map: consultation_id -> set of connected WebSockets
 _active_connections: dict[str, set[WebSocket]] = {}
+
+
+# ---------------------------------------------------------------------------
+# REST endpoint — GET /api/messages/{consultation_id}
+# ---------------------------------------------------------------------------
+
+@router.get("/api/messages/{consultation_id}", status_code=status.HTTP_200_OK)
+def get_messages(
+    consultation_id: str,
+    page: int = Query(default=1, ge=1),
+    limit: int = Query(default=50, ge=1, le=200),
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Return message history for a consultation (REST alternative to WebSocket).
+
+    The caller must be either the consultation client or the astrologer.
+    """
+    user_id = current_user["sub"]
+
+    # Verify the consultation exists and the user is a participant
+    consultation = db.execute(
+        """
+        SELECT c.id, c.user_id, a.user_id as astrologer_user_id
+        FROM consultations c
+        JOIN astrologers a ON a.id = c.astrologer_id
+        WHERE c.id = %s
+        """,
+        (consultation_id,),
+    ).fetchone()
+
+    if consultation is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Consultation not found"
+        )
+
+    if user_id not in (consultation["user_id"], consultation["astrologer_user_id"]):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Not a participant in this consultation"
+        )
+
+    offset = (page - 1) * limit
+
+    total = db.execute(
+        "SELECT COUNT(*) as cnt FROM messages WHERE consultation_id = %s",
+        (consultation_id,),
+    ).fetchone()["cnt"]
+
+    rows = db.execute(
+        """SELECT m.id, m.consultation_id, m.sender_id, m.content, m.message_type, m.created_at,
+                  u.name as sender_name
+           FROM messages m
+           JOIN users u ON u.id = m.sender_id
+           WHERE m.consultation_id = %s
+           ORDER BY m.created_at ASC
+           LIMIT %s OFFSET %s""",
+        (consultation_id, limit, offset),
+    ).fetchall()
+
+    return {
+        "consultation_id": consultation_id,
+        "messages": [
+            {
+                "id": r["id"],
+                "sender_id": r["sender_id"],
+                "sender_name": r["sender_name"],
+                "content": r["content"],
+                "type": r["message_type"],
+                "created_at": r["created_at"],
+            }
+            for r in rows
+        ],
+        "total": total,
+        "page": page,
+        "limit": limit,
+    }
 
 
 @router.websocket("/ws/consultation/{consultation_id}")

@@ -1,0 +1,73 @@
+{
+  "summary": {
+    "python_files": 72,
+    "python_lines": 21200,
+    "python_functions": 447,
+    "python_classes": 81,
+    "frontend_files": 86,
+    "frontend_lines": 26500,
+    "test_coverage_percent": 51.5,
+    "modules_with_tests": 34,
+    "modules_missing_tests": 32
+  },
+  "quality_flags": {
+    "large_files": [
+      "frontend/src/sections/KundliGenerator.tsx (2870 lines) — CRITICAL monolith, 70 hook usages",
+      "frontend/src/components/InteractiveKundli.tsx (1280 lines, 42 hook usages)",
+      "frontend/src/sections/Dashboard.tsx (1160 lines)",
+      "app/routes/kundli.py (1156 lines, 30 functions, includes PDF generation)",
+      "app/dosha_engine.py (1153 lines, 40 functions)"
+    ],
+    "long_functions": [
+      "app/routes/kundli.py:_build_kundli_pdf (~200 lines)",
+      "app/ai_engine.py:_rule_based_period_prediction (~110 lines)",
+      "app/dosha_engine.py:analyze_yogas_and_doshas (~100 lines)",
+      "app/astro_engine.py:calculate_planet_positions (~90 lines)",
+      "app/routes/kundli.py:generate_kundli (~80 lines)",
+      "app/horoscope_generator.py:generate_daily_horoscopes (~70 lines)",
+      "app/seed_data.py:seed_all (~65 lines)",
+      "app/database.py:SCHEMA (~500+ line string constant)",
+      "app/kp_engine.py:calculate_kp_chart (~60 lines)"
+    ],
+    "circular_imports": [],
+    "orphan_components": [
+      "frontend/src/components/SearchBar.tsx",
+      "frontend/src/components/NotificationBell.tsx",
+      "frontend/src/components/three/ObservatoryBackground.tsx"
+    ],
+    "missing_tests": [
+      "app/muhurat_engine.py",
+      "app/varshphal_engine.py",
+      "app/transit_engine.py",
+      "app/avakhada_engine.py",
+      "app/shadbala_engine.py",
+      "app/ashtakvarga_engine.py",
+      "app/divisional_charts.py",
+      "app/kp_engine.py",
+      "app/lalkitab_engine.py",
+      "app/prashnavali_engine.py",
+      "app/matching_engine.py",
+      "app/tarot_engine.py",
+      "app/numerology_engine.py",
+      "app/panchang_engine.py",
+      "app/whatsapp_engine.py",
+      "app/email_service.py",
+      "app/routes/admin.py",
+      "app/routes/admin_dashboard.py",
+      "app/routes/admin_users.py",
+      "app/routes/admin_orders.py",
+      "app/routes/admin_content.py",
+      "app/routes/admin_blog.py",
+      "app/routes/admin_products.py",
+      "app/routes/gamification.py",
+      "app/routes/referral.py",
+      "app/routes/bundles.py",
+      "app/routes/cosmic_calendar.py",
+      "app/routes/forum.py",
+      "app/routes/notifications.py",
+      "app/routes/search.py",
+      "app/routes/messages.py",
+      "app/routes/astrologer_clients.py"
+    ]
+  }
+}

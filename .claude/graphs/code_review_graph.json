@@ -1,0 +1,43 @@
+{
+  "python_impact": {
+    "highest_blast_radius": [
+      { "module": "app/database.py", "imported_by_count": 35, "risk": "CRITICAL — every route depends on this" },
+      { "module": "app/auth.py", "imported_by_count": 29, "risk": "HIGH — all authenticated routes break" },
+      { "module": "app/models.py", "imported_by_count": 23, "risk": "HIGH — Pydantic models for all request/response" },
+      { "module": "app/config.py", "imported_by_count": 20, "risk": "HIGH — env vars, feature flags" },
+      { "module": "app/astro_engine.py", "imported_by_count": 12, "risk": "HIGH — core chart calculations" }
+    ]
+  },
+  "frontend_impact": {
+    "highest_blast_radius": [
+      { "module": "src/lib/api.ts", "imported_by_count": 35, "risk": "CRITICAL — every data-fetching component" },
+      { "module": "src/components/ui/button.tsx", "imported_by_count": 34, "risk": "HIGH — UI primitive" },
+      { "module": "src/hooks/useAuth.ts", "imported_by_count": 22, "risk": "HIGH — auth context everywhere" },
+      { "module": "src/components/InteractiveKundli.tsx", "imported_by_count": 5, "risk": "MEDIUM — chart rendering in 5 views" }
+    ]
+  },
+  "dead_code": {
+    "python": [
+      "app/sanitize.py — zero imports anywhere",
+      "app/cache.py — zero imports anywhere",
+      "app/generate_library_audio.py — standalone script, never imported",
+      "app/routes/admin.py — legacy shim, not in __init__.py or main.py"
+    ],
+    "frontend": [
+      "src/components/three/ObservatoryBackground.tsx — completely orphaned",
+      "src/lib/r3f-shim.ts — zero imports",
+      "src/components/ui/separator.tsx — unused shadcn component",
+      "src/components/ui/spinner.tsx — unused shadcn component",
+      "src/components/ui/sheet.tsx — unused shadcn component",
+      "src/components/ui/navigation-menu.tsx — unused shadcn component",
+      "src/components/ui/label.tsx — unused shadcn component"
+    ]
+  },
+  "missing_backend_routes": [
+    { "route": "GET /api/preferences", "called_by": "PreferencesPage.tsx", "status": "404 — route does not exist" },
+    { "route": "PUT /api/preferences", "called_by": "PreferencesPage.tsx", "status": "404 — route does not exist" },
+    { "route": "GET /api/astrologers/favorites", "called_by": "PreferencesPage.tsx", "status": "404 — route does not exist" },
+    { "route": "DELETE /api/admin/products/{product_id}", "called_by": "AdminDashboard.tsx", "status": "405 — route missing" }
+  ],
+  "route_count": 118
+}

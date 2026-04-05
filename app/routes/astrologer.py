@@ -1,11 +1,26 @@
 """Astrologer dashboard and profile management routes."""
 from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, status
-from app.auth import require_role
+from app.auth import get_current_user, require_role
 from app.database import get_db
 from app.models import AstrologerProfileUpdate, AstrologerAvailability
 
 router = APIRouter()
+
+
+@router.get("/api/astrologers/favorites")
+def get_favorite_astrologers(
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Return the current user's favorite astrologers.
+
+    TODO: The favorites table does not exist yet. Once an
+    ``astrologer_favorites`` table is created (user_id, astrologer_id),
+    this endpoint should query it and return joined astrologer profiles.
+    For now it returns an empty list so the frontend does not break.
+    """
+    return {"favorites": []}
 
 
 def _get_astrologer_record(user_id: str, db: Any):

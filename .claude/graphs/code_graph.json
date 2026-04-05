@@ -1,0 +1,35 @@
+{
+  "summary": {
+    "python_files_scanned": 63,
+    "frontend_files_scanned": 72,
+    "total_endpoints": 118,
+    "endpoint_to_frontend_mappings": 100
+  },
+  "python_dependency_chains": {
+    "entry_point": "api/index.py -> app/main.py",
+    "main_imports": ["app.config", "app.database", "app.migrations", "app.routes", "app.seed_data", "app.horoscope_generator", "app.logging_middleware", "app.rate_limit"],
+    "routes_init_aggregates": "34 route modules into all_routers",
+    "heaviest_route": "app/routes/kundli.py — imports 11 engine modules",
+    "engine_chains": [
+      "astro_engine <- panchang_engine <- muhurat_engine",
+      "astro_engine <- transit_engine, varshphal_engine, kp_engine",
+      "astro_iogita_engine <- lalkitab_engine",
+      "dosha_engine (standalone, only imported by routes/kundli.py)"
+    ]
+  },
+  "frontend_dependency_chains": {
+    "entry_point": "App.tsx imports 8 sections (Navigation, Hero, Features, About, Testimonials, CTA, Footer, WhatsAppWidget)",
+    "heaviest_section": "KundliGenerator.tsx — 21 imports including 8 kundli sub-components",
+    "api_layer": "src/lib/api.ts provides api.get/post/put/patch/delete wrappers — used by all data-fetching components",
+    "ui_library": "14 shadcn/ui components, all depend on @/lib/utils"
+  },
+  "missing_backend_routes": [
+    "GET /api/messages/{consultation_id} — MessagesPage.tsx calls it, only WebSocket route exists",
+    "GET /api/preferences — PreferencesPage.tsx calls it, no route exists",
+    "PUT /api/preferences — PreferencesPage.tsx calls it, no route exists",
+    "GET /api/astrologers/favorites — PreferencesPage.tsx calls it, no route exists",
+    "GET /api/cosmic-calendar/upcoming — Dashboard.tsx calls it, only /transits exists",
+    "GET /api/kundli/{id}/dasha — Dashboard.tsx uses GET but backend only defines POST"
+  ],
+  "backend_only_endpoints": "30+ routes never called from frontend (admin APIs, webhooks, utility endpoints)"
+}
