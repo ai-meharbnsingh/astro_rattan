@@ -75,6 +75,17 @@ os.makedirs(os.path.join(STATIC_DIR, "uploads"), exist_ok=True)
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
+@app.get("/")
+def root():
+    """Root endpoint — API welcome."""
+    return {
+        "name": APP_NAME,
+        "version": APP_VERSION,
+        "docs": "/docs",
+        "health": "/health",
+    }
+
+
 @app.get("/health")
 def health():
     """Health check endpoint."""
