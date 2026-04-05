@@ -107,6 +107,18 @@ function buildDivisionalChartData(data: any): ChartData | null {
 // ─── Helper: build ChartData from transit API response ──────────────
 function buildTransitChartData(transitData: any): ChartData | null {
   if (!transitData?.transits) return null;
+  const asc = transitData.chart_data?.ascendant;
+  let houses = transitData.chart_data?.houses;
+  // Generate houses from ascendant if API didn't return them
+  if (!houses && asc?.sign) {
+    const ascIdx = ZODIAC_SIGNS.indexOf(asc.sign);
+    if (ascIdx >= 0) {
+      houses = Array.from({ length: 12 }, (_, i) => ({
+        number: i + 1,
+        sign: ZODIAC_SIGNS[(ascIdx + i) % 12],
+      }));
+    }
+  }
   return {
     planets: transitData.transits.map((tr: any) => ({
       planet: tr.planet,
@@ -116,8 +128,8 @@ function buildTransitChartData(transitData: any): ChartData | null {
       sign_degree: tr.sign_degree || tr.degree || 0,
       status: tr.is_retrograde ? 'Retrograde' : (tr.effect || ''),
     })),
-    houses: transitData.chart_data?.houses,
-    ascendant: transitData.chart_data?.ascendant,
+    houses,
+    ascendant: asc,
   };
 }
 

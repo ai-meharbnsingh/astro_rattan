@@ -110,19 +110,32 @@ export default function ConsolidatedReport({
   };
 
   // Build transit chart data (include houses + ascendant for rotation)
+  const ZODIAC = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
   const transitChartDataRaw: ChartData | null = transitData?.transits
-    ? {
-        planets: transitData.transits.map((tr: any) => ({
-          planet: tr.planet,
-          sign: tr.current_sign || tr.sign || 'Aries',
-          house: tr.house_from_moon || tr.house || 1,
-          nakshatra: tr.nakshatra || '',
-          sign_degree: tr.degree || 0,
-          status: tr.effect || '',
-        })),
-        houses: transitData.chart_data?.houses || result?.chart_data?.houses,
-        ascendant: transitData.chart_data?.ascendant || result?.chart_data?.ascendant,
-      }
+    ? (() => {
+        const asc = transitData.chart_data?.ascendant || result?.chart_data?.ascendant;
+        let houses = transitData.chart_data?.houses || result?.chart_data?.houses;
+        // Generate houses from ascendant if missing
+        if (!houses && asc?.sign) {
+          const ascIdx = ZODIAC.indexOf(asc.sign);
+          houses = Array.from({ length: 12 }, (_, i) => ({
+            number: i + 1,
+            sign: ZODIAC[(ascIdx + i) % 12],
+          }));
+        }
+        return {
+          planets: transitData.transits.map((tr: any) => ({
+            planet: tr.planet,
+            sign: tr.current_sign || tr.sign || 'Aries',
+            house: tr.house_from_moon || tr.house || 1,
+            nakshatra: tr.nakshatra || '',
+            sign_degree: tr.degree || 0,
+            status: tr.effect || '',
+          })),
+          houses,
+          ascendant: asc,
+        };
+      })()
     : null;
 
   // Apply gochar rotation
