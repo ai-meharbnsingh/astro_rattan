@@ -54,6 +54,10 @@ STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
 FRONTEND_URL = os.getenv("FRONTEND_URL", f"http://localhost:{FRONTEND_PORT}")
 SITE_URL = _env_first("SITE_URL", default="https://astrovedic.com")
 
+# Vercel serverless detection — filesystem under /var/task is read-only, use /tmp
+IS_VERCEL = bool(os.getenv("VERCEL") or os.getenv("VERCEL_ENV"))
+STATIC_DIR = "/tmp/static" if IS_VERCEL else os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
+
 # App
 APP_VERSION = "1.0.0"
 APP_NAME = "AstroVedic"

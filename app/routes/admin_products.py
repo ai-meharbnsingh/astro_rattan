@@ -154,7 +154,8 @@ def admin_toggle_product(
 # ============================================================
 
 _ALLOWED_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"}
-_UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "static", "uploads")
+from app.config import STATIC_DIR
+_UPLOAD_DIR = os.path.join(STATIC_DIR, "uploads")
 
 
 @router.post("/api/admin/upload-image")

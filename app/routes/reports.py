@@ -25,9 +25,8 @@ REPORT_PRICES = {
 }
 
 # Static reports directory
-_REPORTS_DIR = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "static", "reports"
-)
+from app.config import STATIC_DIR
+_REPORTS_DIR = os.path.join(STATIC_DIR, "reports")
 os.makedirs(_REPORTS_DIR, exist_ok=True)
 
 
