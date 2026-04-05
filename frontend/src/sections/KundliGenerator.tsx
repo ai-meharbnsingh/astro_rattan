@@ -64,6 +64,9 @@ export default function KundliGenerator() {
   const [loadingShadbala, setLoadingShadbala] = useState(false);
   const [transitData, setTransitData] = useState<any>(null);
   const [loadingTransit, setLoadingTransit] = useState(false);
+  const [transitHouseShift, setTransitHouseShift] = useState(0);
+  const [transitDate, setTransitDate] = useState('');
+  const [transitTime, setTransitTime] = useState('');
   const [d10Data, setD10Data] = useState<any>(null);
   const [loadingD10, setLoadingD10] = useState(false);
   const [varshphalData, setVarshphalData] = useState<any>(null);
@@ -284,12 +287,18 @@ export default function KundliGenerator() {
     setLoadingShadbala(false);
   };
 
-  // Fetch transits (Gochara)
-  const fetchTransit = async () => {
-    if (!result?.id || transitData) return;
+  // Fetch transits (Gochara) — supports custom date/time
+  const fetchTransit = async (customDate?: string, customTime?: string) => {
+    if (!result?.id) return;
+    // Skip cache if custom date provided
+    if (!customDate && transitData) return;
     setLoadingTransit(true);
+    setTransitHouseShift(0); // reset house shift on new fetch
     try {
-      const data = await api.post(`/api/kundli/${result.id}/transits`, {});
+      const body: any = {};
+      if (customDate) body.transit_date = customDate;
+      if (customTime) body.transit_time = customTime;
+      const data = await api.post(`/api/kundli/${result.id}/transits`, body);
       setTransitData(data);
     } catch { /* fallback */ }
     setLoadingTransit(false);
@@ -666,7 +675,7 @@ export default function KundliGenerator() {
             <TabsTrigger value="avakhada" onClick={fetchAvakhada}>Avakhada</TabsTrigger>
             <TabsTrigger value="yoga-dosha" onClick={fetchYogaDosha}>Yogas</TabsTrigger>
             <TabsTrigger value="predictions" onClick={() => fetchPredictions()}>Predictions</TabsTrigger>
-            <TabsTrigger value="transits" onClick={fetchTransit}>Transits</TabsTrigger>
+            <TabsTrigger value="transits" onClick={() => fetchTransit()}>Transits</TabsTrigger>
             <TabsTrigger value="varshphal" onClick={() => fetchVarshphal()}>Varshphal</TabsTrigger>
           </TabsList>
 
@@ -2221,6 +2230,59 @@ export default function KundliGenerator() {
 
           {/* TRANSITS (GOCHARA) TAB */}
           <TabsContent value="transits">
+            {/* Date/Time Picker — always visible */}
+            <div className="rounded-xl p-4 mb-4 border" style={{ backgroundColor: 'rgba(184,134,11,0.04)', borderColor: 'rgba(184,134,11,0.25)' }}>
+              <h4 className="font-display font-bold text-lg mb-3" style={{ color: '#D4A052' }}>Gochara (Transit) Predictions</h4>
+              <div className="flex flex-wrap items-end gap-3">
+                <div>
+                  <label className="text-xs block mb-1" style={{ color: '#b8b0a4' }}>Date</label>
+                  <input
+                    type="date"
+                    value={transitDate}
+                    onChange={(e) => setTransitDate(e.target.value)}
+                    className="px-3 py-1.5 rounded-lg text-sm border"
+                    style={{ backgroundColor: '#22223a', borderColor: 'rgba(184,134,11,0.3)', color: '#e8e0d4' }}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs block mb-1" style={{ color: '#b8b0a4' }}>Time</label>
+                  <input
+                    type="time"
+                    value={transitTime}
+                    onChange={(e) => setTransitTime(e.target.value)}
+                    className="px-3 py-1.5 rounded-lg text-sm border"
+                    style={{ backgroundColor: '#22223a', borderColor: 'rgba(184,134,11,0.3)', color: '#e8e0d4' }}
+                  />
+                </div>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    setTransitData(null);
+                    fetchTransit(transitDate || undefined, transitTime ? `${transitTime}:00` : undefined);
+                  }}
+                  className="px-4"
+                  style={{ backgroundColor: '#D4A052', color: '#1a1a2e' }}
+                >
+                  {transitDate ? 'View Transits' : 'Current Transits'}
+                </Button>
+                {transitDate && (
+                  <button
+                    onClick={() => { setTransitDate(''); setTransitTime(''); setTransitData(null); fetchTransit(); }}
+                    className="text-xs px-3 py-1.5 rounded-lg border"
+                    style={{ borderColor: 'rgba(184,134,11,0.3)', color: '#b8b0a4' }}
+                  >
+                    Reset to Now
+                  </button>
+                )}
+              </div>
+              {transitData && (
+                <div className="flex flex-wrap gap-4 text-sm mt-3">
+                  <span style={{ color: '#e8e0d4' }}><strong>Transit Date:</strong> {transitData.transit_date}</span>
+                  <span style={{ color: '#e8e0d4' }}><strong>Natal Moon:</strong> {transitData.natal_moon_sign}</span>
+                </div>
+              )}
+            </div>
+
             {loadingTransit ? (
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
@@ -2228,39 +2290,47 @@ export default function KundliGenerator() {
               </div>
             ) : transitData ? (
               <div className="space-y-6">
-                {/* Transit Chart — Current planet positions on Kundli */}
+                {/* Transit Chart — clickable houses */}
                 <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/20">
-                  <h4 className="font-display font-semibold text-sacred-brown mb-4">Current Transit Chart ({transitData.transit_date})</h4>
+                  <h4 className="font-display font-semibold text-sacred-brown mb-2">Transit Chart ({transitData.transit_date})</h4>
+                  <p className="text-xs mb-3" style={{ color: '#b8b0a4' }}>Click any house to make it the Lagna (1st house)</p>
                   <div className="w-full max-w-[600px] mx-auto">
-                    <InteractiveKundli
-                      chartData={{
-                        planets: (transitData.transits || []).map((tr: any) => ({
-                          planet: tr.planet,
-                          sign: tr.current_sign,
-                          house: tr.house || 1,
-                          nakshatra: tr.nakshatra || '',
-                          sign_degree: tr.sign_degree || 0,
-                          status: tr.is_retrograde ? 'Retrograde' : (tr.effect === 'favorable' ? 'Benefic' : 'Malefic'),
-                        })),
-                        houses: transitData.chart_data?.houses || result?.chart_data?.houses,
-                      }}
-                      onPlanetClick={() => {}}
-                      onHouseClick={() => {}}
-                    />
+                    {(() => {
+                      const shift = transitHouseShift;
+                      const transitPlanets = (transitData.transits || []).map((tr: any) => ({
+                        planet: tr.planet,
+                        sign: tr.current_sign,
+                        house: shift ? ((((tr.house || 1) - 1 - shift + 12) % 12) + 1) : (tr.house || 1),
+                        nakshatra: tr.nakshatra || '',
+                        sign_degree: tr.sign_degree || 0,
+                        status: tr.is_retrograde ? 'Retrograde' : (tr.effect === 'favorable' ? 'Benefic' : 'Malefic'),
+                      }));
+                      const baseHouses = transitData.chart_data?.houses || result?.chart_data?.houses;
+                      const transitHouses = shift && baseHouses
+                        ? baseHouses.map((h: any) => ({ number: ((h.number - 1 - shift + 12) % 12) + 1, sign: h.sign }))
+                        : baseHouses;
+                      return (
+                        <InteractiveKundli
+                          chartData={{ planets: transitPlanets, houses: transitHouses }}
+                          onPlanetClick={() => {}}
+                          onHouseClick={(house) => {
+                            // Clicking house X: shift so that house becomes house 1
+                            const originalHouse = shift ? ((house - 1 + shift) % 12) + 1 : house;
+                            const newShift = originalHouse - 1;
+                            setTransitHouseShift(newShift === 0 ? 0 : newShift);
+                          }}
+                        />
+                      );
+                    })()}
                   </div>
                   <div className="flex items-center justify-center gap-4 mt-2 text-xs text-sacred-text-secondary">
-                    <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full" style={{backgroundColor: '#B8860B'}} /> Benefic Transit</span>
-                    <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full" style={{backgroundColor: '#8B2332'}} /> Malefic Transit</span>
-                  </div>
-                </div>
-
-                {/* Header with date and Moon sign */}
-                <div className="rounded-xl p-4 border" style={{ backgroundColor: 'rgba(184,134,11,0.04)', borderColor: 'rgba(184,134,11,0.25)' }}>
-                  <h4 className="font-display font-bold text-lg mb-2" style={{ color: '#e8e0d4' }}>Gochara (Transits)</h4>
-                  <p className="text-sm mb-3" style={{ color: '#b8b0a4' }}>Current planetary positions and their effects on your birth chart</p>
-                  <div className="flex flex-wrap gap-4 text-sm">
-                    <span style={{ color: '#e8e0d4' }}><strong>Transit Date:</strong> {transitData.transit_date}</span>
-                    <span style={{ color: '#e8e0d4' }}><strong>Natal Moon:</strong> {transitData.natal_moon_sign}</span>
+                    <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full" style={{backgroundColor: '#D4A052'}} /> Benefic Transit</span>
+                    <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full" style={{backgroundColor: '#C43E4E'}} /> Malefic Transit</span>
+                    {transitHouseShift > 0 && (
+                      <button onClick={() => setTransitHouseShift(0)} className="text-xs px-2 py-0.5 rounded border" style={{ borderColor: 'rgba(184,134,11,0.3)', color: '#D4A052' }}>
+                        Reset View
+                      </button>
+                    )}
                   </div>
                 </div>
 

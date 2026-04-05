@@ -129,15 +129,16 @@ def _check_sade_sati(moon_sign: str, saturn_sign: str) -> Dict[str, Any]:
 
 # ── Main transit calculation ──────────────────────────────────
 
-def calculate_transits(natal_chart_data: Dict[str, Any], latitude: float = 0.0, longitude: float = 0.0) -> Dict[str, Any]:
+def calculate_transits(natal_chart_data: Dict[str, Any], latitude: float = 0.0, longitude: float = 0.0, transit_date: str = None, transit_time: str = None) -> Dict[str, Any]:
     """
-    Calculate current planetary transits and their Gochara effects on a natal chart.
+    Calculate planetary transits and their Gochara effects on a natal chart.
 
     Args:
-        natal_chart_data: The stored chart_data dict from a kundli row,
-                          containing planets -> {sign, house, ...} and ascendant.
-        latitude:  Observer latitude for ascendant calculation (default 0.0).
-        longitude: Observer longitude for ascendant calculation (default 0.0).
+        natal_chart_data: The stored chart_data dict from a kundli row.
+        latitude:  Observer latitude for ascendant calculation.
+        longitude: Observer longitude for ascendant calculation.
+        transit_date: Optional date string "YYYY-MM-DD". Defaults to today.
+        transit_time: Optional time string "HH:MM:SS". Defaults to current time.
 
     Returns:
         {
@@ -161,13 +162,20 @@ def calculate_transits(natal_chart_data: Dict[str, Any], latitude: float = 0.0, 
     # Calculate current planetary positions using the birth location for correct ascendant.
     # Planet longitudes are nearly location-independent, but the ascendant (Lagna)
     # depends heavily on the observer's latitude and longitude.
-    now_utc = datetime.now(timezone.utc)
-
     # Approximate timezone offset from longitude (15° per hour)
     tz_offset = round(longitude / 15.0 * 2) / 2  # round to nearest 0.5
-    local_now = now_utc + timedelta(hours=tz_offset)
-    today_str = local_now.strftime("%Y-%m-%d")
-    time_str = local_now.strftime("%H:%M:%S")
+
+    if transit_date and transit_time:
+        today_str = transit_date
+        time_str = transit_time
+    elif transit_date:
+        today_str = transit_date
+        time_str = "12:00:00"
+    else:
+        now_utc = datetime.now(timezone.utc)
+        local_now = now_utc + timedelta(hours=tz_offset)
+        today_str = local_now.strftime("%Y-%m-%d")
+        time_str = local_now.strftime("%H:%M:%S")
 
     current_positions = calculate_planet_positions(
         birth_date=today_str,

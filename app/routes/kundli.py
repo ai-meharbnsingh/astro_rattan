@@ -980,13 +980,22 @@ def download_kundli_pdf(
 @router.post("/{kundli_id}/transits", status_code=status.HTTP_200_OK)
 def get_transits(
     kundli_id: str,
+    body: dict = {},
     current_user: dict = Depends(get_current_user),
     db: Any = Depends(get_db),
 ):
-    """Calculate current Gochara (transit) predictions for a kundli."""
+    """Calculate Gochara (transit) predictions for a kundli. Accepts optional transit_date and transit_time."""
     row = _fetch_kundli(db, kundli_id, current_user["sub"])
     chart = _chart_data(row)
-    result = calculate_transits(chart, latitude=row.get("latitude", 0.0), longitude=row.get("longitude", 0.0))
+    transit_date = body.get("transit_date") if isinstance(body, dict) else None
+    transit_time = body.get("transit_time") if isinstance(body, dict) else None
+    result = calculate_transits(
+        chart,
+        latitude=row.get("latitude", 0.0),
+        longitude=row.get("longitude", 0.0),
+        transit_date=transit_date,
+        transit_time=transit_time,
+    )
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result
