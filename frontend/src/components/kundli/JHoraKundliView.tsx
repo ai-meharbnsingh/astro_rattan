@@ -207,6 +207,7 @@ export default function JHoraKundliView({
 
   // Transit chart data
   const transitChartData = useMemo(() => buildTransitChartData(transitData), [transitData]);
+  const [gocharShift, setGocharShift] = useState(0);
 
   // Divisional chart dropdown state + cache
   const [leftChart, setLeftChart] = useState('D9');
@@ -400,16 +401,36 @@ export default function JHoraKundliView({
           </div>
         </div>
 
-        {/* ── Transit (top-right) ── */}
+        {/* ── Transit (top-right) — clickable ── */}
         <div style={chartCell}>
-          <div style={chartLabel}>Transit</div>
+          <div style={chartLabel}>Transit <span style={{ fontSize: '9px', opacity: 0.6, fontWeight: 'normal' }}>(click house → lagan)</span></div>
           <div style={chartInner}>
             {loadingTransit ? <MiniLoader /> : transitChartData ? (
-              <InteractiveKundli chartData={transitChartData} compact />
+              <InteractiveKundli
+                chartData={gocharShift ? {
+                  ...transitChartData,
+                  planets: transitChartData.planets.map((p: PlanetData) => ({
+                    ...p,
+                    house: ((((p.house || 1) - 1 - gocharShift + 12) % 12) + 1),
+                  })),
+                  houses: transitChartData.houses?.map((h: any) => ({
+                    ...h,
+                    house: ((((h.house || 1) - 1 - gocharShift + 12) % 12) + 1),
+                  })),
+                } : transitChartData}
+                compact
+                onHouseClick={(house) => {
+                  const orig = gocharShift ? ((house - 1 + gocharShift) % 12) + 1 : house;
+                  setGocharShift(orig - 1 === 0 ? 0 : orig - 1);
+                }}
+              />
             ) : (
               <span style={{ color: MUTED, fontSize: '10px' }}>Loading...</span>
             )}
           </div>
+          {gocharShift > 0 && (
+            <button onClick={() => setGocharShift(0)} style={{ display: 'block', margin: '2px auto', fontSize: '9px', color: HEADER_COLOR, textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer' }}>Reset View</button>
+          )}
         </div>
 
         {/* ── Bottom-left: selectable divisional chart ── */}

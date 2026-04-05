@@ -53,6 +53,7 @@ export default function ConsolidatedReport({
   const [loadingTransit, setLoadingTransit] = useState(false);
   const [d10Data, setD10Data] = useState<any>(null);
   const [loadingD10, setLoadingD10] = useState(false);
+  const [gocharShift, setGocharShift] = useState(0);
 
   const fetchTransit = useCallback(async () => {
     if (!result?.id || transitData) return;
@@ -257,20 +258,40 @@ export default function ConsolidatedReport({
               </div>
             </div>
 
-            {/* Gochar (Transit) */}
+            {/* Gochar (Transit) — clickable */}
             <div className="border border-[#2a2a4e] rounded-lg p-2">
               <h4 className="text-[11px] font-bold text-center mb-1" style={{ color: '#B8860B' }}>
-                {t('kundli.gochar')}
+                {t('kundli.gochar')} <span className="text-[9px] font-normal opacity-60">(click house → lagan)</span>
               </h4>
               <div className="flex justify-center" style={{ maxWidth: '250px', margin: '0 auto' }}>
                 {loadingTransit ? (
                   <div className="flex items-center justify-center py-12"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
                 ) : transitChartData ? (
-                  <InteractiveKundli chartData={transitChartData} compact />
+                  <InteractiveKundli
+                    chartData={gocharShift ? {
+                      ...transitChartData,
+                      planets: transitChartData.planets.map((p: PlanetData) => ({
+                        ...p,
+                        house: ((((p.house || 1) - 1 - gocharShift + 12) % 12) + 1),
+                      })),
+                      houses: transitChartData.houses?.map((h: any) => ({
+                        ...h,
+                        house: ((((h.house || 1) - 1 - gocharShift + 12) % 12) + 1),
+                      })),
+                    } : transitChartData}
+                    compact
+                    onHouseClick={(house) => {
+                      const orig = gocharShift ? ((house - 1 + gocharShift) % 12) + 1 : house;
+                      setGocharShift(orig - 1 === 0 ? 0 : orig - 1);
+                    }}
+                  />
                 ) : (
                   <p className="text-[10px] text-center py-12 text-[#e8e0d4]/40">Loading...</p>
                 )}
               </div>
+              {gocharShift > 0 && (
+                <button onClick={() => setGocharShift(0)} className="block mx-auto mt-1 text-[9px] text-[#B8860B] underline">Reset View</button>
+              )}
             </div>
           </div>
 

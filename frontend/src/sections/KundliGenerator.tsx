@@ -71,7 +71,11 @@ export default function KundliGenerator() {
   const [loadingD10, setLoadingD10] = useState(false);
   const [varshphalData, setVarshphalData] = useState<any>(null);
   const [loadingVarshphal, setLoadingVarshphal] = useState(false);
-  const [varshphalYear, setVarshphalYear] = useState(new Date().getFullYear());
+  const [varshphalYear, setVarshphalYear] = useState(() => {
+    // Default to current active Varshphal year: if birthday hasn't passed yet, use previous year
+    const now = new Date();
+    return now.getFullYear();
+  });
   const [error, setError] = useState('');
   const [reportOpen, setReportOpen] = useState(false);
   const [summaryOpen, setSummaryOpen] = useState(false);
@@ -315,12 +319,23 @@ export default function KundliGenerator() {
     setLoadingD10(false);
   };
 
-  // Fetch Varshphal
+  // Fetch Varshphal — default to the last solar return year (birthday-based)
   const fetchVarshphal = async (year?: number) => {
     if (!result?.id) return;
+    let targetYear = year || varshphalYear;
+    // Auto-detect: if birthday hasn't passed yet this year, use previous year
+    if (!year && result?.birth_date) {
+      const [, bm, bd] = result.birth_date.split('-').map(Number);
+      const now = new Date();
+      const thisYearBday = new Date(now.getFullYear(), bm - 1, bd);
+      if (now < thisYearBday) {
+        targetYear = now.getFullYear() - 1;
+        setVarshphalYear(targetYear);
+      }
+    }
     setLoadingVarshphal(true);
     try {
-      const data = await api.post(`/api/kundli/${result.id}/varshphal`, { year: year || varshphalYear });
+      const data = await api.post(`/api/kundli/${result.id}/varshphal`, { year: targetYear });
       setVarshphalData(data);
     } catch { /* fallback */ }
     setLoadingVarshphal(false);
