@@ -405,26 +405,27 @@ export default function JHoraKundliView({
         <div style={chartCell}>
           <div style={chartLabel}>Transit <span style={{ fontSize: '9px', opacity: 0.6, fontWeight: 'normal' }}>(click house → lagan)</span></div>
           <div style={chartInner}>
-            {loadingTransit ? <MiniLoader /> : transitChartData ? (
-              <InteractiveKundli
-                chartData={gocharShift ? {
-                  ...transitChartData,
-                  planets: transitChartData.planets.map((p: PlanetData) => ({
-                    ...p,
-                    house: ((((p.house || 1) - 1 - gocharShift + 12) % 12) + 1),
-                  })),
-                  houses: transitChartData.houses?.map((h: any) => ({
-                    ...h,
-                    house: ((((h.house || 1) - 1 - gocharShift + 12) % 12) + 1),
-                  })),
-                } : transitChartData}
-                compact
-                onHouseClick={(house) => {
-                  const orig = gocharShift ? ((house - 1 + gocharShift) % 12) + 1 : house;
-                  setGocharShift(orig - 1 === 0 ? 0 : orig - 1);
-                }}
-              />
-            ) : (
+            {loadingTransit ? <MiniLoader /> : transitChartData ? (() => {
+              const shift = gocharShift;
+              const shiftedPlanets = transitChartData.planets.map((p: PlanetData) => ({
+                ...p,
+                house: shift ? ((((p.house || 1) - 1 - shift + 12) % 12) + 1) : (p.house || 1),
+              }));
+              const baseHouses = transitChartData.houses || transitData?.chart_data?.houses || result?.chart_data?.houses;
+              const shiftedHouses = shift && baseHouses
+                ? baseHouses.map((h: any) => ({ number: ((h.number - 1 - shift + 12) % 12) + 1, sign: h.sign }))
+                : baseHouses;
+              return (
+                <InteractiveKundli
+                  chartData={{ planets: shiftedPlanets, houses: shiftedHouses, ascendant: transitChartData.ascendant }}
+                  compact
+                  onHouseClick={(house) => {
+                    const orig = shift ? ((house - 1 + shift) % 12) + 1 : house;
+                    setGocharShift(orig - 1 === 0 ? 0 : orig - 1);
+                  }}
+                />
+              );
+            })() : (
               <span style={{ color: MUTED, fontSize: '10px' }}>Loading...</span>
             )}
           </div>

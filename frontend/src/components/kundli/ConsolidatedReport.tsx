@@ -109,7 +109,7 @@ export default function ConsolidatedReport({
     }
   };
 
-  // Build transit chart data
+  // Build transit chart data (include houses + ascendant for rotation)
   const transitChartData: ChartData | null = transitData?.transits
     ? {
         planets: transitData.transits.map((tr: any) => ({
@@ -120,6 +120,8 @@ export default function ConsolidatedReport({
           sign_degree: tr.degree || 0,
           status: tr.effect || '',
         })),
+        houses: transitData.chart_data?.houses || result?.chart_data?.houses,
+        ascendant: transitData.chart_data?.ascendant || result?.chart_data?.ascendant,
       }
     : null;
 
@@ -266,26 +268,27 @@ export default function ConsolidatedReport({
               <div className="flex justify-center" style={{ maxWidth: '250px', margin: '0 auto' }}>
                 {loadingTransit ? (
                   <div className="flex items-center justify-center py-12"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
-                ) : transitChartData ? (
-                  <InteractiveKundli
-                    chartData={gocharShift ? {
-                      ...transitChartData,
-                      planets: transitChartData.planets.map((p: PlanetData) => ({
-                        ...p,
-                        house: ((((p.house || 1) - 1 - gocharShift + 12) % 12) + 1),
-                      })),
-                      houses: transitChartData.houses?.map((h: any) => ({
-                        ...h,
-                        house: ((((h.house || 1) - 1 - gocharShift + 12) % 12) + 1),
-                      })),
-                    } : transitChartData}
-                    compact
-                    onHouseClick={(house) => {
-                      const orig = gocharShift ? ((house - 1 + gocharShift) % 12) + 1 : house;
-                      setGocharShift(orig - 1 === 0 ? 0 : orig - 1);
-                    }}
-                  />
-                ) : (
+                ) : transitChartData ? (() => {
+                  const shift = gocharShift;
+                  const shiftedPlanets = transitChartData.planets.map((p: PlanetData) => ({
+                    ...p,
+                    house: shift ? ((((p.house || 1) - 1 - shift + 12) % 12) + 1) : (p.house || 1),
+                  }));
+                  const baseHouses = transitChartData.houses || transitData?.chart_data?.houses || result?.chart_data?.houses;
+                  const shiftedHouses = shift && baseHouses
+                    ? baseHouses.map((h: any) => ({ number: ((h.number - 1 - shift + 12) % 12) + 1, sign: h.sign }))
+                    : baseHouses;
+                  return (
+                    <InteractiveKundli
+                      chartData={{ planets: shiftedPlanets, houses: shiftedHouses, ascendant: transitChartData.ascendant }}
+                      compact
+                      onHouseClick={(house) => {
+                        const orig = shift ? ((house - 1 + shift) % 12) + 1 : house;
+                        setGocharShift(orig - 1 === 0 ? 0 : orig - 1);
+                      }}
+                    />
+                  );
+                })() : (
                   <p className="text-[10px] text-center py-12 text-[#e8e0d4]/40">Loading...</p>
                 )}
               </div>
