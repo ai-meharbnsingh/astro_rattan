@@ -4,11 +4,16 @@ import os
 import uuid
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
-from PIL import Image, ImageFilter, ImageOps, ImageStat
 from pydantic import BaseModel, Field
 from typing import Optional
 
 from app.auth import get_current_user
+
+try:
+    from PIL import Image, ImageFilter, ImageOps, ImageStat
+    _PIL_AVAILABLE = True
+except ImportError:
+    _PIL_AVAILABLE = False
 
 router = APIRouter()
 
@@ -547,6 +552,11 @@ def analyze_palm_image(
     user: dict = Depends(get_current_user),
 ):
     """Heuristic image-driven palm analysis from an uploaded palm photo."""
+    if not _PIL_AVAILABLE:
+        raise HTTPException(
+            status_code=status.HTTP_501_NOT_IMPLEMENTED,
+            detail="Image analysis is not available in this deployment. Use /api/palmistry/analyze for guided text-based readings.",
+        )
     source, prepared, contents, ext = _parse_image(file)
     image_analysis = _infer_visual_traits(prepared)
     image_analysis["image_url"] = _save_upload(contents, ext)

@@ -53,86 +53,58 @@ def _get_provider() -> str:
     return "none"
 
 # ============================================================
-# Gemini client
+# Gemini client (raw httpx — no google-genai SDK needed)
 # ============================================================
-_gemini_model = None
 
-
-_gemini_client = None
-
-
-def _get_gemini():
-    """Get or create the Gemini client. Returns None if no key."""
-    global _gemini_client
+def _call_gemini(system_prompt: str, user_prompt: str, temperature: float = 0.7) -> Optional[str]:
+    """Call Google Gemini API via raw HTTP (no SDK dependency)."""
     from app.config import GEMINI_API_KEY as _gk
     if not _gk:
         return None
-    if _gemini_client is None:
-        try:
-            from google import genai
-            _gemini_client = genai.Client(api_key=_gk)
-        except Exception:
-            return None
-    return _gemini_client
-
-
-def _call_gemini(system_prompt: str, user_prompt: str, temperature: float = 0.7) -> Optional[str]:
-    """Call Google Gemini API using the new google-genai package."""
-    client = _get_gemini()
-    if client is None:
-        return None
     try:
-        from google.genai import types
+        import httpx
         full_prompt = f"{system_prompt}\n\n{user_prompt}"
-        response = client.models.generate_content(
-            model=GEMINI_MODEL,
-            contents=full_prompt,
-            config=types.GenerateContentConfig(
-                temperature=temperature,
-                max_output_tokens=2000,
-            ),
+        resp = httpx.post(
+            f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent",
+            params={"key": _gk},
+            json={
+                "contents": [{"parts": [{"text": full_prompt}]}],
+                "generationConfig": {"temperature": temperature, "maxOutputTokens": 2000},
+            },
+            timeout=60.0,
         )
-        return response.text
-    except Exception as e:
+        resp.raise_for_status()
+        return resp.json()["candidates"][0]["content"]["parts"][0]["text"]
+    except Exception:
         return None
 
 
 # ============================================================
-# OpenAI client
+# OpenAI client (raw httpx — no openai SDK needed)
 # ============================================================
-_openai_client = None
-
-
-def _get_openai():
-    """Get or create the OpenAI client. Returns None if no API key."""
-    global _openai_client
-    if not OPENAI_API_KEY:
-        return None
-    if _openai_client is None:
-        try:
-            import openai
-            _openai_client = openai.OpenAI(api_key=OPENAI_API_KEY)
-        except Exception:
-            return None
-    return _openai_client
-
 
 def _call_openai(system_prompt: str, user_prompt: str, temperature: float = 0.7) -> Optional[str]:
-    """Call OpenAI chat completion API."""
-    client = _get_openai()
-    if client is None:
+    """Call OpenAI chat completion API via raw HTTP (no SDK dependency)."""
+    if not OPENAI_API_KEY:
         return None
     try:
-        response = client.chat.completions.create(
-            model=OPENAI_MODEL,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            temperature=temperature,
-            max_tokens=2000,
+        import httpx
+        resp = httpx.post(
+            "https://api.openai.com/v1/chat/completions",
+            headers={"Authorization": f"Bearer {OPENAI_API_KEY}"},
+            json={
+                "model": OPENAI_MODEL,
+                "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+                "temperature": temperature,
+                "max_tokens": 2000,
+            },
+            timeout=60.0,
         )
-        return response.choices[0].message.content
+        resp.raise_for_status()
+        return resp.json()["choices"][0]["message"]["content"]
     except Exception:
         return None
 

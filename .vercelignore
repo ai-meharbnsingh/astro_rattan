@@ -1,0 +1,11 @@
+tests/
+e2e/
+frontend/
+new_design_30_03/
+_archive/
+*.zip
+**/__pycache__/
+static/
+screenshots/
+*.md
+*.db

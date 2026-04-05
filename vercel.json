@@ -6,6 +6,11 @@
       "use": "@vercel/python"
     }
   ],
+  "functions": {
+    "api/**/*.py": {
+      "excludeFiles": "{tests/**,e2e/**,frontend/**,new_design_30_03/**,_archive/**,*.zip,**/__pycache__/**,static/**,screenshots/**}"
+    }
+  },
   "rewrites": [
     { "source": "/(.*)", "destination": "/api/index.py" }
   ]

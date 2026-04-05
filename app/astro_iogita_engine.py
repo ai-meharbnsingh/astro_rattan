@@ -10,7 +10,7 @@ Pipeline:
   → identify_basin (top 3 positive, top negative, escape analysis)
   → run_astro_analysis (formatted report + JSON output)
 """
-import numpy as np
+import random
 import json
 import os
 from datetime import datetime
@@ -23,11 +23,11 @@ BETA = 4.0
 DT = 0.05
 T_MAX = 500
 
-rng = np.random.default_rng(42)
+_rng = random.Random(42)
 
 def _atom():
     """Generate a bipolar random vector, identical to full_sanatan_system.py atom()."""
-    return rng.choice([-1, 1], size=D).astype(np.float64)
+    return [_rng.choice((-1, 1)) for _ in range(D)]
 
 # 16 atoms — EXACT same order and seed as full_sanatan_system.py
 ALL_ATOM_NAMES = [
@@ -214,7 +214,7 @@ DASHA_AMPLIFY = {
 # ============================================================
 # 4. build_atom_vector(planet_positions, current_dasha) → np.array(16,)
 # ============================================================
-def build_atom_vector(planet_positions: dict, current_dasha: str) -> np.ndarray:
+def build_atom_vector(planet_positions: dict, current_dasha: str) -> list[float]:
     """
     Build a 16-element atom activation vector.
 
@@ -223,11 +223,11 @@ def build_atom_vector(planet_positions: dict, current_dasha: str) -> np.ndarray:
         current_dasha: string name of current Mahadasha lord
 
     Output:
-        numpy array of shape (16,) with atom weights
+        list of 16 floats with atom weights
 
     Logic: PLANET_ATOM_MAP × PLANET_STRENGTH × DASHA_AMPLIFY
     """
-    atom_weights = np.zeros(16, dtype=np.float64)
+    atom_weights = [0.0] * 16
     atom_index = {name: i for i, name in enumerate(ALL_ATOM_NAMES)}
 
     # Step 1: Accumulate planet contributions weighted by dignity
@@ -248,9 +248,9 @@ def build_atom_vector(planet_positions: dict, current_dasha: str) -> np.ndarray:
         atom_weights[idx] *= multiplier
 
     # Step 3: Normalize to [-1, 1] range
-    max_abs = np.max(np.abs(atom_weights))
+    max_abs = max(abs(x) for x in atom_weights) if any(atom_weights) else 0.0
     if max_abs > 0:
-        atom_weights = atom_weights / max_abs
+        atom_weights = [x / max_abs for x in atom_weights]
 
     return atom_weights
 
@@ -320,11 +320,11 @@ BASIN_DEFINITIONS = {
 }
 
 
-def identify_basin(atom_vector: np.ndarray) -> dict:
+def identify_basin(atom_vector: list[float]) -> dict:
     """
     Identify the attractor basin from atom activation vector.
 
-    Input: atom_vector numpy array of shape (16,)
+    Input: atom_vector list of 16 floats
     Logic: find top 3 positive atoms, find top negative atom
     Output: dict with basin_name, basin_hindi, description, escape info
     """
@@ -437,7 +437,7 @@ def run_astro_analysis(planet_positions: dict, current_dasha: str, person_name: 
         "current_dasha": current_dasha,
         "planet_strengths": planet_strengths,
         "atom_activations": activations,
-        "atom_vector": atom_vector.tolist(),
+        "atom_vector": list(atom_vector),
         "basin": {
             "name": basin["basin_name"],
             "hindi": basin["basin_hindi"],
