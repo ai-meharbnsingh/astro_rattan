@@ -363,7 +363,7 @@ export default function KundliGenerator() {
   };
 
   const fetchYogini = async () => {
-    if (!result?.id || yoginiData) return;
+    if (!result?.id) return;
     setLoadingYogini(true);
     try {
       const data = await api.get(`/api/kundli/${result.id}/yogini-dasha`);
@@ -373,7 +373,7 @@ export default function KundliGenerator() {
   };
 
   const fetchKp = async () => {
-    if (!result?.id || kpData) return;
+    if (!result?.id) return;
     setLoadingKp(true);
     try {
       const data = await api.post(`/api/kundli/${result.id}/kp-analysis`, {});
@@ -383,7 +383,7 @@ export default function KundliGenerator() {
   };
 
   const fetchUpagrahas = async () => {
-    if (!result?.id || upagrahasData) return;
+    if (!result?.id) return;
     setLoadingUpagrahas(true);
     try {
       const data = await api.get(`/api/kundli/${result.id}/upagrahas`);
@@ -393,7 +393,7 @@ export default function KundliGenerator() {
   };
 
   const fetchSodashvarga = async () => {
-    if (!result?.id || sodashvargaData) return;
+    if (!result?.id) return;
     setLoadingSodashvarga(true);
     try {
       const data = await api.get(`/api/kundli/${result.id}/sodashvarga`);
@@ -403,7 +403,7 @@ export default function KundliGenerator() {
   };
 
   const fetchAspects = async () => {
-    if (!result?.id || aspectsData) return;
+    if (!result?.id) return;
     setLoadingAspects(true);
     try {
       const data = await api.get(`/api/kundli/${result.id}/aspects`);
@@ -413,7 +413,7 @@ export default function KundliGenerator() {
   };
 
   const fetchSadesati = async () => {
-    if (!result?.id || sadesatiData) return;
+    if (!result?.id) return;
     setLoadingSadesati(true);
     try {
       const data = await api.get(`/api/kundli/${result.id}/lifelong-sadesati`);
@@ -434,6 +434,12 @@ export default function KundliGenerator() {
       fetchDivisional('D9');
       fetchTransit();
       fetchDosha();
+      fetchYogini();
+      fetchKp();
+      fetchUpagrahas();
+      fetchSodashvarga();
+      fetchAspects();
+      fetchSadesati();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, result?.id]);
