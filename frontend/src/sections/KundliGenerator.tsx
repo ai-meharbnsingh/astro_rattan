@@ -2879,12 +2879,19 @@ export default function KundliGenerator() {
                               ))}
                             </tr></thead>
                             <tbody>
-                              {rows.map((row: any) => (
-                                <tr key={row.varga || row.division} className="border-t border-sacred-gold/10">
-                                  <td className="p-2 font-semibold text-sacred-brown whitespace-nowrap">{row.varga || row.division}</td>
-                                  {(row.placements || row.planets || []).map((pl: any, i: number) => {
-                                    const sign = typeof pl === 'string' ? pl : (pl.sign_abbr || pl.sign?.slice(0, 3) || '');
-                                    const dignity = typeof pl === 'object' ? pl.dignity?.toLowerCase() : '';
+                              {rows.map((row: any) => {
+                              const planets = row.placements || row.planets;
+                              const planetEntries = Array.isArray(planets)
+                                ? planets
+                                : typeof planets === 'object'
+                                  ? ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'].map(p => planets[p] || '')
+                                  : [];
+                              return (
+                                <tr key={row.varga || row.division || row.name} className="border-t border-sacred-gold/10">
+                                  <td className="p-2 font-semibold text-sacred-brown whitespace-nowrap">{row.varga || row.name || `D${row.division}`}</td>
+                                  {planetEntries.map((pl: any, i: number) => {
+                                    const sign = typeof pl === 'string' ? pl?.slice(0, 3) : (pl?.sign_abbr || pl?.sign?.slice(0, 3) || '');
+                                    const dignity = typeof pl === 'object' ? pl?.dignity?.toLowerCase() : '';
                                     const dignityColors: Record<string, string> = {
                                       exalted: 'bg-green-500/30 text-green-700', own: 'bg-blue-500/20 text-blue-700',
                                       moolatrikona: 'bg-blue-500/20 text-blue-700', friend: 'bg-yellow-500/20 text-yellow-700',
@@ -2893,7 +2900,8 @@ export default function KundliGenerator() {
                                     return <td key={i} className={`p-1.5 text-center text-xs rounded ${dignityColors[dignity] || ''}`}>{sign}</td>;
                                   })}
                                 </tr>
-                              ))}
+                              );
+                            })}
                             </tbody>
                           </table>
                         );
