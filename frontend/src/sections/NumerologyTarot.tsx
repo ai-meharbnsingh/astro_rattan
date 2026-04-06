@@ -84,15 +84,23 @@ export default function NumerologyTarot() {
   const [palmGuide, setPalmGuide] = useState<PalmistryGuide | null>(null);
   const [palmLoading, setPalmLoading] = useState(false);
 
+  // Error state for user feedback
+  const [error, setError] = useState('');
+
   const calculateNumerology = async () => {
     if (!numName.trim() || !numDob) return;
     setNumLoading(true);
     setNumResult(null);
+    setError('');
     try {
       const data = await api.post('/api/numerology/calculate', { name: numName.trim(), birth_date: numDob });
+      // Normalize predictions: API may return string (old) or array (new)
+      if (data.predictions && !Array.isArray(data.predictions)) {
+        data.predictions = [data.predictions];
+      }
       setNumResult(data);
-    } catch {
-      /* empty */
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Numerology calculation failed. Please try again.');
     }
     setNumLoading(false);
   };
@@ -100,11 +108,12 @@ export default function NumerologyTarot() {
   const drawTarot = async () => {
     setTarotLoading(true);
     setTarotResult(null);
+    setError('');
     try {
       const data = await api.post('/api/tarot/draw', { spread: tarotSpread, question: tarotQuestion.trim() || undefined });
       setTarotResult(data);
-    } catch {
-      /* empty */
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Tarot draw failed. Please try again.');
     }
     setTarotLoading(false);
   };
@@ -112,11 +121,12 @@ export default function NumerologyTarot() {
   const loadPalmistry = async () => {
     if (palmGuide) return;
     setPalmLoading(true);
+    setError('');
     try {
       const data = await api.get('/api/palmistry/guide');
       setPalmGuide(normalizePalmistryGuide(data));
-    } catch {
-      /* empty */
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load palmistry guide. Please try again.');
     }
     setPalmLoading(false);
   };
@@ -132,6 +142,12 @@ export default function NumerologyTarot() {
         </h2>
         <p className="text-cosmic-text-secondary">Explore numbers, cards, and lines of destiny</p>
       </div>
+
+      {error && (
+        <div className="mb-6 p-3 rounded-xl bg-red-900/30 border border-red-500/30 text-red-400 text-sm text-center max-w-xl mx-auto">
+          {error}
+        </div>
+      )}
 
       <Tabs defaultValue="numerology">
         <TabsList className="grid grid-cols-3 bg-cosmic-surface mb-8 max-w-md mx-auto">
