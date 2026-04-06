@@ -54,6 +54,9 @@ export default function ConsolidatedReport({
   const [d10Data, setD10Data] = useState<any>(null);
   const [loadingD10, setLoadingD10] = useState(false);
   const [gocharShift, setGocharShift] = useState(0);
+  const [d1Shift, setD1Shift] = useState(0);
+  const [d9Shift, setD9Shift] = useState(0);
+  const [d10Shift, setD10Shift] = useState(0);
 
   const fetchTransit = useCallback(async () => {
     if (!result?.id || transitData) return;
@@ -137,22 +140,6 @@ export default function ConsolidatedReport({
         };
       })()
     : null;
-
-  // Apply gochar rotation
-  const transitChartData: ChartData | null = (() => {
-    if (!transitChartDataRaw) return null;
-    const shift = gocharShift;
-    if (!shift) return transitChartDataRaw;
-    const shiftedPlanets = transitChartDataRaw.planets.map((p: PlanetData) => ({
-      ...p,
-      house: ((((p.house || 1) - 1 - shift + 12) % 12) + 1),
-    }));
-    const baseHouses = transitChartDataRaw.houses;
-    const shiftedHouses = baseHouses
-      ? baseHouses.map((h: any) => ({ number: ((h.number - 1 - shift + 12) % 12) + 1, sign: h.sign }))
-      : undefined;
-    return { planets: shiftedPlanets, houses: shiftedHouses, ascendant: transitChartDataRaw.ascendant };
-  })();
 
   // Build D10 chart data
   const d10ChartData: ChartData | null = d10Data?.planet_positions
@@ -247,46 +234,113 @@ export default function ConsolidatedReport({
             {/* Birth Chart (D1) */}
             <div className="border border-[#2a2a4e] rounded-lg p-2">
               <h4 className="text-[11px] font-bold text-center mb-1" style={{ color: '#B8860B' }}>
-                Rashi (D1)
+                Rashi (D1) <span className="text-[9px] font-normal opacity-60">(click house → lagan)</span>
               </h4>
               <div className="flex justify-center" style={{ maxWidth: '250px', margin: '0 auto' }}>
-                <InteractiveKundli
-                  chartData={{ planets, houses: result?.chart_data?.houses } as ChartData}
-                  compact
-                />
+                {(() => {
+                  const shift = d1Shift;
+                  const basePlanets = planets;
+                  const baseHouses = result?.chart_data?.houses;
+                  const shiftedPlanets = shift
+                    ? basePlanets.map((p: PlanetData) => ({
+                        ...p,
+                        house: ((((p.house || 1) - 1 - shift + 12) % 12) + 1),
+                      }))
+                    : basePlanets;
+                  const shiftedHouses = shift && baseHouses
+                    ? baseHouses.map((h: any) => ({ number: ((h.number - 1 - shift + 12) % 12) + 1, sign: h.sign }))
+                    : baseHouses;
+                  return (
+                    <InteractiveKundli
+                      chartData={{ planets: shiftedPlanets, houses: shiftedHouses, ascendant: result?.chart_data?.ascendant } as ChartData}
+                      compact
+                      onHouseClick={(house) => {
+                        const orig = shift ? ((house - 1 + shift) % 12) + 1 : house;
+                        setD1Shift(orig - 1 === 0 ? 0 : orig - 1);
+                      }}
+                    />
+                  );
+                })()}
               </div>
+              {d1Shift > 0 && (
+                <button onClick={() => setD1Shift(0)} className="block mx-auto mt-1 text-[9px] text-[#B8860B] underline">Reset View</button>
+              )}
             </div>
 
             {/* D9 Navamsha */}
             <div className="border border-[#2a2a4e] rounded-lg p-2">
               <h4 className="text-[11px] font-bold text-center mb-1" style={{ color: '#B8860B' }}>
-                Navamsha (D9)
+                Navamsha (D9) <span className="text-[9px] font-normal opacity-60">(click house → lagan)</span>
               </h4>
               <div className="flex justify-center" style={{ maxWidth: '250px', margin: '0 auto' }}>
                 {loadingDivisional ? (
                   <div className="flex items-center justify-center py-12"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
-                ) : d9ChartData ? (
-                  <InteractiveKundli chartData={d9ChartData} compact />
-                ) : (
+                ) : d9ChartData ? (() => {
+                  const shift = d9Shift;
+                  const shiftedPlanets = shift
+                    ? d9ChartData.planets.map((p: PlanetData) => ({
+                        ...p,
+                        house: ((((p.house || 1) - 1 - shift + 12) % 12) + 1),
+                      }))
+                    : d9ChartData.planets;
+                  const shiftedHouses = shift && d9ChartData.houses
+                    ? d9ChartData.houses.map((h: any) => ({ number: ((h.number - 1 - shift + 12) % 12) + 1, sign: h.sign }))
+                    : d9ChartData.houses;
+                  return (
+                    <InteractiveKundli
+                      chartData={{ planets: shiftedPlanets, houses: shiftedHouses } as ChartData}
+                      compact
+                      onHouseClick={(house) => {
+                        const orig = shift ? ((house - 1 + shift) % 12) + 1 : house;
+                        setD9Shift(orig - 1 === 0 ? 0 : orig - 1);
+                      }}
+                    />
+                  );
+                })() : (
                   <p className="text-[10px] text-center py-12 text-[#e8e0d4]/40">Loading...</p>
                 )}
               </div>
+              {d9Shift > 0 && (
+                <button onClick={() => setD9Shift(0)} className="block mx-auto mt-1 text-[9px] text-[#B8860B] underline">Reset View</button>
+              )}
             </div>
 
             {/* D10 Dashamsha */}
             <div className="border border-[#2a2a4e] rounded-lg p-2">
               <h4 className="text-[11px] font-bold text-center mb-1" style={{ color: '#B8860B' }}>
-                {t('kundli.d10')}
+                {t('kundli.d10')} <span className="text-[9px] font-normal opacity-60">(click house → lagan)</span>
               </h4>
               <div className="flex justify-center" style={{ maxWidth: '250px', margin: '0 auto' }}>
                 {loadingD10 ? (
                   <div className="flex items-center justify-center py-12"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
-                ) : d10ChartData ? (
-                  <InteractiveKundli chartData={d10ChartData} compact />
-                ) : (
+                ) : d10ChartData ? (() => {
+                  const shift = d10Shift;
+                  const shiftedPlanets = shift
+                    ? d10ChartData.planets.map((p: PlanetData) => ({
+                        ...p,
+                        house: ((((p.house || 1) - 1 - shift + 12) % 12) + 1),
+                      }))
+                    : d10ChartData.planets;
+                  const shiftedHouses = shift && d10ChartData.houses
+                    ? d10ChartData.houses.map((h: any) => ({ number: ((h.number - 1 - shift + 12) % 12) + 1, sign: h.sign }))
+                    : d10ChartData.houses;
+                  return (
+                    <InteractiveKundli
+                      chartData={{ planets: shiftedPlanets, houses: shiftedHouses } as ChartData}
+                      compact
+                      onHouseClick={(house) => {
+                        const orig = shift ? ((house - 1 + shift) % 12) + 1 : house;
+                        setD10Shift(orig - 1 === 0 ? 0 : orig - 1);
+                      }}
+                    />
+                  );
+                })() : (
                   <p className="text-[10px] text-center py-12 text-[#e8e0d4]/40">Loading...</p>
                 )}
               </div>
+              {d10Shift > 0 && (
+                <button onClick={() => setD10Shift(0)} className="block mx-auto mt-1 text-[9px] text-[#B8860B] underline">Reset View</button>
+              )}
             </div>
 
             {/* Gochar (Transit) — clickable */}
@@ -297,16 +351,29 @@ export default function ConsolidatedReport({
               <div className="flex justify-center" style={{ maxWidth: '250px', margin: '0 auto' }}>
                 {loadingTransit ? (
                   <div className="flex items-center justify-center py-12"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
-                ) : transitChartData ? (
-                  <InteractiveKundli
-                    chartData={transitChartData}
-                    compact
-                    onHouseClick={(house) => {
-                      const orig = gocharShift ? ((house - 1 + gocharShift) % 12) + 1 : house;
-                      setGocharShift(orig - 1 === 0 ? 0 : orig - 1);
-                    }}
-                  />
-                ) : (
+                ) : transitChartDataRaw ? (() => {
+                  const shift = gocharShift;
+                  const shiftedPlanets = shift
+                    ? transitChartDataRaw.planets.map((p: PlanetData) => ({
+                        ...p,
+                        house: ((((p.house || 1) - 1 - shift + 12) % 12) + 1),
+                      }))
+                    : transitChartDataRaw.planets;
+                  const baseHouses = transitChartDataRaw.houses;
+                  const shiftedHouses = shift && baseHouses
+                    ? baseHouses.map((h: any) => ({ number: ((h.number - 1 - shift + 12) % 12) + 1, sign: h.sign }))
+                    : baseHouses;
+                  return (
+                    <InteractiveKundli
+                      chartData={{ planets: shiftedPlanets, houses: shiftedHouses, ascendant: transitChartDataRaw.ascendant }}
+                      compact
+                      onHouseClick={(house) => {
+                        const orig = shift ? ((house - 1 + shift) % 12) + 1 : house;
+                        setGocharShift(orig - 1 === 0 ? 0 : orig - 1);
+                      }}
+                    />
+                  );
+                })() : (
                   <p className="text-[10px] text-center py-12 text-[#e8e0d4]/40">Loading...</p>
                 )}
               </div>
