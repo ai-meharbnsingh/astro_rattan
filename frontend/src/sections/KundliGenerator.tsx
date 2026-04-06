@@ -2787,7 +2787,7 @@ export default function KundliGenerator() {
                 <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
                   <h4 className="font-display font-semibold text-sacred-brown mb-3">
                     Yogini Dasha Periods
-                    {yoginiData.current && <span className="ml-2 text-xs px-2 py-1 rounded-full bg-sacred-gold/20 text-sacred-gold-dark">Current: {yoginiData.current}</span>}
+                    {(yoginiData.current_dasha || yoginiData.current) && <span className="ml-2 text-xs px-2 py-1 rounded-full bg-sacred-gold/20 text-sacred-gold-dark">Current: {yoginiData.current_dasha || yoginiData.current}</span>}
                   </h4>
                   <table className="w-full text-xs">
                     <thead><tr className="bg-sacred-gold/10">
@@ -2798,25 +2798,29 @@ export default function KundliGenerator() {
                       <th className="text-center p-2 text-sacred-gold-dark font-medium">Years</th>
                     </tr></thead>
                     <tbody>
-                      {(yoginiData.periods || yoginiData.dashas || []).map((d: any, i: number) => (
-                        <tr key={i} className={`border-t border-sacred-gold/10 ${d.yogini === yoginiData.current || d.is_current ? 'bg-sacred-gold/10 font-semibold' : ''}`}>
-                          <td className="p-2 text-sacred-brown">{d.yogini}{d.is_current ? ' \u2190' : ''}</td>
-                          <td className="p-2 text-sacred-text-secondary">{d.planet}</td>
-                          <td className="p-2 text-sacred-text-secondary">{d.start_date || d.start}</td>
-                          <td className="p-2 text-sacred-text-secondary">{d.end_date || d.end}</td>
-                          <td className="p-2 text-center text-sacred-text-secondary">{d.span || d.years}</td>
-                        </tr>
-                      ))}
+                      {(yoginiData.periods || yoginiData.dashas || []).map((d: any, i: number) => {
+                        const currentName = yoginiData.current_dasha || yoginiData.current;
+                        const isCurrent = d.yogini === currentName || d.is_current;
+                        return (
+                          <tr key={i} className={`border-t border-sacred-gold/10 ${isCurrent ? 'bg-sacred-gold/10 font-semibold' : ''}`}>
+                            <td className="p-2 text-sacred-brown">{d.yogini}{isCurrent ? ' \u2190' : ''}</td>
+                            <td className="p-2 text-sacred-text-secondary">{d.planet}</td>
+                            <td className="p-2 text-sacred-text-secondary">{d.start_date || d.start}</td>
+                            <td className="p-2 text-sacred-text-secondary">{d.end_date || d.end}</td>
+                            <td className="p-2 text-center text-sacred-text-secondary">{d.span || d.years}</td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
               ) : (
-                <p className="text-center text-sacred-text-secondary py-8">Click the Yogini Dasha tab to load</p>
+                <p className="text-center text-sacred-text-secondary py-8">No Yogini Dasha data available</p>
               )}
             </div>
           </TabsContent>
 
-          {/* UPAGRAHAS TAB */}
+          {/* UPAGRAHAS TAB — API returns upagrahas as dict {name: {longitude, sign, ...}} */}
           <TabsContent value="upagrahas">
             <div className="space-y-6">
               {loadingUpagrahas ? (
@@ -2832,57 +2836,85 @@ export default function KundliGenerator() {
                       <th className="text-left p-2 text-sacred-gold-dark font-medium">Nakshatra</th>
                     </tr></thead>
                     <tbody>
-                      {(upagrahasData.upagrahas || []).map((u: any) => (
-                        <tr key={u.name} className="border-t border-sacred-gold/10">
-                          <td className="p-2 font-semibold text-sacred-brown">{u.name}</td>
-                          <td className="p-2 text-sacred-text-secondary">{typeof u.longitude === 'number' ? u.longitude.toFixed(2) + '\u00b0' : u.longitude}</td>
-                          <td className="p-2 text-sacred-text-secondary">{u.sign}</td>
-                          <td className="p-2 text-sacred-text-secondary">{u.nakshatra}{u.pada ? ` (Pada ${u.pada})` : ''}</td>
-                        </tr>
-                      ))}
+                      {(() => {
+                        const raw = upagrahasData.upagrahas;
+                        const items = Array.isArray(raw) ? raw : Object.entries(raw || {}).map(([name, data]: [string, any]) => ({ name, ...data }));
+                        return items.map((u: any) => (
+                          <tr key={u.name} className="border-t border-sacred-gold/10">
+                            <td className="p-2 font-semibold text-sacred-brown">{u.name}</td>
+                            <td className="p-2 text-sacred-text-secondary">{typeof u.longitude === 'number' ? u.longitude.toFixed(2) + '\u00b0' : u.longitude}</td>
+                            <td className="p-2 text-sacred-text-secondary">{u.sign}</td>
+                            <td className="p-2 text-sacred-text-secondary">{u.nakshatra}{u.nakshatra_pada ? ` (Pada ${u.nakshatra_pada})` : u.pada ? ` (Pada ${u.pada})` : ''}</td>
+                          </tr>
+                        ));
+                      })()}
                     </tbody>
                   </table>
                 </div>
               ) : (
-                <p className="text-center text-sacred-text-secondary py-8">Click the Upagrahas tab to load</p>
+                <p className="text-center text-sacred-text-secondary py-8">No Upagrahas data available</p>
               )}
             </div>
           </TabsContent>
 
-          {/* SODASHVARGA TAB */}
+          {/* SODASHVARGA TAB — API returns by_sign as dict, varga_table as list, by_planet as dict */}
           <TabsContent value="sodashvarga">
             <div className="space-y-6">
               {loadingSodashvarga ? (
                 <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-sacred-text-secondary">Loading Sodashvarga...</span></div>
               ) : sodashvargaData ? (
                 <div className="space-y-6">
-                  {/* By Sign Table */}
+                  {/* Varga Table (list) or By Sign (dict) */}
                   <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4 overflow-x-auto">
                     <h4 className="font-display font-semibold text-sacred-brown mb-3">Sodashvarga — 16 Divisional Placements</h4>
-                    <table className="w-full text-xs min-w-[700px]">
-                      <thead><tr className="bg-sacred-gold/10">
-                        <th className="text-left p-2 text-sacred-gold-dark font-medium">Varga</th>
-                        {['Su', 'Mo', 'Ma', 'Me', 'Ju', 'Ve', 'Sa', 'Ra', 'Ke'].map(p => (
-                          <th key={p} className="text-center p-1.5 text-sacred-gold-dark font-medium">{p}</th>
-                        ))}
-                      </tr></thead>
-                      <tbody>
-                        {(sodashvargaData.by_sign || []).map((row: any) => (
-                          <tr key={row.varga} className="border-t border-sacred-gold/10">
-                            <td className="p-2 font-semibold text-sacred-brown whitespace-nowrap">{row.varga}</td>
-                            {(row.placements || []).map((pl: any, i: number) => {
-                              const dignityColors: Record<string, string> = {
-                                exalted: 'bg-green-500/30 text-green-700', own: 'bg-blue-500/20 text-blue-700',
-                                moolatrikona: 'bg-blue-500/20 text-blue-700', friend: 'bg-yellow-500/20 text-yellow-700',
-                                enemy: 'bg-orange-500/20 text-orange-700', debilitated: 'bg-red-500/20 text-red-700',
-                              };
-                              const cls = dignityColors[pl.dignity?.toLowerCase()] || '';
-                              return <td key={i} className={`p-1.5 text-center text-xs rounded ${cls}`}>{pl.sign_abbr || pl.sign?.slice(0, 3)}</td>;
-                            })}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                    {(() => {
+                      const rows = sodashvargaData.varga_table || (Array.isArray(sodashvargaData.by_sign) ? sodashvargaData.by_sign : []);
+                      if (rows.length > 0) {
+                        return (
+                          <table className="w-full text-xs min-w-[700px]">
+                            <thead><tr className="bg-sacred-gold/10">
+                              <th className="text-left p-2 text-sacred-gold-dark font-medium">Varga</th>
+                              {['Su', 'Mo', 'Ma', 'Me', 'Ju', 'Ve', 'Sa', 'Ra', 'Ke'].map(p => (
+                                <th key={p} className="text-center p-1.5 text-sacred-gold-dark font-medium">{p}</th>
+                              ))}
+                            </tr></thead>
+                            <tbody>
+                              {rows.map((row: any) => (
+                                <tr key={row.varga || row.division} className="border-t border-sacred-gold/10">
+                                  <td className="p-2 font-semibold text-sacred-brown whitespace-nowrap">{row.varga || row.division}</td>
+                                  {(row.placements || row.planets || []).map((pl: any, i: number) => {
+                                    const sign = typeof pl === 'string' ? pl : (pl.sign_abbr || pl.sign?.slice(0, 3) || '');
+                                    const dignity = typeof pl === 'object' ? pl.dignity?.toLowerCase() : '';
+                                    const dignityColors: Record<string, string> = {
+                                      exalted: 'bg-green-500/30 text-green-700', own: 'bg-blue-500/20 text-blue-700',
+                                      moolatrikona: 'bg-blue-500/20 text-blue-700', friend: 'bg-yellow-500/20 text-yellow-700',
+                                      enemy: 'bg-orange-500/20 text-orange-700', debilitated: 'bg-red-500/20 text-red-700',
+                                    };
+                                    return <td key={i} className={`p-1.5 text-center text-xs rounded ${dignityColors[dignity] || ''}`}>{sign}</td>;
+                                  })}
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        );
+                      }
+                      // Fallback: by_sign is a dict
+                      if (sodashvargaData.by_sign && typeof sodashvargaData.by_sign === 'object') {
+                        return (
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+                            {Object.entries(sodashvargaData.by_sign).map(([planet, data]: [string, any]) => (
+                              <div key={planet} className="bg-white/5 rounded-lg p-3">
+                                <p className="font-semibold text-sacred-brown mb-1">{planet}</p>
+                                {typeof data === 'object' && Object.entries(data as Record<string, any>).map(([varga, sign]) => (
+                                  <p key={varga} className="text-sacred-text-secondary">{varga}: {String(sign)}</p>
+                                ))}
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      }
+                      return <p className="text-center text-sacred-text-secondary">No data</p>;
+                    })()}
                     <div className="flex flex-wrap gap-2 mt-3 text-xs">
                       <span className="px-2 py-1 rounded bg-green-500/30 text-green-700">Exalted</span>
                       <span className="px-2 py-1 rounded bg-blue-500/20 text-blue-700">Own/Moolatrikona</span>
@@ -2892,31 +2924,37 @@ export default function KundliGenerator() {
                     </div>
                   </div>
 
-                  {/* Vimshopak Bala */}
-                  {sodashvargaData.vimshopak && (
+                  {/* Vimshopak Bala — from by_planet dict or vimshopak list */}
+                  {(sodashvargaData.by_planet || sodashvargaData.vimshopak) && (
                     <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
                       <h4 className="font-display font-semibold text-sacred-brown mb-3">Vimshopak Bala (Strength from 16 Vargas)</h4>
                       <div className="space-y-2">
-                        {(sodashvargaData.vimshopak || []).map((v: any) => (
-                          <div key={v.planet} className="flex items-center gap-3 text-sm">
-                            <span className="w-12 text-sacred-brown font-medium">{v.planet?.slice(0, 3)}</span>
-                            <div className="flex-1 bg-sacred-gold/10 rounded-full h-4">
-                              <div className="bg-sacred-gold rounded-full h-4 transition-all" style={{ width: `${Math.min(100, (v.score / 20) * 100)}%` }} />
+                        {(() => {
+                          const items = Array.isArray(sodashvargaData.vimshopak) ? sodashvargaData.vimshopak
+                            : Object.entries(sodashvargaData.by_planet || {}).map(([planet, data]: [string, any]) => ({
+                                planet, score: typeof data === 'number' ? data : data?.vimshopak || data?.score || 0,
+                              }));
+                          return items.map((v: any) => (
+                            <div key={v.planet} className="flex items-center gap-3 text-sm">
+                              <span className="w-12 text-sacred-brown font-medium">{v.planet?.slice(0, 3)}</span>
+                              <div className="flex-1 bg-sacred-gold/10 rounded-full h-4">
+                                <div className="bg-sacred-gold rounded-full h-4 transition-all" style={{ width: `${Math.min(100, ((typeof v.score === 'number' ? v.score : 0) / 20) * 100)}%` }} />
+                              </div>
+                              <span className="w-16 text-right text-sacred-text-secondary text-xs">{typeof v.score === 'number' ? v.score.toFixed(1) : '?'} / 20</span>
                             </div>
-                            <span className="w-16 text-right text-sacred-text-secondary text-xs">{v.score?.toFixed(1)} / 20</span>
-                          </div>
-                        ))}
+                          ));
+                        })()}
                       </div>
                     </div>
                   )}
                 </div>
               ) : (
-                <p className="text-center text-sacred-text-secondary py-8">Click the Sodashvarga tab to load</p>
+                <p className="text-center text-sacred-text-secondary py-8">No Sodashvarga data available</p>
               )}
             </div>
           </TabsContent>
 
-          {/* ASPECTS TAB */}
+          {/* ASPECTS TAB — API: aspects_on_planets (list), aspects_on_bhavas (dict), bhava_summary (list) */}
           <TabsContent value="aspects">
             <div className="space-y-6">
               {loadingAspects ? (
@@ -2927,20 +2965,20 @@ export default function KundliGenerator() {
                   <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
                     <h4 className="font-display font-semibold text-sacred-brown mb-3">Aspects on Planets</h4>
                     <div className="space-y-3">
-                      {(aspectsData.planet_aspects || []).map((pa: any) => (
-                        <div key={pa.planet} className="bg-white/5 rounded-lg p-3 text-xs">
+                      {(aspectsData.aspects_on_planets || aspectsData.planet_aspects || []).map((pa: any, idx: number) => (
+                        <div key={pa.planet || idx} className="bg-white/5 rounded-lg p-3 text-xs">
                           <div className="flex items-center justify-between mb-1">
                             <span className="font-semibold text-sacred-brown">{pa.planet} <span className="text-sacred-text-secondary font-normal">(House {pa.house})</span></span>
                             <span className="text-xs">
-                              <span className="text-green-500">B:{pa.benefic_count || 0}</span>{' '}
-                              <span className="text-red-400">M:{pa.malefic_count || 0}</span>
+                              <span className="text-green-500">B:{pa.benefic_count || pa.benefic || 0}</span>{' '}
+                              <span className="text-red-400">M:{pa.malefic_count || pa.malefic || 0}</span>
                             </span>
                           </div>
-                          {pa.aspected_by && pa.aspected_by.length > 0 && (
-                            <p className="text-sacred-text-secondary">Aspected by: {pa.aspected_by.map((a: any) => typeof a === 'string' ? a : a.planet).join(', ')}</p>
+                          {pa.aspected_by && (Array.isArray(pa.aspected_by) ? pa.aspected_by.length > 0 : true) && (
+                            <p className="text-sacred-text-secondary">Aspected by: {Array.isArray(pa.aspected_by) ? pa.aspected_by.map((a: any) => typeof a === 'string' ? a : a.planet).join(', ') : String(pa.aspected_by)}</p>
                           )}
-                          {pa.aspects_houses && pa.aspects_houses.length > 0 && (
-                            <p className="text-sacred-text-secondary">Aspects houses: {pa.aspects_houses.join(', ')}</p>
+                          {pa.aspects_to && (
+                            <p className="text-sacred-text-secondary">Aspects: {Array.isArray(pa.aspects_to) ? pa.aspects_to.join(', ') : String(pa.aspects_to)}</p>
                           )}
                         </div>
                       ))}
@@ -2953,27 +2991,39 @@ export default function KundliGenerator() {
                     <table className="w-full text-xs">
                       <thead><tr className="bg-sacred-gold/10">
                         <th className="text-left p-2 text-sacred-gold-dark font-medium">Bhava</th>
-                        <th className="text-left p-2 text-sacred-gold-dark font-medium">Planets</th>
                         <th className="text-left p-2 text-sacred-gold-dark font-medium">Aspected By</th>
                         <th className="text-center p-1 text-sacred-gold-dark font-medium">B</th>
                         <th className="text-center p-1 text-sacred-gold-dark font-medium">M</th>
                       </tr></thead>
                       <tbody>
-                        {(aspectsData.bhava_aspects || []).map((ba: any) => (
-                          <tr key={ba.bhava} className="border-t border-sacred-gold/10">
-                            <td className="p-2 font-semibold text-sacred-brown">{ba.bhava}</td>
-                            <td className="p-2 text-sacred-text-secondary">{(ba.planets_in_house || []).join(', ') || '-'}</td>
-                            <td className="p-2 text-sacred-text-secondary">{(ba.aspected_by || []).join(', ') || '-'}</td>
-                            <td className="p-1 text-center text-green-500">{ba.benefic || 0}</td>
-                            <td className="p-1 text-center text-red-400">{ba.malefic || 0}</td>
-                          </tr>
-                        ))}
+                        {(() => {
+                          const bhavas = aspectsData.bhava_summary || aspectsData.bhava_aspects;
+                          if (Array.isArray(bhavas)) {
+                            return bhavas.map((ba: any, i: number) => (
+                              <tr key={ba.bhava || i} className="border-t border-sacred-gold/10">
+                                <td className="p-2 font-semibold text-sacred-brown">{ba.bhava || i + 1}</td>
+                                <td className="p-2 text-sacred-text-secondary">{Array.isArray(ba.aspected_by) ? ba.aspected_by.join(', ') : (ba.aspected_by || '-')}</td>
+                                <td className="p-1 text-center text-green-500">{ba.benefic || ba.benefic_count || 0}</td>
+                                <td className="p-1 text-center text-red-400">{ba.malefic || ba.malefic_count || 0}</td>
+                              </tr>
+                            ));
+                          }
+                          // Dict format: {1: {aspected_by: [...], ...}, 2: ...}
+                          return Object.entries(bhavas || {}).map(([bhava, data]: [string, any]) => (
+                            <tr key={bhava} className="border-t border-sacred-gold/10">
+                              <td className="p-2 font-semibold text-sacred-brown">{bhava}</td>
+                              <td className="p-2 text-sacred-text-secondary">{Array.isArray(data?.aspected_by) ? data.aspected_by.join(', ') : String(data?.aspected_by || '-')}</td>
+                              <td className="p-1 text-center text-green-500">{data?.benefic || 0}</td>
+                              <td className="p-1 text-center text-red-400">{data?.malefic || 0}</td>
+                            </tr>
+                          ));
+                        })()}
                       </tbody>
                     </table>
                   </div>
                 </div>
               ) : (
-                <p className="text-center text-sacred-text-secondary py-8">Click the Aspects tab to load</p>
+                <p className="text-center text-sacred-text-secondary py-8">No Aspects data available</p>
               )}
             </div>
           </TabsContent>
