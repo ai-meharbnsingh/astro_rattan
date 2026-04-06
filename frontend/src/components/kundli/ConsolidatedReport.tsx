@@ -58,6 +58,28 @@ export default function ConsolidatedReport({
   const [d9Shift, setD9Shift] = useState(0);
   const [d10Shift, setD10Shift] = useState(0);
 
+  // New modules states
+  const [yoginiData, setYoginiData] = useState<any>(null);
+  const [loadingYogini, setLoadingYogini] = useState(false);
+
+  const [sadesatiData, setSadesatiData] = useState<any>(null);
+  const [loadingSadesati, setLoadingSadesati] = useState(false);
+
+  const [kpData, setKpData] = useState<any>(null);
+  const [loadingKp, setLoadingKp] = useState(false);
+
+  const [varshphalData, setVarshphalData] = useState<any>(null);
+  const [loadingVarshphal, setLoadingVarshphal] = useState(false);
+
+  const [upagrahasData, setUpagrahasData] = useState<any>(null);
+  const [loadingUpagrahas, setLoadingUpagrahas] = useState(false);
+
+  const [sodashvargaData, setSodashvargaData] = useState<any>(null);
+  const [loadingSodashvarga, setLoadingSodashvarga] = useState(false);
+
+  const [aspectsData, setAspectsData] = useState<any>(null);
+  const [loadingAspects, setLoadingAspects] = useState(false);
+
   const fetchTransit = useCallback(async () => {
     if (!result?.id || transitData) return;
     setLoadingTransit(true);
@@ -78,13 +100,90 @@ export default function ConsolidatedReport({
     setLoadingD10(false);
   }, [result?.id, d10Data]);
 
-  // Fetch transit and D10 when popup opens
+  const fetchYogini = useCallback(async () => {
+    if (!result?.id || yoginiData) return;
+    setLoadingYogini(true);
+    try {
+      const data = await api.get(`/api/kundli/${result.id}/yogini-dasha`);
+      setYoginiData(data);
+    } catch { /* fallback */ }
+    setLoadingYogini(false);
+  }, [result?.id, yoginiData]);
+
+  const fetchSadesati = useCallback(async () => {
+    if (!result?.id || sadesatiData) return;
+    setLoadingSadesati(true);
+    try {
+      const data = await api.get(`/api/kundli/${result.id}/lifelong-sadesati`);
+      setSadesatiData(data);
+    } catch { /* fallback */ }
+    setLoadingSadesati(false);
+  }, [result?.id, sadesatiData]);
+
+  const fetchKp = useCallback(async () => {
+    if (!result?.id || kpData) return;
+    setLoadingKp(true);
+    try {
+      const data = await api.post(`/api/kundli/${result.id}/kp-analysis`, {});
+      setKpData(data);
+    } catch { /* fallback */ }
+    setLoadingKp(false);
+  }, [result?.id, kpData]);
+
+  const fetchVarshphal = useCallback(async () => {
+    if (!result?.id || varshphalData) return;
+    setLoadingVarshphal(true);
+    try {
+      const data = await api.post(`/api/kundli/${result.id}/varshphal`, {});
+      setVarshphalData(data);
+    } catch { /* fallback */ }
+    setLoadingVarshphal(false);
+  }, [result?.id, varshphalData]);
+
+  const fetchUpagrahas = useCallback(async () => {
+    if (!result?.id || upagrahasData) return;
+    setLoadingUpagrahas(true);
+    try {
+      const data = await api.get(`/api/kundli/${result.id}/upagrahas`);
+      setUpagrahasData(data);
+    } catch { /* fallback */ }
+    setLoadingUpagrahas(false);
+  }, [result?.id, upagrahasData]);
+
+  const fetchSodashvarga = useCallback(async () => {
+    if (!result?.id || sodashvargaData) return;
+    setLoadingSodashvarga(true);
+    try {
+      const data = await api.get(`/api/kundli/${result.id}/sodashvarga`);
+      setSodashvargaData(data);
+    } catch { /* fallback */ }
+    setLoadingSodashvarga(false);
+  }, [result?.id, sodashvargaData]);
+
+  const fetchAspects = useCallback(async () => {
+    if (!result?.id || aspectsData) return;
+    setLoadingAspects(true);
+    try {
+      const data = await api.get(`/api/kundli/${result.id}/aspects`);
+      setAspectsData(data);
+    } catch { /* fallback */ }
+    setLoadingAspects(false);
+  }, [result?.id, aspectsData]);
+
+  // Fetch transit, D10, and new modules when popup opens
   useEffect(() => {
     if (open && result?.id) {
       fetchTransit();
       fetchD10();
+      fetchYogini();
+      fetchSadesati();
+      fetchKp();
+      fetchVarshphal();
+      fetchUpagrahas();
+      fetchSodashvarga();
+      fetchAspects();
     }
-  }, [open, result?.id, fetchTransit, fetchD10]);
+  }, [open, result?.id, fetchTransit, fetchD10, fetchYogini, fetchSadesati, fetchKp, fetchVarshphal, fetchUpagrahas, fetchSodashvarga, fetchAspects]);
 
   const handleDownloadPDF = async () => {
     try {
@@ -435,8 +534,8 @@ export default function ConsolidatedReport({
             </div>
           </div>
 
-          {/* Row 3: Avakhada Chakra + Vimshottari Dasha */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          {/* Row 3: Avakhada Chakra + Vimshottari Dasha + Yogini Dasha */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {/* Avakhada Chakra */}
             <div className="border border-[#2a2a4e] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
@@ -515,10 +614,55 @@ export default function ConsolidatedReport({
                 <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">Loading...</p>
               )}
             </div>
+
+            {/* Yogini Dasha */}
+            <div className="border border-[#2a2a4e] rounded-lg p-3">
+              <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
+                Yogini Dasha
+              </h4>
+              {loadingYogini ? (
+                <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
+              ) : yoginiData ? (
+                <div>
+                  <div className="bg-[#B8860B]/10 rounded px-2 py-1.5 mb-2">
+                    <p className="text-[9px] text-[#e8e0d4]/50">Current Dasha</p>
+                    <p className="text-[11px] font-bold" style={{ color: '#B8860B' }}>{yoginiData.current_dasha?.planet || '\u2014'}</p>
+                    {yoginiData.current_dasha?.planet && (
+                      <p className="text-[9px] text-[#B8860B]">Until: {yoginiData.current_dasha?.end_date}</p>
+                    )}
+                  </div>
+                  <table className="w-full text-[10px]" style={{ borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr style={{ backgroundColor: '#1a1a2e' }}>
+                        <th className="text-left p-1 font-medium text-[#B8860B]">Yogini</th>
+                        <th className="text-left p-1 font-medium text-[#B8860B]">Planet</th>
+                        <th className="text-left p-1 font-medium text-[#B8860B]">Start</th>
+                        <th className="text-left p-1 font-medium text-[#B8860B]">End</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(yoginiData.periods || []).map((p: any) => (
+                        <tr key={p.name + p.start_date} style={{
+                          borderBottom: '1px solid #2a2a4e',
+                          backgroundColor: p.name === yoginiData.current_dasha?.name && p.start_date === yoginiData.current_dasha?.start_date ? '#B8860B10' : undefined,
+                        }}>
+                          <td className="p-1 font-medium">{p.name}{p.name === yoginiData.current_dasha?.name && p.start_date === yoginiData.current_dasha?.start_date ? ' \u2190' : ''}</td>
+                          <td className="p-1 text-[#e8e0d4]/60">{p.planet} ({p.span}y)</td>
+                          <td className="p-1 text-[#e8e0d4]/60">{p.start_date}</td>
+                          <td className="p-1 text-[#e8e0d4]/60">{p.end_date}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">Loading...</p>
+              )}
+            </div>
           </div>
 
-          {/* Row 4: Yogas + Doshas + Lordships */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+          {/* Row 4: Yogas + Doshas + Lifelong Sade Sati + Lordships */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
             {/* Yogas (present only) */}
             <div className="border border-[#2a2a4e] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2 flex items-center gap-1" style={{ color: '#B8860B' }}>
@@ -533,7 +677,7 @@ export default function ConsolidatedReport({
                     <div key={idx} className="bg-green-500/10 border border-green-500/30 rounded px-2 py-1">
                       <span className="text-[10px] font-medium text-green-400">{yoga.name}</span>
                       {yoga.description && (
-                        <p className="text-[9px] text-green-400 mt-0.5">{yoga.description}</p>
+                         <p className="text-[9px] text-green-400 mt-0.5">{yoga.description}</p>
                       )}
                     </div>
                   ))}
@@ -564,6 +708,44 @@ export default function ConsolidatedReport({
                 </div>
               ) : (
                 <p className="text-[10px] text-center py-4 text-green-400">No doshas present</p>
+              )}
+            </div>
+
+            {/* Lifelong Sade Sati */}
+            <div className="border border-[#2a2a4e] rounded-lg p-3">
+              <h4 className="text-[11px] font-bold mb-2 flex items-center gap-1" style={{ color: '#B8860B' }}>
+                <Shield className="w-3 h-3 text-[#B8860B]" />
+                Lifelong Sade Sati
+              </h4>
+              {loadingSadesati ? (
+                <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
+              ) : sadesatiData ? (
+                <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+                  {sadesatiData.phases && sadesatiData.phases.length > 0 ? (
+                    <div className="space-y-1.5">
+                      {sadesatiData.phases.map((ph: any, idx: number) => (
+                        <div key={idx} className="bg-[#1a1a2e] rounded px-2 py-1">
+                          <p className="text-[9px] text-[#B8860B] font-medium">{ph.phase} Phase</p>
+                          <p className="text-[9px] text-[#e8e0d4]/60">{ph.start_date} \u2192 {ph.end_date}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-[10px] text-center py-4 text-green-400">No major phases soon</p>
+                  )}
+                  {sadesatiData.remedies && sadesatiData.remedies.length > 0 && (
+                    <div className="mt-2 pt-2 border-t border-[#2a2a4e]">
+                      <p className="text-[9px] font-semibold text-[#B8860B] mb-1">General Remedies</p>
+                      <ul className="list-disc pl-3 space-y-0.5 text-[8.5px] text-[#e8e0d4]/80">
+                        {sadesatiData.remedies.map((rem: string, idx: number) => (
+                          <li key={idx}>{rem}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="text-[10px] text-center py-4 text-[#e8e0d4]/40">Loading...</p>
               )}
             </div>
 
@@ -655,9 +837,416 @@ export default function ConsolidatedReport({
               )}
             </div>
           </div>
+          {/* Row 6: KP Analysis + Varshphal */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-3">
+            {/* KP Analysis */}
+            <div className="border border-[#2a2a4e] rounded-lg p-3">
+              <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
+                KP Analysis
+              </h4>
+              {loadingKp ? (
+                <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
+              ) : kpData ? (
+                <div className="space-y-4 max-h-64 overflow-y-auto pr-1">
+                  <div>
+                    <h5 className="text-[10px] font-semibold text-[#B8860B] mb-1">Planetary Significators</h5>
+                    <table className="w-full text-[9px]" style={{ borderCollapse: 'collapse' }}>
+                      <thead style={{ backgroundColor: '#1a1a2e' }}>
+                        <tr>
+                          <th className="text-left p-1 text-[#b8b0a4]">Planet</th>
+                          <th className="text-left p-1 text-[#b8b0a4]">Star Lord</th>
+                          <th className="text-left p-1 text-[#b8b0a4]">Sub Lord</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {(kpData.planets || []).map((p: any) => (
+                          <tr key={p.planet} style={{ borderBottom: '1px solid #2a2a4e' }}>
+                            <td className="p-1 text-[#e8e0d4]">{p.planet}</td>
+                            <td className="p-1 text-[#e8e0d4]/70">{p.nakshatra_lord || '-'}</td>
+                            <td className="p-1 text-[#e8e0d4]/70">{p.sub_lord || '-'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div>
+                    <h5 className="text-[10px] font-semibold text-[#B8860B] mb-1">House Cusps</h5>
+                    <table className="w-full text-[9px]" style={{ borderCollapse: 'collapse' }}>
+                      <thead style={{ backgroundColor: '#1a1a2e' }}>
+                        <tr>
+                          <th className="text-left p-1 text-[#b8b0a4]">Cusp</th>
+                          <th className="text-left p-1 text-[#b8b0a4]">Star Lord</th>
+                          <th className="text-left p-1 text-[#b8b0a4]">Sub Lord</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {(kpData.houses || []).map((h: any) => (
+                          <tr key={h.cusp} style={{ borderBottom: '1px solid #2a2a4e' }}>
+                            <td className="p-1 text-[#e8e0d4]">H{h.cusp}</td>
+                            <td className="p-1 text-[#e8e0d4]/70">{h.nakshatra_lord || '-'}</td>
+                            <td className="p-1 text-[#e8e0d4]/70">{h.sub_lord || '-'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">Loading...</p>
+              )}
+            </div>
+
+            {/* Varshphal (Annual Return) */}
+            <div className="border border-[#2a2a4e] rounded-lg p-3">
+              <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
+                Varshphal (Current Year)
+              </h4>
+              {loadingVarshphal ? (
+                <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
+              ) : varshphalData ? (
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="bg-[#1a1a2e] rounded px-2 py-1.5 border border-[#2a2a4e]">
+                      <p className="text-[9px] text-[#e8e0d4]/50">Muntha Sign</p>
+                      <p className="text-[11px] font-bold text-[#B8860B]">{varshphalData.muntha?.sign || 'N/A'}</p>
+                    </div>
+                    <div className="bg-[#1a1a2e] rounded px-2 py-1.5 border border-[#2a2a4e]">
+                      <p className="text-[9px] text-[#e8e0d4]/50">Muntha Lord</p>
+                      <p className="text-[11px] font-bold text-[#B8860B]">{varshphalData.muntha?.lord || 'N/A'}</p>
+                    </div>
+                    <div className="bg-[#1a1a2e] rounded px-2 py-1.5 border border-[#2a2a4e]">
+                      <p className="text-[9px] text-[#e8e0d4]/50">Year Lord (Varsheshvar)</p>
+                      <p className="text-[11px] font-bold text-[#B8860B]">{varshphalData.year_lord || 'N/A'}</p>
+                    </div>
+                  </div>
+                  {varshphalData.mudda_dasha && (
+                    <div>
+                      <h5 className="text-[10px] font-semibold text-[#B8860B] mb-1">Mudda Dasha (Current)</h5>
+                      <div className="bg-[#1a1a2e] p-2 rounded max-h-32 overflow-y-auto w-full">
+                        <table className="w-full text-[9px]" style={{ borderCollapse: 'collapse' }}>
+                           <tbody>
+                             {varshphalData.mudda_dasha.map((md: any) => (
+                               <tr key={md.planet} style={{ borderBottom: '1px solid #2a2a4e' }}>
+                                 <td className="p-1 font-medium">{md.planet}</td>
+                                 <td className="p-1 text-[#e8e0d4]/60">{md.start_date.slice(0, 10)} - {md.end_date.slice(0, 10)}</td>
+                               </tr>
+                             ))}
+                           </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">Loading...</p>
+              )}
+            </div>
+          </div>
+
+          {/* Row 7: Upagrahas */}
+          <div className="grid grid-cols-1 mt-3">
+            <div className="border border-[#2a2a4e] rounded-lg p-3">
+              <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
+                Upagrahas (Sub-planets & Kala Velas)
+              </h4>
+              {loadingUpagrahas ? (
+                <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
+              ) : upagrahasData?.upagrahas ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-[10px]" style={{ borderCollapse: 'collapse' }}>
+                    <thead style={{ backgroundColor: '#1a1a2e' }}>
+                      <tr>
+                        <th className="text-left p-1.5 text-[#b8b0a4]">Upagraha</th>
+                        <th className="text-left p-1.5 text-[#b8b0a4]">Longitude</th>
+                        <th className="text-left p-1.5 text-[#b8b0a4]">Sign</th>
+                        <th className="text-left p-1.5 text-[#b8b0a4]">Nakshatra</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {['Dhooma', 'Vyatipata', 'Parivesha', 'Indrachapa', 'Upaketu', 'Gulika', 'Mandi']
+                        .filter(name => upagrahasData.upagrahas[name])
+                        .map((name: string) => {
+                        const u = upagrahasData.upagrahas[name];
+                        return (
+                          <tr key={name} style={{ borderBottom: '1px solid #2a2a4e' }}>
+                            <td className="p-1.5 font-medium text-[#e8e0d4]">{name}</td>
+                            <td className="p-1.5 text-[#e8e0d4]">{u.sign_degree?.toFixed(2)}°</td>
+                            <td className="p-1.5 text-[#e8e0d4]">{u.sign}</td>
+                            <td className="p-1.5 text-[#e8e0d4]">{u.nakshatra} P{u.nakshatra_pada}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">Loading...</p>
+              )}
+            </div>
+          </div>
+
+          {/* Row 8: Sodashvarga — By Sign (16 Divisional Charts Table) */}
+          <div className="grid grid-cols-1 mt-3">
+            <div className="border border-[#2a2a4e] rounded-lg p-3">
+              <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
+                Sodashvarga (16 Divisional Charts)
+              </h4>
+              {loadingSodashvarga ? (
+                <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
+              ) : sodashvargaData?.varga_table ? (
+                <div className="space-y-4">
+                  {/* By Sign Table */}
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-[9px]" style={{ borderCollapse: 'collapse' }}>
+                      <thead>
+                        <tr style={{ backgroundColor: '#B8860B', color: 'white' }}>
+                          <th className="text-left p-1.5 font-medium sticky left-0" style={{ backgroundColor: '#B8860B', minWidth: '80px' }}>Varga</th>
+                          {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'].map(p => (
+                            <th key={p} className="text-center p-1.5 font-medium" style={{ minWidth: '50px' }}>{p.slice(0, 3)}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {(sodashvargaData.varga_table || []).map((row: any) => (
+                          <tr key={row.division} style={{ borderBottom: '1px solid #2a2a4e' }}>
+                            <td className="p-1.5 font-medium text-[#B8860B] sticky left-0" style={{ backgroundColor: '#22223a' }}>
+                              {row.name}
+                            </td>
+                            {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'].map(planet => {
+                              const sign = row.planets?.[planet] || '-';
+                              const dignity = sodashvargaData.by_sign?.[planet]?.[String(row.division)]?.dignity || '';
+                              const dignityColor = dignity === 'exalted' ? '#22c55e'
+                                : dignity === 'own' || dignity === 'moolatrikona' ? '#B8860B'
+                                : dignity === 'debilitated' ? '#ef4444'
+                                : dignity === 'friend' ? '#60a5fa'
+                                : dignity === 'enemy' ? '#f97316'
+                                : '#e8e0d4';
+                              return (
+                                <td key={planet} className="p-1.5 text-center" style={{ color: dignityColor }} title={dignity}>
+                                  {sign.slice(0, 3)}
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  {/* Legend */}
+                  <div className="flex flex-wrap gap-3 text-[8px] text-[#e8e0d4]/60">
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#22c55e' }} />Exalted</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#B8860B' }} />Own/MT</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#60a5fa' }} />Friend</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#f97316' }} />Enemy</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#ef4444' }} />Debilitated</span>
+                  </div>
+
+                  {/* Vimshopak Bala (By Planet) */}
+                  <div>
+                    <h5 className="text-[10px] font-semibold text-[#B8860B] mb-2">Vimshopak Bala (Strength from 16 Vargas)</h5>
+                    <div className="space-y-1">
+                      {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu']
+                        .filter(p => sodashvargaData.by_planet?.[p])
+                        .map(planet => {
+                          const data = sodashvargaData.by_planet[planet];
+                          const pct = Math.min((data.vimshopak_bala / 20.0) * 100, 100);
+                          const barColor = data.strength === 'Strong' ? '#B8860B' : data.strength === 'Medium' ? '#f59e0b' : '#C43E4E';
+                          return (
+                            <div key={planet} className="flex items-center gap-1.5">
+                              <span className="w-12 text-[9px] font-medium text-[#e8e0d4]">{planet}</span>
+                              <div className="flex-1 bg-[#2a2a4e] rounded-full h-2.5 overflow-hidden">
+                                <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: barColor }} />
+                              </div>
+                              <span className={`text-[8px] w-16 text-right font-medium`} style={{ color: barColor }}>
+                                {data.vimshopak_bala}/20 ({data.strength})
+                              </span>
+                            </div>
+                          );
+                        })}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">Loading...</p>
+              )}
+            </div>
+          </div>
+
+          {/* Row 9: Aspects on Planets + Aspects on Bhavas */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-3">
+            {/* Aspects on Planets */}
+            <div className="border border-[#2a2a4e] rounded-lg p-3">
+              <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
+                Aspects on Planets
+              </h4>
+              {loadingAspects ? (
+                <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
+              ) : aspectsData?.planet_aspects_summary ? (
+                <div className="overflow-y-auto max-h-72 space-y-2">
+                  {Object.entries(aspectsData.planet_aspects_summary).map(([planet, data]: [string, any]) => (
+                    <div key={planet} className="bg-[#1a1a2e] rounded px-2 py-1.5 border border-[#2a2a4e]">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[10px] font-semibold text-[#e8e0d4]">{planet} <span className="text-[8px] text-[#e8e0d4]/40">(H{data.house})</span></span>
+                        <div className="flex gap-2">
+                          <span className="text-[8px] px-1.5 py-0.5 rounded bg-green-500/15 text-green-400">
+                            {data.benefic_aspects} benefic
+                          </span>
+                          <span className="text-[8px] px-1.5 py-0.5 rounded bg-red-500/15 text-red-400">
+                            {data.malefic_aspects} malefic
+                          </span>
+                        </div>
+                      </div>
+                      {data.aspected_by && data.aspected_by.length > 0 ? (
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {data.aspected_by.map((a: any, i: number) => {
+                            const isBenefic = ['Jupiter', 'Venus', 'Moon', 'Mercury'].includes(a.planet);
+                            return (
+                              <span
+                                key={i}
+                                className="text-[8px] px-1.5 py-0.5 rounded"
+                                style={{
+                                  backgroundColor: isBenefic ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
+                                  color: isBenefic ? '#4ade80' : '#f87171',
+                                }}
+                              >
+                                {a.planet} ({a.type})
+                              </span>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <p className="text-[8px] text-[#e8e0d4]/30 mt-0.5">No aspects received</p>
+                      )}
+                      {/* Houses this planet aspects */}
+                      {data.aspects_to && data.aspects_to.length > 0 && (
+                        <div className="mt-1 pt-1 border-t border-[#2a2a4e]">
+                          <span className="text-[8px] text-[#B8860B]">Aspects → </span>
+                          {data.aspects_to.map((a: any, i: number) => (
+                            <span key={i} className="text-[8px] text-[#e8e0d4]/60">
+                              H{a.house}
+                              {a.planets_in_house && a.planets_in_house.length > 0 && (
+                                <span className="text-[#B8860B]"> ({a.planets_in_house.join(', ')})</span>
+                              )}
+                              {i < data.aspects_to.length - 1 ? ', ' : ''}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">Loading...</p>
+              )}
+            </div>
+
+            {/* Aspects on Bhavas */}
+            <div className="border border-[#2a2a4e] rounded-lg p-3">
+              <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
+                Aspects on Bhavas (Houses)
+              </h4>
+              {loadingAspects ? (
+                <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
+              ) : aspectsData?.bhava_summary ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-[9px]" style={{ borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr style={{ backgroundColor: '#1a1a2e' }}>
+                        <th className="text-left p-1.5 text-[#b8b0a4]">Bhava</th>
+                        <th className="text-left p-1.5 text-[#b8b0a4]">Planets</th>
+                        <th className="text-left p-1.5 text-[#b8b0a4]">Aspected By</th>
+                        <th className="text-center p-1.5 text-[#b8b0a4]">B</th>
+                        <th className="text-center p-1.5 text-[#b8b0a4]">M</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(aspectsData.bhava_summary || []).map((bh: any) => (
+                        <tr key={bh.house} style={{ borderBottom: '1px solid #2a2a4e' }}>
+                          <td className="p-1.5 font-medium text-[#B8860B]">H{bh.house}</td>
+                          <td className="p-1.5 text-[#e8e0d4]">
+                            {bh.planets_in_house && bh.planets_in_house.length > 0
+                              ? bh.planets_in_house.join(', ')
+                              : <span className="text-[#e8e0d4]/30">—</span>}
+                          </td>
+                          <td className="p-1.5 text-[#e8e0d4]/70">
+                            {bh.aspected_by && bh.aspected_by.length > 0
+                              ? bh.aspected_by.join(', ')
+                              : <span className="text-[#e8e0d4]/30">—</span>}
+                          </td>
+                          <td className="p-1.5 text-center">
+                            <span className="text-green-400">{bh.benefic_aspects || 0}</span>
+                          </td>
+                          <td className="p-1.5 text-center">
+                            <span className="text-red-400">{bh.malefic_aspects || 0}</span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <div className="flex gap-3 mt-1 text-[8px] text-[#e8e0d4]/50">
+                    <span>B = Benefic Aspects</span>
+                    <span>M = Malefic Aspects</span>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">Loading...</p>
+              )}
+            </div>
+          </div>
+
+          {/* Row 10: Bhinnashtakvarga Detail Table */}
+          {ashtakvargaData?.planet_bindus && (
+            <div className="grid grid-cols-1 mt-3">
+              <div className="border border-[#2a2a4e] rounded-lg p-3">
+                <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
+                  Bhinnashtakvarga (Individual Planet Bindus)
+                </h4>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-[9px]" style={{ borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr style={{ backgroundColor: '#B8860B', color: 'white' }}>
+                        <th className="text-left p-1.5 font-medium">Planet</th>
+                        {['Ari', 'Tau', 'Gem', 'Can', 'Leo', 'Vir', 'Lib', 'Sco', 'Sag', 'Cap', 'Aqu', 'Pis'].map(s => (
+                          <th key={s} className="text-center p-1 font-medium">{s}</th>
+                        ))}
+                        <th className="text-center p-1.5 font-medium">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map(planet => {
+                        const bindus = ashtakvargaData.planet_bindus?.[planet] || {};
+                        const signs = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
+                        const total = signs.reduce((sum: number, s: string) => sum + (bindus[s] || 0), 0);
+                        return (
+                          <tr key={planet} style={{ borderBottom: '1px solid #2a2a4e' }}>
+                            <td className="p-1.5 font-medium text-[#e8e0d4]">{planet}</td>
+                            {signs.map(s => {
+                              const val = bindus[s] || 0;
+                              return (
+                                <td key={s} className="text-center p-1">
+                                  <span className={`inline-block w-5 h-5 rounded text-[8px] leading-5 ${
+                                    val >= 5 ? 'bg-[#B8860B]/20 text-[#B8860B] font-bold'
+                                    : val <= 2 ? 'bg-[#8B2332]/10 text-[#C43E4E]'
+                                    : 'text-[#e8e0d4]/60'
+                                  }`}>
+                                    {val}
+                                  </span>
+                                </td>
+                              );
+                            })}
+                            <td className="text-center p-1.5 font-semibold text-[#B8860B]">{total}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Footer */}
-          <div className="text-center border-t border-[#2a2a4e] pt-2 pb-1">
+          <div className="text-center border-t border-[#2a2a4e] pt-3 pb-1 mt-2">
             <p className="text-[9px] text-[#e8e0d4]/40">
               Generated by Astro Rattan | {new Date().toLocaleDateString()}
             </p>

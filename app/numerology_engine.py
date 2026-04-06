@@ -120,5 +120,5 @@ def calculate_numerology(name: str, birth_date: str) -> dict:
         "expression": expression,
         "soul_urge": soul_urge,
         "personality": personality,
-        "predictions": prediction,
+        "predictions": [prediction],
     }

@@ -65,6 +65,9 @@ export default function KundliGenerator() {
   const [transitData, setTransitData] = useState<any>(null);
   const [loadingTransit, setLoadingTransit] = useState(false);
   const [transitHouseShift, setTransitHouseShift] = useState(0);
+  const [reportLagnaShift, setReportLagnaShift] = useState(0);
+  const [reportMoonShift, setReportMoonShift] = useState(0);
+  const [reportGocharShift, setReportGocharShift] = useState(0);
   const [transitDate, setTransitDate] = useState('');
   const [transitTime, setTransitTime] = useState('');
   const [d10Data, setD10Data] = useState<any>(null);
@@ -822,34 +825,61 @@ export default function KundliGenerator() {
 
               {/* Charts row — Lagna, Moon, Gochar side by side */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 print:grid-cols-3">
-                {/* 1. Lagna Chart (D1) */}
+                {/* 1. Lagna Chart (D1) — click house to rotate lagan */}
                 <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-3">
-                  <h4 className="font-display font-semibold text-sacred-brown mb-2 text-center text-sm">Lagna</h4>
+                  <h4 className="font-display font-semibold text-sacred-brown mb-2 text-center text-sm">
+                    Lagna <span className="text-[10px] font-normal opacity-50">(click house → lagan)</span>
+                  </h4>
                   <div className="flex justify-center">
-                    <InteractiveKundli
-                      chartData={{ planets, houses: result.chart_data?.houses, ascendant: result.chart_data?.ascendant } as ChartData}
-                      onPlanetClick={handlePlanetClick}
-                      onHouseClick={handleHouseClick}
-                      compact
-                    />
+                    {(() => {
+                      const shift = reportLagnaShift;
+                      const basePlanets = planets;
+                      const baseHouses = result.chart_data?.houses;
+                      const shiftedPlanets = shift
+                        ? basePlanets.map((p: PlanetData) => ({
+                            ...p,
+                            house: ((((p.house || 1) - 1 - shift + 12) % 12) + 1),
+                          }))
+                        : basePlanets;
+                      const shiftedHouses = shift && baseHouses
+                        ? baseHouses.map((h: any) => ({ number: ((h.number - 1 - shift + 12) % 12) + 1, sign: h.sign }))
+                        : baseHouses;
+                      return (
+                        <InteractiveKundli
+                          chartData={{ planets: shiftedPlanets, houses: shiftedHouses, ascendant: result.chart_data?.ascendant } as ChartData}
+                          onPlanetClick={handlePlanetClick}
+                          onHouseClick={(house) => {
+                            const orig = shift ? ((house - 1 + shift) % 12) + 1 : house;
+                            setReportLagnaShift(orig - 1 === 0 ? 0 : orig - 1);
+                          }}
+                          compact
+                        />
+                      );
+                    })()}
                   </div>
+                  {reportLagnaShift > 0 && (
+                    <button onClick={() => setReportLagnaShift(0)} className="block mx-auto mt-1 text-[10px] text-sacred-gold underline">Reset View</button>
+                  )}
                 </div>
 
-                {/* 2. Moon Chart — houses shifted so Moon's house = 1 */}
+                {/* 2. Moon Chart — click house to rotate lagan */}
                 <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-3">
-                  <h4 className="font-display font-semibold text-sacred-brown mb-2 text-center text-sm">Moon</h4>
+                  <h4 className="font-display font-semibold text-sacred-brown mb-2 text-center text-sm">
+                    Moon <span className="text-[10px] font-normal opacity-50">(click house → lagan)</span>
+                  </h4>
                   <div className="flex justify-center">
                     {(() => {
                       const moonPlanet = planets.find((p: PlanetData) => p.planet === 'Moon');
                       const moonHouse = moonPlanet?.house || 1;
-                      const shift = moonHouse - 1;
+                      const baseShift = moonHouse - 1;
+                      const totalShift = baseShift + reportMoonShift;
                       const moonPlanets = planets.map((p: PlanetData) => ({
                         ...p,
-                        house: ((p.house - 1 - shift + 12) % 12) + 1,
+                        house: ((((p.house || 1) - 1 - totalShift + 24) % 12) + 1),
                       }));
                       const moonHouses = result.chart_data?.houses
                         ? result.chart_data.houses.map((h: { number: number; sign: string }) => ({
-                            number: ((h.number - 1 - shift + 12) % 12) + 1,
+                            number: ((h.number - 1 - totalShift + 24) % 12) + 1,
                             sign: h.sign,
                           }))
                         : undefined;
@@ -857,42 +887,69 @@ export default function KundliGenerator() {
                         <InteractiveKundli
                           chartData={{ planets: moonPlanets, houses: moonHouses } as ChartData}
                           onPlanetClick={handlePlanetClick}
-                          onHouseClick={handleHouseClick}
+                          onHouseClick={(house) => {
+                            const orig = totalShift ? ((house - 1 + totalShift) % 12) + 1 : house;
+                            const newShift = ((orig - 1) - baseShift + 12) % 12;
+                            setReportMoonShift(newShift);
+                          }}
                           compact
                         />
                       );
                     })()}
                   </div>
+                  {reportMoonShift > 0 && (
+                    <button onClick={() => setReportMoonShift(0)} className="block mx-auto mt-1 text-[10px] text-sacred-gold underline">Reset View</button>
+                  )}
                 </div>
 
-                {/* 3. Gochar (Transit) Chart */}
+                {/* 3. Gochar (Transit) Chart — click house to rotate lagan */}
                 <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-3">
-                  <h4 className="font-display font-semibold text-sacred-brown mb-2 text-center text-sm">Gochar {transitData?.transit_date ? `(${transitData.transit_date})` : ''}</h4>
+                  <h4 className="font-display font-semibold text-sacred-brown mb-2 text-center text-sm">
+                    Gochar {transitData?.transit_date ? `(${transitData.transit_date})` : ''}
+                    <span className="text-[10px] font-normal opacity-50"> (click house → lagan)</span>
+                  </h4>
                   <div className="flex justify-center">
                     {loadingTransit ? (
                       <div className="flex items-center justify-center py-12"><Loader2 className="w-5 h-5 animate-spin text-sacred-gold" /></div>
-                    ) : transitData?.transits ? (
-                      <InteractiveKundli
-                        chartData={{
-                          planets: transitData.transits.map((tr: any) => ({
-                            planet: tr.planet,
-                            sign: tr.current_sign || tr.sign || '',
-                            house: tr.house || 1,
-                            nakshatra: tr.nakshatra || '',
-                            sign_degree: tr.sign_degree || tr.degree || 0,
-                            status: tr.is_retrograde ? 'Retrograde' : '',
-                            is_retrograde: tr.is_retrograde,
-                          })),
-                          houses: transitData.chart_data?.houses || result.chart_data?.houses,
-                        } as ChartData}
-                        onPlanetClick={handlePlanetClick}
-                        onHouseClick={handleHouseClick}
-                        compact
-                      />
-                    ) : (
+                    ) : transitData?.transits ? (() => {
+                      const shift = reportGocharShift;
+                      const transitPlanets = transitData.transits.map((tr: any) => ({
+                        planet: tr.planet,
+                        sign: tr.current_sign || tr.sign || '',
+                        house: tr.house || 1,
+                        nakshatra: tr.nakshatra || '',
+                        sign_degree: tr.sign_degree || tr.degree || 0,
+                        status: tr.is_retrograde ? 'Retrograde' : '',
+                        is_retrograde: tr.is_retrograde,
+                      }));
+                      const baseHouses = transitData.chart_data?.houses || result.chart_data?.houses;
+                      const shiftedPlanets = shift
+                        ? transitPlanets.map((p: any) => ({
+                            ...p,
+                            house: ((((p.house || 1) - 1 - shift + 12) % 12) + 1),
+                          }))
+                        : transitPlanets;
+                      const shiftedHouses = shift && baseHouses
+                        ? baseHouses.map((h: any) => ({ number: ((h.number - 1 - shift + 12) % 12) + 1, sign: h.sign }))
+                        : baseHouses;
+                      return (
+                        <InteractiveKundli
+                          chartData={{ planets: shiftedPlanets, houses: shiftedHouses } as ChartData}
+                          onPlanetClick={handlePlanetClick}
+                          onHouseClick={(house) => {
+                            const orig = shift ? ((house - 1 + shift) % 12) + 1 : house;
+                            setReportGocharShift(orig - 1 === 0 ? 0 : orig - 1);
+                          }}
+                          compact
+                        />
+                      );
+                    })() : (
                       <p className="text-center text-sacred-text-secondary py-12 text-sm">Loading transit...</p>
                     )}
                   </div>
+                  {reportGocharShift > 0 && (
+                    <button onClick={() => setReportGocharShift(0)} className="block mx-auto mt-1 text-[10px] text-sacred-gold underline">Reset View</button>
+                  )}
                 </div>
               </div>
 

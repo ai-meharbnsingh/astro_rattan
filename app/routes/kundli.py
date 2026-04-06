@@ -27,6 +27,9 @@ from app.shadbala_engine import calculate_shadbala
 from app.avakhada_engine import calculate_avakhada
 from app.transit_engine import calculate_transits
 from app.kp_engine import calculate_kp_cuspal
+from app.lifelong_sade_sati import calculate_lifelong_sade_sati
+from app.yogini_dasha_engine import calculate_yogini_dasha
+from datetime import datetime
 
 router = APIRouter(prefix="/api/kundli", tags=["kundli"])
 
@@ -504,6 +507,118 @@ def get_yogas_and_doshas(
     planets = chart.get("planets", {})
     asc_sign = chart.get("ascendant", {}).get("sign", "")
     result = analyze_yogas_and_doshas(planets, asc_sign)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
+@router.get("/{kundli_id}/lifelong-sadesati", status_code=status.HTTP_200_OK)
+def get_lifelong_sadesati(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    moon_info = chart.get("planets", {}).get("Moon", {})
+    moon_sign = moon_info.get("sign", "Aries")
+    ZODIAC = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"]
+    moon_sign_idx = ZODIAC.index(moon_sign)
+    
+    # parse birth datetime
+    bd = row["birth_date"]
+    bt = row["birth_time"]
+    y, m, d = map(int, str(bd).split("-"))
+    hr, mn, sec = 0, 0, 0
+    if bt:
+        parts = str(bt).split(":")
+        hr = int(parts[0])
+        mn = int(parts[1]) if len(parts) > 1 else 0
+        sec = int(parts[2]) if len(parts) > 2 else 0
+    dt = datetime(y, m, d, hr, mn, sec)
+    
+    result = calculate_lifelong_sade_sati(dt, moon_sign_idx)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
+@router.get("/{kundli_id}/yogini-dasha", status_code=status.HTTP_200_OK)
+def get_yogini_dasha(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    moon_info = chart.get("planets", {}).get("Moon", {})
+    moon_nakshatra = moon_info.get("nakshatra", "Ashwini")
+    moon_longitude = moon_info.get("longitude", 0.0)
+    result = calculate_yogini_dasha(moon_nakshatra, str(row["birth_date"]), moon_longitude)
+    return result
+@router.get("/{kundli_id}/upagrahas", status_code=status.HTTP_200_OK)
+def get_upagrahas(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    from app.upagraha_engine import calculate_upagrahas
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    
+    result = calculate_upagrahas(
+        birth_date=row["birth_date"],
+        birth_time=row["birth_time"] or "12:00:00",
+        lat=row["latitude"],
+        lon=row["longitude"],
+        tz_offset=row["timezone_offset"]
+    )
+    return {
+        "kundli_id": kundli_id,
+        "person_name": row["person_name"],
+        "upagrahas": result
+    }
+
+
+@router.get("/{kundli_id}/sodashvarga", status_code=status.HTTP_200_OK)
+def get_sodashvarga(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Sodashvarga — 16 divisional chart placements + Vimshopak Bala."""
+    from app.sodashvarga_engine import calculate_sodashvarga
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    planets = chart.get("planets", {})
+
+    planet_longitudes = {}
+    for pname, pinfo in planets.items():
+        planet_longitudes[pname] = pinfo.get("longitude", 0.0)
+    asc_lon = chart.get("ascendant", {}).get("longitude")
+    if asc_lon is not None:
+        planet_longitudes["Ascendant"] = asc_lon
+
+    result = calculate_sodashvarga(planet_longitudes)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
+@router.get("/{kundli_id}/aspects", status_code=status.HTTP_200_OK)
+def get_aspects(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Planetary aspects on planets and bhavas."""
+    from app.aspects_engine import calculate_aspects
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    planets = chart.get("planets", {})
+    houses = chart.get("houses", None)
+
+    result = calculate_aspects(planets, houses)
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result
