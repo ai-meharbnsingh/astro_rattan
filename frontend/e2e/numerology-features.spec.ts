@@ -53,10 +53,10 @@ test.describe('Numerology', () => {
     await expect(resultsCard).toBeVisible({ timeout: 10_000 });
 
     // Verify all 4 numbers are displayed
-    await expect(page.locator('text=Life Path')).toBeVisible();
-    await expect(page.locator('text=Expression')).toBeVisible();
-    await expect(page.locator('text=Soul Urge')).toBeVisible();
-    await expect(page.locator('text=Personality')).toBeVisible();
+    await expect(page.getByText('Life Path', { exact: true })).toBeVisible();
+    await expect(page.getByText('Expression', { exact: true })).toBeVisible();
+    await expect(page.getByText('Soul Urge', { exact: true })).toBeVisible();
+    await expect(page.getByText('Personality', { exact: true })).toBeVisible();
 
     // Verify predictions section appears
     await expect(page.locator('text=Predictions')).toBeVisible();
