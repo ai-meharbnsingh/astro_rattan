@@ -1136,7 +1136,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
   };
 
   return (
-    <div className={compact ? "relative w-full h-full" : "relative w-full max-w-[600px]"}>
+    <div className={compact ? "relative w-full h-full" : "relative w-full max-w-[800px]"}>
       {/* Chart Style Toggle */}
       {!compact && <div className="flex justify-center gap-1 mb-3 relative z-20">
         <button

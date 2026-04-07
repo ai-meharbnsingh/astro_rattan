@@ -720,7 +720,7 @@ export default function KundliGenerator() {
     } : null;
 
     return (
-      <div className="max-w-4xl mx-auto pt-24 pb-48 px-4 bg-transparent">
+      <div className="max-w-7xl mx-auto pt-24 pb-48 px-4 bg-transparent">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             {savedKundlis.length > 0 && (
@@ -1783,7 +1783,7 @@ export default function KundliGenerator() {
             ) : iogitaData?.basin ? (
               <div className="space-y-6">
                 {/* Overall Summary Card */}
-                <div className="rounded-2xl p-6 border border-sacred-gold/30" style={{ background: 'linear-gradient(135deg, var(--aged-gold-5) 0%, var(--dark-card-alt) 100%)' }}>
+                <div className="rounded-2xl p-6 border border-sacred-gold/30" style={{ background: 'linear-gradient(135deg, rgba(255,153,51,0.06) 0%, rgba(248,250,252,1) 100%)' }}>
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-12 h-12 rounded-full bg-sacred-gold/20 flex items-center justify-center">
                       <Sparkles className="w-6 h-6 text-sacred-gold" />
@@ -1797,8 +1797,8 @@ export default function KundliGenerator() {
                 </div>
 
                 {/* Strengths — Top Forces */}
-                <div className="rounded-xl p-5 border border-sacred-gold/20" className="bg-dark-card">
-                  <h4 className="font-display font-semibold mb-4" style={{ color: 'var(--aged-gold)' }}>{t('iogita.strongestQualities')}</h4>
+                <div className="rounded-xl p-5 border border-sacred-gold/20 bg-sacred-cream">
+                  <h4 className="font-display font-semibold mb-4" style={{ color: 'var(--aged-gold-dim)' }}>{t('iogita.strongestQualities')}</h4>
                   <div className="space-y-3">
                     {(iogitaData.basin.top_3_atoms || []).map(([name, val]: [string, number], idx: number) => {
                       const labels: Record<string, string> = {
@@ -1829,8 +1829,8 @@ export default function KundliGenerator() {
 
                 {/* Area to Improve */}
                 {iogitaData.basin.top_negative && (
-                  <div className="rounded-xl p-5 border border-red-500/20" className="bg-error-8">
-                    <h4 className="font-display font-semibold mb-2" className="text-error-light">{t('iogita.areaNeedsAttention')}</h4>
+                  <div className="rounded-xl p-5 border border-red-200 bg-red-50">
+                    <h4 className="font-display font-semibold mb-2 text-red-700">{t('iogita.areaNeedsAttention')}</h4>
                     {(() => {
                       const negLabels: Record<string, string> = {
                         DHARMA: 'Following your duty', SATYA: 'Being truthful', TYAGA: 'Letting go of attachments',
@@ -1840,35 +1840,35 @@ export default function KundliGenerator() {
                         MOKSHA: 'Spiritual growth', ATMA: 'Self-awareness',
                       };
                       const name = iogitaData.basin.top_negative[0];
-                      return <p className="text-sm" className="text-error-pale">{negLabels[name] || name} — this area is suppressed in your chart. Focus on developing it for a more balanced life.</p>;
+                      return <p className="text-sm text-red-600">{negLabels[name] || name} — this area is suppressed in your chart. Focus on developing it for a more balanced life.</p>;
                     })()}
                   </div>
                 )}
 
                 {/* Guidance Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="rounded-xl p-5 border border-amber-500/20" className="bg-warning-8">
-                    <h4 className="font-display font-semibold mb-2" className="text-warning-light">{t('iogita.beMindfulOf')}</h4>
-                    <p className="text-sm leading-relaxed" className="text-warning-pale">{iogitaData.basin.warning}</p>
+                  <div className="rounded-xl p-5 border border-amber-200 bg-amber-50">
+                    <h4 className="font-display font-semibold mb-2 text-amber-700">{t('iogita.beMindfulOf')}</h4>
+                    <p className="text-sm leading-relaxed text-amber-600">{iogitaData.basin.warning}</p>
                   </div>
-                  <div className="rounded-xl p-5 border border-emerald-500/20" className="bg-success-8">
-                    <h4 className="font-display font-semibold mb-2" className="text-success-light">{t('iogita.pathToGrowth')}</h4>
-                    <p className="text-sm leading-relaxed" className="text-success-pale">{iogitaData.basin.escape_trigger}</p>
+                  <div className="rounded-xl p-5 border border-emerald-200 bg-emerald-50">
+                    <h4 className="font-display font-semibold mb-2 text-emerald-700">{t('iogita.pathToGrowth')}</h4>
+                    <p className="text-sm leading-relaxed text-emerald-600">{iogitaData.basin.escape_trigger}</p>
                   </div>
                 </div>
 
                 {/* Overall Insight */}
                 {iogitaData.iogita_insight && (
-                  <div className="rounded-xl p-5 border border-sacred-gold/20" className="bg-dark-card">
-                    <h4 className="font-display font-semibold mb-3" style={{ color: 'var(--aged-gold)' }}>{t('iogita.overallLifeReading')}</h4>
+                  <div className="rounded-xl p-5 border border-sacred-gold/20 bg-sacred-cream">
+                    <h4 className="font-display font-semibold mb-3" style={{ color: 'var(--aged-gold-dim)' }}>{t('iogita.overallLifeReading')}</h4>
                     <p className="text-sm leading-relaxed" style={{ color: 'var(--ink)' }}>{iogitaData.iogita_insight}</p>
                   </div>
                 )}
 
                 {/* Normal Astrology Insights */}
                 {iogitaData.normal_astrology && iogitaData.normal_astrology.length > 0 && (
-                  <div className="rounded-xl p-5 border border-sacred-gold/20" className="bg-dark-card">
-                    <h4 className="font-display font-semibold mb-3" style={{ color: 'var(--aged-gold)' }}>{t('iogita.kundliSummary')}</h4>
+                  <div className="rounded-xl p-5 border border-sacred-gold/20 bg-sacred-cream">
+                    <h4 className="font-display font-semibold mb-3" style={{ color: 'var(--aged-gold-dim)' }}>{t('iogita.kundliSummary')}</h4>
                     <div className="space-y-2">
                       {iogitaData.normal_astrology.map((point: string, idx: number) => (
                         <div key={idx} className="flex gap-2 text-sm" style={{ color: 'var(--ink)' }}>
