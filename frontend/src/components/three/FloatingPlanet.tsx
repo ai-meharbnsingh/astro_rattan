@@ -46,7 +46,7 @@ export default function FloatingPlanet({
         <mesh rotation={[-Math.PI / 2, 0, 0]}>
           <torusGeometry args={[orbitRadius, 0.005, 8, 128]} />
           <meshBasicMaterial
-            color="var(--aged-gold-dim)"
+            color="#B45309"
             transparent
             opacity={0.1}
             depthWrite={false}

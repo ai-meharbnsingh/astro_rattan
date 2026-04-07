@@ -11,33 +11,33 @@ interface ArmillarySphereProps {
 const ZODIAC_SYMBOLS = ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
 
 const goldMaterial = new THREE.MeshStandardMaterial({
-  color: new THREE.Color('var(--aged-gold-dim)'),
+  color: new THREE.Color('#B45309'),
   metalness: 0.9,
   roughness: 0.2,
 });
 
 const darkGoldMaterial = new THREE.MeshStandardMaterial({
-  color: new THREE.Color('var(--aged-gold-dim)'),
+  color: new THREE.Color('#B45309'),
   metalness: 0.9,
   roughness: 0.2,
 });
 
 const innerRingMaterial = new THREE.MeshStandardMaterial({
-  color: new THREE.Color('var(--aged-gold-dim)'),
+  color: new THREE.Color('#B45309'),
   metalness: 0.85,
   roughness: 0.25,
 });
 
 const centralSphereMaterial = new THREE.MeshStandardMaterial({
-  color: new THREE.Color('var(--aged-gold-dim)'),
-  emissive: new THREE.Color('var(--aged-gold-dim)'),
+  color: new THREE.Color('#B45309'),
+  emissive: new THREE.Color('#B45309'),
   emissiveIntensity: 0.5,
   metalness: 0.7,
   roughness: 0.3,
 });
 
 const auraMaterial = new THREE.MeshBasicMaterial({
-  color: new THREE.Color('var(--aged-gold-dim)'),
+  color: new THREE.Color('#B45309'),
   transparent: true,
   opacity: 0.03,
   side: THREE.DoubleSide,
@@ -190,22 +190,22 @@ export default function ArmillarySphere({ interactive = false, scale = 1 }: Armi
         </mesh>
 
         {/* Point light inside for glow */}
-        <pointLight color="var(--aged-gold-dim)" intensity={2} distance={5} />
+        <pointLight color="#B45309" intensity={2} distance={5} />
 
         {/* Zodiac Symbols around the ecliptic ring */}
         {zodiacPositions.map(({ symbol, position }, i) => (
           <Billboard key={i} follow lockX={false} lockY={false} lockZ={false} position={position}>
             <Text
               fontSize={0.15}
-              color="var(--aged-gold-dim)"
+              color="#B45309"
               anchorX="center"
               anchorY="middle"
               outlineWidth={0.005}
-              outlineColor="var(--aged-gold-dim)"
+              outlineColor="#B45309"
             >
               {symbol}
               <meshBasicMaterial
-                color="var(--aged-gold-dim)"
+                color="#B45309"
                 toneMapped={false}
               />
             </Text>
