@@ -333,6 +333,9 @@ class NumerologyRequest(BaseModel):
 
 class MobileNumerologyRequest(BaseModel):
     phone_number: str = Field(min_length=4)
+    name: str = ""
+    birth_date: str = ""  # YYYY-MM-DD (optional but enables DOB-based features)
+    areas_of_struggle: list = []  # ["health", "relationship", "career", "money", "job"]
 
 class TarotDrawRequest(BaseModel):
     spread: TarotSpread = TarotSpread.single

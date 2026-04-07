@@ -30,7 +30,12 @@ def mobile_numerology(req: MobileNumerologyRequest):
     No authentication required.
     """
     try:
-        result = calculate_mobile_numerology(req.phone_number)
+        result = calculate_mobile_numerology(
+            req.phone_number,
+            name=req.name,
+            birth_date=req.birth_date,
+            areas_of_struggle=req.areas_of_struggle,
+        )
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

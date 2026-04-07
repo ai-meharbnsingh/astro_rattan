@@ -27,15 +27,38 @@ interface NumerologyResult {
   summary?: string;
 }
 
+interface MobileCombination {
+  pair: string;
+  type: 'Benefic' | 'Neutral' | 'Malefic';
+  description?: string;
+}
+
+interface AreaAffirmation {
+  area: string;
+  affirmation: string;
+}
+
 interface MobileNumerologyResult {
   phone_number: string;
-  vibration_number: number;
-  total_sum: number;
-  prediction: string;
-  lucky_qualities: string[];
-  challenges: string[];
-  best_for: string;
-  compatibility_numbers: number[];
+  name?: string;
+  birth_date?: string;
+  compound_number: number;
+  mobile_total: number;
+  mobile_total_prediction?: string;
+  recommended_totals?: number[];
+  loshu_grid?: (number | null)[][];
+  vedic_grid?: (number | null)[][];
+  lucky_colours?: string[];
+  unlucky_colours?: string[];
+  lucky_numbers?: number[];
+  unlucky_numbers?: number[];
+  neutral_numbers?: number[];
+  missing_numbers?: number[];
+  combinations?: MobileCombination[];
+  is_recommended?: boolean;
+  recommendation_message?: string;
+  predictions?: string[];
+  affirmations?: AreaAffirmation[];
 }
 
 interface TarotCard {
@@ -96,7 +119,13 @@ export default function NumerologyTarot() {
   const [numLoading, setNumLoading] = useState(false);
 
   // Mobile Numerology
+  const [firstName, setFirstName] = useState('');
+  const [middleName, setMiddleName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [mobileCountryCode, setMobileCountryCode] = useState('+91');
   const [mobilePhone, setMobilePhone] = useState('');
+  const [mobileDob, setMobileDob] = useState('');
+  const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
   const [mobileResult, setMobileResult] = useState<MobileNumerologyResult | null>(null);
   const [mobileLoading, setMobileLoading] = useState(false);
 
@@ -131,13 +160,26 @@ export default function NumerologyTarot() {
     setNumLoading(false);
   };
 
+  const toggleArea = (area: string) => {
+    setSelectedAreas((prev) =>
+      prev.includes(area) ? prev.filter((a) => a !== area) : [...prev, area]
+    );
+  };
+
   const analyzeMobile = async () => {
-    if (!mobilePhone.trim()) return;
+    if (!mobilePhone.trim() || !firstName.trim() || !mobileDob) return;
     setMobileLoading(true);
     setMobileResult(null);
     setError('');
     try {
-      const data = await api.post('/api/numerology/mobile', { phone_number: mobilePhone.trim() });
+      const fullName = [firstName.trim(), middleName.trim(), lastName.trim()].filter(Boolean).join(' ');
+      const fullPhone = `${mobileCountryCode}${mobilePhone.trim()}`;
+      const data = await api.post('/api/numerology/mobile', {
+        phone_number: fullPhone,
+        name: fullName,
+        birth_date: mobileDob,
+        areas_of_struggle: selectedAreas,
+      });
       setMobileResult(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Mobile numerology analysis failed. Please try again.');
@@ -288,93 +330,389 @@ export default function NumerologyTarot() {
               </div>
               <p className="text-sm text-cosmic-text-secondary">Discover the hidden vibration of your mobile number</p>
             </div>
-            <Card className="bg-cosmic-card border-0 shadow-soft max-w-xl mx-auto">
+            <Card className="bg-cosmic-card border-0 shadow-soft max-w-2xl mx-auto">
               <CardContent className="p-6">
                 <h3 className="font-display font-semibold text-cosmic-text mb-4 text-center">Analyze Your Mobile Number</h3>
-                <div className="space-y-3">
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cosmic-text-secondary" />
+                <div className="space-y-4">
+                  {/* Name Fields */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-xs text-cosmic-text-secondary mb-1">First Name <span className="text-red-400">*</span></label>
+                      <Input
+                        placeholder="First Name"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        className="bg-cosmic-card border-sacred-gold/15"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-cosmic-text-secondary mb-1">Middle Name</label>
+                      <Input
+                        placeholder="Middle Name (optional)"
+                        value={middleName}
+                        onChange={(e) => setMiddleName(e.target.value)}
+                        className="bg-cosmic-card border-sacred-gold/15"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-cosmic-text-secondary mb-1">Last Name</label>
+                      <Input
+                        placeholder="Last Name"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        className="bg-cosmic-card border-sacred-gold/15"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Mobile Number with Country Code */}
+                  <div>
+                    <label className="block text-xs text-cosmic-text-secondary mb-1">Mobile Number <span className="text-red-400">*</span></label>
+                    <div className="flex gap-2">
+                      <Select value={mobileCountryCode} onValueChange={setMobileCountryCode}>
+                        <SelectTrigger className="w-24 bg-cosmic-card border-sacred-gold/15 shrink-0">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="+91">+91</SelectItem>
+                          <SelectItem value="+1">+1</SelectItem>
+                          <SelectItem value="+44">+44</SelectItem>
+                          <SelectItem value="+61">+61</SelectItem>
+                          <SelectItem value="+971">+971</SelectItem>
+                          <SelectItem value="+65">+65</SelectItem>
+                          <SelectItem value="+49">+49</SelectItem>
+                          <SelectItem value="+33">+33</SelectItem>
+                          <SelectItem value="+81">+81</SelectItem>
+                          <SelectItem value="+86">+86</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <div className="relative flex-1">
+                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cosmic-text-secondary" />
+                        <Input
+                          placeholder="9876543210"
+                          value={mobilePhone}
+                          onChange={(e) => setMobilePhone(e.target.value.replace(/\D/g, ''))}
+                          className="bg-cosmic-card border-sacred-gold/15 pl-10"
+                          maxLength={15}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Date of Birth */}
+                  <div>
+                    <label className="block text-xs text-cosmic-text-secondary mb-1">Date of Birth <span className="text-red-400">*</span></label>
                     <Input
-                      placeholder="Enter phone number (e.g. +91 98765 43210)"
-                      value={mobilePhone}
-                      onChange={(e) => setMobilePhone(e.target.value)}
-                      className="bg-cosmic-card border-sacred-gold/15 pl-10"
+                      type="date"
+                      value={mobileDob}
+                      onChange={(e) => setMobileDob(e.target.value)}
+                      className="bg-cosmic-card border-sacred-gold/15"
                     />
                   </div>
+
+                  {/* Area of Struggle */}
+                  <div>
+                    <label className="block text-xs text-cosmic-text-secondary mb-2">Area of Struggle</label>
+                    <div className="flex flex-wrap gap-3">
+                      {['Health', 'Relationship', 'Career', 'Money', 'Job'].map((area) => (
+                        <label
+                          key={area}
+                          className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-all text-sm ${
+                            selectedAreas.includes(area)
+                              ? 'border-sacred-gold bg-sacred-gold/15 text-sacred-gold'
+                              : 'border-sacred-gold/15 bg-cosmic-card text-cosmic-text-secondary hover:border-sacred-gold/30'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedAreas.includes(area)}
+                            onChange={() => toggleArea(area)}
+                            className="sr-only"
+                          />
+                          <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 ${
+                            selectedAreas.includes(area)
+                              ? 'border-sacred-gold bg-sacred-gold'
+                              : 'border-sacred-gold/30 bg-transparent'
+                          }`}>
+                            {selectedAreas.includes(area) && (
+                              <svg className="w-3 h-3 text-[#1a1a2e]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </div>
+                          {area}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
                   <Button
                     onClick={analyzeMobile}
-                    disabled={mobileLoading || !mobilePhone.trim()}
+                    disabled={mobileLoading || !mobilePhone.trim() || !firstName.trim() || !mobileDob}
                     className="w-full bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark"
                   >
                     {mobileLoading ? (
                       <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Analyzing...</>
                     ) : (
-                      <><Phone className="w-4 h-4 mr-2" />Analyze</>
+                      <><Phone className="w-4 h-4 mr-2" />Analyze Mobile Number</>
                     )}
                   </Button>
                 </div>
               </CardContent>
             </Card>
 
+            {/* ── Mobile Numerology Results ── */}
             {mobileResult && (
-              <Card className="mt-6 bg-cosmic-card border-0 shadow-soft-lg max-w-xl mx-auto">
-                <CardContent className="p-6">
-                  {/* Vibration Number Badge */}
-                  <div className="text-center mb-6">
-                    <p className="text-xs text-cosmic-text-secondary mb-2">Vibration Number</p>
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-sacred-gold/20 border-2 border-sacred-gold">
-                      <span className="text-2xl font-display font-bold text-sacred-gold">{mobileResult.vibration_number}</span>
-                    </div>
-                    <p className="text-xs text-cosmic-text-secondary mt-2">Total digit sum: {mobileResult.total_sum}</p>
+              <div className="mt-6 space-y-6 max-w-2xl mx-auto">
+
+                {/* Section 1: Report Header */}
+                <Card className="bg-cosmic-card border-0 shadow-soft-lg overflow-hidden">
+                  <div className="bg-gradient-to-r from-sacred-gold/20 to-sacred-gold-dark/10 px-6 py-4 text-center border-b border-sacred-gold/20">
+                    <h4 className="font-display font-bold text-lg text-sacred-gold tracking-wide uppercase">Mobile Numerology Report</h4>
+                    {mobileResult.name && <p className="text-sm text-cosmic-text mt-1">{mobileResult.name}</p>}
+                    {mobileResult.birth_date && (
+                      <p className="text-xs text-cosmic-text-secondary mt-1">Date of Birth: {mobileResult.birth_date}</p>
+                    )}
                   </div>
 
-                  {/* Prediction */}
-                  <div className="rounded-xl border border-sacred-gold/20 overflow-hidden mb-4">
-                    <div className="px-4 py-2 bg-sacred-gold/10 text-sacred-gold font-medium text-sm flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 shrink-0" />Prediction
-                    </div>
-                    <div className="px-4 py-3">
-                      <p className="text-sm text-cosmic-text-secondary leading-relaxed">{mobileResult.prediction}</p>
-                    </div>
-                  </div>
+                  <CardContent className="p-6 space-y-6">
 
-                  {/* Lucky Qualities */}
-                  <div className="mb-4">
-                    <p className="text-sm font-medium text-cosmic-text mb-2">Lucky Qualities</p>
-                    <div className="flex flex-wrap gap-2">
-                      {mobileResult.lucky_qualities.map((q) => (
-                        <Badge key={q} className="bg-green-500/20 text-green-400 border-green-500/30">{q}</Badge>
-                      ))}
-                    </div>
-                  </div>
+                    {/* Section 2: Loshu Grid & Vedic Grid */}
+                    {(mobileResult.loshu_grid || mobileResult.vedic_grid) && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        {mobileResult.loshu_grid && (
+                          <div>
+                            <p className="text-sm font-medium text-cosmic-text mb-2 text-center">Loshu Grid</p>
+                            <div className="grid grid-cols-3 border border-sacred-gold/30 rounded-lg overflow-hidden">
+                              {mobileResult.loshu_grid.flat().map((cell, i) => (
+                                <div
+                                  key={`loshu-${i}`}
+                                  className="aspect-square flex items-center justify-center border border-sacred-gold/15 text-center"
+                                >
+                                  <span className={`text-lg font-display font-semibold ${cell != null ? 'text-sacred-gold' : 'text-cosmic-text-secondary/30'}`}>
+                                    {cell != null ? cell : '-'}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {mobileResult.vedic_grid && (
+                          <div>
+                            <p className="text-sm font-medium text-cosmic-text mb-2 text-center">Vedic Grid</p>
+                            <div className="grid grid-cols-3 border border-sacred-gold/30 rounded-lg overflow-hidden">
+                              {mobileResult.vedic_grid.flat().map((cell, i) => (
+                                <div
+                                  key={`vedic-${i}`}
+                                  className="aspect-square flex items-center justify-center border border-sacred-gold/15 text-center"
+                                >
+                                  <span className={`text-lg font-display font-semibold ${cell != null ? 'text-sacred-gold' : 'text-cosmic-text-secondary/30'}`}>
+                                    {cell != null ? cell : '-'}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
 
-                  {/* Challenges */}
-                  <div className="mb-4">
-                    <p className="text-sm font-medium text-cosmic-text mb-2">Challenges</p>
-                    <div className="flex flex-wrap gap-2">
-                      {mobileResult.challenges.map((c) => (
-                        <Badge key={c} className="bg-orange-500/20 text-orange-400 border-orange-500/30">{c}</Badge>
-                      ))}
+                    {/* Section 3: Mobile Number Prediction Details */}
+                    <div className="rounded-xl border border-sacred-gold/20 overflow-hidden">
+                      <div className="px-4 py-2 bg-sacred-gold/10 text-sacred-gold font-medium text-sm flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 shrink-0" />Prediction Details
+                      </div>
+                      <div className="divide-y divide-sacred-gold/10">
+                        {/* Mobile Number */}
+                        <div className="flex justify-between px-4 py-3">
+                          <span className="text-sm text-cosmic-text-secondary">Your Mobile Number</span>
+                          <span className="text-sm font-medium text-cosmic-text">{mobileResult.phone_number}</span>
+                        </div>
+                        {/* Compound Number */}
+                        <div className="flex justify-between px-4 py-3">
+                          <span className="text-sm text-cosmic-text-secondary">Compound Number</span>
+                          <span className="text-sm font-medium text-sacred-gold">{mobileResult.compound_number}</span>
+                        </div>
+                        {/* Mobile Total + Prediction */}
+                        <div className="px-4 py-3">
+                          <div className="flex justify-between mb-1">
+                            <span className="text-sm text-cosmic-text-secondary">Mobile Number Total</span>
+                            <span className="text-sm font-medium text-sacred-gold">{mobileResult.mobile_total}</span>
+                          </div>
+                          {mobileResult.mobile_total_prediction && (
+                            <p className="text-xs text-cosmic-text-secondary leading-relaxed mt-1">{mobileResult.mobile_total_prediction}</p>
+                          )}
+                        </div>
+                        {/* Recommended Totals */}
+                        {mobileResult.recommended_totals && mobileResult.recommended_totals.length > 0 && (
+                          <div className="flex items-center justify-between px-4 py-3">
+                            <span className="text-sm text-cosmic-text-secondary">Recommended Totals</span>
+                            <div className="flex flex-wrap gap-1.5">
+                              {mobileResult.recommended_totals.map((n) => (
+                                <Badge key={n} className="bg-sacred-gold/20 text-sacred-gold border-sacred-gold/30 px-2 py-0.5 text-xs">{n}</Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {/* Lucky Colours */}
+                        {mobileResult.lucky_colours && mobileResult.lucky_colours.length > 0 && (
+                          <div className="flex items-start justify-between px-4 py-3 gap-3">
+                            <span className="text-sm text-cosmic-text-secondary shrink-0">Lucky Colours</span>
+                            <div className="flex flex-wrap gap-1.5 justify-end">
+                              {mobileResult.lucky_colours.map((c) => (
+                                <Badge key={c} className="bg-green-500/20 text-green-400 border-green-500/30 px-2 py-0.5 text-xs">{c}</Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {/* Un-Lucky Colours */}
+                        {mobileResult.unlucky_colours && mobileResult.unlucky_colours.length > 0 && (
+                          <div className="flex items-start justify-between px-4 py-3 gap-3">
+                            <span className="text-sm text-cosmic-text-secondary shrink-0">Un-Lucky Colours</span>
+                            <div className="flex flex-wrap gap-1.5 justify-end">
+                              {mobileResult.unlucky_colours.map((c) => (
+                                <Badge key={c} className="bg-zinc-700/50 text-zinc-300 border-zinc-600/30 px-2 py-0.5 text-xs">{c}</Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {/* Lucky Numbers */}
+                        {mobileResult.lucky_numbers && mobileResult.lucky_numbers.length > 0 && (
+                          <div className="flex items-center justify-between px-4 py-3">
+                            <span className="text-sm text-cosmic-text-secondary">Lucky Numbers</span>
+                            <div className="flex flex-wrap gap-1.5">
+                              {mobileResult.lucky_numbers.map((n) => (
+                                <Badge key={n} className="bg-green-500/20 text-green-400 border-green-500/30 px-2 py-0.5 text-xs">{n}</Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {/* Unlucky Numbers */}
+                        {mobileResult.unlucky_numbers && mobileResult.unlucky_numbers.length > 0 && (
+                          <div className="flex items-center justify-between px-4 py-3">
+                            <span className="text-sm text-cosmic-text-secondary">Unlucky Numbers</span>
+                            <div className="flex flex-wrap gap-1.5">
+                              {mobileResult.unlucky_numbers.map((n) => (
+                                <Badge key={n} className="bg-red-500/20 text-red-400 border-red-500/30 px-2 py-0.5 text-xs">{n}</Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {/* Neutral Numbers */}
+                        {mobileResult.neutral_numbers && mobileResult.neutral_numbers.length > 0 && (
+                          <div className="flex items-center justify-between px-4 py-3">
+                            <span className="text-sm text-cosmic-text-secondary">Neutral Numbers</span>
+                            <div className="flex flex-wrap gap-1.5">
+                              {mobileResult.neutral_numbers.map((n) => (
+                                <Badge key={n} className="bg-zinc-500/20 text-zinc-400 border-zinc-500/30 px-2 py-0.5 text-xs">{n}</Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {/* Missing Numbers */}
+                        {mobileResult.missing_numbers && mobileResult.missing_numbers.length > 0 && (
+                          <div className="flex items-center justify-between px-4 py-3">
+                            <span className="text-sm text-cosmic-text-secondary">Missing Numbers</span>
+                            <div className="flex flex-wrap gap-1.5">
+                              {mobileResult.missing_numbers.map((n) => (
+                                <Badge key={n} className="bg-transparent text-cosmic-text-secondary border border-dashed border-sacred-gold/30 px-2 py-0.5 text-xs">{n}</Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Best For */}
-                  <div className="rounded-xl bg-gradient-to-br from-sacred-gold/5 to-sacred-gold-dark/10 border border-sacred-gold/15 p-4 mb-4">
-                    <p className="text-xs text-cosmic-text-secondary mb-1">Best For</p>
-                    <p className="text-sm font-medium text-sacred-gold">{mobileResult.best_for}</p>
-                  </div>
+                    {/* Section 4: Mobile Combinations */}
+                    {mobileResult.combinations && mobileResult.combinations.length > 0 && (
+                      <div className="rounded-xl border border-sacred-gold/20 overflow-hidden">
+                        <div className="px-4 py-2 bg-sacred-gold/10 text-sacred-gold font-medium text-sm flex items-center gap-2">
+                          <Hash className="w-4 h-4 shrink-0" />Mobile Combinations
+                        </div>
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-sm">
+                            <thead>
+                              <tr className="border-b border-sacred-gold/15">
+                                <th className="text-left px-4 py-2 text-cosmic-text-secondary font-medium">Pair</th>
+                                <th className="text-left px-4 py-2 text-cosmic-text-secondary font-medium">Type</th>
+                                <th className="text-left px-4 py-2 text-cosmic-text-secondary font-medium">Description</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-sacred-gold/10">
+                              {mobileResult.combinations.map((combo, i) => (
+                                <tr key={i}>
+                                  <td className="px-4 py-2 font-mono text-cosmic-text">{combo.pair}</td>
+                                  <td className="px-4 py-2">
+                                    <Badge className={`text-xs px-2 py-0.5 ${
+                                      combo.type === 'Benefic'
+                                        ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                                        : combo.type === 'Neutral'
+                                          ? 'bg-amber-500/20 text-amber-400 border-amber-500/30'
+                                          : 'bg-red-500/20 text-red-400 border-red-500/30'
+                                    }`}>
+                                      {combo.type}
+                                    </Badge>
+                                  </td>
+                                  <td className="px-4 py-2 text-cosmic-text-secondary text-xs">{combo.description || '-'}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                        {/* Recommendation Banner */}
+                        {mobileResult.recommendation_message && (
+                          <div className={`px-4 py-3 text-sm font-medium text-center ${
+                            mobileResult.is_recommended
+                              ? 'bg-green-500/15 text-green-400 border-t border-green-500/20'
+                              : 'bg-red-500/15 text-red-400 border-t border-red-500/20'
+                          }`}>
+                            {mobileResult.recommendation_message}
+                          </div>
+                        )}
+                      </div>
+                    )}
 
-                  {/* Compatible Numbers */}
-                  <div>
-                    <p className="text-sm font-medium text-cosmic-text mb-2">Compatible Numbers</p>
-                    <div className="flex flex-wrap gap-2">
-                      {mobileResult.compatibility_numbers.map((n) => (
-                        <Badge key={n} className="bg-purple-500/20 text-purple-400 border-purple-500/30 text-base px-3 py-1">{n}</Badge>
-                      ))}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                    {/* Section 5: Predictions */}
+                    {mobileResult.predictions && mobileResult.predictions.length > 0 && (
+                      <div className="rounded-xl border border-sacred-gold/20 overflow-hidden">
+                        <div className="px-4 py-2 bg-sacred-gold/10 text-sacred-gold font-medium text-sm flex items-center gap-2">
+                          <Sparkles className="w-4 h-4 shrink-0" />Predictions
+                        </div>
+                        <div className="px-4 py-3">
+                          <ul className="space-y-2">
+                            {mobileResult.predictions.map((pred, i) => (
+                              <li key={i} className="text-sm text-cosmic-text-secondary flex gap-2">
+                                <span className="text-sacred-gold shrink-0 mt-0.5">&#8226;</span>
+                                <span>{pred}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Section 6: Area of Struggle Affirmations */}
+                    {mobileResult.affirmations && mobileResult.affirmations.length > 0 && (
+                      <div className="space-y-3">
+                        <p className="text-sm font-medium text-cosmic-text flex items-center gap-2">
+                          <Sparkles className="w-4 h-4 text-sacred-gold" />Affirmations for Your Areas of Struggle
+                        </p>
+                        {mobileResult.affirmations.map((aff, i) => (
+                          <div key={i} className="rounded-xl border border-sacred-gold/15 overflow-hidden">
+                            <div className="px-4 py-2 bg-sacred-gold/5 font-medium text-sm text-sacred-gold border-b border-sacred-gold/10">
+                              {aff.area}
+                            </div>
+                            <div className="px-4 py-3">
+                              <p className="text-sm text-cosmic-text-secondary leading-relaxed italic">{aff.affirmation}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                  </CardContent>
+                </Card>
+              </div>
             )}
           </div>
         </TabsContent>
