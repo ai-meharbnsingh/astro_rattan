@@ -2134,8 +2134,8 @@ export default function KundliGenerator() {
                 <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/20">
                   <h4 className="font-display font-semibold text-sacred-brown mb-2">Bhinna Ashtakvarga Charts</h4>
                   <p className="text-xs text-sacred-text-secondary mb-4">Individual planet bindus across 12 signs (Parashara's Light format).</p>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                    {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
+                  <div className="grid grid-cols-1 gap-5">
+                    {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Lagna'].map((planet) => {
                       const bindus = ashtakvargaData.planet_bindus?.[planet] || {};
                       const signs = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
                       const signAbbr = ['Ari', 'Tau', 'Gem', 'Can', 'Leo', 'Vir', 'Lib', 'Sco', 'Sag', 'Cap', 'Aqu', 'Pis'];
@@ -2447,7 +2447,12 @@ export default function KundliGenerator() {
                     { label: t('avakhada.varna'), value: avakhadaData.varna },
                     { label: t('avakhada.naamakshar'), value: avakhadaData.naamakshar },
                     { label: t('avakhada.sunSign'), value: avakhadaData.sun_sign },
-                  ].map((item) => (
+                    { label: t('avakhada.tithi'), value: avakhadaData.tithi ? `${avakhadaData.tithi} (${avakhadaData.tithi_paksha})` : undefined },
+                    { label: t('avakhada.tithiLord'), value: avakhadaData.tithi_lord },
+                    { label: t('avakhada.vaar'), value: avakhadaData.vaar ? `${avakhadaData.vaar} (${avakhadaData.vaar_lord})` : undefined },
+                    { label: t('avakhada.payaNakshatra'), value: avakhadaData.paya_nakshatra },
+                    { label: t('avakhada.payaChandra'), value: avakhadaData.paya_chandra },
+                  ].filter(item => item.value).map((item) => (
                     <div
                       key={item.label}
                       className="rounded-xl p-4 border"

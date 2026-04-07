@@ -136,6 +136,44 @@ NAAMAKSHAR_BY_NAKSHATRA = [
     ["De", "Do", "Cha", "Chi"],       # Revati
 ]
 
+# Tithi lords — cycling Sun through Saturn for each of 30 tithis
+TITHI_NAMES = [
+    "Pratipada", "Dwitiya", "Tritiya", "Chaturthi", "Panchami",
+    "Shashthi", "Saptami", "Ashtami", "Navami", "Dashami",
+    "Ekadashi", "Dwadashi", "Trayodashi", "Chaturdashi", "Purnima",
+    "Pratipada", "Dwitiya", "Tritiya", "Chaturthi", "Panchami",
+    "Shashthi", "Saptami", "Ashtami", "Navami", "Dashami",
+    "Ekadashi", "Dwadashi", "Trayodashi", "Chaturdashi", "Amavasya",
+]
+
+TITHI_LORDS = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
+
+# Vaar (weekday) lords — Python weekday: 0=Monday
+VAAR_NAMES = {
+    0: "Somvar", 1: "Mangalvar", 2: "Budhvar", 3: "Guruvar",
+    4: "Shukravar", 5: "Shanivar", 6: "Ravivar",
+}
+VAAR_LORDS = {
+    0: "Moon", 1: "Mars", 2: "Mercury", 3: "Jupiter",
+    4: "Venus", 5: "Saturn", 6: "Sun",
+}
+
+# Paya by Nakshatra group (0-indexed nakshatra)
+# Group of 9: nakshatras 0-8 = Gold, 9-17 = Silver, 18-26 = Copper
+PAYA_NAKSHATRA_MAP = {
+    "Gold (Swarna)": list(range(0, 9)),
+    "Silver (Rajat)": list(range(9, 18)),
+    "Copper (Tamra)": list(range(18, 27)),
+}
+
+# Paya by Moon sign element
+PAYA_CHANDRA_MAP = {
+    "Gold (Swarna)": ["Aries", "Leo", "Sagittarius"],       # Fire
+    "Silver (Rajat)": ["Taurus", "Virgo", "Capricorn"],     # Earth
+    "Copper (Tamra)": ["Gemini", "Libra", "Aquarius"],      # Air
+    "Iron (Loha)": ["Cancer", "Scorpio", "Pisces"],         # Water
+}
+
 # Western Sun signs by degree range
 WESTERN_SIGNS = [
     (0, 30, "Aries"), (30, 60, "Taurus"), (60, 90, "Gemini"),
@@ -196,12 +234,13 @@ def _get_western_sign(longitude: float) -> str:
 # PUBLIC FUNCTION
 # ============================================================
 
-def calculate_avakhada(chart_data: dict) -> dict:
+def calculate_avakhada(chart_data: dict, birth_date: str = "") -> dict:
     """
     Calculate Avakhada Chakra from chart_data.
 
     Args:
         chart_data: The full chart_data dict with 'planets' and 'ascendant' keys.
+        birth_date: Birth date string "YYYY-MM-DD" for Vaar calculation.
 
     Returns:
         Dict with all Avakhada Chakra components.
@@ -268,6 +307,39 @@ def calculate_avakhada(chart_data: dict) -> dict:
     # Sun Sign (Western)
     sun_western_sign = _get_western_sign(sun_longitude)
 
+    # --- NEW: Tithi + Tithi Lord ---
+    tithi_index = int(diff / 12.0) % 30  # diff already = (moon - sun) % 360
+    tithi_name = TITHI_NAMES[tithi_index] if 0 <= tithi_index < 30 else "Unknown"
+    tithi_paksha = "Shukla" if tithi_index < 15 else "Krishna"
+    tithi_lord = TITHI_LORDS[tithi_index % 7]
+
+    # --- NEW: Vaar (day of week + lord) ---
+    vaar_name = ""
+    vaar_lord = ""
+    if birth_date:
+        try:
+            from datetime import datetime as _dt
+            bd = _dt.strptime(str(birth_date).split("T")[0].split(" ")[0], "%Y-%m-%d")
+            weekday = bd.weekday()  # 0=Monday
+            vaar_name = VAAR_NAMES.get(weekday, "")
+            vaar_lord = VAAR_LORDS.get(weekday, "")
+        except Exception:
+            pass
+
+    # --- NEW: Paya (Nakshatra-based) ---
+    paya_nakshatra = "Unknown"
+    for paya_label, indices in PAYA_NAKSHATRA_MAP.items():
+        if nakshatra_idx in indices:
+            paya_nakshatra = paya_label
+            break
+
+    # --- NEW: Paya (Chandra / Moon sign element) ---
+    paya_chandra = "Unknown"
+    for paya_label, signs in PAYA_CHANDRA_MAP.items():
+        if moon_sign in signs:
+            paya_chandra = paya_label
+            break
+
     return {
         "ascendant": asc_sign,
         "ascendant_lord": asc_lord,
@@ -285,4 +357,12 @@ def calculate_avakhada(chart_data: dict) -> dict:
         "sun_sign": sun_western_sign,
         "moon_degree": round(moon_longitude % 360.0, 2),
         "sun_degree": round(sun_longitude % 360.0, 2),
+        # New Avakhada fields
+        "tithi": tithi_name,
+        "tithi_paksha": tithi_paksha,
+        "tithi_lord": tithi_lord,
+        "vaar": vaar_name,
+        "vaar_lord": vaar_lord,
+        "paya_nakshatra": paya_nakshatra,
+        "paya_chandra": paya_chandra,
     }

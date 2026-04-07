@@ -518,7 +518,7 @@ def get_avakhada(
     """Calculate Avakhada Chakra — comprehensive birth summary table."""
     row = _fetch_kundli(db, kundli_id, current_user["sub"])
     chart = _chart_data(row)
-    result = calculate_avakhada(chart)
+    result = calculate_avakhada(chart, birth_date=str(row.get("birth_date", "")))
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result

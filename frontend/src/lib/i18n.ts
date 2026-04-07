@@ -299,6 +299,11 @@ const translations: Record<Language, TranslationMap> = {
     'avakhada.varna': 'Varna',
     'avakhada.naamakshar': 'Naamakshar',
     'avakhada.sunSign': 'Sun Sign (Western)',
+    'avakhada.tithi': 'Tithi',
+    'avakhada.tithiLord': 'Tithi Swami',
+    'avakhada.vaar': 'Vaar (Day)',
+    'avakhada.payaNakshatra': 'Paya (Nakshatra)',
+    'avakhada.payaChandra': 'Paya (Chandra)',
 
     // Extended Dasha
     'dasha.mahadasha': 'Mahadasha',
@@ -986,6 +991,11 @@ const translations: Record<Language, TranslationMap> = {
     'avakhada.varna': 'वर्ण',
     'avakhada.naamakshar': 'नामाक्षर',
     'avakhada.sunSign': 'सूर्य राशि (पश्चिमी)',
+    'avakhada.tithi': 'तिथि',
+    'avakhada.tithiLord': 'तिथि स्वामी',
+    'avakhada.vaar': 'वार (दिन)',
+    'avakhada.payaNakshatra': 'पाया (नक्षत्र)',
+    'avakhada.payaChandra': 'पाया (चंद्र)',
 
     // Extended Dasha
     'dasha.mahadasha': 'महादशा',
