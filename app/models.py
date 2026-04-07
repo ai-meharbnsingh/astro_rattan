@@ -59,10 +59,18 @@ class GenderEnum(str, Enum):
     other = "other"
 
 
+class SendOtpRequest(BaseModel):
+    email: EmailStr
+
+class VerifyOtpRequest(BaseModel):
+    email: EmailStr
+    otp: str = Field(min_length=6, max_length=6)
+
 class UserRegister(BaseModel):
     email: EmailStr
     password: str = Field(min_length=8)
     name: str = Field(min_length=1)
+    email_token: str = Field(min_length=1)
     phone: Optional[str] = None
     date_of_birth: Optional[str] = None  # YYYY-MM-DD
     gender: Optional[str] = None  # male/female/other
@@ -248,6 +256,7 @@ class AstrologerRegisterRequest(BaseModel):
     email: EmailStr
     password: str = Field(min_length=8)
     name: str = Field(min_length=1)
+    email_token: str = Field(min_length=1)
     phone: Optional[str] = None
     display_name: Optional[str] = None
     specializations: str = "Vedic"

@@ -12,7 +12,7 @@ interface AuthContextValue {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<any>;
-  register: (email: string, password: string, name: string) => Promise<any>;
+  register: (email: string, password: string, name: string, emailToken: string) => Promise<any>;
   logout: () => void;
   isAuthenticated: boolean;
 }
@@ -48,8 +48,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return data;
   }, []);
 
-  const register = useCallback(async (email: string, password: string, name: string) => {
-    const data = await api.post('/api/auth/register', { email, password, name });
+  const register = useCallback(async (email: string, password: string, name: string, emailToken: string) => {
+    const data = await api.post('/api/auth/register', { email, password, name, email_token: emailToken });
     localStorage.setItem('astrovedic_token', data.token);
     setUser(data.user);
     return data;

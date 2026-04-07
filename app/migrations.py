@@ -56,6 +56,21 @@ MIGRATIONS: List[Tuple[int, str, str]] = [
         CREATE INDEX IF NOT EXISTS idx_blog_posts_published ON blog_posts(is_published, published_at DESC);
         """,
     ),
+    (
+        4,
+        "Add email_verifications table for OTP-based registration",
+        """
+        CREATE TABLE IF NOT EXISTS email_verifications (
+            id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+            email TEXT NOT NULL,
+            otp TEXT NOT NULL,
+            attempts INTEGER NOT NULL DEFAULT 0,
+            expires_at TEXT NOT NULL,
+            created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+        );
+        CREATE INDEX IF NOT EXISTS idx_email_verifications_email ON email_verifications(email);
+        """,
+    ),
 ]
 
 

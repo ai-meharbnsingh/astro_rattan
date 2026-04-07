@@ -105,6 +105,28 @@ def send_order_alert(order: dict, user_email: str) -> bool:
     return send_email(EMAIL_TO, f"{APP_NAME} — New Order {order.get('id', 'N/A')}", body)
 
 
+def send_verification_otp(user_email: str, otp: str) -> bool:
+    """Send email verification OTP."""
+    body = f"""
+    <div style="font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h1 style="color: #6366F1;">Verify Your Email</h1>
+        <p>Use the following code to verify your email address for {APP_NAME}:</p>
+        <div style="background: #F1F5F9; padding: 20px; border-radius: 8px;
+                    font-family: monospace; font-size: 32px; text-align: center;
+                    letter-spacing: 8px; margin: 20px 0; font-weight: bold; color: #1E293B;">
+            {otp}
+        </div>
+        <p>This code expires in <strong>10 minutes</strong>.</p>
+        <p style="color: #64748B;">If you did not request this, please ignore this email.</p>
+        <hr style="border: 1px solid #E2E8F0; margin: 20px 0;">
+        <p style="color: #64748B; font-size: 12px;">
+            This is an automated message from {APP_NAME}. Please do not reply.
+        </p>
+    </div>
+    """
+    return send_email(user_email, f"{APP_NAME} — Email Verification Code", body)
+
+
 def send_registration_welcome(user_name: str, user_email: str) -> bool:
     """Send a welcome email after registration."""
     body = f"""

@@ -564,6 +564,17 @@ CREATE TABLE IF NOT EXISTS astrologer_clients (
 CREATE INDEX IF NOT EXISTS idx_astrologer_clients_astrologer ON astrologer_clients(astrologer_user_id);
 CREATE INDEX IF NOT EXISTS idx_astrologer_clients_name ON astrologer_clients(client_name);
 
+-- Email Verification OTPs
+CREATE TABLE IF NOT EXISTS email_verifications (
+    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+    email TEXT NOT NULL,
+    otp TEXT NOT NULL,
+    attempts INTEGER NOT NULL DEFAULT 0,
+    expires_at TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+);
+CREATE INDEX IF NOT EXISTS idx_email_verifications_email ON email_verifications(email);
+
 -- Applied Migrations Tracker
 CREATE TABLE IF NOT EXISTS applied_migrations (
     version INTEGER PRIMARY KEY,

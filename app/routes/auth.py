@@ -1,14 +1,18 @@
 """Auth routes — register, login, get current user, profile management."""
 import json
+import secrets
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
 from slowapi import Limiter
 
-from app.auth import hash_password, verify_password, create_token, get_current_user
+from app.auth import hash_password, verify_password, create_token, decode_token, get_current_user
 from app.database import get_db
-from app.email_service import send_registration_welcome
+from app.email_service import send_registration_welcome, send_verification_otp
 from app.models import (
+    SendOtpRequest,
+    VerifyOtpRequest,
     UserRegister,
     LoginRequest,
     UserResponse,
@@ -27,13 +31,112 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 limiter = Limiter(key_func=request_rate_limit_key)
 
 
+def _generate_otp() -> str:
+    """Generate a 6-digit numeric OTP."""
+    return f"{secrets.randbelow(900000) + 100000}"
+
+
+def _verify_email_token(email_token: str, expected_email: str):
+    """Validate the email verification token matches the registration email."""
+    payload = decode_token(email_token)
+    if not payload or payload.get("purpose") != "email_verified":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired email verification token. Please verify your email first.",
+        )
+    if payload.get("email", "").lower() != expected_email.lower():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email token does not match registration email.",
+        )
+
+
+@router.post("/send-otp", status_code=status.HTTP_200_OK)
+@limiter.limit("3/minute")
+def send_otp(
+    request: Request,
+    body: SendOtpRequest,
+    background_tasks: BackgroundTasks,
+    db: Any = Depends(get_db),
+):
+    """Send a 6-digit OTP to the given email for verification."""
+    # Check if email already registered
+    existing = db.execute("SELECT id FROM users WHERE email = %s", (body.email,)).fetchone()
+    if existing:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already registered")
+
+    otp = _generate_otp()
+    expires_at = (datetime.now(tz=timezone.utc) + timedelta(minutes=10)).isoformat()
+
+    # Remove any previous OTPs for this email
+    db.execute("DELETE FROM email_verifications WHERE email = %s", (body.email,))
+    db.execute(
+        "INSERT INTO email_verifications (email, otp, expires_at) VALUES (%s, %s, %s)",
+        (body.email, otp, expires_at),
+    )
+    db.commit()
+
+    background_tasks.add_task(send_verification_otp, body.email, otp)
+    return {"message": "Verification code sent to your email"}
+
+
+@router.post("/verify-otp", status_code=status.HTTP_200_OK)
+@limiter.limit("5/minute")
+def verify_otp(
+    request: Request,
+    body: VerifyOtpRequest,
+    db: Any = Depends(get_db),
+):
+    """Verify the OTP and return an email_token for registration."""
+    row = db.execute(
+        "SELECT id, otp, attempts, expires_at FROM email_verifications WHERE email = %s ORDER BY created_at DESC LIMIT 1",
+        (body.email,),
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No verification pending for this email")
+
+    # Check expiry
+    expires_at = datetime.fromisoformat(row["expires_at"])
+    if datetime.now(tz=timezone.utc) > expires_at:
+        db.execute("DELETE FROM email_verifications WHERE email = %s", (body.email,))
+        db.commit()
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Verification code expired. Please request a new one.")
+
+    # Check attempts (max 5)
+    if row["attempts"] >= 5:
+        db.execute("DELETE FROM email_verifications WHERE email = %s", (body.email,))
+        db.commit()
+        raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="Too many attempts. Please request a new code.")
+
+    # Increment attempts
+    db.execute("UPDATE email_verifications SET attempts = attempts + 1 WHERE id = %s", (row["id"],))
+    db.commit()
+
+    if row["otp"] != body.otp:
+        remaining = 5 - row["attempts"] - 1
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid code. {remaining} attempts remaining.",
+        )
+
+    # OTP valid — clean up and issue email_token
+    db.execute("DELETE FROM email_verifications WHERE email = %s", (body.email,))
+    db.commit()
+
+    email_token = create_token({"email": body.email, "purpose": "email_verified"})
+    return {"verified": True, "email_token": email_token}
+
+
 @router.post("/register", status_code=status.HTTP_201_CREATED, response_model=TokenResponse)
 def register(
     body: UserRegister,
     background_tasks: BackgroundTasks,
     db: Any = Depends(get_db),
 ):
-    """Register a new user account."""
+    """Register a new user account. Requires a verified email_token from /verify-otp."""
+    # Validate email verification token
+    _verify_email_token(body.email_token, body.email)
+
     # Check if email already exists
     row = db.execute("SELECT id FROM users WHERE email = %s", (body.email,)).fetchone()
     if row:
@@ -76,7 +179,9 @@ def register_astrologer(
     background_tasks: BackgroundTasks,
     db: Any = Depends(get_db),
 ):
-    """Register a new astrologer account — creates user with role='astrologer' and astrologer profile."""
+    """Register a new astrologer account. Requires a verified email_token from /verify-otp."""
+    _verify_email_token(body.email_token, body.email)
+
     row = db.execute("SELECT id FROM users WHERE email = %s", (body.email,)).fetchone()
     if row:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already registered")
