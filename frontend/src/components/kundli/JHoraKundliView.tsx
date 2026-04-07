@@ -322,6 +322,7 @@ export default function JHoraKundliView({
   const cellBase: React.CSSProperties = {
     fontFamily: SERIF,
     fontSize: '11px',
+    color: '#3E2723',
     padding: '2px 4px',
     borderBottom: `1px solid ${BORDER_COLOR}`,
     whiteSpace: 'nowrap',
