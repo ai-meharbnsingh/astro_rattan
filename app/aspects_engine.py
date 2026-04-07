@@ -222,3 +222,89 @@ def calculate_aspects(
         "planet_aspects_summary": planet_summary,
         "bhava_summary": bhava_summary,
     }
+
+
+# ============================================================
+# WESTERN DEGREE-BASED ASPECTS MATRIX
+# ============================================================
+
+# (name, abbreviation, exact_angle, orb)
+_WESTERN_ASPECTS = [
+    ("Conjunction", "conj", 0, 10),
+    ("Semi-Square", "ssqr", 45, 3),
+    ("Sextile", "sext", 60, 6),
+    ("Quintile", "ququ", 72, 2),
+    ("Square", "squr", 90, 8),
+    ("Trine", "trin", 120, 8),
+    ("Sesquiquadrate", "sesq", 135, 3),
+    ("Opposition", "oppo", 180, 10),
+]
+
+_MATRIX_PLANETS = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
+
+
+def calculate_western_aspects(planets: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Calculate degree-based Western aspects between all planet pairs.
+
+    Returns a matrix (planet × planet) with degree difference and aspect type,
+    plus a flat list of all active aspects.
+    """
+    # Get longitudes
+    longitudes: Dict[str, float] = {}
+    for name in _MATRIX_PLANETS:
+        p = planets.get(name, {})
+        lon = p.get("longitude", 0.0)
+        longitudes[name] = float(lon) if lon else 0.0
+
+    matrix: Dict[str, Dict[str, Any]] = {}
+    aspects_list: List[Dict[str, Any]] = []
+
+    for p1 in _MATRIX_PLANETS:
+        matrix[p1] = {}
+        for p2 in _MATRIX_PLANETS:
+            if p1 == p2:
+                matrix[p1][p2] = {"degree": 0, "aspect": None, "aspect_name": None, "orb": 0}
+                continue
+
+            lon1 = longitudes[p1]
+            lon2 = longitudes[p2]
+            raw_diff = abs(lon1 - lon2) % 360.0
+            degree_diff = min(raw_diff, 360.0 - raw_diff)
+            degree_diff_rounded = round(degree_diff)
+
+            # Find matching aspect
+            matched_aspect = None
+            matched_name = None
+            matched_orb = 0.0
+            for asp_name, asp_abbr, exact_angle, orb in _WESTERN_ASPECTS:
+                actual_orb = abs(degree_diff - exact_angle)
+                if actual_orb <= orb:
+                    matched_aspect = asp_abbr
+                    matched_name = asp_name
+                    matched_orb = round(actual_orb, 1)
+                    break
+
+            matrix[p1][p2] = {
+                "degree": degree_diff_rounded,
+                "aspect": matched_aspect,
+                "aspect_name": matched_name,
+                "orb": matched_orb,
+            }
+
+            # Add to flat list (only upper triangle to avoid duplicates)
+            if matched_aspect and _MATRIX_PLANETS.index(p1) < _MATRIX_PLANETS.index(p2):
+                aspects_list.append({
+                    "planet1": p1,
+                    "planet2": p2,
+                    "degree": degree_diff_rounded,
+                    "aspect": matched_aspect,
+                    "aspect_name": matched_name,
+                    "orb": matched_orb,
+                })
+
+    return {
+        "matrix": matrix,
+        "aspects_list": aspects_list,
+        "planet_order": _MATRIX_PLANETS,
+    }

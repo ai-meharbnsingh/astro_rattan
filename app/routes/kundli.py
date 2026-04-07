@@ -671,6 +671,23 @@ def get_aspects(
     return result
 
 
+@router.get("/{kundli_id}/western-aspects", status_code=status.HTTP_200_OK)
+def get_western_aspects(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Western degree-based aspects matrix (conjunction, square, trine, etc.)."""
+    from app.aspects_engine import calculate_western_aspects
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    planets = chart.get("planets", {})
+    result = calculate_western_aspects(planets)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
 # ── PDF Download ────────────────────────────────────────────
 
 # Sign → Lord mapping used for house lordships table

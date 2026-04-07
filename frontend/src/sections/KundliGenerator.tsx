@@ -19,6 +19,7 @@ import PredictionsTab from '@/components/kundli/PredictionsTab';
 import ConsolidatedReport from '@/components/kundli/ConsolidatedReport';
 import KundliSummaryModal from '@/components/KundliSummaryModal';
 import JHoraKundliView from '@/components/kundli/JHoraKundliView';
+import AspectsMatrixTab from '@/components/kundli/AspectsMatrixTab';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 
 export default function KundliGenerator() {
@@ -90,6 +91,8 @@ export default function KundliGenerator() {
   const [loadingSodashvarga, setLoadingSodashvarga] = useState(false);
   const [aspectsData, setAspectsData] = useState<any>(null);
   const [loadingAspects, setLoadingAspects] = useState(false);
+  const [westernAspectsData, setWesternAspectsData] = useState<any>(null);
+  const [loadingWesternAspects, setLoadingWesternAspects] = useState(false);
   const [sadesatiData, setSadesatiData] = useState<any>(null);
   const [loadingSadesati, setLoadingSadesati] = useState(false);
   const [error, setError] = useState('');
@@ -133,6 +136,7 @@ export default function KundliGenerator() {
     setUpagrahasData(null);
     setSodashvargaData(null);
     setAspectsData(null);
+    setWesternAspectsData(null);
     setSadesatiData(null);
   };
 
@@ -411,6 +415,16 @@ export default function KundliGenerator() {
       setAspectsData(data);
     } catch { /* */ }
     setLoadingAspects(false);
+  };
+
+  const fetchWesternAspects = async () => {
+    if (!result?.id || westernAspectsData) return;
+    setLoadingWesternAspects(true);
+    try {
+      const data = await api.get(`/api/kundli/${result.id}/western-aspects`);
+      setWesternAspectsData(data);
+    } catch { /* */ }
+    setLoadingWesternAspects(false);
   };
 
   const fetchSadesati = async () => {
@@ -785,6 +799,7 @@ export default function KundliGenerator() {
             <TabsTrigger value="upagrahas" onClick={fetchUpagrahas}>{t('tab.upagrahas')}</TabsTrigger>
             <TabsTrigger value="sodashvarga" onClick={fetchSodashvarga}>{t('tab.sodashvarga')}</TabsTrigger>
             <TabsTrigger value="aspects" onClick={fetchAspects}>{t('tab.aspects')}</TabsTrigger>
+            <TabsTrigger value="aspects-matrix" onClick={fetchWesternAspects}>{language === 'hi' ? 'दृष्टि मैट्रिक्स' : 'Aspects Matrix'}</TabsTrigger>
             <TabsTrigger value="sadesati" onClick={fetchSadesati}>{t('tab.sadeSati')}</TabsTrigger>
           </TabsList>
 
@@ -3461,6 +3476,11 @@ export default function KundliGenerator() {
                 <p className="text-center text-sacred-text-secondary py-8">{t('common.noData')}</p>
               )}
             </div>
+          </TabsContent>
+
+          {/* ASPECTS MATRIX TAB */}
+          <TabsContent value="aspects-matrix">
+            <AspectsMatrixTab data={westernAspectsData} loading={loadingWesternAspects} />
           </TabsContent>
 
           {/* SADE SATI TAB - Enhanced with PDF-style Details */}
