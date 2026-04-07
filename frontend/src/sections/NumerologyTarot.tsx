@@ -673,17 +673,17 @@ export default function NumerologyTarot() {
                     )}
 
                     {/* Section 5: Predictions */}
-                    {mobileResult.predictions && mobileResult.predictions.length > 0 && (
+                    {mobileResult.prediction && (
                       <div className="rounded-xl border border-sacred-gold/20 overflow-hidden">
                         <div className="px-4 py-2 bg-sacred-gold/10 text-sacred-gold font-medium text-sm flex items-center gap-2">
                           <Sparkles className="w-4 h-4 shrink-0" />Predictions
                         </div>
                         <div className="px-4 py-3">
                           <ul className="space-y-2">
-                            {mobileResult.predictions.map((pred, i) => (
+                            {(Array.isArray(mobileResult.prediction) ? mobileResult.prediction : mobileResult.prediction.split('. ').filter((s: string) => s.trim())).map((pred: string, i: number) => (
                               <li key={i} className="text-sm text-cosmic-text-secondary flex gap-2">
                                 <span className="text-sacred-gold shrink-0 mt-0.5">&#8226;</span>
-                                <span>{pred}</span>
+                                <span>{pred.endsWith('.') ? pred : pred + '.'}</span>
                               </li>
                             ))}
                           </ul>
@@ -692,18 +692,18 @@ export default function NumerologyTarot() {
                     )}
 
                     {/* Section 6: Area of Struggle Affirmations */}
-                    {mobileResult.affirmations && mobileResult.affirmations.length > 0 && (
+                    {mobileResult.affirmations && typeof mobileResult.affirmations === 'object' && Object.keys(mobileResult.affirmations).length > 0 && (
                       <div className="space-y-3">
                         <p className="text-sm font-medium text-cosmic-text flex items-center gap-2">
                           <Sparkles className="w-4 h-4 text-sacred-gold" />Affirmations for Your Areas of Struggle
                         </p>
-                        {mobileResult.affirmations.map((aff, i) => (
+                        {Object.entries(mobileResult.affirmations).map(([area, text]: [string, any], i: number) => (
                           <div key={i} className="rounded-xl border border-sacred-gold/15 overflow-hidden">
-                            <div className="px-4 py-2 bg-sacred-gold/5 font-medium text-sm text-sacred-gold border-b border-sacred-gold/10">
-                              {aff.area}
+                            <div className="px-4 py-2 bg-sacred-gold/5 font-medium text-sm text-sacred-gold border-b border-sacred-gold/10 capitalize">
+                              {area}
                             </div>
                             <div className="px-4 py-3">
-                              <p className="text-sm text-cosmic-text-secondary leading-relaxed italic">{aff.affirmation}</p>
+                              <p className="text-sm text-cosmic-text-secondary leading-relaxed italic">{text}</p>
                             </div>
                           </div>
                         ))}
