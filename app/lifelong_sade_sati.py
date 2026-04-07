@@ -391,13 +391,16 @@ def calculate_lifelong_sade_sati(birth_dt: datetime, moon_sign_index: int, moon_
         if phase["phase_key"] == "first_dhayya":
             if current_cycle:
                 cycle_count += 1
-                cycle_info = CYCLE_RESULTS.get(["first", "second", "third"][min(cycle_count-1, 2)], {})
+                cycle_key = ["first", "second", "third"][(cycle_count - 1) % 3]
+                cycle_info = CYCLE_RESULTS.get(cycle_key, {})
+                ordinals = {1: "First", 2: "Second", 3: "Third", 4: "Fourth", 5: "Fifth", 6: "Sixth"}
+                cycle_title = f"{ordinals.get(cycle_count, f'{cycle_count}th')} Cycle of Sadhesati"
                 cycles.append({
                     "cycle_number": cycle_count,
                     "start_date": current_cycle[0]["start_date"],
                     "end_date": current_cycle[-1]["end_date"],
                     "phases": current_cycle,
-                    "title": cycle_info.get("title", f"Cycle {cycle_count}"),
+                    "title": cycle_title,
                     "description": cycle_info.get("description", ""),
                     "severity": cycle_info.get("severity", "medium")
                 })
@@ -408,13 +411,16 @@ def calculate_lifelong_sade_sati(birth_dt: datetime, moon_sign_index: int, moon_
     # Add the last cycle
     if current_cycle:
         cycle_count += 1
-        cycle_info = CYCLE_RESULTS.get(["first", "second", "third"][min(cycle_count-1, 2)], {})
+        cycle_key = ["first", "second", "third"][(cycle_count - 1) % 3]
+        cycle_info = CYCLE_RESULTS.get(cycle_key, {})
+        ordinals = {1: "First", 2: "Second", 3: "Third", 4: "Fourth", 5: "Fifth", 6: "Sixth"}
+        cycle_title = f"{ordinals.get(cycle_count, f'{cycle_count}th')} Cycle of Sadhesati"
         cycles.append({
             "cycle_number": cycle_count,
             "start_date": current_cycle[0]["start_date"],
             "end_date": current_cycle[-1]["end_date"],
             "phases": current_cycle,
-            "title": cycle_info.get("title", f"Cycle {cycle_count}"),
+            "title": cycle_title,
             "description": cycle_info.get("description", ""),
             "severity": cycle_info.get("severity", "medium")
         })
