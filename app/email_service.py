@@ -1,9 +1,16 @@
 """AstroVedic — Email service with graceful degradation.
 
-If SMTP is not configured, emails are logged and skipped (no crash).
+Supports two transports:
+1. Resend HTTP API (works on Vercel serverless — SMTP is blocked there)
+2. SMTP (works on Render, Railway, local dev)
+
+If neither is configured, emails are logged and skipped (no crash).
 """
+import json
 import logging
 import smtplib
+import urllib.request
+import urllib.error
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
@@ -21,6 +28,10 @@ from app.config import (
 
 logger = logging.getLogger(__name__)
 
+# Resend API key (HTTP email — works on Vercel)
+import os
+RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
+
 
 def _smtp_configured() -> bool:
     """Return True if all required SMTP settings are present."""
@@ -29,13 +40,42 @@ def _smtp_configured() -> bool:
     return bool(SMTP_HOST and SMTP_PORT and SMTP_USER and SMTP_PASSWORD and FROM_EMAIL)
 
 
-def send_email(to: str, subject: str, body_html: str) -> bool:
-    """Send an HTML email via SMTP.
+def _send_via_resend(to: str, subject: str, body_html: str) -> bool:
+    """Send email via Resend HTTP API (no SMTP needed)."""
+    if not RESEND_API_KEY:
+        return False
+    from_addr = FROM_EMAIL if FROM_EMAIL else "AstroVedic <onboarding@resend.dev>"
+    payload = json.dumps({
+        "from": f"{APP_NAME} <{from_addr}>",
+        "to": [to],
+        "subject": subject,
+        "html": body_html,
+    }).encode()
+    req = urllib.request.Request(
+        "https://api.resend.com/emails",
+        data=payload,
+        headers={
+            "Authorization": f"Bearer {RESEND_API_KEY}",
+            "Content-Type": "application/json",
+        },
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            result = json.loads(resp.read())
+            logger.info("Email sent via Resend to %s: %s (id=%s)", to, subject, result.get("id"))
+            return True
+    except urllib.error.HTTPError as e:
+        body = e.read().decode() if e.fp else ""
+        logger.error("Resend API error %d for %s: %s", e.code, to, body)
+        return False
+    except Exception as e:
+        logger.error("Resend failed for %s: %s", to, e)
+        return False
 
-    Returns True on success, False on failure or if SMTP is not configured.
-    """
+
+def _send_via_smtp(to: str, subject: str, body_html: str) -> bool:
+    """Send email via SMTP (works on non-Vercel platforms)."""
     if not _smtp_configured():
-        logger.info("SMTP not configured — skipping email to %s: %s", to, subject)
         return False
 
     msg = MIMEMultipart("alternative")
@@ -44,7 +84,6 @@ def send_email(to: str, subject: str, body_html: str) -> bool:
     msg["Subject"] = subject
     msg.attach(MIMEText(body_html, "html"))
 
-    # Try STARTTLS (587), then SSL (465), then direct SMTP
     methods = [
         ("STARTTLS", SMTP_PORT, False),
         ("SSL", 465, True),
@@ -61,13 +100,31 @@ def send_email(to: str, subject: str, body_html: str) -> bool:
             server.login(SMTP_USER, SMTP_PASSWORD)
             server.sendmail(FROM_EMAIL, to, msg.as_string())
             server.quit()
-            logger.info("Email sent via %s to %s: %s", method_name, to, subject)
+            logger.info("Email sent via SMTP %s to %s: %s", method_name, to, subject)
             return True
         except Exception as e:
             logger.warning("SMTP %s (port %d) failed for %s: %s", method_name, port, to, e)
             continue
+    return False
 
-    logger.error("All SMTP methods failed for %s: %s", to, subject)
+
+def send_email(to: str, subject: str, body_html: str) -> bool:
+    """Send an HTML email. Tries Resend (HTTP) first, then SMTP fallback."""
+    if TESTING:
+        logger.info("TESTING mode — skipping email to %s: %s", to, subject)
+        return False
+
+    # Try Resend first (works on Vercel)
+    if RESEND_API_KEY:
+        if _send_via_resend(to, subject, body_html):
+            return True
+
+    # Fall back to SMTP (works on Render, Railway, local)
+    if _smtp_configured():
+        if _send_via_smtp(to, subject, body_html):
+            return True
+
+    logger.error("No email transport available for %s: %s", to, subject)
     return False
 
 
