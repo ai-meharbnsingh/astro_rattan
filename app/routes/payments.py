@@ -297,18 +297,22 @@ async def razorpay_webhook(request: Request):
     body = await request.body()
     signature = request.headers.get("X-Razorpay-Signature", "")
 
-    # Verify signature
-    if RAZORPAY_KEY_SECRET:
-        expected = hmac.new(
-            RAZORPAY_KEY_SECRET.encode(),
-            body,
-            hashlib.sha256,
-        ).hexdigest()
-        if not hmac.compare_digest(expected, signature):
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid Razorpay signature",
-            )
+    # Verify signature — ALWAYS (reject if secret not configured)
+    if not RAZORPAY_KEY_SECRET:
+        raise HTTPException(
+            status_code=status.HTTP_501_NOT_IMPLEMENTED,
+            detail="Razorpay webhook not configured — RAZORPAY_KEY_SECRET missing",
+        )
+    expected = hmac.new(
+        RAZORPAY_KEY_SECRET.encode(),
+        body,
+        hashlib.sha256,
+    ).hexdigest()
+    if not hmac.compare_digest(expected, signature):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid Razorpay signature",
+        )
 
     try:
         payload = json.loads(body)
@@ -478,12 +482,11 @@ async def stripe_webhook(request: Request):
                 detail=f"Webhook verification failed: {str(e)}",
             )
     else:
-        try:
-            payload = json.loads(body)
-        except json.JSONDecodeError:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid JSON body"
-            )
+        # Reject unverified webhooks — signature validation is mandatory
+        raise HTTPException(
+            status_code=status.HTTP_501_NOT_IMPLEMENTED,
+            detail="Stripe webhook secret not configured — cannot verify signature",
+        )
 
     event_type = payload.get("type", "")
     data_object = payload.get("data", {}).get("object", {})

@@ -173,6 +173,7 @@ def admin_toggle_product(
 # ============================================================
 
 _ALLOWED_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"}
+_MAX_UPLOAD_BYTES = 5 * 1024 * 1024  # 5 MB
 from app.config import STATIC_DIR
 _UPLOAD_DIR = os.path.join(STATIC_DIR, "uploads")
 
@@ -196,11 +197,17 @@ def upload_image(
             detail=f"File type '{ext}' not allowed. Allowed: {', '.join(_ALLOWED_EXTENSIONS)}",
         )
 
+    contents = file.file.read()
+    if len(contents) > _MAX_UPLOAD_BYTES:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail=f"File too large. Maximum size is {_MAX_UPLOAD_BYTES // (1024 * 1024)} MB",
+        )
+
     unique_name = f"{uuid.uuid4().hex}{ext}"
     os.makedirs(_UPLOAD_DIR, exist_ok=True)
 
     file_path = os.path.join(_UPLOAD_DIR, unique_name)
-    contents = file.file.read()
     with open(file_path, "wb") as f:
         f.write(contents)
 

@@ -61,7 +61,7 @@ class GenderEnum(str, Enum):
 
 class UserRegister(BaseModel):
     email: EmailStr
-    password: str = Field(min_length=6)
+    password: str = Field(min_length=8)
     name: str = Field(min_length=1)
     phone: Optional[str] = None
     date_of_birth: Optional[str] = None  # YYYY-MM-DD
@@ -105,7 +105,7 @@ class ChangePasswordRequest(BaseModel):
 
 class AdminUserCreate(BaseModel):
     email: EmailStr
-    password: str = Field(min_length=6)
+    password: str = Field(min_length=8)
     name: str = Field(min_length=1)
     role: UserRole
     phone: Optional[str] = None
@@ -246,7 +246,7 @@ class AstrologerClientUpdate(BaseModel):
 
 class AstrologerRegisterRequest(BaseModel):
     email: EmailStr
-    password: str = Field(min_length=6)
+    password: str = Field(min_length=8)
     name: str = Field(min_length=1)
     phone: Optional[str] = None
     display_name: Optional[str] = None
