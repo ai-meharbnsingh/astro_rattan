@@ -1016,14 +1016,19 @@ export default function ConsolidatedReport({
                             {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'].map(planet => {
                               const sign = row.planets?.[planet] || '-';
                               const dignity = sodashvargaData.by_sign?.[planet]?.[String(row.division)]?.dignity || '';
-                              const dignityColor = dignity === 'exalted' ? '#22c55e'
-                                : dignity === 'own' || dignity === 'moolatrikona' ? 'var(--aged-gold-dim)'
-                                : dignity === 'debilitated' ? '#ef4444'
-                                : dignity === 'friend' ? '#60a5fa'
-                                : dignity === 'enemy' ? '#f97316'
-                                : 'var(--ink)';
+                              const dignityStyle = dignity === 'exalted'
+                                ? { color: '#065f46', backgroundColor: '#d1fae5' }       // green bg + dark green text
+                                : dignity === 'own' || dignity === 'moolatrikona'
+                                ? { color: '#92400e', backgroundColor: '#fef3c7' }       // amber bg + dark amber text
+                                : dignity === 'debilitated'
+                                ? { color: '#991b1b', backgroundColor: '#fee2e2' }       // red bg + dark red text
+                                : dignity === 'friend'
+                                ? { color: '#1e40af', backgroundColor: '#dbeafe' }       // blue bg + dark blue text
+                                : dignity === 'enemy'
+                                ? { color: '#9a3412', backgroundColor: '#ffedd5' }       // orange bg + dark orange text
+                                : { color: 'var(--ink)' };
                               return (
-                                <td key={planet} className="p-1.5 text-center" style={{ color: dignityColor }} title={dignity ? translateLabel(dignity, language) : ''}>
+                                <td key={planet} className="p-1.5 text-center" style={dignityStyle} title={dignity ? translateLabel(dignity, language) : ''}>
                                   {sign === '-' ? '-' : translateSign(sign, language).slice(0, 3)}
                                 </td>
                               );
@@ -1035,11 +1040,11 @@ export default function ConsolidatedReport({
                   </div>
                   {/* Legend */}
                   <div className="flex flex-wrap gap-3 text-xs text-cosmic-text/60">
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#22c55e' }} />{t('dignity.exalted')}</span>
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: 'var(--aged-gold-dim)' }} />{t('report.ownMT')}</span>
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#60a5fa' }} />{t('dignity.friend')}</span>
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#f97316' }} />{t('dignity.enemy')}</span>
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#ef4444' }} />{t('dignity.debilitated')}</span>
+                    <span className="flex items-center gap-1"><span className="w-4 h-3 rounded" style={{ backgroundColor: '#d1fae5', border: '1px solid #065f46' }} />{t('dignity.exalted')}</span>
+                    <span className="flex items-center gap-1"><span className="w-4 h-3 rounded" style={{ backgroundColor: '#fef3c7', border: '1px solid #92400e' }} />{t('report.ownMT')}</span>
+                    <span className="flex items-center gap-1"><span className="w-4 h-3 rounded" style={{ backgroundColor: '#dbeafe', border: '1px solid #1e40af' }} />{t('dignity.friend')}</span>
+                    <span className="flex items-center gap-1"><span className="w-4 h-3 rounded" style={{ backgroundColor: '#ffedd5', border: '1px solid #9a3412' }} />{t('dignity.enemy')}</span>
+                    <span className="flex items-center gap-1"><span className="w-4 h-3 rounded" style={{ backgroundColor: '#fee2e2', border: '1px solid #991b1b' }} />{t('dignity.debilitated')}</span>
                   </div>
 
                   {/* Vimshopak Bala (By Planet) */}

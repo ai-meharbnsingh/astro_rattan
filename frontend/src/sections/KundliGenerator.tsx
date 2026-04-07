@@ -3303,95 +3303,64 @@ export default function KundliGenerator() {
                 <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-sacred-text-secondary">{t('kundli.loadingAspects')}</span></div>
               ) : aspectsData ? (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Aspects on Planets */}
+                  {/* Aspects on Planets — clear table format */}
                   <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
                     <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.aspectsOnPlanets')}</h4>
-                    <div className="space-y-3">
-                      {(() => {
-                        // Prefer planet_aspects_summary (per-planet with full detail), fallback to flat list
-                        const summary = aspectsData.planet_aspects_summary;
-                        if (summary && typeof summary === 'object' && !Array.isArray(summary)) {
-                          const strengthBadge = (s: number) => {
-                            const color = s >= 1.0 ? 'bg-sacred-gold/30 text-sacred-gold-dark' : s >= 0.75 ? 'bg-blue-500/20 text-blue-700' : s >= 0.5 ? 'bg-yellow-500/20 text-yellow-700' : 'bg-gray-500/15 text-gray-600';
-                            return <span className={`px-1.5 py-0.5 rounded text-label font-semibold ${color}`}>{s}</span>;
-                          };
-                          const typeBadge = (t_val: string) => {
-                            const color = t_val === 'full' ? 'bg-sacred-gold/20 text-sacred-gold-dark' : 'bg-purple-500/15 text-purple-700';
-                            return <span className={`px-1.5 py-0.5 rounded text-label font-medium ${color}`}>{t_val}</span>;
-                          };
-                          return Object.entries(summary).map(([planet, data]: [string, any]) => (
-                            <div key={planet} className="bg-white/5 rounded-lg p-3 text-xs">
-                              <div className="flex items-center justify-between mb-1">
-                                <span className="font-semibold text-sacred-brown">{translatePlanet(planet, language)} <span className="text-sacred-text-secondary font-normal">({t('table.house')} {data.house})</span></span>
-                                <span className="text-xs">
-                                  <span className="text-green-500">B:{data.benefic_aspects || 0}</span>{' '}
-                                  <span className="text-red-400">M:{data.malefic_aspects || 0}</span>
-                                </span>
-                              </div>
-                              {data.aspected_by && Array.isArray(data.aspected_by) && data.aspected_by.length > 0 && (
-                                <div className="mt-1.5 space-y-1">
-                                  <p className="text-sacred-text-secondary font-medium mb-0.5">{t('table.aspectedBy')}:</p>
-                                  {data.aspected_by.map((a: any, i: number) => (
-                                    <div key={i} className="flex items-center gap-1.5 ml-2">
-                                      <span className="text-sacred-brown font-medium">{translatePlanet(a.planet, language)}</span>
-                                      {strengthBadge(a.strength)}
-                                      <span className="text-sacred-text-secondary">{a.offset}th house</span>
-                                      {a.type && typeBadge(a.type)}
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                              {data.aspects_to && Array.isArray(data.aspects_to) && data.aspects_to.length > 0 && (
-                                <div className="mt-1.5 space-y-1">
-                                  <p className="text-sacred-text-secondary font-medium mb-0.5">{t('kundli.aspects')}:</p>
-                                  {data.aspects_to.map((a: any, i: number) => (
-                                    <div key={i} className="flex items-center gap-1.5 ml-2">
-                                      <span className="text-sacred-brown">H{a.house}</span>
-                                      {strengthBadge(a.strength)}
-                                      <span className="text-sacred-text-secondary">{a.offset}th</span>
-                                      {a.type && typeBadge(a.type)}
-                                      {a.planets_in_house && a.planets_in_house.length > 0 && (
-                                        <span className="text-sacred-text-secondary">({a.planets_in_house.join(', ')})</span>
-                                      )}
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                          ));
-                        }
-                        // Fallback: flat list format (aspects_on_planets or planet_aspects)
-                        const flatList = aspectsData.aspects_on_planets || aspectsData.planet_aspects || [];
-                        if (Array.isArray(flatList) && flatList.length > 0) {
-                          return flatList.map((pa: any, idx: number) => (
-                            <div key={pa.planet || pa.aspecting || idx} className="bg-white/5 rounded-lg p-3 text-xs">
-                              <div className="flex items-center justify-between mb-1">
-                                <span className="font-semibold text-sacred-brown">
-                                  {translatePlanet(pa.aspecting || pa.planet, language)}
-                                  {' '}<span className="text-sacred-text-secondary font-normal">({t('table.house')} {pa.house_from || pa.house})</span>
-                                  {' \u2192 '}
-                                  {pa.aspected && <span className="font-semibold">{translatePlanet(pa.aspected, language)}</span>}
-                                </span>
-                                <span className="flex items-center gap-1.5">
-                                  {pa.strength != null && (
-                                    <span className={`px-1.5 py-0.5 rounded text-label font-semibold ${pa.strength >= 1.0 ? 'bg-sacred-gold/30 text-sacred-gold-dark' : pa.strength >= 0.75 ? 'bg-blue-500/20 text-blue-700' : pa.strength >= 0.5 ? 'bg-yellow-500/20 text-yellow-700' : 'bg-gray-500/15 text-gray-600'}`}>{pa.strength}</span>
-                                  )}
-                                  {pa.type && (
-                                    <span className={`px-1.5 py-0.5 rounded text-label font-medium ${pa.type === 'full' ? 'bg-sacred-gold/20 text-sacred-gold-dark' : 'bg-purple-500/15 text-purple-700'}`}>{pa.type}</span>
-                                  )}
-                                </span>
-                              </div>
-                              {pa.offset != null && (
-                                <p className="text-sacred-text-secondary">{pa.offset}th house aspect</p>
-                              )}
-                              {pa.aspected_by && (Array.isArray(pa.aspected_by) ? pa.aspected_by.length > 0 : true) && (
-                                <p className="text-sacred-text-secondary">{t('table.aspectedBy')}: {Array.isArray(pa.aspected_by) ? pa.aspected_by.map((a: any) => typeof a === 'string' ? a : a.planet).join(', ') : String(pa.aspected_by)}</p>
-                              )}
-                            </div>
-                          ));
-                        }
-                        return <p className="text-center text-sacred-text-secondary">{t('common.noData')}</p>;
-                      })()}
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead><tr className="bg-sacred-gold/10">
+                          <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
+                          <th className="text-center p-2 text-sacred-gold-dark font-medium">House</th>
+                          <th className="text-left p-2 text-sacred-gold-dark font-medium">Aspected By (Benefic)</th>
+                          <th className="text-left p-2 text-sacred-gold-dark font-medium">Aspected By (Malefic)</th>
+                          <th className="text-left p-2 text-sacred-gold-dark font-medium">Aspects To</th>
+                        </tr></thead>
+                        <tbody>
+                          {(() => {
+                            const summary = aspectsData.planet_aspects_summary;
+                            const BENEFICS = ['Jupiter', 'Venus', 'Moon', 'Mercury'];
+                            if (summary && typeof summary === 'object' && !Array.isArray(summary)) {
+                              return Object.entries(summary).map(([planet, data]: [string, any], i: number) => {
+                                const aspBy = data.aspected_by || [];
+                                const beneficList = aspBy.filter((a: any) => BENEFICS.includes(a.planet || a));
+                                const maleficList = aspBy.filter((a: any) => !BENEFICS.includes(a.planet || a));
+                                const aspectsTo = data.aspects_to || [];
+                                return (
+                                  <tr key={planet} className={i % 2 ? 'bg-sacred-gold/5' : ''}>
+                                    <td className="p-2 font-semibold text-sacred-brown">{translatePlanet(planet, language)}</td>
+                                    <td className="p-2 text-center">{data.house}</td>
+                                    <td className="p-2">
+                                      {beneficList.length > 0 ? beneficList.map((a: any, j: number) => (
+                                        <span key={j} className="inline-flex items-center gap-1 mr-2">
+                                          <span className="text-green-600 font-medium">{translatePlanet(a.planet || a, language)}</span>
+                                          <span className="text-xs text-sacred-text-secondary">({a.strength || '1.0'}x {a.offset ? a.offset + 'H' : ''}{a.type === 'special' ? ' Spl' : ''})</span>
+                                        </span>
+                                      )) : <span className="text-sacred-text-secondary">-</span>}
+                                    </td>
+                                    <td className="p-2">
+                                      {maleficList.length > 0 ? maleficList.map((a: any, j: number) => (
+                                        <span key={j} className="inline-flex items-center gap-1 mr-2">
+                                          <span className="text-red-500 font-medium">{translatePlanet(a.planet || a, language)}</span>
+                                          <span className="text-xs text-sacred-text-secondary">({a.strength || '1.0'}x {a.offset ? a.offset + 'H' : ''}{a.type === 'special' ? ' Spl' : ''})</span>
+                                        </span>
+                                      )) : <span className="text-sacred-text-secondary">-</span>}
+                                    </td>
+                                    <td className="p-2">
+                                      {aspectsTo.length > 0 ? aspectsTo.map((a: any, j: number) => (
+                                        <span key={j} className="inline-flex items-center gap-1 mr-2">
+                                          <span className="font-medium">H{a.house}</span>
+                                          <span className="text-xs text-sacred-text-secondary">({a.strength}x)</span>
+                                        </span>
+                                      )) : <span className="text-sacred-text-secondary">-</span>}
+                                    </td>
+                                  </tr>
+                                );
+                              });
+                            }
+                            return <tr><td colSpan={5} className="text-center p-4 text-sacred-text-secondary">{t('common.noData')}</td></tr>;
+                          })()}
+                        </tbody>
+                      </table>
                     </div>
                   </div>
 
