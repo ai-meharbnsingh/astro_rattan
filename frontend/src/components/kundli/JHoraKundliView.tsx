@@ -140,7 +140,7 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
   return (
     <div style={{
       fontFamily: SERIF,
-      fontSize: '10px',
+      fontSize: '11px',
       fontWeight: 600,
       color: HEADER_COLOR,
       padding: '2px 6px',
@@ -318,11 +318,11 @@ export default function JHoraKundliView({
     }));
   }, [dasha]);
 
-  // Table cell base style — tight padding for compact JHora layout
+  // Table cell base style — standardized 11px across all JHora tables
   const cellBase: React.CSSProperties = {
     fontFamily: SERIF,
-    fontSize: '10px',
-    padding: '2px 3px',
+    fontSize: '11px',
+    padding: '2px 4px',
     borderBottom: `1px solid ${BORDER_COLOR}`,
     whiteSpace: 'nowrap',
     overflow: 'hidden',
@@ -331,8 +331,7 @@ export default function JHoraKundliView({
 
   const cellCompact: React.CSSProperties = {
     ...cellBase,
-    fontSize: '9px',
-    padding: '1px 3px',
+    padding: '2px 3px',
   };
 
   const thBase: React.CSSProperties = {
@@ -345,14 +344,13 @@ export default function JHoraKundliView({
 
   const thCompact: React.CSSProperties = {
     ...thBase,
-    fontSize: '9px',
-    padding: '1px 3px',
+    padding: '2px 3px',
   };
 
   // Chart cell label style
   const chartLabel: React.CSSProperties = {
     fontFamily: SERIF,
-    fontSize: '9px',
+    fontSize: '11px',
     color: HEADER_COLOR,
     fontWeight: 600,
     textAlign: 'center' as const,
@@ -418,7 +416,7 @@ export default function JHoraKundliView({
 
         {/* ── Transit (top-right) — clickable ── */}
         <div style={chartCell}>
-          <div style={chartLabel}>{t('kundli.transit')} <span style={{ fontSize: '9px', opacity: 0.6, fontWeight: 'normal' }}>({t('kundli.clickHouseLagan')})</span></div>
+          <div style={chartLabel}>{t('kundli.transit')} <span style={{ fontSize: '11px', opacity: 0.6, fontWeight: 'normal' }}>({t('kundli.clickHouseLagan')})</span></div>
           <div style={chartInner}>
             {loadingTransit ? <MiniLoader /> : transitChartData ? (() => {
               const shift = gocharShift;
@@ -445,7 +443,7 @@ export default function JHoraKundliView({
             )}
           </div>
           {gocharShift > 0 && (
-            <button onClick={() => setGocharShift(0)} style={{ display: 'block', margin: '2px auto', fontSize: '9px', color: HEADER_COLOR, textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer' }}>{t('common.resetView')}</button>
+            <button onClick={() => setGocharShift(0)} style={{ display: 'block', margin: '2px auto', fontSize: '11px', color: HEADER_COLOR, textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer' }}>{t('common.resetView')}</button>
           )}
         </div>
 
@@ -579,7 +577,7 @@ export default function JHoraKundliView({
             {(loadingDasha || loadingExtendedDasha) ? <MiniLoader /> : dasha ? (
               <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
                 {/* Current Dasha Info */}
-                <div style={{ padding: '3px 6px', background: '#FEF3C7', borderBottom: `1px solid ${BORDER_COLOR}`, fontSize: '9px', fontFamily: SERIF }}>
+                <div style={{ padding: '3px 6px', background: '#FEF3C7', borderBottom: `1px solid ${BORDER_COLOR}`, fontSize: '11px', fontFamily: SERIF }}>
                   <span style={{ color: HEADER_COLOR, fontWeight: 600 }}>{t('section.currentDasha')}{' '}</span>
                   <span style={{ color: '#B8860B', fontWeight: 700 }}>{dasha.current_dasha}</span>
                   {dasha.current_antardasha && dasha.current_antardasha !== 'Unknown' && (
@@ -603,7 +601,7 @@ export default function JHoraKundliView({
                             padding: '2px 4px', cursor: 'pointer',
                             background: md.is_current ? '#FEF3C7' : (i % 2 === 0 ? 'transparent' : ALT_ROW),
                             borderBottom: `1px solid ${BORDER_COLOR}`,
-                            fontFamily: SERIF, fontSize: '9px',
+                            fontFamily: SERIF, fontSize: '11px',
                           }}
                         >
                           <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
@@ -611,7 +609,7 @@ export default function JHoraKundliView({
                             <span style={{ color: planetColor(md.planet), fontWeight: 600 }}>{md.planet}</span>
                             {md.is_current && <span style={{ color: '#B8860B', fontSize: '7px' }}>\u2190</span>}
                           </span>
-                          <span style={{ color: MUTED, fontSize: '8px' }}>
+                          <span style={{ color: MUTED, fontSize: '10px' }}>
                             {md.start?.slice(0, 10)} — {md.end?.slice(0, 10)} ({md.years}y)
                           </span>
                         </div>
@@ -626,7 +624,7 @@ export default function JHoraKundliView({
                                 padding: '1px 4px 1px 16px', cursor: ad.pratyantar?.length ? 'pointer' : 'default',
                                 background: ad.is_current ? 'rgba(184,134,11,0.08)' : 'transparent',
                                 borderBottom: `1px solid rgba(212,197,169,0.5)`,
-                                fontFamily: SERIF, fontSize: '8px',
+                                fontFamily: SERIF, fontSize: '10px',
                               }}
                             >
                               <span style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
@@ -796,65 +794,49 @@ export default function JHoraKundliView({
             </div>
           </div>
 
-          {/* Shadbala — Vertical bar chart */}
-          <div style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+          {/* Shadbala — Horizontal bar chart for readability */}
+          <div style={{ overflow: 'auto', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
             <SectionHeader>{t('tab.shadbala')}</SectionHeader>
             {loadingShadbala ? <MiniLoader /> : shadbalaData?.planets ? (
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, padding: '4px 6px 2px' }}>
-                {/* Vertical bars */}
-                <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', gap: '3px', minHeight: 0 }}>
-                  {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
-                    const data = shadbalaData.planets[planet];
-                    if (!data) return null;
-                    const ratio = data.total / data.required;
-                    const pct = Math.min(ratio * 100, 100);
-                    const isStrong = ratio >= 1;
-                    return (
-                      <div key={planet} style={{
-                        flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px',
-                        fontFamily: SERIF, fontSize: '10px',
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '3px', padding: '4px 6px 2px', minHeight: 0 }}>
+                {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
+                  const data = shadbalaData.planets[planet];
+                  if (!data) return null;
+                  const ratio = data.total / data.required;
+                  const pct = Math.min(ratio * 100, 100);
+                  const isStrong = ratio >= 1;
+                  return (
+                    <div key={planet} style={{
+                      display: 'flex', alignItems: 'center', gap: '4px',
+                      fontFamily: SERIF, fontSize: '11px',
+                    }}>
+                      <span style={{ color: planetColor(planet), fontWeight: 700, width: '24px', textAlign: 'right', flexShrink: 0 }}>
+                        {planet.slice(0, 2)}
+                      </span>
+                      <div style={{
+                        flex: 1, height: '14px', background: '#E8E0D0', borderRadius: '2px', overflow: 'hidden',
+                        position: 'relative',
                       }}>
-                        <span style={{ color: isStrong ? '#4CAF50' : '#DC2626', fontWeight: 600, fontSize: '10px' }}>
-                          {ratio.toFixed(1)}x
-                        </span>
                         <div style={{
-                          width: '100%', maxWidth: '28px', height: '100%', minHeight: '30px', maxHeight: '120px',
-                          background: '#E8E0D0', borderRadius: '2px 2px 0 0', overflow: 'hidden',
-                          display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
-                          position: 'relative',
-                        }}>
-                          <div style={{
-                            width: '100%',
-                            height: `${pct}%`,
-                            background: isStrong ? '#4CAF50' : '#DC2626',
-                            borderRadius: '2px 2px 0 0',
-                            minHeight: '2px',
-                          }} />
-                          {/* Required threshold line */}
-                          <div style={{
-                            position: 'absolute', bottom: `${Math.min((1 / Math.max(ratio, 1)) * 100, 100)}%`,
-                            width: '100%', borderTop: '1px dashed rgba(93,64,55,0.4)',
-                          }} />
-                        </div>
-                        <span style={{ color: planetColor(planet), fontWeight: 600, fontSize: '10px', lineHeight: 1 }}>
-                          {planet.slice(0, 2)}
-                        </span>
+                          width: `${pct}%`, height: '100%',
+                          background: isStrong ? '#4CAF50' : '#DC2626',
+                          borderRadius: '2px', minWidth: '2px',
+                        }} />
+                        {/* Required threshold line at 1.0x */}
+                        <div style={{
+                          position: 'absolute', left: `${Math.min((1 / Math.max(ratio, 1)) * 100, 100)}%`,
+                          top: 0, bottom: 0, borderLeft: '1.5px dashed rgba(93,64,55,0.5)',
+                        }} />
                       </div>
-                    );
-                  })}
-                </div>
-                {/* Legend */}
-                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', paddingTop: '4px', fontSize: '9px', color: MUTED }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                    <span style={{ width: '6px', height: '6px', borderRadius: '1px', background: '#4CAF50', display: 'inline-block' }} />{t('kundli.strong')}
-                  </span>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                    <span style={{ width: '6px', height: '6px', borderRadius: '1px', background: '#DC2626', display: 'inline-block' }} />{t('kundli.weak')}
-                  </span>
-                </div>
+                      <span style={{ color: isStrong ? '#4CAF50' : '#DC2626', fontWeight: 600, fontSize: '11px', width: '32px', textAlign: 'left', flexShrink: 0 }}>
+                        {ratio.toFixed(1)}x
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             ) : (
-              <div style={{ padding: '8px', color: MUTED, textAlign: 'center', fontSize: '10px' }}>--</div>
+              <div style={{ padding: '8px', color: MUTED, textAlign: 'center', fontSize: '11px' }}>--</div>
             )}
           </div>
         </div>
