@@ -56,7 +56,6 @@ def _verify_email_token(email_token: str, expected_email: str):
 def send_otp(
     request: Request,
     body: SendOtpRequest,
-    background_tasks: BackgroundTasks,
     db: Any = Depends(get_db),
 ):
     """Send a 6-digit OTP to the given email for verification."""
@@ -76,7 +75,13 @@ def send_otp(
     )
     db.commit()
 
-    background_tasks.add_task(send_verification_otp, body.email, otp)
+    # Send synchronously — BackgroundTasks don't complete on Vercel serverless
+    sent = send_verification_otp(body.email, otp)
+    if not sent:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Failed to send verification email. Please try again.",
+        )
     return {"message": "Verification code sent to your email"}
 
 
