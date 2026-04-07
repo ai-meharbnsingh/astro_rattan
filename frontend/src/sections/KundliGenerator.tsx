@@ -919,7 +919,7 @@ export default function KundliGenerator() {
                 {/* 1. Lagna Chart (D1) — click house to rotate lagan */}
                 <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-3">
                   <h4 className="font-display font-semibold text-sacred-brown mb-2 text-center text-sm">
-                    {t('section.lagna')} <span className="text-[10px] font-normal opacity-50">({t('kundli.clickHouseToRotate')})</span>
+                    {t('section.lagna')} <span className="text-xs font-normal opacity-50">({t('kundli.clickHouseToRotate')})</span>
                   </h4>
                   <div className="flex justify-center">
                     {(() => {
@@ -949,14 +949,14 @@ export default function KundliGenerator() {
                     })()}
                   </div>
                   {reportLagnaShift > 0 && (
-                    <button onClick={() => setReportLagnaShift(0)} className="block mx-auto mt-1 text-[10px] text-sacred-gold underline">{t('common.resetView')}</button>
+                    <button onClick={() => setReportLagnaShift(0)} className="block mx-auto mt-1 text-xs text-sacred-gold underline">{t('common.resetView')}</button>
                   )}
                 </div>
 
                 {/* 2. Moon Chart — click house to rotate lagan */}
                 <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-3">
                   <h4 className="font-display font-semibold text-sacred-brown mb-2 text-center text-sm">
-                    {t('section.moon')} <span className="text-[10px] font-normal opacity-50">({t('kundli.clickHouseToRotate')})</span>
+                    {t('section.moon')} <span className="text-xs font-normal opacity-50">({t('kundli.clickHouseToRotate')})</span>
                   </h4>
                   <div className="flex justify-center">
                     {(() => {
@@ -989,7 +989,7 @@ export default function KundliGenerator() {
                     })()}
                   </div>
                   {reportMoonShift > 0 && (
-                    <button onClick={() => setReportMoonShift(0)} className="block mx-auto mt-1 text-[10px] text-sacred-gold underline">{t('common.resetView')}</button>
+                    <button onClick={() => setReportMoonShift(0)} className="block mx-auto mt-1 text-xs text-sacred-gold underline">{t('common.resetView')}</button>
                   )}
                 </div>
 
@@ -997,7 +997,7 @@ export default function KundliGenerator() {
                 <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-3">
                   <h4 className="font-display font-semibold text-sacred-brown mb-2 text-center text-sm">
                     {t('section.gochar')} {transitData?.transit_date ? `(${transitData.transit_date})` : ''}
-                    <span className="text-[10px] font-normal opacity-50"> ({t('kundli.clickHouseToRotate')})</span>
+                    <span className="text-xs font-normal opacity-50"> ({t('kundli.clickHouseToRotate')})</span>
                   </h4>
                   <div className="flex justify-center">
                     {loadingTransit ? (
@@ -1039,7 +1039,7 @@ export default function KundliGenerator() {
                     )}
                   </div>
                   {reportGocharShift > 0 && (
-                    <button onClick={() => setReportGocharShift(0)} className="block mx-auto mt-1 text-[10px] text-sacred-gold underline">{t('common.resetView')}</button>
+                    <button onClick={() => setReportGocharShift(0)} className="block mx-auto mt-1 text-xs text-sacred-gold underline">{t('common.resetView')}</button>
                   )}
                 </div>
               </div>
@@ -1160,7 +1160,7 @@ export default function KundliGenerator() {
                         { label: t('avakhada.sunSign'), value: avakhadaData.sun_sign },
                       ].map((item) => (
                         <div key={item.label} className="rounded-lg p-2 bg-cosmic-card/60">
-                          <p className="text-[10px] text-sacred-text-secondary">{item.label}</p>
+                          <p className="text-xs text-sacred-text-secondary">{item.label}</p>
                           <p className="text-xs font-semibold text-sacred-brown">{item.value}</p>
                         </div>
                       ))}
@@ -1300,7 +1300,7 @@ export default function KundliGenerator() {
                             const planet = Object.entries(karakas).find(([, v]) => v === key)?.[0] || '-';
                             return (
                               <tr key={key} className="border-t border-sacred-gold/10">
-                                <td className="p-2 text-sacred-brown"><span className="font-semibold">{key}</span> <span className="text-[10px] text-sacred-text-secondary">({name})</span></td>
+                                <td className="p-2 text-sacred-brown"><span className="font-semibold">{key}</span> <span className="text-xs text-sacred-text-secondary">({name})</span></td>
                                 <td className="p-2 font-semibold" style={{ color: '#B8860B' }}>{translatePlanet(planet, language)}</td>
                               </tr>
                             );
@@ -1328,7 +1328,7 @@ export default function KundliGenerator() {
                             <div key={idx} className="rounded-lg p-2 text-xs border border-green-500/20 bg-green-500/5">
                               <div className="flex items-center justify-between">
                                 <span className="font-medium text-sacred-brown">{translateName(yoga.name, language)}</span>
-                                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-400">
+                                <span className="text-xs px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-400">
                                   {t('common.present')}
                                 </span>
                               </div>
@@ -1349,7 +1349,7 @@ export default function KundliGenerator() {
                             <div key={idx} className="rounded-lg p-2 text-xs border border-red-500/20 bg-red-500/5">
                               <div className="flex items-center justify-between">
                                 <span className="font-medium text-sacred-brown">{translateName(dosha.name, language)}</span>
-                                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-500/20 text-red-400">
+                                <span className="text-xs px-1.5 py-0.5 rounded-full bg-red-500/20 text-red-400">
                                   {t('common.present')}
                                 </span>
                               </div>
@@ -1377,7 +1377,7 @@ export default function KundliGenerator() {
                       <div className={`rounded-lg p-3 border ${doshaData.mangal_dosha?.has_dosha ? 'border-red-500/30 bg-red-500/5' : 'border-green-500/20 bg-green-500/5'}`}>
                         <div className="flex items-center justify-between mb-1">
                           <h5 className="text-sm font-semibold text-sacred-brown">{translateName('Mangal Dosha', language)}</h5>
-                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${doshaData.mangal_dosha?.has_dosha ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}>
+                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${doshaData.mangal_dosha?.has_dosha ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}>
                             {doshaData.mangal_dosha?.has_dosha ? translateLabel(doshaData.mangal_dosha.severity, language) || t('common.present') : t('common.absent')}
                           </span>
                         </div>
@@ -1387,7 +1387,7 @@ export default function KundliGenerator() {
                       <div className={`rounded-lg p-3 border ${doshaData.kaal_sarp_dosha?.has_dosha ? 'border-red-500/30 bg-red-500/5' : 'border-green-500/20 bg-green-500/5'}`}>
                         <div className="flex items-center justify-between mb-1">
                           <h5 className="text-sm font-semibold text-sacred-brown">{translateName('Kaal Sarp Dosha', language)}</h5>
-                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${doshaData.kaal_sarp_dosha?.has_dosha ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}>
+                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${doshaData.kaal_sarp_dosha?.has_dosha ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}>
                             {doshaData.kaal_sarp_dosha?.has_dosha ? translateLabel(doshaData.kaal_sarp_dosha.severity, language) || t('common.present') : t('common.absent')}
                           </span>
                         </div>
@@ -1397,7 +1397,7 @@ export default function KundliGenerator() {
                       <div className={`rounded-lg p-3 border ${doshaData.sade_sati?.has_sade_sati ? 'border-orange-500/30 bg-orange-500/5' : 'border-green-500/20 bg-green-500/5'}`}>
                         <div className="flex items-center justify-between mb-1">
                           <h5 className="text-sm font-semibold text-sacred-brown">{translateName('Sade Sati', language)}</h5>
-                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${doshaData.sade_sati?.has_sade_sati ? 'bg-orange-500/20 text-orange-600' : 'bg-green-500/20 text-green-400'}`}>
+                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${doshaData.sade_sati?.has_sade_sati ? 'bg-orange-500/20 text-orange-600' : 'bg-green-500/20 text-green-400'}`}>
                             {doshaData.sade_sati?.has_sade_sati ? `${t('common.active')} - ${translateLabel(doshaData.sade_sati.phase, language)}` : t('common.inactive')}
                           </span>
                         </div>
@@ -1424,19 +1424,19 @@ export default function KundliGenerator() {
                           const isStrong = points >= 28;
                           return (
                             <div key={sign} className="flex-1 flex flex-col items-center gap-0.5">
-                              <span className="text-[9px] font-medium text-sacred-brown">{points}</span>
+                              <span className="text-xs font-medium text-sacred-brown">{points}</span>
                               <div className="w-full bg-sacred-gold/10 rounded-t-sm relative" style={{ height: '100px' }}>
                                 <div
                                   className="absolute bottom-0 w-full rounded-t-sm"
                                   style={{ height: `${heightPct}%`, backgroundColor: isStrong ? '#B8860B' : '#b8b0a4' }}
                                 />
                               </div>
-                              <span className="text-[8px] text-sacred-text-secondary">{sign.slice(0, 3)}</span>
+                              <span className="text-xs text-sacred-text-secondary">{sign.slice(0, 3)}</span>
                             </div>
                           );
                         })}
                       </div>
-                      <div className="flex items-center gap-3 mt-2 text-[10px] text-sacred-text-secondary">
+                      <div className="flex items-center gap-3 mt-2 text-xs text-sacred-text-secondary">
                         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#B8860B' }} />{t('kundli.strong')}</span>
                         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#b8b0a4' }} />{t('kundli.weak')}</span>
                       </div>
@@ -1470,7 +1470,7 @@ export default function KundliGenerator() {
                           </div>
                         );
                       })}
-                      <div className="flex items-center gap-3 mt-1 text-[10px] text-sacred-text-secondary">
+                      <div className="flex items-center gap-3 mt-1 text-xs text-sacred-text-secondary">
                         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#B8860B' }} />{t('kundli.strong')}</span>
                         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#8B2332' }} />{t('kundli.weak')}</span>
                       </div>
@@ -2078,7 +2078,7 @@ export default function KundliGenerator() {
                               }}
                             />
                           </div>
-                          <span className="text-[10px] text-sacred-text-secondary truncate w-full text-center" title={sign}>
+                          <span className="text-xs text-sacred-text-secondary truncate w-full text-center" title={sign}>
                             {sign.slice(0, 3)}
                           </span>
                         </div>
