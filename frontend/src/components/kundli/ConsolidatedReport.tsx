@@ -330,13 +330,13 @@ export default function ConsolidatedReport({
           </div>
 
           {/* Row 1: Four charts */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-1">
             {/* Birth Chart (D1) */}
-            <div className="border border-[#2a2a4e] rounded-lg p-2">
+            <div className="border border-[#2a2a4e] rounded-lg p-1">
               <h4 className="text-[11px] font-bold text-center mb-1" style={{ color: '#B8860B' }}>
                 {t('section.rashiD1')} <span className="text-xs font-normal opacity-60">{t('report.clickHouseLagan')}</span>
               </h4>
-              <div className="flex justify-center" style={{ maxWidth: '250px', margin: '0 auto' }}>
+              <div className="flex justify-center" style={{ maxWidth: '100%', margin: '0 auto' }}>
                 {(() => {
                   const shift = d1Shift;
                   const basePlanets = planets;
@@ -368,11 +368,11 @@ export default function ConsolidatedReport({
             </div>
 
             {/* D9 Navamsha */}
-            <div className="border border-[#2a2a4e] rounded-lg p-2">
+            <div className="border border-[#2a2a4e] rounded-lg p-1">
               <h4 className="text-[11px] font-bold text-center mb-1" style={{ color: '#B8860B' }}>
                 {t('section.navamshaD9')} <span className="text-xs font-normal opacity-60">{t('report.clickHouseLagan')}</span>
               </h4>
-              <div className="flex justify-center" style={{ maxWidth: '250px', margin: '0 auto' }}>
+              <div className="flex justify-center" style={{ maxWidth: '100%', margin: '0 auto' }}>
                 {loadingDivisional ? (
                   <div className="flex items-center justify-center py-12"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
                 ) : d9ChartData ? (() => {
@@ -406,11 +406,11 @@ export default function ConsolidatedReport({
             </div>
 
             {/* D10 Dashamsha */}
-            <div className="border border-[#2a2a4e] rounded-lg p-2">
+            <div className="border border-[#2a2a4e] rounded-lg p-1">
               <h4 className="text-[11px] font-bold text-center mb-1" style={{ color: '#B8860B' }}>
                 {t('kundli.d10')} <span className="text-xs font-normal opacity-60">{t('report.clickHouseLagan')}</span>
               </h4>
-              <div className="flex justify-center" style={{ maxWidth: '250px', margin: '0 auto' }}>
+              <div className="flex justify-center" style={{ maxWidth: '100%', margin: '0 auto' }}>
                 {loadingD10 ? (
                   <div className="flex items-center justify-center py-12"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
                 ) : d10ChartData ? (() => {
@@ -444,11 +444,11 @@ export default function ConsolidatedReport({
             </div>
 
             {/* Gochar (Transit) — clickable */}
-            <div className="border border-[#2a2a4e] rounded-lg p-2">
+            <div className="border border-[#2a2a4e] rounded-lg p-1">
               <h4 className="text-[11px] font-bold text-center mb-1" style={{ color: '#B8860B' }}>
                 {t('kundli.gochar')} <span className="text-xs font-normal opacity-60">{t('report.clickHouseLagan')}</span>
               </h4>
-              <div className="flex justify-center" style={{ maxWidth: '250px', margin: '0 auto' }}>
+              <div className="flex justify-center" style={{ maxWidth: '100%', margin: '0 auto' }}>
                 {loadingTransit ? (
                   <div className="flex items-center justify-center py-12"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
                 ) : transitChartDataRaw ? (() => {
