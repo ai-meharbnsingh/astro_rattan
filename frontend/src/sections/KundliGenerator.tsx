@@ -2097,43 +2097,131 @@ export default function KundliGenerator() {
                   </div>
                 </div>
 
-                {/* Bhinna Ashtakvarga Charts — clean grid per planet */}
+                {/* Bhinna Ashtakvarga Charts — Parashara's Light format: table + diamond chart per planet */}
                 <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/20">
                   <h4 className="font-display font-semibold text-sacred-brown mb-2">Bhinna Ashtakvarga Charts</h4>
-                  <p className="text-xs text-sacred-text-secondary mb-4">Individual planet bindus across 12 signs.</p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                  <p className="text-xs text-sacred-text-secondary mb-4">Individual planet bindus across 12 signs (Parashara's Light format).</p>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                     {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
                       const bindus = ashtakvargaData.planet_bindus?.[planet] || {};
                       const signs = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
                       const signAbbr = ['Ari', 'Tau', 'Gem', 'Can', 'Leo', 'Vir', 'Lib', 'Sco', 'Sag', 'Cap', 'Aqu', 'Pis'];
-                      const total = signs.reduce((sum, s) => sum + (bindus[s] || 0), 0);
+                      const vals = signs.map((s) => bindus[s] || 0);
+                      const total = vals.reduce((sum, v) => sum + v, 0);
+
+                      const binduColor = (v: number) =>
+                        v >= 5 ? '#166534' : v >= 3 ? '#B8860B' : '#991b1b';
+                      const binduBg = (v: number) =>
+                        v >= 5 ? '#dcfce7' : v >= 3 ? '#fef3c7' : '#fee2e2';
+
+                      // North Indian diamond chart positions (160x160 SVG, signs fixed)
+                      const housePos: { x: number; y: number }[] = [
+                        { x: 80, y: 28 },   // 1 Ari  — top center
+                        { x: 130, y: 28 },   // 2 Tau  — top right
+                        { x: 138, y: 58 },   // 3 Gem  — right upper
+                        { x: 138, y: 102 },  // 4 Can  — right lower
+                        { x: 130, y: 132 },  // 5 Leo  — bottom right
+                        { x: 80, y: 132 },   // 6 Vir  — bottom center
+                        { x: 30, y: 132 },   // 7 Lib  — bottom left
+                        { x: 22, y: 102 },   // 8 Sco  — left lower
+                        { x: 22, y: 58 },    // 9 Sag  — left upper
+                        { x: 30, y: 28 },    // 10 Cap — top left
+                        { x: 80, y: 65 },    // 11 Aqu — inner top
+                        { x: 80, y: 95 },    // 12 Pis — inner bottom
+                      ];
 
                       return (
-                        <div key={planet} className="flex flex-col">
-                          <h5 className="font-display font-semibold text-sacred-brown text-sm mb-2 text-center">
-                            {translatePlanet(planet, language)}
-                            <span className="ml-1 text-xs font-normal text-sacred-text-secondary">({total})</span>
-                          </h5>
-                          <div className="grid grid-cols-4 gap-1">
-                            {signs.map((sign, i) => {
-                              const val = bindus[sign] || 0;
-                              const cellStyle = val >= 5
-                                ? 'bg-green-100 border-green-300'
-                                : val >= 3
-                                  ? 'bg-amber-50 border-amber-300'
-                                  : 'bg-red-50 border-red-300';
-                              const numColor = val >= 5
-                                ? 'text-[#166534]'
-                                : val >= 3
-                                  ? 'text-[#B8860B]'
-                                  : 'text-[#991b1b]';
-                              return (
-                                <div key={sign} className={`rounded-md border p-1.5 text-center ${cellStyle}`}>
-                                  <span className="block text-label text-sacred-text-secondary leading-tight">{signAbbr[i]}</span>
-                                  <span className={`block text-base font-bold leading-tight ${numColor}`}>{val}</span>
-                                </div>
-                              );
-                            })}
+                        <div key={planet} className="bg-white rounded-lg border border-sacred-gold/20 overflow-hidden">
+                          {/* Planet header */}
+                          <div className="bg-sacred-gold/10 px-4 py-2 border-b border-sacred-gold/20 flex items-center justify-between">
+                            <h5 className="font-display font-semibold text-sacred-brown text-sm">
+                              {translatePlanet(planet, language)}
+                            </h5>
+                            <span className="text-xs font-semibold text-sacred-gold-dark">Total: {total}</span>
+                          </div>
+                          <div className="flex flex-col sm:flex-row">
+                            {/* LEFT: Bindu table */}
+                            <div className="flex-1 overflow-x-auto p-3">
+                              <table className="w-full text-xs border-collapse">
+                                <thead>
+                                  <tr>
+                                    <th className="text-left p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold/20 whitespace-nowrap">Sign</th>
+                                    {signAbbr.map((s, i) => (
+                                      <th key={i} className="text-center p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold/20 min-w-[26px]">{i + 1}</th>
+                                    ))}
+                                    <th className="text-center p-1 text-sacred-gold-dark font-bold border-b border-sacred-gold/20">&Sigma;</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td className="p-1 text-sacred-text-secondary font-medium whitespace-nowrap">Bindu</td>
+                                    {vals.map((v, i) => (
+                                      <td key={i} className="text-center p-1">
+                                        <span
+                                          className="inline-block w-6 h-6 leading-6 rounded text-xs font-bold"
+                                          style={{ backgroundColor: binduBg(v), color: binduColor(v) }}
+                                        >
+                                          {v}
+                                        </span>
+                                      </td>
+                                    ))}
+                                    <td className="text-center p-1 font-bold text-sacred-brown">{total}</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="p-1 text-sacred-text-secondary text-[10px]" colSpan={14}>
+                                      {signAbbr.map((s, i) => (
+                                        <span key={i} className="inline-block mr-1.5 text-[10px] text-sacred-text-secondary/60">
+                                          {i + 1}={s}
+                                        </span>
+                                      ))}
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                            {/* RIGHT: North Indian diamond chart SVG */}
+                            <div className="flex-shrink-0 flex items-center justify-center p-3 sm:border-l border-t sm:border-t-0 border-sacred-gold/10">
+                              <svg viewBox="0 0 160 160" width="160" height="160" className="block">
+                                {/* Outer square */}
+                                <rect x="2" y="2" width="156" height="156" fill="none" stroke="#c8a96e" strokeWidth="1.5" />
+                                {/* Diagonal lines corner-to-corner */}
+                                <line x1="2" y1="2" x2="158" y2="158" stroke="#c8a96e" strokeWidth="0.75" />
+                                <line x1="158" y1="2" x2="2" y2="158" stroke="#c8a96e" strokeWidth="0.75" />
+                                {/* Midpoint lines forming inner diamond */}
+                                <line x1="80" y1="2" x2="158" y2="80" stroke="#c8a96e" strokeWidth="0.75" />
+                                <line x1="158" y1="80" x2="80" y2="158" stroke="#c8a96e" strokeWidth="0.75" />
+                                <line x1="80" y1="158" x2="2" y2="80" stroke="#c8a96e" strokeWidth="0.75" />
+                                <line x1="2" y1="80" x2="80" y2="2" stroke="#c8a96e" strokeWidth="0.75" />
+                                {/* Bindu values in each house position */}
+                                {housePos.map((pos, i) => (
+                                  <g key={i}>
+                                    {/* Sign abbreviation */}
+                                    <text
+                                      x={pos.x}
+                                      y={pos.y - 7}
+                                      textAnchor="middle"
+                                      fontSize="7"
+                                      fill="#8B7355"
+                                      fontFamily="sans-serif"
+                                    >
+                                      {signAbbr[i]}
+                                    </text>
+                                    {/* Bindu value */}
+                                    <text
+                                      x={pos.x}
+                                      y={pos.y + 5}
+                                      textAnchor="middle"
+                                      fontSize="14"
+                                      fontWeight="bold"
+                                      fill={binduColor(vals[i])}
+                                      fontFamily="sans-serif"
+                                    >
+                                      {vals[i]}
+                                    </text>
+                                  </g>
+                                ))}
+                              </svg>
+                            </div>
                           </div>
                         </div>
                       );
@@ -2142,15 +2230,15 @@ export default function KundliGenerator() {
                   {/* Color legend */}
                   <div className="flex items-center gap-4 mt-4 text-xs text-sacred-text-secondary">
                     <div className="flex items-center gap-1">
-                      <div className="w-3 h-3 rounded border bg-green-100 border-green-300" />
+                      <div className="w-3 h-3 rounded border" style={{ backgroundColor: '#dcfce7', borderColor: '#86efac' }} />
                       <span>5-8 Strong</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <div className="w-3 h-3 rounded border bg-amber-50 border-amber-300" />
+                      <div className="w-3 h-3 rounded border" style={{ backgroundColor: '#fef3c7', borderColor: '#fcd34d' }} />
                       <span>3-4 Medium</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <div className="w-3 h-3 rounded border bg-red-50 border-red-300" />
+                      <div className="w-3 h-3 rounded border" style={{ backgroundColor: '#fee2e2', borderColor: '#fca5a5' }} />
                       <span>0-2 Weak</span>
                     </div>
                   </div>
