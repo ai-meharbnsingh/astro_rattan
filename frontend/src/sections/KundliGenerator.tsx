@@ -21,6 +21,7 @@ import KundliSummaryModal from '@/components/KundliSummaryModal';
 import JHoraKundliView from '@/components/kundli/JHoraKundliView';
 import AspectsMatrixTab from '@/components/kundli/AspectsMatrixTab';
 import RetrogradeStationsSection from '@/components/kundli/RetrogradeStationsSection';
+import KundliMilanTab from '@/components/kundli/KundliMilanTab';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 
 export default function KundliGenerator() {
@@ -801,6 +802,7 @@ export default function KundliGenerator() {
             <TabsTrigger value="sodashvarga" onClick={fetchSodashvarga}>{t('tab.sodashvarga')}</TabsTrigger>
             <TabsTrigger value="aspects" onClick={fetchAspects}>{t('tab.aspects')}</TabsTrigger>
             <TabsTrigger value="aspects-matrix" onClick={fetchWesternAspects}>{language === 'hi' ? 'दृष्टि मैट्रिक्स' : 'Aspects Matrix'}</TabsTrigger>
+            <TabsTrigger value="milan">{language === 'hi' ? 'कुंडली मिलान' : 'Kundli Milan'}</TabsTrigger>
             <TabsTrigger value="sadesati" onClick={fetchSadesati}>{t('tab.sadeSati')}</TabsTrigger>
           </TabsList>
 
@@ -2189,44 +2191,60 @@ export default function KundliGenerator() {
                             <span className="text-xs font-semibold text-sacred-gold-dark">Total: {total}</span>
                           </div>
                           <div className="flex flex-col sm:flex-row">
-                            {/* LEFT: Bindu table */}
+                            {/* LEFT: Full contributor matrix table (Parashara's Light format) */}
                             <div className="flex-1 overflow-x-auto p-3">
-                              <table className="w-full text-xs border-collapse">
-                                <thead>
-                                  <tr>
-                                    <th className="text-left p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold/20 whitespace-nowrap">Sign</th>
-                                    {signAbbr.map((s, i) => (
-                                      <th key={i} className="text-center p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold/20 min-w-[26px]">{i + 1}</th>
-                                    ))}
-                                    <th className="text-center p-1 text-sacred-gold-dark font-bold border-b border-sacred-gold/20">&Sigma;</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  <tr>
-                                    <td className="p-1 text-sacred-text-secondary font-medium whitespace-nowrap">Bindu</td>
-                                    {vals.map((v, i) => (
-                                      <td key={i} className="text-center p-1">
-                                        <span
-                                          className="inline-block w-6 h-6 leading-6 rounded text-xs font-bold"
-                                          style={{ backgroundColor: binduBg(v), color: binduColor(v) }}
-                                        >
-                                          {v}
-                                        </span>
-                                      </td>
-                                    ))}
-                                    <td className="text-center p-1 font-bold text-sacred-brown">{total}</td>
-                                  </tr>
-                                  <tr>
-                                    <td className="p-1 text-sacred-text-secondary text-[10px]" colSpan={14}>
-                                      {signAbbr.map((s, i) => (
-                                        <span key={i} className="inline-block mr-1.5 text-[10px] text-sacred-text-secondary/60">
-                                          {i + 1}={s}
-                                        </span>
-                                      ))}
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </table>
+                              {(() => {
+                                const contributors = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Lagna'];
+                                const contribData = ashtakvargaData.planet_details?.[planet]?.contributors;
+                                return (
+                                  <table className="w-full text-xs border-collapse">
+                                    <thead>
+                                      <tr>
+                                        <th className="text-left p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold/20 whitespace-nowrap">Contributor</th>
+                                        {signAbbr.map((s, i) => (
+                                          <th key={i} className="text-center p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold/20 min-w-[26px]">{s}</th>
+                                        ))}
+                                        <th className="text-center p-1 text-sacred-gold-dark font-bold border-b border-sacred-gold/20">&Sigma;</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {contributors.map((contrib) => {
+                                        const row = contribData?.[contrib] || {};
+                                        const rowVals = signs.map((s) => row[s] || 0);
+                                        const rowTotal = rowVals.reduce((a, b) => a + b, 0);
+                                        return (
+                                          <tr key={contrib} className="border-t border-sacred-gold/10 hover:bg-sacred-gold/5">
+                                            <td className="p-1 text-sacred-brown font-medium whitespace-nowrap">{translatePlanet(contrib, language)}</td>
+                                            {rowVals.map((v, i) => (
+                                              <td key={i} className="text-center p-1">
+                                                <span className={`inline-block w-5 h-5 leading-5 rounded-sm text-xs font-semibold ${v === 1 ? 'bg-green-100 text-green-800' : 'text-sacred-text-secondary/40'}`}>
+                                                  {v}
+                                                </span>
+                                              </td>
+                                            ))}
+                                            <td className="text-center p-1 font-semibold text-sacred-brown">{rowTotal}</td>
+                                          </tr>
+                                        );
+                                      })}
+                                      {/* Bindu total row */}
+                                      <tr className="border-t-2 border-sacred-gold/30 bg-sacred-gold/5">
+                                        <td className="p-1 text-sacred-gold-dark font-bold whitespace-nowrap">Bindu</td>
+                                        {vals.map((v, i) => (
+                                          <td key={i} className="text-center p-1">
+                                            <span
+                                              className="inline-block w-6 h-6 leading-6 rounded text-xs font-bold"
+                                              style={{ backgroundColor: binduBg(v), color: binduColor(v) }}
+                                            >
+                                              {v}
+                                            </span>
+                                          </td>
+                                        ))}
+                                        <td className="text-center p-1 font-bold text-sacred-brown">{total}</td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                );
+                              })()}
                             </div>
                             {/* RIGHT: North Indian diamond chart SVG */}
                             <div className="flex-shrink-0 flex items-center justify-center p-3 sm:border-l border-t sm:border-t-0 border-sacred-gold/10">
@@ -3485,6 +3503,11 @@ export default function KundliGenerator() {
           {/* ASPECTS MATRIX TAB */}
           <TabsContent value="aspects-matrix">
             <AspectsMatrixTab data={westernAspectsData} loading={loadingWesternAspects} />
+          </TabsContent>
+
+          {/* KUNDLI MILAN TAB */}
+          <TabsContent value="milan">
+            <KundliMilanTab savedKundlis={savedKundlis} currentKundliId={result?.id} />
           </TabsContent>
 
           {/* SADE SATI TAB - Enhanced with PDF-style Details */}
