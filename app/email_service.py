@@ -44,9 +44,10 @@ def _send_via_resend(to: str, subject: str, body_html: str) -> bool:
     """Send email via Resend HTTP API (no SMTP needed)."""
     if not RESEND_API_KEY:
         return False
-    from_addr = FROM_EMAIL if FROM_EMAIL else "AstroVedic <onboarding@resend.dev>"
+    # Resend requires a verified domain — use their test sender unless RESEND_FROM is set
+    resend_from = os.getenv("RESEND_FROM", "AstroVedic <onboarding@resend.dev>")
     payload = json.dumps({
-        "from": f"{APP_NAME} <{from_addr}>",
+        "from": resend_from,
         "to": [to],
         "subject": subject,
         "html": body_html,
