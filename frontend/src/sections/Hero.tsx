@@ -80,7 +80,7 @@ export default function Hero() {
       <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
         {/* Sanskrit Shloka */}
         <div className="hero-shloka opacity-0 mb-8">
-          <p className="font-['Cinzel'] text-xs md:text-sm tracking-[6px] text-[#ffaa33] uppercase"
+          <p className="font-cinzel text-xs md:text-sm tracking-[6px] text-[#ffaa33] uppercase"
             style={{ textShadow: '0 0 15px rgba(255, 170, 51, 0.4)' }}>
             ज्योतिषम् अयम् ब्रह्म — Astrology is the Supreme
           </p>
@@ -92,7 +92,7 @@ export default function Hero() {
             style={{ textShadow: '0 0 60px rgba(255, 153, 51, 0.15)' }}>
             {t('hero.observatory')}
           </h1>
-          <p className="font-['Cinzel'] text-sm md:text-base tracking-[12px] text-sacred-gold-dark mt-4 uppercase">
+          <p className="font-cinzel text-sm md:text-base tracking-[12px] text-sacred-gold-dark mt-4 uppercase">
             {t('hero.ofDestiny')}
           </p>
         </div>
@@ -119,7 +119,7 @@ export default function Hero() {
           <Button 
             onClick={() => navigate('/kundli')} 
             className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold-dark transition-all duration-300 
-                       text-xs tracking-[3px] uppercase font-['Cinzel'] font-semibold
+                       text-xs tracking-[3px] uppercase font-cinzel font-semibold
                        px-8 py-5 rounded-none border-none"
             style={{ boxShadow: '0 0 30px rgba(212, 175, 55, 0.3)' }}
           >
@@ -130,7 +130,7 @@ export default function Hero() {
             onClick={() => navigate('/consultation')}
             variant="outline"
             className="bg-transparent border border-sacred-gold-dark/30 text-cosmic-text/80 hover:border-sacred-gold hover:text-sacred-gold-dark 
-                       transition-all duration-300 text-xs tracking-[3px] uppercase font-['Cinzel']
+                       transition-all duration-300 text-xs tracking-[3px] uppercase font-cinzel
                        px-8 py-5 rounded-none"
           >
             {t('hero.consultExpert')}
@@ -146,7 +146,7 @@ export default function Hero() {
             <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-sacred-gold" />
             <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-sacred-gold" />
             
-            <p className="text-sacred-gold-dark text-xs tracking-[3px] uppercase mb-4 font-['Cinzel']">
+            <p className="text-sacred-gold-dark text-xs tracking-[3px] uppercase mb-4 font-cinzel">
               {t('hero.calculateChart')}
             </p>
             
@@ -186,7 +186,7 @@ export default function Hero() {
                 onClick={handleGenerateKundli} 
                 className="w-full bg-transparent border border-sacred-gold text-sacred-gold-dark 
                            hover:bg-sacred-gold-dark hover:text-cosmic-bg transition-all duration-300
-                           font-['Cinzel'] text-xs tracking-[2px] uppercase h-10 rounded-none"
+                           font-cinzel text-xs tracking-[2px] uppercase h-10 rounded-none"
               >
                 {t('hero.generateKundli')}
               </Button>

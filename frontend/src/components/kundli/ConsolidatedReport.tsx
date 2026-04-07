@@ -324,7 +324,7 @@ export default function ConsolidatedReport({
             <h2 className="text-lg font-bold font-serif" style={{ color: 'var(--aged-gold-dim)' }}>
               {result?.person_name} — {t('section.vedicBirthChart')}
             </h2>
-            <p className="text-[11px] text-cosmic-text/60 mt-1">
+            <p className="text-data text-cosmic-text/60 mt-1">
               {result?.birth_date} | {result?.birth_time} | {result?.birth_place}
             </p>
           </div>
@@ -333,7 +333,7 @@ export default function ConsolidatedReport({
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-1">
             {/* Birth Chart (D1) */}
             <div className="border border-sacred-purple rounded-lg p-1">
-              <h4 className="text-[11px] font-bold text-center mb-1" style={{ color: 'var(--aged-gold-dim)' }}>
+              <h4 className="text-data font-bold text-center mb-1" style={{ color: 'var(--aged-gold-dim)' }}>
                 {t('section.rashiD1')} <span className="text-xs font-normal opacity-60">{t('report.clickHouseLagan')}</span>
               </h4>
               <div className="flex justify-center" style={{ maxWidth: '100%', margin: '0 auto' }}>
@@ -369,7 +369,7 @@ export default function ConsolidatedReport({
 
             {/* D9 Navamsha */}
             <div className="border border-sacred-purple rounded-lg p-1">
-              <h4 className="text-[11px] font-bold text-center mb-1" style={{ color: 'var(--aged-gold-dim)' }}>
+              <h4 className="text-data font-bold text-center mb-1" style={{ color: 'var(--aged-gold-dim)' }}>
                 {t('section.navamshaD9')} <span className="text-xs font-normal opacity-60">{t('report.clickHouseLagan')}</span>
               </h4>
               <div className="flex justify-center" style={{ maxWidth: '100%', margin: '0 auto' }}>
@@ -407,7 +407,7 @@ export default function ConsolidatedReport({
 
             {/* D10 Dashamsha */}
             <div className="border border-sacred-purple rounded-lg p-1">
-              <h4 className="text-[11px] font-bold text-center mb-1" style={{ color: 'var(--aged-gold-dim)' }}>
+              <h4 className="text-data font-bold text-center mb-1" style={{ color: 'var(--aged-gold-dim)' }}>
                 {t('kundli.d10')} <span className="text-xs font-normal opacity-60">{t('report.clickHouseLagan')}</span>
               </h4>
               <div className="flex justify-center" style={{ maxWidth: '100%', margin: '0 auto' }}>
@@ -445,7 +445,7 @@ export default function ConsolidatedReport({
 
             {/* Gochar (Transit) — clickable */}
             <div className="border border-sacred-purple rounded-lg p-1">
-              <h4 className="text-[11px] font-bold text-center mb-1" style={{ color: 'var(--aged-gold-dim)' }}>
+              <h4 className="text-data font-bold text-center mb-1" style={{ color: 'var(--aged-gold-dim)' }}>
                 {t('kundli.gochar')} <span className="text-xs font-normal opacity-60">{t('report.clickHouseLagan')}</span>
               </h4>
               <div className="flex justify-center" style={{ maxWidth: '100%', margin: '0 auto' }}>
@@ -485,7 +485,7 @@ export default function ConsolidatedReport({
 
           {/* Row 2: Planet Table (full width) */}
           <div className="border border-sacred-purple rounded-lg p-3">
-            <h4 className="text-[11px] font-bold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
+            <h4 className="text-data font-bold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
               {t('section.detailedPlanetPositions')}
             </h4>
             <div className="overflow-x-auto">
@@ -539,7 +539,7 @@ export default function ConsolidatedReport({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {/* Avakhada Chakra */}
             <div className="border border-sacred-purple rounded-lg p-3">
-              <h4 className="text-[11px] font-bold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
+              <h4 className="text-data font-bold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
                 {t('avakhada.title')}
               </h4>
               {loadingAvakhada ? (
@@ -573,7 +573,7 @@ export default function ConsolidatedReport({
 
             {/* Vimshottari Dasha */}
             <div className="border border-sacred-purple rounded-lg p-3">
-              <h4 className="text-[11px] font-bold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
+              <h4 className="text-data font-bold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
                 {t('section.vimshottariDasha')}
               </h4>
               {loadingDasha ? (
@@ -582,7 +582,7 @@ export default function ConsolidatedReport({
                 <div>
                   <div className="bg-sacred-gold-dark/10 rounded px-2 py-1.5 mb-2">
                     <p className="text-xs text-cosmic-text/50">{t('section.currentMahadasha')}</p>
-                    <p className="text-[11px] font-bold" style={{ color: 'var(--aged-gold-dim)' }}>{translatePlanet(dashaData.current_dasha, language)}</p>
+                    <p className="text-data font-bold" style={{ color: 'var(--aged-gold-dim)' }}>{translatePlanet(dashaData.current_dasha, language)}</p>
                     {dashaData.current_antardasha && (
                       <p className="text-xs text-sacred-gold-dark">{t('report.adLabel')} {translatePlanet(dashaData.current_antardasha, language)}</p>
                     )}
@@ -618,7 +618,7 @@ export default function ConsolidatedReport({
 
             {/* Yogini Dasha */}
             <div className="border border-sacred-purple rounded-lg p-3">
-              <h4 className="text-[11px] font-bold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
+              <h4 className="text-data font-bold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
                 {t('section.yoginiDasha')}
               </h4>
               {loadingYogini ? (
@@ -627,7 +627,7 @@ export default function ConsolidatedReport({
                 <div>
                   <div className="bg-sacred-gold-dark/10 rounded px-2 py-1.5 mb-2">
                     <p className="text-xs text-cosmic-text/50">{t('report.currentDasha')}</p>
-                    <p className="text-[11px] font-bold" style={{ color: 'var(--aged-gold-dim)' }}>{yoginiData.current_dasha?.planet ? translatePlanet(yoginiData.current_dasha.planet, language) : '\u2014'}</p>
+                    <p className="text-data font-bold" style={{ color: 'var(--aged-gold-dim)' }}>{yoginiData.current_dasha?.planet ? translatePlanet(yoginiData.current_dasha.planet, language) : '\u2014'}</p>
                     {yoginiData.current_dasha?.planet && (
                       <p className="text-xs text-sacred-gold-dark">{t('report.untilLabel')} {yoginiData.current_dasha?.end_date}</p>
                     )}
@@ -666,7 +666,7 @@ export default function ConsolidatedReport({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
             {/* Yogas (present only) */}
             <div className="border border-sacred-purple rounded-lg p-3">
-              <h4 className="text-[11px] font-bold mb-2 flex items-center gap-1" style={{ color: 'var(--aged-gold-dim)' }}>
+              <h4 className="text-data font-bold mb-2 flex items-center gap-1" style={{ color: 'var(--aged-gold-dim)' }}>
                 <CheckCircle className="w-3 h-3 text-green-500" />
                 {t('section.yogas')}
               </h4>
@@ -690,7 +690,7 @@ export default function ConsolidatedReport({
 
             {/* Doshas (present only) */}
             <div className="border border-sacred-purple rounded-lg p-3">
-              <h4 className="text-[11px] font-bold mb-2 flex items-center gap-1" style={{ color: 'var(--aged-gold-dim)' }}>
+              <h4 className="text-data font-bold mb-2 flex items-center gap-1" style={{ color: 'var(--aged-gold-dim)' }}>
                 <Shield className="w-3 h-3 text-red-500" />
                 {t('section.doshas')}
               </h4>
@@ -714,7 +714,7 @@ export default function ConsolidatedReport({
 
             {/* Lifelong Sade Sati */}
             <div className="border border-sacred-purple rounded-lg p-3">
-              <h4 className="text-[11px] font-bold mb-2 flex items-center gap-1" style={{ color: 'var(--aged-gold-dim)' }}>
+              <h4 className="text-data font-bold mb-2 flex items-center gap-1" style={{ color: 'var(--aged-gold-dim)' }}>
                 <Shield className="w-3 h-3 text-sacred-gold-dark" />
                 {t('section.lifelongSadeSati')}
               </h4>
@@ -737,7 +737,7 @@ export default function ConsolidatedReport({
                   {sadesatiData.remedies && sadesatiData.remedies.length > 0 && (
                     <div className="mt-2 pt-2 border-t border-sacred-purple">
                       <p className="text-xs font-semibold text-sacred-gold-dark mb-1">{t('section.generalRemedies')}</p>
-                      <ul className="list-disc pl-3 space-y-0.5 text-[8.5px] text-cosmic-text/80">
+                      <ul className="list-disc pl-3 space-y-0.5 text-micro text-cosmic-text/80">
                         {sadesatiData.remedies.map((rem: string, idx: number) => (
                           <li key={idx}>{translateRemedy(rem, language)}</li>
                         ))}
@@ -752,7 +752,7 @@ export default function ConsolidatedReport({
 
             {/* Lordships */}
             <div className="border border-sacred-purple rounded-lg p-3">
-              <h4 className="text-[11px] font-bold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
+              <h4 className="text-data font-bold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
                 {t('section.houseLordships')}
               </h4>
               <div className="text-xs">
@@ -765,7 +765,7 @@ export default function ConsolidatedReport({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {/* Ashtakvarga SAV */}
             <div className="border border-sacred-purple rounded-lg p-3">
-              <h4 className="text-[11px] font-bold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
+              <h4 className="text-data font-bold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
                 {t('section.sarvashtakvarga')}
               </h4>
               {loadingAshtakvarga ? (
@@ -787,7 +787,7 @@ export default function ConsolidatedReport({
                               style={{ height: `${heightPct}%`, backgroundColor: isStrong ? 'var(--aged-gold-dim)' : 'var(--ink-light)' }}
                             />
                           </div>
-                          <span className="text-[7px] text-cosmic-text/50">{translateSign(sign, language).slice(0, 3)}</span>
+                          <span className="text-micro text-cosmic-text/50">{translateSign(sign, language).slice(0, 3)}</span>
                         </div>
                       );
                     })}
@@ -804,7 +804,7 @@ export default function ConsolidatedReport({
 
             {/* Shadbala */}
             <div className="border border-sacred-purple rounded-lg p-3">
-              <h4 className="text-[11px] font-bold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
+              <h4 className="text-data font-bold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
                 {t('section.shadbalaStrength')}
               </h4>
               {loadingShadbala ? (
@@ -842,7 +842,7 @@ export default function ConsolidatedReport({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-3">
             {/* KP Analysis */}
             <div className="border border-sacred-purple rounded-lg p-3">
-              <h4 className="text-[11px] font-bold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
+              <h4 className="text-data font-bold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
                 {t('section.kpAnalysis')}
               </h4>
               {loadingKp ? (
@@ -899,7 +899,7 @@ export default function ConsolidatedReport({
 
             {/* Varshphal (Annual Return) */}
             <div className="border border-sacred-purple rounded-lg p-3">
-              <h4 className="text-[11px] font-bold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
+              <h4 className="text-data font-bold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
                 {t('section.varshphalCurrentYear')}
               </h4>
               {loadingVarshphal ? (
@@ -909,15 +909,15 @@ export default function ConsolidatedReport({
                   <div className="grid grid-cols-2 gap-2">
                     <div className="bg-cosmic-bg rounded px-2 py-1.5 border border-sacred-purple">
                       <p className="text-xs text-cosmic-text/50">{t('section.munthaSign')}</p>
-                      <p className="text-[11px] font-bold text-sacred-gold-dark">{varshphalData.muntha?.sign ? translateSign(varshphalData.muntha.sign, language) : 'N/A'}</p>
+                      <p className="text-data font-bold text-sacred-gold-dark">{varshphalData.muntha?.sign ? translateSign(varshphalData.muntha.sign, language) : 'N/A'}</p>
                     </div>
                     <div className="bg-cosmic-bg rounded px-2 py-1.5 border border-sacred-purple">
                       <p className="text-xs text-cosmic-text/50">{t('section.munthaLord')}</p>
-                      <p className="text-[11px] font-bold text-sacred-gold-dark">{varshphalData.muntha?.lord ? translatePlanet(varshphalData.muntha.lord, language) : 'N/A'}</p>
+                      <p className="text-data font-bold text-sacred-gold-dark">{varshphalData.muntha?.lord ? translatePlanet(varshphalData.muntha.lord, language) : 'N/A'}</p>
                     </div>
                     <div className="bg-cosmic-bg rounded px-2 py-1.5 border border-sacred-purple">
                       <p className="text-xs text-cosmic-text/50">{t('section.yearLord')}</p>
-                      <p className="text-[11px] font-bold text-sacred-gold-dark">{varshphalData.year_lord ? translatePlanet(varshphalData.year_lord, language) : 'N/A'}</p>
+                      <p className="text-data font-bold text-sacred-gold-dark">{varshphalData.year_lord ? translatePlanet(varshphalData.year_lord, language) : 'N/A'}</p>
                     </div>
                   </div>
                   {varshphalData.mudda_dasha && (
@@ -947,7 +947,7 @@ export default function ConsolidatedReport({
           {/* Row 7: Upagrahas */}
           <div className="grid grid-cols-1 mt-3">
             <div className="border border-sacred-purple rounded-lg p-3">
-              <h4 className="text-[11px] font-bold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
+              <h4 className="text-data font-bold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
                 {t('section.upagrahasTitle')}
               </h4>
               {loadingUpagrahas ? (
@@ -989,7 +989,7 @@ export default function ConsolidatedReport({
           {/* Row 8: Sodashvarga — By Sign (16 Divisional Charts Table) */}
           <div className="grid grid-cols-1 mt-3">
             <div className="border border-sacred-purple rounded-lg p-3">
-              <h4 className="text-[11px] font-bold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
+              <h4 className="text-data font-bold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
                 {t('section.sodashvargaTitle')}
               </h4>
               {loadingSodashvarga ? (
@@ -1077,7 +1077,7 @@ export default function ConsolidatedReport({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-3">
             {/* Aspects on Planets */}
             <div className="border border-sacred-purple rounded-lg p-3">
-              <h4 className="text-[11px] font-bold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
+              <h4 className="text-data font-bold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
                 {t('section.aspectsOnPlanets')}
               </h4>
               {loadingAspects ? (
@@ -1143,7 +1143,7 @@ export default function ConsolidatedReport({
 
             {/* Aspects on Bhavas */}
             <div className="border border-sacred-purple rounded-lg p-3">
-              <h4 className="text-[11px] font-bold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
+              <h4 className="text-data font-bold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
                 {t('section.aspectsOnBhavas')}
               </h4>
               {loadingAspects ? (
@@ -1199,7 +1199,7 @@ export default function ConsolidatedReport({
           {ashtakvargaData?.planet_bindus && (
             <div className="grid grid-cols-1 mt-3">
               <div className="border border-sacred-purple rounded-lg p-3">
-                <h4 className="text-[11px] font-bold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
+                <h4 className="text-data font-bold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
                   {t('section.bhinnashtakvarga')}
                 </h4>
                 <div className="overflow-x-auto">

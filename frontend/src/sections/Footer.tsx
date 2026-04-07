@@ -59,7 +59,7 @@ export default function Footer() {
               <div className="w-12 h-12 bg-sacred-gold-dark flex items-center justify-center">
                 <Stars className="w-7 h-7 text-cosmic-bg" />
               </div>
-              <span className="font-['Cinzel'] font-bold text-2xl text-cosmic-text">Astro Rattan</span>
+              <span className="font-cinzel font-bold text-2xl text-cosmic-text">Astro Rattan</span>
             </Link>
             <p className="text-cosmic-text/60 mb-6 max-w-sm">
               {t('footer.tagline')}
@@ -89,7 +89,7 @@ export default function Footer() {
           
           {Object.entries(footerLinks).map(([title, links]) => (
             <div key={title}>
-              <h4 className="font-['Cinzel'] font-semibold text-sacred-gold-dark mb-4 capitalize">{t(sectionTitleKeys[title] || title)}</h4>
+              <h4 className="font-cinzel font-semibold text-sacred-gold-dark mb-4 capitalize">{t(sectionTitleKeys[title] || title)}</h4>
               <ul className="space-y-2">
                 {links.map((link, i) => (
                   <li key={i}>

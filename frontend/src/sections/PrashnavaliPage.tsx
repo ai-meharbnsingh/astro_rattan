@@ -92,7 +92,7 @@ export default function PrashnavaliPage() {
                       className="aspect-square bg-cosmic-card hover:bg-sacred-gold/10 transition-colors flex items-center justify-center text-xs font-devanagari text-cosmic-text-muted hover:text-sacred-gold disabled:opacity-50"
                       aria-label={`Grid cell row ${r + 1}, column ${c + 1}`}
                     >
-                      <span className="text-[8px] sm:text-[10px]">{String.fromCharCode(0x0905 + ((r * 15 + c) % 52))}</span>
+                      <span className="text-micro sm:text-label">{String.fromCharCode(0x0905 + ((r * 15 + c) % 52))}</span>
                     </button>
                   ))
                 )}

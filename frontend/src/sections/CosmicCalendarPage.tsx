@@ -162,19 +162,19 @@ function TodaySection({ snapshot }: { snapshot: TodaySnapshot | null }) {
       {/* Panchang row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
         <div className="bg-cosmic-bg/50 rounded-xl p-3 border border-sacred-gold/10">
-          <p className="text-[10px] uppercase tracking-wider text-cosmic-text/40 mb-1">Tithi</p>
+          <p className="text-label uppercase tracking-wider text-cosmic-text/40 mb-1">Tithi</p>
           <p className="text-sm font-medium text-cosmic-text">{p.tithi.paksha} {p.tithi.name}</p>
         </div>
         <div className="bg-cosmic-bg/50 rounded-xl p-3 border border-sacred-gold/10">
-          <p className="text-[10px] uppercase tracking-wider text-cosmic-text/40 mb-1">Nakshatra</p>
+          <p className="text-label uppercase tracking-wider text-cosmic-text/40 mb-1">Nakshatra</p>
           <p className="text-sm font-medium text-cosmic-text">{p.nakshatra.name} (Pada {p.nakshatra.pada})</p>
         </div>
         <div className="bg-cosmic-bg/50 rounded-xl p-3 border border-sacred-gold/10">
-          <p className="text-[10px] uppercase tracking-wider text-cosmic-text/40 mb-1">Sunrise</p>
+          <p className="text-label uppercase tracking-wider text-cosmic-text/40 mb-1">Sunrise</p>
           <p className="text-sm font-medium text-cosmic-text">{p.sunrise}</p>
         </div>
         <div className="bg-cosmic-bg/50 rounded-xl p-3 border border-sacred-gold/10">
-          <p className="text-[10px] uppercase tracking-wider text-cosmic-text/40 mb-1">Sunset</p>
+          <p className="text-label uppercase tracking-wider text-cosmic-text/40 mb-1">Sunset</p>
           <p className="text-sm font-medium text-cosmic-text">{p.sunset}</p>
         </div>
       </div>
@@ -183,17 +183,17 @@ function TodaySection({ snapshot }: { snapshot: TodaySnapshot | null }) {
       <div className="grid grid-cols-3 gap-3 mb-4">
         <div className="bg-cosmic-bg/50 rounded-xl p-3 border border-sacred-gold/10 text-center">
           <Hash className="w-4 h-4 mx-auto text-sacred-gold mb-1" />
-          <p className="text-[10px] uppercase tracking-wider text-cosmic-text/40">Lucky Number</p>
+          <p className="text-label uppercase tracking-wider text-cosmic-text/40">Lucky Number</p>
           <p className="text-lg font-sacred font-bold text-sacred-gold">{snapshot.lucky.number}</p>
         </div>
         <div className="bg-cosmic-bg/50 rounded-xl p-3 border border-sacred-gold/10 text-center">
           <Palette className="w-4 h-4 mx-auto text-sacred-gold mb-1" />
-          <p className="text-[10px] uppercase tracking-wider text-cosmic-text/40">Lucky Color</p>
+          <p className="text-label uppercase tracking-wider text-cosmic-text/40">Lucky Color</p>
           <p className="text-sm font-medium text-cosmic-text">{snapshot.lucky.color}</p>
         </div>
         <div className="bg-cosmic-bg/50 rounded-xl p-3 border border-sacred-gold/10 text-center">
           <Compass className="w-4 h-4 mx-auto text-sacred-gold mb-1" />
-          <p className="text-[10px] uppercase tracking-wider text-cosmic-text/40">Lucky Direction</p>
+          <p className="text-label uppercase tracking-wider text-cosmic-text/40">Lucky Direction</p>
           <p className="text-sm font-medium text-cosmic-text">{snapshot.lucky.direction}</p>
         </div>
       </div>
@@ -217,8 +217,8 @@ function TodaySection({ snapshot }: { snapshot: TodaySnapshot | null }) {
           {Object.entries(snapshot.planetary_positions).map(([name, pos]) => (
             <div key={name} className="bg-cosmic-bg/50 rounded-lg p-2 border border-sacred-gold/10 text-center">
               <p className={`text-xs font-medium ${PLANET_COLORS[name] || 'text-cosmic-text'}`}>{name}</p>
-              <p className="text-[10px] text-cosmic-text/60">{pos.sign}</p>
-              <p className="text-[10px] text-cosmic-text/40">{pos.degree.toFixed(1)}°</p>
+              <p className="text-label text-cosmic-text/60">{pos.sign}</p>
+              <p className="text-label text-cosmic-text/40">{pos.degree.toFixed(1)}°</p>
             </div>
           ))}
         </div>
@@ -282,27 +282,27 @@ function DayDetailPanel({ day, onClose }: { day: CalendarDay; onClose: () => voi
         <p className="text-xs uppercase tracking-wider text-cosmic-text/40 mb-2">Panchang</p>
         <div className="grid grid-cols-2 gap-2">
           <div className="bg-cosmic-bg/50 rounded-lg p-2 border border-sacred-gold/10">
-            <p className="text-[10px] text-cosmic-text/40">Tithi</p>
+            <p className="text-label text-cosmic-text/40">Tithi</p>
             <p className="text-xs font-medium text-cosmic-text">{day.panchang.tithi.paksha} {day.panchang.tithi.name}</p>
           </div>
           <div className="bg-cosmic-bg/50 rounded-lg p-2 border border-sacred-gold/10">
-            <p className="text-[10px] text-cosmic-text/40">Nakshatra</p>
+            <p className="text-label text-cosmic-text/40">Nakshatra</p>
             <p className="text-xs font-medium text-cosmic-text">{day.panchang.nakshatra.name}</p>
           </div>
           <div className="bg-cosmic-bg/50 rounded-lg p-2 border border-sacred-gold/10">
-            <p className="text-[10px] text-cosmic-text/40">Yoga</p>
+            <p className="text-label text-cosmic-text/40">Yoga</p>
             <p className="text-xs font-medium text-cosmic-text">{day.panchang.yoga.name}</p>
           </div>
           <div className="bg-cosmic-bg/50 rounded-lg p-2 border border-sacred-gold/10">
-            <p className="text-[10px] text-cosmic-text/40">Karana</p>
+            <p className="text-label text-cosmic-text/40">Karana</p>
             <p className="text-xs font-medium text-cosmic-text">{day.panchang.karana.name}</p>
           </div>
           <div className="bg-cosmic-bg/50 rounded-lg p-2 border border-sacred-gold/10">
-            <p className="text-[10px] text-cosmic-text/40">Sunrise</p>
+            <p className="text-label text-cosmic-text/40">Sunrise</p>
             <p className="text-xs font-medium text-cosmic-text">{day.panchang.sunrise}</p>
           </div>
           <div className="bg-cosmic-bg/50 rounded-lg p-2 border border-sacred-gold/10">
-            <p className="text-[10px] text-cosmic-text/40">Sunset</p>
+            <p className="text-label text-cosmic-text/40">Sunset</p>
             <p className="text-xs font-medium text-cosmic-text">{day.panchang.sunset}</p>
           </div>
         </div>
@@ -318,7 +318,7 @@ function DayDetailPanel({ day, onClose }: { day: CalendarDay; onClose: () => voi
                 <div className="flex items-center gap-2">
                   <Clock className="w-3.5 h-3.5 text-green-400" />
                   <span className="text-xs font-medium text-green-400">{w.name}</span>
-                  <span className="text-[10px] text-green-400/60">({w.quality})</span>
+                  <span className="text-label text-green-400/60">({w.quality})</span>
                 </div>
                 <span className="text-xs text-cosmic-text/60">{w.start} - {w.end}</span>
               </div>
@@ -380,7 +380,7 @@ function TransitsTimeline({ transits }: { transits: Transit[] }) {
             <div className="flex-1 pb-3">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-xs text-cosmic-text/40">{t.date}</span>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full ${
+                <span className={`text-label px-2 py-0.5 rounded-full ${
                   t.nature === 'favorable'
                     ? 'bg-green-500/15 text-green-400'
                     : 'bg-red-500/15 text-red-400'
@@ -568,26 +568,26 @@ export default function CosmicCalendarPage() {
               <div className="flex flex-wrap gap-3 mb-4">
                 <div className="flex items-center gap-1.5">
                   <div className="w-2.5 h-2.5 rounded-full bg-sacred-gold" />
-                  <span className="text-[10px] text-cosmic-text/50">Festival</span>
+                  <span className="text-label text-cosmic-text/50">Festival</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
-                  <span className="text-[10px] text-cosmic-text/50">Auspicious</span>
+                  <span className="text-label text-cosmic-text/50">Auspicious</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
-                  <span className="text-[10px] text-cosmic-text/50">Inauspicious</span>
+                  <span className="text-label text-cosmic-text/50">Inauspicious</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-2.5 h-2.5 rounded-full bg-cosmic-text/30" />
-                  <span className="text-[10px] text-cosmic-text/50">Neutral</span>
+                  <span className="text-label text-cosmic-text/50">Neutral</span>
                 </div>
               </div>
 
               {/* Weekday headers */}
               <div className="grid grid-cols-7 gap-1 mb-1">
                 {WEEKDAYS.map((d) => (
-                  <div key={d} className="text-center text-[10px] uppercase tracking-wider text-cosmic-text/40 py-1 font-medium">
+                  <div key={d} className="text-center text-label uppercase tracking-wider text-cosmic-text/40 py-1 font-medium">
                     {d}
                   </div>
                 ))}
@@ -628,7 +628,7 @@ export default function CosmicCalendarPage() {
                             <Sparkles className="w-2.5 h-2.5 text-sacred-gold" />
                           )}
                         </div>
-                        <p className="text-[8px] sm:text-[9px] text-cosmic-text/40 truncate w-full text-center mt-0.5 hidden sm:block">
+                        <p className="text-micro sm:text-label text-cosmic-text/40 truncate w-full text-center mt-0.5 hidden sm:block">
                           {day.panchang.tithi.name}
                         </p>
                       </button>

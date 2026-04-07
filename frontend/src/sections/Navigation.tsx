@@ -73,7 +73,7 @@ export default function Navigation() {
                 <Link
                   key={link.key}
                   to={link.href}
-                  className="text-sm text-cosmic-text/70 hover:text-sacred-gold-dark transition-colors font-cinzel tracking-wide uppercase text-[13px]"
+                  className="text-sm text-cosmic-text/70 hover:text-sacred-gold-dark transition-colors font-cinzel tracking-wide uppercase text-sm"
                 >
                   {t(link.key)}
                 </Link>
@@ -83,7 +83,7 @@ export default function Navigation() {
               <div ref={moreRef} className="relative">
                 <button
                   onClick={() => setIsMoreOpen(!isMoreOpen)}
-                  className="text-sm text-cosmic-text/70 hover:text-sacred-gold-dark transition-colors font-cinzel tracking-wide uppercase text-[13px] flex items-center gap-1"
+                  className="text-sm text-cosmic-text/70 hover:text-sacred-gold-dark transition-colors font-cinzel tracking-wide uppercase text-sm flex items-center gap-1"
                 >
                   {t('common.viewAll')}
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isMoreOpen ? 'rotate-180' : ''}`} />
@@ -122,7 +122,7 @@ export default function Navigation() {
               {isAuthenticated && (
                 <Link to="/cart" className="p-2.5 text-cosmic-text/70 hover:text-sacred-gold-dark transition-colors relative">
                   <ShoppingCart className="w-5 h-5" />
-                  <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-sacred-gold-dark rounded-full text-[10px] text-cosmic-bg flex items-center justify-center font-bold">0</span>
+                  <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-sacred-gold-dark rounded-full text-label text-cosmic-bg flex items-center justify-center font-bold">0</span>
                 </Link>
               )}
 

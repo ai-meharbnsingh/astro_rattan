@@ -285,7 +285,7 @@ export default function MessagesPage() {
                         )}
                         <p className="whitespace-pre-line">{msg.content}</p>
                       </div>
-                      <p className={`text-[10px] text-cosmic-text-muted mt-1 px-1 ${own ? 'text-right' : 'text-left'}`}>
+                      <p className={`text-label text-cosmic-text-muted mt-1 px-1 ${own ? 'text-right' : 'text-left'}`}>
                         {formatTimestamp(msg.created_at)}
                       </p>
                     </div>
@@ -374,7 +374,7 @@ export default function MessagesPage() {
                       {convo.astrologer_name}
                     </h4>
                     {convo.last_message_at && (
-                      <span className="text-[11px] text-cosmic-text-muted shrink-0">
+                      <span className="text-data text-cosmic-text-muted shrink-0">
                         {formatTimestamp(convo.last_message_at)}
                       </span>
                     )}

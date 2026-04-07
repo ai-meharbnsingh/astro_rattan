@@ -101,7 +101,7 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
               <span className="text-2xl">☉</span>
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white" style={{ fontFamily: 'Cinzel, serif' }}>
+              <h2 className="text-xl font-bold text-white" style={{ fontFamily: 'var(--font-sacred, Cormorant Garamond, serif)' }}>
                 Vedic Birth Chart
               </h2>
               <p className="text-sm text-[#d4af37]">Complete Analysis Summary</p>
@@ -183,7 +183,7 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
             <div className="lg:col-span-2 space-y-4">
               {/* Chart Container */}
               <div className="bg-[#111] rounded-xl border border-[#d4af37]/20 p-4">
-                <h3 className="text-lg font-semibold text-[#d4af37] mb-3 text-center" style={{ fontFamily: 'Cinzel, serif' }}>
+                <h3 className="text-lg font-semibold text-[#d4af37] mb-3 text-center" style={{ fontFamily: 'var(--font-sacred, Cormorant Garamond, serif)' }}>
                   Rashi Chart (D1)
                 </h3>
                 
@@ -306,7 +306,7 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
             <div className="space-y-4">
               {/* Planet Positions */}
               <div className="bg-[#111] rounded-xl border border-[#d4af37]/20 p-3">
-                <h3 className="text-sm font-semibold text-[#d4af37] mb-2" style={{ fontFamily: 'Cinzel, serif' }}>
+                <h3 className="text-sm font-semibold text-[#d4af37] mb-2" style={{ fontFamily: 'var(--font-sacred, Cormorant Garamond, serif)' }}>
                   Planetary Positions
                 </h3>
                 <div className="space-y-1 max-h-48 overflow-y-auto">
@@ -333,7 +333,7 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
 
               {/* Current Dasha */}
               <div className="bg-[#111] rounded-xl border border-[#d4af37]/20 p-3">
-                <h3 className="text-sm font-semibold text-[#d4af37] mb-2" style={{ fontFamily: 'Cinzel, serif' }}>
+                <h3 className="text-sm font-semibold text-[#d4af37] mb-2" style={{ fontFamily: 'var(--font-sacred, Cormorant Garamond, serif)' }}>
                   Vimshottari Dasha
                 </h3>
                 <div className="space-y-2">
@@ -375,7 +375,7 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
               {/* PRESENT Yogas Only - Not showing absent ones */}
               {presentYogas.length > 0 && (
                 <div className="bg-[#111] rounded-xl border border-green-500/20 p-3 mb-4">
-                  <h3 className="text-sm font-semibold text-green-400 mb-2 flex items-center gap-2" style={{ fontFamily: 'Cinzel, serif' }}>
+                  <h3 className="text-sm font-semibold text-green-400 mb-2 flex items-center gap-2" style={{ fontFamily: 'var(--font-sacred, Cormorant Garamond, serif)' }}>
                     <span>✦</span> Present Yogas ({presentYogas.length})
                   </h3>
                   <div className="space-y-2">
@@ -383,7 +383,7 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
                       <div key={idx} className="p-2 rounded bg-green-500/5 border border-green-500/10 text-xs">
                         <div className="flex items-center justify-between mb-1">
                           <span className="font-semibold text-white">{yoga.name}</span>
-                          <span className={`px-2 py-0.5 rounded-full text-[10px] ${
+                          <span className={`px-2 py-0.5 rounded-full text-label ${
                             yoga.strength === 'Strong' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
                           }`}>
                             {yoga.strength}
@@ -399,7 +399,7 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
               {/* PRESENT Doshas Only - Not showing absent ones */}
               {presentDoshas.length > 0 && (
                 <div className="bg-[#111] rounded-xl border border-red-500/20 p-3">
-                  <h3 className="text-sm font-semibold text-red-400 mb-2 flex items-center gap-2" style={{ fontFamily: 'Cinzel, serif' }}>
+                  <h3 className="text-sm font-semibold text-red-400 mb-2 flex items-center gap-2" style={{ fontFamily: 'var(--font-sacred, Cormorant Garamond, serif)' }}>
                     <span>⚠</span> Present Doshas ({presentDoshas.length})
                   </h3>
                   <div className="space-y-2">
@@ -407,14 +407,14 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
                       <div key={idx} className="p-2 rounded bg-red-500/5 border border-red-500/10 text-xs">
                         <div className="flex items-center justify-between mb-1">
                           <span className="font-semibold text-white">{dosha.name}</span>
-                          <span className={`px-2 py-0.5 rounded-full text-[10px] ${
+                          <span className={`px-2 py-0.5 rounded-full text-label ${
                             dosha.severity === 'High' ? 'bg-red-500/20 text-red-400' : 'bg-yellow-500/20 text-yellow-400'
                           }`}>
                             {dosha.severity}
                           </span>
                         </div>
                         <p className="text-red-400/70 mb-1">{dosha.planet} • {dosha.effect}</p>
-                        <p className="text-[10px] text-white/50">💡 Remedy: {dosha.remedy}</p>
+                        <p className="text-label text-white/50">💡 Remedy: {dosha.remedy}</p>
                       </div>
                     ))}
                   </div>

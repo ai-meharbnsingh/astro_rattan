@@ -408,7 +408,7 @@ export default function Panchang() {
                       <div key={day.date} className={`p-2 rounded-xl border text-center ${bgColor} transition-all hover:scale-105`}>
                         <p className={`text-sm font-medium ${textColor}`}>{dayNum}</p>
                         {day.has_muhurat && day.windows_count && (
-                          <p className="text-[10px] text-cosmic-text-secondary mt-0.5">{day.windows_count} slot{day.windows_count > 1 ? 's' : ''}</p>
+                          <p className="text-label text-cosmic-text-secondary mt-0.5">{day.windows_count} slot{day.windows_count > 1 ? 's' : ''}</p>
                         )}
                         {day.has_muhurat && (
                           <div className="flex justify-center mt-1">

@@ -124,7 +124,7 @@ function AudioPlayer({ isPlaying, onToggle, progress, currentTime, duration, onS
           />
         </div>
       </div>
-      <span className="text-[10px] text-cosmic-text-secondary tabular-nums flex-shrink-0">
+      <span className="text-label text-cosmic-text-secondary tabular-nums flex-shrink-0">
         {formatTime(currentTime)}/{formatTime(duration)}
       </span>
     </div>
@@ -430,7 +430,7 @@ export default function SpiritualLibrary() {
                                   {/* Sanskrit */}
                                   {v.sanskrit && (
                                     <div className="mb-5 p-5 bg-sacred-purple rounded-lg border-l-4 border-sacred-gold">
-                                      <p className="text-xl text-sacred-gold-dark leading-relaxed font-medium" style={{ fontFamily: 'serif' }}>
+                                      <p className="text-xl text-sacred-gold-dark leading-relaxed font-medium" style={{ fontFamily: 'var(--font-sacred, Cormorant Garamond, Georgia, serif)' }}>
                                         {v.sanskrit}
                                       </p>
                                     </div>

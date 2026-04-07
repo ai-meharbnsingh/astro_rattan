@@ -92,9 +92,17 @@ module.exports = {
           blue: '#2563eb',
         },
       },
+      fontSize: {
+        // Standardized typography scale — replace ALL arbitrary text-[Npx]
+        'micro': ['0.5rem', { lineHeight: '1.2' }],     // 8px — legends, fine print
+        'data': ['0.6875rem', { lineHeight: '1.4' }],    // 11px — dense data tables
+        'label': ['0.625rem', { lineHeight: '1.3' }],    // 10px — small labels
+      },
       fontFamily: {
-        display: ['Cormorant Garamond', 'IM Fell English', 'Georgia', 'serif'],
-        body: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        // Primary: clean geometric sans for UI and data
+        display: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+        body: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        // Vedic/scripture: regal serif for headings and sacred text
         sacred: ['Cormorant Garamond', 'IM Fell English', 'Georgia', 'serif'],
         decorative: ['IM Fell English', 'Cormorant Garamond', 'serif'],
         cinzel: ['Cormorant Garamond', 'serif'],

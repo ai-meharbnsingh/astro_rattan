@@ -139,7 +139,7 @@ export default function Kundli3D() {
               </div>
 
               <h1 className="text-5xl lg:text-7xl font-bold mb-6" style={{ 
-                fontFamily: 'Cinzel, serif',
+                fontFamily: 'var(--font-sacred, Cormorant Garamond, serif)',
                 animation: 'slideUp 0.8s ease-out 0.3s both'
               }}>
                 <span className="text-cosmic-text">Your</span>
@@ -172,7 +172,7 @@ export default function Kundli3D() {
             <div style={{ animation: 'slideInRight 0.8s ease-out 0.3s both' }}>
               <TiltCard>
                 <div className="bg-cosmic-bg/40 backdrop-blur-xl border border-sacred-gold/30 rounded-3xl p-8 shadow-2xl shadow-sacred-gold-dark/10">
-                  <h2 className="text-2xl font-bold text-cosmic-text mb-6 text-center" style={{ fontFamily: 'Cinzel, serif' }}>
+                  <h2 className="text-2xl font-bold text-cosmic-text mb-6 text-center" style={{ fontFamily: 'var(--font-sacred, Cormorant Garamond, serif)' }}>
                     Generate Your Kundli
                   </h2>
 

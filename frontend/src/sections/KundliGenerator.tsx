@@ -1223,7 +1223,7 @@ export default function KundliGenerator() {
                                           {ad.pratyantar?.length > 0 && <ChevronDown className={`w-2.5 h-2.5 transition-transform ${expandedAntardasha === `${md.planet}-${ad.planet}` ? 'rotate-180' : ''}`} style={{ color: 'var(--ink-light)' }} />}
                                           <span style={{ color: ad.is_current ? 'var(--aged-gold)' : 'var(--ink)' }}>{translatePlanet(ad.planet, language)} AD {ad.is_current ? '*' : ''}</span>
                                         </span>
-                                        <span style={{ color: 'var(--ink-light)', fontSize: '10px' }}>{ad.start?.slice(0,10)} — {ad.end?.slice(0,10)}</span>
+                                        <span style={{ color: 'var(--ink-light)', fontSize: 'var(--text-label, 0.625rem)' }}>{ad.start?.slice(0,10)} — {ad.end?.slice(0,10)}</span>
                                       </button>
 
                                       {expandedAntardasha === `${md.planet}-${ad.planet}` && (ad.pratyantar || []).length > 0 && (
@@ -1234,7 +1234,7 @@ export default function KundliGenerator() {
                                               <span style={{ color: pt.is_current ? 'var(--aged-gold)' : 'var(--ink-light)' }}>
                                                 {translatePlanet(pt.planet, language)} PD {pt.is_current ? '*' : ''}
                                               </span>
-                                              <span style={{ color: 'var(--ink-light)', fontSize: '10px' }}>{pt.start?.slice(0,10)} — {pt.end?.slice(0,10)}</span>
+                                              <span style={{ color: 'var(--ink-light)', fontSize: 'var(--text-label, 0.625rem)' }}>{pt.start?.slice(0,10)} — {pt.end?.slice(0,10)}</span>
                                             </div>
                                           ))}
                                         </div>
@@ -2129,7 +2129,7 @@ export default function KundliGenerator() {
                                   : 'text-[#991b1b]';
                               return (
                                 <div key={sign} className={`rounded-md border p-1.5 text-center ${cellStyle}`}>
-                                  <span className="block text-[9px] text-sacred-text-secondary leading-tight">{signAbbr[i]}</span>
+                                  <span className="block text-label text-sacred-text-secondary leading-tight">{signAbbr[i]}</span>
                                   <span className={`block text-base font-bold leading-tight ${numColor}`}>{val}</span>
                                 </div>
                               );
@@ -3178,7 +3178,7 @@ export default function KundliGenerator() {
                                   <span className="w-12 text-right text-sacred-brown font-semibold text-xs">{v.percentage}%</span>
                                 )}
                                 {v.strength && (
-                                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${strengthColors[v.strength] || 'text-gray-500 bg-gray-500/10'}`}>{v.strength}</span>
+                                  <span className={`px-1.5 py-0.5 rounded text-label font-semibold ${strengthColors[v.strength] || 'text-gray-500 bg-gray-500/10'}`}>{v.strength}</span>
                                 )}
                               </div>
                               {v.dignities && typeof v.dignities === 'object' && (
@@ -3188,7 +3188,7 @@ export default function KundliGenerator() {
                                     .map(([dignity, count]) => {
                                       const info = dignityLabels[dignity] || { label: dignity.slice(0, 3), color: 'text-gray-500 bg-gray-500/10' };
                                       return (
-                                        <span key={dignity} className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${info.color}`}>
+                                        <span key={dignity} className={`px-1.5 py-0.5 rounded text-label font-medium ${info.color}`}>
                                           {info.label}:{count as number}
                                         </span>
                                       );
@@ -3225,11 +3225,11 @@ export default function KundliGenerator() {
                         if (summary && typeof summary === 'object' && !Array.isArray(summary)) {
                           const strengthBadge = (s: number) => {
                             const color = s >= 1.0 ? 'bg-sacred-gold/30 text-sacred-gold-dark' : s >= 0.75 ? 'bg-blue-500/20 text-blue-700' : s >= 0.5 ? 'bg-yellow-500/20 text-yellow-700' : 'bg-gray-500/15 text-gray-600';
-                            return <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${color}`}>{s}</span>;
+                            return <span className={`px-1.5 py-0.5 rounded text-label font-semibold ${color}`}>{s}</span>;
                           };
                           const typeBadge = (t_val: string) => {
                             const color = t_val === 'full' ? 'bg-sacred-gold/20 text-sacred-gold-dark' : 'bg-purple-500/15 text-purple-700';
-                            return <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${color}`}>{t_val}</span>;
+                            return <span className={`px-1.5 py-0.5 rounded text-label font-medium ${color}`}>{t_val}</span>;
                           };
                           return Object.entries(summary).map(([planet, data]: [string, any]) => (
                             <div key={planet} className="bg-white/5 rounded-lg p-3 text-xs">
@@ -3286,10 +3286,10 @@ export default function KundliGenerator() {
                                 </span>
                                 <span className="flex items-center gap-1.5">
                                   {pa.strength != null && (
-                                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${pa.strength >= 1.0 ? 'bg-sacred-gold/30 text-sacred-gold-dark' : pa.strength >= 0.75 ? 'bg-blue-500/20 text-blue-700' : pa.strength >= 0.5 ? 'bg-yellow-500/20 text-yellow-700' : 'bg-gray-500/15 text-gray-600'}`}>{pa.strength}</span>
+                                    <span className={`px-1.5 py-0.5 rounded text-label font-semibold ${pa.strength >= 1.0 ? 'bg-sacred-gold/30 text-sacred-gold-dark' : pa.strength >= 0.75 ? 'bg-blue-500/20 text-blue-700' : pa.strength >= 0.5 ? 'bg-yellow-500/20 text-yellow-700' : 'bg-gray-500/15 text-gray-600'}`}>{pa.strength}</span>
                                   )}
                                   {pa.type && (
-                                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${pa.type === 'full' ? 'bg-sacred-gold/20 text-sacred-gold-dark' : 'bg-purple-500/15 text-purple-700'}`}>{pa.type}</span>
+                                    <span className={`px-1.5 py-0.5 rounded text-label font-medium ${pa.type === 'full' ? 'bg-sacred-gold/20 text-sacred-gold-dark' : 'bg-purple-500/15 text-purple-700'}`}>{pa.type}</span>
                                   )}
                                 </span>
                               </div>
@@ -3331,7 +3331,7 @@ export default function KundliGenerator() {
                           const renderStrength = (strengths: number[] | null) => {
                             if (!strengths || strengths.length === 0) return '-';
                             return strengths.map((s, i) => (
-                              <span key={i} className={`inline-block px-1 py-0.5 rounded text-[10px] font-semibold mr-0.5 ${s >= 1.0 ? 'bg-sacred-gold/30 text-sacred-gold-dark' : s >= 0.75 ? 'bg-blue-500/20 text-blue-700' : s >= 0.5 ? 'bg-yellow-500/20 text-yellow-700' : 'bg-gray-500/15 text-gray-600'}`}>{s}</span>
+                              <span key={i} className={`inline-block px-1 py-0.5 rounded text-label font-semibold mr-0.5 ${s >= 1.0 ? 'bg-sacred-gold/30 text-sacred-gold-dark' : s >= 0.75 ? 'bg-blue-500/20 text-blue-700' : s >= 0.5 ? 'bg-yellow-500/20 text-yellow-700' : 'bg-gray-500/15 text-gray-600'}`}>{s}</span>
                             ));
                           };
                           if (Array.isArray(bhavas)) {

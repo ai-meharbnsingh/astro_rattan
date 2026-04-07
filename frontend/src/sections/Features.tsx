@@ -38,7 +38,7 @@ export default function Features() {
       
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="features-title text-center mb-16">
-          <p className="text-[#ffaa33] text-sm tracking-[4px] uppercase mb-4 font-['Cinzel']">{t('features.celestialHouses')}</p>
+          <p className="text-[#ffaa33] text-sm tracking-[4px] uppercase mb-4 font-cinzel">{t('features.celestialHouses')}</p>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-['Cinzel_Decorative'] text-cosmic-text mb-4">
             {t('features.cosmicServices')}
           </h2>
@@ -57,7 +57,7 @@ export default function Features() {
                   <div className="w-16 h-16 flex items-center justify-center mb-4 mx-auto bg-sacred-gold-dark/10 border border-sacred-gold/20 group-hover:scale-110 transition-transform">
                     <Icon className="w-8 h-8 text-sacred-gold-dark" />
                   </div>
-                  <h3 className="text-xl font-['Cinzel'] font-semibold text-cosmic-text mb-2 uppercase tracking-wide">
+                  <h3 className="text-xl font-cinzel font-semibold text-cosmic-text mb-2 uppercase tracking-wide">
                     {t(feature.titleKey)}
                   </h3>
                   <p className="text-sm text-cosmic-text/60">{t(feature.descKey)}</p>
@@ -70,7 +70,7 @@ export default function Features() {
         <div className="features-title mt-16 text-center">
           <Button 
             onClick={() => navigate('/ai-chat')} 
-            className="bg-transparent border border-sacred-gold text-sacred-gold-dark hover:bg-sacred-gold-dark hover:text-cosmic-bg transition-all px-8 py-6 text-base font-['Cinzel'] tracking-wider"
+            className="bg-transparent border border-sacred-gold text-sacred-gold-dark hover:bg-sacred-gold-dark hover:text-cosmic-bg transition-all px-8 py-6 text-base font-cinzel tracking-wider"
           >
             <Brain className="w-5 h-5 mr-2" />
             {t('features.chatWithAI')}

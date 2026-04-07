@@ -649,7 +649,7 @@ function PlanetBadge({
         fill={isHovered ? 'var(--parchment)' : color}
         fontSize={13}
         fontWeight="bold"
-        fontFamily="serif"
+        fontFamily="var(--font-sacred, Cormorant Garamond, Georgia, serif)"
         style={{ pointerEvents: 'none', transition: 'fill 0.2s ease' }}
       >
         {label}
@@ -813,7 +813,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           textAnchor="middle"
           fill="var(--aged-gold-dim)"
           fontSize={13}
-          fontFamily="serif"
+          fontFamily="var(--font-sacred, Cormorant Garamond, Georgia, serif)"
           opacity={0.6}
         >
           Rasi Chart
@@ -824,7 +824,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           textAnchor="middle"
           fill="var(--aged-gold-dim)"
           fontSize={9}
-          fontFamily="serif"
+          fontFamily="var(--font-sacred, Cormorant Garamond, Georgia, serif)"
           opacity={0.4}
         >
           South Indian
@@ -1079,7 +1079,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                 fill={JHORA_LINE}
                 fontSize={isTrapezoid ? 20 : 16}
                 fontWeight="bold"
-                fontFamily="serif"
+                fontFamily="var(--font-sacred, Cormorant Garamond, Georgia, serif)"
                 opacity={0.85}
               >
                 {rashiNum}
@@ -1119,7 +1119,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                       fill={getPlanetColor(p.planet)}
                       fontSize={fontSize}
                       fontWeight="bold"
-                      fontFamily="serif"
+                      fontFamily="var(--font-sacred, Cormorant Garamond, Georgia, serif)"
                       style={{ cursor: 'pointer' }}
                       onClick={(e) => { e.stopPropagation(); onPlanetClick?.(p); }}
                     >
@@ -1143,7 +1143,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           onClick={() => setChartStyle('north')}
           className="px-4 py-1.5 text-xs font-semibold rounded-l-md border transition-all duration-200"
           style={{
-            fontFamily: 'serif',
+            fontFamily: 'var(--font-sacred, Cormorant Garamond, Georgia, serif)',
             background: chartStyle === 'north' ? 'var(--aged-gold-dim)' : 'var(--sacred-purple)',
             color: chartStyle === 'north' ? 'var(--parchment)' : 'var(--ink-light)',
             borderColor: 'var(--aged-gold-dim)',
@@ -1155,7 +1155,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           onClick={() => setChartStyle('south')}
           className="px-4 py-1.5 text-xs font-semibold rounded-r-md border transition-all duration-200"
           style={{
-            fontFamily: 'serif',
+            fontFamily: 'var(--font-sacred, Cormorant Garamond, Georgia, serif)',
             background: chartStyle === 'south' ? 'var(--aged-gold-dim)' : 'var(--sacred-purple)',
             color: chartStyle === 'south' ? 'var(--parchment)' : 'var(--ink-light)',
             borderColor: 'var(--aged-gold-dim)',
@@ -1200,7 +1200,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
 // Legend component for chart status symbols
 export function ChartLegend() {
   return (
-    <div className="flex flex-wrap gap-x-4 gap-y-1 justify-center text-xs mt-2 px-2" style={{ color: 'var(--aged-gold)', fontFamily: 'serif' }}>
+    <div className="flex flex-wrap gap-x-4 gap-y-1 justify-center text-xs mt-2 px-2" style={{ color: 'var(--aged-gold)', fontFamily: 'var(--font-sacred, Cormorant Garamond, Georgia, serif)' }}>
       <span><strong>*</strong> Retrograde</span>
       <span><strong>^</strong> Combust</span>
       <span><strong>{'\u25A1'}</strong> Vargottama</span>
