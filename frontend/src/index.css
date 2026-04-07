@@ -3,97 +3,97 @@
 @tailwind utilities;
 
 /* ========================================
-   IO-GITA DARK THEME — Rich & Mystical
-   Ancient manuscript · Modern computation
+   DIGITAL PATRA & PRISMATIC LIGHT
+   Alabaster canvas · Vedic typography
    ======================================== */
 
 @layer base {
   :root {
-    /* Dark Theme Base */
-    --parchment: #1a1a2e;
-    --parchment-dark: #16162a;
-    --ink: #e8e0d4;
-    --ink-light: #b8b0a4;
+    /* Prismatic Light Base */
+    --parchment: #FAFAFA;
+    --parchment-dark: #F1F5F9;
+    --ink: #1e293b;
+    --ink-light: #64748b;
 
-    /* Aged Gold Accents */
-    --aged-gold: #D4A052;
-    --aged-gold-dim: #B8860B;
-    --aged-gold-light: #E8C078;
+    /* Saffron / Gold Accents */
+    --aged-gold: #FF9933;
+    --aged-gold-dim: #B45309;
+    --aged-gold-light: #FFD700;
 
-    /* Wax Red (buttons, seals) */
-    --wax-red: #C43E4E;
-    --wax-red-hover: #D45050;
-    --wax-red-deep: #A52A2A;
+    /* Action Red (buttons, alerts) */
+    --wax-red: #dc2626;
+    --wax-red-hover: #b91c1c;
+    --wax-red-deep: #991b1b;
 
-    /* Warm Browns */
-    --brown: #A08060;
-    --brown-light: rgba(160, 128, 96, 0.2);
-    --coffee: rgba(139, 69, 19, 0.15);
+    /* Warm Neutrals */
+    --brown: #78716c;
+    --brown-light: rgba(120, 113, 108, 0.1);
+    --coffee: rgba(120, 113, 108, 0.08);
 
     /* Text Colors */
-    --text-primary: #e8e0d4;
-    --text-secondary: #b8b0a4;
-    --text-muted: #b8b0a4;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
 
-    /* Legacy compatibility */
-    --cosmic-bg: #1a1a2e;
-    --cosmic-bg-light: #22223a;
-    --cosmic-surface: #22223a;
-    --cosmic-card: rgba(34, 34, 58, 0.8);
-    --cosmic-card-hover: rgba(40, 40, 68, 0.9);
-    --cosmic-border: rgba(184, 134, 11, 0.25);
-    --cosmic-border-hover: rgba(212, 160, 82, 0.5);
-    --cosmic-text: #e8e0d4;
-    --cosmic-text-secondary: #b8b0a4;
-    --cosmic-text-muted: #b8b0a4;
+    /* Semantic surface tokens */
+    --cosmic-bg: #FAFAFA;
+    --cosmic-bg-light: #FFFFFF;
+    --cosmic-surface: #FFFFFF;
+    --cosmic-card: rgba(255, 255, 255, 0.95);
+    --cosmic-card-hover: rgba(255, 255, 255, 1);
+    --cosmic-border: rgba(226, 232, 240, 1);
+    --cosmic-border-hover: rgba(203, 213, 225, 1);
+    --cosmic-text: #1e293b;
+    --cosmic-text-secondary: #64748b;
+    --cosmic-text-muted: #94a3b8;
 
-    --sacred-gold: #D4A052;
-    --sacred-gold-dark: #B8860B;
-    --sacred-gold-light: #E8C078;
-    --sacred-saffron: #D4A052;
-    --sacred-saffron-dark: #B8860B;
-    --sacred-saffron-light: #E8C078;
-    --sacred-purple: #2a2a4e;
-    --sacred-purple-light: #22223a;
-    --sacred-violet: #D4A052;
+    --sacred-gold: #FF9933;
+    --sacred-gold-dark: #B45309;
+    --sacred-gold-light: #FFD700;
+    --sacred-saffron: #FF9933;
+    --sacred-saffron-dark: #B45309;
+    --sacred-saffron-light: #FFD700;
+    --sacred-purple: #e2e8f0;
+    --sacred-purple-light: #f1f5f9;
+    --sacred-violet: #FF9933;
 
-    /* shadcn HSL tokens — dark theme */
-    --background: 240 27% 14%;
-    --foreground: 38 33% 90%;
-    --card: 240 25% 18%;
-    --card-foreground: 38 33% 90%;
-    --popover: 240 25% 16%;
-    --popover-foreground: 38 33% 90%;
-    --primary: 38 60% 55%;
-    --primary-foreground: 240 27% 14%;
-    --secondary: 240 20% 22%;
-    --secondary-foreground: 38 33% 90%;
-    --muted: 240 20% 22%;
-    --muted-foreground: 30 18% 60%;
-    --accent: 350 55% 45%;
-    --accent-foreground: 38 33% 93%;
-    --destructive: 0 84.2% 60.2%;
+    /* shadcn HSL tokens — Prismatic Light */
+    --background: 0 0% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 30 100% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 30 100% 60%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 38 40% 30% / 0.3;
-    --input: 38 40% 30% / 0.2;
-    --ring: 38 60% 55%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 30 100% 60%;
     --radius: 0.5rem;
 
-    --chart-1: 38 60% 55%;
-    --chart-2: 350 55% 45%;
-    --chart-3: 30 35% 55%;
-    --chart-4: 30 18% 60%;
-    --chart-5: 38 33% 90%;
-    --chart-6: 38 50% 45%;
+    --chart-1: 30 100% 60%;
+    --chart-2: 0 84% 60%;
+    --chart-3: 142 71% 45%;
+    --chart-4: 215 16% 47%;
+    --chart-5: 222 47% 11%;
+    --chart-6: 30 70% 45%;
 
-    --sidebar: 240 25% 16%;
-    --sidebar-foreground: 38 33% 90%;
-    --sidebar-primary: 38 60% 55%;
-    --sidebar-primary-foreground: 240 27% 14%;
-    --sidebar-accent: 240 20% 22%;
-    --sidebar-accent-foreground: 38 33% 90%;
-    --sidebar-border: 38 40% 30% / 0.3;
-    --sidebar-ring: 38 60% 55%;
+    --sidebar: 210 40% 96%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 30 100% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 40% 96%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 30 100% 60%;
   }
 }
 
@@ -104,8 +104,8 @@
     font-size: 18px;
   }
   body {
-    background: #1a1a2e;
-    color: #e8e0d4;
+    background: #FAFAFA;
+    color: #1e293b;
     font-feature-settings: "rlig" 1, "calt" 1;
     line-height: 1.6;
   }
@@ -124,8 +124,8 @@
 
   /* Selection color */
   ::selection {
-    background: rgba(184, 134, 11, 0.3);
-    color: #1a1a2e;
+    background: rgba(255, 153, 51, 0.2);
+    color: #1e293b;
   }
 }
 
@@ -136,13 +136,13 @@
 
 .heading-sacred {
   font-family: 'Cormorant Garamond', 'IM Fell English', Georgia, serif;
-  color: #e8e0d4;
+  color: #1e293b;
   font-weight: 300;
   letter-spacing: -0.02em;
 }
 
 .heading-gold {
-  color: #B8860B;
+  color: #B45309;
   text-shadow: none;
 }
 
@@ -152,23 +152,23 @@
                -0.3px -0.3px 0 rgba(26, 26, 46, 0.05);
 }
 
-/* Buttons — wax seal red primary, gold outline secondary */
+/* Buttons — Prismatic Light */
 .btn-sacred {
   background: transparent;
-  color: #D4A052;
+  color: var(--aged-gold);
   font-weight: 500;
-  border: 1px solid #D4A052;
+  border: 1px solid var(--aged-gold);
   transition: all 0.3s ease;
 }
 .btn-sacred:hover {
-  background: #D4A052;
-  color: #1a1a2e;
-  box-shadow: 0 4px 12px rgba(184, 134, 11, 0.2);
+  background: var(--aged-gold);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(255, 153, 51, 0.2);
 }
 
 .btn-saffron {
-  background: #C43E4E;
-  color: #e8e0d4;
+  background: var(--wax-red);
+  color: #ffffff;
   border: none;
   border-radius: 9999px;
   font-family: 'IM Fell English', serif;
@@ -176,68 +176,68 @@
   transition: all 0.3s ease;
 }
 .btn-saffron:hover {
-  background: #A52A2A;
+  background: var(--wax-red-hover);
   transform: scale(1.02);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .btn-maroon {
   background: transparent;
-  color: #e8e0d4;
-  border: 1px solid rgba(184, 134, 11, 0.3);
+  color: var(--ink);
+  border: 1px solid var(--cosmic-border);
   transition: all 0.3s ease;
 }
 .btn-maroon:hover {
-  background: rgba(184, 134, 11, 0.08);
-  border-color: #B8860B;
+  background: rgba(255, 153, 51, 0.06);
+  border-color: var(--aged-gold);
 }
 
-/* Cards — parchment with aged edges */
+/* Cards — elevated panels */
 .card-sacred {
-  background: rgba(34, 34, 58, 0.8);
-  border: 1px solid rgba(184, 134, 11, 0.25);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid var(--cosmic-border);
   backdrop-filter: blur(10px);
 }
 .card-sacred:hover {
-  background: rgba(40, 40, 68, 0.9);
-  border-color: rgba(212, 160, 82, 0.5);
-  box-shadow: inset 0 0 60px rgba(184, 134, 11, 0.05), 0 4px 20px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 1);
+  border-color: var(--cosmic-border-hover);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
 }
 
 .card-gold-border {
-  border: 1px solid rgba(184, 134, 11, 0.3);
-  background: rgba(34, 34, 58, 0.8);
+  border: 1px solid var(--cosmic-border);
+  background: rgba(255, 255, 255, 0.95);
 }
 
-/* Gradients — dark theme */
-.bg-sacred-gradient { background: linear-gradient(135deg, #1a1a2e 0%, #22223a 50%, #1a1a2e 100%); }
-.bg-gold-gradient { background: linear-gradient(135deg, #E8C078 0%, #D4A052 50%, #B8860B 100%); }
-.bg-saffron-gradient { background: linear-gradient(135deg, #E8C078 0%, #D4A052 100%); }
-.bg-maroon-gradient { background: linear-gradient(145deg, #D45050 0%, #A52A2A 100%); }
-.bg-divine-gradient { background: linear-gradient(180deg, #1a1a2e 0%, #22223a 50%, #1a1a2e 100%); }
+/* Gradients — Prismatic Light */
+.bg-sacred-gradient { background: linear-gradient(135deg, #FAFAFA 0%, #F8FAFC 50%, #FAFAFA 100%); }
+.bg-gold-gradient { background: linear-gradient(135deg, #FFD700 0%, #FF9933 50%, #B45309 100%); }
+.bg-saffron-gradient { background: linear-gradient(135deg, #FFD700 0%, #FF9933 100%); }
+.bg-maroon-gradient { background: linear-gradient(145deg, #dc2626 0%, #991b1b 100%); }
+.bg-divine-gradient { background: linear-gradient(180deg, #FAFAFA 0%, #F8FAFC 50%, #FAFAFA 100%); }
 
 /* Text */
 .text-gradient-gold {
-  color: #D4A052;
+  color: var(--aged-gold);
 }
 .text-gradient-saffron {
-  color: #D4A052;
+  color: var(--aged-gold);
 }
 .text-gradient-indigo {
-  color: #e8e0d4;
+  color: var(--ink);
 }
 
-.text-sacred-brown { color: #D4A052; }
-.text-sacred-gold { color: #D4A052; }
-.text-sacred-saffron { color: #D4A052; }
-.text-sacred-maroon { color: #C43E4E; }
+.text-sacred-brown { color: var(--aged-gold-dim); }
+.text-sacred-gold { color: var(--aged-gold); }
+.text-sacred-saffron { color: var(--aged-gold); }
+.text-sacred-maroon { color: var(--wax-red); }
 
 /* Backgrounds */
-.bg-sacred-cream { background-color: #22223a; }
-.bg-sacred-gold { background-color: #D4A052; }
-.bg-sacred-saffron { background-color: #D4A052; }
-.bg-sacred-brown { background-color: #2a2a4e; }
-.bg-sacred-maroon { background-color: #C43E4E; }
+.bg-sacred-cream { background-color: #F8FAFC; }
+.bg-sacred-gold { background-color: var(--aged-gold); }
+.bg-sacred-saffron { background-color: var(--aged-gold); }
+.bg-sacred-brown { background-color: #e2e8f0; }
+.bg-sacred-maroon { background-color: var(--wax-red); }
 
 /* Decorative dividers — warm brown gradient */
 .divider-sacred {
@@ -247,25 +247,25 @@
 }
 .divider-sacred-vertical {
   width: 1px;
-  background: linear-gradient(180deg, transparent 0%, #B8860B 20%, #D4A052 50%, #B8860B 80%, transparent 100%);
+  background: linear-gradient(180deg, transparent 0%, var(--aged-gold-dim) 20%, var(--aged-gold) 50%, var(--aged-gold-dim) 80%, transparent 100%);
 }
 
-.border-sacred { border: 1px solid rgba(184, 134, 11, 0.25); }
+.border-sacred { border: 1px solid var(--cosmic-border); }
 
-/* Inputs — bottom-border manuscript style */
+/* Inputs — clean bottom-border */
 .input-sacred {
   background: transparent;
   border: none;
-  border-bottom: 1px solid rgba(184, 134, 11, 0.3);
-  color: #e8e0d4;
+  border-bottom: 1px solid var(--cosmic-border);
+  color: var(--ink);
   transition: border-color 0.3s;
 }
 .input-sacred:focus {
   outline: none;
-  border-bottom-color: #B8860B;
+  border-bottom-color: var(--aged-gold);
 }
 .input-sacred::placeholder {
-  color: rgba(184, 134, 11, 0.4);
+  color: var(--text-muted);
 }
 
 /* Corner decorations — aged gold */
@@ -295,7 +295,7 @@
 .notebook-lines {
   background-image: repeating-linear-gradient(
     transparent, transparent 31px,
-    #2a2a4e 31px, #2a2a4e 32px
+    #e2e8f0 31px, #e2e8f0 32px
   );
   background-size: 100% 32px;
   line-height: 32px;
@@ -330,17 +330,17 @@
   padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0.75rem));
 }
 
-/* Scrollbar — dark track, gold thumb */
+/* Scrollbar — light track, subtle thumb */
 ::-webkit-scrollbar {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #16162a;
+  background: #f1f5f9;
 }
 ::-webkit-scrollbar-thumb {
-  background: #B8860B;
+  background: #cbd5e1;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #D4A052;
+  background: #94a3b8;
 }

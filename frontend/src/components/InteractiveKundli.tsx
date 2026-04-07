@@ -1087,17 +1087,27 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
 
               {/* Planets in this house — JHora plain colored text with status symbols */}
               {housePlanets.map((p, idx) => {
-                const maxCols = isTrapezoid ? 3 : 2;
-                const cols = Math.min(housePlanets.length, maxCols);
+                const count = housePlanets.length;
+                // Dynamic sizing: scale down for crowded houses
+                const maxCols = isTrapezoid
+                  ? (count > 4 ? 3 : count > 2 ? 2 : count)
+                  : (count > 3 ? 3 : count > 1 ? 2 : 1);
+                const cols = Math.min(count, maxCols);
                 const pRow = Math.floor(idx / cols);
                 const pCol = idx % cols;
-                const spacing = isTrapezoid ? 32 : 30;
+                // Tighter spacing for crowded or triangular houses
+                const spacing = isTrapezoid
+                  ? (count > 4 ? 26 : 32)
+                  : (count > 3 ? 22 : count > 2 ? 24 : 28);
+                const rowHeight = count > 4 ? 16 : count > 3 ? 18 : 20;
+                const fontSize = isTrapezoid
+                  ? (count > 4 ? 11 : 13)
+                  : (count > 3 ? 10 : count > 2 ? 11 : 12);
                 const startX = nh.cx - ((cols - 1) * spacing) / 2;
                 const px = startX + pCol * spacing;
-                const baseY = nh.cy + (isTrapezoid ? 16 : 10) - (housePlanets.length > 0 ? 2 : 0);
-                const py = baseY + pRow * 22;
+                const baseY = nh.cy + (isTrapezoid ? 14 : 8) - (count > 0 ? 2 : 0);
+                const py = baseY + pRow * rowHeight;
                 const label = getPlanetLabel(p, language);
-                const degreeLabel = Math.round(p.sign_degree || 0);
 
                 return (
                   <g key={p.planet}>
@@ -1107,7 +1117,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                       y={py}
                       textAnchor="middle"
                       fill={getPlanetColor(p.planet)}
-                      fontSize={14}
+                      fontSize={fontSize}
                       fontWeight="bold"
                       fontFamily="serif"
                       style={{ cursor: 'pointer' }}
