@@ -87,6 +87,30 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
               desc_en: `Soul's journey (AK in D9)`,
               desc_hi: `आत्मा की यात्रा (AK नवांश में)`,
             },
+            {
+              key: 'hora_lagna',
+              icon: <Wallet className="w-5 h-5 text-sacred-gold" />,
+              title_en: 'Hora Lagna',
+              title_hi: 'होरा लग्न',
+              desc_en: 'Wealth & financial status',
+              desc_hi: 'धन और आर्थिक स्थिति',
+            },
+            {
+              key: 'ghatika_lagna',
+              icon: <Clock className="w-5 h-5 text-sacred-gold" />,
+              title_en: 'Ghatika Lagna',
+              title_hi: 'घटिका लग्न',
+              desc_en: 'Power, authority & social status',
+              desc_hi: 'शक्ति, अधिकार और सामाजिक स्थिति',
+            },
+            {
+              key: 'varnada_lagna',
+              icon: <Star className="w-5 h-5 text-sacred-gold" />,
+              title_en: 'Varnada Lagna',
+              title_hi: 'वर्णद लग्न',
+              desc_en: 'Purpose & dharmic calling',
+              desc_hi: 'उद्देश्य और धार्मिक कर्तव्य',
+            },
           ].map(({ key, icon, title_en, title_hi, desc_en, desc_hi }) => {
             const lagna = data.special_lagnas[key];
             if (!lagna) return null;
@@ -202,6 +226,106 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
                 <span className="text-xs text-slate-600">
                   {(targets as string[]).map((t: string) => translateSign(t, language)).join(', ')}
                 </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Jaimini Yogas */}
+      {data.jaimini_yogas && data.jaimini_yogas.length > 0 && (
+        <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+          <h4 className="font-display font-semibold text-sacred-brown mb-3 flex items-center gap-2">
+            <Star className="w-5 h-5 text-sacred-gold" />
+            {language === 'hi' ? 'जैमिनी योग' : 'Jaimini Yogas'}
+          </h4>
+          <div className="space-y-2">
+            {data.jaimini_yogas.map((yoga: any, i: number) => (
+              <div key={i} className="rounded-lg p-3 border border-emerald-200 bg-emerald-50">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-semibold text-sm text-emerald-800">
+                    {language === 'hi' ? yoga.name_hi : yoga.name_en}
+                  </span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                    yoga.strength === 'Strong' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+                  }`}>
+                    {yoga.strength}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-600">
+                  {language === 'hi' ? yoga.description_hi : yoga.description_en}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Longevity */}
+      {data.longevity && (
+        <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+          <h4 className="font-display font-semibold text-sacred-brown mb-3 flex items-center gap-2">
+            <Clock className="w-5 h-5 text-sacred-gold" />
+            {language === 'hi' ? 'आयु गणना' : 'Longevity Calculation'}
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+            <div className="rounded-lg p-3 border text-center" style={{
+              backgroundColor: data.longevity.category === 'Purna' ? '#d1fae5' : data.longevity.category === 'Madhyama' ? '#fef3c7' : '#fee2e2',
+              borderColor: data.longevity.category === 'Purna' ? '#059669' : data.longevity.category === 'Madhyama' ? '#d97706' : '#dc2626',
+            }}>
+              <p className="text-2xl font-bold" style={{
+                color: data.longevity.category === 'Purna' ? '#065f46' : data.longevity.category === 'Madhyama' ? '#92400e' : '#991b1b',
+              }}>
+                {data.longevity.category}
+              </p>
+              <p className="text-sm" style={{ color: data.longevity.category === 'Purna' ? '#065f46' : data.longevity.category === 'Madhyama' ? '#92400e' : '#991b1b' }}>
+                {language === 'hi' ? data.longevity.description_hi : data.longevity.description_en}
+              </p>
+            </div>
+            <div className="rounded-lg p-3 border" style={{ backgroundColor: 'var(--parchment)', borderColor: 'rgba(184,134,11,0.2)' }}>
+              <p className="text-xs text-slate-400">{language === 'hi' ? 'लग्न राशि' : 'Lagna Sign'}</p>
+              <p className="font-semibold">{translateSign(data.longevity.lagna_sign, language)} ({data.longevity.lagna_modality})</p>
+            </div>
+            <div className="rounded-lg p-3 border" style={{ backgroundColor: 'var(--parchment)', borderColor: 'rgba(184,134,11,0.2)' }}>
+              <p className="text-xs text-slate-400">{language === 'hi' ? '8वां स्वामी' : '8th Lord'}</p>
+              <p className="font-semibold">{translatePlanet(data.longevity.eighth_lord, language)} in {translateSign(data.longevity.eighth_lord_sign, language)} ({data.longevity.eighth_modality})</p>
+            </div>
+          </div>
+          <p className="text-xs text-slate-400 italic">
+            {language === 'hi' ? data.longevity.note_hi : data.longevity.note_en}
+          </p>
+        </div>
+      )}
+
+      {/* Argala */}
+      {data.argala?.house_argalas && data.argala.house_argalas.length > 0 && (
+        <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+          <h4 className="font-display font-semibold text-sacred-brown mb-3 flex items-center gap-2">
+            <Eye className="w-5 h-5 text-sacred-gold" />
+            {language === 'hi' ? 'अर्गला (ग्रह हस्तक्षेप)' : 'Argala (Planetary Intervention)'}
+          </h4>
+          <div className="space-y-2">
+            {data.argala.house_argalas.map((ha: any) => (
+              <div key={ha.house} className="rounded-lg p-3 border border-slate-200 bg-white">
+                <p className="font-semibold text-sm mb-1" style={{ color: 'var(--ink)' }}>
+                  {language === 'hi' ? `भाव ${ha.house}` : `House ${ha.house}`}
+                </p>
+                <div className="space-y-1">
+                  {ha.argalas.map((a: any, i: number) => (
+                    <div key={i} className="flex items-center justify-between text-xs">
+                      <span className="text-slate-600">
+                        {a.type} — {a.planets.map((p: string) => translatePlanet(p, language)).join(', ')} (H{a.from_house})
+                      </span>
+                      <span className={`px-2 py-0.5 rounded-full font-medium ${
+                        a.blocked ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'
+                      }`}>
+                        {a.status === 'Blocked'
+                          ? (language === 'hi' ? 'अवरुद्ध' : 'Blocked')
+                          : (language === 'hi' ? 'सक्रिय' : 'Active')}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>

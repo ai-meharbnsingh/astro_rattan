@@ -155,19 +155,66 @@ def calculate_special_lagnas(planets: Dict, ascendant: Dict, d9_planets: Optiona
         d9_index = int((float(ak_lon) % 360.0) / (360.0 / 108.0)) % 12
         karakamsha_sign = ZODIAC[d9_index]
 
+    # --- Hora Lagna ---
+    # Based on Sun's longitude: each hora = 15° of Sun movement from sunrise
+    # Approximate: Sun longitude / 15 → sign offset from ascendant
+    sun_lon = float(planets.get("Sun", {}).get("longitude", 0.0))
+    hora_offset = int((sun_lon % 360.0) / 15.0) % 12
+    hora_sign = ZODIAC[(asc_idx + hora_offset) % 12]
+
+    # --- Ghatika Lagna ---
+    # Based on Sun's position relative to sunrise (sunrise = lagna)
+    # Approximate: each ghatika = 24 minutes. Use Sun's house position.
+    sun_house = int(planets.get("Sun", {}).get("house", 1))
+    ghatika_offset = (sun_house - 1 + 5) % 12  # 5th from Sun's house
+    ghatika_sign = ZODIAC[(asc_idx + ghatika_offset) % 12]
+
+    # --- Varnada Lagna ---
+    # If lagna is odd sign: Varnada = Aries + (lagna_idx + hora_offset)
+    # If lagna is even sign: Varnada = Pisces - (lagna_idx + hora_offset)
+    if asc_idx % 2 == 0:  # odd sign (Aries, Gemini, etc.)
+        varnada_idx = (asc_idx + hora_offset) % 12
+    else:  # even sign
+        varnada_idx = (11 - asc_idx + hora_offset) % 12  # 11 = Pisces index
+    varnada_sign = ZODIAC[varnada_idx]
+
     return {
         "arudha_lagna": {
             "sign": al_sign,
             "house": _sign_distance(asc_sign, al_sign),
+            "description_en": "How the world perceives you",
+            "description_hi": "संसार आपको कैसे देखता है",
         },
         "upapada_lagna": {
             "sign": ul_sign,
             "house": _sign_distance(asc_sign, ul_sign),
+            "description_en": "Marriage & spouse indicator",
+            "description_hi": "विवाह और जीवनसाथी सूचक",
         },
         "karakamsha": {
             "sign": karakamsha_sign,
             "atmakaraka": ak_planet,
             "house": _sign_distance(asc_sign, karakamsha_sign),
+            "description_en": "Soul's journey (AK in Navamsha D9)",
+            "description_hi": "आत्मा की यात्रा (AK नवांश में)",
+        },
+        "hora_lagna": {
+            "sign": hora_sign,
+            "house": _sign_distance(asc_sign, hora_sign),
+            "description_en": "Wealth & financial status",
+            "description_hi": "धन और आर्थिक स्थिति",
+        },
+        "ghatika_lagna": {
+            "sign": ghatika_sign,
+            "house": _sign_distance(asc_sign, ghatika_sign),
+            "description_en": "Power, authority & social status",
+            "description_hi": "शक्ति, अधिकार और सामाजिक स्थिति",
+        },
+        "varnada_lagna": {
+            "sign": varnada_sign,
+            "house": _sign_distance(asc_sign, varnada_sign),
+            "description_en": "Purpose & dharmic calling",
+            "description_hi": "उद्देश्य और धार्मिक कर्तव्य",
         },
     }
 
@@ -304,7 +351,8 @@ def calculate_indu_lagna(planets: Dict, ascendant: Dict) -> Dict:
     total = kaksha_1 + kaksha_2
     remainder = total % 12
 
-    indu_sign = _sign_at_offset(moon_sign, remainder + 1)
+    # Count remainder from TAURUS (not Moon) — standard Jaimini rule
+    indu_sign = _sign_at_offset("Taurus", remainder)  # remainder houses from Taurus
 
     return {
         "indu_lagna_sign": indu_sign,
@@ -313,6 +361,229 @@ def calculate_indu_lagna(planets: Dict, ascendant: Dict) -> Dict:
         "ninth_lord_moon": ninth_lord_moon,
         "kaksha_sum": total,
         "remainder": remainder,
+    }
+
+
+# ============================================================
+# 6. ARGALA (Planetary Intervention)
+# ============================================================
+
+def calculate_argala(planets: Dict, ascendant: Dict) -> Dict:
+    """
+    Argala = planetary influence from specific houses.
+    Argala houses: 2nd, 4th, 11th, 5th from any house → promote results.
+    Virodha Argala (obstruction): 12th (blocks 2nd), 10th (blocks 4th),
+      3rd (blocks 11th), 9th (blocks 5th).
+    Argala holds if promoting planets > obstructing planets.
+    """
+    asc_sign = ascendant.get("sign", "Aries") if ascendant else "Aries"
+
+    # Build planet-to-house mapping
+    planet_houses: Dict[str, int] = {}
+    for name, data in planets.items():
+        if isinstance(data, dict):
+            planet_houses[name] = int(data.get("house", 1))
+
+    # Planets in each house
+    houses_planets: Dict[int, List[str]] = {h: [] for h in range(1, 13)}
+    for name, house in planet_houses.items():
+        if 1 <= house <= 12:
+            houses_planets[house].append(name)
+
+    ARGALA_PAIRS = [
+        (2, 12, "Secondary Argala (2nd house) — wealth, speech"),
+        (4, 10, "Secondary Argala (4th house) — happiness, property"),
+        (11, 3, "Primary Argala (11th house) — gains, desires"),
+        (5, 9, "Primary Argala (5th house) — children, merit"),
+    ]
+
+    result = []
+    for house_num in range(1, 13):
+        house_argala = []
+        for argala_offset, virodha_offset, desc in ARGALA_PAIRS:
+            argala_house = ((house_num - 1 + argala_offset) % 12) + 1
+            virodha_house = ((house_num - 1 + virodha_offset) % 12) + 1
+
+            argala_planets = houses_planets.get(argala_house, [])
+            virodha_planets = houses_planets.get(virodha_house, [])
+
+            if argala_planets:
+                blocked = len(virodha_planets) >= len(argala_planets)
+                house_argala.append({
+                    "type": desc,
+                    "from_house": argala_house,
+                    "planets": argala_planets,
+                    "virodha_house": virodha_house,
+                    "virodha_planets": virodha_planets,
+                    "blocked": blocked,
+                    "status": "Blocked" if blocked else "Active",
+                })
+
+        if house_argala:
+            result.append({"house": house_num, "argalas": house_argala})
+
+    return {"house_argalas": result}
+
+
+# ============================================================
+# 7. JAIMINI YOGAS
+# ============================================================
+
+def calculate_jaimini_yogas(planets: Dict, ascendant: Dict) -> List[Dict]:
+    """
+    Key Jaimini Yogas based on Karaka relationships and Arudha Padas.
+    """
+    asc_sign = ascendant.get("sign", "Aries") if ascendant else "Aries"
+    karakas = calculate_chara_karakas(planets)
+    karaka_map = {k["karaka"]: k for k in karakas}
+
+    yogas = []
+
+    # Get special lagnas for Arudha-based yogas
+    lagnas = calculate_special_lagnas(planets, ascendant)
+    al_house = lagnas["arudha_lagna"]["house"]
+
+    # 1. Jaimini Raja Yoga: AK and AmK in kendras (1,4,7,10) from each other
+    ak = karaka_map.get("AK", {})
+    amk = karaka_map.get("AmK", {})
+    if ak and amk:
+        ak_house = int(planets.get(ak["planet"], {}).get("house", 1))
+        amk_house = int(planets.get(amk["planet"], {}).get("house", 1))
+        dist = abs(ak_house - amk_house) % 12
+        if dist in [0, 3, 6, 9]:  # kendra positions
+            yogas.append({
+                "name_en": "Jaimini Raja Yoga",
+                "name_hi": "जैमिनी राज योग",
+                "present": True,
+                "description_en": f"AK ({ak['planet']}) and AmK ({amk['planet']}) in kendra — leadership & authority",
+                "description_hi": f"AK ({ak['planet']}) और AmK ({amk['planet']}) केंद्र में — नेतृत्व और अधिकार",
+                "strength": "Strong" if dist == 0 else "Moderate",
+            })
+
+    # 2. Dhana Yoga: Planets in 2nd or 11th from Arudha Lagna
+    second_from_al = ((al_house - 1 + 1) % 12) + 1
+    eleventh_from_al = ((al_house - 1 + 10) % 12) + 1
+    wealth_planets = []
+    for name, data in planets.items():
+        if isinstance(data, dict):
+            h = int(data.get("house", 0))
+            if h == second_from_al or h == eleventh_from_al:
+                wealth_planets.append(name)
+    if wealth_planets:
+        yogas.append({
+            "name_en": "Dhana Yoga (from Arudha)",
+            "name_hi": "धन योग (आरूढ़ से)",
+            "present": True,
+            "description_en": f"Planets in 2nd/11th from AL: {', '.join(wealth_planets)} — wealth accumulation",
+            "description_hi": f"AL से 2/11 भाव में ग्रह: {', '.join(wealth_planets)} — धन संचय",
+            "strength": "Strong" if len(wealth_planets) >= 2 else "Moderate",
+        })
+
+    # 3. AK-DK Yoga: Connection between Atmakaraka and Darakaraka
+    dk = karaka_map.get("DK", {})
+    if ak and dk:
+        ak_house = int(planets.get(ak["planet"], {}).get("house", 1))
+        dk_house = int(planets.get(dk["planet"], {}).get("house", 1))
+        dist = abs(ak_house - dk_house) % 12
+        if dist in [0, 3, 6, 9]:  # kendra
+            yogas.append({
+                "name_en": "AK-DK Kendra Yoga",
+                "name_hi": "AK-DK केंद्र योग",
+                "present": True,
+                "description_en": f"Atmakaraka ({ak['planet']}) and Darakaraka ({dk['planet']}) in kendra — strong marital bond",
+                "description_hi": f"आत्मकारक ({ak['planet']}) और दारकारक ({dk['planet']}) केंद्र में — मजबूत वैवाहिक बंधन",
+                "strength": "Strong",
+            })
+
+    # 4. Mahabhagya Yoga (gender-based): check Sun/Moon/Lagna in odd/even signs
+    sun_sign = _get_planet_sign(planets, "Sun")
+    moon_sign = _get_planet_sign(planets, "Moon")
+    sun_odd = _sign_index(sun_sign) % 2 == 0
+    moon_odd = _sign_index(moon_sign) % 2 == 0
+    asc_odd = _sign_index(asc_sign) % 2 == 0
+    if sun_odd and moon_odd and asc_odd:
+        yogas.append({
+            "name_en": "Mahabhagya Yoga (Male)",
+            "name_hi": "महाभाग्य योग (पुरुष)",
+            "present": True,
+            "description_en": "Sun, Moon, and Lagna all in odd signs — great fortune",
+            "description_hi": "सूर्य, चंद्र, और लग्न सभी विषम राशि में — महान भाग्य",
+            "strength": "Strong",
+        })
+    elif not sun_odd and not moon_odd and not asc_odd:
+        yogas.append({
+            "name_en": "Mahabhagya Yoga (Female)",
+            "name_hi": "महाभाग्य योग (स्त्री)",
+            "present": True,
+            "description_en": "Sun, Moon, and Lagna all in even signs — great fortune",
+            "description_hi": "सूर्य, चंद्र, और लग्न सभी सम राशि में — महान भाग्य",
+            "strength": "Strong",
+        })
+
+    return yogas
+
+
+# ============================================================
+# 8. LONGEVITY CALCULATION
+# ============================================================
+
+def calculate_longevity(planets: Dict, ascendant: Dict) -> Dict:
+    """
+    Jaimini longevity calculation based on 1st and 8th house lords.
+    Divides life into: Alpa (short, 0-32), Madhyama (medium, 32-64),
+    Purna (long, 64-100), based on sign modality of Lagna & 8th lord.
+    """
+    asc_sign = ascendant.get("sign", "Aries") if ascendant else "Aries"
+
+    # 8th house sign
+    eighth_sign = _sign_at_offset(asc_sign, 8)
+    eighth_lord = SIGN_LORD[eighth_sign]
+    eighth_lord_sign = _get_planet_sign(planets, eighth_lord)
+
+    # Classify signs by modality
+    def _modality(sign: str) -> str:
+        if sign in CARDINAL:
+            return "Cardinal"
+        elif sign in FIXED:
+            return "Fixed"
+        return "Dual"
+
+    lagna_mod = _modality(asc_sign)
+    eighth_mod = _modality(eighth_lord_sign)
+
+    # Jaimini longevity matrix:
+    # Cardinal + Cardinal = Purna (Long)
+    # Fixed + Fixed = Alpa (Short)
+    # Dual + Dual = Madhyama (Medium)
+    # Cardinal + Fixed = Madhyama
+    # Cardinal + Dual = Alpa
+    # Fixed + Dual = Purna
+    LONGEVITY_MATRIX = {
+        ("Cardinal", "Cardinal"): ("Purna", "Long Life (64-100 years)", "दीर्घ आयु (64-100 वर्ष)"),
+        ("Fixed", "Fixed"): ("Alpa", "Short Life (0-32 years)", "अल्प आयु (0-32 वर्ष)"),
+        ("Dual", "Dual"): ("Madhyama", "Medium Life (32-64 years)", "मध्यम आयु (32-64 वर्ष)"),
+        ("Cardinal", "Fixed"): ("Madhyama", "Medium Life (32-64 years)", "मध्यम आयु (32-64 वर्ष)"),
+        ("Fixed", "Cardinal"): ("Madhyama", "Medium Life (32-64 years)", "मध्यम आयु (32-64 वर्ष)"),
+        ("Cardinal", "Dual"): ("Alpa", "Short Life (0-32 years)", "अल्प आयु (0-32 वर्ष)"),
+        ("Dual", "Cardinal"): ("Alpa", "Short Life (0-32 years)", "अल्प आयु (0-32 वर्ष)"),
+        ("Fixed", "Dual"): ("Purna", "Long Life (64-100 years)", "दीर्घ आयु (64-100 वर्ष)"),
+        ("Dual", "Fixed"): ("Purna", "Long Life (64-100 years)", "दीर्घ आयु (64-100 वर्ष)"),
+    }
+
+    key = (lagna_mod, eighth_mod)
+    category, desc_en, desc_hi = LONGEVITY_MATRIX.get(key, ("Madhyama", "Medium Life", "मध्यम आयु"))
+
+    return {
+        "category": category,
+        "description_en": desc_en,
+        "description_hi": desc_hi,
+        "lagna_sign": asc_sign,
+        "lagna_modality": lagna_mod,
+        "eighth_lord": eighth_lord,
+        "eighth_lord_sign": eighth_lord_sign,
+        "eighth_modality": eighth_mod,
+        "note_en": "This is an indicative calculation. Multiple factors including Saturn, 8th house occupants, and dasha periods should be considered.",
+        "note_hi": "यह एक सांकेतिक गणना है। शनि, अष्टम भाव के ग्रह, और दशा काल सहित कई कारकों पर विचार करना चाहिए।",
     }
 
 
@@ -331,4 +602,7 @@ def calculate_jaimini(chart_data: Dict, birth_date: str = "") -> Dict:
         "jaimini_drishti": calculate_jaimini_drishti(),
         "chara_dasha": calculate_chara_dasha(planets, ascendant, birth_date),
         "indu_lagna": calculate_indu_lagna(planets, ascendant),
+        "argala": calculate_argala(planets, ascendant),
+        "jaimini_yogas": calculate_jaimini_yogas(planets, ascendant),
+        "longevity": calculate_longevity(planets, ascendant),
     }
