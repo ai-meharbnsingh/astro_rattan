@@ -495,7 +495,7 @@ export default function JHoraKundliView({
       {/* ═══════════ RIGHT: Planet Table | Dasha+Lordships | Avakhada+Karakas+Shadbala ═══════════ */}
       <div style={{
         display: 'grid',
-        gridTemplateRows: '1fr 1fr 1fr',
+        gridTemplateRows: '30% 38% 32%',
         overflow: 'hidden',
       }}>
 
@@ -754,7 +754,7 @@ export default function JHoraKundliView({
                   <div key={item.k} style={{
                     display: 'flex', justifyContent: 'space-between',
                     padding: '2px 6px', borderBottom: `1px solid ${BORDER_COLOR}`,
-                    fontFamily: SERIF, fontSize: '9px',
+                    fontFamily: SERIF, fontSize: '11px',
                   }}>
                     <span style={{ color: MUTED }}>{item.k}</span>
                     <span style={{ color: HEADER_COLOR, fontWeight: 600 }}>{item.v}</span>
@@ -811,14 +811,14 @@ export default function JHoraKundliView({
                     const isStrong = ratio >= 1;
                     return (
                       <div key={planet} style={{
-                        flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px',
-                        fontFamily: SERIF, fontSize: '8px',
+                        flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px',
+                        fontFamily: SERIF, fontSize: '10px',
                       }}>
-                        <span style={{ color: isStrong ? '#4CAF50' : '#DC2626', fontWeight: 600, fontSize: '7px' }}>
+                        <span style={{ color: isStrong ? '#4CAF50' : '#DC2626', fontWeight: 600, fontSize: '10px' }}>
                           {ratio.toFixed(1)}x
                         </span>
                         <div style={{
-                          width: '100%', maxWidth: '24px', height: '100%', minHeight: '20px', maxHeight: '80px',
+                          width: '100%', maxWidth: '28px', height: '100%', minHeight: '30px', maxHeight: '120px',
                           background: '#E8E0D0', borderRadius: '2px 2px 0 0', overflow: 'hidden',
                           display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
                           position: 'relative',
@@ -836,7 +836,7 @@ export default function JHoraKundliView({
                             width: '100%', borderTop: '1px dashed rgba(93,64,55,0.4)',
                           }} />
                         </div>
-                        <span style={{ color: planetColor(planet), fontWeight: 600, fontSize: '7px', lineHeight: 1 }}>
+                        <span style={{ color: planetColor(planet), fontWeight: 600, fontSize: '10px', lineHeight: 1 }}>
                           {planet.slice(0, 2)}
                         </span>
                       </div>
@@ -844,7 +844,7 @@ export default function JHoraKundliView({
                   })}
                 </div>
                 {/* Legend */}
-                <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', paddingTop: '2px', fontSize: '7px', color: MUTED }}>
+                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', paddingTop: '4px', fontSize: '9px', color: MUTED }}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                     <span style={{ width: '6px', height: '6px', borderRadius: '1px', background: '#4CAF50', display: 'inline-block' }} />{t('kundli.strong')}
                   </span>
