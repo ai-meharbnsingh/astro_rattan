@@ -4,6 +4,8 @@ import InteractiveKundli, { type PlanetData, type ChartData } from '@/components
 import { SIGN_LORD, SIGN_ELEMENT, SIGN_TYPE } from '@/components/kundli/kundli-utils';
 import { calculateJaiminiKarakas, getPlanetColor } from '@/components/kundli/jhora-utils';
 import { api } from '@/lib/api';
+import { useTranslation } from '@/lib/i18n';
+import { translatePlanet, translateSign } from '@/lib/backend-translations';
 
 // Available divisional charts
 const DIVISIONAL_OPTIONS = [
@@ -213,6 +215,7 @@ export default function JHoraKundliView({
   onDownloadPDF,
 }: JHoraKundliViewProps) {
 
+  const { t, language } = useTranslation();
   const dasha = extendedDashaData || dashaData;
   const [expandedMD, setExpandedMD] = useState<string | null>(null);
   const [expandedAD, setExpandedAD] = useState<string | null>(null);
@@ -415,7 +418,7 @@ export default function JHoraKundliView({
 
         {/* ── Transit (top-right) — clickable ── */}
         <div style={chartCell}>
-          <div style={chartLabel}>Transit <span style={{ fontSize: '9px', opacity: 0.6, fontWeight: 'normal' }}>(click house → lagan)</span></div>
+          <div style={chartLabel}>{t('kundli.transit')} <span style={{ fontSize: '9px', opacity: 0.6, fontWeight: 'normal' }}>({t('kundli.clickHouseLagan')})</span></div>
           <div style={chartInner}>
             {loadingTransit ? <MiniLoader /> : transitChartData ? (() => {
               const shift = gocharShift;
@@ -438,11 +441,11 @@ export default function JHoraKundliView({
                 />
               );
             })() : (
-              <span style={{ color: MUTED, fontSize: '10px' }}>Loading...</span>
+              <span style={{ color: MUTED, fontSize: '10px' }}>{t('common.loading')}</span>
             )}
           </div>
           {gocharShift > 0 && (
-            <button onClick={() => setGocharShift(0)} style={{ display: 'block', margin: '2px auto', fontSize: '9px', color: HEADER_COLOR, textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer' }}>Reset View</button>
+            <button onClick={() => setGocharShift(0)} style={{ display: 'block', margin: '2px auto', fontSize: '9px', color: HEADER_COLOR, textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer' }}>{t('common.resetView')}</button>
           )}
         </div>
 
@@ -498,17 +501,27 @@ export default function JHoraKundliView({
 
         {/* ── Row 1: Planet Positions Table ── */}
         <div style={{ overflow: 'hidden', borderBottom: BORDER, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-          <SectionHeader>Birth Chart</SectionHeader>
+          <SectionHeader>{t('section.rashiD1')}</SectionHeader>
           <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr>
-                  {['Planet', 'Degree', 'R/C', 'Sign', 'Mod', 'Elem', 'Nakshatra', 'Dignity', 'Karaka'].map((h) => (
-                    <th key={h} style={{
+                  {[
+                    { key: 'Planet', label: t('table.planet') },
+                    { key: 'Degree', label: t('table.degree') },
+                    { key: 'R/C', label: 'R/C' },
+                    { key: 'Sign', label: t('table.sign') },
+                    { key: 'Mod', label: 'Mod' },
+                    { key: 'Elem', label: 'Elem' },
+                    { key: 'Nakshatra', label: t('table.nakshatra') },
+                    { key: 'Dignity', label: t('table.dignity') },
+                    { key: 'Karaka', label: t('table.karaka') },
+                  ].map((h) => (
+                    <th key={h.key} style={{
                       ...thCompact,
-                      textAlign: h === 'Degree' ? 'right' : h === 'R/C' || h === 'Mod' || h === 'Elem' ? 'center' : 'left',
+                      textAlign: h.key === 'Degree' ? 'right' : h.key === 'R/C' || h.key === 'Mod' || h.key === 'Elem' ? 'center' : 'left',
                     }}>
-                      {h}
+                      {h.label}
                     </th>
                   ))}
                 </tr>
@@ -562,12 +575,12 @@ export default function JHoraKundliView({
         }}>
           {/* Vimshottari Dasha — Mahadasha > Antardasha > Pratyantara */}
           <div style={{ borderRight: BORDER, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-            <SectionHeader>Vimshottari Dasha</SectionHeader>
+            <SectionHeader>{t('section.vimshottariDasha')}</SectionHeader>
             {(loadingDasha || loadingExtendedDasha) ? <MiniLoader /> : dasha ? (
               <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
                 {/* Current Dasha Info */}
                 <div style={{ padding: '3px 6px', background: '#FEF3C7', borderBottom: `1px solid ${BORDER_COLOR}`, fontSize: '9px', fontFamily: SERIF }}>
-                  <span style={{ color: HEADER_COLOR, fontWeight: 600 }}>Current: </span>
+                  <span style={{ color: HEADER_COLOR, fontWeight: 600 }}>{t('section.currentDasha')}{' '}</span>
                   <span style={{ color: '#B8860B', fontWeight: 700 }}>{dasha.current_dasha}</span>
                   {dasha.current_antardasha && dasha.current_antardasha !== 'Unknown' && (
                     <span style={{ color: MUTED }}> / {dasha.current_antardasha}</span>
@@ -655,8 +668,13 @@ export default function JHoraKundliView({
                   <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                       <tr>
-                        {['Planet', 'Start', 'End', 'Yrs'].map((h) => (
-                          <th key={h} style={thCompact}>{h}</th>
+                        {[
+                          { key: 'Planet', label: t('table.planet') },
+                          { key: 'Start', label: t('table.start') },
+                          { key: 'End', label: t('table.end') },
+                          { key: 'Yrs', label: t('table.years') },
+                        ].map((h) => (
+                          <th key={h.key} style={thCompact}>{h.label}</th>
                         ))}
                       </tr>
                     </thead>
@@ -684,13 +702,18 @@ export default function JHoraKundliView({
 
           {/* Lordships */}
           <div style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-            <SectionHeader>Lordships</SectionHeader>
+            <SectionHeader>{t('tab.lordships')}</SectionHeader>
             <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr>
-                    {['H', 'Sign', 'Lord', 'In H'].map((h) => (
-                      <th key={h} style={thCompact}>{h}</th>
+                    {[
+                      { key: 'H', label: 'H' },
+                      { key: 'Sign', label: t('table.sign') },
+                      { key: 'Lord', label: t('table.lord') },
+                      { key: 'In H', label: t('table.inHouse') },
+                    ].map((h) => (
+                      <th key={h.key} style={thCompact}>{h.label}</th>
                     ))}
                   </tr>
                 </thead>
@@ -717,16 +740,16 @@ export default function JHoraKundliView({
         }}>
           {/* Avakhada Chakra */}
           <div style={{ borderRight: BORDER, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-            <SectionHeader>Avakhada Chakra</SectionHeader>
+            <SectionHeader>{t('avakhada.title')}</SectionHeader>
             {loadingAvakhada ? <MiniLoader /> : avakhadaData ? (
               <div style={{ flex: 1, overflow: 'auto', minHeight: 0, padding: '1px 0' }}>
                 {[
-                  { k: 'Ascendant/Lord', v: `${avakhadaData.ascendant || '-'}/${avakhadaData.ascendant_lord || '-'}` },
-                  { k: 'Sign/Lord', v: `${avakhadaData.rashi || '-'}/${avakhadaData.rashi_lord || '-'}` },
-                  { k: 'Nakshatra/Pada', v: avakhadaData.nakshatra ? `${avakhadaData.nakshatra}/${avakhadaData.nakshatra_pada}` : '-' },
-                  { k: 'Yoga/Karana', v: `${avakhadaData.yoga || '-'}/${avakhadaData.karana || '-'}` },
-                  { k: 'Yoni/Gana', v: `${avakhadaData.yoni || '-'}/${avakhadaData.gana || '-'}` },
-                  { k: 'Nadi/Varna', v: avakhadaData.nadi || '-' },
+                  { k: t('avakhada.ascendantLord'), v: `${avakhadaData.ascendant || '-'}/${avakhadaData.ascendant_lord || '-'}` },
+                  { k: t('avakhada.signLord'), v: `${avakhadaData.rashi || '-'}/${avakhadaData.rashi_lord || '-'}` },
+                  { k: t('avakhada.nakshatraPada'), v: avakhadaData.nakshatra ? `${avakhadaData.nakshatra}/${avakhadaData.nakshatra_pada}` : '-' },
+                  { k: t('avakhada.yogaKarana'), v: `${avakhadaData.yoga || '-'}/${avakhadaData.karana || '-'}` },
+                  { k: t('avakhada.yoniGana'), v: `${avakhadaData.yoni || '-'}/${avakhadaData.gana || '-'}` },
+                  { k: t('avakhada.nadiVarna'), v: avakhadaData.nadi || '-' },
                 ].map((item) => (
                   <div key={item.k} style={{
                     display: 'flex', justifyContent: 'space-between',
@@ -745,13 +768,13 @@ export default function JHoraKundliView({
 
           {/* Jaimini Karakas */}
           <div style={{ borderRight: BORDER, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-            <SectionHeader>Jaimini Karakas</SectionHeader>
+            <SectionHeader>{t('section.jaiminiKarakas')}</SectionHeader>
             <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr>
-                    <th style={thCompact}>Karaka</th>
-                    <th style={thCompact}>Planet</th>
+                    <th style={thCompact}>{t('table.karaka')}</th>
+                    <th style={thCompact}>{t('table.planet')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -775,7 +798,7 @@ export default function JHoraKundliView({
 
           {/* Shadbala — Vertical bar chart */}
           <div style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-            <SectionHeader>Shadbala</SectionHeader>
+            <SectionHeader>{t('tab.shadbala')}</SectionHeader>
             {loadingShadbala ? <MiniLoader /> : shadbalaData?.planets ? (
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, padding: '4px 6px 2px' }}>
                 {/* Vertical bars */}
@@ -823,10 +846,10 @@ export default function JHoraKundliView({
                 {/* Legend */}
                 <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', paddingTop: '2px', fontSize: '7px', color: MUTED }}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                    <span style={{ width: '6px', height: '6px', borderRadius: '1px', background: '#4CAF50', display: 'inline-block' }} />Strong
+                    <span style={{ width: '6px', height: '6px', borderRadius: '1px', background: '#4CAF50', display: 'inline-block' }} />{t('kundli.strong')}
                   </span>
                   <span style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                    <span style={{ width: '6px', height: '6px', borderRadius: '1px', background: '#DC2626', display: 'inline-block' }} />Weak
+                    <span style={{ width: '6px', height: '6px', borderRadius: '1px', background: '#DC2626', display: 'inline-block' }} />{t('kundli.weak')}
                   </span>
                 </div>
               </div>

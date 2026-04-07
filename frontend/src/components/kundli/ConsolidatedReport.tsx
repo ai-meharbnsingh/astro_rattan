@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
+import { translatePlanet, translateSign, translateName, translateRemedy, translateLabel, translateBackend } from '@/lib/backend-translations';
 import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
 import LordshipsTab from '@/components/kundli/LordshipsTab';
 
@@ -46,7 +47,7 @@ export default function ConsolidatedReport({
   loadingShadbala,
   loadingDivisional,
 }: ConsolidatedReportProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   // Local state for transit and D10
   const [transitData, setTransitData] = useState<any>(null);
@@ -284,7 +285,7 @@ export default function ConsolidatedReport({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-[95vw] max-h-[95vh] w-full bg-[#22223a] overflow-y-auto p-0 border-[#2a2a4e]"
+        className="max-w-[98vw] sm:max-w-[98vw] max-h-[95vh] w-full bg-[#22223a] overflow-y-auto p-0 border-[#2a2a4e]"
         showCloseButton={false}
       >
         {/* Print styles */}
@@ -302,14 +303,14 @@ export default function ConsolidatedReport({
         <div className="sticky top-0 z-10 bg-[#22223a] border-b border-[#2a2a4e] px-6 py-3 flex items-center justify-between no-print">
           <div className="flex items-center gap-3">
             <Button size="sm" onClick={handleDownloadPDF} className="bg-[#B8860B] text-white hover:bg-[#9A7B0A] text-xs h-8">
-              <Download className="w-3.5 h-3.5 mr-1" />Download PDF
+              <Download className="w-3.5 h-3.5 mr-1" />{t('common.downloadPDF')}
             </Button>
             <Button size="sm" variant="outline" onClick={() => window.print()} className="border-[#2a2a4e] text-[#e8e0d4] text-xs h-8">
-              <Printer className="w-3.5 h-3.5 mr-1" />Print Report
+              <Printer className="w-3.5 h-3.5 mr-1" />{t('common.printReport')}
             </Button>
           </div>
           <DialogTitle className="text-sm font-semibold text-[#B8860B] font-serif">
-            Consolidated Report
+            {t('section.consolidatedReport')}
           </DialogTitle>
           <button onClick={() => onOpenChange(false)} className="p-1.5 hover:bg-[#2a2a4e] rounded transition-colors">
             <X className="w-5 h-5 text-[#e8e0d4]" />
@@ -321,7 +322,7 @@ export default function ConsolidatedReport({
           {/* Title block */}
           <div className="text-center border-b border-[#2a2a4e] pb-3">
             <h2 className="text-lg font-bold font-serif" style={{ color: '#B8860B' }}>
-              {result?.person_name}&apos;s Vedic Birth Chart
+              {result?.person_name} — {t('section.vedicBirthChart')}
             </h2>
             <p className="text-[11px] text-[#e8e0d4]/60 mt-1">
               {result?.birth_date} | {result?.birth_time} | {result?.birth_place}
@@ -333,7 +334,7 @@ export default function ConsolidatedReport({
             {/* Birth Chart (D1) */}
             <div className="border border-[#2a2a4e] rounded-lg p-2">
               <h4 className="text-[11px] font-bold text-center mb-1" style={{ color: '#B8860B' }}>
-                Rashi (D1) <span className="text-[9px] font-normal opacity-60">(click house → lagan)</span>
+                {t('section.rashiD1')} <span className="text-[9px] font-normal opacity-60">{t('report.clickHouseLagan')}</span>
               </h4>
               <div className="flex justify-center" style={{ maxWidth: '250px', margin: '0 auto' }}>
                 {(() => {
@@ -362,14 +363,14 @@ export default function ConsolidatedReport({
                 })()}
               </div>
               {d1Shift > 0 && (
-                <button onClick={() => setD1Shift(0)} className="block mx-auto mt-1 text-[9px] text-[#B8860B] underline">Reset View</button>
+                <button onClick={() => setD1Shift(0)} className="block mx-auto mt-1 text-[9px] text-[#B8860B] underline">{t('common.resetView')}</button>
               )}
             </div>
 
             {/* D9 Navamsha */}
             <div className="border border-[#2a2a4e] rounded-lg p-2">
               <h4 className="text-[11px] font-bold text-center mb-1" style={{ color: '#B8860B' }}>
-                Navamsha (D9) <span className="text-[9px] font-normal opacity-60">(click house → lagan)</span>
+                {t('section.navamshaD9')} <span className="text-[9px] font-normal opacity-60">{t('report.clickHouseLagan')}</span>
               </h4>
               <div className="flex justify-center" style={{ maxWidth: '250px', margin: '0 auto' }}>
                 {loadingDivisional ? (
@@ -396,18 +397,18 @@ export default function ConsolidatedReport({
                     />
                   );
                 })() : (
-                  <p className="text-[10px] text-center py-12 text-[#e8e0d4]/40">Loading...</p>
+                  <p className="text-[10px] text-center py-12 text-[#e8e0d4]/40">{t('common.loading')}</p>
                 )}
               </div>
               {d9Shift > 0 && (
-                <button onClick={() => setD9Shift(0)} className="block mx-auto mt-1 text-[9px] text-[#B8860B] underline">Reset View</button>
+                <button onClick={() => setD9Shift(0)} className="block mx-auto mt-1 text-[9px] text-[#B8860B] underline">{t('common.resetView')}</button>
               )}
             </div>
 
             {/* D10 Dashamsha */}
             <div className="border border-[#2a2a4e] rounded-lg p-2">
               <h4 className="text-[11px] font-bold text-center mb-1" style={{ color: '#B8860B' }}>
-                {t('kundli.d10')} <span className="text-[9px] font-normal opacity-60">(click house → lagan)</span>
+                {t('kundli.d10')} <span className="text-[9px] font-normal opacity-60">{t('report.clickHouseLagan')}</span>
               </h4>
               <div className="flex justify-center" style={{ maxWidth: '250px', margin: '0 auto' }}>
                 {loadingD10 ? (
@@ -434,18 +435,18 @@ export default function ConsolidatedReport({
                     />
                   );
                 })() : (
-                  <p className="text-[10px] text-center py-12 text-[#e8e0d4]/40">Loading...</p>
+                  <p className="text-[10px] text-center py-12 text-[#e8e0d4]/40">{t('common.loading')}</p>
                 )}
               </div>
               {d10Shift > 0 && (
-                <button onClick={() => setD10Shift(0)} className="block mx-auto mt-1 text-[9px] text-[#B8860B] underline">Reset View</button>
+                <button onClick={() => setD10Shift(0)} className="block mx-auto mt-1 text-[9px] text-[#B8860B] underline">{t('common.resetView')}</button>
               )}
             </div>
 
             {/* Gochar (Transit) — clickable */}
             <div className="border border-[#2a2a4e] rounded-lg p-2">
               <h4 className="text-[11px] font-bold text-center mb-1" style={{ color: '#B8860B' }}>
-                {t('kundli.gochar')} <span className="text-[9px] font-normal opacity-60">(click house → lagan)</span>
+                {t('kundli.gochar')} <span className="text-[9px] font-normal opacity-60">{t('report.clickHouseLagan')}</span>
               </h4>
               <div className="flex justify-center" style={{ maxWidth: '250px', margin: '0 auto' }}>
                 {loadingTransit ? (
@@ -473,11 +474,11 @@ export default function ConsolidatedReport({
                     />
                   );
                 })() : (
-                  <p className="text-[10px] text-center py-12 text-[#e8e0d4]/40">Loading...</p>
+                  <p className="text-[10px] text-center py-12 text-[#e8e0d4]/40">{t('common.loading')}</p>
                 )}
               </div>
               {gocharShift > 0 && (
-                <button onClick={() => setGocharShift(0)} className="block mx-auto mt-1 text-[9px] text-[#B8860B] underline">Reset View</button>
+                <button onClick={() => setGocharShift(0)} className="block mx-auto mt-1 text-[9px] text-[#B8860B] underline">{t('common.resetView')}</button>
               )}
             </div>
           </div>
@@ -485,19 +486,19 @@ export default function ConsolidatedReport({
           {/* Row 2: Planet Table (full width) */}
           <div className="border border-[#2a2a4e] rounded-lg p-3">
             <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
-              Detailed Planet Positions
+              {t('section.detailedPlanetPositions')}
             </h4>
             <div className="overflow-x-auto">
               <table className="w-full text-[10px]" style={{ borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ backgroundColor: '#B8860B', color: 'white' }}>
-                    <th className="text-left p-1.5 font-medium">Planet</th>
-                    <th className="text-left p-1.5 font-medium">Sign</th>
-                    <th className="text-center p-1.5 font-medium">Degree</th>
-                    <th className="text-left p-1.5 font-medium">Nakshatra</th>
-                    <th className="text-center p-1.5 font-medium">Status</th>
-                    <th className="text-center p-1.5 font-medium">Nature</th>
-                    <th className="text-center p-1.5 font-medium">House</th>
+                    <th className="text-left p-1.5 font-medium">{t('table.planet')}</th>
+                    <th className="text-left p-1.5 font-medium">{t('table.sign')}</th>
+                    <th className="text-center p-1.5 font-medium">{t('table.degree')}</th>
+                    <th className="text-left p-1.5 font-medium">{t('table.nakshatra')}</th>
+                    <th className="text-center p-1.5 font-medium">{t('table.status')}</th>
+                    <th className="text-center p-1.5 font-medium">{t('table.nature')}</th>
+                    <th className="text-center p-1.5 font-medium">{t('table.house')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -505,8 +506,8 @@ export default function ConsolidatedReport({
                     const isBenefic = ['Jupiter', 'Venus', 'Moon', 'Mercury'].includes(planet.planet);
                     return (
                       <tr key={index} style={{ borderBottom: '1px solid #2a2a4e' }}>
-                        <td className="p-1.5 font-medium" style={{ color: '#e8e0d4' }}>{planet.planet}</td>
-                        <td className="p-1.5" style={{ color: '#e8e0d4' }}>{planet.sign}</td>
+                        <td className="p-1.5 font-medium" style={{ color: '#e8e0d4' }}>{translatePlanet(planet.planet, language)}</td>
+                        <td className="p-1.5" style={{ color: '#e8e0d4' }}>{translateSign(planet.sign, language)}</td>
                         <td className="p-1.5 text-center">{planet.sign_degree?.toFixed(1)}&deg;</td>
                         <td className="p-1.5">{planet.nakshatra || '\u2014'}</td>
                         <td className="p-1.5 text-center">
@@ -517,12 +518,12 @@ export default function ConsolidatedReport({
                               ? 'bg-red-500/20 text-red-400'
                               : 'text-[#e8e0d4]/60'
                           }`}>
-                            {planet.status || '\u2014'}
+                            {planet.status ? translateLabel(planet.status, language) : '\u2014'}
                           </span>
                         </td>
                         <td className="p-1.5 text-center">
                           <span className={`text-[9px] ${isBenefic ? 'text-green-400' : 'text-red-400'}`}>
-                            {isBenefic ? 'Benefic' : 'Malefic'}
+                            {isBenefic ? t('kundli.benefic') : t('kundli.malefic')}
                           </span>
                         </td>
                         <td className="p-1.5 text-center">{planet.house}</td>
@@ -539,25 +540,25 @@ export default function ConsolidatedReport({
             {/* Avakhada Chakra */}
             <div className="border border-[#2a2a4e] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
-                Avakhada Chakra
+                {t('avakhada.title')}
               </h4>
               {loadingAvakhada ? (
                 <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
               ) : avakhadaData ? (
                 <div className="grid grid-cols-2 gap-1.5">
                   {[
-                    { label: 'Ascendant (Lagna)', value: avakhadaData.ascendant },
-                    { label: 'Lagna Lord', value: avakhadaData.ascendant_lord },
-                    { label: 'Rashi (Moon Sign)', value: avakhadaData.rashi },
-                    { label: 'Rashi Lord', value: avakhadaData.rashi_lord },
-                    { label: 'Nakshatra', value: `${avakhadaData.nakshatra} (P${avakhadaData.nakshatra_pada})` },
-                    { label: 'Yoga', value: avakhadaData.yoga },
-                    { label: 'Karana', value: avakhadaData.karana },
-                    { label: 'Yoni', value: avakhadaData.yoni },
-                    { label: 'Gana', value: avakhadaData.gana },
-                    { label: 'Nadi', value: avakhadaData.nadi },
-                    { label: 'Varna', value: avakhadaData.varna },
-                    { label: 'Naamakshar', value: avakhadaData.naamakshar },
+                    { label: t('avakhada.ascendant'), value: avakhadaData.ascendant },
+                    { label: t('avakhada.ascendantLord'), value: avakhadaData.ascendant_lord },
+                    { label: t('avakhada.rashi'), value: avakhadaData.rashi },
+                    { label: t('avakhada.rashiLord'), value: avakhadaData.rashi_lord },
+                    { label: t('avakhada.nakshatra'), value: `${avakhadaData.nakshatra} (P${avakhadaData.nakshatra_pada})` },
+                    { label: t('avakhada.yoga'), value: avakhadaData.yoga },
+                    { label: t('avakhada.karana'), value: avakhadaData.karana },
+                    { label: t('avakhada.yoni'), value: avakhadaData.yoni },
+                    { label: t('avakhada.gana'), value: avakhadaData.gana },
+                    { label: t('avakhada.nadi'), value: avakhadaData.nadi },
+                    { label: t('avakhada.varna'), value: avakhadaData.varna },
+                    { label: t('avakhada.naamakshar'), value: avakhadaData.naamakshar },
                   ].map((item) => (
                     <div key={item.label} className="bg-[#1a1a2e] rounded px-2 py-1">
                       <p className="text-[9px] text-[#e8e0d4]/50">{item.label}</p>
@@ -566,33 +567,33 @@ export default function ConsolidatedReport({
                   ))}
                 </div>
               ) : (
-                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">Loading...</p>
+                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">{t('common.loading')}</p>
               )}
             </div>
 
             {/* Vimshottari Dasha */}
             <div className="border border-[#2a2a4e] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
-                Vimshottari Dasha
+                {t('section.vimshottariDasha')}
               </h4>
               {loadingDasha ? (
                 <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
               ) : dashaData ? (
                 <div>
                   <div className="bg-[#B8860B]/10 rounded px-2 py-1.5 mb-2">
-                    <p className="text-[9px] text-[#e8e0d4]/50">Current Mahadasha</p>
-                    <p className="text-[11px] font-bold" style={{ color: '#B8860B' }}>{dashaData.current_dasha}</p>
+                    <p className="text-[9px] text-[#e8e0d4]/50">{t('section.currentMahadasha')}</p>
+                    <p className="text-[11px] font-bold" style={{ color: '#B8860B' }}>{translatePlanet(dashaData.current_dasha, language)}</p>
                     {dashaData.current_antardasha && (
-                      <p className="text-[9px] text-[#B8860B]">AD: {dashaData.current_antardasha}</p>
+                      <p className="text-[9px] text-[#B8860B]">{t('report.adLabel')} {translatePlanet(dashaData.current_antardasha, language)}</p>
                     )}
                   </div>
                   <table className="w-full text-[10px]" style={{ borderCollapse: 'collapse' }}>
                     <thead>
                       <tr style={{ backgroundColor: '#1a1a2e' }}>
-                        <th className="text-left p-1 font-medium text-[#B8860B]">Planet</th>
-                        <th className="text-left p-1 font-medium text-[#B8860B]">Start</th>
-                        <th className="text-left p-1 font-medium text-[#B8860B]">End</th>
-                        <th className="text-center p-1 font-medium text-[#B8860B]">Yrs</th>
+                        <th className="text-left p-1 font-medium text-[#B8860B]">{t('table.planet')}</th>
+                        <th className="text-left p-1 font-medium text-[#B8860B]">{t('table.start')}</th>
+                        <th className="text-left p-1 font-medium text-[#B8860B]">{t('table.end')}</th>
+                        <th className="text-center p-1 font-medium text-[#B8860B]">{t('table.years')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -601,7 +602,7 @@ export default function ConsolidatedReport({
                           borderBottom: '1px solid #2a2a4e',
                           backgroundColor: p.planet === dashaData.current_dasha ? '#B8860B10' : undefined,
                         }}>
-                          <td className="p-1 font-medium">{p.planet}{p.planet === dashaData.current_dasha ? ' \u2190' : ''}</td>
+                          <td className="p-1 font-medium">{translatePlanet(p.planet, language)}{p.planet === dashaData.current_dasha ? ' \u2190' : ''}</td>
                           <td className="p-1 text-[#e8e0d4]/60">{p.start_date}</td>
                           <td className="p-1 text-[#e8e0d4]/60">{p.end_date}</td>
                           <td className="p-1 text-center text-[#e8e0d4]/60">{p.years}</td>
@@ -611,33 +612,33 @@ export default function ConsolidatedReport({
                   </table>
                 </div>
               ) : (
-                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">Loading...</p>
+                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">{t('common.loading')}</p>
               )}
             </div>
 
             {/* Yogini Dasha */}
             <div className="border border-[#2a2a4e] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
-                Yogini Dasha
+                {t('section.yoginiDasha')}
               </h4>
               {loadingYogini ? (
                 <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
               ) : yoginiData ? (
                 <div>
                   <div className="bg-[#B8860B]/10 rounded px-2 py-1.5 mb-2">
-                    <p className="text-[9px] text-[#e8e0d4]/50">Current Dasha</p>
-                    <p className="text-[11px] font-bold" style={{ color: '#B8860B' }}>{yoginiData.current_dasha?.planet || '\u2014'}</p>
+                    <p className="text-[9px] text-[#e8e0d4]/50">{t('report.currentDasha')}</p>
+                    <p className="text-[11px] font-bold" style={{ color: '#B8860B' }}>{yoginiData.current_dasha?.planet ? translatePlanet(yoginiData.current_dasha.planet, language) : '\u2014'}</p>
                     {yoginiData.current_dasha?.planet && (
-                      <p className="text-[9px] text-[#B8860B]">Until: {yoginiData.current_dasha?.end_date}</p>
+                      <p className="text-[9px] text-[#B8860B]">{t('report.untilLabel')} {yoginiData.current_dasha?.end_date}</p>
                     )}
                   </div>
                   <table className="w-full text-[10px]" style={{ borderCollapse: 'collapse' }}>
                     <thead>
                       <tr style={{ backgroundColor: '#1a1a2e' }}>
-                        <th className="text-left p-1 font-medium text-[#B8860B]">Yogini</th>
-                        <th className="text-left p-1 font-medium text-[#B8860B]">Planet</th>
-                        <th className="text-left p-1 font-medium text-[#B8860B]">Start</th>
-                        <th className="text-left p-1 font-medium text-[#B8860B]">End</th>
+                        <th className="text-left p-1 font-medium text-[#B8860B]">{t('table.yogini')}</th>
+                        <th className="text-left p-1 font-medium text-[#B8860B]">{t('table.planet')}</th>
+                        <th className="text-left p-1 font-medium text-[#B8860B]">{t('table.start')}</th>
+                        <th className="text-left p-1 font-medium text-[#B8860B]">{t('table.end')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -646,8 +647,8 @@ export default function ConsolidatedReport({
                           borderBottom: '1px solid #2a2a4e',
                           backgroundColor: p.name === yoginiData.current_dasha?.name && p.start_date === yoginiData.current_dasha?.start_date ? '#B8860B10' : undefined,
                         }}>
-                          <td className="p-1 font-medium">{p.name}{p.name === yoginiData.current_dasha?.name && p.start_date === yoginiData.current_dasha?.start_date ? ' \u2190' : ''}</td>
-                          <td className="p-1 text-[#e8e0d4]/60">{p.planet} ({p.span}y)</td>
+                          <td className="p-1 font-medium">{translateName(p.name, language)}{p.name === yoginiData.current_dasha?.name && p.start_date === yoginiData.current_dasha?.start_date ? ' \u2190' : ''}</td>
+                          <td className="p-1 text-[#e8e0d4]/60">{translatePlanet(p.planet, language)} ({p.span}y)</td>
                           <td className="p-1 text-[#e8e0d4]/60">{p.start_date}</td>
                           <td className="p-1 text-[#e8e0d4]/60">{p.end_date}</td>
                         </tr>
@@ -656,7 +657,7 @@ export default function ConsolidatedReport({
                   </table>
                 </div>
               ) : (
-                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">Loading...</p>
+                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">{t('common.loading')}</p>
               )}
             </div>
           </div>
@@ -667,7 +668,7 @@ export default function ConsolidatedReport({
             <div className="border border-[#2a2a4e] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2 flex items-center gap-1" style={{ color: '#B8860B' }}>
                 <CheckCircle className="w-3 h-3 text-green-500" />
-                Yogas (Positive Combinations)
+                {t('section.yogas')}
               </h4>
               {loadingYogaDosha ? (
                 <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
@@ -675,15 +676,15 @@ export default function ConsolidatedReport({
                 <div className="space-y-1">
                   {presentYogas.map((yoga: any, idx: number) => (
                     <div key={idx} className="bg-green-500/10 border border-green-500/30 rounded px-2 py-1">
-                      <span className="text-[10px] font-medium text-green-400">{yoga.name}</span>
+                      <span className="text-[10px] font-medium text-green-400">{translateName(yoga.name, language)}</span>
                       {yoga.description && (
-                         <p className="text-[9px] text-green-400 mt-0.5">{yoga.description}</p>
+                         <p className="text-[9px] text-green-400 mt-0.5">{translateBackend(yoga.description, language)}</p>
                       )}
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-[10px] text-center py-4 text-[#e8e0d4]/40">No yogas detected</p>
+                <p className="text-[10px] text-center py-4 text-[#e8e0d4]/40">{t('yoga.noneDetected')}</p>
               )}
             </div>
 
@@ -691,7 +692,7 @@ export default function ConsolidatedReport({
             <div className="border border-[#2a2a4e] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2 flex items-center gap-1" style={{ color: '#B8860B' }}>
                 <Shield className="w-3 h-3 text-red-500" />
-                Doshas (Afflictions)
+                {t('section.doshas')}
               </h4>
               {loadingYogaDosha ? (
                 <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
@@ -699,15 +700,15 @@ export default function ConsolidatedReport({
                 <div className="space-y-1">
                   {presentDoshas.map((dosha: any, idx: number) => (
                     <div key={idx} className="bg-red-500/10 border border-red-500/30 rounded px-2 py-1">
-                      <span className="text-[10px] font-medium text-red-400">{dosha.name}</span>
+                      <span className="text-[10px] font-medium text-red-400">{translateName(dosha.name, language)}</span>
                       {dosha.remedies && (
-                        <p className="text-[9px] text-red-400 mt-0.5">Remedies: {dosha.remedies}</p>
+                        <p className="text-[9px] text-red-400 mt-0.5">{t('dosha.remedies')}: {translateRemedy(dosha.remedies, language)}</p>
                       )}
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-[10px] text-center py-4 text-green-400">No doshas present</p>
+                <p className="text-[10px] text-center py-4 text-green-400">{t('dosha.nonePresent')}</p>
               )}
             </div>
 
@@ -715,7 +716,7 @@ export default function ConsolidatedReport({
             <div className="border border-[#2a2a4e] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2 flex items-center gap-1" style={{ color: '#B8860B' }}>
                 <Shield className="w-3 h-3 text-[#B8860B]" />
-                Lifelong Sade Sati
+                {t('section.lifelongSadeSati')}
               </h4>
               {loadingSadesati ? (
                 <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
@@ -725,34 +726,34 @@ export default function ConsolidatedReport({
                     <div className="space-y-1.5">
                       {sadesatiData.phases.map((ph: any, idx: number) => (
                         <div key={idx} className="bg-[#1a1a2e] rounded px-2 py-1">
-                          <p className="text-[9px] text-[#B8860B] font-medium">{ph.phase} Phase</p>
+                          <p className="text-[9px] text-[#B8860B] font-medium">{translateLabel(ph.phase, language)} {t('report.phaseLabel')}</p>
                           <p className="text-[9px] text-[#e8e0d4]/60">{ph.start_date} \u2192 {ph.end_date}</p>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-[10px] text-center py-4 text-green-400">No major phases soon</p>
+                    <p className="text-[10px] text-center py-4 text-green-400">{t('sadesati.noPhases')}</p>
                   )}
                   {sadesatiData.remedies && sadesatiData.remedies.length > 0 && (
                     <div className="mt-2 pt-2 border-t border-[#2a2a4e]">
-                      <p className="text-[9px] font-semibold text-[#B8860B] mb-1">General Remedies</p>
+                      <p className="text-[9px] font-semibold text-[#B8860B] mb-1">{t('section.generalRemedies')}</p>
                       <ul className="list-disc pl-3 space-y-0.5 text-[8.5px] text-[#e8e0d4]/80">
                         {sadesatiData.remedies.map((rem: string, idx: number) => (
-                          <li key={idx}>{rem}</li>
+                          <li key={idx}>{translateRemedy(rem, language)}</li>
                         ))}
                       </ul>
                     </div>
                   )}
                 </div>
               ) : (
-                <p className="text-[10px] text-center py-4 text-[#e8e0d4]/40">Loading...</p>
+                <p className="text-[10px] text-center py-4 text-[#e8e0d4]/40">{t('common.loading')}</p>
               )}
             </div>
 
             {/* Lordships */}
             <div className="border border-[#2a2a4e] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
-                House Lordships
+                {t('section.houseLordships')}
               </h4>
               <div className="text-[10px]">
                 <LordshipsTab planets={planets} houses={result?.chart_data?.houses || {}} />
@@ -765,7 +766,7 @@ export default function ConsolidatedReport({
             {/* Ashtakvarga SAV */}
             <div className="border border-[#2a2a4e] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
-                Sarvashtakvarga
+                {t('section.sarvashtakvarga')}
               </h4>
               {loadingAshtakvarga ? (
                 <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
@@ -786,25 +787,25 @@ export default function ConsolidatedReport({
                               style={{ height: `${heightPct}%`, backgroundColor: isStrong ? '#B8860B' : '#b8b0a4' }}
                             />
                           </div>
-                          <span className="text-[7px] text-[#e8e0d4]/50">{sign.slice(0, 3)}</span>
+                          <span className="text-[7px] text-[#e8e0d4]/50">{translateSign(sign, language).slice(0, 3)}</span>
                         </div>
                       );
                     })}
                   </div>
                   <div className="flex items-center gap-3 mt-1 text-[9px] text-[#e8e0d4]/50">
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#B8860B' }} />Strong</span>
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#b8b0a4' }} />Weak</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#B8860B' }} />{t('dignity.strong')}</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#b8b0a4' }} />{t('dignity.weak')}</span>
                   </div>
                 </div>
               ) : (
-                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">Loading...</p>
+                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">{t('common.loading')}</p>
               )}
             </div>
 
             {/* Shadbala */}
             <div className="border border-[#2a2a4e] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
-                Shadbala Strength
+                {t('section.shadbalaStrength')}
               </h4>
               {loadingShadbala ? (
                 <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
@@ -817,7 +818,7 @@ export default function ConsolidatedReport({
                     const barColor = data.is_strong ? '#B8860B' : '#C43E4E';
                     return (
                       <div key={planet} className="flex items-center gap-1.5">
-                        <span className="w-10 text-[10px] font-medium text-[#e8e0d4]">{planet}</span>
+                        <span className="w-10 text-[10px] font-medium text-[#e8e0d4]">{translatePlanet(planet, language)}</span>
                         <div className="flex-1 bg-[#2a2a4e] rounded-full h-3 overflow-hidden">
                           <div className="h-full rounded-full" style={{ width: `${Math.min(pct, 100)}%`, backgroundColor: barColor }} />
                         </div>
@@ -828,12 +829,12 @@ export default function ConsolidatedReport({
                     );
                   })}
                   <div className="flex items-center gap-3 mt-1 text-[9px] text-[#e8e0d4]/50">
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#B8860B' }} />Strong</span>
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#C43E4E' }} />Weak</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#B8860B' }} />{t('dignity.strong')}</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#C43E4E' }} />{t('dignity.weak')}</span>
                   </div>
                 </div>
               ) : (
-                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">Loading...</p>
+                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">{t('common.loading')}</p>
               )}
             </div>
           </div>
@@ -842,49 +843,49 @@ export default function ConsolidatedReport({
             {/* KP Analysis */}
             <div className="border border-[#2a2a4e] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
-                KP Analysis
+                {t('section.kpAnalysis')}
               </h4>
               {loadingKp ? (
                 <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
               ) : kpData ? (
                 <div className="space-y-4 max-h-64 overflow-y-auto pr-1">
                   <div>
-                    <h5 className="text-[10px] font-semibold text-[#B8860B] mb-1">Planetary Significators</h5>
+                    <h5 className="text-[10px] font-semibold text-[#B8860B] mb-1">{t('section.planetarySignificators')}</h5>
                     <table className="w-full text-[9px]" style={{ borderCollapse: 'collapse' }}>
                       <thead style={{ backgroundColor: '#1a1a2e' }}>
                         <tr>
-                          <th className="text-left p-1 text-[#b8b0a4]">Planet</th>
-                          <th className="text-left p-1 text-[#b8b0a4]">Star Lord</th>
-                          <th className="text-left p-1 text-[#b8b0a4]">Sub Lord</th>
+                          <th className="text-left p-1 text-[#b8b0a4]">{t('table.planet')}</th>
+                          <th className="text-left p-1 text-[#b8b0a4]">{t('table.starLord')}</th>
+                          <th className="text-left p-1 text-[#b8b0a4]">{t('table.subLord')}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {(kpData.planets || []).map((p: any) => (
                           <tr key={p.planet} style={{ borderBottom: '1px solid #2a2a4e' }}>
-                            <td className="p-1 text-[#e8e0d4]">{p.planet}</td>
-                            <td className="p-1 text-[#e8e0d4]/70">{p.nakshatra_lord || '-'}</td>
-                            <td className="p-1 text-[#e8e0d4]/70">{p.sub_lord || '-'}</td>
+                            <td className="p-1 text-[#e8e0d4]">{translatePlanet(p.planet, language)}</td>
+                            <td className="p-1 text-[#e8e0d4]/70">{p.nakshatra_lord ? translatePlanet(p.nakshatra_lord, language) : '-'}</td>
+                            <td className="p-1 text-[#e8e0d4]/70">{p.sub_lord ? translatePlanet(p.sub_lord, language) : '-'}</td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
                   </div>
                   <div>
-                    <h5 className="text-[10px] font-semibold text-[#B8860B] mb-1">House Cusps</h5>
+                    <h5 className="text-[10px] font-semibold text-[#B8860B] mb-1">{t('section.houseCusps')}</h5>
                     <table className="w-full text-[9px]" style={{ borderCollapse: 'collapse' }}>
                       <thead style={{ backgroundColor: '#1a1a2e' }}>
                         <tr>
-                          <th className="text-left p-1 text-[#b8b0a4]">Cusp</th>
-                          <th className="text-left p-1 text-[#b8b0a4]">Star Lord</th>
-                          <th className="text-left p-1 text-[#b8b0a4]">Sub Lord</th>
+                          <th className="text-left p-1 text-[#b8b0a4]">{t('table.cusp')}</th>
+                          <th className="text-left p-1 text-[#b8b0a4]">{t('table.starLord')}</th>
+                          <th className="text-left p-1 text-[#b8b0a4]">{t('table.subLord')}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {(kpData.houses || []).map((h: any) => (
                           <tr key={h.cusp} style={{ borderBottom: '1px solid #2a2a4e' }}>
                             <td className="p-1 text-[#e8e0d4]">H{h.cusp}</td>
-                            <td className="p-1 text-[#e8e0d4]/70">{h.nakshatra_lord || '-'}</td>
-                            <td className="p-1 text-[#e8e0d4]/70">{h.sub_lord || '-'}</td>
+                            <td className="p-1 text-[#e8e0d4]/70">{h.nakshatra_lord ? translatePlanet(h.nakshatra_lord, language) : '-'}</td>
+                            <td className="p-1 text-[#e8e0d4]/70">{h.sub_lord ? translatePlanet(h.sub_lord, language) : '-'}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -892,14 +893,14 @@ export default function ConsolidatedReport({
                   </div>
                 </div>
               ) : (
-                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">Loading...</p>
+                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">{t('common.loading')}</p>
               )}
             </div>
 
             {/* Varshphal (Annual Return) */}
             <div className="border border-[#2a2a4e] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
-                Varshphal (Current Year)
+                {t('section.varshphalCurrentYear')}
               </h4>
               {loadingVarshphal ? (
                 <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
@@ -907,27 +908,27 @@ export default function ConsolidatedReport({
                 <div className="space-y-3">
                   <div className="grid grid-cols-2 gap-2">
                     <div className="bg-[#1a1a2e] rounded px-2 py-1.5 border border-[#2a2a4e]">
-                      <p className="text-[9px] text-[#e8e0d4]/50">Muntha Sign</p>
-                      <p className="text-[11px] font-bold text-[#B8860B]">{varshphalData.muntha?.sign || 'N/A'}</p>
+                      <p className="text-[9px] text-[#e8e0d4]/50">{t('section.munthaSign')}</p>
+                      <p className="text-[11px] font-bold text-[#B8860B]">{varshphalData.muntha?.sign ? translateSign(varshphalData.muntha.sign, language) : 'N/A'}</p>
                     </div>
                     <div className="bg-[#1a1a2e] rounded px-2 py-1.5 border border-[#2a2a4e]">
-                      <p className="text-[9px] text-[#e8e0d4]/50">Muntha Lord</p>
-                      <p className="text-[11px] font-bold text-[#B8860B]">{varshphalData.muntha?.lord || 'N/A'}</p>
+                      <p className="text-[9px] text-[#e8e0d4]/50">{t('section.munthaLord')}</p>
+                      <p className="text-[11px] font-bold text-[#B8860B]">{varshphalData.muntha?.lord ? translatePlanet(varshphalData.muntha.lord, language) : 'N/A'}</p>
                     </div>
                     <div className="bg-[#1a1a2e] rounded px-2 py-1.5 border border-[#2a2a4e]">
-                      <p className="text-[9px] text-[#e8e0d4]/50">Year Lord (Varsheshvar)</p>
-                      <p className="text-[11px] font-bold text-[#B8860B]">{varshphalData.year_lord || 'N/A'}</p>
+                      <p className="text-[9px] text-[#e8e0d4]/50">{t('section.yearLord')}</p>
+                      <p className="text-[11px] font-bold text-[#B8860B]">{varshphalData.year_lord ? translatePlanet(varshphalData.year_lord, language) : 'N/A'}</p>
                     </div>
                   </div>
                   {varshphalData.mudda_dasha && (
                     <div>
-                      <h5 className="text-[10px] font-semibold text-[#B8860B] mb-1">Mudda Dasha (Current)</h5>
+                      <h5 className="text-[10px] font-semibold text-[#B8860B] mb-1">{t('section.muddaDasha')}</h5>
                       <div className="bg-[#1a1a2e] p-2 rounded max-h-32 overflow-y-auto w-full">
                         <table className="w-full text-[9px]" style={{ borderCollapse: 'collapse' }}>
                            <tbody>
                              {varshphalData.mudda_dasha.map((md: any) => (
                                <tr key={md.planet} style={{ borderBottom: '1px solid #2a2a4e' }}>
-                                 <td className="p-1 font-medium">{md.planet}</td>
+                                 <td className="p-1 font-medium">{translatePlanet(md.planet, language)}</td>
                                  <td className="p-1 text-[#e8e0d4]/60">{md.start_date.slice(0, 10)} - {md.end_date.slice(0, 10)}</td>
                                </tr>
                              ))}
@@ -938,7 +939,7 @@ export default function ConsolidatedReport({
                   )}
                 </div>
               ) : (
-                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">Loading...</p>
+                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">{t('common.loading')}</p>
               )}
             </div>
           </div>
@@ -947,7 +948,7 @@ export default function ConsolidatedReport({
           <div className="grid grid-cols-1 mt-3">
             <div className="border border-[#2a2a4e] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
-                Upagrahas (Sub-planets & Kala Velas)
+                {t('section.upagrahasTitle')}
               </h4>
               {loadingUpagrahas ? (
                 <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
@@ -956,10 +957,10 @@ export default function ConsolidatedReport({
                   <table className="w-full text-[10px]" style={{ borderCollapse: 'collapse' }}>
                     <thead style={{ backgroundColor: '#1a1a2e' }}>
                       <tr>
-                        <th className="text-left p-1.5 text-[#b8b0a4]">Upagraha</th>
-                        <th className="text-left p-1.5 text-[#b8b0a4]">Longitude</th>
-                        <th className="text-left p-1.5 text-[#b8b0a4]">Sign</th>
-                        <th className="text-left p-1.5 text-[#b8b0a4]">Nakshatra</th>
+                        <th className="text-left p-1.5 text-[#b8b0a4]">{t('tab.upagrahas')}</th>
+                        <th className="text-left p-1.5 text-[#b8b0a4]">{t('table.longitude')}</th>
+                        <th className="text-left p-1.5 text-[#b8b0a4]">{t('table.sign')}</th>
+                        <th className="text-left p-1.5 text-[#b8b0a4]">{t('table.nakshatra')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -971,7 +972,7 @@ export default function ConsolidatedReport({
                           <tr key={name} style={{ borderBottom: '1px solid #2a2a4e' }}>
                             <td className="p-1.5 font-medium text-[#e8e0d4]">{name}</td>
                             <td className="p-1.5 text-[#e8e0d4]">{u.sign_degree?.toFixed(2)}°</td>
-                            <td className="p-1.5 text-[#e8e0d4]">{u.sign}</td>
+                            <td className="p-1.5 text-[#e8e0d4]">{translateSign(u.sign, language)}</td>
                             <td className="p-1.5 text-[#e8e0d4]">{u.nakshatra} P{u.nakshatra_pada}</td>
                           </tr>
                         );
@@ -980,7 +981,7 @@ export default function ConsolidatedReport({
                   </table>
                 </div>
               ) : (
-                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">Loading...</p>
+                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">{t('common.loading')}</p>
               )}
             </div>
           </div>
@@ -989,7 +990,7 @@ export default function ConsolidatedReport({
           <div className="grid grid-cols-1 mt-3">
             <div className="border border-[#2a2a4e] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
-                Sodashvarga (16 Divisional Charts)
+                {t('section.sodashvargaTitle')}
               </h4>
               {loadingSodashvarga ? (
                 <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
@@ -1000,9 +1001,9 @@ export default function ConsolidatedReport({
                     <table className="w-full text-[9px]" style={{ borderCollapse: 'collapse' }}>
                       <thead>
                         <tr style={{ backgroundColor: '#B8860B', color: 'white' }}>
-                          <th className="text-left p-1.5 font-medium sticky left-0" style={{ backgroundColor: '#B8860B', minWidth: '80px' }}>Varga</th>
+                          <th className="text-left p-1.5 font-medium sticky left-0" style={{ backgroundColor: '#B8860B', minWidth: '80px' }}>{t('table.varga')}</th>
                           {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'].map(p => (
-                            <th key={p} className="text-center p-1.5 font-medium" style={{ minWidth: '50px' }}>{p.slice(0, 3)}</th>
+                            <th key={p} className="text-center p-1.5 font-medium" style={{ minWidth: '50px' }}>{translatePlanet(p, language).slice(0, 3)}</th>
                           ))}
                         </tr>
                       </thead>
@@ -1022,8 +1023,8 @@ export default function ConsolidatedReport({
                                 : dignity === 'enemy' ? '#f97316'
                                 : '#e8e0d4';
                               return (
-                                <td key={planet} className="p-1.5 text-center" style={{ color: dignityColor }} title={dignity}>
-                                  {sign.slice(0, 3)}
+                                <td key={planet} className="p-1.5 text-center" style={{ color: dignityColor }} title={dignity ? translateLabel(dignity, language) : ''}>
+                                  {sign === '-' ? '-' : translateSign(sign, language).slice(0, 3)}
                                 </td>
                               );
                             })}
@@ -1034,16 +1035,16 @@ export default function ConsolidatedReport({
                   </div>
                   {/* Legend */}
                   <div className="flex flex-wrap gap-3 text-[8px] text-[#e8e0d4]/60">
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#22c55e' }} />Exalted</span>
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#B8860B' }} />Own/MT</span>
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#60a5fa' }} />Friend</span>
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#f97316' }} />Enemy</span>
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#ef4444' }} />Debilitated</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#22c55e' }} />{t('dignity.exalted')}</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#B8860B' }} />{t('report.ownMT')}</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#60a5fa' }} />{t('dignity.friend')}</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#f97316' }} />{t('dignity.enemy')}</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#ef4444' }} />{t('dignity.debilitated')}</span>
                   </div>
 
                   {/* Vimshopak Bala (By Planet) */}
                   <div>
-                    <h5 className="text-[10px] font-semibold text-[#B8860B] mb-2">Vimshopak Bala (Strength from 16 Vargas)</h5>
+                    <h5 className="text-[10px] font-semibold text-[#B8860B] mb-2">{t('section.vimshopakBala')}</h5>
                     <div className="space-y-1">
                       {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu']
                         .filter(p => sodashvargaData.by_planet?.[p])
@@ -1053,12 +1054,12 @@ export default function ConsolidatedReport({
                           const barColor = data.strength === 'Strong' ? '#B8860B' : data.strength === 'Medium' ? '#f59e0b' : '#C43E4E';
                           return (
                             <div key={planet} className="flex items-center gap-1.5">
-                              <span className="w-12 text-[9px] font-medium text-[#e8e0d4]">{planet}</span>
+                              <span className="w-12 text-[9px] font-medium text-[#e8e0d4]">{translatePlanet(planet, language)}</span>
                               <div className="flex-1 bg-[#2a2a4e] rounded-full h-2.5 overflow-hidden">
                                 <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: barColor }} />
                               </div>
                               <span className={`text-[8px] w-16 text-right font-medium`} style={{ color: barColor }}>
-                                {data.vimshopak_bala}/20 ({data.strength})
+                                {data.vimshopak_bala}/20 ({translateLabel(data.strength, language)})
                               </span>
                             </div>
                           );
@@ -1067,7 +1068,7 @@ export default function ConsolidatedReport({
                   </div>
                 </div>
               ) : (
-                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">Loading...</p>
+                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">{t('common.loading')}</p>
               )}
             </div>
           </div>
@@ -1077,7 +1078,7 @@ export default function ConsolidatedReport({
             {/* Aspects on Planets */}
             <div className="border border-[#2a2a4e] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
-                Aspects on Planets
+                {t('section.aspectsOnPlanets')}
               </h4>
               {loadingAspects ? (
                 <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
@@ -1086,13 +1087,13 @@ export default function ConsolidatedReport({
                   {Object.entries(aspectsData.planet_aspects_summary).map(([planet, data]: [string, any]) => (
                     <div key={planet} className="bg-[#1a1a2e] rounded px-2 py-1.5 border border-[#2a2a4e]">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-[10px] font-semibold text-[#e8e0d4]">{planet} <span className="text-[8px] text-[#e8e0d4]/40">(H{data.house})</span></span>
+                        <span className="text-[10px] font-semibold text-[#e8e0d4]">{translatePlanet(planet, language)} <span className="text-[8px] text-[#e8e0d4]/40">(H{data.house})</span></span>
                         <div className="flex gap-2">
                           <span className="text-[8px] px-1.5 py-0.5 rounded bg-green-500/15 text-green-400">
-                            {data.benefic_aspects} benefic
+                            {data.benefic_aspects} {t('report.beneficCount')}
                           </span>
                           <span className="text-[8px] px-1.5 py-0.5 rounded bg-red-500/15 text-red-400">
-                            {data.malefic_aspects} malefic
+                            {data.malefic_aspects} {t('report.maleficCount')}
                           </span>
                         </div>
                       </div>
@@ -1109,23 +1110,23 @@ export default function ConsolidatedReport({
                                   color: isBenefic ? '#4ade80' : '#f87171',
                                 }}
                               >
-                                {a.planet} ({a.type})
+                                {translatePlanet(a.planet, language)} ({a.type})
                               </span>
                             );
                           })}
                         </div>
                       ) : (
-                        <p className="text-[8px] text-[#e8e0d4]/30 mt-0.5">No aspects received</p>
+                        <p className="text-[8px] text-[#e8e0d4]/30 mt-0.5">{t('report.noAspectsReceived')}</p>
                       )}
                       {/* Houses this planet aspects */}
                       {data.aspects_to && data.aspects_to.length > 0 && (
                         <div className="mt-1 pt-1 border-t border-[#2a2a4e]">
-                          <span className="text-[8px] text-[#B8860B]">Aspects → </span>
+                          <span className="text-[8px] text-[#B8860B]">{t('report.aspectsTo')} </span>
                           {data.aspects_to.map((a: any, i: number) => (
                             <span key={i} className="text-[8px] text-[#e8e0d4]/60">
                               H{a.house}
                               {a.planets_in_house && a.planets_in_house.length > 0 && (
-                                <span className="text-[#B8860B]"> ({a.planets_in_house.join(', ')})</span>
+                                <span className="text-[#B8860B]"> ({a.planets_in_house.map((p: string) => translatePlanet(p, language)).join(', ')})</span>
                               )}
                               {i < data.aspects_to.length - 1 ? ', ' : ''}
                             </span>
@@ -1136,14 +1137,14 @@ export default function ConsolidatedReport({
                   ))}
                 </div>
               ) : (
-                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">Loading...</p>
+                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">{t('common.loading')}</p>
               )}
             </div>
 
             {/* Aspects on Bhavas */}
             <div className="border border-[#2a2a4e] rounded-lg p-3">
               <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
-                Aspects on Bhavas (Houses)
+                {t('section.aspectsOnBhavas')}
               </h4>
               {loadingAspects ? (
                 <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-[#B8860B]" /></div>
@@ -1152,9 +1153,9 @@ export default function ConsolidatedReport({
                   <table className="w-full text-[9px]" style={{ borderCollapse: 'collapse' }}>
                     <thead>
                       <tr style={{ backgroundColor: '#1a1a2e' }}>
-                        <th className="text-left p-1.5 text-[#b8b0a4]">Bhava</th>
-                        <th className="text-left p-1.5 text-[#b8b0a4]">Planets</th>
-                        <th className="text-left p-1.5 text-[#b8b0a4]">Aspected By</th>
+                        <th className="text-left p-1.5 text-[#b8b0a4]">{t('table.bhava')}</th>
+                        <th className="text-left p-1.5 text-[#b8b0a4]">{t('table.planets')}</th>
+                        <th className="text-left p-1.5 text-[#b8b0a4]">{t('table.aspectedBy')}</th>
                         <th className="text-center p-1.5 text-[#b8b0a4]">B</th>
                         <th className="text-center p-1.5 text-[#b8b0a4]">M</th>
                       </tr>
@@ -1165,12 +1166,12 @@ export default function ConsolidatedReport({
                           <td className="p-1.5 font-medium text-[#B8860B]">H{bh.house}</td>
                           <td className="p-1.5 text-[#e8e0d4]">
                             {bh.planets_in_house && bh.planets_in_house.length > 0
-                              ? bh.planets_in_house.join(', ')
+                              ? bh.planets_in_house.map((p: string) => translatePlanet(p, language)).join(', ')
                               : <span className="text-[#e8e0d4]/30">—</span>}
                           </td>
                           <td className="p-1.5 text-[#e8e0d4]/70">
                             {bh.aspected_by && bh.aspected_by.length > 0
-                              ? bh.aspected_by.join(', ')
+                              ? bh.aspected_by.map((p: string) => translatePlanet(p, language)).join(', ')
                               : <span className="text-[#e8e0d4]/30">—</span>}
                           </td>
                           <td className="p-1.5 text-center">
@@ -1184,12 +1185,12 @@ export default function ConsolidatedReport({
                     </tbody>
                   </table>
                   <div className="flex gap-3 mt-1 text-[8px] text-[#e8e0d4]/50">
-                    <span>B = Benefic Aspects</span>
-                    <span>M = Malefic Aspects</span>
+                    <span>{t('report.beneficAspectsLabel')}</span>
+                    <span>{t('report.maleficAspectsLabel')}</span>
                   </div>
                 </div>
               ) : (
-                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">Loading...</p>
+                <p className="text-[10px] text-center py-6 text-[#e8e0d4]/40">{t('common.loading')}</p>
               )}
             </div>
           </div>
@@ -1199,17 +1200,17 @@ export default function ConsolidatedReport({
             <div className="grid grid-cols-1 mt-3">
               <div className="border border-[#2a2a4e] rounded-lg p-3">
                 <h4 className="text-[11px] font-bold mb-2" style={{ color: '#B8860B' }}>
-                  Bhinnashtakvarga (Individual Planet Bindus)
+                  {t('section.bhinnashtakvarga')}
                 </h4>
                 <div className="overflow-x-auto">
                   <table className="w-full text-[9px]" style={{ borderCollapse: 'collapse' }}>
                     <thead>
                       <tr style={{ backgroundColor: '#B8860B', color: 'white' }}>
-                        <th className="text-left p-1.5 font-medium">Planet</th>
-                        {['Ari', 'Tau', 'Gem', 'Can', 'Leo', 'Vir', 'Lib', 'Sco', 'Sag', 'Cap', 'Aqu', 'Pis'].map(s => (
-                          <th key={s} className="text-center p-1 font-medium">{s}</th>
+                        <th className="text-left p-1.5 font-medium">{t('table.planet')}</th>
+                        {['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'].map(s => (
+                          <th key={s} className="text-center p-1 font-medium">{translateSign(s, language).slice(0, 3)}</th>
                         ))}
-                        <th className="text-center p-1.5 font-medium">Total</th>
+                        <th className="text-center p-1.5 font-medium">{t('table.total')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1219,7 +1220,7 @@ export default function ConsolidatedReport({
                         const total = signs.reduce((sum: number, s: string) => sum + (bindus[s] || 0), 0);
                         return (
                           <tr key={planet} style={{ borderBottom: '1px solid #2a2a4e' }}>
-                            <td className="p-1.5 font-medium text-[#e8e0d4]">{planet}</td>
+                            <td className="p-1.5 font-medium text-[#e8e0d4]">{translatePlanet(planet, language)}</td>
                             {signs.map(s => {
                               const val = bindus[s] || 0;
                               return (
@@ -1248,7 +1249,7 @@ export default function ConsolidatedReport({
           {/* Footer */}
           <div className="text-center border-t border-[#2a2a4e] pt-3 pb-1 mt-2">
             <p className="text-[9px] text-[#e8e0d4]/40">
-              Generated by Astro Rattan | {new Date().toLocaleDateString()}
+              {t('section.generatedBy')} | {new Date().toLocaleDateString()}
             </p>
           </div>
         </div>

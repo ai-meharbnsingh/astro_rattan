@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Hash, Sparkles, Hand, Loader2, Eye } from 'lucide-react';
 import { api } from '@/lib/api';
+import { useTranslation } from '@/lib/i18n';
 
 interface NumerologyResult {
   life_path: number;
@@ -68,6 +69,7 @@ const normalizePalmistryGuide = (data: any): PalmistryGuide => ({
 });
 
 export default function NumerologyTarot() {
+  const { t } = useTranslation();
   // Numerology
   const [numName, setNumName] = useState('');
   const [numDob, setNumDob] = useState('');
@@ -135,12 +137,12 @@ export default function NumerologyTarot() {
     <section className="max-w-4xl mx-auto py-24 px-4">
       <div className="text-center mb-10">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold/10 text-sacred-gold text-sm font-medium mb-4">
-          <Sparkles className="w-4 h-4" />Divination Tools
+          <Sparkles className="w-4 h-4" />{t('numerology.badge')}
         </div>
         <h2 className="text-3xl sm:text-4xl font-display font-bold text-cosmic-text mb-2">
-          Numerology, Tarot &<span className="text-gradient-indigo"> Palmistry</span>
+          {t('numerology.heading')}<span className="text-gradient-indigo"> {t('numerology.headingHighlight')}</span>
         </h2>
-        <p className="text-cosmic-text-secondary">Explore numbers, cards, and lines of destiny</p>
+        <p className="text-cosmic-text-secondary">{t('numerology.subtitle')}</p>
       </div>
 
       {error && (
@@ -152,13 +154,13 @@ export default function NumerologyTarot() {
       <Tabs defaultValue="numerology">
         <TabsList className="grid grid-cols-3 bg-cosmic-surface mb-8 max-w-md mx-auto">
           <TabsTrigger value="numerology" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e]">
-            <Hash className="w-4 h-4 mr-1" />Numerology
+            <Hash className="w-4 h-4 mr-1" />{t('numerology.tabNumerology')}
           </TabsTrigger>
           <TabsTrigger value="tarot" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e]">
-            <Eye className="w-4 h-4 mr-1" />Tarot
+            <Eye className="w-4 h-4 mr-1" />{t('numerology.tabTarot')}
           </TabsTrigger>
           <TabsTrigger value="palmistry" onClick={loadPalmistry} className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e]">
-            <Hand className="w-4 h-4 mr-1" />Palmistry
+            <Hand className="w-4 h-4 mr-1" />{t('numerology.tabPalmistry')}
           </TabsTrigger>
         </TabsList>
 
@@ -166,12 +168,12 @@ export default function NumerologyTarot() {
         <TabsContent value="numerology">
           <Card className="bg-cosmic-card border-0 shadow-soft max-w-xl mx-auto">
             <CardContent className="p-6">
-              <h3 className="font-display font-semibold text-cosmic-text mb-4 text-center">Calculate Your Numbers</h3>
+              <h3 className="font-display font-semibold text-cosmic-text mb-4 text-center">{t('numerology.calculateNumbers')}</h3>
               <div className="space-y-3">
-                <Input placeholder="Full Name" value={numName} onChange={(e) => setNumName(e.target.value)} className="bg-cosmic-card border-sacred-gold/15" />
+                <Input placeholder={t('numerology.fullName')} value={numName} onChange={(e) => setNumName(e.target.value)} className="bg-cosmic-card border-sacred-gold/15" />
                 <Input type="date" value={numDob} onChange={(e) => setNumDob(e.target.value)} className="bg-cosmic-card border-sacred-gold/15" />
                 <Button onClick={calculateNumerology} disabled={numLoading || !numName.trim() || !numDob} className="w-full bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark">
-                  {numLoading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Calculating...</> : <><Hash className="w-4 h-4 mr-2" />Calculate</>}
+                  {numLoading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{t('common.calculating')}</> : <><Hash className="w-4 h-4 mr-2" />{t('numerology.calculate')}</>}
                 </Button>
               </div>
             </CardContent>
@@ -179,13 +181,13 @@ export default function NumerologyTarot() {
           {numResult && (
             <Card className="mt-6 bg-cosmic-card border-0 shadow-soft-lg max-w-xl mx-auto">
               <CardContent className="p-6">
-                <h4 className="font-display font-semibold text-cosmic-text mb-4 text-center">Your Numerology Report</h4>
+                <h4 className="font-display font-semibold text-cosmic-text mb-4 text-center">{t('numerology.report')}</h4>
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   {[
-                    { label: 'Life Path', value: numResult.life_path, color: 'bg-purple-100 text-purple-700' },
-                    { label: 'Expression', value: numResult.expression, color: 'bg-blue-100 text-blue-700' },
-                    { label: 'Soul Urge', value: numResult.soul_urge, color: 'bg-green-500/20 text-green-400' },
-                    { label: 'Personality', value: numResult.personality, color: 'bg-yellow-100 text-yellow-700' },
+                    { label: t('numerology.lifePath'), value: numResult.life_path, color: 'bg-purple-100 text-purple-700' },
+                    { label: t('numerology.expression'), value: numResult.expression, color: 'bg-blue-100 text-blue-700' },
+                    { label: t('numerology.soulUrge'), value: numResult.soul_urge, color: 'bg-green-500/20 text-green-400' },
+                    { label: t('numerology.personality'), value: numResult.personality, color: 'bg-yellow-100 text-yellow-700' },
                   ].map((n) => (
                     <div key={n.label} className="text-center p-3 rounded-xl bg-cosmic-card">
                       <p className="text-xs text-cosmic-text-secondary mb-1">{n.label}</p>
@@ -196,7 +198,7 @@ export default function NumerologyTarot() {
                 {numResult.summary && <p className="text-sm text-cosmic-text-secondary text-center">{numResult.summary}</p>}
                 {numResult.predictions && numResult.predictions.length > 0 && (
                   <div className="mt-4">
-                    <p className="text-sm font-medium text-cosmic-text mb-2">Predictions:</p>
+                    <p className="text-sm font-medium text-cosmic-text mb-2">{t('numerology.predictions')}:</p>
                     <ul className="space-y-1">
                       {numResult.predictions.map((p, i) => (
                         <li key={i} className="text-sm text-cosmic-text-secondary flex gap-2">
@@ -215,7 +217,7 @@ export default function NumerologyTarot() {
         <TabsContent value="tarot">
           <Card className="bg-cosmic-card border-0 shadow-soft max-w-xl mx-auto">
             <CardContent className="p-6">
-              <h3 className="font-display font-semibold text-cosmic-text mb-4 text-center">Draw Tarot Cards</h3>
+              <h3 className="font-display font-semibold text-cosmic-text mb-4 text-center">{t('numerology.drawTarot')}</h3>
               <div className="space-y-3">
                 <Select value={tarotSpread} onValueChange={setTarotSpread}>
                   <SelectTrigger className="w-full bg-cosmic-card border-sacred-gold/15">
