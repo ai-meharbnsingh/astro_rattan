@@ -1206,23 +1206,31 @@ def get_kp_analysis(
         house_cusps = [(asc_lon + i * 30.0) % 360.0 for i in range(12)]
 
     try:
-        kp = calculate_kp_cuspal(planet_longitudes, house_cusps)
+        kp = calculate_kp_cuspal(
+            planet_longitudes, house_cusps,
+            chart_data=chart, birth_date=row.get("birth_date"),
+        )
     except Exception as exc:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=f"KP calculation error: {str(exc)}",
         )
 
-    # Shape response: planets as list, cusps as list
+    # Shape response: planets as list with all KP fields
     planets_list = []
     for pname, pinfo in kp.get("planets", {}).items():
         planets_list.append({
             "planet": pname,
+            "retrograde": pinfo.get("retrograde", False),
             "sign": pinfo.get("sign", ""),
             "sign_lord": pinfo.get("sign_lord", ""),
             "star_lord": pinfo.get("star_lord", ""),
             "sub_lord": pinfo.get("sub_lord", ""),
+            "sub_sub_lord": pinfo.get("sub_sub_lord", ""),
+            "nakshatra": pinfo.get("nakshatra", ""),
+            "pada": pinfo.get("pada", 0),
             "degree": pinfo.get("longitude", 0.0),
+            "degree_dms": pinfo.get("degree_dms", ""),
         })
 
     return {
@@ -1231,6 +1239,9 @@ def get_kp_analysis(
         "planets": planets_list,
         "cusps": kp.get("cusps", []),
         "significators": kp.get("significators", {}),
+        "house_significations": kp.get("house_significations", {}),
+        "planet_significator_strengths": kp.get("planet_significator_strengths", {}),
+        "ruling_planets": kp.get("ruling_planets", {}),
     }
 
 

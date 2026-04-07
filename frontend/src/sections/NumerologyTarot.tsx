@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Hash, Sparkles, Hand, Loader2, Eye } from 'lucide-react';
+import { Hash, Sparkles, Hand, Loader2, Eye, Phone } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
 
@@ -25,6 +25,17 @@ interface NumerologyResult {
   personality: number;
   predictions?: string[] | NumerologyPredictions;
   summary?: string;
+}
+
+interface MobileNumerologyResult {
+  phone_number: string;
+  vibration_number: number;
+  total_sum: number;
+  prediction: string;
+  lucky_qualities: string[];
+  challenges: string[];
+  best_for: string;
+  compatibility_numbers: number[];
 }
 
 interface TarotCard {
@@ -84,6 +95,11 @@ export default function NumerologyTarot() {
   const [numResult, setNumResult] = useState<NumerologyResult | null>(null);
   const [numLoading, setNumLoading] = useState(false);
 
+  // Mobile Numerology
+  const [mobilePhone, setMobilePhone] = useState('');
+  const [mobileResult, setMobileResult] = useState<MobileNumerologyResult | null>(null);
+  const [mobileLoading, setMobileLoading] = useState(false);
+
   // Tarot
   const [tarotSpread, setTarotSpread] = useState('single');
   const [tarotQuestion, setTarotQuestion] = useState('');
@@ -113,6 +129,20 @@ export default function NumerologyTarot() {
       setError(err instanceof Error ? err.message : 'Numerology calculation failed. Please try again.');
     }
     setNumLoading(false);
+  };
+
+  const analyzeMobile = async () => {
+    if (!mobilePhone.trim()) return;
+    setMobileLoading(true);
+    setMobileResult(null);
+    setError('');
+    try {
+      const data = await api.post('/api/numerology/mobile', { phone_number: mobilePhone.trim() });
+      setMobileResult(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Mobile numerology analysis failed. Please try again.');
+    }
+    setMobileLoading(false);
   };
 
   const drawTarot = async () => {
@@ -249,6 +279,104 @@ export default function NumerologyTarot() {
               </CardContent>
             </Card>
           )}
+
+          {/* Mobile Number Numerology Section */}
+          <div className="mt-10 pt-8 border-t border-sacred-gold/10">
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold/10 text-sacred-gold text-sm font-medium mb-3">
+                <Phone className="w-4 h-4" />Mobile Number Numerology
+              </div>
+              <p className="text-sm text-cosmic-text-secondary">Discover the hidden vibration of your mobile number</p>
+            </div>
+            <Card className="bg-cosmic-card border-0 shadow-soft max-w-xl mx-auto">
+              <CardContent className="p-6">
+                <h3 className="font-display font-semibold text-cosmic-text mb-4 text-center">Analyze Your Mobile Number</h3>
+                <div className="space-y-3">
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cosmic-text-secondary" />
+                    <Input
+                      placeholder="Enter phone number (e.g. +91 98765 43210)"
+                      value={mobilePhone}
+                      onChange={(e) => setMobilePhone(e.target.value)}
+                      className="bg-cosmic-card border-sacred-gold/15 pl-10"
+                    />
+                  </div>
+                  <Button
+                    onClick={analyzeMobile}
+                    disabled={mobileLoading || !mobilePhone.trim()}
+                    className="w-full bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark"
+                  >
+                    {mobileLoading ? (
+                      <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Analyzing...</>
+                    ) : (
+                      <><Phone className="w-4 h-4 mr-2" />Analyze</>
+                    )}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {mobileResult && (
+              <Card className="mt-6 bg-cosmic-card border-0 shadow-soft-lg max-w-xl mx-auto">
+                <CardContent className="p-6">
+                  {/* Vibration Number Badge */}
+                  <div className="text-center mb-6">
+                    <p className="text-xs text-cosmic-text-secondary mb-2">Vibration Number</p>
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-sacred-gold/20 border-2 border-sacred-gold">
+                      <span className="text-2xl font-display font-bold text-sacred-gold">{mobileResult.vibration_number}</span>
+                    </div>
+                    <p className="text-xs text-cosmic-text-secondary mt-2">Total digit sum: {mobileResult.total_sum}</p>
+                  </div>
+
+                  {/* Prediction */}
+                  <div className="rounded-xl border border-sacred-gold/20 overflow-hidden mb-4">
+                    <div className="px-4 py-2 bg-sacred-gold/10 text-sacred-gold font-medium text-sm flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 shrink-0" />Prediction
+                    </div>
+                    <div className="px-4 py-3">
+                      <p className="text-sm text-cosmic-text-secondary leading-relaxed">{mobileResult.prediction}</p>
+                    </div>
+                  </div>
+
+                  {/* Lucky Qualities */}
+                  <div className="mb-4">
+                    <p className="text-sm font-medium text-cosmic-text mb-2">Lucky Qualities</p>
+                    <div className="flex flex-wrap gap-2">
+                      {mobileResult.lucky_qualities.map((q) => (
+                        <Badge key={q} className="bg-green-500/20 text-green-400 border-green-500/30">{q}</Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Challenges */}
+                  <div className="mb-4">
+                    <p className="text-sm font-medium text-cosmic-text mb-2">Challenges</p>
+                    <div className="flex flex-wrap gap-2">
+                      {mobileResult.challenges.map((c) => (
+                        <Badge key={c} className="bg-orange-500/20 text-orange-400 border-orange-500/30">{c}</Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Best For */}
+                  <div className="rounded-xl bg-gradient-to-br from-sacred-gold/5 to-sacred-gold-dark/10 border border-sacred-gold/15 p-4 mb-4">
+                    <p className="text-xs text-cosmic-text-secondary mb-1">Best For</p>
+                    <p className="text-sm font-medium text-sacred-gold">{mobileResult.best_for}</p>
+                  </div>
+
+                  {/* Compatible Numbers */}
+                  <div>
+                    <p className="text-sm font-medium text-cosmic-text mb-2">Compatible Numbers</p>
+                    <div className="flex flex-wrap gap-2">
+                      {mobileResult.compatibility_numbers.map((n) => (
+                        <Badge key={n} className="bg-purple-500/20 text-purple-400 border-purple-500/30 text-base px-3 py-1">{n}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </TabsContent>
 
         {/* Tarot Tab */}

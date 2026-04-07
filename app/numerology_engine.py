@@ -128,6 +128,181 @@ PERSONALITY_PREDICTIONS = {
 }
 
 
+# Mobile number vibration predictions keyed by reduced number
+MOBILE_PREDICTIONS = {
+    1: {
+        "prediction": (
+            "Your mobile number carries the vibration of leadership and independence. "
+            "This number attracts opportunities for new beginnings, self-employment, and pioneering ventures. "
+            "Calls and messages received on this number often bring proposals, business leads, and invitations to take charge."
+        ),
+        "lucky_qualities": ["Leadership", "Independence", "Ambition", "Originality", "Confidence"],
+        "challenges": ["Stubbornness", "Isolation", "Over-dominance"],
+        "best_for": "Entrepreneurs, CEOs, freelancers, and anyone starting a new venture",
+        "compatibility_numbers": [1, 3, 5, 9],
+    },
+    2: {
+        "prediction": (
+            "Your mobile number resonates with diplomacy and partnership. "
+            "This vibration attracts cooperation, emotional connections, and harmonious relationships. "
+            "You may notice an increase in calls related to collaboration, mediation, and heartfelt conversations."
+        ),
+        "lucky_qualities": ["Diplomacy", "Sensitivity", "Cooperation", "Intuition", "Peacemaking"],
+        "challenges": ["Indecisiveness", "Over-sensitivity", "Dependency"],
+        "best_for": "Counselors, mediators, artists, and those seeking deep personal relationships",
+        "compatibility_numbers": [2, 4, 6, 8],
+    },
+    3: {
+        "prediction": (
+            "Your mobile number vibrates with creativity and self-expression. "
+            "This number attracts social invitations, artistic opportunities, and joyful communication. "
+            "Expect lively conversations, networking calls, and creative collaborations through this number."
+        ),
+        "lucky_qualities": ["Creativity", "Joy", "Communication", "Optimism", "Social magnetism"],
+        "challenges": ["Scattered energy", "Superficiality", "Overspending"],
+        "best_for": "Writers, speakers, marketers, social media professionals, and entertainers",
+        "compatibility_numbers": [1, 3, 5, 9],
+    },
+    4: {
+        "prediction": (
+            "Your mobile number carries the vibration of stability and hard work. "
+            "This number attracts steady opportunities, reliable contacts, and structured progress. "
+            "Calls received tend to involve practical matters, contracts, and long-term commitments."
+        ),
+        "lucky_qualities": ["Discipline", "Reliability", "Organization", "Patience", "Loyalty"],
+        "challenges": ["Rigidity", "Overthinking", "Resistance to change"],
+        "best_for": "Accountants, engineers, project managers, and anyone building long-term foundations",
+        "compatibility_numbers": [2, 4, 6, 8],
+    },
+    5: {
+        "prediction": (
+            "Your mobile number vibrates with freedom and adventure. "
+            "This number attracts exciting news, travel opportunities, and dynamic change. "
+            "You may receive unexpected calls that open doors to new experiences and diverse connections."
+        ),
+        "lucky_qualities": ["Versatility", "Adventure", "Freedom", "Resourcefulness", "Curiosity"],
+        "challenges": ["Restlessness", "Impulsiveness", "Lack of commitment"],
+        "best_for": "Travelers, sales professionals, journalists, and those in dynamic industries",
+        "compatibility_numbers": [1, 3, 5, 7],
+    },
+    6: {
+        "prediction": (
+            "Your mobile number resonates with love, family, and responsibility. "
+            "This vibration attracts nurturing relationships, domestic harmony, and community connections. "
+            "Calls often involve family matters, caregiving, and opportunities to help others."
+        ),
+        "lucky_qualities": ["Compassion", "Responsibility", "Harmony", "Nurturing", "Aesthetics"],
+        "challenges": ["Over-sacrifice", "Worry", "Controlling tendencies"],
+        "best_for": "Teachers, healers, interior designers, and family-oriented professionals",
+        "compatibility_numbers": [2, 4, 6, 9],
+    },
+    7: {
+        "prediction": (
+            "Your mobile number carries the vibration of wisdom and spiritual seeking. "
+            "This number attracts thoughtful conversations, research opportunities, and introspective connections. "
+            "Calls may bring intellectual stimulation and invitations for deep, meaningful exchanges."
+        ),
+        "lucky_qualities": ["Wisdom", "Intuition", "Analysis", "Spiritual depth", "Mystery"],
+        "challenges": ["Isolation", "Suspicion", "Emotional detachment"],
+        "best_for": "Researchers, spiritual practitioners, analysts, and philosophers",
+        "compatibility_numbers": [3, 5, 7, 9],
+    },
+    8: {
+        "prediction": (
+            "Your mobile number vibrates with abundance and karmic power. "
+            "This number attracts financial opportunities, authority, and material success. "
+            "Expect calls related to business deals, investments, and positions of influence."
+        ),
+        "lucky_qualities": ["Authority", "Abundance", "Business acumen", "Determination", "Manifestation"],
+        "challenges": ["Workaholism", "Materialism", "Power struggles"],
+        "best_for": "Business owners, investors, bankers, and corporate executives",
+        "compatibility_numbers": [2, 4, 6, 8],
+    },
+    9: {
+        "prediction": (
+            "Your mobile number resonates with humanitarianism and universal love. "
+            "This vibration attracts compassionate connections, global opportunities, and service-oriented calls. "
+            "You may receive requests for guidance, charity, and cross-cultural collaboration."
+        ),
+        "lucky_qualities": ["Compassion", "Generosity", "Global vision", "Idealism", "Completion"],
+        "challenges": ["Over-idealism", "Emotional burnout", "Difficulty letting go"],
+        "best_for": "NGO workers, doctors, teachers, and anyone in humanitarian service",
+        "compatibility_numbers": [1, 3, 6, 9],
+    },
+    11: {
+        "prediction": (
+            "Master Number 11 — Your mobile number carries the vibration of spiritual illumination and visionary insight. "
+            "This is a highly charged number that attracts intuitive messages, inspired connections, and opportunities "
+            "for spiritual leadership. Calls may feel synchronistic and deeply meaningful."
+        ),
+        "lucky_qualities": ["Visionary insight", "Spiritual awareness", "Inspiration", "Charisma", "Enlightenment"],
+        "challenges": ["Nervous tension", "Hypersensitivity", "Anxiety"],
+        "best_for": "Spiritual leaders, artists, innovators, and visionary entrepreneurs",
+        "compatibility_numbers": [2, 4, 6, 11, 22],
+    },
+    22: {
+        "prediction": (
+            "Master Number 22 — Your mobile number vibrates with the power of the Master Builder. "
+            "This extraordinary number attracts large-scale opportunities, influential contacts, and projects "
+            "that can shape communities. Calls received often involve ambitious plans and transformative partnerships."
+        ),
+        "lucky_qualities": ["Master building", "Practical idealism", "Global impact", "Discipline", "Vision"],
+        "challenges": ["Overwhelm", "Perfectionism", "Fear of failure"],
+        "best_for": "Architects, city planners, large-scale project leaders, and social reformers",
+        "compatibility_numbers": [4, 6, 8, 11, 22],
+    },
+    33: {
+        "prediction": (
+            "Master Number 33 — Your mobile number carries the vibration of the Master Teacher. "
+            "This sacred number attracts healing relationships, teaching opportunities, and calls for selfless service. "
+            "Conversations through this number tend to uplift, heal, and inspire both caller and receiver."
+        ),
+        "lucky_qualities": ["Healing", "Selfless service", "Master teaching", "Unconditional love", "Upliftment"],
+        "challenges": ["Self-sacrifice", "Emotional overwhelm", "Martyrdom"],
+        "best_for": "Healers, spiritual teachers, counselors, and humanitarian leaders",
+        "compatibility_numbers": [6, 9, 11, 22, 33],
+    },
+}
+
+
+def calculate_mobile_numerology(phone_number: str) -> dict:
+    """
+    Calculate mobile number numerology.
+
+    Args:
+        phone_number: Phone number string (any format — digits extracted automatically)
+
+    Returns:
+        dict with vibration_number, total_sum, prediction, lucky_qualities,
+        challenges, best_for, and compatibility_numbers
+    """
+    # Strip all non-digit characters
+    cleaned = ''.join(ch for ch in phone_number if ch.isdigit())
+    if not cleaned:
+        raise ValueError("Phone number must contain at least one digit.")
+
+    # Sum all digits
+    total_sum = sum(int(d) for d in cleaned)
+
+    # Reduce to single digit or master number
+    vibration = total_sum
+    while vibration > 9 and vibration not in MASTER_NUMBERS:
+        vibration = sum(int(d) for d in str(vibration))
+
+    entry = MOBILE_PREDICTIONS.get(vibration, MOBILE_PREDICTIONS[9])
+
+    return {
+        "phone_number": cleaned,
+        "vibration_number": vibration,
+        "total_sum": total_sum,
+        "prediction": entry["prediction"],
+        "lucky_qualities": entry["lucky_qualities"],
+        "challenges": entry["challenges"],
+        "best_for": entry["best_for"],
+        "compatibility_numbers": entry["compatibility_numbers"],
+    }
+
+
 def _reduce_to_single(n: int) -> int:
     """Reduce a number to single digit (1-9) or master number (11, 22, 33)."""
     while n > 9 and n not in MASTER_NUMBERS:

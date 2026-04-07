@@ -331,6 +331,9 @@ class NumerologyRequest(BaseModel):
     name: str = Field(min_length=1)
     birth_date: str  # YYYY-MM-DD
 
+class MobileNumerologyRequest(BaseModel):
+    phone_number: str = Field(min_length=4)
+
 class TarotDrawRequest(BaseModel):
     spread: TarotSpread = TarotSpread.single
     question: Optional[str] = None

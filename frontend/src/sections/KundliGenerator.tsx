@@ -2748,58 +2748,160 @@ export default function KundliGenerator() {
               {loadingKp ? (
                 <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-sacred-text-secondary">{t('kundli.loadingKP')}</span></div>
               ) : kpData ? (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Planetary Significators */}
+                <div className="space-y-6">
+                  {/* 1. KP Planet Table — full reference chart style */}
                   <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
-                    <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.planetarySignificators')}</h4>
-                    <table className="w-full text-xs">
-                      <thead><tr className="bg-sacred-gold/10">
-                        <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
-                        <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.starLord')}</th>
-                        <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.subLord')}</th>
-                      </tr></thead>
-                      <tbody>
-                        {(kpData.planets || []).map((p: any) => (
-                          <tr key={p.planet} className="border-t border-sacred-gold/10">
-                            <td className="p-2 font-semibold text-sacred-brown">{translatePlanet(p.planet, language)}</td>
-                            <td className="p-2 text-sacred-text-secondary">{p.nakshatra_lord || p.star_lord}</td>
-                            <td className="p-2 text-sacred-text-secondary">{p.sub_lord}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                    <h4 className="font-display font-semibold text-sacred-brown mb-3">Krishnamurti Paddhati — Planet Chart</h4>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-xs">
+                        <thead><tr className="bg-sacred-gold/10">
+                          <th className="text-left p-1.5 text-sacred-gold-dark font-medium">Planet</th>
+                          <th className="text-center p-1.5 text-sacred-gold-dark font-medium">R/C</th>
+                          <th className="text-left p-1.5 text-sacred-gold-dark font-medium">Sign</th>
+                          <th className="text-left p-1.5 text-sacred-gold-dark font-medium">Degree</th>
+                          <th className="text-left p-1.5 text-sacred-gold-dark font-medium">Nakshatra</th>
+                          <th className="text-center p-1.5 text-sacred-gold-dark font-medium">Pada</th>
+                          <th className="text-center p-1.5 text-sacred-gold-dark font-medium">RL</th>
+                          <th className="text-center p-1.5 text-sacred-gold-dark font-medium">NL</th>
+                          <th className="text-center p-1.5 text-sacred-gold-dark font-medium">SL</th>
+                          <th className="text-center p-1.5 text-sacred-gold-dark font-medium">SS</th>
+                        </tr></thead>
+                        <tbody>
+                          {(kpData.planets || []).map((p: any) => (
+                            <tr key={p.planet} className="border-t border-sacred-gold/10">
+                              <td className="p-1.5 font-semibold text-sacred-brown">{translatePlanet(p.planet, language)}</td>
+                              <td className="p-1.5 text-center">{p.retrograde ? <span className="text-red-400 font-bold">R</span> : ''}</td>
+                              <td className="p-1.5 text-sacred-text-secondary">{translateSign(p.sign, language)}</td>
+                              <td className="p-1.5 text-sacred-text-secondary font-mono">{p.degree_dms || (typeof p.degree === 'number' ? p.degree.toFixed(2) : p.degree)}</td>
+                              <td className="p-1.5 text-sacred-text-secondary">{p.nakshatra || '-'}</td>
+                              <td className="p-1.5 text-center text-sacred-text-secondary">{p.pada || '-'}</td>
+                              <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{p.sign_lord ? p.sign_lord.slice(0, 2) : '-'}</td>
+                              <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{(p.star_lord || p.nakshatra_lord || '-').slice(0, 2)}</td>
+                              <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{p.sub_lord ? p.sub_lord.slice(0, 2) : '-'}</td>
+                              <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{p.sub_sub_lord ? p.sub_sub_lord.slice(0, 2) : '-'}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
 
-                  {/* House Cusps */}
+                  {/* 2. Bhava Details (Placidus) — House Cusps */}
                   <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
-                    <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.houseCusps')}</h4>
-                    <table className="w-full text-xs">
-                      <thead><tr className="bg-sacred-gold/10">
-                        <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.cusp')}</th>
-                        <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.starLord')}</th>
-                        <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.subLord')}</th>
-                      </tr></thead>
-                      <tbody>
-                        {(kpData.cusps || []).map((c: any, i: number) => (
-                          <tr key={i} className="border-t border-sacred-gold/10">
-                            <td className="p-2 font-semibold text-sacred-brown">Cusp {c.cusp || i + 1}</td>
-                            <td className="p-2 text-sacred-text-secondary">{c.nakshatra_lord || c.star_lord}</td>
-                            <td className="p-2 text-sacred-text-secondary">{c.sub_lord}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                    <h4 className="font-display font-semibold text-sacred-brown mb-3">Bhava Details (Placidus System)</h4>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-xs">
+                        <thead><tr className="bg-sacred-gold/10">
+                          <th className="text-left p-1.5 text-sacred-gold-dark font-medium">House</th>
+                          <th className="text-left p-1.5 text-sacred-gold-dark font-medium">Sign</th>
+                          <th className="text-left p-1.5 text-sacred-gold-dark font-medium">Degree</th>
+                          <th className="text-left p-1.5 text-sacred-gold-dark font-medium">Nakshatra</th>
+                          <th className="text-center p-1.5 text-sacred-gold-dark font-medium">Pada</th>
+                          <th className="text-center p-1.5 text-sacred-gold-dark font-medium">RL</th>
+                          <th className="text-center p-1.5 text-sacred-gold-dark font-medium">NL</th>
+                          <th className="text-center p-1.5 text-sacred-gold-dark font-medium">SL</th>
+                          <th className="text-center p-1.5 text-sacred-gold-dark font-medium">SS</th>
+                        </tr></thead>
+                        <tbody>
+                          {(kpData.cusps || []).map((c: any, i: number) => {
+                            const houseNames = ['First','Second','Third','Fourth','Fifth','Sixth','Seventh','Eighth','Ninth','Tenth','Eleventh','Twelfth'];
+                            return (
+                              <tr key={i} className="border-t border-sacred-gold/10">
+                                <td className="p-1.5 font-semibold text-sacred-brown">{(c.house || i + 1)}.{houseNames[i] || ''}</td>
+                                <td className="p-1.5 text-sacred-text-secondary">{translateSign(c.sign || '', language)}</td>
+                                <td className="p-1.5 text-sacred-text-secondary font-mono">{c.degree_dms || (typeof c.degree === 'number' ? c.degree.toFixed(2) : c.degree || '-')}</td>
+                                <td className="p-1.5 text-sacred-text-secondary">{c.nakshatra || '-'}</td>
+                                <td className="p-1.5 text-center text-sacred-text-secondary">{c.pada || '-'}</td>
+                                <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{c.sign_lord ? c.sign_lord.slice(0, 2) : '-'}</td>
+                                <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{(c.star_lord || '-').slice(0, 2)}</td>
+                                <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{(c.sub_lord || '-').slice(0, 2)}</td>
+                                <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{(c.sub_sub_lord || '-').slice(0, 2)}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
 
-                  {/* House Significators */}
-                  {kpData.house_significators && (
-                    <div className="lg:col-span-2 bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
-                      <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.houseSignificators')}</h4>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 text-xs">
-                        {Object.entries(kpData.house_significators).map(([house, planets]: [string, any]) => (
-                          <div key={house} className="bg-white/5 rounded-lg p-3">
-                            <p className="text-sacred-gold-dark font-semibold mb-1">House {house}</p>
-                            <p className="text-sacred-text-secondary">{Array.isArray(planets) ? planets.join(', ') : String(planets)}</p>
+                  {/* 3. Significations of Houses */}
+                  {kpData.house_significations && Object.keys(kpData.house_significations).length > 0 && (
+                    <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+                      <h4 className="font-display font-semibold text-sacred-brown mb-3">Significations of Houses</h4>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-xs">
+                          <thead><tr className="bg-sacred-gold/10">
+                            <th className="text-left p-1.5 text-sacred-gold-dark font-medium">House</th>
+                            <th className="text-left p-1.5 text-sacred-gold-dark font-medium">Planets in Nak. of Occupants</th>
+                            <th className="text-left p-1.5 text-sacred-gold-dark font-medium">Occupants</th>
+                            <th className="text-left p-1.5 text-sacred-gold-dark font-medium">Planets in Nak. of Cusp Lord</th>
+                            <th className="text-left p-1.5 text-sacred-gold-dark font-medium">Cusp Sign Lord</th>
+                          </tr></thead>
+                          <tbody>
+                            {[1,2,3,4,5,6,7,8,9,10,11,12].map(h => {
+                              const sig = kpData.house_significations[h] || kpData.house_significations[String(h)] || {};
+                              return (
+                                <tr key={h} className="border-t border-sacred-gold/10">
+                                  <td className="p-1.5 font-semibold text-sacred-brown">{h}</td>
+                                  <td className="p-1.5 text-sacred-text-secondary">{(sig.planets_in_nak_of_occupants || []).join(', ') || '-'}</td>
+                                  <td className="p-1.5 text-sacred-text-secondary font-medium">{(sig.occupants || []).join(', ') || '-'}</td>
+                                  <td className="p-1.5 text-sacred-text-secondary">{(sig.planets_in_nak_of_cusp_sign_lord || []).join(', ') || '-'}</td>
+                                  <td className="p-1.5 text-sacred-gold-dark font-medium">{sig.cusp_sign_lord || '-'}</td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 4. Houses Signified by Planets */}
+                  {kpData.planet_significator_strengths && Object.keys(kpData.planet_significator_strengths).length > 0 && (
+                    <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+                      <h4 className="font-display font-semibold text-sacred-brown mb-3">Houses Signified by Planets</h4>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-xs">
+                          <thead><tr className="bg-sacred-gold/10">
+                            <th className="text-left p-1.5 text-sacred-gold-dark font-medium">Planet</th>
+                            <th className="text-left p-1.5 text-sacred-gold-dark font-medium">Very Strong</th>
+                            <th className="text-left p-1.5 text-sacred-gold-dark font-medium">Strong</th>
+                            <th className="text-left p-1.5 text-sacred-gold-dark font-medium">Normal</th>
+                            <th className="text-left p-1.5 text-sacred-gold-dark font-medium">Weak</th>
+                          </tr></thead>
+                          <tbody>
+                            {Object.entries(kpData.planet_significator_strengths).map(([planet, levels]: [string, any]) => (
+                              <tr key={planet} className="border-t border-sacred-gold/10">
+                                <td className="p-1.5 font-semibold text-sacred-brown">{translatePlanet(planet, language)}</td>
+                                <td className="p-1.5 text-green-500 font-medium">{(levels.very_strong || []).join(' ')}</td>
+                                <td className="p-1.5 text-blue-400 font-medium">{(levels.strong || []).join(' ')}</td>
+                                <td className="p-1.5 text-sacred-text-secondary">{(levels.normal || []).join(' ')}</td>
+                                <td className="p-1.5 text-orange-400">{(levels.weak || []).join(' ')}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 5. Ruling Planets */}
+                  {kpData.ruling_planets && Object.keys(kpData.ruling_planets).length > 0 && (
+                    <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+                      <h4 className="font-display font-semibold text-sacred-brown mb-3">Ruling Planets</h4>
+                      <div className="grid grid-cols-2 gap-3 text-xs">
+                        {[
+                          ['day_lord', 'Day Lord'],
+                          ['lagna_lord', 'Lagna Lord'],
+                          ['lagna_nak_lord', 'Lagna Nak Lord'],
+                          ['lagna_sub_lord', 'Lagna Sub Lord'],
+                          ['moon_rashi_lord', 'Moon Rashi Lord'],
+                          ['moon_nak_lord', 'Moon Nak Lord'],
+                          ['moon_sub_lord', 'Moon Sub Lord'],
+                        ].map(([key, label]) => (
+                          <div key={key} className="flex items-center justify-between bg-white/5 rounded-lg p-2">
+                            <span className="text-sacred-text-secondary">{label}</span>
+                            <span className="font-semibold text-sacred-gold-dark">{translatePlanet(kpData.ruling_planets[key] || '-', language)}</span>
                           </div>
                         ))}
                       </div>
