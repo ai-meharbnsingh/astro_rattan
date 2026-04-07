@@ -53,15 +53,17 @@ interface JHoraKundliViewProps {
   onDownloadPDF: () => void;
 }
 
-// ─── Design Tokens ──────────────────────────────────────────────────
+// ─── Design Tokens (single source of truth — change here only) ──────
 const BG = '#FDF8F0';
 const SERIF = "'Georgia', 'Times New Roman', serif";
+const FONT_SIZE = '11px';          // base font size for all tables/text
+const TEXT_COLOR = '#3E2723';      // dark brown — readable on cream bg
 const BORDER_COLOR = '#D4C5A9';
 const BORDER = `1px solid ${BORDER_COLOR}`;
 const HEADER_BG = '#EDE8DB';
 const HEADER_COLOR = '#D4A052';
 const ALT_ROW = '#FAF6EE';
-const MUTED = '#5D4037';
+const MUTED = '#5D4037';           // secondary text — labels, dates
 
 // Planet color map per spec
 const PLANET_COLOR_MAP: Record<string, string> = {
@@ -140,7 +142,7 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
   return (
     <div style={{
       fontFamily: SERIF,
-      fontSize: '11px',
+      fontSize: FONT_SIZE,
       fontWeight: 600,
       color: HEADER_COLOR,
       padding: '2px 6px',
@@ -318,11 +320,11 @@ export default function JHoraKundliView({
     }));
   }, [dasha]);
 
-  // Table cell base style — standardized 11px across all JHora tables
+  // Table cell base style — uses design tokens for consistency
   const cellBase: React.CSSProperties = {
     fontFamily: SERIF,
-    fontSize: '11px',
-    color: '#3E2723',
+    fontSize: FONT_SIZE,
+    color: TEXT_COLOR,
     padding: '2px 4px',
     borderBottom: `1px solid ${BORDER_COLOR}`,
     whiteSpace: 'nowrap',
@@ -351,7 +353,7 @@ export default function JHoraKundliView({
   // Chart cell label style
   const chartLabel: React.CSSProperties = {
     fontFamily: SERIF,
-    fontSize: '11px',
+    fontSize: FONT_SIZE,
     color: HEADER_COLOR,
     fontWeight: 600,
     textAlign: 'center' as const,
@@ -388,7 +390,7 @@ export default function JHoraKundliView({
       overflow: 'hidden',
       background: BG,
       fontFamily: SERIF,
-      fontSize: '11px',
+      fontSize: FONT_SIZE,
       display: 'grid',
       gridTemplateColumns: '42% 58%',
       boxSizing: 'border-box',
@@ -417,7 +419,7 @@ export default function JHoraKundliView({
 
         {/* ── Transit (top-right) — clickable ── */}
         <div style={chartCell}>
-          <div style={chartLabel}>{t('kundli.transit')} <span style={{ fontSize: '11px', opacity: 0.6, fontWeight: 'normal' }}>({t('kundli.clickHouseLagan')})</span></div>
+          <div style={chartLabel}>{t('kundli.transit')} <span style={{ fontSize: FONT_SIZE, opacity: 0.6, fontWeight: 'normal' }}>({t('kundli.clickHouseLagan')})</span></div>
           <div style={chartInner}>
             {loadingTransit ? <MiniLoader /> : transitChartData ? (() => {
               const shift = gocharShift;
@@ -440,11 +442,11 @@ export default function JHoraKundliView({
                 />
               );
             })() : (
-              <span style={{ color: MUTED, fontSize: '11px' }}>{t('common.loading')}</span>
+              <span style={{ color: MUTED, fontSize: FONT_SIZE }}>{t('common.loading')}</span>
             )}
           </div>
           {gocharShift > 0 && (
-            <button onClick={() => setGocharShift(0)} style={{ display: 'block', margin: '2px auto', fontSize: '11px', color: HEADER_COLOR, textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer' }}>{t('common.resetView')}</button>
+            <button onClick={() => setGocharShift(0)} style={{ display: 'block', margin: '2px auto', fontSize: FONT_SIZE, color: HEADER_COLOR, textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer' }}>{t('common.resetView')}</button>
           )}
         </div>
 
@@ -464,7 +466,7 @@ export default function JHoraKundliView({
             {leftLoading ? <MiniLoader /> : leftChartData ? (
               <InteractiveKundli chartData={leftChartData} compact />
             ) : (
-              <span style={{ color: MUTED, fontSize: '11px' }}>--</span>
+              <span style={{ color: MUTED, fontSize: FONT_SIZE }}>--</span>
             )}
           </div>
         </div>
@@ -485,7 +487,7 @@ export default function JHoraKundliView({
             {rightLoading ? <MiniLoader /> : rightChartData ? (
               <InteractiveKundli chartData={rightChartData} compact />
             ) : (
-              <span style={{ color: MUTED, fontSize: '11px' }}>--</span>
+              <span style={{ color: MUTED, fontSize: FONT_SIZE }}>--</span>
             )}
           </div>
         </div>
@@ -578,7 +580,7 @@ export default function JHoraKundliView({
             {(loadingDasha || loadingExtendedDasha) ? <MiniLoader /> : dasha ? (
               <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
                 {/* Current Dasha Info */}
-                <div style={{ padding: '3px 6px', background: '#FEF3C7', borderBottom: `1px solid ${BORDER_COLOR}`, fontSize: '11px', fontFamily: SERIF }}>
+                <div style={{ padding: '3px 6px', background: '#FEF3C7', borderBottom: `1px solid ${BORDER_COLOR}`, fontSize: FONT_SIZE, fontFamily: SERIF }}>
                   <span style={{ color: HEADER_COLOR, fontWeight: 600 }}>{t('section.currentDasha')}{' '}</span>
                   <span style={{ color: '#B8860B', fontWeight: 700 }}>{dasha.current_dasha}</span>
                   {dasha.current_antardasha && dasha.current_antardasha !== 'Unknown' && (
@@ -602,15 +604,15 @@ export default function JHoraKundliView({
                             padding: '2px 4px', cursor: 'pointer',
                             background: md.is_current ? '#FEF3C7' : (i % 2 === 0 ? 'transparent' : ALT_ROW),
                             borderBottom: `1px solid ${BORDER_COLOR}`,
-                            fontFamily: SERIF, fontSize: '11px',
+                            fontFamily: SERIF, fontSize: FONT_SIZE,
                           }}
                         >
                           <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                            <span style={{ fontSize: '11px', color: MUTED }}>{expandedMD === md.planet ? '\u25BC' : '\u25B6'}</span>
+                            <span style={{ fontSize: FONT_SIZE, color: MUTED }}>{expandedMD === md.planet ? '\u25BC' : '\u25B6'}</span>
                             <span style={{ color: planetColor(md.planet), fontWeight: 600 }}>{md.planet}</span>
-                            {md.is_current && <span style={{ color: '#B8860B', fontSize: '11px' }}>\u2190</span>}
+                            {md.is_current && <span style={{ color: '#B8860B', fontSize: FONT_SIZE }}>\u2190</span>}
                           </span>
-                          <span style={{ color: MUTED, fontSize: '11px' }}>
+                          <span style={{ color: MUTED, fontSize: FONT_SIZE }}>
                             {md.start?.slice(0, 10)} — {md.end?.slice(0, 10)} ({md.years}y)
                           </span>
                         </div>
@@ -625,16 +627,16 @@ export default function JHoraKundliView({
                                 padding: '1px 4px 1px 16px', cursor: ad.pratyantar?.length ? 'pointer' : 'default',
                                 background: ad.is_current ? 'rgba(184,134,11,0.08)' : 'transparent',
                                 borderBottom: `1px solid rgba(212,197,169,0.5)`,
-                                fontFamily: SERIF, fontSize: '11px',
+                                fontFamily: SERIF, fontSize: FONT_SIZE,
                               }}
                             >
                               <span style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                {ad.pratyantar?.length > 0 && <span style={{ fontSize: '10px', color: MUTED }}>{expandedAD === `${md.planet}-${ad.planet}` ? '\u25BC' : '\u25B6'}</span>}
+                                {ad.pratyantar?.length > 0 && <span style={{ fontSize: FONT_SIZE, color: MUTED }}>{expandedAD === `${md.planet}-${ad.planet}` ? '\u25BC' : '\u25B6'}</span>}
                                 <span style={{ color: planetColor(ad.planet), fontWeight: 600 }}>{ad.planet}</span>
                                 <span style={{ color: MUTED }}> AD</span>
-                                {ad.is_current && <span style={{ color: '#B8860B', fontSize: '11px' }}>*</span>}
+                                {ad.is_current && <span style={{ color: '#B8860B', fontSize: FONT_SIZE }}>*</span>}
                               </span>
-                              <span style={{ color: MUTED, fontSize: '11px' }}>{ad.start?.slice(0, 10)} — {ad.end?.slice(0, 10)}</span>
+                              <span style={{ color: MUTED, fontSize: FONT_SIZE }}>{ad.start?.slice(0, 10)} — {ad.end?.slice(0, 10)}</span>
                             </div>
 
                             {/* Pratyantara list (expanded) */}
@@ -646,7 +648,7 @@ export default function JHoraKundliView({
                                   padding: '1px 4px 1px 28px',
                                   background: pt.is_current ? 'rgba(184,134,11,0.05)' : 'transparent',
                                   borderBottom: `1px solid rgba(212,197,169,0.3)`,
-                                  fontFamily: SERIF, fontSize: '11px',
+                                  fontFamily: SERIF, fontSize: FONT_SIZE,
                                 }}
                               >
                                 <span>
@@ -695,7 +697,7 @@ export default function JHoraKundliView({
                 )}
               </div>
             ) : (
-              <div style={{ padding: '8px', color: MUTED, textAlign: 'center', fontSize: '11px' }}>--</div>
+              <div style={{ padding: '8px', color: MUTED, textAlign: 'center', fontSize: FONT_SIZE }}>--</div>
             )}
           </div>
 
@@ -753,7 +755,7 @@ export default function JHoraKundliView({
                   <div key={item.k} style={{
                     display: 'flex', justifyContent: 'space-between',
                     padding: '2px 6px', borderBottom: `1px solid ${BORDER_COLOR}`,
-                    fontFamily: SERIF, fontSize: '11px',
+                    fontFamily: SERIF, fontSize: FONT_SIZE,
                   }}>
                     <span style={{ color: MUTED }}>{item.k}</span>
                     <span style={{ color: HEADER_COLOR, fontWeight: 600 }}>{item.v}</span>
@@ -761,7 +763,7 @@ export default function JHoraKundliView({
                 ))}
               </div>
             ) : (
-              <div style={{ padding: '8px', color: MUTED, textAlign: 'center', fontSize: '11px' }}>--</div>
+              <div style={{ padding: '8px', color: MUTED, textAlign: 'center', fontSize: FONT_SIZE }}>--</div>
             )}
           </div>
 
@@ -809,7 +811,7 @@ export default function JHoraKundliView({
                   return (
                     <div key={planet} style={{
                       display: 'flex', alignItems: 'center', gap: '4px',
-                      fontFamily: SERIF, fontSize: '11px',
+                      fontFamily: SERIF, fontSize: FONT_SIZE,
                     }}>
                       <span style={{ color: planetColor(planet), fontWeight: 700, width: '24px', textAlign: 'right', flexShrink: 0 }}>
                         {planet.slice(0, 2)}
@@ -829,7 +831,7 @@ export default function JHoraKundliView({
                           top: 0, bottom: 0, borderLeft: '1.5px dashed rgba(93,64,55,0.5)',
                         }} />
                       </div>
-                      <span style={{ color: isStrong ? '#4CAF50' : '#DC2626', fontWeight: 600, fontSize: '11px', width: '32px', textAlign: 'left', flexShrink: 0 }}>
+                      <span style={{ color: isStrong ? '#4CAF50' : '#DC2626', fontWeight: 600, fontSize: FONT_SIZE, width: '32px', textAlign: 'left', flexShrink: 0 }}>
                         {ratio.toFixed(1)}x
                       </span>
                     </div>
@@ -837,7 +839,7 @@ export default function JHoraKundliView({
                 })}
               </div>
             ) : (
-              <div style={{ padding: '8px', color: MUTED, textAlign: 'center', fontSize: '11px' }}>--</div>
+              <div style={{ padding: '8px', color: MUTED, textAlign: 'center', fontSize: FONT_SIZE }}>--</div>
             )}
           </div>
         </div>
