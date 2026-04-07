@@ -584,7 +584,7 @@ def get_lifelong_sadesati(
         sec = int(parts[2]) if len(parts) > 2 else 0
     dt = datetime(y, m, d, hr, mn, sec)
     
-    result = calculate_lifelong_sade_sati(dt, moon_sign_idx)
+    result = calculate_lifelong_sade_sati(dt, moon_sign_idx, moon_sign)
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result
