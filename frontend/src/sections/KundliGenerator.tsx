@@ -3461,13 +3461,13 @@ export default function KundliGenerator() {
                       {sadesatiData.cycles.map((cycle: any, idx: number) => (
                         <div key={idx} className="bg-sacred-cream rounded-xl border border-sacred-gold/20 overflow-hidden">
                           {/* Cycle Header */}
-                          <div className={`p-4 ${cycle.severity === 'high' ? 'bg-[#8B2332]/10' : cycle.severity === 'extreme' ? 'bg-[#8B2332]/20' : 'bg-sacred-gold/10'}`}>
+                          <div className="p-4 bg-sacred-gold/10 border-b border-sacred-gold/20">
                             <div className="flex items-center justify-between">
                               <h5 className="font-display font-semibold text-sacred-brown">{cycle.title}</h5>
-                              <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                                cycle.severity === 'extreme' ? 'bg-[#8B2332]/30 text-[#ff6b6b]' :
-                                cycle.severity === 'high' ? 'bg-orange-500/20 text-orange-400' :
-                                'bg-yellow-500/20 text-yellow-600'
+                              <span className={`text-xs px-2 py-1 rounded-full font-medium border ${
+                                cycle.severity === 'extreme' ? 'border-red-400 text-red-500 bg-transparent' :
+                                cycle.severity === 'high' ? 'border-orange-400 text-orange-500 bg-transparent' :
+                                'border-sacred-gold text-sacred-gold bg-transparent'
                               }`}>
                                 {cycle.severity === 'extreme' ? 'Extreme' : cycle.severity === 'high' ? 'Intense' : 'Moderate'} Impact
                               </span>
@@ -3475,7 +3475,7 @@ export default function KundliGenerator() {
                             <p className="text-xs text-sacred-text-secondary mt-1">
                               {cycle.start_date} to {cycle.end_date}
                             </p>
-                            <p className="text-sm mt-2" style={{ color: '#b8b0a4' }}>{cycle.description}</p>
+                            <p className="text-sm mt-2 text-sacred-text-secondary">{cycle.description}</p>
                           </div>
                           
                           {/* Cycle Phases Table */}
