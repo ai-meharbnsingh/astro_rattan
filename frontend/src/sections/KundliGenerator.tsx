@@ -2135,7 +2135,7 @@ export default function KundliGenerator() {
                   <h4 className="font-display font-semibold text-sacred-brown mb-2">Bhinna Ashtakvarga Charts</h4>
                   <p className="text-xs text-sacred-text-secondary mb-4">Full contributor breakdown per planet with North Indian diamond chart (Parashara's Light format).</p>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                    {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
+                    {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Lagna'].map((planet) => {
                       const signs = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
                       const signAbbr = ['Ari', 'Tau', 'Gem', 'Can', 'Leo', 'Vir', 'Lib', 'Sco', 'Sag', 'Cap', 'Aqu', 'Pis'];
                       const contribOrder = ['Saturn', 'Jupiter', 'Mars', 'Sun', 'Venus', 'Mercury', 'Moon', 'Lagna'];
@@ -2177,11 +2177,11 @@ export default function KundliGenerator() {
                               <table className="w-full text-[10px] border-collapse" style={{ minWidth: '340px' }}>
                                 <thead>
                                   <tr>
-                                    <th className="text-left px-1 py-0.5 text-sacred-gold-dark font-semibold border-b border-sacred-gold/30 whitespace-nowrap" style={{ fontSize: '10px' }}>Sign</th>
+                                    <th className="text-left px-1 py-0.5 text-sacred-gold-dark font-semibold border-b border-sacred-gold/30 whitespace-nowrap" style={{ fontSize: '11px' }}>Sign</th>
                                     {signs.map((_, i) => (
-                                      <th key={i} className="text-center px-0.5 py-0.5 text-sacred-gold-dark font-semibold border-b border-sacred-gold/30" style={{ fontSize: '10px', minWidth: '18px' }}>{i + 1}</th>
+                                      <th key={i} className="text-center px-0.5 py-0.5 text-sacred-gold-dark font-semibold border-b border-sacred-gold/30" style={{ fontSize: '11px', minWidth: '18px' }}>{i + 1}</th>
                                     ))}
-                                    <th className="text-center px-1 py-0.5 text-sacred-gold-dark font-bold border-b border-sacred-gold/30" style={{ fontSize: '10px' }}>T</th>
+                                    <th className="text-center px-1 py-0.5 text-sacred-gold-dark font-bold border-b border-sacred-gold/30" style={{ fontSize: '11px' }}>T</th>
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -2194,21 +2194,21 @@ export default function KundliGenerator() {
                                         const rowTotal = rowVals.reduce((sum: number, v: number) => sum + v, 0);
                                         return (
                                           <tr key={contrib} className="border-b border-sacred-gold/10">
-                                            <td className="px-1 py-0.5 text-sacred-text-secondary font-medium whitespace-nowrap" style={{ fontSize: '10px' }}>{contrib}</td>
+                                            <td className="px-1 py-0.5 text-sacred-text-secondary font-medium whitespace-nowrap" style={{ fontSize: '11px' }}>{contrib}</td>
                                             {rowVals.map((v, i) => (
-                                              <td key={i} className="text-center px-0.5 py-0.5" style={{ fontSize: '10px' }}>
-                                                <span style={{ color: v === 1 ? '#4A3728' : '#ccc', fontWeight: v === 1 ? 700 : 400 }}>{v}</span>
+                                              <td key={i} className="text-center px-0.5 py-0.5" style={{ fontSize: '11px' }}>
+                                                <span style={{ color: v === 1 ? '#4A3728' : '#A09080', fontWeight: v === 1 ? 700 : 400, fontSize: '11px' }}>{v}</span>
                                               </td>
                                             ))}
-                                            <td className="text-center px-1 py-0.5 font-semibold text-sacred-brown" style={{ fontSize: '10px' }}>{rowTotal}</td>
+                                            <td className="text-center px-1 py-0.5 font-semibold text-sacred-brown" style={{ fontSize: '11px' }}>{rowTotal}</td>
                                           </tr>
                                         );
                                       })}
                                       {/* Total row */}
                                       <tr className="border-t-2 border-sacred-gold/40" style={{ backgroundColor: 'rgba(184, 134, 11, 0.08)' }}>
-                                        <td className="px-1 py-0.5 font-bold text-sacred-brown" style={{ fontSize: '10px' }}>Total</td>
+                                        <td className="px-1 py-0.5 font-bold text-sacred-brown" style={{ fontSize: '11px' }}>Total</td>
                                         {vals.map((v, i) => (
-                                          <td key={i} className="text-center px-0.5 py-0.5 font-bold text-sacred-brown" style={{ fontSize: '10px' }}>{v}</td>
+                                          <td key={i} className="text-center px-0.5 py-0.5 font-bold text-sacred-brown" style={{ fontSize: '11px' }}>{v}</td>
                                         ))}
                                         <td className="text-center px-1 py-0.5 font-bold text-sacred-brown" style={{ fontSize: '11px' }}>{total}</td>
                                       </tr>
@@ -2217,11 +2217,11 @@ export default function KundliGenerator() {
                                     /* Fallback: just show totals row when planet_details not available */
                                     <>
                                       <tr>
-                                        <td className="px-1 py-0.5 text-sacred-text-secondary font-medium whitespace-nowrap" style={{ fontSize: '10px' }}>Bindu</td>
+                                        <td className="px-1 py-0.5 text-sacred-text-secondary font-medium whitespace-nowrap" style={{ fontSize: '11px' }}>Bindu</td>
                                         {vals.map((v, i) => (
-                                          <td key={i} className="text-center px-0.5 py-0.5 font-bold" style={{ fontSize: '10px', color: v >= 5 ? '#166534' : v >= 3 ? '#B8860B' : '#991b1b' }}>{v}</td>
+                                          <td key={i} className="text-center px-0.5 py-0.5 font-bold" style={{ fontSize: '11px', color: v >= 5 ? '#166534' : v >= 3 ? '#B8860B' : '#991b1b' }}>{v}</td>
                                         ))}
-                                        <td className="text-center px-1 py-0.5 font-bold text-sacred-brown" style={{ fontSize: '10px' }}>{total}</td>
+                                        <td className="text-center px-1 py-0.5 font-bold text-sacred-brown" style={{ fontSize: '11px' }}>{total}</td>
                                       </tr>
                                       <tr>
                                         <td className="px-1 py-1 text-sacred-text-secondary/50" colSpan={14} style={{ fontSize: '9px' }}>
@@ -2265,9 +2265,9 @@ export default function KundliGenerator() {
                                       x={pos.x}
                                       y={pos.y + 7}
                                       textAnchor="middle"
-                                      fontSize="14"
+                                      fontSize="16"
                                       fontWeight="bold"
-                                      fill="#4A3728"
+                                      fill="#3E2723"
                                       fontFamily="sans-serif"
                                     >
                                       {vals[i]}
