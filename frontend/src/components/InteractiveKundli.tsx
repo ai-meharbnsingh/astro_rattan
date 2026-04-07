@@ -128,7 +128,7 @@ function getStrength(status: string): { label: string; color: string } {
   if (s.includes('exalted')) return { label: 'Exalted', color: '#22C55E' };
   if (s.includes('debilitated')) return { label: 'Debilitated', color: '#EF4444' };
   if (s.includes('own')) return { label: 'Own Sign', color: '#3B82F6' };
-  return { label: status || 'Transiting', color: '#9CA3AF' };
+  return { label: status || 'Transiting', color: '#6B5B4F' };
 }
 
 /*

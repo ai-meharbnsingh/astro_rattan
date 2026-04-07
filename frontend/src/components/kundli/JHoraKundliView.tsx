@@ -61,7 +61,7 @@ const BORDER = `1px solid ${BORDER_COLOR}`;
 const HEADER_BG = '#EDE8DB';
 const HEADER_COLOR = '#D4A052';
 const ALT_ROW = '#FAF6EE';
-const MUTED = '#78716C';
+const MUTED = '#5D4037';
 
 // Planet color map per spec
 const PLANET_COLOR_MAP: Record<string, string> = {
@@ -72,7 +72,7 @@ const PLANET_COLOR_MAP: Record<string, string> = {
   Jupiter: '#D97706',
   Venus: '#DB2777',
   Saturn: '#1E40AF',
-  Rahu: '#6B7280',
+  Rahu: '#4A4A5A',
   Ketu: '#78350F',
   Ascendant: '#D4A052',
   Lagna: '#D4A052',
