@@ -764,27 +764,27 @@ export default function KundliGenerator() {
         {/* Tabs */}
         <Tabs defaultValue="report" className="w-full">
           <TabsList className="mb-6 bg-sacred-cream flex-wrap">
-            <TabsTrigger value="report" onClick={() => { fetchDasha(); fetchExtendedDasha(); fetchAvakhada(); fetchYogaDosha(); fetchAshtakvarga(); fetchShadbala(); fetchDivisional('D9'); }}><ScrollText className="w-3 h-3 mr-1" />Report</TabsTrigger>
-            <TabsTrigger value="planets">Planets</TabsTrigger>
-            <TabsTrigger value="details">Details</TabsTrigger>
-            <TabsTrigger value="lordships">Lordships</TabsTrigger>
-            <TabsTrigger value="dosha" onClick={fetchDosha}>Dosha</TabsTrigger>
-            <TabsTrigger value="iogita" onClick={fetchIogita}>io-gita</TabsTrigger>
-            <TabsTrigger value="dasha" onClick={() => { fetchDasha(); fetchExtendedDasha(); }}>Dasha</TabsTrigger>
-            <TabsTrigger value="divisional" onClick={() => fetchDivisional()}>Divisional</TabsTrigger>
-            <TabsTrigger value="ashtakvarga" onClick={fetchAshtakvarga}>Ashtakvarga</TabsTrigger>
-            <TabsTrigger value="shadbala" onClick={fetchShadbala}>Shadbala</TabsTrigger>
-            <TabsTrigger value="avakhada" onClick={fetchAvakhada}>Avakhada</TabsTrigger>
-            <TabsTrigger value="yoga-dosha" onClick={fetchYogaDosha}>Yogas</TabsTrigger>
-            <TabsTrigger value="predictions" onClick={() => fetchPredictions()}>Predictions</TabsTrigger>
-            <TabsTrigger value="transits" onClick={() => fetchTransit()}>Transits</TabsTrigger>
-            <TabsTrigger value="varshphal" onClick={() => fetchVarshphal()}>Varshphal</TabsTrigger>
-            <TabsTrigger value="kp" onClick={fetchKp}>KP System</TabsTrigger>
-            <TabsTrigger value="yogini" onClick={fetchYogini}>Yogini Dasha</TabsTrigger>
-            <TabsTrigger value="upagrahas" onClick={fetchUpagrahas}>Upagrahas</TabsTrigger>
-            <TabsTrigger value="sodashvarga" onClick={fetchSodashvarga}>Sodashvarga</TabsTrigger>
-            <TabsTrigger value="aspects" onClick={fetchAspects}>Aspects</TabsTrigger>
-            <TabsTrigger value="sadesati" onClick={fetchSadesati}>Sade Sati</TabsTrigger>
+            <TabsTrigger value="report" onClick={() => { fetchDasha(); fetchExtendedDasha(); fetchAvakhada(); fetchYogaDosha(); fetchAshtakvarga(); fetchShadbala(); fetchDivisional('D9'); }}><ScrollText className="w-3 h-3 mr-1" />{t('tab.report')}</TabsTrigger>
+            <TabsTrigger value="planets">{t('tab.planets')}</TabsTrigger>
+            <TabsTrigger value="details">{t('tab.details')}</TabsTrigger>
+            <TabsTrigger value="lordships">{t('tab.lordships')}</TabsTrigger>
+            <TabsTrigger value="dosha" onClick={fetchDosha}>{t('tab.dosha')}</TabsTrigger>
+            <TabsTrigger value="iogita" onClick={fetchIogita}>{t('tab.iogita')}</TabsTrigger>
+            <TabsTrigger value="dasha" onClick={() => { fetchDasha(); fetchExtendedDasha(); }}>{t('tab.dasha')}</TabsTrigger>
+            <TabsTrigger value="divisional" onClick={() => fetchDivisional()}>{t('tab.divisional')}</TabsTrigger>
+            <TabsTrigger value="ashtakvarga" onClick={fetchAshtakvarga}>{t('tab.ashtakvarga')}</TabsTrigger>
+            <TabsTrigger value="shadbala" onClick={fetchShadbala}>{t('tab.shadbala')}</TabsTrigger>
+            <TabsTrigger value="avakhada" onClick={fetchAvakhada}>{t('tab.avakhada')}</TabsTrigger>
+            <TabsTrigger value="yoga-dosha" onClick={fetchYogaDosha}>{t('tab.yogas')}</TabsTrigger>
+            <TabsTrigger value="predictions" onClick={() => fetchPredictions()}>{t('tab.predictions')}</TabsTrigger>
+            <TabsTrigger value="transits" onClick={() => fetchTransit()}>{t('tab.transits')}</TabsTrigger>
+            <TabsTrigger value="varshphal" onClick={() => fetchVarshphal()}>{t('tab.varshphal')}</TabsTrigger>
+            <TabsTrigger value="kp" onClick={fetchKp}>{t('tab.kpSystem')}</TabsTrigger>
+            <TabsTrigger value="yogini" onClick={fetchYogini}>{t('tab.yoginiDasha')}</TabsTrigger>
+            <TabsTrigger value="upagrahas" onClick={fetchUpagrahas}>{t('tab.upagrahas')}</TabsTrigger>
+            <TabsTrigger value="sodashvarga" onClick={fetchSodashvarga}>{t('tab.sodashvarga')}</TabsTrigger>
+            <TabsTrigger value="aspects" onClick={fetchAspects}>{t('tab.aspects')}</TabsTrigger>
+            <TabsTrigger value="sadesati" onClick={fetchSadesati}>{t('tab.sadeSati')}</TabsTrigger>
           </TabsList>
 
           {/* REPORT TAB — Consolidated single-page view */}
@@ -2717,7 +2717,7 @@ export default function KundliGenerator() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* Planetary Significators */}
                   <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
-                    <h4 className="font-display font-semibold text-sacred-brown mb-3">Planetary Significators</h4>
+                    <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.planetarySignificators')}</h4>
                     <table className="w-full text-xs">
                       <thead><tr className="bg-sacred-gold/10">
                         <th className="text-left p-2 text-sacred-gold-dark font-medium">Planet</th>
@@ -2738,7 +2738,7 @@ export default function KundliGenerator() {
 
                   {/* House Cusps */}
                   <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
-                    <h4 className="font-display font-semibold text-sacred-brown mb-3">House Cusps</h4>
+                    <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.houseCusps')}</h4>
                     <table className="w-full text-xs">
                       <thead><tr className="bg-sacred-gold/10">
                         <th className="text-left p-2 text-sacred-gold-dark font-medium">Cusp</th>
@@ -2760,7 +2760,7 @@ export default function KundliGenerator() {
                   {/* House Significators */}
                   {kpData.house_significators && (
                     <div className="lg:col-span-2 bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
-                      <h4 className="font-display font-semibold text-sacred-brown mb-3">House Significators</h4>
+                      <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.houseSignificators')}</h4>
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 text-xs">
                         {Object.entries(kpData.house_significators).map(([house, planets]: [string, any]) => (
                           <div key={house} className="bg-white/5 rounded-lg p-3">
@@ -2786,7 +2786,7 @@ export default function KundliGenerator() {
               ) : yoginiData ? (
                 <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
                   <h4 className="font-display font-semibold text-sacred-brown mb-3">
-                    Yogini Dasha Periods
+                    {t('section.yoginiDasha')}
                     {(yoginiData.current_dasha || yoginiData.current) && <span className="ml-2 text-xs px-2 py-1 rounded-full bg-sacred-gold/20 text-sacred-gold-dark">Current: {yoginiData.current_dasha || yoginiData.current}</span>}
                   </h4>
                   <table className="w-full text-xs">
@@ -2827,7 +2827,7 @@ export default function KundliGenerator() {
                 <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-sacred-text-secondary">Loading Upagrahas...</span></div>
               ) : upagrahasData ? (
                 <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
-                  <h4 className="font-display font-semibold text-sacred-brown mb-3">Upagrahas (Sub-planets & Kala Velas)</h4>
+                  <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.upagrahasTitle')}</h4>
                   <table className="w-full text-xs">
                     <thead><tr className="bg-sacred-gold/10">
                       <th className="text-left p-2 text-sacred-gold-dark font-medium">Upagraha</th>
@@ -2866,7 +2866,7 @@ export default function KundliGenerator() {
                 <div className="space-y-6">
                   {/* Varga Table (list) or By Sign (dict) */}
                   <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4 overflow-x-auto">
-                    <h4 className="font-display font-semibold text-sacred-brown mb-3">Sodashvarga — 16 Divisional Placements</h4>
+                    <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.sodashvargaTitle')}</h4>
                     {(() => {
                       const rows = sodashvargaData.varga_table || (Array.isArray(sodashvargaData.by_sign) ? sodashvargaData.by_sign : []);
                       if (rows.length > 0) {
@@ -2935,7 +2935,7 @@ export default function KundliGenerator() {
                   {/* Vimshopak Bala — from by_planet dict or vimshopak list */}
                   {(sodashvargaData.by_planet || sodashvargaData.vimshopak) && (
                     <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
-                      <h4 className="font-display font-semibold text-sacred-brown mb-3">Vimshopak Bala (Strength from 16 Vargas)</h4>
+                      <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.vimshopakBala')}</h4>
                       <div className="space-y-2">
                         {(() => {
                           const items = Array.isArray(sodashvargaData.vimshopak) ? sodashvargaData.vimshopak
@@ -2971,7 +2971,7 @@ export default function KundliGenerator() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* Aspects on Planets */}
                   <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
-                    <h4 className="font-display font-semibold text-sacred-brown mb-3">Aspects on Planets</h4>
+                    <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.aspectsOnPlanets')}</h4>
                     <div className="space-y-3">
                       {(aspectsData.aspects_on_planets || aspectsData.planet_aspects || []).map((pa: any, idx: number) => (
                         <div key={pa.planet || idx} className="bg-white/5 rounded-lg p-3 text-xs">
@@ -2995,7 +2995,7 @@ export default function KundliGenerator() {
 
                   {/* Aspects on Bhavas */}
                   <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
-                    <h4 className="font-display font-semibold text-sacred-brown mb-3">Aspects on Bhavas (Houses)</h4>
+                    <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.aspectsOnBhavas')}</h4>
                     <table className="w-full text-xs">
                       <thead><tr className="bg-sacred-gold/10">
                         <th className="text-left p-2 text-sacred-gold-dark font-medium">Bhava</th>
@@ -3045,7 +3045,7 @@ export default function KundliGenerator() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* Sade Sati Phases */}
                   <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
-                    <h4 className="font-display font-semibold text-sacred-brown mb-3">Lifelong Sade Sati Phases</h4>
+                    <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.lifelongSadeSati')}</h4>
                     <div className="max-h-[400px] overflow-y-auto space-y-2">
                       {(sadesatiData.phases || sadesatiData.sade_sati_phases || []).map((phase: any, i: number) => (
                         <div key={i} className={`p-3 rounded-lg text-xs ${phase.is_current ? 'bg-sacred-gold/20 border border-sacred-gold/40' : 'bg-white/5'}`}>
@@ -3062,7 +3062,7 @@ export default function KundliGenerator() {
                   {/* Dhaiya & Panauti Phases */}
                   {(sadesatiData.dhaiya_phases || sadesatiData.small_panoti_phases) && (
                     <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
-                      <h4 className="font-display font-semibold text-sacred-brown mb-3">Dhaiya & Panauti Phases</h4>
+                      <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.dhaiyaPanauti')}</h4>
                       <div className="max-h-[400px] overflow-y-auto space-y-2">
                         {[...(sadesatiData.dhaiya_phases || []), ...(sadesatiData.small_panoti_phases || [])].map((phase: any, i: number) => (
                           <div key={i} className={`p-3 rounded-lg text-xs ${phase.is_current ? 'bg-orange-500/20 border border-orange-500/30' : 'bg-white/5'}`}>
@@ -3080,7 +3080,7 @@ export default function KundliGenerator() {
                   {/* Remedies */}
                   {sadesatiData.remedies && sadesatiData.remedies.length > 0 && (
                     <div className="lg:col-span-2 bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
-                      <h4 className="font-display font-semibold text-sacred-brown mb-3">Remedies & Gemstone Recommendations</h4>
+                      <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.remediesGemstone')}</h4>
                       <ul className="space-y-2">
                         {sadesatiData.remedies.map((r: string, i: number) => (
                           <li key={i} className="flex gap-2 text-sm text-sacred-text-secondary">
@@ -3101,7 +3101,7 @@ export default function KundliGenerator() {
 
         <div className="mt-8 mb-16 text-center">
           <Button onClick={() => { setStep('form'); setResult(null); resetTabData(); }} variant="outline" className="border-cosmic-text-muted text-cosmic-text">
-            Generate Another Kundli
+            {t('common.generateAnother')}
           </Button>
         </div>
 
