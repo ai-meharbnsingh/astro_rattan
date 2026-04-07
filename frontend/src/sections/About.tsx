@@ -54,11 +54,6 @@ export default function About() {
             <div className="relative aspect-square max-w-lg mx-auto">
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-sacred-gold-dark/10 to-transparent border border-sacred-gold/20" />
               <div className="absolute inset-8 rounded-2xl card-sacred flex items-center justify-center overflow-hidden">
-                <div className="absolute inset-0 z-0 opacity-30 pointer-events-none">
-                  <Canvas camera={{ position: [0, 0, 4], fov: 50 }} gl={{ alpha: true }}>
-                    <FloatingPlanet color="var(--aged-gold-dim)" size={0.6} position={[0, 0, 0]} hasRing rotationSpeed={0.25} />
-                  </Canvas>
-                </div>
               </div>
             </div>
           </div>

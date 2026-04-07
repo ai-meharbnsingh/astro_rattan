@@ -90,9 +90,7 @@ function App() {
     <AuthProvider>
     <I18nProvider>
     <div className="min-h-screen bg-cosmic-bg text-cosmic-text overflow-x-hidden">
-      <Suspense fallback={null}>
-          <CosmicBackground />
-        </Suspense>
+      {/* CosmicBackground removed — 3D objects distracted from content */}
       <div className="relative">
       <Navigation />
 
