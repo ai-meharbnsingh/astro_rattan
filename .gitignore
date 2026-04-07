@@ -25,4 +25,5 @@ e2e_backend.log
 e2e_frontend.log
 .vercel
 _archive/
+_trash/
 .env*.local
