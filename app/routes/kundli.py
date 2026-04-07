@@ -705,6 +705,22 @@ def get_retrograde_stations(
     return {"kundli_id": kundli_id, "year": year, "stations": stations}
 
 
+@router.get("/{kundli_id}/jaimini", status_code=status.HTTP_200_OK)
+def get_jaimini(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Jaimini astrology — Chara Karakas, Special Lagnas, Drishti, Chara Dasha, Indu Lagna."""
+    from app.jaimini_engine import calculate_jaimini
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    result = calculate_jaimini(chart, str(row.get("birth_date", "")))
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
 # ── PDF Download ────────────────────────────────────────────
 
 # Sign → Lord mapping used for house lordships table

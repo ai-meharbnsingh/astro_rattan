@@ -22,6 +22,7 @@ import JHoraKundliView from '@/components/kundli/JHoraKundliView';
 import AspectsMatrixTab from '@/components/kundli/AspectsMatrixTab';
 import RetrogradeStationsSection from '@/components/kundli/RetrogradeStationsSection';
 import KundliMilanTab from '@/components/kundli/KundliMilanTab';
+import JaiminiTab from '@/components/kundli/JaiminiTab';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 
 export default function KundliGenerator() {
@@ -95,6 +96,8 @@ export default function KundliGenerator() {
   const [loadingAspects, setLoadingAspects] = useState(false);
   const [westernAspectsData, setWesternAspectsData] = useState<any>(null);
   const [loadingWesternAspects, setLoadingWesternAspects] = useState(false);
+  const [jaiminiData, setJaiminiData] = useState<any>(null);
+  const [loadingJaimini, setLoadingJaimini] = useState(false);
   const [sadesatiData, setSadesatiData] = useState<any>(null);
   const [loadingSadesati, setLoadingSadesati] = useState(false);
   const [error, setError] = useState('');
@@ -139,6 +142,7 @@ export default function KundliGenerator() {
     setSodashvargaData(null);
     setAspectsData(null);
     setWesternAspectsData(null);
+    setJaiminiData(null);
     setSadesatiData(null);
   };
 
@@ -427,6 +431,16 @@ export default function KundliGenerator() {
       setWesternAspectsData(data);
     } catch { /* */ }
     setLoadingWesternAspects(false);
+  };
+
+  const fetchJaimini = async () => {
+    if (!result?.id || jaiminiData) return;
+    setLoadingJaimini(true);
+    try {
+      const data = await api.get(`/api/kundli/${result.id}/jaimini`);
+      setJaiminiData(data);
+    } catch { /* */ }
+    setLoadingJaimini(false);
   };
 
   const fetchSadesati = async () => {
@@ -803,6 +817,7 @@ export default function KundliGenerator() {
             <TabsTrigger value="aspects" onClick={fetchAspects}>{t('tab.aspects')}</TabsTrigger>
             <TabsTrigger value="aspects-matrix" onClick={fetchWesternAspects}>{language === 'hi' ? 'दृष्टि मैट्रिक्स' : 'Aspects Matrix'}</TabsTrigger>
             <TabsTrigger value="milan">{language === 'hi' ? 'कुंडली मिलान' : 'Kundli Milan'}</TabsTrigger>
+            <TabsTrigger value="jaimini" onClick={fetchJaimini}>{language === 'hi' ? 'जैमिनी' : 'Jaimini'}</TabsTrigger>
             <TabsTrigger value="sadesati" onClick={fetchSadesati}>{t('tab.sadeSati')}</TabsTrigger>
           </TabsList>
 
@@ -3508,6 +3523,11 @@ export default function KundliGenerator() {
           {/* KUNDLI MILAN TAB */}
           <TabsContent value="milan">
             <KundliMilanTab savedKundlis={savedKundlis} currentKundliId={result?.id} />
+          </TabsContent>
+
+          {/* JAIMINI TAB */}
+          <TabsContent value="jaimini">
+            <JaiminiTab data={jaiminiData} loading={loadingJaimini} />
           </TabsContent>
 
           {/* SADE SATI TAB - Enhanced with PDF-style Details */}
