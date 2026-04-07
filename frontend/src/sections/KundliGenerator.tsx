@@ -685,7 +685,6 @@ export default function KundliGenerator() {
       mangal: doshaData.mangal_dosha || { has_dosha: false, severity: 'none', description: 'No data' },
       kaalsarp: doshaData.kaal_sarp_dosha || { has_dosha: false, severity: 'none', description: 'No data' },
       sadesati: doshaData.sade_sati || { has_sade_sati: false, phase: 'none', description: 'No data' },
-      gemstones: doshaData.gemstone_recommendations || [],
     } : null;
 
     return (
@@ -1703,38 +1702,6 @@ export default function KundliGenerator() {
                 {!doshaDisplay.mangal.has_dosha && !doshaDisplay.kaalsarp.has_dosha && !doshaDisplay.sadesati.has_sade_sati && (
                   <p className="text-sm py-4" style={{ color: '#22c55e' }}>{t('kundli.noDoshasInChart')}</p>
                 )}
-                {/* Gemstone Recommendations */}
-                {doshaDisplay.gemstones && doshaDisplay.gemstones.length > 0 && (
-                  <div className="bg-sacred-cream rounded-xl p-4 border border-sacred-gold/30 mt-4">
-                    <h4 className="font-display font-semibold text-sacred-brown mb-3 flex items-center gap-2">
-                      <Gem className="w-5 h-5 text-sacred-gold" />
-                      {language === 'hi' ? 'रत्न सिफारिशें' : 'Gemstone Recommendations'}
-                    </h4>
-                    <div className="grid gap-3">
-                      {doshaDisplay.gemstones.map((g: any, i: number) => (
-                        <div key={i} className={`rounded-lg p-3 border ${g.priority === 'primary' ? 'border-sacred-gold/50 bg-sacred-gold/5' : 'border-sacred-gold/20'}`}>
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="font-semibold text-sm text-sacred-brown">
-                              {language === 'hi' ? g.gemstone_hi : g.gemstone}
-                            </span>
-                            <span className={`text-xs px-2 py-0.5 rounded-full ${g.priority === 'primary' ? 'bg-sacred-gold/20 text-sacred-gold' : 'bg-blue-500/20 text-blue-400'}`}>
-                              {g.priority === 'primary' ? (language === 'hi' ? 'प्राथमिक' : 'Primary') : (language === 'hi' ? 'सहायक' : 'Secondary')}
-                            </span>
-                          </div>
-                          <p className="text-xs text-sacred-text-secondary">
-                            {language === 'hi' ? 'ग्रह' : 'Planet'}: <strong>{translatePlanet(g.planet, language)}</strong> ({language === 'hi' ? g.reason : g.reason})
-                          </p>
-                          <p className="text-xs text-sacred-text-secondary mt-1">
-                            {language === 'hi' ? 'धातु' : 'Metal'}: {g.metal} &bull; {language === 'hi' ? 'अंगुली' : 'Finger'}: {g.finger} &bull; {language === 'hi' ? 'दिन' : 'Day'}: {g.day}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                    <p className="text-xs text-sacred-text-muted mt-2 italic">
-                      {language === 'hi' ? '* कृपया रत्न धारण करने से पहले किसी योग्य ज्योतिषी से परामर्श लें।' : '* Please consult a qualified astrologer before wearing any gemstone.'}
-                    </p>
-                  </div>
-                )}
               </div>
             ) : (
               <p className="text-center text-sacred-text-secondary py-8">{t('kundli.clickDoshaTab')}</p>
@@ -2132,95 +2099,60 @@ export default function KundliGenerator() {
 
                 {/* Bhinna Ashtakvarga Charts — clean grid per planet */}
                 <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/20">
-                  <h4 className="font-display font-semibold text-sacred-brown mb-4">Bhinna Ashtakvarga Charts</h4>
-                  <p className="text-xs text-sacred-text-secondary mb-4">Individual planet bindus across 12 signs shown in North Indian diamond chart format.</p>
+                  <h4 className="font-display font-semibold text-sacred-brown mb-2">Bhinna Ashtakvarga Charts</h4>
+                  <p className="text-xs text-sacred-text-secondary mb-4">Individual planet bindus across 12 signs.</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                     {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
                       const bindus = ashtakvargaData.planet_bindus?.[planet] || {};
                       const signs = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
+                      const signAbbr = ['Ari', 'Tau', 'Gem', 'Can', 'Leo', 'Vir', 'Lib', 'Sco', 'Sag', 'Cap', 'Aqu', 'Pis'];
                       const total = signs.reduce((sum, s) => sum + (bindus[s] || 0), 0);
 
-                      const getBinduColor = (val: number) => {
-                        if (val >= 5) return { bg: '#166534', text: '#ffffff' };
-                        if (val >= 3) return { bg: '#92400e', text: '#ffffff' };
-                        return { bg: '#991b1b', text: '#ffffff' };
-                      };
-
-                      // North Indian diamond chart: square with diagonals + midpoint lines
-                      // creating 12 triangular house regions. Sign positions clockwise from top.
-                      const niPositions = [
-                        { x: 100, y: 42 },   // Aries - top center
-                        { x: 155, y: 42 },   // Taurus - top right corner
-                        { x: 168, y: 78 },   // Gemini - right upper
-                        { x: 168, y: 122 },  // Cancer - right lower
-                        { x: 155, y: 158 },  // Leo - bottom right corner
-                        { x: 100, y: 158 },  // Virgo - bottom center
-                        { x: 45, y: 158 },   // Libra - bottom left corner
-                        { x: 32, y: 122 },   // Scorpio - left lower
-                        { x: 32, y: 78 },    // Sagittarius - left upper
-                        { x: 45, y: 42 },    // Capricorn - top left corner
-                        { x: 100, y: 82 },   // Aquarius - inner top
-                        { x: 100, y: 118 },  // Pisces - inner bottom
-                      ];
-
                       return (
-                        <div key={planet} className="flex flex-col items-center">
-                          <h5 className="font-display font-semibold text-sacred-brown text-sm mb-2">
+                        <div key={planet} className="flex flex-col">
+                          <h5 className="font-display font-semibold text-sacred-brown text-sm mb-2 text-center">
                             {translatePlanet(planet, language)}
                             <span className="ml-1 text-xs font-normal text-sacred-text-secondary">({total})</span>
                           </h5>
-                          <svg viewBox="0 0 200 200" className="w-full max-w-[200px]" xmlns="http://www.w3.org/2000/svg">
-                            {/* Outer square */}
-                            <rect x="10" y="10" width="180" height="180" fill="none" stroke="var(--aged-gold-dim)" strokeWidth="1.5" />
-                            {/* Diagonal lines forming the diamond */}
-                            <line x1="10" y1="10" x2="190" y2="190" stroke="var(--aged-gold-dim)" strokeWidth="1" />
-                            <line x1="190" y1="10" x2="10" y2="190" stroke="var(--aged-gold-dim)" strokeWidth="1" />
-                            {/* Midpoint lines forming inner diamond */}
-                            <line x1="100" y1="10" x2="190" y2="100" stroke="var(--aged-gold-dim)" strokeWidth="1" />
-                            <line x1="190" y1="100" x2="100" y2="190" stroke="var(--aged-gold-dim)" strokeWidth="1" />
-                            <line x1="100" y1="190" x2="10" y2="100" stroke="var(--aged-gold-dim)" strokeWidth="1" />
-                            <line x1="10" y1="100" x2="100" y2="10" stroke="var(--aged-gold-dim)" strokeWidth="1" />
-                            {/* Bindu values in each house */}
+                          <div className="grid grid-cols-4 gap-1">
                             {signs.map((sign, i) => {
                               const val = bindus[sign] || 0;
-                              const color = getBinduColor(val);
-                              const pos = niPositions[i];
+                              const cellStyle = val >= 5
+                                ? 'bg-green-100 border-green-300'
+                                : val >= 3
+                                  ? 'bg-amber-50 border-amber-300'
+                                  : 'bg-red-50 border-red-300';
+                              const numColor = val >= 5
+                                ? 'text-[#166534]'
+                                : val >= 3
+                                  ? 'text-[#B8860B]'
+                                  : 'text-[#991b1b]';
                               return (
-                                <g key={sign}>
-                                  <circle cx={pos.x} cy={pos.y} r="13" fill={color.bg} opacity="0.85" />
-                                  <text
-                                    x={pos.x}
-                                    y={pos.y + 1}
-                                    textAnchor="middle"
-                                    dominantBaseline="central"
-                                    fill={color.text}
-                                    fontSize="12"
-                                    fontWeight="bold"
-                                  >
-                                    {val}
-                                  </text>
-                                  <text
-                                    x={pos.x}
-                                    y={pos.y + 22}
-                                    textAnchor="middle"
-                                    fill="#6B5B4B"
-                                    fontSize="7"
-                                  >
-                                    {sign.slice(0, 3)}
-                                  </text>
-                                </g>
+                                <div key={sign} className={`rounded-md border p-1.5 text-center ${cellStyle}`}>
+                                  <span className="block text-[9px] text-sacred-text-secondary leading-tight">{signAbbr[i]}</span>
+                                  <span className={`block text-base font-bold leading-tight ${numColor}`}>{val}</span>
+                                </div>
                               );
                             })}
-                          </svg>
-                          {/* Strength legend */}
-                          <div className="flex items-center gap-2 mt-1 text-[10px] text-sacred-text-secondary">
-                            <span className="flex items-center gap-0.5"><span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: '#166534' }} />5-8</span>
-                            <span className="flex items-center gap-0.5"><span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: '#92400e' }} />3-4</span>
-                            <span className="flex items-center gap-0.5"><span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: '#991b1b' }} />0-2</span>
                           </div>
                         </div>
                       );
                     })}
+                  </div>
+                  {/* Color legend */}
+                  <div className="flex items-center gap-4 mt-4 text-xs text-sacred-text-secondary">
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 rounded border bg-green-100 border-green-300" />
+                      <span>5-8 Strong</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 rounded border bg-amber-50 border-amber-300" />
+                      <span>3-4 Medium</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 rounded border bg-red-50 border-red-300" />
+                      <span>0-2 Weak</span>
+                    </div>
                   </div>
                 </div>
 
@@ -3494,6 +3426,39 @@ export default function KundliGenerator() {
                           </li>
                         ))}
                       </ul>
+                    </div>
+                  )}
+
+                  {/* Gemstone Recommendations */}
+                  {doshaData?.gemstone_recommendations && doshaData.gemstone_recommendations.length > 0 && (
+                    <div className="lg:col-span-2 bg-sacred-cream rounded-xl p-4 border border-sacred-gold/30">
+                      <h4 className="font-display font-semibold text-sacred-brown mb-3 flex items-center gap-2">
+                        <Gem className="w-5 h-5 text-sacred-gold" />
+                        {language === 'hi' ? 'रत्न सिफारिशें' : 'Gemstone Recommendations'}
+                      </h4>
+                      <div className="grid gap-3">
+                        {doshaData.gemstone_recommendations.map((g: any, i: number) => (
+                          <div key={i} className={`rounded-lg p-3 border ${g.priority === 'primary' ? 'border-sacred-gold/50 bg-sacred-gold/5' : 'border-sacred-gold/20'}`}>
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="font-semibold text-sm text-sacred-brown">
+                                {language === 'hi' ? g.gemstone_hi : g.gemstone}
+                              </span>
+                              <span className={`text-xs px-2 py-0.5 rounded-full ${g.priority === 'primary' ? 'bg-sacred-gold/20 text-sacred-gold' : 'bg-blue-500/20 text-blue-400'}`}>
+                                {g.priority === 'primary' ? (language === 'hi' ? 'प्राथमिक' : 'Primary') : (language === 'hi' ? 'सहायक' : 'Secondary')}
+                              </span>
+                            </div>
+                            <p className="text-xs text-sacred-text-secondary">
+                              {language === 'hi' ? 'ग्रह' : 'Planet'}: <strong>{translatePlanet(g.planet, language)}</strong> ({language === 'hi' ? g.reason : g.reason})
+                            </p>
+                            <p className="text-xs text-sacred-text-secondary mt-1">
+                              {language === 'hi' ? 'धातु' : 'Metal'}: {g.metal} &bull; {language === 'hi' ? 'अंगुली' : 'Finger'}: {g.finger} &bull; {language === 'hi' ? 'दिन' : 'Day'}: {g.day}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-xs text-sacred-text-muted mt-2 italic">
+                        {language === 'hi' ? '* कृपया रत्न धारण करने से पहले किसी योग्य ज्योतिषी से परामर्श लें।' : '* Please consult a qualified astrologer before wearing any gemstone.'}
+                      </p>
                     </div>
                   )}
                 </div>
