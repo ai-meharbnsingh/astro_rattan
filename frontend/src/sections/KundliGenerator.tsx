@@ -2130,6 +2130,100 @@ export default function KundliGenerator() {
                   </div>
                 </div>
 
+                {/* Bhinna Ashtakvarga Charts — SVG North Indian diamond per planet */}
+                <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/20">
+                  <h4 className="font-display font-semibold text-sacred-brown mb-4">Bhinna Ashtakvarga Charts</h4>
+                  <p className="text-xs text-sacred-text-secondary mb-4">Individual planet bindus across 12 signs shown in North Indian diamond chart format.</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                    {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
+                      const bindus = ashtakvargaData.planet_bindus?.[planet] || {};
+                      const signs = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
+                      const total = signs.reduce((sum, s) => sum + (bindus[s] || 0), 0);
+
+                      const getBinduColor = (val: number) => {
+                        if (val >= 5) return { bg: '#166534', text: '#ffffff' };
+                        if (val >= 3) return { bg: '#92400e', text: '#ffffff' };
+                        return { bg: '#991b1b', text: '#ffffff' };
+                      };
+
+                      // North Indian diamond chart: square with diagonals + midpoint lines
+                      // creating 12 triangular house regions. Sign positions clockwise from top.
+                      const niPositions = [
+                        { x: 100, y: 42 },   // Aries - top center
+                        { x: 155, y: 42 },   // Taurus - top right corner
+                        { x: 168, y: 78 },   // Gemini - right upper
+                        { x: 168, y: 122 },  // Cancer - right lower
+                        { x: 155, y: 158 },  // Leo - bottom right corner
+                        { x: 100, y: 158 },  // Virgo - bottom center
+                        { x: 45, y: 158 },   // Libra - bottom left corner
+                        { x: 32, y: 122 },   // Scorpio - left lower
+                        { x: 32, y: 78 },    // Sagittarius - left upper
+                        { x: 45, y: 42 },    // Capricorn - top left corner
+                        { x: 100, y: 82 },   // Aquarius - inner top
+                        { x: 100, y: 118 },  // Pisces - inner bottom
+                      ];
+
+                      return (
+                        <div key={planet} className="flex flex-col items-center">
+                          <h5 className="font-display font-semibold text-sacred-brown text-sm mb-2">
+                            {translatePlanet(planet, language)}
+                            <span className="ml-1 text-xs font-normal text-sacred-text-secondary">({total})</span>
+                          </h5>
+                          <svg viewBox="0 0 200 200" className="w-full max-w-[200px]" xmlns="http://www.w3.org/2000/svg">
+                            {/* Outer square */}
+                            <rect x="10" y="10" width="180" height="180" fill="none" stroke="#B8860B" strokeWidth="1.5" />
+                            {/* Diagonal lines forming the diamond */}
+                            <line x1="10" y1="10" x2="190" y2="190" stroke="#B8860B" strokeWidth="1" />
+                            <line x1="190" y1="10" x2="10" y2="190" stroke="#B8860B" strokeWidth="1" />
+                            {/* Midpoint lines forming inner diamond */}
+                            <line x1="100" y1="10" x2="190" y2="100" stroke="#B8860B" strokeWidth="1" />
+                            <line x1="190" y1="100" x2="100" y2="190" stroke="#B8860B" strokeWidth="1" />
+                            <line x1="100" y1="190" x2="10" y2="100" stroke="#B8860B" strokeWidth="1" />
+                            <line x1="10" y1="100" x2="100" y2="10" stroke="#B8860B" strokeWidth="1" />
+                            {/* Bindu values in each house */}
+                            {signs.map((sign, i) => {
+                              const val = bindus[sign] || 0;
+                              const color = getBinduColor(val);
+                              const pos = niPositions[i];
+                              return (
+                                <g key={sign}>
+                                  <circle cx={pos.x} cy={pos.y} r="13" fill={color.bg} opacity="0.85" />
+                                  <text
+                                    x={pos.x}
+                                    y={pos.y + 1}
+                                    textAnchor="middle"
+                                    dominantBaseline="central"
+                                    fill={color.text}
+                                    fontSize="12"
+                                    fontWeight="bold"
+                                  >
+                                    {val}
+                                  </text>
+                                  <text
+                                    x={pos.x}
+                                    y={pos.y + 22}
+                                    textAnchor="middle"
+                                    fill="#6B5B4B"
+                                    fontSize="7"
+                                  >
+                                    {sign.slice(0, 3)}
+                                  </text>
+                                </g>
+                              );
+                            })}
+                          </svg>
+                          {/* Strength legend */}
+                          <div className="flex items-center gap-2 mt-1 text-[10px] text-sacred-text-secondary">
+                            <span className="flex items-center gap-0.5"><span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: '#166534' }} />5-8</span>
+                            <span className="flex items-center gap-0.5"><span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: '#92400e' }} />3-4</span>
+                            <span className="flex items-center gap-0.5"><span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: '#991b1b' }} />0-2</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/20">
                   <h4 className="font-display font-semibold text-sacred-brown mb-4">{t('section.bhinnashtakvarga')}</h4>
                   <div className="overflow-x-auto">
