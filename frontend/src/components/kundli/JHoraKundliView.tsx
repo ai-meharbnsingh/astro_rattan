@@ -61,7 +61,7 @@ const TEXT_COLOR = '#3E2723';      // dark brown — readable on cream bg
 const BORDER_COLOR = '#D4C5A9';
 const BORDER = `1px solid ${BORDER_COLOR}`;
 const HEADER_BG = '#EDE8DB';
-const HEADER_COLOR = '#D4A052';
+const HEADER_COLOR = 'var(--aged-gold)';
 const ALT_ROW = '#FAF6EE';
 const MUTED = '#5D4037';           // secondary text — labels, dates
 
@@ -76,8 +76,8 @@ const PLANET_COLOR_MAP: Record<string, string> = {
   Saturn: '#1E40AF',
   Rahu: '#4A4A5A',
   Ketu: '#78350F',
-  Ascendant: '#D4A052',
-  Lagna: '#D4A052',
+  Ascendant: 'var(--aged-gold)',
+  Lagna: 'var(--aged-gold)',
 };
 
 function planetColor(planet: string): string {
@@ -556,7 +556,7 @@ export default function JHoraKundliView({
                       <td style={{ ...cellCompact, color: statusColor(p.status), fontWeight: p.status ? 600 : 400 }}>
                         {abbrDignity(p.status)}
                       </td>
-                      <td style={{ ...cellCompact, fontWeight: 600, color: karaka !== '-' ? '#D4A052' : MUTED }}>
+                      <td style={{ ...cellCompact, fontWeight: 600, color: karaka !== '-' ? 'var(--aged-gold)' : MUTED }}>
                         {karaka}
                       </td>
                     </tr>
@@ -582,7 +582,7 @@ export default function JHoraKundliView({
                 {/* Current Dasha Info */}
                 <div style={{ padding: '3px 6px', background: '#FEF3C7', borderBottom: `1px solid ${BORDER_COLOR}`, fontSize: FONT_SIZE, fontFamily: SERIF }}>
                   <span style={{ color: HEADER_COLOR, fontWeight: 600 }}>{t('section.currentDasha')}{' '}</span>
-                  <span style={{ color: '#B8860B', fontWeight: 700 }}>{dasha.current_dasha}</span>
+                  <span style={{ color: 'var(--aged-gold-dim)', fontWeight: 700 }}>{dasha.current_dasha}</span>
                   {dasha.current_antardasha && dasha.current_antardasha !== 'Unknown' && (
                     <span style={{ color: MUTED }}> / {dasha.current_antardasha}</span>
                   )}
@@ -610,7 +610,7 @@ export default function JHoraKundliView({
                           <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                             <span style={{ fontSize: FONT_SIZE, color: MUTED }}>{expandedMD === md.planet ? '\u25BC' : '\u25B6'}</span>
                             <span style={{ color: planetColor(md.planet), fontWeight: 600 }}>{md.planet}</span>
-                            {md.is_current && <span style={{ color: '#B8860B', fontSize: FONT_SIZE }}>\u2190</span>}
+                            {md.is_current && <span style={{ color: 'var(--aged-gold-dim)', fontSize: FONT_SIZE }}>\u2190</span>}
                           </span>
                           <span style={{ color: MUTED, fontSize: FONT_SIZE }}>
                             {md.start?.slice(0, 10)} — {md.end?.slice(0, 10)} ({md.years}y)
@@ -634,7 +634,7 @@ export default function JHoraKundliView({
                                 {ad.pratyantar?.length > 0 && <span style={{ fontSize: FONT_SIZE, color: MUTED }}>{expandedAD === `${md.planet}-${ad.planet}` ? '\u25BC' : '\u25B6'}</span>}
                                 <span style={{ color: planetColor(ad.planet), fontWeight: 600 }}>{ad.planet}</span>
                                 <span style={{ color: MUTED }}> AD</span>
-                                {ad.is_current && <span style={{ color: '#B8860B', fontSize: FONT_SIZE }}>*</span>}
+                                {ad.is_current && <span style={{ color: 'var(--aged-gold-dim)', fontSize: FONT_SIZE }}>*</span>}
                               </span>
                               <span style={{ color: MUTED, fontSize: FONT_SIZE }}>{ad.start?.slice(0, 10)} — {ad.end?.slice(0, 10)}</span>
                             </div>
@@ -654,7 +654,7 @@ export default function JHoraKundliView({
                                 <span>
                                   <span style={{ color: planetColor(pt.planet), fontWeight: 600 }}>{pt.planet}</span>
                                   <span style={{ color: MUTED }}> PD</span>
-                                  {pt.is_current && <span style={{ color: '#B8860B' }}>*</span>}
+                                  {pt.is_current && <span style={{ color: 'var(--aged-gold-dim)' }}>*</span>}
                                 </span>
                                 <span style={{ color: MUTED }}>{pt.start?.slice(0, 10)} — {pt.end?.slice(0, 10)}</span>
                               </div>

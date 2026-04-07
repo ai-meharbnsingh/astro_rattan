@@ -101,7 +101,7 @@ export default function KPLalkitabPage() {
         {/* Header */}
         <div className="text-center mb-10">
           <div className="w-16 h-16 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center mx-auto mb-4">
-            <Star className="w-8 h-8 text-[#1a1a2e]" />
+            <Star className="w-8 h-8 text-cosmic-bg" />
           </div>
           <h1 className="text-3xl sm:text-4xl font-sacred font-bold text-sacred-gold mb-2">
             {t('kp.pageTitle')}

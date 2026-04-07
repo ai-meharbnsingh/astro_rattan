@@ -259,13 +259,13 @@ export default function PalmistryPage() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full max-w-md mx-auto grid-cols-3 mb-8">
-          <TabsTrigger value="analysis" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e]">
+          <TabsTrigger value="analysis" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-cosmic-bg">
             <Sparkles className="w-4 h-4 mr-2" />Analysis
           </TabsTrigger>
-          <TabsTrigger value="guide" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e]">
+          <TabsTrigger value="guide" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-cosmic-bg">
             <BookOpen className="w-4 h-4 mr-2" />Guide
           </TabsTrigger>
-          <TabsTrigger value="results" disabled={!reading} className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e]">
+          <TabsTrigger value="results" disabled={!reading} className="data-[state=active]:bg-sacred-gold data-[state=active]:text-cosmic-bg">
             <Star className="w-4 h-4 mr-2" />Results
           </TabsTrigger>
         </TabsList>
@@ -274,7 +274,7 @@ export default function PalmistryPage() {
           <Card className="border-0 shadow-soft bg-gradient-to-br from-sacred-gold/5 to-sacred-gold-dark/5">
             <CardContent className="p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-xl bg-sacred-gold text-[#1a1a2e] flex items-center justify-center">
+                <div className="w-12 h-12 rounded-xl bg-sacred-gold text-cosmic-bg flex items-center justify-center">
                   <Camera className="w-6 h-6" />
                 </div>
                 <div>
@@ -301,7 +301,7 @@ export default function PalmistryPage() {
                   <Button
                     onClick={handleImageAnalyze}
                     disabled={imageAnalyzing || !selectedImage}
-                    className="w-full bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark"
+                    className="w-full bg-sacred-gold text-cosmic-bg hover:bg-sacred-gold-dark"
                   >
                     {imageAnalyzing ? (
                       <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Analyzing photo...</>
@@ -471,7 +471,7 @@ export default function PalmistryPage() {
           <Button
             onClick={handleAnalyze}
             disabled={analyzing || !handShape || !heartLine || !headLine || !lifeLine}
-            className="w-full bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark py-6 text-lg"
+            className="w-full bg-sacred-gold text-cosmic-bg hover:bg-sacred-gold-dark py-6 text-lg"
           >
             {analyzing ? (
               <><Loader2 className="w-5 h-5 mr-2 animate-spin" />Analyzing...</>
@@ -546,7 +546,7 @@ export default function PalmistryPage() {
               <Card className="border-0 shadow-soft bg-gradient-to-br from-sacred-gold/5 to-sacred-gold-dark/5">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-full bg-sacred-gold text-[#1a1a2e] flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-full bg-sacred-gold text-cosmic-bg flex items-center justify-center">
                       <Sparkles className="w-6 h-6" />
                     </div>
                     <div>

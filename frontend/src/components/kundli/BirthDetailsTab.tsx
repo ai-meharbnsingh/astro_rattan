@@ -40,7 +40,7 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
               const element = SIGN_ELEMENT[p.sign] || '\u2014';
               const nature = PLANET_NATURE[p.planet] || '\u2014';
               const isRetro = (p.status || '').toLowerCase().includes('retrograde') || (p.status || '').toLowerCase().includes(' r');
-              const dignityColor = dignity === 'Exalted' ? '#16a34a' : dignity === 'Debilitated' ? '#dc2626' : dignity === 'Own Sign' ? '#2563eb' : '#b8b0a4';
+              const dignityColor = dignity === 'Exalted' ? '#16a34a' : dignity === 'Debilitated' ? '#dc2626' : dignity === 'Own Sign' ? '#2563eb' : 'var(--ink-light)';
               const nakshatraParts = (p.nakshatra || '').split(' Pada ');
               const nakshatraName = nakshatraParts[0] || p.nakshatra || '\u2014';
               const pada = nakshatraParts[1] || '\u2014';
@@ -61,10 +61,10 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
                       {nature}
                     </span>
                   </td>
-                  <td className="p-2" style={{ color: isRetro ? '#dc2626' : '#b8b0a4' }}>
+                  <td className="p-2" style={{ color: isRetro ? '#dc2626' : 'var(--ink-light)' }}>
                     {isRetro ? 'Yes \u211e' : 'No'}
                   </td>
-                  <td className="p-2 font-semibold" style={{ color: karaka !== '\u2014' ? '#B8860B' : '#b8b0a4' }}>
+                  <td className="p-2 font-semibold" style={{ color: karaka !== '\u2014' ? 'var(--aged-gold-dim)' : 'var(--ink-light)' }}>
                     {karaka}
                   </td>
                 </tr>

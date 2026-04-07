@@ -97,8 +97,8 @@ const PLANET_COLORS: Record<string, string> = {
   Saturn: '#1565C0',   // blue
   Rahu: '#616161',     // grey
   Ketu: '#795548',     // brown
-  Ascendant: '#9A7B0A',
-  Lagna: '#9A7B0A',
+  Ascendant: 'var(--aged-gold-dim)',
+  Lagna: 'var(--aged-gold-dim)',
   Uranus: '#00838F',
   Neptune: '#4527A0',
   Pluto: '#37474F',
@@ -564,9 +564,9 @@ function SvgDefs() {
   return (
     <defs>
       <linearGradient id="kundli-border-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#9A7B0A" />
-        <stop offset="50%" stopColor="#B8860B" />
-        <stop offset="100%" stopColor="#B8860B" />
+        <stop offset="0%" stopColor="var(--aged-gold-dim)" />
+        <stop offset="50%" stopColor="var(--aged-gold-dim)" />
+        <stop offset="100%" stopColor="var(--aged-gold-dim)" />
       </linearGradient>
       <filter id="glow">
         <feGaussianBlur stdDeviation="2" result="blur" />
@@ -636,7 +636,7 @@ function PlanetBadge({
         cx={px}
         cy={py}
         r={isHovered ? 13 : 11}
-        fill={isHovered ? color : '#1a1a2e'}
+        fill={isHovered ? color : 'var(--parchment)'}
         stroke={color}
         strokeWidth={2}
         filter={isHovered ? 'url(#planet-glow)' : undefined}
@@ -646,7 +646,7 @@ function PlanetBadge({
         x={px}
         y={py + 4}
         textAnchor="middle"
-        fill={isHovered ? '#1a1a2e' : color}
+        fill={isHovered ? 'var(--parchment)' : color}
         fontSize={13}
         fontWeight="bold"
         fontFamily="serif"
@@ -802,7 +802,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           width={CELL_SIZE * 4}
           height={CELL_SIZE * 4}
           rx={4}
-          fill="#2a2a4e"
+          fill="var(--sacred-purple)"
           opacity={0.95}
         />
 
@@ -811,7 +811,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           x={svgWidth / 2}
           y={svgHeight / 2 - 6}
           textAnchor="middle"
-          fill="#9A7B0A"
+          fill="var(--aged-gold-dim)"
           fontSize={13}
           fontFamily="serif"
           opacity={0.6}
@@ -822,7 +822,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           x={svgWidth / 2}
           y={svgHeight / 2 + 10}
           textAnchor="middle"
-          fill="#9A7B0A"
+          fill="var(--aged-gold-dim)"
           fontSize={9}
           fontFamily="serif"
           opacity={0.4}
@@ -857,7 +857,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                 width={CELL_SIZE - 2}
                 height={CELL_SIZE - 2}
                 fill={isHovered ? 'rgba(184,134,11,0.08)' : 'rgba(232,224,212,0.5)'}
-                stroke={isHovered ? '#B8860B' : 'rgba(184,134,11,0.3)'}
+                stroke={isHovered ? 'var(--aged-gold-dim)' : 'rgba(184,134,11,0.3)'}
                 strokeWidth={isHovered ? 1.5 : 0.5}
                 rx={2}
                 style={{ transition: 'all 0.2s ease' }}
@@ -868,7 +868,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                 x={x + CELL_SIZE / 2}
                 y={y + CELL_SIZE / 2 + 6}
                 textAnchor="middle"
-                fill="#B8860B"
+                fill="var(--aged-gold-dim)"
                 fontSize={28}
                 fontWeight="bold"
                 opacity={0.8}
@@ -1144,9 +1144,9 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           className="px-4 py-1.5 text-xs font-semibold rounded-l-md border transition-all duration-200"
           style={{
             fontFamily: 'serif',
-            background: chartStyle === 'north' ? '#B8860B' : '#2a2a4e',
-            color: chartStyle === 'north' ? '#1a1a2e' : '#b8b0a4',
-            borderColor: '#B8860B',
+            background: chartStyle === 'north' ? 'var(--aged-gold-dim)' : 'var(--sacred-purple)',
+            color: chartStyle === 'north' ? 'var(--parchment)' : 'var(--ink-light)',
+            borderColor: 'var(--aged-gold-dim)',
           }}
         >
           {t('kundli.northIndian')}
@@ -1156,9 +1156,9 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           className="px-4 py-1.5 text-xs font-semibold rounded-r-md border transition-all duration-200"
           style={{
             fontFamily: 'serif',
-            background: chartStyle === 'south' ? '#B8860B' : '#2a2a4e',
-            color: chartStyle === 'south' ? '#1a1a2e' : '#b8b0a4',
-            borderColor: '#B8860B',
+            background: chartStyle === 'south' ? 'var(--aged-gold-dim)' : 'var(--sacred-purple)',
+            color: chartStyle === 'south' ? 'var(--parchment)' : 'var(--ink-light)',
+            borderColor: 'var(--aged-gold-dim)',
           }}
         >
           {t('kundli.southIndian')}
@@ -1200,7 +1200,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
 // Legend component for chart status symbols
 export function ChartLegend() {
   return (
-    <div className="flex flex-wrap gap-x-4 gap-y-1 justify-center text-xs mt-2 px-2" style={{ color: '#D4A052', fontFamily: 'serif' }}>
+    <div className="flex flex-wrap gap-x-4 gap-y-1 justify-center text-xs mt-2 px-2" style={{ color: 'var(--aged-gold)', fontFamily: 'serif' }}>
       <span><strong>*</strong> Retrograde</span>
       <span><strong>^</strong> Combust</span>
       <span><strong>{'\u25A1'}</strong> Vargottama</span>

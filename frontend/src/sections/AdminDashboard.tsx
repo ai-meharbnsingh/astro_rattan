@@ -399,7 +399,7 @@ export default function AdminDashboard() {
     <section className="max-w-7xl mx-auto py-24 px-4">
       <div className="flex items-center gap-3 mb-8">
         <div className="w-10 h-10 rounded-full bg-sacred-gold flex items-center justify-center">
-          <Shield className="w-5 h-5 text-[#1a1a2e]" />
+          <Shield className="w-5 h-5 text-cosmic-bg" />
         </div>
         <div>
           <h2 className="text-2xl font-display font-bold text-cosmic-text">Admin Dashboard</h2>
@@ -409,13 +409,13 @@ export default function AdminDashboard() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="bg-cosmic-surface mb-6 flex-wrap">
-          <TabsTrigger value="overview" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e]">Overview</TabsTrigger>
-          <TabsTrigger value="users" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e]">Users</TabsTrigger>
-          <TabsTrigger value="orders" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e]">Orders</TabsTrigger>
-          <TabsTrigger value="products" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e]">Products</TabsTrigger>
-          <TabsTrigger value="content" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e]">Content</TabsTrigger>
-          <TabsTrigger value="blog" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e]">Blog</TabsTrigger>
-          <TabsTrigger value="ai-logs" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e]">AI Logs</TabsTrigger>
+          <TabsTrigger value="overview" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-cosmic-bg">Overview</TabsTrigger>
+          <TabsTrigger value="users" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-cosmic-bg">Users</TabsTrigger>
+          <TabsTrigger value="orders" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-cosmic-bg">Orders</TabsTrigger>
+          <TabsTrigger value="products" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-cosmic-bg">Products</TabsTrigger>
+          <TabsTrigger value="content" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-cosmic-bg">Content</TabsTrigger>
+          <TabsTrigger value="blog" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-cosmic-bg">Blog</TabsTrigger>
+          <TabsTrigger value="ai-logs" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-cosmic-bg">AI Logs</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -501,7 +501,7 @@ export default function AdminDashboard() {
                         ) : (
                           <div className="flex gap-1">
                             <Input placeholder="Tracking #" value={trackingUpdate[o.id] || ''} onChange={(e) => setTrackingUpdate((prev) => ({ ...prev, [o.id]: e.target.value }))} className="h-8 w-28 text-xs bg-cosmic-card" />
-                            <Button size="sm" onClick={() => updateTracking(o.id)} className="h-8 bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark text-xs">Set</Button>
+                            <Button size="sm" onClick={() => updateTracking(o.id)} className="h-8 bg-sacred-gold text-cosmic-bg hover:bg-sacred-gold-dark text-xs">Set</Button>
                           </div>
                         )}
                       </TableCell>
@@ -515,7 +515,7 @@ export default function AdminDashboard() {
 
         <TabsContent value="products">
           <div className="flex justify-end mb-4">
-            <Button onClick={openAddProduct} className="bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark">
+            <Button onClick={openAddProduct} className="bg-sacred-gold text-cosmic-bg hover:bg-sacred-gold-dark">
               <Plus className="w-4 h-4 mr-2" />Add Product
             </Button>
           </div>
@@ -703,7 +703,7 @@ export default function AdminDashboard() {
                 <Button
                   onClick={saveProduct}
                   disabled={!productForm.name || !productForm.price || !productForm.stock || productSaving || imageUploading}
-                  className="bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark"
+                  className="bg-sacred-gold text-cosmic-bg hover:bg-sacred-gold-dark"
                 >
                   {productSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                   {editingProduct ? 'Save Changes' : 'Create Product'}
@@ -715,7 +715,7 @@ export default function AdminDashboard() {
 
         <TabsContent value="content">
           <div className="flex justify-end mb-4">
-            <Button onClick={() => setContentDialogOpen(true)} className="bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark">
+            <Button onClick={() => setContentDialogOpen(true)} className="bg-sacred-gold text-cosmic-bg hover:bg-sacred-gold-dark">
               <Plus className="w-4 h-4 mr-2" />Add Content
             </Button>
           </div>
@@ -773,7 +773,7 @@ export default function AdminDashboard() {
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setContentDialogOpen(false)}>Cancel</Button>
-                <Button onClick={addContent} disabled={!newContent.title || !newContent.content} className="bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark">Create</Button>
+                <Button onClick={addContent} disabled={!newContent.title || !newContent.content} className="bg-sacred-gold text-cosmic-bg hover:bg-sacred-gold-dark">Create</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -781,7 +781,7 @@ export default function AdminDashboard() {
 
         <TabsContent value="blog">
           <div className="flex justify-end mb-4">
-            <Button onClick={() => setBlogDialogOpen(true)} className="bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark">
+            <Button onClick={() => setBlogDialogOpen(true)} className="bg-sacred-gold text-cosmic-bg hover:bg-sacred-gold-dark">
               <Plus className="w-4 h-4 mr-2" />Add Blog Post
             </Button>
           </div>
@@ -839,7 +839,7 @@ export default function AdminDashboard() {
                 <Button
                   onClick={addBlogPost}
                   disabled={!newBlogPost.title || !newBlogPost.excerpt || !newBlogPost.content}
-                  className="bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark"
+                  className="bg-sacred-gold text-cosmic-bg hover:bg-sacred-gold-dark"
                 >
                   Publish
                 </Button>

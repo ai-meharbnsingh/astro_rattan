@@ -90,7 +90,7 @@ export default function Panchang() {
   const qualityIcon = (quality: string) => {
     switch (quality?.toLowerCase()) {
       case 'excellent': return <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />;
-      case 'good': return <Star className="w-5 h-5 text-[#b8b0a4] fill-gray-300" />;
+      case 'good': return <Star className="w-5 h-5 text-cosmic-text-secondary fill-gray-300" />;
       case 'average': return <Star className="w-5 h-5 text-amber-700 fill-amber-700" />;
       default: return <Star className="w-5 h-5 text-cosmic-text-secondary" />;
     }
@@ -99,7 +99,7 @@ export default function Panchang() {
   const qualityLabel = (quality: string) => {
     switch (quality?.toLowerCase()) {
       case 'excellent': return 'text-yellow-400';
-      case 'good': return 'text-[#b8b0a4]';
+      case 'good': return 'text-cosmic-text-secondary';
       case 'average': return 'text-amber-700';
       default: return 'text-cosmic-text-secondary';
     }
@@ -344,7 +344,7 @@ export default function Panchang() {
                           </span>
                           <span className={`text-xs font-bold uppercase tracking-wide px-2 py-0.5 rounded-full border ${
                             window.quality?.toLowerCase() === 'excellent' ? 'bg-yellow-400/10 text-yellow-400 border-yellow-400/30' :
-                            window.quality?.toLowerCase() === 'good' ? 'bg-gray-300/10 text-[#b8b0a4] border-gray-300/30' :
+                            window.quality?.toLowerCase() === 'good' ? 'bg-gray-300/10 text-cosmic-text-secondary border-gray-300/30' :
                             'bg-amber-700/10 text-amber-700 border-amber-700/30'
                           }`}>
                             {window.quality}
@@ -402,7 +402,7 @@ export default function Panchang() {
                       'bg-amber-700/10 border-amber-700/30';
                     const textColor = !day.has_muhurat ? 'text-cosmic-text-secondary' :
                       day.quality?.toLowerCase() === 'excellent' ? 'text-yellow-400' :
-                      day.quality?.toLowerCase() === 'good' ? 'text-[#b8b0a4]' :
+                      day.quality?.toLowerCase() === 'good' ? 'text-cosmic-text-secondary' :
                       'text-amber-700';
                     return (
                       <div key={day.date} className={`p-2 rounded-xl border text-center ${bgColor} transition-all hover:scale-105`}>

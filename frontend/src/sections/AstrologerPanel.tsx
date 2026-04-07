@@ -146,10 +146,10 @@ function AddClientForm({ onSaved, onCancel }: AddClientFormProps) {
   return (
     <div className="max-w-lg mx-auto">
       <div className="flex items-center gap-3 mb-6">
-        <Button variant="outline" size="sm" onClick={onCancel} className="border-[#B8860B]/30 text-[#b8b0a4]">
+        <Button variant="outline" size="sm" onClick={onCancel} className="border-sacred-gold-dark/30 text-cosmic-text-secondary">
           <ArrowLeft className="w-4 h-4 mr-1" />{t('astrologer.backToClients')}
         </Button>
-        <h3 className="text-xl font-display font-bold text-[#e8e0d4]">{t('astrologer.addClient')}</h3>
+        <h3 className="text-xl font-display font-bold text-cosmic-text">{t('astrologer.addClient')}</h3>
       </div>
 
       {error && <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 text-red-400 text-sm rounded">{error}</div>}
@@ -157,44 +157,44 @@ function AddClientForm({ onSaved, onCancel }: AddClientFormProps) {
       <div className="space-y-4">
         {/* Name */}
         <div>
-          <label className="text-sm font-medium text-[#e8e0d4] mb-1 block">{t('astrologer.clientName')} *</label>
+          <label className="text-sm font-medium text-cosmic-text mb-1 block">{t('astrologer.clientName')} *</label>
           <div className="relative">
-            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B8860B]" />
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark" />
             <Input value={form.client_name} onChange={(e) => setForm({ ...form, client_name: e.target.value })}
-              placeholder="Full Name" className="pl-10 bg-[#1a1a2e] border-[#B8860B]/15 text-[#e8e0d4]" />
+              placeholder="Full Name" className="pl-10 bg-cosmic-bg border-sacred-gold-dark/15 text-cosmic-text" />
           </div>
         </div>
 
         {/* Phone + Email row */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-sm font-medium text-[#e8e0d4] mb-1 block">{t('astrologer.clientPhone')}</label>
+            <label className="text-sm font-medium text-cosmic-text mb-1 block">{t('astrologer.clientPhone')}</label>
             <div className="relative">
-              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B8860B]" />
+              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark" />
               <Input value={form.client_phone} onChange={(e) => setForm({ ...form, client_phone: e.target.value })}
-                placeholder="+91..." className="pl-10 bg-[#1a1a2e] border-[#B8860B]/15 text-[#e8e0d4]" />
+                placeholder="+91..." className="pl-10 bg-cosmic-bg border-sacred-gold-dark/15 text-cosmic-text" />
             </div>
           </div>
           <div>
-            <label className="text-sm font-medium text-[#e8e0d4] mb-1 block">{t('astrologer.clientEmail')}</label>
+            <label className="text-sm font-medium text-cosmic-text mb-1 block">{t('astrologer.clientEmail')}</label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B8860B]" />
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark" />
               <Input type="email" value={form.client_email} onChange={(e) => setForm({ ...form, client_email: e.target.value })}
-                placeholder="email@example.com" className="pl-10 bg-[#1a1a2e] border-[#B8860B]/15 text-[#e8e0d4]" />
+                placeholder="email@example.com" className="pl-10 bg-cosmic-bg border-sacred-gold-dark/15 text-cosmic-text" />
             </div>
           </div>
         </div>
 
         {/* Gender */}
         <div>
-          <label className="text-sm font-medium text-[#e8e0d4] mb-1 block">Gender</label>
+          <label className="text-sm font-medium text-cosmic-text mb-1 block">Gender</label>
           <div className="grid grid-cols-2 gap-3">
             <button onClick={() => setForm({ ...form, gender: 'male' })}
-              className={`p-2.5 border text-sm transition-colors ${form.gender === 'male' ? 'border-[#B8860B] bg-[#B8860B]/10 text-[#B8860B]' : 'border-[#B8860B]/15 text-[#b8b0a4]'}`}>
+              className={`p-2.5 border text-sm transition-colors ${form.gender === 'male' ? 'border-sacred-gold-dark bg-sacred-gold-dark/10 text-sacred-gold-dark' : 'border-sacred-gold-dark/15 text-cosmic-text-secondary'}`}>
               Male
             </button>
             <button onClick={() => setForm({ ...form, gender: 'female' })}
-              className={`p-2.5 border text-sm transition-colors ${form.gender === 'female' ? 'border-[#B8860B] bg-[#B8860B]/10 text-[#B8860B]' : 'border-[#B8860B]/15 text-[#b8b0a4]'}`}>
+              className={`p-2.5 border text-sm transition-colors ${form.gender === 'female' ? 'border-sacred-gold-dark bg-sacred-gold-dark/10 text-sacred-gold-dark' : 'border-sacred-gold-dark/15 text-cosmic-text-secondary'}`}>
               Female
             </button>
           </div>
@@ -203,37 +203,37 @@ function AddClientForm({ onSaved, onCancel }: AddClientFormProps) {
         {/* Birth Date + Time */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-sm font-medium text-[#e8e0d4] mb-1 block">Birth Date</label>
+            <label className="text-sm font-medium text-cosmic-text mb-1 block">Birth Date</label>
             <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B8860B]" />
+              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark" />
               <Input type="date" value={form.birth_date} onChange={(e) => setForm({ ...form, birth_date: e.target.value })}
-                className="pl-10 bg-[#1a1a2e] border-[#B8860B]/15 text-[#e8e0d4]" />
+                className="pl-10 bg-cosmic-bg border-sacred-gold-dark/15 text-cosmic-text" />
             </div>
           </div>
           <div>
-            <label className="text-sm font-medium text-[#e8e0d4] mb-1 block">Birth Time</label>
+            <label className="text-sm font-medium text-cosmic-text mb-1 block">Birth Time</label>
             <Input type="time" step="1" value={form.birth_time} onChange={(e) => setForm({ ...form, birth_time: e.target.value })}
-              className="bg-[#1a1a2e] border-[#B8860B]/15 text-[#e8e0d4]" />
+              className="bg-cosmic-bg border-sacred-gold-dark/15 text-cosmic-text" />
           </div>
         </div>
 
         {/* Birth Place with geocode */}
         <div ref={placeRef} className="relative">
-          <label className="text-sm font-medium text-[#e8e0d4] mb-1 block">Birth Place</label>
+          <label className="text-sm font-medium text-cosmic-text mb-1 block">Birth Place</label>
           <div className="relative">
-            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B8860B]" />
+            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark" />
             <Input value={form.birth_place}
               onChange={(e) => { setForm({ ...form, birth_place: e.target.value }); geocode.search(e.target.value); }}
-              placeholder="City, Country" className="pl-10 bg-[#1a1a2e] border-[#B8860B]/15 text-[#e8e0d4]" />
-            {geocode.loading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B8860B] animate-spin" />}
+              placeholder="City, Country" className="pl-10 bg-cosmic-bg border-sacred-gold-dark/15 text-cosmic-text" />
+            {geocode.loading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark animate-spin" />}
           </div>
           {geocode.showDropdown && geocode.suggestions.length > 0 && (
-            <div className="absolute z-20 left-0 right-0 mt-1 bg-[#1a1a2e] border border-[#B8860B]/20 shadow-lg max-h-48 overflow-y-auto">
+            <div className="absolute z-20 left-0 right-0 mt-1 bg-cosmic-bg border border-sacred-gold-dark/20 shadow-lg max-h-48 overflow-y-auto">
               {geocode.suggestions.map((s, i) => (
                 <button key={i} onClick={() => {
                   setForm({ ...form, birth_place: s.name.split(',').slice(0, 2).join(','), latitude: s.lat, longitude: s.lon });
                   geocode.close();
-                }} className="block w-full text-left px-3 py-2 text-sm text-[#e8e0d4] hover:bg-[#B8860B]/10 truncate">
+                }} className="block w-full text-left px-3 py-2 text-sm text-cosmic-text hover:bg-sacred-gold-dark/10 truncate">
                   {s.name}
                 </button>
               ))}
@@ -244,35 +244,35 @@ function AddClientForm({ onSaved, onCancel }: AddClientFormProps) {
         {/* Lat/Lon/Tz row */}
         <div className="grid grid-cols-3 gap-3">
           <div>
-            <label className="text-xs font-medium text-[#b8b0a4] mb-1 block">Latitude</label>
+            <label className="text-xs font-medium text-cosmic-text-secondary mb-1 block">Latitude</label>
             <Input type="number" step="0.0001" value={form.latitude}
               onChange={(e) => setForm({ ...form, latitude: parseFloat(e.target.value) || 0 })}
-              className="bg-[#1a1a2e] border-[#B8860B]/15 text-[#e8e0d4] text-sm" />
+              className="bg-cosmic-bg border-sacred-gold-dark/15 text-cosmic-text text-sm" />
           </div>
           <div>
-            <label className="text-xs font-medium text-[#b8b0a4] mb-1 block">Longitude</label>
+            <label className="text-xs font-medium text-cosmic-text-secondary mb-1 block">Longitude</label>
             <Input type="number" step="0.0001" value={form.longitude}
               onChange={(e) => setForm({ ...form, longitude: parseFloat(e.target.value) || 0 })}
-              className="bg-[#1a1a2e] border-[#B8860B]/15 text-[#e8e0d4] text-sm" />
+              className="bg-cosmic-bg border-sacred-gold-dark/15 text-cosmic-text text-sm" />
           </div>
           <div>
-            <label className="text-xs font-medium text-[#b8b0a4] mb-1 block">TZ Offset</label>
+            <label className="text-xs font-medium text-cosmic-text-secondary mb-1 block">TZ Offset</label>
             <Input type="number" step="0.5" value={form.timezone_offset}
               onChange={(e) => setForm({ ...form, timezone_offset: parseFloat(e.target.value) || 5.5 })}
-              className="bg-[#1a1a2e] border-[#B8860B]/15 text-[#e8e0d4] text-sm" />
+              className="bg-cosmic-bg border-sacred-gold-dark/15 text-cosmic-text text-sm" />
           </div>
         </div>
 
         {/* Notes */}
         <div>
-          <label className="text-sm font-medium text-[#e8e0d4] mb-1 block">{t('astrologer.notes')}</label>
+          <label className="text-sm font-medium text-cosmic-text mb-1 block">{t('astrologer.notes')}</label>
           <Textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })}
             placeholder="Consultation notes, observations..." rows={3}
-            className="bg-[#1a1a2e] border-[#B8860B]/15 text-[#e8e0d4]" />
+            className="bg-cosmic-bg border-sacred-gold-dark/15 text-cosmic-text" />
         </div>
 
         <Button onClick={handleSave} disabled={saving || !form.client_name.trim()}
-          className="w-full bg-[#B8860B] text-[#1a1a2e] hover:bg-[#9A7B0A] font-semibold py-3 disabled:opacity-50">
+          className="w-full bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold-dark font-semibold py-3 disabled:opacity-50">
           {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
           {t('astrologer.generateSave')}
         </Button>
@@ -334,18 +334,18 @@ function ClientKundliView({ client, onBack, onNotesUpdate }: ClientKundliViewPro
     <div>
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <Button variant="outline" size="sm" onClick={onBack} className="border-[#B8860B]/30 text-[#b8b0a4]">
+        <Button variant="outline" size="sm" onClick={onBack} className="border-sacred-gold-dark/30 text-cosmic-text-secondary">
           <ArrowLeft className="w-4 h-4 mr-1" />{t('astrologer.backToClients')}
         </Button>
       </div>
 
       {/* Client Info Card */}
-      <Card className="bg-[#2a2a4e] border-0 shadow-sm mb-6">
+      <Card className="bg-sacred-purple border-0 shadow-sm mb-6">
         <CardContent className="p-5">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
-              <h3 className="text-xl font-display font-bold text-[#e8e0d4]">{client.client_name}</h3>
-              <div className="flex flex-wrap gap-3 mt-1 text-sm text-[#b8b0a4]">
+              <h3 className="text-xl font-display font-bold text-cosmic-text">{client.client_name}</h3>
+              <div className="flex flex-wrap gap-3 mt-1 text-sm text-cosmic-text-secondary">
                 {client.client_phone && (
                   <span className="flex items-center gap-1"><Phone className="w-3.5 h-3.5" />{client.client_phone}</span>
                 )}
@@ -357,12 +357,12 @@ function ClientKundliView({ client, onBack, onNotesUpdate }: ClientKundliViewPro
                 )}
               </div>
               {client.birth_date && (
-                <p className="text-sm text-[#b8b0a4] mt-1">
+                <p className="text-sm text-cosmic-text-secondary mt-1">
                   Born: {client.birth_date} {client.birth_time ? `at ${client.birth_time}` : ''}
                 </p>
               )}
             </div>
-            <div className="text-sm text-[#b8b0a4]">
+            <div className="text-sm text-cosmic-text-secondary">
               Added {new Date(client.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
             </div>
           </div>
@@ -370,23 +370,23 @@ function ClientKundliView({ client, onBack, onNotesUpdate }: ClientKundliViewPro
       </Card>
 
       {/* Notes Section */}
-      <Card className="bg-[#2a2a4e] border-0 shadow-sm mb-6">
+      <Card className="bg-sacred-purple border-0 shadow-sm mb-6">
         <CardContent className="p-5">
           <div className="flex items-center justify-between mb-2">
-            <h4 className="font-medium text-[#e8e0d4]">{t('astrologer.notes')}</h4>
+            <h4 className="font-medium text-cosmic-text">{t('astrologer.notes')}</h4>
             {!editingNotes ? (
               <Button variant="outline" size="sm" onClick={() => setEditingNotes(true)}
-                className="border-[#B8860B]/30 text-[#b8b0a4] text-xs">
+                className="border-sacred-gold-dark/30 text-cosmic-text-secondary text-xs">
                 Edit
               </Button>
             ) : (
               <div className="flex gap-2">
                 <Button size="sm" onClick={saveNotes} disabled={savingNotes}
-                  className="bg-[#B8860B] text-[#1a1a2e] text-xs">
+                  className="bg-sacred-gold-dark text-cosmic-bg text-xs">
                   {savingNotes ? 'Saving...' : 'Save'}
                 </Button>
                 <Button variant="outline" size="sm" onClick={() => { setEditingNotes(false); setNotes(client.notes || ''); }}
-                  className="border-[#B8860B]/30 text-[#b8b0a4] text-xs">
+                  className="border-sacred-gold-dark/30 text-cosmic-text-secondary text-xs">
                   Cancel
                 </Button>
               </div>
@@ -394,9 +394,9 @@ function ClientKundliView({ client, onBack, onNotesUpdate }: ClientKundliViewPro
           </div>
           {editingNotes ? (
             <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3}
-              className="bg-[#1a1a2e] border-[#B8860B]/15 text-[#e8e0d4]" />
+              className="bg-cosmic-bg border-sacred-gold-dark/15 text-cosmic-text" />
           ) : (
-            <p className="text-sm text-[#b8b0a4]">{client.notes || 'No notes yet.'}</p>
+            <p className="text-sm text-cosmic-text-secondary">{client.notes || 'No notes yet.'}</p>
           )}
         </CardContent>
       </Card>
@@ -404,11 +404,11 @@ function ClientKundliView({ client, onBack, onNotesUpdate }: ClientKundliViewPro
       {/* Kundli Chart */}
       {loadingKundli ? (
         <div className="flex items-center justify-center py-16">
-          <Loader2 className="w-8 h-8 text-[#B8860B] animate-spin" />
+          <Loader2 className="w-8 h-8 text-sacred-gold-dark animate-spin" />
         </div>
       ) : kundliData && chartData ? (
         <div>
-          <h4 className="text-lg font-display font-semibold text-[#e8e0d4] mb-4">{t('astrologer.viewKundli')}</h4>
+          <h4 className="text-lg font-display font-semibold text-cosmic-text mb-4">{t('astrologer.viewKundli')}</h4>
           <InteractiveKundli
             chartData={{ planets }}
             onPlanetClick={() => {}}
@@ -417,28 +417,28 @@ function ClientKundliView({ client, onBack, onNotesUpdate }: ClientKundliViewPro
 
           {/* Planet positions table */}
           {planets.length > 0 && (
-            <Card className="bg-[#2a2a4e] border-0 shadow-sm mt-6">
+            <Card className="bg-sacred-purple border-0 shadow-sm mt-6">
               <CardContent className="p-5">
-                <h4 className="font-medium text-[#e8e0d4] mb-3">Planet Positions</h4>
+                <h4 className="font-medium text-cosmic-text mb-3">Planet Positions</h4>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-[#B8860B]/20">
-                        <th className="text-left py-2 px-2 text-[#b8b0a4] font-medium">Planet</th>
-                        <th className="text-left py-2 px-2 text-[#b8b0a4] font-medium">Sign</th>
-                        <th className="text-left py-2 px-2 text-[#b8b0a4] font-medium">House</th>
-                        <th className="text-left py-2 px-2 text-[#b8b0a4] font-medium">Degree</th>
-                        <th className="text-left py-2 px-2 text-[#b8b0a4] font-medium">Nakshatra</th>
+                      <tr className="border-b border-sacred-gold-dark/20">
+                        <th className="text-left py-2 px-2 text-cosmic-text-secondary font-medium">Planet</th>
+                        <th className="text-left py-2 px-2 text-cosmic-text-secondary font-medium">Sign</th>
+                        <th className="text-left py-2 px-2 text-cosmic-text-secondary font-medium">House</th>
+                        <th className="text-left py-2 px-2 text-cosmic-text-secondary font-medium">Degree</th>
+                        <th className="text-left py-2 px-2 text-cosmic-text-secondary font-medium">Nakshatra</th>
                       </tr>
                     </thead>
                     <tbody>
                       {planets.map((p) => (
-                        <tr key={p.planet} className="border-b border-[#B8860B]/10">
-                          <td className="py-2 px-2 text-[#e8e0d4] font-medium">{p.planet}{p.status === 'Retrograde' ? ' (R)' : ''}</td>
-                          <td className="py-2 px-2 text-[#e8e0d4]">{p.sign}</td>
-                          <td className="py-2 px-2 text-[#e8e0d4]">{p.house}</td>
-                          <td className="py-2 px-2 text-[#e8e0d4]">{typeof p.sign_degree === 'number' ? p.sign_degree.toFixed(2) : p.sign_degree}</td>
-                          <td className="py-2 px-2 text-[#e8e0d4]">{p.nakshatra}</td>
+                        <tr key={p.planet} className="border-b border-sacred-gold-dark/10">
+                          <td className="py-2 px-2 text-cosmic-text font-medium">{p.planet}{p.status === 'Retrograde' ? ' (R)' : ''}</td>
+                          <td className="py-2 px-2 text-cosmic-text">{p.sign}</td>
+                          <td className="py-2 px-2 text-cosmic-text">{p.house}</td>
+                          <td className="py-2 px-2 text-cosmic-text">{typeof p.sign_degree === 'number' ? p.sign_degree.toFixed(2) : p.sign_degree}</td>
+                          <td className="py-2 px-2 text-cosmic-text">{p.nakshatra}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -450,8 +450,8 @@ function ClientKundliView({ client, onBack, onNotesUpdate }: ClientKundliViewPro
         </div>
       ) : !client.kundli_id ? (
         <div className="text-center py-12">
-          <Calendar className="w-12 h-12 text-[#b8b0a4]/40 mx-auto mb-3" />
-          <p className="text-[#b8b0a4]">No kundli generated. Update client birth details to generate one.</p>
+          <Calendar className="w-12 h-12 text-cosmic-text-secondary/40 mx-auto mb-3" />
+          <p className="text-cosmic-text-secondary">No kundli generated. Update client birth details to generate one.</p>
         </div>
       ) : null}
     </div>
@@ -530,9 +530,9 @@ export default function AstrologerPanel() {
   if (user?.role !== 'astrologer' && user?.role !== 'admin') {
     return (
       <div className="max-w-4xl mx-auto py-24 px-4 text-center">
-        <Star className="w-16 h-16 text-[#b8b0a4]/40 mx-auto mb-4" />
-        <h2 className="text-2xl font-display font-bold text-[#e8e0d4] mb-2">Astrologer Access Required</h2>
-        <p className="text-[#b8b0a4]">This panel is only accessible to verified astrologers.</p>
+        <Star className="w-16 h-16 text-cosmic-text-secondary/40 mx-auto mb-4" />
+        <h2 className="text-2xl font-display font-bold text-cosmic-text mb-2">Astrologer Access Required</h2>
+        <p className="text-cosmic-text-secondary">This panel is only accessible to verified astrologers.</p>
       </div>
     );
   }
@@ -541,12 +541,12 @@ export default function AstrologerPanel() {
     <section className="max-w-6xl mx-auto py-24 px-4">
       {/* Panel Header */}
       <div className="flex items-center gap-3 mb-8">
-        <div className="w-10 h-10 rounded-full bg-[#B8860B] flex items-center justify-center">
-          <Star className="w-5 h-5 text-[#e8e0d4]" />
+        <div className="w-10 h-10 rounded-full bg-sacred-gold-dark flex items-center justify-center">
+          <Star className="w-5 h-5 text-cosmic-text" />
         </div>
         <div>
-          <h2 className="text-2xl font-display font-bold text-[#e8e0d4]">{t('astrologer.panel')}</h2>
-          <p className="text-sm text-[#b8b0a4]">{t('astrologer.clients')}</p>
+          <h2 className="text-2xl font-display font-bold text-cosmic-text">{t('astrologer.panel')}</h2>
+          <p className="text-sm text-cosmic-text-secondary">{t('astrologer.clients')}</p>
         </div>
       </div>
 
@@ -556,21 +556,21 @@ export default function AstrologerPanel() {
           {/* Search + Add */}
           <div className="flex flex-col sm:flex-row gap-3 mb-6">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B8860B]" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark" />
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={t('astrologer.searchClients')}
-                className="pl-10 bg-[#1a1a2e] border-[#B8860B]/15 text-[#e8e0d4]"
+                className="pl-10 bg-cosmic-bg border-sacred-gold-dark/15 text-cosmic-text"
               />
               {searchQuery && (
-                <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#b8b0a4] hover:text-[#e8e0d4]">
+                <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-cosmic-text-secondary hover:text-cosmic-text">
                   <X className="w-4 h-4" />
                 </button>
               )}
             </div>
             <Button onClick={() => setView('add')}
-              className="bg-[#B8860B] text-[#1a1a2e] hover:bg-[#9A7B0A] font-semibold shrink-0">
+              className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold-dark font-semibold shrink-0">
               <Plus className="w-4 h-4 mr-2" />{t('astrologer.addClient')}
             </Button>
           </div>
@@ -578,15 +578,15 @@ export default function AstrologerPanel() {
           {/* Client Cards */}
           {loading ? (
             <div className="flex items-center justify-center py-16">
-              <Loader2 className="w-8 h-8 text-[#B8860B] animate-spin" />
+              <Loader2 className="w-8 h-8 text-sacred-gold-dark animate-spin" />
             </div>
           ) : clients.length === 0 ? (
             <div className="text-center py-16">
-              <User className="w-16 h-16 text-[#b8b0a4]/30 mx-auto mb-4" />
-              <p className="text-lg text-[#b8b0a4] mb-1">{t('astrologer.noClients')}</p>
-              <p className="text-sm text-[#b8b0a4]/70 mb-4">Add your first client to get started</p>
+              <User className="w-16 h-16 text-cosmic-text-secondary/30 mx-auto mb-4" />
+              <p className="text-lg text-cosmic-text-secondary mb-1">{t('astrologer.noClients')}</p>
+              <p className="text-sm text-cosmic-text-secondary/70 mb-4">Add your first client to get started</p>
               <Button onClick={() => setView('add')}
-                className="bg-[#B8860B] text-[#1a1a2e] hover:bg-[#9A7B0A]">
+                className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold-dark">
                 <Plus className="w-4 h-4 mr-2" />{t('astrologer.addClient')}
               </Button>
             </div>
@@ -594,35 +594,35 @@ export default function AstrologerPanel() {
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {clients.map((client) => (
                 <Card key={client.id}
-                  className="bg-[#2a2a4e] border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer group"
+                  className="bg-sacred-purple border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer group"
                   onClick={() => openClientDetail(client.id)}>
                   <CardContent className="p-5">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-9 h-9 rounded-full bg-[#B8860B]/15 flex items-center justify-center">
-                          <User className="w-4 h-4 text-[#B8860B]" />
+                        <div className="w-9 h-9 rounded-full bg-sacred-gold-dark/15 flex items-center justify-center">
+                          <User className="w-4 h-4 text-sacred-gold-dark" />
                         </div>
                         <div>
-                          <h4 className="font-display font-semibold text-[#e8e0d4] group-hover:text-[#B8860B] transition-colors">
+                          <h4 className="font-display font-semibold text-cosmic-text group-hover:text-sacred-gold-dark transition-colors">
                             {client.client_name}
                           </h4>
                           {client.client_phone && (
-                            <p className="text-xs text-[#b8b0a4] flex items-center gap-1">
+                            <p className="text-xs text-cosmic-text-secondary flex items-center gap-1">
                               <Phone className="w-3 h-3" />{client.client_phone}
                             </p>
                           )}
                         </div>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-[#b8b0a4]/50 group-hover:text-[#B8860B] transition-colors mt-1" />
+                      <ChevronRight className="w-4 h-4 text-cosmic-text-secondary/50 group-hover:text-sacred-gold-dark transition-colors mt-1" />
                     </div>
-                    <div className="text-xs text-[#b8b0a4] space-y-1">
+                    <div className="text-xs text-cosmic-text-secondary space-y-1">
                       {client.birth_date && (
                         <p className="flex items-center gap-1"><Calendar className="w-3 h-3" />{client.birth_date}</p>
                       )}
                       {client.birth_place && (
                         <p className="flex items-center gap-1"><MapPin className="w-3 h-3" />{client.birth_place}</p>
                       )}
-                      <p className="text-[#b8b0a4]/50 mt-2">
+                      <p className="text-cosmic-text-secondary/50 mt-2">
                         {new Date(client.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </p>
                     </div>
@@ -634,7 +634,7 @@ export default function AstrologerPanel() {
 
           {loadingDetail && (
             <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
-              <Loader2 className="w-10 h-10 text-[#B8860B] animate-spin" />
+              <Loader2 className="w-10 h-10 text-sacred-gold-dark animate-spin" />
             </div>
           )}
         </>

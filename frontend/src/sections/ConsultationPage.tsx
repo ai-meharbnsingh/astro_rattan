@@ -254,8 +254,8 @@ export default function ConsultationPage() {
 
       <Tabs defaultValue="astrologers" className="w-full">
         <TabsList className="grid grid-cols-2 bg-cosmic-surface mb-8 max-w-xs mx-auto">
-          <TabsTrigger value="astrologers" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e]">Astrologers</TabsTrigger>
-          <TabsTrigger value="my" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e]">My Bookings</TabsTrigger>
+          <TabsTrigger value="astrologers" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-cosmic-bg">Astrologers</TabsTrigger>
+          <TabsTrigger value="my" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-cosmic-bg">My Bookings</TabsTrigger>
         </TabsList>
 
         <TabsContent value="astrologers">
@@ -326,7 +326,7 @@ export default function ConsultationPage() {
                             <SelectItem value="video"><span className="flex items-center gap-1"><Video className="w-3 h-3" />Video</span></SelectItem>
                           </SelectContent>
                         </Select>
-                        <Button size="sm" onClick={() => handleBook(astrologer.id)} disabled={booking === astrologer.id} className="bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark">
+                        <Button size="sm" onClick={() => handleBook(astrologer.id)} disabled={booking === astrologer.id} className="bg-sacred-gold text-cosmic-bg hover:bg-sacred-gold-dark">
                           {booking === astrologer.id ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Book'}
                         </Button>
                       </div>
@@ -386,7 +386,7 @@ export default function ConsultationPage() {
                               size="sm"
                               onClick={() => handleStartVideo(c)}
                               disabled={startingVideoId === c.id}
-                              className="bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark border border-sacred-gold/20"
+                              className="bg-sacred-gold text-cosmic-bg hover:bg-sacred-gold-dark border border-sacred-gold/20"
                             >
                               {startingVideoId === c.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <VideoIcon className="mr-2 h-4 w-4" />}
                               Join Video Call

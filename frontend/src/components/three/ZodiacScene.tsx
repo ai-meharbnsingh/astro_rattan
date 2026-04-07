@@ -25,8 +25,8 @@ function ZodiacRing() {
       <mesh>
         <sphereGeometry args={[0.8, 32, 32]} />
         <meshStandardMaterial 
-          color="#B8860B" 
-          emissive="#9A7B0A"
+          color="var(--aged-gold-dim)" 
+          emissive="var(--aged-gold-dim)"
           emissiveIntensity={0.5}
           metalness={0.8}
           roughness={0.2}
@@ -37,7 +37,7 @@ function ZodiacRing() {
       <mesh>
         <sphereGeometry args={[1.2, 32, 32]} />
         <meshBasicMaterial 
-          color="#B8860B" 
+          color="var(--aged-gold-dim)" 
           transparent 
           opacity={0.1}
         />
@@ -70,7 +70,7 @@ function ZodiacRing() {
               <mesh position={[0, 0, -0.02]}>
                 <planeGeometry args={[0.4, 0.4]} />
                 <meshBasicMaterial 
-                  color="#9A7B0A" 
+                  color="var(--aged-gold-dim)" 
                   transparent 
                   opacity={0.3}
                 />
@@ -83,13 +83,13 @@ function ZodiacRing() {
       {/* Outer ring */}
       <mesh rotation={[Math.PI/2, 0, 0]}>
         <torusGeometry args={[2.5, 0.02, 16, 100]} />
-        <meshBasicMaterial color="#9A7B0A" transparent opacity={0.5} />
+        <meshBasicMaterial color="var(--aged-gold-dim)" transparent opacity={0.5} />
       </mesh>
       
       {/* Second outer ring */}
       <mesh rotation={[Math.PI/2, 0, 0]} position={[0, 0, 0]}>
         <torusGeometry args={[3.2, 0.01, 16, 100]} />
-        <meshBasicMaterial color="#B8860B" transparent opacity={0.3} />
+        <meshBasicMaterial color="var(--aged-gold-dim)" transparent opacity={0.3} />
       </mesh>
     </group>
   );
@@ -128,7 +128,7 @@ function Particles() {
       </bufferGeometry>
       <pointsMaterial
         size={0.05}
-        color="#9A7B0A"
+        color="var(--aged-gold-dim)"
         transparent
         opacity={0.8}
         sizeAttenuation
@@ -148,8 +148,8 @@ export default function ZodiacScene() {
       >
         {/* Lighting */}
         <ambientLight intensity={0.3} />
-        <pointLight position={[10, 10, 10]} intensity={1} color="#B8860B" />
-        <pointLight position={[-10, -10, -10]} intensity={0.5} color="#9A7B0A" />
+        <pointLight position={[10, 10, 10]} intensity={1} color="var(--aged-gold-dim)" />
+        <pointLight position={[-10, -10, -10]} intensity={0.5} color="var(--aged-gold-dim)" />
         
         {/* 3D Elements */}
         <ZodiacRing />
@@ -162,7 +162,7 @@ export default function ZodiacScene() {
           saturation={0} 
           fade 
           speed={0.5}
-          color="#9A7B0A"
+          color="var(--aged-gold-dim)"
         />
       </Canvas>
     </div>

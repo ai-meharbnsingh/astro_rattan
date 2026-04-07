@@ -377,21 +377,21 @@ export default function SpiritualLibrary() {
                 
                 {/* Modal for Chapter Verses */}
                 {isModalOpen && selectedChapter && (
-                  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1a1a2e]/80 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}>
-                    <div className="relative w-full max-w-4xl max-h-[85vh] bg-[#2a2a4e] rounded-2xl border border-[#9A7B0A]/30 shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-cosmic-bg/80 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}>
+                    <div className="relative w-full max-w-4xl max-h-[85vh] bg-sacred-purple rounded-2xl border border-sacred-gold/30 shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
                       {/* Modal Header */}
-                      <div className="sticky top-0 z-10 bg-[#2a2a4e] border-b border-[#9A7B0A]/20 p-6 flex items-center justify-between">
+                      <div className="sticky top-0 z-10 bg-sacred-purple border-b border-sacred-gold/20 p-6 flex items-center justify-between">
                         <div>
-                          <h3 className="text-2xl font-sacred font-bold text-[#e8e0d4]">
+                          <h3 className="text-2xl font-sacred font-bold text-cosmic-text">
                             Bhagavad Gita - Chapter {selectedChapter}
                           </h3>
-                          <p className="text-[#9A7B0A]">
+                          <p className="text-sacred-gold-dark">
                             {chapterTitle[selectedChapter] || `Chapter ${selectedChapter}`}
                           </p>
                         </div>
                         <button
                           onClick={() => setIsModalOpen(false)}
-                          className="w-10 h-10 rounded-full bg-[#9A7B0A]/10 hover:bg-[#9A7B0A]/20 border border-[#9A7B0A]/30 flex items-center justify-center text-[#9A7B0A] transition-colors"
+                          className="w-10 h-10 rounded-full bg-sacred-gold-dark/10 hover:bg-sacred-gold-dark/20 border border-sacred-gold/30 flex items-center justify-center text-sacred-gold-dark transition-colors"
                         >
                           <X className="w-5 h-5" />
                         </button>
@@ -400,37 +400,37 @@ export default function SpiritualLibrary() {
                       {/* Modal Content */}
                       <div className="p-6 overflow-y-auto max-h-[calc(85vh-100px)]">
                         {versesLoading ? (
-                          <div className="flex items-center justify-center gap-3 py-12 text-[#e8e0d4]/60">
-                            <Loader2 className="w-6 h-6 animate-spin text-[#9A7B0A]" />
+                          <div className="flex items-center justify-center gap-3 py-12 text-cosmic-text/60">
+                            <Loader2 className="w-6 h-6 animate-spin text-sacred-gold-dark" />
                             Loading verses...
                           </div>
                         ) : (
                           <div className="space-y-8">
                             {/* Sample data notice */}
                             {(chapterVerses[selectedChapter] || []).length <= 5 && (
-                              <div className="bg-[#9A7B0A]/10 border border-[#9A7B0A]/30 rounded-lg p-4">
-                                <p className="text-base text-[#9A7B0A]">
+                              <div className="bg-sacred-gold-dark/10 border border-sacred-gold/30 rounded-lg p-4">
+                                <p className="text-base text-sacred-gold-dark">
                                   📖 Showing {sampleVerses[selectedChapter]?.length || 0} sample verses. Connect to backend for all {(gitaChapters.find(c => c.chapter === selectedChapter)?.verses || 0)} verses.
                                 </p>
                               </div>
                             )}
                             {(chapterVerses[selectedChapter] || []).map((v, idx) => (
-                              <Card key={v.id || idx} className="bg-[#111] border-[#9A7B0A]/30 hover:border-[#9A7B0A]/50 transition-colors">
+                              <Card key={v.id || idx} className="bg-[#111] border-sacred-gold/30 hover:border-sacred-gold/50 transition-colors">
                                 <CardContent className="p-6">
                                   {/* Verse Header */}
                                   <div className="flex items-center gap-3 mb-4">
-                                    <span className="w-10 h-10 rounded-full bg-[#9A7B0A]/20 flex items-center justify-center text-[#9A7B0A] font-bold text-lg">
+                                    <span className="w-10 h-10 rounded-full bg-sacred-gold-dark/20 flex items-center justify-center text-sacred-gold-dark font-bold text-lg">
                                       {v.verse ?? idx + 1}
                                     </span>
-                                    <span className="text-lg font-medium text-[#e8e0d4]/80">
+                                    <span className="text-lg font-medium text-cosmic-text/80">
                                       Verse {v.verse ?? idx + 1}
                                     </span>
                                   </div>
                                   
                                   {/* Sanskrit */}
                                   {v.sanskrit && (
-                                    <div className="mb-5 p-5 bg-[#2a2a4e] rounded-lg border-l-4 border-[#9A7B0A]">
-                                      <p className="text-xl text-[#B8860B] leading-relaxed font-medium" style={{ fontFamily: 'serif' }}>
+                                    <div className="mb-5 p-5 bg-sacred-purple rounded-lg border-l-4 border-sacred-gold">
+                                      <p className="text-xl text-sacred-gold-dark leading-relaxed font-medium" style={{ fontFamily: 'serif' }}>
                                         {v.sanskrit}
                                       </p>
                                     </div>
@@ -439,16 +439,16 @@ export default function SpiritualLibrary() {
                                   {/* Translation */}
                                   {v.translation && (
                                     <div className="mb-4">
-                                      <p className="text-sm text-[#9A7B0A] uppercase tracking-wide mb-2 font-semibold">Translation</p>
-                                      <p className="text-lg text-[#e8e0d4] leading-relaxed">{v.translation}</p>
+                                      <p className="text-sm text-sacred-gold-dark uppercase tracking-wide mb-2 font-semibold">Translation</p>
+                                      <p className="text-lg text-cosmic-text leading-relaxed">{v.translation}</p>
                                     </div>
                                   )}
                                   
                                   {/* Commentary */}
                                   {v.commentary && (
-                                    <div className="mt-5 pt-4 border-t border-[#b8b0a4]/10">
-                                      <p className="text-sm text-[#9A7B0A] uppercase tracking-wide mb-2 font-semibold">Commentary</p>
-                                      <p className="text-base text-[#e8e0d4]/80 leading-relaxed italic">{v.commentary}</p>
+                                    <div className="mt-5 pt-4 border-t border-cosmic-text-secondary/10">
+                                      <p className="text-sm text-sacred-gold-dark uppercase tracking-wide mb-2 font-semibold">Commentary</p>
+                                      <p className="text-base text-cosmic-text/80 leading-relaxed italic">{v.commentary}</p>
                                     </div>
                                   )}
                                   
@@ -456,7 +456,7 @@ export default function SpiritualLibrary() {
                                     <a
                                       href={resolveApiUrl(v.audio_url)}
                                       download
-                                      className="mt-5 inline-flex items-center gap-2 text-base text-[#9A7B0A] hover:text-[#B8860B] underline"
+                                      className="mt-5 inline-flex items-center gap-2 text-base text-sacred-gold-dark hover:text-sacred-gold-dark underline"
                                     >
                                       🔊 Download Audio
                                     </a>
@@ -466,7 +466,7 @@ export default function SpiritualLibrary() {
                             ))}
                             {(chapterVerses[selectedChapter] || []).length === 0 && (
                               <div className="text-center py-12">
-                                <p className="text-[#e8e0d4]/60 text-lg">No verses available for this chapter.</p>
+                                <p className="text-cosmic-text/60 text-lg">No verses available for this chapter.</p>
                               </div>
                             )}
                           </div>

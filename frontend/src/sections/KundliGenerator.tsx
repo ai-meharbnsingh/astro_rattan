@@ -825,7 +825,7 @@ export default function KundliGenerator() {
               {/* JHora-style Fullscreen Overlay */}
               {jhoraOpen && (
                 <div className="fixed inset-0 z-[9999] bg-[#FDF8F0]" style={{ width: '100vw', height: '100vh' }}>
-                  <button onClick={() => setJhoraOpen(false)} className="absolute top-2 right-3 z-10 p-1.5 hover:bg-black/10 rounded text-[#D4A052] text-sm font-bold" title="Close">
+                  <button onClick={() => setJhoraOpen(false)} className="absolute top-2 right-3 z-10 p-1.5 hover:bg-black/10 rounded text-sacred-gold text-sm font-bold" title="Close">
                     <X className="w-5 h-5" />
                   </button>
                     <JHoraKundliView
@@ -1097,7 +1097,7 @@ export default function KundliGenerator() {
                         setDivisionalData(null);
                         fetchDivisional(e.target.value);
                       }}
-                      className="bg-[#22223a] border border-sacred-gold/30 rounded-lg px-3 py-1.5 text-sacred-brown text-sm focus:border-sacred-gold focus:outline-none"
+                      className="bg-cosmic-surface border border-sacred-gold/30 rounded-lg px-3 py-1.5 text-sacred-brown text-sm focus:border-sacred-gold focus:outline-none"
                     >
                       {DIVISIONAL_CHART_OPTIONS.map((c) => (
                         <option key={c.code} value={c.code}>{c.name}</option>
@@ -1180,12 +1180,12 @@ export default function KundliGenerator() {
                     <div className="space-y-2">
                       {/* Current dasha info */}
                       <div className="rounded-lg p-3" style={{ background: 'rgba(184,134,11,0.1)' }}>
-                        <p className="text-xs" style={{ color: '#b8b0a4' }}>{t('section.currentMahadasha')}</p>
-                        <p className="text-sm font-display font-bold" style={{ color: '#D4A052' }}>
+                        <p className="text-xs" style={{ color: 'var(--ink-light)' }}>{t('section.currentMahadasha')}</p>
+                        <p className="text-sm font-display font-bold" style={{ color: 'var(--aged-gold)' }}>
                           {(extendedDashaData || dashaData).current_dasha}
                         </p>
                         {(extendedDashaData || dashaData).current_antardasha && (extendedDashaData || dashaData).current_antardasha !== 'Unknown' && (
-                          <p className="text-xs" style={{ color: '#D4A052' }}>
+                          <p className="text-xs" style={{ color: 'var(--aged-gold)' }}>
                             AD: {(extendedDashaData || dashaData).current_antardasha}
                             {extendedDashaData?.current_pratyantar && extendedDashaData.current_pratyantar !== 'Unknown' && ` / PD: ${extendedDashaData.current_pratyantar}`}
                           </p>
@@ -1203,12 +1203,12 @@ export default function KundliGenerator() {
                                 style={{ background: md.is_current ? 'rgba(184,134,11,0.12)' : 'transparent' }}
                               >
                                 <span className="flex items-center gap-1.5">
-                                  <ChevronDown className={`w-3 h-3 transition-transform ${expandedMahadasha === md.planet ? 'rotate-180' : ''}`} style={{ color: '#D4A052' }} />
-                                  <span className="font-semibold" style={{ color: md.is_current ? '#D4A052' : '#e8e0d4' }}>
+                                  <ChevronDown className={`w-3 h-3 transition-transform ${expandedMahadasha === md.planet ? 'rotate-180' : ''}`} style={{ color: 'var(--aged-gold)' }} />
+                                  <span className="font-semibold" style={{ color: md.is_current ? 'var(--aged-gold)' : 'var(--ink)' }}>
                                     {translatePlanet(md.planet, language)} {md.is_current ? '←' : ''}
                                   </span>
                                 </span>
-                                <span style={{ color: '#b8b0a4' }}>{md.start?.slice(0,10)} — {md.end?.slice(0,10)} ({md.years}y)</span>
+                                <span style={{ color: 'var(--ink-light)' }}>{md.start?.slice(0,10)} — {md.end?.slice(0,10)} ({md.years}y)</span>
                               </button>
 
                               {expandedMahadasha === md.planet && (md.antardasha || []).length > 0 && (
@@ -1221,10 +1221,10 @@ export default function KundliGenerator() {
                                         style={{ background: ad.is_current ? 'rgba(184,134,11,0.06)' : 'transparent' }}
                                       >
                                         <span className="flex items-center gap-1">
-                                          {ad.pratyantar?.length > 0 && <ChevronDown className={`w-2.5 h-2.5 transition-transform ${expandedAntardasha === `${md.planet}-${ad.planet}` ? 'rotate-180' : ''}`} style={{ color: '#b8b0a4' }} />}
-                                          <span style={{ color: ad.is_current ? '#D4A052' : '#e8e0d4' }}>{translatePlanet(ad.planet, language)} AD {ad.is_current ? '*' : ''}</span>
+                                          {ad.pratyantar?.length > 0 && <ChevronDown className={`w-2.5 h-2.5 transition-transform ${expandedAntardasha === `${md.planet}-${ad.planet}` ? 'rotate-180' : ''}`} style={{ color: 'var(--ink-light)' }} />}
+                                          <span style={{ color: ad.is_current ? 'var(--aged-gold)' : 'var(--ink)' }}>{translatePlanet(ad.planet, language)} AD {ad.is_current ? '*' : ''}</span>
                                         </span>
-                                        <span style={{ color: '#b8b0a4', fontSize: '10px' }}>{ad.start?.slice(0,10)} — {ad.end?.slice(0,10)}</span>
+                                        <span style={{ color: 'var(--ink-light)', fontSize: '10px' }}>{ad.start?.slice(0,10)} — {ad.end?.slice(0,10)}</span>
                                       </button>
 
                                       {expandedAntardasha === `${md.planet}-${ad.planet}` && (ad.pratyantar || []).length > 0 && (
@@ -1232,10 +1232,10 @@ export default function KundliGenerator() {
                                           {ad.pratyantar.map((pt: any, idx: number) => (
                                             <div key={idx} className="flex items-center justify-between px-8 py-1 text-xs"
                                               style={{ background: pt.is_current ? 'rgba(184,134,11,0.04)' : 'transparent' }}>
-                                              <span style={{ color: pt.is_current ? '#D4A052' : '#b8b0a4' }}>
+                                              <span style={{ color: pt.is_current ? 'var(--aged-gold)' : 'var(--ink-light)' }}>
                                                 {translatePlanet(pt.planet, language)} PD {pt.is_current ? '*' : ''}
                                               </span>
-                                              <span style={{ color: '#b8b0a4', fontSize: '10px' }}>{pt.start?.slice(0,10)} — {pt.end?.slice(0,10)}</span>
+                                              <span style={{ color: 'var(--ink-light)', fontSize: '10px' }}>{pt.start?.slice(0,10)} — {pt.end?.slice(0,10)}</span>
                                             </div>
                                           ))}
                                         </div>
@@ -1252,18 +1252,18 @@ export default function KundliGenerator() {
                         <div className="overflow-x-auto">
                           <table className="w-full text-xs">
                             <thead><tr style={{ background: 'rgba(184,134,11,0.1)' }}>
-                              <th className="text-left p-2 font-medium" style={{ color: '#D4A052' }}>{t('table.planet')}</th>
-                              <th className="text-left p-2 font-medium" style={{ color: '#D4A052' }}>{t('table.start')}</th>
-                              <th className="text-left p-2 font-medium" style={{ color: '#D4A052' }}>{t('table.end')}</th>
-                              <th className="text-center p-2 font-medium" style={{ color: '#D4A052' }}>{t('table.years')}</th>
+                              <th className="text-left p-2 font-medium" style={{ color: 'var(--aged-gold)' }}>{t('table.planet')}</th>
+                              <th className="text-left p-2 font-medium" style={{ color: 'var(--aged-gold)' }}>{t('table.start')}</th>
+                              <th className="text-left p-2 font-medium" style={{ color: 'var(--aged-gold)' }}>{t('table.end')}</th>
+                              <th className="text-center p-2 font-medium" style={{ color: 'var(--aged-gold)' }}>{t('table.years')}</th>
                             </tr></thead>
                             <tbody>
                               {(dashaData.mahadasha_periods || []).map((p: any) => (
                                 <tr key={p.planet} className="border-t border-sacred-gold/10" style={{ background: p.planet === dashaData.current_dasha ? 'rgba(184,134,11,0.1)' : 'transparent' }}>
-                                  <td className="p-2" style={{ color: '#e8e0d4' }}>{translatePlanet(p.planet, language)}{p.planet === dashaData.current_dasha ? ' ←' : ''}</td>
-                                  <td className="p-2" style={{ color: '#b8b0a4' }}>{p.start_date}</td>
-                                  <td className="p-2" style={{ color: '#b8b0a4' }}>{p.end_date}</td>
-                                  <td className="p-2 text-center" style={{ color: '#b8b0a4' }}>{p.years}</td>
+                                  <td className="p-2" style={{ color: 'var(--ink)' }}>{translatePlanet(p.planet, language)}{p.planet === dashaData.current_dasha ? ' ←' : ''}</td>
+                                  <td className="p-2" style={{ color: 'var(--ink-light)' }}>{p.start_date}</td>
+                                  <td className="p-2" style={{ color: 'var(--ink-light)' }}>{p.end_date}</td>
+                                  <td className="p-2 text-center" style={{ color: 'var(--ink-light)' }}>{p.years}</td>
                                 </tr>
                               ))}
                             </tbody>
@@ -1272,7 +1272,7 @@ export default function KundliGenerator() {
                       )}
                     </div>
                   ) : (
-                    <p className="text-center py-4 text-sm" style={{ color: '#b8b0a4' }}>{t('common.loading')}</p>
+                    <p className="text-center py-4 text-sm" style={{ color: 'var(--ink-light)' }}>{t('common.loading')}</p>
                   )}
                 </div>
 
@@ -1302,7 +1302,7 @@ export default function KundliGenerator() {
                             return (
                               <tr key={key} className="border-t border-sacred-gold/10">
                                 <td className="p-2 text-sacred-brown"><span className="font-semibold">{key}</span> <span className="text-xs text-sacred-text-secondary">({name})</span></td>
-                                <td className="p-2 font-semibold" style={{ color: '#B8860B' }}>{translatePlanet(planet, language)}</td>
+                                <td className="p-2 font-semibold" style={{ color: 'var(--aged-gold-dim)' }}>{translatePlanet(planet, language)}</td>
                               </tr>
                             );
                           })}
@@ -1429,7 +1429,7 @@ export default function KundliGenerator() {
                               <div className="w-full bg-sacred-gold/10 rounded-t-sm relative" style={{ height: '100px' }}>
                                 <div
                                   className="absolute bottom-0 w-full rounded-t-sm"
-                                  style={{ height: `${heightPct}%`, backgroundColor: isStrong ? '#B8860B' : '#b8b0a4' }}
+                                  style={{ height: `${heightPct}%`, backgroundColor: isStrong ? 'var(--aged-gold-dim)' : 'var(--ink-light)' }}
                                 />
                               </div>
                               <span className="text-xs text-sacred-text-secondary">{sign.slice(0, 3)}</span>
@@ -1438,8 +1438,8 @@ export default function KundliGenerator() {
                         })}
                       </div>
                       <div className="flex items-center gap-3 mt-2 text-xs text-sacred-text-secondary">
-                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#B8860B' }} />{t('kundli.strong')}</span>
-                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#b8b0a4' }} />{t('kundli.weak')}</span>
+                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: 'var(--aged-gold-dim)' }} />{t('kundli.strong')}</span>
+                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: 'var(--ink-light)' }} />{t('kundli.weak')}</span>
                       </div>
                     </div>
                   ) : (
@@ -1458,21 +1458,21 @@ export default function KundliGenerator() {
                         const data = shadbalaData.planets[planet];
                         if (!data) return null;
                         const pct = Math.min((data.total / data.required) * 100, 150);
-                        const barColor = data.is_strong ? '#B8860B' : '#8B2332';
+                        const barColor = data.is_strong ? 'var(--aged-gold-dim)' : '#8B2332';
                         return (
                           <div key={planet} className="flex items-center gap-2">
                             <span className="w-12 text-xs font-medium text-sacred-brown">{translatePlanet(planet, language)}</span>
                             <div className="flex-1 bg-sacred-gold/10 rounded-full h-4 overflow-hidden">
                               <div className="h-full rounded-full" style={{ width: `${Math.min(pct, 100)}%`, backgroundColor: barColor }} />
                             </div>
-                            <span className={`text-xs w-16 text-right font-medium ${data.is_strong ? 'text-[#B8860B]' : 'text-[#8B2332]'}`}>
+                            <span className={`text-xs w-16 text-right font-medium ${data.is_strong ? 'text-sacred-gold-dark' : 'text-[#8B2332]'}`}>
                               {data.total}/{data.required}
                             </span>
                           </div>
                         );
                       })}
                       <div className="flex items-center gap-3 mt-1 text-xs text-sacred-text-secondary">
-                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#B8860B' }} />{t('kundli.strong')}</span>
+                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: 'var(--aged-gold-dim)' }} />{t('kundli.strong')}</span>
                         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#8B2332' }} />{t('kundli.weak')}</span>
                       </div>
                     </div>
@@ -1754,16 +1754,16 @@ export default function KundliGenerator() {
                       <Sparkles className="w-6 h-6 text-sacred-gold" />
                     </div>
                     <div>
-                      <h4 className="font-display font-bold text-xl" style={{ color: '#D4A052' }}>{t('iogita.yourLifePattern')}: {iogitaData.basin.name}</h4>
-                      <p className="text-sm" style={{ color: '#b8b0a4' }}>{t('iogita.basedOnPositions')}</p>
+                      <h4 className="font-display font-bold text-xl" style={{ color: 'var(--aged-gold)' }}>{t('iogita.yourLifePattern')}: {iogitaData.basin.name}</h4>
+                      <p className="text-sm" style={{ color: 'var(--ink-light)' }}>{t('iogita.basedOnPositions')}</p>
                     </div>
                   </div>
-                  <p className="text-sm leading-relaxed mb-4" style={{ color: '#e8e0d4' }}>{iogitaData.basin.description}</p>
+                  <p className="text-sm leading-relaxed mb-4" style={{ color: 'var(--ink)' }}>{iogitaData.basin.description}</p>
                 </div>
 
                 {/* Strengths — Top Forces */}
                 <div className="rounded-xl p-5 border border-sacred-gold/20" style={{ background: 'rgba(34,34,58,0.8)' }}>
-                  <h4 className="font-display font-semibold mb-4" style={{ color: '#D4A052' }}>{t('iogita.strongestQualities')}</h4>
+                  <h4 className="font-display font-semibold mb-4" style={{ color: 'var(--aged-gold)' }}>{t('iogita.strongestQualities')}</h4>
                   <div className="space-y-3">
                     {(iogitaData.basin.top_3_atoms || []).map(([name, val]: [string, number], idx: number) => {
                       const labels: Record<string, string> = {
@@ -1773,14 +1773,14 @@ export default function KundliGenerator() {
                         KRODHA: 'Drive & Determination', NITI: 'Strategy & Wisdom', SHAKTI: 'Power & Energy',
                         BHAKTI: 'Devotion & Faith', KAAM: 'Desire & Passion', LOBH: 'Ambition', MOH: 'Attachment & Love',
                       };
-                      const colors = ['#D4A052', '#E8C078', '#B8860B'];
+                      const colors = ['var(--aged-gold)', 'var(--aged-gold-light)', 'var(--aged-gold-dim)'];
                       return (
                         <div key={name} className="flex items-center gap-3">
                           <span className="text-lg font-bold w-6" style={{ color: colors[idx] }}>{idx + 1}</span>
                           <div className="flex-1">
                             <div className="flex items-center justify-between mb-1">
-                              <span className="text-sm font-semibold" style={{ color: '#e8e0d4' }}>{labels[name] || name}</span>
-                              <span className="text-xs" style={{ color: '#b8b0a4' }}>{Math.round(Math.abs(val) * 100)}%</span>
+                              <span className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>{labels[name] || name}</span>
+                              <span className="text-xs" style={{ color: 'var(--ink-light)' }}>{Math.round(Math.abs(val) * 100)}%</span>
                             </div>
                             <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(184,134,11,0.15)' }}>
                               <div className="h-full rounded-full" style={{ width: `${Math.abs(val) * 100}%`, background: colors[idx] }} />
@@ -1825,19 +1825,19 @@ export default function KundliGenerator() {
                 {/* Overall Insight */}
                 {iogitaData.iogita_insight && (
                   <div className="rounded-xl p-5 border border-sacred-gold/20" style={{ background: 'rgba(34,34,58,0.8)' }}>
-                    <h4 className="font-display font-semibold mb-3" style={{ color: '#D4A052' }}>{t('iogita.overallLifeReading')}</h4>
-                    <p className="text-sm leading-relaxed" style={{ color: '#e8e0d4' }}>{iogitaData.iogita_insight}</p>
+                    <h4 className="font-display font-semibold mb-3" style={{ color: 'var(--aged-gold)' }}>{t('iogita.overallLifeReading')}</h4>
+                    <p className="text-sm leading-relaxed" style={{ color: 'var(--ink)' }}>{iogitaData.iogita_insight}</p>
                   </div>
                 )}
 
                 {/* Normal Astrology Insights */}
                 {iogitaData.normal_astrology && iogitaData.normal_astrology.length > 0 && (
                   <div className="rounded-xl p-5 border border-sacred-gold/20" style={{ background: 'rgba(34,34,58,0.8)' }}>
-                    <h4 className="font-display font-semibold mb-3" style={{ color: '#D4A052' }}>{t('iogita.kundliSummary')}</h4>
+                    <h4 className="font-display font-semibold mb-3" style={{ color: 'var(--aged-gold)' }}>{t('iogita.kundliSummary')}</h4>
                     <div className="space-y-2">
                       {iogitaData.normal_astrology.map((point: string, idx: number) => (
-                        <div key={idx} className="flex gap-2 text-sm" style={{ color: '#e8e0d4' }}>
-                          <span style={{ color: '#D4A052' }}>•</span>
+                        <div key={idx} className="flex gap-2 text-sm" style={{ color: 'var(--ink)' }}>
+                          <span style={{ color: 'var(--aged-gold)' }}>•</span>
                           <span className="leading-relaxed">{point}</span>
                         </div>
                       ))}
@@ -1846,9 +1846,9 @@ export default function KundliGenerator() {
                 )}
               </div>
             ) : iogitaData ? (
-              <p className="text-center py-8" style={{ color: '#b8b0a4' }}>{t('iogita.partialData')}</p>
+              <p className="text-center py-8" style={{ color: 'var(--ink-light)' }}>{t('iogita.partialData')}</p>
             ) : (
-              <p className="text-center py-8" style={{ color: '#b8b0a4' }}>{t('iogita.clickTab')}</p>
+              <p className="text-center py-8" style={{ color: 'var(--ink-light)' }}>{t('iogita.clickTab')}</p>
             )}
           </TabsContent>
 
@@ -1860,7 +1860,7 @@ export default function KundliGenerator() {
               <div className="space-y-4">
                 <div className="bg-gradient-to-r from-sacred-cream to-sacred-gold/10 rounded-xl p-4 border border-sacred-gold/20">
                   <p className="text-sm text-sacred-text-secondary">{t('section.currentMahadasha')}</p>
-                  <p className="text-xl font-display font-bold" style={{ color: '#B8860B' }}>{translatePlanet(extendedDashaData.current_dasha, language)} {t('kundli.mahadasha')}</p>
+                  <p className="text-xl font-display font-bold" style={{ color: 'var(--aged-gold-dim)' }}>{translatePlanet(extendedDashaData.current_dasha, language)} {t('kundli.mahadasha')}</p>
                   <div className="flex gap-4 mt-1">
                     {extendedDashaData.current_antardasha && extendedDashaData.current_antardasha !== 'Unknown' && (
                       <p className="text-sm text-sacred-gold-dark">{t('kundli.antardasha')}: {translatePlanet(extendedDashaData.current_antardasha, language)}</p>
@@ -1873,17 +1873,17 @@ export default function KundliGenerator() {
 
                 <div className="space-y-2">
                   {(extendedDashaData.mahadasha || []).map((md: any) => (
-                    <div key={md.planet} className={`rounded-xl border overflow-hidden ${md.is_current ? 'border-[#B8860B]/50' : 'border-sacred-gold/20'}`}>
+                    <div key={md.planet} className={`rounded-xl border overflow-hidden ${md.is_current ? 'border-sacred-gold-dark/50' : 'border-sacred-gold/20'}`}>
                       <button
                         onClick={() => setExpandedMahadasha(expandedMahadasha === md.planet ? null : md.planet)}
-                        className={`w-full flex items-center justify-between p-4 transition-colors ${md.is_current ? 'bg-[#B8860B]/10' : 'bg-sacred-cream hover:bg-sacred-gold/5'}`}
+                        className={`w-full flex items-center justify-between p-4 transition-colors ${md.is_current ? 'bg-sacred-gold-dark/10' : 'bg-sacred-cream hover:bg-sacred-gold/5'}`}
                       >
                         <div className="flex items-center gap-3">
                           <ChevronDown className={`w-4 h-4 text-sacred-gold-dark transition-transform ${expandedMahadasha === md.planet ? 'rotate-180' : ''}`} />
-                          <span className={`font-display font-semibold ${md.is_current ? 'text-[#B8860B]' : 'text-sacred-brown'}`}>
+                          <span className={`font-display font-semibold ${md.is_current ? 'text-sacred-gold-dark' : 'text-sacred-brown'}`}>
                             {translatePlanet(md.planet, language)} {t('kundli.mahadasha')}
                           </span>
-                          {md.is_current && <span className="text-xs px-2 py-0.5 rounded-full bg-[#B8860B]/20 text-[#B8860B] font-medium">{t('common.current')}</span>}
+                          {md.is_current && <span className="text-xs px-2 py-0.5 rounded-full bg-sacred-gold-dark/20 text-sacred-gold-dark font-medium">{t('common.current')}</span>}
                         </div>
                         <div className="text-right text-sm text-sacred-text-secondary">
                           <span>{md.start} \u2014 {md.end}</span>
@@ -1897,16 +1897,16 @@ export default function KundliGenerator() {
                             <div key={`${md.planet}-${ad.planet}`}>
                               <button
                                 onClick={() => setExpandedAntardasha(expandedAntardasha === `${md.planet}-${ad.planet}` ? null : `${md.planet}-${ad.planet}`)}
-                                className={`w-full flex items-center justify-between px-6 py-3 text-sm transition-colors ${ad.is_current ? 'bg-[#B8860B]/5' : 'hover:bg-sacred-gold/5'}`}
+                                className={`w-full flex items-center justify-between px-6 py-3 text-sm transition-colors ${ad.is_current ? 'bg-sacred-gold-dark/5' : 'hover:bg-sacred-gold/5'}`}
                               >
                                 <div className="flex items-center gap-2">
                                   {ad.pratyantar && ad.pratyantar.length > 0 && (
                                     <ChevronDown className={`w-3 h-3 text-sacred-gold-dark transition-transform ${expandedAntardasha === `${md.planet}-${ad.planet}` ? 'rotate-180' : ''}`} />
                                   )}
-                                  <span className={`font-medium ${ad.is_current ? 'text-[#B8860B]' : 'text-sacred-brown'}`}>
+                                  <span className={`font-medium ${ad.is_current ? 'text-sacred-gold-dark' : 'text-sacred-brown'}`}>
                                     {translatePlanet(ad.planet, language)} {t('kundli.antardasha')}
                                   </span>
-                                  {ad.is_current && <span className="text-xs px-1.5 py-0.5 rounded-full bg-[#B8860B]/15 text-[#B8860B]">{t('common.current')}</span>}
+                                  {ad.is_current && <span className="text-xs px-1.5 py-0.5 rounded-full bg-sacred-gold-dark/15 text-sacred-gold-dark">{t('common.current')}</span>}
                                 </div>
                                 <span className="text-sacred-text-secondary">{ad.start} \u2014 {ad.end}</span>
                               </button>
@@ -1916,11 +1916,11 @@ export default function KundliGenerator() {
                                   {ad.pratyantar.map((pt: any, idx: number) => (
                                     <div
                                       key={idx}
-                                      className={`flex items-center justify-between px-10 py-2 text-xs ${pt.is_current ? 'bg-[#B8860B]/5' : ''}`}
+                                      className={`flex items-center justify-between px-10 py-2 text-xs ${pt.is_current ? 'bg-sacred-gold-dark/5' : ''}`}
                                     >
-                                      <span className={`${pt.is_current ? 'text-[#B8860B] font-semibold' : 'text-sacred-text-secondary'}`}>
+                                      <span className={`${pt.is_current ? 'text-sacred-gold-dark font-semibold' : 'text-sacred-text-secondary'}`}>
                                         {translatePlanet(pt.planet, language)} {t('kundli.pratyantar')}
-                                        {pt.is_current && <span className="ml-1 text-[#B8860B]">*</span>}
+                                        {pt.is_current && <span className="ml-1 text-sacred-gold-dark">*</span>}
                                       </span>
                                       <span className="text-sacred-text-secondary">{pt.start} \u2014 {pt.end}</span>
                                     </div>
@@ -2107,7 +2107,7 @@ export default function KundliGenerator() {
                               className="absolute bottom-0 w-full rounded-t-md transition-all"
                               style={{
                                 height: `${heightPct}%`,
-                                backgroundColor: isStrong ? '#B8860B' : '#b8b0a4',
+                                backgroundColor: isStrong ? 'var(--aged-gold-dim)' : 'var(--ink-light)',
                               }}
                             />
                           </div>
@@ -2120,17 +2120,17 @@ export default function KundliGenerator() {
                   </div>
                   <div className="flex items-center gap-4 mt-3 text-xs text-sacred-text-secondary">
                     <div className="flex items-center gap-1">
-                      <div className="w-3 h-3 rounded" style={{ backgroundColor: '#B8860B' }} />
+                      <div className="w-3 h-3 rounded" style={{ backgroundColor: 'var(--aged-gold-dim)' }} />
                       <span>{t('kundli.strong')} (&ge;28)</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <div className="w-3 h-3 rounded" style={{ backgroundColor: '#b8b0a4' }} />
+                      <div className="w-3 h-3 rounded" style={{ backgroundColor: 'var(--ink-light)' }} />
                       <span>{t('kundli.weak')} (&lt;28)</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Bhinna Ashtakvarga Charts — SVG North Indian diamond per planet */}
+                {/* Bhinna Ashtakvarga Charts — clean grid per planet */}
                 <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/20">
                   <h4 className="font-display font-semibold text-sacred-brown mb-4">Bhinna Ashtakvarga Charts</h4>
                   <p className="text-xs text-sacred-text-secondary mb-4">Individual planet bindus across 12 signs shown in North Indian diamond chart format.</p>
@@ -2171,15 +2171,15 @@ export default function KundliGenerator() {
                           </h5>
                           <svg viewBox="0 0 200 200" className="w-full max-w-[200px]" xmlns="http://www.w3.org/2000/svg">
                             {/* Outer square */}
-                            <rect x="10" y="10" width="180" height="180" fill="none" stroke="#B8860B" strokeWidth="1.5" />
+                            <rect x="10" y="10" width="180" height="180" fill="none" stroke="var(--aged-gold-dim)" strokeWidth="1.5" />
                             {/* Diagonal lines forming the diamond */}
-                            <line x1="10" y1="10" x2="190" y2="190" stroke="#B8860B" strokeWidth="1" />
-                            <line x1="190" y1="10" x2="10" y2="190" stroke="#B8860B" strokeWidth="1" />
+                            <line x1="10" y1="10" x2="190" y2="190" stroke="var(--aged-gold-dim)" strokeWidth="1" />
+                            <line x1="190" y1="10" x2="10" y2="190" stroke="var(--aged-gold-dim)" strokeWidth="1" />
                             {/* Midpoint lines forming inner diamond */}
-                            <line x1="100" y1="10" x2="190" y2="100" stroke="#B8860B" strokeWidth="1" />
-                            <line x1="190" y1="100" x2="100" y2="190" stroke="#B8860B" strokeWidth="1" />
-                            <line x1="100" y1="190" x2="10" y2="100" stroke="#B8860B" strokeWidth="1" />
-                            <line x1="10" y1="100" x2="100" y2="10" stroke="#B8860B" strokeWidth="1" />
+                            <line x1="100" y1="10" x2="190" y2="100" stroke="var(--aged-gold-dim)" strokeWidth="1" />
+                            <line x1="190" y1="100" x2="100" y2="190" stroke="var(--aged-gold-dim)" strokeWidth="1" />
+                            <line x1="100" y1="190" x2="10" y2="100" stroke="var(--aged-gold-dim)" strokeWidth="1" />
+                            <line x1="10" y1="100" x2="100" y2="10" stroke="var(--aged-gold-dim)" strokeWidth="1" />
                             {/* Bindu values in each house */}
                             {signs.map((sign, i) => {
                               const val = bindus[sign] || 0;
@@ -2249,7 +2249,7 @@ export default function KundliGenerator() {
                                 const val = bindus[s] || 0;
                                 return (
                                   <td key={s} className="text-center p-2">
-                                    <span className={`inline-block w-6 h-6 rounded text-xs leading-6 ${val >= 5 ? 'bg-[#B8860B]/20 text-[#B8860B] font-bold' : val <= 2 ? 'bg-[#8B2332]/10 text-[#8B2332]' : 'text-sacred-text-secondary'}`}>
+                                    <span className={`inline-block w-6 h-6 rounded text-xs leading-6 ${val >= 5 ? 'bg-sacred-gold-dark/20 text-sacred-gold-dark font-bold' : val <= 2 ? 'bg-[#8B2332]/10 text-[#8B2332]' : 'text-sacred-text-secondary'}`}>
                                       {val}
                                     </span>
                                   </td>
@@ -2285,7 +2285,7 @@ export default function KundliGenerator() {
                       const data = shadbalaData.planets[planet];
                       if (!data) return null;
                       const pct = Math.min((data.total / data.required) * 100, 150);
-                      const barColor = data.is_strong ? '#B8860B' : '#8B2332';
+                      const barColor = data.is_strong ? 'var(--aged-gold-dim)' : '#8B2332';
                       return (
                         <div key={planet} className="flex items-center gap-3">
                           <span className="w-16 text-sm font-medium text-sacred-brown">{translatePlanet(planet, language)}</span>
@@ -2302,7 +2302,7 @@ export default function KundliGenerator() {
                               title={`Required: ${data.required}`}
                             />
                           </div>
-                          <span className={`text-sm w-20 text-right font-medium ${data.is_strong ? 'text-[#B8860B]' : 'text-[#8B2332]'}`}>
+                          <span className={`text-sm w-20 text-right font-medium ${data.is_strong ? 'text-sacred-gold-dark' : 'text-[#8B2332]'}`}>
                             {data.total} / {data.required}
                           </span>
                         </div>
@@ -2311,7 +2311,7 @@ export default function KundliGenerator() {
                   </div>
                   <div className="flex items-center gap-4 mt-3 text-xs text-sacred-text-secondary">
                     <div className="flex items-center gap-1">
-                      <div className="w-3 h-3 rounded" style={{ backgroundColor: '#B8860B' }} />
+                      <div className="w-3 h-3 rounded" style={{ backgroundColor: 'var(--aged-gold-dim)' }} />
                       <span>{t('kundli.strong')}</span>
                     </div>
                     <div className="flex items-center gap-1">
@@ -2351,8 +2351,8 @@ export default function KundliGenerator() {
                               <td className="text-center p-2 text-sacred-text-secondary">{d.cheshta}</td>
                               <td className="text-center p-2 text-sacred-text-secondary">{d.naisargika}</td>
                               <td className="text-center p-2 text-sacred-text-secondary">{d.drik}</td>
-                              <td className={`text-center p-2 font-semibold ${d.is_strong ? 'text-[#B8860B]' : 'text-[#8B2332]'}`}>{d.total}</td>
-                              <td className={`text-center p-2 font-medium ${d.ratio >= 1 ? 'text-[#B8860B]' : 'text-[#8B2332]'}`}>{d.ratio}x</td>
+                              <td className={`text-center p-2 font-semibold ${d.is_strong ? 'text-sacred-gold-dark' : 'text-[#8B2332]'}`}>{d.total}</td>
+                              <td className={`text-center p-2 font-medium ${d.ratio >= 1 ? 'text-sacred-gold-dark' : 'text-[#8B2332]'}`}>{d.ratio}x</td>
                             </tr>
                           );
                         })}
@@ -2376,7 +2376,7 @@ export default function KundliGenerator() {
             ) : avakhadaData ? (
               <div className="space-y-4">
                 <div className="bg-gradient-to-r from-sacred-cream to-sacred-gold/10 rounded-xl p-4 border border-sacred-gold/20 mb-4">
-                  <h4 className="font-display font-bold text-lg" style={{ color: '#e8e0d4' }}>{t('section.avakhadaChakra')}</h4>
+                  <h4 className="font-display font-bold text-lg" style={{ color: 'var(--ink)' }}>{t('section.avakhadaChakra')}</h4>
                   <p className="text-sm text-sacred-text-secondary">{t('avakhada.birthSummary')}</p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -2398,10 +2398,10 @@ export default function KundliGenerator() {
                     <div
                       key={item.label}
                       className="rounded-xl p-4 border"
-                      style={{ backgroundColor: '#1a1a2e', borderColor: 'rgba(184,134,11,0.2)' }}
+                      style={{ backgroundColor: 'var(--parchment)', borderColor: 'rgba(184,134,11,0.2)' }}
                     >
-                      <p className="text-xs font-medium mb-1" style={{ color: '#b8b0a4' }}>{item.label}</p>
-                      <p className="font-display font-semibold text-base" style={{ color: '#e8e0d4' }}>{item.value}</p>
+                      <p className="text-xs font-medium mb-1" style={{ color: 'var(--ink-light)' }}>{item.label}</p>
+                      <p className="font-display font-semibold text-base" style={{ color: 'var(--ink)' }}>{item.value}</p>
                     </div>
                   ))}
                 </div>
@@ -2423,7 +2423,7 @@ export default function KundliGenerator() {
                 <div>
                   <div className="flex items-center gap-2 mb-4">
                     <CheckCircle className="w-5 h-5" style={{ color: '#22c55e' }} />
-                    <h4 className="font-display font-bold text-lg" style={{ color: '#e8e0d4' }}>{t('section.yogas')}</h4>
+                    <h4 className="font-display font-bold text-lg" style={{ color: 'var(--ink)' }}>{t('section.yogas')}</h4>
                   </div>
                   <div className="grid gap-3">
                     {(yogaDoshaData.yogas || []).filter((y: any) => y.present).length === 0 && (
@@ -2436,12 +2436,12 @@ export default function KundliGenerator() {
                         style={{ backgroundColor: 'rgba(34,197,94,0.05)' }}
                       >
                         <div className="flex items-center justify-between mb-2">
-                          <h5 className="font-display font-semibold" style={{ color: '#e8e0d4' }}>{translateName(yoga.name, language)}</h5>
+                          <h5 className="font-display font-semibold" style={{ color: 'var(--ink)' }}>{translateName(yoga.name, language)}</h5>
                           <span className="text-xs px-2 py-1 rounded-full font-medium bg-green-500/20 text-green-400">
                             {t('common.present')}
                           </span>
                         </div>
-                        <p className="text-sm" style={{ color: '#b8b0a4' }}>{yoga.description}</p>
+                        <p className="text-sm" style={{ color: 'var(--ink-light)' }}>{yoga.description}</p>
                         {yoga.planets_involved && yoga.planets_involved.length > 0 && (
                           <div className="mt-2 flex gap-2">
                             {yoga.planets_involved.map((p: string) => (
@@ -2457,7 +2457,7 @@ export default function KundliGenerator() {
                 <div>
                   <div className="flex items-center gap-2 mb-4">
                     <Shield className="w-5 h-5" style={{ color: '#8B2332' }} />
-                    <h4 className="font-display font-bold text-lg" style={{ color: '#e8e0d4' }}>{t('section.doshas')}</h4>
+                    <h4 className="font-display font-bold text-lg" style={{ color: 'var(--ink)' }}>{t('section.doshas')}</h4>
                   </div>
                   <div className="grid gap-3">
                     {(yogaDoshaData.doshas || []).filter((d: any) => d.present).length === 0 && (
@@ -2470,7 +2470,7 @@ export default function KundliGenerator() {
                         style={{ backgroundColor: dosha.severity === 'high' ? 'rgba(196,62,78,0.08)' : 'rgba(245,158,11,0.05)' }}
                       >
                         <div className="flex items-center justify-between mb-2">
-                          <h5 className="font-display font-semibold" style={{ color: '#e8e0d4' }}>{translateName(dosha.name, language)}</h5>
+                          <h5 className="font-display font-semibold" style={{ color: 'var(--ink)' }}>{translateName(dosha.name, language)}</h5>
                           <div className="flex items-center gap-2">
                             {dosha.severity !== 'none' && (
                               <span className={`text-xs px-2 py-0.5 rounded-full ${dosha.severity === 'high' ? 'bg-red-500/20 text-red-400' : dosha.severity === 'medium' ? 'bg-amber-400/20 text-amber-600' : 'bg-yellow-500/20 text-yellow-400'}`}>
@@ -2482,16 +2482,16 @@ export default function KundliGenerator() {
                             </span>
                           </div>
                         </div>
-                        <p className="text-sm" style={{ color: '#b8b0a4' }}>{dosha.description}</p>
+                        <p className="text-sm" style={{ color: 'var(--ink-light)' }}>{dosha.description}</p>
                         {dosha.remedies && dosha.remedies.length > 0 && (
                           <div className="mt-3 pt-3 border-t" style={{ borderColor: 'rgba(184,134,11,0.2)' }}>
-                            <p className="text-xs font-semibold mb-2" style={{ color: '#B8860B' }}>
+                            <p className="text-xs font-semibold mb-2" style={{ color: 'var(--aged-gold-dim)' }}>
                               <AlertTriangle className="w-3 h-3 inline mr-1" />{t('section.remedies')}:
                             </p>
                             <ul className="space-y-1">
                               {dosha.remedies.map((r: string, ri: number) => (
-                                <li key={ri} className="text-xs flex items-start gap-2" style={{ color: '#b8b0a4' }}>
-                                  <span className="mt-1 w-1 h-1 rounded-full flex-shrink-0" style={{ backgroundColor: '#B8860B' }} />
+                                <li key={ri} className="text-xs flex items-start gap-2" style={{ color: 'var(--ink-light)' }}>
+                                  <span className="mt-1 w-1 h-1 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--aged-gold-dim)' }} />
                                   {translateRemedy(r, language)}
                                 </li>
                               ))}
@@ -2522,26 +2522,26 @@ export default function KundliGenerator() {
           <TabsContent value="transits">
             {/* Date/Time Picker — always visible */}
             <div className="rounded-xl p-4 mb-4 border" style={{ backgroundColor: 'rgba(184,134,11,0.04)', borderColor: 'rgba(184,134,11,0.25)' }}>
-              <h4 className="font-display font-bold text-lg mb-3" style={{ color: '#D4A052' }}>{t('section.gocharPredictions')}</h4>
+              <h4 className="font-display font-bold text-lg mb-3" style={{ color: 'var(--aged-gold)' }}>{t('section.gocharPredictions')}</h4>
               <div className="flex flex-wrap items-end gap-3">
                 <div>
-                  <label className="text-xs block mb-1" style={{ color: '#b8b0a4' }}>{t('common.date')}</label>
+                  <label className="text-xs block mb-1" style={{ color: 'var(--ink-light)' }}>{t('common.date')}</label>
                   <input
                     type="date"
                     value={transitDate}
                     onChange={(e) => setTransitDate(e.target.value)}
                     className="px-3 py-1.5 rounded-lg text-sm border"
-                    style={{ backgroundColor: '#22223a', borderColor: 'rgba(184,134,11,0.3)', color: '#e8e0d4' }}
+                    style={{ backgroundColor: 'var(--cosmic-surface)', borderColor: 'rgba(184,134,11,0.3)', color: 'var(--ink)' }}
                   />
                 </div>
                 <div>
-                  <label className="text-xs block mb-1" style={{ color: '#b8b0a4' }}>{t('common.time')}</label>
+                  <label className="text-xs block mb-1" style={{ color: 'var(--ink-light)' }}>{t('common.time')}</label>
                   <input
                     type="time"
                     value={transitTime}
                     onChange={(e) => setTransitTime(e.target.value)}
                     className="px-3 py-1.5 rounded-lg text-sm border"
-                    style={{ backgroundColor: '#22223a', borderColor: 'rgba(184,134,11,0.3)', color: '#e8e0d4' }}
+                    style={{ backgroundColor: 'var(--cosmic-surface)', borderColor: 'rgba(184,134,11,0.3)', color: 'var(--ink)' }}
                   />
                 </div>
                 <Button
@@ -2551,7 +2551,7 @@ export default function KundliGenerator() {
                     fetchTransit(transitDate || undefined, transitTime ? `${transitTime}:00` : undefined);
                   }}
                   className="px-4"
-                  style={{ backgroundColor: '#D4A052', color: '#1a1a2e' }}
+                  style={{ backgroundColor: 'var(--aged-gold)', color: 'var(--parchment)' }}
                 >
                   {transitDate ? t('transit.viewTransits') : t('transit.currentTransits')}
                 </Button>
@@ -2559,7 +2559,7 @@ export default function KundliGenerator() {
                   <button
                     onClick={() => { setTransitDate(''); setTransitTime(''); setTransitData(null); fetchTransit(); }}
                     className="text-xs px-3 py-1.5 rounded-lg border"
-                    style={{ borderColor: 'rgba(184,134,11,0.3)', color: '#b8b0a4' }}
+                    style={{ borderColor: 'rgba(184,134,11,0.3)', color: 'var(--ink-light)' }}
                   >
                     {t('transit.resetToNow')}
                   </button>
@@ -2567,8 +2567,8 @@ export default function KundliGenerator() {
               </div>
               {transitData && (
                 <div className="flex flex-wrap gap-4 text-sm mt-3">
-                  <span style={{ color: '#e8e0d4' }}><strong>{t('transit.transitDate')}:</strong> {transitData.transit_date}</span>
-                  <span style={{ color: '#e8e0d4' }}><strong>{t('transit.natalMoon')}:</strong> {translateSign(transitData.natal_moon_sign, language)}</span>
+                  <span style={{ color: 'var(--ink)' }}><strong>{t('transit.transitDate')}:</strong> {transitData.transit_date}</span>
+                  <span style={{ color: 'var(--ink)' }}><strong>{t('transit.natalMoon')}:</strong> {translateSign(transitData.natal_moon_sign, language)}</span>
                 </div>
               )}
             </div>
@@ -2583,7 +2583,7 @@ export default function KundliGenerator() {
                 {/* Transit Chart — clickable houses */}
                 <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/20">
                   <h4 className="font-display font-semibold text-sacred-brown mb-2">{t('transit.chart')} ({transitData.transit_date})</h4>
-                  <p className="text-xs mb-3" style={{ color: '#b8b0a4' }}>{t('kundli.clickHouseToRotate')}</p>
+                  <p className="text-xs mb-3" style={{ color: 'var(--ink-light)' }}>{t('kundli.clickHouseToRotate')}</p>
                   <div className="w-full max-w-[600px] mx-auto">
                     {(() => {
                       const shift = transitHouseShift;
@@ -2614,10 +2614,10 @@ export default function KundliGenerator() {
                     })()}
                   </div>
                   <div className="flex items-center justify-center gap-4 mt-2 text-xs text-sacred-text-secondary">
-                    <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full" style={{backgroundColor: '#D4A052'}} /> {t('transit.benefic')}</span>
-                    <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full" style={{backgroundColor: '#C43E4E'}} /> {t('transit.malefic')}</span>
+                    <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full" style={{backgroundColor: 'var(--aged-gold)'}} /> {t('transit.benefic')}</span>
+                    <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full" style={{backgroundColor: 'var(--wax-red)'}} /> {t('transit.malefic')}</span>
                     {transitHouseShift > 0 && (
-                      <button onClick={() => setTransitHouseShift(0)} className="text-xs px-2 py-0.5 rounded border" style={{ borderColor: 'rgba(184,134,11,0.3)', color: '#D4A052' }}>
+                      <button onClick={() => setTransitHouseShift(0)} className="text-xs px-2 py-0.5 rounded border" style={{ borderColor: 'rgba(184,134,11,0.3)', color: 'var(--aged-gold)' }}>
                         {t('common.resetView')}
                       </button>
                     )}
@@ -2630,7 +2630,7 @@ export default function KundliGenerator() {
                   style={{ backgroundColor: transitData.sade_sati?.active ? 'rgba(196,62,78,0.08)' : 'rgba(34,197,94,0.05)' }}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <h5 className="font-display font-semibold" style={{ color: '#e8e0d4' }}>
+                    <h5 className="font-display font-semibold" style={{ color: 'var(--ink)' }}>
                       <Shield className="w-4 h-4 inline mr-2" />
                       {translateName('Sade Sati', language)}
                     </h5>
@@ -2639,11 +2639,11 @@ export default function KundliGenerator() {
                     </span>
                   </div>
                   {transitData.sade_sati?.active && (
-                    <p className="text-xs mb-1" style={{ color: '#B8860B' }}>
+                    <p className="text-xs mb-1" style={{ color: 'var(--aged-gold-dim)' }}>
                       <strong>{t('table.phase')}:</strong> {translateLabel(transitData.sade_sati.phase, language)}
                     </p>
                   )}
-                  <p className="text-sm" style={{ color: '#b8b0a4' }}>{transitData.sade_sati?.description}</p>
+                  <p className="text-sm" style={{ color: 'var(--ink-light)' }}>{transitData.sade_sati?.description}</p>
                 </div>
 
                 {/* Transit Table */}
@@ -2651,10 +2651,10 @@ export default function KundliGenerator() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr style={{ backgroundColor: 'rgba(184,134,11,0.08)' }}>
-                        <th className="text-left p-3 font-display font-semibold" style={{ color: '#e8e0d4' }}>{t('table.planet')}</th>
-                        <th className="text-left p-3 font-display font-semibold" style={{ color: '#e8e0d4' }}>{t('transit.currentSign')}</th>
-                        <th className="text-center p-3 font-display font-semibold" style={{ color: '#e8e0d4' }}>{t('transit.houseFromMoon')}</th>
-                        <th className="text-center p-3 font-display font-semibold" style={{ color: '#e8e0d4' }}>{t('transit.effect')}</th>
+                        <th className="text-left p-3 font-display font-semibold" style={{ color: 'var(--ink)' }}>{t('table.planet')}</th>
+                        <th className="text-left p-3 font-display font-semibold" style={{ color: 'var(--ink)' }}>{t('transit.currentSign')}</th>
+                        <th className="text-center p-3 font-display font-semibold" style={{ color: 'var(--ink)' }}>{t('transit.houseFromMoon')}</th>
+                        <th className="text-center p-3 font-display font-semibold" style={{ color: 'var(--ink)' }}>{t('transit.effect')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -2664,9 +2664,9 @@ export default function KundliGenerator() {
                           className="border-t"
                           style={{ borderColor: 'rgba(184,134,11,0.15)', backgroundColor: idx % 2 === 0 ? 'transparent' : 'rgba(184,134,11,0.02)' }}
                         >
-                          <td className="p-3 font-medium" style={{ color: '#e8e0d4' }}>{translatePlanet(tr.planet, language)}</td>
-                          <td className="p-3" style={{ color: '#b8b0a4' }}>{translateSign(tr.current_sign, language)}</td>
-                          <td className="p-3 text-center" style={{ color: '#b8b0a4' }}>{tr.natal_house_from_moon}</td>
+                          <td className="p-3 font-medium" style={{ color: 'var(--ink)' }}>{translatePlanet(tr.planet, language)}</td>
+                          <td className="p-3" style={{ color: 'var(--ink-light)' }}>{translateSign(tr.current_sign, language)}</td>
+                          <td className="p-3 text-center" style={{ color: 'var(--ink-light)' }}>{tr.natal_house_from_moon}</td>
                           <td className="p-3 text-center">
                             <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full font-medium ${tr.effect === 'favorable' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
                               {tr.effect === 'favorable' ? <CheckCircle className="w-3 h-3" /> : <AlertTriangle className="w-3 h-3" />}
@@ -2688,13 +2688,13 @@ export default function KundliGenerator() {
                       style={{ backgroundColor: tr.effect === 'favorable' ? 'rgba(34,197,94,0.03)' : 'rgba(239,68,68,0.03)' }}
                     >
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="font-display font-semibold" style={{ color: '#e8e0d4' }}>{translatePlanet(tr.planet, language)}</span>
-                        <span className="text-xs" style={{ color: '#b8b0a4' }}>{translateSign(tr.current_sign, language)}</span>
+                        <span className="font-display font-semibold" style={{ color: 'var(--ink)' }}>{translatePlanet(tr.planet, language)}</span>
+                        <span className="text-xs" style={{ color: 'var(--ink-light)' }}>{translateSign(tr.current_sign, language)}</span>
                         <span className={`text-xs px-1.5 py-0.5 rounded-full ${tr.effect === 'favorable' ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'}`}>
                           {tr.effect === 'favorable' ? t('common.favorable') : t('common.unfavorable')}
                         </span>
                       </div>
-                      <p className="text-sm" style={{ color: '#b8b0a4' }}>{tr.description}</p>
+                      <p className="text-sm" style={{ color: 'var(--ink-light)' }}>{tr.description}</p>
                     </div>
                   ))}
                 </div>
@@ -2744,7 +2744,7 @@ export default function KundliGenerator() {
                       </div>
                       <div className="bg-white/5 rounded-lg p-3">
                         <p className="text-xs text-sacred-text-secondary">{t('section.yearLord')}</p>
-                        <p className="font-semibold" style={{ color: '#B8860B' }}>{translatePlanet(varshphalData.year_lord, language)}</p>
+                        <p className="font-semibold" style={{ color: 'var(--aged-gold-dim)' }}>{translatePlanet(varshphalData.year_lord, language)}</p>
                       </div>
                       <div className="bg-white/5 rounded-lg p-3">
                         <p className="text-xs text-sacred-text-secondary">{t('varshphal.completedYears')}</p>
@@ -2767,7 +2767,7 @@ export default function KundliGenerator() {
                       </div>
                       <div className="bg-white/5 rounded-lg p-3">
                         <p className="text-xs text-sacred-text-secondary">{t('section.munthaLord')}</p>
-                        <p className="font-semibold" style={{ color: '#B8860B' }}>{translatePlanet(varshphalData.muntha?.lord || '', language)}</p>
+                        <p className="font-semibold" style={{ color: 'var(--aged-gold-dim)' }}>{translatePlanet(varshphalData.muntha?.lord || '', language)}</p>
                       </div>
                       <div className="bg-white/5 rounded-lg p-3">
                         <p className="text-xs text-sacred-text-secondary">{t('table.status')}</p>

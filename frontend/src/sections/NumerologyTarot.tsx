@@ -233,13 +233,13 @@ export default function NumerologyTarot() {
 
       <Tabs defaultValue="numerology">
         <TabsList className="grid grid-cols-3 bg-cosmic-surface mb-8 max-w-md mx-auto">
-          <TabsTrigger value="numerology" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e]">
+          <TabsTrigger value="numerology" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-cosmic-bg">
             <Hash className="w-4 h-4 mr-1" />{t('numerology.tabNumerology')}
           </TabsTrigger>
-          <TabsTrigger value="tarot" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e]">
+          <TabsTrigger value="tarot" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-cosmic-bg">
             <Eye className="w-4 h-4 mr-1" />{t('numerology.tabTarot')}
           </TabsTrigger>
-          <TabsTrigger value="palmistry" onClick={loadPalmistry} className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e]">
+          <TabsTrigger value="palmistry" onClick={loadPalmistry} className="data-[state=active]:bg-sacred-gold data-[state=active]:text-cosmic-bg">
             <Hand className="w-4 h-4 mr-1" />{t('numerology.tabPalmistry')}
           </TabsTrigger>
         </TabsList>
@@ -252,7 +252,7 @@ export default function NumerologyTarot() {
               <div className="space-y-3">
                 <Input placeholder={t('numerology.fullName')} value={numName} onChange={(e) => setNumName(e.target.value)} className="bg-cosmic-card border-sacred-gold/15" />
                 <Input type="date" value={numDob} onChange={(e) => setNumDob(e.target.value)} className="bg-cosmic-card border-sacred-gold/15" />
-                <Button onClick={calculateNumerology} disabled={numLoading || !numName.trim() || !numDob} className="w-full bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark">
+                <Button onClick={calculateNumerology} disabled={numLoading || !numName.trim() || !numDob} className="w-full bg-sacred-gold text-cosmic-bg hover:bg-sacred-gold-dark">
                   {numLoading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{t('common.calculating')}</> : <><Hash className="w-4 h-4 mr-2" />{t('numerology.calculate')}</>}
                 </Button>
               </div>
@@ -435,7 +435,7 @@ export default function NumerologyTarot() {
                               : 'border-sacred-gold/30 bg-transparent'
                           }`}>
                             {selectedAreas.includes(area) && (
-                              <svg className="w-3 h-3 text-[#1a1a2e]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                              <svg className="w-3 h-3 text-cosmic-bg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                               </svg>
                             )}
@@ -449,7 +449,7 @@ export default function NumerologyTarot() {
                   <Button
                     onClick={analyzeMobile}
                     disabled={mobileLoading || !mobilePhone.trim() || !firstName.trim() || !mobileDob}
-                    className="w-full bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark"
+                    className="w-full bg-sacred-gold text-cosmic-bg hover:bg-sacred-gold-dark"
                   >
                     {mobileLoading ? (
                       <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Analyzing...</>
@@ -734,7 +734,7 @@ export default function NumerologyTarot() {
                   </SelectContent>
                 </Select>
                 <Input placeholder="Your question (optional)" value={tarotQuestion} onChange={(e) => setTarotQuestion(e.target.value)} className="bg-cosmic-card border-sacred-gold/15" />
-                <Button onClick={drawTarot} disabled={tarotLoading} className="w-full bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark">
+                <Button onClick={drawTarot} disabled={tarotLoading} className="w-full bg-sacred-gold text-cosmic-bg hover:bg-sacred-gold-dark">
                   {tarotLoading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Drawing...</> : <><Eye className="w-4 h-4 mr-2" />Draw Cards</>}
                 </Button>
               </div>
@@ -782,7 +782,7 @@ export default function NumerologyTarot() {
                     <h3 className="font-display font-semibold text-cosmic-text">Need a deeper palm reading?</h3>
                     <p className="text-sm text-cosmic-text-secondary mt-1">Use the dedicated palmistry page for photo-based analysis and guided line selection.</p>
                   </div>
-                  <Button asChild className="bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark">
+                  <Button asChild className="bg-sacred-gold text-cosmic-bg hover:bg-sacred-gold-dark">
                     <Link to="/palmistry">
                       <Hand className="w-4 h-4 mr-2" />Open Palmistry
                     </Link>
@@ -847,7 +847,7 @@ export default function NumerologyTarot() {
             <div className="text-center py-12">
               <Hand className="w-12 h-12 text-cosmic-text-muted mx-auto mb-3" />
               <p className="text-cosmic-text-secondary mb-4">Click to load the palmistry guide</p>
-              <Button onClick={loadPalmistry} className="bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark">
+              <Button onClick={loadPalmistry} className="bg-sacred-gold text-cosmic-bg hover:bg-sacred-gold-dark">
                 <Hand className="w-4 h-4 mr-2" />Load Guide
               </Button>
             </div>

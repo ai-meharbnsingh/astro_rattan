@@ -53,7 +53,7 @@ function SegmentLines({ size, count }: { size: number; count: number }) {
         />
       </bufferGeometry>
       <lineBasicMaterial
-        color="#B8860B"
+        color="var(--aged-gold-dim)"
         transparent
         opacity={0.3}
         depthWrite={false}
@@ -89,8 +89,8 @@ export default function ZodiacWheel({
         <mesh>
           <torusGeometry args={[size * 0.9, size * 0.02, 16, 128]} />
           <meshStandardMaterial
-            color="#B8860B"
-            emissive="#B8860B"
+            color="var(--aged-gold-dim)"
+            emissive="var(--aged-gold-dim)"
             emissiveIntensity={0.4}
             metalness={0.8}
             roughness={0.2}
@@ -101,8 +101,8 @@ export default function ZodiacWheel({
         <mesh>
           <torusGeometry args={[size * 0.55, size * 0.01, 16, 128]} />
           <meshStandardMaterial
-            color="#B8860B"
-            emissive="#B8860B"
+            color="var(--aged-gold-dim)"
+            emissive="var(--aged-gold-dim)"
             emissiveIntensity={0.3}
             metalness={0.8}
             roughness={0.3}
@@ -113,7 +113,7 @@ export default function ZodiacWheel({
         <mesh ref={glowRef}>
           <torusGeometry args={[size * 0.9, size * 0.08, 16, 128]} />
           <meshBasicMaterial
-            color="#B8860B"
+            color="var(--aged-gold-dim)"
             transparent
             opacity={0.12}
             depthWrite={false}
@@ -133,7 +133,7 @@ export default function ZodiacWheel({
             <Billboard key={i} position={[x, y, 0.01]} follow={false}>
               <Text
                 fontSize={size * 0.1}
-                color="#B8860B"
+                color="var(--aged-gold-dim)"
                 anchorX="center"
                 anchorY="middle"
               >

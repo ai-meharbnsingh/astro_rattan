@@ -9,7 +9,7 @@ function renderMarkdown(text: string) {
     // Bold: **text**
     const parts = line.split(/\*\*(.*?)\*\*/g);
     const rendered = parts.map((part, i) =>
-      i % 2 === 1 ? <strong key={i} style={{ color: '#D4A052' }}>{part}</strong> : part
+      i % 2 === 1 ? <strong key={i} style={{ color: 'var(--aged-gold)' }}>{part}</strong> : part
     );
 
     // Heading lines
@@ -19,14 +19,14 @@ function renderMarkdown(text: string) {
     // List items
     if (line.trimStart().startsWith('- ')) {
       return (
-        <div key={idx} className="flex gap-2 mb-1.5 ml-2" style={{ fontFamily: 'serif', color: '#e8e0d4' }}>
+        <div key={idx} className="flex gap-2 mb-1.5 ml-2" style={{ fontFamily: 'serif', color: 'var(--ink)' }}>
           <span className="text-sacred-gold mt-0.5">•</span>
           <span className="leading-relaxed">{rendered}</span>
         </div>
       );
     }
     // Regular paragraph
-    return <p key={idx} className="mb-3 leading-relaxed" style={{ fontFamily: 'serif', color: '#e8e0d4' }}>{rendered}</p>;
+    return <p key={idx} className="mb-3 leading-relaxed" style={{ fontFamily: 'serif', color: 'var(--ink)' }}>{rendered}</p>;
   });
 }
 
@@ -65,7 +65,7 @@ export default function PredictionsTab({
             disabled={loadingPredictions}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               activePeriod === key
-                ? 'bg-[#B8860B] text-white shadow-md'
+                ? 'bg-sacred-gold-dark text-white shadow-md'
                 : 'bg-sacred-cream border border-sacred-gold/30 text-sacred-brown hover:bg-sacred-gold/10'
             } ${loadingPredictions ? 'opacity-60 cursor-not-allowed' : ''}`}
           >
@@ -93,10 +93,10 @@ export default function PredictionsTab({
 
       {/* Prediction content */}
       {!loadingPredictions && currentData && (
-        <div className="rounded-2xl p-6 border" style={{ backgroundColor: '#1a1a2e', borderColor: 'rgba(184,134,11,0.25)' }}>
+        <div className="rounded-2xl p-6 border" style={{ backgroundColor: 'var(--parchment)', borderColor: 'rgba(184,134,11,0.25)' }}>
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(184,134,11,0.15)' }}>
-              <Sparkles className="w-5 h-5" style={{ color: '#B8860B' }} />
+              <Sparkles className="w-5 h-5" style={{ color: 'var(--aged-gold-dim)' }} />
             </div>
             <div>
               <h4 className="font-display font-semibold text-xl text-sacred-brown">
@@ -110,12 +110,12 @@ export default function PredictionsTab({
               </p>
             </div>
             {currentData._puterFallback && (
-              <span className="ml-auto text-xs px-2 py-1 rounded-full" style={{ backgroundColor: 'rgba(184,134,11,0.12)', color: '#B8860B', border: '1px solid rgba(184,134,11,0.3)' }}>
+              <span className="ml-auto text-xs px-2 py-1 rounded-full" style={{ backgroundColor: 'rgba(184,134,11,0.12)', color: 'var(--aged-gold-dim)', border: '1px solid rgba(184,134,11,0.3)' }}>
                 Powered by Free AI
               </span>
             )}
           </div>
-          <div className="max-w-none" style={{ color: '#e8e0d4' }}>
+          <div className="max-w-none" style={{ color: 'var(--ink)' }}>
             {renderMarkdown(currentData.interpretation || currentData.response || currentData.text || 'Generating predictions...')}
             {currentData._streaming && <span className="inline-block w-1.5 h-4 ml-0.5 bg-sacred-gold animate-pulse align-middle" />}
           </div>
@@ -140,7 +140,7 @@ export default function PredictionsTab({
              'Get Predictions'}
           </Button>
           {isPuterAvailable() && (
-            <p className="text-xs mt-3" style={{ color: '#b8b0a4' }}>Free AI available as backup if server is busy</p>
+            <p className="text-xs mt-3" style={{ color: 'var(--ink-light)' }}>Free AI available as backup if server is busy</p>
           )}
         </div>
       )}

@@ -227,7 +227,7 @@ export default function ReportMarketplace() {
         <Lock className="w-16 h-16 text-cosmic-text-muted mx-auto mb-4" />
         <h2 className="text-2xl font-display font-bold text-cosmic-text mb-2">Sign In Required</h2>
         <p className="text-cosmic-text-secondary mb-6">Please log in to purchase personalized reports.</p>
-        <Button onClick={() => navigate('/login')} className="bg-sacred-gold text-[#1a1a2e]">
+        <Button onClick={() => navigate('/login')} className="bg-sacred-gold text-cosmic-bg">
           Sign In
         </Button>
       </div>
@@ -248,7 +248,7 @@ export default function ReportMarketplace() {
         <FileText className="w-16 h-16 text-cosmic-text-muted mx-auto mb-4" />
         <h2 className="text-2xl font-display font-bold text-cosmic-text mb-2">No Kundlis Found</h2>
         <p className="text-cosmic-text-secondary mb-6">Generate a kundli first to purchase personalized reports.</p>
-        <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold text-[#1a1a2e]">
+        <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold text-cosmic-bg">
           Generate Kundli <ArrowRight className="w-4 h-4 ml-2" />
         </Button>
       </div>
@@ -310,7 +310,7 @@ export default function ReportMarketplace() {
             <CardContent className="p-6 flex flex-col flex-1">
               {/* Icon & Price */}
               <div className="flex items-start justify-between mb-4">
-                <div className={`w-12 h-12 rounded-xl ${report.color} text-[#1a1a2e] flex items-center justify-center`}>
+                <div className={`w-12 h-12 rounded-xl ${report.color} text-cosmic-bg flex items-center justify-center`}>
                   {report.icon}
                 </div>
                 <div className="text-right">
@@ -341,7 +341,7 @@ export default function ReportMarketplace() {
               <Button 
                 onClick={() => handleRequestReport(report.id)}
                 disabled={requesting === report.id || !selectedKundli}
-                className={`w-full ${report.color} text-[#1a1a2e] hover:opacity-90`}
+                className={`w-full ${report.color} text-cosmic-bg hover:opacity-90`}
               >
                 {requesting === report.id ? (
                   <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Processing...</>

@@ -56,7 +56,7 @@ export default function KundliList({
     <div className="max-w-2xl mx-auto py-24 px-4">
       <div className="text-center mb-8">
         <div className="w-16 h-16 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center mx-auto mb-4">
-          <Sparkles className="w-8 h-8 text-[#1a1a2e]" />
+          <Sparkles className="w-8 h-8 text-cosmic-bg" />
         </div>
         <h3 className="text-2xl font-display font-bold text-sacred-brown mb-2">My Kundlis</h3>
         <p className="text-sacred-text-secondary">Your saved birth charts</p>
@@ -65,12 +65,12 @@ export default function KundliList({
       {/* Delete All Confirmation Modal */}
       {showDeleteAllConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-[#22223a] rounded-xl border border-red-500/30 p-6 max-w-md w-full shadow-xl">
+          <div className="bg-cosmic-surface rounded-xl border border-red-500/30 p-6 max-w-md w-full shadow-xl">
             <div className="flex items-center gap-3 mb-4 text-red-400">
               <AlertTriangle className="w-8 h-8" />
               <h4 className="text-lg font-bold">Delete All Kundlis?</h4>
             </div>
-            <p className="text-[#b8b0a4] mb-6">
+            <p className="text-cosmic-text-secondary mb-6">
               This will permanently delete all {savedKundlis.length} saved kundlis. This action cannot be undone.
             </p>
             <div className="flex gap-3">

@@ -88,19 +88,19 @@ export default function Hero() {
 
         {/* Main Title */}
         <div className="hero-title-main opacity-0 mb-6">
-          <h1 className="font-['Cinzel_Decorative'] text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#e8e0d4] leading-[0.95] tracking-wide"
-            style={{ textShadow: '0 0 60px rgba(184, 134, 11, 0.15)' }}>
+          <h1 className="font-['Cinzel_Decorative'] text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-cosmic-text leading-[0.95] tracking-wide"
+            style={{ textShadow: '0 0 60px rgba(255, 153, 51, 0.15)' }}>
             {t('hero.observatory')}
           </h1>
-          <p className="font-['Cinzel'] text-sm md:text-base tracking-[12px] text-[#9A7B0A] mt-4 uppercase">
+          <p className="font-['Cinzel'] text-sm md:text-base tracking-[12px] text-sacred-gold-dark mt-4 uppercase">
             {t('hero.ofDestiny')}
           </p>
         </div>
 
         {/* Equation */}
         <div className="hero-equation opacity-0 mb-8 inline-block">
-          <div className="px-5 py-2 border border-[#9A7B0A]/30 bg-[#22223a]/60 backdrop-blur-sm">
-            <code className="font-['Space_Mono'] text-xs md:text-sm text-[#9A7B0A] tracking-wider">
+          <div className="px-5 py-2 border border-sacred-gold/30 bg-cosmic-surface/60 backdrop-blur-sm">
+            <code className="font-['Space_Mono'] text-xs md:text-sm text-sacred-gold-dark tracking-wider">
               L = Asc + (S × 30°) + (N × 3°20')
             </code>
           </div>
@@ -108,7 +108,7 @@ export default function Hero() {
 
         {/* Subtitle */}
         <div className="hero-subtitle-text opacity-0 mb-10 max-w-xl mx-auto">
-          <p className="text-sm md:text-base text-[#e8e0d4]/70 leading-relaxed font-light">
+          <p className="text-sm md:text-base text-cosmic-text/70 leading-relaxed font-light">
             The universe does not hide its secrets. It writes them in light,<br className="hidden md:block" />
             across twelve houses, waiting for those who know how to read.
           </p>
@@ -118,7 +118,7 @@ export default function Hero() {
         <div className="hero-cta opacity-0 mb-12 flex flex-col sm:flex-row gap-4 justify-center items-center">
           <Button 
             onClick={() => navigate('/kundli')} 
-            className="bg-[#9A7B0A] text-[#1a1a2e] hover:bg-[#B8860B] transition-all duration-300 
+            className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold-dark transition-all duration-300 
                        text-xs tracking-[3px] uppercase font-['Cinzel'] font-semibold
                        px-8 py-5 rounded-none border-none"
             style={{ boxShadow: '0 0 30px rgba(212, 175, 55, 0.3)' }}
@@ -129,7 +129,7 @@ export default function Hero() {
           <Button 
             onClick={() => navigate('/consultation')}
             variant="outline"
-            className="bg-transparent border border-[#B8860B]/30 text-[#e8e0d4]/80 hover:border-[#9A7B0A] hover:text-[#9A7B0A] 
+            className="bg-transparent border border-sacred-gold-dark/30 text-cosmic-text/80 hover:border-sacred-gold hover:text-sacred-gold-dark 
                        transition-all duration-300 text-xs tracking-[3px] uppercase font-['Cinzel']
                        px-8 py-5 rounded-none"
           >
@@ -139,53 +139,53 @@ export default function Hero() {
 
         {/* Quick Kundli Form */}
         <div className="hero-form opacity-0 max-w-md mx-auto">
-          <div className="border border-[#9A7B0A]/20 bg-[#22223a]/60 backdrop-blur-sm p-5 relative">
+          <div className="border border-sacred-gold/20 bg-cosmic-surface/60 backdrop-blur-sm p-5 relative">
             {/* Corner decorations */}
-            <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-[#9A7B0A]" />
-            <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-[#9A7B0A]" />
-            <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-[#9A7B0A]" />
-            <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-[#9A7B0A]" />
+            <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-sacred-gold" />
+            <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-sacred-gold" />
+            <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-sacred-gold" />
+            <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-sacred-gold" />
             
-            <p className="text-[#9A7B0A] text-xs tracking-[3px] uppercase mb-4 font-['Cinzel']">
+            <p className="text-sacred-gold-dark text-xs tracking-[3px] uppercase mb-4 font-['Cinzel']">
               {t('hero.calculateChart')}
             </p>
             
             <div className="space-y-3">
               <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9A7B0A]/70" />
+                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/70" />
                 <Input 
                   type="date" 
                   value={birthDate} 
                   onChange={(e) => setBirthDate(e.target.value)} 
-                  className="pl-9 bg-transparent border-[#B8860B]/10 text-[#e8e0d4] text-sm
-                             focus:border-[#9A7B0A] rounded-none h-10"
+                  className="pl-9 bg-transparent border-sacred-gold-dark/10 text-cosmic-text text-sm
+                             focus:border-sacred-gold rounded-none h-10"
                 />
               </div>
               <div className="relative">
-                <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9A7B0A]/70" />
+                <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/70" />
                 <Input 
                   type="time" 
                   value={birthTime} 
                   onChange={(e) => setBirthTime(e.target.value)} 
-                  className="pl-9 bg-transparent border-[#B8860B]/10 text-[#e8e0d4] text-sm
-                             focus:border-[#9A7B0A] rounded-none h-10"
+                  className="pl-9 bg-transparent border-sacred-gold-dark/10 text-cosmic-text text-sm
+                             focus:border-sacred-gold rounded-none h-10"
                 />
               </div>
               <div className="relative">
-                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9A7B0A]/70" />
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/70" />
                 <Input 
                   type="text" 
                   value={birthPlace} 
                   onChange={(e) => setBirthPlace(e.target.value)} 
                   placeholder={t('hero.birthPlace')} 
-                  className="pl-9 bg-transparent border-[#B8860B]/10 text-[#e8e0d4] text-sm placeholder:text-[#e8e0d4]/30
-                             focus:border-[#9A7B0A] rounded-none h-10"
+                  className="pl-9 bg-transparent border-sacred-gold-dark/10 text-cosmic-text text-sm placeholder:text-cosmic-text/30
+                             focus:border-sacred-gold rounded-none h-10"
                 />
               </div>
               <Button 
                 onClick={handleGenerateKundli} 
-                className="w-full bg-transparent border border-[#9A7B0A] text-[#9A7B0A] 
-                           hover:bg-[#9A7B0A] hover:text-[#1a1a2e] transition-all duration-300
+                className="w-full bg-transparent border border-sacred-gold text-sacred-gold-dark 
+                           hover:bg-sacred-gold-dark hover:text-cosmic-bg transition-all duration-300
                            font-['Cinzel'] text-xs tracking-[2px] uppercase h-10 rounded-none"
               >
                 {t('hero.generateKundli')}
@@ -196,7 +196,7 @@ export default function Hero() {
 
         {/* Scroll indicator */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50">
-          <div className="w-[1px] h-12 bg-gradient-to-b from-[#9A7B0A] to-transparent" />
+          <div className="w-[1px] h-12 bg-gradient-to-b from-sacred-gold-dark to-transparent" />
         </div>
       </div>
     </section>

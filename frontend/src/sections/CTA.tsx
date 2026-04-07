@@ -21,28 +21,28 @@ export default function CTA() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-[#1a1a2e]">
+    <section ref={sectionRef} className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-cosmic-bg">
       {/* Gold gradient lines */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#9A7B0A]/30 to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-sacred-gold-dark/30 to-transparent" />
       
       {/* Subtle glow effects */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#9A7B0A]/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#9A7B0A]/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-sacred-gold-dark/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-sacred-gold-dark/5 rounded-full blur-3xl" />
       </div>
       
       <div className="relative z-10 cta-content max-w-4xl mx-auto px-4 text-center">
         <div className="flex justify-center gap-2 mb-6">
           {[...Array(5)].map((_, i) => (
-            <Star key={i} className="w-6 h-6 text-[#9A7B0A]" fill="currentColor" />
+            <Star key={i} className="w-6 h-6 text-sacred-gold-dark" fill="currentColor" />
           ))}
         </div>
         
-        <h2 className="text-4xl sm:text-5xl lg:text-6xl font-['Cinzel_Decorative'] text-[#e8e0d4] mb-6">
+        <h2 className="text-4xl sm:text-5xl lg:text-6xl font-['Cinzel_Decorative'] text-cosmic-text mb-6">
           {t('cta.heading')}
         </h2>
 
-        <p className="text-lg text-[#e8e0d4]/70 max-w-2xl mx-auto mb-10">
+        <p className="text-lg text-cosmic-text/70 max-w-2xl mx-auto mb-10">
           {t('cta.subtitle2')}
         </p>
         
@@ -50,7 +50,7 @@ export default function CTA() {
           <Button 
             onClick={() => navigate('/ai-chat')} 
             size="lg" 
-            className="bg-transparent border border-[#ffaa33] text-[#ffaa33] hover:bg-[#ffaa33] hover:text-[#1a1a2e] transition-all text-lg px-8 py-6 font-['Cinzel']"
+            className="bg-transparent border border-[#ffaa33] text-[#ffaa33] hover:bg-[#ffaa33] hover:text-cosmic-bg transition-all text-lg px-8 py-6 font-['Cinzel']"
           >
             <Sparkles className="w-5 h-5 mr-2" />
             {t('cta.chatAI')}
@@ -60,17 +60,17 @@ export default function CTA() {
           <Button 
             variant="outline" 
             size="lg" 
-            className="border-[#9A7B0A]/50 text-[#e8e0d4] text-lg px-8 py-6 hover:bg-[#9A7B0A]/10 hover:border-[#9A7B0A] bg-transparent font-['Cinzel']"
+            className="border-sacred-gold/50 text-cosmic-text text-lg px-8 py-6 hover:bg-sacred-gold-dark/10 hover:border-sacred-gold bg-transparent font-['Cinzel']"
           >
             <Phone className="w-5 h-5 mr-2" />
             {t('cta.talkExpert')}
           </Button>
         </div>
         
-        <div className="flex flex-wrap justify-center gap-6 text-sm text-[#e8e0d4]/60">
+        <div className="flex flex-wrap justify-center gap-6 text-sm text-cosmic-text/60">
           {['Free Kundli', '24/7 Support', '100% Accurate', 'Expert Astrologers'].map((item, i) => (
             <div key={i} className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-[#9A7B0A]" />
+              <div className="w-2 h-2 bg-sacred-gold-dark" />
               <span>{item}</span>
             </div>
           ))}
@@ -78,7 +78,7 @@ export default function CTA() {
       </div>
       
       {/* Bottom gold line */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#9A7B0A]/30 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-sacred-gold-dark/30 to-transparent" />
     </section>
   );
 }

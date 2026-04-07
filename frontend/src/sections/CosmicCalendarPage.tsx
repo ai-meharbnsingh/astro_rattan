@@ -140,7 +140,7 @@ function TodaySection({ snapshot }: { snapshot: TodaySnapshot | null }) {
     <div className="card-sacred rounded-2xl p-6 border border-sacred-gold/20">
       <div className="flex items-center gap-3 mb-4">
         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center">
-          <Sun className="w-5 h-5 text-[#1a1a2e]" />
+          <Sun className="w-5 h-5 text-cosmic-bg" />
         </div>
         <div>
           <h2 className="font-sacred font-bold text-lg text-sacred-gold">Today's Cosmic Snapshot</h2>

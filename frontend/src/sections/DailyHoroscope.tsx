@@ -84,7 +84,7 @@ export default function DailyHoroscope() {
         </div>
         <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-12 gap-3 mb-12">
           {zodiacSigns.map((sign, index) => (
-            <button key={index} onClick={() => setSelectedSign(sign)} className={`group relative aspect-square rounded-xl transition-all duration-300 overflow-hidden ${selectedSign.name === sign.name ? 'ring-2 ring-[#9A7B0A] shadow-[0_0_20px_rgba(212,175,55,0.3)]' : 'border border-[#9A7B0A]/20 hover:border-[#9A7B0A]/50'}`}>
+            <button key={index} onClick={() => setSelectedSign(sign)} className={`group relative aspect-square rounded-xl transition-all duration-300 overflow-hidden ${selectedSign.name === sign.name ? 'ring-2 ring-sacred-gold-dark shadow-[0_0_20px_rgba(212,175,55,0.3)]' : 'border border-sacred-gold/20 hover:border-sacred-gold/50'}`}>
               {/* Background Image */}
               <img
                 src={`/images/zodiac-${sign.name.toLowerCase()}.jpg`}
@@ -92,14 +92,14 @@ export default function DailyHoroscope() {
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               />
               {/* Dark Gradient Overlay - darker at bottom for text */}
-              <div className={`absolute inset-0 transition-all duration-300 bg-gradient-to-t from-[#1a1a2e]/80 via-[#2a2a4e]/30 to-transparent ${selectedSign.name === sign.name ? 'opacity-70' : 'opacity-90 group-hover:opacity-80'}`} />
+              <div className={`absolute inset-0 transition-all duration-300 bg-gradient-to-t from-cosmic-bg/80 via-sacred-purple/30 to-transparent ${selectedSign.name === sign.name ? 'opacity-70' : 'opacity-90 group-hover:opacity-80'}`} />
               {/* Content - Name at bottom */}
               <div className="absolute bottom-0 left-0 right-0 z-10 p-2 text-center">
-                <span className="text-xs sm:text-sm font-medium text-[#e8e0d4] tracking-wide drop-shadow-[0_2px_4px_rgba(139,69,19,0.2)]">{sign.name}</span>
+                <span className="text-xs sm:text-sm font-medium text-cosmic-text tracking-wide drop-shadow-[0_2px_4px_rgba(139,69,19,0.2)]">{sign.name}</span>
               </div>
               {/* Selected Indicator */}
               {selectedSign.name === sign.name && (
-                <div className="absolute inset-0 border-2 border-[#9A7B0A] rounded-xl pointer-events-none" />
+                <div className="absolute inset-0 border-2 border-sacred-gold rounded-xl pointer-events-none" />
               )}
             </button>
           ))}
@@ -107,13 +107,13 @@ export default function DailyHoroscope() {
         <div className="grid lg:grid-cols-3 gap-8">
           <Card className="lg:col-span-1 card-sacred border-sacred-gold/20">
             <CardContent className="p-6 text-center">
-              <div className="relative w-28 h-28 rounded-full overflow-hidden mx-auto mb-4 shadow-[0_0_30px_rgba(212,175,55,0.3)] border-2 border-[#9A7B0A]/50">
+              <div className="relative w-28 h-28 rounded-full overflow-hidden mx-auto mb-4 shadow-[0_0_30px_rgba(212,175,55,0.3)] border-2 border-sacred-gold/50">
                 <img
                   src={`/images/zodiac-${selectedSign.name.toLowerCase()}.jpg`}
                   alt={selectedSign.name}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a2e]/60 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-cosmic-bg/60 via-transparent to-transparent" />
               </div>
               <h3 className="text-2xl font-sacred font-bold text-cosmic-text mb-1">{selectedSign.name}</h3>
               <p className="text-sm text-cosmic-text-secondary mb-4">{selectedSign.date}</p>

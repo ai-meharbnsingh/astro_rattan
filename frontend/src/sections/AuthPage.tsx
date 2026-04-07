@@ -251,7 +251,7 @@ export default function AuthPage() {
                   <Star className={`w-5 h-5 ${isAstrologer ? 'text-sacred-gold' : 'text-cosmic-text-muted'}`} />
                   <span className="text-sm font-medium">{t('astrologer.registerAsAstrologer')}</span>
                   <div className={`ml-auto w-10 h-5 rounded-full transition-colors ${isAstrologer ? 'bg-sacred-gold' : 'bg-cosmic-surface'}`}>
-                    <div className={`w-4 h-4 rounded-full bg-[#e8e0d4] shadow-sm transform transition-transform mt-0.5 ${isAstrologer ? 'translate-x-5.5 ml-[22px]' : 'ml-0.5'}`} />
+                    <div className={`w-4 h-4 rounded-full bg-cosmic-text shadow-sm transform transition-transform mt-0.5 ${isAstrologer ? 'translate-x-5.5 ml-[22px]' : 'ml-0.5'}`} />
                   </div>
                 </button>
                 <Button onClick={handleRegister} disabled={loading || !registerForm.name || !registerForm.password} className="w-full btn-sacred disabled:opacity-50">

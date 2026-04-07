@@ -126,7 +126,7 @@ export default function AIChat() {
             style={{
               backgroundColor: aiProvider === 'puter' ? 'rgba(184,134,11,0.12)' : 'rgba(184,134,11,0.08)',
               borderColor: aiProvider === 'puter' ? 'rgba(184,134,11,0.35)' : 'rgba(184,134,11,0.25)',
-              color: aiProvider === 'puter' ? '#B8860B' : '#b8b0a4',
+              color: aiProvider === 'puter' ? 'var(--aged-gold-dim)' : 'var(--ink-light)',
             }}
             title={aiProvider === 'puter' ? 'Using free Puter.js AI (click to switch to backend)' : 'Using backend AI (click to switch to free Puter.js)'}
           >
@@ -183,7 +183,7 @@ export default function AIChat() {
           )}
           <div className="flex gap-2">
             <Input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && !isTyping && handleSend()} placeholder="Ask about astrology..." className="flex-1 input-sacred text-base" style={{ fontSize: '16px' }} />
-            <Button onClick={() => handleSend()} disabled={!input.trim() || isTyping} className="btn-sacred disabled:opacity-50 shrink-0 w-12 h-12 p-0 flex items-center justify-center rounded-xl" style={{ backgroundColor: input.trim() && !isTyping ? '#B8860B' : undefined, color: input.trim() && !isTyping ? '#1a1a2e' : undefined }}>
+            <Button onClick={() => handleSend()} disabled={!input.trim() || isTyping} className="btn-sacred disabled:opacity-50 shrink-0 w-12 h-12 p-0 flex items-center justify-center rounded-xl" style={{ backgroundColor: input.trim() && !isTyping ? 'var(--aged-gold-dim)' : undefined, color: input.trim() && !isTyping ? 'var(--parchment)' : undefined }}>
               <Send className="w-5 h-5" />
             </Button>
           </div>

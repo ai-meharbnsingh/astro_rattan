@@ -314,7 +314,7 @@ export default function MessagesPage() {
                 <Button
                   onClick={handleSend}
                   disabled={!input.trim() || sending}
-                  className="bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark disabled:opacity-40"
+                  className="bg-sacred-gold text-cosmic-bg hover:bg-sacred-gold-dark disabled:opacity-40"
                 >
                   {sending ? (
                     <Loader2 className="w-4 h-4 animate-spin" />

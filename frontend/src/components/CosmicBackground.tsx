@@ -116,7 +116,7 @@ export default function CosmicBackground() {
   }, []);
 
   return (
-    <div ref={containerRef} className="fixed inset-0 z-0 overflow-hidden bg-[#1a1a2e]">
+    <div ref={containerRef} className="fixed inset-0 z-0 overflow-hidden bg-cosmic-bg">
       {/* Symbols with floating animation */}
       {symbols.map((s) => (
         <div
@@ -129,7 +129,7 @@ export default function CosmicBackground() {
             width: `${s.size}px`,
             height: `${s.size}px`,
             opacity: s.opacity,
-            color: '#9A7B0A',
+            color: 'var(--aged-gold-dim)',
             filter: 'drop-shadow(0 0 10px rgba(212,175,55,0.4)) drop-shadow(0 0 20px rgba(212,175,55,0.2))',
             pointerEvents: 'none'
           }}
@@ -150,11 +150,11 @@ export default function CosmicBackground() {
       {Array.from({ length: 30 }).map((_, i) => (
         <div
           key={`star-${i}`}
-          className="absolute w-[2px] h-[2px] bg-[#9A7B0A] rounded-full pointer-events-none"
+          className="absolute w-[2px] h-[2px] bg-sacred-gold-dark rounded-full pointer-events-none"
           style={{
             left: `${Math.random() * 100}%`,
             top: `${Math.random() * 100}%`,
-            boxShadow: '0 0 6px #9A7B0A',
+            boxShadow: '0 0 6px var(--aged-gold-dim)',
             opacity: 0.3 + Math.random() * 0.5,
             animation: `pulse ${3 + Math.random() * 3}s ease-in-out infinite`,
             animationDelay: `${Math.random() * 4}s`

@@ -184,7 +184,7 @@ export default function UserProfile() {
   return (
     <section className="max-w-4xl mx-auto py-24 px-4">
       <div className="flex items-center gap-3 mb-8">
-        <div className="w-12 h-12 rounded-full bg-sacred-gold flex items-center justify-center text-[#1a1a2e] font-bold text-xl">
+        <div className="w-12 h-12 rounded-full bg-sacred-gold flex items-center justify-center text-cosmic-bg font-bold text-xl">
           {(user?.name || 'U').charAt(0).toUpperCase()}
         </div>
         <div>
@@ -210,10 +210,10 @@ export default function UserProfile() {
 
       <Tabs defaultValue="profile">
         <TabsList className="bg-cosmic-surface mb-6">
-          <TabsTrigger value="profile" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e]">Profile</TabsTrigger>
-          <TabsTrigger value="password" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e]">Password</TabsTrigger>
-          <TabsTrigger value="orders" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e]">Orders</TabsTrigger>
-          <TabsTrigger value="reports" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-[#1a1a2e]">Reports</TabsTrigger>
+          <TabsTrigger value="profile" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-cosmic-bg">Profile</TabsTrigger>
+          <TabsTrigger value="password" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-cosmic-bg">Password</TabsTrigger>
+          <TabsTrigger value="orders" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-cosmic-bg">Orders</TabsTrigger>
+          <TabsTrigger value="reports" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-cosmic-bg">Reports</TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile">
@@ -224,7 +224,7 @@ export default function UserProfile() {
                 {!editing ? (
                   <Button variant="outline" size="sm" onClick={() => setEditing(true)}>Edit</Button>
                 ) : (
-                  <Button size="sm" onClick={saveProfile} disabled={saving} className="bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark">
+                  <Button size="sm" onClick={saveProfile} disabled={saving} className="bg-sacred-gold text-cosmic-bg hover:bg-sacred-gold-dark">
                     <Save className="w-4 h-4 mr-1" />{saving ? 'Saving...' : 'Save'}
                   </Button>
                 )}
@@ -294,7 +294,7 @@ export default function UserProfile() {
                 <Input type="password" placeholder="Current Password" value={passwordForm.current_password} onChange={(e) => setPasswordForm({ ...passwordForm, current_password: e.target.value })} className="bg-cosmic-card border-sacred-gold/15" />
                 <Input type="password" placeholder="New Password" value={passwordForm.new_password} onChange={(e) => setPasswordForm({ ...passwordForm, new_password: e.target.value })} className="bg-cosmic-card border-sacred-gold/15" />
                 <Input type="password" placeholder="Confirm New Password" value={passwordForm.confirm_password} onChange={(e) => setPasswordForm({ ...passwordForm, confirm_password: e.target.value })} className="bg-cosmic-card border-sacred-gold/15" />
-                <Button onClick={changePassword} disabled={changingPassword || !passwordForm.current_password || !passwordForm.new_password} className="w-full bg-sacred-gold text-[#1a1a2e] hover:bg-sacred-gold-dark">
+                <Button onClick={changePassword} disabled={changingPassword || !passwordForm.current_password || !passwordForm.new_password} className="w-full bg-sacred-gold text-cosmic-bg hover:bg-sacred-gold-dark">
                   {changingPassword ? 'Changing...' : 'Change Password'}
                 </Button>
               </div>
@@ -342,7 +342,7 @@ export default function UserProfile() {
               <div className="flex items-center justify-between mb-6">
                 <h3 className="font-display font-semibold text-cosmic-text">My Reports</h3>
                 <Link to="/reports">
-                  <Button size="sm" className="bg-sacred-gold text-[#1a1a2e]">
+                  <Button size="sm" className="bg-sacred-gold text-cosmic-bg">
                     <Sparkles className="w-4 h-4 mr-2" />Get New Report
                   </Button>
                 </Link>
@@ -354,7 +354,7 @@ export default function UserProfile() {
                   <p className="text-cosmic-text-secondary mb-2">No reports yet</p>
                   <p className="text-sm text-cosmic-text-secondary mb-4">Unlock deep insights with personalized PDF reports</p>
                   <Link to="/reports">
-                    <Button className="bg-sacred-gold text-[#1a1a2e]">
+                    <Button className="bg-sacred-gold text-cosmic-bg">
                       Browse Reports
                     </Button>
                   </Link>

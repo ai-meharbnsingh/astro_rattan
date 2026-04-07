@@ -121,7 +121,7 @@ function Constellation({
           />
         </bufferGeometry>
         <pointsMaterial
-          color="#B8860B"
+          color="var(--aged-gold-dim)"
           size={0.08}
           transparent
           opacity={globalOpacity}
@@ -141,7 +141,7 @@ function Constellation({
           />
         </bufferGeometry>
         <lineBasicMaterial
-          color="#B8860B"
+          color="var(--aged-gold-dim)"
           transparent
           opacity={globalOpacity * 0.2}
           depthWrite={false}
