@@ -2786,6 +2786,50 @@ export default function KundliGenerator() {
                     </div>
                   </div>
 
+                  {/* Birth Chart + Cuspal Chart — North Indian Diamond */}
+                  {(() => {
+                    // Build chart data from KP planets for Birth Chart (Rashi-based houses)
+                    const SIGNS = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+                    const kpPlanets = kpData.planets || [];
+                    // Birth chart: house derived from sign relative to ascendant sign
+                    const ascSign = result?.chart_data?.ascendant?.sign || (kpData.cusps?.[0]?.sign) || 'Aries';
+                    const ascIdx = SIGNS.indexOf(ascSign);
+                    const birthPlanets: PlanetData[] = kpPlanets.map((p: any) => {
+                      const signIdx = SIGNS.indexOf(p.sign);
+                      const house = signIdx >= 0 && ascIdx >= 0 ? ((signIdx - ascIdx + 12) % 12) + 1 : 1;
+                      return { planet: p.planet, sign: p.sign, house, nakshatra: p.nakshatra || '', sign_degree: typeof p.degree === 'number' ? p.degree % 30 : 0, status: '', is_retrograde: p.retrograde };
+                    });
+                    const birthHouses = SIGNS.map((_, i) => ({ number: i + 1, sign: SIGNS[(ascIdx + i) % 12] }));
+
+                    // Cuspal chart: house based on which cusp range the planet falls in
+                    const cusps = kpData.cusps || [];
+                    const cuspDegrees = cusps.map((c: any) => typeof c.degree === 'number' ? c.degree : 0);
+                    const cuspalPlanets: PlanetData[] = kpPlanets.map((p: any) => {
+                      const lon = typeof p.degree === 'number' ? p.degree : 0;
+                      let house = 1;
+                      for (let h = 0; h < 12; h++) {
+                        const start = cuspDegrees[h] || 0;
+                        const end = cuspDegrees[(h + 1) % 12] || 0;
+                        if (end > start ? (lon >= start && lon < end) : (lon >= start || lon < end)) { house = h + 1; break; }
+                      }
+                      return { planet: p.planet, sign: p.sign, house, nakshatra: p.nakshatra || '', sign_degree: typeof p.degree === 'number' ? p.degree % 30 : 0, status: '', is_retrograde: p.retrograde };
+                    });
+                    const cuspalHouses = cusps.map((c: any, i: number) => ({ number: i + 1, sign: c.sign || SIGNS[(ascIdx + i) % 12] }));
+
+                    return (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+                          <h4 className="font-display font-semibold text-sacred-brown mb-2 text-center">Birth Chart</h4>
+                          <InteractiveKundli chartData={{ planets: birthPlanets, houses: birthHouses, ascendant: result?.chart_data?.ascendant } as ChartData} compact />
+                        </div>
+                        <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+                          <h4 className="font-display font-semibold text-sacred-brown mb-2 text-center">Cuspal Chart</h4>
+                          <InteractiveKundli chartData={{ planets: cuspalPlanets, houses: cuspalHouses, ascendant: result?.chart_data?.ascendant } as ChartData} compact />
+                        </div>
+                      </div>
+                    );
+                  })()}
+
                   {/* 2. Bhava Details (Placidus) — House Cusps */}
                   <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
                     <h4 className="font-display font-semibold text-sacred-brown mb-3">Bhava Details (Placidus System)</h4>
