@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Sparkles, ChevronDown, Download, Share2, FileText, Heart, Briefcase, Activity, ArrowLeft, Loader2, X, CheckCircle, AlertTriangle, Shield, Printer, ScrollText } from 'lucide-react';
+import { Sparkles, ChevronDown, Download, Share2, FileText, Heart, Briefcase, Activity, ArrowLeft, Loader2, X, CheckCircle, AlertTriangle, Shield, Printer, ScrollText, Gem } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/lib/i18n';
@@ -685,6 +685,7 @@ export default function KundliGenerator() {
       mangal: doshaData.mangal_dosha || { has_dosha: false, severity: 'none', description: 'No data' },
       kaalsarp: doshaData.kaal_sarp_dosha || { has_dosha: false, severity: 'none', description: 'No data' },
       sadesati: doshaData.sade_sati || { has_sade_sati: false, phase: 'none', description: 'No data' },
+      gemstones: doshaData.gemstone_recommendations || [],
     } : null;
 
     return (
@@ -1701,6 +1702,38 @@ export default function KundliGenerator() {
                 )}
                 {!doshaDisplay.mangal.has_dosha && !doshaDisplay.kaalsarp.has_dosha && !doshaDisplay.sadesati.has_sade_sati && (
                   <p className="text-sm py-4" style={{ color: '#22c55e' }}>{t('kundli.noDoshasInChart')}</p>
+                )}
+                {/* Gemstone Recommendations */}
+                {doshaDisplay.gemstones && doshaDisplay.gemstones.length > 0 && (
+                  <div className="bg-sacred-cream rounded-xl p-4 border border-sacred-gold/30 mt-4">
+                    <h4 className="font-display font-semibold text-sacred-brown mb-3 flex items-center gap-2">
+                      <Gem className="w-5 h-5 text-sacred-gold" />
+                      {language === 'hi' ? 'रत्न सिफारिशें' : 'Gemstone Recommendations'}
+                    </h4>
+                    <div className="grid gap-3">
+                      {doshaDisplay.gemstones.map((g: any, i: number) => (
+                        <div key={i} className={`rounded-lg p-3 border ${g.priority === 'primary' ? 'border-sacred-gold/50 bg-sacred-gold/5' : 'border-sacred-gold/20'}`}>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-semibold text-sm text-sacred-brown">
+                              {language === 'hi' ? g.gemstone_hi : g.gemstone}
+                            </span>
+                            <span className={`text-xs px-2 py-0.5 rounded-full ${g.priority === 'primary' ? 'bg-sacred-gold/20 text-sacred-gold' : 'bg-blue-500/20 text-blue-400'}`}>
+                              {g.priority === 'primary' ? (language === 'hi' ? 'प्राथमिक' : 'Primary') : (language === 'hi' ? 'सहायक' : 'Secondary')}
+                            </span>
+                          </div>
+                          <p className="text-xs text-sacred-text-secondary">
+                            {language === 'hi' ? 'ग्रह' : 'Planet'}: <strong>{translatePlanet(g.planet, language)}</strong> ({language === 'hi' ? g.reason : g.reason})
+                          </p>
+                          <p className="text-xs text-sacred-text-secondary mt-1">
+                            {language === 'hi' ? 'धातु' : 'Metal'}: {g.metal} &bull; {language === 'hi' ? 'अंगुली' : 'Finger'}: {g.finger} &bull; {language === 'hi' ? 'दिन' : 'Day'}: {g.day}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-xs text-sacred-text-muted mt-2 italic">
+                      {language === 'hi' ? '* कृपया रत्न धारण करने से पहले किसी योग्य ज्योतिषी से परामर्श लें।' : '* Please consult a qualified astrologer before wearing any gemstone.'}
+                    </p>
+                  </div>
                 )}
               </div>
             ) : (
@@ -2937,19 +2970,59 @@ export default function KundliGenerator() {
                   {(sodashvargaData.by_planet || sodashvargaData.vimshopak) && (
                     <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
                       <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.vimshopakBala')}</h4>
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         {(() => {
                           const items = Array.isArray(sodashvargaData.vimshopak) ? sodashvargaData.vimshopak
                             : Object.entries(sodashvargaData.by_planet || {}).map(([planet, data]: [string, any]) => ({
-                                planet, score: typeof data === 'number' ? data : data?.vimshopak || data?.score || 0,
+                                planet,
+                                score: typeof data === 'number' ? data : data?.vimshopak_bala ?? data?.vimshopak ?? data?.score ?? 0,
+                                percentage: data?.percentage,
+                                strength: data?.strength,
+                                dignities: data?.dignities,
                               }));
+                          const strengthColors: Record<string, string> = {
+                            Strong: 'text-green-600 bg-green-500/15',
+                            Medium: 'text-yellow-600 bg-yellow-500/15',
+                            Weak: 'text-red-500 bg-red-500/15',
+                          };
+                          const dignityLabels: Record<string, { label: string; color: string }> = {
+                            exalted: { label: 'Ex', color: 'text-green-700 bg-green-500/20' },
+                            own: { label: 'Own', color: 'text-blue-700 bg-blue-500/15' },
+                            moolatrikona: { label: 'Moo', color: 'text-blue-700 bg-blue-500/15' },
+                            friend: { label: 'Fr', color: 'text-yellow-700 bg-yellow-500/15' },
+                            neutral: { label: 'Neu', color: 'text-gray-600 bg-gray-500/10' },
+                            enemy: { label: 'En', color: 'text-orange-700 bg-orange-500/15' },
+                            debilitated: { label: 'Deb', color: 'text-red-700 bg-red-500/15' },
+                          };
                           return items.map((v: any) => (
-                            <div key={v.planet} className="flex items-center gap-3 text-sm">
-                              <span className="w-12 text-sacred-brown font-medium">{v.planet?.slice(0, 3)}</span>
-                              <div className="flex-1 bg-sacred-gold/10 rounded-full h-4">
-                                <div className="bg-sacred-gold rounded-full h-4 transition-all" style={{ width: `${Math.min(100, ((typeof v.score === 'number' ? v.score : 0) / 20) * 100)}%` }} />
+                            <div key={v.planet} className="space-y-1">
+                              <div className="flex items-center gap-3 text-sm">
+                                <span className="w-12 text-sacred-brown font-medium">{v.planet?.slice(0, 3)}</span>
+                                <div className="flex-1 bg-sacred-gold/10 rounded-full h-4">
+                                  <div className="bg-sacred-gold rounded-full h-4 transition-all" style={{ width: `${Math.min(100, ((typeof v.score === 'number' ? v.score : 0) / 20) * 100)}%` }} />
+                                </div>
+                                <span className="w-16 text-right text-sacred-text-secondary text-xs">{typeof v.score === 'number' ? v.score.toFixed(1) : '?'} / 20</span>
+                                {v.percentage != null && (
+                                  <span className="w-12 text-right text-sacred-brown font-semibold text-xs">{v.percentage}%</span>
+                                )}
+                                {v.strength && (
+                                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${strengthColors[v.strength] || 'text-gray-500 bg-gray-500/10'}`}>{v.strength}</span>
+                                )}
                               </div>
-                              <span className="w-16 text-right text-sacred-text-secondary text-xs">{typeof v.score === 'number' ? v.score.toFixed(1) : '?'} / 20</span>
+                              {v.dignities && typeof v.dignities === 'object' && (
+                                <div className="flex items-center gap-1 ml-[60px] flex-wrap">
+                                  {Object.entries(v.dignities as Record<string, number>)
+                                    .filter(([, count]) => (count as number) > 0)
+                                    .map(([dignity, count]) => {
+                                      const info = dignityLabels[dignity] || { label: dignity.slice(0, 3), color: 'text-gray-500 bg-gray-500/10' };
+                                      return (
+                                        <span key={dignity} className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${info.color}`}>
+                                          {info.label}:{count as number}
+                                        </span>
+                                      );
+                                    })}
+                                </div>
+                              )}
                             </div>
                           ));
                         })()}
@@ -2974,23 +3047,91 @@ export default function KundliGenerator() {
                   <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
                     <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.aspectsOnPlanets')}</h4>
                     <div className="space-y-3">
-                      {(aspectsData.aspects_on_planets || aspectsData.planet_aspects || []).map((pa: any, idx: number) => (
-                        <div key={pa.planet || idx} className="bg-white/5 rounded-lg p-3 text-xs">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="font-semibold text-sacred-brown">{translatePlanet(pa.planet, language)} <span className="text-sacred-text-secondary font-normal">({t('table.house')} {pa.house})</span></span>
-                            <span className="text-xs">
-                              <span className="text-green-500">B:{pa.benefic_count || pa.benefic || 0}</span>{' '}
-                              <span className="text-red-400">M:{pa.malefic_count || pa.malefic || 0}</span>
-                            </span>
-                          </div>
-                          {pa.aspected_by && (Array.isArray(pa.aspected_by) ? pa.aspected_by.length > 0 : true) && (
-                            <p className="text-sacred-text-secondary">{t('table.aspectedBy')}: {Array.isArray(pa.aspected_by) ? pa.aspected_by.map((a: any) => typeof a === 'string' ? a : a.planet).join(', ') : String(pa.aspected_by)}</p>
-                          )}
-                          {pa.aspects_to && (
-                            <p className="text-sacred-text-secondary">{t('kundli.aspects')}: {Array.isArray(pa.aspects_to) ? pa.aspects_to.join(', ') : String(pa.aspects_to)}</p>
-                          )}
-                        </div>
-                      ))}
+                      {(() => {
+                        // Prefer planet_aspects_summary (per-planet with full detail), fallback to flat list
+                        const summary = aspectsData.planet_aspects_summary;
+                        if (summary && typeof summary === 'object' && !Array.isArray(summary)) {
+                          const strengthBadge = (s: number) => {
+                            const color = s >= 1.0 ? 'bg-sacred-gold/30 text-sacred-gold-dark' : s >= 0.75 ? 'bg-blue-500/20 text-blue-700' : s >= 0.5 ? 'bg-yellow-500/20 text-yellow-700' : 'bg-gray-500/15 text-gray-600';
+                            return <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${color}`}>{s}</span>;
+                          };
+                          const typeBadge = (t_val: string) => {
+                            const color = t_val === 'full' ? 'bg-sacred-gold/20 text-sacred-gold-dark' : 'bg-purple-500/15 text-purple-700';
+                            return <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${color}`}>{t_val}</span>;
+                          };
+                          return Object.entries(summary).map(([planet, data]: [string, any]) => (
+                            <div key={planet} className="bg-white/5 rounded-lg p-3 text-xs">
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="font-semibold text-sacred-brown">{translatePlanet(planet, language)} <span className="text-sacred-text-secondary font-normal">({t('table.house')} {data.house})</span></span>
+                                <span className="text-xs">
+                                  <span className="text-green-500">B:{data.benefic_aspects || 0}</span>{' '}
+                                  <span className="text-red-400">M:{data.malefic_aspects || 0}</span>
+                                </span>
+                              </div>
+                              {data.aspected_by && Array.isArray(data.aspected_by) && data.aspected_by.length > 0 && (
+                                <div className="mt-1.5 space-y-1">
+                                  <p className="text-sacred-text-secondary font-medium mb-0.5">{t('table.aspectedBy')}:</p>
+                                  {data.aspected_by.map((a: any, i: number) => (
+                                    <div key={i} className="flex items-center gap-1.5 ml-2">
+                                      <span className="text-sacred-brown font-medium">{translatePlanet(a.planet, language)}</span>
+                                      {strengthBadge(a.strength)}
+                                      <span className="text-sacred-text-secondary">{a.offset}th house</span>
+                                      {a.type && typeBadge(a.type)}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                              {data.aspects_to && Array.isArray(data.aspects_to) && data.aspects_to.length > 0 && (
+                                <div className="mt-1.5 space-y-1">
+                                  <p className="text-sacred-text-secondary font-medium mb-0.5">{t('kundli.aspects')}:</p>
+                                  {data.aspects_to.map((a: any, i: number) => (
+                                    <div key={i} className="flex items-center gap-1.5 ml-2">
+                                      <span className="text-sacred-brown">H{a.house}</span>
+                                      {strengthBadge(a.strength)}
+                                      <span className="text-sacred-text-secondary">{a.offset}th</span>
+                                      {a.type && typeBadge(a.type)}
+                                      {a.planets_in_house && a.planets_in_house.length > 0 && (
+                                        <span className="text-sacred-text-secondary">({a.planets_in_house.join(', ')})</span>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          ));
+                        }
+                        // Fallback: flat list format (aspects_on_planets or planet_aspects)
+                        const flatList = aspectsData.aspects_on_planets || aspectsData.planet_aspects || [];
+                        if (Array.isArray(flatList) && flatList.length > 0) {
+                          return flatList.map((pa: any, idx: number) => (
+                            <div key={pa.planet || pa.aspecting || idx} className="bg-white/5 rounded-lg p-3 text-xs">
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="font-semibold text-sacred-brown">
+                                  {translatePlanet(pa.aspecting || pa.planet, language)}
+                                  {' '}<span className="text-sacred-text-secondary font-normal">({t('table.house')} {pa.house_from || pa.house})</span>
+                                  {' \u2192 '}
+                                  {pa.aspected && <span className="font-semibold">{translatePlanet(pa.aspected, language)}</span>}
+                                </span>
+                                <span className="flex items-center gap-1.5">
+                                  {pa.strength != null && (
+                                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${pa.strength >= 1.0 ? 'bg-sacred-gold/30 text-sacred-gold-dark' : pa.strength >= 0.75 ? 'bg-blue-500/20 text-blue-700' : pa.strength >= 0.5 ? 'bg-yellow-500/20 text-yellow-700' : 'bg-gray-500/15 text-gray-600'}`}>{pa.strength}</span>
+                                  )}
+                                  {pa.type && (
+                                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${pa.type === 'full' ? 'bg-sacred-gold/20 text-sacred-gold-dark' : 'bg-purple-500/15 text-purple-700'}`}>{pa.type}</span>
+                                  )}
+                                </span>
+                              </div>
+                              {pa.offset != null && (
+                                <p className="text-sacred-text-secondary">{pa.offset}th house aspect</p>
+                              )}
+                              {pa.aspected_by && (Array.isArray(pa.aspected_by) ? pa.aspected_by.length > 0 : true) && (
+                                <p className="text-sacred-text-secondary">{t('table.aspectedBy')}: {Array.isArray(pa.aspected_by) ? pa.aspected_by.map((a: any) => typeof a === 'string' ? a : a.planet).join(', ') : String(pa.aspected_by)}</p>
+                              )}
+                            </div>
+                          ));
+                        }
+                        return <p className="text-center text-sacred-text-secondary">{t('common.noData')}</p>;
+                      })()}
                     </div>
                   </div>
 
@@ -3001,31 +3142,54 @@ export default function KundliGenerator() {
                       <thead><tr className="bg-sacred-gold/10">
                         <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.bhava')}</th>
                         <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.aspectedBy')}</th>
+                        <th className="text-center p-1 text-sacred-gold-dark font-medium">Str</th>
                         <th className="text-center p-1 text-sacred-gold-dark font-medium">B</th>
                         <th className="text-center p-1 text-sacred-gold-dark font-medium">M</th>
                       </tr></thead>
                       <tbody>
                         {(() => {
                           const bhavas = aspectsData.bhava_summary || aspectsData.bhava_aspects;
-                          if (Array.isArray(bhavas)) {
-                            return bhavas.map((ba: any, i: number) => (
-                              <tr key={ba.bhava || i} className="border-t border-sacred-gold/10">
-                                <td className="p-2 font-semibold text-sacred-brown">{ba.bhava || i + 1}</td>
-                                <td className="p-2 text-sacred-text-secondary">{Array.isArray(ba.aspected_by) ? ba.aspected_by.join(', ') : (ba.aspected_by || '-')}</td>
-                                <td className="p-1 text-center text-green-500">{ba.benefic || ba.benefic_count || 0}</td>
-                                <td className="p-1 text-center text-red-400">{ba.malefic || ba.malefic_count || 0}</td>
-                              </tr>
+                          // aspects_on_bhavas has per-house strength data: {house_str: [{planet, strength, offset, type}]}
+                          const bhavaAspects = aspectsData.aspects_on_bhavas || {};
+                          const getStrengths = (houseKey: string | number) => {
+                            const entries = bhavaAspects[String(houseKey)] || [];
+                            if (!Array.isArray(entries) || entries.length === 0) return null;
+                            return entries.map((e: any) => e.strength).filter((s: any) => s != null);
+                          };
+                          const renderStrength = (strengths: number[] | null) => {
+                            if (!strengths || strengths.length === 0) return '-';
+                            return strengths.map((s, i) => (
+                              <span key={i} className={`inline-block px-1 py-0.5 rounded text-[10px] font-semibold mr-0.5 ${s >= 1.0 ? 'bg-sacred-gold/30 text-sacred-gold-dark' : s >= 0.75 ? 'bg-blue-500/20 text-blue-700' : s >= 0.5 ? 'bg-yellow-500/20 text-yellow-700' : 'bg-gray-500/15 text-gray-600'}`}>{s}</span>
                             ));
+                          };
+                          if (Array.isArray(bhavas)) {
+                            return bhavas.map((ba: any, i: number) => {
+                              const houseNum = ba.house || ba.bhava || i + 1;
+                              const strengths = getStrengths(houseNum);
+                              return (
+                                <tr key={houseNum} className="border-t border-sacred-gold/10">
+                                  <td className="p-2 font-semibold text-sacred-brown">{houseNum}</td>
+                                  <td className="p-2 text-sacred-text-secondary">{Array.isArray(ba.aspected_by) ? ba.aspected_by.join(', ') : (ba.aspected_by || '-')}</td>
+                                  <td className="p-1 text-center">{renderStrength(strengths)}</td>
+                                  <td className="p-1 text-center text-green-500">{ba.benefic || ba.benefic_count || ba.benefic_aspects || 0}</td>
+                                  <td className="p-1 text-center text-red-400">{ba.malefic || ba.malefic_count || ba.malefic_aspects || 0}</td>
+                                </tr>
+                              );
+                            });
                           }
                           // Dict format: {1: {aspected_by: [...], ...}, 2: ...}
-                          return Object.entries(bhavas || {}).map(([bhava, data]: [string, any]) => (
-                            <tr key={bhava} className="border-t border-sacred-gold/10">
-                              <td className="p-2 font-semibold text-sacred-brown">{bhava}</td>
-                              <td className="p-2 text-sacred-text-secondary">{Array.isArray(data?.aspected_by) ? data.aspected_by.join(', ') : String(data?.aspected_by || '-')}</td>
-                              <td className="p-1 text-center text-green-500">{data?.benefic || 0}</td>
-                              <td className="p-1 text-center text-red-400">{data?.malefic || 0}</td>
-                            </tr>
-                          ));
+                          return Object.entries(bhavas || {}).map(([bhava, data]: [string, any]) => {
+                            const strengths = getStrengths(bhava);
+                            return (
+                              <tr key={bhava} className="border-t border-sacred-gold/10">
+                                <td className="p-2 font-semibold text-sacred-brown">{bhava}</td>
+                                <td className="p-2 text-sacred-text-secondary">{Array.isArray(data?.aspected_by) ? data.aspected_by.join(', ') : String(data?.aspected_by || '-')}</td>
+                                <td className="p-1 text-center">{renderStrength(strengths)}</td>
+                                <td className="p-1 text-center text-green-500">{data?.benefic || 0}</td>
+                                <td className="p-1 text-center text-red-400">{data?.malefic || 0}</td>
+                              </tr>
+                            );
+                          });
                         })()}
                       </tbody>
                     </table>

@@ -10,12 +10,20 @@ import { Hash, Sparkles, Hand, Loader2, Eye } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
 
+interface NumerologyPredictions {
+  life_path: string;
+  destiny: string;
+  soul_urge: string;
+  personality: string;
+}
+
 interface NumerologyResult {
   life_path: number;
-  expression: number;
+  expression?: number;
+  destiny?: number;
   soul_urge: number;
   personality: number;
-  predictions?: string[];
+  predictions?: string[] | NumerologyPredictions;
   summary?: string;
 }
 
@@ -96,8 +104,8 @@ export default function NumerologyTarot() {
     setError('');
     try {
       const data = await api.post('/api/numerology/calculate', { name: numName.trim(), birth_date: numDob });
-      // Normalize predictions: API may return string (old) or array (new)
-      if (data.predictions && !Array.isArray(data.predictions)) {
+      // Normalize predictions: API may return string (old), array (old), or dict (new)
+      if (data.predictions && typeof data.predictions === 'string') {
         data.predictions = [data.predictions];
       }
       setNumResult(data);
@@ -185,7 +193,7 @@ export default function NumerologyTarot() {
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   {[
                     { label: t('numerology.lifePath'), value: numResult.life_path, color: 'bg-purple-100 text-purple-700' },
-                    { label: t('numerology.expression'), value: numResult.expression, color: 'bg-blue-100 text-blue-700' },
+                    { label: t('numerology.destiny'), value: numResult.destiny ?? numResult.expression, color: 'bg-blue-100 text-blue-700' },
                     { label: t('numerology.soulUrge'), value: numResult.soul_urge, color: 'bg-green-500/20 text-green-400' },
                     { label: t('numerology.personality'), value: numResult.personality, color: 'bg-yellow-100 text-yellow-700' },
                   ].map((n) => (
@@ -196,17 +204,47 @@ export default function NumerologyTarot() {
                   ))}
                 </div>
                 {numResult.summary && <p className="text-sm text-cosmic-text-secondary text-center">{numResult.summary}</p>}
-                {numResult.predictions && numResult.predictions.length > 0 && (
-                  <div className="mt-4">
-                    <p className="text-sm font-medium text-cosmic-text mb-2">{t('numerology.predictions')}:</p>
-                    <ul className="space-y-1">
-                      {numResult.predictions.map((p, i) => (
-                        <li key={i} className="text-sm text-cosmic-text-secondary flex gap-2">
-                          <Sparkles className="w-4 h-4 text-sacred-gold shrink-0 mt-0.5" />{p}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                {numResult.predictions && (
+                  Array.isArray(numResult.predictions) ? (
+                    /* Old format: array of strings */
+                    numResult.predictions.length > 0 && (
+                      <div className="mt-4">
+                        <p className="text-sm font-medium text-cosmic-text mb-2">{t('numerology.predictions')}:</p>
+                        <ul className="space-y-1">
+                          {numResult.predictions.map((p, i) => (
+                            <li key={i} className="text-sm text-cosmic-text-secondary flex gap-2">
+                              <Sparkles className="w-4 h-4 text-sacred-gold shrink-0 mt-0.5" />{p}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )
+                  ) : (
+                    /* New format: dict with life_path, destiny, soul_urge, personality */
+                    <div className="mt-4 space-y-3">
+                      <p className="text-sm font-medium text-cosmic-text mb-2">{t('numerology.predictions')}:</p>
+                      {[
+                        { key: 'life_path' as const, label: t('numerology.lifePath'), headerColor: 'bg-purple-500/20 text-purple-400', borderColor: 'border-purple-500/30' },
+                        { key: 'destiny' as const, label: t('numerology.destiny'), headerColor: 'bg-blue-500/20 text-blue-400', borderColor: 'border-blue-500/30' },
+                        { key: 'soul_urge' as const, label: t('numerology.soulUrge'), headerColor: 'bg-green-500/20 text-green-400', borderColor: 'border-green-500/30' },
+                        { key: 'personality' as const, label: t('numerology.personality'), headerColor: 'bg-yellow-500/20 text-yellow-400', borderColor: 'border-yellow-500/30' },
+                      ].map((section) => {
+                        const text = (numResult.predictions as NumerologyPredictions)[section.key];
+                        if (!text) return null;
+                        return (
+                          <div key={section.key} className={`rounded-xl border ${section.borderColor} overflow-hidden`}>
+                            <div className={`px-4 py-2 ${section.headerColor} font-medium text-sm flex items-center gap-2`}>
+                              <Sparkles className="w-4 h-4 shrink-0" />
+                              {section.label} Number
+                            </div>
+                            <div className="px-4 py-3">
+                              <p className="text-sm text-cosmic-text-secondary leading-relaxed">{text}</p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )
                 )}
               </CardContent>
             </Card>

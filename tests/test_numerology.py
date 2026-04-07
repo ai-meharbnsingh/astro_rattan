@@ -20,12 +20,12 @@ def test_life_path_master_number_11():
     assert lp in {11, 22, 33} or 1 <= lp <= 9
 
 
-def test_expression_number():
-    """Expression number uses all letters of the name."""
+def test_destiny_number():
+    """Destiny number (formerly expression) uses all letters of the name."""
     from app.numerology_engine import calculate_numerology
     result = calculate_numerology("Meharban Singh", "1990-01-01")
-    assert isinstance(result["expression"], int)
-    assert 1 <= result["expression"] <= 33
+    assert isinstance(result["destiny"], int)
+    assert 1 <= result["destiny"] <= 33
 
 
 def test_soul_urge_vowels_only():
@@ -52,12 +52,16 @@ def test_return_structure():
     from app.numerology_engine import calculate_numerology
     result = calculate_numerology("Test Name", "2000-06-15")
     assert "life_path" in result
-    assert "expression" in result
+    assert "destiny" in result
     assert "soul_urge" in result
     assert "personality" in result
     assert "predictions" in result
-    assert isinstance(result["predictions"], str)
-    assert len(result["predictions"]) > 10
+    # predictions is now a dict with per-category prediction text
+    assert isinstance(result["predictions"], dict)
+    for key in ("life_path", "destiny", "soul_urge", "personality"):
+        assert key in result["predictions"], f"predictions missing key: {key}"
+        assert isinstance(result["predictions"][key], str)
+        assert len(result["predictions"][key]) > 10
 
 
 def test_reduce_master_numbers_preserved():

@@ -273,12 +273,59 @@ def check_doshas(
     saturn_transit_sign = _today_positions.get("planets", {}).get("Saturn", {}).get("sign", "Capricorn")
     sade_sati = check_sade_sati(moon_sign, saturn_transit_sign)
 
+    # Gemstone recommendations based on ascendant lord and weak planets
+    SIGN_LORDS = {
+        "Aries": "Mars", "Taurus": "Venus", "Gemini": "Mercury", "Cancer": "Moon",
+        "Leo": "Sun", "Virgo": "Mercury", "Libra": "Venus", "Scorpio": "Mars",
+        "Sagittarius": "Jupiter", "Capricorn": "Saturn", "Aquarius": "Saturn", "Pisces": "Jupiter",
+    }
+    PLANET_GEMS = {
+        "Sun": {"gem": "Ruby (Manik)", "gem_hi": "माणिक्य (रूबी)", "metal": "Gold", "finger": "Ring finger", "day": "Sunday"},
+        "Moon": {"gem": "Pearl (Moti)", "gem_hi": "मोती (पर्ल)", "metal": "Silver", "finger": "Little finger", "day": "Monday"},
+        "Mars": {"gem": "Red Coral (Moonga)", "gem_hi": "मूंगा (रेड कोरल)", "metal": "Gold/Copper", "finger": "Ring finger", "day": "Tuesday"},
+        "Mercury": {"gem": "Emerald (Panna)", "gem_hi": "पन्ना (एमराल्ड)", "metal": "Gold", "finger": "Little finger", "day": "Wednesday"},
+        "Jupiter": {"gem": "Yellow Sapphire (Pukhraj)", "gem_hi": "पुखराज (येलो सफायर)", "metal": "Gold", "finger": "Index finger", "day": "Thursday"},
+        "Venus": {"gem": "Diamond (Heera)", "gem_hi": "हीरा (डायमंड)", "metal": "Silver/Platinum", "finger": "Middle finger", "day": "Friday"},
+        "Saturn": {"gem": "Blue Sapphire (Neelam)", "gem_hi": "नीलम (ब्लू सफायर)", "metal": "Iron/Silver", "finger": "Middle finger", "day": "Saturday"},
+        "Rahu": {"gem": "Hessonite (Gomed)", "gem_hi": "गोमेद (हेसोनाइट)", "metal": "Silver", "finger": "Middle finger", "day": "Saturday"},
+        "Ketu": {"gem": "Cat's Eye (Lehsunia)", "gem_hi": "लहसुनिया (कैट्स आई)", "metal": "Silver", "finger": "Ring finger", "day": "Tuesday"},
+    }
+    asc_sign = chart.get("ascendant", {}).get("sign", "Aries")
+    asc_lord = SIGN_LORDS.get(asc_sign, "Sun")
+    gemstone_recs = []
+    # Primary: ascendant lord gemstone
+    if asc_lord in PLANET_GEMS:
+        g = PLANET_GEMS[asc_lord]
+        gemstone_recs.append({
+            "planet": asc_lord, "reason": "Ascendant Lord",
+            "gemstone": g["gem"], "gemstone_hi": g["gem_hi"],
+            "metal": g["metal"], "finger": g["finger"], "day": g["day"],
+            "priority": "primary",
+        })
+    # Secondary: benefic planets for the ascendant
+    BENEFICS_BY_ASC = {
+        "Aries": ["Sun", "Jupiter"], "Taurus": ["Saturn", "Mercury"], "Gemini": ["Venus", "Saturn"],
+        "Cancer": ["Mars", "Jupiter"], "Leo": ["Mars", "Jupiter"], "Virgo": ["Venus", "Mercury"],
+        "Libra": ["Saturn", "Mercury"], "Scorpio": ["Jupiter", "Moon"], "Sagittarius": ["Sun", "Mars"],
+        "Capricorn": ["Venus", "Mercury"], "Aquarius": ["Venus", "Saturn"], "Pisces": ["Moon", "Mars"],
+    }
+    for planet in BENEFICS_BY_ASC.get(asc_sign, []):
+        if planet != asc_lord and planet in PLANET_GEMS:
+            g = PLANET_GEMS[planet]
+            gemstone_recs.append({
+                "planet": planet, "reason": "Benefic for Ascendant",
+                "gemstone": g["gem"], "gemstone_hi": g["gem_hi"],
+                "metal": g["metal"], "finger": g["finger"], "day": g["day"],
+                "priority": "secondary",
+            })
+
     return {
         "kundli_id": kundli_id,
         "person_name": row["person_name"],
         "mangal_dosha": mangal,
         "kaal_sarp_dosha": kaal_sarp,
         "sade_sati": sade_sati,
+        "gemstone_recommendations": gemstone_recs,
     }
 
 
