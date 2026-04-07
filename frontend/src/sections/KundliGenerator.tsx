@@ -20,6 +20,7 @@ import ConsolidatedReport from '@/components/kundli/ConsolidatedReport';
 import KundliSummaryModal from '@/components/KundliSummaryModal';
 import JHoraKundliView from '@/components/kundli/JHoraKundliView';
 import AspectsMatrixTab from '@/components/kundli/AspectsMatrixTab';
+import RetrogradeStationsSection from '@/components/kundli/RetrogradeStationsSection';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 
 export default function KundliGenerator() {
@@ -2775,6 +2776,9 @@ export default function KundliGenerator() {
             ) : (
               <p className="text-center text-sacred-text-secondary py-8">{t('transit.clickTab')}</p>
             )}
+
+            {/* Retrograde Station Dates */}
+            {result?.id && <RetrogradeStationsSection kundliId={result.id} />}
           </TabsContent>
 
           {/* VARSHPHAL TAB */}

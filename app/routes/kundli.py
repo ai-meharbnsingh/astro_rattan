@@ -688,6 +688,23 @@ def get_western_aspects(
     return result
 
 
+@router.get("/{kundli_id}/retrograde-stations", status_code=status.HTTP_200_OK)
+def get_retrograde_stations(
+    kundli_id: str,
+    year: int = Query(default=None),
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Retrograde and direct station dates for planets in a given year."""
+    from app.retrograde_engine import calculate_retrograde_stations
+    from datetime import datetime
+    _fetch_kundli(db, kundli_id, current_user["sub"])  # validate access
+    if not year:
+        year = datetime.now().year
+    stations = calculate_retrograde_stations(year)
+    return {"kundli_id": kundli_id, "year": year, "stations": stations}
+
+
 # ── PDF Download ────────────────────────────────────────────
 
 # Sign → Lord mapping used for house lordships table
