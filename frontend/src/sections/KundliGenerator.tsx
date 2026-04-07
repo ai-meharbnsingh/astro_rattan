@@ -2753,7 +2753,7 @@ export default function KundliGenerator() {
                   <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
                     <h4 className="font-display font-semibold text-sacred-brown mb-3">Krishnamurti Paddhati — Planet Chart</h4>
                     <div className="overflow-x-auto">
-                      <table className="w-full text-xs">
+                      <table className="w-full text-sm">
                         <thead><tr className="bg-sacred-gold/10">
                           <th className="text-left p-1.5 text-sacred-gold-dark font-medium">Planet</th>
                           <th className="text-center p-1.5 text-sacred-gold-dark font-medium">R/C</th>
@@ -2834,7 +2834,7 @@ export default function KundliGenerator() {
                   <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
                     <h4 className="font-display font-semibold text-sacred-brown mb-3">Bhava Details (Placidus System)</h4>
                     <div className="overflow-x-auto">
-                      <table className="w-full text-xs">
+                      <table className="w-full text-sm">
                         <thead><tr className="bg-sacred-gold/10">
                           <th className="text-left p-1.5 text-sacred-gold-dark font-medium">House</th>
                           <th className="text-left p-1.5 text-sacred-gold-dark font-medium">Sign</th>
@@ -2873,7 +2873,7 @@ export default function KundliGenerator() {
                     <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
                       <h4 className="font-display font-semibold text-sacred-brown mb-3">Significations of Houses</h4>
                       <div className="overflow-x-auto">
-                        <table className="w-full text-xs">
+                        <table className="w-full text-sm">
                           <thead><tr className="bg-sacred-gold/10">
                             <th className="text-left p-1.5 text-sacred-gold-dark font-medium">House</th>
                             <th className="text-left p-1.5 text-sacred-gold-dark font-medium">Planets in Nak. of Occupants</th>
@@ -2905,7 +2905,7 @@ export default function KundliGenerator() {
                     <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
                       <h4 className="font-display font-semibold text-sacred-brown mb-3">Houses Signified by Planets</h4>
                       <div className="overflow-x-auto">
-                        <table className="w-full text-xs">
+                        <table className="w-full text-sm">
                           <thead><tr className="bg-sacred-gold/10">
                             <th className="text-left p-1.5 text-sacred-gold-dark font-medium">Planet</th>
                             <th className="text-left p-1.5 text-sacred-gold-dark font-medium">Very Strong</th>
@@ -2933,7 +2933,7 @@ export default function KundliGenerator() {
                   {kpData.ruling_planets && Object.keys(kpData.ruling_planets).length > 0 && (
                     <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
                       <h4 className="font-display font-semibold text-sacred-brown mb-3">Ruling Planets</h4>
-                      <div className="grid grid-cols-2 gap-3 text-xs">
+                      <div className="grid grid-cols-2 gap-3 text-sm">
                         {[
                           ['day_lord', 'Day Lord'],
                           ['lagna_lord', 'Lagna Lord'],

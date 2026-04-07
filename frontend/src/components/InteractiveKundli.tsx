@@ -647,7 +647,7 @@ function PlanetBadge({
         y={py + 4}
         textAnchor="middle"
         fill={isHovered ? '#1a1a2e' : color}
-        fontSize={11}
+        fontSize={13}
         fontWeight="bold"
         fontFamily="serif"
         style={{ pointerEvents: 'none', transition: 'fill 0.2s ease' }}
@@ -812,7 +812,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           y={svgHeight / 2 - 6}
           textAnchor="middle"
           fill="#9A7B0A"
-          fontSize={11}
+          fontSize={13}
           fontFamily="serif"
           opacity={0.6}
         >
@@ -1101,19 +1101,6 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
 
                 return (
                   <g key={p.planet}>
-                    {/* Degree superscript */}
-                    <text
-                      x={px}
-                      y={py - 10}
-                      textAnchor="middle"
-                      fill={getPlanetColor(p.planet)}
-                      fontSize={9}
-                      fontFamily="serif"
-                      opacity={0.7}
-                      style={{ pointerEvents: 'none' }}
-                    >
-                      {degreeLabel < 100 ? String(degreeLabel).padStart(2, '0') : degreeLabel}
-                    </text>
                     {/* Planet abbreviation + status symbols */}
                     <text
                       x={px}
@@ -1126,7 +1113,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                       style={{ cursor: 'pointer' }}
                       onClick={(e) => { e.stopPropagation(); onPlanetClick?.(p); }}
                     >
-                      {label}
+                      {label}{p.is_retrograde ? 'R' : ''}
                     </text>
                   </g>
                 );
