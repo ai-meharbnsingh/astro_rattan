@@ -1700,7 +1700,40 @@ export default function KundliGenerator() {
                 </div>
                 )}
                 {!doshaDisplay.mangal.has_dosha && !doshaDisplay.kaalsarp.has_dosha && !doshaDisplay.sadesati.has_sade_sati && (
-                  <p className="text-sm py-4" style={{ color: '#22c55e' }}>{t('kundli.noDoshasInChart')}</p>
+                  <p className="text-sm py-4" style={{ color: '#059669' }}>{t('kundli.noDoshasInChart')}</p>
+                )}
+
+                {/* Gemstone Recommendations */}
+                {doshaData?.gemstone_recommendations && doshaData.gemstone_recommendations.length > 0 && (
+                  <div className="bg-sacred-cream rounded-xl p-4 border border-sacred-gold/30 mt-4">
+                    <h4 className="font-display font-semibold text-sacred-brown mb-3 flex items-center gap-2">
+                      <Gem className="w-5 h-5 text-sacred-gold" />
+                      {language === 'hi' ? 'रत्न सिफारिशें' : 'Gemstone Recommendations'}
+                    </h4>
+                    <div className="grid gap-3">
+                      {doshaData.gemstone_recommendations.map((g: any, i: number) => (
+                        <div key={i} className={`rounded-lg p-3 border ${g.priority === 'primary' ? 'border-sacred-gold/50 bg-sacred-gold/5' : 'border-sacred-gold/20'}`}>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-semibold text-sm text-sacred-brown">
+                              {language === 'hi' ? g.gemstone_hi : g.gemstone}
+                            </span>
+                            <span className={`text-xs px-2 py-0.5 rounded-full ${g.priority === 'primary' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}>
+                              {g.priority === 'primary' ? (language === 'hi' ? 'प्राथमिक' : 'Primary') : (language === 'hi' ? 'सहायक' : 'Secondary')}
+                            </span>
+                          </div>
+                          <p className="text-xs text-sacred-text-secondary">
+                            {language === 'hi' ? 'ग्रह' : 'Planet'}: <strong>{translatePlanet(g.planet, language)}</strong> ({g.reason})
+                          </p>
+                          <p className="text-xs text-sacred-text-secondary mt-1">
+                            {language === 'hi' ? 'धातु' : 'Metal'}: {g.metal} &bull; {language === 'hi' ? 'अंगुली' : 'Finger'}: {g.finger} &bull; {language === 'hi' ? 'दिन' : 'Day'}: {g.day}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-xs text-cosmic-text-muted mt-2 italic">
+                      {language === 'hi' ? '* कृपया रत्न धारण करने से पहले किसी योग्य ज्योतिषी से परामर्श लें।' : '* Please consult a qualified astrologer before wearing any gemstone.'}
+                    </p>
+                  </div>
                 )}
               </div>
             ) : (
@@ -3364,64 +3397,59 @@ export default function KundliGenerator() {
                     </div>
                   </div>
 
-                  {/* Aspects on Bhavas */}
+                  {/* Aspects on Bhavas — detailed with planet names */}
                   <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
                     <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.aspectsOnBhavas')}</h4>
-                    <table className="w-full text-xs">
-                      <thead><tr className="bg-sacred-gold/10">
-                        <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.bhava')}</th>
-                        <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.aspectedBy')}</th>
-                        <th className="text-center p-1 text-sacred-gold-dark font-medium">Str</th>
-                        <th className="text-center p-1 text-sacred-gold-dark font-medium">B</th>
-                        <th className="text-center p-1 text-sacred-gold-dark font-medium">M</th>
-                      </tr></thead>
-                      <tbody>
-                        {(() => {
-                          const bhavas = aspectsData.bhava_summary || aspectsData.bhava_aspects;
-                          // aspects_on_bhavas has per-house strength data: {house_str: [{planet, strength, offset, type}]}
-                          const bhavaAspects = aspectsData.aspects_on_bhavas || {};
-                          const getStrengths = (houseKey: string | number) => {
-                            const entries = bhavaAspects[String(houseKey)] || [];
-                            if (!Array.isArray(entries) || entries.length === 0) return null;
-                            return entries.map((e: any) => e.strength).filter((s: any) => s != null);
-                          };
-                          const renderStrength = (strengths: number[] | null) => {
-                            if (!strengths || strengths.length === 0) return '-';
-                            return strengths.map((s, i) => (
-                              <span key={i} className={`inline-block px-1 py-0.5 rounded text-label font-semibold mr-0.5 ${s >= 1.0 ? 'bg-sacred-gold/30 text-sacred-gold-dark' : s >= 0.75 ? 'bg-blue-500/20 text-blue-700' : s >= 0.5 ? 'bg-yellow-500/20 text-yellow-700' : 'bg-gray-500/15 text-gray-600'}`}>{s}</span>
-                            ));
-                          };
-                          if (Array.isArray(bhavas)) {
-                            return bhavas.map((ba: any, i: number) => {
-                              const houseNum = ba.house || ba.bhava || i + 1;
-                              const strengths = getStrengths(houseNum);
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead><tr className="bg-sacred-gold/10">
+                          <th className="text-center p-2 text-sacred-gold-dark font-medium w-12">House</th>
+                          <th className="text-left p-2 text-sacred-gold-dark font-medium">Benefic Aspects (Shubh)</th>
+                          <th className="text-left p-2 text-sacred-gold-dark font-medium">Malefic Aspects (Ashubh)</th>
+                        </tr></thead>
+                        <tbody>
+                          {(() => {
+                            const BENEFICS = ['Jupiter', 'Venus', 'Moon', 'Mercury'];
+                            const bhavas = aspectsData.bhava_summary || aspectsData.bhava_aspects;
+                            const bhavaAspects = aspectsData.aspects_on_bhavas || {};
+                            const renderHouse = (houseNum: number, ba: any) => {
+                              const entries = bhavaAspects[String(houseNum)] || [];
+                              const aspectedBy = Array.isArray(ba?.aspected_by) ? ba.aspected_by : [];
+                              // Classify aspecting planets
+                              const beneficPlanets: string[] = [];
+                              const maleficPlanets: string[] = [];
+                              // From detailed entries
+                              if (Array.isArray(entries) && entries.length > 0) {
+                                entries.forEach((e: any) => {
+                                  const pName = e.planet || '';
+                                  const detail = `${translatePlanet(pName, language)} (${e.strength || 1}x${e.type === 'special' ? ' Spl' : ''})`;
+                                  if (BENEFICS.includes(pName)) beneficPlanets.push(detail);
+                                  else maleficPlanets.push(detail);
+                                });
+                              } else {
+                                // Fallback from summary
+                                aspectedBy.forEach((p: any) => {
+                                  const pName = typeof p === 'string' ? p : p.planet || '';
+                                  if (BENEFICS.includes(pName)) beneficPlanets.push(translatePlanet(pName, language));
+                                  else maleficPlanets.push(translatePlanet(pName, language));
+                                });
+                              }
                               return (
-                                <tr key={houseNum} className="border-t border-sacred-gold/10">
-                                  <td className="p-2 font-semibold text-sacred-brown">{houseNum}</td>
-                                  <td className="p-2 text-sacred-text-secondary">{Array.isArray(ba.aspected_by) ? ba.aspected_by.join(', ') : (ba.aspected_by || '-')}</td>
-                                  <td className="p-1 text-center">{renderStrength(strengths)}</td>
-                                  <td className="p-1 text-center text-green-500">{ba.benefic || ba.benefic_count || ba.benefic_aspects || 0}</td>
-                                  <td className="p-1 text-center text-red-400">{ba.malefic || ba.malefic_count || ba.malefic_aspects || 0}</td>
+                                <tr key={houseNum} className={houseNum % 2 ? 'bg-sacred-gold/5' : ''}>
+                                  <td className="p-2 text-center font-semibold text-sacred-brown">{houseNum}</td>
+                                  <td className="p-2">{beneficPlanets.length > 0 ? <span className="text-green-600">{beneficPlanets.join(', ')}</span> : <span className="text-sacred-text-secondary">-</span>}</td>
+                                  <td className="p-2">{maleficPlanets.length > 0 ? <span className="text-red-500">{maleficPlanets.join(', ')}</span> : <span className="text-sacred-text-secondary">-</span>}</td>
                                 </tr>
                               );
-                            });
-                          }
-                          // Dict format: {1: {aspected_by: [...], ...}, 2: ...}
-                          return Object.entries(bhavas || {}).map(([bhava, data]: [string, any]) => {
-                            const strengths = getStrengths(bhava);
-                            return (
-                              <tr key={bhava} className="border-t border-sacred-gold/10">
-                                <td className="p-2 font-semibold text-sacred-brown">{bhava}</td>
-                                <td className="p-2 text-sacred-text-secondary">{Array.isArray(data?.aspected_by) ? data.aspected_by.join(', ') : String(data?.aspected_by || '-')}</td>
-                                <td className="p-1 text-center">{renderStrength(strengths)}</td>
-                                <td className="p-1 text-center text-green-500">{data?.benefic || 0}</td>
-                                <td className="p-1 text-center text-red-400">{data?.malefic || 0}</td>
-                              </tr>
-                            );
-                          });
-                        })()}
-                      </tbody>
-                    </table>
+                            };
+                            if (Array.isArray(bhavas)) {
+                              return bhavas.map((ba: any, i: number) => renderHouse(ba.house || ba.bhava || i + 1, ba));
+                            }
+                            return [1,2,3,4,5,6,7,8,9,10,11,12].map(h => renderHouse(h, (bhavas || {})[h] || (bhavas || {})[String(h)]));
+                          })()}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               ) : (
