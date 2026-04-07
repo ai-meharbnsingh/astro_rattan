@@ -44,19 +44,31 @@ def send_email(to: str, subject: str, body_html: str) -> bool:
     msg["Subject"] = subject
     msg.attach(MIMEText(body_html, "html"))
 
-    try:
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=10) as server:
-            server.ehlo()
-            if SMTP_PORT != 25:
+    # Try STARTTLS (587), then SSL (465), then direct SMTP
+    methods = [
+        ("STARTTLS", SMTP_PORT, False),
+        ("SSL", 465, True),
+    ]
+    for method_name, port, use_ssl in methods:
+        try:
+            if use_ssl:
+                server = smtplib.SMTP_SSL(SMTP_HOST, port, timeout=15)
+            else:
+                server = smtplib.SMTP(SMTP_HOST, port, timeout=15)
+                server.ehlo()
                 server.starttls()
                 server.ehlo()
             server.login(SMTP_USER, SMTP_PASSWORD)
             server.sendmail(FROM_EMAIL, to, msg.as_string())
-        logger.info("Email sent to %s: %s", to, subject)
-        return True
-    except Exception:
-        logger.exception("Failed to send email to %s: %s", to, subject)
-        return False
+            server.quit()
+            logger.info("Email sent via %s to %s: %s", method_name, to, subject)
+            return True
+        except Exception as e:
+            logger.warning("SMTP %s (port %d) failed for %s: %s", method_name, port, to, e)
+            continue
+
+    logger.error("All SMTP methods failed for %s: %s", to, subject)
+    return False
 
 
 def send_order_confirmation(order: dict, user_email: str) -> bool:
