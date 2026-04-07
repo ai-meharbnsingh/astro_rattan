@@ -96,6 +96,17 @@ BENEFIC_POINTS: Dict[str, Dict[str, Set[int]]] = {
         "Saturn":    {3, 5, 6, 11},
         "Ascendant": {1, 3, 4, 6, 10, 11},
     },
+    # Lagna (Ascendant) Ashtakvarga — benefic houses from each contributor
+    "Lagna": {
+        "Sun":       {3, 4, 6, 10, 11, 12},
+        "Moon":      {3, 6, 10, 11},
+        "Mars":      {1, 3, 6, 10, 11},
+        "Mercury":   {1, 2, 4, 6, 8, 10, 11},
+        "Jupiter":   {1, 2, 4, 5, 6, 7, 9, 10, 11},
+        "Venus":     {1, 2, 3, 4, 5, 8, 9, 11},
+        "Saturn":    {1, 3, 4, 6, 10, 11},
+        "Ascendant": {3, 4, 6, 10, 11, 12},
+    },
 }
 
 
@@ -159,8 +170,8 @@ def calculate_ashtakvarga(planet_signs: Dict[str, str]) -> Dict[str, Any]:
     planet_details: Dict[str, Dict[str, Any]] = {}
     sarvashtakvarga: Dict[str, int] = {sign: 0 for sign in _SIGN_NAMES}
 
-    # Calculate for each receiving planet
-    for recv_planet in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]:
+    # Calculate for each receiving planet (7 planets + Lagna)
+    for recv_planet in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Lagna"]:
         recv_table = BENEFIC_POINTS[recv_planet]
         bindus: Dict[str, int] = {sign: 0 for sign in _SIGN_NAMES}
         contrib_matrix: Dict[str, Dict[str, int]] = {}
@@ -190,9 +201,10 @@ def calculate_ashtakvarga(planet_signs: Dict[str, str]) -> Dict[str, Any]:
             "totals": bindus,
         }
 
-        # Accumulate into sarvashtakvarga
-        for sign in _SIGN_NAMES:
-            sarvashtakvarga[sign] += bindus[sign]
+        # Accumulate into sarvashtakvarga (SAV = 7 planets only, not Lagna)
+        if recv_planet != "Lagna":
+            for sign in _SIGN_NAMES:
+                sarvashtakvarga[sign] += bindus[sign]
 
     return {
         "planet_bindus": planet_bindus,
