@@ -439,7 +439,9 @@ export default function KundliGenerator() {
     try {
       const data = await api.get(`/api/kundli/${result.id}/jaimini`);
       setJaiminiData(data);
-    } catch { /* */ }
+    } catch (e: any) {
+      console.error('Jaimini fetch error:', e);
+    }
     setLoadingJaimini(false);
   };
 
