@@ -80,7 +80,7 @@ export default function Hero() {
       <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
         {/* Sanskrit Shloka */}
         <div className="hero-shloka opacity-0 mb-8">
-          <p className="font-cinzel text-xs md:text-sm tracking-[6px] text-[#ffaa33] uppercase"
+          <p className="font-cinzel text-xs md:text-sm tracking-[6px] text-[var(--aged-gold)] uppercase"
             style={{ textShadow: '0 0 15px rgba(255, 170, 51, 0.4)' }}>
             ज्योतिषम् अयम् ब्रह्म — Astrology is the Supreme
           </p>

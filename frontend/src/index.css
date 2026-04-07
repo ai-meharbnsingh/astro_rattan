@@ -28,16 +28,58 @@
     --aged-gold: #FF9933;
     --aged-gold-dim: #B45309;
     --aged-gold-light: #FFD700;
+    --aged-gold-hex: #B8860B;  /* Legacy gold for compatibility */
+    
+    /* Gold Opacity Variants */
+    --aged-gold-5: rgba(184, 134, 11, 0.05);
+    --aged-gold-10: rgba(184, 134, 11, 0.1);
+    --aged-gold-12: rgba(184, 134, 11, 0.12);
+    --aged-gold-15: rgba(184, 134, 11, 0.15);
+    --aged-gold-20: rgba(184, 134, 11, 0.2);
+    --aged-gold-30: rgba(184, 134, 11, 0.3);
 
     /* Action Red (buttons, alerts) */
     --wax-red: #dc2626;
     --wax-red-hover: #b91c1c;
     --wax-red-deep: #991b1b;
+    --wax-red-light: #f87171;
+    
+    /* Red Opacity Variants */
+    --wax-red-5: rgba(139, 35, 50, 0.05);
+    --wax-red-10: rgba(139, 35, 50, 0.1);
+    --wax-red-20: rgba(139, 35, 50, 0.2);
+    --wax-red-30: rgba(139, 35, 50, 0.3);
 
     /* Warm Neutrals */
     --brown: #78716c;
     --brown-light: rgba(120, 113, 108, 0.1);
     --coffee: rgba(120, 113, 108, 0.08);
+    
+    /* Dark Theme Backgrounds */
+    --dark-bg: #1a1a2e;
+    --dark-bg-secondary: #16213e;
+    --dark-card: rgba(34, 34, 58, 0.8);
+    --dark-card-alt: rgba(34, 34, 58, 0.9);
+    
+    /* WhatsApp Brand Color */
+    --whatsapp-green: #25D366;
+    --whatsapp-green-dark: #128C7E;
+    
+    /* Semantic Status Colors */
+    --success: #059669;
+    --success-light: #34d399;
+    --success-pale: #6ee7b7;
+    --error: #dc2626;
+    --error-light: #f87171;
+    --error-pale: #fca5a5;
+    --warning: #f59e0b;
+    --warning-light: #fbbf24;
+    --warning-pale: #fde68a;
+    
+    /* Text Colors Extended */
+    --text-cream: #e8e0d4;
+    --text-warm: #b8b0a4;
+    --text-gold: #D4A052;
 
     /* Text Colors */
     --text-primary: #1e293b;
@@ -248,6 +290,50 @@
 .bg-sacred-saffron { background-color: var(--aged-gold); }
 .bg-sacred-brown { background-color: #e2e8f0; }
 .bg-sacred-maroon { background-color: var(--wax-red); }
+
+/* Gold Opacity Backgrounds */
+.bg-gold-5 { background-color: var(--aged-gold-5); }
+.bg-gold-10 { background-color: var(--aged-gold-10); }
+.bg-gold-12 { background-color: var(--aged-gold-12); }
+.bg-gold-15 { background-color: var(--aged-gold-15); }
+.bg-gold-20 { background-color: var(--aged-gold-20); }
+.bg-gold-30 { background-color: var(--aged-gold-30); }
+
+/* Red/Maroon Opacity Backgrounds */
+.bg-red-5 { background-color: var(--wax-red-5); }
+.bg-red-10 { background-color: var(--wax-red-10); }
+.bg-red-20 { background-color: var(--wax-red-20); }
+.bg-red-30 { background-color: var(--wax-red-30); }
+
+/* Dark Theme Backgrounds */
+.bg-dark { background-color: var(--dark-bg); }
+.bg-dark-secondary { background-color: var(--dark-bg-secondary); }
+.bg-dark-card { background-color: var(--dark-card); }
+.bg-dark-card-alt { background-color: var(--dark-card-alt); }
+
+/* Semantic Status Backgrounds */
+.bg-success-5 { background-color: rgba(5, 150, 105, 0.05); }
+.bg-success-8 { background-color: rgba(16, 185, 129, 0.08); }
+.bg-error-5 { background-color: var(--wax-red-5); }
+.bg-error-8 { background-color: rgba(196, 62, 78, 0.08); }
+.bg-warning-5 { background-color: rgba(245, 158, 11, 0.05); }
+.bg-warning-8 { background-color: rgba(245, 158, 11, 0.08); }
+
+/* Extended Text Colors */
+.text-gold-hex { color: var(--aged-gold-hex); }
+.text-wax-red-deep { color: var(--wax-red-deep); }
+.text-wax-red-light { color: var(--wax-red-light); }
+.text-success { color: var(--success); }
+.text-success-light { color: var(--success-light); }
+.text-success-pale { color: var(--success-pale); }
+.text-error { color: var(--error); }
+.text-error-light { color: var(--error-light); }
+.text-error-pale { color: var(--error-pale); }
+.text-warning { color: var(--warning); }
+.text-warning-light { color: var(--warning-light); }
+.text-warning-pale { color: var(--warning-pale); }
+.text-cream { color: var(--text-cream); }
+.text-warm { color: var(--text-warm); }
 
 /* Decorative dividers — warm brown gradient */
 .divider-sacred {

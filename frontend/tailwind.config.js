@@ -73,6 +73,12 @@ module.exports = {
           },
           violet: '#FF9933',
         },
+        whatsapp: {
+          green: {
+            DEFAULT: '#25D366',
+            dark: '#128C7E',
+          },
+        },
         minimal: {
           white: '#FFFFFF',
           gray: {

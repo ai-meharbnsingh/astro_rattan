@@ -38,7 +38,7 @@ export default function Features() {
       
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="features-title text-center mb-16">
-          <p className="text-[#ffaa33] text-sm tracking-[4px] uppercase mb-4 font-cinzel">{t('features.celestialHouses')}</p>
+          <p className="text-sacred-gold text-sm tracking-[4px] uppercase mb-4 font-cinzel">{t('features.celestialHouses')}</p>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-['Cinzel_Decorative'] text-cosmic-text mb-4">
             {t('features.cosmicServices')}
           </h2>

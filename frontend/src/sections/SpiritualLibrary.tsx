@@ -415,7 +415,7 @@ export default function SpiritualLibrary() {
                               </div>
                             )}
                             {(chapterVerses[selectedChapter] || []).map((v, idx) => (
-                              <Card key={v.id || idx} className="bg-[#111] border-sacred-gold/30 hover:border-sacred-gold/50 transition-colors">
+                              <Card key={v.id || idx} className="bg-cosmic-card border-sacred-gold/30 hover:border-sacred-gold/50 transition-colors">
                                 <CardContent className="p-6">
                                   {/* Verse Header */}
                                   <div className="flex items-center gap-3 mb-4">

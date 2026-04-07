@@ -109,7 +109,7 @@ export default function Footer() {
         
         <div className="py-6 border-t border-sacred-gold/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-cosmic-text/40">
-            &copy; {new Date().getFullYear()} Astro Rattan. {t('footer.madeWith')} <Heart className="w-4 h-4 inline text-[#ffaa33]" /> in India
+            &copy; {new Date().getFullYear()} Astro Rattan. {t('footer.madeWith')} <Heart className="w-4 h-4 inline text-sacred-gold" /> in India
           </p>
           <div className="flex gap-6">
             {['Privacy Policy', 'Terms of Service', 'Refund Policy'].map((item, i) => (

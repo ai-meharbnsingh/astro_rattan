@@ -91,13 +91,13 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/90 backdrop-blur-sm">
       <div 
         ref={modalRef}
-        className="relative w-full max-w-6xl bg-[#0a0a0a] rounded-2xl border border-[#d4af37]/30 shadow-2xl overflow-hidden"
+        className="relative w-full max-w-6xl bg-[var(--dark-bg)] rounded-2xl border border-[var(--sacred-gold-hex)]/30 shadow-2xl overflow-hidden"
         style={{ maxHeight: '95vh' }}
       >
         {/* Header */}
-        <div className="sticky top-0 z-10 bg-gradient-to-r from-[#0a0a0a] via-[#111] to-[#0a0a0a] border-b border-[#d4af37]/20 p-4 flex items-center justify-between">
+        <div className="sticky top-0 z-10 bg-gradient-to-r from-[var(--dark-bg)] via-[#111] to-[var(--dark-bg)] border-b border-[var(--sacred-gold-hex)]/20 p-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-[#d4af37]/10 border border-[#d4af37]/30 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-full bg-[var(--sacred-gold-hex)]/10 border border-[var(--sacred-gold-hex)]/30 flex items-center justify-center">
               <span className="text-2xl">☉</span>
             </div>
             <div>
@@ -112,7 +112,7 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
             <Button
               variant="outline"
               size="sm"
-              className="hidden sm:flex items-center gap-2 border-[#d4af37]/30 text-[#d4af37] hover:bg-[#d4af37]/10"
+              className="hidden sm:flex items-center gap-2 border-[var(--sacred-gold-hex)]/30 text-[var(--sacred-gold-hex)] hover:bg-[var(--sacred-gold-hex)]/10"
             >
               <Download className="w-4 h-4" />
               PDF
@@ -120,14 +120,14 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
             <Button
               variant="outline"
               size="sm"
-              className="hidden sm:flex items-center gap-2 border-[#d4af37]/30 text-[#d4af37] hover:bg-[#d4af37]/10"
+              className="hidden sm:flex items-center gap-2 border-[var(--sacred-gold-hex)]/30 text-[var(--sacred-gold-hex)] hover:bg-[var(--sacred-gold-hex)]/10"
             >
               <Printer className="w-4 h-4" />
               Print
             </Button>
             <Button
               onClick={onViewFullReport}
-              className="flex items-center gap-2 bg-[#d4af37] text-black hover:bg-[#ffd700]"
+              className="flex items-center gap-2 bg-[var(--sacred-gold-hex)] text-black hover:bg-[var(--sacred-gold)]"
             >
               Full Report
               <ChevronRight className="w-4 h-4" />
@@ -145,7 +145,7 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
         <div className="p-4 overflow-y-auto" style={{ maxHeight: 'calc(95vh - 80px)' }}>
           
           {/* User Info Bar */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 p-3 bg-[#111] rounded-xl border border-[#d4af37]/10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 p-3 bg-[#111] rounded-xl border border-[var(--sacred-gold-hex)]/10">
             <div className="flex items-center gap-2">
               <User className="w-4 h-4 text-[#d4af37]" />
               <div>
@@ -182,7 +182,7 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
             {/* Left - Main Birth Chart */}
             <div className="lg:col-span-2 space-y-4">
               {/* Chart Container */}
-              <div className="bg-[#111] rounded-xl border border-[#d4af37]/20 p-4">
+              <div className="bg-[#111] rounded-xl border border-[var(--sacred-gold-hex)]/20 p-4">
                 <h3 className="text-lg font-semibold text-[#d4af37] mb-3 text-center" style={{ fontFamily: 'var(--font-sacred, Cormorant Garamond, serif)' }}>
                   Rashi Chart (D1)
                 </h3>
@@ -260,23 +260,23 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
                 </div>
 
                 {/* Lagna Info */}
-                <div className="mt-4 p-3 bg-[#d4af37]/5 rounded-lg border border-[#d4af37]/10">
+                <div className="mt-4 p-3 bg-[var(--sacred-gold-hex)]/5 rounded-lg border border-[var(--sacred-gold-hex)]/10">
                   <div className="flex flex-wrap gap-4 justify-center text-center">
                     <div>
                       <p className="text-xs text-white/50">Ascendant</p>
                       <p className="text-lg font-bold text-[#d4af37]">Leo</p>
                     </div>
-                    <div className="w-px bg-[#d4af37]/20" />
+                    <div className="w-px bg-[var(--sacred-gold-hex)]/20" />
                     <div>
                       <p className="text-xs text-white/50">Moon Sign</p>
                       <p className="text-lg font-bold text-[#C0C0C0]">Taurus</p>
                     </div>
-                    <div className="w-px bg-[#d4af37]/20" />
+                    <div className="w-px bg-[var(--sacred-gold-hex)]/20" />
                     <div>
                       <p className="text-xs text-white/50">Sun Sign</p>
                       <p className="text-lg font-bold text-[#FFD700]">Leo</p>
                     </div>
-                    <div className="w-px bg-[#d4af37]/20" />
+                    <div className="w-px bg-[var(--sacred-gold-hex)]/20" />
                     <div>
                       <p className="text-xs text-white/50">Nakshatra</p>
                       <p className="text-lg font-bold text-white">Rohini</p>
@@ -287,15 +287,15 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
 
               {/* Divisional Charts */}
               <div className="grid grid-cols-3 gap-3">
-                <div className="bg-[#111] rounded-lg border border-[#d4af37]/10 p-3 text-center">
+                <div className="bg-[#111] rounded-lg border border-[var(--sacred-gold-hex)]/10 p-3 text-center">
                   <p className="text-xs text-white/50 mb-1">Navamsha (D9)</p>
                   <p className="text-lg font-semibold text-[#d4af37]">Scorpio</p>
                 </div>
-                <div className="bg-[#111] rounded-lg border border-[#d4af37]/10 p-3 text-center">
+                <div className="bg-[#111] rounded-lg border border-[var(--sacred-gold-hex)]/10 p-3 text-center">
                   <p className="text-xs text-white/50 mb-1">Dashamsha (D10)</p>
                   <p className="text-lg font-semibold text-[#d4af37]">Capricorn</p>
                 </div>
-                <div className="bg-[#111] rounded-lg border border-[#d4af37]/10 p-3 text-center">
+                <div className="bg-[#111] rounded-lg border border-[var(--sacred-gold-hex)]/10 p-3 text-center">
                   <p className="text-xs text-white/50 mb-1">Saptamsha (D7)</p>
                   <p className="text-lg font-semibold text-[#d4af37]">Libra</p>
                 </div>
@@ -305,7 +305,7 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
             {/* Right - Planet Positions & Dasha */}
             <div className="space-y-4">
               {/* Planet Positions */}
-              <div className="bg-[#111] rounded-xl border border-[#d4af37]/20 p-3">
+              <div className="bg-[#111] rounded-xl border border-[var(--sacred-gold-hex)]/20 p-3">
                 <h3 className="text-sm font-semibold text-[#d4af37] mb-2" style={{ fontFamily: 'var(--font-sacred, Cormorant Garamond, serif)' }}>
                   Planetary Positions
                 </h3>
@@ -332,7 +332,7 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
               </div>
 
               {/* Current Dasha */}
-              <div className="bg-[#111] rounded-xl border border-[#d4af37]/20 p-3">
+              <div className="bg-[#111] rounded-xl border border-[var(--sacred-gold-hex)]/20 p-3">
                 <h3 className="text-sm font-semibold text-[#d4af37] mb-2" style={{ fontFamily: 'var(--font-sacred, Cormorant Garamond, serif)' }}>
                   Vimshottari Dasha
                 </h3>
@@ -340,7 +340,7 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
                   {sampleDasha.map((period, idx) => (
                     <div 
                       key={idx}
-                      className={`p-2 rounded text-xs ${idx === 0 ? 'bg-[#d4af37]/20 border border-[#d4af37]/30' : 'bg-black/30'}`}
+                      className={`p-2 rounded text-xs ${idx === 0 ? 'bg-[var(--sacred-gold-hex)]/20 border border-[var(--sacred-gold-hex)]/30' : 'bg-black/30'}`}
                     >
                       <div className="flex items-center justify-between mb-1">
                         <span className="font-semibold text-white">{period.planet} Mahadasha</span>
@@ -354,19 +354,19 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
 
               {/* Quick Stats */}
               <div className="grid grid-cols-2 gap-2 mb-4">
-                <div className="bg-[#111] rounded-lg border border-[#d4af37]/10 p-2 text-center">
+                <div className="bg-[#111] rounded-lg border border-[var(--sacred-gold-hex)]/10 p-2 text-center">
                   <p className="text-xs text-white/50">Gana</p>
                   <p className="text-sm font-semibold text-white">Manushya</p>
                 </div>
-                <div className="bg-[#111] rounded-lg border border-[#d4af37]/10 p-2 text-center">
+                <div className="bg-[#111] rounded-lg border border-[var(--sacred-gold-hex)]/10 p-2 text-center">
                   <p className="text-xs text-white/50">Yoni</p>
                   <p className="text-sm font-semibold text-white">Serpent</p>
                 </div>
-                <div className="bg-[#111] rounded-lg border border-[#d4af37]/10 p-2 text-center">
+                <div className="bg-[#111] rounded-lg border border-[var(--sacred-gold-hex)]/10 p-2 text-center">
                   <p className="text-xs text-white/50">Nadi</p>
                   <p className="text-sm font-semibold text-white">Kapha</p>
                 </div>
-                <div className="bg-[#111] rounded-lg border border-[#d4af37]/10 p-2 text-center">
+                <div className="bg-[#111] rounded-lg border border-[var(--sacred-gold-hex)]/10 p-2 text-center">
                   <p className="text-xs text-white/50">Varna</p>
                   <p className="text-sm font-semibold text-white">Kshatriya</p>
                 </div>
@@ -423,7 +423,7 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
 
               {/* No Yogas/Doshas Message */}
               {presentYogas.length === 0 && presentDoshas.length === 0 && (
-                <div className="bg-[#111] rounded-xl border border-[#d4af37]/10 p-3 text-center">
+                <div className="bg-[#111] rounded-xl border border-[var(--sacred-gold-hex)]/10 p-3 text-center">
                   <p className="text-xs text-white/50">No significant Yogas or Doshas detected</p>
                 </div>
               )}

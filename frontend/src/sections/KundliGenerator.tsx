@@ -795,7 +795,7 @@ export default function KundliGenerator() {
               <div className="flex justify-center gap-3">
                 <Button
                   size="lg"
-                  className="bg-[#d4af37] text-black hover:bg-[#ffd700] px-8"
+                  className="bg-sacred-gold text-black hover:bg-sacred-gold-light px-8"
                   onClick={() => {
                     fetchTransit();
                     fetchD10();
@@ -810,7 +810,7 @@ export default function KundliGenerator() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-[#d4af37]/50 text-[#d4af37] hover:bg-[#d4af37]/10 px-8"
+                  className="border-sacred-gold/50 text-sacred-gold hover:bg-gold-10 px-8"
                   onClick={() => {
                     fetchTransit();
                     setReportOpen(true);
@@ -823,7 +823,7 @@ export default function KundliGenerator() {
 
               {/* JHora-style Fullscreen Overlay */}
               {jhoraOpen && (
-                <div className="fixed inset-0 z-[9999] bg-[#FDF8F0]" style={{ width: '100vw', height: '100vh' }}>
+                <div className="fixed inset-0 z-[9999] bg-parchment" style={{ width: '100vw', height: '100vh' }}>
                   <button onClick={() => setJhoraOpen(false)} className="absolute top-2 right-3 z-10 p-1.5 hover:bg-black/10 rounded text-sacred-gold text-sm font-bold" title="Close">
                     <X className="w-5 h-5" />
                   </button>
@@ -1178,7 +1178,7 @@ export default function KundliGenerator() {
                   ) : (extendedDashaData || dashaData) ? (
                     <div className="space-y-2">
                       {/* Current dasha info */}
-                      <div className="rounded-lg p-3" style={{ background: 'rgba(184,134,11,0.1)' }}>
+                      <div className="rounded-lg p-3" className="bg-gold-10">
                         <p className="text-xs" style={{ color: 'var(--ink-light)' }}>{t('section.currentMahadasha')}</p>
                         <p className="text-sm font-display font-bold" style={{ color: 'var(--aged-gold)' }}>
                           {(extendedDashaData || dashaData).current_dasha}
@@ -1250,7 +1250,7 @@ export default function KundliGenerator() {
                         /* Fallback: simple table when extendedDashaData unavailable */
                         <div className="overflow-x-auto">
                           <table className="w-full text-xs">
-                            <thead><tr style={{ background: 'rgba(184,134,11,0.1)' }}>
+                            <thead><tr className="bg-gold-10">
                               <th className="text-left p-2 font-medium" style={{ color: 'var(--aged-gold)' }}>{t('table.planet')}</th>
                               <th className="text-left p-2 font-medium" style={{ color: 'var(--aged-gold)' }}>{t('table.start')}</th>
                               <th className="text-left p-2 font-medium" style={{ color: 'var(--aged-gold)' }}>{t('table.end')}</th>
@@ -1464,7 +1464,7 @@ export default function KundliGenerator() {
                             <div className="flex-1 bg-sacred-gold/10 rounded-full h-4 overflow-hidden">
                               <div className="h-full rounded-full" style={{ width: `${Math.min(pct, 100)}%`, backgroundColor: barColor }} />
                             </div>
-                            <span className={`text-xs w-16 text-right font-medium ${data.is_strong ? 'text-sacred-gold-dark' : 'text-[#8B2332]'}`}>
+                            <span className={`text-xs w-16 text-right font-medium ${data.is_strong ? 'text-sacred-gold-dark' : 'text-wax-red-deep'}`}>
                               {data.total}/{data.required}
                             </span>
                           </div>
@@ -1700,7 +1700,7 @@ export default function KundliGenerator() {
                 </div>
                 )}
                 {!doshaDisplay.mangal.has_dosha && !doshaDisplay.kaalsarp.has_dosha && !doshaDisplay.sadesati.has_sade_sati && (
-                  <p className="text-sm py-4" style={{ color: '#059669' }}>{t('kundli.noDoshasInChart')}</p>
+                  <p className="text-sm py-4" className="text-success">{t('kundli.noDoshasInChart')}</p>
                 )}
 
                 {/* Gemstone Recommendations */}
@@ -1748,7 +1748,7 @@ export default function KundliGenerator() {
             ) : iogitaData?.basin ? (
               <div className="space-y-6">
                 {/* Overall Summary Card */}
-                <div className="rounded-2xl p-6 border border-sacred-gold/30" style={{ background: 'linear-gradient(135deg, rgba(184,134,11,0.08) 0%, rgba(34,34,58,0.9) 100%)' }}>
+                <div className="rounded-2xl p-6 border border-sacred-gold/30" style={{ background: 'linear-gradient(135deg, var(--aged-gold-5) 0%, var(--dark-card-alt) 100%)' }}>
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-12 h-12 rounded-full bg-sacred-gold/20 flex items-center justify-center">
                       <Sparkles className="w-6 h-6 text-sacred-gold" />
@@ -1762,7 +1762,7 @@ export default function KundliGenerator() {
                 </div>
 
                 {/* Strengths — Top Forces */}
-                <div className="rounded-xl p-5 border border-sacred-gold/20" style={{ background: 'rgba(34,34,58,0.8)' }}>
+                <div className="rounded-xl p-5 border border-sacred-gold/20" className="bg-dark-card">
                   <h4 className="font-display font-semibold mb-4" style={{ color: 'var(--aged-gold)' }}>{t('iogita.strongestQualities')}</h4>
                   <div className="space-y-3">
                     {(iogitaData.basin.top_3_atoms || []).map(([name, val]: [string, number], idx: number) => {
@@ -1794,8 +1794,8 @@ export default function KundliGenerator() {
 
                 {/* Area to Improve */}
                 {iogitaData.basin.top_negative && (
-                  <div className="rounded-xl p-5 border border-red-500/20" style={{ background: 'rgba(196,62,78,0.08)' }}>
-                    <h4 className="font-display font-semibold mb-2" style={{ color: '#f87171' }}>{t('iogita.areaNeedsAttention')}</h4>
+                  <div className="rounded-xl p-5 border border-red-500/20" className="bg-error-8">
+                    <h4 className="font-display font-semibold mb-2" className="text-error-light">{t('iogita.areaNeedsAttention')}</h4>
                     {(() => {
                       const negLabels: Record<string, string> = {
                         DHARMA: 'Following your duty', SATYA: 'Being truthful', TYAGA: 'Letting go of attachments',
@@ -1805,26 +1805,26 @@ export default function KundliGenerator() {
                         MOKSHA: 'Spiritual growth', ATMA: 'Self-awareness',
                       };
                       const name = iogitaData.basin.top_negative[0];
-                      return <p className="text-sm" style={{ color: '#fca5a5' }}>{negLabels[name] || name} — this area is suppressed in your chart. Focus on developing it for a more balanced life.</p>;
+                      return <p className="text-sm" className="text-error-pale">{negLabels[name] || name} — this area is suppressed in your chart. Focus on developing it for a more balanced life.</p>;
                     })()}
                   </div>
                 )}
 
                 {/* Guidance Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="rounded-xl p-5 border border-amber-500/20" style={{ background: 'rgba(245,158,11,0.08)' }}>
-                    <h4 className="font-display font-semibold mb-2" style={{ color: '#fbbf24' }}>{t('iogita.beMindfulOf')}</h4>
-                    <p className="text-sm leading-relaxed" style={{ color: '#fde68a' }}>{iogitaData.basin.warning}</p>
+                  <div className="rounded-xl p-5 border border-amber-500/20" className="bg-warning-8">
+                    <h4 className="font-display font-semibold mb-2" className="text-warning-light">{t('iogita.beMindfulOf')}</h4>
+                    <p className="text-sm leading-relaxed" className="text-warning-pale">{iogitaData.basin.warning}</p>
                   </div>
-                  <div className="rounded-xl p-5 border border-emerald-500/20" style={{ background: 'rgba(16,185,129,0.08)' }}>
-                    <h4 className="font-display font-semibold mb-2" style={{ color: '#34d399' }}>{t('iogita.pathToGrowth')}</h4>
-                    <p className="text-sm leading-relaxed" style={{ color: '#6ee7b7' }}>{iogitaData.basin.escape_trigger}</p>
+                  <div className="rounded-xl p-5 border border-emerald-500/20" className="bg-success-8">
+                    <h4 className="font-display font-semibold mb-2" className="text-success-light">{t('iogita.pathToGrowth')}</h4>
+                    <p className="text-sm leading-relaxed" className="text-success-pale">{iogitaData.basin.escape_trigger}</p>
                   </div>
                 </div>
 
                 {/* Overall Insight */}
                 {iogitaData.iogita_insight && (
-                  <div className="rounded-xl p-5 border border-sacred-gold/20" style={{ background: 'rgba(34,34,58,0.8)' }}>
+                  <div className="rounded-xl p-5 border border-sacred-gold/20" className="bg-dark-card">
                     <h4 className="font-display font-semibold mb-3" style={{ color: 'var(--aged-gold)' }}>{t('iogita.overallLifeReading')}</h4>
                     <p className="text-sm leading-relaxed" style={{ color: 'var(--ink)' }}>{iogitaData.iogita_insight}</p>
                   </div>
@@ -1832,7 +1832,7 @@ export default function KundliGenerator() {
 
                 {/* Normal Astrology Insights */}
                 {iogitaData.normal_astrology && iogitaData.normal_astrology.length > 0 && (
-                  <div className="rounded-xl p-5 border border-sacred-gold/20" style={{ background: 'rgba(34,34,58,0.8)' }}>
+                  <div className="rounded-xl p-5 border border-sacred-gold/20" className="bg-dark-card">
                     <h4 className="font-display font-semibold mb-3" style={{ color: 'var(--aged-gold)' }}>{t('iogita.kundliSummary')}</h4>
                     <div className="space-y-2">
                       {iogitaData.normal_astrology.map((point: string, idx: number) => (
@@ -2130,36 +2130,37 @@ export default function KundliGenerator() {
                   </div>
                 </div>
 
-                {/* Bhinna Ashtakvarga Charts — Parashara's Light format: full contributor table + North Indian diamond chart per planet */}
+                {/* Bhinna Ashtakvarga Charts — Parashara's Light format: table + diamond chart per planet */}
                 <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/20">
                   <h4 className="font-display font-semibold text-sacred-brown mb-2">Bhinna Ashtakvarga Charts</h4>
-                  <p className="text-xs text-sacred-text-secondary mb-4">Full contributor breakdown per planet with North Indian diamond chart (Parashara's Light format).</p>
-                  <div className="grid grid-cols-1 gap-5">
-                    {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Lagna'].map((planet) => {
+                  <p className="text-xs text-sacred-text-secondary mb-4">Individual planet bindus across 12 signs (Parashara's Light format).</p>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
+                      const bindus = ashtakvargaData.planet_bindus?.[planet] || {};
                       const signs = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
                       const signAbbr = ['Ari', 'Tau', 'Gem', 'Can', 'Leo', 'Vir', 'Lib', 'Sco', 'Sag', 'Cap', 'Aqu', 'Pis'];
-                      const contribOrder = ['Saturn', 'Jupiter', 'Mars', 'Sun', 'Venus', 'Mercury', 'Moon', 'Lagna'];
-                      const details = ashtakvargaData.planet_details?.[planet];
-                      const bindus = details?.totals || ashtakvargaData.planet_bindus?.[planet] || {};
-                      const contributors = details?.contributors || null;
                       const vals = signs.map((s) => bindus[s] || 0);
-                      const total = vals.reduce((sum: number, v: number) => sum + v, 0);
+                      const total = vals.reduce((sum, v) => sum + v, 0);
 
-                      // North Indian diamond chart positions (180x180 SVG)
-                      // Standard North Indian layout: house 1 = top-center diamond, then clockwise
+                      const binduColor = (v: number) =>
+                        v >= 5 ? '#166534' : v >= 3 ? '#B8860B' : '#991b1b';
+                      const binduBg = (v: number) =>
+                        v >= 5 ? '#dcfce7' : v >= 3 ? '#fef3c7' : '#fee2e2';
+
+                      // North Indian diamond chart positions (160x160 SVG, signs fixed)
                       const housePos: { x: number; y: number }[] = [
-                        { x: 90, y: 30 },   // 1 — top center (Ascendant diamond)
-                        { x: 45, y: 30 },   // 2 — top left triangle
-                        { x: 18, y: 55 },   // 3 — left upper triangle
-                        { x: 18, y: 90 },   // 4 — left center diamond
-                        { x: 18, y: 125 },  // 5 — left lower triangle
-                        { x: 45, y: 150 },  // 6 — bottom left triangle
-                        { x: 90, y: 150 },  // 7 — bottom center diamond
-                        { x: 135, y: 150 }, // 8 — bottom right triangle
-                        { x: 162, y: 125 }, // 9 — right lower triangle
-                        { x: 162, y: 90 },  // 10 — right center diamond
-                        { x: 162, y: 55 },  // 11 — right upper triangle
-                        { x: 135, y: 30 },  // 12 — top right triangle
+                        { x: 80, y: 28 },   // 1 Ari  — top center
+                        { x: 130, y: 28 },   // 2 Tau  — top right
+                        { x: 138, y: 58 },   // 3 Gem  — right upper
+                        { x: 138, y: 102 },  // 4 Can  — right lower
+                        { x: 130, y: 132 },  // 5 Leo  — bottom right
+                        { x: 80, y: 132 },   // 6 Vir  — bottom center
+                        { x: 30, y: 132 },   // 7 Lib  — bottom left
+                        { x: 22, y: 102 },   // 8 Sco  — left lower
+                        { x: 22, y: 58 },    // 9 Sag  — left upper
+                        { x: 30, y: 28 },    // 10 Cap — top left
+                        { x: 80, y: 65 },    // 11 Aqu — inner top
+                        { x: 80, y: 95 },    // 12 Pis — inner bottom
                       ];
 
                       return (
@@ -2172,102 +2173,80 @@ export default function KundliGenerator() {
                             <span className="text-xs font-semibold text-sacred-gold-dark">Total: {total}</span>
                           </div>
                           <div className="flex flex-col sm:flex-row">
-                            {/* LEFT: Full contributor table */}
-                            <div className="flex-1 overflow-x-auto p-2">
-                              <table className="w-full text-[10px] border-collapse" style={{ minWidth: '340px' }}>
+                            {/* LEFT: Bindu table */}
+                            <div className="flex-1 overflow-x-auto p-3">
+                              <table className="w-full text-xs border-collapse">
                                 <thead>
                                   <tr>
-                                    <th className="text-left px-1 py-0.5 text-sacred-gold-dark font-semibold border-b border-sacred-gold/30 whitespace-nowrap" style={{ fontSize: '11px' }}>Sign</th>
-                                    {signs.map((_, i) => (
-                                      <th key={i} className="text-center px-0.5 py-0.5 text-sacred-gold-dark font-semibold border-b border-sacred-gold/30" style={{ fontSize: '11px', minWidth: '18px' }}>{i + 1}</th>
+                                    <th className="text-left p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold/20 whitespace-nowrap">Sign</th>
+                                    {signAbbr.map((s, i) => (
+                                      <th key={i} className="text-center p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold/20 min-w-[26px]">{i + 1}</th>
                                     ))}
-                                    <th className="text-center px-1 py-0.5 text-sacred-gold-dark font-bold border-b border-sacred-gold/30" style={{ fontSize: '11px' }}>T</th>
+                                    <th className="text-center p-1 text-sacred-gold-dark font-bold border-b border-sacred-gold/20">&Sigma;</th>
                                   </tr>
                                 </thead>
                                 <tbody>
-                                  {contributors ? (
-                                    <>
-                                      {contribOrder.map((contrib) => {
-                                        const row = contributors[contrib];
-                                        if (!row) return null;
-                                        const rowVals = signs.map((s) => row[s] || 0);
-                                        const rowTotal = rowVals.reduce((sum: number, v: number) => sum + v, 0);
-                                        return (
-                                          <tr key={contrib} className="border-b border-sacred-gold/10">
-                                            <td className="px-1 py-0.5 text-sacred-text-secondary font-medium whitespace-nowrap" style={{ fontSize: '11px' }}>{contrib}</td>
-                                            {rowVals.map((v, i) => (
-                                              <td key={i} className="text-center px-0.5 py-0.5" style={{ fontSize: '11px' }}>
-                                                <span style={{ color: v === 1 ? '#4A3728' : '#A09080', fontWeight: v === 1 ? 700 : 400, fontSize: '11px' }}>{v}</span>
-                                              </td>
-                                            ))}
-                                            <td className="text-center px-1 py-0.5 font-semibold text-sacred-brown" style={{ fontSize: '11px' }}>{rowTotal}</td>
-                                          </tr>
-                                        );
-                                      })}
-                                      {/* Total row */}
-                                      <tr className="border-t-2 border-sacred-gold/40" style={{ backgroundColor: 'rgba(184, 134, 11, 0.08)' }}>
-                                        <td className="px-1 py-0.5 font-bold text-sacred-brown" style={{ fontSize: '11px' }}>Total</td>
-                                        {vals.map((v, i) => (
-                                          <td key={i} className="text-center px-0.5 py-0.5 font-bold text-sacred-brown" style={{ fontSize: '11px' }}>{v}</td>
-                                        ))}
-                                        <td className="text-center px-1 py-0.5 font-bold text-sacred-brown" style={{ fontSize: '11px' }}>{total}</td>
-                                      </tr>
-                                    </>
-                                  ) : (
-                                    /* Fallback: just show totals row when planet_details not available */
-                                    <>
-                                      <tr>
-                                        <td className="px-1 py-0.5 text-sacred-text-secondary font-medium whitespace-nowrap" style={{ fontSize: '11px' }}>Bindu</td>
-                                        {vals.map((v, i) => (
-                                          <td key={i} className="text-center px-0.5 py-0.5 font-bold" style={{ fontSize: '11px', color: v >= 5 ? '#166534' : v >= 3 ? '#B8860B' : '#991b1b' }}>{v}</td>
-                                        ))}
-                                        <td className="text-center px-1 py-0.5 font-bold text-sacred-brown" style={{ fontSize: '11px' }}>{total}</td>
-                                      </tr>
-                                      <tr>
-                                        <td className="px-1 py-1 text-sacred-text-secondary/50" colSpan={14} style={{ fontSize: '9px' }}>
-                                          Contributor detail unavailable
-                                        </td>
-                                      </tr>
-                                    </>
-                                  )}
+                                  <tr>
+                                    <td className="p-1 text-sacred-text-secondary font-medium whitespace-nowrap">Bindu</td>
+                                    {vals.map((v, i) => (
+                                      <td key={i} className="text-center p-1">
+                                        <span
+                                          className="inline-block w-6 h-6 leading-6 rounded text-xs font-bold"
+                                          style={{ backgroundColor: binduBg(v), color: binduColor(v) }}
+                                        >
+                                          {v}
+                                        </span>
+                                      </td>
+                                    ))}
+                                    <td className="text-center p-1 font-bold text-sacred-brown">{total}</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="p-1 text-sacred-text-secondary text-[10px]" colSpan={14}>
+                                      {signAbbr.map((s, i) => (
+                                        <span key={i} className="inline-block mr-1.5 text-[10px] text-sacred-text-secondary/60">
+                                          {i + 1}={s}
+                                        </span>
+                                      ))}
+                                    </td>
+                                  </tr>
                                 </tbody>
                               </table>
                             </div>
                             {/* RIGHT: North Indian diamond chart SVG */}
-                            <div className="flex-shrink-0 flex items-center justify-center p-2 sm:border-l border-t sm:border-t-0 border-sacred-gold/10">
-                              <svg viewBox="0 0 180 180" width="180" height="180" className="block">
+                            <div className="flex-shrink-0 flex items-center justify-center p-3 sm:border-l border-t sm:border-t-0 border-sacred-gold/10">
+                              <svg viewBox="0 0 160 160" width="160" height="160" className="block">
                                 {/* Outer square */}
-                                <rect x="2" y="2" width="176" height="176" fill="none" stroke="#B8860B" strokeWidth="1.5" />
-                                {/* Diagonal lines from corners */}
-                                <line x1="2" y1="2" x2="178" y2="178" stroke="#B8860B" strokeWidth="0.75" />
-                                <line x1="178" y1="2" x2="2" y2="178" stroke="#B8860B" strokeWidth="0.75" />
-                                {/* Inner diamond (midpoints) */}
-                                <line x1="90" y1="2" x2="178" y2="90" stroke="#B8860B" strokeWidth="0.75" />
-                                <line x1="178" y1="90" x2="90" y2="178" stroke="#B8860B" strokeWidth="0.75" />
-                                <line x1="90" y1="178" x2="2" y2="90" stroke="#B8860B" strokeWidth="0.75" />
-                                <line x1="2" y1="90" x2="90" y2="2" stroke="#B8860B" strokeWidth="0.75" />
-                                {/* Bindu values in each house */}
+                                <rect x="2" y="2" width="156" height="156" fill="none" stroke="#c8a96e" strokeWidth="1.5" />
+                                {/* Diagonal lines corner-to-corner */}
+                                <line x1="2" y1="2" x2="158" y2="158" stroke="#c8a96e" strokeWidth="0.75" />
+                                <line x1="158" y1="2" x2="2" y2="158" stroke="#c8a96e" strokeWidth="0.75" />
+                                {/* Midpoint lines forming inner diamond */}
+                                <line x1="80" y1="2" x2="158" y2="80" stroke="#c8a96e" strokeWidth="0.75" />
+                                <line x1="158" y1="80" x2="80" y2="158" stroke="#c8a96e" strokeWidth="0.75" />
+                                <line x1="80" y1="158" x2="2" y2="80" stroke="#c8a96e" strokeWidth="0.75" />
+                                <line x1="2" y1="80" x2="80" y2="2" stroke="#c8a96e" strokeWidth="0.75" />
+                                {/* Bindu values in each house position */}
                                 {housePos.map((pos, i) => (
                                   <g key={i}>
                                     {/* Sign abbreviation */}
                                     <text
                                       x={pos.x}
-                                      y={pos.y - 6}
+                                      y={pos.y - 7}
                                       textAnchor="middle"
-                                      fontSize="8"
+                                      fontSize="7"
                                       fill="#8B7355"
                                       fontFamily="sans-serif"
                                     >
                                       {signAbbr[i]}
                                     </text>
-                                    {/* Bindu total — plain dark text, no circles */}
+                                    {/* Bindu value */}
                                     <text
                                       x={pos.x}
-                                      y={pos.y + 7}
+                                      y={pos.y + 5}
                                       textAnchor="middle"
-                                      fontSize="16"
+                                      fontSize="14"
                                       fontWeight="bold"
-                                      fill="#3E2723"
+                                      fill={binduColor(vals[i])}
                                       fontFamily="sans-serif"
                                     >
                                       {vals[i]}
@@ -2280,6 +2259,61 @@ export default function KundliGenerator() {
                         </div>
                       );
                     })}
+                  </div>
+                  {/* Color legend */}
+                  <div className="flex items-center gap-4 mt-4 text-xs text-sacred-text-secondary">
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 rounded border" style={{ backgroundColor: '#dcfce7', borderColor: '#86efac' }} />
+                      <span>5-8 Strong</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 rounded border" style={{ backgroundColor: '#fef3c7', borderColor: '#fcd34d' }} />
+                      <span>3-4 Medium</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 rounded border" style={{ backgroundColor: '#fee2e2', borderColor: '#fca5a5' }} />
+                      <span>0-2 Weak</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/20">
+                  <h4 className="font-display font-semibold text-sacred-brown mb-4">{t('section.bhinnashtakvarga')}</h4>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-sacred-gold/20">
+                          <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
+                          {['Ari', 'Tau', 'Gem', 'Can', 'Leo', 'Vir', 'Lib', 'Sco', 'Sag', 'Cap', 'Aqu', 'Pis'].map((s) => (
+                            <th key={s} className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{s}</th>
+                          ))}
+                          <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('table.total')}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
+                          const bindus = ashtakvargaData.planet_bindus?.[planet] || {};
+                          const signs = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
+                          const total = signs.reduce((sum, s) => sum + (bindus[s] || 0), 0);
+                          return (
+                            <tr key={planet} className="border-t border-sacred-gold/10 hover:bg-sacred-gold/5">
+                              <td className="p-2 text-sacred-brown font-medium">{translatePlanet(planet, language)}</td>
+                              {signs.map((s) => {
+                                const val = bindus[s] || 0;
+                                return (
+                                  <td key={s} className="text-center p-2">
+                                    <span className={`inline-block w-6 h-6 rounded text-xs leading-6 ${val >= 5 ? 'bg-sacred-gold-dark/20 text-sacred-gold-dark font-bold' : val <= 2 ? 'bg-red-10 text-wax-red-deep' : 'text-sacred-text-secondary'}`}>
+                                      {val}
+                                    </span>
+                                  </td>
+                                );
+                              })}
+                              <td className="text-center p-2 font-semibold text-sacred-brown">{total}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
@@ -2321,7 +2355,7 @@ export default function KundliGenerator() {
                               title={`Required: ${data.required}`}
                             />
                           </div>
-                          <span className={`text-sm w-20 text-right font-medium ${data.is_strong ? 'text-sacred-gold-dark' : 'text-[#8B2332]'}`}>
+                          <span className={`text-sm w-20 text-right font-medium ${data.is_strong ? 'text-sacred-gold-dark' : 'text-wax-red-deep'}`}>
                             {data.total} / {data.required}
                           </span>
                         </div>
@@ -2362,7 +2396,7 @@ export default function KundliGenerator() {
                           const d = shadbalaData.planets[planet];
                           if (!d) return null;
                           return (
-                            <tr key={planet} className={`border-t border-sacred-gold/10 ${d.is_strong ? '' : 'bg-[#8B2332]/5'}`}>
+                            <tr key={planet} className={`border-t border-sacred-gold/10 ${d.is_strong ? '' : 'bg-red-5'}`}>
                               <td className="p-2 text-sacred-brown font-medium">{translatePlanet(planet, language)}</td>
                               <td className="text-center p-2 text-sacred-text-secondary">{d.sthana}</td>
                               <td className="text-center p-2 text-sacred-text-secondary">{d.dig}</td>
@@ -2370,8 +2404,8 @@ export default function KundliGenerator() {
                               <td className="text-center p-2 text-sacred-text-secondary">{d.cheshta}</td>
                               <td className="text-center p-2 text-sacred-text-secondary">{d.naisargika}</td>
                               <td className="text-center p-2 text-sacred-text-secondary">{d.drik}</td>
-                              <td className={`text-center p-2 font-semibold ${d.is_strong ? 'text-sacred-gold-dark' : 'text-[#8B2332]'}`}>{d.total}</td>
-                              <td className={`text-center p-2 font-medium ${d.ratio >= 1 ? 'text-sacred-gold-dark' : 'text-[#8B2332]'}`}>{d.ratio}x</td>
+                              <td className={`text-center p-2 font-semibold ${d.is_strong ? 'text-sacred-gold-dark' : 'text-wax-red-deep'}`}>{d.total}</td>
+                              <td className={`text-center p-2 font-medium ${d.ratio >= 1 ? 'text-sacred-gold-dark' : 'text-wax-red-deep'}`}>{d.ratio}x</td>
                             </tr>
                           );
                         })}
@@ -3432,20 +3466,20 @@ export default function KundliGenerator() {
               ) : sadesatiData ? (
                 <div className="space-y-6">
                   {/* Introduction Card */}
-                  <div className="bg-gradient-to-r from-[#1a1a2e] to-[#16213e] rounded-xl p-5 border border-[#B8860B]/30">
+                  <div className="bg-gradient-to-r from-dark to-dark-secondary rounded-xl p-5 border border-gold-30">
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 rounded-full bg-[#B8860B]/20 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-full bg-gold-20 flex items-center justify-center">
                         <span className="text-xl">♄</span>
                       </div>
                       <div>
-                        <h3 className="font-display font-bold text-lg" style={{ color: '#e8e0d4' }}>Shani Sade Sati Analysis</h3>
-                        <p className="text-xs" style={{ color: '#b8b0a4' }}>Birth Moon Sign: <span className="text-[#B8860B] font-semibold">{sadesatiData.moon_sign}</span></p>
+                        <h3 className="font-display font-bold text-lg" className="text-cream">Shani Sade Sati Analysis</h3>
+                        <p className="text-xs" className="text-warm">Birth Moon Sign: <span className="text-gold-hex font-semibold">{sadesatiData.moon_sign}</span></p>
                       </div>
                     </div>
-                    <p className="text-sm leading-relaxed" style={{ color: '#b8b0a4' }}>
+                    <p className="text-sm leading-relaxed" className="text-warm">
                       {sadesatiData.explanation?.sadesati || "The seven and a half year period during which Saturn transits in the twelfth, first and second houses from the birth rashi (Moon sign) is called the Sadhesati of Saturn."}
                     </p>
-                    <p className="text-sm mt-2 leading-relaxed" style={{ color: '#b8b0a4' }}>
+                    <p className="text-sm mt-2 leading-relaxed" className="text-warm">
                       {sadesatiData.explanation?.dhayya || "One Sadhesati is made up of three periods of approximately two and a half years each, because Saturn travels in one rashi for two and a half years."}
                     </p>
                   </div>
@@ -3454,20 +3488,20 @@ export default function KundliGenerator() {
                   {sadesatiData.cycles && sadesatiData.cycles.length > 0 && (
                     <div className="space-y-4">
                       <h4 className="font-display font-semibold text-sacred-brown flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-[#B8860B]"></span>
+                        <span className="w-2 h-2 rounded-full bg-gold-hex"></span>
                         Sade Sati Cycles (Normally 3 in a lifetime)
                       </h4>
                       
                       {sadesatiData.cycles.map((cycle: any, idx: number) => (
                         <div key={idx} className="bg-sacred-cream rounded-xl border border-sacred-gold/20 overflow-hidden">
                           {/* Cycle Header */}
-                          <div className="p-4 bg-sacred-gold/10 border-b border-sacred-gold/20">
+                          <div className={`p-4 ${cycle.severity === 'high' ? 'bg-red-10' : cycle.severity === 'extreme' ? 'bg-red-20' : 'bg-sacred-gold/10'}`}>
                             <div className="flex items-center justify-between">
                               <h5 className="font-display font-semibold text-sacred-brown">{cycle.title}</h5>
-                              <span className={`text-xs px-2 py-1 rounded-full font-medium border ${
-                                cycle.severity === 'extreme' ? 'border-red-400 text-red-500 bg-transparent' :
-                                cycle.severity === 'high' ? 'border-orange-400 text-orange-500 bg-transparent' :
-                                'border-sacred-gold text-sacred-gold bg-transparent'
+                              <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                                cycle.severity === 'extreme' ? 'bg-red-30 text-wax-red-light' :
+                                cycle.severity === 'high' ? 'bg-orange-500/20 text-orange-400' :
+                                'bg-yellow-500/20 text-yellow-600'
                               }`}>
                                 {cycle.severity === 'extreme' ? 'Extreme' : cycle.severity === 'high' ? 'Intense' : 'Moderate'} Impact
                               </span>
@@ -3475,7 +3509,7 @@ export default function KundliGenerator() {
                             <p className="text-xs text-sacred-text-secondary mt-1">
                               {cycle.start_date} to {cycle.end_date}
                             </p>
-                            <p className="text-sm mt-2 text-sacred-text-secondary">{cycle.description}</p>
+                            <p className="text-sm mt-2" className="text-warm">{cycle.description}</p>
                           </div>
                           
                           {/* Cycle Phases Table */}
@@ -3541,7 +3575,7 @@ export default function KundliGenerator() {
                                 <tr key={idx} className="border-t border-sacred-gold/10 hover:bg-sacred-gold/5">
                                   <td className="p-2">
                                     <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
-                                      phase.phase === 'Panauti' ? 'bg-[#8B2332]/20 text-[#ff6b6b]' :
+                                      phase.phase === 'Panauti' ? 'bg-[#8B2332]/20 text-wax-red-light' :
                                       phase.phase === 'Dhaiya' ? 'bg-orange-500/20 text-orange-400' :
                                       'bg-blue-500/20 text-blue-400'
                                     }`}>
@@ -3565,7 +3599,7 @@ export default function KundliGenerator() {
                   {/* Phase Effects Details */}
                   <div className="space-y-4">
                     <h4 className="font-display font-semibold text-sacred-brown flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-[#B8860B]"></span>
+                      <span className="w-2 h-2 rounded-full bg-gold-hex"></span>
                       Detailed Effects of Each Phase
                     </h4>
                     
@@ -3582,7 +3616,7 @@ export default function KundliGenerator() {
                         <ul className="space-y-1">
                           {phase.effects.map((effect: string, idx: number) => (
                             <li key={idx} className="text-sm text-sacred-text-secondary flex items-start gap-2">
-                              <span className="mt-1.5 w-1 h-1 rounded-full bg-[#B8860B] flex-shrink-0"></span>
+                              <span className="mt-1.5 w-1 h-1 rounded-full bg-gold-hex flex-shrink-0"></span>
                               {effect}
                             </li>
                           ))}
@@ -3607,7 +3641,7 @@ export default function KundliGenerator() {
                             {sadesatiData.detailed_remedies.mantra.items.map((item: any, idx: number) => (
                               <div key={idx} className="bg-white/5 rounded-lg p-3">
                                 <p className="font-medium text-sacred-brown text-sm">{item.name}</p>
-                                {item.text && <p className="text-xs text-[#B8860B] font-serif my-1">{item.text}</p>}
+                                {item.text && <p className="text-xs text-gold-hex font-serif my-1">{item.text}</p>}
                                 <p className="text-xs text-sacred-text-secondary">{item.instruction}</p>
                               </div>
                             ))}
@@ -3625,7 +3659,7 @@ export default function KundliGenerator() {
                             <ul className="space-y-1">
                               {(data.items || []).map((item: any, idx: number) => (
                                 <li key={idx} className="text-sm text-sacred-text-secondary flex items-start gap-2">
-                                  <span className="mt-1.5 w-1 h-1 rounded-full bg-[#B8860B] flex-shrink-0"></span>
+                                  <span className="mt-1.5 w-1 h-1 rounded-full bg-gold-hex flex-shrink-0"></span>
                                   {typeof item === 'string' ? item : item.name || item.instruction}
                                 </li>
                               ))}
