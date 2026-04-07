@@ -118,8 +118,19 @@ def calculate_ashtakvarga(planet_signs: Dict[str, str]) -> Dict[str, Any]:
             "planet_bindus": {
                 planet: {sign: points}  -- for each of the 7 planets
             },
-            "sarvashtakvarga": {sign: total_points}  -- summed across all planets
+            "sarvashtakvarga": {sign: total_points}  -- summed across all planets,
+            "planet_details": {
+                planet: {
+                    "contributors": {
+                        contributor: {sign: 0_or_1}  -- 8 contributors per planet
+                    },
+                    "totals": {sign: points}  -- same as planet_bindus[planet]
+                }
+            }
         }
+
+        Contributors are keyed as: Sun, Moon, Mars, Mercury, Jupiter, Venus,
+        Saturn, Lagna (Ascendant mapped to "Lagna" in output).
     """
     # Validate required planets
     required = {"Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"}
@@ -141,31 +152,43 @@ def calculate_ashtakvarga(planet_signs: Dict[str, str]) -> Dict[str, Any]:
     # Contributing bodies (7 planets + Ascendant)
     contributors = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Ascendant"]
 
+    # Display name mapping: internal "Ascendant" -> output "Lagna"
+    _CONTRIB_DISPLAY = {c: ("Lagna" if c == "Ascendant" else c) for c in contributors}
+
     planet_bindus: Dict[str, Dict[str, int]] = {}
+    planet_details: Dict[str, Dict[str, Any]] = {}
     sarvashtakvarga: Dict[str, int] = {sign: 0 for sign in _SIGN_NAMES}
 
     # Calculate for each receiving planet
     for recv_planet in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]:
         recv_table = BENEFIC_POINTS[recv_planet]
         bindus: Dict[str, int] = {sign: 0 for sign in _SIGN_NAMES}
+        contrib_matrix: Dict[str, Dict[str, int]] = {}
 
         for contrib in contributors:
-            if contrib not in recv_table:
-                continue
-            if contrib not in positions:
-                continue
+            display_name = _CONTRIB_DISPLAY[contrib]
+            # Initialise this contributor's row to all zeros
+            contrib_row: Dict[str, int] = {sign: 0 for sign in _SIGN_NAMES}
 
-            benefic_houses = recv_table[contrib]
-            contrib_sign_index = positions[contrib]
+            if contrib in recv_table and contrib in positions:
+                benefic_houses = recv_table[contrib]
+                contrib_sign_index = positions[contrib]
 
-            # For each benefic house, mark the corresponding sign
-            for house_num in benefic_houses:
-                # House N from contributor = sign at (contributor_sign + N - 1) mod 12
-                target_sign_index = (contrib_sign_index + house_num - 1) % 12
-                target_sign = _SIGN_NAMES[target_sign_index]
-                bindus[target_sign] += 1
+                # For each benefic house, mark the corresponding sign
+                for house_num in benefic_houses:
+                    # House N from contributor = sign at (contributor_sign + N - 1) mod 12
+                    target_sign_index = (contrib_sign_index + house_num - 1) % 12
+                    target_sign = _SIGN_NAMES[target_sign_index]
+                    contrib_row[target_sign] = 1
+                    bindus[target_sign] += 1
+
+            contrib_matrix[display_name] = contrib_row
 
         planet_bindus[recv_planet] = bindus
+        planet_details[recv_planet] = {
+            "contributors": contrib_matrix,
+            "totals": bindus,
+        }
 
         # Accumulate into sarvashtakvarga
         for sign in _SIGN_NAMES:
@@ -174,4 +197,5 @@ def calculate_ashtakvarga(planet_signs: Dict[str, str]) -> Dict[str, Any]:
     return {
         "planet_bindus": planet_bindus,
         "sarvashtakvarga": sarvashtakvarga,
+        "planet_details": planet_details,
     }
