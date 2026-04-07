@@ -115,6 +115,7 @@ def calculate_special_lagnas(planets: Dict, ascendant: Dict, d9_planets: Optiona
     Arudha Lagna (AL), Upapada Lagna (UL), Karakamsha.
     """
     asc_sign = ascendant.get("sign", "Aries") if ascendant else "Aries"
+    asc_idx = _sign_index(asc_sign)
 
     # --- Arudha Lagna ---
     asc_lord = SIGN_LORD[asc_sign]
