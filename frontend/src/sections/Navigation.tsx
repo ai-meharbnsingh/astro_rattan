@@ -7,6 +7,7 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 const primaryLinks = [
   { key: 'nav.kundli', href: '/kundli' },
+  { key: 'nav.lalKitab', href: '/lal-kitab' },
   { key: 'nav.horoscope', href: '/horoscope' },
   { key: 'nav.panchang', href: '/panchang' },
   { key: 'nav.shop', href: '/shop' },

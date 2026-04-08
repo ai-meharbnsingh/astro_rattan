@@ -39,6 +39,7 @@ const PalmistryPage = lazy(() => import('./sections/PalmistryPage'));
 const BlogPage = lazy(() => import('./sections/BlogPage'));
 const ReferralPage = lazy(() => import('./sections/ReferralPage'));
 const KPLalkitabPage = lazy(() => import('./sections/KPLalkitabPage'));
+const LalKitabPage = lazy(() => import('./sections/LalKitabPage'));
 const MessagesPage = lazy(() => import('./sections/MessagesPage'));
 const PlanetaryTransitsPage = lazy(() => import('./sections/PlanetaryTransitsPage'));
 const CommunityPage = lazy(() => import('./sections/CommunityPage'));
@@ -121,6 +122,7 @@ function App() {
           <Route path="/blog/:slug" element={<BlogPage />} />
           <Route path="/referral" element={<ReferralPage />} />
           <Route path="/kp-lalkitab" element={<KPLalkitabPage />} />
+          <Route path="/lal-kitab" element={<LalKitabPage />} />
           <Route path="/messages" element={<MessagesPage />} />
           <Route path="/transits" element={<PlanetaryTransitsPage />} />
           <Route path="/community" element={<CommunityPage />} />
