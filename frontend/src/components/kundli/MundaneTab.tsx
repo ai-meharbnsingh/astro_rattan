@@ -245,6 +245,24 @@ function DataUnavailable({ lang }: { lang: string }) {
   );
 }
 
+/* ── Deep-flatten {en, hi} objects in API responses ── */
+function flattenBilingual(obj: any, lang: string): any {
+  if (obj === null || obj === undefined) return obj;
+  if (typeof obj !== 'object') return obj;
+  if (Array.isArray(obj)) return obj.map((item) => flattenBilingual(item, lang));
+  // If this object IS a bilingual pair, pick the right language
+  const keys = Object.keys(obj);
+  if (keys.length <= 3 && keys.includes('en') && keys.includes('hi')) {
+    return lang === 'hi' ? (obj.hi || obj.en) : obj.en;
+  }
+  // Otherwise recurse into all values
+  const result: any = {};
+  for (const [k, v] of Object.entries(obj)) {
+    result[k] = flattenBilingual(v, lang);
+  }
+  return result;
+}
+
 /* ────────────────────────────── Main Component ────────────────────────────── */
 
 export default function MundaneTab({ language: languageProp }: MundaneTabProps) {
@@ -268,15 +286,18 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
     let cancelled = false;
     async function fetchCountries() {
       try {
-        const data = await api.get('/api/mundane/countries');
-        if (!cancelled && Array.isArray(data) && data.length > 0) {
-          // API may return {name: {en, hi}} — normalize to flat strings
-          const normalized: CountryOption[] = data.map((c: any) => ({
-            code: c.code,
-            name: typeof c.name === 'string' ? c.name : c.name?.en || c.code,
-            name_hi: typeof c.name === 'string' ? c.name_hi : c.name?.hi,
-            flag: c.flag,
-          }));
+        const raw = await api.get('/api/mundane/countries');
+        const list = Array.isArray(raw) ? raw : raw?.countries;
+        if (!cancelled && Array.isArray(list) && list.length > 0) {
+          const normalized: CountryOption[] = list.map((c: any) => {
+            const flat = flattenBilingual(c, lang);
+            return {
+              code: flat.code || c.code,
+              name: typeof flat.name === 'string' ? flat.name : c.code,
+              name_hi: typeof c.name === 'object' ? c.name.hi : c.name_hi,
+              flag: flat.flag || c.flag,
+            };
+          });
           setCountries(normalized);
         }
       } catch {
@@ -292,8 +313,8 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
     setLoading(true);
     setAnalysisData(null);
     try {
-      const data = await api.get(`/api/mundane/${country}/analysis?year=${year}`);
-      setAnalysisData(data);
+      const raw = await api.get(`/api/mundane/${country}/analysis?year=${year}`);
+      setAnalysisData(flattenBilingual(raw, lang));
     } catch {
       setAnalysisData(null);
     }
@@ -304,7 +325,8 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
   const fetchEclipses = useCallback(async (year: number) => {
     setLoadingEclipse(true);
     try {
-      const data = await api.get(`/api/mundane/eclipses?year=${year}`);
+      const raw = await api.get(`/api/mundane/eclipses?year=${year}`);
+      const data = flattenBilingual(raw, lang);
       setEclipseData(Array.isArray(data) ? data : data?.eclipses ?? null);
     } catch {
       setEclipseData(null);
@@ -316,7 +338,8 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
   const fetchIngress = useCallback(async (year: number) => {
     setLoadingIngress(true);
     try {
-      const data = await api.get(`/api/mundane/ingress?year=${year}`);
+      const raw = await api.get(`/api/mundane/ingress?year=${year}`);
+      const data = flattenBilingual(raw, lang);
       setIngressData(Array.isArray(data) ? data : data?.ingresses ?? null);
     } catch {
       setIngressData(null);
