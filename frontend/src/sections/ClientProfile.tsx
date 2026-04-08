@@ -109,7 +109,13 @@ export default function ClientProfile() {
         <div className="space-y-2">
           {kundlis.map(k => (
             <div key={k.id}
-              onClick={() => navigate('/kundli', { state: { loadKundliId: k.id } })}
+              onClick={() => {
+                if (k.chart_type === 'lalkitab') {
+                  navigate('/lal-kitab', { state: { ...birthState, loadKundliId: k.id } });
+                } else {
+                  navigate('/kundli', { state: { loadKundliId: k.id } });
+                }
+              }}
               className="flex items-center justify-between p-4 border border-sacred-gold/15 hover:border-sacred-gold/40 transition-colors cursor-pointer">
               <div className="flex items-center gap-3">
                 {k.chart_type === 'lalkitab' ? (
@@ -124,7 +130,7 @@ export default function ClientProfile() {
               </div>
               <div className="text-right">
                 <span className="text-xs text-cosmic-text/30 uppercase">{k.chart_type || 'vedic'}</span>
-                <p className="text-xs text-cosmic-text/30">{k.created_at ? new Date(k.created_at).toLocaleDateString() : ''}</p>
+                <p className="text-xs text-cosmic-text/30">{k.created_at ? k.created_at.toString().slice(0, 10) : ''}</p>
               </div>
             </div>
           ))}
