@@ -106,6 +106,13 @@ function SmartHome() {
   return <HomePage />;
 }
 
+function RequireAuth({ children }: { children: ReactNode }) {
+  const { isAuthenticated, loading } = useAuth();
+  if (loading) return <div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-600" /></div>;
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  return <>{children}</>;
+}
+
 function App() {
   return (
     <AuthProvider>
@@ -119,14 +126,14 @@ function App() {
         <Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-600"></div></div>}>
         <Routes>
           <Route path="/" element={<SmartHome />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/client/:clientId" element={<ClientProfile />} />
-          <Route path="/kundli" element={<KundliGenerator />} />
-          <Route path="/panchang" element={<Panchang />} />
+          <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
+          <Route path="/client/:clientId" element={<RequireAuth><ClientProfile /></RequireAuth>} />
+          <Route path="/kundli" element={<RequireAuth><KundliGenerator /></RequireAuth>} />
+          <Route path="/panchang" element={<RequireAuth><Panchang /></RequireAuth>} />
           <Route path="/login" element={<AuthPage />} />
-          <Route path="/numerology" element={<NumerologyTarot />} />
-          <Route path="/lal-kitab" element={<LalKitabPage />} />
-          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/numerology" element={<RequireAuth><NumerologyTarot /></RequireAuth>} />
+          <Route path="/lal-kitab" element={<RequireAuth><LalKitabPage /></RequireAuth>} />
+          <Route path="/admin" element={<RequireAuth><AdminDashboard /></RequireAuth>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         </Suspense>

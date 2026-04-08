@@ -62,6 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('astrovedic_token');
     localStorage.removeItem('astrovedic_refresh_token');
     setUser(null);
+    window.location.href = '/';
   }, []);
 
   return createElement(
