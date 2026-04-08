@@ -29,6 +29,7 @@ import UpagrahasTab from '@/components/kundli/UpagrahasTab';
 import SodashvargaTab from '@/components/kundli/SodashvargaTab';
 import AspectsTab from '@/components/kundli/AspectsTab';
 import SadesatiTab from '@/components/kundli/SadesatiTab';
+import MundaneTab from '@/components/kundli/MundaneTab';
 
 export default function KundliGenerator() {
   const data = useKundliData();
@@ -222,6 +223,7 @@ export default function KundliGenerator() {
             <TabsTrigger value="milan">{language === 'hi' ? 'कुंडली मिलान' : 'Kundli Milan'}</TabsTrigger>
             <TabsTrigger value="jaimini" onClick={fetchJaimini}>{language === 'hi' ? 'जैमिनी' : 'Jaimini'}</TabsTrigger>
             <TabsTrigger value="sadesati" onClick={fetchSadesati}>{t('tab.sadeSati')}</TabsTrigger>
+            <TabsTrigger value="mundane">{language === 'hi' ? 'मुंडन ज्योतिष' : 'Mundane'}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="report">
@@ -376,6 +378,10 @@ export default function KundliGenerator() {
 
           <TabsContent value="sadesati">
             <SadesatiTab sadesatiData={sadesatiData} loadingSadesati={loadingSadesati} doshaData={doshaData} language={language} t={t} />
+          </TabsContent>
+
+          <TabsContent value="mundane">
+            <MundaneTab language={language} />
           </TabsContent>
         </Tabs>
 

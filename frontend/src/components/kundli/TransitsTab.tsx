@@ -1,8 +1,8 @@
-import { Loader2, CheckCircle, AlertTriangle, Shield } from 'lucide-react';
+import { Loader2, CheckCircle, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import InteractiveKundli from '@/components/InteractiveKundli';
 import RetrogradeStationsSection from '@/components/kundli/RetrogradeStationsSection';
-import { translatePlanet, translateSign, translateLabel, translateName } from '@/lib/backend-translations';
+import { translatePlanet, translateSign, translateLabel } from '@/lib/backend-translations';
 
 interface TransitsTabProps {
   transitData: any;
@@ -141,28 +141,6 @@ export default function TransitsTab(props: TransitsTabProps) {
                       </button>
                     )}
                   </div>
-                </div>
-
-                {/* Sade Sati Status */}
-                <div
-                  className={`rounded-xl p-4 border ${transitData.sade_sati?.active ? 'border-red-500/40' : 'border-green-500/30'}`}
-                  style={{ backgroundColor: transitData.sade_sati?.active ? 'rgba(196,62,78,0.08)' : 'rgba(34,197,94,0.05)' }}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <h5 className="font-display font-semibold" style={{ color: 'var(--ink)' }}>
-                      <Shield className="w-4 h-4 inline mr-2" />
-                      {translateName('Sade Sati', language)}
-                    </h5>
-                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${transitData.sade_sati?.active ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}>
-                      {transitData.sade_sati?.active ? t('common.active') : t('common.inactive')}
-                    </span>
-                  </div>
-                  {transitData.sade_sati?.active && (
-                    <p className="text-xs mb-1" style={{ color: 'var(--aged-gold-dim)' }}>
-                      <strong>{t('table.phase')}:</strong> {translateLabel(transitData.sade_sati.phase, language)}
-                    </p>
-                  )}
-                  <p className="text-sm" style={{ color: 'var(--ink-light)' }}>{transitData.sade_sati?.description}</p>
                 </div>
 
                 {/* Transit Table */}
