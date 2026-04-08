@@ -46,7 +46,8 @@ export default function LalKitabPage() {
       setChartData(lkChart);
       setView('result');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to generate Lal Kitab kundli');
+      const msg = err instanceof Error ? err.message : typeof err === 'string' ? err : 'Failed to generate Lal Kitab kundli';
+      setError(msg);
       setView('form');
     }
   }, []);

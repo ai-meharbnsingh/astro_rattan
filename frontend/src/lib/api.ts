@@ -51,7 +51,8 @@ export async function apiFetch(endpoint: string, options: RequestInit = {}) {
       const retryRes = await fetch(`${API_BASE}${endpoint}`, { ...options, headers: retryHeaders });
       if (!retryRes.ok) {
         const err = await retryRes.json().catch(() => ({ detail: retryRes.statusText }));
-        throw new Error(err.detail || retryRes.statusText);
+        const detail = typeof err.detail === 'string' ? err.detail : Array.isArray(err.detail) ? err.detail.map((d: any) => d.msg || d).join('; ') : JSON.stringify(err.detail) || retryRes.statusText;
+        throw new Error(detail);
       }
       const ct = retryRes.headers.get('content-type') || '';
       return ct.includes('application/json') ? retryRes.json() : retryRes.text();
@@ -64,7 +65,8 @@ export async function apiFetch(endpoint: string, options: RequestInit = {}) {
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: res.statusText }));
-    throw new Error(err.detail || res.statusText);
+    const detail = typeof err.detail === 'string' ? err.detail : Array.isArray(err.detail) ? err.detail.map((d: any) => d.msg || d).join('; ') : JSON.stringify(err.detail) || res.statusText;
+    throw new Error(detail);
   }
   const contentType = res.headers.get('content-type') || '';
   if (contentType.includes('application/json')) {
