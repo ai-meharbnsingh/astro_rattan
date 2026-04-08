@@ -43,15 +43,45 @@ const YOGA_NAMES: Record<string, string> = {
   'Danda Yoga': 'दंड योग', 'Kemadruma Yoga': 'केमद्रुम योग',
 };
 
+const NAKSHATRA_NAMES: Record<string, string> = {
+  'Ashwini': 'अश्विनी', 'Bharani': 'भरणी', 'Krittika': 'कृत्तिका',
+  'Rohini': 'रोहिणी', 'Mrigashira': 'मृगशिरा', 'Ardra': 'आर्द्रा',
+  'Punarvasu': 'पुनर्वसु', 'Pushya': 'पुष्य', 'Ashlesha': 'अश्लेषा',
+  'Magha': 'मघा', 'Purva Phalguni': 'पूर्व फाल्गुनी', 'Uttara Phalguni': 'उत्तर फाल्गुनी',
+  'Hasta': 'हस्त', 'Chitra': 'चित्रा', 'Swati': 'स्वाति',
+  'Vishakha': 'विशाखा', 'Anuradha': 'अनुराधा', 'Jyeshtha': 'ज्येष्ठा',
+  'Mula': 'मूल', 'Purva Ashadha': 'पूर्व आषाढ़ा', 'Uttara Ashadha': 'उत्तर आषाढ़ा',
+  'Shravana': 'श्रवण', 'Dhanishta': 'धनिष्ठा', 'Shatabhisha': 'शतभिषा',
+  'Purva Bhadrapada': 'पूर्व भाद्रपद', 'Uttara Bhadrapada': 'उत्तर भाद्रपद', 'Revati': 'रेवती',
+};
+
 const SEVERITY: Record<string, string> = {
   'none': 'कोई नहीं', 'mild': 'हल्का', 'medium': 'मध्यम',
   'high': 'तीव्र', 'severe': 'गंभीर',
 };
 
 const DIGNITY: Record<string, string> = {
-  'exalted': 'उच्च', 'debilitated': 'नीच', 'own': 'स्वराशि',
-  'moolatrikona': 'मूलत्रिकोण', 'friend': 'मित्र', 'enemy': 'शत्रु',
-  'neutral': 'सम', 'retrograde': 'वक्री',
+  'exalted': 'उच्च', 'Exalted': 'उच्च',
+  'debilitated': 'नीच', 'Debilitated': 'नीच',
+  'own': 'स्वराशि', 'Own Sign': 'स्वराशि',
+  'moolatrikona': 'मूलत्रिकोण', 'Moolatrikona': 'मूलत्रिकोण',
+  'friend': 'मित्र', 'Friend': 'मित्र',
+  'enemy': 'शत्रु', 'Enemy': 'शत्रु',
+  'neutral': 'सम', 'Neutral': 'सम',
+  'retrograde': 'वक्री', 'Retrograde': 'वक्री',
+  'combust': 'अस्त', 'Combust': 'अस्त',
+  'vargottama': 'वर्गोत्तम', 'Vargottama': 'वर्गोत्तम',
+  'transiting': 'गोचर', 'Transiting': 'गोचर',
+  'benefic': 'शुभ', 'Benefic': 'शुभ',
+  'malefic': 'पापी', 'Malefic': 'पापी',
+};
+
+const SIGN_TYPE_LABELS: Record<string, string> = {
+  'Moveable': 'चर', 'Fixed': 'स्थिर', 'Dual': 'द्विस्वभाव',
+};
+
+const ELEMENT_LABELS: Record<string, string> = {
+  'Fire': 'अग्नि', 'Earth': 'पृथ्वी', 'Air': 'वायु', 'Water': 'जल',
 };
 
 const PHASE_TYPES: Record<string, string> = {
@@ -89,8 +119,9 @@ const STRENGTH: Record<string, string> = {
 // All lookup tables merged for generic matching
 const ALL_LOOKUPS: Record<string, string> = {
   ...PLANET_NAMES, ...SIGN_NAMES, ...DOSHA_NAMES, ...YOGA_NAMES,
-  ...SEVERITY, ...DIGNITY, ...PHASE_TYPES, ...REMEDY_MAP,
-  ...YOGINI_NAMES, ...STRENGTH,
+  ...SEVERITY, ...DIGNITY, ...SIGN_TYPE_LABELS, ...ELEMENT_LABELS,
+  ...PHASE_TYPES, ...REMEDY_MAP, ...YOGINI_NAMES, ...STRENGTH,
+  ...NAKSHATRA_NAMES,
 };
 
 /**
@@ -128,6 +159,13 @@ export function translateSign(name: string, lang: Language): string {
   return SIGN_NAMES[name] || name;
 }
 
+/** Translate a nakshatra name */
+export function translateNakshatra(name: string | null | undefined, lang: Language): string {
+  if (!name) return '';
+  if (lang === 'en') return name;
+  return NAKSHATRA_NAMES[name] || name;
+}
+
 /** Translate a dosha or yoga name */
 export function translateName(name: string, lang: Language): string {
   if (lang === 'en') return name;
@@ -140,8 +178,8 @@ export function translateRemedy(text: string, lang: Language): string {
   return REMEDY_MAP[text] || text;
 }
 
-/** Translate severity/dignity/strength */
+/** Translate severity/dignity/strength/sign-type/element */
 export function translateLabel(text: string, lang: Language): string {
   if (lang === 'en') return text;
-  return SEVERITY[text] || DIGNITY[text] || STRENGTH[text] || PHASE_TYPES[text] || text;
+  return SEVERITY[text] || DIGNITY[text] || STRENGTH[text] || SIGN_TYPE_LABELS[text] || ELEMENT_LABELS[text] || PHASE_TYPES[text] || text;
 }

@@ -130,6 +130,7 @@ def list_consultations(
         SELECT c.*,
                CASE
                    WHEN c.notes LIKE 'https://meet.jit.si/%' THEN c.notes
+                   WHEN c.notes LIKE 'https://meet.astrovedic.com/%' THEN c.notes
                    ELSE NULL
                END as video_link,
                a.display_name as astrologer_name
@@ -241,7 +242,7 @@ def complete_consultation(
         )
 
     db.execute(
-        "UPDATE consultations SET status = 'completed', ended_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS') WHERE id = %s",
+        "UPDATE consultations SET status = 'completed', ended_at = NOW() WHERE id = %s",
         (consultation_id,),
     )
     # Increment astrologer's total_consultations
@@ -269,8 +270,11 @@ class VideoLinkResponse(BaseModel):
 
 
 def _stored_jitsi_link(value: str | None) -> str | None:
-    """Return the stored Jitsi link when notes already contain one."""
-    if isinstance(value, str) and value.startswith("https://meet.jit.si/"):
+    """Return the stored video link when notes already contain one (Jitsi or AstroVedic Meet)."""
+    if isinstance(value, str) and (
+        value.startswith("https://meet.jit.si/")
+        or value.startswith("https://meet.astrovedic.com/")
+    ):
         return value
     return None
 
@@ -334,7 +338,7 @@ def generate_video_link(
     db.execute(
         """
         UPDATE consultations
-        SET notes = %s, status = %s, started_at = COALESCE(started_at, to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS'))
+        SET notes = %s, status = %s, started_at = COALESCE(started_at, NOW())
         WHERE id = %s
         """,
         (video_link, updated_status, consultation_id),
@@ -413,7 +417,7 @@ def start_video(
     db.execute(
         """
         UPDATE consultations
-        SET notes = %s, status = %s, started_at = COALESCE(started_at, to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS'))
+        SET notes = %s, status = %s, started_at = COALESCE(started_at, NOW())
         WHERE id = %s
         """,
         (room_url, updated_status, consultation_id),

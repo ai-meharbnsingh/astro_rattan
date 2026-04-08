@@ -1,4 +1,5 @@
 """Database initialization and connection management for PostgreSQL."""
+import traceback
 import psycopg2
 import psycopg2.extras
 import psycopg2.pool
@@ -66,8 +67,8 @@ CREATE TABLE IF NOT EXISTS users (
     gender TEXT,
     city TEXT,
     is_active INTEGER DEFAULT 1,
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS'),
-    updated_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
@@ -75,7 +76,7 @@ CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
 -- Kundli / Birth Charts
 CREATE TABLE IF NOT EXISTS kundlis (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-    user_id TEXT NOT NULL REFERENCES users(id),
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     person_name TEXT NOT NULL,
     birth_date TEXT NOT NULL,
     birth_time TEXT NOT NULL,
@@ -86,7 +87,7 @@ CREATE TABLE IF NOT EXISTS kundlis (
     ayanamsa TEXT NOT NULL DEFAULT 'lahiri',
     chart_data TEXT NOT NULL,
     iogita_analysis TEXT,
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_kundlis_user ON kundlis(user_id);
 
@@ -97,7 +98,7 @@ CREATE TABLE IF NOT EXISTS horoscopes (
     period_type TEXT NOT NULL CHECK(period_type IN ('daily','weekly','monthly','yearly')),
     period_date TEXT NOT NULL,
     content TEXT NOT NULL,
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS'),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE(sign, period_type, period_date)
 );
 CREATE INDEX IF NOT EXISTS idx_horoscopes_lookup ON horoscopes(sign, period_type, period_date);
@@ -118,7 +119,7 @@ CREATE TABLE IF NOT EXISTS panchang_cache (
     sunset TEXT NOT NULL,
     moonrise TEXT,
     moonset TEXT,
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS'),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE(date, latitude, longitude)
 );
 
@@ -136,7 +137,7 @@ CREATE TABLE IF NOT EXISTS content_library (
     translation TEXT,
     commentary TEXT,
     sort_order INTEGER DEFAULT 0,
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_content_category ON content_library(category);
 CREATE INDEX IF NOT EXISTS idx_content_gita ON content_library(category, chapter, verse);
@@ -154,9 +155,9 @@ CREATE TABLE IF NOT EXISTS blog_posts (
     seo_title TEXT,
     seo_description TEXT,
     is_published INTEGER NOT NULL DEFAULT 1,
-    published_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS'),
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS'),
-    updated_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+    published_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_blog_posts_slug ON blog_posts(slug);
 CREATE INDEX IF NOT EXISTS idx_blog_posts_published ON blog_posts(is_published, published_at DESC);
@@ -164,25 +165,25 @@ CREATE INDEX IF NOT EXISTS idx_blog_posts_published ON blog_posts(is_published, 
 -- Prashnavali Logs
 CREATE TABLE IF NOT EXISTS prashnavali_logs (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-    user_id TEXT REFERENCES users(id),
+    user_id TEXT REFERENCES users(id) ON DELETE CASCADE,
     prashnavali_type TEXT NOT NULL CHECK(prashnavali_type IN ('ram_shalaka','hanuman_prashna','ramcharitmanas','gita','yes_no_oracle','tarot')),
     question TEXT,
     result TEXT NOT NULL,
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- AI Chat Logs
 CREATE TABLE IF NOT EXISTS ai_chat_logs (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-    user_id TEXT NOT NULL REFERENCES users(id),
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     chat_type TEXT NOT NULL CHECK(chat_type IN ('kundli_interpretation','ask_question','gita_ai','remedies','oracle')),
-    kundli_id TEXT REFERENCES kundlis(id),
+    kundli_id TEXT REFERENCES kundlis(id) ON DELETE CASCADE,
     user_message TEXT NOT NULL,
     ai_response TEXT NOT NULL,
     model_used TEXT NOT NULL DEFAULT 'gpt-4',
     tokens_used INTEGER,
     rating INTEGER CHECK(rating IN (1, -1)),
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_ai_chat_user ON ai_chat_logs(user_id);
 
@@ -201,8 +202,8 @@ CREATE TABLE IF NOT EXISTS products (
     properties TEXT,
     stock INTEGER NOT NULL DEFAULT 0,
     is_active INTEGER NOT NULL DEFAULT 1,
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS'),
-    updated_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_products_category ON products(category);
 CREATE INDEX IF NOT EXISTS idx_products_active ON products(is_active);
@@ -210,10 +211,10 @@ CREATE INDEX IF NOT EXISTS idx_products_active ON products(is_active);
 -- E-Commerce: Cart
 CREATE TABLE IF NOT EXISTS cart_items (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-    user_id TEXT NOT NULL REFERENCES users(id),
-    product_id TEXT NOT NULL REFERENCES products(id),
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    product_id TEXT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
     quantity INTEGER NOT NULL DEFAULT 1 CHECK(quantity > 0),
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS'),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE(user_id, product_id)
 );
 CREATE INDEX IF NOT EXISTS idx_cart_user ON cart_items(user_id);
@@ -221,23 +222,23 @@ CREATE INDEX IF NOT EXISTS idx_cart_user ON cart_items(user_id);
 -- E-Commerce: Orders
 CREATE TABLE IF NOT EXISTS orders (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-    user_id TEXT NOT NULL REFERENCES users(id),
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     status TEXT NOT NULL DEFAULT 'placed' CHECK(status IN ('placed','confirmed','shipped','delivered','cancelled')),
     total DOUBLE PRECISION NOT NULL,
     shipping_address TEXT NOT NULL,
     payment_method TEXT NOT NULL CHECK(payment_method IN ('cod','razorpay','stripe')),
     payment_status TEXT NOT NULL DEFAULT 'pending' CHECK(payment_status IN ('pending','paid','failed','refunded')),
     tracking_number TEXT,
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS'),
-    updated_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_orders_user ON orders(user_id);
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 
 CREATE TABLE IF NOT EXISTS order_items (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-    order_id TEXT NOT NULL REFERENCES orders(id),
-    product_id TEXT NOT NULL REFERENCES products(id),
+    order_id TEXT NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+    product_id TEXT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
     quantity INTEGER NOT NULL CHECK(quantity > 0),
     price DOUBLE PRECISION NOT NULL,
     product_name TEXT NOT NULL
@@ -247,7 +248,7 @@ CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items(order_id);
 -- Payments
 CREATE TABLE IF NOT EXISTS payments (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-    order_id TEXT REFERENCES orders(id),
+    order_id TEXT REFERENCES orders(id) ON DELETE CASCADE,
     report_id TEXT,
     consultation_id TEXT,
     provider TEXT NOT NULL CHECK(provider IN ('razorpay','stripe','cod')),
@@ -256,13 +257,13 @@ CREATE TABLE IF NOT EXISTS payments (
     currency TEXT NOT NULL DEFAULT 'INR',
     status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','completed','failed','refunded')),
     metadata TEXT,
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- Consultation: Astrologer Profiles
 CREATE TABLE IF NOT EXISTS astrologers (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-    user_id TEXT UNIQUE NOT NULL REFERENCES users(id),
+    user_id TEXT UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     display_name TEXT NOT NULL,
     bio TEXT,
     specializations TEXT NOT NULL,
@@ -273,24 +274,24 @@ CREATE TABLE IF NOT EXISTS astrologers (
     total_consultations INTEGER DEFAULT 0,
     is_available INTEGER NOT NULL DEFAULT 0,
     is_approved INTEGER NOT NULL DEFAULT 0,
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_astrologers_available ON astrologers(is_available, is_approved);
 
 -- Consultations
 CREATE TABLE IF NOT EXISTS consultations (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-    user_id TEXT NOT NULL REFERENCES users(id),
-    astrologer_id TEXT NOT NULL REFERENCES astrologers(id),
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    astrologer_id TEXT NOT NULL REFERENCES astrologers(id) ON DELETE CASCADE,
     type TEXT NOT NULL CHECK(type IN ('chat','call','video')),
     status TEXT NOT NULL DEFAULT 'requested' CHECK(status IN ('requested','accepted','active','completed','cancelled')),
-    scheduled_at TEXT,
-    started_at TEXT,
-    ended_at TEXT,
+    scheduled_at TIMESTAMPTZ,
+    started_at TIMESTAMPTZ,
+    ended_at TIMESTAMPTZ,
     duration_minutes INTEGER,
     total_charge DOUBLE PRECISION,
     notes TEXT,
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_consultations_user ON consultations(user_id);
 CREATE INDEX IF NOT EXISTS idx_consultations_astrologer ON consultations(astrologer_id);
@@ -298,25 +299,25 @@ CREATE INDEX IF NOT EXISTS idx_consultations_astrologer ON consultations(astrolo
 -- Messages
 CREATE TABLE IF NOT EXISTS messages (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-    consultation_id TEXT NOT NULL REFERENCES consultations(id),
-    sender_id TEXT NOT NULL REFERENCES users(id),
+    consultation_id TEXT NOT NULL REFERENCES consultations(id) ON DELETE CASCADE,
+    sender_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     content TEXT NOT NULL,
     message_type TEXT NOT NULL DEFAULT 'text' CHECK(message_type IN ('text','image','file')),
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_messages_consultation ON messages(consultation_id);
 
 -- Paid Reports
 CREATE TABLE IF NOT EXISTS reports (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-    user_id TEXT NOT NULL REFERENCES users(id),
-    kundli_id TEXT NOT NULL REFERENCES kundlis(id),
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    kundli_id TEXT NOT NULL REFERENCES kundlis(id) ON DELETE CASCADE,
     report_type TEXT NOT NULL CHECK(report_type IN ('full_kundli','marriage','career','health','yearly')),
     status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','paid','generating','ready','failed')),
     content TEXT,
     pdf_url TEXT,
     price DOUBLE PRECISION NOT NULL,
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_reports_user ON reports(user_id);
 
@@ -329,7 +330,8 @@ CREATE TABLE IF NOT EXISTS muhurat_cache (
     latitude DOUBLE PRECISION NOT NULL,
     longitude DOUBLE PRECISION NOT NULL,
     results TEXT NOT NULL,
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE(muhurat_type, year, month, latitude, longitude)
 );
 
 -- Festivals
@@ -354,14 +356,14 @@ CREATE TABLE IF NOT EXISTS product_bundles (
     bundle_type TEXT NOT NULL CHECK(bundle_type IN ('consultation_product','multi_product')),
     discount_percent DOUBLE PRECISION NOT NULL CHECK(discount_percent >= 0 AND discount_percent <= 100),
     is_active INTEGER NOT NULL DEFAULT 1,
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_bundles_active ON product_bundles(is_active);
 
 CREATE TABLE IF NOT EXISTS bundle_items (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-    bundle_id TEXT NOT NULL REFERENCES product_bundles(id),
-    product_id TEXT REFERENCES products(id),
+    bundle_id TEXT NOT NULL REFERENCES product_bundles(id) ON DELETE CASCADE,
+    product_id TEXT REFERENCES products(id) ON DELETE CASCADE,
     consultation_type TEXT CHECK(consultation_type IN ('chat','call','video')),
     quantity INTEGER NOT NULL DEFAULT 1 CHECK(quantity > 0)
 );
@@ -376,7 +378,7 @@ CREATE TABLE IF NOT EXISTS audit_log (
     resource_id TEXT,
     details TEXT,
     ip_address TEXT,
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_audit_log_user ON audit_log(user_id);
 CREATE INDEX IF NOT EXISTS idx_audit_log_action ON audit_log(action);
@@ -385,45 +387,45 @@ CREATE INDEX IF NOT EXISTS idx_audit_log_action ON audit_log(action);
 CREATE TABLE IF NOT EXISTS referral_codes (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
     code TEXT UNIQUE NOT NULL,
-    user_id TEXT UNIQUE NOT NULL REFERENCES users(id),
+    user_id TEXT UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     discount_percent DOUBLE PRECISION NOT NULL DEFAULT 5.0,
     commission_percent DOUBLE PRECISION NOT NULL DEFAULT 10.0,
     uses_count INTEGER NOT NULL DEFAULT 0,
     max_uses INTEGER,
     is_active INTEGER NOT NULL DEFAULT 1,
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS'),
-    updated_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_referral_codes_code ON referral_codes(code);
 CREATE INDEX IF NOT EXISTS idx_referral_codes_user ON referral_codes(user_id);
 
 CREATE TABLE IF NOT EXISTS referral_earnings (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-    referrer_id TEXT NOT NULL REFERENCES users(id),
-    referred_id TEXT NOT NULL REFERENCES users(id),
-    order_id TEXT NOT NULL REFERENCES orders(id),
+    referrer_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    referred_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    order_id TEXT NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
     amount DOUBLE PRECISION NOT NULL,
     commission DOUBLE PRECISION NOT NULL,
     status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','paid')),
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_referral_earnings_referrer ON referral_earnings(referrer_id);
 CREATE INDEX IF NOT EXISTS idx_referral_earnings_referred ON referral_earnings(referred_id);
 
 -- Gamification: User Karma
 CREATE TABLE IF NOT EXISTS user_karma (
-    user_id TEXT PRIMARY KEY REFERENCES users(id),
+    user_id TEXT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
     total_points INTEGER NOT NULL DEFAULT 0,
     current_streak INTEGER NOT NULL DEFAULT 0,
     longest_streak INTEGER NOT NULL DEFAULT 0,
-    last_activity_date TEXT,
+    last_activity_date TIMESTAMPTZ,
     level INTEGER NOT NULL DEFAULT 1,
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS karma_transactions (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-    user_id TEXT NOT NULL REFERENCES users(id),
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     points INTEGER NOT NULL,
     action_type TEXT NOT NULL CHECK(action_type IN (
         'daily_login','kundli_generated','ai_chat','panchang_viewed',
@@ -431,16 +433,16 @@ CREATE TABLE IF NOT EXISTS karma_transactions (
         'prashnavali_used','learning_completed'
     )),
     description TEXT,
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_karma_transactions_user ON karma_transactions(user_id);
 CREATE INDEX IF NOT EXISTS idx_karma_transactions_created ON karma_transactions(created_at);
 
 CREATE TABLE IF NOT EXISTS user_badges (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-    user_id TEXT NOT NULL REFERENCES users(id),
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     badge_id TEXT NOT NULL,
-    earned_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS'),
+    earned_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE(user_id, badge_id)
 );
 CREATE INDEX IF NOT EXISTS idx_user_badges_user ON user_badges(user_id);
@@ -461,9 +463,9 @@ CREATE INDEX IF NOT EXISTS idx_learning_modules_order ON learning_modules(order_
 
 CREATE TABLE IF NOT EXISTS learning_progress (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-    user_id TEXT NOT NULL REFERENCES users(id),
-    module_id TEXT NOT NULL REFERENCES learning_modules(id),
-    completed_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS'),
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    module_id TEXT NOT NULL REFERENCES learning_modules(id) ON DELETE CASCADE,
+    completed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE(user_id, module_id)
 );
 CREATE INDEX IF NOT EXISTS idx_learning_progress_user ON learning_progress(user_id);
@@ -471,19 +473,19 @@ CREATE INDEX IF NOT EXISTS idx_learning_progress_user ON learning_progress(user_
 -- Notifications
 CREATE TABLE IF NOT EXISTS user_notifications (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-    user_id TEXT NOT NULL REFERENCES users(id),
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     type TEXT NOT NULL CHECK(type IN ('transit','muhurat','festival','streak','content')),
     title TEXT NOT NULL,
     message TEXT NOT NULL,
     is_read INTEGER NOT NULL DEFAULT 0,
     link TEXT,
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_user_notifications_user ON user_notifications(user_id, is_read);
 CREATE INDEX IF NOT EXISTS idx_user_notifications_created ON user_notifications(created_at DESC);
 
 CREATE TABLE IF NOT EXISTS notification_preferences (
-    user_id TEXT PRIMARY KEY REFERENCES users(id),
+    user_id TEXT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
     transit_alerts INTEGER NOT NULL DEFAULT 1,
     muhurat_alerts INTEGER NOT NULL DEFAULT 1,
     festival_alerts INTEGER NOT NULL DEFAULT 1,
@@ -504,16 +506,16 @@ CREATE INDEX IF NOT EXISTS idx_forum_categories_order ON forum_categories(order_
 
 CREATE TABLE IF NOT EXISTS forum_threads (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-    category_id TEXT NOT NULL REFERENCES forum_categories(id),
-    user_id TEXT NOT NULL REFERENCES users(id),
+    category_id TEXT NOT NULL REFERENCES forum_categories(id) ON DELETE CASCADE,
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     title TEXT NOT NULL,
     content TEXT NOT NULL,
     is_pinned INTEGER NOT NULL DEFAULT 0,
     is_locked INTEGER NOT NULL DEFAULT 0,
     views_count INTEGER NOT NULL DEFAULT 0,
     replies_count INTEGER NOT NULL DEFAULT 0,
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS'),
-    updated_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_forum_threads_category ON forum_threads(category_id);
 CREATE INDEX IF NOT EXISTS idx_forum_threads_user ON forum_threads(user_id);
@@ -521,22 +523,22 @@ CREATE INDEX IF NOT EXISTS idx_forum_threads_created ON forum_threads(created_at
 
 CREATE TABLE IF NOT EXISTS forum_replies (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-    thread_id TEXT NOT NULL REFERENCES forum_threads(id),
-    user_id TEXT NOT NULL REFERENCES users(id),
+    thread_id TEXT NOT NULL REFERENCES forum_threads(id) ON DELETE CASCADE,
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     content TEXT NOT NULL,
     is_best_answer INTEGER NOT NULL DEFAULT 0,
     likes_count INTEGER NOT NULL DEFAULT 0,
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS'),
-    updated_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_forum_replies_thread ON forum_replies(thread_id);
 CREATE INDEX IF NOT EXISTS idx_forum_replies_user ON forum_replies(user_id);
 
 CREATE TABLE IF NOT EXISTS forum_likes (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-    user_id TEXT NOT NULL REFERENCES users(id),
-    reply_id TEXT NOT NULL REFERENCES forum_replies(id),
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS'),
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    reply_id TEXT NOT NULL REFERENCES forum_replies(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE(user_id, reply_id)
 );
 CREATE INDEX IF NOT EXISTS idx_forum_likes_reply ON forum_likes(reply_id);
@@ -545,7 +547,7 @@ CREATE INDEX IF NOT EXISTS idx_forum_likes_user ON forum_likes(user_id);
 -- Astrologer Client Management
 CREATE TABLE IF NOT EXISTS astrologer_clients (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-    astrologer_user_id TEXT NOT NULL REFERENCES users(id),
+    astrologer_user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     client_name TEXT NOT NULL,
     client_phone TEXT,
     client_email TEXT,
@@ -557,9 +559,9 @@ CREATE TABLE IF NOT EXISTS astrologer_clients (
     timezone_offset DOUBLE PRECISION DEFAULT 5.5,
     gender TEXT DEFAULT 'male',
     notes TEXT,
-    kundli_id TEXT REFERENCES kundlis(id),
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS'),
-    updated_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+    kundli_id TEXT REFERENCES kundlis(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_astrologer_clients_astrologer ON astrologer_clients(astrologer_user_id);
 CREATE INDEX IF NOT EXISTS idx_astrologer_clients_name ON astrologer_clients(client_name);
@@ -570,8 +572,8 @@ CREATE TABLE IF NOT EXISTS email_verifications (
     email TEXT NOT NULL,
     otp TEXT NOT NULL,
     attempts INTEGER NOT NULL DEFAULT 0,
-    expires_at TEXT NOT NULL,
-    created_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+    expires_at TIMESTAMPTZ NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_email_verifications_email ON email_verifications(email);
 
@@ -579,7 +581,7 @@ CREATE INDEX IF NOT EXISTS idx_email_verifications_email ON email_verifications(
 CREATE TABLE IF NOT EXISTS applied_migrations (
     version INTEGER PRIMARY KEY,
     description TEXT NOT NULL,
-    applied_at TEXT NOT NULL DEFAULT to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+    applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 """
 
@@ -606,7 +608,9 @@ def init_db():
             try:
                 cur.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto")
                 conn.commit()
-            except Exception:
+            except Exception as e:
+                print(f"[init_db] Warning (pgcrypto): {e}")
+                print(traceback.format_exc())
                 conn.rollback()
             # Split and execute each statement individually
             statements = [s.strip() for s in SCHEMA.split(';') if s.strip()]
@@ -628,7 +632,9 @@ def init_db():
                         "INSERT INTO forum_categories (name, description, icon, order_index) VALUES (%s, %s, %s, %s) ON CONFLICT (name) DO NOTHING",
                         (name, description, icon, order_index),
                     )
-                except Exception:
+                except Exception as e:
+                    print(f"[init_db] Warning (forum seed): {e}")
+                    print(traceback.format_exc())
                     conn.rollback()
                     continue
             conn.commit()

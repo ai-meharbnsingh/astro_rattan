@@ -67,9 +67,12 @@ const toList = (value: unknown): string[] => {
   return [];
 };
 
+const isVideoLink = (url: string) =>
+  url.startsWith('https://meet.jit.si/') || url.startsWith('https://meet.astrovedic.com/');
+
 const extractVideoLink = (item: Record<string, unknown>) => {
-  if (typeof item.video_link === 'string' && item.video_link.startsWith('https://meet.jit.si/')) return item.video_link;
-  if (typeof item.notes === 'string' && item.notes.startsWith('https://meet.jit.si/')) return item.notes;
+  if (typeof item.video_link === 'string' && isVideoLink(item.video_link)) return item.video_link;
+  if (typeof item.notes === 'string' && isVideoLink(item.notes)) return item.notes;
   return undefined;
 };
 

@@ -10,6 +10,7 @@ Set AI_PROVIDER=gemini|openai to force a specific provider.
 """
 import os
 import json
+import traceback
 from typing import Optional
 
 try:
@@ -75,7 +76,9 @@ def _call_gemini(system_prompt: str, user_prompt: str, temperature: float = 0.7)
         )
         resp.raise_for_status()
         return resp.json()["candidates"][0]["content"]["parts"][0]["text"]
-    except Exception:
+    except Exception as e:
+        print(f"ERROR in _call_gemini: {e}")
+        print(traceback.format_exc())
         return None
 
 
@@ -105,7 +108,9 @@ def _call_openai(system_prompt: str, user_prompt: str, temperature: float = 0.7)
         )
         resp.raise_for_status()
         return resp.json()["choices"][0]["message"]["content"]
-    except Exception:
+    except Exception as e:
+        print(f"ERROR in _call_openai: {e}")
+        print(traceback.format_exc())
         return None
 
 
@@ -143,6 +148,20 @@ def _fallback_response(context: str) -> str:
         f"Context: {context}. "
         "Please configure GEMINI_API_KEY (free) or OPENAI_API_KEY in your environment."
     )
+
+
+def get_active_model_label() -> str:
+    """Return the model name string for the currently active provider.
+
+    Used by AI chat-log inserts so ``model_used`` reflects the real
+    provider/model rather than a hardcoded ``'gpt-4'``.
+    """
+    provider = _get_provider()
+    if provider == "gemini":
+        return GEMINI_MODEL
+    if provider == "openai":
+        return OPENAI_MODEL
+    return "none"
 
 
 def get_ai_status() -> dict:

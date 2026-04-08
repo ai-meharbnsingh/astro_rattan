@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from app.auth import get_current_user
 from app.database import get_db
 from app.models import AIInterpretRequest, AIAskRequest, AIGitaRequest, AIOracleRequest
-from app.ai_engine import ai_interpret_kundli, ai_ask_question, ai_gita_answer, ai_remedies, ai_oracle
+from app.ai_engine import ai_interpret_kundli, ai_ask_question, ai_gita_answer, ai_remedies, ai_oracle, get_active_model_label
 
 router = APIRouter(prefix="/api/ai", tags=["ai"])
 
@@ -64,7 +64,7 @@ def interpret_kundli(
             body.kundli_id,
             f"Interpret kundli {body.kundli_id}",
             result.get("interpretation", ""),
-            "gpt-4",
+            get_active_model_label(),
         ),
     )
     db.commit()
@@ -99,7 +99,7 @@ def ask_question(
             body.kundli_id,
             body.question,
             result.get("answer", ""),
-            "gpt-4",
+            get_active_model_label(),
         ),
     )
     db.commit()
@@ -145,7 +145,7 @@ def get_remedies(
             body.kundli_id,
             body.question,
             json.dumps(result.get("remedies", []), default=str),
-            "gpt-4",
+            get_active_model_label(),
         ),
     )
     db.commit()

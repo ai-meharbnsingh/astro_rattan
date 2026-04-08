@@ -9,6 +9,7 @@ import hashlib
 import hmac
 import json
 import os
+import traceback
 from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from app.auth import get_current_user
@@ -106,6 +107,8 @@ def initiate_payment(
                 razorpay_key_id = RAZORPAY_KEY_ID
             except Exception as e:
                 # Razorpay API unavailable — create record anyway for manual processing
+                print(f"ERROR in initiate_payment (razorpay): {e}")
+                print(traceback.format_exc())
                 provider_payment_id = f"rz_pending_{req.order_id}"
         else:
             provider_payment_id = f"rz_test_{req.order_id}"  # Test mode
@@ -127,13 +130,15 @@ def initiate_payment(
                         "quantity": 1,
                     }],
                     mode="payment",
-                    success_url=f"{FRONTEND_URL}/orders/{req.order_id}%spayment=success",
-                    cancel_url=f"{FRONTEND_URL}/orders/{req.order_id}%spayment=cancelled",
+                    success_url=f"{FRONTEND_URL}/orders/{req.order_id}?payment=success",
+                    cancel_url=f"{FRONTEND_URL}/orders/{req.order_id}?payment=cancelled",
                     metadata={"order_id": req.order_id},
                 )
                 provider_payment_id = session.id
                 payment_url = session.url
             except Exception as e:
+                print(f"ERROR in initiate_payment (stripe): {e}")
+                print(traceback.format_exc())
                 provider_payment_id = f"stripe_pending_{req.order_id}"
         else:
             provider_payment_id = f"stripe_test_{req.order_id}"  # Test mode
@@ -229,7 +234,9 @@ def initiate_report_payment(
                 })
                 provider_payment_id = rz_order["id"]
                 razorpay_key_id = RAZORPAY_KEY_ID
-            except Exception:
+            except Exception as e:
+                print(f"ERROR in initiate_report_payment (razorpay): {e}")
+                print(traceback.format_exc())
                 provider_payment_id = f"rz_pending_report_{req.report_id}"
         else:
             provider_payment_id = f"rz_test_report_{req.report_id}"
@@ -251,13 +258,15 @@ def initiate_report_payment(
                         "quantity": 1,
                     }],
                     mode="payment",
-                    success_url=f"{FRONTEND_URL}/profile%sreport_payment=success&report_id={req.report_id}",
-                    cancel_url=f"{FRONTEND_URL}/profile%sreport_payment=cancelled",
+                    success_url=f"{FRONTEND_URL}/profile?report_payment=success&report_id={req.report_id}",
+                    cancel_url=f"{FRONTEND_URL}/profile?report_payment=cancelled",
                     metadata={"report_id": req.report_id, "user_id": user_id},
                 )
                 provider_payment_id = session.id
                 payment_url = session.url
-            except Exception:
+            except Exception as e:
+                print(f"ERROR in initiate_report_payment (stripe): {e}")
+                print(traceback.format_exc())
                 provider_payment_id = f"stripe_pending_report_{req.report_id}"
         else:
             provider_payment_id = f"stripe_test_report_{req.report_id}"
@@ -355,7 +364,7 @@ async def razorpay_webhook(request: Request):
                 )
                 # Update report status and trigger PDF generation
                 db.execute(
-                    "UPDATE reports SET status = 'paid', updated_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS') WHERE id = %s",
+                    "UPDATE reports SET status = 'paid', updated_at = NOW() WHERE id = %s",
                     (report_id,),
                 )
                 db.commit()
@@ -399,7 +408,7 @@ async def razorpay_webhook(request: Request):
             # Update order payment status
             db.execute(
                 "UPDATE orders SET payment_status = 'paid', status = 'confirmed', "
-                "updated_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS') WHERE id = %s",
+                "updated_at = NOW() WHERE id = %s",
                 (order_id,),
             )
             db.commit()
@@ -414,7 +423,7 @@ async def razorpay_webhook(request: Request):
                 (razorpay_payment_id, json.dumps(payment_entity), order_id),
             )
             db.execute(
-                "UPDATE orders SET payment_status = 'failed', updated_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS') WHERE id = %s",
+                "UPDATE orders SET payment_status = 'failed', updated_at = NOW() WHERE id = %s",
                 (order_id,),
             )
             db.commit()
@@ -520,7 +529,7 @@ async def stripe_webhook(request: Request):
                     (stripe_payment_id, json.dumps(data_object), report_id),
                 )
                 db.execute(
-                    "UPDATE reports SET status = 'paid', updated_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS') WHERE id = %s",
+                    "UPDATE reports SET status = 'paid', updated_at = NOW() WHERE id = %s",
                     (report_id,),
                 )
                 db.commit()
@@ -562,7 +571,7 @@ async def stripe_webhook(request: Request):
             )
             db.execute(
                 "UPDATE orders SET payment_status = 'paid', status = 'confirmed', "
-                "updated_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS') WHERE id = %s",
+                "updated_at = NOW() WHERE id = %s",
                 (order_id,),
             )
             db.commit()
@@ -577,7 +586,7 @@ async def stripe_webhook(request: Request):
                 (stripe_payment_id, json.dumps(data_object), order_id),
             )
             db.execute(
-                "UPDATE orders SET payment_status = 'failed', updated_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS') WHERE id = %s",
+                "UPDATE orders SET payment_status = 'failed', updated_at = NOW() WHERE id = %s",
                 (order_id,),
             )
             db.commit()

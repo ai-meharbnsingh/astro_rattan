@@ -1,0 +1,51 @@
+import { Loader2 } from 'lucide-react';
+import { translateSign } from '@/lib/backend-translations';
+
+interface UpagrahasTabProps {
+  upagrahasData: any;
+  loadingUpagrahas: boolean;
+  language: string;
+  t: (key: string) => string;
+}
+
+export default function UpagrahasTab({ upagrahasData, loadingUpagrahas, language, t }: UpagrahasTabProps) {
+  if (loadingUpagrahas) {
+    return (
+      <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-sacred-text-secondary">{t('kundli.loadingUpagrahas')}</span></div>
+    );
+  }
+
+  if (!upagrahasData) {
+    return <p className="text-center text-sacred-text-secondary py-8">{t('common.noData')}</p>;
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+        <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.upagrahasTitle')}</h4>
+        <table className="w-full text-xs">
+          <thead><tr className="bg-sacred-gold/10">
+            <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.upagraha')}</th>
+            <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.longitude')}</th>
+            <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.sign')}</th>
+            <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.nakshatra')}</th>
+          </tr></thead>
+          <tbody>
+            {(() => {
+              const raw = upagrahasData.upagrahas;
+              const items = Array.isArray(raw) ? raw : Object.entries(raw || {}).map(([name, data]: [string, any]) => ({ name, ...data }));
+              return items.map((u: any) => (
+                <tr key={u.name} className="border-t border-sacred-gold/10">
+                  <td className="p-2 font-semibold text-sacred-brown">{u.name}</td>
+                  <td className="p-2 text-sacred-text-secondary">{typeof u.longitude === 'number' ? u.longitude.toFixed(2) + '\u00b0' : u.longitude}</td>
+                  <td className="p-2 text-sacred-text-secondary">{translateSign(u.sign, language)}</td>
+                  <td className="p-2 text-sacred-text-secondary">{u.nakshatra}{u.nakshatra_pada ? ` (${t('kundli.pada')} ${u.nakshatra_pada})` : u.pada ? ` (${t('kundli.pada')} ${u.pada})` : ''}</td>
+                </tr>
+              ));
+            })()}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}

@@ -92,6 +92,7 @@ export default function AuthPage() {
           email_token: emailToken,
         });
         localStorage.setItem('astrovedic_token', data.token);
+        if (data.refresh_token) localStorage.setItem('astrovedic_refresh_token', data.refresh_token);
         window.location.href = '/astrologer-panel';
       } else {
         await register(registerForm.email, registerForm.password, registerForm.name, emailToken);

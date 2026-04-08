@@ -262,7 +262,7 @@ def update_client(
     if not updates:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No fields to update")
 
-    updates.append("updated_at = to_char(NOW(), 'YYYY-MM-DD\"T\"HH24:MI:SS')")
+    updates.append("updated_at = NOW()")
     params.extend([client_id, astrologer_user_id])
 
     db.execute(

@@ -123,12 +123,13 @@ function getPlanetLabel(p: PlanetData, lang?: string): string {
   return abbr + suffix;
 }
 
-function getStrength(status: string): { label: string; color: string } {
+function getStrength(status: string, t?: (k: string) => string): { label: string; color: string } {
   const s = status?.toLowerCase() || '';
-  if (s.includes('exalted')) return { label: 'Exalted', color: '#22C55E' };
-  if (s.includes('debilitated')) return { label: 'Debilitated', color: '#EF4444' };
-  if (s.includes('own')) return { label: 'Own Sign', color: '#3B82F6' };
-  return { label: status || 'Transiting', color: '#6B5B4F' };
+  const tr = t || ((k: string) => k);
+  if (s.includes('exalted')) return { label: tr('planet.exalted'), color: '#22C55E' };
+  if (s.includes('debilitated')) return { label: tr('planet.debilitated'), color: '#EF4444' };
+  if (s.includes('own')) return { label: tr('planet.ownSign'), color: '#3B82F6' };
+  return { label: status || tr('planet.transiting'), color: '#6B5B4F' };
 }
 
 /*
@@ -720,7 +721,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
   }, []);
 
   const showPlanetTooltip = useCallback((p: PlanetData, x: number, y: number) => {
-    const strength = getStrength(p.status);
+    const strength = getStrength(p.status, t);
     const aspects = aspectsFor(p);
     setTooltip({
       x, y,
@@ -730,10 +731,10 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           <div className="text-xs text-cosmic-text">
             {ZODIAC_NUMBERS[p.sign] || ''} {p.sign} {p.sign_degree?.toFixed(1)}&deg;
           </div>
-          <div className="text-xs text-cosmic-text-muted">Nakshatra: {p.nakshatra || 'N/A'}</div>
-          <div className="text-xs text-cosmic-text-muted">House: {p.house}</div>
-          <div className="text-xs" style={{ color: strength.color }}>Strength: {strength.label}</div>
-          <div className="text-xs text-cosmic-text-muted">Aspects: {aspects.join(', ')}</div>
+          <div className="text-xs text-cosmic-text-muted">{t('table.nakshatra')}: {p.nakshatra || 'N/A'}</div>
+          <div className="text-xs text-cosmic-text-muted">{t('table.house')}: {p.house}</div>
+          <div className="text-xs" style={{ color: strength.color }}>{strength.label}</div>
+          <div className="text-xs text-cosmic-text-muted">{t('table.aspects')}: {aspects.join(', ')}</div>
         </div>
       ),
     });
@@ -747,12 +748,12 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
       content: (
         <div className="space-y-1.5">
           <div className="font-display font-bold text-sacred-gold text-sm">
-            House {house}
+            {t('table.house')} {house}
           </div>
-          <div className="text-xs text-cosmic-text-muted">{HOUSE_SIGNIFICANCE[house] || ''}</div>
+          <div className="text-xs text-cosmic-text-muted">{t(`house.${house}`)}</div>
           {housePlanets.length > 0 && (
             <div className="text-xs text-cosmic-text">
-              Planets: {housePlanets.map((p) => p.planet).join(', ')}
+              {t('table.planet')}: {housePlanets.map((p) => p.planet).join(', ')}
             </div>
           )}
         </div>
@@ -816,7 +817,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           fontFamily="var(--font-sacred, Cormorant Garamond, Georgia, serif)"
           opacity={0.6}
         >
-          Rasi Chart
+          {t('chart.rasi')}
         </text>
         <text
           x={svgWidth / 2}
@@ -827,7 +828,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           fontFamily="var(--font-sacred, Cormorant Garamond, Georgia, serif)"
           opacity={0.4}
         >
-          South Indian
+          {t('chart.southIndian')}
         </text>
 
         {/* House cells */}
@@ -1101,8 +1102,8 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                   : (count > 3 ? 22 : count > 2 ? 24 : 28);
                 const rowHeight = count > 4 ? 16 : count > 3 ? 18 : 20;
                 const fontSize = isTrapezoid
-                  ? (count > 4 ? 11 : 13)
-                  : (count > 3 ? 10 : count > 2 ? 11 : 12);
+                  ? (count > 4 ? 13 : 15)
+                  : (count > 3 ? 12 : count > 2 ? 13 : 14);
                 const startX = nh.cx - ((cols - 1) * spacing) / 2;
                 const px = startX + pCol * spacing;
                 const baseY = nh.cy + (isTrapezoid ? 14 : 8) - (count > 0 ? 2 : 0);
@@ -1199,13 +1200,14 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
 
 // Legend component for chart status symbols
 export function ChartLegend() {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-wrap gap-x-4 gap-y-1 justify-center text-xs mt-2 px-2" style={{ color: 'var(--aged-gold)', fontFamily: 'var(--font-sacred, Cormorant Garamond, Georgia, serif)' }}>
-      <span><strong>*</strong> Retrograde</span>
-      <span><strong>^</strong> Combust</span>
-      <span><strong>{'\u25A1'}</strong> Vargottama</span>
-      <span><strong>{'\u2191'}</strong> Exalted</span>
-      <span><strong>{'\u2193'}</strong> Debilitated</span>
+      <span><strong>*</strong> {t('planet.retrograde')}</span>
+      <span><strong>^</strong> {t('planet.combust')}</span>
+      <span><strong>{'\u25A1'}</strong> {t('planet.vargottama')}</span>
+      <span><strong>{'\u2191'}</strong> {t('planet.exalted')}</span>
+      <span><strong>{'\u2193'}</strong> {t('planet.debilitated')}</span>
     </div>
   );
 }

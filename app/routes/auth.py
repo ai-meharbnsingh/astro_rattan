@@ -7,7 +7,7 @@ from typing import Any
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
 from slowapi import Limiter
 
-from app.auth import hash_password, verify_password, create_token, decode_token, get_current_user
+from app.auth import hash_password, verify_password, create_token, create_refresh_token, decode_token, get_current_user
 from app.database import get_db
 from app.email_service import send_registration_welcome, send_verification_otp
 from app.models import (
@@ -17,6 +17,7 @@ from app.models import (
     LoginRequest,
     UserResponse,
     TokenResponse,
+    RefreshTokenRequest,
     UserProfileUpdate,
     ChangePasswordRequest,
     AstrologerRegisterRequest,
@@ -174,8 +175,9 @@ def register(
         created_at=user_row["created_at"],
     )
     token = create_token({"sub": user.id, "email": user.email, "role": user.role})
+    refresh = create_refresh_token({"sub": user.id})
     background_tasks.add_task(send_registration_welcome, body.name, body.email)
-    return TokenResponse(user=user, token=token)
+    return TokenResponse(user=user, token=token, refresh_token=refresh)
 
 
 @router.post("/register-astrologer", status_code=status.HTTP_201_CREATED, response_model=TokenResponse)
@@ -233,8 +235,9 @@ def register_astrologer(
         created_at=user_row["created_at"],
     )
     token = create_token({"sub": user.id, "email": user.email, "role": user.role})
+    refresh = create_refresh_token({"sub": user.id})
     background_tasks.add_task(send_registration_welcome, body.name, body.email)
-    return TokenResponse(user=user, token=token)
+    return TokenResponse(user=user, token=token, refresh_token=refresh)
 
 
 @router.post("/login", status_code=status.HTTP_200_OK, response_model=TokenResponse)
@@ -270,7 +273,30 @@ def login(request: Request, body: LoginRequest, db: Any = Depends(get_db)):
         created_at=row["created_at"],
     )
     token = create_token({"sub": user.id, "email": user.email, "role": user.role})
-    return TokenResponse(user=user, token=token)
+    refresh = create_refresh_token({"sub": user.id})
+    return TokenResponse(user=user, token=token, refresh_token=refresh)
+
+
+@router.post("/refresh", status_code=status.HTTP_200_OK)
+def refresh_token(body: RefreshTokenRequest, db: Any = Depends(get_db)):
+    """Exchange a valid refresh token for a new access token + refresh token."""
+    payload = decode_token(body.refresh_token)
+    if not payload or payload.get("type") != "refresh":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token")
+
+    user_id = payload.get("sub")
+    row = db.execute(
+        """SELECT id, email, role, is_active FROM users WHERE id = %s""",
+        (user_id,),
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
+    if row["is_active"] is not None and not row["is_active"]:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account deactivated")
+
+    new_token = create_token({"sub": row["id"], "email": row["email"], "role": row["role"]})
+    new_refresh = create_refresh_token({"sub": row["id"]})
+    return {"token": new_token, "refresh_token": new_refresh}
 
 
 @router.get("/me", status_code=status.HTTP_200_OK, response_model=UserResponse)
@@ -342,7 +368,7 @@ def update_profile(
             status_code=status.HTTP_400_BAD_REQUEST, detail="No fields to update"
         )
 
-    updates.append("updated_at = to_char(NOW(), 'YYYY-MM-DD\"T\"HH24:MI:SS')")
+    updates.append("updated_at = NOW()")
     params.append(user_id)
 
     db.execute(f"UPDATE users SET {', '.join(updates)} WHERE id = %s", params)
@@ -380,7 +406,7 @@ def change_password(
 
     new_hash = hash_password(body.new_password)
     db.execute(
-        "UPDATE users SET password_hash = %s, updated_at = to_char(NOW(), 'YYYY-MM-DD\"T\"HH24:MI:SS') WHERE id = %s",
+        "UPDATE users SET password_hash = %s, updated_at = NOW() WHERE id = %s",
         (new_hash, user_id),
     )
     db.commit()

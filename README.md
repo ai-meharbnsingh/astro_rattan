@@ -141,8 +141,7 @@
 | **Tailwind CSS** | Styling |
 | **shadcn/ui** | Component library |
 | **Three.js** | 3D backgrounds |
-| **Zustand** | State management |
-| **React Query** | Data fetching |
+| **React Context + useState** | State management |
 
 ---
 

@@ -329,6 +329,7 @@ def _calculate_swe(dt_utc: datetime, lat: float, lon: float) -> Dict[str, Any]:
         },
         "houses": houses,
         "placidus_cusps": placidus_cusps,
+        "ayanamsa_value": round(ayanamsa, 6),
     }
 
 

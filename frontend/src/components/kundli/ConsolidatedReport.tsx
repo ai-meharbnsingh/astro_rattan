@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
-import { translatePlanet, translateSign, translateName, translateRemedy, translateLabel, translateBackend } from '@/lib/backend-translations';
+import { translatePlanet, translateSign, translateNakshatra, translateName, translateRemedy, translateLabel, translateBackend } from '@/lib/backend-translations';
 import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
 import LordshipsTab from '@/components/kundli/LordshipsTab';
 
@@ -509,7 +509,7 @@ export default function ConsolidatedReport({
                         <td className="p-1.5 font-medium" style={{ color: 'var(--ink)' }}>{translatePlanet(planet.planet, language)}</td>
                         <td className="p-1.5" style={{ color: 'var(--ink)' }}>{translateSign(planet.sign, language)}</td>
                         <td className="p-1.5 text-center">{planet.sign_degree?.toFixed(1)}&deg;</td>
-                        <td className="p-1.5">{planet.nakshatra || '\u2014'}</td>
+                        <td className="p-1.5">{translateNakshatra(planet.nakshatra, language) || '\u2014'}</td>
                         <td className="p-1.5 text-center">
                           <span className={`text-xs px-1 py-0.5 rounded ${
                             planet.status === 'Exalted' || planet.status === 'Own Sign'
@@ -547,11 +547,11 @@ export default function ConsolidatedReport({
               ) : avakhadaData ? (
                 <div className="grid grid-cols-2 gap-1.5">
                   {[
-                    { label: t('avakhada.ascendant'), value: avakhadaData.ascendant },
-                    { label: t('avakhada.ascendantLord'), value: avakhadaData.ascendant_lord },
-                    { label: t('avakhada.rashi'), value: avakhadaData.rashi },
-                    { label: t('avakhada.rashiLord'), value: avakhadaData.rashi_lord },
-                    { label: t('avakhada.nakshatra'), value: `${avakhadaData.nakshatra} (P${avakhadaData.nakshatra_pada})` },
+                    { label: t('avakhada.ascendant'), value: translateSign(avakhadaData.ascendant, language) },
+                    { label: t('avakhada.ascendantLord'), value: translatePlanet(avakhadaData.ascendant_lord, language) },
+                    { label: t('avakhada.rashi'), value: translateSign(avakhadaData.rashi, language) },
+                    { label: t('avakhada.rashiLord'), value: translatePlanet(avakhadaData.rashi_lord, language) },
+                    { label: t('avakhada.nakshatra'), value: `${translateNakshatra(avakhadaData.nakshatra, language)} (P${avakhadaData.nakshatra_pada})` },
                     { label: t('avakhada.yoga'), value: avakhadaData.yoga },
                     { label: t('avakhada.karana'), value: avakhadaData.karana },
                     { label: t('avakhada.yoni'), value: avakhadaData.yoni },
@@ -973,7 +973,7 @@ export default function ConsolidatedReport({
                             <td className="p-1.5 font-medium text-cosmic-text">{name}</td>
                             <td className="p-1.5 text-cosmic-text">{u.sign_degree?.toFixed(2)}°</td>
                             <td className="p-1.5 text-cosmic-text">{translateSign(u.sign, language)}</td>
-                            <td className="p-1.5 text-cosmic-text">{u.nakshatra} P{u.nakshatra_pada}</td>
+                            <td className="p-1.5 text-cosmic-text">{translateNakshatra(u.nakshatra, language)} P{u.nakshatra_pada}</td>
                           </tr>
                         );
                       })}

@@ -1,5 +1,6 @@
 """WebSocket and REST routes for consultation chat messages."""
 import json
+import traceback
 from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect, Query, status
 from app.auth import decode_token, get_current_user
@@ -144,7 +145,7 @@ async def consultation_ws(
         # Mark as active if currently accepted
         if consultation["status"] == "accepted":
             db.execute(
-                "UPDATE consultations SET status = 'active', started_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS') WHERE id = %s",
+                "UPDATE consultations SET status = 'active', started_at = NOW() WHERE id = %s",
                 (consultation_id,),
             )
             db.commit()
@@ -214,7 +215,9 @@ async def consultation_ws(
             for conn in _active_connections.get(consultation_id, set()):
                 try:
                     await conn.send_json(outgoing)
-                except Exception:
+                except Exception as e:
+                    print(f"ERROR in consultation_ws (broadcast): {e}")
+                    print(traceback.format_exc())
                     dead.add(conn)
 
             # Clean up dead connections

@@ -5,6 +5,10 @@ Calculates compatibility score between two horoscopes based on
 8 Koots (Ashtakoota) with max 36 points (Gun Milan).
 """
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 # ============================================================
 # CONSTANTS
 # ============================================================
@@ -82,12 +86,12 @@ YONI_ENEMIES = {
     frozenset({"Tiger", "Cow"}),
 }
 
-# Gana compatibility matrix
-# Deva-Deva=3, Deva-Manushya=2, Deva-Rakshasa=1, Manushya-Manushya=3, Manushya-Rakshasa=0, Rakshasa-Rakshasa=3
+# Gana compatibility matrix (max 6 points)
+# Same=6, Compatible (Deva-Manushya)=5, Opposite (Manushya-Rakshasa)=0
 GANA_SCORE = {
     ("Deva", "Deva"): 6,
-    ("Deva", "Manushya"): 3,
-    ("Manushya", "Deva"): 3,
+    ("Deva", "Manushya"): 5,
+    ("Manushya", "Deva"): 5,
     ("Deva", "Rakshasa"): 1,
     ("Rakshasa", "Deva"): 1,
     ("Manushya", "Manushya"): 6,
@@ -102,6 +106,32 @@ RASHI_INDEX = {
     "Leo": 5, "Virgo": 6, "Libra": 7, "Scorpio": 8,
     "Sagittarius": 9, "Capricorn": 10, "Aquarius": 11, "Pisces": 12,
 }
+
+# Vasya groups based on Moon Rashi (NOT yoni animals)
+VASYA_BY_RASHI = {
+    "Aries": "Chatushpada", "Taurus": "Chatushpada", "Gemini": "Manava",
+    "Cancer": "Jalchar", "Leo": "Vanchar", "Virgo": "Manava",
+    "Libra": "Manava", "Scorpio": "Keeta", "Sagittarius": "Manava",
+    "Capricorn": "Chatushpada", "Aquarius": "Manava", "Pisces": "Jalchar",
+}
+
+# Yoni friendly pairs (score 3)
+YONI_FRIENDS = {
+    frozenset({"Horse", "Cow"}), frozenset({"Elephant", "Goat"}),
+    frozenset({"Dog", "Cat"}), frozenset({"Serpent", "Deer"}),
+    frozenset({"Monkey", "Lion"}), frozenset({"Buffalo", "Tiger"}),
+    frozenset({"Rat", "Mongoose"}),
+}
+
+# Rashi lords for dosha cancellation checks
+RASHI_LORD = {
+    "Aries": "Mars", "Taurus": "Venus", "Gemini": "Mercury", "Cancer": "Moon",
+    "Leo": "Sun", "Virgo": "Mercury", "Libra": "Venus", "Scorpio": "Mars",
+    "Sagittarius": "Jupiter", "Capricorn": "Saturn", "Aquarius": "Saturn", "Pisces": "Jupiter",
+}
+
+def _rashi_lord(rashi: str) -> str:
+    return RASHI_LORD.get(rashi, "")
 
 # Bhakoot unfavorable combinations (ratio from person1 rashi to person2 rashi)
 # These ratios produce 0 points: 2/12, 5/9, 6/8
@@ -121,55 +151,71 @@ def _score_varna(n1: dict, n2: dict) -> tuple:
 
 
 def _score_vasya(n1: dict, n2: dict) -> tuple:
-    """Vasya koot: mutual influence/attraction. Max 2 points."""
-    if n1["vasya"] == n2["vasya"]:
-        return 2, "Same vasya group — strong mutual attraction."
-    # Simplified: different vasya = 1 if not sworn enemies, else 0
-    pair = frozenset({n1["vasya"], n2["vasya"]})
-    if pair in YONI_ENEMIES:
-        return 0, "Vasya groups are incompatible — dominance conflict."
-    return 1, "Partial vasya compatibility — moderate mutual influence."
+    """Vasya koot: mutual influence/attraction based on Moon rashi. Max 2 points."""
+    v1 = VASYA_BY_RASHI.get(n1["rashi"], "Manava")
+    v2 = VASYA_BY_RASHI.get(n2["rashi"], "Manava")
+    if v1 == v2:
+        return 2, f"Same vasya group ({v1}) — strong mutual attraction."
+    # Keeta with any non-Keeta = 0
+    if v1 == "Keeta" or v2 == "Keeta":
+        return 0, f"Keeta vasya ({v1} vs {v2}) — dominance conflict."
+    # Manava can dominate Chatushpada or Jalchar
+    if v1 == "Manava" and v2 in ("Chatushpada", "Jalchar"):
+        return 1, f"Manava dominates {v2} — partial vasya compatibility."
+    if v2 == "Manava" and v1 in ("Chatushpada", "Jalchar"):
+        return 1, f"Manava dominates {v1} — partial vasya compatibility."
+    # Vanchar eats Chatushpada — average to 1
+    if frozenset({v1, v2}) == frozenset({"Vanchar", "Chatushpada"}):
+        return 1, f"Vanchar-Chatushpada ({v1} vs {v2}) — mixed dominance."
+    # Other combinations
+    return 1, f"Partial vasya compatibility ({v1} vs {v2}) — moderate mutual influence."
 
 
 def _score_tara(n1: dict, n2: dict) -> tuple:
-    """Tara koot: based on nakshatra number positions. Max 3 points."""
-    naks = list(NAKSHATRA_DATA.keys())
+    """Tara koot: based on nakshatra distance. Max 3 points.
+    D = (Bride_nak - Groom_nak) mod 27, R = D mod 9.
+    If R ∈ {1,3,5,7} → 3 points (good), else → 0 (bad).
+    """
+    nak_names = list(NAKSHATRA_DATA.keys())
     try:
-        idx1 = naks.index(next(k for k in naks if k == list(NAKSHATRA_DATA.keys())[naks.index(k)]))
-        idx2 = naks.index(next(k for k in naks if k == list(NAKSHATRA_DATA.keys())[naks.index(k)]))
-        # Find actual indices
-        nak_names = list(NAKSHATRA_DATA.keys())
-        i1 = nak_names.index(n1["_name"])
-        i2 = nak_names.index(n2["_name"])
+        i1 = nak_names.index(n1["_name"])  # groom
+        i2 = nak_names.index(n2["_name"])  # bride
     except (ValueError, KeyError):
-        return 1, "Tara calculation: moderate compatibility."
+        return 1, "Tara calculation: unable to determine — partial score."
 
-    # Tara = (target_nak - source_nak) % 9
-    tara_val = ((i2 - i1) % 9) + 1  # 1-9 cycle
-    # Favorable taras: 1 (Janma), 2 (Sampat), 4 (Kshema), 6 (Sadhana), 8 (Mitra)
-    favorable = {1, 2, 4, 6, 8}
-    if tara_val in favorable:
-        return 3, f"Tara {tara_val} — favorable birth star relationship."
-    elif tara_val in {3, 5}:
-        return 1, f"Tara {tara_val} — mildly unfavorable birth star relationship."
-    else:  # 7 (Vadha), 9 (Pratyari)
-        return 0, f"Tara {tara_val} — unfavorable birth star relationship."
+    # D = (Bride - Groom) mod 27
+    d = (i2 - i1) % 27
+    # R = D mod 9
+    r = d % 9
+    # Favorable: R ∈ {1, 3, 5, 7}
+    if r in {1, 3, 5, 7}:
+        return 3, f"Tara remainder {r} — favorable birth star compatibility."
+    else:
+        return 0, f"Tara remainder {r} — unfavorable birth star compatibility."
 
 
 def _score_yoni(n1: dict, n2: dict) -> tuple:
-    """Yoni koot: sexual/physical compatibility. Max 4 points."""
+    """Yoni koot: sexual/physical compatibility. Max 4 points.
+    Same=4, Friendly=3, Neutral=2, Hostile=1, Sworn enemy=0.
+    """
     y1, y2 = n1["yoni"], n2["yoni"]
     if y1 == y2:
         return 4, f"Same yoni ({y1}) — excellent physical compatibility."
     pair = frozenset({y1, y2})
     if pair in YONI_ENEMIES:
-        return 0, f"Enemy yoni ({y1} vs {y2}) — significant physical incompatibility."
-    # Neutral or friendly
+        return 0, f"Sworn enemy yoni ({y1} vs {y2}) — significant physical incompatibility."
+    if pair in YONI_FRIENDS:
+        return 3, f"Friendly yoni ({y1} & {y2}) — good physical compatibility."
+    # Check for hostile (but not sworn enemy) — animals of same category but not friendly
+    # All remaining pairs are neutral
     return 2, f"Neutral yoni ({y1} vs {y2}) — moderate physical compatibility."
 
 
 def _score_graha_maitri(n1: dict, n2: dict) -> tuple:
-    """Graha Maitri koot: planetary lord friendship. Max 5 points."""
+    """Graha Maitri koot: planetary lord friendship. Max 5 points.
+    Same lord or mutual friends=5, one friend + one neutral=4,
+    both neutral=3, one friend + one enemy=1, mutual enemies=0.
+    """
     lord1, lord2 = n1["lord"], n2["lord"]
     if lord1 == lord2:
         return 5, f"Same nakshatra lord ({lord1}) — excellent mental compatibility."
@@ -177,30 +223,51 @@ def _score_graha_maitri(n1: dict, n2: dict) -> tuple:
     rel1 = PLANET_FRIENDS.get(lord1, {})
     rel2 = PLANET_FRIENDS.get(lord2, {})
 
-    mutual_friend = lord2 in rel1.get("friends", set()) and lord1 in rel2.get("friends", set())
-    one_friend = lord2 in rel1.get("friends", set()) or lord1 in rel2.get("friends", set())
-    mutual_enemy = lord2 in rel1.get("enemies", set()) and lord1 in rel2.get("enemies", set())
+    # Determine each lord's view of the other
+    l1_sees_l2 = (
+        "friend" if lord2 in rel1.get("friends", set())
+        else "enemy" if lord2 in rel1.get("enemies", set())
+        else "neutral"
+    )
+    l2_sees_l1 = (
+        "friend" if lord1 in rel2.get("friends", set())
+        else "enemy" if lord1 in rel2.get("enemies", set())
+        else "neutral"
+    )
 
-    if mutual_friend:
+    pair = frozenset({l1_sees_l2, l2_sees_l1})
+
+    if pair == {"friend"}:
+        # Mutual friends
         return 5, f"Mutual planetary friendship ({lord1} & {lord2}) — strong mental bond."
-    elif one_friend:
-        return 3, f"One-sided planetary friendship ({lord1} & {lord2}) — moderate mental bond."
-    elif mutual_enemy:
-        return 0, f"Mutual planetary enmity ({lord1} & {lord2}) — mental friction likely."
+    elif pair == {"friend", "neutral"}:
+        # One friend + one neutral
+        return 4, f"Friendly planetary relationship ({lord1} & {lord2}) — good mental bond."
+    elif pair == {"neutral"}:
+        # Both neutral
+        return 3, f"Neutral planetary relationship ({lord1} & {lord2}) — average mental compatibility."
+    elif pair == {"friend", "enemy"}:
+        # One friend + one enemy
+        return 1, f"Mixed planetary relationship ({lord1} & {lord2}) — conflicting mental tendencies."
+    elif "enemy" in pair:
+        # Mutual enemies or one enemy + one neutral
+        return 0, f"Planetary enmity ({lord1} & {lord2}) — mental friction likely."
     else:
-        return 2, f"Neutral planetary relationship ({lord1} & {lord2}) — average mental compatibility."
+        return 2, f"Partial planetary compatibility ({lord1} & {lord2}) — moderate mental bond."
 
 
 def _score_gana(n1: dict, n2: dict) -> tuple:
     """Gana koot: temperament compatibility. Max 3 points."""
     g1, g2 = n1["gana"], n2["gana"]
     score = GANA_SCORE.get((g1, g2), 1)
-    if score == 3:
+    if score >= 5:
         desc = f"Same or compatible gana ({g1} & {g2}) — harmonious temperaments."
     elif score == 0:
         desc = f"Incompatible gana ({g1} & {g2}) — temperament clash likely."
-    else:
+    elif score >= 2:
         desc = f"Partially compatible gana ({g1} & {g2}) — manageable differences."
+    else:
+        desc = f"Weak gana compatibility ({g1} & {g2}) — significant temperament differences."
     return score, desc
 
 
@@ -233,13 +300,45 @@ def _score_nadi(n1: dict, n2: dict) -> tuple:
 # MAIN FUNCTION
 # ============================================================
 
-def calculate_gun_milan(person1_moon_nakshatra: str, person2_moon_nakshatra: str) -> dict:
+def _normalize_nakshatra(raw: str) -> str:
+    """Strip pada suffixes and normalize nakshatra name for NAKSHATRA_DATA lookup.
+
+    Handles formats like:
+        "Ashwini (1)"  -> "Ashwini"
+        "ashwini"      -> "Ashwini"
+        "PURVA PHALGUNI" -> "Purva Phalguni"
+        "  Rohini  "   -> "Rohini"
+    """
+    import re
+    # Strip whitespace
+    name = raw.strip()
+    # Remove trailing pada number in parentheses: "Ashwini (1)" -> "Ashwini"
+    name = re.sub(r"\s*\(\d+\)\s*$", "", name)
+    # Remove trailing pada number after dash: "Ashwini-1" -> "Ashwini"
+    name = re.sub(r"\s*-\d+\s*$", "", name)
+    # Title-case each word: "purva phalguni" -> "Purva Phalguni"
+    name = name.title()
+    return name
+
+
+def calculate_gun_milan(
+    person1_moon_nakshatra: str,
+    person2_moon_nakshatra: str,
+    person1_moon_rashi: str | None = None,
+    person2_moon_rashi: str | None = None,
+) -> dict:
     """
     Calculate Ashtakoota Gun Milan compatibility score.
 
     Args:
         person1_moon_nakshatra: Moon nakshatra of person 1 (groom)
         person2_moon_nakshatra: Moon nakshatra of person 2 (bride)
+        person1_moon_rashi: Actual Moon rashi (sign) of person 1 from chart.
+            If provided, overrides the static rashi in NAKSHATRA_DATA.
+            Important for boundary nakshatras (e.g., Krittika pada 1 = Aries,
+            not Taurus) which span two rashis.
+        person2_moon_rashi: Actual Moon rashi (sign) of person 2 from chart.
+            Same override behavior as person1_moon_rashi.
 
     Returns:
         {
@@ -249,7 +348,18 @@ def calculate_gun_milan(person1_moon_nakshatra: str, person2_moon_nakshatra: str
             recommendation: str,
         }
     """
+    # Normalize nakshatra names (strip pada suffixes, fix casing)
+    person1_moon_nakshatra = _normalize_nakshatra(person1_moon_nakshatra)
+    person2_moon_nakshatra = _normalize_nakshatra(person2_moon_nakshatra)
+
+    logger.debug(
+        "Gun Milan input: nak1=%s rashi1=%s | nak2=%s rashi2=%s",
+        person1_moon_nakshatra, person1_moon_rashi,
+        person2_moon_nakshatra, person2_moon_rashi,
+    )
+
     if person1_moon_nakshatra not in NAKSHATRA_DATA:
+        logger.warning("Unknown nakshatra after normalization: %r (raw input)", person1_moon_nakshatra)
         return {
             "total_score": 0,
             "koot_scores": {},
@@ -259,6 +369,7 @@ def calculate_gun_milan(person1_moon_nakshatra: str, person2_moon_nakshatra: str
         }
 
     if person2_moon_nakshatra not in NAKSHATRA_DATA:
+        logger.warning("Unknown nakshatra after normalization: %r (raw input)", person2_moon_nakshatra)
         return {
             "total_score": 0,
             "koot_scores": {},
@@ -269,6 +380,24 @@ def calculate_gun_milan(person1_moon_nakshatra: str, person2_moon_nakshatra: str
 
     n1 = {**NAKSHATRA_DATA[person1_moon_nakshatra], "_name": person1_moon_nakshatra}
     n2 = {**NAKSHATRA_DATA[person2_moon_nakshatra], "_name": person2_moon_nakshatra}
+
+    # Override static rashi with actual Moon rashi from chart when provided.
+    # This is critical for boundary nakshatras that span two rashis
+    # (e.g., Krittika pada 1 is in Aries, but NAKSHATRA_DATA says Taurus).
+    if person1_moon_rashi and person1_moon_rashi in RASHI_INDEX:
+        if n1["rashi"] != person1_moon_rashi:
+            logger.info(
+                "Rashi override for %s: %s -> %s (boundary nakshatra)",
+                person1_moon_nakshatra, n1["rashi"], person1_moon_rashi,
+            )
+        n1["rashi"] = person1_moon_rashi
+    if person2_moon_rashi and person2_moon_rashi in RASHI_INDEX:
+        if n2["rashi"] != person2_moon_rashi:
+            logger.info(
+                "Rashi override for %s: %s -> %s (boundary nakshatra)",
+                person2_moon_nakshatra, n2["rashi"], person2_moon_rashi,
+            )
+        n2["rashi"] = person2_moon_rashi
 
     # Score each koot
     scorers = [
@@ -296,6 +425,82 @@ def calculate_gun_milan(person1_moon_nakshatra: str, person2_moon_nakshatra: str
         }
         total += score
 
+    # ── Dosha Checks & Cancellation Rules ───────────────────────
+    doshas = []
+
+    # Nadi Dosha check + cancellation
+    if koot_scores["Nadi"]["score"] == 0:
+        nadi_cancelled = False
+        cancel_reasons = []
+        # Cancel if both have same rashi
+        if n1["rashi"] == n2["rashi"]:
+            nadi_cancelled = True
+            cancel_reasons.append("Same rashi for both")
+        # Cancel if both have same nakshatra but different padas (implied by different chart)
+        if n1["_name"] == n2["_name"]:
+            nadi_cancelled = True
+            cancel_reasons.append("Same nakshatra for both")
+        # Cancel if rashi lords are friends
+        lord1, lord2 = n1["lord"], n2["lord"]
+        rel1 = PLANET_FRIENDS.get(lord1, {})
+        if lord2 in rel1.get("friends", set()):
+            nadi_cancelled = True
+            cancel_reasons.append(f"Nakshatra lords ({lord1} & {lord2}) are friends")
+
+        doshas.append({
+            "name": "Nadi Dosha",
+            "present": True,
+            "cancelled": nadi_cancelled,
+            "cancel_reasons": cancel_reasons,
+            "severity": "Low (cancelled)" if nadi_cancelled else "High",
+            "description": "Same Nadi — health and progeny concerns." if not nadi_cancelled else f"Nadi Dosha present but cancelled: {'; '.join(cancel_reasons)}.",
+        })
+    else:
+        doshas.append({"name": "Nadi Dosha", "present": False, "cancelled": False, "severity": "None", "description": "Different Nadi — no dosha."})
+
+    # Bhakoot Dosha check + cancellation
+    if koot_scores["Bhakoot"]["score"] == 0:
+        bhakoot_cancelled = False
+        cancel_reasons = []
+        # Cancel if rashi lords are same
+        lord1_r = PLANET_FRIENDS.get(_rashi_lord(n1["rashi"]), {})
+        lord2_r = _rashi_lord(n2["rashi"])
+        if _rashi_lord(n1["rashi"]) == lord2_r:
+            bhakoot_cancelled = True
+            cancel_reasons.append("Same rashi lord for both signs")
+        # Cancel if rashi lords are mutual friends
+        elif lord2_r in lord1_r.get("friends", set()):
+            rl2 = PLANET_FRIENDS.get(lord2_r, {})
+            if _rashi_lord(n1["rashi"]) in rl2.get("friends", set()):
+                bhakoot_cancelled = True
+                cancel_reasons.append(f"Rashi lords ({_rashi_lord(n1['rashi'])} & {lord2_r}) are mutual friends")
+        # Cancel if Nadi koot scored full 8
+        if koot_scores["Nadi"]["score"] == 8:
+            bhakoot_cancelled = True
+            cancel_reasons.append("Nadi koot is full (8/8)")
+
+        doshas.append({
+            "name": "Bhakoot Dosha",
+            "present": True,
+            "cancelled": bhakoot_cancelled,
+            "cancel_reasons": cancel_reasons,
+            "severity": "Low (cancelled)" if bhakoot_cancelled else "Medium",
+            "description": "Bhakoot Dosha — emotional/financial challenges." if not bhakoot_cancelled else f"Bhakoot Dosha present but cancelled: {'; '.join(cancel_reasons)}.",
+        })
+    else:
+        doshas.append({"name": "Bhakoot Dosha", "present": False, "cancelled": False, "severity": "None", "description": "Favorable Bhakoot — no dosha."})
+
+    # Gana Dosha check (Manushya-Rakshasa = 0)
+    if koot_scores["Gana"]["score"] == 0:
+        doshas.append({
+            "name": "Gana Dosha",
+            "present": True,
+            "cancelled": False,
+            "cancel_reasons": [],
+            "severity": "Medium",
+            "description": f"Gana mismatch ({n1['gana']} & {n2['gana']}) — temperament clash. Remedies recommended.",
+        })
+
     pct = round((total / GUN_MILAN_TOTAL) * 100, 1)
 
     if total >= 30:
@@ -312,4 +517,25 @@ def calculate_gun_milan(person1_moon_nakshatra: str, person2_moon_nakshatra: str
         "koot_scores": koot_scores,
         "compatibility_percentage": pct,
         "recommendation": recommendation,
+        "doshas": doshas,
+        "person1_details": {
+            "nakshatra": person1_moon_nakshatra,
+            "rashi": n1["rashi"],
+            "varna": n1["varna"],
+            "vasya": VASYA_BY_RASHI.get(n1["rashi"], "Manava"),
+            "yoni": n1["yoni"],
+            "gana": n1["gana"],
+            "nadi": n1["nadi"],
+            "lord": n1["lord"],
+        },
+        "person2_details": {
+            "nakshatra": person2_moon_nakshatra,
+            "rashi": n2["rashi"],
+            "varna": n2["varna"],
+            "vasya": VASYA_BY_RASHI.get(n2["rashi"], "Manava"),
+            "yoni": n2["yoni"],
+            "gana": n2["gana"],
+            "nadi": n2["nadi"],
+            "lord": n2["lord"],
+        },
     }

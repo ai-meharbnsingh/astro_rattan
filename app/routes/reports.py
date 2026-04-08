@@ -4,6 +4,7 @@ C-05: PDF generation via fpdf2 with paywall enforcement.
 """
 import json
 import os
+import traceback
 from typing import Any
 import uuid
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
@@ -224,7 +225,9 @@ def _background_generate_pdf(report_id: str, kundli_id: str, report_type: str, d
             # fpdf2 not installed — mark as failed
             conn.execute("UPDATE reports SET status = 'failed' WHERE id = %s", (report_id,))
         conn.commit()
-    except Exception:
+    except Exception as e:
+        print(f"ERROR in _background_generate_pdf: {e}")
+        print(traceback.format_exc())
         conn.execute("UPDATE reports SET status = 'failed' WHERE id = %s", (report_id,))
         conn.commit()
     finally:

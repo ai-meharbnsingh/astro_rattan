@@ -1,6 +1,6 @@
 import { Loader2, Star, Crown, Eye, Clock, Wallet } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
-import { translatePlanet, translateSign } from '@/lib/backend-translations';
+import { translatePlanet, translateSign, translateBackend } from '@/lib/backend-translations';
 
 interface JaiminiTabProps {
   data: any;
@@ -51,7 +51,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
                   </td>
                   <td className="p-2 font-semibold">{translatePlanet(k.planet, language)}</td>
                   <td className="p-2 text-center font-mono">{k.degree}°</td>
-                  <td className="p-2 text-xs text-slate-500">{k.significance}</td>
+                  <td className="p-2 text-xs text-slate-500">{translateBackend(k.significance, language)}</td>
                 </tr>
               ))}
             </tbody>
@@ -178,6 +178,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
               <thead>
                 <tr className="bg-slate-100">
                   <th className="text-left p-2 font-medium text-slate-600">{language === 'hi' ? 'राशि' : 'Sign'}</th>
+                  <th className="text-left p-2 font-medium text-slate-600">{language === 'hi' ? 'प्रकार' : 'Type'}</th>
                   <th className="text-left p-2 font-medium text-slate-600">{language === 'hi' ? 'स्वामी' : 'Lord'}</th>
                   <th className="text-center p-2 font-medium text-slate-600">{language === 'hi' ? 'वर्ष' : 'Years'}</th>
                   <th className="text-left p-2 font-medium text-slate-600">{language === 'hi' ? 'आरंभ' : 'Start'}</th>
@@ -195,6 +196,19 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
                       <td className="p-2">
                         {translateSign(p.sign, language)}
                         {isCurrent && <span className="ml-1 text-xs text-amber-700">← {language === 'hi' ? 'वर्तमान' : 'Current'}</span>}
+                      </td>
+                      <td className="p-2">
+                        {p.sign_type && (
+                          <span
+                            className="text-xs px-2 py-0.5 rounded-full font-medium"
+                            style={{
+                              backgroundColor: p.sign_type === 'Cardinal' ? '#dbeafe' : p.sign_type === 'Fixed' ? '#fef3c7' : '#d1fae5',
+                              color: p.sign_type === 'Cardinal' ? '#1e40af' : p.sign_type === 'Fixed' ? '#92400e' : '#065f46',
+                            }}
+                          >
+                            {language === 'hi' ? p.sign_type_hi : p.sign_type}
+                          </span>
+                        )}
                       </td>
                       <td className="p-2">{translatePlanet(p.lord, language)}</td>
                       <td className="p-2 text-center font-mono">{p.years}</td>
@@ -249,7 +263,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
                   <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                     yoga.strength === 'Strong' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
                   }`}>
-                    {yoga.strength}
+                    {yoga.strength === 'Strong' ? (language === 'hi' ? 'बलवान' : 'Strong') : (language === 'hi' ? 'दुर्बल' : 'Weak')}
                   </span>
                 </div>
                 <p className="text-xs text-slate-600">
@@ -288,7 +302,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
             </div>
             <div className="rounded-lg p-3 border" style={{ backgroundColor: 'var(--parchment)', borderColor: 'rgba(184,134,11,0.2)' }}>
               <p className="text-xs text-slate-400">{language === 'hi' ? '8वां स्वामी' : '8th Lord'}</p>
-              <p className="font-semibold">{translatePlanet(data.longevity.eighth_lord, language)} in {translateSign(data.longevity.eighth_lord_sign, language)} ({data.longevity.eighth_modality})</p>
+              <p className="font-semibold">{translatePlanet(data.longevity.eighth_lord, language)} {language === 'hi' ? 'में' : 'in'} {translateSign(data.longevity.eighth_lord_sign, language)} ({data.longevity.eighth_modality})</p>
             </div>
           </div>
           <p className="text-xs text-slate-400 italic">
@@ -310,19 +324,43 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
                 <p className="font-semibold text-sm mb-1" style={{ color: 'var(--ink)' }}>
                   {language === 'hi' ? `भाव ${ha.house}` : `House ${ha.house}`}
                 </p>
-                <div className="space-y-1">
+                <div className="space-y-2">
                   {ha.argalas.map((a: any, i: number) => (
-                    <div key={i} className="flex items-center justify-between text-xs">
-                      <span className="text-slate-600">
-                        {a.type} — {a.planets.map((p: string) => translatePlanet(p, language)).join(', ')} (H{a.from_house})
-                      </span>
-                      <span className={`px-2 py-0.5 rounded-full font-medium ${
-                        a.blocked ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'
-                      }`}>
-                        {a.status === 'Blocked'
-                          ? (language === 'hi' ? 'अवरुद्ध' : 'Blocked')
-                          : (language === 'hi' ? 'सक्रिय' : 'Active')}
-                      </span>
+                    <div key={i} className="rounded-md border border-slate-100 p-2 bg-slate-50/50">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-slate-600">
+                          {translateBackend(a.type, language)} — {a.planets.map((p: string) => translatePlanet(p, language)).join(', ')} (H{a.from_house})
+                        </span>
+                        <div className="flex items-center gap-1.5">
+                          {a.nature && (
+                            <span className={`px-2 py-0.5 rounded-full font-medium ${
+                              a.nature === 'Shubha' ? 'bg-emerald-50 text-emerald-700' :
+                              a.nature === 'Paapa' ? 'bg-red-50 text-red-700' :
+                              'bg-amber-50 text-amber-700'
+                            }`}>
+                              {language === 'hi' ? a.nature_hi : a.nature_en}
+                            </span>
+                          )}
+                          <span className={`px-2 py-0.5 rounded-full font-medium ${
+                            a.blocked ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'
+                          }`}>
+                            {a.status === 'Blocked'
+                              ? (language === 'hi' ? 'अवरुद्ध' : 'Blocked')
+                              : (language === 'hi' ? 'सक्रिय' : 'Active')}
+                          </span>
+                        </div>
+                      </div>
+                      {(a.detail_en || a.detail_hi) && (
+                        <p className="text-xs text-slate-500 mt-1">
+                          {language === 'hi' ? a.detail_hi : a.detail_en}
+                        </p>
+                      )}
+                      {(a.remedy_en || a.remedy_hi) && (
+                        <p className="text-xs mt-1 italic" style={{ color: '#6b21a8' }}>
+                          <span className="font-semibold">{language === 'hi' ? 'उपाय: ' : 'Remedy: '}</span>
+                          {language === 'hi' ? a.remedy_hi : a.remedy_en}
+                        </p>
+                      )}
                     </div>
                   ))}
                 </div>

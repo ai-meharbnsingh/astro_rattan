@@ -1,4 +1,5 @@
 import { useTranslation } from '@/lib/i18n';
+import { translatePlanet, translateSign } from '@/lib/backend-translations';
 import { SIGN_LORD, getHouseSignificance } from './kundli-utils';
 
 interface LordshipsTabProps {
@@ -7,7 +8,7 @@ interface LordshipsTabProps {
 }
 
 export default function LordshipsTab({ planets, houses }: LordshipsTabProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const HOUSE_SIGNIFICANCE = getHouseSignificance(t);
 
   return (
@@ -15,11 +16,11 @@ export default function LordshipsTab({ planets, houses }: LordshipsTabProps) {
         <table className="w-full text-xs">
           <thead className="bg-sacred-gold/10">
             <tr>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">House</th>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">Sign</th>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">Lord</th>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">Placed In</th>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">Significance</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{language === 'hi' ? 'भाव' : 'House'}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{language === 'hi' ? 'राशि' : 'Sign'}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{language === 'hi' ? 'स्वामी' : 'Lord'}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{language === 'hi' ? 'स्थित' : 'Placed In'}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{language === 'hi' ? 'महत्व' : 'Significance'}</th>
             </tr>
           </thead>
           <tbody>
@@ -33,13 +34,13 @@ export default function LordshipsTab({ planets, houses }: LordshipsTabProps) {
 
               // Find which house the lord sits in
               const lordPlanet = planets.find((p: any) => p.planet === lord);
-              const lordPlacedIn = lordPlanet ? `House ${lordPlanet.house}` : '\u2014';
+              const lordPlacedIn = lordPlanet ? `${language === 'hi' ? 'भाव' : 'House'} ${lordPlanet.house}` : '\u2014';
 
               return (
                 <tr key={houseNum} className={`border-t border-sacred-gold/10 text-xs ${houseNum % 2 === 0 ? 'bg-sacred-gold/[0.02]' : ''}`}>
                   <td className="p-2 font-medium text-sacred-brown font-display">{houseNum}</td>
-                  <td className="p-2 text-sacred-brown">{signName}</td>
-                  <td className="p-2 font-medium text-sacred-gold-dark">{lord}</td>
+                  <td className="p-2 text-sacred-brown">{translateSign(signName, language)}</td>
+                  <td className="p-2 font-medium text-sacred-gold-dark">{translatePlanet(lord, language)}</td>
                   <td className="p-2 text-sacred-text-secondary">{lordPlacedIn}</td>
                   <td className="p-2 text-sacred-text-secondary">{HOUSE_SIGNIFICANCE[houseNum] || '\u2014'}</td>
                 </tr>

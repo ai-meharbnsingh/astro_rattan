@@ -16,6 +16,17 @@ const KOOT_LABELS_HI: Record<string, string> = {
   'Graha Maitri': 'ग्रह मैत्री', Gana: 'गण', Bhakoot: 'भकूट', Nadi: 'नाड़ी',
 };
 
+const GUNA_DETAIL_ROWS = [
+  { key: 'nakshatra', en: 'Nakshatra', hi: 'नक्षत्र' },
+  { key: 'rashi', en: 'Rashi', hi: 'राशि' },
+  { key: 'varna', en: 'Varna', hi: 'वर्ण' },
+  { key: 'vasya', en: 'Vasya', hi: 'वश्य' },
+  { key: 'yoni', en: 'Yoni', hi: 'योनि' },
+  { key: 'gana', en: 'Gana', hi: 'गण' },
+  { key: 'nadi', en: 'Nadi', hi: 'नाड़ी' },
+  { key: 'lord', en: 'Nakshatra Lord', hi: 'नक्षत्र स्वामी' },
+];
+
 export default function KundliMilanTab({ savedKundlis, currentKundliId }: KundliMilanTabProps) {
   const { t, language } = useTranslation();
   const [person1Id, setPerson1Id] = useState(currentKundliId || '');
@@ -213,6 +224,109 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Kundli
               </table>
             </div>
           </div>
+
+          {/* Guna Details */}
+          {result.person1_details && result.person2_details && (
+            <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+              <h4 className="font-display font-semibold text-sacred-brown mb-3">
+                {language === 'hi' ? 'गुण विवरण' : 'Guna Details'}
+              </h4>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm border-collapse">
+                  <thead>
+                    <tr className="bg-slate-100">
+                      <th className="text-left p-2 font-medium text-slate-600">
+                        {language === 'hi' ? 'गुण' : 'Property'}
+                      </th>
+                      <th className="text-center p-2 font-medium text-slate-600">
+                        {result.person1 || (language === 'hi' ? 'वर' : 'Person 1')}
+                      </th>
+                      <th className="text-center p-2 font-medium text-slate-600">
+                        {result.person2 || (language === 'hi' ? 'वधू' : 'Person 2')}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {GUNA_DETAIL_ROWS.map((row) => {
+                      const val1 = result.person1_details[row.key] ?? '-';
+                      const val2 = result.person2_details[row.key] ?? '-';
+                      const isMatch = val1 === val2;
+                      return (
+                        <tr key={row.key} className="border-b border-slate-100">
+                          <td className="p-2 font-semibold">
+                            {language === 'hi' ? row.hi : row.en}
+                          </td>
+                          <td
+                            className="p-2 text-center"
+                            style={{
+                              backgroundColor: isMatch ? '#f0fdf4' : undefined,
+                              color: isMatch ? '#166534' : undefined,
+                            }}
+                          >
+                            {val1}
+                          </td>
+                          <td
+                            className="p-2 text-center"
+                            style={{
+                              backgroundColor: isMatch ? '#f0fdf4' : undefined,
+                              color: isMatch ? '#166534' : undefined,
+                            }}
+                          >
+                            {val2}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* Dosha Checks */}
+          {result.doshas && result.doshas.length > 0 && (
+            <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+              <h4 className="font-display font-semibold text-sacred-brown mb-3">
+                {language === 'hi' ? 'दोष जांच एवं निवारण' : 'Dosha Checks & Cancellation'}
+              </h4>
+              <div className="space-y-3">
+                {result.doshas.map((dosha: any, idx: number) => (
+                  <div
+                    key={idx}
+                    className="rounded-lg border p-3"
+                    style={{
+                      borderColor: !dosha.present ? '#86efac' : dosha.cancelled ? '#fcd34d' : '#fca5a5',
+                      backgroundColor: !dosha.present ? '#f0fdf4' : dosha.cancelled ? '#fffbeb' : '#fef2f2',
+                    }}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-semibold text-sm text-sacred-brown">{dosha.name}</span>
+                      <span
+                        className="text-xs px-2 py-0.5 rounded-full font-medium"
+                        style={{
+                          backgroundColor: !dosha.present ? '#dcfce7' : dosha.cancelled ? '#fef3c7' : '#fee2e2',
+                          color: !dosha.present ? '#166534' : dosha.cancelled ? '#92400e' : '#991b1b',
+                        }}
+                      >
+                        {!dosha.present
+                          ? (language === 'hi' ? 'दोष नहीं' : 'No Dosha')
+                          : dosha.cancelled
+                            ? (language === 'hi' ? 'दोष निवारित' : 'Dosha Cancelled')
+                            : (language === 'hi' ? 'दोष उपस्थित' : 'Dosha Present')}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-600">{dosha.description}</p>
+                    {dosha.cancelled && dosha.cancel_reasons?.length > 0 && (
+                      <div className="mt-1 text-xs text-amber-700">
+                        <strong>{language === 'hi' ? 'निवारण कारण:' : 'Cancellation:'}</strong>{' '}
+                        {dosha.cancel_reasons.join('; ')}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

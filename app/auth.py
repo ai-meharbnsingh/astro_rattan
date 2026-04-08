@@ -29,6 +29,15 @@ def create_token(data: dict) -> str:
     return jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
 
+def create_refresh_token(data: dict) -> str:
+    """Create a refresh token with 7-day expiry."""
+    to_encode = data.copy()
+    to_encode["type"] = "refresh"
+    expire = datetime.now(tz=timezone.utc) + timedelta(days=7)
+    to_encode["exp"] = expire
+    return jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
+
 def decode_token(token: str) -> Optional[dict]:
     """Decode a JWT token. Returns payload dict or None if invalid."""
     try:

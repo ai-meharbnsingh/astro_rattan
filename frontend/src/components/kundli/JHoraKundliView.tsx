@@ -5,10 +5,10 @@ import { SIGN_LORD, SIGN_ELEMENT, SIGN_TYPE } from '@/components/kundli/kundli-u
 import { calculateJaiminiKarakas, getPlanetColor } from '@/components/kundli/jhora-utils';
 import { api } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
-import { translatePlanet, translateSign } from '@/lib/backend-translations';
+import { translatePlanet, translateSign, translateNakshatra } from '@/lib/backend-translations';
 
 // Available divisional charts
-const DIVISIONAL_OPTIONS = [
+const DIVISIONAL_OPTIONS_EN = [
   { value: 'D1', label: 'D1 Rashi' },
   { value: 'Moon', label: 'Moon Chart' },
   { value: 'D2', label: 'D2 Hora' },
@@ -26,6 +26,26 @@ const DIVISIONAL_OPTIONS = [
   { value: 'D40', label: 'D40 Khavedamsha' },
   { value: 'D45', label: 'D45 Akshavedamsha' },
   { value: 'D60', label: 'D60 Shashtiamsha' },
+];
+
+const DIVISIONAL_OPTIONS_HI = [
+  { value: 'D1', label: 'D1 राशि' },
+  { value: 'Moon', label: 'चंद्र चार्ट' },
+  { value: 'D2', label: 'D2 होरा' },
+  { value: 'D3', label: 'D3 द्रेक्काण' },
+  { value: 'D4', label: 'D4 चतुर्थांश' },
+  { value: 'D7', label: 'D7 सप्तांश' },
+  { value: 'D9', label: 'D9 नवांश' },
+  { value: 'D10', label: 'D10 दशांश' },
+  { value: 'D12', label: 'D12 द्वादशांश' },
+  { value: 'D16', label: 'D16 षोडशांश' },
+  { value: 'D20', label: 'D20 विंशांश' },
+  { value: 'D24', label: 'D24 चतुर्विंशांश' },
+  { value: 'D27', label: 'D27 भांश' },
+  { value: 'D30', label: 'D30 त्रिंशांश' },
+  { value: 'D40', label: 'D40 खवेदांश' },
+  { value: 'D45', label: 'D45 अक्षवेदांश' },
+  { value: 'D60', label: 'D60 षष्ट्यंश' },
 ];
 
 interface JHoraKundliViewProps {
@@ -183,8 +203,18 @@ function fmtDegree(deg: number | undefined): string {
 }
 
 // ─── Abbreviate dignity status ──────────────────────────────────────
-function abbrDignity(status: string): string {
+function abbrDignity(status: string, lang?: string): string {
   if (!status) return '-';
+  if (lang === 'hi') {
+    return status
+      .replace('Debilitated', 'नीच')
+      .replace('Exalted', 'उच्च')
+      .replace('Own Sign', 'स्व')
+      .replace('Retrograde', 'व')
+      .replace('Combust', 'अस्त')
+      .replace('Vargottama', 'वर्गो')
+      .replace('Neutral', '-');
+  }
   return status
     .replace('Debilitated', 'Deb')
     .replace('Exalted', 'Exl')
@@ -218,6 +248,7 @@ export default function JHoraKundliView({
 }: JHoraKundliViewProps) {
 
   const { t, language } = useTranslation();
+  const DIVISIONAL_OPTIONS = language === 'hi' ? DIVISIONAL_OPTIONS_HI : DIVISIONAL_OPTIONS_EN;
   const dasha = extendedDashaData || dashaData;
   const [expandedMD, setExpandedMD] = useState<string | null>(null);
   const [expandedAD, setExpandedAD] = useState<string | null>(null);
@@ -298,6 +329,14 @@ export default function JHoraKundliView({
 
   // Sign abbreviation
   const signAbbr = (sign: string): string => {
+    if (language === 'hi') {
+      const hiMap: Record<string, string> = {
+        Aries: 'मेष', Taurus: 'वृष', Gemini: 'मिथु', Cancer: 'कर्क',
+        Leo: 'सिंह', Virgo: 'कन्या', Libra: 'तुला', Scorpio: 'वृश्',
+        Sagittarius: 'धनु', Capricorn: 'मकर', Aquarius: 'कुंभ', Pisces: 'मीन',
+      };
+      return hiMap[sign] || translateSign(sign, language).slice(0, 3) || '-';
+    }
     const map: Record<string, string> = {
       Aries: 'Ari', Taurus: 'Tau', Gemini: 'Gem', Cancer: 'Can',
       Leo: 'Leo', Virgo: 'Vir', Libra: 'Lib', Scorpio: 'Sco',
@@ -510,10 +549,10 @@ export default function JHoraKundliView({
                   {[
                     { key: 'Planet', label: t('table.planet') },
                     { key: 'Degree', label: t('table.degree') },
-                    { key: 'R/C', label: 'R/C' },
+                    { key: 'R/C', label: language === 'hi' ? 'व/अ' : 'R/C' },
                     { key: 'Sign', label: t('table.sign') },
-                    { key: 'Mod', label: 'Mod' },
-                    { key: 'Elem', label: 'Elem' },
+                    { key: 'Mod', label: language === 'hi' ? 'गुण' : 'Mod' },
+                    { key: 'Elem', label: language === 'hi' ? 'तत्व' : 'Elem' },
                     { key: 'Nakshatra', label: t('table.nakshatra') },
                     { key: 'Dignity', label: t('table.dignity') },
                     { key: 'Karaka', label: t('table.karaka') },
@@ -529,32 +568,38 @@ export default function JHoraKundliView({
               </thead>
               <tbody>
                 {planets.filter(p => p.planet !== 'Lagna').map((p, i) => {
-                  const rc = [
-                    p.is_retrograde ? 'R' : '',
-                    p.is_combust ? 'C' : '',
-                    p.is_vargottama ? 'V' : '',
-                  ].filter(Boolean).join(',') || '-';
+                  const hasRetro = !!p.is_retrograde;
+                  const hasCombust = !!p.is_combust;
+                  const hasVarg = !!p.is_vargottama;
+                  const rc = language === 'hi'
+                    ? ([hasRetro ? 'व' : '', hasCombust ? 'अ' : '', hasVarg ? 'वर्' : ''].filter(Boolean).join(',') || '-')
+                    : ([hasRetro ? 'R' : '', hasCombust ? 'C' : '', hasVarg ? 'V' : ''].filter(Boolean).join(',') || '-');
                   const mod = SIGN_TYPE[p.sign] || '-';
-                  const modAbbr = mod === 'Moveable' ? 'Mov' : mod === 'Fixed' ? 'Fix' : mod === 'Dual' ? 'Dual' : '-';
-                  const elem = SIGN_ELEMENT[p.sign] || '-';
+                  const modAbbr = language === 'hi'
+                    ? (mod === 'Moveable' ? 'चर' : mod === 'Fixed' ? 'स्थि' : mod === 'Dual' ? 'द्वि' : '-')
+                    : (mod === 'Moveable' ? 'Mov' : mod === 'Fixed' ? 'Fix' : mod === 'Dual' ? 'Dual' : '-');
+                  const elemRaw = SIGN_ELEMENT[p.sign] || '-';
+                  const elem = language === 'hi'
+                    ? (elemRaw === 'Fire' ? 'अग्नि' : elemRaw === 'Earth' ? 'पृथ्वी' : elemRaw === 'Air' ? 'वायु' : elemRaw === 'Water' ? 'जल' : '-')
+                    : elemRaw;
                   const karaka = karakas[p.planet] || '-';
                   return (
                     <tr key={i} style={{ background: i % 2 === 0 ? 'transparent' : ALT_ROW }}>
                       <td style={{ ...cellCompact, color: planetColor(p.planet), fontWeight: 600 }}>
-                        {p.planet}
+                        {translatePlanet(p.planet, language)}
                       </td>
                       <td style={{ ...cellCompact, textAlign: 'right' }}>
                         {fmtDegree(p.sign_degree)}
                       </td>
-                      <td style={{ ...cellCompact, textAlign: 'center', color: rc.includes('R') ? '#DC2626' : rc.includes('C') ? '#D97706' : MUTED, fontWeight: rc !== '-' ? 600 : 400 }}>
+                      <td style={{ ...cellCompact, textAlign: 'center', color: hasRetro ? '#DC2626' : hasCombust ? '#D97706' : MUTED, fontWeight: rc !== '-' ? 600 : 400 }}>
                         {rc}
                       </td>
                       <td style={{ ...cellCompact }}>{signAbbr(p.sign)}</td>
                       <td style={{ ...cellCompact, textAlign: 'center' }}>{modAbbr}</td>
                       <td style={{ ...cellCompact, textAlign: 'center' }}>{elem}</td>
-                      <td style={{ ...cellCompact }}>{p.nakshatra || '-'}</td>
+                      <td style={{ ...cellCompact }}>{translateNakshatra(p.nakshatra, language) || '-'}</td>
                       <td style={{ ...cellCompact, color: statusColor(p.status), fontWeight: p.status ? 600 : 400 }}>
-                        {abbrDignity(p.status)}
+                        {abbrDignity(p.status, language)}
                       </td>
                       <td style={{ ...cellCompact, fontWeight: 600, color: karaka !== '-' ? 'var(--aged-gold)' : MUTED }}>
                         {karaka}
@@ -582,12 +627,12 @@ export default function JHoraKundliView({
                 {/* Current Dasha Info */}
                 <div style={{ padding: '3px 6px', background: '#FEF3C7', borderBottom: `1px solid ${BORDER_COLOR}`, fontSize: FONT_SIZE, fontFamily: SERIF }}>
                   <span style={{ color: HEADER_COLOR, fontWeight: 600 }}>{t('section.currentDasha')}{' '}</span>
-                  <span style={{ color: 'var(--aged-gold-dim)', fontWeight: 700 }}>{dasha.current_dasha}</span>
+                  <span style={{ color: 'var(--aged-gold-dim)', fontWeight: 700 }}>{translatePlanet(dasha.current_dasha, language)}</span>
                   {dasha.current_antardasha && dasha.current_antardasha !== 'Unknown' && (
-                    <span style={{ color: MUTED }}> / {dasha.current_antardasha}</span>
+                    <span style={{ color: MUTED }}> / {translatePlanet(dasha.current_antardasha, language)}</span>
                   )}
                   {dasha.current_pratyantar && dasha.current_pratyantar !== 'Unknown' && (
-                    <span style={{ color: MUTED }}> / {dasha.current_pratyantar}</span>
+                    <span style={{ color: MUTED }}> / {translatePlanet(dasha.current_pratyantar, language)}</span>
                   )}
                 </div>
 
@@ -609,7 +654,7 @@ export default function JHoraKundliView({
                         >
                           <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                             <span style={{ fontSize: FONT_SIZE, color: MUTED }}>{expandedMD === md.planet ? '\u25BC' : '\u25B6'}</span>
-                            <span style={{ color: planetColor(md.planet), fontWeight: 600 }}>{md.planet}</span>
+                            <span style={{ color: planetColor(md.planet), fontWeight: 600 }}>{translatePlanet(md.planet, language)}</span>
                             {md.is_current && <span style={{ color: 'var(--aged-gold-dim)', fontSize: FONT_SIZE }}>\u2190</span>}
                           </span>
                           <span style={{ color: MUTED, fontSize: FONT_SIZE }}>
@@ -632,8 +677,8 @@ export default function JHoraKundliView({
                             >
                               <span style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                 {ad.pratyantar?.length > 0 && <span style={{ fontSize: FONT_SIZE, color: MUTED }}>{expandedAD === `${md.planet}-${ad.planet}` ? '\u25BC' : '\u25B6'}</span>}
-                                <span style={{ color: planetColor(ad.planet), fontWeight: 600 }}>{ad.planet}</span>
-                                <span style={{ color: MUTED }}> AD</span>
+                                <span style={{ color: planetColor(ad.planet), fontWeight: 600 }}>{translatePlanet(ad.planet, language)}</span>
+                                <span style={{ color: MUTED }}> {language === 'hi' ? 'अं' : 'AD'}</span>
                                 {ad.is_current && <span style={{ color: 'var(--aged-gold-dim)', fontSize: FONT_SIZE }}>*</span>}
                               </span>
                               <span style={{ color: MUTED, fontSize: FONT_SIZE }}>{ad.start?.slice(0, 10)} — {ad.end?.slice(0, 10)}</span>
@@ -652,8 +697,8 @@ export default function JHoraKundliView({
                                 }}
                               >
                                 <span>
-                                  <span style={{ color: planetColor(pt.planet), fontWeight: 600 }}>{pt.planet}</span>
-                                  <span style={{ color: MUTED }}> PD</span>
+                                  <span style={{ color: planetColor(pt.planet), fontWeight: 600 }}>{translatePlanet(pt.planet, language)}</span>
+                                  <span style={{ color: MUTED }}> {language === 'hi' ? 'प्र' : 'PD'}</span>
                                   {pt.is_current && <span style={{ color: 'var(--aged-gold-dim)' }}>*</span>}
                                 </span>
                                 <span style={{ color: MUTED }}>{pt.start?.slice(0, 10)} — {pt.end?.slice(0, 10)}</span>
@@ -685,7 +730,7 @@ export default function JHoraKundliView({
                           background: md.isCurrent ? '#FEF3C7' : (i % 2 === 0 ? 'transparent' : ALT_ROW),
                         }}>
                           <td style={{ ...cellCompact, color: planetColor(md.planet), fontWeight: 600 }}>
-                            {md.planet}
+                            {translatePlanet(md.planet, language)}
                           </td>
                           <td style={cellCompact}>{md.start ? md.start.slice(0, 10) : '-'}</td>
                           <td style={cellCompact}>{md.end ? md.end.slice(0, 10) : '-'}</td>
@@ -709,7 +754,7 @@ export default function JHoraKundliView({
                 <thead>
                   <tr>
                     {[
-                      { key: 'H', label: 'H' },
+                      { key: 'H', label: language === 'hi' ? 'भा' : 'H' },
                       { key: 'Sign', label: t('table.sign') },
                       { key: 'Lord', label: t('table.lord') },
                       { key: 'In H', label: t('table.inHouse') },
@@ -723,7 +768,7 @@ export default function JHoraKundliView({
                     <tr key={l.houseNum} style={{ background: i % 2 === 0 ? 'transparent' : ALT_ROW }}>
                       <td style={{ ...cellCompact, textAlign: 'center', fontWeight: 600 }}>{l.houseNum}</td>
                       <td style={cellCompact}>{signAbbr(l.signName)}</td>
-                      <td style={{ ...cellCompact, color: planetColor(l.lord), fontWeight: 600 }}>{l.lord}</td>
+                      <td style={{ ...cellCompact, color: planetColor(l.lord), fontWeight: 600 }}>{translatePlanet(l.lord, language)}</td>
                       <td style={{ ...cellCompact, textAlign: 'center' }}>{l.lordHouse}</td>
                     </tr>
                   ))}
@@ -745,9 +790,9 @@ export default function JHoraKundliView({
             {loadingAvakhada ? <MiniLoader /> : avakhadaData ? (
               <div style={{ flex: 1, overflow: 'auto', minHeight: 0, padding: '1px 0' }}>
                 {[
-                  { k: t('avakhada.ascendantLord'), v: `${avakhadaData.ascendant || '-'}/${avakhadaData.ascendant_lord || '-'}` },
-                  { k: t('avakhada.signLord'), v: `${avakhadaData.rashi || '-'}/${avakhadaData.rashi_lord || '-'}` },
-                  { k: t('avakhada.nakshatraPada'), v: avakhadaData.nakshatra ? `${avakhadaData.nakshatra}/${avakhadaData.nakshatra_pada}` : '-' },
+                  { k: t('avakhada.ascendantSlashLord'), v: `${translateSign(avakhadaData.ascendant || '-', language)}/${translatePlanet(avakhadaData.ascendant_lord || '-', language)}` },
+                  { k: t('avakhada.signLord'), v: `${translateSign(avakhadaData.rashi || '-', language)}/${translatePlanet(avakhadaData.rashi_lord || '-', language)}` },
+                  { k: t('avakhada.nakshatraPada'), v: avakhadaData.nakshatra ? `${translateNakshatra(avakhadaData.nakshatra, language)}/${avakhadaData.nakshatra_pada}` : '-' },
                   { k: t('avakhada.yogaKarana'), v: `${avakhadaData.yoga || '-'}/${avakhadaData.karana || '-'}` },
                   { k: t('avakhada.yoniGana'), v: `${avakhadaData.yoni || '-'}/${avakhadaData.gana || '-'}` },
                   { k: t('avakhada.nadiVarna'), v: avakhadaData.nadi || '-' },
@@ -781,14 +826,17 @@ export default function JHoraKundliView({
                 <tbody>
                   {['AK', 'AmK', 'BK', 'MK', 'PiK', 'GnK', 'DK'].map((k, i) => {
                     const planet = Object.entries(karakas).find(([, v]) => v === k)?.[0] || '-';
-                    const karakaNames: Record<string, string> = {
+                    const karakaNames: Record<string, string> = language === 'hi' ? {
+                      AK: 'आत्मा', AmK: 'अमात्य', BK: 'भ्रातृ', MK: 'मातृ',
+                      PiK: 'पितृ', GnK: 'ज्ञाति', DK: 'दारा',
+                    } : {
                       AK: 'Atma', AmK: 'Amatya', BK: 'Bhratri', MK: 'Matri',
                       PiK: 'Pitri', GnK: 'Gnati', DK: 'Dara',
                     };
                     return (
                       <tr key={k} style={{ background: i % 2 === 0 ? 'transparent' : ALT_ROW }}>
                         <td style={{ ...cellCompact, fontWeight: 600 }}>{k} ({karakaNames[k]})</td>
-                        <td style={{ ...cellCompact, color: planetColor(planet), fontWeight: 600 }}>{planet}</td>
+                        <td style={{ ...cellCompact, color: planetColor(planet), fontWeight: 600 }}>{translatePlanet(planet, language)}</td>
                       </tr>
                     );
                   })}
@@ -814,7 +862,7 @@ export default function JHoraKundliView({
                       fontFamily: SERIF, fontSize: FONT_SIZE,
                     }}>
                       <span style={{ color: planetColor(planet), fontWeight: 700, width: '24px', textAlign: 'right', flexShrink: 0 }}>
-                        {planet.slice(0, 2)}
+                        {language === 'hi' ? translatePlanet(planet, language).slice(0, 2) : planet.slice(0, 2)}
                       </span>
                       <div style={{
                         flex: 1, height: '14px', background: '#E8E0D0', borderRadius: '2px', overflow: 'hidden',

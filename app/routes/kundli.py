@@ -130,6 +130,7 @@ def generate_kundli(
     }
 
 
+@router.get("", status_code=status.HTTP_200_OK)
 @router.get("/list", status_code=status.HTTP_200_OK)
 def list_kundlis(
     current_user: dict = Depends(get_current_user),
@@ -227,12 +228,55 @@ def match_kundlis(
     chart1 = _chart_data(row1)
     chart2 = _chart_data(row2)
 
-    moon1 = chart1.get("planets", {}).get("Moon", {}).get("nakshatra", "Ashwini")
-    moon2 = chart2.get("planets", {}).get("Moon", {}).get("nakshatra", "Ashwini")
+    moon1_info = chart1.get("planets", {}).get("Moon", {})
+    moon2_info = chart2.get("planets", {}).get("Moon", {})
 
-    result = calculate_gun_milan(moon1, moon2)
+    moon1_nak = moon1_info.get("nakshatra", "Ashwini")
+    moon2_nak = moon2_info.get("nakshatra", "Ashwini")
+    # Pass actual Moon rashi (sign) to fix boundary nakshatras that span two rashis
+    moon1_rashi = moon1_info.get("sign")
+    moon2_rashi = moon2_info.get("sign")
+
+    result = calculate_gun_milan(
+        moon1_nak, moon2_nak,
+        person1_moon_rashi=moon1_rashi,
+        person2_moon_rashi=moon2_rashi,
+    )
     result["person1"] = row1["person_name"]
     result["person2"] = row2["person_name"]
+
+    # Manglik Dosha check for both persons (Mars in houses 1,4,7,8,12)
+    planets1 = chart1.get("planets", {})
+    planets2 = chart2.get("planets", {})
+    mars1_house = planets1.get("Mars", {}).get("house", 0)
+    mars2_house = planets2.get("Mars", {}).get("house", 0)
+    manglik_houses = {1, 4, 7, 8, 12}
+    p1_manglik = mars1_house in manglik_houses
+    p2_manglik = mars2_house in manglik_houses
+    manglik_dosha = {
+        "name": "Manglik Dosha",
+        "present": p1_manglik or p2_manglik,
+        "cancelled": p1_manglik and p2_manglik,
+        "cancel_reasons": ["Both are Manglik — dosha cancels out"] if p1_manglik and p2_manglik else [],
+        "person1_manglik": p1_manglik,
+        "person1_mars_house": mars1_house,
+        "person2_manglik": p2_manglik,
+        "person2_mars_house": mars2_house,
+        "severity": "None" if not p1_manglik and not p2_manglik
+                    else "Low (cancelled)" if p1_manglik and p2_manglik
+                    else "High",
+        "description": (
+            "Neither person is Manglik — no dosha."
+            if not p1_manglik and not p2_manglik
+            else "Both are Manglik — dosha cancels out."
+            if p1_manglik and p2_manglik
+            else f"{'Person 1' if p1_manglik else 'Person 2'} is Manglik (Mars in house {mars1_house if p1_manglik else mars2_house}) — mismatch. Remedies recommended."
+        ),
+    }
+    if "doshas" not in result:
+        result["doshas"] = []
+    result["doshas"].append(manglik_dosha)
+
     return result
 
 
@@ -678,11 +722,43 @@ def get_western_aspects(
     db: Any = Depends(get_db),
 ):
     """Western degree-based aspects matrix (conjunction, square, trine, etc.)."""
-    from app.aspects_engine import calculate_western_aspects
+    from app.aspects_engine import calculate_western_aspects, calculate_cusp_aspects
     row = _fetch_kundli(db, kundli_id, current_user["sub"])
     chart = _chart_data(row)
     planets = chart.get("planets", {})
     result = calculate_western_aspects(planets)
+
+    # --- Aspects on Cusps (Nirayana + Sayana) ---
+    nirayana_cusps = chart.get("placidus_cusps", [])
+    if not nirayana_cusps or len(nirayana_cusps) != 12:
+        # Fallback for older kundlis: compute equal-house cusps from ascendant
+        asc_data = chart.get("ascendant", {})
+        asc_lon = float(asc_data.get("longitude", 0.0)) if asc_data else 0.0
+        if asc_lon > 0:
+            nirayana_cusps = [round((asc_lon + i * 30.0) % 360.0, 4) for i in range(12)]
+    if nirayana_cusps and len(nirayana_cusps) == 12:
+        # Get ayanamsa to compute sayana (tropical) cusps
+        ayanamsa_val = chart.get("ayanamsa_value")
+        if ayanamsa_val is None:
+            # Fallback: recalculate ayanamsa from birth data
+            try:
+                from app.astro_engine import _parse_datetime, _datetime_to_jd
+                import swisseph as swe
+                swe.set_sid_mode(swe.SIDM_LAHIRI)
+                dt_local = _parse_datetime(
+                    str(row["birth_date"]),
+                    str(row["birth_time"]),
+                    float(row["timezone_offset"]),
+                )
+                jd = _datetime_to_jd(dt_local)
+                ayanamsa_val = swe.get_ayanamsa(jd)
+            except Exception:
+                ayanamsa_val = 24.0  # safe approximate fallback
+
+        sayana_cusps = [(c + ayanamsa_val) % 360.0 for c in nirayana_cusps]
+        cusp_aspects = calculate_cusp_aspects(planets, nirayana_cusps, sayana_cusps)
+        result["cusp_aspects"] = cusp_aspects
+
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result
@@ -1334,21 +1410,27 @@ async def delete_all_my_kundlis(
     current_user=Depends(get_current_user),
 ):
     """Delete all kundlis for the current user."""
-    # Get count before deletion
+    user_id = current_user["sub"]
     count_row = db.execute(
-        "SELECT COUNT(*) as count FROM kundlis WHERE user_id = %s",
-        (current_user["sub"],)
+        "SELECT COUNT(*) as count FROM kundlis WHERE user_id = %s", (user_id,)
     ).fetchone()
-    
     deleted_count = count_row["count"] if count_row else 0
-    
-    # Delete all kundlis for this user
-    db.execute("DELETE FROM kundlis WHERE user_id = %s", (current_user["sub"],))
+
+    # Delete dependent records first (foreign key references to kundlis)
+    db.execute(
+        "DELETE FROM ai_chat_logs WHERE kundli_id IN (SELECT id FROM kundlis WHERE user_id = %s)",
+        (user_id,),
+    )
+    db.execute(
+        "DELETE FROM reports WHERE kundli_id IN (SELECT id FROM kundlis WHERE user_id = %s)",
+        (user_id,),
+    )
+    db.execute("DELETE FROM kundlis WHERE user_id = %s", (user_id,))
     db.commit()
-    
+
     return {
-        "message": f"All kundlis deleted successfully",
-        "deleted_count": deleted_count
+        "message": "All kundlis deleted successfully",
+        "deleted_count": deleted_count,
     }
 
 
@@ -1379,7 +1461,9 @@ async def delete_kundli(
                 detail="Not authorized to delete this kundli"
             )
         
-        # Delete the kundli
+        # Delete dependent records first (foreign key references)
+        db.execute("DELETE FROM ai_chat_logs WHERE kundli_id = %s", (kundli_id,))
+        db.execute("DELETE FROM reports WHERE kundli_id = %s", (kundli_id,))
         db.execute("DELETE FROM kundlis WHERE id = %s", (kundli_id,))
         db.commit()
         

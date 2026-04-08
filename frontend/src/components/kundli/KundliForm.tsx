@@ -74,7 +74,7 @@ export default function KundliForm({
   onPrashnaKundli,
   onBackToList,
 }: KundliFormProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const geocode = useGeocodeAutocomplete();
   const placeWrapperRef = useRef<HTMLDivElement>(null);
 
@@ -95,12 +95,12 @@ export default function KundliForm({
         <div className="w-16 h-16 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center mx-auto mb-4">
           <Sparkles className="w-8 h-8 text-cosmic-bg" />
         </div>
-        <h3 className="text-2xl sm:text-3xl font-display font-bold text-sacred-brown mb-2">Generate Your Kundli</h3>
-        <p className="text-sacred-text-secondary">Enter your birth details for a personalized Vedic birth chart</p>
+        <h3 className="text-2xl sm:text-3xl font-display font-bold text-sacred-brown mb-2">{language === 'hi' ? 'अपनी कुंडली बनाएं' : 'Generate Your Kundli'}</h3>
+        <p className="text-sacred-text-secondary">{language === 'hi' ? 'व्यक्तिगत जन्म कुंडली के लिए अपना जन्म विवरण दर्ज करें' : 'Enter your birth details for a personalized Vedic birth chart'}</p>
       </div>
       {savedKundlisCount > 0 && (
         <Button variant="outline" onClick={onBackToList} className="w-full mb-4 border-sacred-gold/50 text-sacred-brown">
-          <ArrowLeft className="w-4 h-4 mr-2" />Back to My Kundlis ({savedKundlisCount})
+          <ArrowLeft className="w-4 h-4 mr-2" />{language === 'hi' ? `मेरी कुंडलियों पर वापस (${savedKundlisCount})` : `Back to My Kundlis (${savedKundlisCount})`}
         </Button>
       )}
       <Button onClick={onPrashnaKundli} variant="outline" className="w-full mb-4 border-sacred-gold/50 text-sacred-brown hover:bg-sacred-gold/10">
@@ -111,11 +111,11 @@ export default function KundliForm({
       <div className="space-y-4">
         <div className="relative">
           <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold-dark" />
-          <Input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Full Name" className="pl-10 bg-sacred-cream border-sacred-gold/15 text-sacred-brown" />
+          <Input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder={language === 'hi' ? 'पूरा नाम' : 'Full Name'} className="pl-10 bg-sacred-cream border-sacred-gold/15 text-sacred-brown" />
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <button onClick={() => setFormData({ ...formData, gender: 'male' })} className={`p-3 rounded-xl border transition-colors ${formData.gender === 'male' ? 'border-sacred-gold bg-sacred-gold/10 text-sacred-gold-dark' : 'border-sacred-gold/15 text-sacred-text-secondary'}`}>Male</button>
-          <button onClick={() => setFormData({ ...formData, gender: 'female' })} className={`p-3 rounded-xl border transition-colors ${formData.gender === 'female' ? 'border-sacred-gold bg-sacred-gold/10 text-sacred-gold-dark' : 'border-sacred-gold/15 text-sacred-text-secondary'}`}>Female</button>
+          <button onClick={() => setFormData({ ...formData, gender: 'male' })} className={`p-3 rounded-xl border transition-colors ${formData.gender === 'male' ? 'border-sacred-gold bg-sacred-gold/10 text-sacred-gold-dark' : 'border-sacred-gold/15 text-sacred-text-secondary'}`}>{language === 'hi' ? 'पुरुष' : 'Male'}</button>
+          <button onClick={() => setFormData({ ...formData, gender: 'female' })} className={`p-3 rounded-xl border transition-colors ${formData.gender === 'female' ? 'border-sacred-gold bg-sacred-gold/10 text-sacred-gold-dark' : 'border-sacred-gold/15 text-sacred-text-secondary'}`}>{language === 'hi' ? 'महिला' : 'Female'}</button>
         </div>
         <div className="relative">
           <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-cosmic-text-muted" />
@@ -134,7 +134,7 @@ export default function KundliForm({
               setFormData({ ...formData, place: e.target.value });
               geocode.search(e.target.value);
             }}
-            placeholder="Birth Place (type to search)"
+            placeholder={language === 'hi' ? 'जन्म स्थान (खोजने के लिए टाइप करें)' : 'Birth Place (type to search)'}
             className="pl-10 bg-sacred-cream border-sacred-gold/15 text-sacred-brown"
             autoComplete="off"
           />
@@ -166,7 +166,7 @@ export default function KundliForm({
           <span>Lat: {formData.latitude.toFixed(4)}, Lon: {formData.longitude.toFixed(4)}</span>
         </div>
         <Button onClick={onGenerate} disabled={!formData.name || !formData.date || !formData.time || !formData.place} className="w-full btn-sacred font-semibold hover:bg-sacred-gold-dark disabled:opacity-50">
-          <Sparkles className="w-5 h-5 mr-2" />Generate Kundli<ChevronRight className="w-5 h-5 ml-2" />
+          <Sparkles className="w-5 h-5 mr-2" />{language === 'hi' ? 'कुंडली बनाएं' : 'Generate Kundli'}<ChevronRight className="w-5 h-5 ml-2" />
         </Button>
       </div>
     </div>

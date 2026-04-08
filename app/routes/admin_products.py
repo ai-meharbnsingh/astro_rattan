@@ -96,7 +96,7 @@ def admin_replace_product(
     db.execute(
         """UPDATE products SET name=%s, description=%s, category=%s, price=%s,
            compare_price=%s, image_url=%s, weight=%s, planet=%s, properties=%s,
-           stock=%s, updated_at=to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS') WHERE id=%s""",
+           stock=%s, updated_at=NOW() WHERE id=%s""",
         (
             req.name, req.description, req.category.value, req.price,
             req.compare_price, req.image_url, req.weight, req.planet,
@@ -121,7 +121,7 @@ def admin_delete_product(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
 
     db.execute(
-        "UPDATE products SET is_active = 0, updated_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS') WHERE id = %s",
+        "UPDATE products SET is_active = 0, updated_at = NOW() WHERE id = %s",
         (product_id,),
     )
     db.commit()
@@ -141,7 +141,7 @@ def admin_update_stock(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
 
     db.execute(
-        "UPDATE products SET stock = %s, updated_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS') WHERE id = %s",
+        "UPDATE products SET stock = %s, updated_at = NOW() WHERE id = %s",
         (stock, product_id),
     )
     db.commit()
@@ -161,7 +161,7 @@ def admin_toggle_product(
 
     new_status = 0 if row["is_active"] else 1
     db.execute(
-        "UPDATE products SET is_active = %s, updated_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS') WHERE id = %s",
+        "UPDATE products SET is_active = %s, updated_at = NOW() WHERE id = %s",
         (new_status, product_id),
     )
     db.commit()

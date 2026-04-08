@@ -1,6 +1,7 @@
 """WhatsApp Business Cloud API integration for AstroVedic chatbot."""
 import os
 import logging
+import traceback
 from typing import Optional
 
 logger = logging.getLogger(__name__)
@@ -101,7 +102,9 @@ async def process_incoming_message(message_text: str, sender_phone: str) -> str:
                 f"Sunrise: {p.get('sunrise', 'N/A')}\n"
                 f"Sunset: {p.get('sunset', 'N/A')}"
             )
-        except Exception:
+        except Exception as e:
+            print(f"ERROR in process_incoming_message (panchang): {e}")
+            print(traceback.format_exc())
             return "Today's Panchang is available on our website. Visit astrovedic.com/panchang"
 
     if text_lower in ("hi", "hello", "namaste"):
@@ -123,5 +126,7 @@ async def process_incoming_message(message_text: str, sender_phone: str) -> str:
             user=message_text,
         )
         return response or "I appreciate your question. Please visit astrovedic.com for detailed insights."
-    except Exception:
+    except Exception as e:
+        print(f"ERROR in process_incoming_message (ai_engine): {e}")
+        print(traceback.format_exc())
         return "Thank you for your question! For detailed astrology insights, visit astrovedic.com"

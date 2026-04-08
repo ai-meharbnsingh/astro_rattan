@@ -98,10 +98,11 @@ def get_panchang(
     rahu_str = json.dumps(rahu_kaal)
 
     db.execute(
-        """INSERT OR IGNORE INTO panchang_cache
+        """INSERT INTO panchang_cache
            (date, latitude, longitude, tithi, nakshatra, yoga, karana,
             rahu_kaal, choghadiya, sunrise, sunset, moonrise, moonset)
-           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+           ON CONFLICT (date, latitude, longitude) DO NOTHING""",
         (
             target_date, latitude, longitude,
             tithi_str, nak_str, yoga_str, karana_str,
@@ -224,9 +225,10 @@ def get_muhurat(
     # Cache result
     results_json = json.dumps(auspicious_dates)
     db.execute(
-        """INSERT OR IGNORE INTO muhurat_cache
+        """INSERT INTO muhurat_cache
            (muhurat_type, year, month, latitude, longitude, results)
-           VALUES (%s, %s, %s, %s, %s, %s)""",
+           VALUES (%s, %s, %s, %s, %s, %s)
+           ON CONFLICT (muhurat_type, year, month, latitude, longitude) DO NOTHING""",
         (muhurat_type, target_year, target_month, latitude, longitude, results_json),
     )
     db.commit()

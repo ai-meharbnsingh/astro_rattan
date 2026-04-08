@@ -15,12 +15,13 @@ def get_favorite_astrologers(
 ):
     """Return the current user's favorite astrologers.
 
-    TODO: The favorites table does not exist yet. Once an
-    ``astrologer_favorites`` table is created (user_id, astrologer_id),
-    this endpoint should query it and return joined astrologer profiles.
-    For now it returns an empty list so the frontend does not break.
+    The ``astrologer_favorites`` table does not exist yet. Once it is
+    created (user_id, astrologer_id), this endpoint should query it and
+    return joined astrologer profiles. Until then it returns an empty
+    list with an explicit status message so the frontend can
+    distinguish "no favorites yet" from "endpoint broken".
     """
-    return {"favorites": []}
+    return {"favorites": [], "message": "Coming soon"}
 
 
 def _get_astrologer_record(user_id: str, db: Any):
@@ -105,6 +106,7 @@ def astrologer_consultations(
         SELECT c.*,
                CASE
                    WHEN c.notes LIKE 'https://meet.jit.si/%' THEN c.notes
+                   WHEN c.notes LIKE 'https://meet.astrovedic.com/%' THEN c.notes
                    ELSE NULL
                END as video_link,
                u.name as client_name,

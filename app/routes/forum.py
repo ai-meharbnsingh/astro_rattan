@@ -290,7 +290,7 @@ def create_reply(
     db.execute(
         """
         UPDATE forum_threads
-        SET replies_count = replies_count + 1, updated_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+        SET replies_count = replies_count + 1, updated_at = NOW()
         WHERE id = %s
         """,
         (thread_id,),

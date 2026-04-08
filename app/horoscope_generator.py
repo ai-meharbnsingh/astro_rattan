@@ -1,6 +1,7 @@
 """H-09: Horoscope Content Generation Pipeline — seeds daily & weekly horoscopes."""
 import json
 import random
+import traceback
 import psycopg2
 import psycopg2.extras
 from datetime import date, timedelta
@@ -115,8 +116,9 @@ def _try_ai_horoscope(sign: str, period_date: str) -> str:
         result = call_ai(prompt)
         if result and len(result) > 50:
             return result
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"ERROR in _try_ai_horoscope: {e}")
+        print(traceback.format_exc())
     return ""
 
 
@@ -369,8 +371,9 @@ def generate_ai_horoscope(
             sections = _parse_ai_sections(response)
             if sections:
                 source = "ai"
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"ERROR in generate_ai_horoscope: {e}")
+        print(traceback.format_exc())
 
     # Fallback to template-based generation
     if sections is None:

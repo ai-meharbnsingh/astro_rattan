@@ -9,6 +9,7 @@ Implements key Jaimini system components:
   5. Indu Lagna (wealth indicator)
 """
 from __future__ import annotations
+import traceback
 from typing import Any, Dict, List, Optional
 from datetime import datetime, timedelta
 
@@ -260,10 +261,21 @@ def calculate_jaimini_drishti() -> Dict:
 # 4. CHARA DASHA (Sign-based timing)
 # ============================================================
 
+def _sign_type(sign: str) -> Dict[str, str]:
+    """Return modality info for a sign."""
+    if sign in CARDINAL:
+        return {"sign_type": "Cardinal", "sign_type_hi": "चर", "sign_type_san": "Chara"}
+    elif sign in FIXED:
+        return {"sign_type": "Fixed", "sign_type_hi": "स्थिर", "sign_type_san": "Sthira"}
+    else:
+        return {"sign_type": "Dual", "sign_type_hi": "द्विस्वभाव", "sign_type_san": "Dwiswabhava"}
+
+
 def calculate_chara_dasha(planets: Dict, ascendant: Dict, birth_date: str) -> Dict:
     """
     Chara Dasha periods based on sign distances.
     Each sign gets a period = distance from sign to its lord's sign.
+    Repeats sign cycles to cover at least 120 years from birth.
     """
     asc_sign = ascendant.get("sign", "Aries") if ascendant else "Aries"
     asc_idx = _sign_index(asc_sign)
@@ -276,13 +288,8 @@ def calculate_chara_dasha(planets: Dict, ascendant: Dict, birth_date: str) -> Di
     else:
         sign_order = [ZODIAC[(asc_idx - i) % 12] for i in range(12)]
 
-    # Calculate period for each sign
-    periods = []
-    try:
-        start = datetime.strptime(str(birth_date).split("T")[0].split(" ")[0], "%Y-%m-%d")
-    except Exception:
-        start = datetime(2000, 1, 1)
-
+    # Calculate base period years for each sign
+    sign_years: List[Dict[str, Any]] = []
     for sign in sign_order:
         lord = SIGN_LORD[sign]
         lord_sign = _get_planet_sign(planets, lord)
@@ -296,16 +303,42 @@ def calculate_chara_dasha(planets: Dict, ascendant: Dict, birth_date: str) -> Di
             years = dist - 1  # 0-indexed
 
         years = max(1, min(years, 12))  # clamp 1-12
+        sign_years.append({"sign": sign, "lord": lord, "years": years})
 
-        end = start + timedelta(days=years * 365.25)
-        periods.append({
-            "sign": sign,
-            "lord": lord,
-            "years": years,
-            "start_date": start.strftime("%Y-%m-%d"),
-            "end_date": end.strftime("%Y-%m-%d"),
-        })
-        start = end
+    # Build periods, repeating sign cycles until we cover 120+ years
+    periods = []
+    try:
+        start = datetime.strptime(str(birth_date).split("T")[0].split(" ")[0], "%Y-%m-%d")
+    except Exception as e:
+        print(f"ERROR in calculate_chara_dasha (date parse): {e}")
+        print(traceback.format_exc())
+        start = datetime(2000, 1, 1)
+
+    total_years_covered = 0
+    cycle = 0
+    while total_years_covered < 120:
+        for entry in sign_years:
+            sign = entry["sign"]
+            lord = entry["lord"]
+            years = entry["years"]
+            modality = _sign_type(sign)
+            end = start + timedelta(days=years * 365.25)
+            periods.append({
+                "sign": sign,
+                "lord": lord,
+                "years": years,
+                "start_date": start.strftime("%Y-%m-%d"),
+                "end_date": end.strftime("%Y-%m-%d"),
+                "sign_type": modality["sign_type"],
+                "sign_type_hi": modality["sign_type_hi"],
+                "sign_type_san": modality["sign_type_san"],
+                "cycle": cycle + 1,
+            })
+            total_years_covered += years
+            start = end
+            if total_years_covered >= 120:
+                break
+        cycle += 1
 
     # Mark current period
     now = datetime.now()
@@ -369,13 +402,62 @@ def calculate_indu_lagna(planets: Dict, ascendant: Dict) -> Dict:
 # 6. ARGALA (Planetary Intervention)
 # ============================================================
 
+_BENEFICS = {"Jupiter", "Venus", "Moon", "Mercury"}
+_MALEFICS = {"Sun", "Mars", "Saturn", "Rahu", "Ketu"}
+
+_ARGALA_DETAILS = {
+    2: {
+        "en": "{planets} in the 2nd from House {house} provides {nature} Argala for wealth, family, and speech.",
+        "hi": "{planets} भाव {house} से दूसरे में {nature_hi} अर्गला — धन, परिवार और वाणी पर प्रभाव।",
+    },
+    4: {
+        "en": "{planets} in the 4th from House {house} provides {nature} Argala for happiness, property, and emotional comfort.",
+        "hi": "{planets} भाव {house} से चौथे में {nature_hi} अर्गला — सुख, संपत्ति और भावनात्मक आराम पर प्रभाव।",
+    },
+    11: {
+        "en": "{planets} in the 11th from House {house} provides {nature} Argala for gains, aspirations, and fulfillment of desires.",
+        "hi": "{planets} भाव {house} से ग्यारहवें में {nature_hi} अर्गला — लाभ, आकांक्षा और इच्छापूर्ति पर प्रभाव।",
+    },
+    5: {
+        "en": "{planets} in the 5th from House {house} provides {nature} Argala for children, intellect, and past-life merit.",
+        "hi": "{planets} भाव {house} से पाँचवें में {nature_hi} अर्गला — संतान, बुद्धि और पूर्वजन्म पुण्य पर प्रभाव।",
+    },
+}
+
+_PLANET_REMEDIES = {
+    "Sun": {"en": "Offer water to the Sun at sunrise; chant Aditya Hridaya Stotram.", "hi": "सूर्योदय पर सूर्य को जल अर्पित करें; आदित्य हृदय स्तोत्र का पाठ करें।"},
+    "Moon": {"en": "Wear a pearl or moonstone; chant Chandra mantra on Mondays.", "hi": "मोती या मूनस्टोन धारण करें; सोमवार को चंद्र मंत्र का जाप करें।"},
+    "Mars": {"en": "Chant Hanuman Chalisa on Tuesdays; donate red lentils.", "hi": "मंगलवार को हनुमान चालीसा पढ़ें; लाल मसूर दान करें।"},
+    "Mercury": {"en": "Chant Vishnu Sahasranama on Wednesdays; donate green moong dal.", "hi": "बुधवार को विष्णु सहस्रनाम पढ़ें; हरी मूंग दाल दान करें।"},
+    "Jupiter": {"en": "Chant Jupiter mantra on Thursdays; donate yellow items or turmeric.", "hi": "गुरुवार को गुरु मंत्र जाप करें; पीली वस्तुएँ या हल्दी दान करें।"},
+    "Venus": {"en": "Chant Lakshmi mantra on Fridays; donate white items or rice.", "hi": "शुक्रवार को लक्ष्मी मंत्र जाप करें; सफेद वस्तुएँ या चावल दान करें।"},
+    "Saturn": {"en": "Chant Shani mantra on Saturdays; donate black sesame or mustard oil.", "hi": "शनिवार को शनि मंत्र जाप करें; काले तिल या सरसों का तेल दान करें।"},
+    "Rahu": {"en": "Chant Durga mantra; donate dark blue cloth on Saturdays.", "hi": "दुर्गा मंत्र जाप करें; शनिवार को गहरे नीले कपड़े दान करें।"},
+    "Ketu": {"en": "Chant Ganesha mantra; donate a grey blanket or sesame.", "hi": "गणेश मंत्र जाप करें; भूरा कंबल या तिल दान करें।"},
+}
+
+
+def _classify_nature(planet_list: List[str]) -> tuple:
+    """Classify argala as Shubha (benefic) or Paapa (malefic) based on planets."""
+    benefic_count = sum(1 for p in planet_list if p in _BENEFICS)
+    malefic_count = sum(1 for p in planet_list if p in _MALEFICS)
+    if benefic_count > malefic_count:
+        return ("Shubha", "शुभ", "Benefic")
+    elif malefic_count > benefic_count:
+        return ("Paapa", "पाप", "Malefic")
+    else:
+        return ("Mishrit", "मिश्रित", "Mixed")
+
+
 def calculate_argala(planets: Dict, ascendant: Dict) -> Dict:
     """
     Argala = planetary influence from specific houses.
-    Argala houses: 2nd, 4th, 11th, 5th from any house → promote results.
+    Argala houses: 2nd, 4th, 11th, 5th from any house -> promote results.
     Virodha Argala (obstruction): 12th (blocks 2nd), 10th (blocks 4th),
       3rd (blocks 11th), 9th (blocks 5th).
     Argala holds if promoting planets > obstructing planets.
+
+    Enhanced: includes detail text, Shubha/Paapa classification, and remedies.
     """
     asc_sign = ascendant.get("sign", "Aries") if ascendant else "Aries"
 
@@ -410,6 +492,34 @@ def calculate_argala(planets: Dict, ascendant: Dict) -> Dict:
 
             if argala_planets:
                 blocked = len(virodha_planets) >= len(argala_planets)
+                nature_key, nature_hi, nature_en_label = _classify_nature(argala_planets)
+                planets_str = ", ".join(argala_planets)
+
+                # Build detail text
+                detail_templates = _ARGALA_DETAILS.get(argala_offset, {})
+                detail_en = detail_templates.get("en", "").format(
+                    planets=planets_str, house=house_num,
+                    nature=f"{nature_key} ({nature_en_label})",
+                )
+                detail_hi = detail_templates.get("hi", "").format(
+                    planets=planets_str, house=house_num,
+                    nature_hi=nature_key,
+                )
+
+                # Build remedy (combine remedies for blocked or malefic argala planets)
+                remedy_en = ""
+                remedy_hi = ""
+                if blocked or nature_key == "Paapa":
+                    remedies_en = []
+                    remedies_hi = []
+                    for p in argala_planets:
+                        r = _PLANET_REMEDIES.get(p)
+                        if r:
+                            remedies_en.append(r["en"])
+                            remedies_hi.append(r["hi"])
+                    remedy_en = " ".join(remedies_en)
+                    remedy_hi = " ".join(remedies_hi)
+
                 house_argala.append({
                     "type": desc,
                     "from_house": argala_house,
@@ -418,6 +528,13 @@ def calculate_argala(planets: Dict, ascendant: Dict) -> Dict:
                     "virodha_planets": virodha_planets,
                     "blocked": blocked,
                     "status": "Blocked" if blocked else "Active",
+                    "nature": nature_key,
+                    "nature_en": nature_en_label,
+                    "nature_hi": nature_hi,
+                    "detail_en": detail_en,
+                    "detail_hi": detail_hi,
+                    "remedy_en": remedy_en,
+                    "remedy_hi": remedy_hi,
                 })
 
         if house_argala:

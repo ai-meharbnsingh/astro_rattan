@@ -35,6 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (token) {
       api.get('/api/auth/me').then(setUser).catch(() => {
         localStorage.removeItem('astrovedic_token');
+        localStorage.removeItem('astrovedic_refresh_token');
       }).finally(() => setLoading(false));
     } else {
       setLoading(false);
@@ -44,6 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(async (email: string, password: string) => {
     const data = await api.post('/api/auth/login', { email, password });
     localStorage.setItem('astrovedic_token', data.token);
+    if (data.refresh_token) localStorage.setItem('astrovedic_refresh_token', data.refresh_token);
     setUser(data.user);
     return data;
   }, []);
@@ -51,12 +53,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = useCallback(async (email: string, password: string, name: string, emailToken: string) => {
     const data = await api.post('/api/auth/register', { email, password, name, email_token: emailToken });
     localStorage.setItem('astrovedic_token', data.token);
+    if (data.refresh_token) localStorage.setItem('astrovedic_refresh_token', data.refresh_token);
     setUser(data.user);
     return data;
   }, []);
 
   const logout = useCallback(() => {
     localStorage.removeItem('astrovedic_token');
+    localStorage.removeItem('astrovedic_refresh_token');
     setUser(null);
   }, []);
 

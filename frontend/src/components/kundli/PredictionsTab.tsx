@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sparkles, Loader2, Calendar, CalendarDays, CalendarRange } from 'lucide-react';
 import { isPuterAvailable } from '@/lib/puter-ai';
+import { useTranslation } from '@/lib/i18n';
 
 // Simple markdown-to-JSX renderer for prediction text
 function renderMarkdown(text: string) {
@@ -39,11 +40,18 @@ interface PredictionsTabProps {
   onFetchPredictions: (period: PredictionPeriod) => void;
 }
 
-const PERIOD_TABS: { key: PredictionPeriod; label: string; icon: typeof Sparkles; description: string }[] = [
+const PERIOD_TABS_EN: { key: PredictionPeriod; label: string; icon: typeof Sparkles; description: string }[] = [
   { key: 'general', label: 'General', icon: Sparkles, description: 'Full birth chart analysis' },
   { key: 'daily', label: 'Daily', icon: Calendar, description: "Today's prediction" },
   { key: 'monthly', label: 'Monthly', icon: CalendarDays, description: "This month's forecast" },
   { key: 'yearly', label: 'Yearly', icon: CalendarRange, description: "This year's outlook" },
+];
+
+const PERIOD_TABS_HI: { key: PredictionPeriod; label: string; icon: typeof Sparkles; description: string }[] = [
+  { key: 'general', label: 'सामान्य', icon: Sparkles, description: 'पूर्ण जन्म कुंडली विश्लेषण' },
+  { key: 'daily', label: 'दैनिक', icon: Calendar, description: 'आज का फल' },
+  { key: 'monthly', label: 'मासिक', icon: CalendarDays, description: 'इस माह का फल' },
+  { key: 'yearly', label: 'वार्षिक', icon: CalendarRange, description: 'इस वर्ष का फल' },
 ];
 
 export default function PredictionsTab({
@@ -52,6 +60,8 @@ export default function PredictionsTab({
   activePeriod,
   onFetchPredictions,
 }: PredictionsTabProps) {
+  const { language } = useTranslation();
+  const PERIOD_TABS = language === 'hi' ? PERIOD_TABS_HI : PERIOD_TABS_EN;
   const currentData = predictionsData[activePeriod];
 
   return (
@@ -83,10 +93,15 @@ export default function PredictionsTab({
         <div className="flex items-center justify-center py-12">
           <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
           <span className="ml-2 text-sacred-text-secondary">
-            {activePeriod === 'daily' ? 'Reading today\'s stars...' :
-             activePeriod === 'monthly' ? 'Analyzing this month\'s transits...' :
-             activePeriod === 'yearly' ? 'Calculating yearly forecast...' :
-             'Consulting the stars...'}
+            {language === 'hi'
+              ? (activePeriod === 'daily' ? 'आज के सितारे पढ़ रहे हैं...' :
+                 activePeriod === 'monthly' ? 'इस माह के ग्रह गोचर का विश्लेषण...' :
+                 activePeriod === 'yearly' ? 'वार्षिक फल की गणना...' :
+                 'सितारों से परामर्श...')
+              : (activePeriod === 'daily' ? 'Reading today\'s stars...' :
+                 activePeriod === 'monthly' ? 'Analyzing this month\'s transits...' :
+                 activePeriod === 'yearly' ? 'Calculating yearly forecast...' :
+                 'Consulting the stars...')}
           </span>
         </div>
       )}
@@ -100,10 +115,15 @@ export default function PredictionsTab({
             </div>
             <div>
               <h4 className="font-display font-semibold text-xl text-sacred-brown">
-                {activePeriod === 'daily' ? 'Daily Prediction' :
-                 activePeriod === 'monthly' ? 'Monthly Prediction' :
-                 activePeriod === 'yearly' ? 'Yearly Prediction' :
-                 'AI Predictions'}
+                {language === 'hi'
+                  ? (activePeriod === 'daily' ? 'दैनिक फल' :
+                     activePeriod === 'monthly' ? 'मासिक फल' :
+                     activePeriod === 'yearly' ? 'वार्षिक फल' :
+                     'AI भविष्यवाणी')
+                  : (activePeriod === 'daily' ? 'Daily Prediction' :
+                     activePeriod === 'monthly' ? 'Monthly Prediction' :
+                     activePeriod === 'yearly' ? 'Yearly Prediction' :
+                     'AI Predictions')}
               </h4>
               <p className="text-xs text-sacred-text-secondary">
                 {PERIOD_TABS.find(t => t.key === activePeriod)?.description}
@@ -111,12 +131,12 @@ export default function PredictionsTab({
             </div>
             {currentData._puterFallback && (
               <span className="ml-auto text-xs px-2 py-1 rounded-full" style={{ backgroundColor: 'rgba(184,134,11,0.12)', color: 'var(--aged-gold-dim)', border: '1px solid rgba(184,134,11,0.3)' }}>
-                Powered by Free AI
+                {language === 'hi' ? 'निःशुल्क AI द्वारा संचालित' : 'Powered by Free AI'}
               </span>
             )}
           </div>
           <div className="max-w-none" style={{ color: 'var(--ink)' }}>
-            {renderMarkdown(currentData.interpretation || currentData.response || currentData.text || 'Generating predictions...')}
+            {renderMarkdown(currentData.interpretation || currentData.response || currentData.text || (language === 'hi' ? 'भविष्यवाणी तैयार हो रही है...' : 'Generating predictions...'))}
             {currentData._streaming && <span className="inline-block w-1.5 h-4 ml-0.5 bg-sacred-gold animate-pulse align-middle" />}
           </div>
         </div>
@@ -127,20 +147,30 @@ export default function PredictionsTab({
         <div className="text-center py-12">
           <Sparkles className="w-10 h-10 mx-auto mb-3" style={{ color: 'rgba(184,134,11,0.4)' }} />
           <p className="text-sacred-text-secondary mb-4">
-            {activePeriod === 'daily' ? "Get today's personalized prediction" :
-             activePeriod === 'monthly' ? "Get this month's detailed forecast" :
-             activePeriod === 'yearly' ? "Get your yearly outlook" :
-             'Get AI Predictions'}
+            {language === 'hi'
+              ? (activePeriod === 'daily' ? 'आज का व्यक्तिगत फल प्राप्त करें' :
+                 activePeriod === 'monthly' ? 'इस माह का विस्तृत फल प्राप्त करें' :
+                 activePeriod === 'yearly' ? 'अपना वार्षिक फल प्राप्त करें' :
+                 'AI भविष्यवाणी प्राप्त करें')
+              : (activePeriod === 'daily' ? "Get today's personalized prediction" :
+                 activePeriod === 'monthly' ? "Get this month's detailed forecast" :
+                 activePeriod === 'yearly' ? "Get your yearly outlook" :
+                 'Get AI Predictions')}
           </p>
           <Button onClick={() => onFetchPredictions(activePeriod)} className="btn-sacred">
             <Sparkles className="w-4 h-4 mr-2" />
-            {activePeriod === 'daily' ? "Today's Prediction" :
-             activePeriod === 'monthly' ? 'Monthly Forecast' :
-             activePeriod === 'yearly' ? 'Yearly Outlook' :
-             'Get Predictions'}
+            {language === 'hi'
+              ? (activePeriod === 'daily' ? 'आज का फल' :
+                 activePeriod === 'monthly' ? 'मासिक फल' :
+                 activePeriod === 'yearly' ? 'वार्षिक फल' :
+                 'भविष्यवाणी प्राप्त करें')
+              : (activePeriod === 'daily' ? "Today's Prediction" :
+                 activePeriod === 'monthly' ? 'Monthly Forecast' :
+                 activePeriod === 'yearly' ? 'Yearly Outlook' :
+                 'Get Predictions')}
           </Button>
           {isPuterAvailable() && (
-            <p className="text-xs mt-3" style={{ color: 'var(--ink-light)' }}>Free AI available as backup if server is busy</p>
+            <p className="text-xs mt-3" style={{ color: 'var(--ink-light)' }}>{language === 'hi' ? 'सर्वर व्यस्त होने पर निःशुल्क AI बैकअप उपलब्ध' : 'Free AI available as backup if server is busy'}</p>
           )}
         </div>
       )}

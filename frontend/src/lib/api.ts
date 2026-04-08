@@ -1,5 +1,28 @@
 const API_BASE = import.meta.env.VITE_API_URL || '';
 
+let isRefreshing = false;
+let refreshPromise: Promise<boolean> | null = null;
+
+async function tryRefreshToken(): Promise<boolean> {
+  const refreshToken = localStorage.getItem('astrovedic_refresh_token');
+  if (!refreshToken) return false;
+
+  try {
+    const res = await fetch(`${API_BASE}/api/auth/refresh`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh_token: refreshToken }),
+    });
+    if (!res.ok) return false;
+    const data = await res.json();
+    localStorage.setItem('astrovedic_token', data.token);
+    localStorage.setItem('astrovedic_refresh_token', data.refresh_token);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function apiFetch(endpoint: string, options: RequestInit = {}) {
   const token = localStorage.getItem('astrovedic_token');
   const headers = new Headers(options.headers || {});
@@ -9,6 +32,36 @@ export async function apiFetch(endpoint: string, options: RequestInit = {}) {
   }
 
   const res = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
+
+  if (res.status === 401 && !endpoint.includes('/api/auth/')) {
+    // Try to refresh the token silently
+    if (!isRefreshing) {
+      isRefreshing = true;
+      refreshPromise = tryRefreshToken().finally(() => { isRefreshing = false; });
+    }
+    const refreshed = await refreshPromise;
+    if (refreshed) {
+      // Retry original request with new token
+      const newToken = localStorage.getItem('astrovedic_token');
+      const retryHeaders = new Headers(options.headers || {});
+      if (newToken) retryHeaders.set('Authorization', `Bearer ${newToken}`);
+      if (!(options.body instanceof FormData) && !retryHeaders.has('Content-Type')) {
+        retryHeaders.set('Content-Type', 'application/json');
+      }
+      const retryRes = await fetch(`${API_BASE}${endpoint}`, { ...options, headers: retryHeaders });
+      if (!retryRes.ok) {
+        const err = await retryRes.json().catch(() => ({ detail: retryRes.statusText }));
+        throw new Error(err.detail || retryRes.statusText);
+      }
+      const ct = retryRes.headers.get('content-type') || '';
+      return ct.includes('application/json') ? retryRes.json() : retryRes.text();
+    }
+    // Refresh failed — clear stale tokens, throw (don't redirect — let components handle it)
+    localStorage.removeItem('astrovedic_token');
+    localStorage.removeItem('astrovedic_refresh_token');
+    throw new Error('Not authenticated');
+  }
+
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: res.statusText }));
     throw new Error(err.detail || res.statusText);

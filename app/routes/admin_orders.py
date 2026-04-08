@@ -75,7 +75,7 @@ def update_order(
             status_code=status.HTTP_400_BAD_REQUEST, detail="No fields to update"
         )
 
-    updates.append("updated_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')")
+    updates.append("updated_at = NOW()")
     params.append(order_id)
 
     db.execute(f"UPDATE orders SET {', '.join(updates)} WHERE id = %s", params)

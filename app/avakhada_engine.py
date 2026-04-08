@@ -5,6 +5,7 @@ Computes the comprehensive birth summary table (Avakhada Chakra)
 from chart data: ascendant, Moon position, Sun position, and planet data.
 """
 import math
+import traceback
 from typing import Any, Dict, List, Optional
 
 # ============================================================
@@ -323,8 +324,9 @@ def calculate_avakhada(chart_data: dict, birth_date: str = "") -> dict:
             weekday = bd.weekday()  # 0=Monday
             vaar_name = VAAR_NAMES.get(weekday, "")
             vaar_lord = VAAR_LORDS.get(weekday, "")
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"ERROR in calculate_avakhada (vaar calculation): {e}")
+            print(traceback.format_exc())
 
     # --- NEW: Paya (Nakshatra-based) ---
     paya_nakshatra = "Unknown"

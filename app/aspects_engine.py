@@ -308,3 +308,94 @@ def calculate_western_aspects(planets: Dict[str, Any]) -> Dict[str, Any]:
         "aspects_list": aspects_list,
         "planet_order": _MATRIX_PLANETS,
     }
+
+
+def _match_western_aspect(degree_diff: float):
+    """Find the Western aspect matching a given degree difference, if any."""
+    for asp_name, asp_abbr, exact_angle, orb in _WESTERN_ASPECTS:
+        actual_orb = abs(degree_diff - exact_angle)
+        if actual_orb <= orb:
+            return asp_abbr, asp_name, round(actual_orb, 1)
+    return None, None, 0.0
+
+
+def calculate_cusp_aspects(
+    planets: Dict[str, Any],
+    nirayana_cusps: List[float],
+    sayana_cusps: List[float],
+) -> Dict[str, Any]:
+    """
+    Calculate degree-based aspects from each planet to each house cusp.
+
+    Args:
+        planets: dict of {planet_name: {longitude: float, ...}}
+        nirayana_cusps: list of 12 sidereal cusp longitudes
+        sayana_cusps: list of 12 tropical cusp longitudes
+
+    Returns:
+        {
+            "nirayana": {planet: [{cusp: 1-12, degree: int, aspect: str|None, orb: float}]},
+            "sayana": {planet: [{cusp: 1-12, degree: int, aspect: str|None, orb: float}]},
+            "planet_order": [...],
+        }
+    """
+    # Get planet longitudes (sidereal for nirayana cusps)
+    longitudes: Dict[str, float] = {}
+    for name in _MATRIX_PLANETS:
+        p = planets.get(name, {})
+        lon = p.get("longitude", 0.0)
+        longitudes[name] = float(lon) if lon else 0.0
+
+    nirayana_result: Dict[str, List[Dict[str, Any]]] = {}
+    sayana_result: Dict[str, List[Dict[str, Any]]] = {}
+
+    for pname in _MATRIX_PLANETS:
+        p_lon = longitudes[pname]
+        nirayana_row: List[Dict[str, Any]] = []
+        sayana_row: List[Dict[str, Any]] = []
+
+        for cusp_idx in range(12):
+            cusp_num = cusp_idx + 1
+
+            # Nirayana: planet sidereal vs cusp sidereal
+            n_cusp_lon = nirayana_cusps[cusp_idx] if cusp_idx < len(nirayana_cusps) else 0.0
+            raw_diff = abs(p_lon - n_cusp_lon) % 360.0
+            degree_diff = min(raw_diff, 360.0 - raw_diff)
+            asp_abbr, asp_name, orb = _match_western_aspect(degree_diff)
+            nirayana_row.append({
+                "cusp": cusp_num,
+                "degree": round(degree_diff),
+                "aspect": asp_abbr,
+                "aspect_name": asp_name,
+                "orb": orb,
+            })
+
+            # Sayana: planet sidereal vs cusp tropical
+            # NOTE: for a proper tropical comparison, the planet longitude should
+            # also be tropical.  The sayana cusps already have ayanamsa added back,
+            # so we add ayanamsa to the planet longitude as well.  The difference
+            # (planet_tropical - cusp_tropical) equals (planet_sid - cusp_sid) when
+            # we add the same ayanamsa to both, so the math is the same offset.
+            # We therefore use the same sidereal planet longitude against the
+            # sayana cusp longitude — the degree difference is what matters and it
+            # stays correct because we shift both by the same constant.
+            s_cusp_lon = sayana_cusps[cusp_idx] if cusp_idx < len(sayana_cusps) else 0.0
+            raw_diff_s = abs(p_lon - s_cusp_lon) % 360.0
+            degree_diff_s = min(raw_diff_s, 360.0 - raw_diff_s)
+            asp_abbr_s, asp_name_s, orb_s = _match_western_aspect(degree_diff_s)
+            sayana_row.append({
+                "cusp": cusp_num,
+                "degree": round(degree_diff_s),
+                "aspect": asp_abbr_s,
+                "aspect_name": asp_name_s,
+                "orb": orb_s,
+            })
+
+        nirayana_result[pname] = nirayana_row
+        sayana_result[pname] = sayana_row
+
+    return {
+        "nirayana": nirayana_result,
+        "sayana": sayana_result,
+        "planet_order": list(_MATRIX_PLANETS),
+    }

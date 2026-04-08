@@ -113,7 +113,7 @@ def deactivate_user(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     db.execute(
-        "UPDATE users SET is_active = 0, updated_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS') WHERE id = %s",
+        "UPDATE users SET is_active = 0, updated_at = NOW() WHERE id = %s",
         (user_id,),
     )
     db.commit()
@@ -137,7 +137,7 @@ def activate_user(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     db.execute(
-        "UPDATE users SET is_active = 1, updated_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS') WHERE id = %s",
+        "UPDATE users SET is_active = 1, updated_at = NOW() WHERE id = %s",
         (user_id,),
     )
     db.commit()
@@ -217,7 +217,7 @@ def update_user(
             status_code=status.HTTP_400_BAD_REQUEST, detail="No fields to update"
         )
 
-    updates.append("updated_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')")
+    updates.append("updated_at = NOW()")
     params.append(user_id)
 
     db.execute(f"UPDATE users SET {', '.join(updates)} WHERE id = %s", params)

@@ -77,6 +77,7 @@ export default function RetrogradeStationsSection({ kundliId }: RetrogradeStatio
                 <th className="text-left p-2 font-medium text-slate-600">{language === 'hi' ? 'ग्रह' : 'Planet'}</th>
                 <th className="text-left p-2 font-medium text-slate-600">{language === 'hi' ? 'प्रकार' : 'Station'}</th>
                 <th className="text-left p-2 font-medium text-slate-600">{language === 'hi' ? 'तिथि' : 'Date'}</th>
+                <th className="text-left p-2 font-medium text-slate-600">{language === 'hi' ? 'समय' : 'Time'}</th>
                 <th className="text-left p-2 font-medium text-slate-600">{language === 'hi' ? 'राशि' : 'Sign'}</th>
                 <th className="text-center p-2 font-medium text-slate-600">{language === 'hi' ? 'अंश' : 'Degree'}</th>
               </tr>
@@ -88,7 +89,7 @@ export default function RetrogradeStationsSection({ kundliId }: RetrogradeStatio
                   return (
                     <tr key={planet} className="border-b border-slate-100">
                       <td className="p-2 font-semibold">{translatePlanet(planet, language)}</td>
-                      <td colSpan={4} className="p-2 text-slate-400 text-center">
+                      <td colSpan={5} className="p-2 text-slate-400 text-center">
                         {language === 'hi' ? 'इस वर्ष वक्री नहीं' : 'No retrogression this year'}
                       </td>
                     </tr>
@@ -115,6 +116,7 @@ export default function RetrogradeStationsSection({ kundliId }: RetrogradeStatio
                       </span>
                     </td>
                     <td className="p-2 font-mono text-sm">{s.date}</td>
+                    <td className="p-2 font-mono text-sm">{s.datetime ? s.datetime.split(' ')[1] : '—'}</td>
                     <td className="p-2">{translateSign(s.sign, language)}</td>
                     <td className="p-2 text-center font-mono">{s.sign_degree}°</td>
                   </tr>

@@ -245,7 +245,7 @@ def apply_referral_code(
 
     # Increment uses_count
     db.execute(
-        "UPDATE referral_codes SET uses_count = uses_count + 1, updated_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS') WHERE id = %s",
+        "UPDATE referral_codes SET uses_count = uses_count + 1, updated_at = NOW() WHERE id = %s",
         (ref_row["id"],),
     )
     db.commit()

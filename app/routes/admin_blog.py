@@ -81,7 +81,7 @@ def create_blog_post(
         INSERT INTO blog_posts
             (slug, title, excerpt, content, cover_image_url, tags, author_name,
              seo_title, seo_description, is_published, published_at, updated_at)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS'), to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS'))
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
         RETURNING id
         """,
         (
@@ -148,7 +148,7 @@ def update_blog_post(
         UPDATE blog_posts
         SET slug = %s, title = %s, excerpt = %s, content = %s, cover_image_url = %s, tags = %s,
             author_name = %s, seo_title = %s, seo_description = %s, is_published = %s,
-            updated_at = to_char(NOW(), 'YYYY-MM-DDTHH24:MI:SS')
+            updated_at = NOW()
         WHERE id = %s
         """,
         (
