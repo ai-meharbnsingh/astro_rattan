@@ -8,6 +8,7 @@ import KundliSummaryModal from '@/components/KundliSummaryModal';
 import BirthDetailsTab from '@/components/kundli/BirthDetailsTab';
 import LordshipsTab from '@/components/kundli/LordshipsTab';
 import AspectsMatrixTab from '@/components/kundli/AspectsMatrixTab';
+import KundliMilanTab from '@/components/kundli/KundliMilanTab';
 import JaiminiTab from '@/components/kundli/JaiminiTab';
 import ReportTab from '@/components/kundli/ReportTab';
 import PlanetsTab from '@/components/kundli/PlanetsTab';
@@ -193,6 +194,7 @@ export default function KundliGenerator() {
             <TabsTrigger value="jaimini" onClick={fetchJaimini}>{language === 'hi' ? 'जैमिनी' : 'Jaimini'}</TabsTrigger>
             <TabsTrigger value="sadesati" onClick={fetchSadesati}>{t('tab.sadeSati')}</TabsTrigger>
             <TabsTrigger value="mundane">{language === 'hi' ? 'मुंडन ज्योतिष' : 'Mundane'}</TabsTrigger>
+            <TabsTrigger value="milan">{language === 'hi' ? 'कुंडली मिलान' : 'Kundli Milan'}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="report">
@@ -342,6 +344,10 @@ export default function KundliGenerator() {
 
           <TabsContent value="mundane">
             <MundaneTab language={language} />
+          </TabsContent>
+
+          <TabsContent value="milan">
+            <KundliMilanTab savedKundlis={savedKundlis} currentKundliId={result?.id} />
           </TabsContent>
         </Tabs>
 

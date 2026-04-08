@@ -151,6 +151,46 @@ def list_kundlis(
     ]
 
 
+@router.post("/match", status_code=status.HTTP_200_OK)
+def match_kundlis(
+    body: KundliMatchRequest,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Ashtakoota Gun Milan — match two kundlis for compatibility (36-point system)."""
+    from app.matching_engine import calculate_gun_milan
+
+    row1 = _fetch_kundli(db, body.kundli_id_1, current_user["sub"])
+    row2 = _fetch_kundli(db, body.kundli_id_2, current_user["sub"])
+
+    chart1 = _chart_data(row1)
+    chart2 = _chart_data(row2)
+
+    # Extract Moon nakshatra and rashi from chart data
+    planets1 = chart1.get("planets", {})
+    planets2 = chart2.get("planets", {})
+
+    def _moon_info(planets):
+        if isinstance(planets, list):
+            moon = next((p for p in planets if p.get("planet") == "Moon"), None)
+            return (moon.get("nakshatra", ""), moon.get("sign", "")) if moon else ("", "")
+        elif isinstance(planets, dict):
+            moon = planets.get("Moon", {})
+            return (moon.get("nakshatra", ""), moon.get("sign", "")) if moon else ("", "")
+        return ("", "")
+
+    nak1, rashi1 = _moon_info(planets1)
+    nak2, rashi2 = _moon_info(planets2)
+
+    if not nak1 or not nak2:
+        raise HTTPException(status_code=422, detail="Moon nakshatra not found in one or both charts")
+
+    result = calculate_gun_milan(nak1, nak2, rashi1, rashi2)
+    result["person1_name"] = row1["person_name"]
+    result["person2_name"] = row2["person_name"]
+    return result
+
+
 @router.get("/{kundli_id}", status_code=status.HTTP_200_OK)
 def get_kundli(
     kundli_id: str,
