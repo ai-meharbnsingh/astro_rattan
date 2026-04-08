@@ -167,33 +167,6 @@ export default function KundliGenerator() {
           </div>
         </div>
 
-        {/* Reports banner */}
-        <div className="bg-gradient-to-r from-sacred-cream to-sacred-gold/10 rounded-2xl p-6 mb-8 border border-sacred-gold/20">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h4 className="font-display font-bold text-sacred-brown flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-sacred-gold" />{t('kundli.pdfReports')}
-              </h4>
-              <p className="text-sm text-sacred-text-secondary">{t('kundli.pdfSubtitle')}</p>
-            </div>
-            <Button variant="outline" className="border-sacred-gold text-sacred-gold-dark">{t('kundli.viewReports')}</Button>
-          </div>
-          <div className="grid grid-cols-4 gap-3">
-            {[
-              { icon: FileText, name: t('kundli.completeAnalysis'), price: '\u20b9999' },
-              { icon: Heart, name: t('kundli.marriage'), price: '\u20b9799' },
-              { icon: Briefcase, name: t('kundli.career'), price: '\u20b9799' },
-              { icon: Activity, name: t('kundli.health'), price: '\u20b9699' },
-            ].map(({ icon: Icon, name, price }) => (
-              <button key={name} className="bg-cosmic-card/60 rounded-xl p-3 border border-sacred-gold/20 hover:border-sacred-gold/50 transition-colors text-left">
-                <Icon className="w-5 h-5 text-sacred-gold mb-2" />
-                <p className="text-sm font-medium text-sacred-brown">{name}</p>
-                <p className="text-xs text-sacred-gold-dark">{price}</p>
-              </button>
-            ))}
-          </div>
-        </div>
-
         {/* Tabs */}
         <Tabs defaultValue="report" className="w-full">
           <TabsList className="mb-6 bg-sacred-cream flex-wrap">

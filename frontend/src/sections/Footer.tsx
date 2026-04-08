@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Stars, Mail, Phone, Facebook, Twitter, Instagram, Youtube, ChevronRight, Heart } from 'lucide-react';
+import { Stars, Mail, Phone, Instagram, Youtube, ChevronRight, Heart } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 
 const footerLinks = {
@@ -52,10 +52,15 @@ export default function Footer() {
               </a>
             </div>
             <div className="flex gap-3">
-              {[Facebook, Twitter, Instagram, Youtube].map((Icon, i) => (
-                <a 
-                  key={i} 
-                  href="#" 
+              {[
+                { Icon: Instagram, url: 'https://instagram.com/astrorattan' },
+                { Icon: Youtube, url: 'https://youtube.com/@astrorattan' },
+              ].map(({ Icon, url }) => (
+                <a
+                  key={url}
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-10 h-10 bg-sacred-gold-dark/10 border border-sacred-gold/20 flex items-center justify-center text-cosmic-text/60 hover:text-sacred-gold-dark hover:border-sacred-gold/40 transition-all"
                 >
                   <Icon className="w-5 h-5" />
@@ -89,15 +94,7 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} Astro Rattan. {t('footer.madeWith')} <Heart className="w-4 h-4 inline text-sacred-gold" /> in India
           </p>
           <div className="flex gap-6">
-            {['Privacy Policy', 'Terms of Service', 'Refund Policy'].map((item, i) => (
-              <a
-                key={i}
-                href="#"
-                className="text-sm text-cosmic-text/40 hover:text-sacred-gold-dark transition-colors"
-              >
-                {item}
-              </a>
-            ))}
+            <span className="text-sm text-cosmic-text/40">All rights reserved</span>
           </div>
         </div>
         <div className="pb-4 text-center">

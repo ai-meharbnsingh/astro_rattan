@@ -69,6 +69,7 @@ CREATE TABLE IF NOT EXISTS users (
     gender TEXT,
     city TEXT,
     is_active INTEGER DEFAULT 1,
+    token_version INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

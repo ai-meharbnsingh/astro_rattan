@@ -12,3 +12,4 @@ fpdf2==2.8.7
 slowapi==0.1.9
 python-dotenv==1.2.1
 resend==2.7.0
+sentry-sdk[fastapi]==2.19.2

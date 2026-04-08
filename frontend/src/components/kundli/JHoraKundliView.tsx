@@ -296,7 +296,7 @@ export default function JHoraKundliView({
     try {
       const data = await api.post(`/api/kundli/${result.id}/divisional`, { chart_type: chartType });
       setDivCache(prev => ({ ...prev, [chartType]: data }));
-    } catch { /* ignore */ }
+    } catch (e) { console.error(e); }
     setDivLoading(prev => ({ ...prev, [chartType]: false }));
   }, [divCache, divLoading, result?.id]);
 

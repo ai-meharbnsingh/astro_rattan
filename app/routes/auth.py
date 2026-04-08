@@ -274,7 +274,7 @@ def login(request: Request, body: LoginRequest, db: Any = Depends(get_db)):
     """Authenticate and return JWT token."""
     row = db.execute(
         """SELECT id, email, password_hash, name, role, phone, date_of_birth, gender, city,
-                  avatar_url, created_at, is_active
+                  avatar_url, created_at, is_active, COALESCE(token_version, 0) as token_version
            FROM users WHERE email = %s""",
         (body.email,),
     ).fetchone()
@@ -284,10 +284,10 @@ def login(request: Request, body: LoginRequest, db: Any = Depends(get_db)):
     if not verify_password(body.password, row["password_hash"]):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
-    # Reject deactivated users
     if row["is_active"] is not None and not row["is_active"]:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account deactivated")
 
+    tv = row["token_version"]
     user = UserResponse(
         id=row["id"],
         email=row["email"],
@@ -300,8 +300,8 @@ def login(request: Request, body: LoginRequest, db: Any = Depends(get_db)):
         avatar_url=row["avatar_url"],
         created_at=row["created_at"],
     )
-    token = create_token({"sub": user.id, "email": user.email, "role": user.role})
-    refresh = create_refresh_token({"sub": user.id})
+    token = create_token({"sub": user.id, "email": user.email, "role": user.role}, token_version=tv)
+    refresh = create_refresh_token({"sub": user.id}, token_version=tv)
     return TokenResponse(user=user, token=token, refresh_token=refresh)
 
 
@@ -434,7 +434,7 @@ def change_password(
 
     new_hash = hash_password(body.new_password)
     db.execute(
-        "UPDATE users SET password_hash = %s, updated_at = NOW() WHERE id = %s",
+        "UPDATE users SET password_hash = %s, token_version = COALESCE(token_version, 0) + 1, updated_at = NOW() WHERE id = %s",
         (new_hash, user_id),
     )
     db.commit()
@@ -585,7 +585,7 @@ def reset_password(
         raise HTTPException(status_code=400, detail="new_password is required.")
 
     db.execute(
-        "UPDATE users SET password_hash = %s, updated_at = NOW() WHERE email = %s",
+        "UPDATE users SET password_hash = %s, token_version = COALESCE(token_version, 0) + 1, updated_at = NOW() WHERE email = %s",
         (hash_password(new_password), body.email),
     )
     db.execute("DELETE FROM email_verifications WHERE email = %s", (body.email,))

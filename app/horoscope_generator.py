@@ -103,22 +103,7 @@ def _generate_template_horoscope(sign: str) -> str:
 
 
 def _try_ai_horoscope(sign: str, period_date: str) -> str:
-    """Attempt to generate a horoscope using AI. Returns empty string if unavailable."""
-    try:
-        from app.ai_engine import call_ai
-        ruler = _RULERS[sign]
-        prompt = (
-            f"Generate a Vedic astrology horoscope for {sign.title()} (ruled by {ruler}) "
-            f"for {period_date}. Include career, love, health, and spiritual guidance. "
-            f"Keep it under 200 words, warm and encouraging with specific planetary references. "
-            f"Do not use markdown formatting."
-        )
-        result = call_ai(prompt)
-        if result and len(result) > 50:
-            return result
-    except Exception as e:
-        print(f"ERROR in _try_ai_horoscope: {e}")
-        print(traceback.format_exc())
+    """Attempt to generate a horoscope using AI. Returns empty string — AI engine removed."""
     return ""
 
 
@@ -357,25 +342,10 @@ def generate_ai_horoscope(
     ruler = _RULERS[sign]
     element = _ELEMENTS[sign]
 
-    # Attempt AI generation
+    # AI engine removed — use template-based generation
     sections = None
     source = "template"
 
-    try:
-        from app.ai_engine import _call_ai
-
-        system_prompt, user_prompt = _build_ai_horoscope_prompt(sign, period, birth_data)
-        response = _call_ai(system_prompt, user_prompt, temperature=0.7)
-
-        if response:
-            sections = _parse_ai_sections(response)
-            if sections:
-                source = "ai"
-    except Exception as e:
-        print(f"ERROR in generate_ai_horoscope: {e}")
-        print(traceback.format_exc())
-
-    # Fallback to template-based generation
     if sections is None:
         sections = _template_fallback_sections(sign)
 

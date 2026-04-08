@@ -23,15 +23,17 @@ def verify_password(plain: str, hashed: str) -> bool:
     return pwd_context.verify(plain, hashed)
 
 
-def create_token(data: dict) -> str:
+def create_token(data: dict, token_version: int = 0) -> str:
     to_encode = data.copy()
     to_encode["exp"] = datetime.now(tz=timezone.utc) + timedelta(hours=JWT_EXPIRE_HOURS)
+    to_encode["tv"] = token_version
     return jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
 
-def create_refresh_token(data: dict) -> str:
+def create_refresh_token(data: dict, token_version: int = 0) -> str:
     to_encode = data.copy()
     to_encode["type"] = "refresh"
+    to_encode["tv"] = token_version
     to_encode["exp"] = datetime.now(tz=timezone.utc) + timedelta(days=7)
     return jwt.encode(to_encode, _REFRESH_SECRET, algorithm=JWT_ALGORITHM)
 
@@ -54,6 +56,24 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
     if payload.get("type") == "refresh":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Refresh tokens cannot be used for API access")
+    # Token revocation check — validate token_version against DB
+    token_tv = payload.get("tv", 0)
+    user_id = payload.get("sub")
+    if user_id:
+        from app.database import _get_pool
+        try:
+            pool = _get_pool()
+            conn = pool.getconn()
+            cur = conn.cursor()
+            cur.execute("SELECT COALESCE(token_version, 0) FROM users WHERE id = %s", (user_id,))
+            row = cur.fetchone()
+            pool.putconn(conn)
+            if row and row[0] > token_tv:
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token revoked — please log in again")
+        except HTTPException:
+            raise
+        except Exception:
+            pass  # DB down — allow token through, health check will catch it
     return payload
 
 

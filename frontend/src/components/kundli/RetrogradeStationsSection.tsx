@@ -21,7 +21,7 @@ export default function RetrogradeStationsSection({ kundliId }: RetrogradeStatio
     try {
       const result = await api.get(`/api/kundli/${kundliId}/retrograde-stations?year=${yr}`);
       setData(result);
-    } catch { /* */ }
+    } catch (e) { console.error(e); }
     setLoading(false);
   };
 

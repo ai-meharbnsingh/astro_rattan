@@ -3,6 +3,12 @@ import os
 import time
 from contextlib import asynccontextmanager
 
+# Sentry — initialize before FastAPI if DSN is set
+_sentry_dsn = os.getenv("SENTRY_DSN", "")
+if _sentry_dsn:
+    import sentry_sdk
+    sentry_sdk.init(dsn=_sentry_dsn, traces_sample_rate=0.1, profiles_sample_rate=0.1)
+
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -102,14 +108,25 @@ def root():
 
 @app.get("/health")
 def health():
-    """Health check endpoint."""
+    """Health check endpoint with DB verification."""
     from app.astro_engine import _HAS_SWE
     from app.config import AI_PROVIDER, GEMINI_API_KEY, OPENAI_API_KEY
     ai_status = "configured" if (GEMINI_API_KEY or OPENAI_API_KEY) else "not_configured"
+    db_ok = False
+    try:
+        from app.database import _get_pool
+        pool = _get_pool()
+        conn = pool.getconn()
+        conn.cursor().execute("SELECT 1")
+        pool.putconn(conn)
+        db_ok = True
+    except Exception:
+        pass
     return {
-        "status": "ok",
+        "status": "ok" if db_ok else "degraded",
         "version": APP_VERSION,
         "uptime": round(time.time() - _start_time, 2),
+        "database": "connected" if db_ok else "unreachable",
         "ai": {"provider": AI_PROVIDER, "status": ai_status},
         "swisseph": _HAS_SWE,
     }

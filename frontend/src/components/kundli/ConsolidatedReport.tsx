@@ -87,7 +87,7 @@ export default function ConsolidatedReport({
     try {
       const data = await api.post(`/api/kundli/${result.id}/transits`, {});
       setTransitData(data);
-    } catch { /* fallback */ }
+    } catch (e) { console.error(e); }
     setLoadingTransit(false);
   }, [result?.id, transitData]);
 
@@ -97,7 +97,7 @@ export default function ConsolidatedReport({
     try {
       const data = await api.post(`/api/kundli/${result.id}/divisional`, { chart_type: 'D10' });
       setD10Data(data);
-    } catch { /* fallback */ }
+    } catch (e) { console.error(e); }
     setLoadingD10(false);
   }, [result?.id, d10Data]);
 
@@ -107,7 +107,7 @@ export default function ConsolidatedReport({
     try {
       const data = await api.get(`/api/kundli/${result.id}/yogini-dasha`);
       setYoginiData(data);
-    } catch { /* fallback */ }
+    } catch (e) { console.error(e); }
     setLoadingYogini(false);
   }, [result?.id, yoginiData]);
 
@@ -117,7 +117,7 @@ export default function ConsolidatedReport({
     try {
       const data = await api.get(`/api/kundli/${result.id}/lifelong-sadesati`);
       setSadesatiData(data);
-    } catch { /* fallback */ }
+    } catch (e) { console.error(e); }
     setLoadingSadesati(false);
   }, [result?.id, sadesatiData]);
 
@@ -127,7 +127,7 @@ export default function ConsolidatedReport({
     try {
       const data = await api.post(`/api/kundli/${result.id}/kp-analysis`, {});
       setKpData(data);
-    } catch { /* fallback */ }
+    } catch (e) { console.error(e); }
     setLoadingKp(false);
   }, [result?.id, kpData]);
 
@@ -137,7 +137,7 @@ export default function ConsolidatedReport({
     try {
       const data = await api.post(`/api/kundli/${result.id}/varshphal`, {});
       setVarshphalData(data);
-    } catch { /* fallback */ }
+    } catch (e) { console.error(e); }
     setLoadingVarshphal(false);
   }, [result?.id, varshphalData]);
 
@@ -147,7 +147,7 @@ export default function ConsolidatedReport({
     try {
       const data = await api.get(`/api/kundli/${result.id}/upagrahas`);
       setUpagrahasData(data);
-    } catch { /* fallback */ }
+    } catch (e) { console.error(e); }
     setLoadingUpagrahas(false);
   }, [result?.id, upagrahasData]);
 
@@ -157,7 +157,7 @@ export default function ConsolidatedReport({
     try {
       const data = await api.get(`/api/kundli/${result.id}/sodashvarga`);
       setSodashvargaData(data);
-    } catch { /* fallback */ }
+    } catch (e) { console.error(e); }
     setLoadingSodashvarga(false);
   }, [result?.id, sodashvargaData]);
 
@@ -167,7 +167,7 @@ export default function ConsolidatedReport({
     try {
       const data = await api.get(`/api/kundli/${result.id}/aspects`);
       setAspectsData(data);
-    } catch { /* fallback */ }
+    } catch (e) { console.error(e); }
     setLoadingAspects(false);
   }, [result?.id, aspectsData]);
 

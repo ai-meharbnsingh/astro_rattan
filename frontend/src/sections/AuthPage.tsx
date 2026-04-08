@@ -9,6 +9,7 @@ import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
 
 type RegStep = 'email' | 'otp' | 'details';
+type ResetStep = 'email' | 'otp' | 'newpass' | 'done';
 
 export default function AuthPage() {
   const navigate = useNavigate();
@@ -28,6 +29,35 @@ export default function AuthPage() {
   const [countdown, setCountdown] = useState(0);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Forgot password state
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetStep, setResetStep] = useState<ResetStep>('email');
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetOtp, setResetOtp] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+
+  const handleForgotPassword = async () => {
+    if (!resetEmail) return;
+    setLoading(true); setError('');
+    try {
+      await api.post('/api/auth/forgot-password', { email: resetEmail });
+      setResetStep('otp');
+      setSuccess('If this email is registered, a reset code has been sent.');
+    } catch (err) { setError(err instanceof Error ? err.message : 'Failed'); }
+    finally { setLoading(false); }
+  };
+
+  const handleResetPassword = async () => {
+    if (!resetOtp || !newPassword || newPassword.length < 8) { setError('Password must be at least 8 characters'); return; }
+    setLoading(true); setError('');
+    try {
+      await api.post('/api/auth/reset-password', { email: resetEmail, otp: resetOtp, new_password: newPassword });
+      setResetStep('done');
+      setSuccess('Password reset! You can now log in.');
+    } catch (err) { setError(err instanceof Error ? err.message : 'Reset failed'); }
+    finally { setLoading(false); }
+  };
 
   const startCountdown = () => {
     setCountdown(60);
@@ -93,7 +123,7 @@ export default function AuthPage() {
         });
         localStorage.setItem('astrovedic_token', data.token);
         if (data.refresh_token) localStorage.setItem('astrovedic_refresh_token', data.refresh_token);
-        window.location.href = '/astrologer-panel';
+        window.location.href = '/';
       } else {
         await register(registerForm.email, registerForm.password, registerForm.name, emailToken);
         navigate('/');
@@ -162,6 +192,9 @@ export default function AuthPage() {
               <Button onClick={handleLogin} disabled={loading || !loginForm.email || !loginForm.password} className="w-full btn-sacred disabled:opacity-50">
                 {loading ? t('common.loading') : t('auth.signIn')}<ChevronRight className="w-5 h-5 ml-2" />
               </Button>
+              <button onClick={() => { setShowForgotPassword(true); setResetStep('email'); setError(''); setSuccess(''); }} className="w-full text-center text-sm text-sacred-gold hover:underline mt-2">
+                Forgot Password?
+              </button>
             </div>
           </TabsContent>
           <TabsContent value="register" className="mt-0">
@@ -262,6 +295,45 @@ export default function AuthPage() {
             )}
           </TabsContent>
         </Tabs>
+
+        {/* Forgot Password Flow */}
+        {showForgotPassword && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-cosmic-bg/80 backdrop-blur-sm px-4" onClick={() => setShowForgotPassword(false)}>
+            <div className="bg-cosmic-bg border border-sacred-gold/20 p-6 max-w-sm w-full space-y-4" onClick={e => e.stopPropagation()}>
+              <h3 className="text-lg font-cinzel text-sacred-gold-dark text-center">Reset Password</h3>
+              {error && <p className="text-red-400 text-sm text-center">{error}</p>}
+              {success && <p className="text-green-400 text-sm text-center">{success}</p>}
+
+              {resetStep === 'email' && (
+                <>
+                  <Input type="email" value={resetEmail} onChange={e => setResetEmail(e.target.value)} placeholder="Your email" className="input-sacred" />
+                  <Button onClick={handleForgotPassword} disabled={loading || !resetEmail} className="w-full btn-sacred">
+                    {loading ? 'Sending...' : 'Send Reset Code'}
+                  </Button>
+                </>
+              )}
+
+              {resetStep === 'otp' && (
+                <>
+                  <p className="text-sm text-cosmic-text/60 text-center">Enter the 6-digit code sent to {resetEmail}</p>
+                  <Input type="text" value={resetOtp} onChange={e => setResetOtp(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="000000" maxLength={6} className="input-sacred text-center text-2xl tracking-widest" />
+                  <Input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder="New password (min 8 chars)" className="input-sacred" />
+                  <Button onClick={handleResetPassword} disabled={loading || resetOtp.length !== 6 || newPassword.length < 8} className="w-full btn-sacred">
+                    {loading ? 'Resetting...' : 'Reset Password'}
+                  </Button>
+                </>
+              )}
+
+              {resetStep === 'done' && (
+                <Button onClick={() => { setShowForgotPassword(false); setError(''); setSuccess(''); }} className="w-full btn-sacred">
+                  Back to Login
+                </Button>
+              )}
+
+              <button onClick={() => setShowForgotPassword(false)} className="w-full text-center text-sm text-cosmic-text/40 hover:text-cosmic-text/60">Cancel</button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
