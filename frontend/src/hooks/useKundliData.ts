@@ -442,6 +442,7 @@ export function useKundliData() {
       // Stagger the rest slightly
       setTimeout(() => { fetchExtendedDasha(); fetchAvakhada(); }, 500);
       setTimeout(() => { fetchYogaDosha(); fetchShadbala(); }, 1000);
+      setTimeout(() => { fetchAshtakvarga(); fetchDivisional('D9'); }, 1500);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, result?.id]);
