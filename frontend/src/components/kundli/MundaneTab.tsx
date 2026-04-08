@@ -197,7 +197,14 @@ function StatusBadge({ status, lang }: { status: 'positive' | 'negative' | 'neut
     positive: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', dot: 'bg-emerald-500', label: T.positive(lang) },
     negative: { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200', dot: 'bg-red-500', label: T.negative(lang) },
     neutral: { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200', dot: 'bg-amber-500', label: T.neutral(lang) },
-  }[status];
+  }[status] || {
+    // fallback for undefined/unknown status
+    bg: 'bg-amber-50',
+    text: 'text-amber-700',
+    border: 'border-amber-200',
+    dot: 'bg-amber-500',
+    label: T.neutral(lang)
+  };
 
   return (
     <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border ${config.bg} ${config.text} ${config.border}`}>
@@ -212,7 +219,13 @@ function SeverityBadge({ severity, lang }: { severity: 'high' | 'medium' | 'low'
     high: { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-300', label: T.high(lang) },
     medium: { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-300', label: T.medium(lang) },
     low: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-300', label: T.low(lang) },
-  }[severity];
+  }[severity] || {
+    // fallback for undefined/unknown severity
+    bg: 'bg-emerald-50',
+    text: 'text-emerald-700',
+    border: 'border-emerald-300',
+    label: T.low(lang)
+  };
 
   return (
     <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${config.bg} ${config.text} ${config.border}`}>
