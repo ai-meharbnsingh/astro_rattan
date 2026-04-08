@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BookOpen, ArrowLeft, Loader2 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
@@ -24,12 +25,34 @@ type View = 'form' | 'generating' | 'result';
 
 export default function LalKitabPage() {
   const { t } = useTranslation();
-  const [view, setView] = useState<View>('form');
+  const location = useLocation();
+  const locState = (location.state as { loadKundliId?: string; clientId?: string }) || {};
+  const [view, setView] = useState<View>(locState.loadKundliId ? 'generating' : 'form');
   const [chartData, setChartData] = useState<LalKitabChartData | null>(null);
   const [birthDate, setBirthDate] = useState('');
   const [error, setError] = useState('');
-  const [clientId, setClientId] = useState('');
-  const [kundliId, setKundliId] = useState('');
+  const [clientId, setClientId] = useState(locState.clientId || '');
+  const [kundliId, setKundliId] = useState(locState.loadKundliId || '');
+
+  // Auto-load existing kundli if navigated with loadKundliId
+  useEffect(() => {
+    if (!locState.loadKundliId) return;
+    (async () => {
+      try {
+        const full = await api.get(`/api/kundli/${locState.loadKundliId}`);
+        const lkChart = generateLalKitabChart(full);
+        setChartData(lkChart);
+        setClientId(full.client_id || '');
+        setKundliId(full.id || '');
+        setBirthDate(full.birth_date || '');
+        setView('result');
+      } catch (e) {
+        console.error(e);
+        setError('Failed to load chart');
+        setView('form');
+      }
+    })();
+  }, []);
 
   const handleGenerate = useCallback(async (formData: LalKitabFormData) => {
     setView('generating');
