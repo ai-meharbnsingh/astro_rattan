@@ -66,22 +66,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-        {[
-          { label: 'Kundli', icon: Star, route: '/kundli', color: 'text-amber-500' },
-          { label: 'Panchang', icon: Calendar, route: '/panchang', color: 'text-blue-400' },
-          { label: 'Lal Kitab', icon: BookOpen, route: '/lal-kitab', color: 'text-orange-400' },
-          { label: 'Numerology', icon: Users, route: '/numerology', color: 'text-purple-400' },
-        ].map(a => (
-          <button key={a.label} onClick={() => navigate(a.route)}
-            className="border border-sacred-gold/20 p-4 text-left hover:border-sacred-gold/50 transition-colors bg-cosmic-bg">
-            <a.icon className={`w-5 h-5 ${a.color} mb-2`} />
-            <p className="text-sm font-cinzel text-cosmic-text">{a.label}</p>
-          </button>
-        ))}
-      </div>
-
       {/* Search */}
       <div className="relative mb-6">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cosmic-text/40" />
