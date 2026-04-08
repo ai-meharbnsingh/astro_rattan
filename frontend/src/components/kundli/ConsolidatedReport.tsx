@@ -397,7 +397,7 @@ export default function ConsolidatedReport({
                     />
                   );
                 })() : (
-                  <p className="text-xs text-center py-12 text-cosmic-text/40">{t('common.loading')}</p>
+                  <p className="text-xs text-center py-12 text-cosmic-text/60">{t('common.loading')}</p>
                 )}
               </div>
               {d9Shift > 0 && (
@@ -435,7 +435,7 @@ export default function ConsolidatedReport({
                     />
                   );
                 })() : (
-                  <p className="text-xs text-center py-12 text-cosmic-text/40">{t('common.loading')}</p>
+                  <p className="text-xs text-center py-12 text-cosmic-text/60">{t('common.loading')}</p>
                 )}
               </div>
               {d10Shift > 0 && (
@@ -474,7 +474,7 @@ export default function ConsolidatedReport({
                     />
                   );
                 })() : (
-                  <p className="text-xs text-center py-12 text-cosmic-text/40">{t('common.loading')}</p>
+                  <p className="text-xs text-center py-12 text-cosmic-text/60">{t('common.loading')}</p>
                 )}
               </div>
               {gocharShift > 0 && (
@@ -561,13 +561,13 @@ export default function ConsolidatedReport({
                     { label: t('avakhada.naamakshar'), value: avakhadaData.naamakshar },
                   ].map((item) => (
                     <div key={item.label} className="bg-cosmic-bg rounded px-2 py-1">
-                      <p className="text-xs text-cosmic-text/50">{item.label}</p>
+                      <p className="text-xs text-cosmic-text/70">{item.label}</p>
                       <p className="text-xs font-semibold text-cosmic-text">{item.value || '\u2014'}</p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-xs text-center py-6 text-cosmic-text/40">{t('common.loading')}</p>
+                <p className="text-xs text-center py-6 text-cosmic-text/60">{t('common.loading')}</p>
               )}
             </div>
 
@@ -581,7 +581,7 @@ export default function ConsolidatedReport({
               ) : dashaData ? (
                 <div>
                   <div className="bg-sacred-gold-dark/10 rounded px-2 py-1.5 mb-2">
-                    <p className="text-xs text-cosmic-text/50">{t('section.currentMahadasha')}</p>
+                    <p className="text-xs text-cosmic-text/70">{t('section.currentMahadasha')}</p>
                     <p className="text-data font-bold" style={{ color: 'var(--aged-gold-dim)' }}>{translatePlanet(dashaData.current_dasha, language)}</p>
                     {dashaData.current_antardasha && (
                       <p className="text-xs text-sacred-gold-dark">{t('report.adLabel')} {translatePlanet(dashaData.current_antardasha, language)}</p>
@@ -612,7 +612,7 @@ export default function ConsolidatedReport({
                   </table>
                 </div>
               ) : (
-                <p className="text-xs text-center py-6 text-cosmic-text/40">{t('common.loading')}</p>
+                <p className="text-xs text-center py-6 text-cosmic-text/60">{t('common.loading')}</p>
               )}
             </div>
 
@@ -626,7 +626,7 @@ export default function ConsolidatedReport({
               ) : yoginiData ? (
                 <div>
                   <div className="bg-sacred-gold-dark/10 rounded px-2 py-1.5 mb-2">
-                    <p className="text-xs text-cosmic-text/50">{t('report.currentDasha')}</p>
+                    <p className="text-xs text-cosmic-text/70">{t('report.currentDasha')}</p>
                     <p className="text-data font-bold" style={{ color: 'var(--aged-gold-dim)' }}>{yoginiData.current_dasha?.planet ? translatePlanet(yoginiData.current_dasha.planet, language) : '\u2014'}</p>
                     {yoginiData.current_dasha?.planet && (
                       <p className="text-xs text-sacred-gold-dark">{t('report.untilLabel')} {yoginiData.current_dasha?.end_date}</p>
@@ -657,7 +657,7 @@ export default function ConsolidatedReport({
                   </table>
                 </div>
               ) : (
-                <p className="text-xs text-center py-6 text-cosmic-text/40">{t('common.loading')}</p>
+                <p className="text-xs text-center py-6 text-cosmic-text/60">{t('common.loading')}</p>
               )}
             </div>
           </div>
@@ -684,7 +684,7 @@ export default function ConsolidatedReport({
                   ))}
                 </div>
               ) : (
-                <p className="text-xs text-center py-4 text-cosmic-text/40">{t('yoga.noneDetected')}</p>
+                <p className="text-xs text-center py-4 text-cosmic-text/60">{t('yoga.noneDetected')}</p>
               )}
             </div>
 
@@ -746,7 +746,7 @@ export default function ConsolidatedReport({
                   )}
                 </div>
               ) : (
-                <p className="text-xs text-center py-4 text-cosmic-text/40">{t('common.loading')}</p>
+                <p className="text-xs text-center py-4 text-cosmic-text/60">{t('common.loading')}</p>
               )}
             </div>
 
@@ -787,18 +787,18 @@ export default function ConsolidatedReport({
                               style={{ height: `${heightPct}%`, backgroundColor: isStrong ? 'var(--aged-gold-dim)' : 'var(--ink-light)' }}
                             />
                           </div>
-                          <span className="text-micro text-cosmic-text/50">{translateSign(sign, language).slice(0, 3)}</span>
+                          <span className="text-micro text-cosmic-text/70">{translateSign(sign, language).slice(0, 3)}</span>
                         </div>
                       );
                     })}
                   </div>
-                  <div className="flex items-center gap-3 mt-1 text-xs text-cosmic-text/50">
+                  <div className="flex items-center gap-3 mt-1 text-xs text-cosmic-text/70">
                     <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: 'var(--aged-gold-dim)' }} />{t('dignity.strong')}</span>
                     <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: 'var(--ink-light)' }} />{t('dignity.weak')}</span>
                   </div>
                 </div>
               ) : (
-                <p className="text-xs text-center py-6 text-cosmic-text/40">{t('common.loading')}</p>
+                <p className="text-xs text-center py-6 text-cosmic-text/60">{t('common.loading')}</p>
               )}
             </div>
 
@@ -828,13 +828,13 @@ export default function ConsolidatedReport({
                       </div>
                     );
                   })}
-                  <div className="flex items-center gap-3 mt-1 text-xs text-cosmic-text/50">
+                  <div className="flex items-center gap-3 mt-1 text-xs text-cosmic-text/70">
                     <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: 'var(--aged-gold-dim)' }} />{t('dignity.strong')}</span>
                     <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: 'var(--wax-red)' }} />{t('dignity.weak')}</span>
                   </div>
                 </div>
               ) : (
-                <p className="text-xs text-center py-6 text-cosmic-text/40">{t('common.loading')}</p>
+                <p className="text-xs text-center py-6 text-cosmic-text/60">{t('common.loading')}</p>
               )}
             </div>
           </div>
@@ -893,7 +893,7 @@ export default function ConsolidatedReport({
                   </div>
                 </div>
               ) : (
-                <p className="text-xs text-center py-6 text-cosmic-text/40">{t('common.loading')}</p>
+                <p className="text-xs text-center py-6 text-cosmic-text/60">{t('common.loading')}</p>
               )}
             </div>
 
@@ -908,15 +908,15 @@ export default function ConsolidatedReport({
                 <div className="space-y-3">
                   <div className="grid grid-cols-2 gap-2">
                     <div className="bg-cosmic-bg rounded px-2 py-1.5 border border-sacred-purple">
-                      <p className="text-xs text-cosmic-text/50">{t('section.munthaSign')}</p>
+                      <p className="text-xs text-cosmic-text/70">{t('section.munthaSign')}</p>
                       <p className="text-data font-bold text-sacred-gold-dark">{varshphalData.muntha?.sign ? translateSign(varshphalData.muntha.sign, language) : 'N/A'}</p>
                     </div>
                     <div className="bg-cosmic-bg rounded px-2 py-1.5 border border-sacred-purple">
-                      <p className="text-xs text-cosmic-text/50">{t('section.munthaLord')}</p>
+                      <p className="text-xs text-cosmic-text/70">{t('section.munthaLord')}</p>
                       <p className="text-data font-bold text-sacred-gold-dark">{varshphalData.muntha?.lord ? translatePlanet(varshphalData.muntha.lord, language) : 'N/A'}</p>
                     </div>
                     <div className="bg-cosmic-bg rounded px-2 py-1.5 border border-sacred-purple">
-                      <p className="text-xs text-cosmic-text/50">{t('section.yearLord')}</p>
+                      <p className="text-xs text-cosmic-text/70">{t('section.yearLord')}</p>
                       <p className="text-data font-bold text-sacred-gold-dark">{varshphalData.year_lord ? translatePlanet(varshphalData.year_lord, language) : 'N/A'}</p>
                     </div>
                   </div>
@@ -939,7 +939,7 @@ export default function ConsolidatedReport({
                   )}
                 </div>
               ) : (
-                <p className="text-xs text-center py-6 text-cosmic-text/40">{t('common.loading')}</p>
+                <p className="text-xs text-center py-6 text-cosmic-text/60">{t('common.loading')}</p>
               )}
             </div>
           </div>
@@ -981,7 +981,7 @@ export default function ConsolidatedReport({
                   </table>
                 </div>
               ) : (
-                <p className="text-xs text-center py-6 text-cosmic-text/40">{t('common.loading')}</p>
+                <p className="text-xs text-center py-6 text-cosmic-text/60">{t('common.loading')}</p>
               )}
             </div>
           </div>
@@ -1073,7 +1073,7 @@ export default function ConsolidatedReport({
                   </div>
                 </div>
               ) : (
-                <p className="text-xs text-center py-6 text-cosmic-text/40">{t('common.loading')}</p>
+                <p className="text-xs text-center py-6 text-cosmic-text/60">{t('common.loading')}</p>
               )}
             </div>
           </div>
@@ -1092,7 +1092,7 @@ export default function ConsolidatedReport({
                   {Object.entries(aspectsData.planet_aspects_summary).map(([planet, data]: [string, any]) => (
                     <div key={planet} className="bg-cosmic-bg rounded px-2 py-1.5 border border-sacred-purple">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-semibold text-cosmic-text">{translatePlanet(planet, language)} <span className="text-xs text-cosmic-text/40">(H{data.house})</span></span>
+                        <span className="text-xs font-semibold text-cosmic-text">{translatePlanet(planet, language)} <span className="text-xs text-cosmic-text/60">(H{data.house})</span></span>
                         <div className="flex gap-2">
                           <span className="text-xs px-1.5 py-0.5 rounded bg-green-500/15 text-green-400">
                             {data.benefic_aspects} {t('report.beneficCount')}
@@ -1121,7 +1121,7 @@ export default function ConsolidatedReport({
                           })}
                         </div>
                       ) : (
-                        <p className="text-xs text-cosmic-text/30 mt-0.5">{t('report.noAspectsReceived')}</p>
+                        <p className="text-xs text-cosmic-text/60 mt-0.5">{t('report.noAspectsReceived')}</p>
                       )}
                       {/* Houses this planet aspects */}
                       {data.aspects_to && data.aspects_to.length > 0 && (
@@ -1142,7 +1142,7 @@ export default function ConsolidatedReport({
                   ))}
                 </div>
               ) : (
-                <p className="text-xs text-center py-6 text-cosmic-text/40">{t('common.loading')}</p>
+                <p className="text-xs text-center py-6 text-cosmic-text/60">{t('common.loading')}</p>
               )}
             </div>
 
@@ -1172,12 +1172,12 @@ export default function ConsolidatedReport({
                           <td className="p-1.5 text-cosmic-text">
                             {bh.planets_in_house && bh.planets_in_house.length > 0
                               ? bh.planets_in_house.map((p: string) => translatePlanet(p, language)).join(', ')
-                              : <span className="text-cosmic-text/30">—</span>}
+                              : <span className="text-cosmic-text/60">—</span>}
                           </td>
                           <td className="p-1.5 text-cosmic-text/70">
                             {bh.aspected_by && bh.aspected_by.length > 0
                               ? bh.aspected_by.map((p: string) => translatePlanet(p, language)).join(', ')
-                              : <span className="text-cosmic-text/30">—</span>}
+                              : <span className="text-cosmic-text/60">—</span>}
                           </td>
                           <td className="p-1.5 text-center">
                             <span className="text-green-400">{bh.benefic_aspects || 0}</span>
@@ -1189,13 +1189,13 @@ export default function ConsolidatedReport({
                       ))}
                     </tbody>
                   </table>
-                  <div className="flex gap-3 mt-1 text-xs text-cosmic-text/50">
+                  <div className="flex gap-3 mt-1 text-xs text-cosmic-text/70">
                     <span>{t('report.beneficAspectsLabel')}</span>
                     <span>{t('report.maleficAspectsLabel')}</span>
                   </div>
                 </div>
               ) : (
-                <p className="text-xs text-center py-6 text-cosmic-text/40">{t('common.loading')}</p>
+                <p className="text-xs text-center py-6 text-cosmic-text/60">{t('common.loading')}</p>
               )}
             </div>
           </div>
@@ -1253,7 +1253,7 @@ export default function ConsolidatedReport({
 
           {/* Footer */}
           <div className="text-center border-t border-sacred-purple pt-3 pb-1 mt-2">
-            <p className="text-xs text-cosmic-text/40">
+            <p className="text-xs text-cosmic-text/60">
               {t('section.generatedBy')} | {new Date().toLocaleDateString()}
             </p>
           </div>

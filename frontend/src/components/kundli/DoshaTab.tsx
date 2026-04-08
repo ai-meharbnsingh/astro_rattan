@@ -12,12 +12,12 @@ interface DoshaTabProps {
 export default function DoshaTab({ doshaData, doshaDisplay, loadingDosha, language, t }: DoshaTabProps) {
   if (loadingDosha) {
     return (
-      <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-sacred-text-secondary">{t('kundli.analyzingDoshas')}</span></div>
+      <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-cosmic-text/70">{t('kundli.analyzingDoshas')}</span></div>
     );
   }
 
   if (!doshaDisplay) {
-    return <p className="text-center text-sacred-text-secondary py-8">{t('kundli.clickDoshaTab')}</p>;
+    return <p className="text-center text-cosmic-text/70 py-8">{t('kundli.clickDoshaTab')}</p>;
   }
 
   return (
@@ -30,7 +30,7 @@ export default function DoshaTab({ doshaData, doshaDisplay, loadingDosha, langua
               {t('common.present')} ({translateLabel(doshaDisplay.mangal.severity, language)})
             </span>
           </div>
-          <p className="text-sm text-sacred-text-secondary">{doshaDisplay.mangal.description}</p>
+          <p className="text-sm text-cosmic-text/70">{doshaDisplay.mangal.description}</p>
         </div>
       )}
       {doshaDisplay.kaalsarp.has_dosha && (
@@ -39,7 +39,7 @@ export default function DoshaTab({ doshaData, doshaDisplay, loadingDosha, langua
             <h4 className="font-display font-semibold text-sacred-brown">{translateName('Kaal Sarp Dosha', language)}</h4>
             <span className="text-xs px-2 py-1 rounded-full bg-red-500/20 text-red-400">{t('common.present')}</span>
           </div>
-          <p className="text-sm text-sacred-text-secondary">{doshaDisplay.kaalsarp.description}</p>
+          <p className="text-sm text-cosmic-text/70">{doshaDisplay.kaalsarp.description}</p>
         </div>
       )}
       {doshaDisplay.sadesati.has_sade_sati && (
@@ -50,7 +50,7 @@ export default function DoshaTab({ doshaData, doshaDisplay, loadingDosha, langua
               {t('common.active')} - {translateLabel(doshaDisplay.sadesati.phase, language)}
             </span>
           </div>
-          <p className="text-sm text-sacred-text-secondary">{doshaDisplay.sadesati.description}</p>
+          <p className="text-sm text-cosmic-text/70">{doshaDisplay.sadesati.description}</p>
         </div>
       )}
       {!doshaDisplay.mangal.has_dosha && !doshaDisplay.kaalsarp.has_dosha && !doshaDisplay.sadesati.has_sade_sati && (
@@ -75,16 +75,16 @@ export default function DoshaTab({ doshaData, doshaDisplay, loadingDosha, langua
                     {g.priority === 'primary' ? (language === 'hi' ? 'प्राथमिक' : 'Primary') : (language === 'hi' ? 'सहायक' : 'Secondary')}
                   </span>
                 </div>
-                <p className="text-xs text-sacred-text-secondary">
+                <p className="text-xs text-cosmic-text/70">
                   {language === 'hi' ? 'ग्रह' : 'Planet'}: <strong>{translatePlanet(g.planet, language)}</strong> ({g.reason})
                 </p>
-                <p className="text-xs text-sacred-text-secondary mt-1">
+                <p className="text-xs text-cosmic-text/70 mt-1">
                   {language === 'hi' ? 'धातु' : 'Metal'}: {g.metal} &bull; {language === 'hi' ? 'अंगुली' : 'Finger'}: {g.finger} &bull; {language === 'hi' ? 'दिन' : 'Day'}: {g.day}
                 </p>
               </div>
             ))}
           </div>
-          <p className="text-xs text-cosmic-text-muted mt-2 italic">
+          <p className="text-xs text-cosmic-text/70 mt-2 italic">
             {language === 'hi' ? '* कृपया रत्न धारण करने से पहले किसी योग्य ज्योतिषी से परामर्श लें।' : '* Please consult a qualified astrologer before wearing any gemstone.'}
           </p>
         </div>

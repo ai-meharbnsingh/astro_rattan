@@ -10,7 +10,7 @@ export default function LanguageSwitcher() {
       title={language === 'en' ? 'हिंदी में बदलें' : 'Switch to English'}
     >
       <span className={language === 'en' ? 'text-sacred-gold' : 'text-cosmic-text-secondary'}>EN</span>
-      <span className="text-cosmic-text-muted">/</span>
+      <span className="text-cosmic-text/70">/</span>
       <span className={language === 'hi' ? 'text-sacred-gold' : 'text-cosmic-text-secondary'}>हिं</span>
     </button>
   );

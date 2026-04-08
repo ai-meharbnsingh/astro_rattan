@@ -10,7 +10,7 @@ interface IogitaTabProps {
 export default function IogitaTab({ iogitaData, loadingIogita, language, t }: IogitaTabProps) {
   if (loadingIogita) {
     return (
-      <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-sacred-text-secondary">{t('kundli.analyzingLifePath')}</span></div>
+      <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-cosmic-text/70">{t('kundli.analyzingLifePath')}</span></div>
     );
   }
 

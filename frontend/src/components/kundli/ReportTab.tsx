@@ -204,7 +204,7 @@ export default function ReportTab({
               {/* Report title */}
               <div className="bg-gradient-to-r from-sacred-cream to-sacred-gold/10 rounded-2xl p-5 border border-sacred-gold/20 text-center">
                 <h3 className="font-display font-bold text-xl text-sacred-brown">{t('section.consolidatedReport')}</h3>
-                <p className="text-sm text-sacred-text-secondary mt-1">{result.person_name} | {result.birth_date} | {result.birth_time} | {result.birth_place}</p>
+                <p className="text-sm text-cosmic-text/70 mt-1">{result.person_name} | {result.birth_date} | {result.birth_time} | {result.birth_place}</p>
               </div>
 
               {/* Charts row — Lagna, Moon, Gochar side by side */}
@@ -328,7 +328,7 @@ export default function ReportTab({
                         />
                       );
                     })() : (
-                      <p className="text-center text-sacred-text-secondary py-12 text-sm">{t('common.loading')}</p>
+                      <p className="text-center text-cosmic-text/70 py-12 text-sm">{t('common.loading')}</p>
                     )}
                   </div>
                   {reportGocharShift > 0 && (
@@ -362,12 +362,12 @@ export default function ReportTab({
                         {planets.map((planet: any, index: number) => (
                           <tr key={index} className="border-t border-sacred-gold/10 hover:bg-sacred-gold/5">
                             <td className="p-2 text-sacred-brown font-medium">{translatePlanet(planet.planet, language)}</td>
-                            <td className="p-2 text-sacred-text-secondary">{translateSign(planet.sign, language)}</td>
-                            <td className="p-2 text-center text-sacred-text-secondary">{planet.house}</td>
-                            <td className="p-2 text-sacred-text-secondary">{planet.nakshatra || '\u2014'}</td>
-                            <td className="p-2 text-center text-sacred-text-secondary">{planet.sign_degree?.toFixed(1)}&deg;</td>
+                            <td className="p-2 text-cosmic-text/70">{translateSign(planet.sign, language)}</td>
+                            <td className="p-2 text-center text-cosmic-text/70">{planet.house}</td>
+                            <td className="p-2 text-cosmic-text/70">{planet.nakshatra || '\u2014'}</td>
+                            <td className="p-2 text-center text-cosmic-text/70">{planet.sign_degree?.toFixed(1)}&deg;</td>
                             <td className="p-2 text-center">
-                              <span className={`text-xs px-1 py-0.5 rounded ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-500/20 text-green-400' : 'text-sacred-text-secondary'}`}>
+                              <span className={`text-xs px-1 py-0.5 rounded ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-500/20 text-green-400' : 'text-cosmic-text/70'}`}>
                                 {translateLabel(planet.status, language) || '\u2014'}
                               </span>
                             </td>
@@ -416,7 +416,7 @@ export default function ReportTab({
                       />
                     </div>
                   ) : (
-                    <p className="text-center text-sacred-text-secondary py-8 text-sm">{t('kundli.selectChart')}</p>
+                    <p className="text-center text-cosmic-text/70 py-8 text-sm">{t('kundli.selectChart')}</p>
                   )}
                 </div>
 
@@ -449,13 +449,13 @@ export default function ReportTab({
                         { label: t('avakhada.sunSign'), value: avakhadaData.sun_sign },
                       ].map((item) => (
                         <div key={item.label} className="rounded-lg p-2 bg-cosmic-card/60">
-                          <p className="text-xs text-sacred-text-secondary">{item.label}</p>
+                          <p className="text-xs text-cosmic-text/70">{item.label}</p>
                           <p className="text-xs font-semibold text-sacred-brown">{item.value}</p>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-center text-sacred-text-secondary py-4 text-sm">{t('common.loading')}</p>
+                    <p className="text-center text-cosmic-text/70 py-4 text-sm">{t('common.loading')}</p>
                   )}
                 </div>
 
@@ -589,7 +589,7 @@ export default function ReportTab({
                             const planet = Object.entries(karakas).find(([, v]) => v === key)?.[0] || '-';
                             return (
                               <tr key={key} className="border-t border-sacred-gold/10">
-                                <td className="p-2 text-sacred-brown"><span className="font-semibold">{key}</span> <span className="text-xs text-sacred-text-secondary">({name})</span></td>
+                                <td className="p-2 text-sacred-brown"><span className="font-semibold">{key}</span> <span className="text-xs text-cosmic-text/70">({name})</span></td>
                                 <td className="p-2 font-semibold" style={{ color: 'var(--aged-gold-dim)' }}>{translatePlanet(planet, language)}</td>
                               </tr>
                             );
@@ -624,7 +624,7 @@ export default function ReportTab({
                             </div>
                           ))}
                           {(yogaDoshaData.yogas || []).filter((y: any) => y.present).length === 0 && (
-                            <p className="text-sm text-sacred-text-secondary py-2">{t('kundli.noYogasDetected')}</p>
+                            <p className="text-sm text-cosmic-text/70 py-2">{t('kundli.noYogasDetected')}</p>
                           )}
                         </div>
                       </div>
@@ -651,7 +651,7 @@ export default function ReportTab({
                       </div>
                     </div>
                   ) : (
-                    <p className="text-center text-sacred-text-secondary py-4 text-sm">{t('common.loading')}</p>
+                    <p className="text-center text-cosmic-text/70 py-4 text-sm">{t('common.loading')}</p>
                   )}
                 </div>
 
@@ -670,7 +670,7 @@ export default function ReportTab({
                             {doshaData.mangal_dosha?.has_dosha ? translateLabel(doshaData.mangal_dosha.severity, language) || t('common.present') : t('common.absent')}
                           </span>
                         </div>
-                        <p className="text-xs text-sacred-text-secondary">{doshaData.mangal_dosha?.description || t('kundli.noMangalDosha')}</p>
+                        <p className="text-xs text-cosmic-text/70">{doshaData.mangal_dosha?.description || t('kundli.noMangalDosha')}</p>
                       </div>
                       {/* Kaal Sarp Dosha */}
                       <div className={`rounded-lg p-3 border ${doshaData.kaal_sarp_dosha?.has_dosha ? 'border-red-500/30 bg-red-500/5' : 'border-green-500/20 bg-green-500/5'}`}>
@@ -680,7 +680,7 @@ export default function ReportTab({
                             {doshaData.kaal_sarp_dosha?.has_dosha ? translateLabel(doshaData.kaal_sarp_dosha.severity, language) || t('common.present') : t('common.absent')}
                           </span>
                         </div>
-                        <p className="text-xs text-sacred-text-secondary">{doshaData.kaal_sarp_dosha?.description || t('kundli.noKaalSarpDosha')}</p>
+                        <p className="text-xs text-cosmic-text/70">{doshaData.kaal_sarp_dosha?.description || t('kundli.noKaalSarpDosha')}</p>
                       </div>
                       {/* Sade Sati */}
                       <div className={`rounded-lg p-3 border ${doshaData.sade_sati?.has_sade_sati ? 'border-orange-500/30 bg-orange-500/5' : 'border-green-500/20 bg-green-500/5'}`}>
@@ -690,11 +690,11 @@ export default function ReportTab({
                             {doshaData.sade_sati?.has_sade_sati ? `${t('common.active')} - ${translateLabel(doshaData.sade_sati.phase, language)}` : t('common.inactive')}
                           </span>
                         </div>
-                        <p className="text-xs text-sacred-text-secondary">{doshaData.sade_sati?.description || t('kundli.sadeSatiNotActive')}</p>
+                        <p className="text-xs text-cosmic-text/70">{doshaData.sade_sati?.description || t('kundli.sadeSatiNotActive')}</p>
                       </div>
                     </div>
                   ) : (
-                    <p className="text-center text-sacred-text-secondary py-4 text-sm">{t('common.loading')}</p>
+                    <p className="text-center text-cosmic-text/70 py-4 text-sm">{t('common.loading')}</p>
                   )}
                 </div>
 
@@ -720,18 +720,18 @@ export default function ReportTab({
                                   style={{ height: `${heightPct}%`, backgroundColor: isStrong ? 'var(--aged-gold-dim)' : 'var(--ink-light)' }}
                                 />
                               </div>
-                              <span className="text-xs text-sacred-text-secondary">{sign.slice(0, 3)}</span>
+                              <span className="text-xs text-cosmic-text/70">{sign.slice(0, 3)}</span>
                             </div>
                           );
                         })}
                       </div>
-                      <div className="flex items-center gap-3 mt-2 text-xs text-sacred-text-secondary">
+                      <div className="flex items-center gap-3 mt-2 text-xs text-cosmic-text/70">
                         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: 'var(--aged-gold-dim)' }} />{t('kundli.strong')}</span>
                         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: 'var(--ink-light)' }} />{t('kundli.weak')}</span>
                       </div>
                     </div>
                   ) : (
-                    <p className="text-center text-sacred-text-secondary py-4 text-sm">{t('common.loading')}</p>
+                    <p className="text-center text-cosmic-text/70 py-4 text-sm">{t('common.loading')}</p>
                   )}
                 </div>
 
@@ -759,13 +759,13 @@ export default function ReportTab({
                           </div>
                         );
                       })}
-                      <div className="flex items-center gap-3 mt-1 text-xs text-sacred-text-secondary">
+                      <div className="flex items-center gap-3 mt-1 text-xs text-cosmic-text/70">
                         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: 'var(--aged-gold-dim)' }} />{t('kundli.strong')}</span>
                         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#8B2332' }} />{t('kundli.weak')}</span>
                       </div>
                     </div>
                   ) : (
-                    <p className="text-center text-sacred-text-secondary py-4 text-sm">{t('common.loading')}</p>
+                    <p className="text-center text-cosmic-text/70 py-4 text-sm">{t('common.loading')}</p>
                   )}
                 </div>
 

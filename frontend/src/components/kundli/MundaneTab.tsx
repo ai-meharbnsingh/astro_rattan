@@ -247,14 +247,14 @@ function LoadingSpinner({ lang }: { lang: string }) {
   return (
     <div className="flex items-center justify-center py-12">
       <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
-      <span className="ml-2 text-sacred-text-secondary">{T.loading(lang)}</span>
+      <span className="ml-2 text-cosmic-text/70">{T.loading(lang)}</span>
     </div>
   );
 }
 
 function DataUnavailable({ lang }: { lang: string }) {
   return (
-    <p className="text-center text-sacred-text-secondary py-6 text-sm">{T.dataUnavailable(lang)}</p>
+    <p className="text-center text-cosmic-text/70 py-6 text-sm">{T.dataUnavailable(lang)}</p>
   );
 }
 
@@ -497,7 +497,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                 className={`rounded-xl border bg-white p-3 text-center ${indicatorBorderColor(card.status)}`}
               >
                 <div className="text-2xl mb-1">{indicatorEmoji(idx, card.status)}</div>
-                <div className="text-xs font-medium text-sacred-text-secondary mb-0.5">
+                <div className="text-xs font-medium text-cosmic-text/70 mb-0.5">
                   {loc(card.label, card.label_hi)}
                 </div>
                 <div className="text-sm font-semibold text-sacred-text">
@@ -516,8 +516,8 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
             ].map((card, idx) => (
               <div key={idx} className="rounded-xl border border-sacred-gold/20 bg-white p-3 text-center">
                 <div className="text-2xl mb-1">{card.emoji}</div>
-                <div className="text-xs font-medium text-sacred-text-secondary mb-0.5">{card.label}</div>
-                <div className="text-sm text-sacred-text-secondary italic">{T.dataUnavailable(lang)}</div>
+                <div className="text-xs font-medium text-cosmic-text/70 mb-0.5">{card.label}</div>
+                <div className="text-sm text-cosmic-text/70 italic">{T.dataUnavailable(lang)}</div>
               </div>
             ))}
           </div>
@@ -537,7 +537,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
           <>
             {/* Independence metadata */}
             {(analysisData.independence_date || analysisData.independence_place) && (
-              <div className="mb-4 text-sm space-y-1 text-sacred-text-secondary">
+              <div className="mb-4 text-sm space-y-1 text-cosmic-text/70">
                 {analysisData.independence_date && (
                   <p><span className="font-medium text-sacred-brown">{T.independenceDate(lang)}:</span> {analysisData.independence_date}</p>
                 )}
@@ -661,14 +661,14 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                         <span className="text-sm font-medium text-sacred-brown">
                           {lang === 'hi' ? `भाव ${h.house}` : `House ${h.house}`}
                         </span>
-                        <span className="text-xs text-sacred-text-secondary ml-2">
+                        <span className="text-xs text-cosmic-text/70 ml-2">
                           {loc(h.meaning || fallbackMeaning?.en, h.meaning_hi || fallbackMeaning?.hi)}
                         </span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <StatusBadge status={h.status} lang={lang} />
-                      <ChevronDown className={`w-4 h-4 text-sacred-text-secondary transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`w-4 h-4 text-cosmic-text/70 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                     </div>
                   </button>
 
@@ -676,12 +676,12 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                     <div className="px-3 pb-3 border-t border-sacred-gold/10 pt-2 text-sm space-y-2">
                       <div>
                         <span className="font-medium text-sacred-brown">{T.condition(lang)}: </span>
-                        <span className="text-sacred-text-secondary">{loc(h.condition, h.condition_hi)}</span>
+                        <span className="text-cosmic-text/70">{loc(h.condition, h.condition_hi)}</span>
                       </div>
                       {h.transiting_planets && h.transiting_planets.length > 0 && (
                         <div>
                           <span className="font-medium text-sacred-brown">{T.transitingPlanets(lang)}: </span>
-                          <span className="text-sacred-text-secondary">
+                          <span className="text-cosmic-text/70">
                             {h.transiting_planets.map(p => translatePlanet(p, lang)).join(', ')}
                           </span>
                         </div>
@@ -700,7 +700,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                 <span className="w-7 h-7 flex items-center justify-center rounded-full bg-sacred-gold/10 text-sacred-gold-dark font-bold text-xs shrink-0">
                   {idx + 1}
                 </span>
-                <span className="text-xs text-sacred-text-secondary">{lang === 'hi' ? h.hi : h.en}</span>
+                <span className="text-xs text-cosmic-text/70">{lang === 'hi' ? h.hi : h.en}</span>
               </div>
             ))}
           </div>
@@ -737,7 +737,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                     </span>
                     <SeverityBadge severity={risk.severity} lang={lang} />
                   </div>
-                  <p className="text-xs text-sacred-text-secondary leading-relaxed">
+                  <p className="text-xs text-cosmic-text/70 leading-relaxed">
                     {loc(risk.description, risk.description_hi)}
                   </p>
                 </div>
@@ -747,7 +747,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
         ) : (
           <div className="text-center py-6">
             <Shield className="w-8 h-8 mx-auto text-emerald-400 mb-2" />
-            <p className="text-sm text-sacred-text-secondary">{T.noRisks(lang)}</p>
+            <p className="text-sm text-cosmic-text/70">{T.noRisks(lang)}</p>
           </div>
         )}
       </div>
@@ -786,7 +786,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                   : analysisData.economic_analysis.trend === 'pressure' ? T.pressure(lang)
                   : T.neutral(lang)}
               </p>
-              <p className="text-sm text-sacred-text-secondary leading-relaxed">
+              <p className="text-sm text-cosmic-text/70 leading-relaxed">
                 {loc(analysisData.economic_analysis.description, analysisData.economic_analysis.description_hi)}
               </p>
             </div>
@@ -830,7 +830,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                   : analysisData.political_analysis.stability === 'unstable' ? T.unstable(lang)
                   : T.pressured(lang)}
               </p>
-              <p className="text-sm text-sacred-text-secondary leading-relaxed">
+              <p className="text-sm text-cosmic-text/70 leading-relaxed">
                 {loc(analysisData.political_analysis.description, analysisData.political_analysis.description_hi)}
               </p>
             </div>
@@ -897,7 +897,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                       )}
                     </td>
                     <td className="p-2 text-center">{e.affected_house}</td>
-                    <td className="p-2 text-xs text-sacred-text-secondary">{loc(e.impact, e.impact_hi)}</td>
+                    <td className="p-2 text-xs text-cosmic-text/70">{loc(e.impact, e.impact_hi)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -932,7 +932,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                   <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50/50">
                     <td className="p-2 font-semibold">{translateSign(entry.sign, lang)}</td>
                     <td className="p-2 font-mono text-xs">{entry.date}</td>
-                    <td className="p-2 text-xs text-sacred-text-secondary">{loc(entry.theme, entry.theme_hi)}</td>
+                    <td className="p-2 text-xs text-cosmic-text/70">{loc(entry.theme, entry.theme_hi)}</td>
                   </tr>
                 ))}
               </tbody>

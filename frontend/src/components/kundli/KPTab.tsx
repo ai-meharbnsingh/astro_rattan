@@ -16,7 +16,7 @@ export default function KPTab(props: KPTabProps) {
   return (
     <div className="space-y-6">
       {loadingKp ? (
-        <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-sacred-text-secondary">{t('kundli.loadingKP')}</span></div>
+        <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-cosmic-text/70">{t('kundli.loadingKP')}</span></div>
       ) : kpData ? (
         <div className="space-y-6">
           {/* 1. KP Planet Table — full reference chart style */}
@@ -41,10 +41,10 @@ export default function KPTab(props: KPTabProps) {
                     <tr key={p.planet} className="border-t border-sacred-gold/10">
                       <td className="p-1.5 font-semibold text-sacred-brown">{translatePlanet(p.planet, language)}</td>
                       <td className="p-1.5 text-center">{p.retrograde ? <span className="text-red-400 font-bold">R</span> : ''}</td>
-                      <td className="p-1.5 text-sacred-text-secondary">{translateSign(p.sign, language)}</td>
-                      <td className="p-1.5 text-sacred-text-secondary font-mono">{p.degree_dms || (typeof p.degree === 'number' ? p.degree.toFixed(2) : p.degree)}</td>
-                      <td className="p-1.5 text-sacred-text-secondary">{p.nakshatra || '-'}</td>
-                      <td className="p-1.5 text-center text-sacred-text-secondary">{p.pada || '-'}</td>
+                      <td className="p-1.5 text-cosmic-text/70">{translateSign(p.sign, language)}</td>
+                      <td className="p-1.5 text-cosmic-text/70 font-mono">{p.degree_dms || (typeof p.degree === 'number' ? p.degree.toFixed(2) : p.degree)}</td>
+                      <td className="p-1.5 text-cosmic-text/70">{p.nakshatra || '-'}</td>
+                      <td className="p-1.5 text-center text-cosmic-text/70">{p.pada || '-'}</td>
                       <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{p.sign_lord ? p.sign_lord.slice(0, 2) : '-'}</td>
                       <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{(p.star_lord || p.nakshatra_lord || '-').slice(0, 2)}</td>
                       <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{p.sub_lord ? p.sub_lord.slice(0, 2) : '-'}</td>
@@ -125,10 +125,10 @@ export default function KPTab(props: KPTabProps) {
                     return (
                       <tr key={i} className="border-t border-sacred-gold/10">
                         <td className="p-1.5 font-semibold text-sacred-brown">{(c.house || i + 1)}.{houseNames[i] || ''}</td>
-                        <td className="p-1.5 text-sacred-text-secondary">{translateSign(c.sign || '', language)}</td>
-                        <td className="p-1.5 text-sacred-text-secondary font-mono">{c.degree_dms || (typeof c.degree === 'number' ? c.degree.toFixed(2) : c.degree || '-')}</td>
-                        <td className="p-1.5 text-sacred-text-secondary">{c.nakshatra || '-'}</td>
-                        <td className="p-1.5 text-center text-sacred-text-secondary">{c.pada || '-'}</td>
+                        <td className="p-1.5 text-cosmic-text/70">{translateSign(c.sign || '', language)}</td>
+                        <td className="p-1.5 text-cosmic-text/70 font-mono">{c.degree_dms || (typeof c.degree === 'number' ? c.degree.toFixed(2) : c.degree || '-')}</td>
+                        <td className="p-1.5 text-cosmic-text/70">{c.nakshatra || '-'}</td>
+                        <td className="p-1.5 text-center text-cosmic-text/70">{c.pada || '-'}</td>
                         <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{c.sign_lord ? c.sign_lord.slice(0, 2) : '-'}</td>
                         <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{(c.star_lord || '-').slice(0, 2)}</td>
                         <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{(c.sub_lord || '-').slice(0, 2)}</td>
@@ -161,9 +161,9 @@ export default function KPTab(props: KPTabProps) {
                       return (
                         <tr key={h} className="border-t border-sacred-gold/10">
                           <td className="p-1.5 font-semibold text-sacred-brown">{h}</td>
-                          <td className="p-1.5 text-sacred-text-secondary">{(sig.planets_in_nak_of_occupants || []).join(', ') || '-'}</td>
-                          <td className="p-1.5 text-sacred-text-secondary font-medium">{(sig.occupants || []).join(', ') || '-'}</td>
-                          <td className="p-1.5 text-sacred-text-secondary">{(sig.planets_in_nak_of_cusp_sign_lord || []).join(', ') || '-'}</td>
+                          <td className="p-1.5 text-cosmic-text/70">{(sig.planets_in_nak_of_occupants || []).join(', ') || '-'}</td>
+                          <td className="p-1.5 text-cosmic-text/70 font-medium">{(sig.occupants || []).join(', ') || '-'}</td>
+                          <td className="p-1.5 text-cosmic-text/70">{(sig.planets_in_nak_of_cusp_sign_lord || []).join(', ') || '-'}</td>
                           <td className="p-1.5 text-sacred-gold-dark font-medium">{sig.cusp_sign_lord || '-'}</td>
                         </tr>
                       );
@@ -193,7 +193,7 @@ export default function KPTab(props: KPTabProps) {
                         <td className="p-1.5 font-semibold text-sacred-brown">{translatePlanet(planet, language)}</td>
                         <td className="p-1.5 text-green-500 font-medium">{(levels.very_strong || []).join(' ')}</td>
                         <td className="p-1.5 text-blue-400 font-medium">{(levels.strong || []).join(' ')}</td>
-                        <td className="p-1.5 text-sacred-text-secondary">{(levels.normal || []).join(' ')}</td>
+                        <td className="p-1.5 text-cosmic-text/70">{(levels.normal || []).join(' ')}</td>
                         <td className="p-1.5 text-orange-400">{(levels.weak || []).join(' ')}</td>
                       </tr>
                     ))}
@@ -218,7 +218,7 @@ export default function KPTab(props: KPTabProps) {
                   ['moon_sub_lord', language === 'hi' ? 'चंद्र उप स्वामी' : 'Moon Sub Lord'],
                 ].map(([key, label]) => (
                   <div key={key} className="flex items-center justify-between bg-white/5 rounded-lg p-2">
-                    <span className="text-sacred-text-secondary">{label}</span>
+                    <span className="text-cosmic-text/70">{label}</span>
                     <span className="font-semibold text-sacred-gold-dark">{translatePlanet(kpData.ruling_planets[key] || '-', language)}</span>
                   </div>
                 ))}
@@ -227,7 +227,7 @@ export default function KPTab(props: KPTabProps) {
           )}
         </div>
       ) : (
-        <p className="text-center text-sacred-text-secondary py-8">{t('kundli.clickKPTab')}</p>
+        <p className="text-center text-cosmic-text/70 py-8">{t('kundli.clickKPTab')}</p>
       )}
     </div>
   );

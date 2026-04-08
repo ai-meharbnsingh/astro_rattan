@@ -13,13 +13,13 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, language
     return (
       <div className="flex items-center justify-center py-12">
         <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
-        <span className="ml-2 text-sacred-text-secondary">{t('kundli.analyzingYogasAndDoshas')}</span>
+        <span className="ml-2 text-cosmic-text/70">{t('kundli.analyzingYogasAndDoshas')}</span>
       </div>
     );
   }
 
   if (!yogaDoshaData) {
-    return <p className="text-center text-sacred-text-secondary py-8">{t('kundli.clickYogasTab')}</p>;
+    return <p className="text-center text-cosmic-text/70 py-8">{t('kundli.clickYogasTab')}</p>;
   }
 
   return (
@@ -31,7 +31,7 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, language
         </div>
         <div className="grid gap-3">
           {(yogaDoshaData.yogas || []).filter((y: any) => y.present).length === 0 && (
-            <p className="text-sm text-sacred-text-secondary py-4">{t('kundli.noYogasDetected')}</p>
+            <p className="text-sm text-cosmic-text/70 py-4">{t('kundli.noYogasDetected')}</p>
           )}
           {(yogaDoshaData.yogas || []).filter((y: any) => y.present).map((yoga: any, idx: number) => (
             <div

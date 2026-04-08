@@ -118,7 +118,7 @@ export default function NotesWidget({ clientId, chartType, kundliId }: NotesWidg
           {/* Header */}
           <div className="flex items-center justify-between p-3 border-b border-sacred-gold/20 bg-sacred-gold-dark/5">
             <h3 className="text-sm font-cinzel text-sacred-gold-dark uppercase tracking-wider">Notes</h3>
-            <button onClick={() => setOpen(false)} className="text-cosmic-text/40 hover:text-cosmic-text">
+            <button onClick={() => setOpen(false)} className="text-cosmic-text/60 hover:text-cosmic-text">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -147,13 +147,13 @@ export default function NotesWidget({ clientId, chartType, kundliId }: NotesWidg
             {loading ? (
               <div className="text-center py-4"><Loader2 className="w-4 h-4 animate-spin text-sacred-gold mx-auto" /></div>
             ) : notes.length === 0 ? (
-              <p className="text-center text-cosmic-text/30 text-xs py-4">No notes yet</p>
+              <p className="text-center text-cosmic-text/60 text-xs py-4">No notes yet</p>
             ) : (
               notes.map(note => (
                 <div key={note.id} className="border-l-2 border-sacred-gold/30 pl-3 py-1">
                   <p className="text-sm text-cosmic-text whitespace-pre-wrap">{note.content}</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-xs text-cosmic-text/30">{formatDate(note.created_at)}</span>
+                    <span className="text-xs text-cosmic-text/60">{formatDate(note.created_at)}</span>
                     <span className="text-xs px-1.5 py-0.5 bg-sacred-gold-dark/10 text-sacred-gold-dark rounded">
                       {chartLabel[note.chart_type] || note.chart_type}
                     </span>

@@ -286,7 +286,7 @@ export default function PlanetaryPositions({ planets: propPlanets }: PlanetaryPo
               <div className="text-xs text-cosmic-text">
                 {ZODIAC_SYMBOLS[p.sign]} {p.sign} {p.degree.toFixed(1)}&deg;
               </div>
-              <div className="text-xs text-cosmic-text-muted">Nakshatra: {p.nakshatra}</div>
+              <div className="text-xs text-cosmic-text/70">Nakshatra: {p.nakshatra}</div>
             </div>
           </div>
         );

@@ -102,7 +102,7 @@ export default function LalKitabHousesTab({ chartData }: Props) {
                   {/* Strength Indicator */}
                   <div className="flex items-center gap-1.5">
                     <span className={`w-2.5 h-2.5 rounded-full ${getStrengthDot(houseData.strength)}`} />
-                    <span className="text-xs text-cosmic-text/50">
+                    <span className="text-xs text-cosmic-text/70">
                       {getStrengthLabel(houseData.strength)}
                     </span>
                   </div>
@@ -186,7 +186,7 @@ export default function LalKitabHousesTab({ chartData }: Props) {
                                   </div>
                                 </>
                               ) : (
-                                <p className="text-sm text-cosmic-text/50 italic">
+                                <p className="text-sm text-cosmic-text/70 italic">
                                   {language === 'hi'
                                     ? 'इस ग्रह के लिए प्रभाव उपलब्ध नहीं हैं'
                                     : 'Effects not available for this planet'}
@@ -197,7 +197,7 @@ export default function LalKitabHousesTab({ chartData }: Props) {
                         })}
                       </div>
                     ) : (
-                      <p className="text-sm text-cosmic-text/50 italic">
+                      <p className="text-sm text-cosmic-text/70 italic">
                         {language === 'hi' ? 'खाली भाव — कोई ग्रह नहीं' : 'Empty house — no planets placed'}
                       </p>
                     )}

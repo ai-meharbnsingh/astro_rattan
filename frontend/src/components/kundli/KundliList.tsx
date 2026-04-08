@@ -59,7 +59,7 @@ export default function KundliList({
           <Sparkles className="w-8 h-8 text-cosmic-bg" />
         </div>
         <h3 className="text-2xl font-display font-bold text-sacred-brown mb-2">{language === 'hi' ? 'मेरी कुंडलियाँ' : 'My Kundlis'}</h3>
-        <p className="text-sacred-text-secondary">{language === 'hi' ? 'आपकी सहेजी गई जन्म कुंडलियाँ' : 'Your saved birth charts'}</p>
+        <p className="text-cosmic-text/70">{language === 'hi' ? 'आपकी सहेजी गई जन्म कुंडलियाँ' : 'Your saved birth charts'}</p>
       </div>
 
       {/* Delete All Confirmation Modal */}
@@ -103,7 +103,7 @@ export default function KundliList({
               <div className="flex items-center justify-between pr-10">
                 <div>
                   <h4 className="font-display font-semibold text-sacred-brown">{k.person_name}</h4>
-                  <p className="text-sm text-sacred-text-secondary">{k.birth_date} | {k.birth_time} | {k.birth_place}</p>
+                  <p className="text-sm text-cosmic-text/70">{k.birth_date} | {k.birth_time} | {k.birth_place}</p>
                 </div>
                 <ChevronRight className="w-5 h-5 text-sacred-gold" />
               </div>
@@ -126,7 +126,7 @@ export default function KundliList({
         ))}
 
         {savedKundlis.length === 0 && (
-          <p className="text-center text-sacred-text-secondary py-8">{language === 'hi' ? 'अभी तक कोई कुंडली नहीं' : 'No saved kundlis yet'}</p>
+          <p className="text-center text-cosmic-text/70 py-8">{language === 'hi' ? 'अभी तक कोई कुंडली नहीं' : 'No saved kundlis yet'}</p>
         )}
       </div>
 
@@ -147,7 +147,7 @@ export default function KundliList({
       
       <Button onClick={onPrashnaKundli} variant="outline" className="w-full mt-3 border-sacred-gold/50 text-sacred-brown hover:bg-sacred-gold/10">
         <Clock className="w-5 h-5 mr-2 text-sacred-gold" />{t('kundli.prashnaKundli')}
-        <span className="ml-2 text-xs text-sacred-text-secondary">{t('kundli.prashnaSubtitle')}</span>
+        <span className="ml-2 text-xs text-cosmic-text/70">{t('kundli.prashnaSubtitle')}</span>
       </Button>
     </div>
   );

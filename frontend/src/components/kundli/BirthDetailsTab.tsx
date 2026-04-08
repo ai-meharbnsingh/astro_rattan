@@ -61,8 +61,8 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
                   <td className="p-2 text-sacred-brown">{nakshatraName} ({language === 'hi' ? 'पाद' : 'Pada'} {pada})</td>
                   <td className="p-2 text-sacred-brown">{p.house}</td>
                   <td className="p-2 font-medium" style={{ color: dignityColor }}>{translateLabel(dignity, language)}</td>
-                  <td className="p-2 text-sacred-text-secondary">{translateLabel(signType, language)}</td>
-                  <td className="p-2 text-sacred-text-secondary">{translateLabel(element, language)}</td>
+                  <td className="p-2 text-cosmic-text/70">{translateLabel(signType, language)}</td>
+                  <td className="p-2 text-cosmic-text/70">{translateLabel(element, language)}</td>
                   <td className="p-2">
                     <span className={`text-xs px-2 py-0.5 rounded-full ${nature === 'Benefic' ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'}`}>
                       {language === 'hi' ? (nature === 'Benefic' ? 'शुभ' : 'पापी') : nature}

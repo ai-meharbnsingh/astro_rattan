@@ -92,7 +92,7 @@ export default function PredictionsTab({
       {loadingPredictions && (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
-          <span className="ml-2 text-sacred-text-secondary">
+          <span className="ml-2 text-cosmic-text/70">
             {language === 'hi'
               ? (activePeriod === 'daily' ? 'आज के सितारे पढ़ रहे हैं...' :
                  activePeriod === 'monthly' ? 'इस माह के ग्रह गोचर का विश्लेषण...' :
@@ -125,7 +125,7 @@ export default function PredictionsTab({
                      activePeriod === 'yearly' ? 'Yearly Prediction' :
                      'AI Predictions')}
               </h4>
-              <p className="text-xs text-sacred-text-secondary">
+              <p className="text-xs text-cosmic-text/70">
                 {PERIOD_TABS.find(t => t.key === activePeriod)?.description}
               </p>
             </div>
@@ -146,7 +146,7 @@ export default function PredictionsTab({
       {!loadingPredictions && !currentData && (
         <div className="text-center py-12">
           <Sparkles className="w-10 h-10 mx-auto mb-3" style={{ color: 'rgba(184,134,11,0.4)' }} />
-          <p className="text-sacred-text-secondary mb-4">
+          <p className="text-cosmic-text/70 mb-4">
             {language === 'hi'
               ? (activePeriod === 'daily' ? 'आज का व्यक्तिगत फल प्राप्त करें' :
                  activePeriod === 'monthly' ? 'इस माह का विस्तृत फल प्राप्त करें' :

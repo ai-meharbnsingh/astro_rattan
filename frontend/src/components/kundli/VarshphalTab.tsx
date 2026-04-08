@@ -34,7 +34,7 @@ export default function VarshphalTab({
       </div>
 
       {loadingVarshphal ? (
-        <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-sacred-text-secondary">{t('varshphal.calculating')}</span></div>
+        <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-cosmic-text/70">{t('varshphal.calculating')}</span></div>
       ) : varshphalData ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Solar Return Info */}
@@ -42,19 +42,19 @@ export default function VarshphalTab({
             <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.solarReturn')}</h4>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div className="bg-white/5 rounded-lg p-3">
-                <p className="text-xs text-sacred-text-secondary">{t('varshphal.solarReturnDate')}</p>
+                <p className="text-xs text-cosmic-text/70">{t('varshphal.solarReturnDate')}</p>
                 <p className="font-semibold text-sacred-brown">{varshphalData.solar_return?.date}</p>
               </div>
               <div className="bg-white/5 rounded-lg p-3">
-                <p className="text-xs text-sacred-text-secondary">{t('varshphal.solarReturnTime')}</p>
+                <p className="text-xs text-cosmic-text/70">{t('varshphal.solarReturnTime')}</p>
                 <p className="font-semibold text-sacred-brown">{varshphalData.solar_return?.time}</p>
               </div>
               <div className="bg-white/5 rounded-lg p-3">
-                <p className="text-xs text-sacred-text-secondary">{t('section.yearLord')}</p>
+                <p className="text-xs text-cosmic-text/70">{t('section.yearLord')}</p>
                 <p className="font-semibold" style={{ color: 'var(--aged-gold-dim)' }}>{translatePlanet(varshphalData.year_lord, language)}</p>
               </div>
               <div className="bg-white/5 rounded-lg p-3">
-                <p className="text-xs text-sacred-text-secondary">{t('varshphal.completedYears')}</p>
+                <p className="text-xs text-cosmic-text/70">{t('varshphal.completedYears')}</p>
                 <p className="font-semibold text-sacred-brown">{varshphalData.completed_years}</p>
               </div>
             </div>
@@ -65,19 +65,19 @@ export default function VarshphalTab({
             <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.muntha')}</h4>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div className="bg-white/5 rounded-lg p-3">
-                <p className="text-xs text-sacred-text-secondary">{t('section.munthaSign')}</p>
+                <p className="text-xs text-cosmic-text/70">{t('section.munthaSign')}</p>
                 <p className="font-semibold text-sacred-brown">{translateSign(varshphalData.muntha?.sign || '', language)}</p>
               </div>
               <div className="bg-white/5 rounded-lg p-3">
-                <p className="text-xs text-sacred-text-secondary">{t('varshphal.munthaHouse')}</p>
+                <p className="text-xs text-cosmic-text/70">{t('varshphal.munthaHouse')}</p>
                 <p className="font-semibold text-sacred-brown">{language === 'hi' ? 'भाव' : 'House'} {varshphalData.muntha?.house}</p>
               </div>
               <div className="bg-white/5 rounded-lg p-3">
-                <p className="text-xs text-sacred-text-secondary">{t('section.munthaLord')}</p>
+                <p className="text-xs text-cosmic-text/70">{t('section.munthaLord')}</p>
                 <p className="font-semibold" style={{ color: 'var(--aged-gold-dim)' }}>{translatePlanet(varshphalData.muntha?.lord || '', language)}</p>
               </div>
               <div className="bg-white/5 rounded-lg p-3">
-                <p className="text-xs text-sacred-text-secondary">{t('table.status')}</p>
+                <p className="text-xs text-cosmic-text/70">{t('table.status')}</p>
                 <p className={`font-semibold ${varshphalData.muntha?.favorable ? 'text-green-400' : 'text-red-500'}`}>
                   {varshphalData.muntha?.favorable ? t('common.favorable') : t('common.challenging')}
                 </p>
@@ -104,7 +104,7 @@ export default function VarshphalTab({
                   onHouseClick={handleHouseClick}
                 />
               </div>
-            ) : <p className="text-center text-sacred-text-secondary py-4 text-sm">{t('common.noData')}</p>}
+            ) : <p className="text-center text-cosmic-text/70 py-4 text-sm">{t('common.noData')}</p>}
           </div>
 
           {/* Mudda Dasha */}
@@ -128,9 +128,9 @@ export default function VarshphalTab({
                 {(varshphalData.mudda_dasha || []).map((md: any) => (
                   <tr key={md.planet} className={`border-t border-sacred-gold/10 ${md.planet === varshphalData.current_mudda_dasha ? 'bg-sacred-gold/10 font-semibold' : ''}`}>
                     <td className="p-2 text-sacred-brown">{translatePlanet(md.planet, language)}{md.planet === varshphalData.current_mudda_dasha ? ' \u2190' : ''}</td>
-                    <td className="p-2 text-sacred-text-secondary">{md.start_date}</td>
-                    <td className="p-2 text-sacred-text-secondary">{md.end_date}</td>
-                    <td className="p-2 text-center text-sacred-text-secondary">{md.days}</td>
+                    <td className="p-2 text-cosmic-text/70">{md.start_date}</td>
+                    <td className="p-2 text-cosmic-text/70">{md.end_date}</td>
+                    <td className="p-2 text-center text-cosmic-text/70">{md.days}</td>
                   </tr>
                 ))}
               </tbody>
@@ -138,7 +138,7 @@ export default function VarshphalTab({
           </div>
         </div>
       ) : (
-        <p className="text-center text-sacred-text-secondary py-8">{t('varshphal.clickTab')}</p>
+        <p className="text-center text-cosmic-text/70 py-8">{t('varshphal.clickTab')}</p>
       )}
     </div>
   );

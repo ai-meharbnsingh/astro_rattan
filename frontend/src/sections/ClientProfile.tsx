@@ -1,3 +1,4 @@
+import { useTranslation } from '@/lib/i18n';
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Star, BookOpen, Hash, User, Calendar, MapPin, Phone, Plus, StickyNote } from 'lucide-react';
@@ -19,6 +20,7 @@ interface KundliSummary {
 export default function ClientProfile() {
   const { clientId } = useParams<{ clientId: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [client, setClient] = useState<Client | null>(null);
   const [kundlis, setKundlis] = useState<KundliSummary[]>([]);
   const [notes, setNotes] = useState<Array<{ id: string; content: string; chart_type: string; created_at: string }>>([]);
@@ -41,7 +43,7 @@ export default function ClientProfile() {
   }, [clientId]);
 
   if (loading) return <div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-600" /></div>;
-  if (!client) return <div className="text-center py-20 text-cosmic-text/50">Client not found</div>;
+  if (!client) return <div className="text-center py-20 text-cosmic-text/70">Client not found</div>;
 
   const birthState = {
     clientId: client.id, clientName: client.name,
@@ -52,7 +54,7 @@ export default function ClientProfile() {
   return (
     <div className="min-h-screen pt-24 pb-16 px-4 max-w-4xl mx-auto">
       {/* Back */}
-      <button onClick={() => navigate('/dashboard')} className="flex items-center gap-1 text-sm text-cosmic-text/50 hover:text-sacred-gold-dark mb-6">
+      <button onClick={() => navigate('/dashboard')} className="flex items-center gap-1 text-sm text-cosmic-text/70 hover:text-sacred-gold-dark mb-6">
         <ArrowLeft className="w-4 h-4" /> Back to Dashboard
       </button>
 
@@ -65,7 +67,7 @@ export default function ClientProfile() {
             </div>
             <div>
               <h1 className="text-2xl font-cinzel text-cosmic-text">{client.name}</h1>
-              <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-xs text-cosmic-text/50">
+              <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-xs text-cosmic-text/70">
                 {client.birth_date && <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{client.birth_date} {client.birth_time}</span>}
                 {client.birth_place && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{client.birth_place}</span>}
                 {client.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{client.phone}</span>}
@@ -99,7 +101,7 @@ export default function ClientProfile() {
 
       {kundlis.length === 0 ? (
         <div className="text-center py-12 border border-dashed border-sacred-gold/20">
-          <p className="text-cosmic-text/40 mb-4">No charts generated yet</p>
+          <p className="text-cosmic-text/60 mb-4">No charts generated yet</p>
           <Button onClick={() => navigate('/kundli', { state: { ...birthState, chartType: 'vedic' } })}
             className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold text-xs font-cinzel uppercase rounded-none">
             <Plus className="w-4 h-4 mr-1" /> Generate First Chart
@@ -125,12 +127,12 @@ export default function ClientProfile() {
                 )}
                 <div>
                   <p className="text-sm text-cosmic-text">{k.person_name}</p>
-                  <p className="text-xs text-cosmic-text/40">{k.birth_date} {k.birth_time} · {k.birth_place}</p>
+                  <p className="text-xs text-cosmic-text/60">{k.birth_date} {k.birth_time} · {k.birth_place}</p>
                 </div>
               </div>
               <div className="text-right">
-                <span className="text-xs text-cosmic-text/30 uppercase">{k.chart_type || 'vedic'}</span>
-                <p className="text-xs text-cosmic-text/30">{k.created_at ? k.created_at.toString().slice(0, 10) : ''}</p>
+                <span className="text-xs text-cosmic-text/60 uppercase">{k.chart_type || 'vedic'}</span>
+                <p className="text-xs text-cosmic-text/60">{k.created_at ? k.created_at.toString().slice(0, 10) : ''}</p>
               </div>
             </div>
           ))}
@@ -149,7 +151,7 @@ export default function ClientProfile() {
               <div key={note.id} className="border-l-2 border-sacred-gold/30 pl-4 py-2">
                 <p className="text-sm text-cosmic-text whitespace-pre-wrap">{note.content}</p>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs text-cosmic-text/30">
+                  <span className="text-xs text-cosmic-text/60">
                     {note.created_at ? new Date(note.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + new Date(note.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : ''}
                   </span>
                   <span className="text-xs px-1.5 py-0.5 bg-sacred-gold-dark/10 text-sacred-gold-dark rounded">

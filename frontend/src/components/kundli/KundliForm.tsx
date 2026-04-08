@@ -96,7 +96,7 @@ export default function KundliForm({
           <Sparkles className="w-8 h-8 text-cosmic-bg" />
         </div>
         <h3 className="text-2xl sm:text-3xl font-display font-bold text-sacred-brown mb-2">{language === 'hi' ? 'अपनी कुंडली बनाएं' : 'Generate Your Kundli'}</h3>
-        <p className="text-sacred-text-secondary">{language === 'hi' ? 'व्यक्तिगत जन्म कुंडली के लिए अपना जन्म विवरण दर्ज करें' : 'Enter your birth details for a personalized Vedic birth chart'}</p>
+        <p className="text-cosmic-text/70">{language === 'hi' ? 'व्यक्तिगत जन्म कुंडली के लिए अपना जन्म विवरण दर्ज करें' : 'Enter your birth details for a personalized Vedic birth chart'}</p>
       </div>
       {savedKundlisCount > 0 && (
         <Button variant="outline" onClick={onBackToList} className="w-full mb-4 border-sacred-gold/50 text-sacred-brown">
@@ -105,7 +105,7 @@ export default function KundliForm({
       )}
       <Button onClick={onPrashnaKundli} variant="outline" className="w-full mb-4 border-sacred-gold/50 text-sacred-brown hover:bg-sacred-gold/10">
         <Clock className="w-5 h-5 mr-2 text-sacred-gold" />{t('kundli.prashnaKundli')}
-        <span className="ml-2 text-xs text-sacred-text-secondary">{t('kundli.prashnaSubtitle')}</span>
+        <span className="ml-2 text-xs text-cosmic-text/70">{t('kundli.prashnaSubtitle')}</span>
       </Button>
       {error && <div className="mb-4 p-3 rounded-xl bg-red-900/20 text-red-400 text-sm">{error}</div>}
       <div className="space-y-4">
@@ -114,19 +114,19 @@ export default function KundliForm({
           <Input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder={language === 'hi' ? 'पूरा नाम' : 'Full Name'} className="pl-10 bg-sacred-cream border-sacred-gold/15 text-sacred-brown" />
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <button onClick={() => setFormData({ ...formData, gender: 'male' })} className={`p-3 rounded-xl border transition-colors ${formData.gender === 'male' ? 'border-sacred-gold bg-sacred-gold/10 text-sacred-gold-dark' : 'border-sacred-gold/15 text-sacred-text-secondary'}`}>{language === 'hi' ? 'पुरुष' : 'Male'}</button>
-          <button onClick={() => setFormData({ ...formData, gender: 'female' })} className={`p-3 rounded-xl border transition-colors ${formData.gender === 'female' ? 'border-sacred-gold bg-sacred-gold/10 text-sacred-gold-dark' : 'border-sacred-gold/15 text-sacred-text-secondary'}`}>{language === 'hi' ? 'महिला' : 'Female'}</button>
+          <button onClick={() => setFormData({ ...formData, gender: 'male' })} className={`p-3 rounded-xl border transition-colors ${formData.gender === 'male' ? 'border-sacred-gold bg-sacred-gold/10 text-sacred-gold-dark' : 'border-sacred-gold/15 text-cosmic-text/70'}`}>{language === 'hi' ? 'पुरुष' : 'Male'}</button>
+          <button onClick={() => setFormData({ ...formData, gender: 'female' })} className={`p-3 rounded-xl border transition-colors ${formData.gender === 'female' ? 'border-sacred-gold bg-sacred-gold/10 text-sacred-gold-dark' : 'border-sacred-gold/15 text-cosmic-text/70'}`}>{language === 'hi' ? 'महिला' : 'Female'}</button>
         </div>
         <div className="relative">
-          <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-cosmic-text-muted" />
+          <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-cosmic-text/70" />
           <Input type="date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} className="pl-10 bg-sacred-cream border-sacred-gold/15 text-sacred-brown" />
         </div>
         <div className="relative">
-          <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-cosmic-text-muted" />
+          <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-cosmic-text/70" />
           <Input type="time" value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} className="pl-10 bg-sacred-cream border-sacred-gold/15 text-sacred-brown" />
         </div>
         <div className="relative" ref={placeWrapperRef}>
-          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-cosmic-text-muted z-10" />
+          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-cosmic-text/70 z-10" />
           <Input
             type="text"
             value={formData.place}
@@ -154,14 +154,14 @@ export default function KundliForm({
                   className="w-full text-left px-4 py-3 hover:bg-sacred-purple transition-colors border-b border-sacred-gold-dark/10 last:border-b-0"
                 >
                   <p className="text-sm font-medium text-cosmic-text truncate">{s.name}</p>
-                  <p className="text-xs text-cosmic-text/50">{s.lat.toFixed(4)}, {s.lon.toFixed(4)}</p>
+                  <p className="text-xs text-cosmic-text/70">{s.lat.toFixed(4)}, {s.lon.toFixed(4)}</p>
                 </button>
               ))}
             </div>
           )}
         </div>
         {/* Coordinates display */}
-        <div className="flex items-center gap-2 text-xs text-sacred-text-secondary px-1">
+        <div className="flex items-center gap-2 text-xs text-cosmic-text/70 px-1">
           <MapPin className="w-3 h-3 text-sacred-gold" />
           <span>Lat: {formData.latitude.toFixed(4)}, Lon: {formData.longitude.toFixed(4)}</span>
         </div>

@@ -731,10 +731,10 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           <div className="text-xs text-cosmic-text">
             {ZODIAC_NUMBERS[p.sign] || ''} {p.sign} {p.sign_degree?.toFixed(1)}&deg;
           </div>
-          <div className="text-xs text-cosmic-text-muted">{t('table.nakshatra')}: {p.nakshatra || 'N/A'}</div>
-          <div className="text-xs text-cosmic-text-muted">{t('table.house')}: {p.house}</div>
+          <div className="text-xs text-cosmic-text/70">{t('table.nakshatra')}: {p.nakshatra || 'N/A'}</div>
+          <div className="text-xs text-cosmic-text/70">{t('table.house')}: {p.house}</div>
           <div className="text-xs" style={{ color: strength.color }}>{strength.label}</div>
-          <div className="text-xs text-cosmic-text-muted">{t('table.aspects')}: {aspects.join(', ')}</div>
+          <div className="text-xs text-cosmic-text/70">{t('table.aspects')}: {aspects.join(', ')}</div>
         </div>
       ),
     });
@@ -750,7 +750,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           <div className="font-display font-bold text-sacred-gold text-sm">
             {t('table.house')} {house}
           </div>
-          <div className="text-xs text-cosmic-text-muted">{t(`house.${house}`)}</div>
+          <div className="text-xs text-cosmic-text/70">{t(`house.${house}`)}</div>
           {housePlanets.length > 0 && (
             <div className="text-xs text-cosmic-text">
               {t('table.planet')}: {housePlanets.map((p) => p.planet).join(', ')}

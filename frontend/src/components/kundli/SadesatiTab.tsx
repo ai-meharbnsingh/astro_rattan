@@ -15,7 +15,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
   return (
             <div className="space-y-6">
               {loadingSadesati ? (
-                <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-sacred-text-secondary">{t('kundli.loadingSadeSati')}</span></div>
+                <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-cosmic-text/70">{t('kundli.loadingSadeSati')}</span></div>
               ) : sadesatiData ? (
                 <div className="space-y-6">
                   {/* Introduction Card */}
@@ -59,7 +59,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                                 {cycle.severity === 'extreme' ? (language === 'hi' ? 'अत्यधिक' : 'Extreme') : cycle.severity === 'high' ? (language === 'hi' ? 'तीव्र' : 'Intense') : (language === 'hi' ? 'मध्यम' : 'Moderate')} {language === 'hi' ? 'प्रभाव' : 'Impact'}
                               </span>
                             </div>
-                            <p className="text-xs text-sacred-text-secondary mt-1">
+                            <p className="text-xs text-cosmic-text/70 mt-1">
                               {cycle.start_date} to {cycle.end_date}
                             </p>
                             <p className="text-sm mt-2 text-warm">{cycle.description}</p>
@@ -89,9 +89,9 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                                         <td className="p-2">
                                           <span className="text-sacred-brown font-medium">{phaseNames[phase.phase_key] || phase.sub_phase}</span>
                                         </td>
-                                        <td className="p-2 text-sacred-text-secondary">{phase.sign_name}</td>
-                                        <td className="p-2 text-sacred-text-secondary">{phase.start_date}</td>
-                                        <td className="p-2 text-sacred-text-secondary">{phase.end_date}</td>
+                                        <td className="p-2 text-cosmic-text/70">{phase.sign_name}</td>
+                                        <td className="p-2 text-cosmic-text/70">{phase.start_date}</td>
+                                        <td className="p-2 text-cosmic-text/70">{phase.end_date}</td>
                                       </tr>
                                     );
                                   })}
@@ -136,8 +136,8 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                                     </span>
                                   </td>
                                   <td className="p-2 text-sacred-brown">{phase.sub_phase}</td>
-                                  <td className="p-2 text-sacred-text-secondary">{phase.sign_name}</td>
-                                  <td className="p-2 text-sacred-text-secondary text-xs">
+                                  <td className="p-2 text-cosmic-text/70">{phase.sign_name}</td>
+                                  <td className="p-2 text-cosmic-text/70 text-xs">
                                     {phase.start_date} to {phase.end_date}
                                   </td>
                                 </tr>
@@ -168,7 +168,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                         <h5 className="font-display font-semibold text-sacred-brown mb-2">{phase.title}</h5>
                         <ul className="space-y-1">
                           {phase.effects.map((effect: string, idx: number) => (
-                            <li key={idx} className="text-sm text-sacred-text-secondary flex items-start gap-2">
+                            <li key={idx} className="text-sm text-cosmic-text/70 flex items-start gap-2">
                               <span className="mt-1.5 w-1 h-1 rounded-full bg-gold-hex flex-shrink-0"></span>
                               {effect}
                             </li>
@@ -195,7 +195,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                               <div key={idx} className="bg-white/5 rounded-lg p-3">
                                 <p className="font-medium text-sacred-brown text-sm">{item.name}</p>
                                 {item.text && <p className="text-xs text-gold-hex font-serif my-1">{item.text}</p>}
-                                <p className="text-xs text-sacred-text-secondary">{item.instruction}</p>
+                                <p className="text-xs text-cosmic-text/70">{item.instruction}</p>
                               </div>
                             ))}
                           </div>
@@ -211,7 +211,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                             <h5 className="font-display font-semibold text-sacred-brown mb-3">{data.title}</h5>
                             <ul className="space-y-1">
                               {(data.items || []).map((item: any, idx: number) => (
-                                <li key={idx} className="text-sm text-sacred-text-secondary flex items-start gap-2">
+                                <li key={idx} className="text-sm text-cosmic-text/70 flex items-start gap-2">
                                   <span className="mt-1.5 w-1 h-1 rounded-full bg-gold-hex flex-shrink-0"></span>
                                   {typeof item === 'string' ? item : item.name || item.instruction}
                                 </li>
@@ -229,7 +229,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                       <h4 className="font-display font-semibold text-sacred-brown mb-3">Remedies</h4>
                       <ul className="space-y-2">
                         {sadesatiData.remedies.map((remedy: string, idx: number) => (
-                          <li key={idx} className="text-sm text-sacred-text-secondary flex items-start gap-2">
+                          <li key={idx} className="text-sm text-cosmic-text/70 flex items-start gap-2">
                             <Shield className="w-4 h-4 text-sacred-gold shrink-0 mt-0.5" />
                             <span>{translateRemedy(remedy, language)}</span>
                           </li>
@@ -256,10 +256,10 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                                 {g.priority === 'primary' ? (language === 'hi' ? 'प्राथमिक' : 'Primary') : (language === 'hi' ? 'सहायक' : 'Secondary')}
                               </span>
                             </div>
-                            <p className="text-xs text-sacred-text-secondary">
+                            <p className="text-xs text-cosmic-text/70">
                               {language === 'hi' ? 'ग्रह' : 'Planet'}: <strong>{translatePlanet(g.planet, language)}</strong> ({language === 'hi' ? g.reason : g.reason})
                             </p>
-                            <p className="text-xs text-sacred-text-secondary mt-1">
+                            <p className="text-xs text-cosmic-text/70 mt-1">
                               {language === 'hi' ? 'धातु' : 'Metal'}: {g.metal} &bull; {language === 'hi' ? 'अंगुली' : 'Finger'}: {g.finger} &bull; {language === 'hi' ? 'दिन' : 'Day'}: {g.day}
                             </p>
                           </div>
@@ -272,7 +272,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                   )}
                 </div>
               ) : (
-                <p className="text-center text-sacred-text-secondary py-8">{t('kundli.clickSadeSatiTab')}</p>
+                <p className="text-center text-cosmic-text/70 py-8">{t('kundli.clickSadeSatiTab')}</p>
               )}
             </div>
   );

@@ -149,7 +149,7 @@ export default function LalKitabYearlyTab({ chartData, birthDate }: Props) {
                     className={`text-xs px-2 py-0.5 rounded-full ${
                       isActive
                         ? 'bg-sacred-gold/20 text-sacred-gold'
-                        : 'bg-cosmic-card text-cosmic-text/50'
+                        : 'bg-cosmic-card text-cosmic-text/70'
                     }`}
                   >
                     {t('lk.yearly.ageRange')}: {period.ageStart}–{period.ageEnd}

@@ -96,7 +96,7 @@ export default function AdminDashboard() {
       <div className="flex gap-2 mb-8 border-b border-sacred-gold/20 pb-2">
         {(['overview', 'users', 'kundlis'] as const).map(t => (
           <button key={t} onClick={() => setTab(t)}
-            className={`px-4 py-2 text-sm font-cinzel uppercase tracking-wider transition-colors ${tab === t ? 'text-sacred-gold-dark border-b-2 border-sacred-gold' : 'text-cosmic-text/50 hover:text-cosmic-text/80'}`}>
+            className={`px-4 py-2 text-sm font-cinzel uppercase tracking-wider transition-colors ${tab === t ? 'text-sacred-gold-dark border-b-2 border-sacred-gold' : 'text-cosmic-text/70 hover:text-cosmic-text/80'}`}>
             {t}
           </button>
         ))}
@@ -115,7 +115,7 @@ export default function AdminDashboard() {
               <div key={s.label} className="border border-sacred-gold/20 p-5 bg-cosmic-bg">
                 <s.icon className="w-5 h-5 text-sacred-gold-dark mb-2" />
                 <p className="text-2xl font-cinzel text-sacred-gold-dark">{s.value}</p>
-                <p className="text-xs text-cosmic-text/50 uppercase tracking-wider">{s.label}</p>
+                <p className="text-xs text-cosmic-text/70 uppercase tracking-wider">{s.label}</p>
               </div>
             ))}
           </div>
@@ -128,7 +128,7 @@ export default function AdminDashboard() {
                   <div key={u.id} className="flex items-center justify-between py-2 border-b border-sacred-gold/10 last:border-0">
                     <div>
                       <p className="text-sm text-cosmic-text">{u.name}</p>
-                      <p className="text-xs text-cosmic-text/50">{u.email}</p>
+                      <p className="text-xs text-cosmic-text/70">{u.email}</p>
                     </div>
                     <span className={`text-xs px-2 py-0.5 border ${u.role === 'admin' ? 'border-red-500/30 text-red-400' : u.role === 'astrologer' ? 'border-purple-500/30 text-purple-400' : 'border-sacred-gold/30 text-sacred-gold-dark'}`}>
                       {u.role}
@@ -145,9 +145,9 @@ export default function AdminDashboard() {
                   <div key={k.id} className="flex items-center justify-between py-2 border-b border-sacred-gold/10 last:border-0">
                     <div>
                       <p className="text-sm text-cosmic-text">{k.person_name}</p>
-                      <p className="text-xs text-cosmic-text/50">{k.birth_date} &middot; {k.email}</p>
+                      <p className="text-xs text-cosmic-text/70">{k.birth_date} &middot; {k.email}</p>
                     </div>
-                    <span className="text-xs text-cosmic-text/40">{new Date(k.created_at).toLocaleDateString()}</span>
+                    <span className="text-xs text-cosmic-text/60">{new Date(k.created_at).toLocaleDateString()}</span>
                   </div>
                 ))}
               </div>
@@ -159,11 +159,11 @@ export default function AdminDashboard() {
       {/* Users */}
       {tab === 'users' && (
         <div>
-          <p className="text-sm text-cosmic-text/50 mb-4">{userTotal} total users</p>
+          <p className="text-sm text-cosmic-text/70 mb-4">{userTotal} total users</p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-sacred-gold/20 text-left text-xs text-cosmic-text/50 uppercase tracking-wider">
+                <tr className="border-b border-sacred-gold/20 text-left text-xs text-cosmic-text/70 uppercase tracking-wider">
                   <th className="py-3 pr-4">Name</th>
                   <th className="py-3 pr-4">Email</th>
                   <th className="py-3 pr-4">Role</th>
@@ -190,7 +190,7 @@ export default function AdminDashboard() {
                         {u.is_active ? <ToggleRight className="w-5 h-5 text-green-500" /> : <ToggleLeft className="w-5 h-5 text-red-400" />}
                       </button>
                     </td>
-                    <td className="py-3 pr-4 text-cosmic-text/50 text-xs">{new Date(u.created_at).toLocaleDateString()}</td>
+                    <td className="py-3 pr-4 text-cosmic-text/70 text-xs">{new Date(u.created_at).toLocaleDateString()}</td>
                     <td className="py-3">
                       <button onClick={() => {}} className="text-xs text-sacred-gold-dark hover:underline">View</button>
                     </td>
@@ -219,7 +219,7 @@ export default function AdminDashboard() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-sacred-gold/20 text-left text-xs text-cosmic-text/50 uppercase tracking-wider">
+                <tr className="border-b border-sacred-gold/20 text-left text-xs text-cosmic-text/70 uppercase tracking-wider">
                   <th className="py-3 pr-4">Person</th>
                   <th className="py-3 pr-4">Birth Date</th>
                   <th className="py-3 pr-4">Place</th>
@@ -232,9 +232,9 @@ export default function AdminDashboard() {
                   <tr key={k.id} className="border-b border-sacred-gold/10 hover:bg-sacred-gold-dark/5">
                     <td className="py-3 pr-4 text-cosmic-text">{k.person_name}</td>
                     <td className="py-3 pr-4 text-cosmic-text/70">{k.birth_date} {k.birth_time}</td>
-                    <td className="py-3 pr-4 text-cosmic-text/50 text-xs">{k.birth_place}</td>
-                    <td className="py-3 pr-4 text-cosmic-text/50 text-xs">{k.email}</td>
-                    <td className="py-3 text-cosmic-text/50 text-xs">{new Date(k.created_at).toLocaleDateString()}</td>
+                    <td className="py-3 pr-4 text-cosmic-text/70 text-xs">{k.birth_place}</td>
+                    <td className="py-3 pr-4 text-cosmic-text/70 text-xs">{k.email}</td>
+                    <td className="py-3 text-cosmic-text/70 text-xs">{new Date(k.created_at).toLocaleDateString()}</td>
                   </tr>
                 ))}
               </tbody>

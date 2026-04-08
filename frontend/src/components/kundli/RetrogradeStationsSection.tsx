@@ -67,7 +67,7 @@ export default function RetrogradeStationsSection({ kundliId }: RetrogradeStatio
       {loading ? (
         <div className="flex items-center justify-center py-8">
           <Loader2 className="w-5 h-5 animate-spin text-sacred-gold" />
-          <span className="ml-2 text-sm text-sacred-text-secondary">{t('common.loading')}</span>
+          <span className="ml-2 text-sm text-cosmic-text/70">{t('common.loading')}</span>
         </div>
       ) : data?.stations ? (
         <div className="overflow-x-auto">

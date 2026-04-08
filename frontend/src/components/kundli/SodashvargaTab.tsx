@@ -11,12 +11,12 @@ interface SodashvargaTabProps {
 export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, language, t }: SodashvargaTabProps) {
   if (loadingSodashvarga) {
     return (
-      <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-sacred-text-secondary">{t('kundli.loadingSodashvarga')}</span></div>
+      <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-cosmic-text/70">{t('kundli.loadingSodashvarga')}</span></div>
     );
   }
 
   if (!sodashvargaData) {
-    return <p className="text-center text-sacred-text-secondary py-8">{t('common.noData')}</p>;
+    return <p className="text-center text-cosmic-text/70 py-8">{t('common.noData')}</p>;
   }
 
   const strengthColors: Record<string, string> = {
@@ -87,14 +87,14 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
                   <div key={planet} className="bg-white/5 rounded-lg p-3">
                     <p className="font-semibold text-sacred-brown mb-1">{planet}</p>
                     {typeof data === 'object' && Object.entries(data as Record<string, any>).map(([varga, sign]) => (
-                      <p key={varga} className="text-sacred-text-secondary">{varga}: {String(sign)}</p>
+                      <p key={varga} className="text-cosmic-text/70">{varga}: {String(sign)}</p>
                     ))}
                   </div>
                 ))}
               </div>
             );
           }
-          return <p className="text-center text-sacred-text-secondary">{t('common.noData')}</p>;
+          return <p className="text-center text-cosmic-text/70">{t('common.noData')}</p>;
         })()}
         <div className="flex flex-wrap gap-2 mt-3 text-xs">
           <span className="px-2 py-1 rounded bg-green-500/30 text-green-700">{t('dignity.exalted')}</span>
@@ -126,7 +126,7 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
                     <div className="flex-1 bg-sacred-gold/10 rounded-full h-4">
                       <div className="bg-sacred-gold rounded-full h-4 transition-all" style={{ width: `${Math.min(100, ((typeof v.score === 'number' ? v.score : 0) / 20) * 100)}%` }} />
                     </div>
-                    <span className="w-16 text-right text-sacred-text-secondary text-xs">{typeof v.score === 'number' ? v.score.toFixed(1) : '?'} / 20</span>
+                    <span className="w-16 text-right text-cosmic-text/70 text-xs">{typeof v.score === 'number' ? v.score.toFixed(1) : '?'} / 20</span>
                     {v.percentage != null && (
                       <span className="w-12 text-right text-sacred-brown font-semibold text-xs">{v.percentage}%</span>
                     )}

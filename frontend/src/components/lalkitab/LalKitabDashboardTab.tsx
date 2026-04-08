@@ -290,7 +290,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
           </h3>
 
           {quickRemedies.length === 0 ? (
-            <p className="text-sm text-cosmic-text/50 italic py-4 text-center">
+            <p className="text-sm text-cosmic-text/70 italic py-4 text-center">
               {isHi ? 'कोई उपाय उपलब्ध नहीं' : 'No remedies available'}
             </p>
           ) : (
@@ -334,7 +334,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
           </p>
 
           {timelinePeriods.length === 0 ? (
-            <p className="text-sm text-cosmic-text/50 italic py-4 text-center">
+            <p className="text-sm text-cosmic-text/70 italic py-4 text-center">
               {isHi ? 'समयरेखा उपलब्ध नहीं' : 'Timeline data not available'}
             </p>
           ) : (
@@ -372,7 +372,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
                         >
                           {planetLabel}
                         </p>
-                        <p className="text-xs text-cosmic-text/50">
+                        <p className="text-xs text-cosmic-text/70">
                           {period.startAge}–{period.endAge}{' '}
                           {isHi ? 'वर्ष' : 'years'}
                         </p>
@@ -385,12 +385,12 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
                       </span>
                     )}
                     {isPrevious && (
-                      <span className="px-2.5 py-0.5 rounded-full text-xs text-cosmic-text/40">
+                      <span className="px-2.5 py-0.5 rounded-full text-xs text-cosmic-text/60">
                         {isHi ? 'पिछला' : 'Previous'}
                       </span>
                     )}
                     {isNext && (
-                      <span className="px-2.5 py-0.5 rounded-full text-xs text-cosmic-text/40">
+                      <span className="px-2.5 py-0.5 rounded-full text-xs text-cosmic-text/60">
                         {isHi ? 'अगला' : 'Next'}
                       </span>
                     )}

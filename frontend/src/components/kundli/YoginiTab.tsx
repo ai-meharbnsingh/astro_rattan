@@ -11,12 +11,12 @@ interface YoginiTabProps {
 export default function YoginiTab({ yoginiData, loadingYogini, language, t }: YoginiTabProps) {
   if (loadingYogini) {
     return (
-      <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-sacred-text-secondary">{t('kundli.loadingYoginiDasha')}</span></div>
+      <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-cosmic-text/70">{t('kundli.loadingYoginiDasha')}</span></div>
     );
   }
 
   if (!yoginiData) {
-    return <p className="text-center text-sacred-text-secondary py-8">{t('common.noData')}</p>;
+    return <p className="text-center text-cosmic-text/70 py-8">{t('common.noData')}</p>;
   }
 
   return (
@@ -41,10 +41,10 @@ export default function YoginiTab({ yoginiData, loadingYogini, language, t }: Yo
               return (
                 <tr key={i} className={`border-t border-sacred-gold/10 ${isCurrent ? 'bg-sacred-gold/10 font-semibold' : ''}`}>
                   <td className="p-2 text-sacred-brown">{translateName(d.yogini, language)}{isCurrent ? ' \u2190' : ''}</td>
-                  <td className="p-2 text-sacred-text-secondary">{translatePlanet(d.planet, language)}</td>
-                  <td className="p-2 text-sacred-text-secondary">{d.start_date || d.start}</td>
-                  <td className="p-2 text-sacred-text-secondary">{d.end_date || d.end}</td>
-                  <td className="p-2 text-center text-sacred-text-secondary">{d.span || d.years}</td>
+                  <td className="p-2 text-cosmic-text/70">{translatePlanet(d.planet, language)}</td>
+                  <td className="p-2 text-cosmic-text/70">{d.start_date || d.start}</td>
+                  <td className="p-2 text-cosmic-text/70">{d.end_date || d.end}</td>
+                  <td className="p-2 text-center text-cosmic-text/70">{d.span || d.years}</td>
                 </tr>
               );
             })}

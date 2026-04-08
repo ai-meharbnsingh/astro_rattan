@@ -44,7 +44,7 @@ export default function PlanetsTab({
               </h4>
               <button
                 onClick={() => setSidePanel(null)}
-                className="text-sacred-text-secondary hover:text-sacred-brown transition-colors"
+                className="text-cosmic-text/70 hover:text-sacred-brown transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -54,7 +54,7 @@ export default function PlanetsTab({
               const p = sidePanel.planet;
               const status = p.status?.toLowerCase() || '';
               const strengthLabel = status.includes('exalted') ? 'Exalted' : status.includes('debilitated') ? 'Debilitated' : status.includes('own') ? 'Own Sign' : p.status || 'Transiting';
-              const strengthColor = status.includes('exalted') ? 'text-green-500' : status.includes('debilitated') ? 'text-red-500' : status.includes('own') ? 'text-blue-500' : 'text-sacred-text-secondary';
+              const strengthColor = status.includes('exalted') ? 'text-green-500' : status.includes('debilitated') ? 'text-red-500' : status.includes('own') ? 'text-blue-500' : 'text-cosmic-text/70';
               const aspects = (PLANET_ASPECTS[p.planet] || [7]).map((offset) => {
                 const targetHouse = ((p.house - 1 + offset) % 12) + 1;
                 return `${language === 'hi' ? 'भाव' : 'House'} ${targetHouse}`;
@@ -64,32 +64,32 @@ export default function PlanetsTab({
                 <div className="space-y-3">
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-cosmic-card/60 rounded-lg p-3">
-                      <p className="text-xs text-sacred-text-secondary">{t('kundli.sign')}</p>
+                      <p className="text-xs text-cosmic-text/70">{t('kundli.sign')}</p>
                       <p className="font-semibold text-sacred-brown">{translateSign(p.sign, language)}</p>
                     </div>
                     <div className="bg-cosmic-card/60 rounded-lg p-3">
-                      <p className="text-xs text-sacred-text-secondary">{t('kundli.degree')}</p>
+                      <p className="text-xs text-cosmic-text/70">{t('kundli.degree')}</p>
                       <p className="font-semibold text-sacred-brown">{p.sign_degree?.toFixed(1)}&deg;</p>
                     </div>
                     <div className="bg-cosmic-card/60 rounded-lg p-3">
-                      <p className="text-xs text-sacred-text-secondary">{t('kundli.house')}</p>
+                      <p className="text-xs text-cosmic-text/70">{t('kundli.house')}</p>
                       <p className="font-semibold text-sacred-brown">{p.house}</p>
                     </div>
                     <div className="bg-cosmic-card/60 rounded-lg p-3">
-                      <p className="text-xs text-sacred-text-secondary">{t('kundli.nakshatra')}</p>
+                      <p className="text-xs text-cosmic-text/70">{t('kundli.nakshatra')}</p>
                       <p className="font-semibold text-sacred-brown">{p.nakshatra || 'N/A'}</p>
                     </div>
                   </div>
                   <div className="bg-cosmic-card/60 rounded-lg p-3">
-                    <p className="text-xs text-sacred-text-secondary">{t('kundli.strength')}</p>
+                    <p className="text-xs text-cosmic-text/70">{t('kundli.strength')}</p>
                     <p className={`font-semibold ${strengthColor}`}>{translateLabel(strengthLabel, language)}</p>
                   </div>
                   <div className="bg-cosmic-card/60 rounded-lg p-3">
-                    <p className="text-xs text-sacred-text-secondary">{t('kundli.aspects')}</p>
+                    <p className="text-xs text-cosmic-text/70">{t('kundli.aspects')}</p>
                     <p className="font-semibold text-sacred-brown text-sm">{aspects.join(', ')}</p>
                   </div>
                   <div className="bg-cosmic-card/60 rounded-lg p-3">
-                    <p className="text-xs text-sacred-text-secondary">{t('kundli.housePlacement')}</p>
+                    <p className="text-xs text-cosmic-text/70">{t('kundli.housePlacement')}</p>
                     <p className="text-sm text-sacred-brown">
                       {translatePlanet(p.planet, language)} — {t('kundli.house')} {p.house} ({HOUSE_SIGNIFICANCE[p.house] || (language === 'hi' ? 'अज्ञात' : 'Unknown')})
                     </p>
@@ -102,22 +102,22 @@ export default function PlanetsTab({
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-cosmic-card/60 rounded-lg p-3">
-                    <p className="text-xs text-sacred-text-secondary">{t('kundli.houseNumber')}</p>
+                    <p className="text-xs text-cosmic-text/70">{t('kundli.houseNumber')}</p>
                     <p className="font-semibold text-sacred-brown">{sidePanel.house}</p>
                   </div>
                   <div className="bg-cosmic-card/60 rounded-lg p-3">
-                    <p className="text-xs text-sacred-text-secondary">{t('kundli.sign')}</p>
+                    <p className="text-xs text-cosmic-text/70">{t('kundli.sign')}</p>
                     <p className="font-semibold text-sacred-brown">{translateSign(sidePanel.sign || '', language)}</p>
                   </div>
                 </div>
                 <div className="bg-cosmic-card/60 rounded-lg p-3">
-                  <p className="text-xs text-sacred-text-secondary">{t('kundli.significance')}</p>
+                  <p className="text-xs text-cosmic-text/70">{t('kundli.significance')}</p>
                   <p className="font-semibold text-sacred-brown">
                     {HOUSE_SIGNIFICANCE[sidePanel.house || 0] || (language === 'hi' ? 'अज्ञात' : 'Unknown')}
                   </p>
                 </div>
                 <div className="bg-cosmic-card/60 rounded-lg p-3">
-                  <p className="text-xs text-sacred-text-secondary mb-2">{t('kundli.planetsInHouse')}</p>
+                  <p className="text-xs text-cosmic-text/70 mb-2">{t('kundli.planetsInHouse')}</p>
                   {(sidePanel.planets || []).length > 0 ? (
                     <div className="space-y-1">
                       {(sidePanel.planets || []).map((p) => (
@@ -132,7 +132,7 @@ export default function PlanetsTab({
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm text-sacred-text-secondary">{t('kundli.noPlanets')}</p>
+                    <p className="text-sm text-cosmic-text/70">{t('kundli.noPlanets')}</p>
                   )}
                 </div>
               </div>
@@ -141,7 +141,7 @@ export default function PlanetsTab({
         ) : (
           <div className="bg-sacred-cream/50 rounded-xl border border-dashed border-sacred-gold/20 p-8 flex flex-col items-center justify-center h-full min-h-[200px]">
             <Sparkles className="w-8 h-8 text-sacred-gold/40 mb-3" />
-            <p className="text-sacred-text-secondary text-sm text-center">
+            <p className="text-cosmic-text/70 text-sm text-center">
               {t('kundli.clickInfo')}
             </p>
           </div>
@@ -171,11 +171,11 @@ export default function PlanetsTab({
                   onClick={() => handlePlanetClick(planet)}
                 >
                   <td className="p-3 text-sacred-brown font-medium text-sm">{translatePlanet(planet.planet, language)}</td>
-                  <td className="p-3 text-sacred-text-secondary text-sm">{translateSign(planet.sign, language)}</td>
-                  <td className="p-3 text-sacred-text-secondary text-sm">{planet.house}</td>
-                  <td className="p-3 text-sacred-text-secondary text-sm">{planet.nakshatra || '\u2014'}</td>
+                  <td className="p-3 text-cosmic-text/70 text-sm">{translateSign(planet.sign, language)}</td>
+                  <td className="p-3 text-cosmic-text/70 text-sm">{planet.house}</td>
+                  <td className="p-3 text-cosmic-text/70 text-sm">{planet.nakshatra || '\u2014'}</td>
                   <td className="p-3">
-                    <span className={`text-xs px-2 py-1 rounded-full ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-500/20 text-green-400' : 'bg-cosmic-surface text-sacred-text-secondary'}`}>
+                    <span className={`text-xs px-2 py-1 rounded-full ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-500/20 text-green-400' : 'bg-cosmic-surface text-cosmic-text/70'}`}>
                       {translateLabel(planet.status, language)}
                     </span>
                   </td>

@@ -36,13 +36,13 @@ export default function DivisionalTab({
       {loadingDivisional ? (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
-          <span className="ml-2 text-sacred-text-secondary">{t('kundli.loadingDivisional')}</span>
+          <span className="ml-2 text-cosmic-text/70">{t('kundli.loadingDivisional')}</span>
         </div>
       ) : divisionalData ? (
         <div className="space-y-6">
           <div className="bg-gradient-to-r from-sacred-cream to-sacred-gold/10 rounded-xl p-4 border border-sacred-gold/20">
             <h4 className="font-display font-bold text-sacred-brown text-lg">{divisionalData.chart_name || divisionalData.chart_type}</h4>
-            <p className="text-sm text-sacred-text-secondary">{t('kundli.division')}: {divisionalData.division}</p>
+            <p className="text-sm text-cosmic-text/70">{t('kundli.division')}: {divisionalData.division}</p>
           </div>
 
           {divisionalData.planet_positions && (
@@ -83,8 +83,8 @@ export default function DivisionalTab({
                   return (
                     <tr key={planet} className="border-t border-sacred-gold/20 hover:bg-sacred-gold/5">
                       <td className="p-3 text-sacred-brown font-medium text-sm">{translatePlanet(planet, language)}</td>
-                      <td className="p-3 text-sacred-text-secondary text-sm">{translateSign(sign as string, language)}</td>
-                      <td className="p-3 text-sacred-text-secondary text-sm">{posData?.sign_degree?.toFixed(1) || '--'}&deg;</td>
+                      <td className="p-3 text-cosmic-text/70 text-sm">{translateSign(sign as string, language)}</td>
+                      <td className="p-3 text-cosmic-text/70 text-sm">{posData?.sign_degree?.toFixed(1) || '--'}&deg;</td>
                     </tr>
                   );
                 })}
@@ -93,7 +93,7 @@ export default function DivisionalTab({
           </div>
         </div>
       ) : (
-        <p className="text-center text-sacred-text-secondary py-8">{t('kundli.selectChartToLoad')}</p>
+        <p className="text-center text-cosmic-text/70 py-8">{t('kundli.selectChartToLoad')}</p>
       )}
     </div>
   );

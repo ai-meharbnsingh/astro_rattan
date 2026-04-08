@@ -41,8 +41,8 @@ export default function LordshipsTab({ planets, houses }: LordshipsTabProps) {
                   <td className="p-2 font-medium text-sacred-brown font-display">{houseNum}</td>
                   <td className="p-2 text-sacred-brown">{translateSign(signName, language)}</td>
                   <td className="p-2 font-medium text-sacred-gold-dark">{translatePlanet(lord, language)}</td>
-                  <td className="p-2 text-sacred-text-secondary">{lordPlacedIn}</td>
-                  <td className="p-2 text-sacred-text-secondary">{HOUSE_SIGNIFICANCE[houseNum] || '\u2014'}</td>
+                  <td className="p-2 text-cosmic-text/70">{lordPlacedIn}</td>
+                  <td className="p-2 text-cosmic-text/70">{HOUSE_SIGNIFICANCE[houseNum] || '\u2014'}</td>
                 </tr>
               );
             })}

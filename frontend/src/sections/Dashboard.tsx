@@ -1,3 +1,4 @@
+import { useTranslation } from '@/lib/i18n';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, Plus, Search, Star, BookOpen, Calendar, ChevronRight, User } from 'lucide-react';
@@ -21,6 +22,7 @@ interface Client {
 export default function Dashboard() {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
+  const { t } = useTranslation();
   const [clients, setClients] = useState<Client[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
@@ -52,7 +54,7 @@ export default function Dashboard() {
           <h1 className="text-2xl font-cinzel text-cosmic-text">
             {user?.name ? `Welcome, ${user.name}` : 'Dashboard'}
           </h1>
-          <p className="text-sm text-cosmic-text/50 mt-1">{clients.length} clients registered</p>
+          <p className="text-sm text-cosmic-text/70 mt-1">{clients.length} clients registered</p>
         </div>
         <div className="flex gap-2">
           <Button onClick={() => navigate('/kundli')}
@@ -68,10 +70,10 @@ export default function Dashboard() {
 
       {/* Search */}
       <div className="relative mb-6">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cosmic-text/40" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cosmic-text/60" />
         <Input
           type="text" value={search} onChange={e => handleSearch(e.target.value)}
-          placeholder="Search clients by name..."
+          placeholder={t('dashboard.searchPlaceholder')}
           className="pl-10 bg-cosmic-bg border-sacred-gold/20 text-cosmic-text rounded-none"
         />
       </div>
@@ -83,9 +85,9 @@ export default function Dashboard() {
         </div>
       ) : clients.length === 0 ? (
         <div className="text-center py-16 border border-dashed border-sacred-gold/20">
-          <User className="w-12 h-12 text-cosmic-text/20 mx-auto mb-4" />
-          <p className="text-cosmic-text/50 mb-2">No clients yet</p>
-          <p className="text-xs text-cosmic-text/30 mb-6">Create a kundli to auto-register your first client</p>
+          <User className="w-12 h-12 text-cosmic-text/60 mx-auto mb-4" />
+          <p className="text-cosmic-text/70 mb-2">No clients yet</p>
+          <p className="text-xs text-cosmic-text/60 mb-6">Create a kundli to auto-register your first client</p>
           <Button onClick={() => navigate('/kundli')}
             className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold text-xs font-cinzel uppercase tracking-wider rounded-none">
             <Plus className="w-4 h-4 mr-1" /> Create First Kundli
@@ -104,15 +106,15 @@ export default function Dashboard() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-cosmic-text">{client.name}</p>
-                  <p className="text-xs text-cosmic-text/40">
-                    {client.birth_date || 'No birth date'} {client.birth_place ? `· ${client.birth_place}` : ''}
+                  <p className="text-xs text-cosmic-text/60">
+                    {client.birth_date || t('common.noData')} {client.birth_place ? `· ${client.birth_place}` : ''}
                     {client.phone ? ` · ${client.phone}` : ''}
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <span className="text-xs text-cosmic-text/40">{client.kundli_count} chart{client.kundli_count !== 1 ? 's' : ''}</span>
-                <ChevronRight className="w-4 h-4 text-cosmic-text/20 group-hover:text-sacred-gold-dark transition-colors" />
+                <span className="text-xs text-cosmic-text/60">{client.kundli_count} chart{client.kundli_count !== 1 ? 's' : ''}</span>
+                <ChevronRight className="w-4 h-4 text-cosmic-text/60 group-hover:text-sacred-gold-dark transition-colors" />
               </div>
             </div>
           ))}

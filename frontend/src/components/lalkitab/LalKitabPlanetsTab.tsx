@@ -100,7 +100,7 @@ export default function LalKitabPlanetsTab({ chartData }: Props) {
                 <div className="mt-4 space-y-4 border-t border-sacred-gold/10 pt-4">
                   {/* Pakka Ghar */}
                   <div>
-                    <span className="text-xs text-cosmic-text/50 uppercase tracking-wide">
+                    <span className="text-xs text-cosmic-text/70 uppercase tracking-wide">
                       {t('lk.planets.pakkaGhar')}
                     </span>
                     <p className="text-sacred-gold font-sacred text-sm mt-0.5">
@@ -110,7 +110,7 @@ export default function LalKitabPlanetsTab({ chartData }: Props) {
 
                   {/* Friendly Planets */}
                   <div>
-                    <span className="text-xs text-cosmic-text/50 uppercase tracking-wide">
+                    <span className="text-xs text-cosmic-text/70 uppercase tracking-wide">
                       {t('lk.planets.friends')}
                     </span>
                     <div className="flex flex-wrap gap-1.5 mt-1.5">
@@ -127,7 +127,7 @@ export default function LalKitabPlanetsTab({ chartData }: Props) {
 
                   {/* Enemy Planets */}
                   <div>
-                    <span className="text-xs text-cosmic-text/50 uppercase tracking-wide">
+                    <span className="text-xs text-cosmic-text/70 uppercase tracking-wide">
                       {t('lk.planets.enemies')}
                     </span>
                     <div className="flex flex-wrap gap-1.5 mt-1.5">
@@ -145,7 +145,7 @@ export default function LalKitabPlanetsTab({ chartData }: Props) {
                   {/* Effect */}
                   {effect && (
                     <div>
-                      <span className="text-xs text-cosmic-text/50 uppercase tracking-wide">
+                      <span className="text-xs text-cosmic-text/70 uppercase tracking-wide">
                         {t('lk.planets.effect')}
                       </span>
                       <p className="text-cosmic-text text-sm mt-1 leading-relaxed">

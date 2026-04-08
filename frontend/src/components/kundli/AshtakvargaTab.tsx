@@ -18,7 +18,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
       {loadingAshtakvarga ? (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
-          <span className="ml-2 text-sacred-text-secondary">{t('kundli.loadingAshtakvarga')}</span>
+          <span className="ml-2 text-cosmic-text/70">{t('kundli.loadingAshtakvarga')}</span>
         </div>
       ) : ashtakvargaData ? (
         <div className="space-y-6">
@@ -45,7 +45,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                 onHouseClick={() => {}}
               />
             </div>
-            <p className="text-xs text-center text-sacred-text-secondary mt-2">{t('ashtakvarga.savDescription')}</p>
+            <p className="text-xs text-center text-cosmic-text/70 mt-2">{t('ashtakvarga.savDescription')}</p>
           </div>
 
           {/* SAV Bar Chart */}
@@ -69,14 +69,14 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                         }}
                       />
                     </div>
-                    <span className="text-xs text-sacred-text-secondary truncate w-full text-center" title={sign}>
+                    <span className="text-xs text-cosmic-text/70 truncate w-full text-center" title={sign}>
                       {sign.slice(0, 3)}
                     </span>
                   </div>
                 );
               })}
             </div>
-            <div className="flex items-center gap-4 mt-3 text-xs text-sacred-text-secondary">
+            <div className="flex items-center gap-4 mt-3 text-xs text-cosmic-text/70">
               <div className="flex items-center gap-1">
                 <div className="w-3 h-3 rounded" style={{ backgroundColor: 'var(--aged-gold-dim)' }} />
                 <span>{t('kundli.strong')} (&ge;28)</span>
@@ -91,7 +91,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
           {/* Bhinna Ashtakvarga Charts — Parashara's Light format: table + diamond chart per planet */}
           <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/20">
             <h4 className="font-display font-semibold text-sacred-brown mb-2">{language === 'hi' ? 'भिन्न अष्टकवर्ग चार्ट' : 'Bhinna Ashtakvarga Charts'}</h4>
-            <p className="text-xs text-sacred-text-secondary mb-4">{language === 'hi' ? '12 राशियों में प्रत्येक ग्रह के बिंदु (पराशर प्रकाश प्रारूप)।' : 'Individual planet bindus across 12 signs (Parashara\'s Light format).'}</p>
+            <p className="text-xs text-cosmic-text/70 mb-4">{language === 'hi' ? '12 राशियों में प्रत्येक ग्रह के बिंदु (पराशर प्रकाश प्रारूप)।' : 'Individual planet bindus across 12 signs (Parashara\'s Light format).'}</p>
             <div className="grid grid-cols-1 gap-5">
               {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Lagna'].map((planet) => {
                 const bindus = ashtakvargaData.planet_bindus?.[planet] || {};
@@ -157,7 +157,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                                       <td className="p-1 text-sacred-brown font-medium whitespace-nowrap">{translatePlanet(contrib, language)}</td>
                                       {rowVals.map((v, i) => (
                                         <td key={i} className="text-center p-1">
-                                          <span className={`inline-block w-5 h-5 leading-5 rounded-sm text-xs font-semibold ${v === 1 ? 'bg-green-100 text-green-800' : 'text-sacred-text-secondary/40'}`}>
+                                          <span className={`inline-block w-5 h-5 leading-5 rounded-sm text-xs font-semibold ${v === 1 ? 'bg-green-100 text-green-800' : 'text-cosmic-text/60'}`}>
                                             {v}
                                           </span>
                                         </td>
@@ -215,7 +215,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
               })}
             </div>
             {/* Color legend */}
-            <div className="flex items-center gap-4 mt-4 text-xs text-sacred-text-secondary">
+            <div className="flex items-center gap-4 mt-4 text-xs text-cosmic-text/70">
               <div className="flex items-center gap-1">
                 <div className="w-3 h-3 rounded border" style={{ backgroundColor: '#dcfce7', borderColor: '#86efac' }} />
                 <span>{language === 'hi' ? '5-8 प्रबल' : '5-8 Strong'}</span>
@@ -256,7 +256,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                           const val = bindus[s] || 0;
                           return (
                             <td key={s} className="text-center p-2">
-                              <span className={`inline-block w-6 h-6 rounded text-xs leading-6 ${val >= 5 ? 'bg-sacred-gold-dark/20 text-sacred-gold-dark font-bold' : val <= 2 ? 'bg-red-10 text-wax-red-deep' : 'text-sacred-text-secondary'}`}>
+                              <span className={`inline-block w-6 h-6 rounded text-xs leading-6 ${val >= 5 ? 'bg-sacred-gold-dark/20 text-sacred-gold-dark font-bold' : val <= 2 ? 'bg-red-10 text-wax-red-deep' : 'text-cosmic-text/70'}`}>
                                 {val}
                               </span>
                             </td>
@@ -272,7 +272,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
           </div>
         </div>
       ) : (
-        <p className="text-center text-sacred-text-secondary py-8">{t('kundli.clickAshtakvargaTab')}</p>
+        <p className="text-center text-cosmic-text/70 py-8">{t('kundli.clickAshtakvargaTab')}</p>
       )}
     </>
   );

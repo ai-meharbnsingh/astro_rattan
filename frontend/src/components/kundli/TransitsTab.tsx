@@ -94,7 +94,7 @@ export default function TransitsTab(props: TransitsTabProps) {
             {loadingTransit ? (
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
-                <span className="ml-2 text-sacred-text-secondary">{t('transit.loading')}</span>
+                <span className="ml-2 text-cosmic-text/70">{t('transit.loading')}</span>
               </div>
             ) : transitData ? (
               <div className="space-y-6">
@@ -132,7 +132,7 @@ export default function TransitsTab(props: TransitsTabProps) {
                       );
                     })()}
                   </div>
-                  <div className="flex items-center justify-center gap-4 mt-2 text-xs text-sacred-text-secondary">
+                  <div className="flex items-center justify-center gap-4 mt-2 text-xs text-cosmic-text/70">
                     <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full" style={{backgroundColor: 'var(--aged-gold)'}} /> {t('transit.benefic')}</span>
                     <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full" style={{backgroundColor: 'var(--wax-red)'}} /> {t('transit.malefic')}</span>
                     {transitHouseShift > 0 && (
@@ -197,7 +197,7 @@ export default function TransitsTab(props: TransitsTabProps) {
                 </div>
               </div>
             ) : (
-              <p className="text-center text-sacred-text-secondary py-8">{t('transit.clickTab')}</p>
+              <p className="text-center text-cosmic-text/70 py-8">{t('transit.clickTab')}</p>
             )}
 
             {/* Retrograde Station Dates */}

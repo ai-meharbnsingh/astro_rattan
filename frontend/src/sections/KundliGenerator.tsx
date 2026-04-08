@@ -108,7 +108,7 @@ export default function KundliGenerator() {
           </div>
         </div>
         <h3 className="text-2xl font-sacred font-bold text-sacred-brown mb-2">{t('kundli.generatingYourKundli')}</h3>
-        <p className="text-sacred-text-secondary">{t('kundli.analyzingPositions')}</p>
+        <p className="text-cosmic-text/70">{t('kundli.analyzingPositions')}</p>
       </div>
     );
   }
@@ -125,7 +125,7 @@ export default function KundliGenerator() {
             </Button>
             <div>
               <h3 className="font-display font-bold text-2xl text-sacred-brown">{result.person_name || formData.name} — {t('tab.kundli')}</h3>
-              <p className="text-sm text-sacred-text-secondary">{result.birth_date || formData.date} | {result.birth_time || formData.time} | {result.birth_place || formData.place}</p>
+              <p className="text-sm text-cosmic-text/70">{result.birth_date || formData.date} | {result.birth_time || formData.time} | {result.birth_place || formData.place}</p>
             </div>
           </div>
           <div className="flex gap-2">

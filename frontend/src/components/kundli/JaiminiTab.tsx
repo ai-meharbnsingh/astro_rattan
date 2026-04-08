@@ -14,13 +14,13 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
     return (
       <div className="flex items-center justify-center py-12">
         <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
-        <span className="ml-2 text-sacred-text-secondary">{t('common.loading')}</span>
+        <span className="ml-2 text-cosmic-text/70">{t('common.loading')}</span>
       </div>
     );
   }
 
   if (!data) {
-    return <p className="text-center text-sacred-text-secondary py-8">{t('common.noData')}</p>;
+    return <p className="text-center text-cosmic-text/70 py-8">{t('common.noData')}</p>;
   }
 
   return (

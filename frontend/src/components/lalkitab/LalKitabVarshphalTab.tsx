@@ -152,7 +152,7 @@ export default function LalKitabVarshphalTab({ chartData, birthDate }: Props) {
               key={houseNum}
               className="flex flex-col items-center justify-center rounded-md border border-sacred-gold/15 bg-cosmic-card/40 p-1.5 min-h-[44px]"
             >
-              <span className="text-[9px] font-medium text-sacred-gold-dark/60">
+              <span className="text-[11px] font-medium text-sacred-gold-dark/60">
                 {houseNum}
               </span>
               {planets.length > 0 && (
@@ -160,7 +160,7 @@ export default function LalKitabVarshphalTab({ chartData, birthDate }: Props) {
                   {planets.map((pKey) => (
                     <span
                       key={pKey}
-                      className="text-[8px] font-semibold text-cosmic-text bg-sacred-gold/10 rounded px-1 py-px leading-tight"
+                      className="text-[11px] font-semibold text-cosmic-text bg-sacred-gold/10 rounded px-1 py-px leading-tight"
                     >
                       {getPlanetAbbr(pKey)}
                     </span>
@@ -282,7 +282,7 @@ export default function LalKitabVarshphalTab({ chartData, birthDate }: Props) {
         </h3>
 
         {yearlyRemedies.length === 0 ? (
-          <p className="text-sm text-cosmic-text/50 italic text-center py-4">
+          <p className="text-sm text-cosmic-text/70 italic text-center py-4">
             {isHi ? 'इस वर्ष के लिए कोई विशेष उपाय नहीं' : 'No specific remedies for this year'}
           </p>
         ) : (

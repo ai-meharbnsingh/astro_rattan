@@ -11,12 +11,12 @@ interface UpagrahasTabProps {
 export default function UpagrahasTab({ upagrahasData, loadingUpagrahas, language, t }: UpagrahasTabProps) {
   if (loadingUpagrahas) {
     return (
-      <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-sacred-text-secondary">{t('kundli.loadingUpagrahas')}</span></div>
+      <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-cosmic-text/70">{t('kundli.loadingUpagrahas')}</span></div>
     );
   }
 
   if (!upagrahasData) {
-    return <p className="text-center text-sacred-text-secondary py-8">{t('common.noData')}</p>;
+    return <p className="text-center text-cosmic-text/70 py-8">{t('common.noData')}</p>;
   }
 
   return (
@@ -37,9 +37,9 @@ export default function UpagrahasTab({ upagrahasData, loadingUpagrahas, language
               return items.map((u: any) => (
                 <tr key={u.name} className="border-t border-sacred-gold/10">
                   <td className="p-2 font-semibold text-sacred-brown">{u.name}</td>
-                  <td className="p-2 text-sacred-text-secondary">{typeof u.longitude === 'number' ? u.longitude.toFixed(2) + '\u00b0' : u.longitude}</td>
-                  <td className="p-2 text-sacred-text-secondary">{translateSign(u.sign, language)}</td>
-                  <td className="p-2 text-sacred-text-secondary">{u.nakshatra}{u.nakshatra_pada ? ` (${t('kundli.pada')} ${u.nakshatra_pada})` : u.pada ? ` (${t('kundli.pada')} ${u.pada})` : ''}</td>
+                  <td className="p-2 text-cosmic-text/70">{typeof u.longitude === 'number' ? u.longitude.toFixed(2) + '\u00b0' : u.longitude}</td>
+                  <td className="p-2 text-cosmic-text/70">{translateSign(u.sign, language)}</td>
+                  <td className="p-2 text-cosmic-text/70">{u.nakshatra}{u.nakshatra_pada ? ` (${t('kundli.pada')} ${u.nakshatra_pada})` : u.pada ? ` (${t('kundli.pada')} ${u.pada})` : ''}</td>
                 </tr>
               ));
             })()}

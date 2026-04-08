@@ -249,7 +249,7 @@ export default function AuthPage() {
                 </Button>
                 <div className="text-center">
                   {countdown > 0 ? (
-                    <p className="text-sm text-cosmic-text-muted">Resend code in {countdown}s</p>
+                    <p className="text-sm text-cosmic-text/70">Resend code in {countdown}s</p>
                   ) : (
                     <button onClick={handleResendOtp} className="text-sm text-sacred-gold hover:underline">Resend verification code</button>
                   )}
@@ -282,7 +282,7 @@ export default function AuthPage() {
                       : 'border-sacred-gold/20 text-cosmic-text-secondary hover:border-sacred-gold/40'
                   }`}
                 >
-                  <Star className={`w-5 h-5 ${isAstrologer ? 'text-sacred-gold' : 'text-cosmic-text-muted'}`} />
+                  <Star className={`w-5 h-5 ${isAstrologer ? 'text-sacred-gold' : 'text-cosmic-text/70'}`} />
                   <span className="text-sm font-medium">{t('astrologer.registerAsAstrologer')}</span>
                   <div className={`ml-auto w-10 h-5 rounded-full transition-colors ${isAstrologer ? 'bg-sacred-gold' : 'bg-cosmic-surface'}`}>
                     <div className={`w-4 h-4 rounded-full bg-cosmic-text shadow-sm transform transition-transform mt-0.5 ${isAstrologer ? 'translate-x-5.5 ml-[22px]' : 'ml-0.5'}`} />
@@ -330,7 +330,7 @@ export default function AuthPage() {
                 </Button>
               )}
 
-              <button onClick={() => setShowForgotPassword(false)} className="w-full text-center text-sm text-cosmic-text/40 hover:text-cosmic-text/60">Cancel</button>
+              <button onClick={() => setShowForgotPassword(false)} className="w-full text-center text-sm text-cosmic-text/60 hover:text-cosmic-text/60">Cancel</button>
             </div>
           </div>
         )}

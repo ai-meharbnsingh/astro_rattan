@@ -111,7 +111,7 @@ export default function LalKitabKundliTab({ chartData }: Props) {
                     ))}
                   </div>
                 ) : (
-                  <span className="mt-1 text-[11px] text-cosmic-text/40 italic">
+                  <span className="mt-1 text-[11px] text-cosmic-text/60 italic">
                     {t('lk.kundli.empty')}
                   </span>
                 )}
