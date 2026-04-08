@@ -22,6 +22,7 @@ const KundliGenerator = lazy(() => import('./sections/KundliGenerator'));
 const AuthPage = lazy(() => import('./sections/AuthPage'));
 const NumerologyTarot = lazy(() => import('./sections/NumerologyTarot'));
 const LalKitabPage = lazy(() => import('./sections/LalKitabPage'));
+const AdminDashboard = lazy(() => import('./sections/AdminDashboard'));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -120,6 +121,7 @@ function App() {
           <Route path="/login" element={<AuthPage />} />
           <Route path="/numerology" element={<NumerologyTarot />} />
           <Route path="/lal-kitab" element={<LalKitabPage />} />
+          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         </Suspense>

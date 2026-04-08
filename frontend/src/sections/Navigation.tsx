@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Stars, Menu, X, User, Sparkles, LogOut } from 'lucide-react';
+import { Stars, Menu, X, Sparkles, LogOut, Shield } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/lib/i18n';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
@@ -66,6 +66,11 @@ export default function Navigation() {
 
               {isAuthenticated ? (
                 <>
+                  {user?.role === 'admin' && (
+                    <Link to="/admin" className="p-2.5 text-cosmic-text/70 hover:text-sacred-gold-dark transition-colors hidden sm:block" title="Admin">
+                      <Shield className="w-5 h-5" />
+                    </Link>
+                  )}
                   <button
                     onClick={logout}
                     className="p-2.5 text-cosmic-text/70 hover:text-sacred-gold-dark transition-colors hidden sm:flex items-center gap-1"
