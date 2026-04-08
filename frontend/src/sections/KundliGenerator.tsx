@@ -164,7 +164,7 @@ export default function KundliGenerator() {
 
         {/* Tabs */}
         <Tabs defaultValue="report" className="w-full">
-          <TabsList className="mb-6 bg-sacred-cream flex-wrap justify-start gap-1 h-auto p-2 [&>button]:px-3 [&>button]:py-1.5 [&>button]:text-xs [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
+          <TabsList className="mb-6 bg-sacred-cream grid grid-cols-12 h-auto p-2 gap-1 [&>button]:px-1 [&>button]:py-1.5 [&>button]:text-[10px] [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
             <TabsTrigger value="report" onClick={async () => { await fetchDasha(); fetchExtendedDasha(); fetchAvakhada(); fetchYogaDosha(); fetchShadbala(); }}><ScrollText className="w-3 h-3 mr-1" />{t('tab.report')}</TabsTrigger>
             <TabsTrigger value="planets">{t('tab.planets')}</TabsTrigger>
             <TabsTrigger value="details">{t('tab.details')}</TabsTrigger>
