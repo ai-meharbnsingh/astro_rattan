@@ -314,7 +314,30 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
     setAnalysisData(null);
     try {
       const raw = await api.get(`/api/mundane/${country}/analysis?year=${year}`);
-      setAnalysisData(flattenBilingual(raw, lang));
+      const flat = flattenBilingual(raw, lang);
+      // Normalize API field names to match component expectations
+      const normalized = {
+        ...flat,
+        // country info → top-level
+        independence_date: flat.country?.independence_date || flat.independence_date,
+        independence_time: flat.country?.independence_time || flat.independence_time,
+        independence_place: flat.country?.capital || flat.independence_place,
+        // field name mapping
+        transits: flat.current_transits || flat.transits,
+        houses: flat.house_analysis || flat.houses,
+        // build indicators from summary
+        indicators: flat.indicators || (flat.summary ? [
+          { label: T.nationalMood(lang), label_hi: T.nationalMood('hi'), value: flat.summary.national_mood || '-', status: flat.summary.national_mood === 'positive' ? 'positive' : flat.summary.national_mood === 'negative' ? 'negative' : 'neutral' },
+          { label: T.govStability(lang), label_hi: T.govStability('hi'), value: flat.summary.government_stability || '-', status: flat.summary.government_stability === 'stable' ? 'positive' : flat.summary.government_stability === 'pressured' ? 'negative' : 'neutral' },
+          { label: T.economyTrend(lang), label_hi: T.economyTrend('hi'), value: flat.economic_indicators?.trend || '-', status: flat.economic_indicators?.trend === 'growth' ? 'positive' : flat.economic_indicators?.trend === 'pressure' ? 'negative' : 'neutral' },
+          { label: T.riskLevel(lang), label_hi: T.riskLevel('hi'), value: flat.health_indicators?.risk_level || flat.summary?.risk_level || '-', status: flat.health_indicators?.risk_level === 'low' ? 'positive' : flat.health_indicators?.risk_level === 'high' ? 'negative' : 'neutral' },
+        ] : []),
+        // risks from conflict_indicators
+        risks: flat.risks || flat.conflict_indicators,
+        // economic analysis
+        economic_analysis: flat.economic_analysis || flat.economic_indicators,
+      };
+      setAnalysisData(normalized);
     } catch {
       setAnalysisData(null);
     }

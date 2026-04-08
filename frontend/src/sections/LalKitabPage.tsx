@@ -33,7 +33,7 @@ export default function LalKitabPage() {
     setError('');
     setBirthDate(formData.date);
     try {
-      const result = await api.post('/api/kundli', {
+      const result = await api.post('/api/kundli/generate', {
         person_name: formData.name || 'Lal Kitab User',
         birth_date: formData.date,
         birth_time: formData.time,
