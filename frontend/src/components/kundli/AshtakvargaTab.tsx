@@ -105,20 +105,20 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                 const binduBg = (v: number) =>
                   v >= 5 ? '#dcfce7' : v >= 3 ? '#fef3c7' : '#fee2e2';
 
-                // North Indian diamond chart positions (160x160 SVG, signs fixed)
+                // North Indian diamond chart positions (280x280 SVG)
                 const housePos: { x: number; y: number }[] = [
-                  { x: 80, y: 28 },   // 1 Ari  — top center
-                  { x: 130, y: 28 },   // 2 Tau  — top right
-                  { x: 138, y: 58 },   // 3 Gem  — right upper
-                  { x: 138, y: 102 },  // 4 Can  — right lower
-                  { x: 130, y: 132 },  // 5 Leo  — bottom right
-                  { x: 80, y: 132 },   // 6 Vir  — bottom center
-                  { x: 30, y: 132 },   // 7 Lib  — bottom left
-                  { x: 22, y: 102 },   // 8 Sco  — left lower
-                  { x: 22, y: 58 },    // 9 Sag  — left upper
-                  { x: 30, y: 28 },    // 10 Cap — top left
-                  { x: 80, y: 65 },    // 11 Aqu — inner top
-                  { x: 80, y: 95 },    // 12 Pis — inner bottom
+                  { x: 140, y: 45 },   // 1 Ari  — top center
+                  { x: 210, y: 45 },   // 2 Tau  — top right
+                  { x: 240, y: 95 },   // 3 Gem  — right upper
+                  { x: 240, y: 185 },  // 4 Can  — right lower
+                  { x: 210, y: 235 },  // 5 Leo  — bottom right
+                  { x: 140, y: 235 },  // 6 Vir  — bottom center
+                  { x: 70, y: 235 },   // 7 Lib  — bottom left
+                  { x: 40, y: 185 },   // 8 Sco  — left lower
+                  { x: 40, y: 95 },    // 9 Sag  — left upper
+                  { x: 70, y: 45 },    // 10 Cap — top left
+                  { x: 140, y: 110 },  // 11 Aqu — inner top
+                  { x: 140, y: 170 },  // 12 Pis — inner bottom
                 ];
 
                 return (
@@ -130,9 +130,9 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                       </h5>
                       <span className="text-xs font-semibold text-sacred-gold-dark">{language === 'hi' ? 'कुल' : 'Total'}: {total}</span>
                     </div>
-                    <div className="flex flex-col sm:flex-row">
-                      {/* LEFT: Full contributor matrix table (Parashara's Light format) */}
-                      <div className="flex-1 overflow-x-auto p-3">
+                    <div className="flex flex-col lg:flex-row">
+                      {/* LEFT: Full contributor matrix table (compact) */}
+                      <div className="lg:max-w-[550px] overflow-x-auto p-3">
                         {(() => {
                           const contributors = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Lagna'];
                           const contribData = ashtakvargaData.planet_details?.[planet]?.contributors;
@@ -187,42 +187,22 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                         })()}
                       </div>
                       {/* RIGHT: North Indian diamond chart SVG */}
-                      <div className="flex-shrink-0 flex items-center justify-center p-3 sm:border-l border-t sm:border-t-0 border-sacred-gold/10">
-                        <svg viewBox="0 0 160 160" width="160" height="160" className="block">
-                          {/* Outer square */}
-                          <rect x="2" y="2" width="156" height="156" fill="none" stroke="#c8a96e" strokeWidth="1.5" />
-                          {/* Diagonal lines corner-to-corner */}
-                          <line x1="2" y1="2" x2="158" y2="158" stroke="#c8a96e" strokeWidth="0.75" />
-                          <line x1="158" y1="2" x2="2" y2="158" stroke="#c8a96e" strokeWidth="0.75" />
-                          {/* Midpoint lines forming inner diamond */}
-                          <line x1="80" y1="2" x2="158" y2="80" stroke="#c8a96e" strokeWidth="0.75" />
-                          <line x1="158" y1="80" x2="80" y2="158" stroke="#c8a96e" strokeWidth="0.75" />
-                          <line x1="80" y1="158" x2="2" y2="80" stroke="#c8a96e" strokeWidth="0.75" />
-                          <line x1="2" y1="80" x2="80" y2="2" stroke="#c8a96e" strokeWidth="0.75" />
+                      <div className="flex-shrink-0 flex items-center justify-center p-4 lg:border-l border-t lg:border-t-0 border-sacred-gold/10">
+                        <svg viewBox="0 0 280 280" width="280" height="280" className="block">
+                          <rect x="2" y="2" width="276" height="276" fill="none" stroke="#c8a96e" strokeWidth="1.5" />
+                          <line x1="2" y1="2" x2="278" y2="278" stroke="#c8a96e" strokeWidth="0.75" />
+                          <line x1="278" y1="2" x2="2" y2="278" stroke="#c8a96e" strokeWidth="0.75" />
+                          <line x1="140" y1="2" x2="278" y2="140" stroke="#c8a96e" strokeWidth="0.75" />
+                          <line x1="278" y1="140" x2="140" y2="278" stroke="#c8a96e" strokeWidth="0.75" />
+                          <line x1="140" y1="278" x2="2" y2="140" stroke="#c8a96e" strokeWidth="0.75" />
+                          <line x1="2" y1="140" x2="140" y2="2" stroke="#c8a96e" strokeWidth="0.75" />
                           {/* Bindu values in each house position */}
                           {housePos.map((pos, i) => (
                             <g key={i}>
-                              {/* Sign abbreviation */}
-                              <text
-                                x={pos.x}
-                                y={pos.y - 7}
-                                textAnchor="middle"
-                                fontSize="7"
-                                fill="#8B7355"
-                                fontFamily="sans-serif"
-                              >
+                              <text x={pos.x} y={pos.y - 10} textAnchor="middle" fontSize="10" fill="#8B7355" fontFamily="sans-serif">
                                 {signAbbr[i]}
                               </text>
-                              {/* Bindu value */}
-                              <text
-                                x={pos.x}
-                                y={pos.y + 5}
-                                textAnchor="middle"
-                                fontSize="14"
-                                fontWeight="bold"
-                                fill={binduColor(vals[i])}
-                                fontFamily="sans-serif"
-                              >
+                              <text x={pos.x} y={pos.y + 8} textAnchor="middle" fontSize="22" fontWeight="bold" fill={binduColor(vals[i])} fontFamily="sans-serif">
                                 {vals[i]}
                               </text>
                             </g>
