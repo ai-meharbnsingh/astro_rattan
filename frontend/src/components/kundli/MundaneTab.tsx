@@ -270,7 +270,14 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
       try {
         const data = await api.get('/api/mundane/countries');
         if (!cancelled && Array.isArray(data) && data.length > 0) {
-          setCountries(data);
+          // API may return {name: {en, hi}} — normalize to flat strings
+          const normalized: CountryOption[] = data.map((c: any) => ({
+            code: c.code,
+            name: typeof c.name === 'string' ? c.name : c.name?.en || c.code,
+            name_hi: typeof c.name === 'string' ? c.name_hi : c.name?.hi,
+            flag: c.flag,
+          }));
+          setCountries(normalized);
         }
       } catch {
         // API may not exist yet — keep defaults

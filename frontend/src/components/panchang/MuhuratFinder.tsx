@@ -127,12 +127,18 @@ export default function MuhuratFinder({
     async function fetchTypes() {
       try {
         const data = await api.get('/api/muhurat/types');
-        const types: MuhuratType[] = data.event_types
-          ? Object.entries(data.event_types).map(([key, value]) => ({
-              id: key,
-              name: value as string,
-            }))
-          : [];
+        let types: MuhuratType[] = [];
+        if (Array.isArray(data.event_types)) {
+          types = data.event_types.map((t: any) => ({
+            id: t.key || t.id || String(t),
+            name: t.name || String(t),
+          }));
+        } else if (data.event_types && typeof data.event_types === 'object') {
+          types = Object.entries(data.event_types).map(([key, value]) => ({
+            id: key,
+            name: typeof value === 'string' ? value : (value as any)?.name || key,
+          }));
+        }
         setMuhuratTypes(types);
         if (types.length > 0) {
           setSelectedEventType(types[0].id);
