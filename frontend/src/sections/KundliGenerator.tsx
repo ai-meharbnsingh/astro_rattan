@@ -1,9 +1,9 @@
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Sparkles, Download, Share2, FileText, Heart, Briefcase, Activity, ArrowLeft, Loader2, ScrollText } from 'lucide-react';
+import { Sparkles, Download, Share2, FileText, Heart, Briefcase, Activity, ArrowLeft, Loader2, ScrollText, Home } from 'lucide-react';
 import { useKundliData } from '@/hooks/useKundliData';
 import KundliForm from '@/components/kundli/KundliForm';
-import KundliList from '@/components/kundli/KundliList';
 import KundliSummaryModal from '@/components/KundliSummaryModal';
 import BirthDetailsTab from '@/components/kundli/BirthDetailsTab';
 import LordshipsTab from '@/components/kundli/LordshipsTab';
@@ -78,6 +78,8 @@ export default function KundliGenerator() {
     t, language,
   } = data;
 
+  const navigate = useNavigate();
+
   // --- LOADING ---
   if (step === 'loading') {
     return (
@@ -87,17 +89,10 @@ export default function KundliGenerator() {
     );
   }
 
-  // --- MY KUNDLIS LIST ---
+  // --- LIST → redirect to form ---
   if (step === 'list') {
-    return (
-      <KundliList
-        savedKundlis={savedKundlis}
-        onLoadKundli={loadKundli}
-        onNewKundli={() => setStep('form')}
-        onPrashnaKundli={handlePrashnaKundli}
-        onDeleteKundli={fetchSavedKundlis}
-      />
-    );
+    setStep('form');
+    return null;
   }
 
   // --- GENERATING SPINNER ---
@@ -124,11 +119,9 @@ export default function KundliGenerator() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
-            {savedKundlis.length > 0 && (
-              <Button variant="ghost" size="sm" onClick={() => { setStep('list'); setResult(null); }}>
-                <ArrowLeft className="w-4 h-4" />
-              </Button>
-            )}
+            <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')} title="Dashboard">
+              <Home className="w-4 h-4" />
+            </Button>
             <div>
               <h3 className="font-display font-bold text-2xl text-sacred-brown">{result.person_name || formData.name} — {t('tab.kundli')}</h3>
               <p className="text-sm text-sacred-text-secondary">{result.birth_date || formData.date} | {result.birth_time || formData.time} | {result.birth_place || formData.place}</p>

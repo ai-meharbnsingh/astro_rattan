@@ -6,6 +6,7 @@ import { useTranslation } from '@/lib/i18n';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 const primaryLinks = [
+  { key: 'HOME', href: '/dashboard' },
   { key: 'nav.kundli', href: '/kundli' },
   { key: 'nav.panchang', href: '/panchang' },
   { key: 'nav.lalKitab', href: '/lal-kitab' },
