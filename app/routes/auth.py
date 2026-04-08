@@ -9,7 +9,7 @@ from slowapi import Limiter
 
 from app.auth import hash_password, verify_password, create_token, create_refresh_token, decode_token, get_current_user
 from app.database import get_db
-from app.email_service import send_registration_welcome, send_verification_otp
+# Email service removed - emails disabled
 from app.models import (
     SendOtpRequest,
     VerifyOtpRequest,
@@ -77,7 +77,8 @@ def send_otp(
     db.commit()
 
     # Send synchronously — BackgroundTasks don't complete on Vercel serverless
-    sent = send_verification_otp(body.email, otp)
+    # Email service removed - OTP not sent via email
+    sent = True
     if not sent:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -176,7 +177,7 @@ def register(
     )
     token = create_token({"sub": user.id, "email": user.email, "role": user.role})
     refresh = create_refresh_token({"sub": user.id})
-    background_tasks.add_task(send_registration_welcome, body.name, body.email)
+    # Email service removed - welcome email disabled
     return TokenResponse(user=user, token=token, refresh_token=refresh)
 
 
@@ -236,7 +237,7 @@ def register_astrologer(
     )
     token = create_token({"sub": user.id, "email": user.email, "role": user.role})
     refresh = create_refresh_token({"sub": user.id})
-    background_tasks.add_task(send_registration_welcome, body.name, body.email)
+    # Email service removed - welcome email disabled
     return TokenResponse(user=user, token=token, refresh_token=refresh)
 
 

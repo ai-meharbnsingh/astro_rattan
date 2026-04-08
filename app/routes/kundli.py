@@ -12,7 +12,6 @@ from app.database import get_db
 from app.models import KundliRequest, KundliMatchRequest, DivisionalChartRequest
 from app.astro_engine import calculate_planet_positions
 from app.astro_iogita_engine import run_astro_analysis
-from app.matching_engine import calculate_gun_milan
 from app.dosha_engine import check_mangal_dosha, check_kaal_sarp, check_sade_sati, analyze_yogas_and_doshas
 from app.dasha_engine import calculate_dasha, calculate_extended_dasha
 from app.varshphal_engine import calculate_varshphal
@@ -213,71 +212,6 @@ def run_iogita_analysis(
     db.commit()
 
     return analysis
-
-
-@router.post("/match", status_code=status.HTTP_200_OK)
-def match_kundlis(
-    body: KundliMatchRequest,
-    current_user: dict = Depends(get_current_user),
-    db: Any = Depends(get_db),
-):
-    """Ashtakoota Gun Milan — match two kundlis for compatibility."""
-    row1 = _fetch_kundli(db, body.kundli_id_1, current_user["sub"])
-    row2 = _fetch_kundli(db, body.kundli_id_2, current_user["sub"])
-
-    chart1 = _chart_data(row1)
-    chart2 = _chart_data(row2)
-
-    moon1_info = chart1.get("planets", {}).get("Moon", {})
-    moon2_info = chart2.get("planets", {}).get("Moon", {})
-
-    moon1_nak = moon1_info.get("nakshatra", "Ashwini")
-    moon2_nak = moon2_info.get("nakshatra", "Ashwini")
-    # Pass actual Moon rashi (sign) to fix boundary nakshatras that span two rashis
-    moon1_rashi = moon1_info.get("sign")
-    moon2_rashi = moon2_info.get("sign")
-
-    result = calculate_gun_milan(
-        moon1_nak, moon2_nak,
-        person1_moon_rashi=moon1_rashi,
-        person2_moon_rashi=moon2_rashi,
-    )
-    result["person1"] = row1["person_name"]
-    result["person2"] = row2["person_name"]
-
-    # Manglik Dosha check for both persons (Mars in houses 1,4,7,8,12)
-    planets1 = chart1.get("planets", {})
-    planets2 = chart2.get("planets", {})
-    mars1_house = planets1.get("Mars", {}).get("house", 0)
-    mars2_house = planets2.get("Mars", {}).get("house", 0)
-    manglik_houses = {1, 4, 7, 8, 12}
-    p1_manglik = mars1_house in manglik_houses
-    p2_manglik = mars2_house in manglik_houses
-    manglik_dosha = {
-        "name": "Manglik Dosha",
-        "present": p1_manglik or p2_manglik,
-        "cancelled": p1_manglik and p2_manglik,
-        "cancel_reasons": ["Both are Manglik — dosha cancels out"] if p1_manglik and p2_manglik else [],
-        "person1_manglik": p1_manglik,
-        "person1_mars_house": mars1_house,
-        "person2_manglik": p2_manglik,
-        "person2_mars_house": mars2_house,
-        "severity": "None" if not p1_manglik and not p2_manglik
-                    else "Low (cancelled)" if p1_manglik and p2_manglik
-                    else "High",
-        "description": (
-            "Neither person is Manglik — no dosha."
-            if not p1_manglik and not p2_manglik
-            else "Both are Manglik — dosha cancels out."
-            if p1_manglik and p2_manglik
-            else f"{'Person 1' if p1_manglik else 'Person 2'} is Manglik (Mars in house {mars1_house if p1_manglik else mars2_house}) — mismatch. Remedies recommended."
-        ),
-    }
-    if "doshas" not in result:
-        result["doshas"] = []
-    result["doshas"].append(manglik_dosha)
-
-    return result
 
 
 @router.post("/{kundli_id}/dosha", status_code=status.HTTP_200_OK)

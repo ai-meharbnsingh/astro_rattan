@@ -15,7 +15,6 @@ from app.panchang_engine import (
     calculate_yamaganda,
     calculate_planetary_positions,
 )
-from app.muhurat_engine import find_muhurat, get_monthly_muhurats, EVENT_TYPES
 from app.festival_engine import detect_festivals
 
 router = APIRouter(tags=["panchang"])
@@ -325,68 +324,6 @@ def get_muhurat(
         for r in auspicious_dates
     ]
     return {"dates": dates}
-
-
-# ============================================================
-# Muhurat Types & Finder
-# ============================================================
-
-@router.get("/api/muhurat/types", status_code=status.HTTP_200_OK)
-def get_muhurat_types():
-    """Return the list of supported muhurat event types."""
-    return {
-        "event_types": [
-            {"key": key, "name": info["name"], "description": info["description"]}
-            for key, info in EVENT_TYPES.items()
-        ],
-    }
-
-
-@router.get("/api/muhurat/find", status_code=status.HTTP_200_OK)
-def find_muhurat_endpoint(
-    event_type: str = Query(default="marriage"),
-    date_str: str = Query(default=None, alias="date"),
-    latitude: float = Query(default=28.6139),
-    longitude: float = Query(default=77.2090),
-):
-    """Find auspicious muhurat windows for a specific event on a given date."""
-    target_date = date_str or _today()
-    _parse_date(target_date)
-
-    if event_type not in EVENT_TYPES:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Unknown event type: '{event_type}'. Supported: {list(EVENT_TYPES.keys())}",
-        )
-
-    return find_muhurat(event_type, target_date, latitude, longitude)
-
-
-@router.get("/api/muhurat/monthly", status_code=status.HTTP_200_OK)
-def get_monthly_muhurats_endpoint(
-    event_type: str = Query(default="marriage"),
-    month: int = Query(default=None),
-    year: int = Query(default=None),
-    latitude: float = Query(default=28.6139),
-    longitude: float = Query(default=77.2090),
-):
-    """Find all auspicious dates in a month for a given event type."""
-    today = date.today()
-    target_year = year or today.year
-    target_month = month or today.month
-
-    if not (1 <= target_month <= 12):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid month: {target_month}. Must be 1-12.",
-        )
-    if event_type not in EVENT_TYPES:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Unknown event type: '{event_type}'. Supported: {list(EVENT_TYPES.keys())}",
-        )
-
-    return get_monthly_muhurats(event_type, target_month, target_year, latitude, longitude)
 
 
 # ============================================================
