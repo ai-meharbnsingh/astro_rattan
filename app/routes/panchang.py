@@ -144,7 +144,6 @@ def get_panchang(
             rahu_kaal, choghadiya, sunrise, sunset, moonrise, moonset)
            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
            ON CONFLICT (date, latitude, longitude) DO NOTHING""",
-            (
         (
             target_date, latitude, longitude,
             tithi_str, nak_str, yoga_str, karana_str,
