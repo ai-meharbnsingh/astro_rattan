@@ -392,7 +392,6 @@ const translations: Record<Language, TranslationMap> = {
     'kp.significators': 'House Significators',
 
     // Lal Kitab
-    'nav.lalKitab': 'Lal Kitab',
     'lk.title': 'Lal Kitab',
     'lk.subtitle': 'Practical karma-based astrology with simple remedies (Totke)',
     'lk.enterDetails': 'Enter Birth Details',
@@ -1255,7 +1254,6 @@ const translations: Record<Language, TranslationMap> = {
     'kp.significators': 'भाव कारक',
 
     // Lal Kitab
-    'nav.lalKitab': 'लाल किताब',
     'lk.title': 'लाल किताब',
     'lk.subtitle': 'सरल उपायों (टोटके) के साथ व्यावहारिक कर्म-आधारित ज्योतिष',
     'lk.enterDetails': 'जन्म विवरण दर्ज करें',
