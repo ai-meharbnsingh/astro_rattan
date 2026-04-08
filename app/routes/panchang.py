@@ -1,13 +1,22 @@
-"""Panchang routes — daily panchang, choghadiya, muhurat, sunrise, and festivals."""
+"""Panchang routes — daily panchang, choghadiya, muhurat, sunrise, festivals, and monthly view."""
 import json
+import calendar
 from typing import Any
 from datetime import date, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.database import get_db
-from app.panchang_engine import calculate_panchang, calculate_rahu_kaal, calculate_choghadiya
+from app.panchang_engine import (
+    calculate_panchang,
+    calculate_rahu_kaal,
+    calculate_choghadiya,
+    calculate_gulika_kaal,
+    calculate_yamaganda,
+    calculate_planetary_positions,
+)
 from app.muhurat_engine import find_muhurat, get_monthly_muhurats, EVENT_TYPES
+from app.festival_engine import detect_festivals
 
 router = APIRouter(tags=["panchang"])
 
@@ -27,16 +36,20 @@ def _parse_date(date_str: str) -> datetime:
         )
 
 
+# ============================================================
+# GET /api/panchang -- Full daily panchang (enhanced)
+# ============================================================
+
 @router.get("/api/panchang", status_code=status.HTTP_200_OK)
 def get_panchang(
     date_str: str = Query(default=None, alias="date"),
-    latitude: float = Query(default=28.6139),   # Delhi default
+    latitude: float = Query(default=28.6139),
     longitude: float = Query(default=77.2090),
     db: Any = Depends(get_db),
 ):
-    """Calculate Panchang for a given date and location."""
+    """Calculate complete Panchang for a given date and location."""
     target_date = date_str or _today()
-    _parse_date(target_date)  # Validate date format
+    _parse_date(target_date)
 
     # Check cache first
     cached = db.execute(
@@ -45,7 +58,6 @@ def get_panchang(
     ).fetchone()
 
     if cached:
-        # Parse JSON strings back to objects for cached fields
         tithi = cached["tithi"]
         if isinstance(tithi, str):
             tithi = json.loads(tithi)
@@ -62,7 +74,16 @@ def get_panchang(
         if isinstance(rahu_kaal, str):
             rahu_kaal = json.loads(rahu_kaal)
 
-        return {
+        # Try to load extended data from choghadiya column (stores full JSON now)
+        extended = {}
+        raw_ext = cached.get("choghadiya", "")
+        if raw_ext and raw_ext != "[]":
+            try:
+                extended = json.loads(raw_ext) if isinstance(raw_ext, str) else raw_ext
+            except (json.JSONDecodeError, TypeError):
+                extended = {}
+
+        result = {
             "date": cached["date"],
             "latitude": cached["latitude"],
             "longitude": cached["longitude"],
@@ -73,29 +94,49 @@ def get_panchang(
             "rahu_kaal": rahu_kaal,
             "sunrise": cached["sunrise"],
             "sunset": cached["sunset"],
-            "moonrise": cached["moonrise"],
-            "moonset": cached["moonset"],
+            "moonrise": cached.get("moonrise", "--:--"),
+            "moonset": cached.get("moonset", "--:--"),
         }
+        # Merge extended data if present
+        if isinstance(extended, dict):
+            result.update(extended)
+        return result
 
     # Calculate fresh
     panchang = calculate_panchang(target_date, latitude, longitude)
 
-    # Rahu Kaal
-    dt = _parse_date(target_date)
-    weekday = dt.weekday()
-    rahu_kaal = calculate_rahu_kaal(weekday, panchang["sunrise"], panchang["sunset"])
+    # Detect festivals
+    festivals = detect_festivals(
+        tithi_name=panchang["tithi"]["name"],
+        paksha=panchang["tithi"]["paksha"],
+        nakshatra_name=panchang["nakshatra"]["name"],
+        maas=panchang.get("hindu_calendar", {}).get("maas", ""),
+    )
+    panchang["festivals"] = festivals
 
-    # Approximate moonrise/moonset (roughly sunrise + 50min per lunar day, sunset + similar offset)
-    # This is a rough approximation; a real implementation would use ephemeris
-    moonrise_approx = panchang.get("moonrise", _approx_moonrise(panchang["sunrise"]))
-    moonset_approx = panchang.get("moonset", _approx_moonset(panchang["sunset"]))
+    # Build extended data for cache (everything beyond core fields)
+    extended_data = {
+        "vaar": panchang.get("vaar"),
+        "gulika_kaal": panchang.get("gulika_kaal"),
+        "yamaganda": panchang.get("yamaganda"),
+        "abhijit_muhurat": panchang.get("abhijit_muhurat"),
+        "brahma_muhurat": panchang.get("brahma_muhurat"),
+        "planetary_positions": panchang.get("planetary_positions"),
+        "hindu_calendar": panchang.get("hindu_calendar"),
+        "choghadiya": panchang.get("choghadiya"),
+        "festivals": festivals,
+        "ayanamsa": panchang.get("ayanamsa"),
+        "sun_longitude": panchang.get("sun_longitude"),
+        "moon_longitude": panchang.get("moon_longitude"),
+    }
 
     # Cache the result
     tithi_str = json.dumps(panchang["tithi"])
     nak_str = json.dumps(panchang["nakshatra"])
     yoga_str = json.dumps(panchang["yoga"])
     karana_str = json.dumps(panchang["karana"])
-    rahu_str = json.dumps(rahu_kaal)
+    rahu_str = json.dumps(panchang.get("rahu_kaal", {}))
+    extended_str = json.dumps(extended_data, default=str)
 
     db.execute(
         """INSERT INTO panchang_cache
@@ -103,47 +144,89 @@ def get_panchang(
             rahu_kaal, choghadiya, sunrise, sunset, moonrise, moonset)
            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
            ON CONFLICT (date, latitude, longitude) DO NOTHING""",
+            (
         (
             target_date, latitude, longitude,
             tithi_str, nak_str, yoga_str, karana_str,
             rahu_str, "[]",
             panchang["sunrise"], panchang["sunset"],
-            moonrise_approx, moonset_approx,
+            panchang.get("moonrise", "--:--"),
+            panchang.get("moonset", "--:--"),
         ),
     )
     db.commit()
 
+    # Build full response
     return {
         "date": target_date,
         "latitude": latitude,
         "longitude": longitude,
-        "tithi": panchang["tithi"],
-        "nakshatra": panchang["nakshatra"],
-        "yoga": panchang["yoga"],
-        "karana": panchang["karana"],
-        "rahu_kaal": rahu_kaal,
-        "sunrise": panchang["sunrise"],
-        "sunset": panchang["sunset"],
-        "moonrise": moonrise_approx,
-        "moonset": moonset_approx,
+        **panchang,
+        "festivals": festivals,
     }
 
 
-def _approx_moonrise(sunrise: str) -> str:
-    """Approximate moonrise as ~50 minutes after sunrise (varies by lunar day)."""
-    parts = sunrise.split(":")
-    h, m = int(parts[0]), int(parts[1])
-    total = h * 60 + m + 50
-    return f"{(total // 60) % 24:02d}:{total % 60:02d}"
+# ============================================================
+# GET /api/panchang/month -- Monthly panchang overview
+# ============================================================
+
+@router.get("/api/panchang/month", status_code=status.HTTP_200_OK)
+def get_monthly_panchang(
+    month: int = Query(default=None),
+    year: int = Query(default=None),
+    latitude: float = Query(default=28.6139),
+    longitude: float = Query(default=77.2090),
+):
+    """Get panchang summary for each day of a month."""
+    today = date.today()
+    target_year = year or today.year
+    target_month = month or today.month
+
+    if not (1 <= target_month <= 12):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid month: {target_month}. Must be 1-12.",
+        )
+
+    days_in_month = calendar.monthrange(target_year, target_month)[1]
+    days = []
+
+    for day in range(1, days_in_month + 1):
+        d = date(target_year, target_month, day)
+        d_str = d.isoformat()
+        panchang = calculate_panchang(d_str, latitude, longitude)
+
+        festivals = detect_festivals(
+            tithi_name=panchang["tithi"]["name"],
+            paksha=panchang["tithi"]["paksha"],
+            nakshatra_name=panchang["nakshatra"]["name"],
+            maas=panchang.get("hindu_calendar", {}).get("maas", ""),
+        )
+
+        days.append({
+            "date": d_str,
+            "weekday": d.strftime("%A"),
+            "tithi": panchang["tithi"]["name"],
+            "paksha": panchang["tithi"]["paksha"],
+            "nakshatra": panchang["nakshatra"]["name"],
+            "yoga": panchang["yoga"]["name"],
+            "sunrise": panchang["sunrise"],
+            "sunset": panchang["sunset"],
+            "festivals": [f["name"] for f in festivals],
+        })
+
+    return {
+        "month": target_month,
+        "year": target_year,
+        "latitude": latitude,
+        "longitude": longitude,
+        "days": days,
+    }
 
 
-def _approx_moonset(sunset: str) -> str:
-    """Approximate moonset as ~50 minutes after sunset."""
-    parts = sunset.split(":")
-    h, m = int(parts[0]), int(parts[1])
-    total = h * 60 + m + 50
-    return f"{(total // 60) % 24:02d}:{total % 60:02d}"
-
+# ============================================================
+# GET /api/panchang/choghadiya
+# ============================================================
 
 @router.get("/api/panchang/choghadiya", status_code=status.HTTP_200_OK)
 def get_choghadiya(
@@ -167,6 +250,10 @@ def get_choghadiya(
     }
 
 
+# ============================================================
+# GET /api/panchang/muhurat -- Monthly muhurat
+# ============================================================
+
 @router.get("/api/panchang/muhurat", status_code=status.HTTP_200_OK)
 def get_muhurat(
     muhurat_type: str = Query(default="marriage"),
@@ -176,9 +263,7 @@ def get_muhurat(
     longitude: float = Query(default=77.2090),
     db: Any = Depends(get_db),
 ):
-    """Get auspicious muhurat dates for a given type and period.
-    Contract response: {dates: [{date, time_range, quality}]}
-    """
+    """Get auspicious muhurat dates for a given type and period."""
     today = date.today()
     target_year = year or today.year
     target_month = month or today.month
@@ -191,7 +276,6 @@ def get_muhurat(
 
     if cached:
         raw_results = json.loads(cached["results"])
-        # Transform to contract format: {dates: [{date, time_range, quality}]}
         dates = [
             {
                 "date": r.get("date", ""),
@@ -202,8 +286,6 @@ def get_muhurat(
         ]
         return {"dates": dates}
 
-    # Generate muhurat dates by checking panchang for each day of the month
-    import calendar
     days_in_month = calendar.monthrange(target_year, target_month)[1]
     auspicious_dates = []
 
@@ -213,7 +295,6 @@ def get_muhurat(
         panchang = calculate_panchang(d_str, latitude, longitude)
         tithi = panchang["tithi"]
 
-        # Simple auspicious check: Shukla paksha, non-Ashtami/Navami tithis
         if tithi["paksha"] == "Shukla" and tithi["name"] not in ("Ashtami", "Navami", "Chaturdashi"):
             auspicious_dates.append({
                 "date": d_str,
@@ -222,7 +303,6 @@ def get_muhurat(
                 "quality": "auspicious",
             })
 
-    # Cache result
     results_json = json.dumps(auspicious_dates)
     db.execute(
         """INSERT INTO muhurat_cache
@@ -233,7 +313,6 @@ def get_muhurat(
     )
     db.commit()
 
-    # Transform to contract format
     dates = [
         {
             "date": r["date"],
@@ -245,16 +324,16 @@ def get_muhurat(
     return {"dates": dates}
 
 
+# ============================================================
+# Muhurat Types & Finder
+# ============================================================
+
 @router.get("/api/muhurat/types", status_code=status.HTTP_200_OK)
 def get_muhurat_types():
-    """Return the list of supported muhurat event types with descriptions."""
+    """Return the list of supported muhurat event types."""
     return {
         "event_types": [
-            {
-                "key": key,
-                "name": info["name"],
-                "description": info["description"],
-            }
+            {"key": key, "name": info["name"], "description": info["description"]}
             for key, info in EVENT_TYPES.items()
         ],
     }
@@ -267,14 +346,9 @@ def find_muhurat_endpoint(
     latitude: float = Query(default=28.6139),
     longitude: float = Query(default=77.2090),
 ):
-    """Find auspicious muhurat windows for a specific event on a given date.
-
-    Returns scored auspicious time windows excluding Rahu Kaal and
-    inauspicious Choghadiya periods, with quality ratings
-    (excellent/good/average) and positive/negative factors.
-    """
+    """Find auspicious muhurat windows for a specific event on a given date."""
     target_date = date_str or _today()
-    _parse_date(target_date)  # Validate
+    _parse_date(target_date)
 
     if event_type not in EVENT_TYPES:
         raise HTTPException(
@@ -282,8 +356,7 @@ def find_muhurat_endpoint(
             detail=f"Unknown event type: '{event_type}'. Supported: {list(EVENT_TYPES.keys())}",
         )
 
-    result = find_muhurat(event_type, target_date, latitude, longitude)
-    return result
+    return find_muhurat(event_type, target_date, latitude, longitude)
 
 
 @router.get("/api/muhurat/monthly", status_code=status.HTTP_200_OK)
@@ -294,11 +367,7 @@ def get_monthly_muhurats_endpoint(
     latitude: float = Query(default=28.6139),
     longitude: float = Query(default=77.2090),
 ):
-    """Find all auspicious dates in a month for a given event type.
-
-    Returns a list of auspicious dates sorted by quality score (best first),
-    each with panchang details and the best available time window.
-    """
+    """Find all auspicious dates in a month for a given event type."""
     today = date.today()
     target_year = year or today.year
     target_month = month or today.month
@@ -306,18 +375,20 @@ def get_monthly_muhurats_endpoint(
     if not (1 <= target_month <= 12):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid month: {target_month}. Must be between 1 and 12.",
+            detail=f"Invalid month: {target_month}. Must be 1-12.",
         )
-
     if event_type not in EVENT_TYPES:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Unknown event type: '{event_type}'. Supported: {list(EVENT_TYPES.keys())}",
         )
 
-    result = get_monthly_muhurats(event_type, target_month, target_year, latitude, longitude)
-    return result
+    return get_monthly_muhurats(event_type, target_month, target_year, latitude, longitude)
 
+
+# ============================================================
+# Sunrise & Festivals
+# ============================================================
 
 @router.get("/api/panchang/sunrise", status_code=status.HTTP_200_OK)
 def get_sunrise(
@@ -325,22 +396,17 @@ def get_sunrise(
     latitude: float = Query(default=28.6139),
     longitude: float = Query(default=77.2090),
 ):
-    """Get sunrise, sunset, moonrise, moonset for a given date and location.
-    Contract response: {sunrise, sunset, moonrise, moonset}
-    """
+    """Get sunrise, sunset, moonrise, moonset for a given date and location."""
     target_date = date_str or _today()
-    _parse_date(target_date)  # Validate date format
+    _parse_date(target_date)
 
     panchang = calculate_panchang(target_date, latitude, longitude)
-
-    moonrise = panchang.get("moonrise", _approx_moonrise(panchang["sunrise"]))
-    moonset = panchang.get("moonset", _approx_moonset(panchang["sunset"]))
 
     return {
         "sunrise": panchang["sunrise"],
         "sunset": panchang["sunset"],
-        "moonrise": moonrise,
-        "moonset": moonset,
+        "moonrise": panchang.get("moonrise", "--:--"),
+        "moonset": panchang.get("moonset", "--:--"),
     }
 
 

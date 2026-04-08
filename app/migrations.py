@@ -84,6 +84,11 @@ MIGRATIONS: List[Tuple[int, str, str]] = [
         # SQL is not used — handled via special Python logic in run_migrations
         "SELECT 1;",
     ),
+    (
+        7,
+        "Enhance panchang_cache with extended data support via ON CONFLICT",
+        "SELECT 1;",
+    ),
 ]
 
 
