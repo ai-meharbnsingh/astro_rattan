@@ -66,12 +66,9 @@ export default function Features() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="features-title text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-['Cinzel_Decorative'] text-cosmic-text mb-4">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-['Cinzel_Decorative'] text-cosmic-text">
             Built Different
           </h2>
-          <p className="text-cosmic-text/60 max-w-2xl mx-auto">
-            Bridging Ancient Wisdom with Modern Technology
-          </p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
