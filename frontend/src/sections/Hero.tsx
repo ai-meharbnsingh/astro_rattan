@@ -1,18 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Calendar, MapPin, Clock } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 
 export default function Hero() {
   const heroRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [birthDate, setBirthDate] = useState('');
-  const [birthTime, setBirthTime] = useState('');
-  const [birthPlace, setBirthPlace] = useState('');
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -46,20 +41,9 @@ export default function Hero() {
         { opacity: 1, y: 0, duration: 0.8, delay: 1.2, ease: 'power3.out' }
       );
       
-      // Form
-      gsap.fromTo('.hero-form',
-        { opacity: 0, y: 50 },
-        { opacity: 1, y: 0, duration: 0.8, delay: 1.4, ease: 'power3.out' }
-      );
     }, heroRef);
     return () => ctx.revert();
   }, []);
-
-  const handleGenerateKundli = () => {
-    if (birthDate && birthTime && birthPlace) {
-      navigate('/kundli', { state: { birthDate, birthTime, birthPlace } });
-    }
-  };
 
   return (
     <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -137,62 +121,6 @@ export default function Hero() {
           </Button>
         </div>
 
-        {/* Quick Kundli Form */}
-        <div className="hero-form opacity-0 max-w-md mx-auto">
-          <div className="border border-sacred-gold/20 bg-cosmic-surface/60 backdrop-blur-sm p-5 relative">
-            {/* Corner decorations */}
-            <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-sacred-gold" />
-            <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-sacred-gold" />
-            <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-sacred-gold" />
-            <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-sacred-gold" />
-            
-            <p className="text-sacred-gold-dark text-xs tracking-[3px] uppercase mb-4 font-cinzel">
-              {t('hero.calculateChart')}
-            </p>
-            
-            <div className="space-y-3">
-              <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/70" />
-                <Input 
-                  type="date" 
-                  value={birthDate} 
-                  onChange={(e) => setBirthDate(e.target.value)} 
-                  className="pl-9 bg-transparent border-sacred-gold-dark/10 text-cosmic-text text-sm
-                             focus:border-sacred-gold rounded-none h-10"
-                />
-              </div>
-              <div className="relative">
-                <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/70" />
-                <Input 
-                  type="time" 
-                  value={birthTime} 
-                  onChange={(e) => setBirthTime(e.target.value)} 
-                  className="pl-9 bg-transparent border-sacred-gold-dark/10 text-cosmic-text text-sm
-                             focus:border-sacred-gold rounded-none h-10"
-                />
-              </div>
-              <div className="relative">
-                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/70" />
-                <Input 
-                  type="text" 
-                  value={birthPlace} 
-                  onChange={(e) => setBirthPlace(e.target.value)} 
-                  placeholder={t('hero.birthPlace')} 
-                  className="pl-9 bg-transparent border-sacred-gold-dark/10 text-cosmic-text text-sm placeholder:text-cosmic-text/30
-                             focus:border-sacred-gold rounded-none h-10"
-                />
-              </div>
-              <Button 
-                onClick={handleGenerateKundli} 
-                className="w-full bg-transparent border border-sacred-gold text-sacred-gold-dark 
-                           hover:bg-sacred-gold-dark hover:text-cosmic-bg transition-all duration-300
-                           font-cinzel text-xs tracking-[2px] uppercase h-10 rounded-none"
-              >
-                {t('hero.generateKundli')}
-              </Button>
-            </div>
-          </div>
-        </div>
 
         {/* Scroll indicator */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50">
