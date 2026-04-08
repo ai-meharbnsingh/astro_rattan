@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Star, BookOpen, Hash, User, Calendar, MapPin, Phone, Plus } from 'lucide-react';
+import { ArrowLeft, Star, BookOpen, Hash, User, Calendar, MapPin, Phone, Plus, StickyNote } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 
@@ -21,6 +21,7 @@ export default function ClientProfile() {
   const navigate = useNavigate();
   const [client, setClient] = useState<Client | null>(null);
   const [kundlis, setKundlis] = useState<KundliSummary[]>([]);
+  const [notes, setNotes] = useState<Array<{ id: string; content: string; chart_type: string; created_at: string }>>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -30,6 +31,10 @@ export default function ClientProfile() {
         const data = await api.get(`/api/clients/${clientId}`);
         setClient(data.client);
         setKundlis(data.kundlis);
+        try {
+          const n = await api.get(`/api/clients/${clientId}/notes`);
+          setNotes(n);
+        } catch { /* notes may not exist yet */ }
       } catch (e) { console.error(e); }
       setLoading(false);
     })();
@@ -124,6 +129,31 @@ export default function ClientProfile() {
             </div>
           ))}
         </div>
+      )}
+
+      {/* Notes */}
+      {notes.length > 0 && (
+        <>
+          <div className="mb-4 mt-8 flex items-center gap-2">
+            <StickyNote className="w-4 h-4 text-sacred-gold-dark" />
+            <h2 className="text-sm font-cinzel text-cosmic-text/70 uppercase tracking-wider">Notes ({notes.length})</h2>
+          </div>
+          <div className="space-y-2">
+            {notes.map(note => (
+              <div key={note.id} className="border-l-2 border-sacred-gold/30 pl-4 py-2">
+                <p className="text-sm text-cosmic-text whitespace-pre-wrap">{note.content}</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-xs text-cosmic-text/30">
+                    {note.created_at ? new Date(note.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + new Date(note.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : ''}
+                  </span>
+                  <span className="text-xs px-1.5 py-0.5 bg-sacred-gold-dark/10 text-sacred-gold-dark rounded">
+                    {{ vedic: 'Kundli', lalkitab: 'Lal Kitab', numerology: 'Numerology', general: 'General' }[note.chart_type] || note.chart_type}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

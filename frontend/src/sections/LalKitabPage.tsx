@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BookOpen, ArrowLeft, Loader2 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
+import NotesWidget from '@/components/NotesWidget';
 import { Button } from '@/components/ui/button';
 import type { LalKitabChartData } from '@/components/lalkitab/lalkitab-data';
 import { generateLalKitabChart } from '@/components/lalkitab/lalkitab-data';
@@ -27,6 +28,8 @@ export default function LalKitabPage() {
   const [chartData, setChartData] = useState<LalKitabChartData | null>(null);
   const [birthDate, setBirthDate] = useState('');
   const [error, setError] = useState('');
+  const [clientId, setClientId] = useState('');
+  const [kundliId, setKundliId] = useState('');
 
   const handleGenerate = useCallback(async (formData: LalKitabFormData) => {
     setView('generating');
@@ -46,6 +49,8 @@ export default function LalKitabPage() {
       });
       const lkChart = generateLalKitabChart(result);
       setChartData(lkChart);
+      setClientId(result.client_id || '');
+      setKundliId(result.id || '');
       setView('result');
     } catch (err) {
       const msg = err instanceof Error ? err.message : typeof err === 'string' ? err : 'Failed to generate Lal Kitab kundli';
@@ -147,6 +152,7 @@ export default function LalKitabPage() {
                 <LalKitabRulesTab chartData={chartData} />
               </TabsContent>
             </Tabs>
+            {clientId && <NotesWidget clientId={clientId} chartType="lalkitab" kundliId={kundliId} />}
           </div>
         )}
       </div>

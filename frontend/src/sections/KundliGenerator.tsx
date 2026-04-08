@@ -9,6 +9,7 @@ import BirthDetailsTab from '@/components/kundli/BirthDetailsTab';
 import LordshipsTab from '@/components/kundli/LordshipsTab';
 import AspectsMatrixTab from '@/components/kundli/AspectsMatrixTab';
 import KundliMilanTab from '@/components/kundli/KundliMilanTab';
+import NotesWidget from '@/components/NotesWidget';
 import JaiminiTab from '@/components/kundli/JaiminiTab';
 import ReportTab from '@/components/kundli/ReportTab';
 import PlanetsTab from '@/components/kundli/PlanetsTab';
@@ -367,6 +368,7 @@ export default function KundliGenerator() {
             setSummaryOpen(false);
           }}
         />
+        {result?.client_id && <NotesWidget clientId={result.client_id} chartType="vedic" kundliId={result.id} />}
       </div>
     );
   }

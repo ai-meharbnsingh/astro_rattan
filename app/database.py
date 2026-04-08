@@ -182,6 +182,19 @@ CREATE TABLE IF NOT EXISTS festivals (
 );
 CREATE INDEX IF NOT EXISTS idx_festivals_date ON festivals(date);
 
+-- Astrologer Notes (per client, per chart)
+CREATE TABLE IF NOT EXISTS notes (
+    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+    astrologer_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    client_id TEXT NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+    kundli_id TEXT REFERENCES kundlis(id) ON DELETE SET NULL,
+    chart_type TEXT NOT NULL DEFAULT 'vedic' CHECK(chart_type IN ('vedic','lalkitab','numerology','general')),
+    content TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_notes_client ON notes(client_id);
+CREATE INDEX IF NOT EXISTS idx_notes_astrologer ON notes(astrologer_id);
+
 -- Email Verification OTPs
 CREATE TABLE IF NOT EXISTS email_verifications (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),

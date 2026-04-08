@@ -137,3 +137,57 @@ def update_client(
     )
     db.commit()
     return {"message": "Client updated"}
+
+
+# ── Notes ────────────────────────────────────────────────────
+
+class NoteCreate(BaseModel):
+    content: str = Field(min_length=1, max_length=5000)
+    chart_type: str = "general"
+    kundli_id: Optional[str] = None
+
+
+@router.get("/{client_id}/notes")
+def list_notes(
+    client_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """List all notes for a client, newest first."""
+    # Verify client belongs to this astrologer
+    client = db.execute(
+        "SELECT id FROM clients WHERE id = %s AND astrologer_id = %s",
+        (client_id, current_user["sub"]),
+    ).fetchone()
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+
+    rows = db.execute(
+        "SELECT id, content, chart_type, kundli_id, created_at FROM notes WHERE client_id = %s AND astrologer_id = %s ORDER BY created_at DESC",
+        (client_id, current_user["sub"]),
+    ).fetchall()
+    return [dict(r) for r in rows]
+
+
+@router.post("/{client_id}/notes", status_code=201)
+def add_note(
+    client_id: str,
+    body: NoteCreate,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Add a note for a client."""
+    client = db.execute(
+        "SELECT id FROM clients WHERE id = %s AND astrologer_id = %s",
+        (client_id, current_user["sub"]),
+    ).fetchone()
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+
+    row = db.execute(
+        """INSERT INTO notes (astrologer_id, client_id, kundli_id, chart_type, content)
+           VALUES (%s, %s, %s, %s, %s) RETURNING *""",
+        (current_user["sub"], client_id, body.kundli_id, body.chart_type, body.content),
+    ).fetchone()
+    db.commit()
+    return dict(row)
