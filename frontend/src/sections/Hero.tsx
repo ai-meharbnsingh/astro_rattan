@@ -1,77 +1,43 @@
 import { useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
-import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/lib/i18n';
 
 export default function Hero() {
   const heroRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
   const { t } = useTranslation();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Shloka fade in
       gsap.fromTo('.hero-shloka',
         { opacity: 0, y: 30 },
         { opacity: 1, y: 0, duration: 1, delay: 0.3, ease: 'power3.out' }
       );
-      
-      // Title animation
       gsap.fromTo('.hero-title-main',
         { opacity: 0, y: 50 },
         { opacity: 1, y: 0, duration: 1.2, delay: 0.5, ease: 'power3.out' }
       );
-      
-      // Subtitle
-      gsap.fromTo('.hero-subtitle-text',
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 0.8, delay: 0.8, ease: 'power3.out' }
-      );
-      
-      // Equation box
-      gsap.fromTo('.hero-equation',
-        { opacity: 0, scale: 0.9 },
-        { opacity: 1, scale: 1, duration: 0.8, delay: 1, ease: 'power3.out' }
-      );
-      
-      // CTA Buttons
-      gsap.fromTo('.hero-cta',
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 0.8, delay: 1.2, ease: 'power3.out' }
-      );
-      
     }, heroRef);
     return () => ctx.revert();
   }, []);
 
   return (
-    <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Grain overlay */}
+    <section ref={heroRef} className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0 z-[1] opacity-[0.03] pointer-events-none"
-        style={{ 
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")` 
-        }} 
+        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")` }}
       />
-      
-      {/* Vignette */}
       <div className="absolute inset-0 z-[2] pointer-events-none"
-        style={{ 
-          background: 'radial-gradient(ellipse at center, transparent 30%, rgba(139,69,19,0.06) 100%)' 
-        }} 
+        style={{ background: 'radial-gradient(ellipse at center, transparent 30%, rgba(139,69,19,0.06) 100%)' }}
       />
-      
+
       <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
-        {/* Sanskrit Shloka */}
         <div className="hero-shloka opacity-0 mb-8">
           <p className="font-cinzel text-xs md:text-sm tracking-[6px] text-[var(--aged-gold)] uppercase"
             style={{ textShadow: '0 0 15px rgba(255, 170, 51, 0.4)' }}>
-            ज्योतिषम् अयम् ब्रह्म — Astrology is the Supreme
+            {'\u091C\u094D\u092F\u094B\u0924\u093F\u0937\u092E\u094D \u0905\u092F\u092E\u094D \u092C\u094D\u0930\u0939\u094D\u092E'} — Astrology is the Supreme
           </p>
         </div>
 
-        {/* Main Title */}
-        <div className="hero-title-main opacity-0 mb-6">
+        <div className="hero-title-main opacity-0">
           <h1 className="font-['Cinzel_Decorative'] text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-cosmic-text leading-[0.95] tracking-wide"
             style={{ textShadow: '0 0 60px rgba(255, 153, 51, 0.15)' }}>
             {t('hero.observatory')}
@@ -80,52 +46,10 @@ export default function Hero() {
             {t('hero.ofDestiny')}
           </p>
         </div>
+      </div>
 
-        {/* Equation */}
-        <div className="hero-equation opacity-0 mb-8 inline-block">
-          <div className="px-5 py-2 border border-sacred-gold/30 bg-cosmic-surface/60 backdrop-blur-sm">
-            <code className="font-['Space_Mono'] text-xs md:text-sm text-sacred-gold-dark tracking-wider">
-              L = Asc + (S × 30°) + (N × 3°20')
-            </code>
-          </div>
-        </div>
-
-        {/* Subtitle */}
-        <div className="hero-subtitle-text opacity-0 mb-10 max-w-xl mx-auto">
-          <p className="text-sm md:text-base text-cosmic-text/70 leading-relaxed font-light">
-            The universe does not hide its secrets. It writes them in light,<br className="hidden md:block" />
-            across twelve houses, waiting for those who know how to read.
-          </p>
-        </div>
-
-        {/* CTA Buttons - Elegant Style */}
-        <div className="hero-cta opacity-0 mb-12 flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <Button 
-            onClick={() => navigate('/kundli')} 
-            className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold-dark transition-all duration-300 
-                       text-xs tracking-[3px] uppercase font-cinzel font-semibold
-                       px-8 py-5 rounded-none border-none"
-            style={{ boxShadow: '0 0 30px rgba(212, 175, 55, 0.3)' }}
-          >
-            {t('hero.getFreeKundli')}
-          </Button>
-          
-          <Button
-            onClick={() => navigate('/panchang')}
-            variant="outline"
-            className="bg-transparent border border-sacred-gold-dark/30 text-cosmic-text/80 hover:border-sacred-gold hover:text-sacred-gold-dark
-                       transition-all duration-300 text-xs tracking-[3px] uppercase font-cinzel
-                       px-8 py-5 rounded-none"
-          >
-            {t('nav.panchang')}
-          </Button>
-        </div>
-
-
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50">
-          <div className="w-[1px] h-12 bg-gradient-to-b from-sacred-gold-dark to-transparent" />
-        </div>
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50">
+        <div className="w-[1px] h-12 bg-gradient-to-b from-sacred-gold-dark to-transparent" />
       </div>
     </section>
   );
