@@ -1,52 +1,29 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Stars, Menu, X, MessageCircle, ShoppingCart, User, Search, ChevronDown, Shield, Star, Sparkles, Users, LogOut } from 'lucide-react';
+import { Stars, Menu, X, MessageCircle, ShoppingCart, User, Search, Shield, Star, Sparkles, Users, LogOut } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/lib/i18n';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 const primaryLinks = [
   { key: 'nav.kundli', href: '/kundli' },
-  { key: 'nav.lalKitab', href: '/lal-kitab' },
-  { key: 'nav.horoscope', href: '/horoscope' },
   { key: 'nav.panchang', href: '/panchang' },
-  { key: 'nav.shop', href: '/shop' },
-  { key: 'nav.consultation', href: '/consultation' },
-];
-
-const moreLinks = [
-  { key: 'nav.prashnavali', href: '/prashnavali' },
+  { key: 'nav.lalKitab', href: '/kp-lalkitab' },
   { key: 'nav.numerology', href: '/numerology' },
-  { key: 'nav.palmistry', href: '/palmistry' },
-  { key: 'nav.library', href: '/library' },
-  { key: 'nav.blog', href: '/blog' },
-  { key: 'nav.community', href: '/community' },
 ];
 
-const allLinks = [...primaryLinks, ...moreLinks];
+const allLinks = [...primaryLinks];
 
 export default function Navigation() {
   const { user, isAuthenticated, logout } = useAuth();
   const { t } = useTranslation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isMoreOpen, setIsMoreOpen] = useState(false);
-  const moreRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
-        setIsMoreOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   return (
@@ -79,31 +56,6 @@ export default function Navigation() {
                   {t(link.key)}
                 </Link>
               ))}
-
-              {/* More dropdown */}
-              <div ref={moreRef} className="relative">
-                <button
-                  onClick={() => setIsMoreOpen(!isMoreOpen)}
-                  className="text-sm text-cosmic-text/70 hover:text-sacred-gold-dark transition-colors font-cinzel tracking-wide uppercase text-sm flex items-center gap-1"
-                >
-                  {t('common.viewAll')}
-                  <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isMoreOpen ? 'rotate-180' : ''}`} />
-                </button>
-                {isMoreOpen && (
-                  <div className="absolute top-full mt-2 right-0 w-48 bg-cosmic-bg/95 backdrop-blur-lg border border-sacred-gold/20 rounded-none py-2 shadow-xl">
-                    {moreLinks.map((link) => (
-                      <Link
-                        key={link.key}
-                        to={link.href}
-                        onClick={() => setIsMoreOpen(false)}
-                        className="block px-4 py-2.5 text-sm text-cosmic-text/70 hover:text-sacred-gold-dark hover:bg-sacred-gold-dark/10 transition-colors font-sacred"
-                      >
-                        {t(link.key)}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
             </div>
 
             {/* Action buttons */}
