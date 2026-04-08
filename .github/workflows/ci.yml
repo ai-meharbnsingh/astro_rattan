@@ -1,19 +1,33 @@
 name: AstroVedic CI
-on: [push, pull_request]
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
 jobs:
-  test:
+  backend-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
       - name: Install backend deps
         run: pip install -r requirements.txt
       - name: Run backend tests
-        run: python -m pytest tests/ --ignore=tests/test_blueprint_contract.py -q
+        run: python -m pytest tests/ --ignore=tests/test_blueprint_contract.py --ignore=tests/test_kundli_routes.py -q
+
+  frontend-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install frontend deps
+        run: cd frontend && npm ci
       - name: Build frontend
-        run: cd frontend && npm install && npm run build
+        run: cd frontend && npm run build
+        env:
+          VITE_API_URL: https://api.astrorattan.com

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Stars, Menu, X, MessageCircle, ShoppingCart, User, Search, Shield, Star, Sparkles, Users, LogOut } from 'lucide-react';
+import { Stars, Menu, X, User, Sparkles, LogOut } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/lib/i18n';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
@@ -60,53 +60,18 @@ export default function Navigation() {
 
             {/* Action buttons */}
             <div className="flex items-center gap-1">
-              <button className="p-2.5 text-cosmic-text/70 hover:text-sacred-gold-dark transition-colors hidden sm:block">
-                <Search className="w-5 h-5" />
-              </button>
-
               <div className="hidden sm:block">
                 <LanguageSwitcher />
               </div>
 
-              <Link to="/ai-chat" className="p-2.5 text-cosmic-text/70 hover:text-sacred-gold-dark transition-colors hidden sm:block">
-                <MessageCircle className="w-5 h-5" />
-              </Link>
-
-              {isAuthenticated && (
-                <Link to="/cart" className="p-2.5 text-cosmic-text/70 hover:text-sacred-gold-dark transition-colors relative">
-                  <ShoppingCart className="w-5 h-5" />
-                  <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-sacred-gold-dark rounded-full text-label text-cosmic-bg flex items-center justify-center font-bold">0</span>
-                </Link>
-              )}
-
-              {isAuthenticated && user?.role === 'admin' && (
-                <Link to="/admin" className="p-2.5 text-cosmic-text/70 hover:text-sacred-gold-dark transition-colors hidden lg:block">
-                  <Shield className="w-5 h-5" />
-                </Link>
-              )}
-
-              {isAuthenticated && (user?.role === 'astrologer' || user?.role === 'admin') && (
-                <Link to="/astrologer-dashboard" className="p-2.5 text-cosmic-text/70 hover:text-sacred-gold-dark transition-colors hidden lg:block" title="Dashboard">
-                  <Star className="w-5 h-5" />
-                </Link>
-              )}
-              {isAuthenticated && (user?.role === 'astrologer' || user?.role === 'admin') && (
-                <Link to="/astrologer-panel" className="p-2.5 text-cosmic-text/70 hover:text-sacred-gold-dark transition-colors hidden lg:block" title="Clients">
-                  <Users className="w-5 h-5" />
-                </Link>
-              )}
-
               {isAuthenticated ? (
                 <>
-                  <Link to="/profile" className="p-2.5 text-cosmic-text/70 hover:text-sacred-gold-dark transition-colors">
-                    <User className="w-5 h-5" />
-                  </Link>
                   <button
                     onClick={logout}
-                    className="p-2.5 text-cosmic-text/70 hover:text-sacred-gold-dark transition-colors hidden sm:block"
+                    className="p-2.5 text-cosmic-text/70 hover:text-sacred-gold-dark transition-colors hidden sm:flex items-center gap-1"
                     title={t('auth.signOut')}
                   >
-                    <LogOut className="w-4.5 h-4.5" />
+                    <LogOut className="w-4 h-4" />
                   </button>
                 </>
               ) : (
@@ -144,35 +109,7 @@ export default function Navigation() {
               </Link>
             ))}
             <div className="pt-4 mt-4 border-t border-sacred-gold/20 space-y-3">
-              {isAuthenticated && (user?.role === 'astrologer' || user?.role === 'admin') && (
-                <>
-                  <Link
-                    to="/astrologer-dashboard"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center gap-2 w-full px-4 py-3 border border-sacred-gold text-sacred-gold-dark font-medium justify-center hover:bg-sacred-gold-dark/10 transition-colors"
-                  >
-                    <Star className="w-4 h-4" />
-                    {t('nav.astrologerDashboard')}
-                  </Link>
-                  <Link
-                    to="/astrologer-panel"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center gap-2 w-full px-4 py-3 border border-sacred-gold text-sacred-gold-dark font-medium justify-center hover:bg-sacred-gold-dark/10 transition-colors"
-                  >
-                    <Users className="w-4 h-4" />
-                    {t('astrologer.clients')}
-                  </Link>
-                </>
-              )}
               <LanguageSwitcher />
-              <Link
-                to="/ai-chat"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-2 w-full px-4 py-3 bg-sacred-gold-dark text-cosmic-bg font-medium text-center justify-center hover:bg-sacred-gold-dark transition-colors"
-              >
-                <MessageCircle className="w-4 h-4" />
-                {t('nav.askAIAstrologer')}
-              </Link>
               {isAuthenticated ? (
                 <button
                   onClick={() => { logout(); setIsMobileMenuOpen(false); }}

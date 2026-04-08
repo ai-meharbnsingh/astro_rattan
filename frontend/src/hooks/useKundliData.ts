@@ -183,7 +183,7 @@ export function useKundliData() {
     try {
       const data = await api.post(`/api/kundli/${result.id}/dosha`, {});
       setDoshaData(data);
-    } catch { /* fallback handled in UI */ }
+    } catch (e) { console.error(e); }
     setLoadingDosha(false);
   };
 
@@ -193,7 +193,7 @@ export function useKundliData() {
     try {
       const data = await api.post(`/api/kundli/${result.id}/iogita`, {});
       setIogitaData(data);
-    } catch { /* fallback handled in UI */ }
+    } catch (e) { console.error(e); }
     setLoadingIogita(false);
   };
 
@@ -203,7 +203,7 @@ export function useKundliData() {
     try {
       const data = await api.post(`/api/kundli/${result.id}/dasha`, {});
       setDashaData(data);
-    } catch { /* fallback */ }
+    } catch (e) { console.error(e); }
     setLoadingDasha(false);
   };
 
@@ -213,7 +213,7 @@ export function useKundliData() {
     try {
       const data = await api.get(`/api/kundli/${result.id}/avakhada`);
       setAvakhadaData(data);
-    } catch { /* fallback handled in UI */ }
+    } catch (e) { console.error(e); }
     setLoadingAvakhada(false);
   };
 
@@ -239,7 +239,7 @@ export function useKundliData() {
     try {
       const data = await api.post(`/api/kundli/${result.id}/yogas-doshas`, {});
       setYogaDoshaData(data);
-    } catch { /* fallback */ }
+    } catch (e) { console.error(e); }
     setLoadingYogaDosha(false);
   };
 
@@ -271,7 +271,7 @@ export function useKundliData() {
     try {
       const data = await api.post(`/api/kundli/${result.id}/divisional`, { chart_type: ct });
       setDivisionalData(data);
-    } catch { /* fallback */ }
+    } catch (e) { console.error(e); }
     setLoadingDivisional(false);
   };
 
@@ -281,7 +281,7 @@ export function useKundliData() {
     try {
       const data = await api.post(`/api/kundli/${result.id}/ashtakvarga`, {});
       setAshtakvargaData(data);
-    } catch { /* fallback */ }
+    } catch (e) { console.error(e); }
     setLoadingAshtakvarga(false);
   };
 
@@ -291,7 +291,7 @@ export function useKundliData() {
     try {
       const data = await api.post(`/api/kundli/${result.id}/shadbala`, {});
       setShadbalaData(data);
-    } catch { /* fallback */ }
+    } catch (e) { console.error(e); }
     setLoadingShadbala(false);
   };
 
@@ -306,7 +306,7 @@ export function useKundliData() {
       if (customTime) body.transit_time = customTime;
       const data = await api.post(`/api/kundli/${result.id}/transits`, body);
       setTransitData(data);
-    } catch { /* fallback */ }
+    } catch (e) { console.error(e); }
     setLoadingTransit(false);
   };
 
@@ -316,7 +316,7 @@ export function useKundliData() {
     try {
       const data = await api.post(`/api/kundli/${result.id}/divisional`, { chart_type: 'D10' });
       setD10Data(data);
-    } catch { /* fallback */ }
+    } catch (e) { console.error(e); }
     setLoadingD10(false);
   };
 
@@ -336,7 +336,7 @@ export function useKundliData() {
     try {
       const data = await api.post(`/api/kundli/${result.id}/varshphal`, { year: targetYear });
       setVarshphalData(data);
-    } catch { /* fallback */ }
+    } catch (e) { console.error(e); }
     setLoadingVarshphal(false);
   };
 
@@ -346,7 +346,7 @@ export function useKundliData() {
     try {
       const data = await api.get(`/api/kundli/${result.id}/yogini-dasha`);
       setYoginiData(data);
-    } catch { /* */ }
+    } catch (e) { console.error(e); }
     setLoadingYogini(false);
   };
 
@@ -356,7 +356,7 @@ export function useKundliData() {
     try {
       const data = await api.post(`/api/kundli/${result.id}/kp-analysis`, {});
       setKpData(data);
-    } catch { /* */ }
+    } catch (e) { console.error(e); }
     setLoadingKp(false);
   };
 
@@ -366,7 +366,7 @@ export function useKundliData() {
     try {
       const data = await api.get(`/api/kundli/${result.id}/upagrahas`);
       setUpagrahasData(data);
-    } catch { /* */ }
+    } catch (e) { console.error(e); }
     setLoadingUpagrahas(false);
   };
 
@@ -376,7 +376,7 @@ export function useKundliData() {
     try {
       const data = await api.get(`/api/kundli/${result.id}/sodashvarga`);
       setSodashvargaData(data);
-    } catch { /* */ }
+    } catch (e) { console.error(e); }
     setLoadingSodashvarga(false);
   };
 
@@ -386,7 +386,7 @@ export function useKundliData() {
     try {
       const data = await api.get(`/api/kundli/${result.id}/aspects`);
       setAspectsData(data);
-    } catch { /* */ }
+    } catch (e) { console.error(e); }
     setLoadingAspects(false);
   };
 
@@ -396,7 +396,7 @@ export function useKundliData() {
     try {
       const data = await api.get(`/api/kundli/${result.id}/western-aspects`);
       setWesternAspectsData(data);
-    } catch { /* */ }
+    } catch (e) { console.error(e); }
     setLoadingWesternAspects(false);
   };
 
@@ -418,28 +418,15 @@ export function useKundliData() {
     try {
       const data = await api.get(`/api/kundli/${result.id}/lifelong-sadesati`);
       setSadesatiData(data);
-    } catch { /* */ }
+    } catch (e) { console.error(e); }
     setLoadingSadesati(false);
   };
 
-  // Auto-fetch data when result is loaded
+  // Auto-fetch only essential data when result loads (dasha is the default tab)
   useEffect(() => {
     if (step === 'result' && result?.id) {
       fetchDasha();
-      fetchExtendedDasha();
-      fetchAvakhada();
-      fetchYogaDosha();
-      fetchAshtakvarga();
-      fetchShadbala();
-      fetchDivisional('D9');
-      fetchTransit();
       fetchDosha();
-      fetchYogini();
-      fetchKp();
-      fetchUpagrahas();
-      fetchSodashvarga();
-      fetchAspects();
-      fetchSadesati();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, result?.id]);
@@ -535,7 +522,7 @@ export function useKundliData() {
         birth_place: placeName,
         latitude: lat,
         longitude: lon,
-        timezone_offset: 5.5,
+        timezone_offset: -(new Date().getTimezoneOffset() / 60),
       });
       setResult(data);
       resetTabData();
@@ -562,7 +549,7 @@ export function useKundliData() {
         birth_place: formData.place,
         latitude: formData.latitude,
         longitude: formData.longitude,
-        timezone_offset: 5.5,
+        timezone_offset: -(new Date().getTimezoneOffset() / 60),
       });
       setResult(data);
       resetTabData();

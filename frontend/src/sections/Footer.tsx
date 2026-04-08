@@ -5,35 +5,14 @@ import { useTranslation } from '@/lib/i18n';
 const footerLinks = {
   services: [
     { label: 'Kundli Generation', href: '/kundli' },
-    { label: 'Daily Horoscope', href: '/horoscope' },
-    { label: 'Panchang', href: '/panchang' },
-    { label: 'AI Astrologer', href: '/ai-chat' },
-    { label: 'Spiritual Library', href: '/library' },
     { label: 'Dosha Analysis', href: '/kundli' },
-  ],
-  spiritual: [
-    { label: 'Bhagavad Gita', href: '/library' },
-    { label: 'Sacred Mantras', href: '/library' },
-    { label: 'Aarti Collection', href: '/library' },
-    { label: 'Pooja Vidhi', href: '/library' },
-    { label: 'Vrat Katha', href: '/library' },
-    { label: 'Chalisa', href: '/library' },
-  ],
-  shop: [
-    { label: 'Gemstones', href: '/shop' },
-    { label: 'Rudraksha', href: '/shop' },
-    { label: 'Bracelets', href: '/shop' },
-    { label: 'Yantras', href: '/shop' },
-    { label: 'Vastu Products', href: '/shop' },
-    { label: 'Idols', href: '/shop' },
+    { label: 'Panchang', href: '/panchang' },
+    { label: 'Lal Kitab', href: '/lal-kitab' },
+    { label: 'Numerology', href: '/numerology' },
   ],
   company: [
     { label: 'About Us', href: '/' },
-    { label: 'Our Astrologers', href: '/' },
-    { label: 'Careers', href: '/' },
-    { label: 'Blog', href: '/blog' },
     { label: 'Contact', href: '/' },
-    { label: 'FAQ', href: '/' },
   ],
 };
 
@@ -42,8 +21,6 @@ export default function Footer() {
 
   const sectionTitleKeys: Record<string, string> = {
     services: 'footer.services',
-    spiritual: 'footer.spiritual',
-    shop: 'footer.shop',
     company: 'footer.company',
   };
 

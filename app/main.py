@@ -10,7 +10,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
 from app.config import APP_NAME, APP_VERSION, CORS_ORIGINS, RATE_LIMIT_PER_MINUTE
-from app.database import init_db, migrate_users_table, migrate_referral_tables, migrate_forum_tables, migrate_gamification_tables, migrate_notification_tables
+from app.database import init_db
 from app.migrations import run_migrations
 from app.rate_limit import request_rate_limit_key
 from app.seed_data import seed_all
@@ -28,17 +28,19 @@ limiter = Limiter(
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Initialize database, run migrations, seed data, and generate horoscopes on startup."""
+    """Initialize database and run migrations on startup. Heavy seeding runs in background."""
+    import threading
     init_db()
-    migrate_users_table()
-    migrate_referral_tables()
-    migrate_forum_tables()
-    migrate_gamification_tables()
-    migrate_notification_tables()
     run_migrations()
-    seed_all()
-    generate_daily_horoscopes()
-    seed_weekly_horoscopes()
+    # Heavy work in background so health check passes quickly
+    def _background_init():
+        try:
+            seed_all()
+            generate_daily_horoscopes()
+            seed_weekly_horoscopes()
+        except Exception as e:
+            print(f"[startup] Background init error: {e}")
+    threading.Thread(target=_background_init, daemon=True).start()
     yield
 
 
@@ -101,13 +103,14 @@ def root():
 @app.get("/health")
 def health():
     """Health check endpoint."""
-    from app.ai_engine import get_ai_status
     from app.astro_engine import _HAS_SWE
+    from app.config import AI_PROVIDER, GEMINI_API_KEY, OPENAI_API_KEY
+    ai_status = "configured" if (GEMINI_API_KEY or OPENAI_API_KEY) else "not_configured"
     return {
         "status": "ok",
         "version": APP_VERSION,
         "uptime": round(time.time() - _start_time, 2),
-        "ai": get_ai_status(),
+        "ai": {"provider": AI_PROVIDER, "status": ai_status},
         "swisseph": _HAS_SWE,
     }
 

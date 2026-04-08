@@ -47,23 +47,23 @@ export default function CTA() {
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-          <Button 
-            onClick={() => navigate('/ai-chat')} 
-            size="lg" 
+          <Button
+            onClick={() => navigate('/kundli')}
+            size="lg"
             className="bg-transparent border border-sacred-gold text-sacred-gold hover:bg-sacred-gold hover:text-cosmic-bg transition-all text-lg px-8 py-6 font-cinzel"
           >
             <Sparkles className="w-5 h-5 mr-2" />
-            {t('cta.chatAI')}
+            {t('features.kundli.title')}
             <ChevronRight className="w-5 h-5 ml-2" />
           </Button>
-          
-          <Button 
-            variant="outline" 
-            size="lg" 
+
+          <Button
+            onClick={() => navigate('/panchang')}
+            variant="outline"
+            size="lg"
             className="border-sacred-gold/50 text-cosmic-text text-lg px-8 py-6 hover:bg-sacred-gold-dark/10 hover:border-sacred-gold bg-transparent font-cinzel"
           >
-            <Phone className="w-5 h-5 mr-2" />
-            {t('cta.talkExpert')}
+            {t('nav.panchang')}
           </Button>
         </div>
         

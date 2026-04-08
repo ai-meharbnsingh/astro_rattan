@@ -1,5 +1,6 @@
-import { useEffect, useRef, lazy, Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { useEffect, useRef, lazy, Suspense, Component } from 'react';
+import type { ReactNode, ErrorInfo } from 'react';
+import { Routes, Route, Link } from 'react-router-dom';
 import { I18nProvider } from './lib/i18n';
 import { AuthProvider } from './hooks/useAuth';
 import { gsap } from 'gsap';
@@ -23,6 +24,46 @@ const NumerologyTarot = lazy(() => import('./sections/NumerologyTarot'));
 const LalKitabPage = lazy(() => import('./sections/LalKitabPage'));
 
 gsap.registerPlugin(ScrollTrigger);
+
+class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError(): { hasError: boolean } {
+    return { hasError: true };
+  }
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error('ErrorBoundary caught:', error, info);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+          <h2 className="text-2xl font-cinzel text-sacred-gold-dark mb-4">Something went wrong</h2>
+          <p className="text-cosmic-text/60 mb-6">An unexpected error occurred.</p>
+          <button onClick={() => { this.setState({ hasError: false }); window.location.href = '/'; }}
+            className="px-6 py-2 border border-sacred-gold text-sacred-gold-dark hover:bg-sacred-gold-dark hover:text-cosmic-bg transition-all">
+            Return Home
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+function NotFound() {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+      <h2 className="text-6xl font-cinzel text-sacred-gold-dark mb-4">404</h2>
+      <p className="text-xl text-cosmic-text/70 mb-6">Page not found</p>
+      <Link to="/" className="px-6 py-2 border border-sacred-gold text-sacred-gold-dark hover:bg-sacred-gold-dark hover:text-cosmic-bg transition-all">
+        Return Home
+      </Link>
+    </div>
+  );
+}
 
 function HomePage() {
   const mainRef = useRef<HTMLDivElement>(null);
@@ -70,6 +111,7 @@ function App() {
       <Navigation />
 
       <main>
+        <ErrorBoundary>
         <Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-600"></div></div>}>
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -78,8 +120,10 @@ function App() {
           <Route path="/login" element={<AuthPage />} />
           <Route path="/numerology" element={<NumerologyTarot />} />
           <Route path="/lal-kitab" element={<LalKitabPage />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
         </Suspense>
+        </ErrorBoundary>
       </main>
 
       <Footer />

@@ -65,6 +65,7 @@ class SendOtpRequest(BaseModel):
 class VerifyOtpRequest(BaseModel):
     email: EmailStr
     otp: str = Field(min_length=6, max_length=6)
+    new_password: Optional[str] = Field(default=None, min_length=6)
 
 class UserRegister(BaseModel):
     email: EmailStr

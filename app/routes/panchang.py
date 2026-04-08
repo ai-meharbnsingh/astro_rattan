@@ -150,7 +150,7 @@ def get_panchang(
         (
             target_date, latitude, longitude,
             tithi_str, nak_str, yoga_str, karana_str,
-            rahu_str, "[]",
+            rahu_str, extended_str,
             panchang["sunrise"], panchang["sunset"],
             panchang.get("moonrise", "--:--"),
             panchang.get("moonset", "--:--"),
@@ -178,6 +178,7 @@ def get_monthly_panchang(
     year: int = Query(default=None),
     latitude: float = Query(default=28.6139),
     longitude: float = Query(default=77.2090),
+    db: Any = Depends(get_db),
 ):
     """Get panchang summary for each day of a month."""
     today = date.today()
@@ -196,15 +197,37 @@ def get_monthly_panchang(
     for day in range(1, days_in_month + 1):
         d = date(target_year, target_month, day)
         d_str = d.isoformat()
-        panchang = calculate_panchang(d_str, latitude, longitude)
 
+        # Check daily cache first
+        cached = db.execute(
+            "SELECT tithi, nakshatra, yoga, sunrise, sunset FROM panchang_cache WHERE date = %s AND latitude = %s AND longitude = %s",
+            (d_str, latitude, longitude),
+        ).fetchone()
+
+        if cached:
+            tithi = json.loads(cached["tithi"]) if isinstance(cached["tithi"], str) else cached["tithi"]
+            nak = json.loads(cached["nakshatra"]) if isinstance(cached["nakshatra"], str) else cached["nakshatra"]
+            yoga = json.loads(cached["yoga"]) if isinstance(cached["yoga"], str) else cached["yoga"]
+            days.append({
+                "date": d_str,
+                "weekday": d.strftime("%A"),
+                "tithi": tithi.get("name", "") if isinstance(tithi, dict) else str(tithi),
+                "paksha": tithi.get("paksha", "") if isinstance(tithi, dict) else "",
+                "nakshatra": nak.get("name", "") if isinstance(nak, dict) else str(nak),
+                "yoga": yoga.get("name", "") if isinstance(yoga, dict) else str(yoga),
+                "sunrise": cached["sunrise"],
+                "sunset": cached["sunset"],
+                "festivals": [],
+            })
+            continue
+
+        panchang = calculate_panchang(d_str, latitude, longitude)
         festivals = detect_festivals(
             tithi_name=panchang["tithi"]["name"],
             paksha=panchang["tithi"]["paksha"],
             nakshatra_name=panchang["nakshatra"]["name"],
             maas=panchang.get("hindu_calendar", {}).get("maas", ""),
         )
-
         days.append({
             "date": d_str,
             "weekday": d.strftime("%A"),

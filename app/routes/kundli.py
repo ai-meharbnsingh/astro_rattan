@@ -93,11 +93,12 @@ def generate_kundli(
     )
     chart_json = json.dumps(chart_data, default=str)
 
-    db.execute(
+    row = db.execute(
         """INSERT INTO kundlis
            (user_id, person_name, birth_date, birth_time, birth_place,
             latitude, longitude, timezone_offset, ayanamsa, chart_data)
-           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+           RETURNING *""",
         (
             current_user["sub"],
             body.person_name,
@@ -110,13 +111,8 @@ def generate_kundli(
             body.ayanamsa,
             chart_json,
         ),
-    )
-    db.commit()
-
-    row = db.execute(
-        "SELECT * FROM kundlis WHERE user_id = %s ORDER BY created_at DESC LIMIT 1",
-        (current_user["sub"],),
     ).fetchone()
+    db.commit()
 
     return {
         "id": row["id"],
@@ -1217,15 +1213,16 @@ def download_kundli_pdf(
 @router.post("/{kundli_id}/transits", status_code=status.HTTP_200_OK)
 def get_transits(
     kundli_id: str,
-    body: dict = {},
+    body: dict = None,
     current_user: dict = Depends(get_current_user),
     db: Any = Depends(get_db),
 ):
     """Calculate Gochara (transit) predictions for a kundli. Accepts optional transit_date and transit_time."""
     row = _fetch_kundli(db, kundli_id, current_user["sub"])
     chart = _chart_data(row)
-    transit_date = body.get("transit_date") if isinstance(body, dict) else None
-    transit_time = body.get("transit_time") if isinstance(body, dict) else None
+    body = body or {}
+    transit_date = body.get("transit_date")
+    transit_time = body.get("transit_time")
     result = calculate_transits(
         chart,
         latitude=row.get("latitude", 0.0),
@@ -1408,4 +1405,4 @@ async def delete_kundli(
         import traceback
         print(f"ERROR in delete_kundli: {e}")
         print(traceback.format_exc())
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="An internal error occurred")

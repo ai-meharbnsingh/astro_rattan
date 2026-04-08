@@ -23,9 +23,11 @@ DB_PATH = os.getenv("DB_PATH", "astrovedic.db")
 # Auth
 JWT_SECRET = os.getenv("JWT_SECRET", "")
 if not JWT_SECRET:
+    if os.getenv("RAILWAY_ENVIRONMENT") or os.getenv("RENDER") or os.getenv("FLY_APP_NAME"):
+        raise RuntimeError("FATAL: JWT_SECRET env var is required in production. Set it and redeploy.")
     import secrets
     JWT_SECRET = secrets.token_hex(32)
-    print("[WARNING] JWT_SECRET not set — using random secret. Sessions will not persist across restarts. Set JWT_SECRET env var for production.")
+    print("[WARNING] JWT_SECRET not set — using random secret (dev only).")
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRE_HOURS = 24
 
@@ -44,19 +46,13 @@ OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
 
-# Payment
-RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "")
-RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET", "")
-STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
-STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
 
 # Frontend URL (used in payment redirect URLs)
 FRONTEND_URL = os.getenv("FRONTEND_URL", f"http://localhost:{FRONTEND_PORT}")
-SITE_URL = _env_first("SITE_URL", default="https://astrovedic.com")
+SITE_URL = _env_first("SITE_URL", default="https://astrorattan.com")
 
-# Vercel serverless detection — filesystem under /var/task is read-only, use /tmp
-IS_VERCEL = bool(os.getenv("VERCEL") or os.getenv("VERCEL_ENV"))
-STATIC_DIR = "/tmp/static" if IS_VERCEL else os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
+# Static files directory
+STATIC_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
 
 # App
 APP_VERSION = "1.0.0"
@@ -64,14 +60,14 @@ APP_NAME = "AstroVedic"
 TESTING = _env_first("TESTING", default="").lower() in {"1", "true", "yes", "on"}
 
 # CORS - Explicit domains only (no wildcards — security hardening)
-_default_cors = f"http://localhost:{FRONTEND_PORT},https://astrovedic-web.vercel.app,https://astrovedic-api.vercel.app"
+_default_cors = f"http://localhost:{FRONTEND_PORT},https://astrorattan.com,https://www.astrorattan.com"
 _env_cors = os.getenv("CORS_ORIGINS", _default_cors)
 CORS_ORIGINS = _env_cors.split(",")
 
 # Always ensure production URLs are included
 _production_urls = [
-    "https://astrovedic-web.vercel.app",
-    "https://astrovedic-api.vercel.app",
+    "https://astrorattan.com",
+    "https://www.astrorattan.com",
     f"http://localhost:{FRONTEND_PORT}",
 ]
 for url in _production_urls:

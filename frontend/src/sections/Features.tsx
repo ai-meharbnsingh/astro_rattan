@@ -12,10 +12,10 @@ gsap.registerPlugin(ScrollTrigger);
 const features = [
   { icon: Star, titleKey: 'features.kundli.title', descKey: 'features.kundli.description', route: '/kundli' },
   { icon: Calendar, titleKey: 'features.panchang.title', descKey: 'features.panchang.description', route: '/panchang' },
-  { icon: Brain, titleKey: 'features.aiAstrologer.title', descKey: 'features.aiAstrologer.description', route: '/ai-chat' },
-  { icon: BookOpen, titleKey: 'features.shop.title', descKey: 'features.shop.description', route: '/shop' },
+  { icon: BookOpen, titleKey: 'features.shop.title', descKey: 'features.shop.description', route: '/lal-kitab' },
   { icon: Sparkles, titleKey: 'features.dosha.title', descKey: 'features.dosha.description', route: '/kundli' },
   { icon: Compass, titleKey: 'features.muhurat.title', descKey: 'features.muhurat.description', route: '/panchang' },
+  { icon: Brain, titleKey: 'features.aiAstrologer.title', descKey: 'features.aiAstrologer.description', route: '/numerology' },
 ];
 
 export default function Features() {
@@ -68,12 +68,12 @@ export default function Features() {
         </div>
         
         <div className="features-title mt-16 text-center">
-          <Button 
-            onClick={() => navigate('/ai-chat')} 
+          <Button
+            onClick={() => navigate('/kundli')}
             className="bg-transparent border border-sacred-gold text-sacred-gold-dark hover:bg-sacred-gold-dark hover:text-cosmic-bg transition-all px-8 py-6 text-base font-cinzel tracking-wider"
           >
-            <Brain className="w-5 h-5 mr-2" />
-            {t('features.chatWithAI')}
+            <Star className="w-5 h-5 mr-2" />
+            {t('features.kundli.title')}
             <ChevronRight className="w-5 h-5 ml-2" />
           </Button>
         </div>

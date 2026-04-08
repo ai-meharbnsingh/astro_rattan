@@ -7,9 +7,7 @@ import KundliList from '@/components/kundli/KundliList';
 import KundliSummaryModal from '@/components/KundliSummaryModal';
 import BirthDetailsTab from '@/components/kundli/BirthDetailsTab';
 import LordshipsTab from '@/components/kundli/LordshipsTab';
-import PredictionsTab from '@/components/kundli/PredictionsTab';
 import AspectsMatrixTab from '@/components/kundli/AspectsMatrixTab';
-import KundliMilanTab from '@/components/kundli/KundliMilanTab';
 import JaiminiTab from '@/components/kundli/JaiminiTab';
 import ReportTab from '@/components/kundli/ReportTab';
 import PlanetsTab from '@/components/kundli/PlanetsTab';
@@ -211,7 +209,6 @@ export default function KundliGenerator() {
             <TabsTrigger value="shadbala" onClick={fetchShadbala}>{t('tab.shadbala')}</TabsTrigger>
             <TabsTrigger value="avakhada" onClick={fetchAvakhada}>{t('tab.avakhada')}</TabsTrigger>
             <TabsTrigger value="yoga-dosha" onClick={fetchYogaDosha}>{t('tab.yogas')}</TabsTrigger>
-            <TabsTrigger value="predictions" onClick={() => fetchPredictions()}>{t('tab.predictions')}</TabsTrigger>
             <TabsTrigger value="transits" onClick={() => fetchTransit()}>{t('tab.transits')}</TabsTrigger>
             <TabsTrigger value="varshphal" onClick={() => fetchVarshphal()}>{t('tab.varshphal')}</TabsTrigger>
             <TabsTrigger value="kp" onClick={fetchKp}>{t('tab.kpSystem')}</TabsTrigger>
@@ -220,7 +217,6 @@ export default function KundliGenerator() {
             <TabsTrigger value="sodashvarga" onClick={fetchSodashvarga}>{t('tab.sodashvarga')}</TabsTrigger>
             <TabsTrigger value="aspects" onClick={fetchAspects}>{t('tab.aspects')}</TabsTrigger>
             <TabsTrigger value="aspects-matrix" onClick={fetchWesternAspects}>{language === 'hi' ? 'दृष्टि मैट्रिक्स' : 'Aspects Matrix'}</TabsTrigger>
-            <TabsTrigger value="milan">{language === 'hi' ? 'कुंडली मिलान' : 'Kundli Milan'}</TabsTrigger>
             <TabsTrigger value="jaimini" onClick={fetchJaimini}>{language === 'hi' ? 'जैमिनी' : 'Jaimini'}</TabsTrigger>
             <TabsTrigger value="sadesati" onClick={fetchSadesati}>{t('tab.sadeSati')}</TabsTrigger>
             <TabsTrigger value="mundane">{language === 'hi' ? 'मुंडन ज्योतिष' : 'Mundane'}</TabsTrigger>
@@ -317,12 +313,6 @@ export default function KundliGenerator() {
             <YogaDoshaTab yogaDoshaData={yogaDoshaData} loadingYogaDosha={loadingYogaDosha} language={language} t={t} />
           </TabsContent>
 
-          <TabsContent value="predictions">
-            <PredictionsTab
-              predictionsData={predictionsData} loadingPredictions={loadingPredictions}
-              activePeriod={activePredictionPeriod} onFetchPredictions={fetchPredictions}
-            />
-          </TabsContent>
 
           <TabsContent value="transits">
             <TransitsTab
@@ -368,9 +358,6 @@ export default function KundliGenerator() {
             <AspectsMatrixTab data={westernAspectsData} loading={loadingWesternAspects} />
           </TabsContent>
 
-          <TabsContent value="milan">
-            <KundliMilanTab savedKundlis={savedKundlis} currentKundliId={result?.id} />
-          </TabsContent>
 
           <TabsContent value="jaimini">
             <JaiminiTab data={jaiminiData} loading={loadingJaimini} />

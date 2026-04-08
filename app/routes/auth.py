@@ -9,7 +9,6 @@ from slowapi import Limiter
 
 from app.auth import hash_password, verify_password, create_token, create_refresh_token, decode_token, get_current_user
 from app.database import get_db
-# Email service removed - emails disabled
 from app.models import (
     SendOtpRequest,
     VerifyOtpRequest,
@@ -35,6 +34,35 @@ limiter = Limiter(key_func=request_rate_limit_key)
 def _generate_otp() -> str:
     """Generate a 6-digit numeric OTP."""
     return f"{secrets.randbelow(900000) + 100000}"
+
+
+def _send_otp_email(email: str, otp: str) -> bool:
+    """Send OTP via Resend API. Returns True on success, False on failure."""
+    import os
+    api_key = os.getenv("RESEND_API_KEY", "")
+    if not api_key:
+        print(f"[OTP] RESEND_API_KEY not set — OTP for {email}: {otp}")
+        return True  # Allow registration in dev (OTP logged to console)
+    try:
+        import resend
+        resend.api_key = api_key
+        resend.Emails.send({
+            "from": "Astro Rattan <noreply@astrorattan.com>",
+            "to": [email],
+            "subject": f"Astro Rattan - Verification Code: {otp}",
+            "html": (
+                f"<div style='font-family:Georgia,serif;max-width:480px;margin:0 auto;padding:32px;'>"
+                f"<h2 style='color:#C4A35A;'>Astro Rattan</h2>"
+                f"<p>Your verification code is:</p>"
+                f"<p style='font-size:32px;font-weight:bold;letter-spacing:8px;color:#1a1a2e;'>{otp}</p>"
+                f"<p style='color:#666;'>This code expires in 10 minutes.</p>"
+                f"</div>"
+            ),
+        })
+        return True
+    except Exception as e:
+        print(f"[OTP] Failed to send email to {email}: {e}")
+        return False
 
 
 def _verify_email_token(email_token: str, expected_email: str):
@@ -76,9 +104,8 @@ def send_otp(
     )
     db.commit()
 
-    # Send synchronously — BackgroundTasks don't complete on Vercel serverless
-    # Email service removed - OTP not sent via email
-    sent = True
+    # Send OTP via SMTP
+    sent = _send_otp_email(body.email, otp)
     if not sent:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -471,3 +498,97 @@ def user_history(
         "ai_chats": {"count": ai_chat_count},
         "reports": {"count": report_count, "list": [dict(r) for r in reports]},
     }
+
+
+# ── Forgot Password ─────────────────────────────────────────
+
+@router.post("/forgot-password", status_code=status.HTTP_200_OK)
+@limiter.limit("3/minute")
+def forgot_password(
+    request: Request,
+    body: SendOtpRequest,
+    db: Any = Depends(get_db),
+):
+    """Send a password reset OTP to the given email."""
+    user = db.execute("SELECT id FROM users WHERE email = %s", (body.email,)).fetchone()
+    if not user:
+        # Don't reveal whether email exists
+        return {"message": "If this email is registered, a reset code has been sent."}
+
+    otp = _generate_otp()
+    expires_at = (datetime.now(tz=timezone.utc) + timedelta(minutes=10)).isoformat()
+    db.execute("DELETE FROM email_verifications WHERE email = %s", (body.email,))
+    db.execute(
+        "INSERT INTO email_verifications (email, otp, expires_at) VALUES (%s, %s, %s)",
+        (body.email, otp, expires_at),
+    )
+    db.commit()
+
+    import os
+    api_key = os.getenv("RESEND_API_KEY", "")
+    if api_key:
+        try:
+            import resend
+            resend.api_key = api_key
+            resend.Emails.send({
+                "from": "Astro Rattan <noreply@astrorattan.com>",
+                "to": [body.email],
+                "subject": f"Astro Rattan - Password Reset Code: {otp}",
+                "html": (
+                    f"<div style='font-family:Georgia,serif;max-width:480px;margin:0 auto;padding:32px;'>"
+                    f"<h2 style='color:#C4A35A;'>Password Reset</h2>"
+                    f"<p>Your reset code is:</p>"
+                    f"<p style='font-size:32px;font-weight:bold;letter-spacing:8px;color:#1a1a2e;'>{otp}</p>"
+                    f"<p style='color:#666;'>This code expires in 10 minutes. If you didn't request this, ignore this email.</p>"
+                    f"</div>"
+                ),
+            })
+        except Exception as e:
+            print(f"[RESET] Failed to send email: {e}")
+    else:
+        print(f"[RESET] OTP for {body.email}: {otp}")
+
+    return {"message": "If this email is registered, a reset code has been sent."}
+
+
+@router.post("/reset-password", status_code=status.HTTP_200_OK)
+@limiter.limit("5/minute")
+def reset_password(
+    request: Request,
+    body: VerifyOtpRequest,
+    db: Any = Depends(get_db),
+):
+    """Reset password using OTP. Body: {email, otp, new_password}."""
+    row = db.execute(
+        "SELECT id, otp, attempts, expires_at FROM email_verifications WHERE email = %s ORDER BY created_at DESC LIMIT 1",
+        (body.email,),
+    ).fetchone()
+
+    if not row:
+        raise HTTPException(status_code=400, detail="No reset code found. Please request a new one.")
+
+    expires_at = row["expires_at"]
+    if isinstance(expires_at, str):
+        expires_at = datetime.fromisoformat(expires_at)
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+    if datetime.now(tz=timezone.utc) > expires_at:
+        raise HTTPException(status_code=400, detail="Reset code expired. Please request a new one.")
+
+    if row["otp"] != body.otp:
+        db.execute("UPDATE email_verifications SET attempts = attempts + 1 WHERE id = %s", (row["id"],))
+        db.commit()
+        raise HTTPException(status_code=400, detail="Invalid code.")
+
+    new_password = getattr(body, "new_password", None)
+    if not new_password:
+        raise HTTPException(status_code=400, detail="new_password is required.")
+
+    db.execute(
+        "UPDATE users SET password_hash = %s, updated_at = NOW() WHERE email = %s",
+        (hash_password(new_password), body.email),
+    )
+    db.execute("DELETE FROM email_verifications WHERE email = %s", (body.email,))
+    db.commit()
+
+    return {"message": "Password reset successfully. You can now log in."}

@@ -126,14 +126,14 @@ export default function Hero() {
             {t('hero.getFreeKundli')}
           </Button>
           
-          <Button 
-            onClick={() => navigate('/consultation')}
+          <Button
+            onClick={() => navigate('/panchang')}
             variant="outline"
-            className="bg-transparent border border-sacred-gold-dark/30 text-cosmic-text/80 hover:border-sacred-gold hover:text-sacred-gold-dark 
+            className="bg-transparent border border-sacred-gold-dark/30 text-cosmic-text/80 hover:border-sacred-gold hover:text-sacred-gold-dark
                        transition-all duration-300 text-xs tracking-[3px] uppercase font-cinzel
                        px-8 py-5 rounded-none"
           >
-            {t('hero.consultExpert')}
+            {t('nav.panchang')}
           </Button>
         </div>
 

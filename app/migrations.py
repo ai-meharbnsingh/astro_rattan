@@ -340,7 +340,10 @@ def run_migrations(db_path: str = None):
             _safe_alter(conn, "users", "city", "TEXT")
             _safe_alter(conn, "users", "is_active", "INTEGER DEFAULT 1")
         elif version == 3:
-            from app.blog_seed import seed_blog_posts
+            try:
+                from app.blog_seed import seed_blog_posts
+            except ImportError:
+                seed_blog_posts = None  # blog_seed removed — skip blog seeding
             # Execute each statement in the SQL block
             stmts = [s.strip() for s in sql.split(';') if s.strip()]
             with conn.cursor() as cur:
@@ -352,14 +355,14 @@ def run_migrations(db_path: str = None):
                         print(traceback.format_exc())
                         conn.rollback()
             conn.commit()
-            # Use a PgConnection-like wrapper for seed_blog_posts
-            from app.database import PgConnection
-            import psycopg2 as pg2
-            raw = pg2.connect(DATABASE_URL)
-            pg = PgConnection(raw)
-            seed_blog_posts(pg)
-            raw.commit()
-            raw.close()
+            if seed_blog_posts is not None:
+                from app.database import PgConnection
+                import psycopg2 as pg2
+                raw = pg2.connect(DATABASE_URL)
+                pg = PgConnection(raw)
+                seed_blog_posts(pg)
+                raw.commit()
+                raw.close()
         else:
             stmts = [s.strip() for s in sql.split(';') if s.strip()]
             with conn.cursor() as cur:
