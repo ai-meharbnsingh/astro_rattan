@@ -68,11 +68,14 @@ CORS_ORIGINS = _env_cors.split(",")
 _production_urls = [
     "https://astrorattan.com",
     "https://www.astrorattan.com",
+    "https://astrorattan-web.vercel.app",
     f"http://localhost:{FRONTEND_PORT}",
 ]
 for url in _production_urls:
     if url not in CORS_ORIGINS:
         CORS_ORIGINS.append(url)
+# Allow Vercel preview deployments (*.vercel.app)
+CORS_ORIGIN_REGEX = r"https://astrorattan-.*\.vercel\.app"
 
 # Swiss Ephemeris
 EPHE_PATH = os.getenv("EPHE_PATH", "")  # Path to ephemeris data files

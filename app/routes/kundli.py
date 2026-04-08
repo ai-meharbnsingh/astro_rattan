@@ -1270,7 +1270,7 @@ def get_kp_analysis(
     except Exception as exc:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=f"KP calculation error: {str(exc)}",
+            detail="Calculation error — please try again",
         )
 
     # Shape response: planets as list with all KP fields

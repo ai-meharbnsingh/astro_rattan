@@ -17,7 +17,7 @@ def numerology_calculate(req: NumerologyRequest):
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(exc),
+            detail="Invalid input — please check your data",
         )
 
     return result
@@ -39,7 +39,7 @@ def mobile_numerology(req: MobileNumerologyRequest):
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(exc),
+            detail="Invalid input — please check your data",
         )
 
     return result

@@ -63,7 +63,7 @@ def kp_cuspal(payload: dict, user: dict = Depends(get_current_user), db: Any = D
     except Exception as exc:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=f"KP calculation error: {str(exc)}",
+            detail="Calculation error — please try again",
         )
 
     # Contract response: {cuspal_chart, significators}
@@ -120,7 +120,7 @@ def lalkitab_remedies(payload: dict, user: dict = Depends(get_current_user), db:
     except Exception as exc:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=f"Lal Kitab calculation error: {str(exc)}",
+            detail="Calculation error — please try again",
         )
 
     return {"remedies_by_planet": result}

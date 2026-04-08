@@ -15,7 +15,7 @@ from fastapi.staticfiles import StaticFiles
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
-from app.config import APP_NAME, APP_VERSION, CORS_ORIGINS, RATE_LIMIT_PER_MINUTE
+from app.config import APP_NAME, APP_VERSION, CORS_ORIGINS, CORS_ORIGIN_REGEX, RATE_LIMIT_PER_MINUTE
 from app.database import init_db
 from app.migrations import run_migrations
 from app.rate_limit import request_rate_limit_key
@@ -48,6 +48,12 @@ async def lifespan(app: FastAPI):
             print(f"[startup] Background init error: {e}")
     threading.Thread(target=_background_init, daemon=True).start()
     yield
+    # Graceful shutdown — close connection pool
+    from app.database import _get_pool
+    try:
+        _get_pool().closeall()
+    except Exception:
+        pass
 
 
 app = FastAPI(
@@ -64,6 +70,7 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,
+    allow_origin_regex=CORS_ORIGIN_REGEX,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
