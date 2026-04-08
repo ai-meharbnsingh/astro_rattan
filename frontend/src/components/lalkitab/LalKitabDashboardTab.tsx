@@ -201,26 +201,28 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
           </div>
 
           {/* Mini 3x4 grid */}
-          <div className="grid grid-cols-4 gap-1">
+          <div className="grid grid-cols-4 gap-1.5">
             {miniGridHouses.map((houseNum) => {
               const house = chartData.houses.find((h) => h.house === houseNum);
               const planets = house?.planets ?? [];
+              const planetAbbr: Record<string, string> = { Sun: 'Su', Moon: 'Mo', Mars: 'Ma', Mercury: 'Me', Jupiter: 'Ju', Venus: 'Ve', Saturn: 'Sa', Rahu: 'Ra', Ketu: 'Ke' };
               return (
                 <div
                   key={houseNum}
-                  className="relative flex flex-col items-center justify-center rounded-md border border-sacred-gold/15 bg-cosmic-card/40 p-1.5 min-h-[40px]"
+                  className="relative flex flex-col items-center justify-center rounded-md border border-sacred-gold/15 bg-cosmic-card/40 p-2 min-h-[52px]"
                 >
-                  <span className="text-[9px] font-medium text-sacred-gold-dark/60">
+                  <span className="text-xs font-bold text-sacred-gold-dark">
                     {houseNum}
                   </span>
                   {planets.length > 0 && (
-                    <div className="flex flex-wrap gap-0.5 justify-center mt-0.5">
+                    <div className="flex flex-wrap gap-0.5 justify-center mt-1">
                       {planets.map((pKey) => (
                         <span
                           key={pKey}
-                          title={getPlanetLabel(pKey, language)}
-                          className={`w-2 h-2 rounded-full ${getPlanetDotColor(pKey)}`}
-                        />
+                          className={`text-[10px] font-semibold px-1 rounded ${getPlanetDotColor(pKey).replace('bg-', 'text-')}`}
+                        >
+                          {planetAbbr[pKey] || pKey.slice(0, 2)}
+                        </span>
                       ))}
                     </div>
                   )}
