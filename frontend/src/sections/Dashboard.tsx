@@ -112,7 +112,7 @@ export default function Dashboard() {
           {clients.map(client => (
             <div key={client.id}
               className="flex items-center justify-between p-4 border border-sacred-gold/15 hover:border-sacred-gold/40 transition-colors bg-cosmic-bg cursor-pointer group"
-              onClick={() => navigate(`/kundli`, { state: { clientId: client.id, clientName: client.name, birthDate: client.birth_date, birthTime: client.birth_time, birthPlace: client.birth_place, latitude: client.latitude, longitude: client.longitude } })}
+              onClick={() => navigate(`/client/${client.id}`)}
             >
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 bg-sacred-gold-dark/10 border border-sacred-gold/20 flex items-center justify-center shrink-0">
