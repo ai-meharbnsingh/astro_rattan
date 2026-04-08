@@ -3,19 +3,48 @@ import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Brain, Star, Calendar, BookOpen, Sparkles, ChevronRight, Compass } from 'lucide-react';
+import { Star, Calendar, BookOpen, Sparkles, Compass, ChevronRight, Layers } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const features = [
-  { icon: Star, titleKey: 'features.kundli.title', descKey: 'features.kundli.description', route: '/kundli' },
-  { icon: Calendar, titleKey: 'features.panchang.title', descKey: 'features.panchang.description', route: '/panchang' },
-  { icon: BookOpen, titleKey: 'features.shop.title', descKey: 'features.shop.description', route: '/lal-kitab' },
-  { icon: Sparkles, titleKey: 'features.dosha.title', descKey: 'features.dosha.description', route: '/kundli' },
-  { icon: Compass, titleKey: 'features.muhurat.title', descKey: 'features.muhurat.description', route: '/panchang' },
-  { icon: Brain, titleKey: 'features.aiAstrologer.title', descKey: 'features.aiAstrologer.description', route: '/numerology' },
+  {
+    icon: Star,
+    title: '21 Kundli Engines',
+    desc: 'Parashari + Jaimini + KP System. Divisional charts (D1–D60), Shadbala, Ashtakvarga, Yogini Dasha — depth no app matches.',
+    route: '/kundli',
+  },
+  {
+    icon: Calendar,
+    title: 'Live Panchang',
+    desc: 'Tithi, Nakshatra, Yoga, Karana with exact end times. Rahu Kaal, Choghadiya, Muhurat finder — location-aware.',
+    route: '/panchang',
+  },
+  {
+    icon: BookOpen,
+    title: 'Lal Kitab Remedies',
+    desc: 'Full Lal Kitab system with personalized remedies, house analysis, and annual predictions — rarely found in apps.',
+    route: '/lal-kitab',
+  },
+  {
+    icon: Sparkles,
+    title: 'Dosha + Yoga Detection',
+    desc: 'Mangal, Kaal Sarp, Sade Sati, Pitra, Kemdrum Dosha. Plus Gajakesari, Budhaditya, Panch Mahapurusha Yogas.',
+    route: '/kundli',
+  },
+  {
+    icon: Layers,
+    title: 'Varshphal + Transits',
+    desc: 'Solar Return with Muntha & Mudda Dasha. Live Gochara transit tracking from your natal Moon.',
+    route: '/kundli',
+  },
+  {
+    icon: Compass,
+    title: 'Numerology + Loshu Grid',
+    desc: 'Life Path, Destiny, Soul Urge numbers. Mobile number analysis with Vedic Grid and compatibility.',
+    route: '/numerology',
+  },
 ];
 
 export default function Features() {
@@ -33,53 +62,53 @@ export default function Features() {
 
   return (
     <section ref={sectionRef} id="features" className="relative py-24 bg-cosmic-bg">
-      {/* Gold gradient line at top */}
       <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-sacred-gold-dark/50 to-transparent" />
-      
+
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="features-title text-center mb-16">
-          <p className="text-sacred-gold text-sm tracking-[4px] uppercase mb-4 font-cinzel">{t('features.celestialHouses')}</p>
+          <p className="text-sacred-gold text-sm tracking-[4px] uppercase mb-4 font-cinzel">21 Calculation Engines</p>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-['Cinzel_Decorative'] text-cosmic-text mb-4">
-            {t('features.cosmicServices')}
+            What We Calculate
           </h2>
+          <p className="text-cosmic-text/60 max-w-2xl mx-auto">
+            Swiss Ephemeris precision. Every system — Parashari, Jaimini, KP, Lal Kitab — computed from real planetary positions, not lookup tables.
+          </p>
         </div>
-        
+
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
-              <Card 
-                key={index} 
-                className="feature-card group relative bg-cosmic-bg border border-sacred-gold/20 hover:border-sacred-gold/50 transition-all duration-300 hover:-translate-y-1 cursor-pointer" 
+              <Card
+                key={index}
+                className="feature-card group relative bg-cosmic-bg border border-sacred-gold/20 hover:border-sacred-gold/50 transition-all duration-300 hover:-translate-y-1 cursor-pointer"
                 onClick={() => navigate(feature.route)}
               >
-                <CardContent className="relative p-6 text-center">
-                  <div className="w-16 h-16 flex items-center justify-center mb-4 mx-auto bg-sacred-gold-dark/10 border border-sacred-gold/20 group-hover:scale-110 transition-transform">
-                    <Icon className="w-8 h-8 text-sacred-gold-dark" />
+                <CardContent className="relative p-6">
+                  <div className="w-14 h-14 flex items-center justify-center mb-4 bg-sacred-gold-dark/10 border border-sacred-gold/20 group-hover:scale-110 transition-transform">
+                    <Icon className="w-7 h-7 text-sacred-gold-dark" />
                   </div>
-                  <h3 className="text-xl font-cinzel font-semibold text-cosmic-text mb-2 uppercase tracking-wide">
-                    {t(feature.titleKey)}
+                  <h3 className="text-lg font-cinzel font-semibold text-cosmic-text mb-2 uppercase tracking-wide">
+                    {feature.title}
                   </h3>
-                  <p className="text-sm text-cosmic-text/60">{t(feature.descKey)}</p>
+                  <p className="text-sm text-cosmic-text/60 leading-relaxed">{feature.desc}</p>
                 </CardContent>
               </Card>
             );
           })}
         </div>
-        
+
         <div className="features-title mt-16 text-center">
-          <Button
-            onClick={() => navigate('/kundli')}
-            className="bg-transparent border border-sacred-gold text-sacred-gold-dark hover:bg-sacred-gold-dark hover:text-cosmic-bg transition-all px-8 py-6 text-base font-cinzel tracking-wider"
+          <button
+            onClick={() => navigate('/login')}
+            className="inline-flex items-center gap-2 bg-transparent border border-sacred-gold text-sacred-gold-dark hover:bg-sacred-gold-dark hover:text-cosmic-bg transition-all px-8 py-4 text-xs font-cinzel tracking-[3px] uppercase"
           >
-            <Star className="w-5 h-5 mr-2" />
-            {t('features.kundli.title')}
-            <ChevronRight className="w-5 h-5 ml-2" />
-          </Button>
+            Sign In to Explore
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
       </div>
-      
-      {/* Gold gradient line at bottom */}
+
       <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-sacred-gold-dark/30 to-transparent" />
     </section>
   );

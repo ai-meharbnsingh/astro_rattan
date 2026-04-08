@@ -1,19 +1,16 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Button } from '@/components/ui/button';
-import { Sparkles, Star, ChevronRight, Users, Award, Globe } from 'lucide-react';
-import { Canvas } from '@react-three/fiber';
-import { FloatingPlanet } from '@/components/three';
+import { Sparkles, Star, Layers, BookOpen } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const stats = [
-  { value: '50K+', label: 'Kundlis Generated', icon: Star },
-  { value: '100+', label: 'Expert Astrologers', icon: Users },
-  { value: '99%', label: 'Accuracy Rate', icon: Award },
-  { value: '24/7', label: 'AI Support', icon: Globe },
+  { value: '21', label: 'Calculation Engines', icon: Layers },
+  { value: '24', label: 'Kundli Analysis Tabs', icon: Star },
+  { value: '16', label: 'Divisional Charts', icon: Sparkles },
+  { value: '3', label: 'Astrological Systems', icon: BookOpen },
 ];
 
 export default function About() {
@@ -23,7 +20,6 @@ export default function About() {
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.fromTo('.about-content', { x: -50, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8, ease: 'power3.out', scrollTrigger: { trigger: sectionRef.current, start: 'top 70%' } });
-      gsap.fromTo('.about-image', { x: 50, opacity: 0 }, { x: 0, opacity: 1, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: sectionRef.current, start: 'top 70%' } });
       gsap.fromTo('.stat-item', { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, stagger: 0.1, ease: 'power3.out', scrollTrigger: { trigger: '.stats-grid', start: 'top 85%' } });
     }, sectionRef);
     return () => ctx.revert();
@@ -31,43 +27,37 @@ export default function About() {
 
   return (
     <section ref={sectionRef} id="about" className="relative py-24 bg-cosmic-bg overflow-hidden">
-      {/* Observatory theme - pure black with gold accents */}
-      <div className="absolute inset-0 z-0 bg-gradient-to-b from-cosmic-bg via-transparent to-cosmic-bg pointer-events-none" />
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          <div className="about-content">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold/10 text-sacred-gold text-sm font-medium mb-6 border border-sacred-gold/30">
-              <Sparkles className="w-4 h-4" />{t('about.ourStory')}
-            </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-sacred font-bold text-cosmic-text mb-6">
-              {t('about.heading')}
-            </h2>
-            <div className="space-y-4 text-cosmic-text-secondary mb-8">
-              <p>{t('about.p1')}</p>
-              <p>{t('about.p2')}</p>
-            </div>
-            <Button className="btn-sacred">
-              {t('about.learnMore')}<ChevronRight className="w-5 h-5 ml-2" />
-            </Button>
-          </div>
-          <div className="about-image relative">
-            <div className="relative aspect-square max-w-lg mx-auto">
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-sacred-gold-dark/10 to-transparent border border-sacred-gold/20" />
-              <div className="absolute inset-8 rounded-2xl card-sacred flex items-center justify-center overflow-hidden">
-              </div>
-            </div>
+        <div className="about-content max-w-3xl mx-auto text-center mb-16">
+          <p className="text-sacred-gold text-sm tracking-[4px] uppercase mb-4 font-cinzel">Built Different</p>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-['Cinzel_Decorative'] text-cosmic-text mb-6">
+            {t('about.heading')}
+          </h2>
+          <div className="space-y-4 text-cosmic-text/70">
+            <p>
+              Most astrology apps use lookup tables and generic predictions.
+              Astro Rattan computes every position from Swiss Ephemeris — the same
+              library used by research astronomers — accurate to arc-seconds.
+            </p>
+            <p>
+              Three complete astrological systems in one app: <strong className="text-sacred-gold-dark">Parashari</strong> (classical Vedic),
+              <strong className="text-sacred-gold-dark"> Jaimini</strong> (Chara Karakas, special lagnas),
+              and <strong className="text-sacred-gold-dark">KP System</strong> (Krishnamurti Paddhati with sub-lord analysis).
+              Plus full <strong className="text-sacred-gold-dark">Lal Kitab</strong> remedies and <strong className="text-sacred-gold-dark">Numerology</strong>.
+            </p>
           </div>
         </div>
-        <div className="stats-grid grid grid-cols-2 lg:grid-cols-4 gap-6 mt-20">
+
+        <div className="stats-grid grid grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
-              <div key={index} className="stat-item card-sacred rounded-2xl p-6 text-center">
-                <div className="w-12 h-12 rounded-xl bg-sacred-gold/10 flex items-center justify-center mx-auto mb-4 border border-sacred-gold/20">
-                  <Icon className="w-6 h-6 text-sacred-gold" />
+              <div key={index} className="stat-item border border-sacred-gold/20 p-6 text-center bg-cosmic-bg hover:border-sacred-gold/40 transition-colors">
+                <div className="w-12 h-12 flex items-center justify-center mx-auto mb-4 bg-sacred-gold-dark/10 border border-sacred-gold/20">
+                  <Icon className="w-6 h-6 text-sacred-gold-dark" />
                 </div>
-                <p className="text-3xl font-sacred font-bold text-gradient-gold mb-1">{stat.value}</p>
-                <p className="text-sm text-cosmic-text-secondary">{stat.label}</p>
+                <p className="text-3xl font-cinzel font-bold text-sacred-gold-dark mb-1">{stat.value}</p>
+                <p className="text-sm text-cosmic-text/60">{stat.label}</p>
               </div>
             );
           })}

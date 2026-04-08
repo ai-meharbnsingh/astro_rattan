@@ -3,15 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Button } from '@/components/ui/button';
-import { Sparkles, Phone, ChevronRight, Star } from 'lucide-react';
-import { useTranslation } from '@/lib/i18n';
+import { ChevronRight, Star } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function CTA() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const { t } = useTranslation();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -21,63 +19,37 @@ export default function CTA() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-cosmic-bg">
-      {/* Gold gradient lines */}
+    <section ref={sectionRef} className="relative min-h-[50vh] flex items-center justify-center overflow-hidden bg-cosmic-bg">
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-sacred-gold-dark/30 to-transparent" />
-      
-      {/* Subtle glow effects */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-sacred-gold-dark/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-sacred-gold-dark/5 rounded-full blur-3xl" />
-      </div>
-      
-      <div className="relative z-10 cta-content max-w-4xl mx-auto px-4 text-center">
+
+      <div className="relative z-10 cta-content max-w-3xl mx-auto px-4 text-center py-20">
         <div className="flex justify-center gap-2 mb-6">
           {[...Array(5)].map((_, i) => (
-            <Star key={i} className="w-6 h-6 text-sacred-gold-dark" fill="currentColor" />
+            <Star key={i} className="w-5 h-5 text-sacred-gold-dark" fill="currentColor" />
           ))}
         </div>
-        
-        <h2 className="text-4xl sm:text-5xl lg:text-6xl font-['Cinzel_Decorative'] text-cosmic-text mb-6">
-          {t('cta.heading')}
+
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-['Cinzel_Decorative'] text-cosmic-text mb-6">
+          Start Reading Your Chart
         </h2>
 
-        <p className="text-lg text-cosmic-text/70 max-w-2xl mx-auto mb-10">
-          {t('cta.subtitle2')}
+        <p className="text-cosmic-text/60 max-w-xl mx-auto mb-10">
+          Free account. No credit card. Full access to all 21 engines,
+          24 analysis tabs, and PDF export.
         </p>
-        
-        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-          <Button
-            onClick={() => navigate('/kundli')}
-            size="lg"
-            className="bg-transparent border border-sacred-gold text-sacred-gold hover:bg-sacred-gold hover:text-cosmic-bg transition-all text-lg px-8 py-6 font-cinzel"
-          >
-            <Sparkles className="w-5 h-5 mr-2" />
-            {t('features.kundli.title')}
-            <ChevronRight className="w-5 h-5 ml-2" />
-          </Button>
 
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button
-            onClick={() => navigate('/panchang')}
-            variant="outline"
-            size="lg"
-            className="border-sacred-gold/50 text-cosmic-text text-lg px-8 py-6 hover:bg-sacred-gold-dark/10 hover:border-sacred-gold bg-transparent font-cinzel"
+            onClick={() => navigate('/login')}
+            className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold transition-all px-8 py-5 text-xs font-cinzel tracking-[3px] uppercase rounded-none"
+            style={{ boxShadow: '0 0 30px rgba(212, 175, 55, 0.3)' }}
           >
-            {t('nav.panchang')}
+            Create Free Account
+            <ChevronRight className="w-4 h-4 ml-2" />
           </Button>
-        </div>
-        
-        <div className="flex flex-wrap justify-center gap-6 text-sm text-cosmic-text/60">
-          {['Free Kundli', '24/7 Support', '100% Accurate', 'Expert Astrologers'].map((item, i) => (
-            <div key={i} className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-sacred-gold-dark" />
-              <span>{item}</span>
-            </div>
-          ))}
         </div>
       </div>
-      
-      {/* Bottom gold line */}
+
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-sacred-gold-dark/30 to-transparent" />
     </section>
   );

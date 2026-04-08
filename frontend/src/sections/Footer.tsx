@@ -1,15 +1,17 @@
 import { Link } from 'react-router-dom';
 import { Stars, Mail, Phone, Instagram, Youtube, ChevronRight, Heart } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
+import { useAuth } from '@/hooks/useAuth';
+
+const serviceLinks = [
+  { label: 'Kundli Generation', href: '/kundli' },
+  { label: 'Dosha Analysis', href: '/kundli' },
+  { label: 'Panchang', href: '/panchang' },
+  { label: 'Lal Kitab', href: '/lal-kitab' },
+  { label: 'Numerology', href: '/numerology' },
+];
 
 const footerLinks = {
-  services: [
-    { label: 'Kundli Generation', href: '/kundli' },
-    { label: 'Dosha Analysis', href: '/kundli' },
-    { label: 'Panchang', href: '/panchang' },
-    { label: 'Lal Kitab', href: '/lal-kitab' },
-    { label: 'Numerology', href: '/numerology' },
-  ],
   company: [
     { label: 'About Us', href: '/' },
     { label: 'Contact', href: '/' },
@@ -18,9 +20,9 @@ const footerLinks = {
 
 export default function Footer() {
   const { t } = useTranslation();
+  const { isAuthenticated } = useAuth();
 
   const sectionTitleKeys: Record<string, string> = {
-    services: 'footer.services',
     company: 'footer.company',
   };
 
@@ -69,6 +71,20 @@ export default function Footer() {
             </div>
           </div>
           
+          {isAuthenticated && (
+            <div>
+              <h4 className="font-cinzel font-semibold text-sacred-gold-dark mb-4">{t('footer.services')}</h4>
+              <ul className="space-y-2">
+                {serviceLinks.map((link, i) => (
+                  <li key={i}>
+                    <Link to={link.href} className="text-sm text-cosmic-text/60 hover:text-sacred-gold-dark transition-colors flex items-center gap-1">
+                      <ChevronRight className="w-3 h-3" />{link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           {Object.entries(footerLinks).map(([title, links]) => (
             <div key={title}>
               <h4 className="font-cinzel font-semibold text-sacred-gold-dark mb-4 capitalize">{t(sectionTitleKeys[title] || title)}</h4>
