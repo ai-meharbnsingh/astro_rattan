@@ -53,8 +53,7 @@ export default function Features() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="features" className="relative py-24 bg-cosmic-bg">
-      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-sacred-gold-dark/50 to-transparent" />
+    <section ref={sectionRef} id="features" className="relative pt-4 pb-24 bg-cosmic-bg">
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="features-title text-center mb-16">
@@ -98,7 +97,6 @@ export default function Features() {
 
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-sacred-gold-dark/30 to-transparent" />
     </section>
   );
 }

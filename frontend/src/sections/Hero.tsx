@@ -21,7 +21,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section ref={heroRef} className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
+    <section ref={heroRef} className="relative min-h-[40vh] flex items-center justify-center overflow-hidden pt-24 pb-8">
       <div className="absolute inset-0 z-[1] opacity-[0.03] pointer-events-none"
         style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")` }}
       />
@@ -48,9 +48,6 @@ export default function Hero() {
         </div>
       </div>
 
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50">
-        <div className="w-[1px] h-12 bg-gradient-to-b from-sacred-gold-dark to-transparent" />
-      </div>
     </section>
   );
 }
