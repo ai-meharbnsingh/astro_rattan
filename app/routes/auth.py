@@ -51,6 +51,7 @@ def _send_otp_email(email: str, otp: str) -> bool:
             "from": from_addr,
             "to": [email],
             "subject": f"Astro Rattan - Verification Code: {otp}",
+            "reply_to": "ai.meharbansingh@gmail.com",
             "html": (
                 f"<div style='font-family:Georgia,serif;max-width:480px;margin:0 auto;padding:32px;'>"
                 f"<h2 style='color:#C4A35A;'>Astro Rattan</h2>"
