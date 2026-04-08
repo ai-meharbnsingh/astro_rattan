@@ -433,11 +433,15 @@ export function useKundliData() {
     setLoadingSadesati(false);
   };
 
-  // Auto-fetch only essential data when result loads (dasha is the default tab)
+  // Auto-fetch core data when result loads (needed for Report tab)
   useEffect(() => {
     if (step === 'result' && result?.id) {
       fetchDasha();
       fetchDosha();
+      fetchTransit();
+      // Stagger the rest slightly
+      setTimeout(() => { fetchExtendedDasha(); fetchAvakhada(); }, 500);
+      setTimeout(() => { fetchYogaDosha(); fetchShadbala(); }, 1000);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, result?.id]);
