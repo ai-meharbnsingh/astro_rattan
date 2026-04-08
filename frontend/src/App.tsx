@@ -11,7 +11,6 @@ import Navigation from './sections/Navigation';
 import Hero from './sections/Hero';
 import Features from './sections/Features';
 import About from './sections/About';
-import Testimonials from './sections/Testimonials';
 import CTA from './sections/CTA';
 import Footer from './sections/Footer';
 import WhatsAppWidget from './components/WhatsAppWidget';
@@ -97,7 +96,6 @@ function HomePage() {
       <Hero />
       <Features />
       <About />
-      <Testimonials />
       <CTA />
     </div>
   );
