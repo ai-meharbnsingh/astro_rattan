@@ -12,8 +12,6 @@ const primaryLinks = [
   { key: 'nav.numerology', href: '/numerology' },
 ];
 
-const allLinks = [...primaryLinks];
-
 export default function Navigation() {
   const { user, isAuthenticated, logout } = useAuth();
   const { t } = useTranslation();
@@ -45,18 +43,20 @@ export default function Navigation() {
               </span>
             </Link>
 
-            {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center gap-6">
-              {primaryLinks.map((link) => (
-                <Link
-                  key={link.key}
-                  to={link.href}
-                  className="text-sm text-cosmic-text/70 hover:text-sacred-gold-dark transition-colors font-cinzel tracking-wide uppercase text-sm"
-                >
-                  {t(link.key)}
-                </Link>
-              ))}
-            </div>
+            {/* Desktop Navigation - Only show when authenticated */}
+            {isAuthenticated && (
+              <div className="hidden lg:flex items-center gap-6">
+                {primaryLinks.map((link) => (
+                  <Link
+                    key={link.key}
+                    to={link.href}
+                    className="text-sm text-cosmic-text/70 hover:text-sacred-gold-dark transition-colors font-cinzel tracking-wide uppercase text-sm"
+                  >
+                    {t(link.key)}
+                  </Link>
+                ))}
+              </div>
+            )}
 
             {/* Action buttons */}
             <div className="flex items-center gap-1">
@@ -133,7 +133,7 @@ export default function Navigation() {
         <div className="absolute inset-0 bg-cosmic-bg/95 backdrop-blur-xl" onClick={() => setIsMobileMenuOpen(false)} />
         <div className={`absolute top-20 left-4 right-4 bg-cosmic-bg/95 backdrop-blur-lg border border-sacred-gold/20 rounded-none p-6 transition-all duration-500 ${isMobileMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}`}>
           <div className="space-y-1">
-            {allLinks.map((link) => (
+            {isAuthenticated && primaryLinks.map((link) => (
               <Link
                 key={link.key}
                 to={link.href}
