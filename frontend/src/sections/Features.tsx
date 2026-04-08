@@ -66,12 +66,11 @@ export default function Features() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="features-title text-center mb-16">
-          <p className="text-sacred-gold text-sm tracking-[4px] uppercase mb-4 font-cinzel">21 Calculation Engines</p>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-['Cinzel_Decorative'] text-cosmic-text mb-4">
-            What We Calculate
+            Built Different
           </h2>
           <p className="text-cosmic-text/60 max-w-2xl mx-auto">
-            Swiss Ephemeris precision. Every system — Parashari, Jaimini, KP, Lal Kitab — computed from real planetary positions, not lookup tables.
+            Bridging Ancient Wisdom with Modern Technology
           </p>
         </div>
 
