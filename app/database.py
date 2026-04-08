@@ -208,7 +208,15 @@ def get_db():
     """Yield a PgConnection wrapping a psycopg2 connection from the pool. Use as FastAPI dependency."""
     pool = _get_pool()
     raw_conn = pool.getconn()
-    # Set autocommit off to use explicit transactions
+    # Validate connection is alive (Neon drops idle connections)
+    try:
+        raw_conn.cursor().execute("SELECT 1")
+    except Exception:
+        try:
+            pool.putconn(raw_conn, close=True)
+        except Exception:
+            pass
+        raw_conn = pool.getconn()
     raw_conn.autocommit = False
     pg_conn = PgConnection(raw_conn)
     try:

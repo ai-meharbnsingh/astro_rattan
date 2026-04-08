@@ -46,8 +46,9 @@ def _send_otp_email(email: str, otp: str) -> bool:
     try:
         import resend
         resend.api_key = api_key
+        from_addr = os.getenv("RESEND_FROM", "Astro Rattan <onboarding@resend.dev>")
         resend.Emails.send({
-            "from": "Astro Rattan <noreply@astrorattan.com>",
+            "from": from_addr,
             "to": [email],
             "subject": f"Astro Rattan - Verification Code: {otp}",
             "html": (
@@ -531,7 +532,7 @@ def forgot_password(
             import resend
             resend.api_key = api_key
             resend.Emails.send({
-                "from": "Astro Rattan <noreply@astrorattan.com>",
+                "from": os.getenv("RESEND_FROM", "Astro Rattan <onboarding@resend.dev>"),
                 "to": [body.email],
                 "subject": f"Astro Rattan - Password Reset Code: {otp}",
                 "html": (
