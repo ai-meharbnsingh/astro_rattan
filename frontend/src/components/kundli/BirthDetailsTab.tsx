@@ -44,17 +44,21 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
               const nature = PLANET_NATURE[p.planet] || '\u2014';
               const isRetro = (p.status || '').toLowerCase().includes('retrograde') || (p.status || '').toLowerCase().includes(' r');
               const dignityColor = dignity === 'Exalted' ? '#16a34a' : dignity === 'Debilitated' ? '#dc2626' : dignity === 'Own Sign' ? '#2563eb' : 'var(--ink-light)';
-              const nakshatraParts = (p.nakshatra || '').split(' Pada ');
-              const nakshatraName = translateNakshatra(nakshatraParts[0] || p.nakshatra, language) || '\u2014';
-              const pada = nakshatraParts[1] || '\u2014';
+              const nakshatraName = translateNakshatra(p.nakshatra || '', language) || '\u2014';
+              const pada = p.nakshatra_pada || (p.nakshatra || '').split(' Pada ')[1] || '\u2014';
+              const signDeg = p.sign_degree != null ? Number(p.sign_degree) : null;
+              const isSandhi = signDeg !== null && (signDeg < 1 || signDeg > 29);
               const karaka = planetKaraka[p.planet] || '\u2014';
 
               return (
                 <tr key={idx} className={`border-t border-sacred-gold/10 text-xs ${idx % 2 === 0 ? '' : 'bg-sacred-gold/[0.02]'}`}>
                   <td className="p-2 font-medium text-sacred-brown font-display">{translatePlanet(p.planet, language)}</td>
                   <td className="p-2 text-sacred-brown">{translateSign(p.sign, language)}</td>
-                  <td className="p-2 text-sacred-brown">{p.sign_degree != null ? `${Number(p.sign_degree).toFixed(2)}\u00b0` : '\u2014'}</td>
-                  <td className="p-2 text-sacred-brown">{nakshatraName}{pada !== '\u2014' ? ` (${language === 'hi' ? 'पाद' : 'Pada'} ${pada})` : ''}</td>
+                  <td className="p-2 text-sacred-brown">
+                    {signDeg !== null ? `${signDeg.toFixed(2)}\u00b0` : '\u2014'}
+                    {isSandhi && <span className="ml-1 text-[10px] px-1 py-0.5 rounded bg-amber-500/15 text-amber-600 font-medium">{language === 'hi' ? 'संधि' : 'Sandhi'}</span>}
+                  </td>
+                  <td className="p-2 text-sacred-brown">{nakshatraName} ({language === 'hi' ? 'पाद' : 'Pada'} {pada})</td>
                   <td className="p-2 text-sacred-brown">{p.house}</td>
                   <td className="p-2 font-medium" style={{ color: dignityColor }}>{translateLabel(dignity, language)}</td>
                   <td className="p-2 text-sacred-text-secondary">{translateLabel(signType, language)}</td>

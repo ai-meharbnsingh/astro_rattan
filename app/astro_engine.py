@@ -306,6 +306,7 @@ def _calculate_swe(dt_utc: datetime, lat: float, lon: float) -> Dict[str, Any]:
 
         combust = _is_combust(pname, sid_lon, sun_lon, is_retrograde)
         vargottama = _is_vargottama(sid_lon)
+        sandhi = sign_deg < 1.0 or sign_deg > 29.0
 
         planets_result[pname] = {
             "longitude": round(sid_lon, 4),
@@ -317,7 +318,8 @@ def _calculate_swe(dt_utc: datetime, lat: float, lon: float) -> Dict[str, Any]:
             "retrograde": is_retrograde,
             "is_combust": combust,
             "is_vargottama": vargottama,
-            "status": _build_status(pname, sign, is_retrograde, combust, vargottama),
+            "is_sandhi": sandhi,
+            "status": _build_status(pname, sign, is_retrograde, combust, vargottama, sandhi),
         }
 
     return {
@@ -525,6 +527,7 @@ def _calculate_fallback(dt_utc: datetime, lat: float, lon: float) -> Dict[str, A
 
         combust = _is_combust(pname, sid_lon, sun_lon, is_retrograde)
         vargottama = _is_vargottama(sid_lon)
+        sandhi = sign_deg < 1.0 or sign_deg > 29.0
 
         planets_result[pname] = {
             "longitude": round(sid_lon, 4),
@@ -536,7 +539,8 @@ def _calculate_fallback(dt_utc: datetime, lat: float, lon: float) -> Dict[str, A
             "retrograde": is_retrograde,
             "is_combust": combust,
             "is_vargottama": vargottama,
-            "status": _build_status(pname, sign, is_retrograde, combust, vargottama),
+            "is_sandhi": sandhi,
+            "status": _build_status(pname, sign, is_retrograde, combust, vargottama, sandhi),
         }
 
     return {
@@ -618,7 +622,7 @@ def _is_vargottama(planet_lon: float) -> bool:
     return d1_sign_index == d9_sign_index
 
 
-def _build_status(planet: str, sign: str, is_retrograde: bool, is_combust: bool = False, is_vargottama: bool = False) -> str:
+def _build_status(planet: str, sign: str, is_retrograde: bool, is_combust: bool = False, is_vargottama: bool = False, is_sandhi: bool = False) -> str:
     """
     Build a human-readable status string combining dignity, retrograde, combust, vargottama.
 
@@ -646,6 +650,10 @@ def _build_status(planet: str, sign: str, is_retrograde: bool, is_combust: bool 
     # Vargottama flag
     if is_vargottama:
         parts.append("Vargottama")
+
+    # Sandhi flag (planet at sign boundary)
+    if is_sandhi:
+        parts.append("Sandhi")
 
     return ", ".join(parts)
 
