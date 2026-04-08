@@ -1,16 +1,20 @@
 """
-panchang_engine.py -- Vedic Panchang (Hindu Calendar) Engine
+panchang_engine.py -- Production-Grade Vedic Panchang Engine
 =============================================================
-Calculates the five limbs of panchang: Tithi, Nakshatra, Yoga, Karana.
-Also provides Rahu Kaal and Choghadiya calculations.
-
-Falls back to pure-math approximations when swisseph is not installed.
+Swiss Ephemeris-powered panchang with accurate calculations for:
+- Tithi, Nakshatra, Yoga, Karana with end times (binary search)
+- Sunrise/Sunset/Moonrise/Moonset via Swiss Ephemeris
+- Planetary positions (Navgraha) with Rashi
+- Rahu Kaal, Gulika Kaal, Yamaganda Kaal
+- Auspicious timings (Abhijit Muhurat, Brahma Muhurat)
+- Hindu calendar (Vikram/Shaka Samvat, Maas, Ritu, Ayana)
+- Choghadiya periods
 """
 from __future__ import annotations
 
 import math
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 # ---------- Try swisseph ----------
 try:
@@ -19,7 +23,6 @@ try:
 except ImportError:
     _HAS_SWE = False
 
-# We reuse helpers from astro_engine for astronomical calculations
 from app.astro_engine import (
     _approx_sun_longitude,
     _approx_moon_longitude,
@@ -27,6 +30,11 @@ from app.astro_engine import (
     _datetime_to_jd,
     _parse_datetime,
     get_nakshatra_from_longitude,
+    get_sign_from_longitude,
+    PLANETS as PLANET_IDS,
+    SE_SUN,
+    SE_MOON,
+    SE_MEAN_NODE,
 )
 
 # ============================================================
@@ -77,6 +85,8 @@ YOGAS: List[str] = [
     "Indra", "Vaidhriti",
 ]
 
+YOGA_SPAN = 360.0 / 27.0  # ~13.3333 degrees
+
 # ============================================================
 # KARANAS -- 11 karana types (cycle: 7 repeating + 4 fixed)
 # ============================================================
@@ -91,10 +101,9 @@ KARANAS: List[str] = _REPEATING_KARANAS + _FIXED_KARANAS
 
 
 # ============================================================
-# RAHU KAAL timing by weekday
+# RAHU KAAL / GULIKA / YAMAGANDA timing by weekday
 # ============================================================
-# Rahu Kaal slot number (1-8) for each weekday (0=Monday ... 6=Sunday)
-# Slot 1 = first 1/8 of daytime, Slot 2 = second 1/8, etc.
+# Slot number (1-8) for each weekday (0=Monday ... 6=Sunday)
 _RAHU_KAAL_SLOT = {
     0: 2,  # Monday
     1: 7,  # Tuesday
@@ -105,6 +114,25 @@ _RAHU_KAAL_SLOT = {
     6: 8,  # Sunday
 }
 
+_GULIKA_KAAL_SLOT = {
+    0: 6,  # Monday
+    1: 5,  # Tuesday
+    2: 4,  # Wednesday
+    3: 3,  # Thursday
+    4: 2,  # Friday
+    5: 1,  # Saturday
+    6: 7,  # Sunday
+}
+
+_YAMAGANDA_SLOT = {
+    0: 4,  # Monday
+    1: 3,  # Tuesday
+    2: 2,  # Wednesday
+    3: 1,  # Thursday
+    4: 6,  # Friday
+    5: 5,  # Saturday
+    6: 8,  # Sunday (some traditions say 5)
+}
 
 # ============================================================
 # CHOGHADIYA -- Planetary periods
@@ -129,10 +157,111 @@ _CHOGHADIYA_QUALITY = {
     "Udveg": "Inauspicious",
 }
 
+# ============================================================
+# HINDU MONTH NAMES
+# ============================================================
+_HINDU_MONTHS = [
+    "Chaitra", "Vaishakha", "Jyeshtha", "Ashadha",
+    "Shravana", "Bhadrapada", "Ashwin", "Kartik",
+    "Margashirsha", "Pausha", "Magha", "Phalguna",
+]
+
+_RITU = [
+    ("Vasanta", "Spring"),    # Chaitra-Vaishakha
+    ("Grishma", "Summer"),    # Jyeshtha-Ashadha
+    ("Varsha", "Monsoon"),    # Shravana-Bhadrapada
+    ("Sharad", "Autumn"),     # Ashwin-Kartik
+    ("Hemanta", "Pre-winter"), # Margashirsha-Pausha
+    ("Shishira", "Winter"),   # Magha-Phalguna
+]
+
+_AYANA = ["Uttarayana", "Dakshinayana"]
 
 # ============================================================
-# SUNRISE / SUNSET approximation
+# VAAR (Weekday) NAMES
 # ============================================================
+_VAAR_NAMES = [
+    "Somvar",   # Monday
+    "Mangalvar", # Tuesday
+    "Budhvar",   # Wednesday
+    "Guruvar",   # Thursday
+    "Shukravar", # Friday
+    "Shanivar",  # Saturday
+    "Ravivar",   # Sunday
+]
+
+_VAAR_ENGLISH = [
+    "Monday", "Tuesday", "Wednesday", "Thursday",
+    "Friday", "Saturday", "Sunday",
+]
+
+
+# ============================================================
+# SUNRISE / SUNSET via Swiss Ephemeris or NOAA fallback
+# ============================================================
+
+def _swe_sunrise_sunset(date_str: str, latitude: float, longitude: float) -> Tuple[float, float, float, float]:
+    """
+    Compute sunrise, sunset, moonrise, moonset using Swiss Ephemeris.
+    Returns (sunrise_jd, sunset_jd, moonrise_jd, moonset_jd).
+    """
+    parts = date_str.split("-")
+    year, month, day = int(parts[0]), int(parts[1]), int(parts[2])
+    jd_start = swe.julday(year, month, day, 0.0)
+
+    # Sunrise (upper limb, atmospheric refraction)
+    try:
+        sunrise_jd = swe.rise_trans(
+            jd_start, swe.SUN, geopos=(longitude, latitude, 0),
+            rsmi=swe.CALC_RISE | swe.BIT_DISC_CENTER,
+        )[1][0]
+    except Exception:
+        sunrise_jd = jd_start + 0.25  # fallback ~6 AM
+
+    try:
+        sunset_jd = swe.rise_trans(
+            jd_start, swe.SUN, geopos=(longitude, latitude, 0),
+            rsmi=swe.CALC_SET | swe.BIT_DISC_CENTER,
+        )[1][0]
+    except Exception:
+        sunset_jd = jd_start + 0.75  # fallback ~6 PM
+
+    try:
+        moonrise_jd = swe.rise_trans(
+            jd_start, swe.MOON, geopos=(longitude, latitude, 0),
+            rsmi=swe.CALC_RISE | swe.BIT_DISC_CENTER,
+        )[1][0]
+    except Exception:
+        moonrise_jd = 0.0
+
+    try:
+        moonset_jd = swe.rise_trans(
+            jd_start, swe.MOON, geopos=(longitude, latitude, 0),
+            rsmi=swe.CALC_SET | swe.BIT_DISC_CENTER,
+        )[1][0]
+    except Exception:
+        moonset_jd = 0.0
+
+    return sunrise_jd, sunset_jd, moonrise_jd, moonset_jd
+
+
+def _jd_to_local_time_str(jd: float, tz_hours: float) -> str:
+    """Convert JD to local HH:MM string."""
+    if jd == 0.0:
+        return "--:--"
+    # Convert JD to UTC components
+    ut_hours = (jd - int(jd) - 0.5) * 24.0
+    if ut_hours < 0:
+        ut_hours += 24.0
+    local_hours = ut_hours + tz_hours
+    if local_hours >= 24:
+        local_hours -= 24
+    elif local_hours < 0:
+        local_hours += 24
+    h = int(local_hours)
+    m = int((local_hours - h) * 60)
+    return f"{h:02d}:{m:02d}"
+
 
 def _approx_sunrise_sunset(
     date_str: str, latitude: float, longitude: float,
@@ -144,29 +273,21 @@ def _approx_sunrise_sunset(
     parts = date_str.split("-")
     year, month, day = int(parts[0]), int(parts[1]), int(parts[2])
 
-    # Day of year
     dt = datetime(year, month, day)
     doy = dt.timetuple().tm_yday
 
-    # Solar declination (approximate)
     declination = 23.45 * math.sin(math.radians(360.0 / 365.0 * (doy - 81)))
     dec_rad = math.radians(declination)
     lat_rad = math.radians(latitude)
 
-    # Hour angle at sunrise/sunset
     cos_ha = -math.tan(lat_rad) * math.tan(dec_rad)
-    cos_ha = max(-1.0, min(1.0, cos_ha))  # Clamp for polar regions
+    cos_ha = max(-1.0, min(1.0, cos_ha))
     ha = math.degrees(math.acos(cos_ha))
 
-    # Sunrise/sunset in hours from solar noon (12:00 local solar time)
-    # Equation of time (approximate)
     b_val = math.radians(360.0 / 365.0 * (doy - 81))
     eot = 9.87 * math.sin(2 * b_val) - 7.53 * math.cos(b_val) - 1.5 * math.sin(b_val)
 
-    # Solar noon in local time (minutes from midnight)
-    # Assuming longitude already provides local solar time offset
-    solar_noon_minutes = 720  # 12:00 in minutes
-
+    solar_noon_minutes = 720
     sunrise_minutes = solar_noon_minutes - (ha / 360.0) * 24 * 60
     sunset_minutes = solar_noon_minutes + (ha / 360.0) * 24 * 60
 
@@ -178,85 +299,40 @@ def _approx_sunrise_sunset(
     return f"{sunrise_h:02d}:{sunrise_m:02d}", f"{sunset_h:02d}:{sunset_m:02d}"
 
 
-# ============================================================
-# PUBLIC: calculate_panchang
-# ============================================================
-
-def calculate_panchang(
-    date: str, latitude: float, longitude: float,
-) -> Dict[str, Any]:
+def _compute_sun_times(date_str: str, latitude: float, longitude: float) -> Dict[str, str]:
     """
-    Calculate Panchang (Hindu calendar elements) for a given date and location.
-
-    Args:
-        date:       ISO date "YYYY-MM-DD"
-        latitude:   Location latitude
-        longitude:  Location longitude
-
-    Returns:
-        {
-            tithi: {name, number, paksha},
-            nakshatra: {name, pada, lord},
-            yoga: {name, number},
-            karana: {name, number},
-            sunrise: "HH:MM",
-            sunset: "HH:MM",
-        }
+    Compute sunrise, sunset, moonrise, moonset.
+    Uses Swiss Ephemeris if available, otherwise NOAA approximation.
+    Returns dict with sunrise, sunset, moonrise, moonset as HH:MM strings.
     """
-    sunrise_str, sunset_str = _approx_sunrise_sunset(date, latitude, longitude)
-
-    # We need Sun and Moon longitudes at sunrise for panchang calculations
-    # Parse sunrise time for the given date
-    dt_utc = _parse_datetime(date, sunrise_str, longitude / 15.0)  # approx tz from longitude
-    jd = _datetime_to_jd(dt_utc)
+    tz_offset = longitude / 15.0  # approximate timezone from longitude
 
     if _HAS_SWE:
-        sun_lon, moon_lon = _get_sun_moon_swe(jd)
-    else:
-        sun_lon = _approx_sun_longitude(jd)
-        moon_lon = _approx_moon_longitude(jd)
+        try:
+            sr_jd, ss_jd, mr_jd, ms_jd = _swe_sunrise_sunset(date_str, latitude, longitude)
+            return {
+                "sunrise": _jd_to_local_time_str(sr_jd, tz_offset),
+                "sunset": _jd_to_local_time_str(ss_jd, tz_offset),
+                "moonrise": _jd_to_local_time_str(mr_jd, tz_offset),
+                "moonset": _jd_to_local_time_str(ms_jd, tz_offset),
+            }
+        except Exception:
+            pass
 
-    ayanamsa = _approx_ayanamsa(jd)
-    sun_sid = (sun_lon - ayanamsa) % 360.0
-    moon_sid = (moon_lon - ayanamsa) % 360.0
-
-    # Tithi: based on elongation of Moon from Sun
-    elongation = (moon_lon - sun_lon) % 360.0
-    tithi_index = int(elongation / 12.0)
-    if tithi_index >= 30:
-        tithi_index = 29
-    tithi = TITHIS[tithi_index]
-
-    # Nakshatra: Moon's sidereal position
-    nakshatra = get_nakshatra_from_longitude(moon_sid)
-
-    # Yoga: (Sun sidereal + Moon sidereal) / (800/60 = 13.333...)
-    yoga_sum = (sun_sid + moon_sid) % 360.0
-    yoga_index = int(yoga_sum / YOGA_SPAN)
-    if yoga_index >= 27:
-        yoga_index = 26
-    yoga_name = YOGAS[yoga_index]
-
-    # Karana: half-tithi
-    karana_index = _get_karana_index(tithi_index)
-    karana_name = _get_karana_name(karana_index)
-
+    sr, ss = _approx_sunrise_sunset(date_str, latitude, longitude)
+    # Approximate moonrise/moonset
+    sr_min = _time_to_minutes(sr)
     return {
-        "tithi": {
-            "name": tithi["name"],
-            "number": tithi["number"],
-            "paksha": tithi["paksha"],
-        },
-        "nakshatra": nakshatra,
-        "yoga": {"name": yoga_name, "number": yoga_index + 1},
-        "karana": {"name": karana_name, "number": karana_index + 1},
-        "sunrise": sunrise_str,
-        "sunset": sunset_str,
+        "sunrise": sr,
+        "sunset": ss,
+        "moonrise": _minutes_to_time(sr_min + 50),
+        "moonset": _minutes_to_time(_time_to_minutes(ss) + 50),
     }
 
 
-YOGA_SPAN = 360.0 / 27.0  # ~13.3333 degrees
-
+# ============================================================
+# ASTRONOMICAL COMPUTATIONS -- Sun/Moon longitudes at a given JD
+# ============================================================
 
 def _get_sun_moon_swe(jd: float) -> Tuple[float, float]:
     """Get tropical Sun and Moon longitudes via swisseph."""
@@ -265,83 +341,381 @@ def _get_sun_moon_swe(jd: float) -> Tuple[float, float]:
     return sun_pos[0], moon_pos[0]
 
 
+def _get_sidereal_longitudes(jd: float) -> Tuple[float, float, float]:
+    """Return (sun_sid, moon_sid, ayanamsa) at given JD."""
+    if _HAS_SWE:
+        sun_lon, moon_lon = _get_sun_moon_swe(jd)
+        ayanamsa = swe.get_ayanamsa(jd)
+    else:
+        sun_lon = _approx_sun_longitude(jd)
+        moon_lon = _approx_moon_longitude(jd)
+        ayanamsa = _approx_ayanamsa(jd)
+    sun_sid = (sun_lon - ayanamsa) % 360.0
+    moon_sid = (moon_lon - ayanamsa) % 360.0
+    return sun_sid, moon_sid, ayanamsa
+
+
+def _get_elongation(jd: float) -> float:
+    """Get Moon-Sun elongation (0-360) at given JD. Used for tithi/karana."""
+    if _HAS_SWE:
+        sun_lon, moon_lon = _get_sun_moon_swe(jd)
+    else:
+        sun_lon = _approx_sun_longitude(jd)
+        moon_lon = _approx_moon_longitude(jd)
+    return (moon_lon - sun_lon) % 360.0
+
+
+def _get_moon_longitude_sidereal(jd: float) -> float:
+    """Get sidereal Moon longitude. Used for nakshatra boundary detection."""
+    if _HAS_SWE:
+        moon_pos, _ = swe.calc_ut(jd, 1)
+        ayanamsa = swe.get_ayanamsa(jd)
+        return (moon_pos[0] - ayanamsa) % 360.0
+    else:
+        moon_lon = _approx_moon_longitude(jd)
+        ayanamsa = _approx_ayanamsa(jd)
+        return (moon_lon - ayanamsa) % 360.0
+
+
+def _get_yoga_angle(jd: float) -> float:
+    """Get (Sun_sid + Moon_sid) % 360. Used for yoga boundary detection."""
+    sun_sid, moon_sid, _ = _get_sidereal_longitudes(jd)
+    return (sun_sid + moon_sid) % 360.0
+
+
+# ============================================================
+# END TIME CALCULATIONS -- Binary search for boundary crossings
+# ============================================================
+
+def _find_boundary_time(
+    jd_start: float,
+    angle_func,
+    boundary_degree: float,
+    span: float,
+    max_hours: float = 30.0,
+    tolerance_minutes: float = 0.5,
+) -> Optional[float]:
+    """
+    Binary search to find when angle_func(jd) crosses boundary_degree.
+    Returns JD of crossing, or None if not found within max_hours.
+
+    angle_func: callable(jd) -> float (0-360)
+    boundary_degree: the target boundary value
+    span: the span of one unit (12 for tithi, 13.333 for nakshatra, etc.)
+    """
+    jd_end = jd_start + max_hours / 24.0
+    step = 1.0 / 24.0  # 1 hour steps for coarse scan
+
+    # Determine which unit we are in at start
+    start_val = angle_func(jd_start)
+    start_index = int(start_val / span)
+
+    # Coarse scan to find the hour bracket where the boundary is crossed
+    jd_a = jd_start
+    prev_index = start_index
+    found = False
+
+    t = jd_start + step
+    while t <= jd_end:
+        cur_val = angle_func(t)
+        cur_index = int(cur_val / span)
+        # Handle wraparound
+        if cur_index != prev_index:
+            jd_a = t - step
+            found = True
+            break
+        prev_index = cur_index
+        t += step
+
+    if not found:
+        return None
+
+    # Binary search within [jd_a, jd_a + step]
+    jd_lo = jd_a
+    jd_hi = jd_a + step
+    tol = tolerance_minutes / (24.0 * 60.0)  # convert to JD units
+
+    for _ in range(50):  # max iterations
+        if (jd_hi - jd_lo) < tol:
+            break
+        jd_mid = (jd_lo + jd_hi) / 2.0
+        mid_index = int(angle_func(jd_mid) / span)
+        if mid_index == start_index:
+            jd_lo = jd_mid
+        else:
+            jd_hi = jd_mid
+
+    return (jd_lo + jd_hi) / 2.0
+
+
+def _compute_tithi_end(jd_sunrise: float, tz_offset: float) -> str:
+    """Find the end time of the current tithi after sunrise."""
+    jd = _find_boundary_time(jd_sunrise, _get_elongation, 0.0, 12.0)
+    if jd is None:
+        return "--:--"
+    return _jd_to_local_time_str(jd, tz_offset)
+
+
+def _compute_nakshatra_end(jd_sunrise: float, tz_offset: float) -> str:
+    """Find the end time of the current nakshatra after sunrise."""
+    jd = _find_boundary_time(jd_sunrise, _get_moon_longitude_sidereal, 0.0, NAKSHATRA_SPAN)
+    if jd is None:
+        return "--:--"
+    return _jd_to_local_time_str(jd, tz_offset)
+
+
+def _compute_yoga_end(jd_sunrise: float, tz_offset: float) -> str:
+    """Find the end time of the current yoga after sunrise."""
+    jd = _find_boundary_time(jd_sunrise, _get_yoga_angle, 0.0, YOGA_SPAN)
+    if jd is None:
+        return "--:--"
+    return _jd_to_local_time_str(jd, tz_offset)
+
+
+def _compute_karana_end(jd_sunrise: float, tz_offset: float) -> str:
+    """Find the end time of the current karana (half-tithi) after sunrise."""
+    jd = _find_boundary_time(jd_sunrise, _get_elongation, 0.0, 6.0)
+    if jd is None:
+        return "--:--"
+    return _jd_to_local_time_str(jd, tz_offset)
+
+
+NAKSHATRA_SPAN = 360.0 / 27.0  # 13.3333 degrees
+
+
+# ============================================================
+# PLANETARY POSITIONS (NAVGRAHA)
+# ============================================================
+
+def calculate_planetary_positions(jd: float) -> List[Dict[str, Any]]:
+    """
+    Calculate sidereal positions for all 9 Vedic planets (Navgraha).
+    Returns list of {name, longitude, degree, rashi, rashi_index}.
+    """
+    planets = []
+    if _HAS_SWE:
+        ayanamsa = swe.get_ayanamsa(jd)
+        planet_list = [
+            ("Sun", 0), ("Moon", 1), ("Mars", 4), ("Mercury", 2),
+            ("Jupiter", 5), ("Venus", 3), ("Saturn", 6), ("Rahu", 10),
+        ]
+        for name, pid in planet_list:
+            pos, _ = swe.calc_ut(jd, pid)
+            sid_lon = (pos[0] - ayanamsa) % 360.0
+            rashi = get_sign_from_longitude(sid_lon)
+            planets.append({
+                "name": name,
+                "longitude": round(sid_lon, 4),
+                "degree": round(sid_lon % 30.0, 2),
+                "rashi": rashi,
+                "rashi_index": int(sid_lon / 30.0),
+            })
+        # Ketu = Rahu + 180
+        rahu_lon = next(p["longitude"] for p in planets if p["name"] == "Rahu")
+        ketu_lon = (rahu_lon + 180.0) % 360.0
+        planets.append({
+            "name": "Ketu",
+            "longitude": round(ketu_lon, 4),
+            "degree": round(ketu_lon % 30.0, 2),
+            "rashi": get_sign_from_longitude(ketu_lon),
+            "rashi_index": int(ketu_lon / 30.0),
+        })
+    else:
+        # Fallback -- use approximations from astro_engine
+        from app.astro_engine import _approx_planet_longitude, _approx_rahu_longitude
+        ayanamsa = _approx_ayanamsa(jd)
+        approx_funcs = {
+            "Sun": lambda: _approx_sun_longitude(jd),
+            "Moon": lambda: _approx_moon_longitude(jd),
+            "Mars": lambda: _approx_planet_longitude(jd, "Mars"),
+            "Mercury": lambda: _approx_planet_longitude(jd, "Mercury"),
+            "Jupiter": lambda: _approx_planet_longitude(jd, "Jupiter"),
+            "Venus": lambda: _approx_planet_longitude(jd, "Venus"),
+            "Saturn": lambda: _approx_planet_longitude(jd, "Saturn"),
+            "Rahu": lambda: _approx_rahu_longitude(jd),
+        }
+        for name, func in approx_funcs.items():
+            trop = func()
+            sid_lon = (trop - ayanamsa) % 360.0
+            rashi = get_sign_from_longitude(sid_lon)
+            planets.append({
+                "name": name,
+                "longitude": round(sid_lon, 4),
+                "degree": round(sid_lon % 30.0, 2),
+                "rashi": rashi,
+                "rashi_index": int(sid_lon / 30.0),
+            })
+        rahu_lon = next(p["longitude"] for p in planets if p["name"] == "Rahu")
+        ketu_lon = (rahu_lon + 180.0) % 360.0
+        planets.append({
+            "name": "Ketu",
+            "longitude": round(ketu_lon, 4),
+            "degree": round(ketu_lon % 30.0, 2),
+            "rashi": get_sign_from_longitude(ketu_lon),
+            "rashi_index": int(ketu_lon / 30.0),
+        })
+    return planets
+
+
+# ============================================================
+# RAHU KAAL / GULIKA KAAL / YAMAGANDA KAAL
+# ============================================================
+
+def _compute_kaal_period(weekday: int, sunrise: str, sunset: str, slot_map: dict) -> Dict[str, str]:
+    """Divide daytime into 8 equal parts and return the slot for the weekday."""
+    sr_min = _time_to_minutes(sunrise)
+    ss_min = _time_to_minutes(sunset)
+    day_duration = ss_min - sr_min
+    slot = slot_map.get(weekday, 1)
+    slot_duration = day_duration / 8.0
+    start_min = sr_min + (slot - 1) * slot_duration
+    end_min = start_min + slot_duration
+    return {
+        "start": _minutes_to_time(start_min),
+        "end": _minutes_to_time(end_min),
+    }
+
+
+def calculate_rahu_kaal(weekday: int, sunrise: str, sunset: str) -> Dict[str, str]:
+    """Calculate Rahu Kaal period for a given weekday."""
+    return _compute_kaal_period(weekday, sunrise, sunset, _RAHU_KAAL_SLOT)
+
+
+def calculate_gulika_kaal(weekday: int, sunrise: str, sunset: str) -> Dict[str, str]:
+    """Calculate Gulika Kaal period for a given weekday."""
+    return _compute_kaal_period(weekday, sunrise, sunset, _GULIKA_KAAL_SLOT)
+
+
+def calculate_yamaganda(weekday: int, sunrise: str, sunset: str) -> Dict[str, str]:
+    """Calculate Yamaganda Kaal period for a given weekday."""
+    return _compute_kaal_period(weekday, sunrise, sunset, _YAMAGANDA_SLOT)
+
+
+# ============================================================
+# AUSPICIOUS TIMINGS
+# ============================================================
+
+def calculate_abhijit_muhurat(sunrise: str, sunset: str) -> Dict[str, str]:
+    """
+    Abhijit Muhurat: the 8th muhurat of the day (midday window).
+    Divide daytime into 15 muhurats; the 8th is Abhijit.
+    """
+    sr_min = _time_to_minutes(sunrise)
+    ss_min = _time_to_minutes(sunset)
+    day_duration = ss_min - sr_min
+    muhurat_duration = day_duration / 15.0
+    start = sr_min + 7 * muhurat_duration
+    end = start + muhurat_duration
+    return {
+        "start": _minutes_to_time(start),
+        "end": _minutes_to_time(end),
+    }
+
+
+def calculate_brahma_muhurat(sunrise: str) -> Dict[str, str]:
+    """
+    Brahma Muhurat: ~1 hour 36 minutes (2 muhurats) before sunrise.
+    One muhurat = 48 minutes. Brahma Muhurat = 96 to 48 min before sunrise.
+    """
+    sr_min = _time_to_minutes(sunrise)
+    start = sr_min - 96
+    end = sr_min - 48
+    if start < 0:
+        start += 1440
+    if end < 0:
+        end += 1440
+    return {
+        "start": _minutes_to_time(start),
+        "end": _minutes_to_time(end),
+    }
+
+
+# ============================================================
+# HINDU CALENDAR SYSTEM (Vikram Samvat, Shaka Samvat)
+# ============================================================
+
+def _compute_hindu_calendar(date_str: str, tithi_index: int, sun_sid: float) -> Dict[str, Any]:
+    """
+    Compute Hindu calendar elements.
+    - Vikram Samvat = Gregorian year + 57 (approx, adjusted for Chaitra)
+    - Shaka Samvat = Gregorian year - 78 (approx)
+    - Maas from Sun sidereal longitude (solar month)
+    - Paksha from tithi
+    - Ritu and Ayana from solar position
+    """
+    parts = date_str.split("-")
+    year = int(parts[0])
+    month = int(parts[1])
+
+    # Solar month index (0-11) from Sun sidereal longitude
+    solar_month_idx = int(sun_sid / 30.0) % 12
+    # Map: Aries=0 -> Chaitra, etc. (Mesh Sankranti starts Chaitra)
+    # Traditional: Chaitra starts when Sun enters Pisces/Aries boundary
+    maas_index = solar_month_idx  # 0=Mesha->Chaitra
+    maas_name = _HINDU_MONTHS[maas_index]
+
+    # Paksha
+    paksha = "Shukla" if tithi_index < 15 else "Krishna"
+
+    # Vikram Samvat (starts ~March/April, Chaitra Shukla Pratipada)
+    vikram_samvat = year + 57
+    if month < 4:  # Before April
+        vikram_samvat -= 1
+
+    # Shaka Samvat
+    shaka_samvat = year - 78
+    if month < 4:
+        shaka_samvat -= 1
+
+    # Ritu (season) -- 2 months per ritu
+    ritu_index = maas_index // 2
+    ritu_name, ritu_english = _RITU[ritu_index]
+
+    # Ayana -- Uttarayana (Capricorn to Gemini = months 9-2), Dakshinayana (Cancer to Sagittarius = 3-8)
+    if solar_month_idx >= 9 or solar_month_idx <= 2:
+        ayana = _AYANA[0]  # Uttarayana
+    else:
+        ayana = _AYANA[1]  # Dakshinayana
+
+    return {
+        "vikram_samvat": vikram_samvat,
+        "shaka_samvat": shaka_samvat,
+        "maas": maas_name,
+        "paksha": paksha,
+        "ritu": ritu_name,
+        "ritu_english": ritu_english,
+        "ayana": ayana,
+    }
+
+
+# ============================================================
+# KARANA HELPERS
+# ============================================================
+
 def _get_karana_index(tithi_index: int) -> int:
-    """
-    Get karana number (0-59) from tithi index (0-29).
-    Each tithi has 2 karanas. We return the first karana of the tithi.
-    Karanas cycle: first half of Pratipada Shukla = Kimstughna (fixed),
-    then 7 repeating karanas cycle, then last 3 fixed at end.
-    """
+    """Get karana number (0-59) from tithi index (0-29)."""
     half_tithi = tithi_index * 2
     return half_tithi % 60
 
 
 def _get_karana_name(karana_index: int) -> str:
-    """
-    Map a karana index (0-59) to its name.
-    Karana 0 = Kimstughna (fixed)
-    Karanas 1-56 cycle through 7 repeating (Bava..Vishti) = 8 full cycles
-    Karana 57 = Shakuni, 58 = Chatushpada, 59 = Naga
-    """
+    """Map a karana index (0-59) to its name."""
     if karana_index == 0:
         return "Kimstughna"
     if karana_index >= 57:
         fixed_map = {57: "Shakuni", 58: "Chatushpada", 59: "Naga"}
         return fixed_map.get(karana_index, "Kimstughna")
-    # Repeating karanas (1-56 -> index into 7 repeating)
     return _REPEATING_KARANAS[(karana_index - 1) % 7]
 
 
 # ============================================================
-# PUBLIC: calculate_rahu_kaal
-# ============================================================
-
-def calculate_rahu_kaal(
-    weekday: int, sunrise: str, sunset: str,
-) -> Dict[str, str]:
-    """
-    Calculate Rahu Kaal period for a given weekday.
-
-    Args:
-        weekday:  0=Monday, 1=Tuesday, ..., 6=Sunday
-        sunrise:  "HH:MM"
-        sunset:   "HH:MM"
-
-    Returns: {start: "HH:MM", end: "HH:MM"}
-    """
-    sr_minutes = _time_to_minutes(sunrise)
-    ss_minutes = _time_to_minutes(sunset)
-    day_duration = ss_minutes - sr_minutes
-
-    slot = _RAHU_KAAL_SLOT.get(weekday, 1)
-    slot_duration = day_duration / 8.0
-
-    start_minutes = sr_minutes + (slot - 1) * slot_duration
-    end_minutes = start_minutes + slot_duration
-
-    return {
-        "start": _minutes_to_time(start_minutes),
-        "end": _minutes_to_time(end_minutes),
-    }
-
-
-# ============================================================
-# PUBLIC: calculate_choghadiya
+# CHOGHADIYA
 # ============================================================
 
 def calculate_choghadiya(
     weekday: int, sunrise: str, sunset: str,
 ) -> List[Dict[str, Any]]:
-    """
-    Calculate Choghadiya (auspicious time periods) for daytime.
-
-    Args:
-        weekday:  0=Monday, 1=Tuesday, ..., 6=Sunday
-        sunrise:  "HH:MM"
-        sunset:   "HH:MM"
-
-    Returns: list of {name, quality, start, end}
-    """
+    """Calculate Choghadiya (auspicious time periods) for daytime."""
     sr_minutes = _time_to_minutes(sunrise)
     ss_minutes = _time_to_minutes(sunset)
     day_duration = ss_minutes - sr_minutes
@@ -352,19 +726,17 @@ def calculate_choghadiya(
     for i, name in enumerate(names):
         start = sr_minutes + i * slot_duration
         end = start + slot_duration
-        result.append(
-            {
-                "name": name,
-                "quality": _CHOGHADIYA_QUALITY.get(name, "Unknown"),
-                "start": _minutes_to_time(start),
-                "end": _minutes_to_time(end),
-            }
-        )
+        result.append({
+            "name": name,
+            "quality": _CHOGHADIYA_QUALITY.get(name, "Unknown"),
+            "start": _minutes_to_time(start),
+            "end": _minutes_to_time(end),
+        })
     return result
 
 
 # ============================================================
-# INTERNAL: time helpers
+# TIME HELPERS
 # ============================================================
 
 def _time_to_minutes(time_str: str) -> float:
@@ -378,3 +750,126 @@ def _minutes_to_time(minutes: float) -> str:
     h = int(minutes // 60) % 24
     m = int(minutes % 60)
     return f"{h:02d}:{m:02d}"
+
+
+# ============================================================
+# PUBLIC: calculate_panchang (ENHANCED)
+# ============================================================
+
+def calculate_panchang(
+    date: str, latitude: float, longitude: float,
+) -> Dict[str, Any]:
+    """
+    Calculate complete Panchang for a given date and location.
+
+    Returns the original contract keys (tithi, nakshatra, yoga, karana, sunrise, sunset)
+    plus extended data for the enhanced UI.
+    """
+    tz_offset = longitude / 15.0
+
+    # 1. Sunrise/Sunset/Moonrise/Moonset
+    sun_times = _compute_sun_times(date, latitude, longitude)
+    sunrise_str = sun_times["sunrise"]
+    sunset_str = sun_times["sunset"]
+
+    # 2. Julian Day at sunrise for panchang calculations
+    dt_utc = _parse_datetime(date, sunrise_str, tz_offset)
+    jd_sunrise = _datetime_to_jd(dt_utc)
+
+    # 3. Sidereal longitudes at sunrise
+    sun_sid, moon_sid, ayanamsa = _get_sidereal_longitudes(jd_sunrise)
+
+    # 4. Elongation for Tithi
+    elongation = _get_elongation(jd_sunrise)
+    tithi_index = int(elongation / 12.0)
+    if tithi_index >= 30:
+        tithi_index = 29
+    tithi = TITHIS[tithi_index]
+
+    # 5. Nakshatra
+    nakshatra = get_nakshatra_from_longitude(moon_sid)
+
+    # 6. Yoga
+    yoga_sum = (sun_sid + moon_sid) % 360.0
+    yoga_index = int(yoga_sum / YOGA_SPAN)
+    if yoga_index >= 27:
+        yoga_index = 26
+    yoga_name = YOGAS[yoga_index]
+
+    # 7. Karana
+    karana_index = _get_karana_index(tithi_index)
+    karana_name = _get_karana_name(karana_index)
+
+    # 8. End times via binary search
+    tithi_end = _compute_tithi_end(jd_sunrise, tz_offset)
+    nakshatra_end = _compute_nakshatra_end(jd_sunrise, tz_offset)
+    yoga_end = _compute_yoga_end(jd_sunrise, tz_offset)
+    karana_end = _compute_karana_end(jd_sunrise, tz_offset)
+
+    # 9. Weekday / Vaar
+    parts = date.split("-")
+    dt = datetime(int(parts[0]), int(parts[1]), int(parts[2]))
+    weekday = dt.weekday()
+
+    # 10. Rahu Kaal, Gulika Kaal, Yamaganda
+    rahu_kaal = calculate_rahu_kaal(weekday, sunrise_str, sunset_str)
+    gulika_kaal = calculate_gulika_kaal(weekday, sunrise_str, sunset_str)
+    yamaganda = calculate_yamaganda(weekday, sunrise_str, sunset_str)
+
+    # 11. Auspicious timings
+    abhijit = calculate_abhijit_muhurat(sunrise_str, sunset_str)
+    brahma = calculate_brahma_muhurat(sunrise_str)
+
+    # 12. Planetary positions
+    planetary_positions = calculate_planetary_positions(jd_sunrise)
+
+    # 13. Hindu calendar
+    hindu_calendar = _compute_hindu_calendar(date, tithi_index, sun_sid)
+
+    # 14. Choghadiya
+    choghadiya = calculate_choghadiya(weekday, sunrise_str, sunset_str)
+
+    return {
+        # Original contract keys
+        "tithi": {
+            "name": tithi["name"],
+            "number": tithi["number"],
+            "paksha": tithi["paksha"],
+            "end_time": tithi_end,
+        },
+        "nakshatra": {
+            **nakshatra,
+            "end_time": nakshatra_end,
+        },
+        "yoga": {
+            "name": yoga_name,
+            "number": yoga_index + 1,
+            "end_time": yoga_end,
+        },
+        "karana": {
+            "name": karana_name,
+            "number": karana_index + 1,
+            "end_time": karana_end,
+        },
+        "sunrise": sunrise_str,
+        "sunset": sunset_str,
+        # Extended data
+        "moonrise": sun_times["moonrise"],
+        "moonset": sun_times["moonset"],
+        "vaar": {
+            "name": _VAAR_NAMES[weekday],
+            "english": _VAAR_ENGLISH[weekday],
+            "number": weekday,
+        },
+        "rahu_kaal": rahu_kaal,
+        "gulika_kaal": gulika_kaal,
+        "yamaganda": yamaganda,
+        "abhijit_muhurat": abhijit,
+        "brahma_muhurat": brahma,
+        "planetary_positions": planetary_positions,
+        "hindu_calendar": hindu_calendar,
+        "choghadiya": choghadiya,
+        "ayanamsa": round(ayanamsa, 4),
+        "sun_longitude": round(sun_sid, 4),
+        "moon_longitude": round(moon_sid, 4),
+    }

@@ -73,7 +73,7 @@ class TestCalculatePanchang:
             longitude=77.2090,
         )
         required_keys = {"tithi", "nakshatra", "yoga", "karana", "sunrise", "sunset"}
-        assert set(result.keys()) == required_keys
+        assert required_keys.issubset(set(result.keys()))
 
     def test_tithi_has_name_and_number(self):
         result = calculate_panchang("2024-01-15", 28.6139, 77.2090)
