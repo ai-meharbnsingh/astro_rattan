@@ -209,7 +209,12 @@ def calculate_sodashvarga(
         for planet in planets_list:
             info = varga_results[div].get(planet)
             if info:
-                row["planets"][planet] = info["sign"]
+                sign = info["sign"]
+                row["planets"][planet] = {
+                    "sign": sign,
+                    "sign_abbr": sign[:3],
+                    "dignity": _get_dignity(planet, sign),
+                }
         varga_table.append(row)
 
     return {
