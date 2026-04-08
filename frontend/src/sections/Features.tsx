@@ -66,9 +66,17 @@ export default function Features() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="features-title text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-['Cinzel_Decorative'] text-cosmic-text">
-            Built Different
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-['Cinzel_Decorative'] text-cosmic-text mb-6">
+            Bridging Ancient Wisdom with Modern Technology
           </h2>
+          <div className="max-w-3xl mx-auto space-y-4 text-cosmic-text/70">
+            <p>
+              Most astrology apps use lookup tables and generic predictions. Astro Rattan computes every position from Swiss Ephemeris — the same library used by research astronomers — accurate to arc-seconds.
+            </p>
+            <p>
+              Three complete astrological systems in one app: <strong className="text-sacred-gold-dark">Parashari</strong> (classical Vedic), <strong className="text-sacred-gold-dark">Jaimini</strong> (Chara Karakas, special lagnas), and <strong className="text-sacred-gold-dark">KP System</strong> (Krishnamurti Paddhati with sub-lord analysis). Plus full <strong className="text-sacred-gold-dark">Lal Kitab</strong> remedies and <strong className="text-sacred-gold-dark">Numerology</strong>.
+            </p>
+          </div>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
