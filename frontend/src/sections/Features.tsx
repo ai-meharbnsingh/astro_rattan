@@ -96,15 +96,6 @@ export default function Features() {
           ))}
         </div>
 
-        <div className="features-title mt-16 text-center">
-          <button
-            onClick={() => navigate('/login')}
-            className="inline-flex items-center gap-2 bg-transparent border border-sacred-gold text-sacred-gold-dark hover:bg-sacred-gold-dark hover:text-cosmic-bg transition-all px-8 py-4 text-xs font-cinzel tracking-[3px] uppercase"
-          >
-            Sign In to Explore
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
       </div>
 
       <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-sacred-gold-dark/30 to-transparent" />

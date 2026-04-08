@@ -10,7 +10,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Navigation from './sections/Navigation';
 import Hero from './sections/Hero';
 import Features from './sections/Features';
-import CTA from './sections/CTA';
 import Footer from './sections/Footer';
 import WhatsAppWidget from './components/WhatsAppWidget';
 
@@ -94,7 +93,6 @@ function HomePage() {
     <div ref={mainRef}>
       <Hero />
       <Features />
-      <CTA />
     </div>
   );
 }
