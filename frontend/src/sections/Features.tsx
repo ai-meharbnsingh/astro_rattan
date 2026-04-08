@@ -11,32 +11,32 @@ const features = [
   {
     title: '21 Kundli Engines',
     desc: 'Parashari + Jaimini + KP System. Divisional charts (D1-D60), Shadbala, Ashtakvarga, Yogini Dasha — depth no app matches.',
-    img: 'https://images.unsplash.com/photo-1532968961962-8a0cb3a2d4f0?w=400&h=250&fit=crop&q=80',
+    img: 'https://images.unsplash.com/photo-1630694093867-4b947d812bf0?w=600&h=400&fit=crop&q=90',
   },
   {
     title: 'Live Panchang',
     desc: 'Tithi, Nakshatra, Yoga, Karana with exact end times. Rahu Kaal, Choghadiya, Muhurat finder — location-aware.',
-    img: 'https://images.unsplash.com/photo-1504333638930-c8787321eee0?w=400&h=250&fit=crop&q=80',
+    img: 'https://images.unsplash.com/photo-1545156521-77bd85671d30?w=600&h=400&fit=crop&q=90',
   },
   {
     title: 'Lal Kitab Remedies',
     desc: 'Full Lal Kitab system with personalized remedies, house analysis, and annual predictions — rarely found in apps.',
-    img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=250&fit=crop&q=80',
+    img: 'https://images.unsplash.com/photo-1604881991720-f91add269bed?w=600&h=400&fit=crop&q=90',
   },
   {
     title: 'Dosha + Yoga Detection',
     desc: 'Mangal, Kaal Sarp, Sade Sati, Pitra, Kemdrum Dosha. Plus Gajakesari, Budhaditya, Panch Mahapurusha Yogas.',
-    img: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=400&h=250&fit=crop&q=80',
+    img: 'https://images.unsplash.com/photo-1614732414444-096e5f1122d5?w=600&h=400&fit=crop&q=90',
   },
   {
     title: 'Varshphal + Transits',
     desc: 'Solar Return with Muntha & Mudda Dasha. Live Gochara transit tracking from your natal Moon.',
-    img: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=400&h=250&fit=crop&q=80',
+    img: 'https://images.unsplash.com/photo-1543722530-d2c3201371e7?w=600&h=400&fit=crop&q=90',
   },
   {
     title: 'Numerology + Loshu Grid',
     desc: 'Life Path, Destiny, Soul Urge numbers. Mobile number analysis with Vedic Grid and compatibility.',
-    img: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=250&fit=crop&q=80',
+    img: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=600&h=400&fit=crop&q=90',
   },
 ];
 
