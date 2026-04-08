@@ -293,6 +293,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
   const [loadingEclipse, setLoadingEclipse] = useState(false);
   const [loadingIngress, setLoadingIngress] = useState(false);
   const [expandedHouses, setExpandedHouses] = useState<Set<number>>(new Set());
+  const [error, setError] = useState<string | null>(null);
 
   /* ── fetch country list ── */
   useEffect(() => {
@@ -434,6 +435,31 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
 
   return (
     <div className="space-y-6">
+
+      {/* Error Banner */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium text-red-800">
+                {lang === 'hi' ? 'सर्वर त्रुटि' : 'Server Error'}
+              </p>
+              <p className="text-xs text-red-600 mt-1">
+                {lang === 'hi' 
+                  ? 'डेटा लोड करने में समस्या हुई। कृपया बाद में पुनः प्रयास करें।' 
+                  : 'Failed to load data. Please try again later.'}
+              </p>
+              <button
+                onClick={() => fetchAnalysis(selectedCountry, selectedYear)}
+                className="mt-2 px-3 py-1 bg-red-100 hover:bg-red-200 text-red-700 text-xs rounded-md transition-colors"
+              >
+                {lang === 'hi' ? 'पुनः प्रयास करें' : 'Retry'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ══════════════════ 1. Country Selector + Summary Dashboard ══════════════════ */}
       <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
