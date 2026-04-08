@@ -799,10 +799,10 @@ const translations: Record<Language, TranslationMap> = {
     'ashtakvarga.savDescription': 'Numbers show SAV points per sign (28+ = strong)',
 
     // Numerology page
-    'numerology.badge': 'Divination Tools',
-    'numerology.heading': 'Numerology, Tarot &',
-    'numerology.headingHighlight': 'Palmistry',
-    'numerology.subtitle': 'Explore numbers, cards, and lines of destiny',
+    'numerology.badge': 'Numerology',
+    'numerology.heading': 'Numerology',
+    'numerology.headingHighlight': 'Analysis',
+    'numerology.subtitle': 'Explore the power of numbers in your life',
     'numerology.tabNumerology': 'Numerology',
     'numerology.tabTarot': 'Tarot',
     'numerology.tabPalmistry': 'Palmistry',
@@ -1661,10 +1661,10 @@ const translations: Record<Language, TranslationMap> = {
     'ashtakvarga.savDescription': 'संख्या प्रति राशि SAV अंक दर्शाती है (28+ = बलवान)',
 
     // Numerology page
-    'numerology.badge': 'भविष्यवाणी उपकरण',
-    'numerology.heading': 'अंकशास्त्र, टैरो एवं',
-    'numerology.headingHighlight': 'हस्तरेखा',
-    'numerology.subtitle': 'अंकों, कार्डों और भाग्य रेखाओं का अन्वेषण करें',
+    'numerology.badge': 'अंक ज्योतिष',
+    'numerology.heading': 'अंक ज्योतिष',
+    'numerology.headingHighlight': 'विश्लेषण',
+    'numerology.subtitle': 'अपने जीवन में अंकों की शक्ति का अन्वेषण करें',
     'numerology.tabNumerology': 'अंकशास्त्र',
     'numerology.tabTarot': 'टैरो',
     'numerology.tabPalmistry': 'हस्तरेखा',
