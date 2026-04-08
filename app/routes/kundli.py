@@ -229,6 +229,7 @@ def get_kundli(
     row = _fetch_kundli(db, kundli_id, current_user["sub"])
     return {
         "id": row["id"],
+        "client_id": row.get("client_id"),
         "person_name": row["person_name"],
         "birth_date": row["birth_date"],
         "birth_time": row["birth_time"],
@@ -237,6 +238,7 @@ def get_kundli(
         "longitude": row["longitude"],
         "timezone_offset": row["timezone_offset"],
         "ayanamsa": row["ayanamsa"],
+        "chart_type": row.get("chart_type", "vedic"),
         "chart_data": json.loads(row["chart_data"]),
         "iogita_analysis": json.loads(row["iogita_analysis"]) if row["iogita_analysis"] else None,
         "created_at": row["created_at"],
