@@ -1,6 +1,6 @@
 import { useEffect, useRef, lazy, Suspense, Component } from 'react';
 import type { ReactNode, ErrorInfo } from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route, Link, Navigate } from 'react-router-dom';
 import { I18nProvider } from './lib/i18n';
 import { AuthProvider } from './hooks/useAuth';
 import { gsap } from 'gsap';
@@ -12,6 +12,7 @@ import Hero from './sections/Hero';
 import Features from './sections/Features';
 import Footer from './sections/Footer';
 import WhatsAppWidget from './components/WhatsAppWidget';
+import { useAuth } from './hooks/useAuth';
 
 // Lazy imports — code-split per route
 const Panchang = lazy(() => import('./sections/Panchang'));
@@ -20,6 +21,7 @@ const AuthPage = lazy(() => import('./sections/AuthPage'));
 const NumerologyTarot = lazy(() => import('./sections/NumerologyTarot'));
 const LalKitabPage = lazy(() => import('./sections/LalKitabPage'));
 const AdminDashboard = lazy(() => import('./sections/AdminDashboard'));
+const Dashboard = lazy(() => import('./sections/Dashboard'));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -97,6 +99,12 @@ function HomePage() {
   );
 }
 
+function SmartHome() {
+  const { isAuthenticated } = useAuth();
+  if (isAuthenticated) return <Navigate to="/dashboard" replace />;
+  return <HomePage />;
+}
+
 function App() {
   return (
     <AuthProvider>
@@ -109,7 +117,8 @@ function App() {
         <ErrorBoundary>
         <Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-600"></div></div>}>
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<SmartHome />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/kundli" element={<KundliGenerator />} />
           <Route path="/panchang" element={<Panchang />} />
           <Route path="/login" element={<AuthPage />} />

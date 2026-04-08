@@ -137,6 +137,10 @@ class KundliRequest(BaseModel):
     longitude: float = Field(ge=-180, le=180)
     timezone_offset: float = Field(ge=-12, le=14)
     ayanamsa: str = "lahiri"
+    client_id: Optional[str] = None  # Link to existing client
+    chart_type: str = "vedic"  # vedic, lalkitab
+    phone: Optional[str] = None  # Auto-create client if provided
+    gender: Optional[str] = None
 
 class KundliMatchRequest(BaseModel):
     kundli_id_1: str

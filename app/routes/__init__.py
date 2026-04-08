@@ -5,6 +5,7 @@ from app.routes.panchang import router as panchang_router
 from app.routes.kp_lalkitab import router as kp_lalkitab_router
 from app.routes.numerology import router as numerology_router
 from app.routes.mundane import router as mundane_router
+from app.routes.clients import router as clients_router
 from app.routes.admin import router as admin_router
 
 all_routers = [
@@ -14,5 +15,6 @@ all_routers = [
     kp_lalkitab_router,
     numerology_router,
     mundane_router,
+    clients_router,
     admin_router,
 ]

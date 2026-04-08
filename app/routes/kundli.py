@@ -83,7 +83,7 @@ def generate_kundli(
     current_user: dict = Depends(get_current_user),
     db: Any = Depends(get_db),
 ):
-    """Generate a new Vedic birth chart (kundli) and store it."""
+    """Generate a new Vedic birth chart (kundli) and store it. Auto-creates/links client."""
     chart_data = calculate_planet_positions(
         birth_date=body.birth_date,
         birth_time=body.birth_time,
@@ -93,33 +93,61 @@ def generate_kundli(
     )
     chart_json = json.dumps(chart_data, default=str)
 
+    # Auto-create or link client
+    client_id = body.client_id
+    if not client_id:
+        # Check if client with same name exists for this astrologer
+        existing = db.execute(
+            "SELECT id FROM clients WHERE astrologer_id = %s AND name = %s LIMIT 1",
+            (current_user["sub"], body.person_name),
+        ).fetchone()
+        if existing:
+            client_id = existing["id"]
+            # Update client's birth details if they were missing
+            db.execute(
+                """UPDATE clients SET birth_date = COALESCE(NULLIF(birth_date,''), %s),
+                   birth_time = COALESCE(NULLIF(birth_time,''), %s),
+                   birth_place = COALESCE(NULLIF(birth_place,''), %s),
+                   latitude = COALESCE(latitude, %s), longitude = COALESCE(longitude, %s),
+                   timezone_offset = COALESCE(timezone_offset, %s), updated_at = NOW()
+                   WHERE id = %s""",
+                (body.birth_date, body.birth_time, body.birth_place,
+                 body.latitude, body.longitude, body.timezone_offset, client_id),
+            )
+        else:
+            client_row = db.execute(
+                """INSERT INTO clients (astrologer_id, name, phone, birth_date, birth_time,
+                   birth_place, latitude, longitude, timezone_offset, gender)
+                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id""",
+                (current_user["sub"], body.person_name, body.phone, body.birth_date,
+                 body.birth_time, body.birth_place, body.latitude, body.longitude,
+                 body.timezone_offset, body.gender or "male"),
+            ).fetchone()
+            client_id = client_row["id"]
+
     row = db.execute(
         """INSERT INTO kundlis
-           (user_id, person_name, birth_date, birth_time, birth_place,
-            latitude, longitude, timezone_offset, ayanamsa, chart_data)
-           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+           (user_id, client_id, person_name, birth_date, birth_time, birth_place,
+            latitude, longitude, timezone_offset, ayanamsa, chart_type, chart_data)
+           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
            RETURNING *""",
         (
-            current_user["sub"],
-            body.person_name,
-            body.birth_date,
-            body.birth_time,
-            body.birth_place,
-            body.latitude,
-            body.longitude,
-            body.timezone_offset,
-            body.ayanamsa,
-            chart_json,
+            current_user["sub"], client_id,
+            body.person_name, body.birth_date, body.birth_time, body.birth_place,
+            body.latitude, body.longitude, body.timezone_offset, body.ayanamsa,
+            body.chart_type or "vedic", chart_json,
         ),
     ).fetchone()
     db.commit()
 
     return {
         "id": row["id"],
+        "client_id": client_id,
         "person_name": row["person_name"],
         "birth_date": row["birth_date"],
         "birth_time": row["birth_time"],
         "birth_place": row["birth_place"],
+        "chart_type": row.get("chart_type", "vedic"),
         "chart_data": json.loads(row["chart_data"]),
         "created_at": row["created_at"],
     }

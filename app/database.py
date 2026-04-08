@@ -76,10 +76,31 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
 
+-- Astrologer Clients (people whose charts are being read)
+CREATE TABLE IF NOT EXISTS clients (
+    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+    astrologer_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    phone TEXT,
+    birth_date TEXT,
+    birth_time TEXT,
+    birth_place TEXT,
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION,
+    timezone_offset DOUBLE PRECISION DEFAULT 5.5,
+    gender TEXT DEFAULT 'male',
+    notes TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_clients_astrologer ON clients(astrologer_id);
+CREATE INDEX IF NOT EXISTS idx_clients_name ON clients(name);
+
 -- Kundli / Birth Charts
 CREATE TABLE IF NOT EXISTS kundlis (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
     user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    client_id TEXT REFERENCES clients(id) ON DELETE SET NULL,
     person_name TEXT NOT NULL,
     birth_date TEXT NOT NULL,
     birth_time TEXT NOT NULL,
@@ -88,11 +109,13 @@ CREATE TABLE IF NOT EXISTS kundlis (
     longitude DOUBLE PRECISION NOT NULL,
     timezone_offset DOUBLE PRECISION NOT NULL,
     ayanamsa TEXT NOT NULL DEFAULT 'lahiri',
+    chart_type TEXT NOT NULL DEFAULT 'vedic',
     chart_data TEXT NOT NULL,
     iogita_analysis TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_kundlis_user ON kundlis(user_id);
+CREATE INDEX IF NOT EXISTS idx_kundlis_client ON kundlis(client_id);
 
 -- Horoscopes
 CREATE TABLE IF NOT EXISTS horoscopes (
