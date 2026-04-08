@@ -57,7 +57,11 @@ def get_panchang(
         (target_date, latitude, longitude),
     ).fetchone()
 
-    if cached:
+    # Serve from cache only if it has extended data (new engine format)
+    raw_ext_check = cached.get("choghadiya", "") if cached else ""
+    cache_has_extended = cached and raw_ext_check and raw_ext_check not in ("", "[]")
+
+    if cache_has_extended:
         tithi = cached["tithi"]
         if isinstance(tithi, str):
             tithi = json.loads(tithi)
