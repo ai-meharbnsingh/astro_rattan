@@ -20,7 +20,7 @@ export function useKundliData() {
   const { isAuthenticated } = useAuth();
   const { t, language } = useTranslation();
   const location = useLocation();
-  const prefill = (location.state as { birthDate?: string; birthTime?: string; birthPlace?: string }) || {};
+  const prefill = (location.state as { birthDate?: string; birthTime?: string; birthPlace?: string; loadKundliId?: string; clientId?: string; clientName?: string }) || {};
 
   const [step, setStep] = useState<'loading' | 'list' | 'form' | 'generating' | 'result'>('loading');
   const [formData, setFormData] = useState<KundliFormData>({
@@ -127,7 +127,7 @@ export function useKundliData() {
     setVarshphalData(null);
   };
 
-  // On mount: load existing kundlis if logged in
+  // On mount: load existing kundlis if logged in, auto-open if loadKundliId passed
   useEffect(() => {
     if (!isAuthenticated) {
       setStep('form');
@@ -137,8 +137,19 @@ export function useKundliData() {
       .then((data: any) => {
         const list = Array.isArray(data) ? data : [];
         setSavedKundlis(list);
-        if (list.length > 0) {
-          setStep('list');
+        // If navigated with a specific kundli to load, open it directly
+        if (prefill.loadKundliId) {
+          loadKundli({ id: prefill.loadKundliId });
+        } else if (prefill.clientName) {
+          // Pre-fill form with client data
+          setFormData(prev => ({
+            ...prev,
+            name: prefill.clientName || prev.name,
+            date: prefill.birthDate || prev.date,
+            time: prefill.birthTime || prev.time,
+            place: prefill.birthPlace || prev.place,
+          }));
+          setStep('form');
         } else {
           setStep('form');
         }

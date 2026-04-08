@@ -40,7 +40,9 @@ export default function LalKitabPage() {
         birth_place: formData.place,
         latitude: formData.latitude,
         longitude: formData.longitude,
+        timezone_offset: -(new Date().getTimezoneOffset() / 60),
         gender: formData.gender,
+        chart_type: 'lalkitab',
       });
       const lkChart = generateLalKitabChart(result);
       setChartData(lkChart);

@@ -119,7 +119,7 @@ export default function ClientProfile() {
               </div>
               <div className="text-right">
                 <span className="text-xs text-cosmic-text/30 uppercase">{k.chart_type || 'vedic'}</span>
-                <p className="text-xs text-cosmic-text/30">{new Date(k.created_at).toLocaleDateString()}</p>
+                <p className="text-xs text-cosmic-text/30">{k.created_at ? new Date(k.created_at).toLocaleDateString() : ''}</p>
               </div>
             </div>
           ))}
