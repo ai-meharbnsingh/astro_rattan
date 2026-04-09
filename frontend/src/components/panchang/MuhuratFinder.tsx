@@ -417,7 +417,7 @@ export default function MuhuratFinder({
                             className={`w-1.5 h-1.5 rounded-full ${qualityDotColor(day.quality)}`}
                           />
                           {day.windows_count != null && day.windows_count > 0 && (
-                            <span className="text-[10px] text-cosmic-text-secondary">
+                            <span className="text-xs text-cosmic-text-secondary">
                               {day.windows_count}
                             </span>
                           )}

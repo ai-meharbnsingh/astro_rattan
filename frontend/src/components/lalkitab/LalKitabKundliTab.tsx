@@ -96,7 +96,7 @@ export default function LalKitabKundliTab({ chartData }: Props) {
                   gridColumn: `${pos.col} / span ${pos.colSpan ?? 1}`,
                 }}
               >
-                <span className="text-[10px] font-medium text-sacred-gold-dark/70 uppercase tracking-wide">
+                <span className="text-xs font-medium text-sacred-gold-dark/70 uppercase tracking-wide">
                   {t('lk.kundli.house')} {houseNum}
                 </span>
                 {planets.length > 0 ? (
@@ -111,13 +111,13 @@ export default function LalKitabKundliTab({ chartData }: Props) {
                     ))}
                   </div>
                 ) : (
-                  <span className="mt-1 text-[11px] text-cosmic-text/60 italic">
+                  <span className="mt-1 text-xs text-cosmic-text/60 italic">
                     {t('lk.kundli.empty')}
                   </span>
                 )}
                 {strength && strength !== 'empty' && (
                   <span
-                    className={`mt-1 text-[10px] font-medium ${
+                    className={`mt-1 text-xs font-medium ${
                       strength === 'strong' ? 'text-green-400' : 'text-red-400'
                     }`}
                   >
@@ -136,7 +136,7 @@ export default function LalKitabKundliTab({ chartData }: Props) {
             <span className="font-sacred text-lg font-bold text-sacred-gold">
               {language === 'hi' ? 'लाल किताब' : 'Lal Kitab'}
             </span>
-            <span className="text-[11px] text-cosmic-text/60">
+            <span className="text-xs text-cosmic-text/60">
               {language === 'hi' ? 'कुंडली' : 'Kundli'}
             </span>
           </div>

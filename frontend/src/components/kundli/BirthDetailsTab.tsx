@@ -56,7 +56,7 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
                   <td className="p-2 text-sacred-brown">{translateSign(p.sign, language)}</td>
                   <td className="p-2 text-sacred-brown">
                     {signDeg !== null ? `${signDeg.toFixed(2)}\u00b0` : '\u2014'}
-                    {isSandhi && <span className="ml-1 text-[10px] px-1 py-0.5 rounded bg-amber-500/15 text-amber-600 font-medium">{language === 'hi' ? 'संधि' : 'Sandhi'}</span>}
+                    {isSandhi && <span className="ml-1 text-xs px-1 py-0.5 rounded bg-amber-500/15 text-amber-600 font-medium">{language === 'hi' ? 'संधि' : 'Sandhi'}</span>}
                   </td>
                   <td className="p-2 text-sacred-brown">{nakshatraName} ({language === 'hi' ? 'पाद' : 'Pada'} {pada})</td>
                   <td className="p-2 text-sacred-brown">{p.house}</td>

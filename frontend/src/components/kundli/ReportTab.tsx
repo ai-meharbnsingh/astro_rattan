@@ -512,7 +512,7 @@ export default function ReportTab({
                                           {ad.pratyantar?.length > 0 && <ChevronDown className={`w-2.5 h-2.5 transition-transform ${expandedAntardasha === `${md.planet}-${ad.planet}` ? 'rotate-180' : ''}`} style={{ color: 'var(--ink-light)' }} />}
                                           <span style={{ color: ad.is_current ? 'var(--aged-gold)' : 'var(--ink)' }}>{translatePlanet(ad.planet, language)} AD {ad.is_current ? '*' : ''}</span>
                                         </span>
-                                        <span style={{ color: 'var(--ink-light)', fontSize: 'var(--text-label, 0.625rem)' }}>{ad.start?.slice(0,10)} — {ad.end?.slice(0,10)}</span>
+                                        <span style={{ color: 'var(--ink-light)', fontSize: 'var(--text-label, 0.75rem)' }}>{ad.start?.slice(0,10)} — {ad.end?.slice(0,10)}</span>
                                       </button>
 
                                       {expandedAntardasha === `${md.planet}-${ad.planet}` && (ad.pratyantar || []).length > 0 && (
@@ -523,7 +523,7 @@ export default function ReportTab({
                                               <span style={{ color: pt.is_current ? 'var(--aged-gold)' : 'var(--ink-light)' }}>
                                                 {translatePlanet(pt.planet, language)} PD {pt.is_current ? '*' : ''}
                                               </span>
-                                              <span style={{ color: 'var(--ink-light)', fontSize: 'var(--text-label, 0.625rem)' }}>{pt.start?.slice(0,10)} — {pt.end?.slice(0,10)}</span>
+                                              <span style={{ color: 'var(--ink-light)', fontSize: 'var(--text-label, 0.75rem)' }}>{pt.start?.slice(0,10)} — {pt.end?.slice(0,10)}</span>
                                             </div>
                                           ))}
                                         </div>

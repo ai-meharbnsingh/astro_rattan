@@ -69,7 +69,7 @@ export default function InauspiciousPeriods({
                     <span className="text-red-400 font-medium text-sm">
                       {period.label}
                     </span>
-                    <p className="text-[11px] text-cosmic-text-secondary/50">
+                    <p className="text-xs text-cosmic-text-secondary/50">
                       {period.description}
                     </p>
                   </div>

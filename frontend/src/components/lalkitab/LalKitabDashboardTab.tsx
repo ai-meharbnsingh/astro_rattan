@@ -219,7 +219,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
                       {planets.map((pKey) => (
                         <span
                           key={pKey}
-                          className={`text-[10px] font-semibold px-1 rounded ${getPlanetDotColor(pKey).replace('bg-', 'text-')}`}
+                          className={`text-xs font-semibold px-1 rounded ${getPlanetDotColor(pKey).replace('bg-', 'text-')}`}
                         >
                           {planetAbbr[pKey] || pKey.slice(0, 2)}
                         </span>

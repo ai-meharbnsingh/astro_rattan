@@ -152,7 +152,7 @@ export default function LalKitabVarshphalTab({ chartData, birthDate }: Props) {
               key={houseNum}
               className="flex flex-col items-center justify-center rounded-md border border-sacred-gold/15 bg-cosmic-card/40 p-1.5 min-h-[44px]"
             >
-              <span className="text-[11px] font-medium text-sacred-gold-dark/60">
+              <span className="text-xs font-medium text-sacred-gold-dark/60">
                 {houseNum}
               </span>
               {planets.length > 0 && (
@@ -160,7 +160,7 @@ export default function LalKitabVarshphalTab({ chartData, birthDate }: Props) {
                   {planets.map((pKey) => (
                     <span
                       key={pKey}
-                      className="text-[11px] font-semibold text-cosmic-text bg-sacred-gold/10 rounded px-1 py-px leading-tight"
+                      className="text-xs font-semibold text-cosmic-text bg-sacred-gold/10 rounded px-1 py-px leading-tight"
                     >
                       {getPlanetAbbr(pKey)}
                     </span>
@@ -241,7 +241,7 @@ export default function LalKitabVarshphalTab({ chartData, birthDate }: Props) {
                     {isHi ? 'भाव' : 'H'}{annualHouse}
                   </span>
                   {changed && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sacred-gold/20 text-sacred-gold">
+                    <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-sacred-gold/20 text-sacred-gold">
                       {isHi ? 'बदलाव' : 'Changed'}
                     </span>
                   )}
@@ -252,7 +252,7 @@ export default function LalKitabVarshphalTab({ chartData, birthDate }: Props) {
               {effects && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
                   <div className="bg-green-500/5 border border-green-500/15 rounded-lg p-3">
-                    <p className="text-[10px] font-semibold text-green-400 uppercase tracking-wide mb-1">
+                    <p className="text-xs font-semibold text-green-400 uppercase tracking-wide mb-1">
                       {isHi ? 'शुभ' : 'Good'}
                     </p>
                     <p className="text-xs text-cosmic-text/70 leading-relaxed">
@@ -260,7 +260,7 @@ export default function LalKitabVarshphalTab({ chartData, birthDate }: Props) {
                     </p>
                   </div>
                   <div className="bg-red-500/5 border border-red-500/15 rounded-lg p-3">
-                    <p className="text-[10px] font-semibold text-red-400 uppercase tracking-wide mb-1">
+                    <p className="text-xs font-semibold text-red-400 uppercase tracking-wide mb-1">
                       {isHi ? 'अशुभ' : 'Bad'}
                     </p>
                     <p className="text-xs text-cosmic-text/70 leading-relaxed">
