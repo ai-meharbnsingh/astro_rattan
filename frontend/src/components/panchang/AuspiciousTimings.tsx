@@ -116,12 +116,12 @@ export default function AuspiciousTimings({
                   <span className="text-cosmic-text font-medium">
                     {period.name}
                   </span>
-                  <span className="text-xs text-cosmic-text-secondary">
+                  <span className="text-sm text-cosmic-text-secondary">
                     {period.start} &ndash; {period.end}
                   </span>
                 </div>
                 <span
-                  className={`text-xs px-2 py-0.5 rounded-full ${classes.badge}`}
+                  className={`text-sm px-2 py-0.5 rounded-full ${classes.badge}`}
                 >
                   {period.quality}
                 </span>

@@ -76,7 +76,7 @@ export default function LalKitabHousesTab({ chartData }: Props) {
                       {meaning.lifeAreas.map((area, idx) => (
                         <span
                           key={idx}
-                          className="bg-sacred-gold/10 text-sacred-gold border border-sacred-gold/20 px-2 py-0.5 rounded-full text-xs"
+                          className="bg-sacred-gold/10 text-sacred-gold border border-sacred-gold/20 px-2 py-0.5 rounded-full text-sm"
                         >
                           {language === 'hi' ? area.hi : area.en}
                         </span>
@@ -92,7 +92,7 @@ export default function LalKitabHousesTab({ chartData }: Props) {
                       {houseData.planets.map((planet, idx) => (
                         <span
                           key={idx}
-                          className="bg-sacred-gold/10 text-sacred-gold px-2 py-0.5 rounded-full text-xs font-medium"
+                          className="bg-sacred-gold/10 text-sacred-gold px-2 py-0.5 rounded-full text-sm font-medium"
                         >
                           {planet}
                         </span>
@@ -103,7 +103,7 @@ export default function LalKitabHousesTab({ chartData }: Props) {
                   {/* Strength Indicator */}
                   <div className="flex items-center gap-1.5">
                     <span className={`w-2.5 h-2.5 rounded-full ${getStrengthDot(houseData.strength)}`} />
-                    <span className="text-xs text-cosmic-text/70">
+                    <span className="text-sm text-cosmic-text/70">
                       {getStrengthLabel(houseData.strength)}
                     </span>
                   </div>
@@ -139,7 +139,7 @@ export default function LalKitabHousesTab({ chartData }: Props) {
                       {meaning.lifeAreas.map((area, idx) => (
                         <span
                           key={idx}
-                          className="bg-sacred-gold/10 text-sacred-gold border border-sacred-gold/20 px-2 py-0.5 rounded-full text-xs"
+                          className="bg-sacred-gold/10 text-sacred-gold border border-sacred-gold/20 px-2 py-0.5 rounded-full text-sm"
                         >
                           {language === 'hi' ? area.hi : area.en}
                         </span>
@@ -168,7 +168,7 @@ export default function LalKitabHousesTab({ chartData }: Props) {
                                 <>
                                   {/* Good Results */}
                                   <div className="bg-green-500/5 border border-green-500/20 rounded-xl p-4">
-                                    <h6 className="text-xs font-semibold text-green-400 mb-1">
+                                    <h6 className="text-sm font-semibold text-green-400 mb-1">
                                       {t('lk.houses.goodResults')}
                                     </h6>
                                     <p className="text-sm text-cosmic-text/80">
@@ -178,7 +178,7 @@ export default function LalKitabHousesTab({ chartData }: Props) {
 
                                   {/* Bad Results */}
                                   <div className="bg-red-500/5 border border-red-500/20 rounded-xl p-4">
-                                    <h6 className="text-xs font-semibold text-red-400 mb-1">
+                                    <h6 className="text-sm font-semibold text-red-400 mb-1">
                                       {t('lk.houses.badResults')}
                                     </h6>
                                     <p className="text-sm text-cosmic-text/80">

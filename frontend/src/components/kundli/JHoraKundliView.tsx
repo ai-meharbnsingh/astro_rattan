@@ -76,7 +76,7 @@ interface JHoraKundliViewProps {
 // ─── Design Tokens (single source of truth — change here only) ──────
 const BG = '#FDF8F0';
 const SERIF = "'Georgia', 'Times New Roman', serif";
-const FONT_SIZE = '12px';          // base font size for all tables/text (minimum 12px for readability)
+const FONT_SIZE = '14px';          // base font size for all tables/text (minimum 12px for readability)
 const TEXT_COLOR = '#3E2723';      // dark brown — readable on cream bg
 const BORDER_COLOR = '#D4C5A9';
 const BORDER = `1px solid ${BORDER_COLOR}`;

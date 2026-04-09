@@ -48,14 +48,14 @@ export default function Testimonials() {
                     {[...Array(t.rating)].map((_, j) => <Star key={j} className="w-4 h-4 text-sacred-gold fill-sacred-gold" />)}
                   </div>
                   <p className="text-cosmic-text-secondary text-sm mb-4">&ldquo;{t.text}&rdquo;</p>
-                  <span className="inline-block text-xs px-3 py-1 rounded-full bg-sacred-gold text-sacred-gold mb-4 border border-sacred-gold">{t.service}</span>
+                  <span className="inline-block text-sm px-3 py-1 rounded-full bg-sacred-gold text-sacred-gold mb-4 border border-sacred-gold">{t.service}</span>
                   <div className="flex items-center gap-3 pt-4 border-t border-sacred-gold">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center">
                       <span className="text-cosmic-bg font-bold text-sm">{t.name.charAt(0)}</span>
                     </div>
                     <div>
                       <p className="text-sm font-medium text-cosmic-text">{t.name}</p>
-                      <p className="text-xs text-cosmic-text-secondary">{t.location}</p>
+                      <p className="text-sm text-cosmic-text-secondary">{t.location}</p>
                     </div>
                   </div>
                 </CardContent>

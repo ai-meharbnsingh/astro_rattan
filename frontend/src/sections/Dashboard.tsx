@@ -70,10 +70,10 @@ export default function Dashboard() {
       <div className="min-h-screen pt-24 pb-16 px-4 max-w-6xl mx-auto">
         <div className="flex items-center justify-end mb-8">
           <div className="flex gap-2">
-            <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold text-xs font-sans uppercase tracking-wider px-4 py-2 rounded-none">
+            <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold text-sm font-sans uppercase tracking-wider px-4 py-2 rounded-none">
               <Plus className="w-4 h-4 mr-1" /> New Kundli
             </Button>
-            <Button onClick={() => navigate('/admin')} variant="outline" className="border-sacred-gold text-sacred-gold-dark text-xs font-sans uppercase tracking-wider px-4 py-2 rounded-none">
+            <Button onClick={() => navigate('/admin')} variant="outline" className="border-sacred-gold text-sacred-gold-dark text-sm font-sans uppercase tracking-wider px-4 py-2 rounded-none">
               <BarChart3 className="w-4 h-4 mr-1" /> Full Admin
             </Button>
           </div>
@@ -90,7 +90,7 @@ export default function Dashboard() {
             <div key={s.label} className="border border-sacred-gold p-5 bg-cosmic-bg">
               <s.icon className={`w-5 h-5 ${s.color} mb-2`} />
               <p className="text-3xl font-sans text-cosmic-text font-bold">{s.value}</p>
-              <p className="text-xs text-cosmic-text uppercase tracking-wider mt-1">{s.label}</p>
+              <p className="text-sm text-cosmic-text uppercase tracking-wider mt-1">{s.label}</p>
             </div>
           ))}
         </div>
@@ -107,19 +107,19 @@ export default function Dashboard() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-cosmic-text">{astro.name}</p>
-                    <p className="text-xs text-cosmic-text">{astro.email}</p>
+                    <p className="text-sm text-cosmic-text">{astro.email}</p>
                   </div>
                 </div>
                 <div className="flex gap-6 text-right">
                   <div>
                     <p className="text-lg font-sans text-cosmic-text font-bold">{astro.client_count}</p>
-                    <p className="text-xs text-cosmic-text">Clients</p>
+                    <p className="text-sm text-cosmic-text">Clients</p>
                   </div>
                   <div>
                     <p className="text-lg font-sans text-cosmic-text font-bold">{astro.kundli_count}</p>
-                    <p className="text-xs text-cosmic-text">Kundlis</p>
+                    <p className="text-sm text-cosmic-text">Kundlis</p>
                   </div>
-                  <span className={`self-center text-xs px-2 py-0.5 border ${astro.role === 'admin' ? 'border-red-500 text-red-500' : 'border-purple-500 text-purple-500'}`}>
+                  <span className={`self-center text-sm px-2 py-0.5 border ${astro.role === 'admin' ? 'border-red-500 text-red-500' : 'border-purple-500 text-purple-500'}`}>
                     {astro.role}
                   </span>
                 </div>
@@ -150,8 +150,8 @@ export default function Dashboard() {
         <div className="text-center py-16 border border-dashed border-sacred-gold">
           <User className="w-12 h-12 text-cosmic-text mx-auto mb-4" />
           <p className="text-cosmic-text mb-2">{t('dashboard.noClients')}</p>
-          <p className="text-xs text-cosmic-text mb-6">{t('dashboard.createPrompt')}</p>
-          <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold text-xs font-sans uppercase tracking-wider rounded-none">
+          <p className="text-sm text-cosmic-text mb-6">{t('dashboard.createPrompt')}</p>
+          <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold text-sm font-sans uppercase tracking-wider rounded-none">
             <Plus className="w-4 h-4 mr-1" /> {t('dashboard.createFirst')}
           </Button>
         </div>
@@ -169,14 +169,14 @@ export default function Dashboard() {
               </div>
               <div>
                 <p className="text-sm font-medium text-cosmic-text">{client.name}</p>
-                <p className="text-xs text-cosmic-text">
+                <p className="text-sm text-cosmic-text">
                   {client.birth_date || t('common.noData')} {client.birth_place ? `· ${client.birth_place}` : ''}
                   {client.phone ? ` · ${client.phone}` : ''}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-xs text-cosmic-text">{client.kundli_count} chart{client.kundli_count !== 1 ? 's' : ''}</span>
+              <span className="text-sm text-cosmic-text">{client.kundli_count} chart{client.kundli_count !== 1 ? 's' : ''}</span>
               <ChevronRight className="w-4 h-4 text-cosmic-text group-hover:text-sacred-gold-dark transition-colors" />
             </div>
           </div>
@@ -195,10 +195,10 @@ export default function Dashboard() {
           <p className="text-sm text-cosmic-text mt-1">{clients.length} {t('dashboard.clientsRegistered')}</p>
         </div>
         <div className="flex gap-2">
-          <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold text-xs font-sans uppercase tracking-wider px-4 py-2 rounded-none">
+          <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold text-sm font-sans uppercase tracking-wider px-4 py-2 rounded-none">
             <Plus className="w-4 h-4 mr-1" /> New Kundli
           </Button>
-          <Button onClick={() => navigate('/lal-kitab')} variant="outline" className="border-sacred-gold text-sacred-gold-dark text-xs font-sans uppercase tracking-wider px-4 py-2 rounded-none">
+          <Button onClick={() => navigate('/lal-kitab')} variant="outline" className="border-sacred-gold text-sacred-gold-dark text-sm font-sans uppercase tracking-wider px-4 py-2 rounded-none">
             <BookOpen className="w-4 h-4 mr-1" /> Lal Kitab
           </Button>
         </div>

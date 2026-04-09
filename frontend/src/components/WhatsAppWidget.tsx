@@ -18,7 +18,7 @@ export default function WhatsAppWidget() {
           <button onClick={() => setShowTooltip(false)} className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-cosmic-surface border border-sacred-gold flex items-center justify-center text-cosmic-text hover:text-cosmic-text">
             <X className="w-3 h-3" />
           </button>
-          <p className="text-xs text-cosmic-text-secondary">Chat with us on WhatsApp for instant astrology guidance!</p>
+          <p className="text-sm text-cosmic-text-secondary">Chat with us on WhatsApp for instant astrology guidance!</p>
         </div>
       )}
       <button

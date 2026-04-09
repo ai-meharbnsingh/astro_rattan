@@ -231,7 +231,7 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
                       {entry.aspectHouses.map((h) => (
                         <span
                           key={h}
-                          className="px-2 py-0.5 rounded bg-sacred-gold/10 text-sacred-gold text-xs font-medium"
+                          className="px-2 py-0.5 rounded bg-sacred-gold/10 text-sacred-gold text-sm font-medium"
                         >
                           {h}
                         </span>
@@ -293,7 +293,7 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
                         {conj.planets.map(getPlanetLabel).join(', ')}
                       </p>
                       <p
-                        className={`text-xs mt-0.5 ${
+                        className={`text-sm mt-0.5 ${
                           hasClash ? 'text-red-500' : 'text-green-500'
                         }`}
                       >

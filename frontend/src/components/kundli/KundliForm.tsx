@@ -105,7 +105,7 @@ export default function KundliForm({
       )}
       <Button onClick={onPrashnaKundli} variant="outline" className="w-full mb-4 border-sacred-gold text-sacred-brown hover:bg-sacred-gold">
         <Clock className="w-5 h-5 mr-2 text-sacred-gold" />{t('kundli.prashnaKundli')}
-        <span className="ml-2 text-xs text-cosmic-text">{t('kundli.prashnaSubtitle')}</span>
+        <span className="ml-2 text-sm text-cosmic-text">{t('kundli.prashnaSubtitle')}</span>
       </Button>
       {error && <div className="mb-4 p-3 rounded-xl bg-red-900 text-red-400 text-sm">{error}</div>}
       <div className="space-y-4">
@@ -154,14 +154,14 @@ export default function KundliForm({
                   className="w-full text-left px-4 py-3 hover:bg-sacred-purple transition-colors border-b border-sacred-gold-dark last:border-b-0"
                 >
                   <p className="text-sm font-medium text-cosmic-text truncate">{s.name}</p>
-                  <p className="text-xs text-cosmic-text">{s.lat.toFixed(4)}, {s.lon.toFixed(4)}</p>
+                  <p className="text-sm text-cosmic-text">{s.lat.toFixed(4)}, {s.lon.toFixed(4)}</p>
                 </button>
               ))}
             </div>
           )}
         </div>
         {/* Coordinates display */}
-        <div className="flex items-center gap-2 text-xs text-cosmic-text px-1">
+        <div className="flex items-center gap-2 text-sm text-cosmic-text px-1">
           <MapPin className="w-3 h-3 text-sacred-gold" />
           <span>Lat: {formData.latitude.toFixed(4)}, Lon: {formData.longitude.toFixed(4)}</span>
         </div>

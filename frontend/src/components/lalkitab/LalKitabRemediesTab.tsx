@@ -112,7 +112,7 @@ export default function LalKitabRemediesTab({ chartData }: Props) {
                               {typeLabel}
                             </span>
                             <span
-                              className={`px-2 py-0.5 rounded-full text-xs font-medium ${badgeStyle}`}
+                              className={`px-2 py-0.5 rounded-full text-sm font-medium ${badgeStyle}`}
                             >
                               {categoryLabel}
                             </span>

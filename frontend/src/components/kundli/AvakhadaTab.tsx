@@ -52,7 +52,7 @@ export default function AvakhadaTab({ avakhadaData, loadingAvakhada, t }: Avakha
             className="rounded-xl p-4 border"
             style={{ backgroundColor: 'var(--parchment)', borderColor: 'rgba(184,134,11,0.2)' }}
           >
-            <p className="text-xs font-medium mb-1" style={{ color: 'var(--ink-light)' }}>{item.label}</p>
+            <p className="text-sm font-medium mb-1" style={{ color: 'var(--ink-light)' }}>{item.label}</p>
             <p className="font-display font-semibold text-base" style={{ color: 'var(--ink)' }}>{item.value}</p>
           </div>
         ))}

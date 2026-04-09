@@ -178,7 +178,7 @@ export default function LalKitabRulesTab({ chartData }: Props) {
                 <div className="flex items-stretch">
                   {/* Left house */}
                   <div className="flex-1 p-4 text-center">
-                    <p className="text-xs text-cosmic-text/70 mb-1">
+                    <p className="text-sm text-cosmic-text/70 mb-1">
                       {isHi ? 'भाव' : 'House'}
                     </p>
                     <p className="text-2xl font-sans font-bold text-sacred-gold">
@@ -189,13 +189,13 @@ export default function LalKitabRulesTab({ chartData }: Props) {
                         planetsH1.map((p) => (
                           <span
                             key={p}
-                            className="inline-block px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold text-xs font-medium mr-1"
+                            className="inline-block px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold text-sm font-medium mr-1"
                           >
                             {getPlanetLabel(p)}
                           </span>
                         ))
                       ) : (
-                        <span className="text-xs text-cosmic-text/60 italic">
+                        <span className="text-sm text-cosmic-text/60 italic">
                           {isHi ? 'खाली' : 'Empty'}
                         </span>
                       )}
@@ -209,7 +209,7 @@ export default function LalKitabRulesTab({ chartData }: Props) {
 
                   {/* Right house */}
                   <div className="flex-1 p-4 text-center">
-                    <p className="text-xs text-cosmic-text/70 mb-1">
+                    <p className="text-sm text-cosmic-text/70 mb-1">
                       {isHi ? 'भाव' : 'House'}
                     </p>
                     <p className="text-2xl font-sans font-bold text-sacred-gold">
@@ -220,13 +220,13 @@ export default function LalKitabRulesTab({ chartData }: Props) {
                         planetsH2.map((p) => (
                           <span
                             key={p}
-                            className="inline-block px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold text-xs font-medium mr-1"
+                            className="inline-block px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold text-sm font-medium mr-1"
                           >
                             {getPlanetLabel(p)}
                           </span>
                         ))
                       ) : (
-                        <span className="text-xs text-cosmic-text/60 italic">
+                        <span className="text-sm text-cosmic-text/60 italic">
                           {isHi ? 'खाली' : 'Empty'}
                         </span>
                       )}
@@ -237,13 +237,13 @@ export default function LalKitabRulesTab({ chartData }: Props) {
                 {/* Explanation */}
                 <div className="border-t border-sacred-gold/10 p-3">
                   {hasMutual ? (
-                    <p className="text-xs text-sacred-gold/80 text-center">
+                    <p className="text-sm text-sacred-gold/80 text-center">
                       {isHi
                         ? `भाव ${h1} और भाव ${h2} के ग्रह परस्पर प्रभाव डालते हैं`
                         : `Planets in House ${h1} and House ${h2} have mutual influence`}
                     </p>
                   ) : (
-                    <p className="text-xs text-cosmic-text/60 text-center">
+                    <p className="text-sm text-cosmic-text/60 text-center">
                       {isHi
                         ? `भाव ${h1} का ग्रह भाव ${h2} को प्रभावित करता है`
                         : `Planet in House ${h1} affects House ${h2}`}
@@ -311,7 +311,7 @@ export default function LalKitabRulesTab({ chartData }: Props) {
                   <span className="px-2.5 py-1 rounded-lg bg-sacred-gold/10 text-sacred-gold text-sm font-sans font-medium">
                     {isHi ? 'भाव' : 'House'} {rule.toHouse}
                   </span>
-                  <span className="text-xs text-cosmic-text/60">
+                  <span className="text-sm text-cosmic-text/60">
                     ({isHi ? rule.domainHi : rule.domainEn})
                   </span>
                 </div>
@@ -324,7 +324,7 @@ export default function LalKitabRulesTab({ chartData }: Props) {
                 {/* Applied chart data */}
                 {hasPlanets && (
                   <div className="mt-3 pt-3 border-t border-sacred-gold/10">
-                    <p className="text-xs text-cosmic-text/70 mb-1.5">
+                    <p className="text-sm text-cosmic-text/70 mb-1.5">
                       {isHi
                         ? `भाव ${rule.fromHouse} में वर्तमान ग्रह:`
                         : `Current planets in House ${rule.fromHouse}:`}
@@ -335,11 +335,11 @@ export default function LalKitabRulesTab({ chartData }: Props) {
                           PLANET_EFFECTS_IN_HOUSES[p]?.[rule.fromHouse];
                         return (
                           <div key={p} className="flex-1 min-w-[200px]">
-                            <span className="inline-block px-2 py-0.5 rounded-full bg-sacred-gold/15 text-sacred-gold text-xs font-medium mb-1">
+                            <span className="inline-block px-2 py-0.5 rounded-full bg-sacred-gold/15 text-sacred-gold text-sm font-medium mb-1">
                               {getPlanetLabel(p)}
                             </span>
                             {effect && (
-                              <p className="text-xs text-cosmic-text/60">
+                              <p className="text-sm text-cosmic-text/60">
                                 {isHi ? effect.hi : effect.en}
                               </p>
                             )}

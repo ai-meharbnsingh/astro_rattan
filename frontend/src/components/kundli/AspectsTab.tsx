@@ -53,7 +53,7 @@ export default function AspectsTab({ aspectsData, loadingAspects, language, t }:
                             {beneficList.length > 0 ? beneficList.map((a: any, j: number) => (
                               <span key={j} className="inline-flex items-center gap-1 mr-2">
                                 <span className="text-green-600 font-medium">{translatePlanet(a.planet || a, language)}</span>
-                                <span className="text-xs text-cosmic-text">({a.strength || '1.0'}x {a.offset ? a.offset + 'H' : ''}{a.type === 'special' ? ' Spl' : ''})</span>
+                                <span className="text-sm text-cosmic-text">({a.strength || '1.0'}x {a.offset ? a.offset + 'H' : ''}{a.type === 'special' ? ' Spl' : ''})</span>
                               </span>
                             )) : <span className="text-cosmic-text">-</span>}
                           </td>
@@ -61,7 +61,7 @@ export default function AspectsTab({ aspectsData, loadingAspects, language, t }:
                             {maleficList.length > 0 ? maleficList.map((a: any, j: number) => (
                               <span key={j} className="inline-flex items-center gap-1 mr-2">
                                 <span className="text-red-500 font-medium">{translatePlanet(a.planet || a, language)}</span>
-                                <span className="text-xs text-cosmic-text">({a.strength || '1.0'}x {a.offset ? a.offset + 'H' : ''}{a.type === 'special' ? ' Spl' : ''})</span>
+                                <span className="text-sm text-cosmic-text">({a.strength || '1.0'}x {a.offset ? a.offset + 'H' : ''}{a.type === 'special' ? ' Spl' : ''})</span>
                               </span>
                             )) : <span className="text-cosmic-text">-</span>}
                           </td>
@@ -69,7 +69,7 @@ export default function AspectsTab({ aspectsData, loadingAspects, language, t }:
                             {aspectsTo.length > 0 ? aspectsTo.map((a: any, j: number) => (
                               <span key={j} className="inline-flex items-center gap-1 mr-2">
                                 <span className="font-medium">H{a.house}</span>
-                                <span className="text-xs text-cosmic-text">({a.strength}x)</span>
+                                <span className="text-sm text-cosmic-text">({a.strength}x)</span>
                               </span>
                             )) : <span className="text-cosmic-text">-</span>}
                           </td>

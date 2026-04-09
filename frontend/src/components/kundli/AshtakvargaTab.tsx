@@ -45,7 +45,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                 onHouseClick={() => {}}
               />
             </div>
-            <p className="text-xs text-center text-cosmic-text mt-2">{t('ashtakvarga.savDescription')}</p>
+            <p className="text-sm text-center text-cosmic-text mt-2">{t('ashtakvarga.savDescription')}</p>
           </div>
 
           {/* SAV Bar Chart */}
@@ -59,7 +59,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                 const isStrong = points >= 28;
                 return (
                   <div key={sign} className="flex-1 flex flex-col items-center gap-1">
-                    <span className="text-xs font-medium text-sacred-brown">{points}</span>
+                    <span className="text-sm font-medium text-sacred-brown">{points}</span>
                     <div className="w-full bg-sacred-gold rounded-t-md relative" style={{ height: '140px' }}>
                       <div
                         className="absolute bottom-0 w-full rounded-t-md transition-all"
@@ -69,14 +69,14 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                         }}
                       />
                     </div>
-                    <span className="text-xs text-cosmic-text truncate w-full text-center" title={sign}>
+                    <span className="text-sm text-cosmic-text truncate w-full text-center" title={sign}>
                       {sign.slice(0, 3)}
                     </span>
                   </div>
                 );
               })}
             </div>
-            <div className="flex items-center gap-4 mt-3 text-xs text-cosmic-text">
+            <div className="flex items-center gap-4 mt-3 text-sm text-cosmic-text">
               <div className="flex items-center gap-1">
                 <div className="w-3 h-3 rounded" style={{ backgroundColor: 'var(--aged-gold-dim)' }} />
                 <span>{t('kundli.strong')} (&ge;28)</span>
@@ -91,7 +91,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
           {/* Bhinna Ashtakvarga Charts — Parashara's Light format: table + diamond chart per planet */}
           <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
             <h4 className="font-display font-semibold text-sacred-brown mb-2">{language === 'hi' ? 'भिन्न अष्टकवर्ग चार्ट' : 'Bhinna Ashtakvarga Charts'}</h4>
-            <p className="text-xs text-cosmic-text mb-4">{language === 'hi' ? '12 राशियों में प्रत्येक ग्रह के बिंदु (पराशर प्रकाश प्रारूप)।' : 'Individual planet bindus across 12 signs (Parashara\'s Light format).'}</p>
+            <p className="text-sm text-cosmic-text mb-4">{language === 'hi' ? '12 राशियों में प्रत्येक ग्रह के बिंदु (पराशर प्रकाश प्रारूप)।' : 'Individual planet bindus across 12 signs (Parashara\'s Light format).'}</p>
             <div className="grid grid-cols-1 gap-5">
               {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Lagna'].map((planet) => {
                 const bindus = ashtakvargaData.planet_bindus?.[planet] || {};
@@ -131,7 +131,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                       <h5 className="font-display font-semibold text-sacred-brown text-sm">
                         {translatePlanet(planet, language)}
                       </h5>
-                      <span className="text-xs font-semibold text-sacred-gold-dark">{language === 'hi' ? 'कुल' : 'Total'}: {total}</span>
+                      <span className="text-sm font-semibold text-sacred-gold-dark">{language === 'hi' ? 'कुल' : 'Total'}: {total}</span>
                     </div>
                     <div className="flex flex-col lg:flex-row">
                       {/* LEFT: Full contributor matrix table */}
@@ -140,7 +140,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                           const contributors = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Lagna'];
                           const contribData = ashtakvargaData.planet_details?.[planet]?.contributors;
                           return (
-                            <table className="w-full text-xs border-collapse">
+                            <table className="w-full text-sm border-collapse">
                               <thead>
                                 <tr>
                                   <th className="text-left p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold whitespace-nowrap">Contributor</th>
@@ -160,7 +160,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                                       <td className="p-1 text-sacred-brown font-medium whitespace-nowrap">{translatePlanet(contrib, language)}</td>
                                       {rowVals.map((v, i) => (
                                         <td key={i} className="text-center p-1">
-                                          <span className={`inline-block w-5 h-5 leading-5 rounded-sm text-xs font-semibold ${v === 1 ? 'bg-green-100 text-green-800' : 'text-cosmic-text'}`}>
+                                          <span className={`inline-block w-5 h-5 leading-5 rounded-sm text-sm font-semibold ${v === 1 ? 'bg-green-100 text-green-800' : 'text-cosmic-text'}`}>
                                             {v}
                                           </span>
                                         </td>
@@ -175,7 +175,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                                   {vals.map((v, i) => (
                                     <td key={i} className="text-center p-1">
                                       <span
-                                        className="inline-block w-6 h-6 leading-6 rounded text-xs font-bold"
+                                        className="inline-block w-6 h-6 leading-6 rounded text-sm font-bold"
                                         style={{ backgroundColor: binduBg(v), color: binduColor(v) }}
                                       >
                                         {v}
@@ -218,7 +218,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
               })}
             </div>
             {/* Color legend */}
-            <div className="flex items-center gap-4 mt-4 text-xs text-cosmic-text">
+            <div className="flex items-center gap-4 mt-4 text-sm text-cosmic-text">
               <div className="flex items-center gap-1">
                 <div className="w-3 h-3 rounded border" style={{ backgroundColor: '#dcfce7', borderColor: '#86efac' }} />
                 <span>{language === 'hi' ? '5-8 प्रबल' : '5-8 Strong'}</span>
@@ -242,7 +242,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                   <tr className="border-b border-sacred-gold">
                     <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
                     {['Ari', 'Tau', 'Gem', 'Can', 'Leo', 'Vir', 'Lib', 'Sco', 'Sag', 'Cap', 'Aqu', 'Pis'].map((s) => (
-                      <th key={s} className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{s}</th>
+                      <th key={s} className="text-center p-2 text-sacred-gold-dark font-medium text-sm">{s}</th>
                     ))}
                     <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('table.total')}</th>
                   </tr>
@@ -259,7 +259,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                           const val = bindus[s] || 0;
                           return (
                             <td key={s} className="text-center p-2">
-                              <span className={`inline-block w-6 h-6 rounded text-xs leading-6 ${val >= 5 ? 'bg-sacred-gold-dark text-sacred-gold-dark font-bold' : val <= 2 ? 'bg-red-10 text-wax-red-deep' : 'text-cosmic-text'}`}>
+                              <span className={`inline-block w-6 h-6 rounded text-sm leading-6 ${val >= 5 ? 'bg-sacred-gold-dark text-sacred-gold-dark font-bold' : val <= 2 ? 'bg-red-10 text-wax-red-deep' : 'text-cosmic-text'}`}>
                                 {val}
                               </span>
                             </td>

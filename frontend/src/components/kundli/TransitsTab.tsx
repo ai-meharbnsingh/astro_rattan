@@ -44,7 +44,7 @@ export default function TransitsTab(props: TransitsTabProps) {
               <h4 className="font-display font-bold text-lg mb-3" style={{ color: 'var(--aged-gold)' }}>{t('section.gocharPredictions')}</h4>
               <div className="flex flex-wrap items-end gap-3">
                 <div>
-                  <label className="text-xs block mb-1" style={{ color: 'var(--ink-light)' }}>{t('common.date')}</label>
+                  <label className="text-sm block mb-1" style={{ color: 'var(--ink-light)' }}>{t('common.date')}</label>
                   <input
                     type="date"
                     value={transitDate}
@@ -54,7 +54,7 @@ export default function TransitsTab(props: TransitsTabProps) {
                   />
                 </div>
                 <div>
-                  <label className="text-xs block mb-1" style={{ color: 'var(--ink-light)' }}>{t('common.time')}</label>
+                  <label className="text-sm block mb-1" style={{ color: 'var(--ink-light)' }}>{t('common.time')}</label>
                   <input
                     type="time"
                     value={transitTime}
@@ -76,7 +76,7 @@ export default function TransitsTab(props: TransitsTabProps) {
                 {transitDate && (
                   <button
                     onClick={() => { resetTransitFilters(); }}
-                    className="text-xs px-3 py-1.5 rounded-lg border"
+                    className="text-sm px-3 py-1.5 rounded-lg border"
                     style={{ borderColor: 'rgba(184,134,11,0.3)', color: 'var(--ink-light)' }}
                   >
                     {t('transit.resetToNow')}
@@ -101,7 +101,7 @@ export default function TransitsTab(props: TransitsTabProps) {
                 {/* Transit Chart — clickable houses */}
                 <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
                   <h4 className="font-display font-semibold text-sacred-brown mb-2">{t('transit.chart')} ({transitData.transit_date})</h4>
-                  <p className="text-xs mb-3" style={{ color: 'var(--ink-light)' }}>{t('kundli.clickHouseToRotate')}</p>
+                  <p className="text-sm mb-3" style={{ color: 'var(--ink-light)' }}>{t('kundli.clickHouseToRotate')}</p>
                   <div className="w-full max-w-[600px] mx-auto">
                     {(() => {
                       const shift = transitHouseShift;
@@ -132,11 +132,11 @@ export default function TransitsTab(props: TransitsTabProps) {
                       );
                     })()}
                   </div>
-                  <div className="flex items-center justify-center gap-4 mt-2 text-xs text-cosmic-text">
+                  <div className="flex items-center justify-center gap-4 mt-2 text-sm text-cosmic-text">
                     <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full" style={{backgroundColor: 'var(--aged-gold)'}} /> {t('transit.benefic')}</span>
                     <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full" style={{backgroundColor: 'var(--wax-red)'}} /> {t('transit.malefic')}</span>
                     {transitHouseShift > 0 && (
-                      <button onClick={() => setTransitHouseShift(0)} className="text-xs px-2 py-0.5 rounded border" style={{ borderColor: 'rgba(184,134,11,0.3)', color: 'var(--aged-gold)' }}>
+                      <button onClick={() => setTransitHouseShift(0)} className="text-sm px-2 py-0.5 rounded border" style={{ borderColor: 'rgba(184,134,11,0.3)', color: 'var(--aged-gold)' }}>
                         {t('common.resetView')}
                       </button>
                     )}
@@ -165,7 +165,7 @@ export default function TransitsTab(props: TransitsTabProps) {
                           <td className="p-3" style={{ color: 'var(--ink-light)' }}>{translateSign(tr.current_sign, language)}</td>
                           <td className="p-3 text-center" style={{ color: 'var(--ink-light)' }}>{tr.natal_house_from_moon}</td>
                           <td className="p-3 text-center">
-                            <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full font-medium ${tr.effect === 'favorable' ? 'bg-green-500 text-green-400' : 'bg-red-500 text-red-400'}`}>
+                            <span className={`inline-flex items-center gap-1 text-sm px-2 py-1 rounded-full font-medium ${tr.effect === 'favorable' ? 'bg-green-500 text-green-400' : 'bg-red-500 text-red-400'}`}>
                               {tr.effect === 'favorable' ? <CheckCircle className="w-3 h-3" /> : <AlertTriangle className="w-3 h-3" />}
                               {tr.effect === 'favorable' ? t('common.favorable') : t('common.unfavorable')}
                             </span>
@@ -186,8 +186,8 @@ export default function TransitsTab(props: TransitsTabProps) {
                     >
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-display font-semibold" style={{ color: 'var(--ink)' }}>{translatePlanet(tr.planet, language)}</span>
-                        <span className="text-xs" style={{ color: 'var(--ink-light)' }}>{translateSign(tr.current_sign, language)}</span>
-                        <span className={`text-xs px-1.5 py-0.5 rounded-full ${tr.effect === 'favorable' ? 'bg-green-500 text-green-400' : 'bg-red-500 text-red-400'}`}>
+                        <span className="text-sm" style={{ color: 'var(--ink-light)' }}>{translateSign(tr.current_sign, language)}</span>
+                        <span className={`text-sm px-1.5 py-0.5 rounded-full ${tr.effect === 'favorable' ? 'bg-green-500 text-green-400' : 'bg-red-500 text-red-400'}`}>
                           {tr.effect === 'favorable' ? t('common.favorable') : t('common.unfavorable')}
                         </span>
                       </div>

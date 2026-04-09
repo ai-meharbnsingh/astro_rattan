@@ -170,7 +170,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
               <p className="text-2xl font-sans font-bold text-cosmic-text">
                 {counts.totalPlanets}
               </p>
-              <p className="text-xs text-cosmic-text/60">
+              <p className="text-sm text-cosmic-text/60">
                 {isHi ? 'ग्रह' : 'Planets'}
               </p>
             </div>
@@ -178,7 +178,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
               <p className="text-2xl font-sans font-bold text-cosmic-text">
                 {counts.empty}
               </p>
-              <p className="text-xs text-cosmic-text/60">
+              <p className="text-sm text-cosmic-text/60">
                 {isHi ? 'खाली भाव' : 'Empty'}
               </p>
             </div>
@@ -186,7 +186,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
               <p className="text-2xl font-sans font-bold text-green-400">
                 {counts.strong}
               </p>
-              <p className="text-xs text-cosmic-text/60">
+              <p className="text-sm text-cosmic-text/60">
                 {isHi ? 'मजबूत' : 'Strong'}
               </p>
             </div>
@@ -194,7 +194,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
               <p className="text-2xl font-sans font-bold text-red-400">
                 {counts.weak}
               </p>
-              <p className="text-xs text-cosmic-text/60">
+              <p className="text-sm text-cosmic-text/60">
                 {isHi ? 'कमजोर' : 'Weak'}
               </p>
             </div>
@@ -211,7 +211,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
                   key={houseNum}
                   className="relative flex flex-col items-center justify-center rounded-md border border-sacred-gold/15 bg-cosmic-card/40 p-2 min-h-[52px]"
                 >
-                  <span className="text-xs font-bold text-sacred-gold-dark">
+                  <span className="text-sm font-bold text-sacred-gold-dark">
                     {houseNum}
                   </span>
                   {planets.length > 0 && (
@@ -219,7 +219,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
                       {planets.map((pKey) => (
                         <span
                           key={pKey}
-                          className={`text-xs font-semibold px-1 rounded ${getPlanetDotColor(pKey).replace('bg-', 'text-')}`}
+                          className={`text-sm font-semibold px-1 rounded ${getPlanetDotColor(pKey).replace('bg-', 'text-')}`}
                         >
                           {planetAbbr[pKey] || pKey.slice(0, 2)}
                         </span>
@@ -269,7 +269,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
                     </span>
                   </div>
                   <span
-                    className={`px-2.5 py-0.5 rounded-full text-xs font-semibold shrink-0 ml-2 ${severityStyles[dosha.severity].badge}`}
+                    className={`px-2.5 py-0.5 rounded-full text-sm font-semibold shrink-0 ml-2 ${severityStyles[dosha.severity].badge}`}
                   >
                     {dosha.severity === 'high'
                       ? t('lk.dosha.high')
@@ -372,7 +372,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
                         >
                           {planetLabel}
                         </p>
-                        <p className="text-xs text-cosmic-text/70">
+                        <p className="text-sm text-cosmic-text/70">
                           {period.startAge}–{period.endAge}{' '}
                           {isHi ? 'वर्ष' : 'years'}
                         </p>
@@ -380,17 +380,17 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
                     </div>
 
                     {isCurrent && (
-                      <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sacred-gold/20 text-sacred-gold">
+                      <span className="px-2.5 py-0.5 rounded-full text-sm font-semibold bg-sacred-gold/20 text-sacred-gold">
                         {isHi ? 'वर्तमान' : 'Active'}
                       </span>
                     )}
                     {isPrevious && (
-                      <span className="px-2.5 py-0.5 rounded-full text-xs text-cosmic-text/60">
+                      <span className="px-2.5 py-0.5 rounded-full text-sm text-cosmic-text/60">
                         {isHi ? 'पिछला' : 'Previous'}
                       </span>
                     )}
                     {isNext && (
-                      <span className="px-2.5 py-0.5 rounded-full text-xs text-cosmic-text/60">
+                      <span className="px-2.5 py-0.5 rounded-full text-sm text-cosmic-text/60">
                         {isHi ? 'अगला' : 'Next'}
                       </span>
                     )}

@@ -41,7 +41,7 @@ export default function CTA() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button
             onClick={() => navigate('/login')}
-            className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold transition-all px-8 py-5 text-xs font-sans tracking-[3px] uppercase rounded-none"
+            className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold transition-all px-8 py-5 text-sm font-sans tracking-[3px] uppercase rounded-none"
             style={{ boxShadow: '0 0 30px rgba(212, 175, 55, 0.3)' }}
           >
             Create Free Account

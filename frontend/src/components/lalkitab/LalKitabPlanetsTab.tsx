@@ -72,18 +72,18 @@ export default function LalKitabPlanetsTab({ chartData }: Props) {
                     <h3 className="font-sans text-sacred-gold text-lg">
                       {getPlanetName(planet)}
                     </h3>
-                    <p className="text-cosmic-text/60 text-xs">
+                    <p className="text-cosmic-text/60 text-sm">
                       {t('lk.planets.housePlacement')}: {house ?? '—'}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   {status === 'active' ? (
-                    <span className="bg-green-500/20 text-green-600 px-2 py-0.5 rounded-full text-xs">
+                    <span className="bg-green-500/20 text-green-600 px-2 py-0.5 rounded-full text-sm">
                       {t('lk.planets.active')}
                     </span>
                   ) : (
-                    <span className="bg-orange-500/20 text-orange-600 px-2 py-0.5 rounded-full text-xs">
+                    <span className="bg-orange-500/20 text-orange-600 px-2 py-0.5 rounded-full text-sm">
                       {t('lk.planets.sleeping')}
                     </span>
                   )}
@@ -100,7 +100,7 @@ export default function LalKitabPlanetsTab({ chartData }: Props) {
                 <div className="mt-4 space-y-4 border-t border-sacred-gold/10 pt-4">
                   {/* Pakka Ghar */}
                   <div>
-                    <span className="text-xs text-cosmic-text/70 uppercase tracking-wide">
+                    <span className="text-sm text-cosmic-text/70 uppercase tracking-wide">
                       {t('lk.planets.pakkaGhar')}
                     </span>
                     <p className="text-sacred-gold font-sans text-sm mt-0.5">
@@ -110,14 +110,14 @@ export default function LalKitabPlanetsTab({ chartData }: Props) {
 
                   {/* Friendly Planets */}
                   <div>
-                    <span className="text-xs text-cosmic-text/70 uppercase tracking-wide">
+                    <span className="text-sm text-cosmic-text/70 uppercase tracking-wide">
                       {t('lk.planets.friends')}
                     </span>
                     <div className="flex flex-wrap gap-1.5 mt-1.5">
                       {friends.map((f) => (
                         <span
                           key={f}
-                          className="bg-blue-500/10 text-blue-600 border border-blue-500/20 px-2 py-0.5 rounded-full text-xs"
+                          className="bg-blue-500/10 text-blue-600 border border-blue-500/20 px-2 py-0.5 rounded-full text-sm"
                         >
                           {getFriendName(f)}
                         </span>
@@ -127,14 +127,14 @@ export default function LalKitabPlanetsTab({ chartData }: Props) {
 
                   {/* Enemy Planets */}
                   <div>
-                    <span className="text-xs text-cosmic-text/70 uppercase tracking-wide">
+                    <span className="text-sm text-cosmic-text/70 uppercase tracking-wide">
                       {t('lk.planets.enemies')}
                     </span>
                     <div className="flex flex-wrap gap-1.5 mt-1.5">
                       {enemies.map((e) => (
                         <span
                           key={e}
-                          className="bg-red-500/10 text-red-600 border border-red-500/20 px-2 py-0.5 rounded-full text-xs"
+                          className="bg-red-500/10 text-red-600 border border-red-500/20 px-2 py-0.5 rounded-full text-sm"
                         >
                           {getFriendName(e)}
                         </span>
@@ -145,7 +145,7 @@ export default function LalKitabPlanetsTab({ chartData }: Props) {
                   {/* Effect */}
                   {effect && (
                     <div>
-                      <span className="text-xs text-cosmic-text/70 uppercase tracking-wide">
+                      <span className="text-sm text-cosmic-text/70 uppercase tracking-wide">
                         {t('lk.planets.effect')}
                       </span>
                       <p className="text-cosmic-text text-sm mt-1 leading-relaxed">

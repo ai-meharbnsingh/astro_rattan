@@ -207,7 +207,7 @@ function StatusBadge({ status, lang }: { status: 'positive' | 'negative' | 'neut
   };
 
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border ${config.bg} ${config.text} ${config.border}`}>
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-sm font-medium border ${config.bg} ${config.text} ${config.border}`}>
       <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
       {config.label}
     </span>
@@ -228,7 +228,7 @@ function SeverityBadge({ severity, lang }: { severity: 'high' | 'medium' | 'low'
   };
 
   return (
-    <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${config.bg} ${config.text} ${config.border}`}>
+    <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-sm font-semibold border ${config.bg} ${config.text} ${config.border}`}>
       {severity === 'high' && '\u26A0\uFE0F'} {config.label}
     </span>
   );
@@ -475,14 +475,14 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
               <p className="text-sm font-medium text-red-800">
                 {lang === 'hi' ? 'सर्वर त्रुटि' : 'Server Error'}
               </p>
-              <p className="text-xs text-red-600 mt-1">
+              <p className="text-sm text-red-600 mt-1">
                 {lang === 'hi' 
                   ? 'डेटा लोड करने में समस्या हुई। कृपया बाद में पुनः प्रयास करें।' 
                   : 'Failed to load data. Please try again later.'}
               </p>
               <button
                 onClick={() => fetchAnalysis(selectedCountry, selectedYear)}
-                className="mt-2 px-3 py-1 bg-red-100 hover:bg-red-200 text-red-700 text-xs rounded-md transition-colors"
+                className="mt-2 px-3 py-1 bg-red-100 hover:bg-red-200 text-red-700 text-sm rounded-md transition-colors"
               >
                 {lang === 'hi' ? 'पुनः प्रयास करें' : 'Retry'}
               </button>
@@ -527,7 +527,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                 className={`rounded-xl border bg-white p-3 text-center ${indicatorBorderColor(card.status)}`}
               >
                 <div className="text-2xl mb-1">{indicatorEmoji(idx, card.status)}</div>
-                <div className="text-xs font-medium text-cosmic-text mb-0.5">
+                <div className="text-sm font-medium text-cosmic-text mb-0.5">
                   {loc(card.label, card.label_hi)}
                 </div>
                 <div className="text-sm font-semibold text-sacred-text">
@@ -546,7 +546,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
             ].map((card, idx) => (
               <div key={idx} className="rounded-xl border border-sacred-gold bg-white p-3 text-center">
                 <div className="text-2xl mb-1">{card.emoji}</div>
-                <div className="text-xs font-medium text-cosmic-text mb-0.5">{card.label}</div>
+                <div className="text-sm font-medium text-cosmic-text mb-0.5">{card.label}</div>
                 <div className="text-sm text-cosmic-text italic">{T.dataUnavailable(lang)}</div>
               </div>
             ))}
@@ -598,7 +598,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                         <td className="p-2 font-semibold">{translatePlanet(p.planet, lang)}</td>
                         <td className="p-2">{translateSign(p.sign, lang)}</td>
                         <td className="p-2 text-center">{p.house}</td>
-                        <td className="p-2 text-center font-mono text-xs">{p.degree}</td>
+                        <td className="p-2 text-center font-mono text-sm">{p.degree}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -650,7 +650,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                       <td className="p-2 font-semibold">{translatePlanet(t_item.planet, lang)}</td>
                       <td className="p-2">{translateSign(t_item.current_sign, lang)}</td>
                       <td className="p-2 text-center">{t_item.house}</td>
-                      <td className={`p-2 text-xs ${textColor}`}>{loc(t_item.impact, t_item.impact_hi)}</td>
+                      <td className={`p-2 text-sm ${textColor}`}>{loc(t_item.impact, t_item.impact_hi)}</td>
                     </tr>
                   );
                 })}
@@ -691,7 +691,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                         <span className="text-sm font-medium text-sacred-brown">
                           {lang === 'hi' ? `भाव ${h.house}` : `House ${h.house}`}
                         </span>
-                        <span className="text-xs text-cosmic-text ml-2">
+                        <span className="text-sm text-cosmic-text ml-2">
                           {loc(h.meaning || fallbackMeaning?.en, h.meaning_hi || fallbackMeaning?.hi)}
                         </span>
                       </div>
@@ -727,10 +727,10 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {MUNDANE_HOUSE_MEANINGS.map((h, idx) => (
               <div key={idx} className="border border-sacred-gold rounded-lg bg-white p-3 flex items-start gap-2">
-                <span className="w-7 h-7 flex items-center justify-center rounded-full bg-sacred-gold text-sacred-gold-dark font-bold text-xs shrink-0">
+                <span className="w-7 h-7 flex items-center justify-center rounded-full bg-sacred-gold text-sacred-gold-dark font-bold text-sm shrink-0">
                   {idx + 1}
                 </span>
-                <span className="text-xs text-cosmic-text">{lang === 'hi' ? h.hi : h.en}</span>
+                <span className="text-sm text-cosmic-text">{lang === 'hi' ? h.hi : h.en}</span>
               </div>
             ))}
           </div>
@@ -767,7 +767,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                     </span>
                     <SeverityBadge severity={risk.severity} lang={lang} />
                   </div>
-                  <p className="text-xs text-cosmic-text leading-relaxed">
+                  <p className="text-sm text-cosmic-text leading-relaxed">
                     {loc(risk.description, risk.description_hi)}
                   </p>
                 </div>
@@ -917,7 +917,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
               <tbody>
                 {eclipseData.map((e, idx) => (
                   <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
-                    <td className="p-2 font-mono text-xs">{e.date}</td>
+                    <td className="p-2 font-mono text-sm">{e.date}</td>
                     <td className="p-2">{loc(e.type, e.type_hi)}</td>
                     <td className="p-2">
                       {e.solar_lunar === 'Solar' ? (
@@ -927,7 +927,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                       )}
                     </td>
                     <td className="p-2 text-center">{e.affected_house}</td>
-                    <td className="p-2 text-xs text-cosmic-text">{loc(e.impact, e.impact_hi)}</td>
+                    <td className="p-2 text-sm text-cosmic-text">{loc(e.impact, e.impact_hi)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -961,8 +961,8 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                 {ingressData.map((entry, idx) => (
                   <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
                     <td className="p-2 font-semibold">{translateSign(entry.sign, lang)}</td>
-                    <td className="p-2 font-mono text-xs">{entry.date}</td>
-                    <td className="p-2 text-xs text-cosmic-text">{loc(entry.theme, entry.theme_hi)}</td>
+                    <td className="p-2 font-mono text-sm">{entry.date}</td>
+                    <td className="p-2 text-sm text-cosmic-text">{loc(entry.theme, entry.theme_hi)}</td>
                   </tr>
                 ))}
               </tbody>

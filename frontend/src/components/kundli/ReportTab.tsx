@@ -243,7 +243,7 @@ export default function ReportTab({
                     })()}
                   </div>
                   {reportLagnaShift > 0 && (
-                    <button onClick={() => setReportLagnaShift(0)} className="block mx-auto mt-1 text-xs text-sacred-gold underline">{t('common.resetView')}</button>
+                    <button onClick={() => setReportLagnaShift(0)} className="block mx-auto mt-1 text-sm text-sacred-gold underline">{t('common.resetView')}</button>
                   )}
                 </div>
 
@@ -283,7 +283,7 @@ export default function ReportTab({
                     })()}
                   </div>
                   {reportMoonShift > 0 && (
-                    <button onClick={() => setReportMoonShift(0)} className="block mx-auto mt-1 text-xs text-sacred-gold underline">{t('common.resetView')}</button>
+                    <button onClick={() => setReportMoonShift(0)} className="block mx-auto mt-1 text-sm text-sacred-gold underline">{t('common.resetView')}</button>
                   )}
                 </div>
 
@@ -291,7 +291,7 @@ export default function ReportTab({
                 <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-3">
                   <h4 className="font-display font-semibold text-sacred-brown mb-2 text-center text-sm">
                     {t('section.gochar')} {transitData?.transit_date ? `(${transitData.transit_date})` : ''}
-                    <span className="text-xs font-normal opacity-50"> ({t('kundli.clickHouseToRotate')})</span>
+                    <span className="text-sm font-normal opacity-50"> ({t('kundli.clickHouseToRotate')})</span>
                   </h4>
                   <div className="flex justify-center">
                     {loadingTransit ? (
@@ -333,7 +333,7 @@ export default function ReportTab({
                     )}
                   </div>
                   {reportGocharShift > 0 && (
-                    <button onClick={() => setReportGocharShift(0)} className="block mx-auto mt-1 text-xs text-sacred-gold underline">{t('common.resetView')}</button>
+                    <button onClick={() => setReportGocharShift(0)} className="block mx-auto mt-1 text-sm text-sacred-gold underline">{t('common.resetView')}</button>
                   )}
                 </div>
               </div>
@@ -348,7 +348,7 @@ export default function ReportTab({
                 <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
                   <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.detailedPlanetPositions')}</h4>
                   <div className="overflow-x-auto">
-                    <table className="w-full text-xs">
+                    <table className="w-full text-sm">
                       <thead className="bg-sacred-gold">
                         <tr>
                           <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
@@ -368,7 +368,7 @@ export default function ReportTab({
                             <td className="p-2 text-cosmic-text">{planet.nakshatra || '\u2014'}</td>
                             <td className="p-2 text-center text-cosmic-text">{planet.sign_degree?.toFixed(1)}&deg;</td>
                             <td className="p-2 text-center">
-                              <span className={`text-xs px-1 py-0.5 rounded ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-500 text-green-400' : 'text-cosmic-text'}`}>
+                              <span className={`text-sm px-1 py-0.5 rounded ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-500 text-green-400' : 'text-cosmic-text'}`}>
                                 {translateLabel(planet.status, language) || '\u2014'}
                               </span>
                             </td>
@@ -450,8 +450,8 @@ export default function ReportTab({
                         { label: t('avakhada.sunSign'), value: avakhadaData.sun_sign },
                       ].map((item) => (
                         <div key={item.label} className="rounded-lg p-2 bg-cosmic-card">
-                          <p className="text-xs text-cosmic-text">{item.label}</p>
-                          <p className="text-xs font-semibold text-sacred-brown">{item.value}</p>
+                          <p className="text-sm text-cosmic-text">{item.label}</p>
+                          <p className="text-sm font-semibold text-sacred-brown">{item.value}</p>
                         </div>
                       ))}
                     </div>
@@ -469,12 +469,12 @@ export default function ReportTab({
                     <div className="space-y-2">
                       {/* Current dasha info */}
                       <div className="rounded-lg p-3 bg-gold-10">
-                        <p className="text-xs" style={{ color: 'var(--ink-light)' }}>{t('section.currentMahadasha')}</p>
+                        <p className="text-sm" style={{ color: 'var(--ink-light)' }}>{t('section.currentMahadasha')}</p>
                         <p className="text-sm font-display font-bold" style={{ color: 'var(--aged-gold)' }}>
                           {(extendedDashaData || dashaData).current_dasha}
                         </p>
                         {(extendedDashaData || dashaData).current_antardasha && (extendedDashaData || dashaData).current_antardasha !== 'Unknown' && (
-                          <p className="text-xs" style={{ color: 'var(--aged-gold)' }}>
+                          <p className="text-sm" style={{ color: 'var(--aged-gold)' }}>
                             AD: {(extendedDashaData || dashaData).current_antardasha}
                             {extendedDashaData?.current_pratyantar && extendedDashaData.current_pratyantar !== 'Unknown' && ` / PD: ${extendedDashaData.current_pratyantar}`}
                           </p>
@@ -488,7 +488,7 @@ export default function ReportTab({
                             <div key={md.planet} className="border border-sacred-gold rounded-lg overflow-hidden">
                               <button
                                 onClick={() => setExpandedMahadasha(expandedMahadasha === md.planet ? null : md.planet)}
-                                className="w-full flex items-center justify-between p-2 text-xs transition-colors"
+                                className="w-full flex items-center justify-between p-2 text-sm transition-colors"
                                 style={{ background: md.is_current ? 'rgba(184,134,11,0.12)' : 'transparent' }}
                               >
                                 <span className="flex items-center gap-1.5">
@@ -506,25 +506,25 @@ export default function ReportTab({
                                     <div key={`${md.planet}-${ad.planet}`}>
                                       <button
                                         onClick={() => setExpandedAntardasha(expandedAntardasha === `${md.planet}-${ad.planet}` ? null : `${md.planet}-${ad.planet}`)}
-                                        className="w-full flex items-center justify-between px-4 py-1.5 text-xs"
+                                        className="w-full flex items-center justify-between px-4 py-1.5 text-sm"
                                         style={{ background: ad.is_current ? 'rgba(184,134,11,0.06)' : 'transparent' }}
                                       >
                                         <span className="flex items-center gap-1">
                                           {ad.pratyantar?.length > 0 && <ChevronDown className={`w-2.5 h-2.5 transition-transform ${expandedAntardasha === `${md.planet}-${ad.planet}` ? 'rotate-180' : ''}`} style={{ color: 'var(--ink-light)' }} />}
                                           <span style={{ color: ad.is_current ? 'var(--aged-gold)' : 'var(--ink)' }}>{translatePlanet(ad.planet, language)} AD {ad.is_current ? '*' : ''}</span>
                                         </span>
-                                        <span style={{ color: 'var(--ink-light)', fontSize: 'var(--text-label, 0.75rem)' }}>{ad.start?.slice(0,10)} — {ad.end?.slice(0,10)}</span>
+                                        <span style={{ color: 'var(--ink-light)', fontSize: 'var(--text-label, 0.875rem)' }}>{ad.start?.slice(0,10)} — {ad.end?.slice(0,10)}</span>
                                       </button>
 
                                       {expandedAntardasha === `${md.planet}-${ad.planet}` && (ad.pratyantar || []).length > 0 && (
                                         <div className="border-t border-sacred-gold">
                                           {ad.pratyantar.map((pt: any, idx: number) => (
-                                            <div key={idx} className="flex items-center justify-between px-8 py-1 text-xs"
+                                            <div key={idx} className="flex items-center justify-between px-8 py-1 text-sm"
                                               style={{ background: pt.is_current ? 'rgba(184,134,11,0.04)' : 'transparent' }}>
                                               <span style={{ color: pt.is_current ? 'var(--aged-gold)' : 'var(--ink-light)' }}>
                                                 {translatePlanet(pt.planet, language)} PD {pt.is_current ? '*' : ''}
                                               </span>
-                                              <span style={{ color: 'var(--ink-light)', fontSize: 'var(--text-label, 0.75rem)' }}>{pt.start?.slice(0,10)} — {pt.end?.slice(0,10)}</span>
+                                              <span style={{ color: 'var(--ink-light)', fontSize: 'var(--text-label, 0.875rem)' }}>{pt.start?.slice(0,10)} — {pt.end?.slice(0,10)}</span>
                                             </div>
                                           ))}
                                         </div>
@@ -539,7 +539,7 @@ export default function ReportTab({
                       ) : (
                         /* Fallback: simple table when extendedDashaData unavailable */
                         <div className="overflow-x-auto">
-                          <table className="w-full text-xs">
+                          <table className="w-full text-sm">
                             <thead><tr className="bg-gold-10">
                               <th className="text-left p-2 font-medium" style={{ color: 'var(--aged-gold)' }}>{t('table.planet')}</th>
                               <th className="text-left p-2 font-medium" style={{ color: 'var(--aged-gold)' }}>{t('table.start')}</th>
@@ -580,7 +580,7 @@ export default function ReportTab({
                       { key: 'DK', name: 'Darakaraka' },
                     ];
                     return (
-                      <table className="w-full text-xs">
+                      <table className="w-full text-sm">
                         <thead><tr className="bg-sacred-gold">
                           <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.karaka')}</th>
                           <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
@@ -590,7 +590,7 @@ export default function ReportTab({
                             const planet = Object.entries(karakas).find(([, v]) => v === key)?.[0] || '-';
                             return (
                               <tr key={key} className="border-t border-sacred-gold">
-                                <td className="p-2 text-sacred-brown"><span className="font-semibold">{key}</span> <span className="text-xs text-cosmic-text">({name})</span></td>
+                                <td className="p-2 text-sacred-brown"><span className="font-semibold">{key}</span> <span className="text-sm text-cosmic-text">({name})</span></td>
                                 <td className="p-2 font-semibold" style={{ color: 'var(--aged-gold-dim)' }}>{translatePlanet(planet, language)}</td>
                               </tr>
                             );
@@ -615,10 +615,10 @@ export default function ReportTab({
                         </div>
                         <div className="space-y-1">
                           {(yogaDoshaData.yogas || []).filter((y: any) => y.present).slice(0, 8).map((yoga: any, idx: number) => (
-                            <div key={idx} className="rounded-lg p-2 text-xs border border-green-500 bg-green-500">
+                            <div key={idx} className="rounded-lg p-2 text-sm border border-green-500 bg-green-500">
                               <div className="flex items-center justify-between">
                                 <span className="font-medium text-sacred-brown">{translateName(yoga.name, language)}</span>
-                                <span className="text-xs px-1.5 py-0.5 rounded-full bg-green-500 text-green-400">
+                                <span className="text-sm px-1.5 py-0.5 rounded-full bg-green-500 text-green-400">
                                   {t('common.present')}
                                 </span>
                               </div>
@@ -636,10 +636,10 @@ export default function ReportTab({
                         </div>
                         <div className="space-y-1">
                           {(yogaDoshaData.doshas || []).filter((d: any) => d.present).slice(0, 8).map((dosha: any, idx: number) => (
-                            <div key={idx} className="rounded-lg p-2 text-xs border border-red-500 bg-red-500">
+                            <div key={idx} className="rounded-lg p-2 text-sm border border-red-500 bg-red-500">
                               <div className="flex items-center justify-between">
                                 <span className="font-medium text-sacred-brown">{translateName(dosha.name, language)}</span>
-                                <span className="text-xs px-1.5 py-0.5 rounded-full bg-red-500 text-red-400">
+                                <span className="text-sm px-1.5 py-0.5 rounded-full bg-red-500 text-red-400">
                                   {t('common.present')}
                                 </span>
                               </div>
@@ -667,31 +667,31 @@ export default function ReportTab({
                       <div className={`rounded-lg p-3 border ${doshaData.mangal_dosha?.has_dosha ? 'border-red-500 bg-red-500' : 'border-green-500 bg-green-500'}`}>
                         <div className="flex items-center justify-between mb-1">
                           <h5 className="text-sm font-semibold text-sacred-brown">{translateName('Mangal Dosha', language)}</h5>
-                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${doshaData.mangal_dosha?.has_dosha ? 'bg-red-500 text-red-400' : 'bg-green-500 text-green-400'}`}>
+                          <span className={`text-sm px-2 py-0.5 rounded-full font-medium ${doshaData.mangal_dosha?.has_dosha ? 'bg-red-500 text-red-400' : 'bg-green-500 text-green-400'}`}>
                             {doshaData.mangal_dosha?.has_dosha ? translateLabel(doshaData.mangal_dosha.severity, language) || t('common.present') : t('common.absent')}
                           </span>
                         </div>
-                        <p className="text-xs text-cosmic-text">{doshaData.mangal_dosha?.description || t('kundli.noMangalDosha')}</p>
+                        <p className="text-sm text-cosmic-text">{doshaData.mangal_dosha?.description || t('kundli.noMangalDosha')}</p>
                       </div>
                       {/* Kaal Sarp Dosha */}
                       <div className={`rounded-lg p-3 border ${doshaData.kaal_sarp_dosha?.has_dosha ? 'border-red-500 bg-red-500' : 'border-green-500 bg-green-500'}`}>
                         <div className="flex items-center justify-between mb-1">
                           <h5 className="text-sm font-semibold text-sacred-brown">{translateName('Kaal Sarp Dosha', language)}</h5>
-                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${doshaData.kaal_sarp_dosha?.has_dosha ? 'bg-red-500 text-red-400' : 'bg-green-500 text-green-400'}`}>
+                          <span className={`text-sm px-2 py-0.5 rounded-full font-medium ${doshaData.kaal_sarp_dosha?.has_dosha ? 'bg-red-500 text-red-400' : 'bg-green-500 text-green-400'}`}>
                             {doshaData.kaal_sarp_dosha?.has_dosha ? translateLabel(doshaData.kaal_sarp_dosha.severity, language) || t('common.present') : t('common.absent')}
                           </span>
                         </div>
-                        <p className="text-xs text-cosmic-text">{doshaData.kaal_sarp_dosha?.description || t('kundli.noKaalSarpDosha')}</p>
+                        <p className="text-sm text-cosmic-text">{doshaData.kaal_sarp_dosha?.description || t('kundli.noKaalSarpDosha')}</p>
                       </div>
                       {/* Sade Sati */}
                       <div className={`rounded-lg p-3 border ${doshaData.sade_sati?.has_sade_sati ? 'border-orange-500 bg-orange-500' : 'border-green-500 bg-green-500'}`}>
                         <div className="flex items-center justify-between mb-1">
                           <h5 className="text-sm font-semibold text-sacred-brown">{translateName('Sade Sati', language)}</h5>
-                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${doshaData.sade_sati?.has_sade_sati ? 'bg-orange-500 text-orange-600' : 'bg-green-500 text-green-400'}`}>
+                          <span className={`text-sm px-2 py-0.5 rounded-full font-medium ${doshaData.sade_sati?.has_sade_sati ? 'bg-orange-500 text-orange-600' : 'bg-green-500 text-green-400'}`}>
                             {doshaData.sade_sati?.has_sade_sati ? `${t('common.active')} - ${translateLabel(doshaData.sade_sati.phase, language)}` : t('common.inactive')}
                           </span>
                         </div>
-                        <p className="text-xs text-cosmic-text">{doshaData.sade_sati?.description || t('kundli.sadeSatiNotActive')}</p>
+                        <p className="text-sm text-cosmic-text">{doshaData.sade_sati?.description || t('kundli.sadeSatiNotActive')}</p>
                       </div>
                     </div>
                   ) : (
@@ -714,19 +714,19 @@ export default function ReportTab({
                           const isStrong = points >= 28;
                           return (
                             <div key={sign} className="flex-1 flex flex-col items-center gap-0.5">
-                              <span className="text-xs font-medium text-sacred-brown">{points}</span>
+                              <span className="text-sm font-medium text-sacred-brown">{points}</span>
                               <div className="w-full bg-sacred-gold rounded-t-sm relative" style={{ height: '100px' }}>
                                 <div
                                   className="absolute bottom-0 w-full rounded-t-sm"
                                   style={{ height: `${heightPct}%`, backgroundColor: isStrong ? 'var(--aged-gold-dim)' : 'var(--ink-light)' }}
                                 />
                               </div>
-                              <span className="text-xs text-cosmic-text">{sign.slice(0, 3)}</span>
+                              <span className="text-sm text-cosmic-text">{sign.slice(0, 3)}</span>
                             </div>
                           );
                         })}
                       </div>
-                      <div className="flex items-center gap-3 mt-2 text-xs text-cosmic-text">
+                      <div className="flex items-center gap-3 mt-2 text-sm text-cosmic-text">
                         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: 'var(--aged-gold-dim)' }} />{t('kundli.strong')}</span>
                         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: 'var(--ink-light)' }} />{t('kundli.weak')}</span>
                       </div>
@@ -750,17 +750,17 @@ export default function ReportTab({
                         const barColor = data.is_strong ? 'var(--aged-gold-dim)' : '#8B2332';
                         return (
                           <div key={planet} className="flex items-center gap-2">
-                            <span className="w-12 text-xs font-medium text-sacred-brown">{translatePlanet(planet, language)}</span>
+                            <span className="w-12 text-sm font-medium text-sacred-brown">{translatePlanet(planet, language)}</span>
                             <div className="flex-1 bg-sacred-gold rounded-full h-4 overflow-hidden">
                               <div className="h-full rounded-full" style={{ width: `${Math.min(pct, 100)}%`, backgroundColor: barColor }} />
                             </div>
-                            <span className={`text-xs w-16 text-right font-medium ${data.is_strong ? 'text-sacred-gold-dark' : 'text-wax-red-deep'}`}>
+                            <span className={`text-sm w-16 text-right font-medium ${data.is_strong ? 'text-sacred-gold-dark' : 'text-wax-red-deep'}`}>
                               {data.total}/{data.required}
                             </span>
                           </div>
                         );
                       })}
-                      <div className="flex items-center gap-3 mt-1 text-xs text-cosmic-text">
+                      <div className="flex items-center gap-3 mt-1 text-sm text-cosmic-text">
                         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: 'var(--aged-gold-dim)' }} />{t('kundli.strong')}</span>
                         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#8B2332' }} />{t('kundli.weak')}</span>
                       </div>

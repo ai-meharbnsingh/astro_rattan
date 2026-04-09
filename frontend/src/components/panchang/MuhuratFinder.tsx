@@ -192,7 +192,7 @@ export default function MuhuratFinder({
     <div className="flex flex-col gap-6">
       {/* Section title */}
       <div className="flex items-center gap-3">
-        <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-0.5 rounded-full border bg-sacred-gold/10 text-sacred-gold border-sacred-gold/20">
+        <span className="inline-flex items-center gap-1.5 text-sm font-medium px-2.5 py-0.5 rounded-full border bg-sacred-gold/10 text-sacred-gold border-sacred-gold/20">
           <Search className="h-3 w-3" />
           Muhurat Finder
         </span>
@@ -207,7 +207,7 @@ export default function MuhuratFinder({
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             {/* Event type dropdown */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs text-cosmic-text-secondary">Event Type</label>
+              <label className="text-sm text-cosmic-text-secondary">Event Type</label>
               <select
                 value={selectedEventType}
                 onChange={(e) => setSelectedEventType(e.target.value)}
@@ -226,7 +226,7 @@ export default function MuhuratFinder({
 
             {/* Date picker */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs text-cosmic-text-secondary">Date</label>
+              <label className="text-sm text-cosmic-text-secondary">Date</label>
               <input
                 type="date"
                 value={muhuratDate}
@@ -237,7 +237,7 @@ export default function MuhuratFinder({
 
             {/* Latitude */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs text-cosmic-text-secondary flex items-center gap-1">
+              <label className="text-sm text-cosmic-text-secondary flex items-center gap-1">
                 <MapPin className="h-3 w-3" />
                 Latitude
               </label>
@@ -252,7 +252,7 @@ export default function MuhuratFinder({
 
             {/* Longitude */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs text-cosmic-text-secondary flex items-center gap-1">
+              <label className="text-sm text-cosmic-text-secondary flex items-center gap-1">
                 <MapPin className="h-3 w-3" />
                 Longitude
               </label>
@@ -315,7 +315,7 @@ export default function MuhuratFinder({
                       </span>
                     </div>
                     <span
-                      className={`inline-block text-xs font-medium px-2.5 py-0.5 rounded-full border capitalize ${qualityLabel(w.quality)}`}
+                      className={`inline-block text-sm font-medium px-2.5 py-0.5 rounded-full border capitalize ${qualityLabel(w.quality)}`}
                     >
                       {w.quality}
                     </span>
@@ -325,7 +325,7 @@ export default function MuhuratFinder({
                       {w.factors.map((factor, fi) => (
                         <span
                           key={fi}
-                          className="text-xs px-2 py-0.5 rounded-full bg-sacred-gold/5 text-cosmic-text-secondary border border-sacred-gold/10"
+                          className="text-sm px-2 py-0.5 rounded-full bg-sacred-gold/5 text-cosmic-text-secondary border border-sacred-gold/10"
                         >
                           {factor}
                         </span>
@@ -369,7 +369,7 @@ export default function MuhuratFinder({
                 {weekDays.map((day) => (
                   <div
                     key={day}
-                    className="text-center text-xs font-medium text-cosmic-text-secondary py-2"
+                    className="text-center text-sm font-medium text-cosmic-text-secondary py-2"
                   >
                     {day}
                   </div>
@@ -407,7 +407,7 @@ export default function MuhuratFinder({
                             className={`w-1.5 h-1.5 rounded-full ${qualityDotColor(day.quality)}`}
                           />
                           {day.windows_count != null && day.windows_count > 0 && (
-                            <span className="text-xs text-cosmic-text-secondary">
+                            <span className="text-sm text-cosmic-text-secondary">
                               {day.windows_count}
                             </span>
                           )}

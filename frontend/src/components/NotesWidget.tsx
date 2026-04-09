@@ -99,7 +99,7 @@ export default function NotesWidget({ clientId, chartType, kundliId }: NotesWidg
       >
         <StickyNote className="w-5 h-5" />
         {notes.length > 0 && (
-          <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+          <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-sm rounded-full flex items-center justify-center font-bold">
             {notes.length}
           </span>
         )}
@@ -129,7 +129,7 @@ export default function NotesWidget({ clientId, chartType, kundliId }: NotesWidg
             <button
               onClick={handleSave}
               disabled={saving || !newNote.trim()}
-              className="mt-2 w-full flex items-center justify-center gap-2 bg-sacred-gold-dark text-cosmic-bg text-xs py-2 font-sans uppercase tracking-wider disabled:opacity-50 hover:bg-sacred-gold transition-colors"
+              className="mt-2 w-full flex items-center justify-center gap-2 bg-sacred-gold-dark text-cosmic-bg text-sm py-2 font-sans uppercase tracking-wider disabled:opacity-50 hover:bg-sacred-gold transition-colors"
             >
               {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
               Save Note
@@ -141,14 +141,14 @@ export default function NotesWidget({ clientId, chartType, kundliId }: NotesWidg
             {loading ? (
               <div className="text-center py-4"><Loader2 className="w-4 h-4 animate-spin text-sacred-gold mx-auto" /></div>
             ) : notes.length === 0 ? (
-              <p className="text-center text-cosmic-text text-xs py-4">No notes yet</p>
+              <p className="text-center text-cosmic-text text-sm py-4">No notes yet</p>
             ) : (
               notes.map(note => (
                 <div key={note.id} className="border-l-2 border-sacred-gold pl-3 py-1">
                   <p className="text-sm text-cosmic-text whitespace-pre-wrap">{note.content}</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-xs text-cosmic-text">{formatNoteDate(note.created_at)}</span>
-                    <span className="text-xs px-1.5 py-0.5 bg-sacred-gold-dark text-sacred-gold-dark rounded">
+                    <span className="text-sm text-cosmic-text">{formatNoteDate(note.created_at)}</span>
+                    <span className="text-sm px-1.5 py-0.5 bg-sacred-gold-dark text-sacred-gold-dark rounded">
                       {chartLabel[note.chart_type] || note.chart_type}
                     </span>
                   </div>

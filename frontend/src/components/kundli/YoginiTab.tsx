@@ -24,9 +24,9 @@ export default function YoginiTab({ yoginiData, loadingYogini, language, t }: Yo
       <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
         <h4 className="font-display font-semibold text-sacred-brown mb-3">
           {t('section.yoginiDasha')}
-          {(yoginiData.current_dasha || yoginiData.current) && <span className="ml-2 text-xs px-2 py-1 rounded-full bg-sacred-gold text-sacred-gold-dark">{t('common.current')}: {translateName(yoginiData.current_dasha || yoginiData.current, language)}</span>}
+          {(yoginiData.current_dasha || yoginiData.current) && <span className="ml-2 text-sm px-2 py-1 rounded-full bg-sacred-gold text-sacred-gold-dark">{t('common.current')}: {translateName(yoginiData.current_dasha || yoginiData.current, language)}</span>}
         </h4>
-        <table className="w-full text-xs">
+        <table className="w-full text-sm">
           <thead><tr className="bg-sacred-gold">
             <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.yogini')}</th>
             <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.planet')}</th>

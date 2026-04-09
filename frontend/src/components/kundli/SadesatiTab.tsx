@@ -26,7 +26,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                       </div>
                       <div>
                         <h3 className="font-display font-bold text-lg text-cream">{language === 'hi' ? 'शनि साढ़े साती विश्लेषण' : 'Shani Sade Sati Analysis'}</h3>
-                        <p className="text-xs text-warm">{language === 'hi' ? 'जन्म चंद्र राशि' : 'Birth Moon Sign'}: <span className="text-gold-hex font-semibold">{sadesatiData.moon_sign}</span></p>
+                        <p className="text-sm text-warm">{language === 'hi' ? 'जन्म चंद्र राशि' : 'Birth Moon Sign'}: <span className="text-gold-hex font-semibold">{sadesatiData.moon_sign}</span></p>
                       </div>
                     </div>
                     <p className="text-sm leading-relaxed text-warm">
@@ -51,7 +51,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                           <div className={`p-4 ${cycle.severity === 'high' ? 'bg-red-10' : cycle.severity === 'extreme' ? 'bg-red-20' : 'bg-sacred-gold'}`}>
                             <div className="flex items-center justify-between">
                               <h5 className="font-display font-semibold text-sacred-brown">{cycle.title}</h5>
-                              <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                              <span className={`text-sm px-2 py-1 rounded-full font-medium ${
                                 cycle.severity === 'extreme' ? 'bg-red-30 text-wax-red-light' :
                                 cycle.severity === 'high' ? 'bg-orange-500 text-orange-400' :
                                 'bg-yellow-500 text-yellow-600'
@@ -59,7 +59,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                                 {cycle.severity === 'extreme' ? (language === 'hi' ? 'अत्यधिक' : 'Extreme') : cycle.severity === 'high' ? (language === 'hi' ? 'तीव्र' : 'Intense') : (language === 'hi' ? 'मध्यम' : 'Moderate')} {language === 'hi' ? 'प्रभाव' : 'Impact'}
                               </span>
                             </div>
-                            <p className="text-xs text-cosmic-text mt-1">
+                            <p className="text-sm text-cosmic-text mt-1">
                               {cycle.start_date} to {cycle.end_date}
                             </p>
                             <p className="text-sm mt-2 text-warm">{cycle.description}</p>
@@ -127,7 +127,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                               {sadesatiData.other_phases.map((phase: any, idx: number) => (
                                 <tr key={idx} className="border-t border-sacred-gold hover:bg-sacred-gold">
                                   <td className="p-2">
-                                    <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
+                                    <span className={`inline-block px-2 py-0.5 rounded text-sm font-medium ${
                                       phase.phase === 'Panauti' ? 'bg-[#8B2332] text-wax-red-light' :
                                       phase.phase === 'Dhaiya' ? 'bg-orange-500 text-orange-400' :
                                       'bg-blue-500 text-blue-400'
@@ -137,7 +137,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                                   </td>
                                   <td className="p-2 text-sacred-brown">{phase.sub_phase}</td>
                                   <td className="p-2 text-cosmic-text">{phase.sign_name}</td>
-                                  <td className="p-2 text-cosmic-text text-xs">
+                                  <td className="p-2 text-cosmic-text text-sm">
                                     {phase.start_date} to {phase.end_date}
                                   </td>
                                 </tr>
@@ -194,8 +194,8 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                             {sadesatiData.detailed_remedies.mantra.items.map((item: any, idx: number) => (
                               <div key={idx} className="bg-white rounded-lg p-3">
                                 <p className="font-medium text-sacred-brown text-sm">{item.name}</p>
-                                {item.text && <p className="text-xs text-gold-hex font-serif my-1">{item.text}</p>}
-                                <p className="text-xs text-cosmic-text">{item.instruction}</p>
+                                {item.text && <p className="text-sm text-gold-hex font-serif my-1">{item.text}</p>}
+                                <p className="text-sm text-cosmic-text">{item.instruction}</p>
                               </div>
                             ))}
                           </div>

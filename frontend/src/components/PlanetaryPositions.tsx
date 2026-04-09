@@ -281,12 +281,12 @@ export default function PlanetaryPositions({ planets: propPlanets }: PlanetaryPo
               <div className="flex items-center gap-2 mb-1">
                 <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />
                 <span className="font-display font-bold text-sacred-gold text-sm">{p.name}</span>
-                {p.retrograde && <span className="text-xs text-red-400 font-bold">Retrograde</span>}
+                {p.retrograde && <span className="text-sm text-red-400 font-bold">Retrograde</span>}
               </div>
-              <div className="text-xs text-cosmic-text">
+              <div className="text-sm text-cosmic-text">
                 {ZODIAC_SYMBOLS[p.sign]} {p.sign} {p.degree.toFixed(1)}&deg;
               </div>
-              <div className="text-xs text-cosmic-text">Nakshatra: {p.nakshatra}</div>
+              <div className="text-sm text-cosmic-text">Nakshatra: {p.nakshatra}</div>
             </div>
           </div>
         );

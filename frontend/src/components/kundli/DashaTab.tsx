@@ -53,7 +53,7 @@ export default function DashaTab({
                   <span className={`font-display font-semibold ${md.is_current ? 'text-sacred-gold-dark' : 'text-sacred-brown'}`}>
                     {translatePlanet(md.planet, language)} {t('kundli.mahadasha')}
                   </span>
-                  {md.is_current && <span className="text-xs px-2 py-0.5 rounded-full bg-sacred-gold-dark text-sacred-gold-dark font-medium">{t('common.current')}</span>}
+                  {md.is_current && <span className="text-sm px-2 py-0.5 rounded-full bg-sacred-gold-dark text-sacred-gold-dark font-medium">{t('common.current')}</span>}
                 </div>
                 <div className="text-right text-sm text-cosmic-text">
                   <span>{md.start} {'\u2014'} {md.end}</span>
@@ -76,7 +76,7 @@ export default function DashaTab({
                           <span className={`font-medium ${ad.is_current ? 'text-sacred-gold-dark' : 'text-sacred-brown'}`}>
                             {translatePlanet(ad.planet, language)} {t('kundli.antardasha')}
                           </span>
-                          {ad.is_current && <span className="text-xs px-1.5 py-0.5 rounded-full bg-sacred-gold-dark text-sacred-gold-dark">{t('common.current')}</span>}
+                          {ad.is_current && <span className="text-sm px-1.5 py-0.5 rounded-full bg-sacred-gold-dark text-sacred-gold-dark">{t('common.current')}</span>}
                         </div>
                         <span className="text-cosmic-text">{ad.start} {'\u2014'} {ad.end}</span>
                       </button>
@@ -86,7 +86,7 @@ export default function DashaTab({
                           {ad.pratyantar.map((pt: any, idx: number) => (
                             <div
                               key={idx}
-                              className={`flex items-center justify-between px-10 py-2 text-xs ${pt.is_current ? 'bg-sacred-gold-dark' : ''}`}
+                              className={`flex items-center justify-between px-10 py-2 text-sm ${pt.is_current ? 'bg-sacred-gold-dark' : ''}`}
                             >
                               <span className={`${pt.is_current ? 'text-sacred-gold-dark font-semibold' : 'text-cosmic-text'}`}>
                                 {translatePlanet(pt.planet, language)} {t('kundli.pratyantar')}

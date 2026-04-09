@@ -43,12 +43,12 @@ function ElementCard({ icon, label, value, subInfo, endTime, nextValue }: Elemen
         <div className="text-cosmic-text font-semibold text-lg">{value}</div>
         <div className="text-cosmic-text/70 text-sm">{subInfo}</div>
         {formatted && (
-          <span className="text-xs px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold border border-sacred-gold/20">
+          <span className="text-sm px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold border border-sacred-gold/20">
             upto {formatted}
           </span>
         )}
         {nextValue && (
-          <span className="text-xs text-cosmic-text/60">→ {nextValue}</span>
+          <span className="text-sm text-cosmic-text/60">→ {nextValue}</span>
         )}
       </CardContent>
     </Card>

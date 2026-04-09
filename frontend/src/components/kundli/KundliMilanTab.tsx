@@ -75,13 +75,13 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
       {savedKundlis.length < 2 ? (
         <div className="text-center py-8 text-cosmic-text">
           <p>You need at least 2 saved kundlis to perform matching.</p>
-          <p className="text-xs mt-2">Generate kundlis for both persons first.</p>
+          <p className="text-sm mt-2">Generate kundlis for both persons first.</p>
         </div>
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs text-cosmic-text uppercase tracking-wider mb-1 block">Person 1</label>
+              <label className="text-sm text-cosmic-text uppercase tracking-wider mb-1 block">Person 1</label>
               <select value={kundliId1} onChange={e => setKundliId1(e.target.value)}
                 className="w-full bg-cosmic-bg border border-sacred-gold text-cosmic-text p-2 text-sm">
                 <option value="">Select kundli...</option>
@@ -91,7 +91,7 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
               </select>
             </div>
             <div>
-              <label className="text-xs text-cosmic-text uppercase tracking-wider mb-1 block">Person 2</label>
+              <label className="text-sm text-cosmic-text uppercase tracking-wider mb-1 block">Person 2</label>
               <select value={kundliId2} onChange={e => setKundliId2(e.target.value)}
                 className="w-full bg-cosmic-bg border border-sacred-gold text-cosmic-text p-2 text-sm">
                 <option value="">Select kundli...</option>
@@ -117,11 +117,11 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
                 <p className="text-5xl font-sans font-bold">{result.total_score}<span className="text-lg text-cosmic-text">/36</span></p>
                 <p className="text-sm mt-1">{result.compatibility_percentage}% Compatibility</p>
                 <p className="text-lg font-sans mt-2">{result.recommendation}</p>
-                <p className="text-xs text-cosmic-text mt-1">{result.person1_name} & {result.person2_name}</p>
+                <p className="text-sm text-cosmic-text mt-1">{result.person1_name} & {result.person2_name}</p>
               </div>
 
               <div className="border border-sacred-gold">
-                <div className="grid grid-cols-4 gap-0 text-xs text-cosmic-text uppercase tracking-wider p-3 border-b border-sacred-gold bg-sacred-gold-dark">
+                <div className="grid grid-cols-4 gap-0 text-sm text-cosmic-text uppercase tracking-wider p-3 border-b border-sacred-gold bg-sacred-gold-dark">
                   <span>Koot</span><span>Score</span><span>Max</span><span>Aspect</span>
                 </div>
                 {Object.entries(result.koot_scores).map(([name, koot]) => (
@@ -129,7 +129,7 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
                     <span className="text-sm text-cosmic-text font-medium">{name}</span>
                     <span className={`text-sm font-bold ${scoreColor(koot.score, koot.max)}`}>{koot.score}</span>
                     <span className="text-sm text-cosmic-text">{koot.max}</span>
-                    <span className="text-xs text-cosmic-text">{koot.description}</span>
+                    <span className="text-sm text-cosmic-text">{koot.description}</span>
                   </div>
                 ))}
               </div>
@@ -143,7 +143,7 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
                     <h4 className="text-sm font-sans text-sacred-gold-dark mb-3 uppercase">{label}</h4>
                     <div className="space-y-1">
                       {Object.entries(details).map(([k, v]) => (
-                        <div key={k} className="flex justify-between text-xs">
+                        <div key={k} className="flex justify-between text-sm">
                           <span className="text-cosmic-text capitalize">{k}</span>
                           <span className="text-cosmic-text">{v}</span>
                         </div>
@@ -166,7 +166,7 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
                         )}
                         <div>
                           <p className="text-sm text-cosmic-text">{dosha.name}</p>
-                          <p className="text-xs text-cosmic-text">{dosha.description}</p>
+                          <p className="text-sm text-cosmic-text">{dosha.description}</p>
                         </div>
                       </div>
                     ))}

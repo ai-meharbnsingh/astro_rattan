@@ -67,7 +67,7 @@ export default function ClientProfile() {
             </div>
             <div>
               <h1 className="text-2xl font-sans text-cosmic-text">{client.name}</h1>
-              <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-xs text-cosmic-text">
+              <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-sm text-cosmic-text">
                 {client.birth_date && <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{formatDate(client.birth_date)} {client.birth_time}</span>}
                 {client.birth_place && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{client.birth_place}</span>}
                 {client.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{client.phone}</span>}
@@ -81,15 +81,15 @@ export default function ClientProfile() {
       {/* Action Buttons */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
         <Button onClick={() => navigate('/kundli', { state: { ...birthState, chartType: 'vedic' } })}
-          className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold h-14 rounded-none font-sans uppercase tracking-wider text-xs">
+          className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold h-14 rounded-none font-sans uppercase tracking-wider text-sm">
           <Star className="w-4 h-4 mr-2" /> New Kundli
         </Button>
         <Button onClick={() => navigate('/lal-kitab', { state: birthState })}
-          variant="outline" className="border-sacred-gold text-sacred-gold-dark h-14 rounded-none font-sans uppercase tracking-wider text-xs">
+          variant="outline" className="border-sacred-gold text-sacred-gold-dark h-14 rounded-none font-sans uppercase tracking-wider text-sm">
           <BookOpen className="w-4 h-4 mr-2" /> Lal Kitab
         </Button>
         <Button onClick={() => navigate('/numerology', { state: { clientName: client.name, birthDate: client.birth_date } })}
-          variant="outline" className="border-sacred-gold text-sacred-gold-dark h-14 rounded-none font-sans uppercase tracking-wider text-xs">
+          variant="outline" className="border-sacred-gold text-sacred-gold-dark h-14 rounded-none font-sans uppercase tracking-wider text-sm">
           <Hash className="w-4 h-4 mr-2" /> Numerology
         </Button>
       </div>
@@ -103,7 +103,7 @@ export default function ClientProfile() {
         <div className="text-center py-12 border border-dashed border-sacred-gold">
           <p className="text-cosmic-text mb-4">No charts generated yet</p>
           <Button onClick={() => navigate('/kundli', { state: { ...birthState, chartType: 'vedic' } })}
-            className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold text-xs font-sans uppercase rounded-none">
+            className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold text-sm font-sans uppercase rounded-none">
             <Plus className="w-4 h-4 mr-1" /> Generate First Chart
           </Button>
         </div>
@@ -127,12 +127,12 @@ export default function ClientProfile() {
                 )}
                 <div>
                   <p className="text-sm text-cosmic-text">{k.person_name}</p>
-                  <p className="text-xs text-cosmic-text">{formatDate(k.birth_date)} {k.birth_time} · {k.birth_place}</p>
+                  <p className="text-sm text-cosmic-text">{formatDate(k.birth_date)} {k.birth_time} · {k.birth_place}</p>
                 </div>
               </div>
               <div className="text-right">
-                <span className="text-xs text-cosmic-text uppercase">{k.chart_type || 'vedic'}</span>
-                <p className="text-xs text-cosmic-text">{formatDate(k.created_at)}</p>
+                <span className="text-sm text-cosmic-text uppercase">{k.chart_type || 'vedic'}</span>
+                <p className="text-sm text-cosmic-text">{formatDate(k.created_at)}</p>
               </div>
             </div>
           ))}
@@ -151,10 +151,10 @@ export default function ClientProfile() {
               <div key={note.id} className="border-l-2 border-sacred-gold pl-4 py-2">
                 <p className="text-sm text-cosmic-text whitespace-pre-wrap">{note.content}</p>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs text-cosmic-text">
+                  <span className="text-sm text-cosmic-text">
                     {note.created_at ? formatDateTime(note.created_at) : ''}
                   </span>
-                  <span className="text-xs px-1.5 py-0.5 bg-sacred-gold-dark text-sacred-gold-dark rounded">
+                  <span className="text-sm px-1.5 py-0.5 bg-sacred-gold-dark text-sacred-gold-dark rounded">
                     {{ vedic: 'Kundli', lalkitab: 'Lal Kitab', numerology: 'Numerology', general: 'General' }[note.chart_type] || note.chart_type}
                   </span>
                 </div>

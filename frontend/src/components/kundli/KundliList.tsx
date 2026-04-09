@@ -147,7 +147,7 @@ export default function KundliList({
       
       <Button onClick={onPrashnaKundli} variant="outline" className="w-full mt-3 border-sacred-gold text-sacred-brown hover:bg-sacred-gold">
         <Clock className="w-5 h-5 mr-2 text-sacred-gold" />{t('kundli.prashnaKundli')}
-        <span className="ml-2 text-xs text-cosmic-text">{t('kundli.prashnaSubtitle')}</span>
+        <span className="ml-2 text-sm text-cosmic-text">{t('kundli.prashnaSubtitle')}</span>
       </Button>
     </div>
   );

@@ -25,7 +25,7 @@ interface InfoCellProps {
 function InfoCell({ label, value }: InfoCellProps) {
   return (
     <div className="rounded-lg bg-cosmic-card border border-sacred-gold/10 px-3 py-2">
-      <span className="block text-xs text-cosmic-text-secondary">{label}</span>
+      <span className="block text-sm text-cosmic-text-secondary">{label}</span>
       <span className="block text-sm font-medium text-cosmic-text">{value}</span>
     </div>
   );

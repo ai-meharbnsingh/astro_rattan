@@ -123,7 +123,7 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
           ].map(({ abbr, label }) => (
             <span key={abbr} className="flex items-center gap-1.5">
               <span
-                className="px-1.5 py-0.5 rounded text-xs font-mono font-bold"
+                className="px-1.5 py-0.5 rounded text-sm font-mono font-bold"
                 style={{ backgroundColor: ASPECT_COLORS[abbr].bg, color: ASPECT_COLORS[abbr].text }}
               >
                 {abbr}
@@ -172,7 +172,7 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
                   <span className="font-semibold text-sm">
                     {translatePlanet(asp.planet1, language)} — {translatePlanet(asp.planet2, language)}
                   </span>
-                  <span className="text-xs font-mono">
+                  <span className="text-sm font-mono">
                     {asp.aspect_name} ({asp.degree}° orb:{asp.orb}°)
                   </span>
                 </div>

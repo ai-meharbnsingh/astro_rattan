@@ -42,19 +42,19 @@ export default function VarshphalTab({
             <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.solarReturn')}</h4>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div className="bg-white rounded-lg p-3">
-                <p className="text-xs text-cosmic-text">{t('varshphal.solarReturnDate')}</p>
+                <p className="text-sm text-cosmic-text">{t('varshphal.solarReturnDate')}</p>
                 <p className="font-semibold text-sacred-brown">{varshphalData.solar_return?.date}</p>
               </div>
               <div className="bg-white rounded-lg p-3">
-                <p className="text-xs text-cosmic-text">{t('varshphal.solarReturnTime')}</p>
+                <p className="text-sm text-cosmic-text">{t('varshphal.solarReturnTime')}</p>
                 <p className="font-semibold text-sacred-brown">{varshphalData.solar_return?.time}</p>
               </div>
               <div className="bg-white rounded-lg p-3">
-                <p className="text-xs text-cosmic-text">{t('section.yearLord')}</p>
+                <p className="text-sm text-cosmic-text">{t('section.yearLord')}</p>
                 <p className="font-semibold" style={{ color: 'var(--aged-gold-dim)' }}>{translatePlanet(varshphalData.year_lord, language)}</p>
               </div>
               <div className="bg-white rounded-lg p-3">
-                <p className="text-xs text-cosmic-text">{t('varshphal.completedYears')}</p>
+                <p className="text-sm text-cosmic-text">{t('varshphal.completedYears')}</p>
                 <p className="font-semibold text-sacred-brown">{varshphalData.completed_years}</p>
               </div>
             </div>
@@ -65,19 +65,19 @@ export default function VarshphalTab({
             <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.muntha')}</h4>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div className="bg-white rounded-lg p-3">
-                <p className="text-xs text-cosmic-text">{t('section.munthaSign')}</p>
+                <p className="text-sm text-cosmic-text">{t('section.munthaSign')}</p>
                 <p className="font-semibold text-sacred-brown">{translateSign(varshphalData.muntha?.sign || '', language)}</p>
               </div>
               <div className="bg-white rounded-lg p-3">
-                <p className="text-xs text-cosmic-text">{t('varshphal.munthaHouse')}</p>
+                <p className="text-sm text-cosmic-text">{t('varshphal.munthaHouse')}</p>
                 <p className="font-semibold text-sacred-brown">{language === 'hi' ? 'भाव' : 'House'} {varshphalData.muntha?.house}</p>
               </div>
               <div className="bg-white rounded-lg p-3">
-                <p className="text-xs text-cosmic-text">{t('section.munthaLord')}</p>
+                <p className="text-sm text-cosmic-text">{t('section.munthaLord')}</p>
                 <p className="font-semibold" style={{ color: 'var(--aged-gold-dim)' }}>{translatePlanet(varshphalData.muntha?.lord || '', language)}</p>
               </div>
               <div className="bg-white rounded-lg p-3">
-                <p className="text-xs text-cosmic-text">{t('table.status')}</p>
+                <p className="text-sm text-cosmic-text">{t('table.status')}</p>
                 <p className={`font-semibold ${varshphalData.muntha?.favorable ? 'text-green-400' : 'text-red-500'}`}>
                   {varshphalData.muntha?.favorable ? t('common.favorable') : t('common.challenging')}
                 </p>
@@ -112,12 +112,12 @@ export default function VarshphalTab({
             <h4 className="font-display font-semibold text-sacred-brown mb-3">
               {t('section.muddaDasha')}
               {varshphalData.current_mudda_dasha && (
-                <span className="ml-2 text-xs px-2 py-1 rounded-full bg-sacred-gold text-sacred-gold-dark">
+                <span className="ml-2 text-sm px-2 py-1 rounded-full bg-sacred-gold text-sacred-gold-dark">
                   {t('common.current')}: {translatePlanet(varshphalData.current_mudda_dasha, language)}
                 </span>
               )}
             </h4>
-            <table className="w-full text-xs">
+            <table className="w-full text-sm">
               <thead><tr className="bg-sacred-gold">
                 <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
                 <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.start')}</th>

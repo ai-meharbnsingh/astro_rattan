@@ -27,7 +27,7 @@ function TypeBadge({ type }: { type: string }) {
 
   return (
     <span
-      className={`inline-block text-xs font-medium px-2.5 py-0.5 rounded-full border capitalize ${colors}`}
+      className={`inline-block text-sm font-medium px-2.5 py-0.5 rounded-full border capitalize ${colors}`}
     >
       {type}
     </span>
@@ -75,7 +75,7 @@ function FestivalVrat({ festivals }: FestivalVratProps) {
                 </p>
 
                 {festival.rituals && (
-                  <div className="text-xs text-cosmic-text-secondary bg-sacred-gold/5 rounded-lg px-3 py-2 border border-sacred-gold/10">
+                  <div className="text-sm text-cosmic-text-secondary bg-sacred-gold/5 rounded-lg px-3 py-2 border border-sacred-gold/10">
                     <span className="font-medium text-sacred-gold">Rituals: </span>
                     {festival.rituals}
                   </div>

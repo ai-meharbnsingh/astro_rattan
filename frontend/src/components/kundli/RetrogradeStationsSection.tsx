@@ -48,7 +48,7 @@ export default function RetrogradeStationsSection({ kundliId }: RetrogradeStatio
             size="sm"
             variant="outline"
             onClick={() => handleYearChange(year - 1)}
-            className="h-7 px-2 text-xs"
+            className="h-7 px-2 text-sm"
           >
             ←
           </Button>
@@ -57,7 +57,7 @@ export default function RetrogradeStationsSection({ kundliId }: RetrogradeStatio
             size="sm"
             variant="outline"
             onClick={() => handleYearChange(year + 1)}
-            className="h-7 px-2 text-xs"
+            className="h-7 px-2 text-sm"
           >
             →
           </Button>
@@ -104,7 +104,7 @@ export default function RetrogradeStationsSection({ kundliId }: RetrogradeStatio
                     )}
                     <td className="p-2">
                       <span
-                        className="text-xs px-2 py-0.5 rounded-full font-medium"
+                        className="text-sm px-2 py-0.5 rounded-full font-medium"
                         style={{
                           backgroundColor: s.station === 'retrograde' ? '#fee2e2' : '#d1fae5',
                           color: s.station === 'retrograde' ? '#991b1b' : '#065f46',

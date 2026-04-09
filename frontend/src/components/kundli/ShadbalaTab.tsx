@@ -55,7 +55,7 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
             );
           })}
         </div>
-        <div className="flex items-center gap-4 mt-3 text-xs text-cosmic-text">
+        <div className="flex items-center gap-4 mt-3 text-sm text-cosmic-text">
           <div className="flex items-center gap-1">
             <div className="w-3 h-3 rounded" style={{ backgroundColor: 'var(--aged-gold-dim)' }} />
             <span>{t('kundli.strong')}</span>

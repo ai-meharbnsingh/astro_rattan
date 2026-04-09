@@ -99,7 +99,7 @@ export default function LalKitabDoshaTab({ chartData }: Props) {
                       {t('lk.dosha.severity')}:
                     </span>
                     <span
-                      className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${severityStyles[dosha.severity]}`}
+                      className={`text-sm font-semibold px-2.5 py-0.5 rounded-full ${severityStyles[dosha.severity]}`}
                     >
                       {dosha.severity === 'high'
                         ? t('lk.dosha.high')

@@ -58,7 +58,7 @@ export default function IogitaTab({ iogitaData, loadingIogita, language, t }: Io
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>{labels[name] || name}</span>
-                      <span className="text-xs" style={{ color: 'var(--ink-light)' }}>{Math.round(Math.abs(val) * 100)}%</span>
+                      <span className="text-sm" style={{ color: 'var(--ink-light)' }}>{Math.round(Math.abs(val) * 100)}%</span>
                     </div>
                     <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(184,134,11,0.15)' }}>
                       <div className="h-full rounded-full" style={{ width: `${Math.abs(val) * 100}%`, background: colors[idx] }} />

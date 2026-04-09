@@ -44,7 +44,7 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
           const rows = sodashvargaData.varga_table || (Array.isArray(sodashvargaData.by_sign) ? sodashvargaData.by_sign : []);
           if (rows.length > 0) {
             return (
-              <table className="w-full text-xs min-w-[700px]">
+              <table className="w-full text-sm min-w-[700px]">
                 <thead><tr className="bg-sacred-gold">
                   <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.varga')}</th>
                   {['Su', 'Mo', 'Ma', 'Me', 'Ju', 'Ve', 'Sa', 'Ra', 'Ke'].map(p => (
@@ -70,7 +70,7 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
                             moolatrikona: 'bg-blue-500 text-blue-700', friend: 'bg-yellow-500 text-yellow-700',
                             enemy: 'bg-orange-500 text-orange-700', debilitated: 'bg-red-500 text-red-700',
                           };
-                          return <td key={i} className={`p-1.5 text-center text-xs rounded ${dignityColors[dignity] || ''}`}>{sign}</td>;
+                          return <td key={i} className={`p-1.5 text-center text-sm rounded ${dignityColors[dignity] || ''}`}>{sign}</td>;
                         })}
                       </tr>
                     );
@@ -82,7 +82,7 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
           // Fallback: by_sign is a dict
           if (sodashvargaData.by_sign && typeof sodashvargaData.by_sign === 'object') {
             return (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
                 {Object.entries(sodashvargaData.by_sign).map(([planet, data]: [string, any]) => (
                   <div key={planet} className="bg-white rounded-lg p-3">
                     <p className="font-semibold text-sacred-brown mb-1">{planet}</p>
@@ -96,7 +96,7 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
           }
           return <p className="text-center text-cosmic-text">{t('common.noData')}</p>;
         })()}
-        <div className="flex flex-wrap gap-2 mt-3 text-xs">
+        <div className="flex flex-wrap gap-2 mt-3 text-sm">
           <span className="px-2 py-1 rounded bg-green-500 text-green-700">{t('dignity.exalted')}</span>
           <span className="px-2 py-1 rounded bg-blue-500 text-blue-700">{t('dignity.ownMoolatrikona')}</span>
           <span className="px-2 py-1 rounded bg-yellow-500 text-yellow-700">{t('dignity.friend')}</span>
@@ -126,9 +126,9 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
                     <div className="flex-1 bg-sacred-gold rounded-full h-4">
                       <div className="bg-sacred-gold rounded-full h-4 transition-all" style={{ width: `${Math.min(100, ((typeof v.score === 'number' ? v.score : 0) / 20) * 100)}%` }} />
                     </div>
-                    <span className="w-16 text-right text-cosmic-text text-xs">{typeof v.score === 'number' ? v.score.toFixed(1) : '?'} / 20</span>
+                    <span className="w-16 text-right text-cosmic-text text-sm">{typeof v.score === 'number' ? v.score.toFixed(1) : '?'} / 20</span>
                     {v.percentage != null && (
-                      <span className="w-12 text-right text-sacred-brown font-semibold text-xs">{v.percentage}%</span>
+                      <span className="w-12 text-right text-sacred-brown font-semibold text-sm">{v.percentage}%</span>
                     )}
                     {v.strength && (
                       <span className={`px-1.5 py-0.5 rounded text-label font-semibold ${strengthColors[v.strength] || 'text-gray-500 bg-gray-500'}`}>{v.strength}</span>

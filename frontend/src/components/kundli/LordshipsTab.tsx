@@ -13,7 +13,7 @@ export default function LordshipsTab({ planets, houses }: LordshipsTabProps) {
 
   return (
     <div className="overflow-x-auto">
-        <table className="w-full text-xs">
+        <table className="w-full text-sm">
           <thead className="bg-sacred-gold">
             <tr>
               <th className="text-left p-2 font-medium text-sacred-gold-dark">{language === 'hi' ? 'भाव' : 'House'}</th>
@@ -37,7 +37,7 @@ export default function LordshipsTab({ planets, houses }: LordshipsTabProps) {
               const lordPlacedIn = lordPlanet ? `${language === 'hi' ? 'भाव' : 'House'} ${lordPlanet.house}` : '\u2014';
 
               return (
-                <tr key={houseNum} className={`border-t border-sacred-gold text-xs ${houseNum % 2 === 0 ? 'bg-sacred-gold/[0.02]' : ''}`}>
+                <tr key={houseNum} className={`border-t border-sacred-gold text-sm ${houseNum % 2 === 0 ? 'bg-sacred-gold/[0.02]' : ''}`}>
                   <td className="p-2 font-medium text-sacred-brown font-display">{houseNum}</td>
                   <td className="p-2 text-sacred-brown">{translateSign(signName, language)}</td>
                   <td className="p-2 font-medium text-sacred-gold-dark">{translatePlanet(lord, language)}</td>

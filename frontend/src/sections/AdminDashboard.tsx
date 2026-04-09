@@ -115,7 +115,7 @@ export default function AdminDashboard() {
               <div key={s.label} className="border border-sacred-gold p-5 bg-cosmic-bg">
                 <s.icon className="w-5 h-5 text-sacred-gold-dark mb-2" />
                 <p className="text-2xl font-sans text-sacred-gold-dark">{s.value}</p>
-                <p className="text-xs text-cosmic-text uppercase tracking-wider">{s.label}</p>
+                <p className="text-sm text-cosmic-text uppercase tracking-wider">{s.label}</p>
               </div>
             ))}
           </div>
@@ -128,9 +128,9 @@ export default function AdminDashboard() {
                   <div key={u.id} className="flex items-center justify-between py-2 border-b border-sacred-gold last:border-0">
                     <div>
                       <p className="text-sm text-cosmic-text">{u.name}</p>
-                      <p className="text-xs text-cosmic-text">{u.email}</p>
+                      <p className="text-sm text-cosmic-text">{u.email}</p>
                     </div>
-                    <span className={`text-xs px-2 py-0.5 border ${u.role === 'admin' ? 'border-red-500 text-red-400' : u.role === 'astrologer' ? 'border-purple-500 text-purple-400' : 'border-sacred-gold text-sacred-gold-dark'}`}>
+                    <span className={`text-sm px-2 py-0.5 border ${u.role === 'admin' ? 'border-red-500 text-red-400' : u.role === 'astrologer' ? 'border-purple-500 text-purple-400' : 'border-sacred-gold text-sacred-gold-dark'}`}>
                       {u.role}
                     </span>
                   </div>
@@ -145,9 +145,9 @@ export default function AdminDashboard() {
                   <div key={k.id} className="flex items-center justify-between py-2 border-b border-sacred-gold last:border-0">
                     <div>
                       <p className="text-sm text-cosmic-text">{k.person_name}</p>
-                      <p className="text-xs text-cosmic-text">{formatDate(k.birth_date)} &middot; {k.email}</p>
+                      <p className="text-sm text-cosmic-text">{formatDate(k.birth_date)} &middot; {k.email}</p>
                     </div>
-                    <span className="text-xs text-cosmic-text">{formatDate(k.created_at)}</span>
+                    <span className="text-sm text-cosmic-text">{formatDate(k.created_at)}</span>
                   </div>
                 ))}
               </div>
@@ -163,7 +163,7 @@ export default function AdminDashboard() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-sacred-gold text-left text-xs text-cosmic-text uppercase tracking-wider">
+                <tr className="border-b border-sacred-gold text-left text-sm text-cosmic-text uppercase tracking-wider">
                   <th className="py-3 pr-4">Name</th>
                   <th className="py-3 pr-4">Email</th>
                   <th className="py-3 pr-4">Role</th>
@@ -179,7 +179,7 @@ export default function AdminDashboard() {
                     <td className="py-3 pr-4 text-cosmic-text">{u.email}</td>
                     <td className="py-3 pr-4">
                       <select value={u.role} onChange={e => changeRole(u.id, e.target.value)}
-                        className="bg-transparent border border-sacred-gold text-cosmic-text text-xs px-2 py-1">
+                        className="bg-transparent border border-sacred-gold text-cosmic-text text-sm px-2 py-1">
                         <option value="user">user</option>
                         <option value="astrologer">astrologer</option>
                         <option value="admin">admin</option>
@@ -190,9 +190,9 @@ export default function AdminDashboard() {
                         {u.is_active ? <ToggleRight className="w-5 h-5 text-green-500" /> : <ToggleLeft className="w-5 h-5 text-red-400" />}
                       </button>
                     </td>
-                    <td className="py-3 pr-4 text-cosmic-text text-xs">{formatDate(u.created_at)}</td>
+                    <td className="py-3 pr-4 text-cosmic-text text-sm">{formatDate(u.created_at)}</td>
                     <td className="py-3">
-                      <button onClick={() => {}} className="text-xs text-sacred-gold-dark hover:underline">View</button>
+                      <button onClick={() => {}} className="text-sm text-sacred-gold-dark hover:underline">View</button>
                     </td>
                   </tr>
                 ))}
@@ -219,7 +219,7 @@ export default function AdminDashboard() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-sacred-gold text-left text-xs text-cosmic-text uppercase tracking-wider">
+                <tr className="border-b border-sacred-gold text-left text-sm text-cosmic-text uppercase tracking-wider">
                   <th className="py-3 pr-4">Person</th>
                   <th className="py-3 pr-4">Birth Date</th>
                   <th className="py-3 pr-4">Place</th>
@@ -232,9 +232,9 @@ export default function AdminDashboard() {
                   <tr key={k.id} className="border-b border-sacred-gold hover:bg-sacred-gold-dark">
                     <td className="py-3 pr-4 text-cosmic-text">{k.person_name}</td>
                     <td className="py-3 pr-4 text-cosmic-text">{formatDate(k.birth_date)} {k.birth_time}</td>
-                    <td className="py-3 pr-4 text-cosmic-text text-xs">{k.birth_place}</td>
-                    <td className="py-3 pr-4 text-cosmic-text text-xs">{k.email}</td>
-                    <td className="py-3 text-cosmic-text text-xs">{formatDate(k.created_at)}</td>
+                    <td className="py-3 pr-4 text-cosmic-text text-sm">{k.birth_place}</td>
+                    <td className="py-3 pr-4 text-cosmic-text text-sm">{k.email}</td>
+                    <td className="py-3 text-cosmic-text text-sm">{formatDate(k.created_at)}</td>
                   </tr>
                 ))}
               </tbody>

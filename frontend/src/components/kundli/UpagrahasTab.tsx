@@ -23,7 +23,7 @@ export default function UpagrahasTab({ upagrahasData, loadingUpagrahas, language
     <div className="space-y-6">
       <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
         <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.upagrahasTitle')}</h4>
-        <table className="w-full text-xs">
+        <table className="w-full text-sm">
           <thead><tr className="bg-sacred-gold">
             <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.upagraha')}</th>
             <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.longitude')}</th>

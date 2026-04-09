@@ -146,7 +146,7 @@ export default function LalKitabYearlyTab({ chartData, birthDate }: Props) {
                     {getPlanetLabel(period.planet)}
                   </span>
                   <span
-                    className={`text-xs px-2 py-0.5 rounded-full ${
+                    className={`text-sm px-2 py-0.5 rounded-full ${
                       isActive
                         ? 'bg-sacred-gold/20 text-sacred-gold'
                         : 'bg-cosmic-card text-cosmic-text/70'
@@ -155,7 +155,7 @@ export default function LalKitabYearlyTab({ chartData, birthDate }: Props) {
                     {t('lk.yearly.ageRange')}: {period.ageStart}–{period.ageEnd}
                   </span>
                   {isActive && (
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/15 text-green-500 font-medium">
+                    <span className="text-sm px-2 py-0.5 rounded-full bg-green-500/15 text-green-500 font-medium">
                       {isHi ? 'सक्रिय' : 'Active'}
                     </span>
                   )}
