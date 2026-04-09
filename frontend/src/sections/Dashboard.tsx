@@ -99,7 +99,7 @@ export default function Dashboard() {
         <h2 className="text-sm font-cinzel text-cosmic-text uppercase tracking-wider mb-4">Astrologers & Their Clients</h2>
         <div className="space-y-3 mb-10">
           {adminStats.astrologers.map(astro => (
-            <div key={astro.id} className="border border-sacred-gold/20 p-4 bg-cosmic-bg">
+            <div key={astro.id} className="border border-sacred-gold p-4 bg-cosmic-bg">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-sacred-gold-dark border border-sacred-gold flex items-center justify-center">
@@ -133,7 +133,7 @@ export default function Dashboard() {
         <div className="relative mb-4">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cosmic-text" />
           <Input type="text" value={search} onChange={e => handleSearch(e.target.value)}
-            placeholder={t('dashboard.searchPlaceholder')} className="pl-10 bg-cosmic-bg border-sacred-gold/20 text-cosmic-text rounded-none" />
+            placeholder={t('dashboard.searchPlaceholder')} className="pl-10 bg-cosmic-bg border-sacred-gold text-cosmic-text rounded-none" />
         </div>
         {renderClientList()}
       </div>
@@ -198,7 +198,7 @@ export default function Dashboard() {
           <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold text-xs font-cinzel uppercase tracking-wider px-4 py-2 rounded-none">
             <Plus className="w-4 h-4 mr-1" /> New Kundli
           </Button>
-          <Button onClick={() => navigate('/lal-kitab')} variant="outline" className="border-sacred-gold/30 text-sacred-gold-dark text-xs font-cinzel uppercase tracking-wider px-4 py-2 rounded-none">
+          <Button onClick={() => navigate('/lal-kitab')} variant="outline" className="border-sacred-gold text-sacred-gold-dark text-xs font-cinzel uppercase tracking-wider px-4 py-2 rounded-none">
             <BookOpen className="w-4 h-4 mr-1" /> Lal Kitab
           </Button>
         </div>
@@ -207,7 +207,7 @@ export default function Dashboard() {
       <div className="relative mb-6">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cosmic-text" />
         <Input type="text" value={search} onChange={e => handleSearch(e.target.value)}
-          placeholder={t('dashboard.searchPlaceholder')} className="pl-10 bg-cosmic-bg border-sacred-gold/20 text-cosmic-text rounded-none" />
+          placeholder={t('dashboard.searchPlaceholder')} className="pl-10 bg-cosmic-bg border-sacred-gold text-cosmic-text rounded-none" />
       </div>
 
       {renderClientList()}

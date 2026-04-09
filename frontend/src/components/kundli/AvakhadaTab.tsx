@@ -11,20 +11,20 @@ export default function AvakhadaTab({ avakhadaData, loadingAvakhada, t }: Avakha
     return (
       <div className="flex items-center justify-center py-12">
         <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
-        <span className="ml-2 text-cosmic-text/70">{t('kundli.calculatingAvakhada')}</span>
+        <span className="ml-2 text-cosmic-text">{t('kundli.calculatingAvakhada')}</span>
       </div>
     );
   }
 
   if (!avakhadaData) {
-    return <p className="text-center text-cosmic-text/70 py-8">{t('kundli.clickAvakhadaTab')}</p>;
+    return <p className="text-center text-cosmic-text py-8">{t('kundli.clickAvakhadaTab')}</p>;
   }
 
   return (
     <div className="space-y-4">
-      <div className="bg-gradient-to-r from-sacred-cream to-sacred-gold/10 rounded-xl p-4 border border-sacred-gold/20 mb-4">
+      <div className="bg-gradient-to-r from-sacred-cream to-sacred-gold rounded-xl p-4 border border-sacred-gold mb-4">
         <h4 className="font-display font-bold text-lg" style={{ color: 'var(--ink)' }}>{t('section.avakhadaChakra')}</h4>
-        <p className="text-sm text-cosmic-text/70">{t('avakhada.birthSummary')}</p>
+        <p className="text-sm text-cosmic-text">{t('avakhada.birthSummary')}</p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {[

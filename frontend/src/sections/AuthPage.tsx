@@ -172,10 +172,10 @@ export default function AuthPage() {
           <h2 className="text-2xl sm:text-3xl font-sacred font-bold text-cosmic-text mb-2">{t('auth.welcome')}</h2>
           <p className="text-cosmic-text-secondary">{t('auth.subtitle')}</p>
         </div>
-        {error && <div className="mb-4 p-3 rounded-xl bg-red-900/30 border border-red-500/30 text-red-400 text-sm text-center">{error}</div>}
-        {success && <div className="mb-4 p-3 rounded-xl bg-green-900/30 border border-green-500/30 text-green-400 text-sm text-center">{success}</div>}
+        {error && <div className="mb-4 p-3 rounded-xl bg-red-900 border border-red-500 text-red-400 text-sm text-center">{error}</div>}
+        {success && <div className="mb-4 p-3 rounded-xl bg-green-900 border border-green-500 text-green-400 text-sm text-center">{success}</div>}
         <Tabs defaultValue="login" className="w-full">
-          <TabsList className="grid grid-cols-2 bg-cosmic-card mb-6 border border-sacred-gold/10">
+          <TabsList className="grid grid-cols-2 bg-cosmic-card mb-6 border border-sacred-gold">
             <TabsTrigger value="login" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-cosmic-bg text-cosmic-text-secondary">{t('auth.signIn')}</TabsTrigger>
             <TabsTrigger value="register" onClick={() => { setRegStep('email'); setOtp(['','','','','','']); setEmailToken(''); setError(''); setSuccess(''); }} className="data-[state=active]:bg-sacred-gold data-[state=active]:text-cosmic-bg text-cosmic-text-secondary">{t('auth.signUp')}</TabsTrigger>
           </TabsList>
@@ -240,7 +240,7 @@ export default function AuthPage() {
                       value={digit}
                       onChange={(e) => handleOtpChange(i, e.target.value)}
                       onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                      className="w-12 h-14 text-center text-xl font-bold rounded-lg border border-sacred-gold/30 bg-cosmic-card text-cosmic-text focus:border-sacred-gold focus:ring-1 focus:ring-sacred-gold outline-none transition-colors"
+                      className="w-12 h-14 text-center text-xl font-bold rounded-lg border border-sacred-gold bg-cosmic-card text-cosmic-text focus:border-sacred-gold focus:ring-1 focus:ring-sacred-gold outline-none transition-colors"
                     />
                   ))}
                 </div>
@@ -249,7 +249,7 @@ export default function AuthPage() {
                 </Button>
                 <div className="text-center">
                   {countdown > 0 ? (
-                    <p className="text-sm text-cosmic-text/70">Resend code in {countdown}s</p>
+                    <p className="text-sm text-cosmic-text">Resend code in {countdown}s</p>
                   ) : (
                     <button onClick={handleResendOtp} className="text-sm text-sacred-gold hover:underline">Resend verification code</button>
                   )}
@@ -261,7 +261,7 @@ export default function AuthPage() {
             {regStep === 'details' && (
               <div className="space-y-4">
                 <div className="text-center mb-2">
-                  <div className="inline-flex items-center gap-2 bg-green-900/20 border border-green-500/30 rounded-full px-4 py-1.5 text-green-400 text-sm">
+                  <div className="inline-flex items-center gap-2 bg-green-900 border border-green-500 rounded-full px-4 py-1.5 text-green-400 text-sm">
                     <ShieldCheck className="w-4 h-4" /> {registerForm.email} verified
                   </div>
                 </div>
@@ -278,11 +278,11 @@ export default function AuthPage() {
                   onClick={() => setIsAstrologer(!isAstrologer)}
                   className={`w-full flex items-center gap-3 p-3 border transition-colors rounded-lg ${
                     isAstrologer
-                      ? 'border-sacred-gold bg-sacred-gold/10 text-sacred-gold'
-                      : 'border-sacred-gold/20 text-cosmic-text-secondary hover:border-sacred-gold/40'
+                      ? 'border-sacred-gold bg-sacred-gold text-sacred-gold'
+                      : 'border-sacred-gold text-cosmic-text-secondary hover:border-sacred-gold'
                   }`}
                 >
-                  <Star className={`w-5 h-5 ${isAstrologer ? 'text-sacred-gold' : 'text-cosmic-text/70'}`} />
+                  <Star className={`w-5 h-5 ${isAstrologer ? 'text-sacred-gold' : 'text-cosmic-text'}`} />
                   <span className="text-sm font-medium">{t('astrologer.registerAsAstrologer')}</span>
                   <div className={`ml-auto w-10 h-5 rounded-full transition-colors ${isAstrologer ? 'bg-sacred-gold' : 'bg-cosmic-surface'}`}>
                     <div className={`w-4 h-4 rounded-full bg-cosmic-text shadow-sm transform transition-transform mt-0.5 ${isAstrologer ? 'translate-x-5.5 ml-[22px]' : 'ml-0.5'}`} />
@@ -298,8 +298,8 @@ export default function AuthPage() {
 
         {/* Forgot Password Flow */}
         {showForgotPassword && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-cosmic-bg/80 backdrop-blur-sm px-4" onClick={() => setShowForgotPassword(false)}>
-            <div className="bg-cosmic-bg border border-sacred-gold/20 p-6 max-w-sm w-full space-y-4" onClick={e => e.stopPropagation()}>
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-cosmic-bg backdrop-blur-sm px-4" onClick={() => setShowForgotPassword(false)}>
+            <div className="bg-cosmic-bg border border-sacred-gold p-6 max-w-sm w-full space-y-4" onClick={e => e.stopPropagation()}>
               <h3 className="text-lg font-cinzel text-sacred-gold-dark text-center">Reset Password</h3>
               {error && <p className="text-red-400 text-sm text-center">{error}</p>}
               {success && <p className="text-green-400 text-sm text-center">{success}</p>}
@@ -315,7 +315,7 @@ export default function AuthPage() {
 
               {resetStep === 'otp' && (
                 <>
-                  <p className="text-sm text-cosmic-text/60 text-center">Enter the 6-digit code sent to {resetEmail}</p>
+                  <p className="text-sm text-cosmic-text text-center">Enter the 6-digit code sent to {resetEmail}</p>
                   <Input type="text" value={resetOtp} onChange={e => setResetOtp(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="000000" maxLength={6} className="input-sacred text-center text-2xl tracking-widest" />
                   <Input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder="New password (min 8 chars)" className="input-sacred" />
                   <Button onClick={handleResetPassword} disabled={loading || resetOtp.length !== 6 || newPassword.length < 8} className="w-full btn-sacred">
@@ -330,7 +330,7 @@ export default function AuthPage() {
                 </Button>
               )}
 
-              <button onClick={() => setShowForgotPassword(false)} className="w-full text-center text-sm text-cosmic-text/60 hover:text-cosmic-text/60">Cancel</button>
+              <button onClick={() => setShowForgotPassword(false)} className="w-full text-center text-sm text-cosmic-text hover:text-cosmic-text">Cancel</button>
             </div>
           </div>
         )}

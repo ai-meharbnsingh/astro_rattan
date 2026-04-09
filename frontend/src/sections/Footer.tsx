@@ -27,9 +27,9 @@ export default function Footer() {
   };
 
   return (
-    <footer className="relative bg-cosmic-bg overflow-hidden border-t border-sacred-gold/20">
+    <footer className="relative bg-cosmic-bg overflow-hidden border-t border-sacred-gold">
       {/* Top gold line */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-sacred-gold-dark/50 to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-sacred-gold-dark to-transparent" />
       
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="py-16 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
@@ -60,7 +60,7 @@ export default function Footer() {
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 bg-sacred-gold-dark/10 border border-sacred-gold/20 flex items-center justify-center text-cosmic-text hover:text-sacred-gold-dark hover:border-sacred-gold/40 transition-all"
+                  className="w-10 h-10 bg-sacred-gold-dark border border-sacred-gold flex items-center justify-center text-cosmic-text hover:text-sacred-gold-dark hover:border-sacred-gold transition-all"
                 >
                   <Icon className="w-5 h-5" />
                 </a>
@@ -102,7 +102,7 @@ export default function Footer() {
           ))}
         </div>
         
-        <div className="py-6 border-t border-sacred-gold/10 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="py-6 border-t border-sacred-gold flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-base text-cosmic-text">
             &copy; {new Date().getFullYear()} Astro Rattan. {t('footer.madeWith')} <Heart className="w-4 h-4 inline text-sacred-gold" /> in India
           </p>

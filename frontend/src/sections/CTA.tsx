@@ -20,7 +20,7 @@ export default function CTA() {
 
   return (
     <section ref={sectionRef} className="relative min-h-[50vh] flex items-center justify-center overflow-hidden bg-cosmic-bg">
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-sacred-gold-dark/30 to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-sacred-gold-dark to-transparent" />
 
       <div className="relative z-10 cta-content max-w-3xl mx-auto px-4 text-center py-20">
         <div className="flex justify-center gap-2 mb-6">
@@ -33,7 +33,7 @@ export default function CTA() {
           Start Reading Your Chart
         </h2>
 
-        <p className="text-cosmic-text/60 max-w-xl mx-auto mb-10">
+        <p className="text-cosmic-text max-w-xl mx-auto mb-10">
           Free account. No credit card. Full access to all 21 engines,
           24 analysis tabs, and PDF export.
         </p>
@@ -50,7 +50,7 @@ export default function CTA() {
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-sacred-gold-dark/30 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-sacred-gold-dark to-transparent" />
     </section>
   );
 }

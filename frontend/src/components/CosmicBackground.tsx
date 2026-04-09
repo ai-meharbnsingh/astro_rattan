@@ -60,7 +60,7 @@ export default function CosmicBackground() {
         size: 28 + Math.random() * 24,
         delay: Math.random() * 4,
         duration: 5 + Math.random() * 3,
-        opacity: inCenterX && inCenterY ? 0.15 : 0.45 + Math.random() * 0.25,
+        opacity: 1,
         rotate: Math.random() * 360
       });
     }
@@ -155,7 +155,7 @@ export default function CosmicBackground() {
             left: `${Math.random() * 100}%`,
             top: `${Math.random() * 100}%`,
             boxShadow: '0 0 6px var(--aged-gold-dim)',
-            opacity: 0.3 + Math.random() * 0.5,
+            opacity: 1,
             animation: `pulse ${3 + Math.random() * 3}s ease-in-out infinite`,
             animationDelay: `${Math.random() * 4}s`
           }}

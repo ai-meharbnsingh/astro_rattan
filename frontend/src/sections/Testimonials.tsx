@@ -29,7 +29,7 @@ export default function Testimonials() {
     <section ref={sectionRef} className="relative py-24 bg-cosmic-bg">
       <div className="relative z-10">
         <div className="testimonials-title text-center mb-16 px-4">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold/10 text-sacred-gold text-sm font-medium mb-6 border border-sacred-gold/30">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold text-sacred-gold text-sm font-medium mb-6 border border-sacred-gold">
             <Star className="w-4 h-4" />{t('testimonials.heading')}
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-sacred font-bold text-cosmic-text mb-4">
@@ -41,15 +41,15 @@ export default function Testimonials() {
           <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-cosmic-bg to-transparent z-10" />
           <div className="flex gap-6 animate-marquee-left">
             {[...testimonials, ...testimonials].map((t, i) => (
-              <Card key={i} className="flex-shrink-0 w-[350px] card-sacred border-sacred-gold/15">
+              <Card key={i} className="flex-shrink-0 w-[350px] card-sacred border-sacred-gold">
                 <CardContent className="p-6">
-                  <Quote className="w-8 h-8 text-sacred-gold/30 mb-4" />
+                  <Quote className="w-8 h-8 text-sacred-gold mb-4" />
                   <div className="flex gap-1 mb-3">
                     {[...Array(t.rating)].map((_, j) => <Star key={j} className="w-4 h-4 text-sacred-gold fill-sacred-gold" />)}
                   </div>
                   <p className="text-cosmic-text-secondary text-sm mb-4">&ldquo;{t.text}&rdquo;</p>
-                  <span className="inline-block text-xs px-3 py-1 rounded-full bg-sacred-gold/10 text-sacred-gold mb-4 border border-sacred-gold/20">{t.service}</span>
-                  <div className="flex items-center gap-3 pt-4 border-t border-sacred-gold/10">
+                  <span className="inline-block text-xs px-3 py-1 rounded-full bg-sacred-gold text-sacred-gold mb-4 border border-sacred-gold">{t.service}</span>
+                  <div className="flex items-center gap-3 pt-4 border-t border-sacred-gold">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center">
                       <span className="text-cosmic-bg font-bold text-sm">{t.name.charAt(0)}</span>
                     </div>

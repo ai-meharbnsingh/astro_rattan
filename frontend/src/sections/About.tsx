@@ -33,7 +33,7 @@ export default function About() {
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-['Cinzel_Decorative'] text-cosmic-text mb-6">
             {t('about.heading')}
           </h2>
-          <div className="space-y-4 text-cosmic-text/70">
+          <div className="space-y-4 text-cosmic-text">
             <p>
               Most astrology apps use lookup tables and generic predictions.
               Astro Rattan computes every position from Swiss Ephemeris — the same
@@ -52,12 +52,12 @@ export default function About() {
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
-              <div key={index} className="stat-item border border-sacred-gold/20 p-6 text-center bg-cosmic-bg hover:border-sacred-gold/40 transition-colors">
-                <div className="w-12 h-12 flex items-center justify-center mx-auto mb-4 bg-sacred-gold-dark/10 border border-sacred-gold/20">
+              <div key={index} className="stat-item border border-sacred-gold p-6 text-center bg-cosmic-bg hover:border-sacred-gold transition-colors">
+                <div className="w-12 h-12 flex items-center justify-center mx-auto mb-4 bg-sacred-gold-dark border border-sacred-gold">
                   <Icon className="w-6 h-6 text-sacred-gold-dark" />
                 </div>
                 <p className="text-3xl font-cinzel font-bold text-sacred-gold-dark mb-1">{stat.value}</p>
-                <p className="text-sm text-cosmic-text/60">{stat.label}</p>
+                <p className="text-sm text-cosmic-text">{stat.label}</p>
               </div>
             );
           })}

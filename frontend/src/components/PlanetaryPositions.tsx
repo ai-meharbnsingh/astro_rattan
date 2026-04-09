@@ -114,7 +114,7 @@ export default function PlanetaryPositions({ planets: propPlanets }: PlanetaryPo
     <div className="relative inline-block">
       {/* Cosmic glow */}
       <div
-        className="absolute inset-0 rounded-full opacity-30 blur-2xl pointer-events-none"
+        className="absolute inset-0 rounded-full blur-2xl pointer-events-none"
         style={{
           background: 'radial-gradient(circle, rgba(128,0,128,0.3) 0%, rgba(212,175,55,0.15) 50%, transparent 70%)',
           transform: 'scale(1.15)',
@@ -147,14 +147,14 @@ export default function PlanetaryPositions({ planets: propPlanets }: PlanetaryPo
         <circle cx={CX} cy={CY} r={ZODIAC_R + 10} fill="url(#zodiac-bg)" />
 
         {/* Outer zodiac ring */}
-        <circle cx={CX} cy={CY} r={ZODIAC_R} fill="none" stroke="var(--aged-gold-dim)" strokeWidth={1} opacity={0.4} />
-        <circle cx={CX} cy={CY} r={ZODIAC_R - 20} fill="none" stroke="var(--aged-gold-dim)" strokeWidth={0.5} opacity={0.2} />
+        <circle cx={CX} cy={CY} r={ZODIAC_R} fill="none" stroke="var(--aged-gold-dim)" strokeWidth={1}  />
+        <circle cx={CX} cy={CY} r={ZODIAC_R - 20} fill="none" stroke="var(--aged-gold-dim)" strokeWidth={0.5}  />
 
         {/* Planet orbit circle */}
-        <circle cx={CX} cy={CY} r={PLANET_R} fill="none" stroke="rgba(212,175,55,0.1)" strokeWidth={0.5} strokeDasharray="4 4" />
+        <circle cx={CX} cy={CY} r={PLANET_R} fill="none" stroke="rgba(212,175,55,1)" strokeWidth={0.5} strokeDasharray="4 4" />
 
         {/* Inner circle */}
-        <circle cx={CX} cy={CY} r={INNER_R} fill="none" stroke="rgba(212,175,55,0.15)" strokeWidth={0.5} />
+        <circle cx={CX} cy={CY} r={INNER_R} fill="none" stroke="rgba(212,175,55,1)" strokeWidth={0.5} />
 
         {/* Zodiac sign divisions & labels */}
         {ZODIAC_SIGNS.map((sign, idx) => {
@@ -169,14 +169,14 @@ export default function PlanetaryPositions({ planets: propPlanets }: PlanetaryPo
 
           return (
             <g key={sign}>
-              <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="var(--aged-gold-dim)" strokeWidth={0.5} opacity={0.3} />
+              <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="var(--aged-gold-dim)" strokeWidth={0.5}  />
               <text
                 x={labelX}
                 y={labelY + 4}
                 textAnchor="middle"
                 fill="var(--aged-gold-dim)"
                 fontSize={11}
-                opacity={0.6}
+                
               >
                 {ZODIAC_SYMBOLS[sign]}
               </text>
@@ -185,13 +185,13 @@ export default function PlanetaryPositions({ planets: propPlanets }: PlanetaryPo
         })}
 
         {/* Center label */}
-        <text x={CX} y={CY - 8} textAnchor="middle" fill="var(--aged-gold-dim)" fontSize={10} opacity={0.5} fontFamily="var(--font-sacred, Cormorant Garamond, Georgia, serif)">
+        <text x={CX} y={CY - 8} textAnchor="middle" fill="var(--aged-gold-dim)" fontSize={10}  fontFamily="var(--font-sacred, Cormorant Garamond, Georgia, serif)">
           Planetary
         </text>
         <text x={CX} y={CY + 6} textAnchor="middle" fill="var(--aged-gold-dim)" fontSize={10} opacity={0.5} fontFamily="var(--font-sacred, Cormorant Garamond, Georgia, serif)">
           Positions
         </text>
-        <text x={CX} y={CY + 20} textAnchor="middle" fill="#9B59B6" fontSize={8} opacity={0.4} fontFamily="sans-serif">
+        <text x={CX} y={CY + 20} textAnchor="middle" fill="#9B59B6" fontSize={8}  fontFamily="sans-serif">
           Live Sky
         </text>
 
@@ -277,7 +277,7 @@ export default function PlanetaryPositions({ planets: propPlanets }: PlanetaryPo
               transform: 'translateX(-50%)',
             }}
           >
-            <div className="bg-cosmic-bg/95 backdrop-blur-sm border border-sacred-gold/30 rounded-lg px-4 py-2.5 shadow-lg shadow-sacred-gold/10 whitespace-nowrap">
+            <div className="bg-cosmic-bg backdrop-blur-sm border border-sacred-gold rounded-lg px-4 py-2.5 shadow-lg whitespace-nowrap">
               <div className="flex items-center gap-2 mb-1">
                 <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />
                 <span className="font-display font-bold text-sacred-gold text-sm">{p.name}</span>
@@ -286,7 +286,7 @@ export default function PlanetaryPositions({ planets: propPlanets }: PlanetaryPo
               <div className="text-xs text-cosmic-text">
                 {ZODIAC_SYMBOLS[p.sign]} {p.sign} {p.degree.toFixed(1)}&deg;
               </div>
-              <div className="text-xs text-cosmic-text/70">Nakshatra: {p.nakshatra}</div>
+              <div className="text-xs text-cosmic-text">Nakshatra: {p.nakshatra}</div>
             </div>
           </div>
         );

@@ -107,24 +107,24 @@ export default function NotesWidget({ clientId, chartType, kundliId }: NotesWidg
 
       {/* Notes Panel */}
       {open && (
-        <div className="fixed z-50 bg-cosmic-bg border border-sacred-gold/30 shadow-2xl flex flex-col"
+        <div className="fixed z-50 bg-cosmic-bg border border-sacred-gold shadow-2xl flex flex-col"
           style={{ width: '360px', maxHeight: '500px', right: '20px', bottom: '80px' }}>
           {/* Header */}
-          <div className="flex items-center justify-between p-3 border-b border-sacred-gold/20 bg-sacred-gold-dark/5">
+          <div className="flex items-center justify-between p-3 border-b border-sacred-gold bg-sacred-gold-dark">
             <h3 className="text-sm font-cinzel text-sacred-gold-dark uppercase tracking-wider">Notes</h3>
-            <button onClick={() => setOpen(false)} className="text-cosmic-text/60 hover:text-cosmic-text">
+            <button onClick={() => setOpen(false)} className="text-cosmic-text hover:text-cosmic-text">
               <X className="w-4 h-4" />
             </button>
           </div>
 
           {/* Add note */}
-          <div className="p-3 border-b border-sacred-gold/10">
+          <div className="p-3 border-b border-sacred-gold">
             <textarea
               value={newNote}
               onChange={e => setNewNote(e.target.value)}
               placeholder="Add a note..."
               rows={3}
-              className="w-full bg-transparent border border-sacred-gold/20 text-cosmic-text text-sm p-2 resize-none focus:border-sacred-gold outline-none"
+              className="w-full bg-transparent border border-sacred-gold text-cosmic-text text-sm p-2 resize-none focus:border-sacred-gold outline-none"
             />
             <button
               onClick={handleSave}
@@ -141,14 +141,14 @@ export default function NotesWidget({ clientId, chartType, kundliId }: NotesWidg
             {loading ? (
               <div className="text-center py-4"><Loader2 className="w-4 h-4 animate-spin text-sacred-gold mx-auto" /></div>
             ) : notes.length === 0 ? (
-              <p className="text-center text-cosmic-text/60 text-xs py-4">No notes yet</p>
+              <p className="text-center text-cosmic-text text-xs py-4">No notes yet</p>
             ) : (
               notes.map(note => (
-                <div key={note.id} className="border-l-2 border-sacred-gold/30 pl-3 py-1">
+                <div key={note.id} className="border-l-2 border-sacred-gold pl-3 py-1">
                   <p className="text-sm text-cosmic-text whitespace-pre-wrap">{note.content}</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-xs text-cosmic-text/60">{formatNoteDate(note.created_at)}</span>
-                    <span className="text-xs px-1.5 py-0.5 bg-sacred-gold-dark/10 text-sacred-gold-dark rounded">
+                    <span className="text-xs text-cosmic-text">{formatNoteDate(note.created_at)}</span>
+                    <span className="text-xs px-1.5 py-0.5 bg-sacred-gold-dark text-sacred-gold-dark rounded">
                       {chartLabel[note.chart_type] || note.chart_type}
                     </span>
                   </div>

@@ -18,12 +18,12 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
       {loadingAshtakvarga ? (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
-          <span className="ml-2 text-cosmic-text/70">{t('kundli.loadingAshtakvarga')}</span>
+          <span className="ml-2 text-cosmic-text">{t('kundli.loadingAshtakvarga')}</span>
         </div>
       ) : ashtakvargaData ? (
         <div className="space-y-6">
           {/* SAV Chart — Visual Kundli with points in each house */}
-          <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/20">
+          <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
             <h4 className="font-display font-semibold text-sacred-brown mb-4">{t('section.sarvashtakvarga')} {t('kundli.chart')}</h4>
             <div className="w-full max-w-[600px] mx-auto">
               <InteractiveKundli
@@ -45,11 +45,11 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                 onHouseClick={() => {}}
               />
             </div>
-            <p className="text-xs text-center text-cosmic-text/70 mt-2">{t('ashtakvarga.savDescription')}</p>
+            <p className="text-xs text-center text-cosmic-text mt-2">{t('ashtakvarga.savDescription')}</p>
           </div>
 
           {/* SAV Bar Chart */}
-          <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/20">
+          <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
             <h4 className="font-display font-semibold text-sacred-brown mb-4">{t('section.sarvashtakvarga')}</h4>
             <div className="flex items-end gap-2 h-48">
               {['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'].map((sign) => {
@@ -60,7 +60,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                 return (
                   <div key={sign} className="flex-1 flex flex-col items-center gap-1">
                     <span className="text-xs font-medium text-sacred-brown">{points}</span>
-                    <div className="w-full bg-sacred-gold/10 rounded-t-md relative" style={{ height: '140px' }}>
+                    <div className="w-full bg-sacred-gold rounded-t-md relative" style={{ height: '140px' }}>
                       <div
                         className="absolute bottom-0 w-full rounded-t-md transition-all"
                         style={{
@@ -69,14 +69,14 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                         }}
                       />
                     </div>
-                    <span className="text-xs text-cosmic-text/70 truncate w-full text-center" title={sign}>
+                    <span className="text-xs text-cosmic-text truncate w-full text-center" title={sign}>
                       {sign.slice(0, 3)}
                     </span>
                   </div>
                 );
               })}
             </div>
-            <div className="flex items-center gap-4 mt-3 text-xs text-cosmic-text/70">
+            <div className="flex items-center gap-4 mt-3 text-xs text-cosmic-text">
               <div className="flex items-center gap-1">
                 <div className="w-3 h-3 rounded" style={{ backgroundColor: 'var(--aged-gold-dim)' }} />
                 <span>{t('kundli.strong')} (&ge;28)</span>
@@ -89,9 +89,9 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
           </div>
 
           {/* Bhinna Ashtakvarga Charts — Parashara's Light format: table + diamond chart per planet */}
-          <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/20">
+          <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
             <h4 className="font-display font-semibold text-sacred-brown mb-2">{language === 'hi' ? 'भिन्न अष्टकवर्ग चार्ट' : 'Bhinna Ashtakvarga Charts'}</h4>
-            <p className="text-xs text-cosmic-text/70 mb-4">{language === 'hi' ? '12 राशियों में प्रत्येक ग्रह के बिंदु (पराशर प्रकाश प्रारूप)।' : 'Individual planet bindus across 12 signs (Parashara\'s Light format).'}</p>
+            <p className="text-xs text-cosmic-text mb-4">{language === 'hi' ? '12 राशियों में प्रत्येक ग्रह के बिंदु (पराशर प्रकाश प्रारूप)।' : 'Individual planet bindus across 12 signs (Parashara\'s Light format).'}</p>
             <div className="grid grid-cols-1 gap-5">
               {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Lagna'].map((planet) => {
                 const bindus = ashtakvargaData.planet_bindus?.[planet] || {};
@@ -125,9 +125,9 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                 ];
 
                 return (
-                  <div key={planet} className="bg-white rounded-lg border border-sacred-gold/20 overflow-hidden">
+                  <div key={planet} className="bg-white rounded-lg border border-sacred-gold overflow-hidden">
                     {/* Planet header */}
-                    <div className="bg-sacred-gold/10 px-4 py-2 border-b border-sacred-gold/20 flex items-center justify-between">
+                    <div className="bg-sacred-gold px-4 py-2 border-b border-sacred-gold flex items-center justify-between">
                       <h5 className="font-display font-semibold text-sacred-brown text-sm">
                         {translatePlanet(planet, language)}
                       </h5>
@@ -143,11 +143,11 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                             <table className="w-full text-xs border-collapse">
                               <thead>
                                 <tr>
-                                  <th className="text-left p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold/20 whitespace-nowrap">Contributor</th>
+                                  <th className="text-left p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold whitespace-nowrap">Contributor</th>
                                   {signAbbr.map((s, i) => (
-                                    <th key={i} className="text-center p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold/20 min-w-[26px]">{s}</th>
+                                    <th key={i} className="text-center p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold min-w-[26px]">{s}</th>
                                   ))}
-                                  <th className="text-center p-1 text-sacred-gold-dark font-bold border-b border-sacred-gold/20">&Sigma;</th>
+                                  <th className="text-center p-1 text-sacred-gold-dark font-bold border-b border-sacred-gold">&Sigma;</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -156,11 +156,11 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                                   const rowVals = signs.map((s) => row[s] || 0);
                                   const rowTotal = rowVals.reduce((a, b) => a + b, 0);
                                   return (
-                                    <tr key={contrib} className="border-t border-sacred-gold/10 hover:bg-sacred-gold/5">
+                                    <tr key={contrib} className="border-t border-sacred-gold hover:bg-sacred-gold">
                                       <td className="p-1 text-sacred-brown font-medium whitespace-nowrap">{translatePlanet(contrib, language)}</td>
                                       {rowVals.map((v, i) => (
                                         <td key={i} className="text-center p-1">
-                                          <span className={`inline-block w-5 h-5 leading-5 rounded-sm text-xs font-semibold ${v === 1 ? 'bg-green-100 text-green-800' : 'text-cosmic-text/60'}`}>
+                                          <span className={`inline-block w-5 h-5 leading-5 rounded-sm text-xs font-semibold ${v === 1 ? 'bg-green-100 text-green-800' : 'text-cosmic-text'}`}>
                                             {v}
                                           </span>
                                         </td>
@@ -170,7 +170,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                                   );
                                 })}
                                 {/* Bindu total row */}
-                                <tr className="border-t-2 border-sacred-gold/30 bg-sacred-gold/5">
+                                <tr className="border-t-2 border-sacred-gold bg-sacred-gold">
                                   <td className="p-1 text-sacred-gold-dark font-bold whitespace-nowrap">{language === 'hi' ? 'बिंदु' : 'Bindu'}</td>
                                   {vals.map((v, i) => (
                                     <td key={i} className="text-center p-1">
@@ -190,7 +190,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                         })()}
                       </div>
                       {/* RIGHT: North Indian diamond chart SVG */}
-                      <div className="flex-shrink-0 flex items-center justify-center p-4 lg:border-l border-t lg:border-t-0 border-sacred-gold/10">
+                      <div className="flex-shrink-0 flex items-center justify-center p-4 lg:border-l border-t lg:border-t-0 border-sacred-gold">
                         <svg viewBox="0 0 280 280" width="280" height="280" className="block">
                           <rect x="2" y="2" width="276" height="276" fill="none" stroke="#c8a96e" strokeWidth="1.5" />
                           <line x1="2" y1="2" x2="278" y2="278" stroke="#c8a96e" strokeWidth="0.75" />
@@ -218,7 +218,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
               })}
             </div>
             {/* Color legend */}
-            <div className="flex items-center gap-4 mt-4 text-xs text-cosmic-text/70">
+            <div className="flex items-center gap-4 mt-4 text-xs text-cosmic-text">
               <div className="flex items-center gap-1">
                 <div className="w-3 h-3 rounded border" style={{ backgroundColor: '#dcfce7', borderColor: '#86efac' }} />
                 <span>{language === 'hi' ? '5-8 प्रबल' : '5-8 Strong'}</span>
@@ -234,12 +234,12 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
             </div>
           </div>
 
-          <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/20">
+          <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
             <h4 className="font-display font-semibold text-sacred-brown mb-4">{t('section.bhinnashtakvarga')}</h4>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-sacred-gold/20">
+                  <tr className="border-b border-sacred-gold">
                     <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
                     {['Ari', 'Tau', 'Gem', 'Can', 'Leo', 'Vir', 'Lib', 'Sco', 'Sag', 'Cap', 'Aqu', 'Pis'].map((s) => (
                       <th key={s} className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{s}</th>
@@ -253,13 +253,13 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                     const signs = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
                     const total = signs.reduce((sum, s) => sum + (bindus[s] || 0), 0);
                     return (
-                      <tr key={planet} className="border-t border-sacred-gold/10 hover:bg-sacred-gold/5">
+                      <tr key={planet} className="border-t border-sacred-gold hover:bg-sacred-gold">
                         <td className="p-2 text-sacred-brown font-medium">{translatePlanet(planet, language)}</td>
                         {signs.map((s) => {
                           const val = bindus[s] || 0;
                           return (
                             <td key={s} className="text-center p-2">
-                              <span className={`inline-block w-6 h-6 rounded text-xs leading-6 ${val >= 5 ? 'bg-sacred-gold-dark/20 text-sacred-gold-dark font-bold' : val <= 2 ? 'bg-red-10 text-wax-red-deep' : 'text-cosmic-text/70'}`}>
+                              <span className={`inline-block w-6 h-6 rounded text-xs leading-6 ${val >= 5 ? 'bg-sacred-gold-dark text-sacred-gold-dark font-bold' : val <= 2 ? 'bg-red-10 text-wax-red-deep' : 'text-cosmic-text'}`}>
                                 {val}
                               </span>
                             </td>
@@ -275,7 +275,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
           </div>
         </div>
       ) : (
-        <p className="text-center text-cosmic-text/70 py-8">{t('kundli.clickAshtakvargaTab')}</p>
+        <p className="text-center text-cosmic-text py-8">{t('kundli.clickAshtakvargaTab')}</p>
       )}
     </>
   );

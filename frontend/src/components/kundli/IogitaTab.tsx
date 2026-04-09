@@ -10,7 +10,7 @@ interface IogitaTabProps {
 export default function IogitaTab({ iogitaData, loadingIogita, language, t }: IogitaTabProps) {
   if (loadingIogita) {
     return (
-      <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-cosmic-text/70">{t('kundli.analyzingLifePath')}</span></div>
+      <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-cosmic-text">{t('kundli.analyzingLifePath')}</span></div>
     );
   }
 
@@ -18,9 +18,9 @@ export default function IogitaTab({ iogitaData, loadingIogita, language, t }: Io
     return (
       <div className="space-y-6">
         {/* Overall Summary Card */}
-        <div className="rounded-2xl p-6 border border-sacred-gold/30" style={{ background: 'linear-gradient(135deg, rgba(255,153,51,0.06) 0%, rgba(248,250,252,1) 100%)' }}>
+        <div className="rounded-2xl p-6 border border-sacred-gold" style={{ background: 'linear-gradient(135deg, rgba(255,153,51,0.06) 0%, rgba(248,250,252,1) 100%)' }}>
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-full bg-sacred-gold/20 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-full bg-sacred-gold flex items-center justify-center">
               <Sparkles className="w-6 h-6 text-sacred-gold" />
             </div>
             <div>
@@ -32,7 +32,7 @@ export default function IogitaTab({ iogitaData, loadingIogita, language, t }: Io
         </div>
 
         {/* Strengths — Top Forces */}
-        <div className="rounded-xl p-5 border border-sacred-gold/20 bg-sacred-cream">
+        <div className="rounded-xl p-5 border border-sacred-gold bg-sacred-cream">
           <h4 className="font-display font-semibold mb-4" style={{ color: 'var(--aged-gold-dim)' }}>{t('iogita.strongestQualities')}</h4>
           <div className="space-y-3">
             {(iogitaData.basin.top_3_atoms || []).map(([name, val]: [string, number], idx: number) => {
@@ -113,7 +113,7 @@ export default function IogitaTab({ iogitaData, loadingIogita, language, t }: Io
 
         {/* Overall Insight */}
         {iogitaData.iogita_insight && (
-          <div className="rounded-xl p-5 border border-sacred-gold/20 bg-sacred-cream">
+          <div className="rounded-xl p-5 border border-sacred-gold bg-sacred-cream">
             <h4 className="font-display font-semibold mb-3" style={{ color: 'var(--aged-gold-dim)' }}>{t('iogita.overallLifeReading')}</h4>
             <p className="text-sm leading-relaxed" style={{ color: 'var(--ink)' }}>{iogitaData.iogita_insight}</p>
           </div>
@@ -121,7 +121,7 @@ export default function IogitaTab({ iogitaData, loadingIogita, language, t }: Io
 
         {/* Normal Astrology Insights */}
         {iogitaData.normal_astrology && iogitaData.normal_astrology.length > 0 && (
-          <div className="rounded-xl p-5 border border-sacred-gold/20 bg-sacred-cream">
+          <div className="rounded-xl p-5 border border-sacred-gold bg-sacred-cream">
             <h4 className="font-display font-semibold mb-3" style={{ color: 'var(--aged-gold-dim)' }}>{t('iogita.kundliSummary')}</h4>
             <div className="space-y-2">
               {iogitaData.normal_astrology.map((point: string, idx: number) => (

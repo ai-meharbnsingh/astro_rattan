@@ -131,7 +131,7 @@ export default function Panchang() {
 
         {/* Title */}
         <div className="panchang-title text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-saffron/10 text-sacred-saffron text-sm font-medium mb-6 border border-sacred-saffron/30">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-saffron text-sacred-saffron text-sm font-medium mb-6 border border-sacred-saffron">
             <Calendar className="w-4 h-4" />Daily Panchang
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-sacred font-bold text-cosmic-text mb-4">
@@ -143,7 +143,7 @@ export default function Panchang() {
         <div className="card-gold-border rounded-2xl p-4 mb-8">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-sacred-gold/10 flex items-center justify-center border border-sacred-gold/20">
+              <div className="w-12 h-12 rounded-xl bg-sacred-gold flex items-center justify-center border border-sacred-gold">
                 <Calendar className="w-6 h-6 text-sacred-gold" />
               </div>
               <div>
@@ -152,7 +152,7 @@ export default function Panchang() {
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-sacred-saffron/10 flex items-center justify-center border border-sacred-saffron/20">
+              <div className="w-12 h-12 rounded-xl bg-sacred-saffron flex items-center justify-center border border-sacred-saffron">
                 <Clock className="w-6 h-6 text-sacred-saffron" />
               </div>
               <div>
@@ -170,7 +170,7 @@ export default function Panchang() {
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="px-3 py-2 rounded-xl bg-cosmic-card border border-sacred-gold/20 text-cosmic-text text-sm focus:border-sacred-gold/50 focus:outline-none"
+                className="px-3 py-2 rounded-xl bg-cosmic-card border border-sacred-gold text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none"
               />
             </div>
             <div>
@@ -180,7 +180,7 @@ export default function Panchang() {
               <input
                 type="number" step="0.0001" value={latitude}
                 onChange={(e) => setLatitude(e.target.value)}
-                className="w-28 px-3 py-2 rounded-xl bg-cosmic-card border border-sacred-gold/20 text-cosmic-text text-sm focus:border-sacred-gold/50 focus:outline-none"
+                className="w-28 px-3 py-2 rounded-xl bg-cosmic-card border border-sacred-gold text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none"
               />
             </div>
             <div>
@@ -190,13 +190,13 @@ export default function Panchang() {
               <input
                 type="number" step="0.0001" value={longitude}
                 onChange={(e) => setLongitude(e.target.value)}
-                className="w-28 px-3 py-2 rounded-xl bg-cosmic-card border border-sacred-gold/20 text-cosmic-text text-sm focus:border-sacred-gold/50 focus:outline-none"
+                className="w-28 px-3 py-2 rounded-xl bg-cosmic-card border border-sacred-gold text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none"
               />
             </div>
             <Button
               onClick={detectLocation}
               disabled={detectingLocation}
-              className="btn-sacred bg-sacred-gold/10 text-sacred-gold hover:bg-sacred-gold hover:text-cosmic-bg border border-sacred-gold/30 transition-all text-sm px-4 py-2"
+              className="btn-sacred bg-sacred-gold text-sacred-gold hover:bg-sacred-gold hover:text-cosmic-bg border border-sacred-gold transition-all text-sm px-4 py-2"
             >
               {detectingLocation ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Navigation className="w-4 h-4 mr-1" />}
               Detect Location
@@ -225,7 +225,7 @@ export default function Panchang() {
                 <FestivalVrat festivals={panchang.festivals} />
               </div>
               <div className="lg:col-span-2">
-                <Card className="card-sacred border-sacred-gold/20 h-full">
+                <Card className="card-sacred border-sacred-gold h-full">
                   <CardContent className="p-6">
                     <h3 className="text-xl font-sacred font-semibold text-cosmic-text mb-6 flex items-center gap-2">
                       <Calendar className="w-5 h-5 text-sacred-gold" />Today&apos;s Panchang
@@ -251,13 +251,13 @@ export default function Panchang() {
                   moonset={panchang.moonset}
                 />
                 {/* Sun/Moon Sign + Day/Night Duration */}
-                <Card className="card-sacred border-sacred-gold/20">
+                <Card className="card-sacred border-sacred-gold">
                   <CardContent className="p-4 space-y-2 text-sm">
-                    {panchang.sun_sign && <div className="flex justify-between"><span className="text-cosmic-text/70">Sun Sign</span><span className="font-medium text-cosmic-text">{panchang.sun_sign}</span></div>}
-                    {panchang.moon_sign && <div className="flex justify-between"><span className="text-cosmic-text/70">Moon Sign</span><span className="font-medium text-cosmic-text">{panchang.moon_sign}</span></div>}
-                    {panchang.dinamana && <div className="flex justify-between"><span className="text-cosmic-text/70">Dinamana</span><span className="font-medium text-cosmic-text">{panchang.dinamana}</span></div>}
-                    {panchang.ratrimana && <div className="flex justify-between"><span className="text-cosmic-text/70">Ratrimana</span><span className="font-medium text-cosmic-text">{panchang.ratrimana}</span></div>}
-                    {panchang.madhyahna && <div className="flex justify-between"><span className="text-cosmic-text/70">Madhyahna</span><span className="font-medium text-cosmic-text">{panchang.madhyahna}</span></div>}
+                    {panchang.sun_sign && <div className="flex justify-between"><span className="text-cosmic-text">Sun Sign</span><span className="font-medium text-cosmic-text">{panchang.sun_sign}</span></div>}
+                    {panchang.moon_sign && <div className="flex justify-between"><span className="text-cosmic-text">Moon Sign</span><span className="font-medium text-cosmic-text">{panchang.moon_sign}</span></div>}
+                    {panchang.dinamana && <div className="flex justify-between"><span className="text-cosmic-text">Dinamana</span><span className="font-medium text-cosmic-text">{panchang.dinamana}</span></div>}
+                    {panchang.ratrimana && <div className="flex justify-between"><span className="text-cosmic-text">Ratrimana</span><span className="font-medium text-cosmic-text">{panchang.ratrimana}</span></div>}
+                    {panchang.madhyahna && <div className="flex justify-between"><span className="text-cosmic-text">Madhyahna</span><span className="font-medium text-cosmic-text">{panchang.madhyahna}</span></div>}
                   </CardContent>
                 </Card>
               </div>
@@ -288,25 +288,25 @@ export default function Panchang() {
             <div className="space-y-4">
               {/* Hora Table */}
               {panchang.hora_table && <ExpandableSection title="Hora Muhurta" desc="24 planetary hours">
-                <table className="w-full text-sm"><thead><tr className="bg-sacred-gold/10"><th className="p-2 text-left text-sacred-gold-dark">Hora</th><th className="p-2 text-left">Lord</th><th className="p-2">Start</th><th className="p-2">End</th><th className="p-2">Type</th></tr></thead><tbody>
+                <table className="w-full text-sm"><thead><tr className="bg-sacred-gold"><th className="p-2 text-left text-sacred-gold-dark">Hora</th><th className="p-2 text-left">Lord</th><th className="p-2">Start</th><th className="p-2">End</th><th className="p-2">Type</th></tr></thead><tbody>
                 {(panchang.hora_table as any[]).map((h: any, i: number) => (
-                  <tr key={i} className="border-t border-sacred-gold/10"><td className="p-2 text-cosmic-text">{h.hora}</td><td className="p-2 text-cosmic-text font-medium">{h.lord}</td><td className="p-2 text-cosmic-text/70">{h.start}</td><td className="p-2 text-cosmic-text/70">{h.end}</td><td className="p-2"><span className={`text-xs px-2 py-0.5 rounded ${h.type === 'day' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}>{h.type}</span></td></tr>
+                  <tr key={i} className="border-t border-sacred-gold"><td className="p-2 text-cosmic-text">{h.hora}</td><td className="p-2 text-cosmic-text font-medium">{h.lord}</td><td className="p-2 text-cosmic-text">{h.start}</td><td className="p-2 text-cosmic-text">{h.end}</td><td className="p-2"><span className={`text-xs px-2 py-0.5 rounded ${h.type === 'day' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}>{h.type}</span></td></tr>
                 ))}</tbody></table>
               </ExpandableSection>}
 
               {/* Lagna Table */}
               {panchang.lagna_table && <ExpandableSection title="Lagna Muhurta" desc="Rising sign through the day">
-                <table className="w-full text-sm"><thead><tr className="bg-sacred-gold/10"><th className="p-2 text-left text-sacred-gold-dark">Lagna</th><th className="p-2">Start</th><th className="p-2">End</th></tr></thead><tbody>
+                <table className="w-full text-sm"><thead><tr className="bg-sacred-gold"><th className="p-2 text-left text-sacred-gold-dark">Lagna</th><th className="p-2">Start</th><th className="p-2">End</th></tr></thead><tbody>
                 {(panchang.lagna_table as any[]).map((l: any, i: number) => (
-                  <tr key={i} className="border-t border-sacred-gold/10"><td className="p-2 text-cosmic-text font-medium">{l.lagna}</td><td className="p-2 text-cosmic-text/70">{l.start}</td><td className="p-2 text-cosmic-text/70">{l.end}</td></tr>
+                  <tr key={i} className="border-t border-sacred-gold"><td className="p-2 text-cosmic-text font-medium">{l.lagna}</td><td className="p-2 text-cosmic-text">{l.start}</td><td className="p-2 text-cosmic-text">{l.end}</td></tr>
                 ))}</tbody></table>
               </ExpandableSection>}
 
               {/* Gowri Panchangam */}
               {panchang.gowri_panchang && <ExpandableSection title="Gowri Panchangam" desc="Day and night quality periods">
-                <table className="w-full text-sm"><thead><tr className="bg-sacred-gold/10"><th className="p-2 text-left text-sacred-gold-dark">Period</th><th className="p-2">Start</th><th className="p-2">End</th><th className="p-2">Type</th><th className="p-2">Quality</th></tr></thead><tbody>
+                <table className="w-full text-sm"><thead><tr className="bg-sacred-gold"><th className="p-2 text-left text-sacred-gold-dark">Period</th><th className="p-2">Start</th><th className="p-2">End</th><th className="p-2">Type</th><th className="p-2">Quality</th></tr></thead><tbody>
                 {(panchang.gowri_panchang as any[]).map((g: any, i: number) => (
-                  <tr key={i} className={`border-t border-sacred-gold/10 ${g.quality === 'good' ? 'bg-green-50' : ''}`}><td className="p-2 text-cosmic-text font-medium">{g.name}</td><td className="p-2 text-cosmic-text/70">{g.start}</td><td className="p-2 text-cosmic-text/70">{g.end}</td><td className="p-2"><span className={`text-xs px-2 py-0.5 rounded ${g.type === 'day' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}>{g.type}</span></td><td className="p-2"><span className={`text-xs px-2 py-0.5 rounded ${g.quality === 'good' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{g.quality === 'good' ? 'Shubh' : 'Ashubh'}</span></td></tr>
+                  <tr key={i} className={`border-t border-sacred-gold ${g.quality === 'good' ? 'bg-green-50' : ''}`}><td className="p-2 text-cosmic-text font-medium">{g.name}</td><td className="p-2 text-cosmic-text">{g.start}</td><td className="p-2 text-cosmic-text">{g.end}</td><td className="p-2"><span className={`text-xs px-2 py-0.5 rounded ${g.type === 'day' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}>{g.type}</span></td><td className="p-2"><span className={`text-xs px-2 py-0.5 rounded ${g.quality === 'good' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{g.quality === 'good' ? 'Shubh' : 'Ashubh'}</span></td></tr>
                 ))}</tbody></table>
               </ExpandableSection>}
 
@@ -317,7 +317,7 @@ export default function Panchang() {
                   <div key={i} className={`p-3 text-center border rounded ${c.good ? 'border-green-300 bg-green-50' : 'border-red-200 bg-red-50'}`}>
                     <p className="text-sm font-medium text-cosmic-text">{c.rashi}</p>
                     <p className={`text-xs font-semibold ${c.good ? 'text-green-600' : 'text-red-500'}`}>{c.balam}</p>
-                    <p className="text-xs text-cosmic-text/60">House {c.house_from_moon}</p>
+                    <p className="text-xs text-cosmic-text">House {c.house_from_moon}</p>
                   </div>
                 ))}
                 </div>
@@ -337,9 +337,9 @@ export default function Panchang() {
 
               {/* Do Ghati Muhurta */}
               {panchang.do_ghati_muhurta && <ExpandableSection title="Do Ghati Muhurta" desc="30 Muhurta division of the day">
-                <table className="w-full text-sm"><thead><tr className="bg-sacred-gold/10"><th className="p-2 text-left text-sacred-gold-dark">#</th><th className="p-2 text-left">Name</th><th className="p-2">Start</th><th className="p-2">End</th><th className="p-2">Quality</th></tr></thead><tbody>
+                <table className="w-full text-sm"><thead><tr className="bg-sacred-gold"><th className="p-2 text-left text-sacred-gold-dark">#</th><th className="p-2 text-left">Name</th><th className="p-2">Start</th><th className="p-2">End</th><th className="p-2">Quality</th></tr></thead><tbody>
                 {(panchang.do_ghati_muhurta as any[]).map((m: any, i: number) => (
-                  <tr key={i} className={`border-t border-sacred-gold/10 ${m.quality === 'good' ? 'bg-green-50' : ''}`}><td className="p-2 text-cosmic-text">{m.muhurta}</td><td className="p-2 text-cosmic-text font-medium">{m.name}</td><td className="p-2 text-cosmic-text/70">{m.start}</td><td className="p-2 text-cosmic-text/70">{m.end}</td><td className="p-2"><span className={`text-xs px-2 py-0.5 rounded ${m.quality === 'good' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>{m.quality}</span></td></tr>
+                  <tr key={i} className={`border-t border-sacred-gold ${m.quality === 'good' ? 'bg-green-50' : ''}`}><td className="p-2 text-cosmic-text">{m.muhurta}</td><td className="p-2 text-cosmic-text font-medium">{m.name}</td><td className="p-2 text-cosmic-text">{m.start}</td><td className="p-2 text-cosmic-text">{m.end}</td><td className="p-2"><span className={`text-xs px-2 py-0.5 rounded ${m.quality === 'good' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>{m.quality}</span></td></tr>
                 ))}</tbody></table>
               </ExpandableSection>}
 
@@ -369,15 +369,15 @@ export default function Panchang() {
 function ExpandableSection({ title, desc, children }: { title: string; desc: string; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="border border-sacred-gold/20 rounded-xl overflow-hidden bg-sacred-cream">
-      <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between p-4 hover:bg-sacred-gold/5 transition-colors">
+    <div className="border border-sacred-gold rounded-xl overflow-hidden bg-sacred-cream">
+      <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between p-4 hover:bg-sacred-gold transition-colors">
         <div className="text-left">
           <h4 className="font-display font-semibold text-sacred-brown text-sm">{title}</h4>
-          <p className="text-xs text-cosmic-text/60">{desc}</p>
+          <p className="text-xs text-cosmic-text">{desc}</p>
         </div>
         <span className={`text-sacred-gold-dark transition-transform ${open ? 'rotate-180' : ''}`}>▼</span>
       </button>
-      {open && <div className="p-4 pt-0 border-t border-sacred-gold/10">{children}</div>}
+      {open && <div className="p-4 pt-0 border-t border-sacred-gold">{children}</div>}
     </div>
   );
 }

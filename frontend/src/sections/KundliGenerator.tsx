@@ -101,14 +101,14 @@ export default function KundliGenerator() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] py-20">
         <div className="relative w-32 h-32 mb-8">
-          <div className="absolute inset-0 rounded-full border-4 border-sacred-gold/20" />
+          <div className="absolute inset-0 rounded-full border-4 border-sacred-gold" />
           <div className="absolute inset-0 rounded-full border-4 border-sacred-gold border-t-transparent animate-spin" />
-          <div className="absolute inset-4 rounded-full bg-sacred-gold/10 flex items-center justify-center">
+          <div className="absolute inset-4 rounded-full bg-sacred-gold flex items-center justify-center">
             <Sparkles className="w-10 h-10 text-sacred-gold animate-pulse" />
           </div>
         </div>
         <h3 className="text-2xl font-sacred font-bold text-sacred-brown mb-2">{t('kundli.generatingYourKundli')}</h3>
-        <p className="text-cosmic-text/70">{t('kundli.analyzingPositions')}</p>
+        <p className="text-cosmic-text">{t('kundli.analyzingPositions')}</p>
       </div>
     );
   }
@@ -125,11 +125,11 @@ export default function KundliGenerator() {
             </Button>
             <div>
               <h3 className="font-display font-bold text-2xl text-sacred-brown">{result.person_name || formData.name} — {t('tab.kundli')}</h3>
-              <p className="text-sm text-cosmic-text/70">{formatDate(result.birth_date) || formData.date} | {result.birth_time || formData.time} | {result.birth_place || formData.place}</p>
+              <p className="text-sm text-cosmic-text">{formatDate(result.birth_date) || formData.date} | {result.birth_time || formData.time} | {result.birth_place || formData.place}</p>
             </div>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="border-sacred-gold/50 text-sacred-brown"
+            <Button variant="outline" size="sm" className="border-sacred-gold text-sacred-brown"
               onClick={async () => {
                 try {
                   const fresh = await api.post(`/api/kundli/${result.id}/regenerate`, {});
@@ -140,7 +140,7 @@ export default function KundliGenerator() {
               }}>
               <RefreshCw className="w-4 h-4 mr-1" />{language === 'hi' ? 'पुनः गणना' : 'Regenerate'}
             </Button>
-            <Button variant="outline" size="sm" className="border-sacred-gold/50 text-sacred-brown" onClick={async () => {
+            <Button variant="outline" size="sm" className="border-sacred-gold text-sacred-brown" onClick={async () => {
               const shareData = {
                 title: `Kundli - ${result.person_name}`,
                 text: `Vedic Kundli for ${result.person_name}, generated on Astro Rattan`,

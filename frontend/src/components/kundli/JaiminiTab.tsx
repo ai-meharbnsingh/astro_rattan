@@ -14,19 +14,19 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
     return (
       <div className="flex items-center justify-center py-12">
         <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
-        <span className="ml-2 text-cosmic-text/70">{t('common.loading')}</span>
+        <span className="ml-2 text-cosmic-text">{t('common.loading')}</span>
       </div>
     );
   }
 
   if (!data) {
-    return <p className="text-center text-cosmic-text/70 py-8">{t('common.noData')}</p>;
+    return <p className="text-center text-cosmic-text py-8">{t('common.noData')}</p>;
   }
 
   return (
     <div className="space-y-6">
       {/* Chara Karakas */}
-      <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+      <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
         <h4 className="font-display font-semibold text-sacred-brown mb-3 flex items-center gap-2">
           <Crown className="w-5 h-5 text-sacred-gold" />
           {language === 'hi' ? 'चर कारक (7 परिवर्तनशील कारक)' : 'Chara Karakas (7 Variable Significators)'}
@@ -115,7 +115,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
             const lagna = data.special_lagnas[key];
             if (!lagna) return null;
             return (
-              <div key={key} className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+              <div key={key} className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
                 <div className="flex items-center gap-2 mb-2">
                   {icon}
                   <h5 className="font-display font-semibold text-sacred-brown text-sm">
@@ -138,7 +138,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
 
       {/* Indu Lagna */}
       {data.indu_lagna && (
-        <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+        <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
           <h4 className="font-display font-semibold text-sacred-brown mb-3 flex items-center gap-2">
             <Wallet className="w-5 h-5 text-sacred-gold" />
             {language === 'hi' ? 'इंदु लग्न (धन सूचक)' : 'Indu Lagna (Wealth Indicator)'}
@@ -168,7 +168,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
 
       {/* Chara Dasha */}
       {data.chara_dasha?.periods && (
-        <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+        <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
           <h4 className="font-display font-semibold text-sacred-brown mb-3 flex items-center gap-2">
             <Clock className="w-5 h-5 text-sacred-gold" />
             {language === 'hi' ? 'चर दशा (राशि आधारित समय)' : 'Chara Dasha (Sign-based Timing)'}
@@ -225,7 +225,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
 
       {/* Jaimini Drishti */}
       {data.jaimini_drishti?.sign_aspects && (
-        <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+        <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
           <h4 className="font-display font-semibold text-sacred-brown mb-3 flex items-center gap-2">
             <Eye className="w-5 h-5 text-sacred-gold" />
             {language === 'hi' ? 'जैमिनी दृष्टि (राशि दृष्टि)' : 'Jaimini Drishti (Sign-based Aspects)'}
@@ -248,7 +248,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
 
       {/* Jaimini Yogas */}
       {data.jaimini_yogas && data.jaimini_yogas.length > 0 && (
-        <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+        <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
           <h4 className="font-display font-semibold text-sacred-brown mb-3 flex items-center gap-2">
             <Star className="w-5 h-5 text-sacred-gold" />
             {language === 'hi' ? 'जैमिनी योग' : 'Jaimini Yogas'}
@@ -277,7 +277,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
 
       {/* Longevity */}
       {data.longevity && (
-        <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+        <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
           <h4 className="font-display font-semibold text-sacred-brown mb-3 flex items-center gap-2">
             <Clock className="w-5 h-5 text-sacred-gold" />
             {language === 'hi' ? 'आयु गणना' : 'Longevity Calculation'}
@@ -313,7 +313,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
 
       {/* Argala */}
       {data.argala?.house_argalas && data.argala.house_argalas.length > 0 && (
-        <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+        <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
           <h4 className="font-display font-semibold text-sacred-brown mb-3 flex items-center gap-2">
             <Eye className="w-5 h-5 text-sacred-gold" />
             {language === 'hi' ? 'अर्गला (ग्रह हस्तक्षेप)' : 'Argala (Planetary Intervention)'}
@@ -326,7 +326,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
                 </p>
                 <div className="space-y-2">
                   {ha.argalas.map((a: any, i: number) => (
-                    <div key={i} className="rounded-md border border-slate-100 p-2 bg-slate-50/50">
+                    <div key={i} className="rounded-md border border-slate-100 p-2 bg-slate-50">
                       <div className="flex items-center justify-between text-xs">
                         <span className="text-slate-600">
                           {translateBackend(a.type, language)} — {a.planets.map((p: string) => translatePlanet(p, language)).join(', ')} (H{a.from_house})

@@ -96,7 +96,7 @@ export default function LalKitabPage() {
           <h1 className="text-3xl sm:text-4xl font-sacred font-bold text-sacred-gold mb-2">
             {t('lk.title')}
           </h1>
-          <p className="text-cosmic-text/70 max-w-lg mx-auto">
+          <p className="text-cosmic-text max-w-lg mx-auto">
             {t('lk.subtitle')}
           </p>
         </div>
@@ -106,7 +106,7 @@ export default function LalKitabPage() {
           <div className="max-w-xl mx-auto">
             <LalKitabForm onGenerate={handleGenerate} loading={false} />
             {error && (
-              <div className="mt-4 p-3 rounded-xl bg-red-900/20 border border-red-500/30 text-red-500 text-sm text-center">
+              <div className="mt-4 p-3 rounded-xl bg-red-900 border border-red-500 text-red-500 text-sm text-center">
                 {error}
               </div>
             )}
@@ -127,7 +127,7 @@ export default function LalKitabPage() {
             <Button
               variant="outline"
               onClick={() => { setView('form'); setChartData(null); }}
-              className="mb-6 border-sacred-gold/30 text-sacred-gold hover:bg-sacred-gold/10"
+              className="mb-6 border-sacred-gold text-sacred-gold hover:bg-sacred-gold"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               {t('lk.backToForm')}

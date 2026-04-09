@@ -38,7 +38,7 @@ export default function RetrogradeStationsSection({ kundliId }: RetrogradeStatio
   const planets = ['Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn'];
 
   return (
-    <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4 mt-4">
+    <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4 mt-4">
       <div className="flex items-center justify-between mb-3">
         <h4 className="font-display font-semibold text-sacred-brown">
           {language === 'hi' ? 'ग्रह वक्री तिथियाँ' : 'Planet Retrogression Dates'}
@@ -67,7 +67,7 @@ export default function RetrogradeStationsSection({ kundliId }: RetrogradeStatio
       {loading ? (
         <div className="flex items-center justify-center py-8">
           <Loader2 className="w-5 h-5 animate-spin text-sacred-gold" />
-          <span className="ml-2 text-sm text-cosmic-text/70">{t('common.loading')}</span>
+          <span className="ml-2 text-sm text-cosmic-text">{t('common.loading')}</span>
         </div>
       ) : data?.stations ? (
         <div className="overflow-x-auto">

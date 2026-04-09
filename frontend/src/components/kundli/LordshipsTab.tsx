@@ -14,7 +14,7 @@ export default function LordshipsTab({ planets, houses }: LordshipsTabProps) {
   return (
     <div className="overflow-x-auto">
         <table className="w-full text-xs">
-          <thead className="bg-sacred-gold/10">
+          <thead className="bg-sacred-gold">
             <tr>
               <th className="text-left p-2 font-medium text-sacred-gold-dark">{language === 'hi' ? 'भाव' : 'House'}</th>
               <th className="text-left p-2 font-medium text-sacred-gold-dark">{language === 'hi' ? 'राशि' : 'Sign'}</th>
@@ -37,12 +37,12 @@ export default function LordshipsTab({ planets, houses }: LordshipsTabProps) {
               const lordPlacedIn = lordPlanet ? `${language === 'hi' ? 'भाव' : 'House'} ${lordPlanet.house}` : '\u2014';
 
               return (
-                <tr key={houseNum} className={`border-t border-sacred-gold/10 text-xs ${houseNum % 2 === 0 ? 'bg-sacred-gold/[0.02]' : ''}`}>
+                <tr key={houseNum} className={`border-t border-sacred-gold text-xs ${houseNum % 2 === 0 ? 'bg-sacred-gold/[0.02]' : ''}`}>
                   <td className="p-2 font-medium text-sacred-brown font-display">{houseNum}</td>
                   <td className="p-2 text-sacred-brown">{translateSign(signName, language)}</td>
                   <td className="p-2 font-medium text-sacred-gold-dark">{translatePlanet(lord, language)}</td>
-                  <td className="p-2 text-cosmic-text/70">{lordPlacedIn}</td>
-                  <td className="p-2 text-cosmic-text/70">{HOUSE_SIGNIFICANCE[houseNum] || '\u2014'}</td>
+                  <td className="p-2 text-cosmic-text">{lordPlacedIn}</td>
+                  <td className="p-2 text-cosmic-text">{HOUSE_SIGNIFICANCE[houseNum] || '\u2014'}</td>
                 </tr>
               );
             })}

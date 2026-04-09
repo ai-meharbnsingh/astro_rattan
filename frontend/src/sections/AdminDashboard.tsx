@@ -93,10 +93,10 @@ export default function AdminDashboard() {
       </div>
 
       {/* Tab bar */}
-      <div className="flex gap-2 mb-8 border-b border-sacred-gold/20 pb-2">
+      <div className="flex gap-2 mb-8 border-b border-sacred-gold pb-2">
         {(['overview', 'users', 'kundlis'] as const).map(t => (
           <button key={t} onClick={() => setTab(t)}
-            className={`px-4 py-2 text-sm font-cinzel uppercase tracking-wider transition-colors ${tab === t ? 'text-sacred-gold-dark border-b-2 border-sacred-gold' : 'text-cosmic-text/70 hover:text-cosmic-text/80'}`}>
+            className={`px-4 py-2 text-sm font-cinzel uppercase tracking-wider transition-colors ${tab === t ? 'text-sacred-gold-dark border-b-2 border-sacred-gold' : 'text-cosmic-text hover:text-cosmic-text'}`}>
             {t}
           </button>
         ))}
@@ -112,25 +112,25 @@ export default function AdminDashboard() {
               { label: 'Horoscopes', value: stats.counts.horoscopes, icon: Calendar },
               { label: 'Panchang Cached', value: stats.counts.panchang_cached, icon: Activity },
             ].map(s => (
-              <div key={s.label} className="border border-sacred-gold/20 p-5 bg-cosmic-bg">
+              <div key={s.label} className="border border-sacred-gold p-5 bg-cosmic-bg">
                 <s.icon className="w-5 h-5 text-sacred-gold-dark mb-2" />
                 <p className="text-2xl font-cinzel text-sacred-gold-dark">{s.value}</p>
-                <p className="text-xs text-cosmic-text/70 uppercase tracking-wider">{s.label}</p>
+                <p className="text-xs text-cosmic-text uppercase tracking-wider">{s.label}</p>
               </div>
             ))}
           </div>
 
           <div className="grid lg:grid-cols-2 gap-6">
-            <div className="border border-sacred-gold/20 p-5">
+            <div className="border border-sacred-gold p-5">
               <h3 className="font-cinzel text-sacred-gold-dark mb-4 uppercase text-sm tracking-wider">Recent Users</h3>
               <div className="space-y-2">
                 {stats.recent_users.map(u => (
-                  <div key={u.id} className="flex items-center justify-between py-2 border-b border-sacred-gold/10 last:border-0">
+                  <div key={u.id} className="flex items-center justify-between py-2 border-b border-sacred-gold last:border-0">
                     <div>
                       <p className="text-sm text-cosmic-text">{u.name}</p>
-                      <p className="text-xs text-cosmic-text/70">{u.email}</p>
+                      <p className="text-xs text-cosmic-text">{u.email}</p>
                     </div>
-                    <span className={`text-xs px-2 py-0.5 border ${u.role === 'admin' ? 'border-red-500/30 text-red-400' : u.role === 'astrologer' ? 'border-purple-500/30 text-purple-400' : 'border-sacred-gold/30 text-sacred-gold-dark'}`}>
+                    <span className={`text-xs px-2 py-0.5 border ${u.role === 'admin' ? 'border-red-500 text-red-400' : u.role === 'astrologer' ? 'border-purple-500 text-purple-400' : 'border-sacred-gold text-sacred-gold-dark'}`}>
                       {u.role}
                     </span>
                   </div>
@@ -138,16 +138,16 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            <div className="border border-sacred-gold/20 p-5">
+            <div className="border border-sacred-gold p-5">
               <h3 className="font-cinzel text-sacred-gold-dark mb-4 uppercase text-sm tracking-wider">Recent Kundlis</h3>
               <div className="space-y-2">
                 {stats.recent_kundlis.map(k => (
-                  <div key={k.id} className="flex items-center justify-between py-2 border-b border-sacred-gold/10 last:border-0">
+                  <div key={k.id} className="flex items-center justify-between py-2 border-b border-sacred-gold last:border-0">
                     <div>
                       <p className="text-sm text-cosmic-text">{k.person_name}</p>
-                      <p className="text-xs text-cosmic-text/70">{formatDate(k.birth_date)} &middot; {k.email}</p>
+                      <p className="text-xs text-cosmic-text">{formatDate(k.birth_date)} &middot; {k.email}</p>
                     </div>
-                    <span className="text-xs text-cosmic-text/60">{formatDate(k.created_at)}</span>
+                    <span className="text-xs text-cosmic-text">{formatDate(k.created_at)}</span>
                   </div>
                 ))}
               </div>
@@ -159,11 +159,11 @@ export default function AdminDashboard() {
       {/* Users */}
       {tab === 'users' && (
         <div>
-          <p className="text-sm text-cosmic-text/70 mb-4">{userTotal} total users</p>
+          <p className="text-sm text-cosmic-text mb-4">{userTotal} total users</p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-sacred-gold/20 text-left text-xs text-cosmic-text/70 uppercase tracking-wider">
+                <tr className="border-b border-sacred-gold text-left text-xs text-cosmic-text uppercase tracking-wider">
                   <th className="py-3 pr-4">Name</th>
                   <th className="py-3 pr-4">Email</th>
                   <th className="py-3 pr-4">Role</th>
@@ -174,23 +174,23 @@ export default function AdminDashboard() {
               </thead>
               <tbody>
                 {users.map(u => (
-                  <tr key={u.id} className="border-b border-sacred-gold/10 hover:bg-sacred-gold-dark/5">
+                  <tr key={u.id} className="border-b border-sacred-gold hover:bg-sacred-gold-dark">
                     <td className="py-3 pr-4 text-cosmic-text">{u.name}</td>
-                    <td className="py-3 pr-4 text-cosmic-text/70">{u.email}</td>
+                    <td className="py-3 pr-4 text-cosmic-text">{u.email}</td>
                     <td className="py-3 pr-4">
                       <select value={u.role} onChange={e => changeRole(u.id, e.target.value)}
-                        className="bg-transparent border border-sacred-gold/20 text-cosmic-text text-xs px-2 py-1">
+                        className="bg-transparent border border-sacred-gold text-cosmic-text text-xs px-2 py-1">
                         <option value="user">user</option>
                         <option value="astrologer">astrologer</option>
                         <option value="admin">admin</option>
                       </select>
                     </td>
                     <td className="py-3 pr-4">
-                      <button onClick={() => toggleActive(u.id)} className="text-cosmic-text/60 hover:text-sacred-gold-dark">
+                      <button onClick={() => toggleActive(u.id)} className="text-cosmic-text hover:text-sacred-gold-dark">
                         {u.is_active ? <ToggleRight className="w-5 h-5 text-green-500" /> : <ToggleLeft className="w-5 h-5 text-red-400" />}
                       </button>
                     </td>
-                    <td className="py-3 pr-4 text-cosmic-text/70 text-xs">{formatDate(u.created_at)}</td>
+                    <td className="py-3 pr-4 text-cosmic-text text-xs">{formatDate(u.created_at)}</td>
                     <td className="py-3">
                       <button onClick={() => {}} className="text-xs text-sacred-gold-dark hover:underline">View</button>
                     </td>
@@ -201,11 +201,11 @@ export default function AdminDashboard() {
           </div>
           {userPages > 1 && (
             <div className="flex items-center justify-center gap-4 mt-6">
-              <Button variant="outline" size="sm" disabled={userPage <= 1} onClick={() => fetchUsers(userPage - 1)} className="border-sacred-gold/20">
+              <Button variant="outline" size="sm" disabled={userPage <= 1} onClick={() => fetchUsers(userPage - 1)} className="border-sacred-gold">
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <span className="text-sm text-cosmic-text/60">Page {userPage} of {userPages}</span>
-              <Button variant="outline" size="sm" disabled={userPage >= userPages} onClick={() => fetchUsers(userPage + 1)} className="border-sacred-gold/20">
+              <span className="text-sm text-cosmic-text">Page {userPage} of {userPages}</span>
+              <Button variant="outline" size="sm" disabled={userPage >= userPages} onClick={() => fetchUsers(userPage + 1)} className="border-sacred-gold">
                 <ChevronRight className="w-4 h-4" />
               </Button>
             </div>
@@ -219,7 +219,7 @@ export default function AdminDashboard() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-sacred-gold/20 text-left text-xs text-cosmic-text/70 uppercase tracking-wider">
+                <tr className="border-b border-sacred-gold text-left text-xs text-cosmic-text uppercase tracking-wider">
                   <th className="py-3 pr-4">Person</th>
                   <th className="py-3 pr-4">Birth Date</th>
                   <th className="py-3 pr-4">Place</th>
@@ -229,12 +229,12 @@ export default function AdminDashboard() {
               </thead>
               <tbody>
                 {kundlis.map(k => (
-                  <tr key={k.id} className="border-b border-sacred-gold/10 hover:bg-sacred-gold-dark/5">
+                  <tr key={k.id} className="border-b border-sacred-gold hover:bg-sacred-gold-dark">
                     <td className="py-3 pr-4 text-cosmic-text">{k.person_name}</td>
-                    <td className="py-3 pr-4 text-cosmic-text/70">{formatDate(k.birth_date)} {k.birth_time}</td>
-                    <td className="py-3 pr-4 text-cosmic-text/70 text-xs">{k.birth_place}</td>
-                    <td className="py-3 pr-4 text-cosmic-text/70 text-xs">{k.email}</td>
-                    <td className="py-3 text-cosmic-text/70 text-xs">{formatDate(k.created_at)}</td>
+                    <td className="py-3 pr-4 text-cosmic-text">{formatDate(k.birth_date)} {k.birth_time}</td>
+                    <td className="py-3 pr-4 text-cosmic-text text-xs">{k.birth_place}</td>
+                    <td className="py-3 pr-4 text-cosmic-text text-xs">{k.email}</td>
+                    <td className="py-3 text-cosmic-text text-xs">{formatDate(k.created_at)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -242,11 +242,11 @@ export default function AdminDashboard() {
           </div>
           {kundliPages > 1 && (
             <div className="flex items-center justify-center gap-4 mt-6">
-              <Button variant="outline" size="sm" disabled={kundliPage <= 1} onClick={() => fetchKundlis(kundliPage - 1)} className="border-sacred-gold/20">
+              <Button variant="outline" size="sm" disabled={kundliPage <= 1} onClick={() => fetchKundlis(kundliPage - 1)} className="border-sacred-gold">
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <span className="text-sm text-cosmic-text/60">Page {kundliPage} of {kundliPages}</span>
-              <Button variant="outline" size="sm" disabled={kundliPage >= kundliPages} onClick={() => fetchKundlis(kundliPage + 1)} className="border-sacred-gold/20">
+              <span className="text-sm text-cosmic-text">Page {kundliPage} of {kundliPages}</span>
+              <Button variant="outline" size="sm" disabled={kundliPage >= kundliPages} onClick={() => fetchKundlis(kundliPage + 1)} className="border-sacred-gold">
                 <ChevronRight className="w-4 h-4" />
               </Button>
             </div>

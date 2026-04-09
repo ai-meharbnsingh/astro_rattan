@@ -130,7 +130,7 @@ export default function NumerologyTarot() {
   return (
     <section className="max-w-4xl mx-auto py-24 px-4">
       <div className="text-center mb-10">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold/10 text-sacred-gold text-sm font-medium mb-4">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold text-sacred-gold text-sm font-medium mb-4">
           <Sparkles className="w-4 h-4" />{t('numerology.badge')}
         </div>
         <h2 className="text-3xl sm:text-4xl font-display font-bold text-cosmic-text mb-2">
@@ -140,7 +140,7 @@ export default function NumerologyTarot() {
       </div>
 
       {error && (
-        <div className="mb-6 p-3 rounded-xl bg-red-900/30 border border-red-500/30 text-red-400 text-sm text-center max-w-xl mx-auto">
+        <div className="mb-6 p-3 rounded-xl bg-red-900 border border-red-500 text-red-400 text-sm text-center max-w-xl mx-auto">
           {error}
         </div>
       )}
@@ -149,8 +149,8 @@ export default function NumerologyTarot() {
         <CardContent className="p-6">
           <h3 className="font-display font-semibold text-cosmic-text mb-4 text-center">{t('numerology.calculateNumbers')}</h3>
           <div className="space-y-3">
-            <Input placeholder={t('numerology.fullName')} value={numName} onChange={(e) => setNumName(e.target.value)} className="bg-cosmic-card border-sacred-gold/15" />
-            <Input type="date" value={numDob} onChange={(e) => setNumDob(e.target.value)} className="bg-cosmic-card border-sacred-gold/15" />
+            <Input placeholder={t('numerology.fullName')} value={numName} onChange={(e) => setNumName(e.target.value)} className="bg-cosmic-card border-sacred-gold" />
+            <Input type="date" value={numDob} onChange={(e) => setNumDob(e.target.value)} className="bg-cosmic-card border-sacred-gold" />
             <Button onClick={calculateNumerology} disabled={numLoading || !numName.trim() || !numDob} className="w-full bg-sacred-gold text-cosmic-bg hover:bg-sacred-gold-dark">
               {numLoading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{t('common.calculating')}</> : <><Hash className="w-4 h-4 mr-2" />{t('numerology.calculate')}</>}
             </Button>
@@ -165,7 +165,7 @@ export default function NumerologyTarot() {
                   {[
                     { label: t('numerology.lifePath'), value: numResult.life_path, color: 'bg-purple-100 text-purple-700' },
                     { label: t('numerology.destiny'), value: numResult.destiny ?? numResult.expression, color: 'bg-blue-100 text-blue-700' },
-                    { label: t('numerology.soulUrge'), value: numResult.soul_urge, color: 'bg-green-500/20 text-green-400' },
+                    { label: t('numerology.soulUrge'), value: numResult.soul_urge, color: 'bg-green-500 text-green-400' },
                     { label: t('numerology.personality'), value: numResult.personality, color: 'bg-yellow-100 text-yellow-700' },
                   ].map((n) => (
                     <div key={n.label} className="text-center p-3 rounded-xl bg-cosmic-card">
@@ -195,10 +195,10 @@ export default function NumerologyTarot() {
                     <div className="mt-4 space-y-3">
                       <p className="text-sm font-medium text-cosmic-text mb-2">{t('numerology.predictions')}:</p>
                       {[
-                        { key: 'life_path' as const, label: t('numerology.lifePath'), headerColor: 'bg-purple-500/20 text-purple-400', borderColor: 'border-purple-500/30' },
-                        { key: 'destiny' as const, label: t('numerology.destiny'), headerColor: 'bg-blue-500/20 text-blue-400', borderColor: 'border-blue-500/30' },
-                        { key: 'soul_urge' as const, label: t('numerology.soulUrge'), headerColor: 'bg-green-500/20 text-green-400', borderColor: 'border-green-500/30' },
-                        { key: 'personality' as const, label: t('numerology.personality'), headerColor: 'bg-yellow-500/20 text-yellow-400', borderColor: 'border-yellow-500/30' },
+                        { key: 'life_path' as const, label: t('numerology.lifePath'), headerColor: 'bg-purple-500 text-purple-400', borderColor: 'border-purple-500' },
+                        { key: 'destiny' as const, label: t('numerology.destiny'), headerColor: 'bg-blue-500 text-blue-400', borderColor: 'border-blue-500' },
+                        { key: 'soul_urge' as const, label: t('numerology.soulUrge'), headerColor: 'bg-green-500 text-green-400', borderColor: 'border-green-500' },
+                        { key: 'personality' as const, label: t('numerology.personality'), headerColor: 'bg-yellow-500 text-yellow-400', borderColor: 'border-yellow-500' },
                       ].map((section) => {
                         const text = (numResult.predictions as NumerologyPredictions)[section.key];
                         if (!text) return null;
@@ -222,9 +222,9 @@ export default function NumerologyTarot() {
           )}
 
           {/* Mobile Number Numerology Section */}
-          <div className="mt-10 pt-8 border-t border-sacred-gold/10">
+          <div className="mt-10 pt-8 border-t border-sacred-gold">
             <div className="text-center mb-6">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold/10 text-sacred-gold text-sm font-medium mb-3">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold text-sacred-gold text-sm font-medium mb-3">
                 <Phone className="w-4 h-4" />Mobile Number Numerology
               </div>
               <p className="text-sm text-cosmic-text-secondary">Discover the hidden vibration of your mobile number</p>
@@ -241,7 +241,7 @@ export default function NumerologyTarot() {
                         placeholder="First Name"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
-                        className="bg-cosmic-card border-sacred-gold/15"
+                        className="bg-cosmic-card border-sacred-gold"
                       />
                     </div>
                     <div>
@@ -250,7 +250,7 @@ export default function NumerologyTarot() {
                         placeholder="Middle Name (optional)"
                         value={middleName}
                         onChange={(e) => setMiddleName(e.target.value)}
-                        className="bg-cosmic-card border-sacred-gold/15"
+                        className="bg-cosmic-card border-sacred-gold"
                       />
                     </div>
                     <div>
@@ -259,7 +259,7 @@ export default function NumerologyTarot() {
                         placeholder="Last Name"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
-                        className="bg-cosmic-card border-sacred-gold/15"
+                        className="bg-cosmic-card border-sacred-gold"
                       />
                     </div>
                   </div>
@@ -269,7 +269,7 @@ export default function NumerologyTarot() {
                     <label className="block text-xs text-cosmic-text-secondary mb-1">Mobile Number <span className="text-red-400">*</span></label>
                     <div className="flex gap-2">
                       <Select value={mobileCountryCode} onValueChange={setMobileCountryCode}>
-                        <SelectTrigger className="w-24 bg-cosmic-card border-sacred-gold/15 shrink-0">
+                        <SelectTrigger className="w-24 bg-cosmic-card border-sacred-gold shrink-0">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -291,7 +291,7 @@ export default function NumerologyTarot() {
                           placeholder="9876543210"
                           value={mobilePhone}
                           onChange={(e) => setMobilePhone(e.target.value.replace(/\D/g, ''))}
-                          className="bg-cosmic-card border-sacred-gold/15 pl-10"
+                          className="bg-cosmic-card border-sacred-gold pl-10"
                           maxLength={15}
                         />
                       </div>
@@ -305,7 +305,7 @@ export default function NumerologyTarot() {
                       type="date"
                       value={mobileDob}
                       onChange={(e) => setMobileDob(e.target.value)}
-                      className="bg-cosmic-card border-sacred-gold/15"
+                      className="bg-cosmic-card border-sacred-gold"
                     />
                   </div>
 
@@ -318,8 +318,8 @@ export default function NumerologyTarot() {
                           key={area}
                           className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-all text-sm ${
                             selectedAreas.includes(area)
-                              ? 'border-sacred-gold bg-sacred-gold/15 text-sacred-gold'
-                              : 'border-sacred-gold/15 bg-cosmic-card text-cosmic-text-secondary hover:border-sacred-gold/30'
+                              ? 'border-sacred-gold bg-sacred-gold text-sacred-gold'
+                              : 'border-sacred-gold bg-cosmic-card text-cosmic-text-secondary hover:border-sacred-gold'
                           }`}
                         >
                           <input
@@ -331,7 +331,7 @@ export default function NumerologyTarot() {
                           <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 ${
                             selectedAreas.includes(area)
                               ? 'border-sacred-gold bg-sacred-gold'
-                              : 'border-sacred-gold/30 bg-transparent'
+                              : 'border-sacred-gold bg-transparent'
                           }`}>
                             {selectedAreas.includes(area) && (
                               <svg className="w-3 h-3 text-cosmic-bg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
@@ -366,7 +366,7 @@ export default function NumerologyTarot() {
 
                 {/* Section 1: Report Header */}
                 <Card className="bg-cosmic-card border-0 shadow-soft-lg overflow-hidden">
-                  <div className="bg-gradient-to-r from-sacred-gold/20 to-sacred-gold-dark/10 px-6 py-4 text-center border-b border-sacred-gold/20">
+                  <div className="bg-gradient-to-r from-sacred-gold to-sacred-gold-dark px-6 py-4 text-center border-b border-sacred-gold">
                     <h4 className="font-display font-bold text-lg text-sacred-gold tracking-wide uppercase">Mobile Numerology Report</h4>
                     {mobileResult.name && <p className="text-sm text-cosmic-text mt-1">{mobileResult.name}</p>}
                     {mobileResult.birth_date && (
@@ -382,13 +382,13 @@ export default function NumerologyTarot() {
                         {mobileResult.loshu_grid && (
                           <div>
                             <p className="text-sm font-medium text-cosmic-text mb-2 text-center">Loshu Grid</p>
-                            <div className="grid grid-cols-3 border border-sacred-gold/30 rounded-lg overflow-hidden">
+                            <div className="grid grid-cols-3 border border-sacred-gold rounded-lg overflow-hidden">
                               {mobileResult.loshu_grid.flat().map((cell, i) => (
                                 <div
                                   key={`loshu-${i}`}
-                                  className="aspect-square flex items-center justify-center border border-sacred-gold/15 text-center"
+                                  className="aspect-square flex items-center justify-center border border-sacred-gold text-center"
                                 >
-                                  <span className={`text-lg font-display font-semibold ${cell != null ? 'text-sacred-gold' : 'text-cosmic-text-secondary/30'}`}>
+                                  <span className={`text-lg font-display font-semibold ${cell != null ? 'text-sacred-gold' : 'text-cosmic-text-secondary'}`}>
                                     {cell != null ? cell : '-'}
                                   </span>
                                 </div>
@@ -399,13 +399,13 @@ export default function NumerologyTarot() {
                         {mobileResult.vedic_grid && (
                           <div>
                             <p className="text-sm font-medium text-cosmic-text mb-2 text-center">Vedic Grid</p>
-                            <div className="grid grid-cols-3 border border-sacred-gold/30 rounded-lg overflow-hidden">
+                            <div className="grid grid-cols-3 border border-sacred-gold rounded-lg overflow-hidden">
                               {mobileResult.vedic_grid.flat().map((cell, i) => (
                                 <div
                                   key={`vedic-${i}`}
-                                  className="aspect-square flex items-center justify-center border border-sacred-gold/15 text-center"
+                                  className="aspect-square flex items-center justify-center border border-sacred-gold text-center"
                                 >
-                                  <span className={`text-lg font-display font-semibold ${cell != null ? 'text-sacred-gold' : 'text-cosmic-text-secondary/30'}`}>
+                                  <span className={`text-lg font-display font-semibold ${cell != null ? 'text-sacred-gold' : 'text-cosmic-text-secondary'}`}>
                                     {cell != null ? cell : '-'}
                                   </span>
                                 </div>
@@ -417,11 +417,11 @@ export default function NumerologyTarot() {
                     )}
 
                     {/* Section 3: Mobile Number Prediction Details */}
-                    <div className="rounded-xl border border-sacred-gold/20 overflow-hidden">
-                      <div className="px-4 py-2 bg-sacred-gold/10 text-sacred-gold font-medium text-sm flex items-center gap-2">
+                    <div className="rounded-xl border border-sacred-gold overflow-hidden">
+                      <div className="px-4 py-2 bg-sacred-gold text-sacred-gold font-medium text-sm flex items-center gap-2">
                         <Sparkles className="w-4 h-4 shrink-0" />Prediction Details
                       </div>
-                      <div className="divide-y divide-sacred-gold/10">
+                      <div className="divide-y divide-sacred-gold">
                         {/* Mobile Number */}
                         <div className="flex justify-between px-4 py-3">
                           <span className="text-sm text-cosmic-text-secondary">Your Mobile Number</span>
@@ -448,7 +448,7 @@ export default function NumerologyTarot() {
                             <span className="text-sm text-cosmic-text-secondary">Recommended Totals</span>
                             <div className="flex flex-wrap gap-1.5">
                               {mobileResult.recommended_totals.map((n) => (
-                                <Badge key={n} className="bg-sacred-gold/20 text-sacred-gold border-sacred-gold/30 px-2 py-0.5 text-xs">{n}</Badge>
+                                <Badge key={n} className="bg-sacred-gold text-sacred-gold border-sacred-gold px-2 py-0.5 text-xs">{n}</Badge>
                               ))}
                             </div>
                           </div>
@@ -459,7 +459,7 @@ export default function NumerologyTarot() {
                             <span className="text-sm text-cosmic-text-secondary shrink-0">Lucky Colours</span>
                             <div className="flex flex-wrap gap-1.5 justify-end">
                               {mobileResult.lucky_colours.map((c) => (
-                                <Badge key={c} className="bg-green-500/20 text-green-400 border-green-500/30 px-2 py-0.5 text-xs">{c}</Badge>
+                                <Badge key={c} className="bg-green-500 text-green-400 border-green-500 px-2 py-0.5 text-xs">{c}</Badge>
                               ))}
                             </div>
                           </div>
@@ -470,7 +470,7 @@ export default function NumerologyTarot() {
                             <span className="text-sm text-cosmic-text-secondary shrink-0">Un-Lucky Colours</span>
                             <div className="flex flex-wrap gap-1.5 justify-end">
                               {mobileResult.unlucky_colours.map((c) => (
-                                <Badge key={c} className="bg-zinc-700/50 text-zinc-300 border-zinc-600/30 px-2 py-0.5 text-xs">{c}</Badge>
+                                <Badge key={c} className="bg-zinc-700 text-zinc-300 border-zinc-600 px-2 py-0.5 text-xs">{c}</Badge>
                               ))}
                             </div>
                           </div>
@@ -481,7 +481,7 @@ export default function NumerologyTarot() {
                             <span className="text-sm text-cosmic-text-secondary">Lucky Numbers</span>
                             <div className="flex flex-wrap gap-1.5">
                               {mobileResult.lucky_numbers.map((n) => (
-                                <Badge key={n} className="bg-green-500/20 text-green-400 border-green-500/30 px-2 py-0.5 text-xs">{n}</Badge>
+                                <Badge key={n} className="bg-green-500 text-green-400 border-green-500 px-2 py-0.5 text-xs">{n}</Badge>
                               ))}
                             </div>
                           </div>
@@ -492,7 +492,7 @@ export default function NumerologyTarot() {
                             <span className="text-sm text-cosmic-text-secondary">Unlucky Numbers</span>
                             <div className="flex flex-wrap gap-1.5">
                               {mobileResult.unlucky_numbers.map((n) => (
-                                <Badge key={n} className="bg-red-500/20 text-red-400 border-red-500/30 px-2 py-0.5 text-xs">{n}</Badge>
+                                <Badge key={n} className="bg-red-500 text-red-400 border-red-500 px-2 py-0.5 text-xs">{n}</Badge>
                               ))}
                             </div>
                           </div>
@@ -503,7 +503,7 @@ export default function NumerologyTarot() {
                             <span className="text-sm text-cosmic-text-secondary">Neutral Numbers</span>
                             <div className="flex flex-wrap gap-1.5">
                               {mobileResult.neutral_numbers.map((n) => (
-                                <Badge key={n} className="bg-zinc-500/20 text-zinc-400 border-zinc-500/30 px-2 py-0.5 text-xs">{n}</Badge>
+                                <Badge key={n} className="bg-zinc-500 text-zinc-400 border-zinc-500 px-2 py-0.5 text-xs">{n}</Badge>
                               ))}
                             </div>
                           </div>
@@ -514,7 +514,7 @@ export default function NumerologyTarot() {
                             <span className="text-sm text-cosmic-text-secondary">Missing Numbers</span>
                             <div className="flex flex-wrap gap-1.5">
                               {mobileResult.missing_numbers.map((n) => (
-                                <Badge key={n} className="bg-transparent text-cosmic-text-secondary border border-dashed border-sacred-gold/30 px-2 py-0.5 text-xs">{n}</Badge>
+                                <Badge key={n} className="bg-transparent text-cosmic-text-secondary border border-dashed border-sacred-gold px-2 py-0.5 text-xs">{n}</Badge>
                               ))}
                             </div>
                           </div>
@@ -524,30 +524,30 @@ export default function NumerologyTarot() {
 
                     {/* Section 4: Mobile Combinations */}
                     {mobileResult.combinations && mobileResult.combinations.length > 0 && (
-                      <div className="rounded-xl border border-sacred-gold/20 overflow-hidden">
-                        <div className="px-4 py-2 bg-sacred-gold/10 text-sacred-gold font-medium text-sm flex items-center gap-2">
+                      <div className="rounded-xl border border-sacred-gold overflow-hidden">
+                        <div className="px-4 py-2 bg-sacred-gold text-sacred-gold font-medium text-sm flex items-center gap-2">
                           <Hash className="w-4 h-4 shrink-0" />Mobile Combinations
                         </div>
                         <div className="overflow-x-auto">
                           <table className="w-full text-sm">
                             <thead>
-                              <tr className="border-b border-sacred-gold/15">
+                              <tr className="border-b border-sacred-gold">
                                 <th className="text-left px-4 py-2 text-cosmic-text-secondary font-medium">Pair</th>
                                 <th className="text-left px-4 py-2 text-cosmic-text-secondary font-medium">Type</th>
                                 <th className="text-left px-4 py-2 text-cosmic-text-secondary font-medium">Description</th>
                               </tr>
                             </thead>
-                            <tbody className="divide-y divide-sacred-gold/10">
+                            <tbody className="divide-y divide-sacred-gold">
                               {mobileResult.combinations.map((combo, i) => (
                                 <tr key={i}>
                                   <td className="px-4 py-2 font-mono text-cosmic-text">{combo.pair}</td>
                                   <td className="px-4 py-2">
                                     <Badge className={`text-xs px-2 py-0.5 ${
                                       combo.type === 'Benefic'
-                                        ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                                        ? 'bg-green-500 text-green-400 border-green-500'
                                         : combo.type === 'Neutral'
-                                          ? 'bg-amber-500/20 text-amber-400 border-amber-500/30'
-                                          : 'bg-red-500/20 text-red-400 border-red-500/30'
+                                          ? 'bg-amber-500 text-amber-400 border-amber-500'
+                                          : 'bg-red-500 text-red-400 border-red-500'
                                     }`}>
                                       {combo.type}
                                     </Badge>
@@ -562,8 +562,8 @@ export default function NumerologyTarot() {
                         {mobileResult.recommendation_message && (
                           <div className={`px-4 py-3 text-sm font-medium text-center ${
                             mobileResult.is_recommended
-                              ? 'bg-green-500/15 text-green-400 border-t border-green-500/20'
-                              : 'bg-red-500/15 text-red-400 border-t border-red-500/20'
+                              ? 'bg-green-500 text-green-400 border-t border-green-500'
+                              : 'bg-red-500 text-red-400 border-t border-red-500'
                           }`}>
                             {mobileResult.recommendation_message}
                           </div>
@@ -573,8 +573,8 @@ export default function NumerologyTarot() {
 
                     {/* Section 5: Predictions */}
                     {mobileResult.prediction && (
-                      <div className="rounded-xl border border-sacred-gold/20 overflow-hidden">
-                        <div className="px-4 py-2 bg-sacred-gold/10 text-sacred-gold font-medium text-sm flex items-center gap-2">
+                      <div className="rounded-xl border border-sacred-gold overflow-hidden">
+                        <div className="px-4 py-2 bg-sacred-gold text-sacred-gold font-medium text-sm flex items-center gap-2">
                           <Sparkles className="w-4 h-4 shrink-0" />Predictions
                         </div>
                         <div className="px-4 py-3">
@@ -597,8 +597,8 @@ export default function NumerologyTarot() {
                           <Sparkles className="w-4 h-4 text-sacred-gold" />Affirmations for Your Areas of Struggle
                         </p>
                         {Object.entries(mobileResult.affirmations).map(([area, text]: [string, any], i: number) => (
-                          <div key={i} className="rounded-xl border border-sacred-gold/15 overflow-hidden">
-                            <div className="px-4 py-2 bg-sacred-gold/5 font-medium text-sm text-sacred-gold border-b border-sacred-gold/10 capitalize">
+                          <div key={i} className="rounded-xl border border-sacred-gold overflow-hidden">
+                            <div className="px-4 py-2 bg-sacred-gold font-medium text-sm text-sacred-gold border-b border-sacred-gold capitalize">
                               {area}
                             </div>
                             <div className="px-4 py-3">

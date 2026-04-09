@@ -21,7 +21,7 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
   return (
     <div className="overflow-x-auto">
         <table className="w-full text-xs">
-          <thead className="bg-sacred-gold/10">
+          <thead className="bg-sacred-gold">
             <tr>
               <th className="text-left p-2 font-medium text-sacred-gold-dark">{language === 'hi' ? 'ग्रह' : 'Planet'}</th>
               <th className="text-left p-2 font-medium text-sacred-gold-dark">{language === 'hi' ? 'राशि' : 'Sign'}</th>
@@ -51,20 +51,20 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
               const karaka = planetKaraka[p.planet] || '\u2014';
 
               return (
-                <tr key={idx} className={`border-t border-sacred-gold/10 text-xs ${idx % 2 === 0 ? '' : 'bg-sacred-gold/[0.02]'}`}>
+                <tr key={idx} className={`border-t border-sacred-gold text-xs ${idx % 2 === 0 ? '' : 'bg-sacred-gold/[0.02]'}`}>
                   <td className="p-2 font-medium text-sacred-brown font-display">{translatePlanet(p.planet, language)}</td>
                   <td className="p-2 text-sacred-brown">{translateSign(p.sign, language)}</td>
                   <td className="p-2 text-sacred-brown">
                     {signDeg !== null ? `${signDeg.toFixed(2)}\u00b0` : '\u2014'}
-                    {isSandhi && <span className="ml-1 text-xs px-1 py-0.5 rounded bg-amber-500/15 text-amber-600 font-medium">{language === 'hi' ? 'संधि' : 'Sandhi'}</span>}
+                    {isSandhi && <span className="ml-1 text-xs px-1 py-0.5 rounded bg-amber-500 text-amber-600 font-medium">{language === 'hi' ? 'संधि' : 'Sandhi'}</span>}
                   </td>
                   <td className="p-2 text-sacred-brown">{nakshatraName} ({language === 'hi' ? 'पाद' : 'Pada'} {pada})</td>
                   <td className="p-2 text-sacred-brown">{p.house}</td>
                   <td className="p-2 font-medium" style={{ color: dignityColor }}>{translateLabel(dignity, language)}</td>
-                  <td className="p-2 text-cosmic-text/70">{translateLabel(signType, language)}</td>
-                  <td className="p-2 text-cosmic-text/70">{translateLabel(element, language)}</td>
+                  <td className="p-2 text-cosmic-text">{translateLabel(signType, language)}</td>
+                  <td className="p-2 text-cosmic-text">{translateLabel(element, language)}</td>
                   <td className="p-2">
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${nature === 'Benefic' ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'}`}>
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${nature === 'Benefic' ? 'bg-green-500 text-green-400' : 'bg-red-500 text-red-400'}`}>
                       {language === 'hi' ? (nature === 'Benefic' ? 'शुभ' : 'पापी') : nature}
                     </span>
                   </td>

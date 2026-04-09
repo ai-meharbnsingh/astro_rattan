@@ -731,10 +731,10 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           <div className="text-xs text-cosmic-text">
             {ZODIAC_NUMBERS[p.sign] || ''} {p.sign} {p.sign_degree?.toFixed(1)}&deg;
           </div>
-          <div className="text-xs text-cosmic-text/70">{t('table.nakshatra')}: {p.nakshatra || 'N/A'}</div>
-          <div className="text-xs text-cosmic-text/70">{t('table.house')}: {p.house}</div>
+          <div className="text-xs text-cosmic-text">{t('table.nakshatra')}: {p.nakshatra || 'N/A'}</div>
+          <div className="text-xs text-cosmic-text">{t('table.house')}: {p.house}</div>
           <div className="text-xs" style={{ color: strength.color }}>{strength.label}</div>
-          <div className="text-xs text-cosmic-text/70">{t('table.aspects')}: {aspects.join(', ')}</div>
+          <div className="text-xs text-cosmic-text">{t('table.aspects')}: {aspects.join(', ')}</div>
         </div>
       ),
     });
@@ -750,7 +750,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           <div className="font-display font-bold text-sacred-gold text-sm">
             {t('table.house')} {house}
           </div>
-          <div className="text-xs text-cosmic-text/70">{t(`house.${house}`)}</div>
+          <div className="text-xs text-cosmic-text">{t(`house.${house}`)}</div>
           {housePlanets.length > 0 && (
             <div className="text-xs text-cosmic-text">
               {t('table.planet')}: {housePlanets.map((p) => p.planet).join(', ')}
@@ -804,7 +804,6 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           height={CELL_SIZE * 4}
           rx={4}
           fill="var(--sacred-purple)"
-          opacity={0.95}
         />
 
         {/* Center area label */}
@@ -815,7 +814,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           fill="var(--aged-gold-dim)"
           fontSize={13}
           fontFamily="var(--font-sacred, Cormorant Garamond, Georgia, serif)"
-          opacity={0.6}
+          
         >
           {t('chart.rasi')}
         </text>
@@ -826,7 +825,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           fill="var(--aged-gold-dim)"
           fontSize={9}
           fontFamily="var(--font-sacred, Cormorant Garamond, Georgia, serif)"
-          opacity={0.4}
+          
         >
           {t('chart.southIndian')}
         </text>
@@ -872,7 +871,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                 fill="var(--aged-gold-dim)"
                 fontSize={28}
                 fontWeight="bold"
-                opacity={0.8}
+                
               >
                 {house}
               </text>
@@ -912,7 +911,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
               y1={GRID_PADDING}
               x2={GRID_PADDING + i * CELL_SIZE}
               y2={GRID_PADDING + CELL_SIZE * 4}
-              stroke="rgba(184,134,11,0.25)"
+              stroke="rgba(184,134,11,1)"
               strokeWidth={0.5}
             />
             <line
@@ -920,7 +919,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
               y1={GRID_PADDING + i * CELL_SIZE}
               x2={GRID_PADDING + CELL_SIZE * 4}
               y2={GRID_PADDING + i * CELL_SIZE}
-              stroke="rgba(184,134,11,0.25)"
+              stroke="rgba(184,134,11,1)"
               strokeWidth={0.5}
             />
           </g>
@@ -1081,7 +1080,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                 fontSize={isTrapezoid ? 20 : 16}
                 fontWeight="bold"
                 fontFamily="var(--font-sacred, Cormorant Garamond, Georgia, serif)"
-                opacity={0.85}
+                
               >
                 {rashiNum}
               </text>
@@ -1169,7 +1168,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
       {/* Cosmic glow effect behind chart — hidden in compact mode */}
       {!compact && (
         <div
-          className="absolute inset-0 rounded-2xl opacity-40 blur-xl pointer-events-none"
+          className="absolute inset-0 rounded-2xl blur-xl pointer-events-none"
           style={{
             background: 'radial-gradient(circle, rgba(212,175,55,0.3) 0%, rgba(128,0,128,0.15) 50%, transparent 70%)',
             transform: 'scale(1.1)',
@@ -1189,7 +1188,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
             maxWidth: 220,
           }}
         >
-          <div className="bg-cosmic-bg/95 backdrop-blur-sm border border-sacred-gold/30 rounded-lg p-3 shadow-lg shadow-sacred-gold/10">
+          <div className="bg-cosmic-bg backdrop-blur-sm border border-sacred-gold rounded-lg p-3 shadow-lg">
             {tooltip.content}
           </div>
         </div>

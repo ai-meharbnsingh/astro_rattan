@@ -74,7 +74,7 @@ export default function Features() {
           {features.map((feature, index) => (
             <Card
               key={index}
-              className="feature-card group relative bg-cosmic-bg border border-sacred-gold/20 overflow-hidden"
+              className="feature-card group relative bg-cosmic-bg border border-sacred-gold overflow-hidden"
             >
               <div className="h-40 overflow-hidden">
                 <img
@@ -83,7 +83,7 @@ export default function Features() {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   loading="lazy"
                 />
-                <div className="absolute inset-0 h-40 bg-gradient-to-t from-cosmic-bg via-cosmic-bg/40 to-transparent" />
+                <div className="absolute inset-0 h-40 bg-gradient-to-t from-cosmic-bg via-cosmic-bg to-transparent" />
               </div>
               <CardContent className="relative p-6 pt-2">
                 <h3 className="text-lg font-cinzel font-semibold text-cosmic-text mb-2 uppercase tracking-wide">

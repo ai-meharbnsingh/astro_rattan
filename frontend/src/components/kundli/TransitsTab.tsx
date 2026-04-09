@@ -94,12 +94,12 @@ export default function TransitsTab(props: TransitsTabProps) {
             {loadingTransit ? (
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
-                <span className="ml-2 text-cosmic-text/70">{t('transit.loading')}</span>
+                <span className="ml-2 text-cosmic-text">{t('transit.loading')}</span>
               </div>
             ) : transitData ? (
               <div className="space-y-6">
                 {/* Transit Chart — clickable houses */}
-                <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/20">
+                <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
                   <h4 className="font-display font-semibold text-sacred-brown mb-2">{t('transit.chart')} ({transitData.transit_date})</h4>
                   <p className="text-xs mb-3" style={{ color: 'var(--ink-light)' }}>{t('kundli.clickHouseToRotate')}</p>
                   <div className="w-full max-w-[600px] mx-auto">
@@ -132,7 +132,7 @@ export default function TransitsTab(props: TransitsTabProps) {
                       );
                     })()}
                   </div>
-                  <div className="flex items-center justify-center gap-4 mt-2 text-xs text-cosmic-text/70">
+                  <div className="flex items-center justify-center gap-4 mt-2 text-xs text-cosmic-text">
                     <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full" style={{backgroundColor: 'var(--aged-gold)'}} /> {t('transit.benefic')}</span>
                     <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full" style={{backgroundColor: 'var(--wax-red)'}} /> {t('transit.malefic')}</span>
                     {transitHouseShift > 0 && (
@@ -165,7 +165,7 @@ export default function TransitsTab(props: TransitsTabProps) {
                           <td className="p-3" style={{ color: 'var(--ink-light)' }}>{translateSign(tr.current_sign, language)}</td>
                           <td className="p-3 text-center" style={{ color: 'var(--ink-light)' }}>{tr.natal_house_from_moon}</td>
                           <td className="p-3 text-center">
-                            <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full font-medium ${tr.effect === 'favorable' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                            <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full font-medium ${tr.effect === 'favorable' ? 'bg-green-500 text-green-400' : 'bg-red-500 text-red-400'}`}>
                               {tr.effect === 'favorable' ? <CheckCircle className="w-3 h-3" /> : <AlertTriangle className="w-3 h-3" />}
                               {tr.effect === 'favorable' ? t('common.favorable') : t('common.unfavorable')}
                             </span>
@@ -181,13 +181,13 @@ export default function TransitsTab(props: TransitsTabProps) {
                   {(transitData.transits || []).map((tr: any, idx: number) => (
                     <div
                       key={idx}
-                      className={`rounded-xl p-4 border ${tr.effect === 'favorable' ? 'border-green-500/30' : 'border-red-500/30'}`}
+                      className={`rounded-xl p-4 border ${tr.effect === 'favorable' ? 'border-green-500' : 'border-red-500'}`}
                       style={{ backgroundColor: tr.effect === 'favorable' ? 'rgba(34,197,94,0.03)' : 'rgba(239,68,68,0.03)' }}
                     >
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-display font-semibold" style={{ color: 'var(--ink)' }}>{translatePlanet(tr.planet, language)}</span>
                         <span className="text-xs" style={{ color: 'var(--ink-light)' }}>{translateSign(tr.current_sign, language)}</span>
-                        <span className={`text-xs px-1.5 py-0.5 rounded-full ${tr.effect === 'favorable' ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'}`}>
+                        <span className={`text-xs px-1.5 py-0.5 rounded-full ${tr.effect === 'favorable' ? 'bg-green-500 text-green-400' : 'bg-red-500 text-red-400'}`}>
                           {tr.effect === 'favorable' ? t('common.favorable') : t('common.unfavorable')}
                         </span>
                       </div>
@@ -197,7 +197,7 @@ export default function TransitsTab(props: TransitsTabProps) {
                 </div>
               </div>
             ) : (
-              <p className="text-center text-cosmic-text/70 py-8">{t('transit.clickTab')}</p>
+              <p className="text-center text-cosmic-text py-8">{t('transit.clickTab')}</p>
             )}
 
             {/* Retrograde Station Dates */}

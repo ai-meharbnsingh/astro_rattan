@@ -39,13 +39,13 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
     return (
       <div className="flex items-center justify-center py-12">
         <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
-        <span className="ml-2 text-cosmic-text/70">{t('common.loading')}</span>
+        <span className="ml-2 text-cosmic-text">{t('common.loading')}</span>
       </div>
     );
   }
 
   if (!data?.matrix) {
-    return <p className="text-center text-cosmic-text/70 py-8">{t('common.noData')}</p>;
+    return <p className="text-center text-cosmic-text py-8">{t('common.noData')}</p>;
   }
 
   const planets = data.planet_order || Object.keys(data.matrix);
@@ -53,7 +53,7 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
   return (
     <div className="space-y-6">
       {/* Matrix Grid */}
-      <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+      <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
         <h4 className="font-display font-semibold text-sacred-brown mb-3">
           {language === 'hi' ? 'ग्रहों के पारस्परिक दृष्टि' : 'Aspects on Planets'}
         </h4>
@@ -110,7 +110,7 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
         </div>
 
         {/* Legend */}
-        <div className="flex flex-wrap gap-4 mt-4 text-sm text-cosmic-text/70">
+        <div className="flex flex-wrap gap-4 mt-4 text-sm text-cosmic-text">
           {[
             { abbr: 'conj', label: language === 'hi' ? 'युति (0°)' : 'Conjunction (0°)' },
             { abbr: 'sext', label: language === 'hi' ? 'षडाष्टक (60°)' : 'Sextile (60°)' },
@@ -156,7 +156,7 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
 
       {/* Active Aspects List */}
       {data.aspects_list && data.aspects_list.length > 0 && (
-        <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+        <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
           <h4 className="font-display font-semibold text-sacred-brown mb-3">
             {language === 'hi' ? 'सक्रिय दृष्टियां' : 'Active Aspects'}
           </h4>
@@ -200,7 +200,7 @@ function CuspAspectGrid({ title, cuspData, planetOrder, language }: CuspAspectGr
   const abbr = language === 'hi' ? PLANET_ABBR_HI : PLANET_ABBR_EN;
 
   return (
-    <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-4">
+    <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
       <h4 className="font-display font-semibold text-sacred-brown mb-3">{title}</h4>
       <div className="overflow-x-auto">
         <table className="w-full text-data border-collapse" style={{ minWidth: '700px' }}>
