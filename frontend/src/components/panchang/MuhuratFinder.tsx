@@ -136,6 +136,7 @@ export default function MuhuratFinder({
       ];
       setMuhuratTypes(types);
       setSelectedEventType(types[0].id);
+    }
     fetchTypes();
   }, []);
 
