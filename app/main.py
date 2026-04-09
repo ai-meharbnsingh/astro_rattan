@@ -113,22 +113,27 @@ def root():
     }
 
 
+_db_check_cache = {"ok": False, "ts": 0.0}
+
 @app.get("/health")
 def health():
-    """Health check endpoint with DB verification."""
+    """Health check endpoint with cached DB verification (30s TTL)."""
     from app.astro_engine import _HAS_SWE
     from app.config import AI_PROVIDER, GEMINI_API_KEY, OPENAI_API_KEY
     ai_status = "configured" if (GEMINI_API_KEY or OPENAI_API_KEY) else "not_configured"
-    db_ok = False
-    try:
-        from app.database import _get_pool
-        pool = _get_pool()
-        conn = pool.getconn()
-        conn.cursor().execute("SELECT 1")
-        pool.putconn(conn)
-        db_ok = True
-    except Exception:
-        pass
+    now = time.time()
+    if now - _db_check_cache["ts"] > 30:
+        try:
+            from app.database import _get_pool
+            pool = _get_pool()
+            conn = pool.getconn()
+            conn.cursor().execute("SELECT 1")
+            pool.putconn(conn)
+            _db_check_cache["ok"] = True
+        except Exception:
+            _db_check_cache["ok"] = False
+        _db_check_cache["ts"] = now
+    db_ok = _db_check_cache["ok"]
     return {
         "status": "ok" if db_ok else "degraded",
         "version": APP_VERSION,
