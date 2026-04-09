@@ -73,7 +73,7 @@ export default function Dashboard() {
             <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold text-xs font-cinzel uppercase tracking-wider px-4 py-2 rounded-none">
               <Plus className="w-4 h-4 mr-1" /> New Kundli
             </Button>
-            <Button onClick={() => navigate('/admin')} variant="outline" className="border-sacred-gold/30 text-sacred-gold-dark text-xs font-cinzel uppercase tracking-wider px-4 py-2 rounded-none">
+            <Button onClick={() => navigate('/admin')} variant="outline" className="border-sacred-gold text-sacred-gold-dark text-xs font-cinzel uppercase tracking-wider px-4 py-2 rounded-none">
               <BarChart3 className="w-4 h-4 mr-1" /> Full Admin
             </Button>
           </div>
@@ -87,39 +87,39 @@ export default function Dashboard() {
             { label: 'Total Kundlis', value: adminStats.counts.kundlis, icon: BarChart3, color: 'text-green-500' },
             { label: 'Registered Users', value: adminStats.counts.users, icon: User, color: 'text-purple-500' },
           ].map(s => (
-            <div key={s.label} className="border border-sacred-gold/20 p-5 bg-cosmic-bg">
+            <div key={s.label} className="border border-sacred-gold p-5 bg-cosmic-bg">
               <s.icon className={`w-5 h-5 ${s.color} mb-2`} />
               <p className="text-3xl font-cinzel text-cosmic-text font-bold">{s.value}</p>
-              <p className="text-xs text-cosmic-text/70 uppercase tracking-wider mt-1">{s.label}</p>
+              <p className="text-xs text-cosmic-text uppercase tracking-wider mt-1">{s.label}</p>
             </div>
           ))}
         </div>
 
         {/* Astrologers List */}
-        <h2 className="text-sm font-cinzel text-cosmic-text/70 uppercase tracking-wider mb-4">Astrologers & Their Clients</h2>
+        <h2 className="text-sm font-cinzel text-cosmic-text uppercase tracking-wider mb-4">Astrologers & Their Clients</h2>
         <div className="space-y-3 mb-10">
           {adminStats.astrologers.map(astro => (
             <div key={astro.id} className="border border-sacred-gold/20 p-4 bg-cosmic-bg">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-sacred-gold-dark/10 border border-sacred-gold/20 flex items-center justify-center">
+                  <div className="w-10 h-10 bg-sacred-gold-dark border border-sacred-gold flex items-center justify-center">
                     <Star className="w-5 h-5 text-sacred-gold-dark" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-cosmic-text">{astro.name}</p>
-                    <p className="text-xs text-cosmic-text/60">{astro.email}</p>
+                    <p className="text-xs text-cosmic-text">{astro.email}</p>
                   </div>
                 </div>
                 <div className="flex gap-6 text-right">
                   <div>
                     <p className="text-lg font-cinzel text-cosmic-text font-bold">{astro.client_count}</p>
-                    <p className="text-xs text-cosmic-text/60">Clients</p>
+                    <p className="text-xs text-cosmic-text">Clients</p>
                   </div>
                   <div>
                     <p className="text-lg font-cinzel text-cosmic-text font-bold">{astro.kundli_count}</p>
-                    <p className="text-xs text-cosmic-text/60">Kundlis</p>
+                    <p className="text-xs text-cosmic-text">Kundlis</p>
                   </div>
-                  <span className={`self-center text-xs px-2 py-0.5 border ${astro.role === 'admin' ? 'border-red-500/30 text-red-400' : 'border-purple-500/30 text-purple-400'}`}>
+                  <span className={`self-center text-xs px-2 py-0.5 border ${astro.role === 'admin' ? 'border-red-500 text-red-500' : 'border-purple-500 text-purple-500'}`}>
                     {astro.role}
                   </span>
                 </div>
@@ -129,9 +129,9 @@ export default function Dashboard() {
         </div>
 
         {/* Admin's own clients below */}
-        <h2 className="text-sm font-cinzel text-cosmic-text/70 uppercase tracking-wider mb-4">My Clients</h2>
+        <h2 className="text-sm font-cinzel text-cosmic-text uppercase tracking-wider mb-4">My Clients</h2>
         <div className="relative mb-4">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cosmic-text/60" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cosmic-text" />
           <Input type="text" value={search} onChange={e => handleSearch(e.target.value)}
             placeholder={t('dashboard.searchPlaceholder')} className="pl-10 bg-cosmic-bg border-sacred-gold/20 text-cosmic-text rounded-none" />
         </div>
@@ -147,10 +147,10 @@ export default function Dashboard() {
     }
     if (clients.length === 0) {
       return (
-        <div className="text-center py-16 border border-dashed border-sacred-gold/20">
-          <User className="w-12 h-12 text-cosmic-text/60 mx-auto mb-4" />
-          <p className="text-cosmic-text/70 mb-2">{t('dashboard.noClients')}</p>
-          <p className="text-xs text-cosmic-text/60 mb-6">{t('dashboard.createPrompt')}</p>
+        <div className="text-center py-16 border border-dashed border-sacred-gold">
+          <User className="w-12 h-12 text-cosmic-text mx-auto mb-4" />
+          <p className="text-cosmic-text mb-2">{t('dashboard.noClients')}</p>
+          <p className="text-xs text-cosmic-text mb-6">{t('dashboard.createPrompt')}</p>
           <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold text-xs font-cinzel uppercase tracking-wider rounded-none">
             <Plus className="w-4 h-4 mr-1" /> {t('dashboard.createFirst')}
           </Button>
@@ -161,23 +161,23 @@ export default function Dashboard() {
       <div className="space-y-2">
         {clients.map(client => (
           <div key={client.id}
-            className="flex items-center justify-between p-4 border border-sacred-gold/15 hover:border-sacred-gold/40 transition-colors bg-cosmic-bg cursor-pointer group"
+            className="flex items-center justify-between p-4 border border-sacred-gold hover:border-sacred-gold-dark transition-colors bg-cosmic-bg cursor-pointer group"
             onClick={() => navigate(`/client/${client.id}`)}>
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-sacred-gold-dark/10 border border-sacred-gold/20 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 bg-sacred-gold-dark border border-sacred-gold flex items-center justify-center shrink-0">
                 <User className="w-5 h-5 text-sacred-gold-dark" />
               </div>
               <div>
                 <p className="text-sm font-medium text-cosmic-text">{client.name}</p>
-                <p className="text-xs text-cosmic-text/60">
+                <p className="text-xs text-cosmic-text">
                   {client.birth_date || t('common.noData')} {client.birth_place ? `· ${client.birth_place}` : ''}
                   {client.phone ? ` · ${client.phone}` : ''}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-xs text-cosmic-text/60">{client.kundli_count} chart{client.kundli_count !== 1 ? 's' : ''}</span>
-              <ChevronRight className="w-4 h-4 text-cosmic-text/60 group-hover:text-sacred-gold-dark transition-colors" />
+              <span className="text-xs text-cosmic-text">{client.kundli_count} chart{client.kundli_count !== 1 ? 's' : ''}</span>
+              <ChevronRight className="w-4 h-4 text-cosmic-text group-hover:text-sacred-gold-dark transition-colors" />
             </div>
           </div>
         ))}
@@ -192,7 +192,7 @@ export default function Dashboard() {
           <h1 className="text-2xl font-cinzel text-cosmic-text">
             {user?.name ? `${t('dashboard.welcome')}, ${user.name}` : 'Dashboard'}
           </h1>
-          <p className="text-sm text-cosmic-text/70 mt-1">{clients.length} {t('dashboard.clientsRegistered')}</p>
+          <p className="text-sm text-cosmic-text mt-1">{clients.length} {t('dashboard.clientsRegistered')}</p>
         </div>
         <div className="flex gap-2">
           <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold text-xs font-cinzel uppercase tracking-wider px-4 py-2 rounded-none">
@@ -205,7 +205,7 @@ export default function Dashboard() {
       </div>
 
       <div className="relative mb-6">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cosmic-text/60" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cosmic-text" />
         <Input type="text" value={search} onChange={e => handleSearch(e.target.value)}
           placeholder={t('dashboard.searchPlaceholder')} className="pl-10 bg-cosmic-bg border-sacred-gold/20 text-cosmic-text rounded-none" />
       </div>
