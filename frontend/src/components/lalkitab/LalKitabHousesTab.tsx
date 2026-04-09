@@ -32,7 +32,7 @@ export default function LalKitabHousesTab({ chartData }: Props) {
     <div>
       {/* Header */}
       <div className="mb-6">
-        <h2 className="text-xl font-sacred font-semibold text-sacred-gold mb-1">
+        <h2 className="text-xl font-sans font-semibold text-sacred-gold mb-1">
           {t('lk.houses.title')}
         </h2>
         <p className="text-sm text-cosmic-text/60">
@@ -62,7 +62,7 @@ export default function LalKitabHousesTab({ chartData }: Props) {
                   {/* House Number */}
                   <div className="flex items-center gap-2">
                     <Home className="w-5 h-5 text-sacred-gold/60" />
-                    <span className="text-2xl font-sacred font-bold text-sacred-gold">
+                    <span className="text-2xl font-sans font-bold text-sacred-gold">
                       {houseData.house}
                     </span>
                   </div>

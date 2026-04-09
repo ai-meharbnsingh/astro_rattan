@@ -111,7 +111,7 @@ export default function NotesWidget({ clientId, chartType, kundliId }: NotesWidg
           style={{ width: '360px', maxHeight: '500px', right: '20px', bottom: '80px' }}>
           {/* Header */}
           <div className="flex items-center justify-between p-3 border-b border-sacred-gold bg-sacred-gold-dark">
-            <h3 className="text-sm font-cinzel text-sacred-gold-dark uppercase tracking-wider">Notes</h3>
+            <h3 className="text-sm font-sans text-sacred-gold-dark uppercase tracking-wider">Notes</h3>
             <button onClick={() => setOpen(false)} className="text-cosmic-text hover:text-cosmic-text">
               <X className="w-4 h-4" />
             </button>
@@ -129,7 +129,7 @@ export default function NotesWidget({ clientId, chartType, kundliId }: NotesWidg
             <button
               onClick={handleSave}
               disabled={saving || !newNote.trim()}
-              className="mt-2 w-full flex items-center justify-center gap-2 bg-sacred-gold-dark text-cosmic-bg text-xs py-2 font-cinzel uppercase tracking-wider disabled:opacity-50 hover:bg-sacred-gold transition-colors"
+              className="mt-2 w-full flex items-center justify-center gap-2 bg-sacred-gold-dark text-cosmic-bg text-xs py-2 font-sans uppercase tracking-wider disabled:opacity-50 hover:bg-sacred-gold transition-colors"
             >
               {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
               Save Note

@@ -89,14 +89,14 @@ export default function AdminDashboard() {
     <div className="min-h-screen pt-24 pb-16 px-4 max-w-7xl mx-auto">
       <div className="flex items-center gap-3 mb-8">
         <Shield className="w-8 h-8 text-sacred-gold-dark" />
-        <h1 className="text-3xl font-cinzel text-cosmic-text">Admin Dashboard</h1>
+        <h1 className="text-3xl font-sans text-cosmic-text">Admin Dashboard</h1>
       </div>
 
       {/* Tab bar */}
       <div className="flex gap-2 mb-8 border-b border-sacred-gold pb-2">
         {(['overview', 'users', 'kundlis'] as const).map(t => (
           <button key={t} onClick={() => setTab(t)}
-            className={`px-4 py-2 text-sm font-cinzel uppercase tracking-wider transition-colors ${tab === t ? 'text-sacred-gold-dark border-b-2 border-sacred-gold' : 'text-cosmic-text hover:text-cosmic-text'}`}>
+            className={`px-4 py-2 text-sm font-sans uppercase tracking-wider transition-colors ${tab === t ? 'text-sacred-gold-dark border-b-2 border-sacred-gold' : 'text-cosmic-text hover:text-cosmic-text'}`}>
             {t}
           </button>
         ))}
@@ -114,7 +114,7 @@ export default function AdminDashboard() {
             ].map(s => (
               <div key={s.label} className="border border-sacred-gold p-5 bg-cosmic-bg">
                 <s.icon className="w-5 h-5 text-sacred-gold-dark mb-2" />
-                <p className="text-2xl font-cinzel text-sacred-gold-dark">{s.value}</p>
+                <p className="text-2xl font-sans text-sacred-gold-dark">{s.value}</p>
                 <p className="text-xs text-cosmic-text uppercase tracking-wider">{s.label}</p>
               </div>
             ))}
@@ -122,7 +122,7 @@ export default function AdminDashboard() {
 
           <div className="grid lg:grid-cols-2 gap-6">
             <div className="border border-sacred-gold p-5">
-              <h3 className="font-cinzel text-sacred-gold-dark mb-4 uppercase text-sm tracking-wider">Recent Users</h3>
+              <h3 className="font-sans text-sacred-gold-dark mb-4 uppercase text-sm tracking-wider">Recent Users</h3>
               <div className="space-y-2">
                 {stats.recent_users.map(u => (
                   <div key={u.id} className="flex items-center justify-between py-2 border-b border-sacred-gold last:border-0">
@@ -139,7 +139,7 @@ export default function AdminDashboard() {
             </div>
 
             <div className="border border-sacred-gold p-5">
-              <h3 className="font-cinzel text-sacred-gold-dark mb-4 uppercase text-sm tracking-wider">Recent Kundlis</h3>
+              <h3 className="font-sans text-sacred-gold-dark mb-4 uppercase text-sm tracking-wider">Recent Kundlis</h3>
               <div className="space-y-2">
                 {stats.recent_kundlis.map(k => (
                   <div key={k.id} className="flex items-center justify-between py-2 border-b border-sacred-gold last:border-0">

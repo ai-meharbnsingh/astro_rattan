@@ -141,7 +141,7 @@ export default function LalKitabVarshphalTab({ chartData, birthDate }: Props) {
     housePlanets: Record<number, string[]>,
   ) => (
     <div className="card-sacred rounded-2xl p-5 border border-sacred-gold/20">
-      <h4 className="font-sacred text-base font-semibold text-sacred-gold mb-3 text-center">
+      <h4 className="font-sans text-base font-semibold text-sacred-gold mb-3 text-center">
         {title}
       </h4>
       <div className="grid grid-cols-4 gap-1">
@@ -178,7 +178,7 @@ export default function LalKitabVarshphalTab({ chartData, birthDate }: Props) {
     <div className="space-y-8">
       {/* ─── Header ─── */}
       <div className="text-center space-y-2">
-        <h2 className="text-2xl font-sacred font-bold text-sacred-gold flex items-center justify-center gap-2">
+        <h2 className="text-2xl font-sans font-bold text-sacred-gold flex items-center justify-center gap-2">
           <Calendar className="w-6 h-6" />
           {t('lk.varshphal.title')}
         </h2>
@@ -211,7 +211,7 @@ export default function LalKitabVarshphalTab({ chartData, birthDate }: Props) {
 
       {/* ─── Yearly Predictions ─── */}
       <div className="card-sacred rounded-2xl p-6 border border-sacred-gold/20">
-        <h3 className="font-sacred text-lg font-semibold text-sacred-gold mb-4">
+        <h3 className="font-sans text-lg font-semibold text-sacred-gold mb-4">
           {isHi ? 'वार्षिक फलादेश' : 'Yearly Predictions'} — {selectedYear}
         </h3>
 
@@ -266,7 +266,7 @@ export default function LalKitabVarshphalTab({ chartData, birthDate }: Props) {
 
       {/* ─── Yearly Remedies ─── */}
       <div className="card-sacred rounded-2xl p-6 border border-sacred-gold/20">
-        <h3 className="font-sacred text-lg font-semibold text-sacred-gold mb-4 flex items-center gap-2">
+        <h3 className="font-sans text-lg font-semibold text-sacred-gold mb-4 flex items-center gap-2">
           <Sparkles className="w-5 h-5" />
           {t('lk.varshphal.yearlyRemedies')}
         </h3>

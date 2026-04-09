@@ -70,10 +70,10 @@ export default function Dashboard() {
       <div className="min-h-screen pt-24 pb-16 px-4 max-w-6xl mx-auto">
         <div className="flex items-center justify-end mb-8">
           <div className="flex gap-2">
-            <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold text-xs font-cinzel uppercase tracking-wider px-4 py-2 rounded-none">
+            <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold text-xs font-sans uppercase tracking-wider px-4 py-2 rounded-none">
               <Plus className="w-4 h-4 mr-1" /> New Kundli
             </Button>
-            <Button onClick={() => navigate('/admin')} variant="outline" className="border-sacred-gold text-sacred-gold-dark text-xs font-cinzel uppercase tracking-wider px-4 py-2 rounded-none">
+            <Button onClick={() => navigate('/admin')} variant="outline" className="border-sacred-gold text-sacred-gold-dark text-xs font-sans uppercase tracking-wider px-4 py-2 rounded-none">
               <BarChart3 className="w-4 h-4 mr-1" /> Full Admin
             </Button>
           </div>
@@ -89,14 +89,14 @@ export default function Dashboard() {
           ].map(s => (
             <div key={s.label} className="border border-sacred-gold p-5 bg-cosmic-bg">
               <s.icon className={`w-5 h-5 ${s.color} mb-2`} />
-              <p className="text-3xl font-cinzel text-cosmic-text font-bold">{s.value}</p>
+              <p className="text-3xl font-sans text-cosmic-text font-bold">{s.value}</p>
               <p className="text-xs text-cosmic-text uppercase tracking-wider mt-1">{s.label}</p>
             </div>
           ))}
         </div>
 
         {/* Astrologers List */}
-        <h2 className="text-sm font-cinzel text-cosmic-text uppercase tracking-wider mb-4">Astrologers & Their Clients</h2>
+        <h2 className="text-sm font-sans text-cosmic-text uppercase tracking-wider mb-4">Astrologers & Their Clients</h2>
         <div className="space-y-3 mb-10">
           {adminStats.astrologers.map(astro => (
             <div key={astro.id} className="border border-sacred-gold p-4 bg-cosmic-bg">
@@ -112,11 +112,11 @@ export default function Dashboard() {
                 </div>
                 <div className="flex gap-6 text-right">
                   <div>
-                    <p className="text-lg font-cinzel text-cosmic-text font-bold">{astro.client_count}</p>
+                    <p className="text-lg font-sans text-cosmic-text font-bold">{astro.client_count}</p>
                     <p className="text-xs text-cosmic-text">Clients</p>
                   </div>
                   <div>
-                    <p className="text-lg font-cinzel text-cosmic-text font-bold">{astro.kundli_count}</p>
+                    <p className="text-lg font-sans text-cosmic-text font-bold">{astro.kundli_count}</p>
                     <p className="text-xs text-cosmic-text">Kundlis</p>
                   </div>
                   <span className={`self-center text-xs px-2 py-0.5 border ${astro.role === 'admin' ? 'border-red-500 text-red-500' : 'border-purple-500 text-purple-500'}`}>
@@ -129,7 +129,7 @@ export default function Dashboard() {
         </div>
 
         {/* Admin's own clients below */}
-        <h2 className="text-sm font-cinzel text-cosmic-text uppercase tracking-wider mb-4">My Clients</h2>
+        <h2 className="text-sm font-sans text-cosmic-text uppercase tracking-wider mb-4">My Clients</h2>
         <div className="relative mb-4">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cosmic-text" />
           <Input type="text" value={search} onChange={e => handleSearch(e.target.value)}
@@ -151,7 +151,7 @@ export default function Dashboard() {
           <User className="w-12 h-12 text-cosmic-text mx-auto mb-4" />
           <p className="text-cosmic-text mb-2">{t('dashboard.noClients')}</p>
           <p className="text-xs text-cosmic-text mb-6">{t('dashboard.createPrompt')}</p>
-          <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold text-xs font-cinzel uppercase tracking-wider rounded-none">
+          <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold text-xs font-sans uppercase tracking-wider rounded-none">
             <Plus className="w-4 h-4 mr-1" /> {t('dashboard.createFirst')}
           </Button>
         </div>
@@ -189,16 +189,16 @@ export default function Dashboard() {
     <div className="min-h-screen pt-24 pb-16 px-4 max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-cinzel text-cosmic-text">
+          <h1 className="text-2xl font-sans text-cosmic-text">
             {user?.name ? `${t('dashboard.welcome')}, ${user.name}` : 'Dashboard'}
           </h1>
           <p className="text-sm text-cosmic-text mt-1">{clients.length} {t('dashboard.clientsRegistered')}</p>
         </div>
         <div className="flex gap-2">
-          <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold text-xs font-cinzel uppercase tracking-wider px-4 py-2 rounded-none">
+          <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold text-xs font-sans uppercase tracking-wider px-4 py-2 rounded-none">
             <Plus className="w-4 h-4 mr-1" /> New Kundli
           </Button>
-          <Button onClick={() => navigate('/lal-kitab')} variant="outline" className="border-sacred-gold text-sacred-gold-dark text-xs font-cinzel uppercase tracking-wider px-4 py-2 rounded-none">
+          <Button onClick={() => navigate('/lal-kitab')} variant="outline" className="border-sacred-gold text-sacred-gold-dark text-xs font-sans uppercase tracking-wider px-4 py-2 rounded-none">
             <BookOpen className="w-4 h-4 mr-1" /> Lal Kitab
           </Button>
         </div>

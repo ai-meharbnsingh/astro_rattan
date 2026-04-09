@@ -101,7 +101,7 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
               <span className="text-2xl">☉</span>
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white" style={{ fontFamily: 'var(--font-sacred, Cormorant Garamond, serif)' }}>
+              <h2 className="text-xl font-bold text-white" style={{ fontFamily: 'var(--font-sacred, Inter, sans-serif)' }}>
                 Vedic Birth Chart
               </h2>
               <p className="text-sm text-[#d4af37]">Complete Analysis Summary</p>
@@ -183,7 +183,7 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
             <div className="lg:col-span-2 space-y-4">
               {/* Chart Container */}
               <div className="bg-[#111] rounded-xl border border-[var(--sacred-gold-hex)] p-4">
-                <h3 className="text-lg font-semibold text-[#d4af37] mb-3 text-center" style={{ fontFamily: 'var(--font-sacred, Cormorant Garamond, serif)' }}>
+                <h3 className="text-lg font-semibold text-[#d4af37] mb-3 text-center" style={{ fontFamily: 'var(--font-sacred, Inter, sans-serif)' }}>
                   Rashi Chart (D1)
                 </h3>
                 
@@ -306,7 +306,7 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
             <div className="space-y-4">
               {/* Planet Positions */}
               <div className="bg-[#111] rounded-xl border border-[var(--sacred-gold-hex)] p-3">
-                <h3 className="text-sm font-semibold text-[#d4af37] mb-2" style={{ fontFamily: 'var(--font-sacred, Cormorant Garamond, serif)' }}>
+                <h3 className="text-sm font-semibold text-[#d4af37] mb-2" style={{ fontFamily: 'var(--font-sacred, Inter, sans-serif)' }}>
                   Planetary Positions
                 </h3>
                 <div className="space-y-1 max-h-48 overflow-y-auto">
@@ -333,7 +333,7 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
 
               {/* Current Dasha */}
               <div className="bg-[#111] rounded-xl border border-[var(--sacred-gold-hex)] p-3">
-                <h3 className="text-sm font-semibold text-[#d4af37] mb-2" style={{ fontFamily: 'var(--font-sacred, Cormorant Garamond, serif)' }}>
+                <h3 className="text-sm font-semibold text-[#d4af37] mb-2" style={{ fontFamily: 'var(--font-sacred, Inter, sans-serif)' }}>
                   Vimshottari Dasha
                 </h3>
                 <div className="space-y-2">
@@ -375,7 +375,7 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
               {/* PRESENT Yogas Only - Not showing absent ones */}
               {presentYogas.length > 0 && (
                 <div className="bg-[#111] rounded-xl border border-green-500 p-3 mb-4">
-                  <h3 className="text-sm font-semibold text-green-400 mb-2 flex items-center gap-2" style={{ fontFamily: 'var(--font-sacred, Cormorant Garamond, serif)' }}>
+                  <h3 className="text-sm font-semibold text-green-400 mb-2 flex items-center gap-2" style={{ fontFamily: 'var(--font-sacred, Inter, sans-serif)' }}>
                     <span>✦</span> Present Yogas ({presentYogas.length})
                   </h3>
                   <div className="space-y-2">
@@ -399,7 +399,7 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
               {/* PRESENT Doshas Only - Not showing absent ones */}
               {presentDoshas.length > 0 && (
                 <div className="bg-[#111] rounded-xl border border-red-500 p-3">
-                  <h3 className="text-sm font-semibold text-red-400 mb-2 flex items-center gap-2" style={{ fontFamily: 'var(--font-sacred, Cormorant Garamond, serif)' }}>
+                  <h3 className="text-sm font-semibold text-red-400 mb-2 flex items-center gap-2" style={{ fontFamily: 'var(--font-sacred, Inter, sans-serif)' }}>
                     <span>⚠</span> Present Doshas ({presentDoshas.length})
                   </h3>
                   <div className="space-y-2">

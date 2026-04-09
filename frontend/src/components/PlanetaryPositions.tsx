@@ -185,10 +185,10 @@ export default function PlanetaryPositions({ planets: propPlanets }: PlanetaryPo
         })}
 
         {/* Center label */}
-        <text x={CX} y={CY - 8} textAnchor="middle" fill="var(--aged-gold-dim)" fontSize={10}  fontFamily="var(--font-sacred, Cormorant Garamond, Georgia, serif)">
+        <text x={CX} y={CY - 8} textAnchor="middle" fill="var(--aged-gold-dim)" fontSize={10}  fontFamily="var(--font-sacred, Inter, sans-serif)">
           Planetary
         </text>
-        <text x={CX} y={CY + 6} textAnchor="middle" fill="var(--aged-gold-dim)" fontSize={10} opacity={0.5} fontFamily="var(--font-sacred, Cormorant Garamond, Georgia, serif)">
+        <text x={CX} y={CY + 6} textAnchor="middle" fill="var(--aged-gold-dim)" fontSize={10} opacity={0.5} fontFamily="var(--font-sacred, Inter, sans-serif)">
           Positions
         </text>
         <text x={CX} y={CY + 20} textAnchor="middle" fill="#9B59B6" fontSize={8}  fontFamily="sans-serif">

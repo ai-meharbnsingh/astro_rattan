@@ -70,7 +70,7 @@ export default function Footer() {
           
           {isAuthenticated && (
             <div>
-              <h4 className="font-cinzel font-semibold text-sacred-gold-dark mb-4">{t('footer.services')}</h4>
+              <h4 className="font-sans font-semibold text-sacred-gold-dark mb-4">{t('footer.services')}</h4>
               <ul className="space-y-2">
                 {serviceLinks.map((link, i) => (
                   <li key={i}>
@@ -84,7 +84,7 @@ export default function Footer() {
           )}
           {Object.entries(footerLinks).map(([title, links]) => (
             <div key={title}>
-              <h4 className="font-cinzel font-semibold text-sacred-gold-dark mb-4 capitalize">{t(sectionTitleKeys[title] || title)}</h4>
+              <h4 className="font-sans font-semibold text-sacred-gold-dark mb-4 capitalize">{t(sectionTitleKeys[title] || title)}</h4>
               <ul className="space-y-2">
                 {links.map((link, i) => (
                   <li key={i}>

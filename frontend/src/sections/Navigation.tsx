@@ -46,7 +46,7 @@ export default function Navigation() {
                   <Link
                     key={link.key}
                     to={link.href}
-                    className="text-base text-cosmic-text hover:text-sacred-gold-dark transition-colors font-cinzel tracking-wide uppercase"
+                    className="text-base text-cosmic-text hover:text-sacred-gold-dark transition-colors font-sans tracking-wide uppercase"
                   >
                     {t(link.key)}
                   </Link>
@@ -104,7 +104,7 @@ export default function Navigation() {
                 key={link.key}
                 to={link.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block py-3 px-3 text-cosmic-text hover:text-sacred-gold-dark hover:bg-sacred-gold-dark transition-colors font-sacred"
+                className="block py-3 px-3 text-cosmic-text hover:text-sacred-gold-dark hover:bg-sacred-gold-dark transition-colors font-sans"
               >
                 {t(link.key)}
               </Link>

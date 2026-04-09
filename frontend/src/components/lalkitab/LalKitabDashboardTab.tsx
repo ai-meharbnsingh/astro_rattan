@@ -149,7 +149,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
     <div className="space-y-6">
       {/* Header */}
       <div className="text-center space-y-2">
-        <h2 className="text-2xl font-sacred font-bold text-sacred-gold flex items-center justify-center gap-2">
+        <h2 className="text-2xl font-sans font-bold text-sacred-gold flex items-center justify-center gap-2">
           <LayoutGrid className="w-6 h-6" />
           {t('lk.dashboard.title')}
         </h2>
@@ -160,14 +160,14 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* ─── 1. Kundli Overview ─── */}
         <div className="card-sacred rounded-2xl p-6 border border-sacred-gold/20">
-          <h3 className="font-sacred text-lg font-semibold text-sacred-gold mb-4">
+          <h3 className="font-sans text-lg font-semibold text-sacred-gold mb-4">
             {t('lk.dashboard.kundliView')}
           </h3>
 
           {/* Quick stats */}
           <div className="grid grid-cols-2 gap-3 mb-5">
             <div className="text-center p-3 rounded-xl bg-sacred-gold/5 border border-sacred-gold/10">
-              <p className="text-2xl font-sacred font-bold text-cosmic-text">
+              <p className="text-2xl font-sans font-bold text-cosmic-text">
                 {counts.totalPlanets}
               </p>
               <p className="text-xs text-cosmic-text/60">
@@ -175,7 +175,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
               </p>
             </div>
             <div className="text-center p-3 rounded-xl bg-sacred-gold/5 border border-sacred-gold/10">
-              <p className="text-2xl font-sacred font-bold text-cosmic-text">
+              <p className="text-2xl font-sans font-bold text-cosmic-text">
                 {counts.empty}
               </p>
               <p className="text-xs text-cosmic-text/60">
@@ -183,7 +183,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
               </p>
             </div>
             <div className="text-center p-3 rounded-xl bg-green-500/5 border border-green-500/10">
-              <p className="text-2xl font-sacred font-bold text-green-400">
+              <p className="text-2xl font-sans font-bold text-green-400">
                 {counts.strong}
               </p>
               <p className="text-xs text-cosmic-text/60">
@@ -191,7 +191,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
               </p>
             </div>
             <div className="text-center p-3 rounded-xl bg-red-500/5 border border-red-500/10">
-              <p className="text-2xl font-sacred font-bold text-red-400">
+              <p className="text-2xl font-sans font-bold text-red-400">
                 {counts.weak}
               </p>
               <p className="text-xs text-cosmic-text/60">
@@ -234,7 +234,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
 
         {/* ─── 2. Problem Summary (Doshas) ─── */}
         <div className="card-sacred rounded-2xl p-6 border border-sacred-gold/20">
-          <h3 className="font-sacred text-lg font-semibold text-sacred-gold mb-4">
+          <h3 className="font-sans text-lg font-semibold text-sacred-gold mb-4">
             {t('lk.dashboard.problems')}
           </h3>
 
@@ -285,7 +285,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
 
         {/* ─── 3. Quick Remedies ─── */}
         <div className="card-sacred rounded-2xl p-6 border border-sacred-gold/20">
-          <h3 className="font-sacred text-lg font-semibold text-sacred-gold mb-4">
+          <h3 className="font-sans text-lg font-semibold text-sacred-gold mb-4">
             {t('lk.dashboard.remediesList')}
           </h3>
 
@@ -323,7 +323,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
 
         {/* ─── 4. Life Timeline ─── */}
         <div className="card-sacred rounded-2xl p-6 border border-sacred-gold/20">
-          <h3 className="font-sacred text-lg font-semibold text-sacred-gold mb-4 flex items-center gap-2">
+          <h3 className="font-sans text-lg font-semibold text-sacred-gold mb-4 flex items-center gap-2">
             <Clock className="w-5 h-5" />
             {t('lk.dashboard.timeline')}
           </h3>

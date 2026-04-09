@@ -37,7 +37,7 @@ export default function LalKitabPlanetsTab({ chartData }: Props) {
     <div className="space-y-6">
       {/* Header */}
       <div className="text-center space-y-2">
-        <h2 className="text-2xl font-sacred text-sacred-gold">
+        <h2 className="text-2xl font-sans text-sacred-gold">
           {t('lk.planets.title')}
         </h2>
         <p className="text-cosmic-text/70 text-sm">
@@ -69,7 +69,7 @@ export default function LalKitabPlanetsTab({ chartData }: Props) {
                 <div className="flex items-center gap-3">
                   <Star className="w-5 h-5 text-sacred-gold" />
                   <div>
-                    <h3 className="font-sacred text-sacred-gold text-lg">
+                    <h3 className="font-sans text-sacred-gold text-lg">
                       {getPlanetName(planet)}
                     </h3>
                     <p className="text-cosmic-text/60 text-xs">
@@ -103,7 +103,7 @@ export default function LalKitabPlanetsTab({ chartData }: Props) {
                     <span className="text-xs text-cosmic-text/70 uppercase tracking-wide">
                       {t('lk.planets.pakkaGhar')}
                     </span>
-                    <p className="text-sacred-gold font-sacred text-sm mt-0.5">
+                    <p className="text-sacred-gold font-sans text-sm mt-0.5">
                       {language === 'hi' ? `भाव ${pakkaGhar}` : `House ${pakkaGhar}`}
                     </p>
                   </div>

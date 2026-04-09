@@ -29,7 +29,7 @@ export default function CTA() {
           ))}
         </div>
 
-        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-['Cinzel_Decorative'] text-cosmic-text mb-6">
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-sans text-cosmic-text mb-6">
           Start Reading Your Chart
         </h2>
 
@@ -41,7 +41,7 @@ export default function CTA() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button
             onClick={() => navigate('/login')}
-            className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold transition-all px-8 py-5 text-xs font-cinzel tracking-[3px] uppercase rounded-none"
+            className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold transition-all px-8 py-5 text-xs font-sans tracking-[3px] uppercase rounded-none"
             style={{ boxShadow: '0 0 30px rgba(212, 175, 55, 0.3)' }}
           >
             Create Free Account

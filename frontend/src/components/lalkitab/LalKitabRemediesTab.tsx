@@ -32,7 +32,7 @@ export default function LalKitabRemediesTab({ chartData }: Props) {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-xl font-sacred font-semibold text-sacred-gold mb-1">
+        <h2 className="text-xl font-sans font-semibold text-sacred-gold mb-1">
           {t('lk.remedies.title')}
         </h2>
         <p className="text-sm text-cosmic-text/60">
@@ -81,7 +81,7 @@ export default function LalKitabRemediesTab({ chartData }: Props) {
           return (
             <div key={planet.key} className="space-y-4">
               {/* Section header */}
-              <h3 className="text-lg font-sacred font-semibold text-sacred-gold">
+              <h3 className="text-lg font-sans font-semibold text-sacred-gold">
                 {planetName} — {language === 'hi' ? 'भाव' : 'House'} {houseNumber}
               </h3>
 

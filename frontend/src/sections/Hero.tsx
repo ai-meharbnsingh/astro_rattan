@@ -31,18 +31,18 @@ export default function Hero() {
 
       <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
         <div className="hero-shloka opacity-0 mb-8">
-          <p className="font-cinzel text-base tracking-[6px] text-[var(--aged-gold)] uppercase"
+          <p className="font-sans text-base tracking-[6px] text-[var(--aged-gold)] uppercase"
             style={{ textShadow: '0 0 15px rgba(255, 170, 51, 0.4)' }}>
             {'\u091C\u094D\u092F\u094B\u0924\u093F\u0937\u092E\u094D \u0905\u092F\u092E\u094D \u092C\u094D\u0930\u0939\u094D\u092E'} — Astrology is the Supreme
           </p>
         </div>
 
         <div className="hero-title-main opacity-0">
-          <h1 className="font-['Cinzel_Decorative'] text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-cosmic-text leading-[0.95] tracking-wide"
+          <h1 className="font-sans text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-cosmic-text leading-[0.95] tracking-wide"
             style={{ textShadow: '0 0 60px rgba(255, 153, 51, 0.15)' }}>
             {t('hero.observatory')}
           </h1>
-          <p className="font-cinzel text-base tracking-[12px] text-sacred-gold-dark mt-4 uppercase">
+          <p className="font-sans text-base tracking-[12px] text-sacred-gold-dark mt-4 uppercase">
             {t('hero.ofDestiny')}
           </p>
         </div>

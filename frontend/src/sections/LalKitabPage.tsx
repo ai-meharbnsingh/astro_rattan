@@ -93,7 +93,7 @@ export default function LalKitabPage() {
           <div className="w-16 h-16 rounded-full bg-gradient-to-br from-red-600 to-sacred-gold flex items-center justify-center mx-auto mb-4">
             <BookOpen className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl sm:text-4xl font-sacred font-bold text-sacred-gold mb-2">
+          <h1 className="text-3xl sm:text-4xl font-sans font-bold text-sacred-gold mb-2">
             {t('lk.title')}
           </h1>
           <p className="text-cosmic-text max-w-lg mx-auto">
@@ -117,7 +117,7 @@ export default function LalKitabPage() {
         {view === 'generating' && (
           <div className="flex flex-col items-center justify-center py-20">
             <Loader2 className="w-12 h-12 animate-spin text-sacred-gold mb-4" />
-            <p className="text-lg font-sacred text-sacred-gold">{t('lk.generating')}</p>
+            <p className="text-lg font-sans text-sacred-gold">{t('lk.generating')}</p>
           </div>
         )}
 

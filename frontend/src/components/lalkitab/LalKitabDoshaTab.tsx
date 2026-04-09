@@ -37,7 +37,7 @@ export default function LalKitabDoshaTab({ chartData }: Props) {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="font-sacred text-2xl text-sacred-gold flex items-center gap-2">
+        <h2 className="font-sans text-2xl text-sacred-gold flex items-center gap-2">
           <Shield className="w-6 h-6" />
           {t('lk.dosha.title')}
         </h2>
@@ -46,7 +46,7 @@ export default function LalKitabDoshaTab({ chartData }: Props) {
 
       {/* Summary bar */}
       <div className="rounded-2xl p-5 border border-sacred-gold/20 bg-sacred-gold/5 flex items-center justify-between">
-        <span className="font-sacred text-lg text-sacred-gold">
+        <span className="font-sans text-lg text-sacred-gold">
           {t('lk.dosha.detected')}: {detectedDoshas.length} / {doshas.length}
         </span>
         <div className="flex items-center gap-2">
@@ -76,7 +76,7 @@ export default function LalKitabDoshaTab({ chartData }: Props) {
             >
               {/* Card header */}
               <div className="flex items-center justify-between">
-                <h3 className="font-sacred text-lg text-white">{name}</h3>
+                <h3 className="font-sans text-lg text-white">{name}</h3>
                 {dosha.detected ? (
                   <span className="flex items-center gap-1.5 text-red-500 text-sm font-medium">
                     <AlertTriangle className="w-4 h-4" />

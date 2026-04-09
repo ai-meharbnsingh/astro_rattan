@@ -146,7 +146,7 @@ export default function LalKitabRulesTab({ chartData }: Props) {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h2 className="font-sacred text-2xl text-sacred-gold flex items-center gap-2">
+        <h2 className="font-sans text-2xl text-sacred-gold flex items-center gap-2">
           <BookOpen className="w-6 h-6" />
           {t('lk.rules.title')}
         </h2>
@@ -155,7 +155,7 @@ export default function LalKitabRulesTab({ chartData }: Props) {
 
       {/* Mirror House Axis */}
       <section>
-        <h3 className="font-sacred text-lg text-sacred-gold mb-4">
+        <h3 className="font-sans text-lg text-sacred-gold mb-4">
           {t('lk.rules.mirrorAxis')}
         </h3>
 
@@ -181,7 +181,7 @@ export default function LalKitabRulesTab({ chartData }: Props) {
                     <p className="text-xs text-cosmic-text/70 mb-1">
                       {isHi ? 'भाव' : 'House'}
                     </p>
-                    <p className="text-2xl font-sacred font-bold text-sacred-gold">
+                    <p className="text-2xl font-sans font-bold text-sacred-gold">
                       {h1}
                     </p>
                     <div className="mt-2 space-y-1">
@@ -212,7 +212,7 @@ export default function LalKitabRulesTab({ chartData }: Props) {
                     <p className="text-xs text-cosmic-text/70 mb-1">
                       {isHi ? 'भाव' : 'House'}
                     </p>
-                    <p className="text-2xl font-sacred font-bold text-sacred-gold">
+                    <p className="text-2xl font-sans font-bold text-sacred-gold">
                       {h2}
                     </p>
                     <div className="mt-2 space-y-1">
@@ -261,7 +261,7 @@ export default function LalKitabRulesTab({ chartData }: Props) {
 
       {/* Hidden Influence */}
       <section>
-        <h3 className="font-sacred text-lg text-sacred-gold mb-4 flex items-center gap-2">
+        <h3 className="font-sans text-lg text-sacred-gold mb-4 flex items-center gap-2">
           <Eye className="w-5 h-5" />
           {t('lk.rules.hiddenInfluence')}
         </h3>
@@ -285,7 +285,7 @@ export default function LalKitabRulesTab({ chartData }: Props) {
 
       {/* Cross-House Effects */}
       <section>
-        <h3 className="font-sacred text-lg text-sacred-gold mb-4 flex items-center gap-2">
+        <h3 className="font-sans text-lg text-sacred-gold mb-4 flex items-center gap-2">
           <Layers className="w-5 h-5" />
           {t('lk.rules.crossEffect')}
         </h3>
@@ -304,11 +304,11 @@ export default function LalKitabRulesTab({ chartData }: Props) {
               >
                 {/* House labels */}
                 <div className="flex items-center gap-3 mb-2 flex-wrap">
-                  <span className="px-2.5 py-1 rounded-lg bg-sacred-gold/10 text-sacred-gold text-sm font-sacred font-medium">
+                  <span className="px-2.5 py-1 rounded-lg bg-sacred-gold/10 text-sacred-gold text-sm font-sans font-medium">
                     {isHi ? 'भाव' : 'House'} {rule.fromHouse}
                   </span>
                   <span className="text-sacred-gold/40">&#10230;</span>
-                  <span className="px-2.5 py-1 rounded-lg bg-sacred-gold/10 text-sacred-gold text-sm font-sacred font-medium">
+                  <span className="px-2.5 py-1 rounded-lg bg-sacred-gold/10 text-sacred-gold text-sm font-sans font-medium">
                     {isHi ? 'भाव' : 'House'} {rule.toHouse}
                   </span>
                   <span className="text-xs text-cosmic-text/60">

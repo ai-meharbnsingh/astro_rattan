@@ -29,8 +29,8 @@ export default function About() {
     <section ref={sectionRef} id="about" className="relative py-24 bg-cosmic-bg overflow-hidden">
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="about-content max-w-3xl mx-auto text-center mb-16">
-          <p className="text-sacred-gold text-sm tracking-[4px] uppercase mb-4 font-cinzel">Built Different</p>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-['Cinzel_Decorative'] text-cosmic-text mb-6">
+          <p className="text-sacred-gold text-sm tracking-[4px] uppercase mb-4 font-sans">Built Different</p>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-sans text-cosmic-text mb-6">
             {t('about.heading')}
           </h2>
           <div className="space-y-4 text-cosmic-text">
@@ -56,7 +56,7 @@ export default function About() {
                 <div className="w-12 h-12 flex items-center justify-center mx-auto mb-4 bg-sacred-gold-dark border border-sacred-gold">
                   <Icon className="w-6 h-6 text-sacred-gold-dark" />
                 </div>
-                <p className="text-3xl font-cinzel font-bold text-sacred-gold-dark mb-1">{stat.value}</p>
+                <p className="text-3xl font-sans font-bold text-sacred-gold-dark mb-1">{stat.value}</p>
                 <p className="text-sm text-cosmic-text">{stat.label}</p>
               </div>
             );

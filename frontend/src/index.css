@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -12,8 +12,8 @@
 @layer base {
   :root {
     /* Typography tokens */
-    --font-display: 'Inter', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --font-sacred: 'Cormorant Garamond', 'Noto Sans Devanagari', 'IM Fell English', Georgia, serif;
+    --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-sacred: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --text-data: 0.75rem;
     --text-label: 0.75rem;
     --text-micro: 0.75rem;
@@ -157,7 +157,7 @@
   body {
     background: #FAFAFA;
     color: #1e293b;
-    font-family: 'Inter', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
     line-height: 1.6;
   }
@@ -181,17 +181,8 @@
   }
 }
 
-/* Typography — io-gita manuscript fonts */
-.font-sacred { font-family: 'Cormorant Garamond', 'IM Fell English', Georgia, serif; }
-.font-decorative { font-family: 'IM Fell English', 'Cormorant Garamond', serif; }
-.font-mantra { font-family: 'Laila', 'Noto Serif Devanagari', Georgia, serif; }
-
-.heading-sacred {
-  font-family: 'Cormorant Garamond', 'IM Fell English', Georgia, serif;
-  color: #1e293b;
-  font-weight: 300;
-  letter-spacing: -0.02em;
-}
+/* Typography — All fonts now use Inter */
+/* Note: .font-sacred, .font-decorative, .font-mantra, .heading-sacred removed - using Inter font-sans instead */
 
 .heading-gold {
   color: #B45309;
@@ -223,7 +214,7 @@
   color: #ffffff;
   border: none;
   border-radius: 9999px;
-  font-family: 'IM Fell English', serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   letter-spacing: 0.05em;
   transition: all 0.3s ease;
 }
@@ -397,9 +388,9 @@
   line-height: 32px;
 }
 
-/* Devanagari watermark */
+/* Devanagari watermark - font removed, using Inter */
 .devanagari-watermark {
-  font-family: 'Noto Sans Devanagari', serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 20rem;
   color: rgba(139, 69, 19, 0.03);
   pointer-events: none;

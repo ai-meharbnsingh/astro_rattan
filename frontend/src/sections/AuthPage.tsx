@@ -169,7 +169,7 @@ export default function AuthPage() {
           <div className="w-16 h-16 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center mx-auto mb-4 shadow-glow-gold">
             <Stars className="w-8 h-8 text-cosmic-bg" />
           </div>
-          <h2 className="text-2xl sm:text-3xl font-sacred font-bold text-cosmic-text mb-2">{t('auth.welcome')}</h2>
+          <h2 className="text-2xl sm:text-3xl font-sans font-bold text-cosmic-text mb-2">{t('auth.welcome')}</h2>
           <p className="text-cosmic-text-secondary">{t('auth.subtitle')}</p>
         </div>
         {error && <div className="mb-4 p-3 rounded-xl bg-red-900 border border-red-500 text-red-400 text-sm text-center">{error}</div>}
@@ -300,7 +300,7 @@ export default function AuthPage() {
         {showForgotPassword && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-cosmic-bg backdrop-blur-sm px-4" onClick={() => setShowForgotPassword(false)}>
             <div className="bg-cosmic-bg border border-sacred-gold p-6 max-w-sm w-full space-y-4" onClick={e => e.stopPropagation()}>
-              <h3 className="text-lg font-cinzel text-sacred-gold-dark text-center">Reset Password</h3>
+              <h3 className="text-lg font-sans text-sacred-gold-dark text-center">Reset Password</h3>
               {error && <p className="text-red-400 text-sm text-center">{error}</p>}
               {success && <p className="text-green-400 text-sm text-center">{success}</p>}
 

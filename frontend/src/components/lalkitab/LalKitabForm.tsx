@@ -103,7 +103,7 @@ export default function LalKitabForm({ onGenerate, loading }: LalKitabFormProps)
 
   return (
     <form onSubmit={handleSubmit} className="card-sacred rounded-2xl p-6 border border-sacred-gold/20">
-      <h2 className="text-xl font-sacred font-semibold text-sacred-gold mb-1">
+      <h2 className="text-xl font-sans font-semibold text-sacred-gold mb-1">
         {t('lk.enterDetails')}
       </h2>
       <p className="text-sm text-cosmic-text/60 mb-6">

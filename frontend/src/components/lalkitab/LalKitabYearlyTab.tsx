@@ -56,7 +56,7 @@ export default function LalKitabYearlyTab({ chartData, birthDate }: Props) {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="font-sacred text-2xl text-sacred-gold flex items-center gap-2">
+        <h2 className="font-sans text-2xl text-sacred-gold flex items-center gap-2">
           <Calendar className="w-6 h-6" />
           {t('lk.yearly.title')}
         </h2>
@@ -66,7 +66,7 @@ export default function LalKitabYearlyTab({ chartData, birthDate }: Props) {
       {/* Current age display */}
       <div className="rounded-2xl p-6 border border-sacred-gold/20 bg-sacred-gold/5 text-center">
         <p className="text-sm text-sacred-gold/70 mb-1">{t('lk.yearly.currentAge')}</p>
-        <p className="text-5xl font-sacred font-bold text-sacred-gold">{currentAge}</p>
+        <p className="text-5xl font-sans font-bold text-sacred-gold">{currentAge}</p>
         {activePeriod && (
           <p className="text-sm text-cosmic-text/60 mt-2">
             {isHi ? 'सक्रिय ग्रह' : 'Active Planet'}:{' '}
@@ -83,7 +83,7 @@ export default function LalKitabYearlyTab({ chartData, birthDate }: Props) {
           <div className="flex items-start gap-3">
             <Star className="w-5 h-5 text-sacred-gold mt-0.5 shrink-0" />
             <div>
-              <h3 className="font-sacred text-lg text-sacred-gold mb-1">
+              <h3 className="font-sans text-lg text-sacred-gold mb-1">
                 {getPlanetLabel(activePeriod.planet)} —{' '}
                 {isHi ? 'भाव' : 'House'} {chartData.planetPositions[activePeriod.planet]}
               </h3>
@@ -139,7 +139,7 @@ export default function LalKitabYearlyTab({ chartData, birthDate }: Props) {
               >
                 <div className="flex items-center gap-2 flex-wrap">
                   <span
-                    className={`font-sacred text-base font-semibold ${
+                    className={`font-sans text-base font-semibold ${
                       isActive ? 'text-sacred-gold' : 'text-cosmic-text/70'
                     }`}
                   >

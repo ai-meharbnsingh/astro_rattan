@@ -57,7 +57,7 @@ export default function Features() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="features-title text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-['Cinzel_Decorative'] text-cosmic-text mb-6">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-sans text-cosmic-text mb-6">
             Bridging Ancient Wisdom with Modern Technology
           </h2>
           <div className="max-w-3xl mx-auto space-y-4 text-cosmic-text">
@@ -86,7 +86,7 @@ export default function Features() {
                 <div className="absolute inset-0 h-40 bg-gradient-to-t from-cosmic-bg via-cosmic-bg to-transparent" />
               </div>
               <CardContent className="relative p-6 pt-2">
-                <h3 className="text-lg font-cinzel font-semibold text-cosmic-text mb-2 uppercase tracking-wide">
+                <h3 className="text-lg font-sans font-semibold text-cosmic-text mb-2 uppercase tracking-wide">
                   {feature.title}
                 </h3>
                 <p className="text-base text-cosmic-text leading-relaxed">{feature.desc}</p>

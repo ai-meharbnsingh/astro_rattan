@@ -32,7 +32,7 @@ export default function Testimonials() {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold text-sacred-gold text-sm font-medium mb-6 border border-sacred-gold">
             <Star className="w-4 h-4" />{t('testimonials.heading')}
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-sacred font-bold text-cosmic-text mb-4">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-sans font-bold text-cosmic-text mb-4">
             {t('testimonials.heading')}
           </h2>
         </div>
@@ -67,7 +67,7 @@ export default function Testimonials() {
           <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
             {[{ value: '50K+', label: 'Happy Users' }, { value: '4.9', label: 'Average Rating' }, { value: '100K+', label: 'Kundlis' }, { value: '98%', label: 'Satisfaction' }].map((stat, i) => (
               <div key={i} className="text-center">
-                <p className="text-3xl font-sacred font-bold text-gradient-gold mb-1">{stat.value}</p>
+                <p className="text-3xl font-sans font-bold text-gradient-gold mb-1">{stat.value}</p>
                 <p className="text-sm text-cosmic-text-secondary">{stat.label}</p>
               </div>
             ))}

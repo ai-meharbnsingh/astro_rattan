@@ -91,7 +91,7 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h2 className="font-sacred text-2xl text-sacred-gold flex items-center gap-2">
+        <h2 className="font-sans text-2xl text-sacred-gold flex items-center gap-2">
           <Users className="w-6 h-6" />
           {t('lk.relations.title')}
         </h2>
@@ -100,7 +100,7 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
 
       {/* Conjunctions (Yuti) */}
       <section>
-        <h3 className="font-sacred text-lg text-sacred-gold mb-4">
+        <h3 className="font-sans text-lg text-sacred-gold mb-4">
           {t('lk.relations.conjunction')} ({isHi ? 'युति' : 'Yuti'})
         </h3>
 
@@ -194,7 +194,7 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
 
       {/* Aspects (Drishti) */}
       <section>
-        <h3 className="font-sacred text-lg text-sacred-gold mb-4 flex items-center gap-2">
+        <h3 className="font-sans text-lg text-sacred-gold mb-4 flex items-center gap-2">
           <Eye className="w-5 h-5" />
           {isHi ? 'दृष्टि (Aspects)' : 'Aspects (Drishti)'}
         </h3>
@@ -203,13 +203,13 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr className="border-b border-sacred-gold/10">
-                <th className="text-left py-2 px-3 text-sacred-gold/70 font-sacred font-medium">
+                <th className="text-left py-2 px-3 text-sacred-gold/70 font-sans font-medium">
                   {isHi ? 'ग्रह' : 'Planet'}
                 </th>
-                <th className="text-left py-2 px-3 text-sacred-gold/70 font-sacred font-medium">
+                <th className="text-left py-2 px-3 text-sacred-gold/70 font-sans font-medium">
                   {isHi ? 'स्थित भाव' : 'In House'}
                 </th>
-                <th className="text-left py-2 px-3 text-sacred-gold/70 font-sacred font-medium">
+                <th className="text-left py-2 px-3 text-sacred-gold/70 font-sans font-medium">
                   {isHi ? 'दृष्टि भाव' : 'Aspects Houses'}
                 </th>
               </tr>
@@ -250,7 +250,7 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
 
       {/* Clash Detection Summary */}
       <section>
-        <h3 className="font-sacred text-lg text-sacred-gold mb-4">
+        <h3 className="font-sans text-lg text-sacred-gold mb-4">
           {isHi ? 'टकराव विश्लेषण' : 'Clash Analysis'}
         </h3>
 

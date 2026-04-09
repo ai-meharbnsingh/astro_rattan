@@ -20,14 +20,14 @@ function renderMarkdown(text: string) {
     // List items
     if (line.trimStart().startsWith('- ')) {
       return (
-        <div key={idx} className="flex gap-2 mb-1.5 ml-2" style={{ fontFamily: 'var(--font-sacred, Cormorant Garamond, Georgia, serif)', color: 'var(--ink)' }}>
+        <div key={idx} className="flex gap-2 mb-1.5 ml-2" style={{ fontFamily: 'var(--font-sacred, Inter, sans-serif)', color: 'var(--ink)' }}>
           <span className="text-sacred-gold mt-0.5">•</span>
           <span className="leading-relaxed">{rendered}</span>
         </div>
       );
     }
     // Regular paragraph
-    return <p key={idx} className="mb-3 leading-relaxed" style={{ fontFamily: 'var(--font-sacred, Cormorant Garamond, Georgia, serif)', color: 'var(--ink)' }}>{rendered}</p>;
+    return <p key={idx} className="mb-3 leading-relaxed" style={{ fontFamily: 'var(--font-sacred, Inter, sans-serif)', color: 'var(--ink)' }}>{rendered}</p>;
   });
 }
 

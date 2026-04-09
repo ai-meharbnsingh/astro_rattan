@@ -134,7 +134,7 @@ export default function Panchang() {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-saffron text-sacred-saffron text-sm font-medium mb-6 border border-sacred-saffron">
             <Calendar className="w-4 h-4" />Daily Panchang
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-sacred font-bold text-cosmic-text mb-4">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-sans font-bold text-cosmic-text mb-4">
             Cosmic Timekeeping with<span className="text-gradient-saffron"> Panchang</span>
           </h2>
         </div>
@@ -148,7 +148,7 @@ export default function Panchang() {
               </div>
               <div>
                 <p className="text-sm text-cosmic-text-secondary">Date</p>
-                <p className="text-lg font-sacred font-semibold text-cosmic-text">{dateDisplay}</p>
+                <p className="text-lg font-sans font-semibold text-cosmic-text">{dateDisplay}</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -157,7 +157,7 @@ export default function Panchang() {
               </div>
               <div>
                 <p className="text-sm text-cosmic-text-secondary">Current Time</p>
-                <p className="text-lg font-sacred font-semibold text-cosmic-text">{currentTime.toLocaleTimeString('en-IN')}</p>
+                <p className="text-lg font-sans font-semibold text-cosmic-text">{currentTime.toLocaleTimeString('en-IN')}</p>
               </div>
             </div>
           </div>
@@ -227,7 +227,7 @@ export default function Panchang() {
               <div className="lg:col-span-2">
                 <Card className="card-sacred border-sacred-gold h-full">
                   <CardContent className="p-6">
-                    <h3 className="text-xl font-sacred font-semibold text-cosmic-text mb-6 flex items-center gap-2">
+                    <h3 className="text-xl font-sans font-semibold text-cosmic-text mb-6 flex items-center gap-2">
                       <Calendar className="w-5 h-5 text-sacred-gold" />Today&apos;s Panchang
                     </h3>
                     <PanchangCore
