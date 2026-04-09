@@ -330,15 +330,40 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
       const raw = await api.get(`/api/mundane/${country}/analysis?year=${year}`);
       const flat = flattenBilingual(raw, lang);
       // Normalize API field names to match component expectations
+      // Extract birth chart planets into flat array
+      const rawBirthChart = raw.birth_chart?.planets || flat.birth_chart?.planets || {};
+      const birthChartArr = typeof rawBirthChart === 'object' && !Array.isArray(rawBirthChart)
+        ? Object.entries(rawBirthChart).map(([name, data]: [string, any]) => ({
+            planet: name,
+            sign: data?.sign || '',
+            sign_degree: data?.sign_degree || data?.longitude || 0,
+            house: data?.house || 0,
+            nakshatra: data?.nakshatra || '',
+            retrograde: data?.retrograde || false,
+          }))
+        : Array.isArray(rawBirthChart) ? rawBirthChart : [];
+
+      // Extract transits
+      const rawTransits = raw.current_transits || flat.current_transits || flat.transits || [];
+      const transitsArr = Array.isArray(rawTransits) ? rawTransits.map((t: any) => ({
+        planet: t.planet || '',
+        sign: t.sign || '',
+        sign_degree: t.sign_degree || 0,
+        house: t.house_in_country_chart || t.house || 0,
+        impact: typeof t.house_meaning === 'object' ? (t.house_meaning[lang] || t.house_meaning.en) : (t.impact || t.house_meaning || ''),
+        retrograde: t.retrograde || false,
+      })) : [];
+
       const normalized = {
         ...flat,
         // country info → top-level
-        independence_date: flat.country?.independence_date || flat.independence_date,
-        independence_time: flat.country?.independence_time || flat.independence_time,
-        independence_place: flat.country?.capital || flat.independence_place,
-        // field name mapping
-        transits: flat.current_transits || flat.transits,
-        houses: flat.house_analysis || flat.houses,
+        independence_date: raw.country?.independence_date || flat.country?.independence_date || flat.independence_date,
+        independence_time: raw.country?.independence_time || flat.country?.independence_time || flat.independence_time,
+        independence_place: (typeof raw.country?.capital === 'object' ? raw.country.capital[lang] || raw.country.capital.en : raw.country?.capital) || flat.independence_place,
+        // normalized arrays
+        birth_chart: birthChartArr,
+        transits: transitsArr,
+        houses: raw.house_analysis || flat.house_analysis || flat.houses,
         // build indicators from summary
         indicators: flat.indicators || (flat.summary ? [
           { label: T.nationalMood(lang), label_hi: T.nationalMood('hi'), value: flat.summary.national_mood || '-', status: flat.summary.national_mood === 'positive' ? 'positive' : flat.summary.national_mood === 'negative' ? 'negative' : 'neutral' },
