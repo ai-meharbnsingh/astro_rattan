@@ -105,20 +105,23 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                 const binduBg = (v: number) =>
                   v >= 5 ? '#dcfce7' : v >= 3 ? '#fef3c7' : '#fee2e2';
 
-                // North Indian diamond chart positions (280x280 SVG)
+                // North Indian diamond chart — house centers (280x280 SVG)
+                // Houses: 1=top-center(Asc), 2=top-right, 3=right-top, 4=right-bottom
+                // 5=bottom-right, 6=bottom-center, 7=bottom-left, 8=left-bottom
+                // 9=left-top, 10=top-left, 11=center-top, 12=center-bottom
                 const housePos: { x: number; y: number }[] = [
-                  { x: 140, y: 45 },   // 1 Ari  — top center
-                  { x: 210, y: 45 },   // 2 Tau  — top right
-                  { x: 240, y: 95 },   // 3 Gem  — right upper
-                  { x: 240, y: 185 },  // 4 Can  — right lower
-                  { x: 210, y: 235 },  // 5 Leo  — bottom right
-                  { x: 140, y: 235 },  // 6 Vir  — bottom center
-                  { x: 70, y: 235 },   // 7 Lib  — bottom left
-                  { x: 40, y: 185 },   // 8 Sco  — left lower
-                  { x: 40, y: 95 },    // 9 Sag  — left upper
-                  { x: 70, y: 45 },    // 10 Cap — top left
-                  { x: 140, y: 110 },  // 11 Aqu — inner top
-                  { x: 140, y: 170 },  // 12 Pis — inner bottom
+                  { x: 140, y: 38 },   // 1 — top center triangle
+                  { x: 215, y: 38 },   // 2 — top right triangle
+                  { x: 245, y: 100 },  // 3 — right upper triangle
+                  { x: 245, y: 180 },  // 4 — right lower triangle
+                  { x: 215, y: 242 },  // 5 — bottom right triangle
+                  { x: 140, y: 242 },  // 6 — bottom center triangle
+                  { x: 65, y: 242 },   // 7 — bottom left triangle
+                  { x: 35, y: 180 },   // 8 — left lower triangle
+                  { x: 35, y: 100 },   // 9 — left upper triangle
+                  { x: 65, y: 38 },    // 10 — top left triangle
+                  { x: 140, y: 105 },  // 11 — inner top diamond
+                  { x: 140, y: 175 },  // 12 — inner bottom diamond
                 ];
 
                 return (
@@ -131,8 +134,8 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                       <span className="text-xs font-semibold text-sacred-gold-dark">{language === 'hi' ? 'कुल' : 'Total'}: {total}</span>
                     </div>
                     <div className="flex flex-col lg:flex-row">
-                      {/* LEFT: Full contributor matrix table (compact) */}
-                      <div className="lg:max-w-[550px] overflow-x-auto p-3">
+                      {/* LEFT: Full contributor matrix table */}
+                      <div className="flex-1 overflow-x-auto p-3">
                         {(() => {
                           const contributors = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Lagna'];
                           const contribData = ashtakvargaData.planet_details?.[planet]?.contributors;
