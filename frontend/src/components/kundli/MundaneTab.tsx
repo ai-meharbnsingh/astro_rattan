@@ -306,8 +306,8 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
           const normalized: CountryOption[] = list.map((c: any) => {
             const flat = flattenBilingual(c, lang);
             return {
-              code: flat.code || c.code,
-              name: typeof flat.name === 'string' ? flat.name : c.code,
+              code: c.key || flat.code || c.code,
+              name: typeof flat.name === 'string' ? flat.name : (typeof c.name === 'object' ? c.name.en : c.name) || c.key,
               name_hi: typeof c.name === 'object' ? c.name.hi : c.name_hi,
               flag: flat.flag || c.flag,
             };
