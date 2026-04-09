@@ -236,7 +236,6 @@ const translations: Record<Language, TranslationMap> = {
     'milan.doshaAnalysis': 'Dosha Analysis',
 
     // Auth extras
-    'auth.forgotPassword': 'Forgot Password?',
     'auth.resetPassword': 'Reset Password',
     'auth.sendResetCode': 'Send Reset Code',
     'auth.newPassword': 'New password (min 8 chars)',
@@ -1160,7 +1159,6 @@ const translations: Record<Language, TranslationMap> = {
     'milan.doshaAnalysis': 'दोष विश्लेषण',
 
     // Auth extras
-    'auth.forgotPassword': 'पासवर्ड भूल गए?',
     'auth.resetPassword': 'पासवर्ड रीसेट करें',
     'auth.sendResetCode': 'रीसेट कोड भेजें',
     'auth.newPassword': 'नया पासवर्ड (न्यूनतम 8 अक्षर)',

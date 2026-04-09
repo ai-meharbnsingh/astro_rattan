@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Star, ChevronDown, ChevronUp } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
+import type { LalKitabChartData } from './lalkitab-data';
 import {
-  LalKitabChartData,
   PLANETS,
   PAKKA_GHAR,
   PLANET_FRIENDS,

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useTranslation } from '@/lib/i18n';
+import type { LalKitabChartData } from './lalkitab-data';
 import {
-  LalKitabChartData,
   PLANETS,
   MIRROR_HOUSES,
   PLANET_EFFECTS_IN_HOUSES,

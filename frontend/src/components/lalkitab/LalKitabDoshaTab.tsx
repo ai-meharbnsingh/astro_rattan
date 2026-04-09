@@ -1,5 +1,5 @@
 import { useTranslation } from '@/lib/i18n';
-import { LalKitabChartData } from './lalkitab-data';
+import type { LalKitabChartData } from './lalkitab-data';
 import { AlertTriangle, CheckCircle, Shield } from 'lucide-react';
 
 interface DoshaResult {

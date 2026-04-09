@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from '@/lib/i18n';
-import { LalKitabChartData, HOUSE_MEANINGS, PLANETS, PLANET_EFFECTS_IN_HOUSES } from './lalkitab-data';
+import type { LalKitabChartData } from './lalkitab-data';
+import { HOUSE_MEANINGS, PLANETS, PLANET_EFFECTS_IN_HOUSES } from './lalkitab-data';
 import { ChevronDown, ChevronUp, Home } from 'lucide-react';
 
 interface Props {

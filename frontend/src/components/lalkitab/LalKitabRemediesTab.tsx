@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from '@/lib/i18n';
-import { LalKitabChartData, PLANETS, REMEDIES } from './lalkitab-data';
+import type { LalKitabChartData } from './lalkitab-data';
+import { PLANETS, REMEDIES } from './lalkitab-data';
 import { Heart, Gift, Home, Zap, Filter } from 'lucide-react';
 
 interface Props {

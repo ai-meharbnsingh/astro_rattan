@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useTranslation } from '@/lib/i18n';
+import type { LalKitabChartData } from './lalkitab-data';
 import {
-  LalKitabChartData,
   PLANETS,
   PLANET_FRIENDS,
   PLANET_ENEMIES,
