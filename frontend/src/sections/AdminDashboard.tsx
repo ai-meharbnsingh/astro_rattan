@@ -147,7 +147,7 @@ export default function AdminDashboard() {
                       <p className="text-sm text-cosmic-text">{k.person_name}</p>
                       <p className="text-xs text-cosmic-text/70">{formatDate(k.birth_date)} &middot; {k.email}</p>
                     </div>
-                    <span className="text-xs text-cosmic-text/60">{new Date(k.created_at).toLocaleDateString()}</span>
+                    <span className="text-xs text-cosmic-text/60">{formatDate(k.created_at)}</span>
                   </div>
                 ))}
               </div>
@@ -190,7 +190,7 @@ export default function AdminDashboard() {
                         {u.is_active ? <ToggleRight className="w-5 h-5 text-green-500" /> : <ToggleLeft className="w-5 h-5 text-red-400" />}
                       </button>
                     </td>
-                    <td className="py-3 pr-4 text-cosmic-text/70 text-xs">{new Date(u.created_at).toLocaleDateString()}</td>
+                    <td className="py-3 pr-4 text-cosmic-text/70 text-xs">{formatDate(u.created_at)}</td>
                     <td className="py-3">
                       <button onClick={() => {}} className="text-xs text-sacred-gold-dark hover:underline">View</button>
                     </td>
@@ -234,7 +234,7 @@ export default function AdminDashboard() {
                     <td className="py-3 pr-4 text-cosmic-text/70">{formatDate(k.birth_date)} {k.birth_time}</td>
                     <td className="py-3 pr-4 text-cosmic-text/70 text-xs">{k.birth_place}</td>
                     <td className="py-3 pr-4 text-cosmic-text/70 text-xs">{k.email}</td>
-                    <td className="py-3 text-cosmic-text/70 text-xs">{new Date(k.created_at).toLocaleDateString()}</td>
+                    <td className="py-3 text-cosmic-text/70 text-xs">{formatDate(k.created_at)}</td>
                   </tr>
                 ))}
               </tbody>

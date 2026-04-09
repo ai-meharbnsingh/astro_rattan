@@ -616,6 +616,7 @@ export function useKundliData() {
           sign: data?.sign || 'Unknown',
           house: data?.house || 0,
           nakshatra: data?.nakshatra || '',
+          nakshatra_pada: data?.nakshatra_pada || data?.pada || null,
           sign_degree: data?.sign_degree || 0,
           status: data?.status && !['Transiting', 'Entering', 'Leaving'].includes(data.status) ? data.status : calcDignity(name, data?.sign || ''),
           is_retrograde: data?.is_retrograde || data?.retrograde || false,

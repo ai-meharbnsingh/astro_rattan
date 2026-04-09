@@ -878,6 +878,16 @@ def _build_kundli_pdf(row: dict, chart: dict) -> bytes:
     from fpdf import FPDF
     from datetime import datetime as _dt
 
+    def _format_date_ddmmyyyy(d: str) -> str:
+        """Convert YYYY-MM-DD to DD/MM/YYYY for display."""
+        try:
+            parts = str(d).split("-")
+            if len(parts) == 3:
+                return f"{parts[2]}/{parts[1]}/{parts[0]}"
+        except Exception:
+            pass
+        return str(d)
+
     # ── Astrological reference tables ─────────────────────
     _SIGN_ELEMENT = {
         "Aries": "Fire", "Taurus": "Earth", "Gemini": "Air", "Cancer": "Water",
@@ -933,7 +943,7 @@ def _build_kundli_pdf(row: dict, chart: dict) -> bytes:
     RED_MARK = (178, 34, 34)
 
     generated_date = _dt.now().strftime("%d %b %Y, %I:%M %p")
-    footer_text = f"Powered by Semantic Gravity | astrovedic-web.vercel.app | Generated on {generated_date}"
+    footer_text = f"Powered by Semantic Gravity | astrorattan.com | Generated on {generated_date}"
 
     class KundliPDF(FPDF):
         def cell(self, w=0, h=0, txt="", *args, **kwargs):
@@ -992,7 +1002,13 @@ def _build_kundli_pdf(row: dict, chart: dict) -> bytes:
 
     # Birth details block
     person_name = row.get("person_name", "N/A")
-    birth_date = row.get("birth_date", "N/A")
+    raw_birth_date = row.get("birth_date", "N/A")
+    # Convert YYYY-MM-DD to DD/MM/YYYY for display
+    try:
+        bd_parts = str(raw_birth_date).split("-")
+        birth_date = f"{bd_parts[2]}/{bd_parts[1]}/{bd_parts[0]}" if len(bd_parts) == 3 else str(raw_birth_date)
+    except Exception:
+        birth_date = str(raw_birth_date)
     birth_time = row.get("birth_time", "N/A")
     birth_place = row.get("birth_place", "N/A")
     ayanamsa = row.get("ayanamsa", "lahiri")
@@ -1082,8 +1098,8 @@ def _build_kundli_pdf(row: dict, chart: dict) -> bytes:
 
     for idx, period in enumerate(dasha_result.get("mahadasha_periods", [])):
         planet = period.get("planet", "?")
-        start = period.get("start_date", "?")
-        end = period.get("end_date", "?")
+        start = _format_date_ddmmyyyy(period.get("start_date", "?"))
+        end = _format_date_ddmmyyyy(period.get("end_date", "?"))
         years = str(period.get("years", "?"))
         marker = " <" if planet == current_md else ""
         pdf.table_row([planet + marker, start, end, years], dasha_widths, idx)

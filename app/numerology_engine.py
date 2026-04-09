@@ -784,6 +784,9 @@ def calculate_mobile_numerology(
     cleaned = ''.join(ch for ch in phone_number if ch.isdigit())
     if not cleaned:
         raise ValueError("Phone number must contain at least one digit.")
+    # Strip common country codes (91 for India) — calculate on local number only
+    if len(cleaned) > 10 and cleaned.startswith('91'):
+        cleaned = cleaned[2:]
 
     # --- Compound number & mobile total ---
     compound_number = sum(int(d) for d in cleaned)

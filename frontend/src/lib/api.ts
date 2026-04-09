@@ -99,3 +99,16 @@ export function formatDate(d: string | null | undefined): string {
   if (match) return `${match[3]}/${match[2]}/${match[1]}`;
   return str;
 }
+
+/** Format a timestamp (ISO or Date) to DD/MM/YYYY HH:MM */
+export function formatDateTime(d: string | null | undefined): string {
+  if (!d) return '';
+  const date = new Date(d);
+  if (isNaN(date.getTime())) return String(d);
+  const dd = String(date.getDate()).padStart(2, '0');
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const yyyy = date.getFullYear();
+  const hh = String(date.getHours()).padStart(2, '0');
+  const min = String(date.getMinutes()).padStart(2, '0');
+  return `${dd}/${mm}/${yyyy} ${hh}:${min}`;
+}

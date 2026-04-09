@@ -29,6 +29,7 @@ export default function LalKitabPage() {
   const locState = (location.state as { loadKundliId?: string; clientId?: string }) || {};
   const [view, setView] = useState<View>(locState.loadKundliId ? 'generating' : 'form');
   const [chartData, setChartData] = useState<LalKitabChartData | null>(null);
+  const [apiResult, setApiResult] = useState<any>(null);
   const [birthDate, setBirthDate] = useState('');
   const [error, setError] = useState('');
   const [clientId, setClientId] = useState(locState.clientId || '');
@@ -42,6 +43,7 @@ export default function LalKitabPage() {
         const full = await api.get(`/api/kundli/${locState.loadKundliId}`);
         const lkChart = generateLalKitabChart(full);
         setChartData(lkChart);
+        setApiResult(full);
         setClientId(full.client_id || '');
         setKundliId(full.id || '');
         setBirthDate(full.birth_date || '');
@@ -72,6 +74,7 @@ export default function LalKitabPage() {
       });
       const lkChart = generateLalKitabChart(result);
       setChartData(lkChart);
+      setApiResult(result);
       setClientId(result.client_id || '');
       setKundliId(result.id || '');
       setView('result');
@@ -148,7 +151,7 @@ export default function LalKitabPage() {
                 <LalKitabDashboardTab chartData={chartData} birthDate={birthDate} />
               </TabsContent>
               <TabsContent value="kundli">
-                <LalKitabKundliTab chartData={chartData} />
+                <LalKitabKundliTab chartData={chartData} apiResult={apiResult} />
               </TabsContent>
               <TabsContent value="planets">
                 <LalKitabPlanetsTab chartData={chartData} />

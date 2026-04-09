@@ -115,7 +115,7 @@ function getPlanetLabel(p: PlanetData, lang?: string): string {
   const abbr = abbrMap[p.planet] || PLANET_ABBREVIATIONS[p.planet] || p.planet.slice(0, 2);
   let suffix = '';
   const s = p.status?.toLowerCase() || '';
-  // Retrograde marker removed per astrologer feedback
+  if (p.is_retrograde || s.includes('retrograde')) suffix += '*';
   if (p.is_combust || s.includes('combust')) suffix += '^';
   if (p.is_vargottama || s.includes('vargottama')) suffix += '\u25A1';
   if (s.includes('exalted')) suffix += '\u2191';

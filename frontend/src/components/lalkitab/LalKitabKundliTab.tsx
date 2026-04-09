@@ -1,52 +1,21 @@
 import { useMemo } from 'react';
 import { LayoutGrid, Home, ShieldCheck, ShieldAlert } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
+import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
 import type { LalKitabChartData } from './lalkitab-data';
-import { PLANETS, PAKKA_GHAR } from './lalkitab-data';
 
 interface Props {
   chartData: LalKitabChartData;
+  apiResult?: any;
 }
 
-/**
- * North-Indian style 4x4 grid layout.
- * Houses map to grid positions (row, col, rowSpan, colSpan).
- * The center 2x2 block is reserved for the chart title.
- */
-const HOUSE_GRID: Record<
-  number,
-  { row: number; col: number; rowSpan?: number; colSpan?: number }
-> = {
-  12: { row: 1, col: 1 },
-  1:  { row: 1, col: 2 },
-  2:  { row: 1, col: 3 },
-  3:  { row: 1, col: 4 },
-  11: { row: 2, col: 1 },
-  4:  { row: 2, col: 4 },
-  10: { row: 3, col: 1 },
-  5:  { row: 3, col: 4 },
-  9:  { row: 4, col: 1 },
-  8:  { row: 4, col: 2 },
-  7:  { row: 4, col: 3 },
-  6:  { row: 4, col: 4 },
-};
+const ZODIAC_SIGNS = [
+  'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
+  'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces',
+];
 
-function getPlanetLabel(key: string, language: string): string {
-  const planet = PLANETS.find((p) => p.key === key);
-  if (!planet) return key;
-  return language === 'hi' ? planet.hi : planet.en;
-}
-
-export default function LalKitabKundliTab({ chartData }: Props) {
+export default function LalKitabKundliTab({ chartData, apiResult }: Props) {
   const { t, language } = useTranslation();
-
-  const houseMap = useMemo(() => {
-    const map = new Map<number, (typeof chartData.houses)[number]>();
-    for (const h of chartData.houses) {
-      map.set(h.house, h);
-    }
-    return map;
-  }, [chartData.houses]);
 
   const counts = useMemo(() => {
     let empty = 0;
@@ -60,11 +29,49 @@ export default function LalKitabKundliTab({ chartData }: Props) {
     return { empty, strong, weak };
   }, [chartData.houses]);
 
-  const cellClass = (strength: string | undefined) => {
-    if (strength === 'strong') return 'border-green-500/50 bg-green-500/5';
-    if (strength === 'weak') return 'border-red-500/50 bg-red-500/5';
-    return 'border-sacred-gold/10 bg-cosmic-card/50';
-  };
+  // Convert API result to InteractiveKundli ChartData format
+  const interactiveChartData: ChartData | null = useMemo(() => {
+    const planetsRaw = apiResult?.chart_data?.planets;
+    if (!planetsRaw) return null;
+
+    const planets: PlanetData[] = Array.isArray(planetsRaw)
+      ? planetsRaw.map((p: any) => ({
+          planet: p.planet,
+          sign: p.sign || 'Unknown',
+          house: p.house || 0,
+          nakshatra: p.nakshatra || '',
+          sign_degree: p.sign_degree || 0,
+          status: p.status || '',
+          is_retrograde: p.is_retrograde || false,
+          is_combust: p.is_combust || false,
+          is_vargottama: p.is_vargottama || false,
+        }))
+      : Object.entries(planetsRaw).map(([name, data]: [string, any]) => ({
+          planet: name,
+          sign: data?.sign || 'Unknown',
+          house: data?.house || 0,
+          nakshatra: data?.nakshatra || '',
+          sign_degree: data?.sign_degree || 0,
+          status: data?.status || '',
+          is_retrograde: data?.is_retrograde || false,
+          is_combust: data?.is_combust || false,
+          is_vargottama: data?.is_vargottama || false,
+        }));
+
+    const asc = apiResult.chart_data?.ascendant;
+    const ascSign = asc?.sign || 'Aries';
+    const ascIdx = ZODIAC_SIGNS.indexOf(ascSign);
+    const houses = Array.from({ length: 12 }, (_, i) => ({
+      number: i + 1,
+      sign: ZODIAC_SIGNS[(ascIdx + i) % 12],
+    }));
+
+    return {
+      planets,
+      houses,
+      ascendant: asc ? { longitude: asc.longitude || 0, sign: ascSign, sign_degree: asc.sign_degree } : undefined,
+    };
+  }, [apiResult]);
 
   return (
     <div className="space-y-8">
@@ -77,71 +84,16 @@ export default function LalKitabKundliTab({ chartData }: Props) {
         <p className="text-sm text-cosmic-text/70">{t('lk.kundli.desc')}</p>
       </div>
 
-      {/* Visual Kundli Chart */}
-      <div className="card-sacred rounded-2xl p-6 border border-sacred-gold/20">
-        <div className="grid grid-cols-4 gap-1 max-w-2xl mx-auto">
-          {/* Render 12 houses */}
-          {[12, 1, 2, 3, 11, 4, 10, 5, 9, 8, 7, 6].map((houseNum) => {
-            const pos = HOUSE_GRID[houseNum];
-            const house = houseMap.get(houseNum);
-            const strength = house?.strength;
-            const planets = house?.planets ?? [];
-
-            return (
-              <div
-                key={houseNum}
-                className={`border rounded-lg min-h-[80px] p-2 flex flex-col items-center justify-center text-center transition-colors ${cellClass(strength)} border-sacred-gold/30`}
-                style={{
-                  gridRow: `${pos.row} / span ${pos.rowSpan ?? 1}`,
-                  gridColumn: `${pos.col} / span ${pos.colSpan ?? 1}`,
-                }}
-              >
-                <span className="text-xs font-medium text-sacred-gold-dark/70 uppercase tracking-wide">
-                  {t('lk.kundli.house')} {houseNum}
-                </span>
-                {planets.length > 0 ? (
-                  <div className="mt-1 flex flex-wrap gap-1 justify-center">
-                    {planets.map((pKey) => (
-                      <span
-                        key={pKey}
-                        className="text-xs font-semibold text-cosmic-text bg-sacred-gold/10 rounded px-1.5 py-0.5"
-                      >
-                        {getPlanetLabel(pKey, language)}
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <span className="mt-1 text-xs text-cosmic-text/60 italic">
-                    {t('lk.kundli.empty')}
-                  </span>
-                )}
-                {strength && strength !== 'empty' && (
-                  <span
-                    className={`mt-1 text-xs font-medium ${
-                      strength === 'strong' ? 'text-green-400' : 'text-red-400'
-                    }`}
-                  >
-                    {strength === 'strong' ? t('lk.kundli.strong') : t('lk.kundli.weak')}
-                  </span>
-                )}
-              </div>
-            );
-          })}
-
-          {/* Center 2x2 block — chart title */}
-          <div
-            className="flex flex-col items-center justify-center rounded-lg border border-sacred-gold/20 bg-sacred-gold/5"
-            style={{ gridRow: '2 / span 2', gridColumn: '2 / span 2' }}
-          >
-            <span className="font-sacred text-lg font-bold text-sacred-gold">
-              {language === 'hi' ? 'लाल किताब' : 'Lal Kitab'}
-            </span>
-            <span className="text-xs text-cosmic-text/60">
-              {language === 'hi' ? 'कुंडली' : 'Kundli'}
-            </span>
-          </div>
+      {/* North Indian Kundli Chart via InteractiveKundli */}
+      {interactiveChartData ? (
+        <div className="card-sacred rounded-2xl p-6 border border-sacred-gold/20">
+          <InteractiveKundli chartData={interactiveChartData} compact />
         </div>
-      </div>
+      ) : (
+        <div className="text-center text-cosmic-text/70 py-12 text-sm">
+          {language === 'hi' ? 'कुंडली चार्ट डेटा उपलब्ध नहीं है' : 'Chart data not available'}
+        </div>
+      )}
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

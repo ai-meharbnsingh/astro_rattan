@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { X, Download, Printer, Loader2, CheckCircle, Shield } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { api } from '@/lib/api';
+import { api, formatDate } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
 import { translatePlanet, translateSign, translateNakshatra, translateName, translateRemedy, translateLabel, translateBackend } from '@/lib/backend-translations';
 import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
@@ -929,7 +929,7 @@ export default function ConsolidatedReport({
                              {varshphalData.mudda_dasha.map((md: any) => (
                                <tr key={md.planet} style={{ borderBottom: '1px solid var(--sacred-purple)' }}>
                                  <td className="p-1 font-medium">{translatePlanet(md.planet, language)}</td>
-                                 <td className="p-1 text-cosmic-text/60">{md.start_date.slice(0, 10)} - {md.end_date.slice(0, 10)}</td>
+                                 <td className="p-1 text-cosmic-text/60">{formatDate(md.start_date)} - {formatDate(md.end_date)}</td>
                                </tr>
                              ))}
                            </tbody>
@@ -1254,7 +1254,7 @@ export default function ConsolidatedReport({
           {/* Footer */}
           <div className="text-center border-t border-sacred-purple pt-3 pb-1 mt-2">
             <p className="text-xs text-cosmic-text/60">
-              {t('section.generatedBy')} | {new Date().toLocaleDateString()}
+              {t('section.generatedBy')} | {new Date().toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' })}
             </p>
           </div>
         </div>

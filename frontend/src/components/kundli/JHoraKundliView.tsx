@@ -3,7 +3,7 @@ import { Loader2 } from 'lucide-react';
 import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
 import { SIGN_LORD, SIGN_ELEMENT, SIGN_TYPE } from '@/components/kundli/kundli-utils';
 import { calculateJaiminiKarakas, getPlanetColor } from '@/components/kundli/jhora-utils';
-import { api } from '@/lib/api';
+import { api, formatDate } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
 import { translatePlanet, translateSign, translateNakshatra } from '@/lib/backend-translations';
 
@@ -424,8 +424,8 @@ export default function JHoraKundliView({
 
   return (
     <div style={{
-      width: '100vw',
-      height: '100vh',
+      width: '100%',
+      height: '100%',
       overflow: 'hidden',
       background: BG,
       fontFamily: SERIF,
@@ -658,7 +658,7 @@ export default function JHoraKundliView({
                             {md.is_current && <span style={{ color: 'var(--aged-gold-dim)', fontSize: FONT_SIZE }}>\u2190</span>}
                           </span>
                           <span style={{ color: MUTED, fontSize: FONT_SIZE }}>
-                            {md.start?.slice(0, 10)} — {md.end?.slice(0, 10)} ({md.years}y)
+                            {formatDate(md.start)} — {formatDate(md.end)} ({md.years}y)
                           </span>
                         </div>
 
@@ -681,7 +681,7 @@ export default function JHoraKundliView({
                                 <span style={{ color: MUTED }}> {language === 'hi' ? 'अं' : 'AD'}</span>
                                 {ad.is_current && <span style={{ color: 'var(--aged-gold-dim)', fontSize: FONT_SIZE }}>*</span>}
                               </span>
-                              <span style={{ color: MUTED, fontSize: FONT_SIZE }}>{ad.start?.slice(0, 10)} — {ad.end?.slice(0, 10)}</span>
+                              <span style={{ color: MUTED, fontSize: FONT_SIZE }}>{formatDate(ad.start)} — {formatDate(ad.end)}</span>
                             </div>
 
                             {/* Pratyantara list (expanded) */}
@@ -701,7 +701,7 @@ export default function JHoraKundliView({
                                   <span style={{ color: MUTED }}> {language === 'hi' ? 'प्र' : 'PD'}</span>
                                   {pt.is_current && <span style={{ color: 'var(--aged-gold-dim)' }}>*</span>}
                                 </span>
-                                <span style={{ color: MUTED }}>{pt.start?.slice(0, 10)} — {pt.end?.slice(0, 10)}</span>
+                                <span style={{ color: MUTED }}>{formatDate(pt.start)} — {formatDate(pt.end)}</span>
                               </div>
                             ))}
                           </div>
@@ -732,8 +732,8 @@ export default function JHoraKundliView({
                           <td style={{ ...cellCompact, color: planetColor(md.planet), fontWeight: 600 }}>
                             {translatePlanet(md.planet, language)}
                           </td>
-                          <td style={cellCompact}>{md.start ? md.start.slice(0, 10) : '-'}</td>
-                          <td style={cellCompact}>{md.end ? md.end.slice(0, 10) : '-'}</td>
+                          <td style={cellCompact}>{md.start ? formatDate(md.start) : '-'}</td>
+                          <td style={cellCompact}>{md.end ? formatDate(md.end) : '-'}</td>
                           <td style={{ ...cellCompact, textAlign: 'center' }}>{md.years || '-'}</td>
                         </tr>
                       ))}

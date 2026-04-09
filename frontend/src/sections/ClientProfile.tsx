@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Star, BookOpen, Hash, User, Calendar, MapPin, Phone, Plus, StickyNote } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { api, formatDate } from '@/lib/api';
+import { api, formatDate, formatDateTime } from '@/lib/api';
 
 interface Client {
   id: string; name: string; phone: string | null;
@@ -132,7 +132,7 @@ export default function ClientProfile() {
               </div>
               <div className="text-right">
                 <span className="text-xs text-cosmic-text/60 uppercase">{k.chart_type || 'vedic'}</span>
-                <p className="text-xs text-cosmic-text/60">{k.created_at ? k.created_at.toString().slice(0, 10) : ''}</p>
+                <p className="text-xs text-cosmic-text/60">{formatDate(k.created_at)}</p>
               </div>
             </div>
           ))}
@@ -152,7 +152,7 @@ export default function ClientProfile() {
                 <p className="text-sm text-cosmic-text whitespace-pre-wrap">{note.content}</p>
                 <div className="flex items-center gap-2 mt-1">
                   <span className="text-xs text-cosmic-text/60">
-                    {note.created_at ? new Date(note.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + new Date(note.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : ''}
+                    {note.created_at ? formatDateTime(note.created_at) : ''}
                   </span>
                   <span className="text-xs px-1.5 py-0.5 bg-sacred-gold-dark/10 text-sacred-gold-dark rounded">
                     {{ vedic: 'Kundli', lalkitab: 'Lal Kitab', numerology: 'Numerology', general: 'General' }[note.chart_type] || note.chart_type}

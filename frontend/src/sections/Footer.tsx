@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Stars, Mail, Phone, Instagram, Youtube, ChevronRight, Heart } from 'lucide-react';
+import { Mail, Phone, Instagram, Youtube, ChevronRight, Heart } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -35,10 +35,7 @@ export default function Footer() {
         <div className="py-16 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
           <div className="col-span-2 md:col-span-3 lg:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-6">
-              <div className="w-12 h-12 bg-sacred-gold-dark flex items-center justify-center">
-                <Stars className="w-7 h-7 text-cosmic-bg" />
-              </div>
-              <span className="font-cinzel font-bold text-2xl text-cosmic-text">Astro Rattan</span>
+              <img src="/logo.png" alt="Astro Rattan" className="h-14 w-auto" />
             </Link>
             <p className="text-cosmic-text/60 mb-6 max-w-sm">
               {t('footer.tagline')}

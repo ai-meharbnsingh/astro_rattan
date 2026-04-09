@@ -250,23 +250,13 @@ export default function LalKitabVarshphalTab({ chartData, birthDate }: Props) {
 
               {/* Effects of annual position */}
               {effects && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
-                  <div className="bg-green-500/5 border border-green-500/15 rounded-lg p-3">
-                    <p className="text-xs font-semibold text-green-400 uppercase tracking-wide mb-1">
-                      {isHi ? 'शुभ' : 'Good'}
-                    </p>
-                    <p className="text-xs text-cosmic-text/70 leading-relaxed">
-                      {isHi ? effects.good.hi : effects.good.en}
-                    </p>
-                  </div>
-                  <div className="bg-red-500/5 border border-red-500/15 rounded-lg p-3">
-                    <p className="text-xs font-semibold text-red-400 uppercase tracking-wide mb-1">
-                      {isHi ? 'अशुभ' : 'Bad'}
-                    </p>
-                    <p className="text-xs text-cosmic-text/70 leading-relaxed">
-                      {isHi ? effects.bad.hi : effects.bad.en}
-                    </p>
-                  </div>
+                <div className="mt-2 bg-sacred-gold/5 border border-sacred-gold/15 rounded-lg p-3">
+                  <p className="text-xs font-semibold text-sacred-gold uppercase tracking-wide mb-1">
+                    {isHi ? 'फल' : 'Effect'}
+                  </p>
+                  <p className="text-xs text-cosmic-text/70 leading-relaxed">
+                    {isHi ? effects.hi : effects.en}
+                  </p>
                 </div>
               )}
             </div>

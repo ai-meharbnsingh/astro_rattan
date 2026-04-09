@@ -14,7 +14,6 @@ import NotesWidget from '@/components/NotesWidget';
 import JaiminiTab from '@/components/kundli/JaiminiTab';
 import ReportTab from '@/components/kundli/ReportTab';
 import PlanetsTab from '@/components/kundli/PlanetsTab';
-import DoshaTab from '@/components/kundli/DoshaTab';
 import IogitaTab from '@/components/kundli/IogitaTab';
 import DashaTab from '@/components/kundli/DashaTab';
 import DivisionalTab from '@/components/kundli/DivisionalTab';
@@ -141,7 +140,23 @@ export default function KundliGenerator() {
               }}>
               <RefreshCw className="w-4 h-4 mr-1" />{language === 'hi' ? 'पुनः गणना' : 'Regenerate'}
             </Button>
-            <Button variant="outline" size="sm" className="border-sacred-gold/50 text-sacred-brown">
+            <Button variant="outline" size="sm" className="border-sacred-gold/50 text-sacred-brown" onClick={async () => {
+              const shareData = {
+                title: `Kundli - ${result.person_name}`,
+                text: `Vedic Kundli for ${result.person_name}, generated on Astro Rattan`,
+                url: window.location.href,
+              };
+              try {
+                if (navigator.share) {
+                  await navigator.share(shareData);
+                } else {
+                  await navigator.clipboard.writeText(`${shareData.title}\n${shareData.text}\n${shareData.url}`);
+                  alert(language === 'hi' ? 'लिंक कॉपी हो गया!' : 'Link copied to clipboard!');
+                }
+              } catch (e) {
+                if ((e as Error).name !== 'AbortError') console.error(e);
+              }
+            }}>
               <Share2 className="w-4 h-4 mr-1" />{t('common.share')}
             </Button>
             <Button size="sm" className="btn-sacred" onClick={async () => {
@@ -181,14 +196,13 @@ export default function KundliGenerator() {
             <TabsTrigger value="planets">{t('tab.planets')}</TabsTrigger>
             <TabsTrigger value="details">{t('tab.details')}</TabsTrigger>
             <TabsTrigger value="lordships">{t('tab.lordships')}</TabsTrigger>
-            <TabsTrigger value="dosha" onClick={fetchDosha}>{t('tab.dosha')}</TabsTrigger>
             <TabsTrigger value="iogita" onClick={fetchIogita}>{t('tab.iogita')}</TabsTrigger>
             <TabsTrigger value="dasha" onClick={() => { fetchDasha(); fetchExtendedDasha(); }}>{t('tab.dasha')}</TabsTrigger>
             <TabsTrigger value="divisional" onClick={() => fetchDivisional()}>{t('tab.divisional')}</TabsTrigger>
             <TabsTrigger value="ashtakvarga" onClick={fetchAshtakvarga}>{t('tab.ashtakvarga')}</TabsTrigger>
             <TabsTrigger value="shadbala" onClick={fetchShadbala}>{t('tab.shadbala')}</TabsTrigger>
             <TabsTrigger value="avakhada" onClick={fetchAvakhada}>{t('tab.avakhada')}</TabsTrigger>
-            <TabsTrigger value="yoga-dosha" onClick={fetchYogaDosha}>{t('tab.yogas')}</TabsTrigger>
+            <TabsTrigger value="yoga-dosha" onClick={() => { fetchYogaDosha(); fetchDosha(); }}>{language === 'hi' ? 'योग/दोष' : 'Yogas/Dosha'}</TabsTrigger>
             <TabsTrigger value="transits" onClick={() => fetchTransit()}>{t('tab.transits')}</TabsTrigger>
             <TabsTrigger value="varshphal" onClick={() => fetchVarshphal()}>{t('tab.varshphal')}</TabsTrigger>
             <TabsTrigger value="kp" onClick={fetchKp}>{t('tab.kpSystem')}</TabsTrigger>
@@ -248,10 +262,6 @@ export default function KundliGenerator() {
             <LordshipsTab planets={planets} houses={result.chart_data?.houses || {}} />
           </TabsContent>
 
-          <TabsContent value="dosha">
-            <DoshaTab doshaData={doshaData} doshaDisplay={doshaDisplay} loadingDosha={loadingDosha} language={language} t={t} />
-          </TabsContent>
-
           <TabsContent value="iogita">
             <IogitaTab iogitaData={iogitaData} loadingIogita={loadingIogita} language={language} t={t} />
           </TabsContent>
@@ -291,7 +301,7 @@ export default function KundliGenerator() {
           </TabsContent>
 
           <TabsContent value="yoga-dosha">
-            <YogaDoshaTab yogaDoshaData={yogaDoshaData} loadingYogaDosha={loadingYogaDosha} language={language} t={t} />
+            <YogaDoshaTab yogaDoshaData={yogaDoshaData} loadingYogaDosha={loadingYogaDosha} doshaDisplay={doshaDisplay} loadingDosha={loadingDosha} language={language} t={t} />
           </TabsContent>
 
 

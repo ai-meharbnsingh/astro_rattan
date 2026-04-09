@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { StickyNote, X, Send, Loader2 } from 'lucide-react';
-import { api } from '@/lib/api';
+import { api, formatDateTime } from '@/lib/api';
 
 interface Note {
   id: string;
@@ -80,13 +80,7 @@ export default function NotesWidget({ clientId, chartType, kundliId }: NotesWidg
 
   if (!clientId) return null;
 
-  const formatDate = (d: string) => {
-    try {
-      const date = new Date(d);
-      return date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) +
-        ' ' + date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-    } catch { return d; }
-  };
+  const formatNoteDate = (d: string) => formatDateTime(d) || d;
 
   const chartLabel: Record<string, string> = {
     vedic: 'Kundli', lalkitab: 'Lal Kitab', numerology: 'Numerology', general: 'General',
@@ -153,7 +147,7 @@ export default function NotesWidget({ clientId, chartType, kundliId }: NotesWidg
                 <div key={note.id} className="border-l-2 border-sacred-gold/30 pl-3 py-1">
                   <p className="text-sm text-cosmic-text whitespace-pre-wrap">{note.content}</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-xs text-cosmic-text/60">{formatDate(note.created_at)}</span>
+                    <span className="text-xs text-cosmic-text/60">{formatNoteDate(note.created_at)}</span>
                     <span className="text-xs px-1.5 py-0.5 bg-sacred-gold-dark/10 text-sacred-gold-dark rounded">
                       {chartLabel[note.chart_type] || note.chart_type}
                     </span>

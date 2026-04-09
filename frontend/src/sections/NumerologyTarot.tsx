@@ -112,7 +112,8 @@ export default function NumerologyTarot() {
     setError('');
     try {
       const fullName = [firstName.trim(), middleName.trim(), lastName.trim()].filter(Boolean).join(' ');
-      const fullPhone = `${mobileCountryCode}${mobilePhone.trim()}`;
+      const digitsOnly = mobilePhone.trim().replace(/\D/g, '');
+      const fullPhone = `${mobileCountryCode}${digitsOnly}`;
       const data = await api.post('/api/numerology/mobile', {
         phone_number: fullPhone,
         name: fullName,

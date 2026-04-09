@@ -331,12 +331,12 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
       const flat = flattenBilingual(raw, lang);
       // Normalize API field names to match component expectations
       // Extract birth chart planets into flat array
-      const rawBirthChart = raw?.birth_chart?.planets || {};
+      const rawBirthChart = raw?.birth_chart?.planets || raw?.birth_chart || {};
       const birthChartArr = typeof rawBirthChart === 'object' && !Array.isArray(rawBirthChart)
         ? Object.entries(rawBirthChart).map(([name, data]: [string, any]) => ({
             planet: name,
             sign: data?.sign || '',
-            sign_degree: data?.sign_degree || data?.longitude || 0,
+            degree: data?.sign_degree != null ? Number(data.sign_degree).toFixed(2) + '\u00b0' : (data?.longitude != null ? (data.longitude % 30).toFixed(2) + '\u00b0' : ''),
             house: data?.house || 0,
             nakshatra: data?.nakshatra || '',
             retrograde: data?.retrograde || false,
@@ -348,9 +348,12 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
       const transitsArr = Array.isArray(rawTransits) ? rawTransits.map((t: any) => ({
         planet: t.planet || '',
         sign: t.sign || '',
+        current_sign: t.sign || t.current_sign || '',
         sign_degree: t.sign_degree || 0,
         house: t.house_in_country_chart || t.house || 0,
         impact: typeof t.house_meaning === 'object' ? (t.house_meaning[lang] || t.house_meaning.en) : (t.impact || t.house_meaning || ''),
+        impact_hi: typeof t.house_meaning === 'object' ? t.house_meaning.hi : undefined,
+        type: t.type || 'neutral',
         retrograde: t.retrograde || false,
       })) : [];
 
