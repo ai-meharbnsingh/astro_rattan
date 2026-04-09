@@ -56,7 +56,7 @@ export default function Navigation() {
 
             {/* Action buttons */}
             <div className="flex items-center gap-1">
-              <div className="hidden sm:block">
+              <div className="hidden sm:block -mt-8">
                 <LanguageSwitcher />
               </div>
 
