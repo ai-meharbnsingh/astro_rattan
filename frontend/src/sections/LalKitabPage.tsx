@@ -131,7 +131,7 @@ export default function LalKitabPage() {
             </Button>
 
             <Tabs defaultValue="dashboard" className="w-full">
-              <TabsList className="mb-6 bg-sacred-cream flex-wrap justify-start">
+              <TabsList className="mb-6 bg-sacred-cream flex-wrap justify-start gap-1 h-auto p-2 [&>button]:py-2 [&>button]:text-sm [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
                 <TabsTrigger value="dashboard">{t('lk.tab.dashboard')}</TabsTrigger>
                 <TabsTrigger value="kundli">{t('lk.tab.kundli')}</TabsTrigger>
                 <TabsTrigger value="planets">{t('lk.tab.planets')}</TabsTrigger>
