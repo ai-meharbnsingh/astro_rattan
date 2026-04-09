@@ -570,6 +570,8 @@ export function useKundliData() {
       setResult(data);
       resetTabData();
       setStep('result');
+      // Refresh saved kundlis list (for Milan dropdown)
+      try { const list = await api.get('/api/kundli/list'); setSavedKundlis(Array.isArray(list) ? list : []); } catch {}
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate kundli');
       setStep('form');

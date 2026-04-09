@@ -9,14 +9,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-get autoremove -y && \
     apt-get clean
 
-# Download Swiss Ephemeris data files for arc-second precision
-# sepl*.se1 = planet ephemeris, semo*.se1 = moon, seas*.se1 = asteroids
-RUN apt-get update && apt-get install -y --no-install-recommends wget && \
-    mkdir -p /usr/share/swisseph/ephe && cd /usr/share/swisseph/ephe && \
-    wget -q https://www.astro.com/ftp/swisseph/ephe/sepl_18.se1 && \
-    wget -q https://www.astro.com/ftp/swisseph/ephe/semo_18.se1 && \
-    wget -q https://www.astro.com/ftp/swisseph/ephe/seas_18.se1 && \
-    apt-get purge -y wget && apt-get autoremove -y && apt-get clean
+# Swiss Ephemeris — use Moshier (built-in, no download needed)
+# Accuracy: ~0.5 arcminute. For arc-second precision, mount .se1 files at /usr/share/swisseph/ephe
+RUN mkdir -p /usr/share/swisseph/ephe
 ENV EPHE_PATH=/usr/share/swisseph/ephe
 
 COPY requirements.txt .

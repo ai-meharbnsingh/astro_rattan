@@ -91,9 +91,9 @@ export default function KundliGenerator() {
     );
   }
 
-  // --- LIST → redirect to form ---
+  // --- LIST → go to dashboard ---
   if (step === 'list') {
-    setStep('form');
+    navigate('/dashboard');
     return null;
   }
 
