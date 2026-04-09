@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
-import { formatDate } from '@/lib/api';
+import { formatDate, api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Sparkles, Download, Share2, FileText, Heart, Briefcase, Activity, ArrowLeft, Loader2, ScrollText, Home } from 'lucide-react';
+import { Sparkles, Download, Share2, FileText, Heart, Briefcase, Activity, ArrowLeft, Loader2, ScrollText, Home, RefreshCw } from 'lucide-react';
 import { useKundliData } from '@/hooks/useKundliData';
 import KundliForm from '@/components/kundli/KundliForm';
 import KundliSummaryModal from '@/components/KundliSummaryModal';
@@ -130,6 +130,17 @@ export default function KundliGenerator() {
             </div>
           </div>
           <div className="flex gap-2">
+            <Button variant="outline" size="sm" className="border-sacred-gold/50 text-sacred-brown"
+              onClick={async () => {
+                try {
+                  const fresh = await api.post(`/api/kundli/${result.id}/regenerate`, {});
+                  setResult(fresh);
+                  resetTabData();
+                  alert('Chart regenerated with latest Swiss Ephemeris data');
+                } catch (e) { console.error(e); alert('Regeneration failed'); }
+              }}>
+              <RefreshCw className="w-4 h-4 mr-1" />{language === 'hi' ? 'पुनः गणना' : 'Regenerate'}
+            </Button>
             <Button variant="outline" size="sm" className="border-sacred-gold/50 text-sacred-brown">
               <Share2 className="w-4 h-4 mr-1" />{t('common.share')}
             </Button>

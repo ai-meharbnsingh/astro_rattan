@@ -245,6 +245,45 @@ def get_kundli(
     }
 
 
+@router.post("/{kundli_id}/regenerate", status_code=status.HTTP_200_OK)
+def regenerate_kundli(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Recalculate chart data using current Swiss Ephemeris and update in DB."""
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart_data = calculate_planet_positions(
+        birth_date=row["birth_date"],
+        birth_time=row["birth_time"],
+        latitude=row["latitude"],
+        longitude=row["longitude"],
+        tz_offset=row["timezone_offset"],
+    )
+    chart_json = json.dumps(chart_data, default=str)
+    db.execute(
+        "UPDATE kundlis SET chart_data = %s, iogita_analysis = NULL WHERE id = %s AND user_id = %s",
+        (chart_json, kundli_id, current_user["sub"]),
+    )
+    db.commit()
+    return {
+        "id": row["id"],
+        "client_id": row.get("client_id"),
+        "person_name": row["person_name"],
+        "birth_date": row["birth_date"],
+        "birth_time": row["birth_time"],
+        "birth_place": row["birth_place"],
+        "latitude": row["latitude"],
+        "longitude": row["longitude"],
+        "timezone_offset": row["timezone_offset"],
+        "ayanamsa": row["ayanamsa"],
+        "chart_type": row.get("chart_type", "vedic"),
+        "chart_data": json.loads(chart_json),
+        "created_at": row["created_at"],
+        "regenerated": True,
+    }
+
+
 @router.post("/{kundli_id}/iogita", status_code=status.HTTP_200_OK)
 def run_iogita_analysis(
     kundli_id: str,
