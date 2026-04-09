@@ -204,7 +204,7 @@ export default function ReportTab({
               {/* Report title */}
               <div className="bg-gradient-to-r from-sacred-cream to-sacred-gold/10 rounded-2xl p-5 border border-sacred-gold/20 text-center">
                 <h3 className="font-display font-bold text-xl text-sacred-brown">{t('section.consolidatedReport')}</h3>
-                <p className="text-sm text-cosmic-text/70 mt-1">{result.person_name} | {result.birth_date} | {result.birth_time} | {result.birth_place}</p>
+                <p className="text-sm text-cosmic-text/70 mt-1">{result.person_name} | {formatDate(result.birth_date)} | {result.birth_time} | {result.birth_place}</p>
               </div>
 
               {/* Charts row — Lagna, Moon, Gochar side by side */}
@@ -212,7 +212,7 @@ export default function ReportTab({
                 {/* 1. Lagna Chart (D1) — click house to rotate lagan */}
                 <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-3">
                   <h4 className="font-display font-semibold text-sacred-brown mb-2 text-center text-sm">
-                    {t('section.lagna')} <span className="text-xs font-normal opacity-50">({t('kundli.clickHouseToRotate')})</span>
+                    {t('section.lagna')}
                   </h4>
                   <div className="flex justify-center">
                     {(() => {
@@ -249,7 +249,7 @@ export default function ReportTab({
                 {/* 2. Moon Chart — click house to rotate lagan */}
                 <div className="bg-sacred-cream rounded-xl border border-sacred-gold/20 p-3">
                   <h4 className="font-display font-semibold text-sacred-brown mb-2 text-center text-sm">
-                    {t('section.moon')} <span className="text-xs font-normal opacity-50">({t('kundli.clickHouseToRotate')})</span>
+                    {t('section.moon')}
                   </h4>
                   <div className="flex justify-center">
                     {(() => {

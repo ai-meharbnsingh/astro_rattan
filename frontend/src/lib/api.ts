@@ -89,3 +89,13 @@ export const api = {
   patch: (url: string, data: unknown) => apiFetch(url, { method: 'PATCH', body: JSON.stringify(data) }),
   delete: (url: string) => apiFetch(url, { method: 'DELETE' }),
 };
+
+/** Convert YYYY-MM-DD to DD/MM/YYYY (astrologer-friendly format) */
+export function formatDate(d: string | null | undefined): string {
+  if (!d) return '';
+  const str = d.toString();
+  // Handle YYYY-MM-DD
+  const match = str.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (match) return `${match[3]}/${match[2]}/${match[1]}`;
+  return str;
+}

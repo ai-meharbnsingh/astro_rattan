@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, Star, Calendar, Activity, Shield, ChevronRight, ChevronLeft, ToggleLeft, ToggleRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { api } from '@/lib/api';
+import { api, formatDate } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 
 interface Stats {
@@ -145,7 +145,7 @@ export default function AdminDashboard() {
                   <div key={k.id} className="flex items-center justify-between py-2 border-b border-sacred-gold/10 last:border-0">
                     <div>
                       <p className="text-sm text-cosmic-text">{k.person_name}</p>
-                      <p className="text-xs text-cosmic-text/70">{k.birth_date} &middot; {k.email}</p>
+                      <p className="text-xs text-cosmic-text/70">{formatDate(k.birth_date)} &middot; {k.email}</p>
                     </div>
                     <span className="text-xs text-cosmic-text/60">{new Date(k.created_at).toLocaleDateString()}</span>
                   </div>
@@ -231,7 +231,7 @@ export default function AdminDashboard() {
                 {kundlis.map(k => (
                   <tr key={k.id} className="border-b border-sacred-gold/10 hover:bg-sacred-gold-dark/5">
                     <td className="py-3 pr-4 text-cosmic-text">{k.person_name}</td>
-                    <td className="py-3 pr-4 text-cosmic-text/70">{k.birth_date} {k.birth_time}</td>
+                    <td className="py-3 pr-4 text-cosmic-text/70">{formatDate(k.birth_date)} {k.birth_time}</td>
                     <td className="py-3 pr-4 text-cosmic-text/70 text-xs">{k.birth_place}</td>
                     <td className="py-3 pr-4 text-cosmic-text/70 text-xs">{k.email}</td>
                     <td className="py-3 text-cosmic-text/70 text-xs">{new Date(k.created_at).toLocaleDateString()}</td>

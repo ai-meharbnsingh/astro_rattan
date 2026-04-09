@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Star, BookOpen, Hash, User, Calendar, MapPin, Phone, Plus, StickyNote } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { api } from '@/lib/api';
+import { api, formatDate } from '@/lib/api';
 
 interface Client {
   id: string; name: string; phone: string | null;
@@ -68,7 +68,7 @@ export default function ClientProfile() {
             <div>
               <h1 className="text-2xl font-cinzel text-cosmic-text">{client.name}</h1>
               <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-xs text-cosmic-text/70">
-                {client.birth_date && <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{client.birth_date} {client.birth_time}</span>}
+                {client.birth_date && <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{formatDate(client.birth_date)} {client.birth_time}</span>}
                 {client.birth_place && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{client.birth_place}</span>}
                 {client.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{client.phone}</span>}
                 {client.gender && <span className="capitalize">{client.gender}</span>}
@@ -127,7 +127,7 @@ export default function ClientProfile() {
                 )}
                 <div>
                   <p className="text-sm text-cosmic-text">{k.person_name}</p>
-                  <p className="text-xs text-cosmic-text/60">{k.birth_date} {k.birth_time} · {k.birth_place}</p>
+                  <p className="text-xs text-cosmic-text/60">{formatDate(k.birth_date)} {k.birth_time} · {k.birth_place}</p>
                 </div>
               </div>
               <div className="text-right">

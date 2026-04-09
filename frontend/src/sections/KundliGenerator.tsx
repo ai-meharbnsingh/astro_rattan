@@ -125,7 +125,7 @@ export default function KundliGenerator() {
             </Button>
             <div>
               <h3 className="font-display font-bold text-2xl text-sacred-brown">{result.person_name || formData.name} — {t('tab.kundli')}</h3>
-              <p className="text-sm text-cosmic-text/70">{result.birth_date || formData.date} | {result.birth_time || formData.time} | {result.birth_place || formData.place}</p>
+              <p className="text-sm text-cosmic-text/70">{formatDate(result.birth_date) || formData.date} | {result.birth_time || formData.time} | {result.birth_place || formData.place}</p>
             </div>
           </div>
           <div className="flex gap-2">
