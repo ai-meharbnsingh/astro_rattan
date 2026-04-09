@@ -1,5 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Globe } from 'lucide-react';
+import InteractiveKundli from '@/components/InteractiveKundli';
 
 interface Planet {
   name: string;
@@ -13,18 +14,6 @@ interface PlanetaryPositionsProps {
   planets: Planet[];
 }
 
-const PLANET_COLORS: Record<string, string> = {
-  Sun: 'bg-amber-400',
-  Moon: 'bg-blue-300',
-  Mars: 'bg-red-400',
-  Mercury: 'bg-green-400',
-  Jupiter: 'bg-yellow-400',
-  Venus: 'bg-pink-400',
-  Saturn: 'bg-purple-400',
-  Rahu: 'bg-gray-400',
-  Ketu: 'bg-gray-500',
-};
-
 function formatDegree(degree: number): string {
   const deg = Math.floor(degree);
   const min = Math.round((degree - deg) * 60);
@@ -32,6 +21,16 @@ function formatDegree(degree: number): string {
 }
 
 function PlanetaryPositions({ planets }: PlanetaryPositionsProps) {
+  // Build chart data for InteractiveKundli
+  const chartPlanets = planets.map(p => ({
+    planet: p.name,
+    sign: p.rashi,
+    house: (p.rashi_index || 0) + 1,
+    nakshatra: '',
+    sign_degree: p.degree,
+    status: '',
+  }));
+
   return (
     <Card className="bg-cosmic-card border-sacred-gold/10">
       <CardContent>
@@ -41,28 +40,40 @@ function PlanetaryPositions({ planets }: PlanetaryPositionsProps) {
             Planetary Positions (Navgraha)
           </h3>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {planets.map((planet) => (
-            <div
-              key={planet.name}
-              className="p-3 rounded-xl bg-cosmic-card border border-sacred-gold/10 flex items-center gap-3"
-            >
-              <span
-                className={`inline-block w-3 h-3 rounded-full shrink-0 ${PLANET_COLORS[planet.name] ?? 'bg-gray-400'}`}
-              />
-              <div className="min-w-0">
-                <div className="text-sm font-medium text-cosmic-text">
-                  {planet.name}
-                </div>
-                <div className="text-xs text-cosmic-text-secondary">
-                  {formatDegree(planet.degree)}
-                </div>
-                <span className="inline-block mt-1 text-xs font-medium px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold">
-                  {planet.rashi}
-                </span>
-              </div>
-            </div>
-          ))}
+
+        <div className="grid lg:grid-cols-2 gap-6">
+          {/* Kundli Chart */}
+          <div className="flex justify-center">
+            <InteractiveKundli
+              chartData={{ planets: chartPlanets }}
+              onPlanetClick={() => {}}
+              onHouseClick={() => {}}
+            />
+          </div>
+
+          {/* Table with degrees */}
+          <div>
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-sacred-gold/10">
+                  <th className="p-2 text-left text-sacred-gold-dark">Planet</th>
+                  <th className="p-2 text-left text-sacred-gold-dark">Rashi</th>
+                  <th className="p-2 text-right text-sacred-gold-dark">Degree</th>
+                  <th className="p-2 text-right text-sacred-gold-dark">Longitude</th>
+                </tr>
+              </thead>
+              <tbody>
+                {planets.map(p => (
+                  <tr key={p.name} className="border-t border-sacred-gold/10">
+                    <td className="p-2 text-cosmic-text font-medium">{p.name}</td>
+                    <td className="p-2 text-cosmic-text">{p.rashi}</td>
+                    <td className="p-2 text-right text-cosmic-text/70">{formatDegree(p.degree)}</td>
+                    <td className="p-2 text-right text-cosmic-text/60">{p.longitude?.toFixed(2)}°</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </CardContent>
     </Card>

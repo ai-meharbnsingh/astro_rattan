@@ -125,28 +125,17 @@ export default function MuhuratFinder({
 
   useEffect(() => {
     async function fetchTypes() {
-      try {
-        const data = await api.get('/api/muhurat/types');
-        let types: MuhuratType[] = [];
-        if (Array.isArray(data.event_types)) {
-          types = data.event_types.map((t: any) => ({
-            id: t.key || t.id || String(t),
-            name: t.name || String(t),
-          }));
-        } else if (data.event_types && typeof data.event_types === 'object') {
-          types = Object.entries(data.event_types).map(([key, value]) => ({
-            id: key,
-            name: typeof value === 'string' ? value : (value as any)?.name || key,
-          }));
-        }
-        setMuhuratTypes(types);
-        if (types.length > 0) {
-          setSelectedEventType(types[0].id);
-        }
-      } catch {
-        setMuhuratTypes([]);
-      }
-    }
+      // Hardcoded muhurat types — API doesn't have this endpoint
+      const types: MuhuratType[] = [
+        { id: 'marriage', name: 'Marriage (Vivah)' },
+        { id: 'griha_pravesh', name: 'Griha Pravesh' },
+        { id: 'business_start', name: 'Business Start' },
+        { id: 'travel', name: 'Travel' },
+        { id: 'naming_ceremony', name: 'Naming Ceremony' },
+        { id: 'mundan', name: 'Mundan' },
+      ];
+      setMuhuratTypes(types);
+      setSelectedEventType(types[0].id);
     fetchTypes();
   }, []);
 
