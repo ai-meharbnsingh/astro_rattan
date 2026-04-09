@@ -28,13 +28,28 @@ def get_stats(
            ORDER BY k.created_at DESC LIMIT 5"""
     ).fetchall()
 
+    astrologers_count = db.execute("SELECT COUNT(*) as c FROM users WHERE role IN ('astrologer', 'admin')").fetchone()["c"]
+    clients_count = db.execute("SELECT COUNT(*) as c FROM clients").fetchone()["c"]
+
+    # Astrologers with their client counts
+    astrologers_list = db.execute(
+        """SELECT u.id, u.name, u.email, u.role, u.created_at,
+                  (SELECT COUNT(*) FROM clients c WHERE c.astrologer_id = u.id) as client_count,
+                  (SELECT COUNT(*) FROM kundlis k WHERE k.user_id = u.id) as kundli_count
+           FROM users u WHERE u.role IN ('astrologer', 'admin')
+           ORDER BY u.created_at DESC"""
+    ).fetchall()
+
     return {
         "counts": {
             "users": users,
+            "astrologers": astrologers_count,
+            "clients": clients_count,
             "kundlis": kundlis,
             "horoscopes": horoscopes,
             "panchang_cached": panchang,
         },
+        "astrologers": [dict(r) for r in astrologers_list],
         "recent_users": [dict(r) for r in recent_users],
         "recent_kundlis": [dict(r) for r in recent_kundlis],
     }
