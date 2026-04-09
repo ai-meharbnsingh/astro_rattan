@@ -35,7 +35,7 @@ export default function Footer() {
         <div className="py-16 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
           <div className="col-span-2 md:col-span-3 lg:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-6">
-              <img src="/logo.png" alt="Astro Rattan" className="h-28 w-auto" />
+              <img src="/logo.png" alt="Astro Rattan" className="h-16 w-auto" />
             </Link>
             <p className="text-cosmic-text mb-6 max-w-sm">
               {t('footer.tagline')}

@@ -36,7 +36,7 @@ export default function Navigation() {
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 shrink-0">
-              <img src="/logo.png" alt="Astro Rattan" className="h-32 w-auto" />
+              <img src="/logo.png" alt="Astro Rattan" className="h-20 w-auto" />
             </Link>
 
             {/* Desktop Navigation - Only show when authenticated */}
