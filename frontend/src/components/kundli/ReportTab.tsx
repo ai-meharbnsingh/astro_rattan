@@ -1,4 +1,5 @@
 import { Loader2, X, Download, Printer, CheckCircle, Shield, ScrollText, ChevronDown } from 'lucide-react';
+import { formatDate } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import InteractiveKundli, { ChartLegend, type PlanetData, type ChartData } from '@/components/InteractiveKundli';
 import { DIVISIONAL_CHART_OPTIONS } from '@/components/kundli/kundli-utils';

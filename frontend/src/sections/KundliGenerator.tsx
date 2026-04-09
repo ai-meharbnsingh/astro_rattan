@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { formatDate } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Sparkles, Download, Share2, FileText, Heart, Briefcase, Activity, ArrowLeft, Loader2, ScrollText, Home } from 'lucide-react';
