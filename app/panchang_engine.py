@@ -889,6 +889,111 @@ def calculate_panchang(
     varjyam_start = sunrise_mins + varjyam_offset % (dinamana_mins * 0.8)
     varjyam = {"start": _minutes_to_time(varjyam_start), "end": _minutes_to_time(varjyam_start + 90)}
 
+    # 22. Hora Table (planetary hours — 24 horas, day + night)
+    hora_sequence_day = ["Sun", "Venus", "Mercury", "Moon", "Saturn", "Jupiter", "Mars"]
+    # Day lord based on weekday
+    day_lord_idx = [0, 3, 6, 2, 5, 1, 4][weekday]  # Sun=0(Sun), Mon=3(Moon), Tue=6(Mars)...
+    hora_duration_day = dinamana_mins / 12
+    hora_duration_night = ratrimana_mins / 12
+    hora_table = []
+    for i in range(12):
+        lord = hora_sequence_day[(day_lord_idx + i) % 7]
+        start = _minutes_to_time(sunrise_mins + i * hora_duration_day)
+        end = _minutes_to_time(sunrise_mins + (i + 1) * hora_duration_day)
+        hora_table.append({"hora": i + 1, "lord": lord, "start": start, "end": end, "type": "day"})
+    for i in range(12):
+        lord = hora_sequence_day[(day_lord_idx + 12 + i) % 7]
+        start = _minutes_to_time(sunset_mins + i * hora_duration_night)
+        end = _minutes_to_time(sunset_mins + (i + 1) * hora_duration_night)
+        hora_table.append({"hora": i + 13, "lord": lord, "start": start, "end": end, "type": "night"})
+
+    # 23. Lagna Table (Udaya Lagna — rising sign changes through the day)
+    lagna_table = []
+    _RASHI_NAMES = ["Mesha", "Vrishabha", "Mithuna", "Karka", "Simha", "Kanya",
+                    "Tula", "Vrishchika", "Dhanu", "Makara", "Kumbha", "Meena"]
+    # Approximate: each lagna lasts ~2 hours, starting from ascendant at sunrise
+    asc_sign_idx = int(sun_sid / 30) % 12
+    for i in range(12):
+        sign_idx = (asc_sign_idx + i) % 12
+        start = _minutes_to_time(sunrise_mins + i * (1440 / 12))
+        end = _minutes_to_time(sunrise_mins + (i + 1) * (1440 / 12))
+        lagna_table.append({"lagna": _RASHI_NAMES[sign_idx], "start": start, "end": end})
+
+    # 24. Chandrabalam (Moon strength for each Rashi)
+    moon_rashi_idx = int(moon_sid / 30)
+    chandrabalam = []
+    for i in range(12):
+        house_from_moon = ((i - moon_rashi_idx) % 12) + 1
+        good = house_from_moon in [1, 3, 6, 7, 10, 11]
+        chandrabalam.append({
+            "rashi": _RASHI_NAMES[i],
+            "house_from_moon": house_from_moon,
+            "balam": "Shubh" if good else "Ashubh",
+            "good": good,
+        })
+
+    # 25. Tarabalam (Star strength for each Nakshatra)
+    from app.astro_engine import NAKSHATRAS as _ALL_NAKS
+    moon_nak_idx = nakshatra.get("index", 0)
+    tarabalam = []
+    tara_names = ["Janma", "Sampat", "Vipat", "Kshema", "Pratyari", "Sadhaka", "Vadha", "Mitra", "Ati-Mitra"]
+    for i in range(27):
+        tara_num = ((i - moon_nak_idx) % 9)
+        tara_name = tara_names[tara_num]
+        good = tara_name in ["Sampat", "Kshema", "Sadhaka", "Mitra", "Ati-Mitra"]
+        tarabalam.append({
+            "nakshatra": _ALL_NAKS[i]["name"] if i < len(_ALL_NAKS) else f"Nak-{i+1}",
+            "tara": tara_name,
+            "tara_number": tara_num + 1,
+            "good": good,
+        })
+
+    # 26. Gowri Panchangam (8 periods, day + night)
+    gowri_names_day = ["Udvega", "Chara", "Labha", "Amruta", "Kaala", "Shubha", "Roga", "Dhanada"]
+    gowri_names_night = ["Kaala", "Shubha", "Roga", "Dhanada", "Udvega", "Chara", "Labha", "Amruta"]
+    gowri_day_dur = dinamana_mins / 8
+    gowri_night_dur = ratrimana_mins / 8
+    gowri_panchang = []
+    for i in range(8):
+        gowri_panchang.append({
+            "name": gowri_names_day[(day_lord_idx + i) % 8],
+            "start": _minutes_to_time(sunrise_mins + i * gowri_day_dur),
+            "end": _minutes_to_time(sunrise_mins + (i + 1) * gowri_day_dur),
+            "type": "day",
+            "quality": "good" if gowri_names_day[(day_lord_idx + i) % 8] in ["Labha", "Amruta", "Shubha", "Dhanada"] else "bad",
+        })
+    for i in range(8):
+        gowri_panchang.append({
+            "name": gowri_names_night[(day_lord_idx + i) % 8],
+            "start": _minutes_to_time(sunset_mins + i * gowri_night_dur),
+            "end": _minutes_to_time(sunset_mins + (i + 1) * gowri_night_dur),
+            "type": "night",
+            "quality": "good" if gowri_names_night[(day_lord_idx + i) % 8] in ["Labha", "Amruta", "Shubha", "Dhanada"] else "bad",
+        })
+
+    # 27. Do Ghati Muhurta (30 muhurtas in a day)
+    total_day_mins = 1440
+    ghati_duration = total_day_mins / 30
+    do_ghati = []
+    muhurta_names_30 = ["Rudra", "Ahi", "Mitra", "Pitru", "Vasu", "Varah", "Vishwadeva", "Vidhi",
+                        "Satamukhi", "Puruhuta", "Vahini", "Naktanchara", "Varuna", "Aryaman", "Bhaga",
+                        "Girisha", "Ajapada", "Ahirbudhnya", "Pushan", "Ashwini", "Yama", "Agni",
+                        "Vidhata", "Chanda", "Aditi", "Jeeva", "Vishnu", "Dyumadgadyuti", "Brahma", "Samudra"]
+    for i in range(30):
+        start_min = sunrise_mins + i * ghati_duration
+        do_ghati.append({
+            "muhurta": i + 1,
+            "name": muhurta_names_30[i] if i < len(muhurta_names_30) else f"M-{i+1}",
+            "start": _minutes_to_time(start_min % 1440),
+            "end": _minutes_to_time((start_min + ghati_duration) % 1440),
+            "quality": "good" if i in [0, 2, 3, 4, 6, 7, 10, 13, 14, 19, 25, 26, 28] else "neutral",
+        })
+
+    # 28. Panchaka check (5 elements — inauspicious when Moon in certain nakshatras)
+    panchaka_nakshatras = [1, 6, 11, 16, 21, 26]  # Bharani, Ardra, P.Phalguni, Vishakha, P.Ashadha, U.Bhadrapada
+    is_panchaka = moon_nak_idx in panchaka_nakshatras
+    panchaka = {"active": is_panchaka, "rahita": not is_panchaka}
+
     return {
         # Original contract keys
         "tithi": {
@@ -949,4 +1054,12 @@ def calculate_panchang(
         "ayanamsa": round(ayanamsa, 4),
         "sun_longitude": round(sun_sid, 4),
         "moon_longitude": round(moon_sid, 4),
+        # Advanced Panchang
+        "hora_table": hora_table,
+        "lagna_table": lagna_table,
+        "chandrabalam": chandrabalam,
+        "tarabalam": tarabalam,
+        "gowri_panchang": gowri_panchang,
+        "do_ghati_muhurta": do_ghati,
+        "panchaka": panchaka,
     }
