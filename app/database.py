@@ -240,26 +240,50 @@ def init_db():
         conn.close()
 
 
-def get_db():
-    """Yield a PgConnection wrapping a psycopg2 connection from the pool. Use as FastAPI dependency."""
-    pool = _get_pool()
+def _get_valid_conn(pool):
+    """Get a valid connection from pool, replacing dead ones."""
     raw_conn = pool.getconn()
-    # Quick liveness check — no query, just test socket
-    if raw_conn.closed:
+    # Test with a lightweight ping
+    try:
+        raw_conn.autocommit = True
+        cur = raw_conn.cursor()
+        cur.execute("SELECT 1")
+        cur.close()
+        raw_conn.autocommit = False
+        return raw_conn
+    except Exception:
+        # Connection is dead — discard and get a fresh one
         try:
             pool.putconn(raw_conn, close=True)
         except Exception:
             pass
-        raw_conn = pool.getconn()
-    raw_conn.autocommit = False
+        # Create a fresh connection directly
+        fresh = psycopg2.connect(DATABASE_URL)
+        fresh.autocommit = False
+        return fresh
+
+
+def get_db():
+    """Yield a PgConnection wrapping a psycopg2 connection from the pool. Use as FastAPI dependency."""
+    pool = _get_pool()
+    raw_conn = _get_valid_conn(pool)
     pg_conn = PgConnection(raw_conn)
     try:
         yield pg_conn
     except Exception:
-        raw_conn.rollback()
+        try:
+            raw_conn.rollback()
+        except Exception:
+            pass
         raise
     finally:
-        pool.putconn(raw_conn)
+        try:
+            pool.putconn(raw_conn)
+        except Exception:
+            try:
+                raw_conn.close()
+            except Exception:
+                pass
 
 
 def migrate_users_table():
