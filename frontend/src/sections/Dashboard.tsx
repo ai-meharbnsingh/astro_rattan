@@ -68,14 +68,7 @@ export default function Dashboard() {
   if (isAdmin && adminStats) {
     return (
       <div className="min-h-screen pt-24 pb-16 px-4 max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <Shield className="w-6 h-6 text-sacred-gold-dark" />
-            <div>
-              <h1 className="text-2xl font-cinzel text-cosmic-text">Admin Dashboard</h1>
-              <p className="text-sm text-cosmic-text/70">Platform overview</p>
-            </div>
-          </div>
+        <div className="flex items-center justify-end mb-8">
           <div className="flex gap-2">
             <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold text-xs font-cinzel uppercase tracking-wider px-4 py-2 rounded-none">
               <Plus className="w-4 h-4 mr-1" /> New Kundli
