@@ -36,7 +36,7 @@ export default function Navigation() {
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 shrink-0">
-              <img src="/logo.png" alt="Astro Rattan" className="h-16 w-auto" />
+              <img src="/logo.png" alt="Astro Rattan" className="h-32 w-auto" />
             </Link>
 
             {/* Desktop Navigation - Only show when authenticated */}
@@ -46,7 +46,7 @@ export default function Navigation() {
                   <Link
                     key={link.key}
                     to={link.href}
-                    className="text-sm text-cosmic-text/70 hover:text-sacred-gold-dark transition-colors font-cinzel tracking-wide uppercase text-sm"
+                    className="text-base text-cosmic-text hover:text-sacred-gold-dark transition-colors font-cinzel tracking-wide uppercase"
                   >
                     {t(link.key)}
                   </Link>
@@ -63,20 +63,20 @@ export default function Navigation() {
               {isAuthenticated ? (
                 <>
                   {user?.role === 'admin' && (
-                    <Link to="/admin" className="p-2.5 text-cosmic-text/70 hover:text-sacred-gold-dark transition-colors hidden sm:block" title="Admin">
+                    <Link to="/admin" className="p-2.5 text-cosmic-text hover:text-sacred-gold-dark transition-colors hidden sm:block" title="Admin">
                       <Shield className="w-5 h-5" />
                     </Link>
                   )}
                   <button
                     onClick={logout}
-                    className="p-2.5 text-cosmic-text/70 hover:text-sacred-gold-dark transition-colors hidden sm:flex items-center gap-1"
+                    className="p-2.5 text-cosmic-text hover:text-sacred-gold-dark transition-colors hidden sm:flex items-center gap-1"
                     title={t('auth.signOut')}
                   >
                     <LogOut className="w-4 h-4" />
                   </button>
                 </>
               ) : (
-                <Link to="/login" className="ml-2 px-4 py-2 bg-transparent border border-sacred-gold text-sacred-gold-dark text-sm font-medium hover:bg-sacred-gold-dark hover:text-cosmic-bg transition-all hidden sm:flex items-center gap-1.5">
+                <Link to="/login" className="ml-2 px-4 py-2 bg-transparent border border-sacred-gold text-sacred-gold-dark text-base font-medium hover:bg-sacred-gold-dark hover:text-cosmic-bg transition-all hidden sm:flex items-center gap-1.5">
                   <Sparkles className="w-4 h-4" />
                   {t('auth.signIn')}
                 </Link>
@@ -104,7 +104,7 @@ export default function Navigation() {
                 key={link.key}
                 to={link.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block py-3 px-3 text-cosmic-text/70 hover:text-sacred-gold-dark hover:bg-sacred-gold-dark/10 transition-colors font-sacred"
+                className="block py-3 px-3 text-cosmic-text hover:text-sacred-gold-dark hover:bg-sacred-gold-dark/10 transition-colors font-sacred"
               >
                 {t(link.key)}
               </Link>

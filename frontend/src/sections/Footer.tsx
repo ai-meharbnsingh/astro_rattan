@@ -35,19 +35,19 @@ export default function Footer() {
         <div className="py-16 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
           <div className="col-span-2 md:col-span-3 lg:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-6">
-              <img src="/logo.png" alt="Astro Rattan" className="h-14 w-auto" />
+              <img src="/logo.png" alt="Astro Rattan" className="h-28 w-auto" />
             </Link>
-            <p className="text-cosmic-text/60 mb-6 max-w-sm">
+            <p className="text-cosmic-text mb-6 max-w-sm">
               {t('footer.tagline')}
             </p>
             <div className="space-y-3 mb-6">
-              <a href="mailto:support@astrovedic.com" className="flex items-center gap-3 text-cosmic-text/60 hover:text-sacred-gold-dark transition-colors">
+              <a href="mailto:support@astrovedic.com" className="flex items-center gap-3 text-cosmic-text hover:text-sacred-gold-dark transition-colors">
                 <Mail className="w-5 h-5" />
-                <span className="text-sm">support@astrovedic.com</span>
+                <span className="text-base">support@astrovedic.com</span>
               </a>
-              <a href="tel:+919911760060" className="flex items-center gap-3 text-cosmic-text/60 hover:text-sacred-gold-dark transition-colors">
+              <a href="tel:+919911760060" className="flex items-center gap-3 text-cosmic-text hover:text-sacred-gold-dark transition-colors">
                 <Phone className="w-5 h-5" />
-                <span className="text-sm">+91 99117 60060</span>
+                <span className="text-base">+91 99117 60060</span>
               </a>
             </div>
             <div className="flex gap-3">
@@ -60,7 +60,7 @@ export default function Footer() {
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 bg-sacred-gold-dark/10 border border-sacred-gold/20 flex items-center justify-center text-cosmic-text/60 hover:text-sacred-gold-dark hover:border-sacred-gold/40 transition-all"
+                  className="w-10 h-10 bg-sacred-gold-dark/10 border border-sacred-gold/20 flex items-center justify-center text-cosmic-text hover:text-sacred-gold-dark hover:border-sacred-gold/40 transition-all"
                 >
                   <Icon className="w-5 h-5" />
                 </a>
@@ -74,8 +74,8 @@ export default function Footer() {
               <ul className="space-y-2">
                 {serviceLinks.map((link, i) => (
                   <li key={i}>
-                    <Link to={link.href} className="text-sm text-cosmic-text/60 hover:text-sacred-gold-dark transition-colors flex items-center gap-1">
-                      <ChevronRight className="w-3 h-3" />{link.label}
+                    <Link to={link.href} className="text-base text-cosmic-text hover:text-sacred-gold-dark transition-colors flex items-center gap-1">
+                      <ChevronRight className="w-4 h-4" />{link.label}
                     </Link>
                   </li>
                 ))}
@@ -90,9 +90,9 @@ export default function Footer() {
                   <li key={i}>
                     <Link 
                       to={link.href} 
-                      className="text-sm text-cosmic-text/60 hover:text-sacred-gold-dark transition-colors flex items-center gap-1"
+                      className="text-base text-cosmic-text hover:text-sacred-gold-dark transition-colors flex items-center gap-1"
                     >
-                      <ChevronRight className="w-3 h-3" />
+                      <ChevronRight className="w-4 h-4" />
                       {link.label}
                     </Link>
                   </li>
@@ -103,15 +103,15 @@ export default function Footer() {
         </div>
         
         <div className="py-6 border-t border-sacred-gold/10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-cosmic-text/60">
+          <p className="text-base text-cosmic-text">
             &copy; {new Date().getFullYear()} Astro Rattan. {t('footer.madeWith')} <Heart className="w-4 h-4 inline text-sacred-gold" /> in India
           </p>
           <div className="flex gap-6">
-            <span className="text-sm text-cosmic-text/60">All rights reserved</span>
+            <span className="text-base text-cosmic-text">All rights reserved</span>
           </div>
         </div>
         <div className="pb-4 text-center">
-          <p className="text-xs text-cosmic-text-secondary/60" style={{ fontFamily: "'IM Fell English', serif" }}>
+          <p className="text-base text-cosmic-text-secondary" style={{ fontFamily: "'IM Fell English', serif" }}>
             {t('footer.poweredBy')}{' '}
             <a
               href="https://adaptive-mind.com"

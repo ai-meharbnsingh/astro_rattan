@@ -60,7 +60,7 @@ export default function Features() {
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-['Cinzel_Decorative'] text-cosmic-text mb-6">
             Bridging Ancient Wisdom with Modern Technology
           </h2>
-          <div className="max-w-3xl mx-auto space-y-4 text-cosmic-text/70">
+          <div className="max-w-3xl mx-auto space-y-4 text-cosmic-text">
             <p>
               Most astrology apps use lookup tables and generic predictions. Astro Rattan computes every position from Swiss Ephemeris — the same library used by research astronomers — accurate to arc-seconds.
             </p>
@@ -89,7 +89,7 @@ export default function Features() {
                 <h3 className="text-lg font-cinzel font-semibold text-cosmic-text mb-2 uppercase tracking-wide">
                   {feature.title}
                 </h3>
-                <p className="text-sm text-cosmic-text/60 leading-relaxed">{feature.desc}</p>
+                <p className="text-base text-cosmic-text leading-relaxed">{feature.desc}</p>
               </CardContent>
             </Card>
           ))}
