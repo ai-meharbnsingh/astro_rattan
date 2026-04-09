@@ -829,6 +829,66 @@ def calculate_panchang(
     # 14. Choghadiya
     choghadiya = calculate_choghadiya(weekday, sunrise_str, sunset_str)
 
+    # 15. Next Tithi, Nakshatra, Yoga
+    next_tithi_idx = (tithi_index + 1) % 30
+    next_tithi = TITHIS[next_tithi_idx]
+    next_nakshatra_idx = (nakshatra.get("index", 0) + 1) % 27
+    from app.astro_engine import NAKSHATRAS
+    next_nak_name = NAKSHATRAS[next_nakshatra_idx]["name"] if next_nakshatra_idx < len(NAKSHATRAS) else ""
+    next_yoga_idx = (yoga_index + 1) % 27
+    next_yoga_name = YOGAS[next_yoga_idx] if next_yoga_idx < len(YOGAS) else ""
+
+    # 16. Second Karana
+    second_karana_idx = _get_karana_index(tithi_index) + 1
+    if second_karana_idx >= 60:
+        second_karana_idx = 0
+    second_karana_name = _get_karana_name(second_karana_idx)
+
+    # 17. Sun sign + Moon sign
+    sun_sign = get_sign_from_longitude(sun_sid)
+    moon_sign = get_sign_from_longitude(moon_sid)
+
+    # 18. Dinamana / Ratrimana / Madhyahna
+    sunrise_mins = _time_to_minutes(sunrise_str)
+    sunset_mins = _time_to_minutes(sunset_str)
+    dinamana_mins = sunset_mins - sunrise_mins
+    ratrimana_mins = 1440 - dinamana_mins
+    madhyahna_mins = sunrise_mins + dinamana_mins / 2
+    dinamana_str = f"{int(dinamana_mins // 60)} Hours {int(dinamana_mins % 60)} Mins"
+    ratrimana_str = f"{int(ratrimana_mins // 60)} Hours {int(ratrimana_mins % 60)} Mins"
+    madhyahna_str = _minutes_to_time(madhyahna_mins)
+
+    # 19. Additional Muhurtas
+    day_duration_mins = dinamana_mins
+    muhurta_duration = day_duration_mins / 15  # each muhurta = 1/15th of day
+
+    # Godhuli Muhurta: ~24 min around sunset
+    godhuli = {"start": _minutes_to_time(sunset_mins - 24), "end": _minutes_to_time(sunset_mins)}
+    # Sayahna Sandhya: sunset to sunset+48min
+    sayahna = {"start": sunset_str, "end": _minutes_to_time(sunset_mins + 48)}
+    # Nishita Muhurta: midnight ± 24min
+    midnight_mins = sunset_mins + ratrimana_mins / 2
+    nishita = {"start": _minutes_to_time(midnight_mins - 24), "end": _minutes_to_time(midnight_mins + 24)}
+    # Pratah Sandhya: sunrise-48min to sunrise
+    pratah = {"start": _minutes_to_time(sunrise_mins - 48), "end": sunrise_str}
+    # Ravi Yoga: sunrise to sunrise + 1/5 of day (first 1/5 of daytime on Sunday)
+    ravi_yoga_end = sunrise_mins + day_duration_mins * 3 / 15
+    ravi_yoga = {"start": sunrise_str, "end": _minutes_to_time(ravi_yoga_end)}
+    # Vijaya Muhurta: 7th muhurta of the day
+    vijaya_start = sunrise_mins + muhurta_duration * 6
+    vijaya = {"start": _minutes_to_time(vijaya_start), "end": _minutes_to_time(vijaya_start + muhurta_duration)}
+
+    # 20. Dur Muhurtam (8th muhurta on most days)
+    dur_start = sunrise_mins + muhurta_duration * 7
+    dur_muhurtam = {"start": _minutes_to_time(dur_start), "end": _minutes_to_time(dur_start + muhurta_duration)}
+
+    # 21. Varjyam (inauspicious period based on nakshatra)
+    # Simplified: ~1.5 hours, position depends on nakshatra number
+    nak_num = nakshatra.get("index", 0) % 9
+    varjyam_offset = (nak_num * 2 + 1) * 60  # rough calculation
+    varjyam_start = sunrise_mins + varjyam_offset % (dinamana_mins * 0.8)
+    varjyam = {"start": _minutes_to_time(varjyam_start), "end": _minutes_to_time(varjyam_start + 90)}
+
     return {
         # Original contract keys
         "tithi": {
@@ -836,36 +896,53 @@ def calculate_panchang(
             "number": tithi["number"],
             "paksha": tithi["paksha"],
             "end_time": tithi_end,
+            "next": next_tithi["name"],
         },
         "nakshatra": {
             **nakshatra,
             "end_time": nakshatra_end,
+            "next": next_nak_name,
         },
         "yoga": {
             "name": yoga_name,
             "number": yoga_index + 1,
             "end_time": yoga_end,
+            "next": next_yoga_name,
         },
         "karana": {
             "name": karana_name,
             "number": karana_index + 1,
             "end_time": karana_end,
+            "second_karana": second_karana_name,
         },
         "sunrise": sunrise_str,
         "sunset": sunset_str,
         # Extended data
         "moonrise": sun_times["moonrise"],
         "moonset": sun_times["moonset"],
+        "sun_sign": sun_sign,
+        "moon_sign": moon_sign,
         "vaar": {
             "name": _VAAR_NAMES[weekday],
             "english": _VAAR_ENGLISH[weekday],
             "number": weekday,
         },
+        "dinamana": dinamana_str,
+        "ratrimana": ratrimana_str,
+        "madhyahna": madhyahna_str,
         "rahu_kaal": rahu_kaal,
         "gulika_kaal": gulika_kaal,
         "yamaganda": yamaganda,
         "abhijit_muhurat": abhijit,
         "brahma_muhurat": brahma,
+        "ravi_yoga": ravi_yoga,
+        "vijaya_muhurta": vijaya,
+        "godhuli_muhurta": godhuli,
+        "sayahna_sandhya": sayahna,
+        "nishita_muhurta": nishita,
+        "pratah_sandhya": pratah,
+        "dur_muhurtam": dur_muhurtam,
+        "varjyam": varjyam,
         "planetary_positions": planetary_positions,
         "hindu_calendar": hindu_calendar,
         "choghadiya": choghadiya,

@@ -17,6 +17,12 @@ interface AuspiciousTimingsProps {
   abhijit_muhurat: TimePeriod;
   brahma_muhurat: TimePeriod;
   choghadiya: ChoghadiyaPeriod[];
+  ravi_yoga?: TimePeriod | null;
+  vijaya_muhurta?: TimePeriod | null;
+  godhuli_muhurta?: TimePeriod | null;
+  sayahna_sandhya?: TimePeriod | null;
+  nishita_muhurta?: TimePeriod | null;
+  pratah_sandhya?: TimePeriod | null;
 }
 
 function qualityClasses(quality: string) {
@@ -68,9 +74,9 @@ function MuhuratCard({
 }
 
 export default function AuspiciousTimings({
-  abhijit_muhurat,
-  brahma_muhurat,
-  choghadiya,
+  abhijit_muhurat, brahma_muhurat, choghadiya,
+  ravi_yoga, vijaya_muhurta, godhuli_muhurta,
+  sayahna_sandhya, nishita_muhurta, pratah_sandhya,
 }: AuspiciousTimingsProps) {
   return (
     <Card className="bg-cosmic-card border-sacred-gold/10">
@@ -83,9 +89,15 @@ export default function AuspiciousTimings({
         </div>
 
         {/* Muhurat highlight cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
           <MuhuratCard title="Abhijit Muhurat" period={abhijit_muhurat} />
           <MuhuratCard title="Brahma Muhurat" period={brahma_muhurat} />
+          {ravi_yoga && <MuhuratCard title="Ravi Yoga" period={ravi_yoga} />}
+          {vijaya_muhurta && <MuhuratCard title="Vijaya Muhurta" period={vijaya_muhurta} />}
+          {godhuli_muhurta && <MuhuratCard title="Godhuli Muhurta" period={godhuli_muhurta} />}
+          {sayahna_sandhya && <MuhuratCard title="Sayahna Sandhya" period={sayahna_sandhya} />}
+          {nishita_muhurta && <MuhuratCard title="Nishita Muhurta" period={nishita_muhurta} />}
+          {pratah_sandhya && <MuhuratCard title="Pratah Sandhya" period={pratah_sandhya} />}
         </div>
 
         {/* Choghadiya periods */}

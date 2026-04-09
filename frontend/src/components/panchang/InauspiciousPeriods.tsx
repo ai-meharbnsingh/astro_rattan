@@ -10,38 +10,23 @@ interface InauspiciousPeriodsProps {
   rahu_kaal: TimePeriod;
   gulika_kaal: TimePeriod;
   yamaganda: TimePeriod;
+  dur_muhurtam?: TimePeriod | null;
+  varjyam?: TimePeriod | null;
 }
 
 const periods = [
-  {
-    key: "rahu_kaal" as const,
-    label: "Rahu Kaal",
-    description: "Avoid new ventures",
-    icon: ShieldAlert,
-  },
-  {
-    key: "gulika_kaal" as const,
-    label: "Gulika Kaal",
-    description: "Avoid auspicious work",
-    icon: AlertTriangle,
-  },
-  {
-    key: "yamaganda" as const,
-    label: "Yamaganda",
-    description: "Avoid travel & deals",
-    icon: AlertTriangle,
-  },
+  { key: "rahu_kaal" as const, label: "Rahu Kalam", icon: ShieldAlert },
+  { key: "gulika_kaal" as const, label: "Gulikai Kalam", icon: AlertTriangle },
+  { key: "yamaganda" as const, label: "Yamaganda", icon: AlertTriangle },
+  { key: "dur_muhurtam" as const, label: "Dur Muhurtam", icon: AlertTriangle },
+  { key: "varjyam" as const, label: "Varjyam", icon: AlertTriangle },
 ];
 
 export default function InauspiciousPeriods({
-  rahu_kaal,
-  gulika_kaal,
-  yamaganda,
+  rahu_kaal, gulika_kaal, yamaganda, dur_muhurtam, varjyam,
 }: InauspiciousPeriodsProps) {
-  const values: Record<string, TimePeriod> = {
-    rahu_kaal,
-    gulika_kaal,
-    yamaganda,
+  const values: Record<string, TimePeriod | null | undefined> = {
+    rahu_kaal, gulika_kaal, yamaganda, dur_muhurtam, varjyam,
   };
 
   return (

@@ -243,21 +243,41 @@ export default function Panchang() {
 
             {/* ROW 2: Sun/Moon + Inauspicious + Auspicious */}
             <div className="grid lg:grid-cols-3 gap-6">
-              <SunMoonTimes
-                sunrise={panchang.sunrise}
-                sunset={panchang.sunset}
-                moonrise={panchang.moonrise}
-                moonset={panchang.moonset}
-              />
+              <div className="space-y-4">
+                <SunMoonTimes
+                  sunrise={panchang.sunrise}
+                  sunset={panchang.sunset}
+                  moonrise={panchang.moonrise}
+                  moonset={panchang.moonset}
+                />
+                {/* Sun/Moon Sign + Day/Night Duration */}
+                <Card className="card-sacred border-sacred-gold/20">
+                  <CardContent className="p-4 space-y-2 text-sm">
+                    {panchang.sun_sign && <div className="flex justify-between"><span className="text-cosmic-text/70">Sun Sign</span><span className="font-medium text-cosmic-text">{panchang.sun_sign}</span></div>}
+                    {panchang.moon_sign && <div className="flex justify-between"><span className="text-cosmic-text/70">Moon Sign</span><span className="font-medium text-cosmic-text">{panchang.moon_sign}</span></div>}
+                    {panchang.dinamana && <div className="flex justify-between"><span className="text-cosmic-text/70">Dinamana</span><span className="font-medium text-cosmic-text">{panchang.dinamana}</span></div>}
+                    {panchang.ratrimana && <div className="flex justify-between"><span className="text-cosmic-text/70">Ratrimana</span><span className="font-medium text-cosmic-text">{panchang.ratrimana}</span></div>}
+                    {panchang.madhyahna && <div className="flex justify-between"><span className="text-cosmic-text/70">Madhyahna</span><span className="font-medium text-cosmic-text">{panchang.madhyahna}</span></div>}
+                  </CardContent>
+                </Card>
+              </div>
               <InauspiciousPeriods
                 rahu_kaal={panchang.rahu_kaal}
                 gulika_kaal={panchang.gulika_kaal}
                 yamaganda={panchang.yamaganda}
+                dur_muhurtam={panchang.dur_muhurtam}
+                varjyam={panchang.varjyam}
               />
               <AuspiciousTimings
                 abhijit_muhurat={panchang.abhijit_muhurat}
                 brahma_muhurat={panchang.brahma_muhurat}
                 choghadiya={panchang.choghadiya}
+                ravi_yoga={panchang.ravi_yoga}
+                vijaya_muhurta={panchang.vijaya_muhurta}
+                godhuli_muhurta={panchang.godhuli_muhurta}
+                sayahna_sandhya={panchang.sayahna_sandhya}
+                nishita_muhurta={panchang.nishita_muhurta}
+                pratah_sandhya={panchang.pratah_sandhya}
               />
             </div>
 
@@ -306,5 +326,19 @@ function normalizePanchang(data: Record<string, unknown>): FullPanchangData {
       ritu: '', ritu_english: '', ayana: '',
     },
     festivals: Array.isArray(d.festivals) ? d.festivals : [],
+    // New fields
+    sun_sign: d.sun_sign || '',
+    moon_sign: d.moon_sign || '',
+    dinamana: d.dinamana || '',
+    ratrimana: d.ratrimana || '',
+    madhyahna: d.madhyahna || '',
+    ravi_yoga: d.ravi_yoga || null,
+    vijaya_muhurta: d.vijaya_muhurta || null,
+    godhuli_muhurta: d.godhuli_muhurta || null,
+    sayahna_sandhya: d.sayahna_sandhya || null,
+    nishita_muhurta: d.nishita_muhurta || null,
+    pratah_sandhya: d.pratah_sandhya || null,
+    dur_muhurtam: d.dur_muhurtam || null,
+    varjyam: d.varjyam || null,
   };
 }
