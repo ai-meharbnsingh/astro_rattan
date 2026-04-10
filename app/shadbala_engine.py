@@ -7,13 +7,14 @@ Hora Shastra.  All intermediate values are in Virupas (1 Rupa = 60 Virupas).
 Components:
   1. Sthana Bala  (Positional)  — 5 sub-components
   2. Dig Bala     (Directional)
-  3. Kala Bala    (Temporal)     — 6 sub-components
+  3. Kala Bala    (Temporal)     — 8 sub-components
   4. Cheshta Bala (Motional)
   5. Naisargika Bala (Natural)
   6. Drik Bala    (Aspectual)
 """
 from __future__ import annotations
 
+import math
 from typing import Any, Dict, Optional, Set
 
 # ---------------------------------------------------------------------------
@@ -540,6 +541,73 @@ def _vara_bala(planet: str, weekday: int) -> float:
     return 45.0 if planet == day_lord else 0.0
 
 
+def _hora_bala(planet: str, birth_hour: float, weekday: int) -> float:
+    """
+    Hora (planetary hour) strength.  The lord of the birth hour gets 60 Virupas.
+
+    Planetary hours follow the Chaldean order repeating:
+        Saturn, Jupiter, Mars, Sun, Venus, Mercury, Moon
+    The first hour of each day is ruled by the day lord.
+    weekday: Python weekday (Monday=0 .. Sunday=6).
+    """
+    _CHALDEAN_ORDER = ["Saturn", "Jupiter", "Mars", "Sun", "Venus", "Mercury", "Moon"]
+
+    # Day lord starting index in Chaldean order
+    _DAY_START = {
+        6: 3,  # Sunday  -> Sun   (index 3 in Chaldean)
+        0: 6,  # Monday  -> Moon  (index 6)
+        1: 2,  # Tuesday -> Mars  (index 2)
+        2: 5,  # Wednesday -> Mercury (index 5)
+        3: 1,  # Thursday -> Jupiter (index 1)
+        4: 4,  # Friday  -> Venus (index 4)
+        5: 0,  # Saturday -> Saturn (index 0)
+    }
+
+    # Approximate: hours since sunrise (assuming ~6:00 sunrise)
+    sunrise = 6.0
+    hours_since_sunrise = (birth_hour - sunrise) % 24.0
+    hora_number = int(hours_since_sunrise)  # 0-indexed hour of the day
+
+    start_idx = _DAY_START.get(weekday, 0)
+    lord_idx = (start_idx + hora_number) % 7
+    hora_lord = _CHALDEAN_ORDER[lord_idx]
+
+    return 60.0 if planet == hora_lord else 0.0
+
+
+def _ayana_bala(planet: str, longitude: Optional[float], ayanamsa: float = 24.0) -> float:
+    """
+    Ayana (declination) strength.
+
+    Benefics (Jupiter, Venus, Moon, Mercury) gain strength when the Sun is in
+    Uttarayana (northern declination); malefics (Sun, Mars, Saturn) gain when in
+    Dakshinayana (southern declination).
+
+    Formula:
+        tropical_lon = sidereal_lon + ayanamsa
+        declination  = arcsin(sin(23.44) * sin(tropical_lon))
+        benefic_value = 60 * (declination + 23.44) / (2 * 23.44)
+        malefic_value = 60 - benefic_value
+    """
+    if longitude is None:
+        return 30.0  # neutral fallback
+
+    obliquity = 23.44  # Earth's axial tilt in degrees
+    tropical = (longitude + ayanamsa) % 360.0
+    decl = math.degrees(
+        math.asin(math.sin(math.radians(obliquity)) * math.sin(math.radians(tropical)))
+    )
+
+    benefic_val = round(60.0 * (decl + obliquity) / (2.0 * obliquity), 2)
+    benefic_val = max(0.0, min(60.0, benefic_val))
+
+    _KALA_BENEFICS = {"Jupiter", "Venus", "Moon", "Mercury"}
+    if planet in _KALA_BENEFICS:
+        return benefic_val
+    else:
+        return round(60.0 - benefic_val, 2)
+
+
 def _kala_bala(
     planet: str,
     is_daytime: bool,
@@ -548,9 +616,11 @@ def _kala_bala(
     weekday: int = 0,
     birth_year: int = 2000,
     birth_month: int = 1,
+    longitude: Optional[float] = None,
 ) -> Dict[str, float]:
     """
-    Total Kala Bala = Nathonnatha + Paksha + Tribhaga + Abda + Masa + Vara.
+    Total Kala Bala = Nathonnatha + Paksha + Tribhaga + Abda + Masa + Vara
+                    + Hora + Ayana.
     Returns dict with breakdown and total.
     """
     nathonnatha = _nathonnatha_bala(planet, birth_hour)
@@ -559,8 +629,12 @@ def _kala_bala(
     abda = _abda_bala(planet, birth_year)
     masa = _masa_bala(planet, birth_month)
     vara = _vara_bala(planet, weekday)
+    hora = _hora_bala(planet, birth_hour, weekday)
+    ayana = _ayana_bala(planet, longitude)
 
-    total = round(nathonnatha + paksha + tribhaga + abda + masa + vara, 2)
+    total = round(
+        nathonnatha + paksha + tribhaga + abda + masa + vara + hora + ayana, 2
+    )
     return {
         "nathonnatha": nathonnatha,
         "paksha": paksha,
@@ -568,6 +642,8 @@ def _kala_bala(
         "abda": abda,
         "masa": masa,
         "vara": vara,
+        "hora": hora,
+        "ayana": ayana,
         "total": total,
     }
 
@@ -751,10 +827,11 @@ def calculate_shadbala(
         # 2. Dig Bala
         dig = _dig_bala(planet, house)
 
-        # 3. Kala Bala (6 sub-components)
+        # 3. Kala Bala (8 sub-components)
         kala_detail = _kala_bala(
             planet, is_daytime, birth_hour, moon_sun_elongation,
             weekday=weekday, birth_year=birth_year, birth_month=birth_month,
+            longitude=lon,
         )
         kala = kala_detail["total"]
 

@@ -152,7 +152,7 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
                           {language === 'hi' ? 'काल विवरण' : 'Kala Detail'}
                         </td>
                         <td colSpan={7} className="p-2 text-xs text-cosmic-text">
-                          {['nathonnatha', 'paksha', 'tribhaga', 'abda', 'masa', 'vara']
+                          {['nathonnatha', 'paksha', 'tribhaga', 'abda', 'masa', 'vara', 'hora', 'ayana']
                             .filter((k) => d.kala_detail[k] != null)
                             .map((k) => `${k}: ${d.kala_detail[k]}`)
                             .join(' | ')}

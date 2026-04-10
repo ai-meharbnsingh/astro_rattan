@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { getDignity, SIGN_TYPE, SIGN_ELEMENT, PLANET_NATURE } from './kundli-utils';
+import { getDignity, SIGN_TYPE, SIGN_ELEMENT, PLANET_NATURE, toDMS } from './kundli-utils';
 import { calculateJaiminiKarakas } from './jhora-utils';
 import { useTranslation } from '@/lib/i18n';
 import { translatePlanet, translateSign, translateNakshatra, translateLabel } from '@/lib/backend-translations';
@@ -52,10 +52,13 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
 
               return (
                 <tr key={idx} className={`border-t border-sacred-gold text-sm ${idx % 2 === 0 ? '' : 'bg-sacred-gold/[0.02]'}`}>
-                  <td className="p-2 font-medium text-sacred-brown font-display">{translatePlanet(p.planet, language)}</td>
+                  <td className="p-2 font-medium text-sacred-brown font-display">
+                    {translatePlanet(p.planet, language)}
+                    {isRetro && <span className="text-red-500 ml-0.5" title="Retrograde">*</span>}
+                  </td>
                   <td className="p-2 text-sacred-brown">{translateSign(p.sign, language)}</td>
                   <td className="p-2 text-sacred-brown">
-                    {signDeg !== null ? `${signDeg.toFixed(2)}\u00b0` : '\u2014'}
+                    {signDeg !== null ? toDMS(signDeg) : '\u2014'}
                     {isSandhi && <span className="ml-1 text-sm px-1 py-0.5 rounded bg-amber-500 text-amber-600 font-medium">{language === 'hi' ? 'संधि' : 'Sandhi'}</span>}
                   </td>
                   <td className="p-2 text-sacred-brown">{nakshatraName} ({language === 'hi' ? 'पाद' : 'Pada'} {pada})</td>

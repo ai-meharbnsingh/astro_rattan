@@ -187,11 +187,21 @@ def _score_tara(n1: dict, n2: dict) -> tuple:
     d = (i2 - i1) % 27
     # R = D mod 9
     r = d % 9
-    # Favorable: R ∈ {1, 3, 5, 7}
-    if r in {1, 3, 5, 7}:
-        return 3, f"Tara remainder {r} — favorable birth star compatibility."
+    # Tara mapping (0-based remainder -> 1-based tara number):
+    #   R=0 -> Janma(1, bad), R=1 -> Sampat(2, good), R=2 -> Vipat(3, bad),
+    #   R=3 -> Kshema(4, good), R=4 -> Pratyari(5, bad), R=5 -> Sadhaka(6, good),
+    #   R=6 -> Vadha(7, bad), R=7 -> Mitra(8, good), R=8 -> Parama Mitra(9, good)
+    _TARA_NAMES = {
+        0: "Janma", 1: "Sampat", 2: "Vipat", 3: "Kshema",
+        4: "Pratyari", 5: "Sadhaka", 6: "Vadha", 7: "Mitra",
+        8: "Parama Mitra",
+    }
+    tara_name = _TARA_NAMES.get(r, str(r))
+    # Favorable: Sampat(1), Kshema(3), Sadhaka(5), Mitra(7), Parama Mitra(8)
+    if r in {1, 3, 5, 7, 8}:
+        return 3, f"Tara: {tara_name} (remainder {r}) — favorable birth star compatibility."
     else:
-        return 0, f"Tara remainder {r} — unfavorable birth star compatibility."
+        return 0, f"Tara: {tara_name} (remainder {r}) — unfavorable birth star compatibility."
 
 
 def _score_yoni(n1: dict, n2: dict) -> tuple:

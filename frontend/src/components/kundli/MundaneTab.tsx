@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Loader2, ChevronDown, ChevronLeft, ChevronRight, AlertTriangle, TrendingUp, TrendingDown, Minus, Shield, Globe2, Building2, Landmark, Moon, Sun } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import { translatePlanet, translateSign } from '@/lib/backend-translations';
 import type { Language } from '@/lib/i18n';
+import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
 
 /* ────────────────────────────── Props ────────────────────────────── */
 
@@ -33,15 +34,20 @@ interface PlanetPosition {
   sign: string;
   house: number;
   degree: string;
+  nakshatra?: string;
+  retrograde?: boolean;
 }
 
 interface TransitImpact {
   planet: string;
+  sign?: string;
   current_sign: string;
+  sign_degree?: number;
   house: number;
   impact: string;
   impact_hi?: string;
   type: 'benefic' | 'malefic' | 'neutral';
+  retrograde?: boolean;
 }
 
 interface HouseAnalysis {
@@ -87,6 +93,8 @@ interface AnalysisData {
   independence_place?: string;
   indicators: IndicatorCard[];
   birth_chart: PlanetPosition[];
+  birth_chart_ascendant?: { longitude: number; sign: string; sign_degree?: number };
+  birth_chart_houses?: { number: number; sign: string }[];
   transits: TransitImpact[];
   houses: HouseAnalysis[];
   risks: RiskIndicator[];
@@ -156,6 +164,8 @@ const T = {
   year: (l: string) => l === 'hi' ? 'वर्ष' : 'Year',
   solar: (l: string) => l === 'hi' ? 'सूर्य ग्रहण' : 'Solar',
   lunar: (l: string) => l === 'hi' ? 'चंद्र ग्रहण' : 'Lunar',
+  kundliChart: (l: string) => l === 'hi' ? 'कुंडली चार्ट' : 'Kundli Chart',
+  gocharChart: (l: string) => l === 'hi' ? 'गोचर चार्ट' : 'Gochar (Transit) Chart',
 };
 
 /* ────────────────────────────── Mundane house meanings ────────────────────────────── */
@@ -357,6 +367,10 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
         retrograde: t.retrograde || false,
       })) : [];
 
+      // Preserve ascendant and houses from birth_chart for visual chart rendering
+      const birthAscendant = raw?.birth_chart?.ascendant || null;
+      const birthHouses = Array.isArray(raw?.birth_chart?.houses) ? raw.birth_chart.houses : null;
+
       const normalized = {
         ...flat,
         // country info → top-level
@@ -364,6 +378,8 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
         independence_time: raw?.country?.independence_time || flat.independence_time,
         independence_place: typeof raw?.country?.capital === 'object' ? (raw.country.capital[lang] || raw.country.capital.en) : (raw?.country?.capital || flat.independence_place),
         birth_chart: birthChartArr,
+        birth_chart_ascendant: birthAscendant,
+        birth_chart_houses: birthHouses,
         transits: transitsArr,
         houses: (raw?.house_analysis || []).map((h: any) => ({
           ...h,
@@ -460,6 +476,46 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
     if (status === 'negative') return 'border-red-300';
     return 'border-amber-300';
   };
+
+  /* ── Build ChartData for InteractiveKundli (birth chart) ── */
+  const birthChartData: ChartData | null = useMemo(() => {
+    if (!analysisData?.birth_chart || analysisData.birth_chart.length === 0) return null;
+    const planets: PlanetData[] = analysisData.birth_chart.map(p => ({
+      planet: p.planet,
+      sign: p.sign,
+      house: p.house,
+      nakshatra: p.nakshatra || '',
+      sign_degree: parseFloat(p.degree?.replace('\u00b0', '') || '0') || 0,
+      status: p.retrograde ? 'Retrograde' : '',
+      is_retrograde: !!p.retrograde,
+    }));
+    return {
+      planets,
+      houses: analysisData.birth_chart_houses || undefined,
+      ascendant: analysisData.birth_chart_ascendant || undefined,
+    };
+  }, [analysisData]);
+
+  /* ── Build ChartData for InteractiveKundli (transit / gochar chart) ── */
+  const transitChartData: ChartData | null = useMemo(() => {
+    if (!analysisData?.transits || analysisData.transits.length === 0) return null;
+    const planets: PlanetData[] = analysisData.transits.map(t => ({
+      planet: t.planet,
+      sign: t.current_sign || t.sign || '',
+      house: t.house,
+      nakshatra: '',
+      sign_degree: t.sign_degree || 0,
+      status: t.retrograde ? 'Retrograde' : '',
+      is_retrograde: !!t.retrograde,
+    }));
+    // For transit chart, derive houses from the country birth chart ascendant
+    // so transit planets are placed relative to the natal ascendant
+    return {
+      planets,
+      houses: analysisData.birth_chart_houses || undefined,
+      ascendant: analysisData.birth_chart_ascendant || undefined,
+    };
+  }, [analysisData]);
 
   /* ────────────────────────────── Render ────────────────────────────── */
 
@@ -580,6 +636,19 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
               </div>
             )}
 
+            {/* Visual Kundli Chart */}
+            {birthChartData && (
+              <div className="mb-6">
+                <h5 className="text-sm font-semibold text-sacred-brown mb-3 text-center">{T.kundliChart(lang)}</h5>
+                <div className="flex justify-center">
+                  <InteractiveKundli
+                    chartData={birthChartData}
+                    compact
+                  />
+                </div>
+              </div>
+            )}
+
             {/* Planet positions table */}
             {analysisData.birth_chart && analysisData.birth_chart.length > 0 ? (
               <div className="overflow-x-auto">
@@ -623,7 +692,21 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
         {loading ? (
           <LoadingSpinner lang={lang} />
         ) : analysisData?.transits && analysisData.transits.length > 0 ? (
-          <div className="overflow-x-auto">
+          <>
+            {/* Visual Gochar Chart */}
+            {transitChartData && (
+              <div className="mb-6">
+                <h5 className="text-sm font-semibold text-sacred-brown mb-3 text-center">{T.gocharChart(lang)}</h5>
+                <div className="flex justify-center">
+                  <InteractiveKundli
+                    chartData={transitChartData}
+                    compact
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className="bg-sacred-gold">
@@ -657,6 +740,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
               </tbody>
             </table>
           </div>
+          </>
         ) : (
           <DataUnavailable lang={lang} />
         )}

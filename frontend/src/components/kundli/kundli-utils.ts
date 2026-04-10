@@ -136,3 +136,11 @@ export function getDivisionalChartOptions(language?: string) {
 }
 // Backward-compatible alias
 export const DIVISIONAL_CHART_OPTIONS = getDivisionalChartOptions();
+
+/** Convert a decimal degree to DMS string: DD°MM'SS" */
+export function toDMS(deg: number): string {
+  const d = Math.floor(deg);
+  const m = Math.floor((deg - d) * 60);
+  const s = Math.floor(((deg - d) * 60 - m) * 60);
+  return `${d}°${String(m).padStart(2, '0')}'${String(s).padStart(2, '0')}"`;
+}

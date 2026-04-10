@@ -1,6 +1,6 @@
 import { Sparkles, X } from 'lucide-react';
 import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
-import { PLANET_ASPECTS } from '@/components/kundli/kundli-utils';
+import { PLANET_ASPECTS, toDMS } from '@/components/kundli/kundli-utils';
 import { translatePlanet, translateSign, translateLabel } from '@/lib/backend-translations';
 import type { SidePanelState } from '@/hooks/useKundliData';
 
@@ -39,7 +39,7 @@ export default function PlanetsTab({
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-display font-bold text-sacred-brown text-lg">
                 {sidePanel.type === 'planet'
-                  ? `${translatePlanet(sidePanel.planet?.planet || '', language)} — ${t('kundli.details')}`
+                  ? `${translatePlanet(sidePanel.planet?.planet || '', language)}${(sidePanel.planet?.status || '').toLowerCase().includes('retrograde') ? ' (R)' : ''} — ${t('kundli.details')}`
                   : t('kundli.houseDetails')}
               </h4>
               <button
@@ -69,7 +69,7 @@ export default function PlanetsTab({
                     </div>
                     <div className="bg-cosmic-card rounded-lg p-3">
                       <p className="text-sm text-cosmic-text">{t('kundli.degree')}</p>
-                      <p className="font-semibold text-sacred-brown">{p.sign_degree?.toFixed(1)}&deg;</p>
+                      <p className="font-semibold text-sacred-brown">{p.sign_degree != null ? toDMS(p.sign_degree) : '\u2014'}</p>
                     </div>
                     <div className="bg-cosmic-card rounded-lg p-3">
                       <p className="text-sm text-cosmic-text">{t('kundli.house')}</p>
@@ -77,7 +77,10 @@ export default function PlanetsTab({
                     </div>
                     <div className="bg-cosmic-card rounded-lg p-3">
                       <p className="text-sm text-cosmic-text">{t('kundli.nakshatra')}</p>
-                      <p className="font-semibold text-sacred-brown">{p.nakshatra || 'N/A'}</p>
+                      <p className="font-semibold text-sacred-brown">
+                        {p.nakshatra || 'N/A'}
+                        {p.nakshatra_pada ? ` (${language === 'hi' ? 'पाद' : 'Pada'} ${p.nakshatra_pada})` : ''}
+                      </p>
                     </div>
                   </div>
                   <div className="bg-cosmic-card rounded-lg p-3">
@@ -127,7 +130,7 @@ export default function PlanetsTab({
                           onClick={() => setSidePanel({ type: 'planet', planet: p })}
                         >
                           <span className="w-2 h-2 rounded-full bg-sacred-gold" />
-                          {translatePlanet(p.planet, language)} ({translateSign(p.sign, language)} {p.sign_degree?.toFixed(1)}&deg;)
+                          {translatePlanet(p.planet, language)}{(p.status || '').toLowerCase().includes('retrograde') ? '*' : ''} ({translateSign(p.sign, language)} {p.sign_degree != null ? toDMS(p.sign_degree) : '\u2014'})
                         </button>
                       ))}
                     </div>
@@ -170,10 +173,16 @@ export default function PlanetsTab({
                   }`}
                   onClick={() => handlePlanetClick(planet)}
                 >
-                  <td className="p-3 text-sacred-brown font-medium text-sm">{translatePlanet(planet.planet, language)}</td>
+                  <td className="p-3 text-sacred-brown font-medium text-sm">
+                    {translatePlanet(planet.planet, language)}
+                    {(planet.status || '').toLowerCase().includes('retrograde') && <span className="text-red-500 ml-0.5" title="Retrograde">*</span>}
+                  </td>
                   <td className="p-3 text-cosmic-text text-sm">{translateSign(planet.sign, language)}</td>
                   <td className="p-3 text-cosmic-text text-sm">{planet.house}</td>
-                  <td className="p-3 text-cosmic-text text-sm">{planet.nakshatra || '\u2014'}</td>
+                  <td className="p-3 text-cosmic-text text-sm">
+                    {planet.nakshatra || '\u2014'}
+                    {planet.nakshatra_pada ? ` (${language === 'hi' ? 'पाद' : 'P'}${planet.nakshatra_pada})` : ''}
+                  </td>
                   <td className="p-3">
                     <span className={`text-sm px-2 py-1 rounded-full ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-500 text-green-400' : 'bg-cosmic-surface text-cosmic-text'}`}>
                       {translateLabel(planet.status, language)}
