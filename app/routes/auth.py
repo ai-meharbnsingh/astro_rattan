@@ -41,7 +41,7 @@ def _send_otp_email(email: str, otp: str) -> bool:
     import os
     api_key = os.getenv("RESEND_API_KEY", "")
     if not api_key:
-        print(f"[OTP] RESEND_API_KEY not set — OTP for {email}: {otp}")
+        print(f"[OTP] Code sent to {email[:3]}***@*** (dev mode)")
         return True  # Allow registration in dev (OTP logged to console)
     try:
         import resend
@@ -548,7 +548,7 @@ def forgot_password(
         except Exception as e:
             print(f"[RESET] Failed to send email: {e}")
     else:
-        print(f"[RESET] OTP for {body.email}: {otp}")
+        print(f"[RESET] Code sent to {body.email[:3]}***@*** (dev mode)")
 
     return {"message": "If this email is registered, a reset code has been sent."}
 

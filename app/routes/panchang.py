@@ -182,17 +182,23 @@ def get_monthly_panchang(
         )
 
     days_in_month = calendar.monthrange(target_year, target_month)[1]
+    start_date = date(target_year, target_month, 1).isoformat()
+    end_date = date(target_year, target_month, days_in_month).isoformat()
+
+    # Batch-query all cached days for this month in ONE query
+    cached_rows = db.execute(
+        "SELECT date, tithi, nakshatra, yoga, sunrise, sunset FROM panchang_cache WHERE date >= %s AND date <= %s AND latitude = %s AND longitude = %s",
+        (start_date, end_date, latitude, longitude),
+    ).fetchall()
+    cached_dates = {row["date"]: row for row in cached_rows}
+
     days = []
 
     for day in range(1, days_in_month + 1):
         d = date(target_year, target_month, day)
         d_str = d.isoformat()
 
-        # Check daily cache first
-        cached = db.execute(
-            "SELECT tithi, nakshatra, yoga, sunrise, sunset FROM panchang_cache WHERE date = %s AND latitude = %s AND longitude = %s",
-            (d_str, latitude, longitude),
-        ).fetchone()
+        cached = cached_dates.get(d_str)
 
         if cached:
             tithi = json.loads(cached["tithi"]) if isinstance(cached["tithi"], str) else cached["tithi"]

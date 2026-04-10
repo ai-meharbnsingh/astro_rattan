@@ -118,17 +118,17 @@ export default function KundliGenerator() {
     return (
       <div className="max-w-7xl mx-auto pt-24 pb-48 px-4 bg-transparent">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')} title="Dashboard">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+          <div className="flex items-center gap-3 min-w-0">
+            <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')} title="Dashboard" className="flex-shrink-0">
               <Home className="w-4 h-4" />
             </Button>
-            <div>
-              <h3 className="font-display font-bold text-2xl text-sacred-brown">{result.person_name || formData.name} — {t('tab.kundli')}</h3>
-              <p className="text-sm text-cosmic-text">{formatDate(result.birth_date) || formData.date} | {result.birth_time || formData.time} | {result.birth_place || formData.place}</p>
+            <div className="min-w-0">
+              <h3 className="font-display font-bold text-xl sm:text-2xl text-sacred-brown truncate">{result.person_name || formData.name} — {t('tab.kundli')}</h3>
+              <p className="text-sm text-cosmic-text truncate">{formatDate(result.birth_date) || formData.date} | {result.birth_time || formData.time} | {result.birth_place || formData.place}</p>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2 flex-shrink-0">
             <Button variant="outline" size="sm" className="border-sacred-gold text-sacred-brown"
               onClick={async () => {
                 try {
@@ -191,7 +191,7 @@ export default function KundliGenerator() {
 
         {/* Tabs */}
         <Tabs defaultValue="report" className="w-full">
-          <TabsList className="mb-6 bg-sacred-cream grid grid-cols-12 w-full h-auto p-2 gap-0 [&>button]:py-2 [&>button]:text-sm [&>button]:w-full [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
+          <TabsList className="mb-6 bg-sacred-cream flex flex-nowrap overflow-x-auto w-full h-auto p-2 gap-1 pb-3 scrollbar-hide [&>button]:flex-shrink-0 [&>button]:flex-grow-0 [&>button]:basis-auto [&>button]:whitespace-nowrap [&>button]:min-h-[40px] [&>button]:px-3 [&>button]:py-2 [&>button]:text-sm [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
             <TabsTrigger value="report" onClick={async () => { await fetchDasha(); fetchExtendedDasha(); fetchAvakhada(); fetchYogaDosha(); fetchShadbala(); }}><ScrollText className="w-3 h-3 mr-1" />{t('tab.report')}</TabsTrigger>
             <TabsTrigger value="planets">{t('tab.planets')}</TabsTrigger>
             <TabsTrigger value="details">{t('tab.details')}</TabsTrigger>
@@ -301,7 +301,7 @@ export default function KundliGenerator() {
           </TabsContent>
 
           <TabsContent value="yoga-dosha">
-            <YogaDoshaTab yogaDoshaData={yogaDoshaData} loadingYogaDosha={loadingYogaDosha} doshaDisplay={doshaDisplay} loadingDosha={loadingDosha} language={language} t={t} />
+            <YogaDoshaTab yogaDoshaData={yogaDoshaData} loadingYogaDosha={loadingYogaDosha} doshaDisplay={doshaDisplay} doshaData={doshaData} loadingDosha={loadingDosha} language={language} t={t} />
           </TabsContent>
 
 

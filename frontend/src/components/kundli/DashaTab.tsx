@@ -116,7 +116,7 @@ export default function DashaTab({
           <p className="text-xl font-display font-bold text-sacred-brown">{translatePlanet(dashaData.current_dasha, language)} {t('kundli.mahadasha')}</p>
           {dashaData.current_antardasha && <p className="text-sm text-sacred-gold-dark">{t('kundli.antardasha')}: {translatePlanet(dashaData.current_antardasha, language)}</p>}
         </div>
-        <div className="rounded-xl border border-sacred-gold overflow-hidden">
+        <div className="rounded-xl border border-sacred-gold overflow-x-auto">
           <table className="w-full">
             <thead className="bg-sacred-cream">
               <tr>

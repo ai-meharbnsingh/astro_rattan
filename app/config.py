@@ -23,7 +23,7 @@ DB_PATH = os.getenv("DB_PATH", "astrovedic.db")
 # Auth
 JWT_SECRET = os.getenv("JWT_SECRET", "")
 if not JWT_SECRET:
-    if os.getenv("RAILWAY_ENVIRONMENT") or os.getenv("RENDER") or os.getenv("FLY_APP_NAME"):
+    if os.getenv("RAILWAY_ENVIRONMENT") or os.getenv("RENDER") or os.getenv("FLY_APP_NAME") or os.getenv("VERCEL"):
         raise RuntimeError("FATAL: JWT_SECRET env var is required in production. Set it and redeploy.")
     import secrets
     JWT_SECRET = secrets.token_hex(32)

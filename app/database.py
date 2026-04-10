@@ -21,8 +21,8 @@ def _get_pool() -> psycopg2.pool.ThreadedConnectionPool:
     global _pool
     if _pool is None:
         _pool = psycopg2.pool.ThreadedConnectionPool(
-            minconn=2,
-            maxconn=10,
+            minconn=1,
+            maxconn=3,
             dsn=DATABASE_URL,
         )
     return _pool
@@ -252,15 +252,19 @@ def _get_valid_conn(pool):
         raw_conn.autocommit = False
         return raw_conn
     except Exception:
-        # Connection is dead — discard and get a fresh one
+        # Connection is dead — discard it and recreate the pool
+        global _pool
         try:
             pool.putconn(raw_conn, close=True)
         except Exception:
             pass
-        # Create a fresh connection directly
-        fresh = psycopg2.connect(DATABASE_URL)
-        fresh.autocommit = False
-        return fresh
+        try:
+            _pool.closeall()
+        except Exception:
+            pass
+        _pool = None
+        new_pool = _get_pool()
+        return new_pool.getconn()
 
 
 def get_db():

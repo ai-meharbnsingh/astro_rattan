@@ -126,14 +126,14 @@ function App() {
         <Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-600"></div></div>}>
         <Routes>
           <Route path="/" element={<SmartHome />} />
-          <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
+          <Route path="/dashboard" element={<RequireAuth><ErrorBoundary><Dashboard /></ErrorBoundary></RequireAuth>} />
           <Route path="/client/:clientId" element={<RequireAuth><ClientProfile /></RequireAuth>} />
-          <Route path="/kundli" element={<RequireAuth><KundliGenerator /></RequireAuth>} />
-          <Route path="/panchang" element={<RequireAuth><Panchang /></RequireAuth>} />
+          <Route path="/kundli" element={<RequireAuth><ErrorBoundary><KundliGenerator /></ErrorBoundary></RequireAuth>} />
+          <Route path="/panchang" element={<RequireAuth><ErrorBoundary><Panchang /></ErrorBoundary></RequireAuth>} />
           <Route path="/login" element={<AuthPage />} />
-          <Route path="/numerology" element={<RequireAuth><NumerologyTarot /></RequireAuth>} />
-          <Route path="/lal-kitab" element={<RequireAuth><LalKitabPage /></RequireAuth>} />
-          <Route path="/admin" element={<RequireAuth><AdminDashboard /></RequireAuth>} />
+          <Route path="/numerology" element={<RequireAuth><ErrorBoundary><NumerologyTarot /></ErrorBoundary></RequireAuth>} />
+          <Route path="/lal-kitab" element={<RequireAuth><ErrorBoundary><LalKitabPage /></ErrorBoundary></RequireAuth>} />
+          <Route path="/admin" element={<RequireAuth><ErrorBoundary><AdminDashboard /></ErrorBoundary></RequireAuth>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         </Suspense>

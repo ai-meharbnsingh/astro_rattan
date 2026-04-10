@@ -51,7 +51,8 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
           {/* SAV Bar Chart */}
           <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
             <h4 className="font-display font-semibold text-sacred-brown mb-4">{t('section.sarvashtakvarga')}</h4>
-            <div className="flex items-end gap-2 h-48">
+            <div className="overflow-x-auto">
+            <div className="flex items-end gap-2 h-48 min-w-[400px]">
               {['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'].map((sign) => {
                 const points = ashtakvargaData.sarvashtakvarga?.[sign] || 0;
                 const maxPoints = 56;
@@ -75,6 +76,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                   </div>
                 );
               })}
+            </div>
             </div>
             <div className="flex items-center gap-4 mt-3 text-sm text-cosmic-text">
               <div className="flex items-center gap-1">
@@ -195,7 +197,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                       </div>
                       {/* RIGHT: North Indian diamond chart SVG */}
                       <div className="flex-shrink-0 flex items-center justify-center p-4 lg:border-l border-t lg:border-t-0 border-sacred-gold">
-                        <svg viewBox="0 0 280 280" width="280" height="280" className="block">
+                        <svg viewBox="0 0 280 280" className="w-full max-w-[280px] h-auto block">
                           <rect x="2" y="2" width="276" height="276" fill="none" stroke="#c8a96e" strokeWidth="1.5" />
                           <line x1="2" y1="2" x2="278" y2="278" stroke="#c8a96e" strokeWidth="0.75" />
                           <line x1="278" y1="2" x2="2" y2="278" stroke="#c8a96e" strokeWidth="0.75" />

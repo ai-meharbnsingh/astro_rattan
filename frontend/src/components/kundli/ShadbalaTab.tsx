@@ -1,4 +1,5 @@
-import { Loader2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { Loader2, ChevronDown, ChevronRight } from 'lucide-react';
 import { translatePlanet } from '@/lib/backend-translations';
 
 interface ShadbalaTabProps {
@@ -9,6 +10,17 @@ interface ShadbalaTabProps {
 }
 
 export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t }: ShadbalaTabProps) {
+  const [expandedPlanets, setExpandedPlanets] = useState<Set<string>>(new Set());
+
+  const toggleExpand = (planet: string) => {
+    setExpandedPlanets((prev) => {
+      const next = new Set(prev);
+      if (next.has(planet)) next.delete(planet);
+      else next.add(planet);
+      return next;
+    });
+  };
+
   if (loadingShadbala) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -100,18 +112,54 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
               {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
                 const d = shadbalaData.planets[planet];
                 if (!d) return null;
+                const hasDetail = d.sthana_detail || d.kala_detail;
+                const isExpanded = expandedPlanets.has(planet);
                 return (
-                  <tr key={planet} className={`border-t border-sacred-gold ${d.is_strong ? '' : 'bg-red-5'}`}>
-                    <td className="p-2 text-sacred-brown font-medium">{translatePlanet(planet, language)}</td>
-                    <td className="text-center p-2 text-cosmic-text">{d.sthana}</td>
-                    <td className="text-center p-2 text-cosmic-text">{d.dig}</td>
-                    <td className="text-center p-2 text-cosmic-text">{d.kala}</td>
-                    <td className="text-center p-2 text-cosmic-text">{d.cheshta}</td>
-                    <td className="text-center p-2 text-cosmic-text">{d.naisargika}</td>
-                    <td className="text-center p-2 text-cosmic-text">{d.drik}</td>
-                    <td className={`text-center p-2 font-semibold ${d.is_strong ? 'text-sacred-gold-dark' : 'text-wax-red-deep'}`}>{d.total}</td>
-                    <td className={`text-center p-2 font-medium ${d.ratio >= 1 ? 'text-sacred-gold-dark' : 'text-wax-red-deep'}`}>{d.ratio}x</td>
-                  </tr>
+                  <React.Fragment key={planet}>
+                    <tr
+                      className={`border-t border-sacred-gold ${d.is_strong ? '' : 'bg-red-5'} ${hasDetail ? 'cursor-pointer hover:bg-sacred-gold' : ''}`}
+                      onClick={hasDetail ? () => toggleExpand(planet) : undefined}
+                    >
+                      <td className="p-2 text-sacred-brown font-medium flex items-center gap-1">
+                        {hasDetail && (isExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />)}
+                        {translatePlanet(planet, language)}
+                      </td>
+                      <td className="text-center p-2 text-cosmic-text">{d.sthana}</td>
+                      <td className="text-center p-2 text-cosmic-text">{d.dig}</td>
+                      <td className="text-center p-2 text-cosmic-text">{d.kala}</td>
+                      <td className="text-center p-2 text-cosmic-text">{d.cheshta}</td>
+                      <td className="text-center p-2 text-cosmic-text">{d.naisargika}</td>
+                      <td className="text-center p-2 text-cosmic-text">{d.drik}</td>
+                      <td className={`text-center p-2 font-semibold ${d.is_strong ? 'text-sacred-gold-dark' : 'text-wax-red-deep'}`}>{d.total}</td>
+                      <td className={`text-center p-2 font-medium ${d.ratio >= 1 ? 'text-sacred-gold-dark' : 'text-wax-red-deep'}`}>{d.ratio}x</td>
+                    </tr>
+                    {isExpanded && d.sthana_detail && (
+                      <tr className="bg-sacred-cream">
+                        <td className="p-2 pl-6 text-xs text-cosmic-text italic" colSpan={2}>
+                          {language === 'hi' ? 'स्थान विवरण' : 'Sthana Detail'}
+                        </td>
+                        <td colSpan={7} className="p-2 text-xs text-cosmic-text">
+                          {['uchcha', 'saptavargaja', 'ojhayugma', 'kendra', 'drekkana']
+                            .filter((k) => d.sthana_detail[k] != null)
+                            .map((k) => `${k}: ${d.sthana_detail[k]}`)
+                            .join(' | ')}
+                        </td>
+                      </tr>
+                    )}
+                    {isExpanded && d.kala_detail && (
+                      <tr className="bg-sacred-cream">
+                        <td className="p-2 pl-6 text-xs text-cosmic-text italic" colSpan={2}>
+                          {language === 'hi' ? 'काल विवरण' : 'Kala Detail'}
+                        </td>
+                        <td colSpan={7} className="p-2 text-xs text-cosmic-text">
+                          {['nathonnatha', 'paksha', 'tribhaga', 'abda', 'masa', 'vara']
+                            .filter((k) => d.kala_detail[k] != null)
+                            .map((k) => `${k}: ${d.kala_detail[k]}`)
+                            .join(' | ')}
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
                 );
               })}
             </tbody>

@@ -57,7 +57,7 @@ export default function DivisionalTab({
                     sign_degree: p.sign_degree || 0,
                     status: '',
                   })),
-                  houses: Array.from({ length: 12 }, (_, i) => ({
+                  houses: divisionalData.houses || Array.from({ length: 12 }, (_, i) => ({
                     number: i + 1,
                     sign: ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'][i],
                   })),

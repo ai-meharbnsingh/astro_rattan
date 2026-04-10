@@ -309,26 +309,26 @@ export default function Panchang() {
             <div className="space-y-4">
               {/* Hora Table */}
               {panchang.hora_table && <ExpandableSection title="Hora Muhurta" desc="24 planetary hours">
-                <table className="w-full text-sm"><thead><tr className="bg-sacred-gold"><th className="p-2 text-left text-sacred-gold-dark">Hora</th><th className="p-2 text-left">Lord</th><th className="p-2">Start</th><th className="p-2">End</th><th className="p-2">Type</th></tr></thead><tbody>
+                <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr className="bg-sacred-gold"><th className="p-2 text-left text-sacred-gold-dark">Hora</th><th className="p-2 text-left">Lord</th><th className="p-2">Start</th><th className="p-2">End</th><th className="p-2">Type</th></tr></thead><tbody>
                 {(panchang.hora_table as any[]).map((h: any, i: number) => (
                   <tr key={i} className="border-t border-sacred-gold"><td className="p-2 text-cosmic-text">{h.hora}</td><td className="p-2 text-cosmic-text font-medium">{h.lord}</td><td className="p-2 text-cosmic-text">{h.start}</td><td className="p-2 text-cosmic-text">{h.end}</td><td className="p-2"><span className={`text-sm px-2 py-0.5 rounded ${h.type === 'day' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}>{h.type}</span></td></tr>
-                ))}</tbody></table>
+                ))}</tbody></table></div>
               </ExpandableSection>}
 
               {/* Lagna Table */}
               {panchang.lagna_table && <ExpandableSection title="Lagna Muhurta" desc="Rising sign through the day">
-                <table className="w-full text-sm"><thead><tr className="bg-sacred-gold"><th className="p-2 text-left text-sacred-gold-dark">Lagna</th><th className="p-2">Start</th><th className="p-2">End</th></tr></thead><tbody>
+                <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr className="bg-sacred-gold"><th className="p-2 text-left text-sacred-gold-dark">Lagna</th><th className="p-2">Start</th><th className="p-2">End</th></tr></thead><tbody>
                 {(panchang.lagna_table as any[]).map((l: any, i: number) => (
                   <tr key={i} className="border-t border-sacred-gold"><td className="p-2 text-cosmic-text font-medium">{l.lagna}</td><td className="p-2 text-cosmic-text">{l.start}</td><td className="p-2 text-cosmic-text">{l.end}</td></tr>
-                ))}</tbody></table>
+                ))}</tbody></table></div>
               </ExpandableSection>}
 
               {/* Gowri Panchangam */}
               {panchang.gowri_panchang && <ExpandableSection title="Gowri Panchangam" desc="Day and night quality periods">
-                <table className="w-full text-sm"><thead><tr className="bg-sacred-gold"><th className="p-2 text-left text-sacred-gold-dark">Period</th><th className="p-2">Start</th><th className="p-2">End</th><th className="p-2">Type</th><th className="p-2">Quality</th></tr></thead><tbody>
+                <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr className="bg-sacred-gold"><th className="p-2 text-left text-sacred-gold-dark">Period</th><th className="p-2">Start</th><th className="p-2">End</th><th className="p-2">Type</th><th className="p-2">Quality</th></tr></thead><tbody>
                 {(panchang.gowri_panchang as any[]).map((g: any, i: number) => (
                   <tr key={i} className={`border-t border-sacred-gold ${g.quality === 'good' ? 'bg-green-50' : ''}`}><td className="p-2 text-cosmic-text font-medium">{g.name}</td><td className="p-2 text-cosmic-text">{g.start}</td><td className="p-2 text-cosmic-text">{g.end}</td><td className="p-2"><span className={`text-sm px-2 py-0.5 rounded ${g.type === 'day' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}>{g.type}</span></td><td className="p-2"><span className={`text-sm px-2 py-0.5 rounded ${g.quality === 'good' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{g.quality === 'good' ? 'Shubh' : 'Ashubh'}</span></td></tr>
-                ))}</tbody></table>
+                ))}</tbody></table></div>
               </ExpandableSection>}
 
               {/* Chandrabalam */}
@@ -358,10 +358,10 @@ export default function Panchang() {
 
               {/* Do Ghati Muhurta */}
               {panchang.do_ghati_muhurta && <ExpandableSection title="Do Ghati Muhurta" desc="30 Muhurta division of the day">
-                <table className="w-full text-sm"><thead><tr className="bg-sacred-gold"><th className="p-2 text-left text-sacred-gold-dark">#</th><th className="p-2 text-left">Name</th><th className="p-2">Start</th><th className="p-2">End</th><th className="p-2">Quality</th></tr></thead><tbody>
+                <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr className="bg-sacred-gold"><th className="p-2 text-left text-sacred-gold-dark">#</th><th className="p-2 text-left">Name</th><th className="p-2">Start</th><th className="p-2">End</th><th className="p-2">Quality</th></tr></thead><tbody>
                 {(panchang.do_ghati_muhurta as any[]).map((m: any, i: number) => (
                   <tr key={i} className={`border-t border-sacred-gold ${m.quality === 'good' ? 'bg-green-50' : ''}`}><td className="p-2 text-cosmic-text">{m.muhurta}</td><td className="p-2 text-cosmic-text font-medium">{m.name}</td><td className="p-2 text-cosmic-text">{m.start}</td><td className="p-2 text-cosmic-text">{m.end}</td><td className="p-2"><span className={`text-sm px-2 py-0.5 rounded ${m.quality === 'good' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>{m.quality}</span></td></tr>
-                ))}</tbody></table>
+                ))}</tbody></table></div>
               </ExpandableSection>}
 
               {/* Panchaka */}

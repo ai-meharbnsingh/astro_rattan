@@ -52,7 +52,7 @@ function PlanetaryPositions({ planets }: PlanetaryPositionsProps) {
           </div>
 
           {/* Table with degrees */}
-          <div>
+          <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-sacred-gold/10">

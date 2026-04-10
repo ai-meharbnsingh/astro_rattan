@@ -67,7 +67,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
 
                           {/* Cycle Phases Table */}
                           {cycle.phases && cycle.phases.length > 0 && (
-                            <div className="p-4">
+                            <div className="p-4 overflow-x-auto">
                               <table className="w-full text-sm">
                                 <thead>
                                   <tr className="border-b border-sacred-gold">
@@ -113,7 +113,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                       </h4>
 
                       <div className="bg-sacred-cream rounded-xl border border-sacred-gold overflow-hidden">
-                        <div className="p-4">
+                        <div className="p-4 overflow-x-auto">
                           <table className="w-full text-sm">
                             <thead>
                               <tr className="border-b border-sacred-gold">

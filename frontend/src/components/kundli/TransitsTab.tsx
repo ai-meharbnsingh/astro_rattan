@@ -144,7 +144,7 @@ export default function TransitsTab(props: TransitsTabProps) {
                 </div>
 
                 {/* Transit Table */}
-                <div className="rounded-xl border overflow-hidden" style={{ borderColor: 'rgba(184,134,11,0.25)' }}>
+                <div className="rounded-xl border overflow-x-auto" style={{ borderColor: 'rgba(184,134,11,0.25)' }}>
                   <table className="w-full text-sm">
                     <thead>
                       <tr style={{ backgroundColor: 'rgba(184,134,11,0.08)' }}>

@@ -131,9 +131,11 @@ def health():
             from app.database import _get_pool
             pool = _get_pool()
             conn = pool.getconn()
-            conn.cursor().execute("SELECT 1")
-            pool.putconn(conn)
-            _db_check_cache["ok"] = True
+            try:
+                conn.cursor().execute("SELECT 1")
+                _db_check_cache["ok"] = True
+            finally:
+                pool.putconn(conn)
         except Exception:
             _db_check_cache["ok"] = False
         _db_check_cache["ts"] = now

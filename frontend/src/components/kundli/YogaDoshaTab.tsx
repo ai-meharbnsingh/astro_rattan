@@ -1,16 +1,17 @@
-import { Loader2, CheckCircle, Shield, AlertTriangle } from 'lucide-react';
-import { translateName, translateLabel, translateRemedy, translateBackend } from '@/lib/backend-translations';
+import { Loader2, CheckCircle, Shield, AlertTriangle, Gem } from 'lucide-react';
+import { translateName, translateLabel, translateRemedy, translateBackend, translatePlanet } from '@/lib/backend-translations';
 
 interface YogaDoshaTabProps {
   yogaDoshaData: any;
   loadingYogaDosha: boolean;
   doshaDisplay?: { mangal: any; kaalsarp: any; sadesati: any } | null;
+  doshaData?: any;
   loadingDosha?: boolean;
   language: string;
   t: (key: string) => string;
 }
 
-export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDisplay, loadingDosha, language, t }: YogaDoshaTabProps) {
+export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDisplay, doshaData, loadingDosha, language, t }: YogaDoshaTabProps) {
   if (loadingYogaDosha) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -157,6 +158,38 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
             {!doshaDisplay.mangal.has_dosha && !doshaDisplay.kaalsarp.has_dosha && !doshaDisplay.sadesati.has_sade_sati && (
               <p className="text-sm py-4" style={{ color: '#22c55e' }}>{t('kundli.noDoshasInChart')}</p>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Gemstone Recommendations */}
+      {doshaData?.gemstone_recommendations && doshaData.gemstone_recommendations.length > 0 && (
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <Gem className="w-5 h-5" style={{ color: 'var(--aged-gold-dim)' }} />
+            <h4 className="font-display font-bold text-lg" style={{ color: 'var(--ink)' }}>{language === 'hi' ? 'रत्न सिफारिशें' : 'Gemstone Recommendations'}</h4>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {doshaData.gemstone_recommendations.map((gem: any, idx: number) => (
+              <div key={idx} className="rounded-xl p-4 border border-sacred-gold" style={{ backgroundColor: 'rgba(184,134,11,0.05)' }}>
+                <div className="flex items-center justify-between mb-2">
+                  <h5 className="font-display font-semibold" style={{ color: 'var(--ink)' }}>
+                    {language === 'hi' && gem.gemstone_hi ? gem.gemstone_hi : gem.gemstone}
+                  </h5>
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${gem.priority === 'primary' ? 'bg-sacred-gold text-sacred-gold-dark font-semibold' : 'bg-sacred-cream text-cosmic-text'}`}>
+                    {gem.priority === 'primary' ? (language === 'hi' ? 'प्राथमिक' : 'Primary') : (language === 'hi' ? 'द्वितीयक' : 'Secondary')}
+                  </span>
+                </div>
+                <p className="text-sm mb-2" style={{ color: 'var(--ink-light)' }}>
+                  {language === 'hi' ? 'ग्रह' : 'Planet'}: {translatePlanet(gem.planet, language)} — {gem.reason}
+                </p>
+                <div className="flex flex-wrap gap-3 text-xs" style={{ color: 'var(--ink-light)' }}>
+                  {gem.metal && <span>{language === 'hi' ? 'धातु' : 'Metal'}: {gem.metal}</span>}
+                  {gem.finger && <span>{language === 'hi' ? 'उंगली' : 'Finger'}: {gem.finger}</span>}
+                  {gem.day && <span>{language === 'hi' ? 'दिन' : 'Day'}: {gem.day}</span>}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}

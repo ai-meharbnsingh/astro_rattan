@@ -64,12 +64,14 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
         try:
             pool = _get_pool()
             conn = pool.getconn()
-            cur = conn.cursor()
-            cur.execute("SELECT COALESCE(token_version, 0) FROM users WHERE id = %s", (user_id,))
-            row = cur.fetchone()
-            pool.putconn(conn)
-            if row and row[0] > token_tv:
-                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token revoked — please log in again")
+            try:
+                cur = conn.cursor()
+                cur.execute("SELECT COALESCE(token_version, 0) FROM users WHERE id = %s", (user_id,))
+                row = cur.fetchone()
+                if row and row[0] > token_tv:
+                    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token revoked — please log in again")
+            finally:
+                pool.putconn(conn)
         except HTTPException:
             raise
         except Exception:

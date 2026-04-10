@@ -111,12 +111,13 @@ export default function VarshphalTab({
           <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
             <h4 className="font-display font-semibold text-sacred-brown mb-3">
               {t('section.muddaDasha')}
-              {varshphalData.current_mudda_dasha && (
+              {(varshphalData.current_mudda || varshphalData.current_mudda_dasha) && (
                 <span className="ml-2 text-sm px-2 py-1 rounded-full bg-sacred-gold text-sacred-gold-dark">
-                  {t('common.current')}: {translatePlanet(varshphalData.current_mudda_dasha, language)}
+                  {t('common.current')}: {translatePlanet(varshphalData.current_mudda || varshphalData.current_mudda_dasha, language)}
                 </span>
               )}
             </h4>
+            <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead><tr className="bg-sacred-gold">
                 <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
@@ -126,8 +127,8 @@ export default function VarshphalTab({
               </tr></thead>
               <tbody>
                 {(varshphalData.mudda_dasha || []).map((md: any) => (
-                  <tr key={md.planet} className={`border-t border-sacred-gold ${md.planet === varshphalData.current_mudda_dasha ? 'bg-sacred-gold font-semibold' : ''}`}>
-                    <td className="p-2 text-sacred-brown">{translatePlanet(md.planet, language)}{md.planet === varshphalData.current_mudda_dasha ? ' \u2190' : ''}</td>
+                  <tr key={md.planet} className={`border-t border-sacred-gold ${md.planet === (varshphalData.current_mudda || varshphalData.current_mudda_dasha) ? 'bg-sacred-gold font-semibold' : ''}`}>
+                    <td className="p-2 text-sacred-brown">{translatePlanet(md.planet, language)}{md.planet === (varshphalData.current_mudda || varshphalData.current_mudda_dasha) ? ' \u2190' : ''}</td>
                     <td className="p-2 text-cosmic-text">{md.start_date}</td>
                     <td className="p-2 text-cosmic-text">{md.end_date}</td>
                     <td className="p-2 text-center text-cosmic-text">{md.days}</td>
@@ -135,6 +136,7 @@ export default function VarshphalTab({
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
       ) : (

@@ -121,11 +121,11 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
               </div>
 
               <div className="border border-sacred-gold">
-                <div className="grid grid-cols-4 gap-0 text-sm text-cosmic-text uppercase tracking-wider p-3 border-b border-sacred-gold bg-sacred-gold-dark">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-0 text-sm text-cosmic-text uppercase tracking-wider p-3 border-b border-sacred-gold bg-sacred-gold-dark">
                   <span>Koot</span><span>Score</span><span>Max</span><span>Aspect</span>
                 </div>
                 {Object.entries(result.koot_scores).map(([name, koot]) => (
-                  <div key={name} className="grid grid-cols-4 gap-0 p-3 border-b border-sacred-gold last:border-0 items-center">
+                  <div key={name} className="grid grid-cols-2 sm:grid-cols-4 gap-0 p-3 border-b border-sacred-gold last:border-0 items-center">
                     <span className="text-sm text-cosmic-text font-medium">{name}</span>
                     <span className={`text-sm font-bold ${scoreColor(koot.score, koot.max)}`}>{koot.score}</span>
                     <span className="text-sm text-cosmic-text">{koot.max}</span>
@@ -134,7 +134,7 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
                 ))}
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[
                   { label: result.person1_name, details: result.person1_details },
                   { label: result.person2_name, details: result.person2_details },
