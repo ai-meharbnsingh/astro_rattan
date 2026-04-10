@@ -132,11 +132,11 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                                       phase.phase === 'Dhaiya' ? 'bg-orange-500/20 text-orange-700' :
                                       'bg-blue-500/20 text-blue-700'
                                     }`}>
-                                      {phase.phase}
+                                      {translateBackend(phase.phase, language)}
                                     </span>
                                   </td>
                                   <td className="p-2 text-sacred-brown">{translateBackend(phase.sub_phase, language)}</td>
-                                  <td className="p-2 text-cosmic-text">{phase.sign_name}</td>
+                                  <td className="p-2 text-cosmic-text">{translateSign(phase.sign_name, language)}</td>
                                   <td className="p-2 text-cosmic-text text-sm">
                                     {phase.start_date} to {phase.end_date}
                                   </td>
