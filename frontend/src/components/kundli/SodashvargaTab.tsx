@@ -20,19 +20,19 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
   }
 
   const strengthColors: Record<string, string> = {
-    Strong: 'text-green-600 bg-green-500',
-    Medium: 'text-yellow-600 bg-yellow-500',
-    Weak: 'text-red-500 bg-red-500',
+    Strong: 'text-green-800 bg-green-100',
+    Medium: 'text-yellow-800 bg-yellow-100',
+    Weak: 'text-red-800 bg-red-100',
   };
 
   const dignityLabels: Record<string, { label: string; color: string }> = {
-    exalted: { label: 'Ex', color: 'text-green-700 bg-green-500' },
-    own: { label: 'Own', color: 'text-blue-700 bg-blue-500' },
-    moolatrikona: { label: 'Moo', color: 'text-blue-700 bg-blue-500' },
-    friend: { label: 'Fr', color: 'text-yellow-700 bg-yellow-500' },
-    neutral: { label: 'Neu', color: 'text-gray-600 bg-gray-500' },
-    enemy: { label: 'En', color: 'text-orange-700 bg-orange-500' },
-    debilitated: { label: 'Deb', color: 'text-red-700 bg-red-500' },
+    exalted: { label: 'Ex', color: 'text-green-800 bg-green-100' },
+    own: { label: 'Own', color: 'text-blue-800 bg-blue-100' },
+    moolatrikona: { label: 'Moo', color: 'text-blue-800 bg-blue-100' },
+    friend: { label: 'Fr', color: 'text-yellow-800 bg-yellow-100' },
+    neutral: { label: 'Neu', color: 'text-gray-700 bg-gray-100' },
+    enemy: { label: 'En', color: 'text-orange-800 bg-orange-100' },
+    debilitated: { label: 'Deb', color: 'text-red-800 bg-red-100' },
   };
 
   return (

@@ -105,7 +105,7 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
         </h3>
 
         {conjunctions.length === 0 ? (
-          <p className="text-sm text-cosmic-text/70 italic">
+          <p className="text-sm text-gray-600 italic">
             {isHi ? 'कोई युति नहीं पाई गई।' : 'No conjunctions found.'}
           </p>
         ) : (
@@ -140,7 +140,7 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
                 >
                   <div className="flex items-center justify-between mb-3">
                     <div>
-                      <span className="text-sm text-cosmic-text/70">
+                      <span className="text-sm text-gray-600">
                         {isHi ? 'भाव' : 'House'} {conj.house}
                       </span>
                       <div className="flex items-center gap-2 mt-1 flex-wrap">
@@ -223,7 +223,7 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
                   <td className="py-2.5 px-3 text-cosmic-text font-medium">
                     {getPlanetLabel(entry.planet)}
                   </td>
-                  <td className="py-2.5 px-3 text-cosmic-text/70">
+                  <td className="py-2.5 px-3 text-gray-600">
                     {entry.fromHouse}
                   </td>
                   <td className="py-2.5 px-3">

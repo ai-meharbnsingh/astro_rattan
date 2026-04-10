@@ -334,7 +334,7 @@ export default function ConsolidatedReport({
             {/* Birth Chart (D1) */}
             <div className="border border-sacred-purple rounded-lg p-1">
               <h4 className="text-data font-bold text-center mb-1" style={{ color: 'var(--aged-gold-dim)' }}>
-                {t('section.rashiD1')} <span className="text-sm font-normal opacity-60">{t('report.clickHouseLagan')}</span>
+                {t('section.rashiD1')} <span className="text-sm font-normal text-gray-500">{t('report.clickHouseLagan')}</span>
               </h4>
               <div className="flex justify-center" style={{ maxWidth: '100%', margin: '0 auto' }}>
                 {(() => {
@@ -370,7 +370,7 @@ export default function ConsolidatedReport({
             {/* D9 Navamsha */}
             <div className="border border-sacred-purple rounded-lg p-1">
               <h4 className="text-data font-bold text-center mb-1" style={{ color: 'var(--aged-gold-dim)' }}>
-                {t('section.navamshaD9')} <span className="text-sm font-normal opacity-60">{t('report.clickHouseLagan')}</span>
+                {t('section.navamshaD9')} <span className="text-sm font-normal text-gray-500">{t('report.clickHouseLagan')}</span>
               </h4>
               <div className="flex justify-center" style={{ maxWidth: '100%', margin: '0 auto' }}>
                 {loadingDivisional ? (
@@ -408,7 +408,7 @@ export default function ConsolidatedReport({
             {/* D10 Dashamsha */}
             <div className="border border-sacred-purple rounded-lg p-1">
               <h4 className="text-data font-bold text-center mb-1" style={{ color: 'var(--aged-gold-dim)' }}>
-                {t('kundli.d10')} <span className="text-sm font-normal opacity-60">{t('report.clickHouseLagan')}</span>
+                {t('kundli.d10')} <span className="text-sm font-normal text-gray-500">{t('report.clickHouseLagan')}</span>
               </h4>
               <div className="flex justify-center" style={{ maxWidth: '100%', margin: '0 auto' }}>
                 {loadingD10 ? (
@@ -446,7 +446,7 @@ export default function ConsolidatedReport({
             {/* Gochar (Transit) — clickable */}
             <div className="border border-sacred-purple rounded-lg p-1">
               <h4 className="text-data font-bold text-center mb-1" style={{ color: 'var(--aged-gold-dim)' }}>
-                {t('kundli.gochar')} <span className="text-sm font-normal opacity-60">{t('report.clickHouseLagan')}</span>
+                {t('kundli.gochar')} <span className="text-sm font-normal text-gray-500">{t('report.clickHouseLagan')}</span>
               </h4>
               <div className="flex justify-center" style={{ maxWidth: '100%', margin: '0 auto' }}>
                 {loadingTransit ? (

@@ -91,7 +91,7 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black backdrop-blur-sm">
       <div 
         ref={modalRef}
-        className="relative w-full max-w-6xl bg-[var(--dark-bg)] rounded-2xl border border-[var(--sacred-gold-hex)] shadow-2xl overflow-hidden"
+        className="relative w-full max-w-6xl bg-[var(--dark-bg)] rounded-xl border border-[var(--sacred-gold-hex)] shadow-2xl overflow-hidden"
         style={{ maxHeight: '95vh' }}
       >
         {/* Header */}

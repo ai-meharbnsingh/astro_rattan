@@ -24,7 +24,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
         <div className="space-y-6">
           {/* SAV Chart — Visual Kundli with points in each house */}
           <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
-            <h4 className="font-display font-semibold text-sacred-brown mb-4">{t('section.sarvashtakvarga')} {t('kundli.chart')}</h4>
+            <h4 className="text-lg font-semibold text-gray-800 mb-4">{t('section.sarvashtakvarga')} {t('kundli.chart')}</h4>
             <div className="w-full max-w-[600px] mx-auto">
               <InteractiveKundli
                 chartData={{
@@ -50,7 +50,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
 
           {/* SAV Bar Chart */}
           <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
-            <h4 className="font-display font-semibold text-sacred-brown mb-4">{t('section.sarvashtakvarga')}</h4>
+            <h4 className="text-lg font-semibold text-gray-800 mb-4">{t('section.sarvashtakvarga')}</h4>
             <div className="overflow-x-auto">
             <div className="flex items-end gap-2 h-48 min-w-[400px]">
               {['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'].map((sign) => {
@@ -92,8 +92,8 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
 
           {/* Bhinna Ashtakvarga Charts — Parashara's Light format: table + diamond chart per planet */}
           <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
-            <h4 className="font-display font-semibold text-sacred-brown mb-2">{language === 'hi' ? 'भिन्न अष्टकवर्ग चार्ट' : 'Bhinna Ashtakvarga Charts'}</h4>
-            <p className="text-sm text-cosmic-text mb-4">{language === 'hi' ? '12 राशियों में प्रत्येक ग्रह के बिंदु (पराशर प्रकाश प्रारूप)।' : 'Individual planet bindus across 12 signs (Parashara\'s Light format).'}</p>
+            <h4 className="text-lg font-semibold text-gray-800 mb-2">{language === 'hi' ? 'भिन्न अष्टकवर्ग चार्ट' : 'Bhinna Ashtakvarga Charts'}</h4>
+            <p className="text-sm text-gray-600 mb-4">{language === 'hi' ? '12 राशियों में प्रत्येक ग्रह के बिंदु (पराशर प्रकाश प्रारूप)।' : 'Individual planet bindus across 12 signs (Parashara\'s Light format).'}</p>
             <div className="grid grid-cols-1 gap-5">
               {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Lagna'].map((planet) => {
                 const bindus = ashtakvargaData.planet_bindus?.[planet] || {};
@@ -241,7 +241,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
           </div>
 
           <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
-            <h4 className="font-display font-semibold text-sacred-brown mb-4">{t('section.bhinnashtakvarga')}</h4>
+            <h4 className="text-lg font-semibold text-gray-800 mb-4">{t('section.bhinnashtakvarga')}</h4>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>

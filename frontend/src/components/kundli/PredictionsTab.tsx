@@ -108,7 +108,7 @@ export default function PredictionsTab({
 
       {/* Prediction content */}
       {!loadingPredictions && currentData && (
-        <div className="rounded-2xl p-6 border" style={{ backgroundColor: 'var(--parchment)', borderColor: 'rgba(184,134,11,0.25)' }}>
+        <div className="rounded-xl p-6 border" style={{ backgroundColor: 'var(--parchment)', borderColor: 'rgba(184,134,11,0.25)' }}>
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(184,134,11,0.15)' }}>
               <Sparkles className="w-5 h-5" style={{ color: 'var(--aged-gold-dim)' }} />

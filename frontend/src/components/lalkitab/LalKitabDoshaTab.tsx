@@ -45,7 +45,7 @@ export default function LalKitabDoshaTab({ chartData }: Props) {
       </div>
 
       {/* Summary bar */}
-      <div className="rounded-2xl p-5 border border-sacred-gold/20 bg-sacred-gold/5 flex items-center justify-between">
+      <div className="rounded-xl p-5 border border-sacred-gold/20 bg-sacred-gold/5 flex items-center justify-between">
         <span className="font-sans text-lg text-sacred-gold">
           {t('lk.dosha.detected')}: {detectedDoshas.length} / {doshas.length}
         </span>
@@ -68,7 +68,7 @@ export default function LalKitabDoshaTab({ chartData }: Props) {
           return (
             <div
               key={dosha.key}
-              className={`rounded-2xl p-5 border transition-all ${
+              className={`rounded-xl p-5 border transition-all ${
                 dosha.detected
                   ? 'border-red-300/30 bg-red-500/5'
                   : 'border-green-300/30 bg-green-500/5'

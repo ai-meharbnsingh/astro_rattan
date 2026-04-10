@@ -35,7 +35,7 @@ export default function LalKitabRemediesTab({ chartData }: Props) {
         <h2 className="text-xl font-sans font-semibold text-sacred-gold mb-1">
           {t('lk.remedies.title')}
         </h2>
-        <p className="text-sm text-cosmic-text/60">
+        <p className="text-sm text-gray-500">
           {t('lk.remedies.desc')}
         </p>
       </div>
@@ -50,7 +50,7 @@ export default function LalKitabRemediesTab({ chartData }: Props) {
             className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
               activeFilter === category
                 ? 'bg-sacred-gold text-cosmic-bg'
-                : 'bg-cosmic-card border border-sacred-gold/20 text-cosmic-text/70'
+                : 'bg-cosmic-card border border-sacred-gold/20 text-gray-600'
             }`}
           >
             {category === 'all'

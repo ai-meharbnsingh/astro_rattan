@@ -18,7 +18,7 @@ export default function IogitaTab({ iogitaData, loadingIogita, language, t }: Io
     return (
       <div className="space-y-6">
         {/* Overall Summary Card */}
-        <div className="rounded-2xl p-6 border border-sacred-gold" style={{ background: 'linear-gradient(135deg, rgba(255,153,51,0.06) 0%, rgba(248,250,252,1) 100%)' }}>
+        <div className="rounded-xl p-6 border border-sacred-gold" style={{ background: 'linear-gradient(135deg, rgba(255,153,51,0.06) 0%, rgba(248,250,252,1) 100%)' }}>
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-12 rounded-full bg-sacred-gold flex items-center justify-center">
               <Sparkles className="w-6 h-6 text-sacred-gold" />

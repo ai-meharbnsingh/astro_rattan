@@ -67,8 +67,8 @@ function PlanetaryPositions({ planets }: PlanetaryPositionsProps) {
                   <tr key={p.name} className="border-t border-sacred-gold/10">
                     <td className="p-2 text-cosmic-text font-medium">{p.name}</td>
                     <td className="p-2 text-cosmic-text">{p.rashi}</td>
-                    <td className="p-2 text-right text-cosmic-text/70">{formatDegree(p.degree)}</td>
-                    <td className="p-2 text-right text-cosmic-text/60">{p.longitude?.toFixed(2)}°</td>
+                    <td className="p-2 text-right text-gray-600">{formatDegree(p.degree)}</td>
+                    <td className="p-2 text-right text-gray-500">{p.longitude?.toFixed(2)}°</td>
                   </tr>
                 ))}
               </tbody>

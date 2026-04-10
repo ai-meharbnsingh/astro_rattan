@@ -203,7 +203,7 @@ export default function ReportTab({
               </div>
 
               {/* Report title */}
-              <div className="bg-gradient-to-r from-sacred-cream to-sacred-gold rounded-2xl p-5 border border-sacred-gold text-center">
+              <div className="bg-gradient-to-r from-sacred-cream to-sacred-gold rounded-xl p-5 border border-sacred-gold text-center">
                 <h3 className="font-display font-bold text-xl text-sacred-brown">{t('section.consolidatedReport')}</h3>
                 <p className="text-sm text-cosmic-text mt-1">{result.person_name} | {formatDate(result.birth_date)} | {result.birth_time} | {result.birth_place}</p>
               </div>
@@ -291,7 +291,7 @@ export default function ReportTab({
                 <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-3">
                   <h4 className="font-display font-semibold text-sacred-brown mb-2 text-center text-sm">
                     {t('section.gochar')} {transitData?.transit_date ? `(${transitData.transit_date})` : ''}
-                    <span className="text-sm font-normal opacity-50"> ({t('kundli.clickHouseToRotate')})</span>
+                    <span className="text-sm font-normal text-gray-500"> ({t('kundli.clickHouseToRotate')})</span>
                   </h4>
                   <div className="flex justify-center">
                     {loadingTransit ? (

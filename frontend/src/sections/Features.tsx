@@ -45,6 +45,7 @@ export default function Features() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (gsap.globalTimeline.timeScale() === 0) return; // reduced motion
     const ctx = gsap.context(() => {
       gsap.fromTo('.features-title', { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out', scrollTrigger: { trigger: sectionRef.current, start: 'top 80%' } });
       gsap.fromTo('.feature-card', { y: 80, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: 'power3.out', scrollTrigger: { trigger: sectionRef.current, start: 'top 70%' } });

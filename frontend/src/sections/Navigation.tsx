@@ -5,12 +5,15 @@ import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/lib/i18n';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 
-const primaryLinks = [
-  { key: 'HOME', href: '/dashboard' },
+const serviceLinks = [
   { key: 'nav.kundli', href: '/kundli' },
   { key: 'nav.panchang', href: '/panchang' },
   { key: 'nav.lalKitab', href: '/lal-kitab' },
   { key: 'nav.numerology', href: '/numerology' },
+];
+
+const authOnlyLinks = [
+  { key: 'HOME', href: '/dashboard' },
 ];
 
 export default function Navigation() {
@@ -39,20 +42,27 @@ export default function Navigation() {
               <img src="/logo.png" alt="Astro Rattan" className="h-20 w-auto" />
             </Link>
 
-            {/* Desktop Navigation - Only show when authenticated */}
-            {isAuthenticated && (
-              <div className="hidden lg:flex items-center gap-6">
-                {primaryLinks.map((link) => (
-                  <Link
-                    key={link.key}
-                    to={link.href}
-                    className="text-base text-cosmic-text hover:text-sacred-gold-dark transition-colors font-sans tracking-wide uppercase"
-                  >
-                    {t(link.key)}
-                  </Link>
-                ))}
-              </div>
-            )}
+            {/* Desktop Navigation - Service links always visible, Dashboard only when authenticated */}
+            <div className="hidden lg:flex items-center gap-6">
+              {isAuthenticated && authOnlyLinks.map((link) => (
+                <Link
+                  key={link.key}
+                  to={link.href}
+                  className="text-base text-cosmic-text hover:text-sacred-gold-dark transition-colors font-sans tracking-wide uppercase"
+                >
+                  {t(link.key)}
+                </Link>
+              ))}
+              {serviceLinks.map((link) => (
+                <Link
+                  key={link.key}
+                  to={link.href}
+                  className="text-base text-cosmic-text hover:text-sacred-gold-dark transition-colors font-sans tracking-wide uppercase"
+                >
+                  {t(link.key)}
+                </Link>
+              ))}
+            </div>
 
             {/* Action buttons */}
             <div className="flex items-center gap-1">
@@ -100,9 +110,19 @@ export default function Navigation() {
       {/* Mobile Menu */}
       <div id="mobile-menu" className={`fixed inset-0 z-40 lg:hidden transition-all duration-500 ${isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}>
         <div className="absolute inset-0 bg-cosmic-bg backdrop-blur-xl" onClick={() => setIsMobileMenuOpen(false)} />
-        <div className={`absolute top-20 left-4 right-4 bg-cosmic-bg backdrop-blur-lg border border-sacred-gold rounded-none p-6 transition-all duration-500 ${isMobileMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}`}>
+        <div className={`absolute top-20 left-4 right-4 bg-cosmic-bg backdrop-blur-lg border border-sacred-gold rounded-lg p-6 transition-all duration-500 ${isMobileMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}`}>
           <div className="space-y-1">
-            {isAuthenticated && primaryLinks.map((link) => (
+            {isAuthenticated && authOnlyLinks.map((link) => (
+              <Link
+                key={link.key}
+                to={link.href}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block py-3 px-3 text-cosmic-text hover:text-sacred-gold-dark hover:bg-sacred-gold-dark transition-colors font-sans"
+              >
+                {t(link.key)}
+              </Link>
+            ))}
+            {serviceLinks.map((link) => (
               <Link
                 key={link.key}
                 to={link.href}

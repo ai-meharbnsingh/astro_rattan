@@ -64,11 +64,11 @@ export default function LalKitabYearlyTab({ chartData, birthDate }: Props) {
       </div>
 
       {/* Current age display */}
-      <div className="rounded-2xl p-6 border border-sacred-gold/20 bg-sacred-gold/5 text-center">
+      <div className="rounded-xl p-6 border border-sacred-gold/20 bg-sacred-gold/5 text-center">
         <p className="text-sm text-sacred-gold/70 mb-1">{t('lk.yearly.currentAge')}</p>
         <p className="text-5xl font-sans font-bold text-sacred-gold">{currentAge}</p>
         {activePeriod && (
-          <p className="text-sm text-cosmic-text/60 mt-2">
+          <p className="text-sm text-gray-500 mt-2">
             {isHi ? 'सक्रिय ग्रह' : 'Active Planet'}:{' '}
             <span className="text-sacred-gold font-medium">
               {getPlanetLabel(activePeriod.planet)}
@@ -140,7 +140,7 @@ export default function LalKitabYearlyTab({ chartData, birthDate }: Props) {
                 <div className="flex items-center gap-2 flex-wrap">
                   <span
                     className={`font-sans text-base font-semibold ${
-                      isActive ? 'text-sacred-gold' : 'text-cosmic-text/70'
+                      isActive ? 'text-sacred-gold' : 'text-gray-600'
                     }`}
                   >
                     {getPlanetLabel(period.planet)}
@@ -149,7 +149,7 @@ export default function LalKitabYearlyTab({ chartData, birthDate }: Props) {
                     className={`text-sm px-2 py-0.5 rounded-full ${
                       isActive
                         ? 'bg-sacred-gold/20 text-sacred-gold'
-                        : 'bg-cosmic-card text-cosmic-text/70'
+                        : 'bg-cosmic-card text-gray-600'
                     }`}
                   >
                     {t('lk.yearly.ageRange')}: {period.ageStart}–{period.ageEnd}
@@ -163,7 +163,7 @@ export default function LalKitabYearlyTab({ chartData, birthDate }: Props) {
 
                 {/* Show effect text for active period */}
                 {isActive && effect && (
-                  <p className="text-sm text-cosmic-text/70 mt-2">
+                  <p className="text-sm text-gray-600 mt-2">
                     {isHi ? effect.hi : effect.en}
                   </p>
                 )}

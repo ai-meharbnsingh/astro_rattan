@@ -113,7 +113,7 @@ export default function KundliList({
             <button
               onClick={(e) => handleDelete(k.id, e)}
               disabled={deletingId === k.id}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-red-500 hover:bg-red-500 border border-red-300 flex items-center justify-center text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-red-500 hover:bg-red-600 border border-red-300 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
               title={language === 'hi' ? 'कुंडली हटाएं' : 'Delete Kundli'}
             >
               {deletingId === k.id ? (

@@ -81,16 +81,16 @@ export default function LalKitabKundliTab({ chartData, apiResult }: Props) {
           <LayoutGrid className="w-6 h-6" />
           {t('lk.kundli.title')}
         </h2>
-        <p className="text-sm text-cosmic-text/70">{t('lk.kundli.desc')}</p>
+        <p className="text-sm text-gray-600">{t('lk.kundli.desc')}</p>
       </div>
 
       {/* North Indian Kundli Chart via InteractiveKundli */}
       {interactiveChartData ? (
-        <div className="card-sacred rounded-2xl p-6 border border-sacred-gold/20">
+        <div className="card-sacred rounded-xl p-6 border border-sacred-gold/20">
           <InteractiveKundli chartData={interactiveChartData} compact />
         </div>
       ) : (
-        <div className="text-center text-cosmic-text/70 py-12 text-sm">
+        <div className="text-center text-gray-600 py-12 text-sm">
           {language === 'hi' ? 'कुंडली चार्ट डेटा उपलब्ध नहीं है' : 'Chart data not available'}
         </div>
       )}
@@ -98,23 +98,23 @@ export default function LalKitabKundliTab({ chartData, apiResult }: Props) {
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* Empty Houses */}
-        <div className="card-sacred rounded-2xl p-6 border border-sacred-gold/20 text-center space-y-2">
+        <div className="card-sacred rounded-xl p-6 border border-sacred-gold/20 text-center space-y-2">
           <Home className="w-6 h-6 text-sacred-gold/50 mx-auto" />
-          <p className="text-sm text-cosmic-text/70">{t('lk.kundli.emptyHouses')}</p>
+          <p className="text-sm text-gray-600">{t('lk.kundli.emptyHouses')}</p>
           <p className="text-3xl font-sans font-bold text-cosmic-text">{counts.empty}</p>
         </div>
 
         {/* Strong Houses */}
-        <div className="card-sacred rounded-2xl p-6 border border-sacred-gold/20 text-center space-y-2">
+        <div className="card-sacred rounded-xl p-6 border border-sacred-gold/20 text-center space-y-2">
           <ShieldCheck className="w-6 h-6 text-green-400 mx-auto" />
-          <p className="text-sm text-cosmic-text/70">{t('lk.kundli.strongHouses')}</p>
+          <p className="text-sm text-gray-600">{t('lk.kundli.strongHouses')}</p>
           <p className="text-3xl font-sans font-bold text-green-400">{counts.strong}</p>
         </div>
 
         {/* Weak Houses */}
-        <div className="card-sacred rounded-2xl p-6 border border-sacred-gold/20 text-center space-y-2">
+        <div className="card-sacred rounded-xl p-6 border border-sacred-gold/20 text-center space-y-2">
           <ShieldAlert className="w-6 h-6 text-red-400 mx-auto" />
-          <p className="text-sm text-cosmic-text/70">{t('lk.kundli.weakHouses')}</p>
+          <p className="text-sm text-gray-600">{t('lk.kundli.weakHouses')}</p>
           <p className="text-3xl font-sans font-bold text-red-400">{counts.weak}</p>
         </div>
       </div>

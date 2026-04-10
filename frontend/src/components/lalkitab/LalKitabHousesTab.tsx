@@ -35,7 +35,7 @@ export default function LalKitabHousesTab({ chartData }: Props) {
         <h2 className="text-xl font-sans font-semibold text-sacred-gold mb-1">
           {t('lk.houses.title')}
         </h2>
-        <p className="text-sm text-cosmic-text/60">
+        <p className="text-sm text-gray-500">
           {t('lk.houses.desc')}
         </p>
       </div>
@@ -50,7 +50,7 @@ export default function LalKitabHousesTab({ chartData }: Props) {
           return (
             <div
               key={houseData.house}
-              className="card-sacred rounded-2xl border border-sacred-gold/20 overflow-hidden transition-all"
+              className="card-sacred rounded-xl border border-sacred-gold/20 overflow-hidden transition-all"
             >
               {/* Collapsed View */}
               <button
@@ -103,7 +103,7 @@ export default function LalKitabHousesTab({ chartData }: Props) {
                   {/* Strength Indicator */}
                   <div className="flex items-center gap-1.5">
                     <span className={`w-2.5 h-2.5 rounded-full ${getStrengthDot(houseData.strength)}`} />
-                    <span className="text-sm text-cosmic-text/70">
+                    <span className="text-sm text-gray-600">
                       {getStrengthLabel(houseData.strength)}
                     </span>
                   </div>
@@ -187,7 +187,7 @@ export default function LalKitabHousesTab({ chartData }: Props) {
                                   </div>
                                 </>
                               ) : (
-                                <p className="text-sm text-cosmic-text/70 italic">
+                                <p className="text-sm text-gray-600 italic">
                                   {language === 'hi'
                                     ? 'इस ग्रह के लिए प्रभाव उपलब्ध नहीं हैं'
                                     : 'Effects not available for this planet'}
@@ -198,7 +198,7 @@ export default function LalKitabHousesTab({ chartData }: Props) {
                         })}
                       </div>
                     ) : (
-                      <p className="text-sm text-cosmic-text/70 italic">
+                      <p className="text-sm text-gray-600 italic">
                         {language === 'hi' ? 'खाली भाव — कोई ग्रह नहीं' : 'Empty house — no planets placed'}
                       </p>
                     )}

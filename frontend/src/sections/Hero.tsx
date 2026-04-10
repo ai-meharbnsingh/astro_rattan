@@ -7,6 +7,7 @@ export default function Hero() {
   const { t } = useTranslation();
 
   useEffect(() => {
+    if (gsap.globalTimeline.timeScale() === 0) return; // reduced motion
     const ctx = gsap.context(() => {
       gsap.fromTo('.hero-shloka',
         { opacity: 0, y: 30 },

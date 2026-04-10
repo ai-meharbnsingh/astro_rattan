@@ -96,6 +96,7 @@ export default function Panchang() {
 
   // GSAP animation with proper ScrollTrigger cleanup
   useEffect(() => {
+    if (gsap.globalTimeline.timeScale() === 0) return; // reduced motion
     const ctx = gsap.context(() => {
       gsap.fromTo('.panchang-title', { y: 50, opacity: 0 }, {
         y: 0, opacity: 1, duration: 0.8, ease: 'power3.out',
@@ -164,7 +165,7 @@ export default function Panchang() {
         </div>
 
         {/* Date/Time Bar + Location Controls */}
-        <div className="card-gold-border rounded-2xl p-4 mb-8">
+        <div className="card-gold-border rounded-xl p-4 mb-8">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-xl bg-sacred-gold flex items-center justify-center border border-sacred-gold">

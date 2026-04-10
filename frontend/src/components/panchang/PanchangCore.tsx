@@ -36,19 +36,19 @@ function ElementCard({ icon, label, value, subInfo, endTime, nextValue }: Elemen
   return (
     <Card className="bg-cosmic-card border-sacred-gold/10">
       <CardContent className="flex flex-col items-start gap-2">
-        <div className="flex items-center gap-2 text-cosmic-text/70 text-sm">
+        <div className="flex items-center gap-2 text-gray-600 text-sm">
           {icon}
           <span>{label}</span>
         </div>
         <div className="text-cosmic-text font-semibold text-lg">{value}</div>
-        <div className="text-cosmic-text/70 text-sm">{subInfo}</div>
+        <div className="text-gray-600 text-sm">{subInfo}</div>
         {formatted && (
           <span className="text-sm px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold border border-sacred-gold/20">
             upto {formatted}
           </span>
         )}
         {nextValue && (
-          <span className="text-sm text-cosmic-text/60">→ {nextValue}</span>
+          <span className="text-sm text-gray-500">→ {nextValue}</span>
         )}
       </CardContent>
     </Card>

@@ -29,8 +29,8 @@ export default function DashaTab({
     return (
       <div className="space-y-4">
         <div className="bg-gradient-to-r from-sacred-cream to-sacred-gold rounded-xl p-4 border border-sacred-gold">
-          <p className="text-sm text-cosmic-text">{t('section.currentMahadasha')}</p>
-          <p className="text-xl font-display font-bold" style={{ color: 'var(--aged-gold-dim)' }}>{translatePlanet(extendedDashaData.current_dasha, language)} {t('kundli.mahadasha')}</p>
+          <p className="text-sm text-gray-600">{t('section.currentMahadasha')}</p>
+          <p className="text-xl font-display font-bold text-gray-900">{translatePlanet(extendedDashaData.current_dasha, language)} {t('kundli.mahadasha')}</p>
           <div className="flex gap-4 mt-1">
             {extendedDashaData.current_antardasha && extendedDashaData.current_antardasha !== 'Unknown' && (
               <p className="text-sm text-sacred-gold-dark">{t('kundli.antardasha')}: {translatePlanet(extendedDashaData.current_antardasha, language)}</p>
@@ -112,8 +112,8 @@ export default function DashaTab({
     return (
       <div className="space-y-4">
         <div className="bg-gradient-to-r from-sacred-cream to-sacred-gold rounded-xl p-4 border border-sacred-gold">
-          <p className="text-sm text-cosmic-text">{t('section.currentMahadasha')}</p>
-          <p className="text-xl font-display font-bold text-sacred-brown">{translatePlanet(dashaData.current_dasha, language)} {t('kundli.mahadasha')}</p>
+          <p className="text-sm text-gray-600">{t('section.currentMahadasha')}</p>
+          <p className="text-xl font-display font-bold text-gray-900">{translatePlanet(dashaData.current_dasha, language)} {t('kundli.mahadasha')}</p>
           {dashaData.current_antardasha && <p className="text-sm text-sacred-gold-dark">{t('kundli.antardasha')}: {translatePlanet(dashaData.current_antardasha, language)}</p>}
         </div>
         <div className="rounded-xl border border-sacred-gold overflow-x-auto">

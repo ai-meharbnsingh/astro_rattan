@@ -178,7 +178,7 @@ export default function LalKitabRulesTab({ chartData }: Props) {
                 <div className="flex items-stretch">
                   {/* Left house */}
                   <div className="flex-1 p-4 text-center">
-                    <p className="text-sm text-cosmic-text/70 mb-1">
+                    <p className="text-sm text-gray-600 mb-1">
                       {isHi ? 'भाव' : 'House'}
                     </p>
                     <p className="text-2xl font-sans font-bold text-sacred-gold">
@@ -195,7 +195,7 @@ export default function LalKitabRulesTab({ chartData }: Props) {
                           </span>
                         ))
                       ) : (
-                        <span className="text-sm text-cosmic-text/60 italic">
+                        <span className="text-sm text-gray-500 italic">
                           {isHi ? 'खाली' : 'Empty'}
                         </span>
                       )}
@@ -209,7 +209,7 @@ export default function LalKitabRulesTab({ chartData }: Props) {
 
                   {/* Right house */}
                   <div className="flex-1 p-4 text-center">
-                    <p className="text-sm text-cosmic-text/70 mb-1">
+                    <p className="text-sm text-gray-600 mb-1">
                       {isHi ? 'भाव' : 'House'}
                     </p>
                     <p className="text-2xl font-sans font-bold text-sacred-gold">
@@ -226,7 +226,7 @@ export default function LalKitabRulesTab({ chartData }: Props) {
                           </span>
                         ))
                       ) : (
-                        <span className="text-sm text-cosmic-text/60 italic">
+                        <span className="text-sm text-gray-500 italic">
                           {isHi ? 'खाली' : 'Empty'}
                         </span>
                       )}
@@ -243,7 +243,7 @@ export default function LalKitabRulesTab({ chartData }: Props) {
                         : `Planets in House ${h1} and House ${h2} have mutual influence`}
                     </p>
                   ) : (
-                    <p className="text-sm text-cosmic-text/60 text-center">
+                    <p className="text-sm text-gray-500 text-center">
                       {isHi
                         ? `भाव ${h1} का ग्रह भाव ${h2} को प्रभावित करता है`
                         : `Planet in House ${h1} affects House ${h2}`}
@@ -311,20 +311,20 @@ export default function LalKitabRulesTab({ chartData }: Props) {
                   <span className="px-2.5 py-1 rounded-lg bg-sacred-gold/10 text-sacred-gold text-sm font-sans font-medium">
                     {isHi ? 'भाव' : 'House'} {rule.toHouse}
                   </span>
-                  <span className="text-sm text-cosmic-text/60">
+                  <span className="text-sm text-gray-500">
                     ({isHi ? rule.domainHi : rule.domainEn})
                   </span>
                 </div>
 
                 {/* Rule text */}
-                <p className="text-sm text-cosmic-text/70">
+                <p className="text-sm text-gray-600">
                   {isHi ? rule.effectHi : rule.effectEn}
                 </p>
 
                 {/* Applied chart data */}
                 {hasPlanets && (
                   <div className="mt-3 pt-3 border-t border-sacred-gold/10">
-                    <p className="text-sm text-cosmic-text/70 mb-1.5">
+                    <p className="text-sm text-gray-600 mb-1.5">
                       {isHi
                         ? `भाव ${rule.fromHouse} में वर्तमान ग्रह:`
                         : `Current planets in House ${rule.fromHouse}:`}
@@ -339,7 +339,7 @@ export default function LalKitabRulesTab({ chartData }: Props) {
                               {getPlanetLabel(p)}
                             </span>
                             {effect && (
-                              <p className="text-sm text-cosmic-text/60">
+                              <p className="text-sm text-gray-500">
                                 {isHi ? effect.hi : effect.en}
                               </p>
                             )}

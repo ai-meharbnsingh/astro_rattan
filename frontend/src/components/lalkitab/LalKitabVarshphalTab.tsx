@@ -140,7 +140,7 @@ export default function LalKitabVarshphalTab({ chartData, birthDate }: Props) {
     title: string,
     housePlanets: Record<number, string[]>,
   ) => (
-    <div className="card-sacred rounded-2xl p-5 border border-sacred-gold/20">
+    <div className="card-sacred rounded-xl p-5 border border-sacred-gold/20">
       <h4 className="font-sans text-base font-semibold text-sacred-gold mb-3 text-center">
         {title}
       </h4>
@@ -182,7 +182,7 @@ export default function LalKitabVarshphalTab({ chartData, birthDate }: Props) {
           <Calendar className="w-6 h-6" />
           {t('lk.varshphal.title')}
         </h2>
-        <p className="text-sm text-cosmic-text/70">{t('lk.varshphal.desc')}</p>
+        <p className="text-sm text-gray-600">{t('lk.varshphal.desc')}</p>
       </div>
 
       {/* ─── Year Selector ─── */}
@@ -210,7 +210,7 @@ export default function LalKitabVarshphalTab({ chartData, birthDate }: Props) {
       </div>
 
       {/* ─── Yearly Predictions ─── */}
-      <div className="card-sacred rounded-2xl p-6 border border-sacred-gold/20">
+      <div className="card-sacred rounded-xl p-6 border border-sacred-gold/20">
         <h3 className="font-sans text-lg font-semibold text-sacred-gold mb-4">
           {isHi ? 'वार्षिक फलादेश' : 'Yearly Predictions'} — {selectedYear}
         </h3>
@@ -230,7 +230,7 @@ export default function LalKitabVarshphalTab({ chartData, birthDate }: Props) {
                 <span className="font-medium text-cosmic-text">
                   {getPlanetLabel(planet.key, language)}
                 </span>
-                <div className="flex items-center gap-2 text-sm text-cosmic-text/70">
+                <div className="flex items-center gap-2 text-sm text-gray-600">
                   <span>
                     {isHi ? 'भाव' : 'H'}{birthHouse}
                   </span>
@@ -254,7 +254,7 @@ export default function LalKitabVarshphalTab({ chartData, birthDate }: Props) {
                   <p className="text-sm font-semibold text-sacred-gold uppercase tracking-wide mb-1">
                     {isHi ? 'फल' : 'Effect'}
                   </p>
-                  <p className="text-sm text-cosmic-text/70 leading-relaxed">
+                  <p className="text-sm text-gray-600 leading-relaxed">
                     {isHi ? effects.hi : effects.en}
                   </p>
                 </div>
@@ -265,14 +265,14 @@ export default function LalKitabVarshphalTab({ chartData, birthDate }: Props) {
       </div>
 
       {/* ─── Yearly Remedies ─── */}
-      <div className="card-sacred rounded-2xl p-6 border border-sacred-gold/20">
+      <div className="card-sacred rounded-xl p-6 border border-sacred-gold/20">
         <h3 className="font-sans text-lg font-semibold text-sacred-gold mb-4 flex items-center gap-2">
           <Sparkles className="w-5 h-5" />
           {t('lk.varshphal.yearlyRemedies')}
         </h3>
 
         {yearlyRemedies.length === 0 ? (
-          <p className="text-sm text-cosmic-text/70 italic text-center py-4">
+          <p className="text-sm text-gray-600 italic text-center py-4">
             {isHi ? 'इस वर्ष के लिए कोई विशेष उपाय नहीं' : 'No specific remedies for this year'}
           </p>
         ) : (

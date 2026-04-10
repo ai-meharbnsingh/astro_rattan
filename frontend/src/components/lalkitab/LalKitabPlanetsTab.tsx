@@ -40,7 +40,7 @@ export default function LalKitabPlanetsTab({ chartData }: Props) {
         <h2 className="text-2xl font-sans text-sacred-gold">
           {t('lk.planets.title')}
         </h2>
-        <p className="text-cosmic-text/70 text-sm">
+        <p className="text-gray-600 text-sm">
           {t('lk.planets.desc')}
         </p>
       </div>
@@ -62,7 +62,7 @@ export default function LalKitabPlanetsTab({ chartData }: Props) {
             <div
               key={planet.key}
               onClick={() => togglePlanet(planet.key)}
-              className="card-sacred rounded-2xl p-5 border border-sacred-gold/20 cursor-pointer hover:border-sacred-gold/40 transition-all"
+              className="card-sacred rounded-xl p-5 border border-sacred-gold/20 cursor-pointer hover:border-sacred-gold/40 transition-all"
             >
               {/* Collapsed View — always visible */}
               <div className="flex items-center justify-between">
@@ -72,7 +72,7 @@ export default function LalKitabPlanetsTab({ chartData }: Props) {
                     <h3 className="font-sans text-sacred-gold text-lg">
                       {getPlanetName(planet)}
                     </h3>
-                    <p className="text-cosmic-text/60 text-sm">
+                    <p className="text-gray-500 text-sm">
                       {t('lk.planets.housePlacement')}: {house ?? '—'}
                     </p>
                   </div>
@@ -100,7 +100,7 @@ export default function LalKitabPlanetsTab({ chartData }: Props) {
                 <div className="mt-4 space-y-4 border-t border-sacred-gold/10 pt-4">
                   {/* Pakka Ghar */}
                   <div>
-                    <span className="text-sm text-cosmic-text/70 uppercase tracking-wide">
+                    <span className="text-sm text-gray-600 uppercase tracking-wide">
                       {t('lk.planets.pakkaGhar')}
                     </span>
                     <p className="text-sacred-gold font-sans text-sm mt-0.5">
@@ -110,7 +110,7 @@ export default function LalKitabPlanetsTab({ chartData }: Props) {
 
                   {/* Friendly Planets */}
                   <div>
-                    <span className="text-sm text-cosmic-text/70 uppercase tracking-wide">
+                    <span className="text-sm text-gray-600 uppercase tracking-wide">
                       {t('lk.planets.friends')}
                     </span>
                     <div className="flex flex-wrap gap-1.5 mt-1.5">
@@ -127,7 +127,7 @@ export default function LalKitabPlanetsTab({ chartData }: Props) {
 
                   {/* Enemy Planets */}
                   <div>
-                    <span className="text-sm text-cosmic-text/70 uppercase tracking-wide">
+                    <span className="text-sm text-gray-600 uppercase tracking-wide">
                       {t('lk.planets.enemies')}
                     </span>
                     <div className="flex flex-wrap gap-1.5 mt-1.5">
@@ -145,7 +145,7 @@ export default function LalKitabPlanetsTab({ chartData }: Props) {
                   {/* Effect */}
                   {effect && (
                     <div>
-                      <span className="text-sm text-cosmic-text/70 uppercase tracking-wide">
+                      <span className="text-sm text-gray-600 uppercase tracking-wide">
                         {t('lk.planets.effect')}
                       </span>
                       <p className="text-cosmic-text text-sm mt-1 leading-relaxed">

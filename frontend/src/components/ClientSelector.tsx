@@ -84,7 +84,7 @@ export default function ClientSelector({ onSelectClient, isNewClient, onToggle }
           className={`flex items-center justify-center gap-2 p-3 rounded-xl border text-sm font-medium transition-colors ${
             !isNewClient
               ? 'border-sacred-gold bg-sacred-gold/10 text-sacred-gold'
-              : 'border-sacred-gold/20 text-cosmic-text/60 hover:border-sacred-gold/40'
+              : 'border-sacred-gold/20 text-gray-500 hover:border-sacred-gold/40'
           }`}
         >
           <Users className="w-4 h-4" />
@@ -96,7 +96,7 @@ export default function ClientSelector({ onSelectClient, isNewClient, onToggle }
           className={`flex items-center justify-center gap-2 p-3 rounded-xl border text-sm font-medium transition-colors ${
             isNewClient
               ? 'border-sacred-gold bg-sacred-gold/10 text-sacred-gold'
-              : 'border-sacred-gold/20 text-cosmic-text/60 hover:border-sacred-gold/40'
+              : 'border-sacred-gold/20 text-gray-500 hover:border-sacred-gold/40'
           }`}
         >
           <UserPlus className="w-4 h-4" />
@@ -122,7 +122,7 @@ export default function ClientSelector({ onSelectClient, isNewClient, onToggle }
           {showDropdown && !selectedName && (
             <div className="absolute z-50 left-0 right-0 mt-1 bg-cosmic-bg border border-sacred-gold/30 rounded-xl shadow-lg max-h-60 overflow-y-auto">
               {clients.length === 0 && !loading && (
-                <div className="px-4 py-3 text-sm text-cosmic-text/50 text-center">
+                <div className="px-4 py-3 text-sm text-gray-500 text-center">
                   {search ? 'No clients found' : 'No clients yet'}
                 </div>
               )}
@@ -134,7 +134,7 @@ export default function ClientSelector({ onSelectClient, isNewClient, onToggle }
                   className="w-full text-left px-4 py-3 hover:bg-sacred-gold/10 transition-colors border-b border-sacred-gold/10 last:border-b-0"
                 >
                   <p className="text-sm font-medium text-cosmic-text">{c.name}</p>
-                  <p className="text-xs text-cosmic-text/50">
+                  <p className="text-xs text-gray-500">
                     {[c.phone, c.birth_date, c.birth_place].filter(Boolean).join(' | ') || 'No details'}
                   </p>
                 </button>

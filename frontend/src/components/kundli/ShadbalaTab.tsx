@@ -37,7 +37,7 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
   return (
     <div className="space-y-6">
       <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
-        <h4 className="font-display font-semibold text-sacred-brown mb-4">{t('section.shadbalaStrength')}</h4>
+        <h4 className="text-lg font-semibold text-gray-800 mb-4">{t('section.shadbalaStrength')}</h4>
         <div className="flex items-end justify-around gap-3" style={{ height: '220px' }}>
           {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
             const data = shadbalaData.planets[planet];
@@ -92,7 +92,7 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
       </div>
 
       <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
-        <h4 className="font-display font-semibold text-sacred-brown mb-4">{t('section.detailedBreakdown')}</h4>
+        <h4 className="text-lg font-semibold text-gray-800 mb-4">{t('section.detailedBreakdown')}</h4>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

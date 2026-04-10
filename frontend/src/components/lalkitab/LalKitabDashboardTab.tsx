@@ -153,13 +153,13 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
           <LayoutGrid className="w-6 h-6" />
           {t('lk.dashboard.title')}
         </h2>
-        <p className="text-sm text-cosmic-text/70">{t('lk.dashboard.desc')}</p>
+        <p className="text-sm text-gray-600">{t('lk.dashboard.desc')}</p>
       </div>
 
       {/* 2x2 Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* ─── 1. Kundli Overview ─── */}
-        <div className="card-sacred rounded-2xl p-6 border border-sacred-gold/20">
+        <div className="card-sacred rounded-xl p-6 border border-sacred-gold/20">
           <h3 className="font-sans text-lg font-semibold text-sacred-gold mb-4">
             {t('lk.dashboard.kundliView')}
           </h3>
@@ -170,7 +170,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
               <p className="text-2xl font-sans font-bold text-cosmic-text">
                 {counts.totalPlanets}
               </p>
-              <p className="text-sm text-cosmic-text/60">
+              <p className="text-sm text-gray-500">
                 {isHi ? 'ग्रह' : 'Planets'}
               </p>
             </div>
@@ -178,7 +178,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
               <p className="text-2xl font-sans font-bold text-cosmic-text">
                 {counts.empty}
               </p>
-              <p className="text-sm text-cosmic-text/60">
+              <p className="text-sm text-gray-500">
                 {isHi ? 'खाली भाव' : 'Empty'}
               </p>
             </div>
@@ -186,7 +186,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
               <p className="text-2xl font-sans font-bold text-green-400">
                 {counts.strong}
               </p>
-              <p className="text-sm text-cosmic-text/60">
+              <p className="text-sm text-gray-500">
                 {isHi ? 'मजबूत' : 'Strong'}
               </p>
             </div>
@@ -194,7 +194,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
               <p className="text-2xl font-sans font-bold text-red-400">
                 {counts.weak}
               </p>
-              <p className="text-sm text-cosmic-text/60">
+              <p className="text-sm text-gray-500">
                 {isHi ? 'कमजोर' : 'Weak'}
               </p>
             </div>
@@ -233,7 +233,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
         </div>
 
         {/* ─── 2. Problem Summary (Doshas) ─── */}
-        <div className="card-sacred rounded-2xl p-6 border border-sacred-gold/20">
+        <div className="card-sacred rounded-xl p-6 border border-sacred-gold/20">
           <h3 className="font-sans text-lg font-semibold text-sacred-gold mb-4">
             {t('lk.dashboard.problems')}
           </h3>
@@ -284,13 +284,13 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
         </div>
 
         {/* ─── 3. Quick Remedies ─── */}
-        <div className="card-sacred rounded-2xl p-6 border border-sacred-gold/20">
+        <div className="card-sacred rounded-xl p-6 border border-sacred-gold/20">
           <h3 className="font-sans text-lg font-semibold text-sacred-gold mb-4">
             {t('lk.dashboard.remediesList')}
           </h3>
 
           {quickRemedies.length === 0 ? (
-            <p className="text-sm text-cosmic-text/70 italic py-4 text-center">
+            <p className="text-sm text-gray-600 italic py-4 text-center">
               {isHi ? 'कोई उपाय उपलब्ध नहीं' : 'No remedies available'}
             </p>
           ) : (
@@ -322,19 +322,19 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
         </div>
 
         {/* ─── 4. Life Timeline ─── */}
-        <div className="card-sacred rounded-2xl p-6 border border-sacred-gold/20">
+        <div className="card-sacred rounded-xl p-6 border border-sacred-gold/20">
           <h3 className="font-sans text-lg font-semibold text-sacred-gold mb-4 flex items-center gap-2">
             <Clock className="w-5 h-5" />
             {t('lk.dashboard.timeline')}
           </h3>
 
-          <p className="text-sm text-cosmic-text/60 mb-4">
+          <p className="text-sm text-gray-500 mb-4">
             {isHi ? 'वर्तमान आयु' : 'Current Age'}:{' '}
             <span className="font-semibold text-cosmic-text">{age}</span>
           </p>
 
           {timelinePeriods.length === 0 ? (
-            <p className="text-sm text-cosmic-text/70 italic py-4 text-center">
+            <p className="text-sm text-gray-600 italic py-4 text-center">
               {isHi ? 'समयरेखा उपलब्ध नहीं' : 'Timeline data not available'}
             </p>
           ) : (
@@ -367,12 +367,12 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
                       <div>
                         <p
                           className={`text-sm font-medium ${
-                            isCurrent ? 'text-sacred-gold' : 'text-cosmic-text/70'
+                            isCurrent ? 'text-sacred-gold' : 'text-gray-600'
                           }`}
                         >
                           {planetLabel}
                         </p>
-                        <p className="text-sm text-cosmic-text/70">
+                        <p className="text-sm text-gray-600">
                           {period.startAge}–{period.endAge}{' '}
                           {isHi ? 'वर्ष' : 'years'}
                         </p>
@@ -385,12 +385,12 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
                       </span>
                     )}
                     {isPrevious && (
-                      <span className="px-2.5 py-0.5 rounded-full text-sm text-cosmic-text/60">
+                      <span className="px-2.5 py-0.5 rounded-full text-sm text-gray-500">
                         {isHi ? 'पिछला' : 'Previous'}
                       </span>
                     )}
                     {isNext && (
-                      <span className="px-2.5 py-0.5 rounded-full text-sm text-cosmic-text/60">
+                      <span className="px-2.5 py-0.5 rounded-full text-sm text-gray-500">
                         {isHi ? 'अगला' : 'Next'}
                       </span>
                     )}
