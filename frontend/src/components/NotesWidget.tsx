@@ -93,7 +93,7 @@ export default function NotesWidget({ clientId, chartType, kundliId }: NotesWidg
         ref={btnRef}
         onMouseDown={onMouseDown}
         onClick={() => !dragging.current && (open ? setOpen(false) : handleOpen())}
-        className="fixed z-50 w-12 h-12 bg-sacred-gold-dark text-cosmic-bg rounded-full shadow-lg flex items-center justify-center hover:bg-sacred-gold transition-colors cursor-grab active:cursor-grabbing"
+        className="fixed z-50 w-12 h-12 bg-sacred-gold-dark text-cosmic-bg rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors cursor-grab active:cursor-grabbing"
         style={{ left: position.x, top: position.y }}
         title="Astrologer Notes"
       >
@@ -129,7 +129,7 @@ export default function NotesWidget({ clientId, chartType, kundliId }: NotesWidg
             <button
               onClick={handleSave}
               disabled={saving || !newNote.trim()}
-              className="mt-2 w-full flex items-center justify-center gap-2 bg-sacred-gold-dark text-cosmic-bg text-sm py-2 font-sans uppercase tracking-wider disabled:opacity-50 hover:bg-sacred-gold transition-colors"
+              className="mt-2 w-full flex items-center justify-center gap-2 bg-sacred-gold-dark text-cosmic-bg text-sm py-2 font-sans uppercase tracking-wider disabled:opacity-50 hover:bg-gray-50 transition-colors"
             >
               {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
               Save Note

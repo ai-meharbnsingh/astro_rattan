@@ -225,7 +225,7 @@ export default function NumerologyTarot() {
           <div className="space-y-3">
             <Input placeholder={t('numerology.fullName')} value={numName} onChange={(e) => setNumName(e.target.value)} className="bg-cosmic-card border-sacred-gold" />
             <Input type="date" value={numDob} onChange={(e) => setNumDob(e.target.value)} className="bg-cosmic-card border-sacred-gold" />
-            <Button onClick={calculateNumerology} disabled={numLoading || !numName.trim() || !numDob} className="w-full bg-sacred-gold text-cosmic-bg hover:bg-sacred-gold-dark">
+            <Button onClick={calculateNumerology} disabled={numLoading || !numName.trim() || !numDob} className="w-full bg-sacred-gold text-cosmic-bg hover:bg-gray-50 dark">
               {numLoading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{t('common.calculating')}</> : <><Hash className="w-4 h-4 mr-2" />{t('numerology.calculate')}</>}
             </Button>
           </div>
@@ -429,7 +429,7 @@ export default function NumerologyTarot() {
                   <Button
                     onClick={analyzeMobile}
                     disabled={mobileLoading || !mobilePhone.trim() || !firstName.trim() || !mobileDob}
-                    className="w-full bg-sacred-gold text-cosmic-bg hover:bg-sacred-gold-dark"
+                    className="w-full bg-sacred-gold text-cosmic-bg hover:bg-gray-50 dark"
                   >
                     {mobileLoading ? (
                       <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Analyzing...</>

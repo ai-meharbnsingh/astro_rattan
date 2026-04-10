@@ -89,7 +89,7 @@ export default function ReportTab({
               <div className="flex justify-center gap-3">
                 <Button
                   size="lg"
-                  className="bg-sacred-gold text-black hover:bg-sacred-gold-light px-8"
+                  className="bg-sacred-gold text-black hover:bg-gray-50 light px-8"
                   onClick={() => {
                     fetchTransit();
                     fetchD10();

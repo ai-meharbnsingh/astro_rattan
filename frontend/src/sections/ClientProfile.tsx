@@ -81,7 +81,7 @@ export default function ClientProfile() {
       {/* Action Buttons */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
         <Button onClick={() => navigate('/kundli', { state: { ...birthState, chartType: 'vedic' } })}
-          className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold h-14 rounded-lg font-sans uppercase tracking-wider text-sm">
+          className="bg-sacred-gold-dark text-cosmic-bg hover:bg-gray-50 h-14 rounded-lg font-sans uppercase tracking-wider text-sm">
           <Star className="w-4 h-4 mr-2" /> New Kundli
         </Button>
         <Button onClick={() => navigate('/lal-kitab', { state: birthState })}
@@ -103,7 +103,7 @@ export default function ClientProfile() {
         <div className="text-center py-12 border border-dashed border-sacred-gold">
           <p className="text-cosmic-text mb-4">No charts generated yet</p>
           <Button onClick={() => navigate('/kundli', { state: { ...birthState, chartType: 'vedic' } })}
-            className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold text-sm font-sans uppercase rounded-lg">
+            className="bg-sacred-gold-dark text-cosmic-bg hover:bg-gray-50 text-sm font-sans uppercase rounded-lg">
             <Plus className="w-4 h-4 mr-1" /> Generate First Chart
           </Button>
         </div>

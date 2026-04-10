@@ -78,7 +78,7 @@ export default function Dashboard() {
       <div className="min-h-screen pt-24 pb-16 px-4 max-w-6xl mx-auto">
         <div className="flex items-center justify-end mb-8">
           <div className="flex gap-2">
-            <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold text-sm font-sans uppercase tracking-wider px-4 py-2 rounded-lg">
+            <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-cosmic-bg hover:bg-gray-50 text-sm font-sans uppercase tracking-wider px-4 py-2 rounded-lg">
               <Plus className="w-4 h-4 mr-1" /> New Kundli
             </Button>
             <Button onClick={() => navigate('/admin')} variant="outline" className="border-sacred-gold text-sacred-gold-dark text-sm font-sans uppercase tracking-wider px-4 py-2 rounded-lg">
@@ -181,7 +181,7 @@ export default function Dashboard() {
           <User className="w-12 h-12 text-cosmic-text mx-auto mb-4" />
           <p className="text-cosmic-text mb-2">{t('dashboard.noClients')}</p>
           <p className="text-sm text-cosmic-text mb-6">{t('dashboard.createPrompt')}</p>
-          <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold text-sm font-sans uppercase tracking-wider rounded-lg">
+          <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-cosmic-bg hover:bg-gray-50 text-sm font-sans uppercase tracking-wider rounded-lg">
             <Plus className="w-4 h-4 mr-1" /> {t('dashboard.createFirst')}
           </Button>
         </div>
@@ -225,7 +225,7 @@ export default function Dashboard() {
           <p className="text-sm text-cosmic-text mt-1">{clients.length} {t('dashboard.clientsRegistered')}</p>
         </div>
         <div className="flex gap-2">
-          <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold text-sm font-sans uppercase tracking-wider px-4 py-2 rounded-lg">
+          <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-cosmic-bg hover:bg-gray-50 text-sm font-sans uppercase tracking-wider px-4 py-2 rounded-lg">
             <Plus className="w-4 h-4 mr-1" /> New Kundli
           </Button>
           <Button onClick={() => navigate('/lal-kitab')} variant="outline" className="border-sacred-gold text-sacred-gold-dark text-sm font-sans uppercase tracking-wider px-4 py-2 rounded-lg">

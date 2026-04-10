@@ -183,7 +183,7 @@ export default function AdminDashboard() {
               </thead>
               <tbody>
                 {users.map(u => (
-                  <tr key={u.id} className="border-b border-sacred-gold hover:bg-sacred-gold-dark">
+                  <tr key={u.id} className="border-b border-sacred-gold hover:bg-gray-50 dark">
                     <td className="py-3 pr-4 text-cosmic-text">{u.name}</td>
                     <td className="py-3 pr-4 text-cosmic-text">{u.email}</td>
                     <td className="py-3 pr-4">
@@ -238,7 +238,7 @@ export default function AdminDashboard() {
               </thead>
               <tbody>
                 {kundlis.map(k => (
-                  <tr key={k.id} className="border-b border-sacred-gold hover:bg-sacred-gold-dark">
+                  <tr key={k.id} className="border-b border-sacred-gold hover:bg-gray-50 dark">
                     <td className="py-3 pr-4 text-cosmic-text">{k.person_name}</td>
                     <td className="py-3 pr-4 text-cosmic-text">{formatDate(k.birth_date)} {k.birth_time}</td>
                     <td className="py-3 pr-4 text-cosmic-text text-sm">{k.birth_place}</td>

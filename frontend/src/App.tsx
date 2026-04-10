@@ -77,7 +77,7 @@ function NotFound() {
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
       <h2 className="text-6xl font-sans text-sacred-gold-dark mb-4">404</h2>
       <p className="text-xl text-gray-600 mb-6">Page not found</p>
-      <Link to="/" className="px-6 py-2 border border-sacred-gold text-sacred-gold-dark hover:bg-sacred-gold-dark hover:text-cosmic-bg transition-all">
+      <Link to="/" className="px-6 py-2 border border-sacred-gold text-sacred-gold-dark hover:bg-gray-50 dark hover:text-cosmic-bg transition-all">
         Return Home
       </Link>
     </div>

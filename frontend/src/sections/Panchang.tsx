@@ -196,7 +196,7 @@ export default function Panchang() {
               <Button
                 onClick={detectLocation}
                 disabled={detectingLocation}
-                className="btn-sacred bg-sacred-gold-dark text-white hover:bg-sacred-gold hover:text-cosmic-bg border border-sacred-gold transition-all text-sm px-4 py-2"
+                className="btn-sacred bg-sacred-gold-dark text-white hover:bg-gray-50 hover:text-cosmic-bg border border-sacred-gold transition-all text-sm px-4 py-2"
               >
                 {detectingLocation ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Navigation className="w-4 h-4 mr-1" />}
                 Detect Location
@@ -414,7 +414,7 @@ function ExpandableSection({ title, desc, children }: { title: string; desc: str
   const [open, setOpen] = useState(false);
   return (
     <div className="border border-sacred-gold rounded-xl overflow-hidden bg-sacred-cream">
-      <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between p-4 hover:bg-sacred-gold transition-colors">
+      <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
         <div className="text-left">
           <h4 className="font-display font-semibold text-sacred-brown text-sm">{title}</h4>
           <p className="text-sm text-cosmic-text">{desc}</p>

@@ -86,7 +86,7 @@ export default function Navigation() {
                   </button>
                 </>
               ) : (
-                <Link to="/login" className="ml-2 px-4 py-2 bg-transparent border border-sacred-gold text-sacred-gold-dark text-base font-medium hover:bg-sacred-gold-dark hover:text-cosmic-bg transition-all hidden sm:flex items-center gap-1.5">
+                <Link to="/login" className="ml-2 px-4 py-2 bg-transparent border border-sacred-gold text-sacred-gold-dark text-base font-medium hover:bg-gray-50 dark hover:text-cosmic-bg transition-all hidden sm:flex items-center gap-1.5">
                   <Sparkles className="w-4 h-4" />
                   {t('auth.signIn')}
                 </Link>
@@ -117,7 +117,7 @@ export default function Navigation() {
                 key={link.key}
                 to={link.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block py-3 px-3 text-cosmic-text hover:text-sacred-gold-dark hover:bg-sacred-gold-dark transition-colors font-sans"
+                className="block py-3 px-3 text-cosmic-text hover:text-sacred-gold-dark hover:bg-gray-50 dark transition-colors font-sans"
               >
                 {t(link.key)}
               </Link>
@@ -127,7 +127,7 @@ export default function Navigation() {
                 key={link.key}
                 to={link.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block py-3 px-3 text-cosmic-text hover:text-sacred-gold-dark hover:bg-sacred-gold-dark transition-colors font-sans"
+                className="block py-3 px-3 text-cosmic-text hover:text-sacred-gold-dark hover:bg-gray-50 dark transition-colors font-sans"
               >
                 {t(link.key)}
               </Link>
@@ -137,7 +137,7 @@ export default function Navigation() {
               {isAuthenticated ? (
                 <button
                   onClick={() => { logout(); setIsMobileMenuOpen(false); }}
-                  className="flex items-center gap-2 w-full px-4 py-3 border border-sacred-gold text-sacred-gold-dark font-medium text-center justify-center hover:bg-sacred-gold-dark transition-colors"
+                  className="flex items-center gap-2 w-full px-4 py-3 border border-sacred-gold text-sacred-gold-dark font-medium text-center justify-center hover:bg-gray-50 dark transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
                   {t('auth.signOut')}
@@ -146,7 +146,7 @@ export default function Navigation() {
                 <Link
                   to="/login"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-2 w-full px-4 py-3 border border-sacred-gold text-sacred-gold-dark font-medium text-center justify-center hover:bg-sacred-gold-dark transition-colors"
+                  className="flex items-center gap-2 w-full px-4 py-3 border border-sacred-gold text-sacred-gold-dark font-medium text-center justify-center hover:bg-gray-50 dark transition-colors"
                 >
                   <Sparkles className="w-4 h-4" />
                   {t('auth.signIn')}

@@ -106,7 +106,7 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
 
           <div className="text-center">
             <Button onClick={handleMatch} disabled={loading || !kundliId1 || !kundliId2}
-              className="bg-sacred-gold-dark text-cosmic-bg hover:bg-sacred-gold px-8 py-3 font-sans uppercase tracking-wider disabled:opacity-50">
+              className="bg-sacred-gold-dark text-cosmic-bg hover:bg-gray-50 px-8 py-3 font-sans uppercase tracking-wider disabled:opacity-50">
               {loading ? <><Loader2 className="w-4 h-4 animate-spin mr-2" />Calculating...</> : 'Match Kundlis'}
             </Button>
           </div>

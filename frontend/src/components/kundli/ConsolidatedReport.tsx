@@ -302,7 +302,7 @@ export default function ConsolidatedReport({
         {/* Header bar */}
         <div className="sticky top-0 z-10 bg-cosmic-surface border-b border-sacred-purple px-6 py-3 flex items-center justify-between no-print">
           <div className="flex items-center gap-3">
-            <Button size="sm" onClick={handleDownloadPDF} className="bg-sacred-gold-dark text-white hover:bg-sacred-gold-dark text-sm h-8">
+            <Button size="sm" onClick={handleDownloadPDF} className="bg-sacred-gold-dark text-white hover:bg-gray-50 dark text-sm h-8">
               <Download className="w-3.5 h-3.5 mr-1" />{t('common.downloadPDF')}
             </Button>
             <Button size="sm" variant="outline" onClick={() => window.print()} className="border-sacred-purple text-cosmic-text text-sm h-8">

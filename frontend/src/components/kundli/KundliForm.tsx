@@ -227,7 +227,7 @@ export default function KundliForm({
             )}
           </div>
         )}
-        <Button onClick={onGenerate} disabled={!formData.name || !formData.date || !formData.time || !formData.place || (isAstrologer && isNewClient && !formData.phone?.trim())} className="w-full btn-sacred font-semibold hover:bg-sacred-gold-dark disabled:opacity-50">
+        <Button onClick={onGenerate} disabled={!formData.name || !formData.date || !formData.time || !formData.place || (isAstrologer && isNewClient && !formData.phone?.trim())} className="w-full btn-sacred font-semibold hover:bg-gray-50 dark disabled:opacity-50">
           <Sparkles className="w-5 h-5 mr-2" />{language === 'hi' ? 'कुंडली बनाएं' : 'Generate Kundli'}<ChevronRight className="w-5 h-5 ml-2" />
         </Button>
       </div>
