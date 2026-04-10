@@ -29,8 +29,9 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
     exalted: { label: 'Ex', color: 'text-green-800 bg-green-100' },
     own: { label: 'Own', color: 'text-blue-800 bg-blue-100' },
     moolatrikona: { label: 'Moo', color: 'text-blue-800 bg-blue-100' },
-    friend: { label: 'Fr', color: 'text-yellow-800 bg-yellow-100' },
-    neutral: { label: 'Neu', color: 'text-gray-700 bg-gray-100' },
+<<<<<<< HEAD
+    friend: { label: 'Fr', color: 'text-amber-800 bg-amber-100' },
+    neutral: { label: 'Neu', color: 'text-slate-700 bg-slate-200' },
     enemy: { label: 'En', color: 'text-orange-800 bg-orange-100' },
     debilitated: { label: 'Deb', color: 'text-red-800 bg-red-100' },
   };
@@ -66,9 +67,9 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
                           const sign = typeof pl === 'string' ? pl.slice(0, 3) : (pl?.sign_abbr || (typeof pl?.sign === 'string' ? pl.sign.slice(0, 3) : '') || '');
                           const dignity = typeof pl === 'object' ? pl?.dignity?.toLowerCase() : '';
                           const dignityColors: Record<string, string> = {
-                            exalted: 'bg-green-500 text-green-700', own: 'bg-blue-500 text-blue-700',
-                            moolatrikona: 'bg-blue-500 text-blue-700', friend: 'bg-yellow-500 text-yellow-700',
-                            enemy: 'bg-orange-500 text-orange-700', debilitated: 'bg-red-500 text-red-700',
+                            exalted: 'bg-green-100 text-green-800', own: 'bg-blue-100 text-blue-800',
+                            moolatrikona: 'bg-blue-100 text-blue-800', friend: 'bg-amber-100 text-amber-800',
+                            enemy: 'bg-orange-100 text-orange-800', debilitated: 'bg-red-100 text-red-800',
                           };
                           return <td key={i} className={`p-1.5 text-center text-sm rounded ${dignityColors[dignity] || ''}`}>{sign}</td>;
                         })}
@@ -97,11 +98,11 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
           return <p className="text-center text-cosmic-text">{t('common.noData')}</p>;
         })()}
         <div className="flex flex-wrap gap-2 mt-3 text-sm">
-          <span className="px-2 py-1 rounded bg-green-500 text-green-700">{t('dignity.exalted')}</span>
-          <span className="px-2 py-1 rounded bg-blue-500 text-blue-700">{t('dignity.ownMoolatrikona')}</span>
-          <span className="px-2 py-1 rounded bg-yellow-500 text-yellow-700">{t('dignity.friend')}</span>
-          <span className="px-2 py-1 rounded bg-orange-500 text-orange-700">{t('dignity.enemy')}</span>
-          <span className="px-2 py-1 rounded bg-red-500 text-red-700">{t('dignity.debilitated')}</span>
+          <span className="px-2 py-1 rounded bg-green-100 text-green-800">{t('dignity.exalted')}</span>
+          <span className="px-2 py-1 rounded bg-blue-100 text-blue-800">{t('dignity.ownMoolatrikona')}</span>
+          <span className="px-2 py-1 rounded bg-amber-100 text-amber-800">{t('dignity.friend')}</span>
+          <span className="px-2 py-1 rounded bg-orange-100 text-orange-800">{t('dignity.enemy')}</span>
+          <span className="px-2 py-1 rounded bg-red-100 text-red-800">{t('dignity.debilitated')}</span>
         </div>
       </div>
 
