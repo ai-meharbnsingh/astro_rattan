@@ -153,7 +153,7 @@ export default function LalKitabPage() {
             <Button
               variant="outline"
               onClick={() => { setView('form'); setChartData(null); }}
-              className="mb-6 border-sacred-gold text-sacred-gold hover:bg-gray-50 
+              className="mb-6 border-sacred-gold text-sacred-gold hover:bg-gray-50"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               {t('lk.backToForm')}
