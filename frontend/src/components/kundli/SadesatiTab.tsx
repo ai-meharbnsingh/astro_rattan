@@ -25,15 +25,15 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                         <span className="text-xl">♄</span>
                       </div>
                       <div>
-                        <h3 className="font-display font-bold text-lg text-sacred-brown">{language === 'hi' ? 'शनि साढ़े साती विश्लेषण' : 'Shani Sade Sati Analysis'}</h3>
-                        <p className="text-sm text-gray-600">{language === 'hi' ? 'जन्म चंद्र राशि' : 'Birth Moon Sign'}: <span className="text-sacred-gold-dark font-semibold">{sadesatiData.moon_sign}</span></p>
+                        <h3 className="font-display font-bold text-lg text-sacred-brown">{t('sadeSati.analysisTitle')}</h3>
+                        <p className="text-sm text-gray-600">{t('sadeSati.birthMoonSign')}: <span className="text-sacred-gold-dark font-semibold">{sadesatiData.moon_sign}</span></p>
                       </div>
                     </div>
                     <p className="text-sm leading-relaxed text-gray-700">
-                      {sadesatiData.explanation?.sadesati || (language === 'hi' ? "साढ़े सात वर्ष की अवधि जिसमें शनि जन्म राशि (चंद्र राशि) से बारहवें, प्रथम और द्वितीय भाव में गोचर करता है, शनि की साढ़ेसाती कहलाती है।" : "The seven and a half year period during which Saturn transits in the twelfth, first and second houses from the birth rashi (Moon sign) is called the Sadhesati of Saturn.")}
+                      {sadesatiData.explanation?.sadesati || t('sadeSati.sadesatiExplanation')}
                     </p>
                     <p className="text-sm mt-2 leading-relaxed text-gray-700">
-                      {sadesatiData.explanation?.dhayya || (language === 'hi' ? "एक साढ़ेसाती लगभग ढाई वर्ष की तीन अवधियों से बनी होती है, क्योंकि शनि एक राशि में ढाई वर्ष गोचर करता है।" : "One Sadhesati is made up of three periods of approximately two and a half years each, because Saturn travels in one rashi for two and a half years.")}
+                      {sadesatiData.explanation?.dhayya || t('sadeSati.dhayyaExplanation')}
                     </p>
                   </div>
 
@@ -42,7 +42,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                     <div className="space-y-4">
                       <h4 className="font-display font-semibold text-sacred-brown flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-gold-hex"></span>
-                        {language === 'hi' ? 'साढ़ेसाती चक्र (सामान्यतः जीवन में 3)' : 'Sade Sati Cycles (Normally 3 in a lifetime)'}
+                        {t('sadeSati.cyclesTitle')}
                       </h4>
 
                       {sadesatiData.cycles.map((cycle: any, idx: number) => (
@@ -56,7 +56,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                                 cycle.severity === 'high' ? 'bg-orange-500/20 text-orange-700' :
                                 'bg-yellow-500/20 text-yellow-700'
                               }`}>
-                                {cycle.severity === 'extreme' ? (language === 'hi' ? 'अत्यधिक' : 'Extreme') : cycle.severity === 'high' ? (language === 'hi' ? 'तीव्र' : 'Intense') : (language === 'hi' ? 'मध्यम' : 'Moderate')} {language === 'hi' ? 'प्रभाव' : 'Impact'}
+                                {cycle.severity === 'extreme' ? t('sadeSati.extremeImpact') : cycle.severity === 'high' ? t('sadeSati.intenseImpact') : t('sadeSati.moderateImpact')}
                               </span>
                             </div>
                             <p className="text-sm text-gray-600 mt-1">
@@ -71,18 +71,18 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                               <table className="w-full text-sm">
                                 <thead>
                                   <tr className="border-b border-sacred-gold">
-                                    <th className="text-left p-2 text-sacred-gold-dark font-medium">Dhayya</th>
-                                    <th className="text-left p-2 text-sacred-gold-dark font-medium">Transit Sign</th>
-                                    <th className="text-left p-2 text-sacred-gold-dark font-medium">Start Date</th>
-                                    <th className="text-left p-2 text-sacred-gold-dark font-medium">End Date</th>
+                                    <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.dhayya')}</th>
+                                    <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.transitSign')}</th>
+                                    <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.startDate')}</th>
+                                    <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.endDate')}</th>
                                   </tr>
                                 </thead>
                                 <tbody>
                                   {cycle.phases.map((phase: any, pidx: number) => {
                                     const phaseNames: Record<string, string> = {
-                                      'first_dhayya': 'First Dhayya (Rising)',
-                                      'second_dhayya': 'Second Dhayya (Peak)',
-                                      'third_dhayya': 'Third Dhayya (Setting)'
+                                      'first_dhayya': t('sadeSati.firstDhayya'),
+                                      'second_dhayya': t('sadeSati.secondDhayya'),
+                                      'third_dhayya': t('sadeSati.thirdDhayya')
                                     };
                                     return (
                                       <tr key={pidx} className="border-t border-sacred-gold hover:bg-sacred-gold/10">
@@ -109,7 +109,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                     <div className="space-y-4">
                       <h4 className="font-display font-semibold text-sacred-brown flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-[#8B2332]"></span>
-                        Other Saturn Transits (Dhaiya, Panauti, Kantaka)
+                        {t('sadeSati.otherTransits')}
                       </h4>
 
                       <div className="bg-sacred-cream rounded-xl border border-sacred-gold overflow-hidden">
@@ -117,10 +117,10 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                           <table className="w-full text-sm">
                             <thead>
                               <tr className="border-b border-sacred-gold">
-                                <th className="text-left p-2 text-sacred-gold-dark font-medium">Type</th>
-                                <th className="text-left p-2 text-sacred-gold-dark font-medium">Details</th>
-                                <th className="text-left p-2 text-sacred-gold-dark font-medium">Sign</th>
-                                <th className="text-left p-2 text-sacred-gold-dark font-medium">Period</th>
+                                <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.type')}</th>
+                                <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.details')}</th>
+                                <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.sign')}</th>
+                                <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.period')}</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -153,16 +153,28 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                   <div className="space-y-4">
                     <h4 className="font-display font-semibold text-sacred-brown flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-gold-hex"></span>
-                      Detailed Effects of Each Phase
+                      {t('sadeSati.detailedEffects')}
                     </h4>
 
                     {[
-                      { key: 'first_dhayya', title: "First Dhayya (Rising) - 12th from Moon", effects: ["Fall in mental and physical happiness", "Possibility of eye ailments", "Financial losses and unwanted expenditure", "Separation from family", "Father may suffer ailments", "Interest in spiritualism increases", "Fear of accidents; may wander uselessly"] },
-                      { key: 'second_dhayya', title: "Second Dhayya (Peak) - Over Moon Sign", effects: ["Ailments in middle part of body", "Physical energy affected", "Disputes with brothers and partners", "Financial problems persist", "Wrong decisions may be taken", "Family and business life unstable", "Enemies may inflict harm; separation from near ones"] },
-                      { key: 'third_dhayya', title: "Third Dhayya (Setting) - 2nd from Moon", effects: ["Legs may suffer from ailments", "Physical weakness and laziness", "Happiness faces hurdles", "Expenses increase", "Conflicts with relatives", "Domestic happiness obstacles", "Lowly people give troubles"] },
-                      { key: 'kantak_4th', title: "Kantaka Saturn - 4th House", effects: ["Change of place or transfer", "Housing problems", "Heart problems may occur", "Blood pressure instability", "Opposition from public/government", "Obstacles in work sphere", "Mental fear due to Saturn's aspect"] },
-                      { key: 'kantak_7th', title: "Kantaka Saturn - 7th House", effects: ["Spouse may suffer ailments", "Mental anxiety increases", "Obstacles in fortune", "Father may suffer", "Mother's health may suffer", "Vehicle related problems", "Hardships in travelling"] },
-                      { key: 'ashtam_8th', title: "Ashtam Shani (Panauti) - 8th House", effects: ["Long term ailments and accidents", "Fear of being insulted", "Change in work-sphere", "Wealth may diminish", "Children may suffer", "Most challenging period", "Possibilities of separation from children"] }
+                      { key: 'first_dhayya', title: t('sadeSati.firstDhayyaEffectsTitle'), effects: language === 'hi' ? 
+                        ["मानसिक और शारीरिक सुख में गिरावट", "आंखों की बीमारी की संभावना", "वित्तीय हानि और अनावश्यक व्यय", "परिवार से अलगाव", "पिता को बीमारी हो सकती है", "आध्यात्मिकता में रुचि बढ़ती है", "दुर्घटना का भय; व्यर्थ घूमना"] :
+                        ["Fall in mental and physical happiness", "Possibility of eye ailments", "Financial losses and unwanted expenditure", "Separation from family", "Father may suffer ailments", "Interest in spiritualism increases", "Fear of accidents; may wander uselessly"] },
+                      { key: 'second_dhayya', title: t('sadeSati.secondDhayyaEffectsTitle'), effects: language === 'hi' ? 
+                        ["शरीर के मध्य भाग में रोग", "शारीरिक ऊर्जा प्रभावित", "भाइयों और भागीदारों के साथ विवाद", "वित्तीय समस्याएं बनी रहती हैं", "गलत निर्णय लिए जा सकते हैं", "पारिवारिक और व्यावसायिक जीवन अस्थिर", "शत्रु नुकसान पहुंचा सकते हैं; प्रियजनों से अलगाव"] :
+                        ["Ailments in middle part of body", "Physical energy affected", "Disputes with brothers and partners", "Financial problems persist", "Wrong decisions may be taken", "Family and business life unstable", "Enemies may inflict harm; separation from near ones"] },
+                      { key: 'third_dhayya', title: t('sadeSati.thirdDhayyaEffectsTitle'), effects: language === 'hi' ? 
+                        ["पैरों में रोग हो सकते हैं", "शारीरिक कमजोरी और आलस्य", "सुख में बाधाएं", "व्यय में वृद्धि", "रिश्तेदारों के साथ विवाद", "घरेलू सुख में बाधाएं", "नीच लोग परेशानी देते हैं"] :
+                        ["Legs may suffer from ailments", "Physical weakness and laziness", "Happiness faces hurdles", "Expenses increase", "Conflicts with relatives", "Domestic happiness obstacles", "Lowly people give troubles"] },
+                      { key: 'kantak_4th', title: t('sadeSati.kantaka4thEffectsTitle'), effects: language === 'hi' ? 
+                        ["स्थान परिवर्तन या तबादला", "आवास समस्याएं", "हृदय रोग हो सकते हैं", "रक्तचाप अस्थिरता", "जनता/सरकार का विरोध", "कार्य क्षेत्र में बाधाएं", "शनि की दृष्टि से मानसिक भय"] :
+                        ["Change of place or transfer", "Housing problems", "Heart problems may occur", "Blood pressure instability", "Opposition from public/government", "Obstacles in work sphere", "Mental fear due to Saturn's aspect"] },
+                      { key: 'kantak_7th', title: t('sadeSati.kantaka7thEffectsTitle'), effects: language === 'hi' ? 
+                        ["जीवन साथी को बीमारी हो सकती है", "मानसिक चिंता बढ़ती है", "भाग्य में बाधाएं", "पिता को कष्ट हो सकता है", "माता के स्वास्थ्य को कष्ट", "वाहन संबंधी समस्याएं", "यात्रा में कठिनाइयां"] :
+                        ["Spouse may suffer ailments", "Mental anxiety increases", "Obstacles in fortune", "Father may suffer", "Mother's health may suffer", "Vehicle related problems", "Hardships in travelling"] },
+                      { key: 'ashtam_8th', title: t('sadeSati.ashtam8thEffectsTitle'), effects: language === 'hi' ? 
+                        ["दीर्घकालिक रोग और दुर्घटनाएं", "अपमानित होने का भय", "कार्य क्षेत्र में परिवर्तन", "धन में कमी आ सकती है", "बच्चों को कष्ट हो सकता है", "सबसे चुनौतीपूर्ण अवधि", "बच्चों से अलगाव की संभावना"] :
+                        ["Long term ailments and accidents", "Fear of being insulted", "Change in work-sphere", "Wealth may diminish", "Children may suffer", "Most challenging period", "Possibilities of separation from children"] }
                     ].map((phase) => (
                       <div key={phase.key} className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
                         <h5 className="font-display font-semibold text-sacred-brown mb-2">{phase.title}</h5>
@@ -183,7 +195,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                     <div className="space-y-4">
                       <h4 className="font-display font-semibold text-sacred-brown flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                        Remedies for Sade Sati
+                        {t('sadeSati.remediesTitle')}
                       </h4>
 
                       {/* Mantra Remedies */}
