@@ -19,20 +19,20 @@ export default function SadesatiTab(props: SadesatiTabProps) {
               ) : sadesatiData ? (
                 <div className="space-y-6">
                   {/* Introduction Card */}
-                  <div className="bg-gradient-to-r from-dark to-dark-secondary rounded-xl p-5 border border-gold-30">
+                  <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold/30">
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 rounded-full bg-gold-20 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-full bg-sacred-gold/20 flex items-center justify-center">
                         <span className="text-xl">♄</span>
                       </div>
                       <div>
-                        <h3 className="font-display font-bold text-lg text-cream">{language === 'hi' ? 'शनि साढ़े साती विश्लेषण' : 'Shani Sade Sati Analysis'}</h3>
-                        <p className="text-sm text-warm">{language === 'hi' ? 'जन्म चंद्र राशि' : 'Birth Moon Sign'}: <span className="text-gold-hex font-semibold">{sadesatiData.moon_sign}</span></p>
+                        <h3 className="font-display font-bold text-lg text-sacred-brown">{language === 'hi' ? 'शनि साढ़े साती विश्लेषण' : 'Shani Sade Sati Analysis'}</h3>
+                        <p className="text-sm text-gray-600">{language === 'hi' ? 'जन्म चंद्र राशि' : 'Birth Moon Sign'}: <span className="text-sacred-gold-dark font-semibold">{sadesatiData.moon_sign}</span></p>
                       </div>
                     </div>
-                    <p className="text-sm leading-relaxed text-warm">
+                    <p className="text-sm leading-relaxed text-gray-700">
                       {sadesatiData.explanation?.sadesati || (language === 'hi' ? "साढ़े सात वर्ष की अवधि जिसमें शनि जन्म राशि (चंद्र राशि) से बारहवें, प्रथम और द्वितीय भाव में गोचर करता है, शनि की साढ़ेसाती कहलाती है।" : "The seven and a half year period during which Saturn transits in the twelfth, first and second houses from the birth rashi (Moon sign) is called the Sadhesati of Saturn.")}
                     </p>
-                    <p className="text-sm mt-2 leading-relaxed text-warm">
+                    <p className="text-sm mt-2 leading-relaxed text-gray-700">
                       {sadesatiData.explanation?.dhayya || (language === 'hi' ? "एक साढ़ेसाती लगभग ढाई वर्ष की तीन अवधियों से बनी होती है, क्योंकि शनि एक राशि में ढाई वर्ष गोचर करता है।" : "One Sadhesati is made up of three periods of approximately two and a half years each, because Saturn travels in one rashi for two and a half years.")}
                     </p>
                   </div>
@@ -48,21 +48,21 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                       {sadesatiData.cycles.map((cycle: any, idx: number) => (
                         <div key={idx} className="bg-sacred-cream rounded-xl border border-sacred-gold overflow-hidden">
                           {/* Cycle Header */}
-                          <div className={`p-4 ${cycle.severity === 'high' ? 'bg-red-10' : cycle.severity === 'extreme' ? 'bg-red-20' : 'bg-sacred-gold'}`}>
+                          <div className={`p-4 ${cycle.severity === 'high' ? 'bg-red-50' : cycle.severity === 'extreme' ? 'bg-red-100' : 'bg-sacred-gold/10'}`}>
                             <div className="flex items-center justify-between">
                               <h5 className="font-display font-semibold text-sacred-brown">{cycle.title}</h5>
                               <span className={`text-sm px-2 py-1 rounded-full font-medium ${
-                                cycle.severity === 'extreme' ? 'bg-red-30 text-wax-red-light' :
-                                cycle.severity === 'high' ? 'bg-orange-500 text-orange-400' :
-                                'bg-yellow-500 text-yellow-600'
+                                cycle.severity === 'extreme' ? 'bg-red-500/20 text-red-700' :
+                                cycle.severity === 'high' ? 'bg-orange-500/20 text-orange-700' :
+                                'bg-yellow-500/20 text-yellow-700'
                               }`}>
                                 {cycle.severity === 'extreme' ? (language === 'hi' ? 'अत्यधिक' : 'Extreme') : cycle.severity === 'high' ? (language === 'hi' ? 'तीव्र' : 'Intense') : (language === 'hi' ? 'मध्यम' : 'Moderate')} {language === 'hi' ? 'प्रभाव' : 'Impact'}
                               </span>
                             </div>
-                            <p className="text-sm text-cosmic-text mt-1">
+                            <p className="text-sm text-gray-600 mt-1">
                               {cycle.start_date} to {cycle.end_date}
                             </p>
-                            <p className="text-sm mt-2 text-warm">{cycle.description}</p>
+                            <p className="text-sm mt-2 text-gray-700">{cycle.description}</p>
                           </div>
 
                           {/* Cycle Phases Table */}
@@ -85,7 +85,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                                       'third_dhayya': 'Third Dhayya (Setting)'
                                     };
                                     return (
-                                      <tr key={pidx} className="border-t border-sacred-gold hover:bg-sacred-gold">
+                                      <tr key={pidx} className="border-t border-sacred-gold hover:bg-sacred-gold/10">
                                         <td className="p-2">
                                           <span className="text-sacred-brown font-medium">{phaseNames[phase.phase_key] || phase.sub_phase}</span>
                                         </td>
@@ -125,12 +125,12 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                             </thead>
                             <tbody>
                               {sadesatiData.other_phases.map((phase: any, idx: number) => (
-                                <tr key={idx} className="border-t border-sacred-gold hover:bg-sacred-gold">
+                                <tr key={idx} className="border-t border-sacred-gold hover:bg-sacred-gold/10">
                                   <td className="p-2">
                                     <span className={`inline-block px-2 py-0.5 rounded text-sm font-medium ${
-                                      phase.phase === 'Panauti' ? 'bg-[#8B2332] text-wax-red-light' :
-                                      phase.phase === 'Dhaiya' ? 'bg-orange-500 text-orange-400' :
-                                      'bg-blue-500 text-blue-400'
+                                      phase.phase === 'Panauti' ? 'bg-red-500/20 text-red-700' :
+                                      phase.phase === 'Dhaiya' ? 'bg-orange-500/20 text-orange-700' :
+                                      'bg-blue-500/20 text-blue-700'
                                     }`}>
                                       {phase.phase}
                                     </span>

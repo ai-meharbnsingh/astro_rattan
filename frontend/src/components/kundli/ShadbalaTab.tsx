@@ -26,43 +26,55 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
     <div className="space-y-6">
       <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
         <h4 className="font-display font-semibold text-sacred-brown mb-4">{t('section.shadbalaStrength')}</h4>
-        <div className="space-y-3">
+        <div className="flex items-end justify-around gap-3" style={{ height: '220px' }}>
           {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
             const data = shadbalaData.planets[planet];
             if (!data) return null;
             const pct = Math.min((data.total / data.required) * 100, 150);
-            const barColor = data.is_strong ? 'var(--aged-gold-dim)' : '#8B2332';
+            const barHeight = Math.min(pct, 100);
+            const barColor = data.is_strong ? '#3B2712' : '#F5F0E8';
+            const barBorder = data.is_strong ? 'none' : '1px solid #C4A96A';
+            const requiredPct = Math.min((1 / 1.5) * 100, 100);
             return (
-              <div key={planet} className="flex items-center gap-3">
-                <span className="w-16 text-sm font-medium text-sacred-brown">{translatePlanet(planet, language)}</span>
-                <div className="flex-1 relative">
-                  <div className="bg-sacred-gold rounded-full h-5 overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all"
-                      style={{ width: `${Math.min(pct, 100)}%`, backgroundColor: barColor }}
-                    />
-                  </div>
+              <div key={planet} className="flex flex-col items-center gap-1" style={{ flex: '1 1 0' }}>
+                <span className={`text-xs font-medium ${data.is_strong ? 'text-sacred-brown' : 'text-cosmic-text'}`}>
+                  {data.total}
+                </span>
+                <div className="relative w-full flex justify-center" style={{ height: '160px' }}>
                   <div
-                    className="absolute top-0 h-5 border-r-2 border-dashed border-sacred-brown"
-                    style={{ left: `${Math.min((data.required / (data.required * 1.5)) * 100, 100)}%` }}
+                    className="w-8 rounded-t-md transition-all relative"
+                    style={{
+                      height: `${barHeight}%`,
+                      backgroundColor: barColor,
+                      border: barBorder,
+                      alignSelf: 'flex-end',
+                    }}
+                  />
+                  <div
+                    className="absolute w-full border-t-2 border-dashed border-sacred-brown"
+                    style={{ bottom: `${requiredPct}%` }}
                     title={`Required: ${data.required}`}
                   />
                 </div>
-                <span className={`text-sm w-20 text-right font-medium ${data.is_strong ? 'text-sacred-gold-dark' : 'text-wax-red-deep'}`}>
-                  {data.total} / {data.required}
+                <span className="text-xs font-medium text-sacred-brown text-center leading-tight">
+                  {translatePlanet(planet, language)}
                 </span>
               </div>
             );
           })}
         </div>
-        <div className="flex items-center gap-4 mt-3 text-sm text-cosmic-text">
+        <div className="flex items-center justify-center gap-6 mt-4 text-sm text-cosmic-text">
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded" style={{ backgroundColor: 'var(--aged-gold-dim)' }} />
+            <div className="w-3 h-3 rounded" style={{ backgroundColor: '#3B2712' }} />
             <span>{t('kundli.strong')}</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded" style={{ backgroundColor: '#8B2332' }} />
+            <div className="w-3 h-3 rounded" style={{ backgroundColor: '#F5F0E8', border: '1px solid #C4A96A' }} />
             <span>{t('kundli.weak')}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-6 border-t-2 border-dashed border-sacred-brown" />
+            <span>{language === 'hi' ? 'आवश्यक' : 'Required'}</span>
           </div>
         </div>
       </div>

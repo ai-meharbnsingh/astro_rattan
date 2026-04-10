@@ -52,6 +52,27 @@ interface FullPanchangData {
   planetary_positions: Planet[];
   hindu_calendar: HinduCalendarData;
   festivals: Festival[];
+  // Extended fields (may be absent on older cached responses)
+  sun_sign?: string;
+  moon_sign?: string;
+  dinamana?: string;
+  ratrimana?: string;
+  madhyahna?: string;
+  ravi_yoga?: TimePeriod | null;
+  vijaya_muhurta?: TimePeriod | null;
+  godhuli_muhurta?: TimePeriod | null;
+  sayahna_sandhya?: TimePeriod | null;
+  nishita_muhurta?: TimePeriod | null;
+  pratah_sandhya?: TimePeriod | null;
+  dur_muhurtam?: TimePeriod | null;
+  varjyam?: TimePeriod | null;
+  hora_table?: any[] | null;
+  lagna_table?: any[] | null;
+  chandrabalam?: any[] | null;
+  tarabalam?: any[] | null;
+  gowri_panchang?: any[] | null;
+  do_ghati_muhurta?: any[] | null;
+  panchaka?: { active: boolean; rahita: boolean } | null;
 }
 
 const DEFAULT_LAT = '28.6139';

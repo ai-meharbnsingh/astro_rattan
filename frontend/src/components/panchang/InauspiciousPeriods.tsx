@@ -43,6 +43,7 @@ export default function InauspiciousPeriods({
           {periods.map((period) => {
             const Icon = period.icon;
             const time = values[period.key];
+            if (!time) return null;
             return (
               <div
                 key={period.key}
@@ -54,9 +55,6 @@ export default function InauspiciousPeriods({
                     <span className="text-red-400 font-medium text-sm">
                       {period.label}
                     </span>
-                    <p className="text-sm text-cosmic-text-secondary/50">
-                      {period.description}
-                    </p>
                   </div>
                 </div>
                 <span className="text-cosmic-text-secondary text-sm whitespace-nowrap">

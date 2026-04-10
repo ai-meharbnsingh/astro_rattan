@@ -109,17 +109,21 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                 // Houses: 1=top-center(Asc), 2=top-right, 3=right-top, 4=right-bottom
                 // 5=bottom-right, 6=bottom-center, 7=bottom-left, 8=left-bottom
                 // 9=left-top, 10=top-left, 11=center-top, 12=center-bottom
+                // House centroids for North Indian diamond chart (280x280)
+                // Key vertices: corners (2,2)(278,2)(278,278)(2,278),
+                // midpoints (140,2)(278,140)(140,278)(2,140),
+                // inner intersections (71,71)(209,71)(209,209)(71,209), center (140,140)
                 const housePos: { x: number; y: number }[] = [
-                  { x: 140, y: 38 },   // 1 — top center triangle
-                  { x: 215, y: 38 },   // 2 — top right triangle
-                  { x: 245, y: 100 },  // 3 — right upper triangle
-                  { x: 245, y: 180 },  // 4 — right lower triangle
-                  { x: 215, y: 242 },  // 5 — bottom right triangle
-                  { x: 140, y: 242 },  // 6 — bottom center triangle
-                  { x: 65, y: 242 },   // 7 — bottom left triangle
-                  { x: 35, y: 180 },   // 8 — left lower triangle
-                  { x: 35, y: 100 },   // 9 — left upper triangle
-                  { x: 65, y: 38 },    // 10 — top left triangle
+                  { x: 140, y: 56 },   // 1 — top center rhombus
+                  { x: 206, y: 32 },   // 2 — top right triangle
+                  { x: 248, y: 78 },   // 3 — right upper triangle
+                  { x: 248, y: 202 },  // 4 — right lower triangle
+                  { x: 206, y: 248 },  // 5 — bottom right triangle
+                  { x: 140, y: 224 },  // 6 — bottom center rhombus
+                  { x: 74, y: 248 },   // 7 — bottom left triangle
+                  { x: 32, y: 202 },   // 8 — left lower triangle
+                  { x: 32, y: 78 },    // 9 — left upper triangle
+                  { x: 74, y: 32 },    // 10 — top left triangle
                   { x: 140, y: 105 },  // 11 — inner top diamond
                   { x: 140, y: 175 },  // 12 — inner bottom diamond
                 ];

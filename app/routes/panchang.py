@@ -118,20 +118,10 @@ def get_panchang(
     panchang["festivals"] = festivals
 
     # Build extended data for cache (everything beyond core fields)
-    extended_data = {
-        "vaar": panchang.get("vaar"),
-        "gulika_kaal": panchang.get("gulika_kaal"),
-        "yamaganda": panchang.get("yamaganda"),
-        "abhijit_muhurat": panchang.get("abhijit_muhurat"),
-        "brahma_muhurat": panchang.get("brahma_muhurat"),
-        "planetary_positions": panchang.get("planetary_positions"),
-        "hindu_calendar": panchang.get("hindu_calendar"),
-        "choghadiya": panchang.get("choghadiya"),
-        "festivals": festivals,
-        "ayanamsa": panchang.get("ayanamsa"),
-        "sun_longitude": panchang.get("sun_longitude"),
-        "moon_longitude": panchang.get("moon_longitude"),
-    }
+    _CORE_KEYS = {"date", "tithi", "nakshatra", "yoga", "karana", "rahu_kaal",
+                  "sunrise", "sunset", "moonrise", "moonset", "latitude", "longitude"}
+    extended_data = {k: v for k, v in panchang.items() if k not in _CORE_KEYS}
+    extended_data["festivals"] = festivals
 
     # Cache the result
     tithi_str = json.dumps(panchang["tithi"])
