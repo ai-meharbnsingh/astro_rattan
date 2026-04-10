@@ -90,6 +90,49 @@ const PHASE_TYPES: Record<string, string> = {
   'Peak (1st from Moon)': 'शिखर (चंद्र से 1ला)',
   'Setting (2nd from Moon)': 'अस्त (चंद्र से 2रा)',
   'Kantak Shani': 'कंटक शनि', 'Ashtam Shani': 'अष्टम शनि',
+  'Kantaka': 'कंटक', 'Kantaka Saturn': 'कंटक शनि',
+};
+
+// Sade Sati Cycle Titles
+const SADE_SATI_CYCLES: Record<string, string> = {
+  'First Cycle of Sadhesati': 'साढ़ेसाती का प्रथम चक्र',
+  'Second Cycle of Sadhesati': 'साढ़ेसाती का द्वितीय चक्र',
+  'Third Cycle of Sadhesati': 'साढ़ेसाती का तृतीय चक्र',
+  'Fourth Cycle of Sadhesati': 'साढ़ेसाती का चतुर्थ चक्र',
+  'Fifth Cycle of Sadhesati': 'साढ़ेसाती का पंचम चक्र',
+  'Sixth Cycle of Sadhesati': 'साढ़ेसाती का षष्ठम चक्र',
+  '7th Cycle of Sadhesati': 'साढ़ेसाती का सप्तम चक्र',
+  '8th Cycle of Sadhesati': 'साढ़ेसाती का अष्टम चक्र',
+};
+
+// Sade Sati Descriptions
+const SADE_SATI_DESCRIPTIONS: Record<string, string> = {
+  'The first cycle of Sadhesati of Saturn is extremely intense. During this period you may experience physical pain. There would be obstacles and hardships of various kinds. During this period of Sadhesati, there may also be some troubles to your parents.':
+    'शनि की साढ़ेसाती का प्रथम चक्र अत्यंत तीव्र होता है। इस अवधि में आपको शारीरिक पीड़ा का अनुभव हो सकता है। विभिन्न प्रकार की बाधाएं और कठिनाइयां रहेंगी। इस साढ़ेसाती की अवधि में आपके माता-पिता को भी कुछ परेशानियां हो सकती हैं।',
+  
+  'In the second cycle of Sadhesati, Saturn exerts mediocre influence compared to first cycle. During this period you succeed through physical struggle and labour. Despite mental unrest, your worldly progress continues. You may suffer separation or loss of parents or other elders in the family.':
+    'साढ़ेसाती के द्वितीय चक्र में, शनि प्रथम चक्र की तुलना में मध्यम प्रभाव डालता है। इस अवधि में आप शारीरिक संघर्ष और परिश्रम के माध्यम से सफल होते हैं। मानसिक अशांति के बावजूद, आपकी सांसारिक प्रगति जारी रहती है। आपको माता-पिता या परिवार के अन्य बुजुर्गों से अलगाव या हानि हो सकती है।',
+  
+  'In the third cycle of Sadhesati, Saturn inflicts extremely harsh results. During this period you may face tremendous physical hardships. There will be illness and even fear of death. During this period only fortunate persons survive.':
+    'साढ़ेसाती के तृतीय चक्र में, शनि अत्यंत कठोर परिणाम देता है। इस अवधि में आपको अत्यधिक शारीरिक कठिनाइयों का सामना करना पड़ सकता है। बीमारी और मृत्यु का भय भी रहेगा। इस अवधि में केवल भाग्यशाली व्यक्ति ही जीवित रहते हैं।',
+};
+
+// Transit Details Translation
+const TRANSIT_DETAILS: Record<string, string> = {
+  'Kantak Shani (4th from Moon)': 'कंटक शनि (चंद्र से 4वां)',
+  'Kantaka Saturn (7th from Moon)': 'कंटक शनि (चंद्र से 7वां)',
+  'Kantaka Saturn (10th from Moon)': 'कंटक शनि (चंद्र से 10वां)',
+  'Ashtam Shani (8th from Moon)': 'अष्टम शनि (चंद्र से 8वां)',
+};
+
+// Remedy Categories
+const REMEDY_CATEGORIES: Record<string, string> = {
+  'Mantra Remedies': 'मंत्र उपाय',
+  'Stotra (Hymns)': 'स्तोत्र',
+  'Vrata (Fasting)': 'व्रत (उपवास)',
+  'Donation (Daan)': 'दान',
+  'Gems and Metals': 'रत्न और धातु',
+  'Other Remedies': 'अन्य उपाय',
 };
 
 const REMEDY_MAP: Record<string, string> = {
@@ -121,7 +164,8 @@ const ALL_LOOKUPS: Record<string, string> = {
   ...PLANET_NAMES, ...SIGN_NAMES, ...DOSHA_NAMES, ...YOGA_NAMES,
   ...SEVERITY, ...DIGNITY, ...SIGN_TYPE_LABELS, ...ELEMENT_LABELS,
   ...PHASE_TYPES, ...REMEDY_MAP, ...YOGINI_NAMES, ...STRENGTH,
-  ...NAKSHATRA_NAMES,
+  ...NAKSHATRA_NAMES, ...SADE_SATI_CYCLES, ...SADE_SATI_DESCRIPTIONS,
+  ...TRANSIT_DETAILS, ...REMEDY_CATEGORIES,
 };
 
 /**

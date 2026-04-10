@@ -1,5 +1,5 @@
 import { Loader2, Shield, Gem } from 'lucide-react';
-import { translatePlanet, translateRemedy } from '@/lib/backend-translations';
+import { translatePlanet, translateRemedy, translateSign, translateBackend } from '@/lib/backend-translations';
 
 interface SadesatiTabProps {
   sadesatiData: any;
@@ -26,7 +26,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                       </div>
                       <div>
                         <h3 className="font-display font-bold text-lg text-sacred-brown">{t('sadeSati.analysisTitle')}</h3>
-                        <p className="text-sm text-gray-600">{t('sadeSati.birthMoonSign')}: <span className="text-sacred-gold-dark font-semibold">{sadesatiData.moon_sign}</span></p>
+                        <p className="text-sm text-gray-600">{t('sadeSati.birthMoonSign')}: <span className="text-sacred-gold-dark font-semibold">{translateSign(sadesatiData.moon_sign, language)}</span></p>
                       </div>
                     </div>
                     <p className="text-sm leading-relaxed text-gray-700">
@@ -50,7 +50,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                           {/* Cycle Header */}
                           <div className={`p-4 ${cycle.severity === 'high' ? 'bg-red-50' : cycle.severity === 'extreme' ? 'bg-red-100' : 'bg-sacred-gold/10'}`}>
                             <div className="flex items-center justify-between">
-                              <h5 className="font-display font-semibold text-sacred-brown">{cycle.title}</h5>
+                              <h5 className="font-display font-semibold text-sacred-brown">{translateBackend(cycle.title, language)}</h5>
                               <span className={`text-sm px-2 py-1 rounded-full font-medium ${
                                 cycle.severity === 'extreme' ? 'bg-red-500/20 text-red-700' :
                                 cycle.severity === 'high' ? 'bg-orange-500/20 text-orange-700' :
@@ -62,7 +62,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                             <p className="text-sm text-gray-600 mt-1">
                               {cycle.start_date} to {cycle.end_date}
                             </p>
-                            <p className="text-sm mt-2 text-gray-700">{cycle.description}</p>
+                            <p className="text-sm mt-2 text-gray-700">{translateBackend(cycle.description, language)}</p>
                           </div>
 
                           {/* Cycle Phases Table */}
@@ -89,7 +89,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                                         <td className="p-2">
                                           <span className="text-sacred-brown font-medium">{phaseNames[phase.phase_key] || phase.sub_phase}</span>
                                         </td>
-                                        <td className="p-2 text-cosmic-text">{phase.sign_name}</td>
+                                        <td className="p-2 text-cosmic-text">{translateSign(phase.sign_name, language)}</td>
                                         <td className="p-2 text-cosmic-text">{phase.start_date}</td>
                                         <td className="p-2 text-cosmic-text">{phase.end_date}</td>
                                       </tr>
@@ -135,7 +135,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                                       {phase.phase}
                                     </span>
                                   </td>
-                                  <td className="p-2 text-sacred-brown">{phase.sub_phase}</td>
+                                  <td className="p-2 text-sacred-brown">{translateBackend(phase.sub_phase, language)}</td>
                                   <td className="p-2 text-cosmic-text">{phase.sign_name}</td>
                                   <td className="p-2 text-cosmic-text text-sm">
                                     {phase.start_date} to {phase.end_date}
@@ -201,7 +201,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                       {/* Mantra Remedies */}
                       {sadesatiData.detailed_remedies.mantra && (
                         <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
-                          <h5 className="font-display font-semibold text-sacred-brown mb-3">{sadesatiData.detailed_remedies.mantra.title}</h5>
+                          <h5 className="font-display font-semibold text-sacred-brown mb-3">{translateBackend(sadesatiData.detailed_remedies.mantra.title, language)}</h5>
                           <div className="space-y-3">
                             {sadesatiData.detailed_remedies.mantra.items.map((item: any, idx: number) => (
                               <div key={idx} className="bg-white rounded-lg p-3">
@@ -220,7 +220,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                         if (!data) return null;
                         return (
                           <div key={category} className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
-                            <h5 className="font-display font-semibold text-sacred-brown mb-3">{data.title}</h5>
+                            <h5 className="font-display font-semibold text-sacred-brown mb-3">{translateBackend(data.title, language)}</h5>
                             <ul className="space-y-1">
                               {(data.items || []).map((item: any, idx: number) => (
                                 <li key={idx} className="text-sm text-cosmic-text flex items-start gap-2">
