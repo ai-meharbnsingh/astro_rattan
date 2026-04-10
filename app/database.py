@@ -206,6 +206,125 @@ CREATE TABLE IF NOT EXISTS email_verifications (
 );
 CREATE INDEX IF NOT EXISTS idx_email_verifications_email ON email_verifications(email);
 
+-- Astrologer Profiles
+CREATE TABLE IF NOT EXISTS astrologers (
+    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    display_name TEXT,
+    specializations TEXT DEFAULT 'Vedic',
+    experience_years INTEGER DEFAULT 0,
+    per_minute_rate FLOAT DEFAULT 10.0,
+    languages TEXT DEFAULT '["English"]',
+    bio TEXT,
+    is_available BOOLEAN DEFAULT true,
+    rating FLOAT DEFAULT 0,
+    total_consultations INTEGER DEFAULT 0,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_astrologers_user ON astrologers(user_id);
+
+-- Consultations
+CREATE TABLE IF NOT EXISTS consultations (
+    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    astrologer_id TEXT REFERENCES astrologers(id) ON DELETE SET NULL,
+    type TEXT DEFAULT 'chat',
+    status TEXT DEFAULT 'pending',
+    scheduled_at TIMESTAMPTZ,
+    notes TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Orders
+CREATE TABLE IF NOT EXISTS orders (
+    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    status TEXT DEFAULT 'pending',
+    total FLOAT DEFAULT 0,
+    payment_status TEXT DEFAULT 'pending',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS order_items (
+    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+    order_id TEXT NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+    product_name TEXT,
+    quantity INTEGER DEFAULT 1,
+    price FLOAT DEFAULT 0
+);
+
+-- Products
+CREATE TABLE IF NOT EXISTS products (
+    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+    name TEXT NOT NULL,
+    description TEXT,
+    price FLOAT DEFAULT 0,
+    category TEXT,
+    image_url TEXT,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Payments
+CREATE TABLE IF NOT EXISTS payments (
+    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+    order_id TEXT REFERENCES orders(id) ON DELETE SET NULL,
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    amount FLOAT DEFAULT 0,
+    status TEXT DEFAULT 'pending',
+    provider TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Reports
+CREATE TABLE IF NOT EXISTS reports (
+    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    report_type TEXT DEFAULT 'kundli',
+    status TEXT DEFAULT 'pending',
+    price FLOAT DEFAULT 0,
+    data TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- AI Chat Logs
+CREATE TABLE IF NOT EXISTS ai_chat_logs (
+    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    message TEXT,
+    response TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Messages
+CREATE TABLE IF NOT EXISTS messages (
+    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+    sender_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    receiver_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    content TEXT,
+    is_read BOOLEAN DEFAULT false,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Muhurat Cache
+CREATE TABLE IF NOT EXISTS muhurat_cache (
+    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+    date TEXT NOT NULL,
+    latitude FLOAT,
+    longitude FLOAT,
+    data TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Prashnavali Logs
+CREATE TABLE IF NOT EXISTS prashnavali_logs (
+    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+    user_id TEXT REFERENCES users(id) ON DELETE SET NULL,
+    question TEXT,
+    answer TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 -- Applied Migrations Tracker
 CREATE TABLE IF NOT EXISTS applied_migrations (
     version INTEGER PRIMARY KEY,
