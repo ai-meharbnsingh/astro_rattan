@@ -45,38 +45,36 @@ export default function DivisionalTab({
             <p className="text-sm text-cosmic-text">{t('kundli.division')}: {divisionalData.division}</p>
           </div>
 
-          {/* Kundli Chart and Table side by side - same height */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
-            {/* Left: Kundli Chart - reduced size */}
+          {/* Kundli Chart and Table side by side - same height, no scroll */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+            {/* Left: Kundli Chart */}
             {divisionalData.planet_positions && (
-              <div className="flex justify-center items-center h-[320px]">
-                <div className="w-full max-w-[320px] h-full">
-                  <InteractiveKundli
-                    chartData={{
-                      planets: divisionalData.planet_positions.map((p: any) => ({
-                        planet: p.planet,
-                        sign: p.sign,
-                        house: p.house,
-                        nakshatra: p.nakshatra || '',
-                        sign_degree: p.sign_degree || 0,
-                        status: '',
-                      })),
-                      houses: divisionalData.houses || Array.from({ length: 12 }, (_, i) => ({
-                        number: i + 1,
-                        sign: ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'][i],
-                      })),
-                    } as ChartData}
-                    onPlanetClick={handlePlanetClick}
-                    onHouseClick={handleHouseClick}
-                  />
-                </div>
+              <div className="flex justify-center">
+                <InteractiveKundli
+                  chartData={{
+                    planets: divisionalData.planet_positions.map((p: any) => ({
+                      planet: p.planet,
+                      sign: p.sign,
+                      house: p.house,
+                      nakshatra: p.nakshatra || '',
+                      sign_degree: p.sign_degree || 0,
+                      status: '',
+                    })),
+                    houses: divisionalData.houses || Array.from({ length: 12 }, (_, i) => ({
+                      number: i + 1,
+                      sign: ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'][i],
+                    })),
+                  } as ChartData}
+                  onPlanetClick={handlePlanetClick}
+                  onHouseClick={handleHouseClick}
+                />
               </div>
             )}
 
-            {/* Right: Planet Table - same height as kundli */}
-            <div className="overflow-auto rounded-xl border border-sacred-gold h-[320px]">
+            {/* Right: Planet Table - full height, no scroll */}
+            <div className="rounded-xl border border-sacred-gold h-fit">
               <table className="w-full">
-                <thead className="bg-sacred-cream sticky top-0">
+                <thead className="bg-sacred-cream">
                   <tr>
                     <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">{t('table.planet')}</th>
                     <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">{t('table.sign')}</th>
