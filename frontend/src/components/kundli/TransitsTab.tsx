@@ -104,7 +104,7 @@ export default function TransitsTab(props: TransitsTabProps) {
                   <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
                     <h4 className="font-display font-semibold text-sacred-brown mb-2">{t('transit.chart')} ({transitData.transit_date})</h4>
                     <p className="text-sm mb-3" style={{ color: 'var(--ink-light)' }}>{t('kundli.clickHouseToRotate')}</p>
-                    <div className="w-full max-w-[600px] mx-auto">
+                    <div className="w-full max-w-[450px] mx-auto">
                       {(() => {
                         const shift = transitHouseShift;
                         const transitPlanets = (transitData.transits || []).map((tr: any) => ({
