@@ -372,7 +372,7 @@ export default function KundliGenerator() {
           </TabsContent>
 
           <TabsContent value="avakhada" className="min-h-[300px]">
-            <AvakhadaTab avakhadaData={avakhadaData} loadingAvakhada={loadingAvakhada} t={t} />
+            <AvakhadaTab avakhadaData={avakhadaData} loadingAvakhada={loadingAvakhada} language={language} t={t} />
           </TabsContent>
 
           <TabsContent value="yoga-dosha" className="min-h-[300px]">

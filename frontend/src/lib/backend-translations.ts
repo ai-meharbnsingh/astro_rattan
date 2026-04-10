@@ -228,6 +228,28 @@ const STRENGTH: Record<string, string> = {
   'Strong': 'बलवान', 'Medium': 'मध्यम', 'Weak': 'दुर्बल',
 };
 
+// Avakhada specific translations
+const AVAKHADA_VALUES: Record<string, string> = {
+  // Gana
+  'Deva': 'देव', 'Manushya': 'मनुष्य', 'Rakshasa': 'राक्षस',
+  // Nadi
+  'Aadi': 'आदि', 'Madhya': 'मध्य', 'Antya': 'अंत्य',
+  // Varna
+  'Brahmin': 'ब्राह्मण', 'Kshatriya': 'क्षत्रिय', 'Vaishya': 'वैश्य', 'Shudra': 'शूद्र',
+  // Yoni
+  'Horse': 'अश्व', 'Elephant': 'हाथी', 'Goat': 'बकरी', 'Serpent': 'सर्प',
+  'Dog': 'कुत्ता', 'Cat': 'बिल्ली', 'Rat': 'चूहा', 'Cow': 'गाय',
+  'Buffalo': 'भैंस', 'Tiger': 'बाघ', 'Deer': 'हिरण', 'Monkey': 'बंदर',
+  'Mongoose': 'नेवला', 'Lion': 'सिंह',
+  // Paya
+  'Gold': 'स्वर्ण', 'Silver': 'रजत', 'Copper': 'ताम्र', 'Iron': 'लोहा',
+  'Rajat': 'रजत', 'Loha': 'लोहा',
+  // Paksha
+  'Shukla': 'शुक्ल', 'Krishna': 'कृष्ण',
+  // Additional
+  'Mrig': 'मृग',
+};
+
 // All lookup tables merged for generic matching
 const ALL_LOOKUPS: Record<string, string> = {
   ...PLANET_NAMES, ...SIGN_NAMES, ...DOSHA_NAMES, ...YOGA_NAMES,
@@ -235,7 +257,7 @@ const ALL_LOOKUPS: Record<string, string> = {
   ...PHASE_TYPES, ...REMEDY_MAP, ...YOGINI_NAMES, ...STRENGTH,
   ...NAKSHATRA_NAMES, ...SADE_SATI_CYCLES, ...SADE_SATI_DESCRIPTIONS,
   ...TRANSIT_DETAILS, ...REMEDY_CATEGORIES, ...SADE_SATI_EXPLANATIONS,
-  ...YOGA_DESCRIPTIONS,
+  ...YOGA_DESCRIPTIONS, ...AVAKHADA_VALUES,
 };
 
 /**
