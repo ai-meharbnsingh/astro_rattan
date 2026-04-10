@@ -197,7 +197,7 @@ export default function NumerologyTarot() {
   return (
     <section className="max-w-4xl mx-auto py-24 px-4">
       <div className="text-center mb-10">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold text-sacred-gold text-sm font-medium mb-4">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold-dark text-white text-sm font-medium mb-4">
           <Sparkles className="w-4 h-4" />{t('numerology.badge')}
         </div>
         <h2 className="text-3xl sm:text-4xl font-display font-bold text-cosmic-text mb-2">
@@ -298,7 +298,7 @@ export default function NumerologyTarot() {
           {/* Mobile Number Numerology Section */}
           <div className="mt-10 pt-8 border-t border-sacred-gold">
             <div className="text-center mb-6">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold text-sacred-gold text-sm font-medium mb-3">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold-dark text-white text-sm font-medium mb-3">
                 <Phone className="w-4 h-4" />Mobile Number Numerology
               </div>
               <p className="text-sm text-cosmic-text-secondary">Discover the hidden vibration of your mobile number</p>
@@ -499,7 +499,7 @@ export default function NumerologyTarot() {
 
                     {/* Section 3: Mobile Number Prediction Details */}
                     <div className="rounded-xl border border-sacred-gold overflow-hidden">
-                      <div className="px-4 py-2 bg-sacred-gold text-sacred-gold font-medium text-sm flex items-center gap-2">
+                      <div className="px-4 py-2 bg-sacred-gold-dark text-white font-medium text-sm flex items-center gap-2">
                         <Sparkles className="w-4 h-4 shrink-0" />Prediction Details
                       </div>
                       <div className="divide-y divide-sacred-gold">
@@ -529,7 +529,7 @@ export default function NumerologyTarot() {
                             <span className="text-sm text-cosmic-text-secondary">Recommended Totals</span>
                             <div className="flex flex-wrap gap-1.5">
                               {mobileResult.recommended_totals.map((n) => (
-                                <Badge key={n} className="bg-sacred-gold text-sacred-gold border-sacred-gold px-2 py-0.5 text-sm">{n}</Badge>
+                                <Badge key={n} className="bg-sacred-gold-dark text-white border-sacred-gold px-2 py-0.5 text-sm">{n}</Badge>
                               ))}
                             </div>
                           </div>
@@ -606,7 +606,7 @@ export default function NumerologyTarot() {
                     {/* Section 4: Mobile Combinations */}
                     {mobileResult.combinations && mobileResult.combinations.length > 0 && (
                       <div className="rounded-xl border border-sacred-gold overflow-hidden">
-                        <div className="px-4 py-2 bg-sacred-gold text-sacred-gold font-medium text-sm flex items-center gap-2">
+                        <div className="px-4 py-2 bg-sacred-gold-dark text-white font-medium text-sm flex items-center gap-2">
                           <Hash className="w-4 h-4 shrink-0" />Mobile Combinations
                         </div>
                         <div className="overflow-x-auto">
@@ -655,7 +655,7 @@ export default function NumerologyTarot() {
                     {/* Section 5: Predictions */}
                     {mobileResult.prediction && (
                       <div className="rounded-xl border border-sacred-gold overflow-hidden">
-                        <div className="px-4 py-2 bg-sacred-gold text-sacred-gold font-medium text-sm flex items-center gap-2">
+                        <div className="px-4 py-2 bg-sacred-gold-dark text-white font-medium text-sm flex items-center gap-2">
                           <Sparkles className="w-4 h-4 shrink-0" />Predictions
                         </div>
                         <div className="px-4 py-3">

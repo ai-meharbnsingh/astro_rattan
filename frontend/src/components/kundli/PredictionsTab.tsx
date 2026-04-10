@@ -76,7 +76,7 @@ export default function PredictionsTab({
             className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               activePeriod === key
                 ? 'bg-sacred-gold-dark text-white shadow-md'
-                : 'bg-sacred-cream border border-sacred-gold text-sacred-brown hover:bg-sacred-gold'
+                : 'bg-sacred-cream border border-sacred-gold text-sacred-brown hover:bg-sacred-gold/5'
             } ${loadingPredictions ? 'opacity-75 cursor-not-allowed' : ''}`}
           >
             <Icon className="w-4 h-4" />

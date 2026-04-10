@@ -117,7 +117,7 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
                 return (
                   <React.Fragment key={planet}>
                     <tr
-                      className={`border-t border-sacred-gold ${d.is_strong ? '' : 'bg-red-5'} ${hasDetail ? 'cursor-pointer hover:bg-sacred-gold' : ''}`}
+                      className={`border-t border-sacred-gold ${d.is_strong ? '' : 'bg-red-5'} ${hasDetail ? 'cursor-pointer hover:bg-sacred-gold/5' : ''}`}
                       onClick={hasDetail ? () => toggleExpand(planet) : undefined}
                     >
                       <td className="p-2 text-sacred-brown font-medium flex items-center gap-1">

@@ -640,7 +640,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
             {birthChartData && (
               <div className="mb-6">
                 <h5 className="text-sm font-semibold text-sacred-brown mb-3 text-center">{T.kundliChart(lang)}</h5>
-                <div className="flex justify-center">
+                <div className="flex justify-center max-w-[300px] mx-auto">
                   <InteractiveKundli
                     chartData={birthChartData}
                     compact
@@ -697,7 +697,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
             {transitChartData && (
               <div className="mb-6">
                 <h5 className="text-sm font-semibold text-sacred-brown mb-3 text-center">{T.gocharChart(lang)}</h5>
-                <div className="flex justify-center">
+                <div className="flex justify-center max-w-[300px] mx-auto">
                   <InteractiveKundli
                     chartData={transitChartData}
                     compact
@@ -768,7 +768,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                     className="w-full flex items-center justify-between p-3 text-left hover:bg-slate-50 transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      <span className="w-8 h-8 flex items-center justify-center rounded-full bg-sacred-gold text-sacred-gold-dark font-bold text-sm">
+                      <span className="w-8 h-8 flex items-center justify-center rounded-full bg-sacred-gold-dark text-white-dark font-bold text-sm">
                         {h.house}
                       </span>
                       <div>
@@ -811,7 +811,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {MUNDANE_HOUSE_MEANINGS.map((h, idx) => (
               <div key={idx} className="border border-sacred-gold rounded-lg bg-white p-3 flex items-start gap-2">
-                <span className="w-7 h-7 flex items-center justify-center rounded-full bg-sacred-gold text-sacred-gold-dark font-bold text-sm shrink-0">
+                <span className="w-7 h-7 flex items-center justify-center rounded-full bg-sacred-gold-dark text-white-dark font-bold text-sm shrink-0">
                   {idx + 1}
                 </span>
                 <span className="text-sm text-cosmic-text">{lang === 'hi' ? h.hi : h.en}</span>
@@ -966,7 +966,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
           <button
             type="button"
             onClick={prevYear}
-            className="p-1.5 rounded-lg border border-sacred-gold hover:bg-sacred-gold text-sacred-brown transition-colors"
+            className="p-1.5 rounded-lg border border-sacred-gold hover:bg-sacred-gold/10 text-sacred-brown transition-colors"
             aria-label="Previous year"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -977,7 +977,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
           <button
             type="button"
             onClick={nextYear}
-            className="p-1.5 rounded-lg border border-sacred-gold hover:bg-sacred-gold text-sacred-brown transition-colors"
+            className="p-1.5 rounded-lg border border-sacred-gold hover:bg-sacred-gold/10 text-sacred-brown transition-colors"
             aria-label="Next year"
           >
             <ChevronRight className="w-4 h-4" />

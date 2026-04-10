@@ -112,7 +112,7 @@ export default function VarshphalTab({
             <h4 className="font-display font-semibold text-sacred-brown mb-3">
               {t('section.muddaDasha')}
               {(varshphalData.current_mudda || varshphalData.current_mudda_dasha) && (
-                <span className="ml-2 text-sm px-2 py-1 rounded-full bg-sacred-gold text-sacred-gold-dark">
+                <span className="ml-2 text-sm px-2 py-1 rounded-full bg-sacred-gold-dark text-white-dark">
                   {t('common.current')}: {translatePlanet(varshphalData.current_mudda || varshphalData.current_mudda_dasha, language)}
                 </span>
               )}

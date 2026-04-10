@@ -142,7 +142,7 @@ export default function KundliForm({
           <ArrowLeft className="w-4 h-4 mr-2" />{language === 'hi' ? `मेरी कुंडलियों पर वापस (${savedKundlisCount})` : `Back to My Kundlis (${savedKundlisCount})`}
         </Button>
       )}
-      <Button onClick={onPrashnaKundli} variant="outline" className="w-full mb-4 border-sacred-gold text-sacred-brown hover:bg-sacred-gold">
+      <Button onClick={onPrashnaKundli} variant="outline" className="w-full mb-4 border-sacred-gold text-sacred-brown hover:bg-sacred-gold/10">
         <Clock className="w-5 h-5 mr-2 text-sacred-gold" />{t('kundli.prashnaKundli')}
         <span className="ml-2 text-sm text-cosmic-text">{t('kundli.prashnaSubtitle')}</span>
       </Button>
@@ -160,8 +160,8 @@ export default function KundliForm({
           <Input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder={language === 'hi' ? 'पूरा नाम' : 'Full Name'} className="pl-10 bg-sacred-cream border-sacred-gold text-sacred-brown" />
         </div>
         <div className="grid grid-cols-2 gap-4" role="radiogroup" aria-label={language === 'hi' ? 'लिंग' : 'Gender'}>
-          <button role="radio" aria-checked={formData.gender === 'male'} onClick={() => setFormData({ ...formData, gender: 'male' })} className={`p-3 rounded-xl border transition-colors ${formData.gender === 'male' ? 'border-sacred-gold bg-sacred-gold text-sacred-gold-dark' : 'border-sacred-gold text-cosmic-text'}`}>{language === 'hi' ? 'पुरुष' : 'Male'}</button>
-          <button role="radio" aria-checked={formData.gender === 'female'} onClick={() => setFormData({ ...formData, gender: 'female' })} className={`p-3 rounded-xl border transition-colors ${formData.gender === 'female' ? 'border-sacred-gold bg-sacred-gold text-sacred-gold-dark' : 'border-sacred-gold text-cosmic-text'}`}>{language === 'hi' ? 'महिला' : 'Female'}</button>
+          <button role="radio" aria-checked={formData.gender === 'male'} onClick={() => setFormData({ ...formData, gender: 'male' })} className={`p-3 rounded-xl border transition-colors ${formData.gender === 'male' ? 'border-sacred-gold bg-sacred-gold-dark text-white-dark' : 'border-sacred-gold text-cosmic-text'}`}>{language === 'hi' ? 'पुरुष' : 'Male'}</button>
+          <button role="radio" aria-checked={formData.gender === 'female'} onClick={() => setFormData({ ...formData, gender: 'female' })} className={`p-3 rounded-xl border transition-colors ${formData.gender === 'female' ? 'border-sacred-gold bg-sacred-gold-dark text-white-dark' : 'border-sacred-gold text-cosmic-text'}`}>{language === 'hi' ? 'महिला' : 'Female'}</button>
         </div>
         <div className="relative">
           <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-cosmic-text" />

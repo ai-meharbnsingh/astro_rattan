@@ -1231,7 +1231,7 @@ export default function ConsolidatedReport({
                               return (
                                 <td key={s} className="text-center p-1">
                                   <span className={`inline-block w-5 h-5 rounded text-sm leading-5 ${
-                                    val >= 5 ? 'bg-sacred-gold-dark text-sacred-gold-dark font-bold'
+                                    val >= 5 ? 'bg-sacred-gold-dark text-white font-bold'
                                     : val <= 2 ? 'bg-red-10 text-sacred-maroon'
                                     : 'text-cosmic-text'
                                   }`}>

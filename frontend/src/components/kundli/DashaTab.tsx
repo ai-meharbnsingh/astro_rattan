@@ -46,14 +46,14 @@ export default function DashaTab({
             <div key={md.planet} className={`rounded-xl border overflow-hidden ${md.is_current ? 'border-sacred-gold-dark' : 'border-sacred-gold'}`}>
               <button
                 onClick={() => setExpandedMahadasha(expandedMahadasha === md.planet ? null : md.planet)}
-                className={`w-full flex items-center justify-between p-4 transition-colors ${md.is_current ? 'bg-sacred-gold-dark' : 'bg-sacred-cream hover:bg-sacred-gold'}`}
+                className={`w-full flex items-center justify-between p-4 transition-colors ${md.is_current ? 'bg-sacred-gold-dark' : 'bg-sacred-cream hover:bg-sacred-gold/5'}`}
               >
                 <div className="flex items-center gap-3">
                   <ChevronDown className={`w-4 h-4 text-sacred-gold-dark transition-transform ${expandedMahadasha === md.planet ? 'rotate-180' : ''}`} />
                   <span className={`font-display font-semibold ${md.is_current ? 'text-sacred-gold-dark' : 'text-sacred-brown'}`}>
                     {translatePlanet(md.planet, language)} {t('kundli.mahadasha')}
                   </span>
-                  {md.is_current && <span className="text-sm px-2 py-0.5 rounded-full bg-sacred-gold-dark text-sacred-gold-dark font-medium">{t('common.current')}</span>}
+                  {md.is_current && <span className="text-sm px-2 py-0.5 rounded-full bg-sacred-cream text-sacred-brown font-medium">{t('common.current')}</span>}
                 </div>
                 <div className="text-right text-sm text-cosmic-text">
                   <span>{md.start} {'\u2014'} {md.end}</span>
@@ -67,7 +67,7 @@ export default function DashaTab({
                     <div key={`${md.planet}-${ad.planet}`}>
                       <button
                         onClick={() => setExpandedAntardasha(expandedAntardasha === `${md.planet}-${ad.planet}` ? null : `${md.planet}-${ad.planet}`)}
-                        className={`w-full flex items-center justify-between px-6 py-3 text-sm transition-colors ${ad.is_current ? 'bg-sacred-gold-dark' : 'hover:bg-sacred-gold'}`}
+                        className={`w-full flex items-center justify-between px-6 py-3 text-sm transition-colors ${ad.is_current ? 'bg-sacred-gold-dark' : 'hover:bg-sacred-gold/5'}`}
                       >
                         <div className="flex items-center gap-2">
                           {ad.pratyantar && ad.pratyantar.length > 0 && (
@@ -76,7 +76,7 @@ export default function DashaTab({
                           <span className={`font-medium ${ad.is_current ? 'text-sacred-gold-dark' : 'text-sacred-brown'}`}>
                             {translatePlanet(ad.planet, language)} {t('kundli.antardasha')}
                           </span>
-                          {ad.is_current && <span className="text-sm px-1.5 py-0.5 rounded-full bg-sacred-gold-dark text-sacred-gold-dark">{t('common.current')}</span>}
+                          {ad.is_current && <span className="text-sm px-1.5 py-0.5 rounded-full bg-sacred-cream text-sacred-brown">{t('common.current')}</span>}
                         </div>
                         <span className="text-cosmic-text">{ad.start} {'\u2014'} {ad.end}</span>
                       </button>

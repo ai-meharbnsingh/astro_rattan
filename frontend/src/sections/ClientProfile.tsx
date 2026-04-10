@@ -154,7 +154,7 @@ export default function ClientProfile() {
                   <span className="text-sm text-cosmic-text">
                     {note.created_at ? formatDateTime(note.created_at) : ''}
                   </span>
-                  <span className="text-sm px-1.5 py-0.5 bg-sacred-gold-dark text-sacred-gold-dark rounded">
+                  <span className="text-sm px-1.5 py-0.5 bg-sacred-gold-dark text-white rounded">
                     {{ vedic: 'Kundli', lalkitab: 'Lal Kitab', numerology: 'Numerology', general: 'General' }[note.chart_type] || note.chart_type}
                   </span>
                 </div>

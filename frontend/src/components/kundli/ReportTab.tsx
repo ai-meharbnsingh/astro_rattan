@@ -361,7 +361,7 @@ export default function ReportTab({
                       </thead>
                       <tbody>
                         {planets.map((planet: any, index: number) => (
-                          <tr key={index} className="border-t border-sacred-gold hover:bg-sacred-gold">
+                          <tr key={index} className="border-t border-sacred-gold hover:bg-sacred-gold/5">
                             <td className="p-2 text-sacred-brown font-medium">{translatePlanet(planet.planet, language)}</td>
                             <td className="p-2 text-cosmic-text">{translateSign(planet.sign, language)}</td>
                             <td className="p-2 text-center text-cosmic-text">{planet.house}</td>

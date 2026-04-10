@@ -162,7 +162,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                                   const rowVals = signs.map((s) => row[s] || 0);
                                   const rowTotal = rowVals.reduce((a, b) => a + b, 0);
                                   return (
-                                    <tr key={contrib} className="border-t border-sacred-gold hover:bg-sacred-gold">
+                                    <tr key={contrib} className="border-t border-sacred-gold hover:bg-sacred-gold/5">
                                       <td className="p-1 text-sacred-brown font-medium whitespace-nowrap">{translatePlanet(contrib, language)}</td>
                                       {rowVals.map((v, i) => (
                                         <td key={i} className="text-center p-1">
@@ -208,10 +208,10 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                           {/* Bindu values in each house position */}
                           {housePos.map((pos, i) => (
                             <g key={i}>
-                              <text x={pos.x} y={pos.y - 10} textAnchor="middle" fontSize="14" fill="#8B7355" fontFamily="sans-serif">
+                              <text x={pos.x} y={pos.y - 8} textAnchor="middle" fontSize="11" fill="#8B7355" fontFamily="sans-serif">
                                 {signAbbr[i]}
                               </text>
-                              <text x={pos.x} y={pos.y + 8} textAnchor="middle" fontSize="22" fontWeight="bold" fill={binduColor(vals[i])} fontFamily="sans-serif">
+                              <text x={pos.x} y={pos.y + 8} textAnchor="middle" fontSize="16" fontWeight="bold" fill={binduColor(vals[i])} fontFamily="sans-serif">
                                 {vals[i]}
                               </text>
                             </g>
@@ -259,13 +259,13 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                     const signs = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
                     const total = signs.reduce((sum, s) => sum + (bindus[s] || 0), 0);
                     return (
-                      <tr key={planet} className="border-t border-sacred-gold hover:bg-sacred-gold">
+                      <tr key={planet} className="border-t border-sacred-gold hover:bg-sacred-gold/5">
                         <td className="p-2 text-sacred-brown font-medium">{translatePlanet(planet, language)}</td>
                         {signs.map((s) => {
                           const val = bindus[s] || 0;
                           return (
                             <td key={s} className="text-center p-2">
-                              <span className={`inline-block w-6 h-6 rounded text-sm leading-6 ${val >= 5 ? 'bg-sacred-gold-dark text-sacred-gold-dark font-bold' : val <= 2 ? 'bg-red-10 text-wax-red-deep' : 'text-cosmic-text'}`}>
+                              <span className={`inline-block w-6 h-6 rounded text-sm leading-6 ${val >= 5 ? 'bg-sacred-gold-dark text-white font-bold' : val <= 2 ? 'bg-red-10 text-wax-red-deep' : 'text-cosmic-text'}`}>
                                 {val}
                               </span>
                             </td>

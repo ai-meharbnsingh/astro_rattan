@@ -148,7 +148,7 @@ export default function NotesWidget({ clientId, chartType, kundliId }: NotesWidg
                   <p className="text-sm text-cosmic-text whitespace-pre-wrap">{note.content}</p>
                   <div className="flex items-center gap-2 mt-1">
                     <span className="text-sm text-cosmic-text">{formatNoteDate(note.created_at)}</span>
-                    <span className="text-sm px-1.5 py-0.5 bg-sacred-gold-dark text-sacred-gold-dark rounded">
+                    <span className="text-sm px-1.5 py-0.5 bg-sacred-gold-dark text-white rounded">
                       {chartLabel[note.chart_type] || note.chart_type}
                     </span>
                   </div>

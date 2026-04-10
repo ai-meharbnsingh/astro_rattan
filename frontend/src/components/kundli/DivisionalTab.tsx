@@ -81,7 +81,7 @@ export default function DivisionalTab({
                 {Object.entries(divisionalData.planet_signs || {}).map(([planet, sign]: [string, any]) => {
                   const posData = (divisionalData.planet_positions || []).find((p: any) => p.planet === planet);
                   return (
-                    <tr key={planet} className="border-t border-sacred-gold hover:bg-sacred-gold">
+                    <tr key={planet} className="border-t border-sacred-gold hover:bg-sacred-gold/5">
                       <td className="p-3 text-sacred-brown font-medium text-sm">{translatePlanet(planet, language)}</td>
                       <td className="p-3 text-cosmic-text text-sm">{translateSign(sign as string, language)}</td>
                       <td className="p-3 text-cosmic-text text-sm">{posData?.sign_degree?.toFixed(1) || '--'}&deg;</td>

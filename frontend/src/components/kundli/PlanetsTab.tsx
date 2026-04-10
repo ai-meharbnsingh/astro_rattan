@@ -169,7 +169,7 @@ export default function PlanetsTab({
                   className={`border-t border-sacred-gold cursor-pointer transition-colors ${
                     sidePanel?.type === 'planet' && sidePanel.planet?.planet === planet.planet
                       ? 'bg-sacred-gold'
-                      : 'hover:bg-sacred-gold'
+                      : 'hover:bg-sacred-gold/5'
                   }`}
                   onClick={() => handlePlanetClick(planet)}
                 >

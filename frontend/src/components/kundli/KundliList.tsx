@@ -145,7 +145,7 @@ export default function KundliList({
         <Sparkles className="w-5 h-5 mr-2" />{language === 'hi' ? 'नई कुंडली बनाएं' : 'Generate New Kundli'}
       </Button>
       
-      <Button onClick={onPrashnaKundli} variant="outline" className="w-full mt-3 border-sacred-gold text-sacred-brown hover:bg-sacred-gold">
+      <Button onClick={onPrashnaKundli} variant="outline" className="w-full mt-3 border-sacred-gold text-sacred-brown hover:bg-sacred-gold/10">
         <Clock className="w-5 h-5 mr-2 text-sacred-gold" />{t('kundli.prashnaKundli')}
         <span className="ml-2 text-sm text-cosmic-text">{t('kundli.prashnaSubtitle')}</span>
       </Button>
