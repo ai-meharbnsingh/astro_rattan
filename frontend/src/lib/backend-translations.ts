@@ -105,6 +105,15 @@ const SADE_SATI_CYCLES: Record<string, string> = {
   '8th Cycle of Sadhesati': 'साढ़ेसाती का अष्टम चक्र',
 };
 
+// Sade Sati Explanation Texts
+const SADE_SATI_EXPLANATIONS: Record<string, string> = {
+  'The seven and a half year period during which Saturn transits in the twelfth, first and second houses from the birth rashi (Moon sign) is called the Sadhesati of Saturn.':
+    'साढ़े सात वर्ष की अवधि जिसमें शनि जन्म राशि (चंद्र राशि) से बारहवें, प्रथम और द्वितीय भाव में गोचर करता है, शनि की साढ़ेसाती कहलाती है।',
+  
+  'One Sadhesati is made up of three periods of approximately two and a half years each, because Saturn travels in one rashi for two and a half years.':
+    'एक साढ़ेसाती लगभग ढाई वर्ष की तीन अवधियों से बनी होती है, क्योंकि शनि एक राशि में ढाई वर्ष गोचर करता है।',
+};
+
 // Sade Sati Descriptions
 const SADE_SATI_DESCRIPTIONS: Record<string, string> = {
   'The first cycle of Sadhesati of Saturn is extremely intense. During this period you may experience physical pain. There would be obstacles and hardships of various kinds. During this period of Sadhesati, there may also be some troubles to your parents.':
@@ -147,6 +156,42 @@ const REMEDY_MAP: Record<string, string> = {
   'Feed crows and black dogs on Saturdays': 'शनिवार को कौओं और काले कुत्तों को भोजन दें',
   'Chant Om Sham Shanaishcharaye Namah 108 times': 'ॐ शं शनैश्चराय नमः 108 बार जपें',
   'Perform Shani Shanti Puja': 'शनि शांति पूजा करवाएं',
+  // Mantra Remedies
+  'Mahamrityunjaya Mantra': 'महामृत्युंजय मंत्र',
+  'Shani Mantra': 'शनि मंत्र',
+  'Ancient Shani Mantra': 'प्राचीन शनि मंत्र',
+  '125,000 times recitations (daily 10 malas for 125 days)': '125,000 बार जप (प्रतिदिन 10 माला, 125 दिन)',
+  'Recite 23,000 times in 21 days': '21 दिनों में 23,000 बार जप करें',
+  'Recite daily on Saturdays': 'शनिवार को प्रतिदिन जप करें',
+  // Stotra
+  'Dashratha Stotra': 'दशरथ स्तोत्र',
+  'Shani Stotra': 'शनि स्तोत्र',
+  // Vrata
+  'Observe Vrata on Saturdays': 'शनिवार को व्रत रखें',
+  'Worship Lord Saturn with kavacha, stotra and mantra': 'कवच, स्तोत्र और मंत्र के साथ शनिदेव की पूजा करें',
+  'Recite Saturday Vrata Katha': 'शनिवार व्रत कथा का पाठ करें',
+  'Consume milk, curd and fruit juice during daytime': 'दिन के समय दूध, दही और फलों का रस ग्रहण करें',
+  'In evening, visit temple of Lord Hanuman or Bhairavji': 'शाम को हनुमान जी या भैरव जी के मंदिर जाएं',
+  'Take sweet halwa made of Urad pulse or salted Khichari': 'उड़द की दाल का हलवा या नमकीन खिचड़ी ग्रहण करें',
+  // Donation
+  'Donate Urad (black pulse) on Saturdays': 'शनिवार को उड़द (काली दाल) दान करें',
+  'Donate sesame oil': 'तिल का तेल दान करें',
+  'Donate sapphire (if affordable)': 'नीलम दान करें (यदि सामर्थ्य हो)',
+  'Donate black sesame seeds': 'काले तिल दान करें',
+  'Donate Kulathi (horse bean)': 'कुलथी (घोड़े की दाल) दान करें',
+  'Donate iron items': 'लोहे की वस्तुएं दान करें',
+  'Donate money and black clothes to the needy': 'जरूरतमंदों को धन और काले वस्त्र दान करें',
+  // Gems
+  'Wear an iron ring made from the bottom of a boat or horse\'s bridle on the middle finger on Saturday': 'शनिवार को नाव के तले या घोड़े की लगाम का बना लोहे की अंगूठी मध्यमा में पहनें',
+  'Consider wearing Blue Sapphire (Neelam) after consulting an astrologer': 'ज्योतिषी से परामर्श के बाद नीलम धारण करने पर विचार करें',
+  'Amethyst can be worn as a substitute after consultation': 'परामर्श के बाद जामुनिया विकल्प के रूप में पहना जा सकता है',
+  // Other Remedies
+  'Wrap a raw cotton thread seven times around a Peepal tree on Saturday evening and light a lamp with mustard oil': 'शनिवार शाम को पीपल के पेड़ पर कच्चे सूती धागे को सात बार लपेटें और सरसों के तेल का दीपक जलाएं',
+  'Measure a black thread equal to 19 times the length of your hand and wear it like a garland': 'अपने हाथ की लंबाई के 19 गुना बराबर काला धागा मापकर माला के रूप में पहनें',
+  'Bury a sweet made of urad pulse, sesame, oil and jaggery in an un-tilled place on Saturday': 'शनिवार को उड़द, तिल, तेल और गुड़ से बनी मिठाई खेत में गाड़ें',
+  'Light a mustard oil lamp under a Peepal tree on Saturdays': 'शनिवार को पीपल के पेड़ के नीचे सरसों के तेल का दीपक जलाएं',
+  'Recite Hanuman Chalisa on Tuesdays and Saturdays': 'मंगलवार और शनिवार को हनुमान चालीसा का पाठ करें',
+  'Worship Lord Shiva daily by doing Jalabhishek': 'रोजाना जलाभिषेक करके भगवान शिव की पूजा करें',
 };
 
 const YOGINI_NAMES: Record<string, string> = {
@@ -165,7 +210,7 @@ const ALL_LOOKUPS: Record<string, string> = {
   ...SEVERITY, ...DIGNITY, ...SIGN_TYPE_LABELS, ...ELEMENT_LABELS,
   ...PHASE_TYPES, ...REMEDY_MAP, ...YOGINI_NAMES, ...STRENGTH,
   ...NAKSHATRA_NAMES, ...SADE_SATI_CYCLES, ...SADE_SATI_DESCRIPTIONS,
-  ...TRANSIT_DETAILS, ...REMEDY_CATEGORIES,
+  ...TRANSIT_DETAILS, ...REMEDY_CATEGORIES, ...SADE_SATI_EXPLANATIONS,
 };
 
 /**

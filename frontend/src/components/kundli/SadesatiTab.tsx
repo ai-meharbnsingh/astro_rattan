@@ -30,10 +30,10 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                       </div>
                     </div>
                     <p className="text-sm leading-relaxed text-gray-700">
-                      {sadesatiData.explanation?.sadesati || t('sadeSati.sadesatiExplanation')}
+                      {translateBackend(sadesatiData.explanation?.sadesati, language) || t('sadeSati.sadesatiExplanation')}
                     </p>
                     <p className="text-sm mt-2 leading-relaxed text-gray-700">
-                      {sadesatiData.explanation?.dhayya || t('sadeSati.dhayyaExplanation')}
+                      {translateBackend(sadesatiData.explanation?.dhayya, language) || t('sadeSati.dhayyaExplanation')}
                     </p>
                   </div>
 
@@ -225,7 +225,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                               {(data.items || []).map((item: any, idx: number) => (
                                 <li key={idx} className="text-sm text-cosmic-text flex items-start gap-2">
                                   <span className="mt-1.5 w-1 h-1 rounded-full bg-gold-hex flex-shrink-0"></span>
-                                  {typeof item === 'string' ? item : item.name || item.instruction}
+                                  {typeof item === 'string' ? translateBackend(item, language) : translateBackend(item.name, language) || translateBackend(item.instruction, language)}
                                 </li>
                               ))}
                             </ul>
