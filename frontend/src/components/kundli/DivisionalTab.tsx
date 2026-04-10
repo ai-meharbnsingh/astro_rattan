@@ -47,27 +47,29 @@ export default function DivisionalTab({
 
           {/* Kundli Chart and Table side by side - same height, no scroll */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-            {/* Left: Kundli Chart */}
+            {/* Left: Kundli Chart - 25% smaller */}
             {divisionalData.planet_positions && (
               <div className="flex justify-center">
-                <InteractiveKundli
-                  chartData={{
-                    planets: divisionalData.planet_positions.map((p: any) => ({
-                      planet: p.planet,
-                      sign: p.sign,
-                      house: p.house,
-                      nakshatra: p.nakshatra || '',
-                      sign_degree: p.sign_degree || 0,
-                      status: '',
-                    })),
-                    houses: divisionalData.houses || Array.from({ length: 12 }, (_, i) => ({
-                      number: i + 1,
-                      sign: ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'][i],
-                    })),
-                  } as ChartData}
-                  onPlanetClick={handlePlanetClick}
-                  onHouseClick={handleHouseClick}
-                />
+                <div className="w-full max-w-[420px]">
+                  <InteractiveKundli
+                    chartData={{
+                      planets: divisionalData.planet_positions.map((p: any) => ({
+                        planet: p.planet,
+                        sign: p.sign,
+                        house: p.house,
+                        nakshatra: p.nakshatra || '',
+                        sign_degree: p.sign_degree || 0,
+                        status: '',
+                      })),
+                      houses: divisionalData.houses || Array.from({ length: 12 }, (_, i) => ({
+                        number: i + 1,
+                        sign: ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'][i],
+                      })),
+                    } as ChartData}
+                    onPlanetClick={handlePlanetClick}
+                    onHouseClick={handleHouseClick}
+                  />
+                </div>
               </div>
             )}
 
