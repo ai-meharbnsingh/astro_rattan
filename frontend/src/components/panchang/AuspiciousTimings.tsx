@@ -28,25 +28,29 @@ interface AuspiciousTimingsProps {
 function qualityClasses(quality: string) {
   switch (quality) {
     case "Best":
+      return {
+        badge: "bg-green-100 text-green-800 border border-green-300",
+        row: "bg-green-50",
+      };
     case "Good":
       return {
-        badge: "bg-green-500/20 text-green-400 border border-green-500/30",
-        row: "bg-green-900/10",
+        badge: "bg-green-100 text-green-700 border border-green-200",
+        row: "bg-green-50/50",
       };
     case "Neutral":
       return {
-        badge: "bg-amber-500/20 text-amber-400 border border-amber-500/30",
-        row: "bg-amber-900/10",
+        badge: "bg-amber-100 text-amber-800 border border-amber-300",
+        row: "bg-amber-50",
       };
     case "Inauspicious":
       return {
-        badge: "bg-red-500/20 text-red-400 border border-red-500/30",
-        row: "bg-red-900/10",
+        badge: "bg-red-100 text-red-700 border border-red-300",
+        row: "bg-red-50",
       };
     default:
       return {
-        badge: "bg-cosmic-card text-cosmic-text-secondary border border-sacred-gold/10",
-        row: "bg-cosmic-card",
+        badge: "bg-gray-100 text-gray-600 border border-gray-200",
+        row: "bg-gray-50",
       };
   }
 }
@@ -59,13 +63,13 @@ function MuhuratCard({
   period: TimePeriod;
 }) {
   return (
-    <div className="flex flex-row gap-4 p-4 rounded-xl bg-green-900/10 border border-green-500/20">
-      <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-green-500/10">
-        <Sparkles className="h-5 w-5 text-green-400" />
+    <div className="flex flex-row gap-4 p-4 rounded-xl bg-green-50 border border-green-200">
+      <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-green-100">
+        <Sparkles className="h-5 w-5 text-green-700" />
       </div>
       <div className="flex flex-col justify-center">
-        <span className="text-sm text-green-400 font-medium">{title}</span>
-        <span className="text-cosmic-text font-semibold">
+        <span className="text-sm text-green-700 font-medium">{title}</span>
+        <span className="text-gray-800 font-semibold">
           {period.start} &ndash; {period.end}
         </span>
       </div>
@@ -79,11 +83,11 @@ export default function AuspiciousTimings({
   sayahna_sandhya, nishita_muhurta, pratah_sandhya,
 }: AuspiciousTimingsProps) {
   return (
-    <Card className="bg-cosmic-card border-sacred-gold/10">
+    <Card className="bg-white border-sacred-gold/20">
       <CardContent>
         <div className="flex items-center gap-2 mb-4">
-          <Sparkles className="h-5 w-5 text-green-400" />
-          <h3 className="text-lg font-semibold text-cosmic-text">
+          <Sparkles className="h-5 w-5 text-green-700" />
+          <h3 className="text-lg font-semibold text-gray-800">
             Auspicious Timings
           </h3>
         </div>
@@ -113,10 +117,10 @@ export default function AuspiciousTimings({
                 className={`flex items-center justify-between p-3 rounded-xl ${classes.row}`}
               >
                 <div className="flex flex-col">
-                  <span className="text-cosmic-text font-medium">
+                  <span className="text-gray-800 font-medium">
                     {period.name}
                   </span>
-                  <span className="text-sm text-cosmic-text-secondary">
+                  <span className="text-sm text-gray-600">
                     {period.start} &ndash; {period.end}
                   </span>
                 </div>
