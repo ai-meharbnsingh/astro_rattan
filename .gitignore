@@ -1,6 +1,8 @@
 .env
 .env.local
 .env.*.local
+docs/DEPLOYMENT_PROCESS.md
+docs/HOSTINGER_MIGRATION.md
 __pycache__/
 .pytest_cache/
 *.pyc

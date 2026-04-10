@@ -1,6 +1,6 @@
 """Pydantic request/response models for AstroVedic API."""
 from pydantic import BaseModel, EmailStr, Field, field_validator
-from typing import Optional
+from typing import Any, Optional
 from enum import Enum
 
 
@@ -48,7 +48,7 @@ class UserResponse(BaseModel):
     gender: Optional[str] = None
     city: Optional[str] = None
     avatar_url: Optional[str] = None
-    created_at: str
+    created_at: Any = None  # datetime from local PG, string from Neon
 
 class TokenResponse(BaseModel):
     user: UserResponse
