@@ -147,7 +147,7 @@ def get_nakshatra_from_longitude(longitude: float) -> Dict[str, Any]:
     pada = int(offset_in_nak / PADA_SPAN) + 1
     if pada > 4:
         pada = 4
-    return {"name": nak["name"], "pada": pada, "lord": nak["lord"]}
+    return {"name": nak["name"], "pada": pada, "lord": nak["lord"], "index": nak_index}
 
 
 def calculate_planet_positions(

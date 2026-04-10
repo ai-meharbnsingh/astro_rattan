@@ -46,7 +46,7 @@ def kp_cuspal(payload: dict, user: dict = Depends(get_current_user), db: Any = D
         planet_longitudes[planet_name] = info.get("longitude", 0.0)
 
     # Extract house cusps from chart_data
-    house_cusps = chart_data.get("house_cusps", [])
+    house_cusps = chart_data.get("placidus_cusps", chart_data.get("house_cusps", []))
     if not house_cusps or len(house_cusps) != 12:
         # Generate default cusps from ascendant if house_cusps not stored
         asc_lon = chart_data.get("ascendant", {}).get("longitude", 0.0)

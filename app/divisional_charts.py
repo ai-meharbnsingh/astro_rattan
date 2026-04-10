@@ -206,7 +206,7 @@ def _calculate_d10(planet_longitudes: Dict[str, float]) -> Dict[str, Dict[str, A
         if sign_number % 2 == 1:
             start = rasi_index
         else:
-            start = (rasi_index + 9) % 12
+            start = (rasi_index + 8) % 12  # 9th sign = +8 in 0-indexed
         div_sign_index = (start + part) % 12
         degree_within = (degree_in_sign % 3.0) * 10.0
         result[planet] = {
@@ -258,8 +258,8 @@ def _calculate_d30(planet_longitudes: Dict[str, float]) -> Dict[str, Dict[str, A
     even_ranges = [(5, 3), (10, 2), (18, 5), (25, 6), (30, 4)]  # reversed lordship
     # Mars=Aries(0)/Scorpio(7), Saturn=Cap(9)/Aqu(10), Jupiter=Sag(8)/Pisces(11),
     # Mercury=Gem(2)/Virgo(5), Venus=Tau(1)/Libra(6)
-    odd_signs = [0, 9, 8, 2, 1]   # Aries, Cap, Sag, Gem, Taurus
-    even_signs = [1, 2, 8, 9, 0]  # Taurus, Gem, Sag, Cap, Aries
+    odd_signs = [0, 10, 8, 2, 1]   # Mars=Aries, Saturn=Aquarius, Jupiter=Sag, Mercury=Gemini, Venus=Taurus
+    even_signs = [6, 5, 11, 9, 7]  # Venus=Libra, Mercury=Virgo, Jupiter=Pisces, Saturn=Cap, Mars=Scorpio
 
     result: Dict[str, Dict[str, Any]] = {}
     for planet, lon in planet_longitudes.items():

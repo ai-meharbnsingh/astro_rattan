@@ -582,10 +582,18 @@ def get_shadbala(
         hour = 12
     is_daytime = 6 <= hour < 18
 
+    # Extract retrograde planets for Cheshta Bala
+    retrograde_planets = set()
+    for planet_name, info in planets.items():
+        status = info.get("status", "")
+        if "Retrograde" in status or "retrograde" in status:
+            retrograde_planets.add(planet_name)
+
     result = calculate_shadbala(
         planet_signs=planet_signs,
         planet_houses=planet_houses,
         is_daytime=is_daytime,
+        retrograde_planets=retrograde_planets,
     )
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
@@ -1382,7 +1390,7 @@ def get_kp_analysis(
         )
 
     # Extract house cusps (Placidus from swisseph) or fallback to equal houses
-    house_cusps = chart.get("house_cusps", [])
+    house_cusps = chart.get("placidus_cusps", chart.get("house_cusps", []))
     if not house_cusps or len(house_cusps) != 12:
         asc_lon = chart.get("ascendant", {}).get("longitude", 0.0)
         house_cusps = [(asc_lon + i * 30.0) % 360.0 for i in range(12)]
