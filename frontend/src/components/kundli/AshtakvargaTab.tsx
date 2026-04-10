@@ -4,6 +4,8 @@ import { translateSign } from '@/lib/backend-translations';
 // Simple SAV Kundli Chart component
 function SAVKundliChart({ savData, language }: { savData: Record<string, number>; language: string }) {
   const signs = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
+  // Hindi sign abbreviations (2 characters)
+  const hindiSignAbbr = ['मे', 'वृ', 'मि', 'कर', 'सिं', 'कन', 'तु', 'वृ', 'धन', 'मक', 'कु', 'मी'];
   
   // North Indian chart house positions (1-12) in a diamond layout
   // House 1 = top center, then clockwise
@@ -213,6 +215,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                 const bindus = ashtakvargaData.planet_bindus?.[planet] || {};
                 const signs = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
                 const signAbbr = ['Ari', 'Tau', 'Gem', 'Can', 'Leo', 'Vir', 'Lib', 'Sco', 'Sag', 'Cap', 'Aqu', 'Pis'];
+                const hindiSignAbbr = ['मे', 'वृ', 'मि', 'कर', 'सिं', 'कन', 'तु', 'वृ', 'धन', 'मक', 'कु', 'मी'];
                 const vals = signs.map((s) => bindus[s] || 0);
                 const total = vals.reduce((sum, v) => sum + v, 0);
 
@@ -260,13 +263,17 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                         {(() => {
                           const contributors = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Lagna'];
                           const contribData = ashtakvargaData.planet_details?.[planet]?.contributors;
+                          // Hindi sign abbreviations
+                          const hindiSignAbbr = ['मे', 'वृ', 'मि', 'कर', 'सिं', 'कन', 'तु', 'वृ', 'धन', 'मक', 'कु', 'मी'];
                           return (
                             <table className="w-full text-sm border-collapse">
                               <thead>
                                 <tr>
                                   <th className="text-left p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold whitespace-nowrap">{language === 'hi' ? 'योगदानकर्ता' : 'Contributor'}</th>
-                                  {signAbbr.map((s, i) => (
-                                    <th key={i} className="text-center p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold min-w-[26px]">{s}</th>
+                                  {signs.map((s, i) => (
+                                    <th key={i} className="text-center p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold min-w-[26px] text-xs">
+                                      {language === 'hi' ? hindiSignAbbr[i] : signAbbr[i]}
+                                    </th>
                                   ))}
                                   <th className="text-center p-1 text-sacred-gold-dark font-bold border-b border-sacred-gold">&Sigma;</th>
                                 </tr>
@@ -324,7 +331,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                           {housePos.map((pos, i) => (
                             <g key={i}>
                               <text x={pos.x} y={pos.y - 5} textAnchor="middle" fontSize="9" fill="#8B7355" fontFamily="sans-serif">
-                                {language === 'hi' ? translateSign(signs[i], language).slice(0, 2) : signAbbr[i]}
+                                {language === 'hi' ? hindiSignAbbr[i] : signAbbr[i]}
                               </text>
                               <text x={pos.x} y={pos.y + 10} textAnchor="middle" fontSize="14" fontWeight="bold" fill={binduColor(vals[i])} fontFamily="sans-serif">
                                 {vals[i]}
