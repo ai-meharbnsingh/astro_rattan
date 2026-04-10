@@ -787,7 +787,7 @@ export default function ConsolidatedReport({
                               style={{ height: `${heightPct}%`, backgroundColor: isStrong ? 'var(--aged-gold-dim)' : 'var(--ink-light)' }}
                             />
                           </div>
-                          <span className="text-micro text-cosmic-text">{translateSign(sign, language).slice(0, 3)}</span>
+                          <span className="text-micro text-cosmic-text">{(translateSign(sign, language) || sign || '').slice(0, 3)}</span>
                         </div>
                       );
                     })}
@@ -1003,7 +1003,7 @@ export default function ConsolidatedReport({
                         <tr style={{ backgroundColor: 'var(--aged-gold-dim)', color: 'white' }}>
                           <th className="text-left p-1.5 font-medium sticky left-0" style={{ backgroundColor: 'var(--aged-gold-dim)', minWidth: '80px' }}>{t('table.varga')}</th>
                           {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'].map(p => (
-                            <th key={p} className="text-center p-1.5 font-medium" style={{ minWidth: '50px' }}>{translatePlanet(p, language).slice(0, 3)}</th>
+                            <th key={p} className="text-center p-1.5 font-medium" style={{ minWidth: '50px' }}>{(translatePlanet(p, language) || p).slice(0, 3)}</th>
                           ))}
                         </tr>
                       </thead>
@@ -1029,7 +1029,7 @@ export default function ConsolidatedReport({
                                 : { color: 'var(--ink)' };
                               return (
                                 <td key={planet} className="p-1.5 text-center" style={dignityStyle} title={dignity ? translateLabel(dignity, language) : ''}>
-                                  {sign === '-' ? '-' : translateSign(sign, language).slice(0, 3)}
+                                  {sign === '-' ? '-' : (translateSign(sign, language) || sign || '').slice(0, 3)}
                                 </td>
                               );
                             })}
@@ -1213,7 +1213,7 @@ export default function ConsolidatedReport({
                       <tr style={{ backgroundColor: 'var(--aged-gold-dim)', color: 'white' }}>
                         <th className="text-left p-1.5 font-medium">{t('table.planet')}</th>
                         {['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'].map(s => (
-                          <th key={s} className="text-center p-1 font-medium">{translateSign(s, language).slice(0, 3)}</th>
+                          <th key={s} className="text-center p-1 font-medium">{(translateSign(s, language) || s).slice(0, 3)}</th>
                         ))}
                         <th className="text-center p-1.5 font-medium">{t('table.total')}</th>
                       </tr>
