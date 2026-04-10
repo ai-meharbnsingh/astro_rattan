@@ -131,8 +131,12 @@ def verify_otp(
     if not row:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No verification pending for this email")
 
-    # Check expiry
-    expires_at = datetime.fromisoformat(row["expires_at"])
+    # Check expiry — handle both string (Neon) and datetime (local PG) types
+    expires_at = row["expires_at"]
+    if isinstance(expires_at, str):
+        expires_at = datetime.fromisoformat(expires_at)
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
     if datetime.now(tz=timezone.utc) > expires_at:
         db.execute("DELETE FROM email_verifications WHERE email = %s", (body.email,))
         db.commit()
