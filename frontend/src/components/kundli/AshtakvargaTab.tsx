@@ -123,10 +123,10 @@ function SAVKundliChart({ savData, language }: { savData: Record<string, number>
       {/* Legend */}
       <div className="flex justify-center gap-4 mt-3 text-xs">
         <span className="flex items-center gap-1">
-          <span className="w-3 h-3 rounded-full bg-green-600" /> ≥28 Strong
+          <span className="w-3 h-3 rounded-full bg-green-600" /> ≥28 {language === 'hi' ? 'प्रबल' : 'Strong'}
         </span>
         <span className="flex items-center gap-1">
-          <span className="w-3 h-3 rounded-full bg-red-600" /> &lt;28 Weak
+          <span className="w-3 h-3 rounded-full bg-red-600" /> &lt;28 {language === 'hi' ? 'दुर्बल' : 'Weak'}
         </span>
       </div>
     </div>
@@ -184,8 +184,8 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                         }}
                       />
                     </div>
-                    <span className="text-sm text-cosmic-text truncate w-full text-center" title={sign}>
-                      {sign.slice(0, 3)}
+                    <span className="text-sm text-cosmic-text truncate w-full text-center" title={translateSign(sign, language)}>
+                      {language === 'hi' ? translateSign(sign, language).slice(0, 2) : sign.slice(0, 3)}
                     </span>
                   </div>
                 );
@@ -264,7 +264,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                             <table className="w-full text-sm border-collapse">
                               <thead>
                                 <tr>
-                                  <th className="text-left p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold whitespace-nowrap">Contributor</th>
+                                  <th className="text-left p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold whitespace-nowrap">{language === 'hi' ? 'योगदानकर्ता' : 'Contributor'}</th>
                                   {signAbbr.map((s, i) => (
                                     <th key={i} className="text-center p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold min-w-[26px]">{s}</th>
                                   ))}
@@ -324,7 +324,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                           {housePos.map((pos, i) => (
                             <g key={i}>
                               <text x={pos.x} y={pos.y - 5} textAnchor="middle" fontSize="9" fill="#8B7355" fontFamily="sans-serif">
-                                {signAbbr[i]}
+                                {language === 'hi' ? translateSign(signs[i], language).slice(0, 2) : signAbbr[i]}
                               </text>
                               <text x={pos.x} y={pos.y + 10} textAnchor="middle" fontSize="14" fontWeight="bold" fill={binduColor(vals[i])} fontFamily="sans-serif">
                                 {vals[i]}
@@ -362,8 +362,8 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                 <thead>
                   <tr className="border-b border-sacred-gold">
                     <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
-                    {['Ari', 'Tau', 'Gem', 'Can', 'Leo', 'Vir', 'Lib', 'Sco', 'Sag', 'Cap', 'Aqu', 'Pis'].map((s) => (
-                      <th key={s} className="text-center p-2 text-sacred-gold-dark font-medium text-sm">{s}</th>
+                    {['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'].map((s) => (
+                      <th key={s} className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{language === 'hi' ? translateSign(s, language).slice(0, 2) : s.slice(0, 3)}</th>
                     ))}
                     <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('table.total')}</th>
                   </tr>
