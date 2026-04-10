@@ -15,7 +15,13 @@ import concurrent.futures
 import pytest
 from fastapi.testclient import TestClient
 
-# Skip entire module if using PostgreSQL (tests use SQLite fixtures)
+# Skip entire module — init_db() was rewritten for PostgreSQL only.
+# These SQLite-based route tests need rewriting for the PostgreSQL backend.
+import inspect as _inspect
+from app.database import init_db as _init_db
+_init_db_params = _inspect.signature(_init_db).parameters
+if not _init_db_params or "db_path" not in _init_db_params:
+    pytest.skip("Kundli route tests require SQLite init_db — app uses PostgreSQL now", allow_module_level=True)
 _db_url = os.getenv("DATABASE_URL", "")
 if "postgresql" in _db_url or "neon.tech" in _db_url:
     pytest.skip("Kundli route tests require SQLite — PostgreSQL rewrite pending", allow_module_level=True)

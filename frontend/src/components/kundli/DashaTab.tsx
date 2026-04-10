@@ -46,14 +46,14 @@ export default function DashaTab({
             <div key={md.planet} className={`rounded-xl border overflow-hidden ${md.is_current ? 'border-sacred-gold-dark' : 'border-sacred-gold'}`}>
               <button
                 onClick={() => setExpandedMahadasha(expandedMahadasha === md.planet ? null : md.planet)}
-                className={`w-full flex items-center justify-between p-4 transition-colors ${md.is_current ? 'bg-sacred-gold-dark' : 'bg-sacred-cream hover:bg-sacred-gold/5'}`}
+                className={`w-full flex items-center justify-between p-4 transition-colors ${md.is_current ? 'bg-sacred-gold-dark/15 border-l-4 border-l-sacred-gold-dark' : 'bg-sacred-cream hover:bg-sacred-gold/5'}`}
               >
                 <div className="flex items-center gap-3">
                   <ChevronDown className={`w-4 h-4 text-sacred-gold-dark transition-transform ${expandedMahadasha === md.planet ? 'rotate-180' : ''}`} />
                   <span className={`font-display font-semibold ${md.is_current ? 'text-sacred-gold-dark' : 'text-sacred-brown'}`}>
                     {translatePlanet(md.planet, language)} {t('kundli.mahadasha')}
                   </span>
-                  {md.is_current && <span className="text-sm px-2 py-0.5 rounded-full bg-sacred-cream text-sacred-brown font-medium">{t('common.current')}</span>}
+                  {md.is_current && <span className="text-sm px-2 py-0.5 rounded-full bg-sacred-gold-dark text-white font-medium">{t('common.current')}</span>}
                 </div>
                 <div className="text-right text-sm text-cosmic-text">
                   <span>{md.start} {'\u2014'} {md.end}</span>
@@ -67,16 +67,16 @@ export default function DashaTab({
                     <div key={`${md.planet}-${ad.planet}`}>
                       <button
                         onClick={() => setExpandedAntardasha(expandedAntardasha === `${md.planet}-${ad.planet}` ? null : `${md.planet}-${ad.planet}`)}
-                        className={`w-full flex items-center justify-between px-6 py-3 text-sm transition-colors ${ad.is_current ? 'bg-sacred-gold-dark' : 'hover:bg-sacred-gold/5'}`}
+                        className={`w-full flex items-center justify-between px-6 py-3 text-sm transition-colors ${ad.is_current ? 'bg-sacred-gold-dark/10 border-l-2 border-l-sacred-gold-dark' : 'hover:bg-sacred-gold/5'}`}
                       >
                         <div className="flex items-center gap-2">
                           {ad.pratyantar && ad.pratyantar.length > 0 && (
                             <ChevronDown className={`w-3 h-3 text-sacred-gold-dark transition-transform ${expandedAntardasha === `${md.planet}-${ad.planet}` ? 'rotate-180' : ''}`} />
                           )}
-                          <span className={`font-medium ${ad.is_current ? 'text-sacred-gold-dark' : 'text-sacred-brown'}`}>
+                          <span className={`font-medium ${ad.is_current ? 'text-sacred-gold-dark font-semibold' : 'text-sacred-brown'}`}>
                             {translatePlanet(ad.planet, language)} {t('kundli.antardasha')}
                           </span>
-                          {ad.is_current && <span className="text-sm px-1.5 py-0.5 rounded-full bg-sacred-cream text-sacred-brown">{t('common.current')}</span>}
+                          {ad.is_current && <span className="text-sm px-1.5 py-0.5 rounded-full bg-sacred-gold-dark text-white">{t('common.current')}</span>}
                         </div>
                         <span className="text-cosmic-text">{ad.start} {'\u2014'} {ad.end}</span>
                       </button>
@@ -86,11 +86,11 @@ export default function DashaTab({
                           {ad.pratyantar.map((pt: any, idx: number) => (
                             <div
                               key={idx}
-                              className={`flex items-center justify-between px-10 py-2 text-sm ${pt.is_current ? 'bg-sacred-gold-dark' : ''}`}
+                              className={`flex items-center justify-between px-10 py-2 text-sm ${pt.is_current ? 'bg-sacred-gold-dark/10' : ''}`}
                             >
                               <span className={`${pt.is_current ? 'text-sacred-gold-dark font-semibold' : 'text-cosmic-text'}`}>
                                 {translatePlanet(pt.planet, language)} {t('kundli.pratyantar')}
-                                {pt.is_current && <span className="ml-1 text-sacred-gold-dark">*</span>}
+                                {pt.is_current && <span className="ml-1 text-sacred-gold-dark font-bold">&#9679;</span>}
                               </span>
                               <span className="text-cosmic-text">{pt.start} {'\u2014'} {pt.end}</span>
                             </div>

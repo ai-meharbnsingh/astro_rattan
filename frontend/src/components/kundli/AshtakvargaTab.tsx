@@ -115,19 +115,20 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                 // Key vertices: corners (2,2)(278,2)(278,278)(2,278),
                 // midpoints (140,2)(278,140)(140,278)(2,140),
                 // inner intersections (71,71)(209,71)(209,209)(71,209), center (140,140)
+                // Centroids pulled inward so text fits inside each triangle/rhombus
                 const housePos: { x: number; y: number }[] = [
-                  { x: 140, y: 56 },   // 1 — top center rhombus
-                  { x: 206, y: 32 },   // 2 — top right triangle
-                  { x: 248, y: 78 },   // 3 — right upper triangle
-                  { x: 248, y: 202 },  // 4 — right lower triangle
-                  { x: 206, y: 248 },  // 5 — bottom right triangle
-                  { x: 140, y: 224 },  // 6 — bottom center rhombus
-                  { x: 74, y: 248 },   // 7 — bottom left triangle
-                  { x: 32, y: 202 },   // 8 — left lower triangle
-                  { x: 32, y: 78 },    // 9 — left upper triangle
-                  { x: 74, y: 32 },    // 10 — top left triangle
-                  { x: 140, y: 105 },  // 11 — inner top diamond
-                  { x: 140, y: 175 },  // 12 — inner bottom diamond
+                  { x: 140, y: 52 },   // 1 — top center rhombus
+                  { x: 196, y: 36 },   // 2 — top right triangle (inward from corner)
+                  { x: 240, y: 90 },   // 3 — right upper triangle
+                  { x: 240, y: 190 },  // 4 — right lower triangle
+                  { x: 196, y: 244 },  // 5 — bottom right triangle
+                  { x: 140, y: 228 },  // 6 — bottom center rhombus
+                  { x: 84, y: 244 },   // 7 — bottom left triangle
+                  { x: 40, y: 190 },   // 8 — left lower triangle
+                  { x: 40, y: 90 },    // 9 — left upper triangle
+                  { x: 84, y: 36 },    // 10 — top left triangle
+                  { x: 140, y: 108 },  // 11 — inner top diamond
+                  { x: 140, y: 172 },  // 12 — inner bottom diamond
                 ];
 
                 return (
@@ -208,10 +209,10 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                           {/* Bindu values in each house position */}
                           {housePos.map((pos, i) => (
                             <g key={i}>
-                              <text x={pos.x} y={pos.y - 8} textAnchor="middle" fontSize="11" fill="#8B7355" fontFamily="sans-serif">
+                              <text x={pos.x} y={pos.y - 5} textAnchor="middle" fontSize="9" fill="#8B7355" fontFamily="sans-serif">
                                 {signAbbr[i]}
                               </text>
-                              <text x={pos.x} y={pos.y + 8} textAnchor="middle" fontSize="16" fontWeight="bold" fill={binduColor(vals[i])} fontFamily="sans-serif">
+                              <text x={pos.x} y={pos.y + 10} textAnchor="middle" fontSize="14" fontWeight="bold" fill={binduColor(vals[i])} fontFamily="sans-serif">
                                 {vals[i]}
                               </text>
                             </g>

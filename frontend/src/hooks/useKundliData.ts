@@ -236,6 +236,11 @@ export function useKundliData() {
       const data = await api.post(`/api/kundli/${result.id}/extended-dasha`, {});
       if (data?.mahadasha) {
         setExtendedDashaData(data);
+        // Auto-expand current mahadasha so user sees it immediately
+        const currentMd = data.mahadasha.find((md: any) => md.is_current);
+        if (currentMd) {
+          setExpandedMahadasha(currentMd.planet);
+        }
       } else {
         console.warn('Extended dasha response missing mahadasha:', data);
       }

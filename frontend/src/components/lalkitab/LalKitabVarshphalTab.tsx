@@ -9,12 +9,19 @@ import {
   Home,
   Zap,
 } from 'lucide-react';
+import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
 import type { LalKitabChartData } from './lalkitab-data';
 import { PLANETS, REMEDIES, PLANET_EFFECTS_IN_HOUSES } from './lalkitab-data';
+
+const ZODIAC_SIGNS = [
+  'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
+  'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces',
+];
 
 interface Props {
   chartData: LalKitabChartData;
   birthDate: string;
+  apiResult?: any;
 }
 
 const typeIcons = {
@@ -55,7 +62,7 @@ function getYearRange(): number[] {
   return years;
 }
 
-export default function LalKitabVarshphalTab({ chartData, birthDate }: Props) {
+export default function LalKitabVarshphalTab({ chartData, birthDate, apiResult }: Props) {
   const { t, language } = useTranslation();
   const isHi = language === 'hi';
 
@@ -133,46 +140,38 @@ export default function LalKitabVarshphalTab({ chartData, birthDate }: Props) {
     return collected.slice(0, 5);
   }, [annualPositions]);
 
-  // Mini chart houses order: 4x3 grid
-  const miniGridHouses = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  // Build InteractiveKundli ChartData from house-to-planets map
+  const buildChartData = (housePlanets: Record<number, string[]>): ChartData | null => {
+    // Use API result for ascendant sign, or default to Aries (house 1)
+    const asc = apiResult?.chart_data?.ascendant;
+    const ascSign = asc?.sign || 'Aries';
+    const ascIdx = ZODIAC_SIGNS.indexOf(ascSign);
 
-  const renderMiniChart = (
-    title: string,
-    housePlanets: Record<number, string[]>,
-  ) => (
-    <div className="card-sacred rounded-xl p-5 border border-sacred-gold/20">
-      <h4 className="font-sans text-base font-semibold text-sacred-gold mb-3 text-center">
-        {title}
-      </h4>
-      <div className="grid grid-cols-4 gap-1">
-        {miniGridHouses.map((houseNum) => {
-          const planets = housePlanets[houseNum] ?? [];
-          return (
-            <div
-              key={houseNum}
-              className="flex flex-col items-center justify-center rounded-md border border-sacred-gold/15 bg-cosmic-card/40 p-1.5 min-h-[44px]"
-            >
-              <span className="text-sm font-medium text-sacred-gold-dark/60">
-                {houseNum}
-              </span>
-              {planets.length > 0 && (
-                <div className="flex flex-wrap gap-0.5 justify-center mt-0.5">
-                  {planets.map((pKey) => (
-                    <span
-                      key={pKey}
-                      className="text-sm font-semibold text-cosmic-text bg-sacred-gold/10 rounded px-1 py-px leading-tight"
-                    >
-                      {getPlanetAbbr(pKey)}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
+    const houses = Array.from({ length: 12 }, (_, i) => ({
+      number: i + 1,
+      sign: ZODIAC_SIGNS[(ascIdx + i) % 12],
+    }));
+
+    const planets: PlanetData[] = [];
+    for (let h = 1; h <= 12; h++) {
+      const pList = housePlanets[h] ?? [];
+      for (const pKey of pList) {
+        planets.push({
+          planet: pKey,
+          sign: houses[h - 1].sign,
+          house: h,
+          nakshatra: '',
+          sign_degree: 15,
+          status: '',
+        });
+      }
+    }
+
+    return { planets, houses, ascendant: asc ? { longitude: asc.longitude || 0, sign: ascSign } : undefined };
+  };
+
+  const birthChartData = useMemo(() => buildChartData(birthHousePlanets), [birthHousePlanets, apiResult]);
+  const annualChartData = useMemo(() => buildChartData(annualHousePlanets), [annualHousePlanets, apiResult]);
 
   return (
     <div className="space-y-8">
@@ -203,10 +202,28 @@ export default function LalKitabVarshphalTab({ chartData, birthDate }: Props) {
         </select>
       </div>
 
-      {/* ─── Side-by-side Comparison Charts ─── */}
+      {/* ─── Side-by-side Comparison Charts (Diamond Kundli) ─── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {renderMiniChart(t('lk.varshphal.birthChart'), birthHousePlanets)}
-        {renderMiniChart(t('lk.varshphal.annualChart'), annualHousePlanets)}
+        <div className="card-sacred rounded-xl p-5 border border-sacred-gold/20">
+          <h4 className="font-sans text-base font-semibold text-sacred-gold mb-3 text-center">
+            {t('lk.varshphal.birthChart')}
+          </h4>
+          {birthChartData ? (
+            <InteractiveKundli chartData={birthChartData} compact />
+          ) : (
+            <p className="text-center text-sm text-gray-500 py-8">{isHi ? 'चार्ट उपलब्ध नहीं' : 'Chart not available'}</p>
+          )}
+        </div>
+        <div className="card-sacred rounded-xl p-5 border border-sacred-gold/20">
+          <h4 className="font-sans text-base font-semibold text-sacred-gold mb-3 text-center">
+            {t('lk.varshphal.annualChart')} — {selectedYear}
+          </h4>
+          {annualChartData ? (
+            <InteractiveKundli chartData={annualChartData} compact />
+          ) : (
+            <p className="text-center text-sm text-gray-500 py-8">{isHi ? 'चार्ट उपलब्ध नहीं' : 'Chart not available'}</p>
+          )}
+        </div>
       </div>
 
       {/* ─── Yearly Predictions ─── */}

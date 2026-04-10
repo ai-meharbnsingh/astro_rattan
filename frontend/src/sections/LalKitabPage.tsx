@@ -195,7 +195,7 @@ export default function LalKitabPage() {
                 <LalKitabYearlyTab chartData={chartData} birthDate={birthDate} />
               </TabsContent>
               <TabsContent value="varshphal">
-                <LalKitabVarshphalTab chartData={chartData} birthDate={birthDate} />
+                <LalKitabVarshphalTab chartData={chartData} birthDate={birthDate} apiResult={apiResult} />
               </TabsContent>
               <TabsContent value="relations">
                 <LalKitabRelationsTab chartData={chartData} />

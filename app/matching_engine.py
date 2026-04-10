@@ -172,9 +172,9 @@ def _score_vasya(n1: dict, n2: dict) -> tuple:
 
 
 def _score_tara(n1: dict, n2: dict) -> tuple:
-    """Tara koot: based on nakshatra distance. Max 3 points.
-    D = (Bride_nak - Groom_nak) mod 27, R = D mod 9.
-    If R ∈ {1,3,5,7} → 3 points (good), else → 0 (bad).
+    """Tara koot: based on nakshatra distance (bidirectional). Max 3 points.
+    Standard method: check BOTH directions (groom→bride and bride→groom).
+    Both favorable = 3, one favorable = 1.5, neither = 0.
     """
     nak_names = list(NAKSHATRA_DATA.keys())
     try:
@@ -183,25 +183,33 @@ def _score_tara(n1: dict, n2: dict) -> tuple:
     except (ValueError, KeyError):
         return 1, "Tara calculation: unable to determine — partial score."
 
-    # D = (Bride - Groom) mod 27
-    d = (i2 - i1) % 27
-    # R = D mod 9
-    r = d % 9
-    # Tara mapping (0-based remainder -> 1-based tara number):
-    #   R=0 -> Janma(1, bad), R=1 -> Sampat(2, good), R=2 -> Vipat(3, bad),
-    #   R=3 -> Kshema(4, good), R=4 -> Pratyari(5, bad), R=5 -> Sadhaka(6, good),
-    #   R=6 -> Vadha(7, bad), R=7 -> Mitra(8, good), R=8 -> Parama Mitra(9, good)
     _TARA_NAMES = {
         0: "Janma", 1: "Sampat", 2: "Vipat", 3: "Kshema",
         4: "Pratyari", 5: "Sadhaka", 6: "Vadha", 7: "Mitra",
         8: "Parama Mitra",
     }
-    tara_name = _TARA_NAMES.get(r, str(r))
-    # Favorable: Sampat(1), Kshema(3), Sadhaka(5), Mitra(7), Parama Mitra(8)
-    if r in {1, 3, 5, 7, 8}:
-        return 3, f"Tara: {tara_name} (remainder {r}) — favorable birth star compatibility."
+    _FAVORABLE = {1, 3, 5, 7, 8}
+
+    # Direction 1: Bride from Groom
+    d1 = (i2 - i1) % 27
+    r1 = d1 % 9
+    tara1 = _TARA_NAMES.get(r1, str(r1))
+    fav1 = r1 in _FAVORABLE
+
+    # Direction 2: Groom from Bride
+    d2 = (i1 - i2) % 27
+    r2 = d2 % 9
+    tara2 = _TARA_NAMES.get(r2, str(r2))
+    fav2 = r2 in _FAVORABLE
+
+    if fav1 and fav2:
+        return 3, f"Tara: {tara1} & {tara2} — both directions favorable."
+    elif fav1 or fav2:
+        good = tara1 if fav1 else tara2
+        bad = tara2 if fav1 else tara1
+        return 1.5, f"Tara: {good} (favorable) & {bad} (unfavorable) — partially compatible."
     else:
-        return 0, f"Tara: {tara_name} (remainder {r}) — unfavorable birth star compatibility."
+        return 0, f"Tara: {tara1} & {tara2} — both directions unfavorable."
 
 
 def _score_yoni(n1: dict, n2: dict) -> tuple:

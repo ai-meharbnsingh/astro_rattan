@@ -131,8 +131,8 @@ export default function KundliForm({
   return (
     <div className="max-w-md mx-auto py-24 px-4 bg-transparent">
       <div className="text-center mb-8">
-        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center mx-auto mb-4">
-          <Sparkles className="w-8 h-8 text-cosmic-bg" />
+        <div className="w-16 h-16 rounded-full overflow-hidden mx-auto mb-4 shadow-md">
+          <img src="/logo.png" alt="AstroRattan" className="w-full h-full object-cover" />
         </div>
         <h3 className="text-2xl sm:text-3xl font-display font-bold text-sacred-brown mb-2">{language === 'hi' ? 'अपनी कुंडली बनाएं' : 'Generate Your Kundli'}</h3>
         <p className="text-cosmic-text">{language === 'hi' ? 'व्यक्तिगत जन्म कुंडली के लिए अपना जन्म विवरण दर्ज करें' : 'Enter your birth details for a personalized Vedic birth chart'}</p>
