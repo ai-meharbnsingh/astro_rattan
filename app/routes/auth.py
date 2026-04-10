@@ -58,16 +58,21 @@ def _send_otp_email(email: str, otp: str) -> bool:
     if smtp_user and smtp_pass:
         try:
             smtp_host = os.getenv("SMTP_HOST", "smtp.gmail.com")
-            smtp_port = int(os.getenv("SMTP_PORT", "587"))
+            smtp_port = int(os.getenv("SMTP_PORT", "465"))
             msg = MIMEMultipart("alternative")
             msg["Subject"] = f"Astro Rattan - Verification Code: {otp}"
             msg["From"] = f"Astro Rattan <{smtp_user}>"
             msg["To"] = email
             msg.attach(MIMEText(html_body, "html"))
-            with smtplib.SMTP(smtp_host, smtp_port, timeout=10) as s:
-                s.starttls()
-                s.login(smtp_user, smtp_pass)
-                s.sendmail(smtp_user, [email], msg.as_string())
+            if smtp_port == 465:
+                with smtplib.SMTP_SSL(smtp_host, smtp_port, timeout=10) as s:
+                    s.login(smtp_user, smtp_pass)
+                    s.sendmail(smtp_user, [email], msg.as_string())
+            else:
+                with smtplib.SMTP(smtp_host, smtp_port, timeout=10) as s:
+                    s.starttls()
+                    s.login(smtp_user, smtp_pass)
+                    s.sendmail(smtp_user, [email], msg.as_string())
             return True
         except Exception as e:
             print(f"[OTP] SMTP failed for {email[:3]}***@***: {e}")
