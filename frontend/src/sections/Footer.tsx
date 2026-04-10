@@ -45,9 +45,9 @@ export default function Footer() {
                 <Mail className="w-5 h-5" />
                 <span className="text-base">info@astrorattan.com</span>
               </a>
-              <a href="tel:+919911760060" className="flex items-center gap-3 text-cosmic-text hover:text-sacred-gold-dark transition-colors">
+              <a href="tel:+918076025521" className="flex items-center gap-3 text-cosmic-text hover:text-sacred-gold-dark transition-colors">
                 <Phone className="w-5 h-5" />
-                <span className="text-base">+91 99117 60060</span>
+                <span className="text-base">+91 80760 25521</span>
               </a>
             </div>
             <div className="flex gap-3">

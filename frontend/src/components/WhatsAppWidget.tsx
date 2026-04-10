@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { MessageCircle, X } from 'lucide-react';
 
-const WHATSAPP_NUMBER = '919911760060';
+const WHATSAPP_NUMBER = '918076025521';
 
 export default function WhatsAppWidget() {
   const [showTooltip, setShowTooltip] = useState(true);
