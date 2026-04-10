@@ -230,13 +230,16 @@ def _score_yoni(n1: dict, n2: dict) -> tuple:
 
 
 def _score_graha_maitri(n1: dict, n2: dict) -> tuple:
-    """Graha Maitri koot: planetary lord friendship. Max 5 points.
+    """Graha Maitri koot: Rashi lord friendship. Max 5 points.
+    Per BPHS and Muhurta Chintamani: use Moon sign (Rashi) lords only.
+    Rahu/Ketu are never used — always the primary 7 planet lords.
     Same lord or mutual friends=5, one friend + one neutral=4,
     both neutral=3, one friend + one enemy=1, mutual enemies=0.
     """
-    lord1, lord2 = n1["lord"], n2["lord"]
+    lord1 = RASHI_LORD.get(n1["rashi"], "")
+    lord2 = RASHI_LORD.get(n2["rashi"], "")
     if lord1 == lord2:
-        return 5, f"Same nakshatra lord ({lord1}) — excellent mental compatibility."
+        return 5, f"Same rashi lord ({lord1}) — excellent mental compatibility."
 
     rel1 = PLANET_FRIENDS.get(lord1, {})
     rel2 = PLANET_FRIENDS.get(lord2, {})
