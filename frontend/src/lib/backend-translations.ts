@@ -41,6 +41,11 @@ const YOGA_NAMES: Record<string, string> = {
   'Panch Mahapurusha Yoga': 'पंच महापुरुष योग',
   'Viparit Raja Yoga': 'विपरीत राजयोग',
   'Danda Yoga': 'दंड योग', 'Kemadruma Yoga': 'केमद्रुम योग',
+  // Additional yogas
+  'Vasi Yoga': 'वसी योग',
+  'Parashari Raja Yoga': 'पाराशरी राजयोग',
+  'Surya in Swa Rashi (Sun in Own Sign)': 'सूर्य स्वराशि में (स्वराशि का सूर्य)',
+  'Shani Uchcha (Saturn Exalted)': 'शनि उच्च (उच्च का शनि)',
 };
 
 const NAKSHATRA_NAMES: Record<string, string> = {

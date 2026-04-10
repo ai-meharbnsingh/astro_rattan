@@ -66,7 +66,7 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
               {yoga.planets_involved && yoga.planets_involved.length > 0 && (
                 <div className="mt-2 flex gap-2">
                   {yoga.planets_involved.map((p: string) => (
-                    <span key={p} className="text-sm px-2 py-0.5 rounded-full bg-green-100 text-green-800">{p}</span>
+                    <span key={p} className="text-sm px-2 py-0.5 rounded-full bg-green-100 text-green-800">{translatePlanet(p, language)}</span>
                   ))}
                 </div>
               )}
