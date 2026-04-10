@@ -677,9 +677,9 @@ def _drik_bala(planet: str, planet_houses: Dict[str, int]) -> float:
             continue  # skip Rahu/Ketu for Drik Bala
 
         # House distance from aspecting planet to target planet's house
-        dist = ((planet_house - other_house) % 12)
-        if dist == 0:
-            dist = 12  # conjunction counts as 12th-house distance (no standard aspect)
+        # _aspect_strength expects 1-based distance (1..12), so add 1 to the
+        # 0-based modular result, mapping 0→12 (conjunction, no standard aspect).
+        dist = ((planet_house - other_house) % 12) or 12
 
         strength = _aspect_strength(other, dist)
         if strength > 0:

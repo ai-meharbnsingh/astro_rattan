@@ -624,11 +624,12 @@ def check_neecha_bhanga(planets: dict) -> dict:
                 disp_house = planets[dispositor].get("house", 0)
                 moon_house = planets.get("Moon", {}).get("house", 0)
                 
-                # Check if dispositor is in kendra from debilitated planet or Moon
-                kendra_from_deb = ((deb_house - disp_house) % 12) in [0, 3, 6, 9]
-                kendra_from_moon = ((moon_house - disp_house) % 12) in [0, 3, 6, 9]
-                
-                if kendra_from_deb or kendra_from_moon:
+                # Check if dispositor is in kendra from debilitated planet, Moon, or Lagna
+                kendra_from_deb = ((disp_house - deb_house) % 12) in [0, 3, 6, 9]
+                kendra_from_moon = ((disp_house - moon_house) % 12) in [0, 3, 6, 9] if moon_house else False
+                kendra_from_lagna = ((disp_house - 1) % 12) in [0, 3, 6, 9]  # Lagna = house 1
+
+                if kendra_from_deb or kendra_from_moon or kendra_from_lagna:
                     neecha_planets.append({
                         "planet": planet_name,
                         "sign": deb_sign,
@@ -775,16 +776,32 @@ def check_adhi_yoga(planets: dict) -> dict:
 
 
 def check_amala_yoga(planets: dict) -> dict:
-    """Amala Yoga: A natural benefic in 10th from Lagna or Moon."""
-    found = []
+    """Amala Yoga: A natural benefic in 10th from Lagna or 10th from Moon."""
+    found_lagna = []
+    found_moon = []
+    moon_house = _h("Moon", planets)
+    # 10th from Lagna = absolute house 10 (Lagna is always house 1)
+    house_10_lagna = 10
+    # 10th from Moon
+    house_10_moon = ((moon_house + 9 - 1) % 12) + 1 if moon_house else 0
     for p in ["Jupiter", "Venus", "Mercury", "Moon"]:
-        if _h(p, planets) == 10:
-            found.append(p)
+        ph = _h(p, planets)
+        if ph == house_10_lagna:
+            found_lagna.append(p)
+        if house_10_moon and ph == house_10_moon:
+            found_moon.append(p)
+    found = list(dict.fromkeys(found_lagna + found_moon))  # dedupe, preserve order
     if found:
+        sources = []
+        if found_lagna:
+            sources.append(f"{', '.join(found_lagna)} in 10th from Lagna")
+        if found_moon:
+            sources.append(f"{', '.join(found_moon)} in 10th from Moon (house {house_10_moon})")
+        desc = "; ".join(sources) + ". Grants spotless reputation, fame, and virtuous conduct in career."
         return {"name": "Amala Yoga", "present": True,
-                "description": f"{', '.join(found)} in 10th house. Grants spotless reputation, fame, and virtuous conduct in career.",
+                "description": desc,
                 "planets_involved": found}
-    return {"name": "Amala Yoga", "present": False, "description": "No benefic in 10th house.", "planets_involved": []}
+    return {"name": "Amala Yoga", "present": False, "description": "No benefic in 10th from Lagna or Moon.", "planets_involved": []}
 
 
 def check_vesi_yoga(planets: dict) -> dict:

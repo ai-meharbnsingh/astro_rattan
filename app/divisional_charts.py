@@ -179,6 +179,7 @@ def _calculate_d9(planet_longitudes: Dict[str, float]) -> Dict[str, Dict[str, An
         start = start_signs[element]
         div_sign_index = (start + part) % 12
         degree_within = (degree_in_sign % part_size) * 9.0
+        degree_within = degree_within % 30.0  # clamp float boundary: 30.0 → 0.0
         result[planet] = {
             "sign": _SIGN_NAMES[div_sign_index],
             "sign_index": div_sign_index,
@@ -209,6 +210,7 @@ def _calculate_d10(planet_longitudes: Dict[str, float]) -> Dict[str, Dict[str, A
             start = (rasi_index + 8) % 12  # 9th sign = +8 in 0-indexed
         div_sign_index = (start + part) % 12
         degree_within = (degree_in_sign % 3.0) * 10.0
+        degree_within = degree_within % 30.0  # clamp float boundary: 30.0 → 0.0
         result[planet] = {
             "sign": _SIGN_NAMES[div_sign_index],
             "sign_index": div_sign_index,
@@ -235,6 +237,7 @@ def _calculate_d12(planet_longitudes: Dict[str, float]) -> Dict[str, Dict[str, A
         part = min(int(degree_in_sign / part_size), 11)
         div_sign_index = (rasi_index + part) % 12
         degree_within = (degree_in_sign % part_size) * 12.0
+        degree_within = degree_within % 30.0  # clamp float boundary: 30.0 → 0.0
         result[planet] = {
             "sign": _SIGN_NAMES[div_sign_index],
             "sign_index": div_sign_index,
@@ -314,8 +317,7 @@ def _calculate_generic(
         part_index = min(int(degree_in_sign / part_size), division - 1)
         div_sign_index = (rasi_index * division + part_index) % 12
         degree_within = (degree_in_sign % part_size) * division
-        if degree_within > 30.0:
-            degree_within = degree_within % 30.0
+        degree_within = degree_within % 30.0  # clamp float boundary: 30.0 → 0.0
         result[planet] = {
             "sign": _SIGN_NAMES[div_sign_index],
             "sign_index": div_sign_index,

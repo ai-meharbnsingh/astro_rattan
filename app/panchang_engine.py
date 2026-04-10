@@ -693,8 +693,18 @@ def _compute_hindu_calendar(date_str: str, tithi_index: int, sun_sid: float) -> 
 # KARANA HELPERS
 # ============================================================
 
-def _get_karana_index(tithi_index: int) -> int:
-    """Get karana number (0-59) from tithi index (0-29)."""
+def _get_karana_index(tithi_index: int, elongation: float = None) -> int:
+    """Get karana number (0-59).
+
+    When *elongation* (Moon - Sun mod 360) is provided, the index is computed
+    directly from ``floor(elongation / 6.0)``, which correctly distinguishes
+    the first and second half of each tithi.  Falls back to the tithi-based
+    approximation only when elongation is unavailable.
+    """
+    if elongation is not None:
+        idx = int(elongation / 6.0)
+        return min(idx, 59)  # clamp to valid range
+    # Legacy fallback (first half only — kept for backward compat)
     half_tithi = tithi_index * 2
     return half_tithi % 60
 
@@ -774,7 +784,7 @@ def calculate_panchang(
             tz_offset = round(longitude / 15.0 * 2) / 2  # round to nearest 0.5h
 
     # 1. Sunrise/Sunset/Moonrise/Moonset
-    sun_times = _compute_sun_times(date, latitude, longitude)
+    sun_times = _compute_sun_times(date, latitude, longitude, tz_offset)
     sunrise_str = sun_times["sunrise"]
     sunset_str = sun_times["sunset"]
 
@@ -802,8 +812,8 @@ def calculate_panchang(
         yoga_index = 26
     yoga_name = YOGAS[yoga_index]
 
-    # 7. Karana
-    karana_index = _get_karana_index(tithi_index)
+    # 7. Karana (use elongation for correct half-tithi distinction)
+    karana_index = _get_karana_index(tithi_index, elongation)
     karana_name = _get_karana_name(karana_index)
 
     # 8. End times via binary search
@@ -845,7 +855,7 @@ def calculate_panchang(
     next_yoga_name = YOGAS[next_yoga_idx] if next_yoga_idx < len(YOGAS) else ""
 
     # 16. Second Karana
-    second_karana_idx = _get_karana_index(tithi_index) + 1
+    second_karana_idx = _get_karana_index(tithi_index, elongation) + 1
     if second_karana_idx >= 60:
         second_karana_idx = 0
     second_karana_name = _get_karana_name(second_karana_idx)

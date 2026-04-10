@@ -104,6 +104,9 @@ def _calculate_dasha_balance(birth_nakshatra: str, moon_longitude: float = None)
     if moon_longitude is None:
         return 1.0  # Legacy fallback: full dasha from birth
 
+    # Normalize to 0..360 (handles negatives and multiples like -1, 360, 721)
+    moon_longitude = moon_longitude % 360.0
+
     # Find nakshatra index
     try:
         nak_index = NAKSHATRA_ORDER.index(birth_nakshatra)
