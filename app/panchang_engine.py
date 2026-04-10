@@ -299,13 +299,14 @@ def _approx_sunrise_sunset(
     return f"{sunrise_h:02d}:{sunrise_m:02d}", f"{sunset_h:02d}:{sunset_m:02d}"
 
 
-def _compute_sun_times(date_str: str, latitude: float, longitude: float) -> Dict[str, str]:
+def _compute_sun_times(date_str: str, latitude: float, longitude: float, tz_offset: float = None) -> Dict[str, str]:
     """
     Compute sunrise, sunset, moonrise, moonset.
     Uses Swiss Ephemeris if available, otherwise NOAA approximation.
     Returns dict with sunrise, sunset, moonrise, moonset as HH:MM strings.
     """
-    tz_offset = longitude / 15.0  # approximate timezone from longitude
+    if tz_offset is None:
+        tz_offset = 5.5 if 68.0 <= longitude <= 97.5 else round(longitude / 15.0 * 2) / 2
 
     if _HAS_SWE:
         try:
@@ -757,7 +758,7 @@ def _minutes_to_time(minutes: float) -> str:
 # ============================================================
 
 def calculate_panchang(
-    date: str, latitude: float, longitude: float,
+    date: str, latitude: float, longitude: float, tz_offset: float = None,
 ) -> Dict[str, Any]:
     """
     Calculate complete Panchang for a given date and location.
@@ -765,7 +766,12 @@ def calculate_panchang(
     Returns the original contract keys (tithi, nakshatra, yoga, karana, sunrise, sunset)
     plus extended data for the enhanced UI.
     """
-    tz_offset = longitude / 15.0
+    if tz_offset is None:
+        # Default to IST for India, otherwise approximate from longitude
+        if 68.0 <= longitude <= 97.5:
+            tz_offset = 5.5  # IST
+        else:
+            tz_offset = round(longitude / 15.0 * 2) / 2  # round to nearest 0.5h
 
     # 1. Sunrise/Sunset/Moonrise/Moonset
     sun_times = _compute_sun_times(date, latitude, longitude)

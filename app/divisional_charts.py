@@ -255,7 +255,7 @@ def _calculate_d30(planet_longitudes: Dict[str, float]) -> Dict[str, Dict[str, A
     """
     # Odd sign boundaries and lords
     odd_ranges = [(5, 4), (10, 6), (18, 5), (25, 2), (30, 3)]   # (end, sign_index for lord)
-    even_ranges = [(5, 3), (10, 2), (18, 5), (25, 6), (30, 4)]  # reversed lordship
+    even_ranges = [(5, 3), (12, 2), (20, 5), (25, 6), (30, 4)]  # BPHS even: 5,7,8,5,5 degrees
     # Mars=Aries(0)/Scorpio(7), Saturn=Cap(9)/Aqu(10), Jupiter=Sag(8)/Pisces(11),
     # Mercury=Gem(2)/Virgo(5), Venus=Tau(1)/Libra(6)
     odd_signs = [0, 10, 8, 2, 1]   # Mars=Aries, Saturn=Aquarius, Jupiter=Sag, Mercury=Gemini, Venus=Taurus
