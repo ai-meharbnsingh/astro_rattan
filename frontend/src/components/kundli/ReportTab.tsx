@@ -750,7 +750,7 @@ export default function ReportTab({
                           const ratio = (data.total || 0) / (data.required || 1);
                           const barHeight = Math.min((ratio / 1.5) * 100, 100);
                           const isStrong = ratio >= 1.0;
-                          const barColor = isStrong ? 'var(--aged-gold-dim)' : '#8B2332';
+                          const barColor = isStrong ? '#16a34a' : '#dc2626';
                           const requiredPct = (1 / 1.5) * 100;
                           return (
                             <div key={planet} className="flex flex-col items-center gap-1 flex-1 min-w-[36px]">
@@ -776,8 +776,8 @@ export default function ReportTab({
                         })}
                       </div>
                       <div className="flex items-center gap-3 mt-2 text-xs text-cosmic-text">
-                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: 'var(--aged-gold-dim)' }} />{t('kundli.strong')}</span>
-                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#8B2332' }} />{t('kundli.weak')}</span>
+                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#16a34a' }} />{t('kundli.strong')}</span>
+                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#dc2626' }} />{t('kundli.weak')}</span>
                         <span className="flex items-center gap-1"><span className="w-4 border-t-2 border-dashed border-red-500" />{language === 'hi' ? 'आवश्यक' : 'Required'}</span>
                       </div>
                     </div>

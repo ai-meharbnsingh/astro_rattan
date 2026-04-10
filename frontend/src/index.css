@@ -443,6 +443,13 @@
   background: #94a3b8;
 }
 
+/* Kundli tab active state — Tailwind can't parse nested [] in arbitrary variants */
+.kundli-tabs [data-state="active"] {
+  background-color: #B45309 !important;
+  color: #ffffff !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
 /* Global focus-visible for accessibility */
 *:focus-visible {
   outline: 2px solid var(--sacred-gold, #C4A35A);

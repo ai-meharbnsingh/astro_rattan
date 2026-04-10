@@ -67,7 +67,7 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
             const ratio = total / required;
             const barHeight = Math.min((ratio / 1.5) * 100, 100);
             const isStrong = ratio >= 1.0;
-            const barColor = isStrong ? 'var(--sacred-brown)' : 'var(--sacred-gold)';
+            const barColor = isStrong ? '#16a34a' : '#dc2626';
             const requiredPct = (1 / 1.5) * 100;
             return (
               <div key={planet} className="flex flex-col items-center gap-1 flex-1 min-w-[60px]">
@@ -109,11 +109,11 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
         </div>
         <div className="flex items-center justify-center gap-6 mt-4 text-sm text-cosmic-text">
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded" style={{ backgroundColor: '#3B2712' }} />
+            <div className="w-3 h-3 rounded" style={{ backgroundColor: '#16a34a' }} />
             <span>{t('kundli.strong')}</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded" style={{ backgroundColor: '#F5F0E8', border: '1px solid #C4A96A' }} />
+            <div className="w-3 h-3 rounded" style={{ backgroundColor: '#dc2626' }} />
             <span>{t('kundli.weak')}</span>
           </div>
           <div className="flex items-center gap-1">

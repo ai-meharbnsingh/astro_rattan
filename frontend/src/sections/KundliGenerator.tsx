@@ -207,7 +207,7 @@ export default function KundliGenerator() {
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue="report" className="w-full">
+        <Tabs defaultValue="report" className="w-full kundli-tabs">
           {/* Mobile: relative wrapper for scroll arrows */}
           <div className="relative mb-8 md:mb-4 md:static">
             {/* Left arrow hint — mobile only */}
