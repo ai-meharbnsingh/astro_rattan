@@ -636,42 +636,43 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
               </div>
             )}
 
-            {/* Visual Kundli Chart */}
-            {birthChartData && (
-              <div className="mb-6">
-                <h5 className="text-sm font-semibold text-sacred-brown mb-3 text-center">{T.kundliChart(lang)}</h5>
-                <div className="flex justify-center max-w-[300px] mx-auto">
-                  <InteractiveKundli
-                    chartData={birthChartData}
-                    compact
-                  />
+            {/* Kundli Chart + Table Side by Side */}
+            {birthChartData && analysisData.birth_chart && analysisData.birth_chart.length > 0 ? (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                {/* Chart */}
+                <div className="flex flex-col items-center">
+                  <h5 className="text-sm font-semibold text-sacred-brown mb-3">{T.kundliChart(lang)}</h5>
+                  <div className="max-w-[240px]">
+                    <InteractiveKundli
+                      chartData={birthChartData}
+                      compact
+                    />
+                  </div>
                 </div>
-              </div>
-            )}
-
-            {/* Planet positions table */}
-            {analysisData.birth_chart && analysisData.birth_chart.length > 0 ? (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm border-collapse">
-                  <thead>
-                    <tr className="bg-sacred-gold">
-                      <th className="text-left p-2 font-medium text-sacred-gold-dark">{T.planet(lang)}</th>
-                      <th className="text-left p-2 font-medium text-sacred-gold-dark">{T.sign(lang)}</th>
-                      <th className="text-center p-2 font-medium text-sacred-gold-dark">{T.house(lang)}</th>
-                      <th className="text-center p-2 font-medium text-sacred-gold-dark">{T.degree(lang)}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {analysisData.birth_chart.map((p, idx) => (
-                      <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
-                        <td className="p-2 font-semibold">{translatePlanet(p.planet, lang)}</td>
-                        <td className="p-2">{translateSign(p.sign, lang)}</td>
-                        <td className="p-2 text-center">{p.house}</td>
-                        <td className="p-2 text-center font-mono text-sm">{p.degree}</td>
+                
+                {/* Planet positions table */}
+                <div className="overflow-x-auto max-h-[320px] overflow-y-auto">
+                  <table className="w-full text-sm border-collapse">
+                    <thead className="sticky top-0">
+                      <tr className="bg-sacred-gold">
+                        <th className="text-left p-2 font-medium text-sacred-gold-dark">{T.planet(lang)}</th>
+                        <th className="text-left p-2 font-medium text-sacred-gold-dark">{T.sign(lang)}</th>
+                        <th className="text-center p-2 font-medium text-sacred-gold-dark">{T.house(lang)}</th>
+                        <th className="text-center p-2 font-medium text-sacred-gold-dark">{T.degree(lang)}</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {analysisData.birth_chart.map((p, idx) => (
+                        <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
+                          <td className="p-2 font-semibold">{translatePlanet(p.planet, lang)}</td>
+                          <td className="p-2">{translateSign(p.sign, lang)}</td>
+                          <td className="p-2 text-center">{p.house}</td>
+                          <td className="p-2 text-center font-mono text-sm">{p.degree}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             ) : (
               <DataUnavailable lang={lang} />
@@ -693,53 +694,59 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
           <LoadingSpinner lang={lang} />
         ) : analysisData?.transits && analysisData.transits.length > 0 ? (
           <>
-            {/* Visual Gochar Chart */}
-            {transitChartData && (
-              <div className="mb-6">
-                <h5 className="text-sm font-semibold text-sacred-brown mb-3 text-center">{T.gocharChart(lang)}</h5>
-                <div className="flex justify-center max-w-[300px] mx-auto">
-                  <InteractiveKundli
-                    chartData={transitChartData}
-                    compact
-                  />
+            {/* Gochar Chart + Table Side by Side */}
+            {transitChartData && analysisData.transits && analysisData.transits.length > 0 ? (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Chart */}
+                <div className="flex flex-col items-center">
+                  <h5 className="text-sm font-semibold text-sacred-brown mb-3">{T.gocharChart(lang)}</h5>
+                  <div className="max-w-[240px]">
+                    <InteractiveKundli
+                      chartData={transitChartData}
+                      compact
+                    />
+                  </div>
+                </div>
+                
+                {/* Transits table */}
+                <div className="overflow-x-auto max-h-[320px] overflow-y-auto">
+                  <table className="w-full text-sm border-collapse">
+                    <thead className="sticky top-0">
+                      <tr className="bg-sacred-gold">
+                        <th className="text-left p-2 font-medium text-sacred-gold-dark">{T.planet(lang)}</th>
+                        <th className="text-left p-2 font-medium text-sacred-gold-dark">{T.currentSign(lang)}</th>
+                        <th className="text-center p-2 font-medium text-sacred-gold-dark">{T.house(lang)}</th>
+                        <th className="text-left p-2 font-medium text-sacred-gold-dark">{T.impact(lang)}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {analysisData.transits.map((t_item, idx) => {
+                        const rowColor = t_item.type === 'benefic'
+                          ? 'bg-emerald-50'
+                          : t_item.type === 'malefic'
+                          ? 'bg-red-50'
+                          : 'bg-amber-50';
+                        const textColor = t_item.type === 'benefic'
+                          ? 'text-emerald-700'
+                          : t_item.type === 'malefic'
+                          ? 'text-red-700'
+                          : 'text-amber-700';
+                        return (
+                          <tr key={idx} className={`border-b border-slate-100 ${rowColor}`}>
+                            <td className="p-2 font-semibold">{translatePlanet(t_item.planet, lang)}</td>
+                            <td className="p-2">{translateSign(t_item.current_sign, lang)}</td>
+                            <td className="p-2 text-center">{t_item.house}</td>
+                            <td className={`p-2 text-sm ${textColor}`}>{loc(t_item.impact, t_item.impact_hi)}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
                 </div>
               </div>
+            ) : (
+              <DataUnavailable lang={lang} />
             )}
-
-            <div className="overflow-x-auto">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-sacred-gold">
-                  <th className="text-left p-2 font-medium text-sacred-gold-dark">{T.planet(lang)}</th>
-                  <th className="text-left p-2 font-medium text-sacred-gold-dark">{T.currentSign(lang)}</th>
-                  <th className="text-center p-2 font-medium text-sacred-gold-dark">{T.house(lang)}</th>
-                  <th className="text-left p-2 font-medium text-sacred-gold-dark">{T.impact(lang)}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {analysisData.transits.map((t_item, idx) => {
-                  const rowColor = t_item.type === 'benefic'
-                    ? 'bg-emerald-50'
-                    : t_item.type === 'malefic'
-                    ? 'bg-red-50'
-                    : 'bg-amber-50';
-                  const textColor = t_item.type === 'benefic'
-                    ? 'text-emerald-700'
-                    : t_item.type === 'malefic'
-                    ? 'text-red-700'
-                    : 'text-amber-700';
-                  return (
-                    <tr key={idx} className={`border-b border-slate-100 ${rowColor}`}>
-                      <td className="p-2 font-semibold">{translatePlanet(t_item.planet, lang)}</td>
-                      <td className="p-2">{translateSign(t_item.current_sign, lang)}</td>
-                      <td className="p-2 text-center">{t_item.house}</td>
-                      <td className={`p-2 text-sm ${textColor}`}>{loc(t_item.impact, t_item.impact_hi)}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
           </>
         ) : (
           <DataUnavailable lang={lang} />

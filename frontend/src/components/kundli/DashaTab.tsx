@@ -26,17 +26,56 @@ export default function DashaTab({
   }
 
   if (extendedDashaData) {
+    // Find current mahadasha for date range
+    const currentMD = extendedDashaData.mahadasha?.find((md: any) => md.is_current);
+    const currentAD = currentMD?.antardasha?.find((ad: any) => ad.is_current);
+    const currentPT = currentAD?.pratyantar?.find((pt: any) => pt.is_current);
+    
     return (
       <div className="space-y-4">
-        <div className="bg-gradient-to-r from-sacred-cream to-sacred-gold rounded-xl p-4 border border-sacred-gold">
-          <p className="text-sm text-gray-600">{t('section.currentMahadasha')}</p>
-          <p className="text-xl font-display font-bold text-gray-900">{translatePlanet(extendedDashaData.current_dasha, language)} {t('kundli.mahadasha')}</p>
-          <div className="flex gap-4 mt-1">
+        {/* Current Dasha Status Card */}
+        <div className="bg-gradient-to-r from-sacred-gold to-sacred-gold-light rounded-xl p-4 border-2 border-sacred-gold-dark">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm font-medium text-sacred-brown uppercase tracking-wide">{t('section.currentDashaStatus')}</p>
+            <span className="px-3 py-1 bg-sacred-brown text-white text-xs font-bold rounded-full animate-pulse">● LIVE</span>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Mahadasha */}
+            <div className="bg-sacred-cream rounded-lg p-3 border border-sacred-gold-dark">
+              <p className="text-xs text-cosmic-text uppercase">{t('kundli.mahadasha')}</p>
+              <p className="text-lg font-display font-bold text-sacred-brown">
+                {translatePlanet(extendedDashaData.current_dasha, language)}
+              </p>
+              {currentMD && (
+                <p className="text-xs text-cosmic-text mt-1">{currentMD.start} — {currentMD.end}</p>
+              )}
+            </div>
+            
+            {/* Antardasha */}
             {extendedDashaData.current_antardasha && extendedDashaData.current_antardasha !== 'Unknown' && (
-              <p className="text-sm text-sacred-gold-dark">{t('kundli.antardasha')}: {translatePlanet(extendedDashaData.current_antardasha, language)}</p>
+              <div className="bg-sacred-cream rounded-lg p-3 border border-sacred-gold-dark">
+                <p className="text-xs text-cosmic-text uppercase">{t('kundli.antardasha')}</p>
+                <p className="text-lg font-display font-bold text-sacred-brown">
+                  {translatePlanet(extendedDashaData.current_antardasha, language)}
+                </p>
+                {currentAD && (
+                  <p className="text-xs text-cosmic-text mt-1">{currentAD.start} — {currentAD.end}</p>
+                )}
+              </div>
             )}
+            
+            {/* Pratyantar */}
             {extendedDashaData.current_pratyantar && extendedDashaData.current_pratyantar !== 'Unknown' && (
-              <p className="text-sm text-cosmic-text">{t('kundli.pratyantar')}: {translatePlanet(extendedDashaData.current_pratyantar, language)}</p>
+              <div className="bg-sacred-cream rounded-lg p-3 border border-sacred-gold-dark">
+                <p className="text-xs text-cosmic-text uppercase">{t('kundli.pratyantar')}</p>
+                <p className="text-lg font-display font-bold text-sacred-brown">
+                  {translatePlanet(extendedDashaData.current_pratyantar, language)}
+                </p>
+                {currentPT && (
+                  <p className="text-xs text-cosmic-text mt-1">{currentPT.start} — {currentPT.end}</p>
+                )}
+              </div>
             )}
           </div>
         </div>

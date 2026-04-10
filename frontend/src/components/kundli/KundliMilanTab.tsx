@@ -41,13 +41,21 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
   const [error, setError] = useState('');
 
   const handleMatch = async () => {
-    if (!kundliId1 || !kundliId2) { setError('Select both kundlis'); return; }
-    if (kundliId1 === kundliId2) { setError('Select two different kundlis'); return; }
+    if (!kundliId1 || !kundliId2) { setError('Please select both kundlis'); return; }
+    if (kundliId1 === kundliId2) { setError('Please select two different kundlis'); return; }
     setLoading(true); setError(''); setResult(null);
     try {
       const data = await api.post('/api/kundli/match', { kundli_id_1: kundliId1, kundli_id_2: kundliId2 });
+      console.log('Match result:', data);
+      if (!data || typeof data.total_score !== 'number') {
+        throw new Error('Invalid response from server');
+      }
       setResult(data);
-    } catch (e) { setError(e instanceof Error ? e.message : 'Match failed'); console.error(e); }
+    } catch (e) { 
+      const msg = e instanceof Error ? e.message : 'Match calculation failed';
+      setError(msg); 
+      console.error('Match error:', e); 
+    }
     setLoading(false);
   };
 
@@ -120,18 +128,59 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
                 <p className="text-sm text-cosmic-text mt-1">{result.person1_name} & {result.person2_name}</p>
               </div>
 
-              <div className="border border-sacred-gold">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-0 text-sm text-cosmic-text uppercase tracking-wider p-3 border-b border-sacred-gold bg-sacred-gold-dark">
-                  <span>Koot</span><span>Score</span><span>Max</span><span>Aspect</span>
+              {/* Koot Scores Table */}
+              <div className="bg-sacred-cream rounded-xl border border-sacred-gold overflow-hidden">
+                <div className="bg-sacred-gold px-4 py-2">
+                  <h4 className="font-semibold text-sacred-brown">Ashtakoota Scores (8 Koots)</h4>
                 </div>
-                {Object.entries(result.koot_scores).map(([name, koot]) => (
-                  <div key={name} className="grid grid-cols-2 sm:grid-cols-4 gap-0 p-3 border-b border-sacred-gold last:border-0 items-center">
-                    <span className="text-sm text-cosmic-text font-medium">{name}</span>
-                    <span className={`text-sm font-bold ${scoreColor(koot.score, koot.max)}`}>{koot.score}</span>
-                    <span className="text-sm text-cosmic-text">{koot.max}</span>
-                    <span className="text-sm text-cosmic-text">{koot.description}</span>
-                  </div>
-                ))}
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-sacred-gold/50">
+                        <th className="text-left p-3 font-medium text-sacred-gold-dark">Koot</th>
+                        <th className="text-center p-3 font-medium text-sacred-gold-dark">Score</th>
+                        <th className="text-center p-3 font-medium text-sacred-gold-dark">Max</th>
+                        <th className="text-left p-3 font-medium text-sacred-gold-dark">Description</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Object.entries(result.koot_scores || {}).map(([name, koot]) => (
+                        <tr key={name} className="border-t border-sacred-gold/30 hover:bg-sacred-gold/10">
+                          <td className="p-3 font-medium text-sacred-brown">{name}</td>
+                          <td className="p-3 text-center">
+                            <span className={`inline-block w-8 h-8 leading-8 rounded-full font-bold ${
+                              koot.score >= koot.max ? 'bg-green-500 text-white' : 
+                              koot.score >= koot.max * 0.5 ? 'bg-yellow-500 text-white' : 
+                              'bg-red-500 text-white'
+                            }`}>
+                              {koot.score}
+                            </span>
+                          </td>
+                          <td className="p-3 text-center text-cosmic-text">{koot.max}</td>
+                          <td className="p-3 text-sm text-cosmic-text">{koot.description}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot>
+                      <tr className="bg-sacred-gold/30 border-t-2 border-sacred-gold">
+                        <td className="p-3 font-bold text-sacred-brown">Total</td>
+                        <td className="p-3 text-center">
+                          <span className={`inline-block px-3 py-1 rounded-full font-bold text-lg ${
+                            result.total_score >= 24 ? 'bg-green-600 text-white' : 
+                            result.total_score >= 18 ? 'bg-yellow-500 text-white' : 
+                            'bg-red-500 text-white'
+                          }`}>
+                            {result.total_score}
+                          </span>
+                        </td>
+                        <td className="p-3 text-center font-bold text-sacred-brown">36</td>
+                        <td className="p-3 text-sm font-medium text-sacred-brown">
+                          {result.compatibility_percentage}% - {result.recommendation}
+                        </td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

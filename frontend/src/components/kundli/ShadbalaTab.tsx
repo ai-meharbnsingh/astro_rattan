@@ -38,38 +38,52 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
     <div className="space-y-6">
       <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
         <h4 className="text-lg font-semibold text-gray-800 mb-4">{t('section.shadbalaStrength')}</h4>
-        <div className="flex items-end justify-around gap-3" style={{ height: '220px' }}>
+        <div className="flex items-end justify-around gap-2" style={{ height: '280px' }}>
           {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
             const data = shadbalaData.planets[planet];
             if (!data) return null;
-            const pct = Math.min((data.total / data.required) * 100, 150);
+            const required = data.required || 1.0;
+            const total = data.total || 0;
+            const ratio = total / required;
+            const pct = Math.min(ratio * 100, 150);
             const barHeight = Math.min(pct, 100);
-            const barColor = data.is_strong ? '#3B2712' : '#F5F0E8';
-            const barBorder = data.is_strong ? 'none' : '1px solid #C4A96A';
-            const requiredPct = Math.min((1 / 1.5) * 100, 100);
+            const isStrong = ratio >= 1.0;
+            const barColor = isStrong ? 'var(--sacred-brown)' : 'var(--sacred-gold)';
+            const barBg = isStrong ? 'var(--sacred-brown)' : 'var(--sacred-cream)';
+            const requiredPct = (1 / 1.5) * 100;
             return (
-              <div key={planet} className="flex flex-col items-center gap-1" style={{ flex: '1 1 0' }}>
-                <span className={`text-sm font-medium ${data.is_strong ? 'text-sacred-brown' : 'text-cosmic-text'}`}>
-                  {data.total}
+              <div key={planet} className="flex flex-col items-center gap-1 flex-1 min-w-[60px]">
+                <span className={`text-sm font-bold ${isStrong ? 'text-sacred-brown' : 'text-cosmic-text'}`}>
+                  {total.toFixed(1)}
                 </span>
-                <div className="relative w-full flex justify-center" style={{ height: '160px' }}>
+                <div className="relative w-full flex justify-center bg-sacred-gold/20 rounded-t-lg" style={{ height: '200px' }}>
+                  {/* Required line */}
                   <div
-                    className="w-8 rounded-t-md transition-all relative"
+                    className="absolute w-full border-t-2 border-dashed border-red-500 z-10"
+                    style={{ bottom: `${requiredPct}%` }}
+                    title={`Required: ${required}`}
+                  />
+                  {/* Bar */}
+                  <div
+                    className="w-10 rounded-t-lg transition-all duration-500 relative"
                     style={{
                       height: `${barHeight}%`,
                       backgroundColor: barColor,
-                      border: barBorder,
                       alignSelf: 'flex-end',
                     }}
-                  />
-                  <div
-                    className="absolute w-full border-t-2 border-dashed border-sacred-brown"
-                    style={{ bottom: `${requiredPct}%` }}
-                    title={`Required: ${data.required}`}
-                  />
+                  >
+                    {ratio > 1.2 && (
+                      <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
+                        <span className="text-xs text-sacred-gold-dark">★</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <span className="text-sm font-medium text-sacred-brown text-center leading-tight">
+                <span className="text-xs font-medium text-sacred-brown text-center leading-tight mt-1">
                   {translatePlanet(planet, language)}
+                </span>
+                <span className={`text-xs ${isStrong ? 'text-green-600 font-semibold' : 'text-red-500'}`}>
+                  {isStrong ? '✓' : '✗'}
                 </span>
               </div>
             );
