@@ -127,29 +127,31 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
       {shadbalaData.bhav_bala && (
         <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
           <h4 className="text-lg font-semibold text-gray-800 mb-4">{language === 'hi' ? 'भाव बल (भाव शक्ति)' : 'Bhav Bala (House Strength)'}</h4>
-          <div className="flex items-end justify-around gap-2" style={{ height: '220px' }}>
-            {Array.from({ length: 12 }, (_, i) => i + 1).map((house) => {
-              const data = shadbalaData.bhav_bala[house];
-              if (!data) return null;
-              const maxVal = Math.max(...Object.values(shadbalaData.bhav_bala as Record<string, {total: number}>).map((d) => d.total), 1);
-              const barHeight = Math.min((data.total / maxVal) * 100, 100);
-              const barColor = data.total >= maxVal * 0.5 ? '#16a34a' : '#dc2626';
-              return (
-                <div key={house} className="flex flex-col items-center gap-1 flex-1 min-w-[40px]">
-                  <span className="text-xs font-bold" style={{ color: barColor }}>{data.total.toFixed(1)}</span>
-                  <div className="relative w-full flex justify-center bg-sacred-gold/20 rounded-t-lg" style={{ height: '160px' }}>
-                    <div
-                      className="w-8 rounded-t-lg transition-all duration-500"
-                      style={{ height: `${barHeight}%`, backgroundColor: barColor, alignSelf: 'flex-end' }}
-                    />
+          <div className="overflow-x-auto -mx-1 px-1">
+            <div className="flex items-end gap-1" style={{ height: '220px', minWidth: '420px' }}>
+              {Array.from({ length: 12 }, (_, i) => i + 1).map((house) => {
+                const data = shadbalaData.bhav_bala[house];
+                if (!data) return null;
+                const maxVal = Math.max(...Object.values(shadbalaData.bhav_bala as Record<string, {total: number}>).map((d) => d.total), 1);
+                const barHeight = Math.min((data.total / maxVal) * 100, 100);
+                const barColor = data.total >= maxVal * 0.5 ? '#16a34a' : '#dc2626';
+                return (
+                  <div key={house} className="flex flex-col items-center gap-1 flex-1">
+                    <span className="text-xs font-bold" style={{ color: barColor }}>{data.total.toFixed(1)}</span>
+                    <div className="relative w-full flex justify-center bg-sacred-gold/20 rounded-t-lg" style={{ height: '160px' }}>
+                      <div
+                        className="w-6 rounded-t-lg transition-all duration-500"
+                        style={{ height: `${barHeight}%`, backgroundColor: barColor, alignSelf: 'flex-end' }}
+                      />
+                    </div>
+                    <span className="text-xs font-medium text-sacred-brown text-center mt-1">{house}</span>
+                    <span className="text-center leading-tight text-cosmic-text" style={{ fontSize: '9px' }}>
+                      {data.sign?.substring(0, 3)}
+                    </span>
                   </div>
-                  <span className="text-xs font-medium text-sacred-brown text-center mt-1">{house}</span>
-                  <span className="text-xs text-cosmic-text text-center leading-tight" style={{ fontSize: '9px' }}>
-                    {data.sign?.substring(0, 3)}
-                  </span>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
           <div className="flex items-center justify-center gap-6 mt-3 text-sm text-cosmic-text">
             <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#16a34a' }} />{language === 'hi' ? 'बलशाली' : 'Strong'}</span>
