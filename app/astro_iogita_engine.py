@@ -37,8 +37,6 @@ ALL_ATOM_NAMES = [
     "NYAYA", "KRODHA", "NITI", "SHAKTI", "BHAKTI",  # Mahabharata
     "KAAM", "LOBH", "MOH",                    # Panch Vikar (negative)
 ]
-V = {name: _atom() for name in ALL_ATOM_NAMES}
-
 # ============================================================
 # 1. PLANET_ATOM_MAP — 9 Vedic planets to atom weights (-1.0 to +1.0)
 # ============================================================

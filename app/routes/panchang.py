@@ -11,9 +11,6 @@ from app.panchang_engine import (
     calculate_panchang,
     calculate_rahu_kaal,
     calculate_choghadiya,
-    calculate_gulika_kaal,
-    calculate_yamaganda,
-    calculate_planetary_positions,
 )
 from app.festival_engine import detect_festivals
 

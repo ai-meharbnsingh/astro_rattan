@@ -3,6 +3,7 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from app.auth import get_current_user, require_role
 from app.database import get_db
+from app.models import AdminUserUpdate
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
@@ -104,13 +105,13 @@ def get_user_detail(
 @router.patch("/users/{user_id}/role")
 def update_user_role(
     user_id: str,
-    body: dict,
+    body: AdminUserUpdate,
     current_user: dict = Depends(require_role("admin")),
     db: Any = Depends(get_db),
 ):
     """Change a user's role (user/astrologer/admin)."""
-    new_role = body.get("role")
-    if new_role not in ("user", "astrologer", "admin"):
+    new_role = body.role
+    if new_role is None or new_role not in ("user", "astrologer", "admin"):
         raise HTTPException(status_code=400, detail="Role must be user, astrologer, or admin")
     db.execute("UPDATE users SET role = %s, updated_at = NOW() WHERE id = %s", (new_role, user_id))
     db.commit()

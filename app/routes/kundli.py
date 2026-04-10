@@ -16,7 +16,6 @@ from app.dosha_engine import check_mangal_dosha, check_kaal_sarp, check_sade_sat
 from app.dasha_engine import calculate_dasha, calculate_extended_dasha
 from app.varshphal_engine import calculate_varshphal
 from app.divisional_charts import (
-    calculate_divisional_chart,
     calculate_divisional_chart_detailed,
     calculate_divisional_houses,
     DIVISIONAL_CHARTS,

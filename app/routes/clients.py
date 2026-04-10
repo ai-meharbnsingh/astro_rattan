@@ -125,7 +125,7 @@ def update_client(
     if not existing:
         raise HTTPException(status_code=404, detail="Client not found")
 
-    updates = {k: v for k, v in body.dict(exclude_unset=True).items() if v is not None}
+    updates = {k: v for k, v in body.model_dump(exclude_unset=True).items() if v is not None}
     if not updates:
         raise HTTPException(status_code=400, detail="No fields to update")
 
