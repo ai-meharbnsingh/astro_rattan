@@ -1029,7 +1029,7 @@ export default function ConsolidatedReport({
                                 : { color: 'var(--ink)' };
                               return (
                                 <td key={planet} className="p-1.5 text-center" style={dignityStyle} title={dignity ? translateLabel(dignity, language) : ''}>
-                                  {sign === '-' ? '-' : (translateSign(sign, language) || sign || '').slice(0, 3)}
+                                  {sign === '-' ? '-' : (translateSign(sign, language) || (typeof sign === 'string' ? sign : '')).slice(0, 3)}
                                 </td>
                               );
                             })}

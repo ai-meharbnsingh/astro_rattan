@@ -63,7 +63,7 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
                       <tr key={row.varga || row.division || row.name} className="border-t border-sacred-gold">
                         <td className="p-2 font-semibold text-sacred-brown whitespace-nowrap">{row.varga || row.name || `D${row.division}`}</td>
                         {planetEntries.map((pl: any, i: number) => {
-                          const sign = typeof pl === 'string' ? pl?.slice(0, 3) : (pl?.sign_abbr || pl?.sign?.slice(0, 3) || '');
+                          const sign = typeof pl === 'string' ? pl.slice(0, 3) : (pl?.sign_abbr || (typeof pl?.sign === 'string' ? pl.sign.slice(0, 3) : '') || '');
                           const dignity = typeof pl === 'object' ? pl?.dignity?.toLowerCase() : '';
                           const dignityColors: Record<string, string> = {
                             exalted: 'bg-green-500 text-green-700', own: 'bg-blue-500 text-blue-700',

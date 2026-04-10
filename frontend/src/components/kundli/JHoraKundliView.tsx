@@ -335,7 +335,7 @@ export default function JHoraKundliView({
         Leo: 'सिंह', Virgo: 'कन्या', Libra: 'तुला', Scorpio: 'वृश्',
         Sagittarius: 'धनु', Capricorn: 'मकर', Aquarius: 'कुंभ', Pisces: 'मीन',
       };
-      return hiMap[sign] || (translateSign(sign, language) || sign || '').slice(0, 3) || '-';
+      return hiMap[sign] || (translateSign(sign, language) || (typeof sign === 'string' ? sign : '')).slice(0, 3) || '-';
     }
     const map: Record<string, string> = {
       Aries: 'Ari', Taurus: 'Tau', Gemini: 'Gem', Cancer: 'Can',
