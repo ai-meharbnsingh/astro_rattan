@@ -95,7 +95,7 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
           <Users className="w-6 h-6" />
           {t('lk.relations.title')}
         </h2>
-        <p className="text-gray-400 mt-1">{t('lk.relations.desc')}</p>
+        <p className="text-gray-500 mt-1">{t('lk.relations.desc')}</p>
       </div>
 
       {/* Conjunctions (Yuti) */}

@@ -150,7 +150,7 @@ export default function LalKitabRulesTab({ chartData }: Props) {
           <BookOpen className="w-6 h-6" />
           {t('lk.rules.title')}
         </h2>
-        <p className="text-gray-400 mt-1">{t('lk.rules.desc')}</p>
+        <p className="text-gray-500 mt-1">{t('lk.rules.desc')}</p>
       </div>
 
       {/* Mirror House Axis */}

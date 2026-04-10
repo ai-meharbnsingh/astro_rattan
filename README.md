@@ -8,9 +8,9 @@
 
 | Service | Environment | URL | Status |
 |---------|-------------|-----|--------|
-| **Frontend** | Production | https://astrovedic-web.vercel.app | ✅ Live |
-| **Backend API** | Production | https://astro-rattan-api.onrender.com | ✅ Live |
-| **Health Check** | — | https://astro-rattan-api.onrender.com/health | ✅ OK |
+| **Frontend** | Production | https://astrorattan.com | ✅ Live |
+| **Backend API** | Production | https://astrorattan.vercel.app | ✅ Live |
+| **Health Check** | — | https://astrorattan.vercel.app/health | ✅ OK |
 
 ### Latest Deployments
 | Deployment | URL | Age |
@@ -216,7 +216,7 @@ DATABASE_URL=sqlite:///astrovedic.db
 JWT_SECRET=your-secret-key
 JWT_ALGORITHM=HS256
 JWT_EXPIRE_HOURS=24
-CORS_ORIGINS=https://astrovedic-web.vercel.app,http://localhost:5198
+CORS_ORIGINS=https://astrorattan.com,https://www.astrorattan.com,http://localhost:5198
 GEMINI_API_KEY=your-gemini-key
 OPENAI_API_KEY=your-openai-key
 RAZORPAY_KEY_ID=your-razorpay-key
@@ -225,7 +225,7 @@ RAZORPAY_KEY_SECRET=your-razorpay-secret
 
 #### Frontend (.env)
 ```env
-VITE_API_URL=https://astro-rattan-api.onrender.com
+VITE_API_URL=https://astrorattan.vercel.app
 ```
 
 ---
@@ -305,11 +305,11 @@ Built with ❤️ by **Meharban Singh**
 
 | Resource | Link |
 |----------|------|
-| 🌐 Live App | https://astrovedic-web.vercel.app |
-| 🔌 API Base | https://astro-rattan-api.onrender.com |
-| 💓 Health | https://astro-rattan-api.onrender.com/health |
-| 📚 API Docs | https://astro-rattan-api.onrender.com/docs |
-| 🧪 Redoc | https://astro-rattan-api.onrender.com/redoc |
+| 🌐 Live App | https://astrorattan.com |
+| 🔌 API Base | https://astrorattan.vercel.app |
+| 💓 Health | https://astrorattan.vercel.app/health |
+| 📚 API Docs | https://astrorattan.vercel.app/docs |
+| 🧪 Redoc | https://astrorattan.vercel.app/redoc |
 
 ---
 

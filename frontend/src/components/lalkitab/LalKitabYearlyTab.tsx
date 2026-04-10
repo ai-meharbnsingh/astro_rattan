@@ -60,7 +60,7 @@ export default function LalKitabYearlyTab({ chartData, birthDate }: Props) {
           <Calendar className="w-6 h-6" />
           {t('lk.yearly.title')}
         </h2>
-        <p className="text-gray-400 mt-1">{t('lk.yearly.desc')}</p>
+        <p className="text-gray-500 mt-1">{t('lk.yearly.desc')}</p>
       </div>
 
       {/* Current age display */}

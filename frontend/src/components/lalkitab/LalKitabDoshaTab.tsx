@@ -41,7 +41,7 @@ export default function LalKitabDoshaTab({ chartData }: Props) {
           <Shield className="w-6 h-6" />
           {t('lk.dosha.title')}
         </h2>
-        <p className="text-gray-400 mt-1">{t('lk.dosha.desc')}</p>
+        <p className="text-gray-500 mt-1">{t('lk.dosha.desc')}</p>
       </div>
 
       {/* Summary bar */}
@@ -76,7 +76,7 @@ export default function LalKitabDoshaTab({ chartData }: Props) {
             >
               {/* Card header */}
               <div className="flex items-center justify-between">
-                <h3 className="font-sans text-lg text-white">{name}</h3>
+                <h3 className="font-sans text-lg text-sacred-brown">{name}</h3>
                 {dosha.detected ? (
                   <span className="flex items-center gap-1.5 text-red-500 text-sm font-medium">
                     <AlertTriangle className="w-4 h-4" />
@@ -95,7 +95,7 @@ export default function LalKitabDoshaTab({ chartData }: Props) {
                 <div className="mt-3 space-y-3">
                   {/* Severity badge */}
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-400">
+                    <span className="text-sm text-gray-600">
                       {t('lk.dosha.severity')}:
                     </span>
                     <span
@@ -110,7 +110,7 @@ export default function LalKitabDoshaTab({ chartData }: Props) {
                   </div>
 
                   {/* Description */}
-                  <p className="text-sm text-gray-300">{desc}</p>
+                  <p className="text-sm text-gray-700">{desc}</p>
 
                   {/* Remedy box */}
                   <div className="bg-sacred-gold/5 border border-sacred-gold/20 rounded-xl p-4 mt-3">

@@ -16,7 +16,7 @@ export default defineConfig({
   reporter: [['html', { open: 'never' }], ['list']],
   timeout: 60_000,
   use: {
-    baseURL: process.env.E2E_BASE_URL || 'https://astrovedic-web.vercel.app',
+    baseURL: process.env.E2E_BASE_URL || 'https://astrorattan.com',
     trace: 'on-first-retry',
     screenshot: 'on',
     video: 'on-first-retry',

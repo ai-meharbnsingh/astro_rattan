@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python",
+      "config": {
+        "excludeFiles": "{tests/**,e2e/**,frontend/**,_archive/**,*.zip,**/__pycache__/**,screenshots/**}"
+      }
+    }
+  ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/api/index.py" }
+  ]
+}

@@ -96,10 +96,14 @@ app.add_middleware(RequestLoggingMiddleware)
 for router in all_routers:
     app.include_router(router)
 
-# Static file serving for uploaded images
+# Static file serving for uploaded images — skip on Vercel (read-only filesystem)
 from app.config import STATIC_DIR
-os.makedirs(os.path.join(STATIC_DIR, "uploads"), exist_ok=True)
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+if os.path.isdir(STATIC_DIR):
+    try:
+        os.makedirs(os.path.join(STATIC_DIR, "uploads"), exist_ok=True)
+    except OSError:
+        pass  # read-only filesystem (Vercel)
+    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
 @app.get("/")

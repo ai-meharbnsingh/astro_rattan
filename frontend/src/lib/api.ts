@@ -23,6 +23,28 @@ async function tryRefreshToken(): Promise<boolean> {
   }
 }
 
+async function fetchWithRetry(url: string, options: RequestInit, retries = 2): Promise<Response> {
+  for (let i = 0; i <= retries; i++) {
+    try {
+      const res = await fetch(url, options);
+      // Retry on 500/502/503/504 (cold start / transient errors)
+      if (res.status >= 500 && i < retries) {
+        await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
+        continue;
+      }
+      return res;
+    } catch (err) {
+      // Network error (backend unreachable during cold start)
+      if (i < retries) {
+        await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
+        continue;
+      }
+      throw err;
+    }
+  }
+  return fetch(url, options); // unreachable, satisfies TS
+}
+
 export async function apiFetch(endpoint: string, options: RequestInit = {}) {
   const token = localStorage.getItem('astrovedic_token');
   const headers = new Headers(options.headers || {});
@@ -31,7 +53,7 @@ export async function apiFetch(endpoint: string, options: RequestInit = {}) {
     headers.set('Content-Type', 'application/json');
   }
 
-  const res = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
+  const res = await fetchWithRetry(`${API_BASE}${endpoint}`, { ...options, headers });
 
   if (res.status === 401 && !endpoint.includes('/api/auth/')) {
     // Try to refresh the token silently

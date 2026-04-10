@@ -69,6 +69,7 @@ _production_urls = [
     "https://astrorattan.com",
     "https://www.astrorattan.com",
     "https://astrorattan-web.vercel.app",
+    "https://astrorattan.vercel.app",
     f"http://localhost:{FRONTEND_PORT}",
 ]
 for url in _production_urls:
