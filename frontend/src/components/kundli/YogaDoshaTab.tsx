@@ -22,7 +22,15 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
   }
 
   if (!yogaDoshaData) {
-    return <p className="text-center text-cosmic-text py-8">{t('kundli.clickYogasTab')}</p>;
+    return (
+      <div className="flex flex-col items-center justify-center py-12">
+        <p className="text-cosmic-text mb-3 text-sm">Yoga and dosha analysis has not been loaded yet.</p>
+        <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-sacred-gold/10 border border-sacred-gold text-sacred-gold-dark text-sm font-medium cursor-default">
+          <CheckCircle className="w-4 h-4" />
+          Click the Yogas/Dosha tab above to load analysis
+        </span>
+      </div>
+    );
   }
 
   return (
@@ -30,11 +38,17 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
       <div>
         <div className="flex items-center gap-2 mb-4">
           <CheckCircle className="w-5 h-5" style={{ color: '#22c55e' }} />
-          <h4 className="font-display font-bold text-lg" style={{ color: 'var(--ink)' }}>{t('section.yogas')}</h4>
+          <h4 className="text-lg font-semibold text-gray-800">{t('section.yogas')}</h4>
         </div>
         <div className="grid gap-3">
           {(yogaDoshaData.yogas || []).filter((y: any) => y.present).length === 0 && (
-            <p className="text-sm text-cosmic-text py-4">{t('kundli.noYogasDetected')}</p>
+            <div className="rounded-xl border border-green-200 bg-green-50 p-6 flex items-center gap-4">
+              <CheckCircle className="w-8 h-8 text-green-500 flex-shrink-0" />
+              <div>
+                <p className="font-medium text-gray-800">No yogas detected in your chart</p>
+                <p className="text-sm text-gray-600 mt-1">This analysis found no significant planetary yogas in the current configuration.</p>
+              </div>
+            </div>
           )}
           {(yogaDoshaData.yogas || []).filter((y: any) => y.present).map((yoga: any, idx: number) => (
             <div
@@ -44,7 +58,7 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
             >
               <div className="flex items-center justify-between mb-2">
                 <h5 className="font-display font-semibold" style={{ color: 'var(--ink)' }}>{translateName(yoga.name, language)}</h5>
-                <span className="text-sm px-2 py-1 rounded-full font-medium bg-green-100 text-green-800">
+                <span className="text-sm px-2.5 py-0.5 rounded-full font-medium bg-green-100 text-green-800">
                   {t('common.present')}
                 </span>
               </div>
@@ -64,7 +78,7 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
       <div>
         <div className="flex items-center gap-2 mb-4">
           <Shield className="w-5 h-5" style={{ color: '#8B2332' }} />
-          <h4 className="font-display font-bold text-lg" style={{ color: 'var(--ink)' }}>{t('section.doshas')}</h4>
+          <h4 className="text-lg font-semibold text-gray-800">{t('section.doshas')}</h4>
         </div>
         <div className="grid gap-3">
           {(yogaDoshaData.doshas || []).filter((d: any) => d.present).length === 0 && (
@@ -84,7 +98,7 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
                       {translateLabel(dosha.severity, language)}
                     </span>
                   )}
-                  <span className="text-sm px-2 py-1 rounded-full font-medium bg-red-100 text-red-800">
+                  <span className="text-sm px-2.5 py-0.5 rounded-full font-medium bg-red-100 text-red-800">
                     {t('common.present')}
                   </span>
                 </div>
@@ -121,14 +135,14 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
         <div>
           <div className="flex items-center gap-2 mb-4">
             <AlertTriangle className="w-5 h-5" style={{ color: '#DC2626' }} />
-            <h4 className="font-display font-bold text-lg" style={{ color: 'var(--ink)' }}>{language === 'hi' ? 'विशेष दोष' : 'Specific Doshas'}</h4>
+            <h4 className="text-lg font-semibold text-gray-800">{language === 'hi' ? 'विशेष दोष' : 'Specific Doshas'}</h4>
           </div>
           <div className="grid gap-3">
             {doshaDisplay.mangal.has_dosha && (
               <div className="rounded-xl p-4 border border-red-300" style={{ backgroundColor: 'rgba(196,62,78,0.08)' }}>
                 <div className="flex items-center justify-between mb-2">
                   <h5 className="font-display font-semibold" style={{ color: 'var(--ink)' }}>{translateName('Mangal Dosha', language)}</h5>
-                  <span className="text-sm px-2 py-1 rounded-full bg-red-100 text-red-800">
+                  <span className="text-sm px-2.5 py-0.5 rounded-full font-medium bg-red-100 text-red-800">
                     {t('common.present')} ({translateLabel(doshaDisplay.mangal.severity, language)})
                   </span>
                 </div>
@@ -139,7 +153,7 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
               <div className="rounded-xl p-4 border border-red-300" style={{ backgroundColor: 'rgba(196,62,78,0.08)' }}>
                 <div className="flex items-center justify-between mb-2">
                   <h5 className="font-display font-semibold" style={{ color: 'var(--ink)' }}>{translateName('Kaal Sarp Dosha', language)}</h5>
-                  <span className="text-sm px-2 py-1 rounded-full bg-red-100 text-red-800">{t('common.present')}</span>
+                  <span className="text-sm px-2.5 py-0.5 rounded-full font-medium bg-red-100 text-red-800">{t('common.present')}</span>
                 </div>
                 <p className="text-sm" style={{ color: 'var(--ink-light)' }}>{doshaDisplay.kaalsarp.description}</p>
               </div>
@@ -148,7 +162,7 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
               <div className="rounded-xl p-4 border border-orange-200" style={{ backgroundColor: 'rgba(245,158,11,0.05)' }}>
                 <div className="flex items-center justify-between mb-2">
                   <h5 className="font-display font-semibold" style={{ color: 'var(--ink)' }}>{translateName('Sade Sati', language)}</h5>
-                  <span className="text-sm px-2 py-1 rounded-full bg-orange-100 text-orange-600">
+                  <span className="text-sm px-2.5 py-0.5 rounded-full font-medium bg-orange-100 text-orange-600">
                     {t('common.active')} - {translateLabel(doshaDisplay.sadesati.phase, language)}
                   </span>
                 </div>
@@ -167,7 +181,7 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
         <div>
           <div className="flex items-center gap-2 mb-4">
             <Gem className="w-5 h-5" style={{ color: 'var(--aged-gold-dim)' }} />
-            <h4 className="font-display font-bold text-lg" style={{ color: 'var(--ink)' }}>{language === 'hi' ? 'रत्न सिफारिशें' : 'Gemstone Recommendations'}</h4>
+            <h4 className="text-lg font-semibold text-gray-800">{language === 'hi' ? 'रत्न सिफारिशें' : 'Gemstone Recommendations'}</h4>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             {doshaData.gemstone_recommendations.map((gem: any, idx: number) => (

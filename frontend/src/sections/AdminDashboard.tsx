@@ -96,11 +96,20 @@ export default function AdminDashboard() {
       <div className="flex gap-2 mb-8 border-b border-sacred-gold pb-2">
         {(['overview', 'users', 'kundlis'] as const).map(t => (
           <button key={t} onClick={() => setTab(t)}
-            className={`px-4 py-2 text-sm font-sans uppercase tracking-wider transition-colors ${tab === t ? 'text-sacred-gold-dark border-b-2 border-sacred-gold' : 'text-cosmic-text hover:text-cosmic-text'}`}>
+            className={`px-4 py-2 text-sm font-sans uppercase tracking-wider transition-colors ${tab === t ? 'text-sacred-gold-dark border-b-2 border-sacred-gold font-semibold bg-sacred-gold/10 rounded-t' : 'text-cosmic-text hover:text-sacred-gold-dark'}`}>
             {t}
           </button>
         ))}
       </div>
+
+      {/* Overview — empty state */}
+      {tab === 'overview' && !stats && !loading && (
+        <div className="text-center py-16 border border-dashed border-sacred-gold rounded-lg">
+          <Shield className="w-12 h-12 text-cosmic-text mx-auto mb-4 opacity-50" />
+          <p className="text-cosmic-text font-medium">No data yet</p>
+          <p className="text-sm text-cosmic-text mt-1">Stats will appear once users and kundlis are created.</p>
+        </div>
+      )}
 
       {/* Overview */}
       {tab === 'overview' && stats && (

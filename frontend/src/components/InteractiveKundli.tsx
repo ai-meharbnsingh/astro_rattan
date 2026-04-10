@@ -617,6 +617,8 @@ function PlanetBadge({
 
   return (
     <g
+      role="img"
+      aria-label={p.planet}
       style={{ cursor: 'pointer' }}
       onMouseEnter={(e) => {
         e.stopPropagation();
@@ -1110,7 +1112,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                 const label = getPlanetLabel(p, language);
 
                 return (
-                  <g key={p.planet}>
+                  <g key={p.planet} role="img" aria-label={p.planet}>
                     {/* Planet abbreviation + status symbols */}
                     <text
                       x={px}

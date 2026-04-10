@@ -368,7 +368,7 @@ export default function ReportTab({
                             <td className="p-2 text-cosmic-text">{planet.nakshatra || '\u2014'}</td>
                             <td className="p-2 text-center text-cosmic-text">{planet.sign_degree?.toFixed(1)}&deg;</td>
                             <td className="p-2 text-center">
-                              <span className={`text-sm px-1 py-0.5 rounded ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-100 text-green-800' : 'text-cosmic-text'}`}>
+                              <span className={`text-sm px-2.5 py-0.5 rounded-full font-medium ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-100 text-green-800' : 'text-cosmic-text'}`}>
                                 {translateLabel(planet.status, language) || '\u2014'}
                               </span>
                             </td>

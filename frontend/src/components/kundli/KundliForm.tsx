@@ -159,9 +159,9 @@ export default function KundliForm({
           <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold-dark" />
           <Input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder={language === 'hi' ? 'पूरा नाम' : 'Full Name'} className="pl-10 bg-sacred-cream border-sacred-gold text-sacred-brown" />
         </div>
-        <div className="grid grid-cols-2 gap-4">
-          <button onClick={() => setFormData({ ...formData, gender: 'male' })} className={`p-3 rounded-xl border transition-colors ${formData.gender === 'male' ? 'border-sacred-gold bg-sacred-gold text-sacred-gold-dark' : 'border-sacred-gold text-cosmic-text'}`}>{language === 'hi' ? 'पुरुष' : 'Male'}</button>
-          <button onClick={() => setFormData({ ...formData, gender: 'female' })} className={`p-3 rounded-xl border transition-colors ${formData.gender === 'female' ? 'border-sacred-gold bg-sacred-gold text-sacred-gold-dark' : 'border-sacred-gold text-cosmic-text'}`}>{language === 'hi' ? 'महिला' : 'Female'}</button>
+        <div className="grid grid-cols-2 gap-4" role="radiogroup" aria-label={language === 'hi' ? 'लिंग' : 'Gender'}>
+          <button role="radio" aria-checked={formData.gender === 'male'} onClick={() => setFormData({ ...formData, gender: 'male' })} className={`p-3 rounded-xl border transition-colors ${formData.gender === 'male' ? 'border-sacred-gold bg-sacred-gold text-sacred-gold-dark' : 'border-sacred-gold text-cosmic-text'}`}>{language === 'hi' ? 'पुरुष' : 'Male'}</button>
+          <button role="radio" aria-checked={formData.gender === 'female'} onClick={() => setFormData({ ...formData, gender: 'female' })} className={`p-3 rounded-xl border transition-colors ${formData.gender === 'female' ? 'border-sacred-gold bg-sacred-gold text-sacred-gold-dark' : 'border-sacred-gold text-cosmic-text'}`}>{language === 'hi' ? 'महिला' : 'Female'}</button>
         </div>
         <div className="relative">
           <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-cosmic-text" />
@@ -211,16 +211,20 @@ export default function KundliForm({
           <MapPin className="w-3 h-3 text-sacred-gold" />
           <span>Lat: {formData.latitude.toFixed(4)}, Lon: {formData.longitude.toFixed(4)}</span>
         </div>
-        {isAstrologer && isNewClient && (
-          <div className="relative">
-            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold-dark" />
-            <Input
-              type="tel"
-              value={formData.phone || ''}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              placeholder={language === 'hi' ? 'क्लाइंट फ़ोन नंबर (आवश्यक)' : 'Client phone number (required)'}
-              className="pl-10 bg-sacred-cream border-sacred-gold text-sacred-brown"
-            />
+        {isAstrologer && (
+          <div className="min-h-[56px]">
+            {isNewClient && (
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold-dark" />
+                <Input
+                  type="tel"
+                  value={formData.phone || ''}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  placeholder={language === 'hi' ? 'क्लाइंट फ़ोन नंबर (आवश्यक)' : 'Client phone number (required)'}
+                  className="pl-10 bg-sacred-cream border-sacred-gold text-sacred-brown"
+                />
+              </div>
+            )}
           </div>
         )}
         <Button onClick={onGenerate} disabled={!formData.name || !formData.date || !formData.time || !formData.place || (isAstrologer && isNewClient && !formData.phone?.trim())} className="w-full btn-sacred font-semibold hover:bg-sacred-gold-dark disabled:opacity-50">

@@ -26,7 +26,7 @@ export default function DoshaTab({ doshaData, doshaDisplay, loadingDosha, langua
         <div className="bg-sacred-cream rounded-xl p-4 border border-red-300">
           <div className="flex items-center justify-between mb-2">
             <h4 className="font-display font-semibold text-sacred-brown">{translateName('Mangal Dosha', language)}</h4>
-            <span className="text-sm px-2 py-1 rounded-full bg-red-100 text-red-800">
+            <span className="text-sm px-2.5 py-0.5 rounded-full font-medium bg-red-100 text-red-800">
               {t('common.present')} ({translateLabel(doshaDisplay.mangal.severity, language)})
             </span>
           </div>
@@ -37,7 +37,7 @@ export default function DoshaTab({ doshaData, doshaDisplay, loadingDosha, langua
         <div className="bg-sacred-cream rounded-xl p-4 border border-red-300">
           <div className="flex items-center justify-between mb-2">
             <h4 className="font-display font-semibold text-sacred-brown">{translateName('Kaal Sarp Dosha', language)}</h4>
-            <span className="text-sm px-2 py-1 rounded-full bg-red-100 text-red-800">{t('common.present')}</span>
+            <span className="text-sm px-2.5 py-0.5 rounded-full font-medium bg-red-100 text-red-800">{t('common.present')}</span>
           </div>
           <p className="text-sm text-cosmic-text">{doshaDisplay.kaalsarp.description}</p>
         </div>
@@ -46,7 +46,7 @@ export default function DoshaTab({ doshaData, doshaDisplay, loadingDosha, langua
         <div className="bg-sacred-cream rounded-xl p-4 border border-orange-200">
           <div className="flex items-center justify-between mb-2">
             <h4 className="font-display font-semibold text-sacred-brown">{translateName('Sade Sati', language)}</h4>
-            <span className="text-sm px-2 py-1 rounded-full bg-orange-100 text-orange-600">
+            <span className="text-sm px-2.5 py-0.5 rounded-full font-medium bg-orange-100 text-orange-600">
               {t('common.active')} - {translateLabel(doshaDisplay.sadesati.phase, language)}
             </span>
           </div>

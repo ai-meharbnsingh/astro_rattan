@@ -292,14 +292,14 @@ export default function AuthPage() {
                   onClick={() => setIsAstrologer(!isAstrologer)}
                   className={`w-full flex items-center gap-3 p-3 border transition-colors rounded-lg ${
                     isAstrologer
-                      ? 'border-sacred-gold bg-sacred-gold text-sacred-gold'
-                      : 'border-sacred-gold text-cosmic-text-secondary hover:border-sacred-gold'
+                      ? 'border-sacred-gold bg-sacred-gold/10 text-sacred-gold-dark'
+                      : 'border-gray-300 text-gray-600 hover:border-sacred-gold'
                   }`}
                 >
-                  <Star className={`w-5 h-5 ${isAstrologer ? 'text-sacred-gold' : 'text-cosmic-text'}`} />
+                  <Star className={`w-5 h-5 ${isAstrologer ? 'text-sacred-gold-dark' : 'text-gray-400'}`} />
                   <span className="text-sm font-medium">{t('astrologer.registerAsAstrologer')}</span>
-                  <div className={`ml-auto w-10 h-5 rounded-full transition-colors ${isAstrologer ? 'bg-sacred-gold' : 'bg-cosmic-surface'}`}>
-                    <div className={`w-4 h-4 rounded-full bg-cosmic-text shadow-sm transform transition-transform mt-0.5 ${isAstrologer ? 'translate-x-5.5 ml-[22px]' : 'ml-0.5'}`} />
+                  <div className={`ml-auto w-10 h-5 rounded-full transition-colors ${isAstrologer ? 'bg-sacred-gold-dark' : 'bg-gray-300'}`}>
+                    <div className={`w-4 h-4 rounded-full bg-white shadow-sm transform transition-transform mt-0.5 ${isAstrologer ? 'translate-x-5.5 ml-[22px]' : 'ml-0.5'}`} />
                   </div>
                 </button>
                 {isAstrologer && (

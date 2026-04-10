@@ -26,6 +26,12 @@ const ClientProfile = lazy(() => import('./sections/ClientProfile'));
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Respect prefers-reduced-motion: disable all GSAP animations globally
+if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  gsap.globalTimeline.timeScale(0);
+  gsap.defaults({ duration: 0 });
+}
+
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error: Error | null }> {
   constructor(props: { children: ReactNode }) {
     super(props);

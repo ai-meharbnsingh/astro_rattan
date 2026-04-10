@@ -399,8 +399,8 @@ export default function NumerologyTarot() {
                           key={area}
                           className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-all text-sm ${
                             selectedAreas.includes(area)
-                              ? 'border-sacred-gold bg-sacred-gold text-sacred-gold'
-                              : 'border-sacred-gold bg-cosmic-card text-cosmic-text-secondary hover:border-sacred-gold'
+                              ? 'border-sacred-gold bg-sacred-gold/10 text-sacred-gold-dark font-medium'
+                              : 'border-gray-300 bg-white text-gray-600 hover:border-sacred-gold'
                           }`}
                         >
                           <input
@@ -409,13 +409,13 @@ export default function NumerologyTarot() {
                             onChange={() => toggleArea(area)}
                             className="sr-only"
                           />
-                          <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 ${
+                          <div className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 ${
                             selectedAreas.includes(area)
-                              ? 'border-sacred-gold bg-sacred-gold'
-                              : 'border-sacred-gold bg-transparent'
+                              ? 'border-sacred-gold-dark bg-sacred-gold-dark'
+                              : 'border-gray-300 bg-white'
                           }`}>
                             {selectedAreas.includes(area) && (
-                              <svg className="w-3 h-3 text-cosmic-bg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                              <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                               </svg>
                             )}

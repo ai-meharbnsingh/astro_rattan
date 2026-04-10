@@ -184,7 +184,7 @@ export default function PlanetsTab({
                     {planet.nakshatra_pada ? ` (${language === 'hi' ? 'पाद' : 'P'}${planet.nakshatra_pada})` : ''}
                   </td>
                   <td className="p-3">
-                    <span className={`text-sm px-2 py-1 rounded-full ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-100 text-green-800' : 'bg-cosmic-surface text-cosmic-text'}`}>
+                    <span className={`text-sm px-2.5 py-0.5 rounded-full font-medium ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-100 text-green-800' : 'bg-cosmic-surface text-cosmic-text'}`}>
                       {translateLabel(planet.status, language)}
                     </span>
                   </td>

@@ -94,7 +94,7 @@ export default function Panchang() {
     return () => clearInterval(timer);
   }, []);
 
-  // GSAP animation
+  // GSAP animation with proper ScrollTrigger cleanup
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.fromTo('.panchang-title', { y: 50, opacity: 0 }, {
@@ -102,7 +102,10 @@ export default function Panchang() {
         scrollTrigger: { trigger: sectionRef.current, start: 'top 80%' },
       });
     }, sectionRef);
-    return () => ctx.revert();
+    return () => {
+      ctx.revert();
+      ScrollTrigger.getAll().forEach(t => t.kill());
+    };
   }, []);
 
   // Fetch panchang data
@@ -236,16 +239,24 @@ export default function Panchang() {
           </div>
         </div>
 
-        {/* Loading */}
+        {/* Loading skeleton */}
         {loading && !panchang && (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-10 h-10 text-sacred-gold animate-spin" />
+          <div className="min-h-[400px] space-y-6">
+            <div className="grid lg:grid-cols-3 gap-6">
+              <div className="h-48 animate-pulse bg-gray-200 rounded-xl" />
+              <div className="lg:col-span-2 h-48 animate-pulse bg-gray-200 rounded-xl" />
+            </div>
+            <div className="grid lg:grid-cols-3 gap-6">
+              <div className="h-36 animate-pulse bg-gray-200 rounded-xl" />
+              <div className="h-36 animate-pulse bg-gray-200 rounded-xl" />
+              <div className="h-36 animate-pulse bg-gray-200 rounded-xl" />
+            </div>
           </div>
         )}
 
         {/* Main Panchang Dashboard */}
         {panchang && (
-          <div className="space-y-8">
+          <div className="space-y-8 min-h-[400px]">
 
             {/* ROW 1: Hindu Calendar + Core Panchang */}
             <div className="grid lg:grid-cols-3 gap-6">

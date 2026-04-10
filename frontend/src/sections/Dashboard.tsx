@@ -151,7 +151,20 @@ export default function Dashboard() {
   // ─── ASTROLOGER DASHBOARD ────────────────────────────────
   function renderClientList() {
     if (loading) {
-      return <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-600" /></div>;
+      return (
+        <div className="space-y-3 py-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="flex items-center gap-4 p-4 border border-sacred-gold">
+              <div className="w-10 h-10 animate-pulse bg-gray-200 rounded" />
+              <div className="flex-1 space-y-2">
+                <div className="h-4 w-32 animate-pulse bg-gray-200 rounded" />
+                <div className="h-3 w-48 animate-pulse bg-gray-200 rounded" />
+              </div>
+              <div className="h-4 w-16 animate-pulse bg-gray-200 rounded" />
+            </div>
+          ))}
+        </div>
+      );
     }
     if (fetchError) {
       return (

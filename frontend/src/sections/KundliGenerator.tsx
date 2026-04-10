@@ -96,19 +96,36 @@ export default function KundliGenerator() {
     return null;
   }
 
-  // --- GENERATING SPINNER ---
+  // --- GENERATING SKELETON ---
   if (step === 'generating') {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] py-20">
-        <div className="relative w-32 h-32 mb-8">
-          <div className="absolute inset-0 rounded-full border-4 border-sacred-gold" />
-          <div className="absolute inset-0 rounded-full border-4 border-sacred-gold border-t-transparent animate-spin" />
-          <div className="absolute inset-4 rounded-full bg-sacred-gold flex items-center justify-center">
-            <Sparkles className="w-10 h-10 text-sacred-gold animate-pulse" />
+      <div className="max-w-7xl mx-auto pt-24 pb-48 px-4">
+        {/* Header skeleton */}
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-10 h-10 animate-pulse bg-gray-200 rounded" />
+          <div className="space-y-2 flex-1">
+            <div className="h-6 w-48 animate-pulse bg-gray-200 rounded" />
+            <div className="h-4 w-72 animate-pulse bg-gray-200 rounded" />
           </div>
         </div>
-        <h3 className="text-2xl font-sans font-bold text-sacred-brown mb-2">{t('kundli.generatingYourKundli')}</h3>
-        <p className="text-cosmic-text">{t('kundli.analyzingPositions')}</p>
+        {/* Tab bar skeleton */}
+        <div className="flex gap-2 mb-6 overflow-hidden">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="h-10 w-24 animate-pulse bg-gray-200 rounded flex-shrink-0" />
+          ))}
+        </div>
+        {/* Content skeleton cards */}
+        <div className="grid lg:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <div className="h-40 animate-pulse bg-gray-200 rounded-xl" />
+            <div className="h-28 animate-pulse bg-gray-200 rounded-xl" />
+          </div>
+          <div className="space-y-4">
+            <div className="h-52 animate-pulse bg-gray-200 rounded-xl" />
+            <div className="h-16 animate-pulse bg-gray-200 rounded-xl" />
+          </div>
+        </div>
+        <p className="text-center text-cosmic-text mt-8 animate-pulse">{t('kundli.analyzingPositions')}</p>
       </div>
     );
   }
@@ -224,7 +241,7 @@ export default function KundliGenerator() {
             </div>
           )}
 
-          <TabsContent value="report">
+          <TabsContent value="report" className="min-h-[300px]">
             <ReportTab
               result={result} planets={planets} formData={formData} language={language} t={t}
               doshaData={doshaData} loadingDosha={loadingDosha}
@@ -252,7 +269,7 @@ export default function KundliGenerator() {
             />
           </TabsContent>
 
-          <TabsContent value="planets">
+          <TabsContent value="planets" className="min-h-[300px]">
             <PlanetsTab
               planets={planets} result={result}
               sidePanel={sidePanel} setSidePanel={setSidePanel}
@@ -261,19 +278,19 @@ export default function KundliGenerator() {
             />
           </TabsContent>
 
-          <TabsContent value="details">
+          <TabsContent value="details" className="min-h-[300px]">
             <BirthDetailsTab planets={planets} />
           </TabsContent>
 
-          <TabsContent value="lordships">
+          <TabsContent value="lordships" className="min-h-[300px]">
             <LordshipsTab planets={planets} houses={result.chart_data?.houses || {}} />
           </TabsContent>
 
-          <TabsContent value="iogita">
+          <TabsContent value="iogita" className="min-h-[300px]">
             <IogitaTab iogitaData={iogitaData} loadingIogita={loadingIogita} language={language} t={t} />
           </TabsContent>
 
-          <TabsContent value="dasha">
+          <TabsContent value="dasha" className="min-h-[300px]">
             <DashaTab
               dashaData={dashaData} extendedDashaData={extendedDashaData}
               loadingDasha={loadingDasha} loadingExtendedDasha={loadingExtendedDasha}
@@ -283,7 +300,7 @@ export default function KundliGenerator() {
             />
           </TabsContent>
 
-          <TabsContent value="divisional">
+          <TabsContent value="divisional" className="min-h-[300px]">
             <DivisionalTab
               divisionalData={divisionalData} loadingDivisional={loadingDivisional}
               selectedDivision={selectedDivision} changeDivision={changeDivision}
@@ -292,27 +309,27 @@ export default function KundliGenerator() {
             />
           </TabsContent>
 
-          <TabsContent value="ashtakvarga">
+          <TabsContent value="ashtakvarga" className="min-h-[300px]">
             <AshtakvargaTab
               ashtakvargaData={ashtakvargaData} loadingAshtakvarga={loadingAshtakvarga}
               result={result} language={language} t={t}
             />
           </TabsContent>
 
-          <TabsContent value="shadbala">
+          <TabsContent value="shadbala" className="min-h-[300px]">
             <ShadbalaTab shadbalaData={shadbalaData} loadingShadbala={loadingShadbala} language={language} t={t} />
           </TabsContent>
 
-          <TabsContent value="avakhada">
+          <TabsContent value="avakhada" className="min-h-[300px]">
             <AvakhadaTab avakhadaData={avakhadaData} loadingAvakhada={loadingAvakhada} t={t} />
           </TabsContent>
 
-          <TabsContent value="yoga-dosha">
+          <TabsContent value="yoga-dosha" className="min-h-[300px]">
             <YogaDoshaTab yogaDoshaData={yogaDoshaData} loadingYogaDosha={loadingYogaDosha} doshaDisplay={doshaDisplay} doshaData={doshaData} loadingDosha={loadingDosha} language={language} t={t} />
           </TabsContent>
 
 
-          <TabsContent value="transits">
+          <TabsContent value="transits" className="min-h-[300px]">
             <TransitsTab
               transitData={transitData} loadingTransit={loadingTransit}
               transitHouseShift={transitHouseShift} setTransitHouseShift={setTransitHouseShift}
@@ -323,7 +340,7 @@ export default function KundliGenerator() {
             />
           </TabsContent>
 
-          <TabsContent value="varshphal">
+          <TabsContent value="varshphal" className="min-h-[300px]">
             <VarshphalTab
               varshphalData={varshphalData} loadingVarshphal={loadingVarshphal}
               varshphalYear={varshphalYear} changeVarshphalYear={changeVarshphalYear}
@@ -332,44 +349,44 @@ export default function KundliGenerator() {
             />
           </TabsContent>
 
-          <TabsContent value="kp">
+          <TabsContent value="kp" className="min-h-[300px]">
             <KPTab kpData={kpData} loadingKp={loadingKp} result={result} language={language} t={t} />
           </TabsContent>
 
-          <TabsContent value="yogini">
+          <TabsContent value="yogini" className="min-h-[300px]">
             <YoginiTab yoginiData={yoginiData} loadingYogini={loadingYogini} language={language} t={t} />
           </TabsContent>
 
-          <TabsContent value="upagrahas">
+          <TabsContent value="upagrahas" className="min-h-[300px]">
             <UpagrahasTab upagrahasData={upagrahasData} loadingUpagrahas={loadingUpagrahas} language={language} t={t} />
           </TabsContent>
 
-          <TabsContent value="sodashvarga">
+          <TabsContent value="sodashvarga" className="min-h-[300px]">
             <SodashvargaTab sodashvargaData={sodashvargaData} loadingSodashvarga={loadingSodashvarga} language={language} t={t} />
           </TabsContent>
 
-          <TabsContent value="aspects">
+          <TabsContent value="aspects" className="min-h-[300px]">
             <AspectsTab aspectsData={aspectsData} loadingAspects={loadingAspects} language={language} t={t} />
           </TabsContent>
 
-          <TabsContent value="aspects-matrix">
+          <TabsContent value="aspects-matrix" className="min-h-[300px]">
             <AspectsMatrixTab data={westernAspectsData} loading={loadingWesternAspects} />
           </TabsContent>
 
 
-          <TabsContent value="jaimini">
+          <TabsContent value="jaimini" className="min-h-[300px]">
             <JaiminiTab data={jaiminiData} loading={loadingJaimini} />
           </TabsContent>
 
-          <TabsContent value="sadesati">
+          <TabsContent value="sadesati" className="min-h-[300px]">
             <SadesatiTab sadesatiData={sadesatiData} loadingSadesati={loadingSadesati} doshaData={doshaData} language={language} t={t} />
           </TabsContent>
 
-          <TabsContent value="mundane">
+          <TabsContent value="mundane" className="min-h-[300px]">
             <MundaneTab language={language} />
           </TabsContent>
 
-          <TabsContent value="milan">
+          <TabsContent value="milan" className="min-h-[300px]">
             <KundliMilanTab savedKundlis={savedKundlis} currentKundliId={result?.id} />
           </TabsContent>
         </Tabs>

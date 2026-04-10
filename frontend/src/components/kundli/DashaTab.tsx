@@ -142,5 +142,13 @@ export default function DashaTab({
     );
   }
 
-  return <p className="text-center text-cosmic-text py-8">{t('kundli.clickDashaTab')}</p>;
+  return (
+    <div className="flex flex-col items-center justify-center py-12">
+      <p className="text-cosmic-text mb-3 text-sm">Dasha periods have not been loaded yet.</p>
+      <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-sacred-gold/10 border border-sacred-gold text-sacred-gold-dark text-sm font-medium cursor-default">
+        <ChevronDown className="w-4 h-4" />
+        Click the Dasha tab above to load analysis
+      </span>
+    </div>
+  );
 }
