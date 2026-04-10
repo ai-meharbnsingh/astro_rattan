@@ -30,6 +30,9 @@ export default function AuthPage() {
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  // OTP paste feedback
+  const [otpPasted, setOtpPasted] = useState(false);
+
   // Forgot password state
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetStep, setResetStep] = useState<ResetStep>('email');
@@ -161,6 +164,8 @@ export default function AuthPage() {
     if (pasted.length === 6) {
       setOtp(pasted.split(''));
       otpRefs.current[5]?.focus();
+      setOtpPasted(true);
+      setTimeout(() => setOtpPasted(false), 1200);
     }
   };
 
@@ -174,8 +179,8 @@ export default function AuthPage() {
           <h2 className="text-2xl sm:text-3xl font-sans font-bold text-cosmic-text mb-2">{t('auth.welcome')}</h2>
           <p className="text-cosmic-text-secondary">{t('auth.subtitle')}</p>
         </div>
-        {error && <div className="mb-4 p-3 rounded-xl bg-red-900 border border-red-300 text-red-400 text-sm text-center">{error}</div>}
-        {success && <div className="mb-4 p-3 rounded-xl bg-green-900 border border-green-300 text-green-400 text-sm text-center">{success}</div>}
+        {error && <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-300 text-red-700 text-sm text-center">{error}</div>}
+        {success && <div className="mb-4 p-3 rounded-xl bg-green-50 border border-green-300 text-green-700 text-sm text-center">{success}</div>}
         <Tabs defaultValue="login" className="w-full">
           <TabsList className="grid grid-cols-2 bg-cosmic-card mb-6 border border-sacred-gold">
             <TabsTrigger value="login" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-cosmic-bg text-cosmic-text-secondary">{t('auth.signIn')}</TabsTrigger>
@@ -242,10 +247,17 @@ export default function AuthPage() {
                       value={digit}
                       onChange={(e) => handleOtpChange(i, e.target.value)}
                       onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                      className="w-12 h-14 text-center text-xl font-bold rounded-lg border border-sacred-gold bg-cosmic-card text-cosmic-text focus:border-sacred-gold focus:ring-1 focus:ring-sacred-gold outline-none transition-colors"
+                      className={`w-12 h-14 text-center text-xl font-bold rounded-lg border bg-cosmic-card text-cosmic-text focus:border-sacred-gold focus:ring-1 focus:ring-sacred-gold outline-none transition-all duration-200 ${
+                        otpPasted ? 'border-green-500 ring-1 ring-green-400 bg-green-50' : 'border-sacred-gold'
+                      }`}
                     />
                   ))}
                 </div>
+                {otpPasted && (
+                  <p className="text-center text-sm text-green-600 font-medium animate-fadeIn">
+                    Code pasted
+                  </p>
+                )}
                 <Button onClick={handleVerifyOtp} disabled={loading || otp.join('').length !== 6} className="w-full btn-sacred disabled:opacity-50">
                   {loading ? t('common.loading') : 'Verify Code'}<ShieldCheck className="w-5 h-5 ml-2" />
                 </Button>
@@ -263,7 +275,7 @@ export default function AuthPage() {
             {regStep === 'details' && (
               <div className="space-y-4">
                 <div className="text-center mb-2">
-                  <div className="inline-flex items-center gap-2 bg-green-900 border border-green-300 rounded-full px-4 py-1.5 text-green-400 text-sm">
+                  <div className="inline-flex items-center gap-2 bg-green-50 border border-green-300 rounded-full px-4 py-1.5 text-green-700 text-sm">
                     <ShieldCheck className="w-4 h-4" /> {registerForm.email} verified
                   </div>
                 </div>
@@ -309,8 +321,8 @@ export default function AuthPage() {
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-cosmic-bg backdrop-blur-sm px-4" onClick={() => setShowForgotPassword(false)}>
             <div className="bg-cosmic-bg border border-sacred-gold p-6 max-w-sm w-full space-y-4" onClick={e => e.stopPropagation()}>
               <h3 className="text-lg font-sans text-sacred-gold-dark text-center">Reset Password</h3>
-              {error && <p className="text-red-400 text-sm text-center">{error}</p>}
-              {success && <p className="text-green-400 text-sm text-center">{success}</p>}
+              {error && <p className="text-red-700 text-sm text-center">{error}</p>}
+              {success && <p className="text-green-700 text-sm text-center">{success}</p>}
 
               {resetStep === 'email' && (
                 <>

@@ -26,13 +26,13 @@ const ClientProfile = lazy(() => import('./sections/ClientProfile'));
 
 gsap.registerPlugin(ScrollTrigger);
 
-class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error: Error | null }> {
   constructor(props: { children: ReactNode }) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, error: null };
   }
-  static getDerivedStateFromError(): { hasError: boolean } {
-    return { hasError: true };
+  static getDerivedStateFromError(error: Error): { hasError: boolean; error: Error } {
+    return { hasError: true, error };
   }
   componentDidCatch(error: Error, info: ErrorInfo) {
     console.error('ErrorBoundary caught:', error, info);
@@ -41,12 +41,24 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
     if (this.state.hasError) {
       return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-          <h2 className="text-2xl font-sans text-sacred-gold-dark mb-4">Something went wrong</h2>
-          <p className="text-cosmic-text/60 mb-6">An unexpected error occurred.</p>
-          <button onClick={() => { this.setState({ hasError: false }); window.location.href = '/'; }}
-            className="px-6 py-2 border border-sacred-gold text-sacred-gold-dark hover:bg-sacred-gold-dark hover:text-cosmic-bg transition-all">
-            Return Home
-          </button>
+          <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mb-4">
+            <span className="text-3xl">⚠️</span>
+          </div>
+          <h2 className="text-2xl font-sans text-gray-800 mb-2">Something went wrong</h2>
+          <p className="text-gray-500 mb-2 max-w-md">This section encountered an error. Your data is safe — try refreshing.</p>
+          {this.state.error && (
+            <p className="text-sm text-red-600 bg-red-50 px-3 py-1 rounded mb-4 max-w-md truncate">{this.state.error.message}</p>
+          )}
+          <div className="flex gap-3">
+            <button onClick={() => this.setState({ hasError: false, error: null })}
+              className="px-6 py-2.5 bg-sacred-gold-dark text-white rounded-lg hover:opacity-90 transition-all font-medium">
+              Try Again
+            </button>
+            <button onClick={() => window.location.href = '/'}
+              className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-medium">
+              Go Home
+            </button>
+          </div>
         </div>
       );
     }

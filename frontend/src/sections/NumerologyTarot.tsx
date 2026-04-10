@@ -207,7 +207,7 @@ export default function NumerologyTarot() {
       </div>
 
       {error && (
-        <div className="mb-6 p-3 rounded-xl bg-red-900 border border-red-300 text-red-400 text-sm text-center max-w-xl mx-auto">
+        <div className="mb-6 p-3 rounded-xl bg-red-50 border border-red-300 text-red-700 text-sm text-center max-w-xl mx-auto">
           {error}
         </div>
       )}
@@ -317,7 +317,7 @@ export default function NumerologyTarot() {
                   {/* Name Fields */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                      <label className="block text-sm text-cosmic-text-secondary mb-1">First Name <span className="text-red-400">*</span></label>
+                      <label className="block text-sm text-cosmic-text-secondary mb-1">First Name <span className="text-red-600">*</span></label>
                       <Input
                         placeholder="First Name"
                         value={firstName}
@@ -347,7 +347,7 @@ export default function NumerologyTarot() {
 
                   {/* Mobile Number with Country Code */}
                   <div>
-                    <label className="block text-sm text-cosmic-text-secondary mb-1">Mobile Number <span className="text-red-400">*</span></label>
+                    <label className="block text-sm text-cosmic-text-secondary mb-1">Mobile Number <span className="text-red-600">*</span></label>
                     <div className="flex gap-2">
                       <Select value={mobileCountryCode} onValueChange={setMobileCountryCode}>
                         <SelectTrigger className="w-24 bg-cosmic-card border-sacred-gold shrink-0">
@@ -381,7 +381,7 @@ export default function NumerologyTarot() {
 
                   {/* Date of Birth */}
                   <div>
-                    <label className="block text-sm text-cosmic-text-secondary mb-1">Date of Birth <span className="text-red-400">*</span></label>
+                    <label className="block text-sm text-cosmic-text-secondary mb-1">Date of Birth <span className="text-red-600">*</span></label>
                     <Input
                       type="date"
                       value={mobileDob}

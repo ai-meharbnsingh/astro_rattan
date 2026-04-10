@@ -35,7 +35,7 @@ export default function KundliGenerator() {
   const data = useKundliData();
   const {
     step, setStep, formData, setFormData, result, setResult,
-    savedKundlis, error, planets, doshaDisplay,
+    savedKundlis, error, tabError, setTabError, planets, doshaDisplay,
     // Tab data
     doshaData, loadingDosha, iogitaData, loadingIogita,
     dashaData, loadingDasha, extendedDashaData, loadingExtendedDasha,
@@ -216,6 +216,13 @@ export default function KundliGenerator() {
             <TabsTrigger value="mundane">{language === 'hi' ? 'मुंडन ज्योतिष' : 'Mundane'}</TabsTrigger>
             <TabsTrigger value="milan">{language === 'hi' ? 'कुंडली मिलान' : 'Kundli Milan'}</TabsTrigger>
           </TabsList>
+
+          {tabError && (
+            <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 flex items-center justify-between">
+              <p className="text-sm text-red-700">{tabError}</p>
+              <button onClick={() => setTabError(null)} className="text-red-500 hover:text-red-700 text-sm font-medium ml-3">Dismiss</button>
+            </div>
+          )}
 
           <TabsContent value="report">
             <ReportTab

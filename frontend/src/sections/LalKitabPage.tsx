@@ -132,7 +132,7 @@ export default function LalKitabPage() {
           <div className="max-w-xl mx-auto">
             <LalKitabForm onGenerate={handleGenerate} loading={false} />
             {error && (
-              <div className="mt-4 p-3 rounded-xl bg-red-900 border border-red-300 text-red-500 text-sm text-center">
+              <div className="mt-4 p-3 rounded-xl bg-red-50 border border-red-300 text-red-700 text-sm text-center">
                 {error}
               </div>
             )}

@@ -1,5 +1,17 @@
 const API_BASE = import.meta.env.VITE_API_URL || '';
 
+/** Map raw/technical error messages to user-friendly text */
+function friendlyError(msg: string): string {
+  const map: Record<string, string> = {
+    'Failed to fetch': 'Unable to connect. Please check your internet connection.',
+    'NetworkError when attempting to fetch resource.': 'Unable to connect. Please check your internet connection.',
+    'Load failed': 'Unable to connect. Please check your internet connection.',
+    'Internal Server Error': 'Something went wrong on our end. Please try again.',
+    'Not authenticated': 'Your session has expired. Please log in again.',
+  };
+  return map[msg] || msg;
+}
+
 let isRefreshing = false;
 let refreshPromise: Promise<boolean> | null = null;
 
@@ -39,7 +51,7 @@ async function fetchWithRetry(url: string, options: RequestInit, retries = 2): P
         await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
         continue;
       }
-      throw err;
+      throw new Error(friendlyError(err instanceof Error ? err.message : String(err)));
     }
   }
   return fetch(url, options); // unreachable, satisfies TS
@@ -74,7 +86,7 @@ export async function apiFetch(endpoint: string, options: RequestInit = {}) {
       if (!retryRes.ok) {
         const err = await retryRes.json().catch(() => ({ detail: retryRes.statusText }));
         const detail = typeof err.detail === 'string' ? err.detail : Array.isArray(err.detail) ? err.detail.map((d: any) => d.msg || d).join('; ') : JSON.stringify(err.detail) || retryRes.statusText;
-        throw new Error(detail);
+        throw new Error(friendlyError(detail));
       }
       const ct = retryRes.headers.get('content-type') || '';
       return ct.includes('application/json') ? retryRes.json() : retryRes.text();
@@ -82,13 +94,13 @@ export async function apiFetch(endpoint: string, options: RequestInit = {}) {
     // Refresh failed — clear stale tokens, throw (don't redirect — let components handle it)
     localStorage.removeItem('astrovedic_token');
     localStorage.removeItem('astrovedic_refresh_token');
-    throw new Error('Not authenticated');
+    throw new Error(friendlyError('Not authenticated'));
   }
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: res.statusText }));
     const detail = typeof err.detail === 'string' ? err.detail : Array.isArray(err.detail) ? err.detail.map((d: any) => d.msg || d).join('; ') : JSON.stringify(err.detail) || res.statusText;
-    throw new Error(detail);
+    throw new Error(friendlyError(detail));
   }
   const contentType = res.headers.get('content-type') || '';
   if (contentType.includes('application/json')) {

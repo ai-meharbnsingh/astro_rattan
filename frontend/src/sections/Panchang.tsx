@@ -183,45 +183,56 @@ export default function Panchang() {
             </div>
           </div>
 
-          {/* Date picker + Location row */}
-          <div className="mt-4 flex flex-wrap items-end gap-3">
-            <div>
-              <label className="block text-sm text-cosmic-text-secondary mb-1">Date</label>
-              <input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                className="px-3 py-2 rounded-xl bg-cosmic-card border border-sacred-gold text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none"
-              />
+          {/* Location & Date grouped inputs */}
+          <div className="mt-4 rounded-xl border border-cosmic-border bg-cosmic-card p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-sm font-semibold text-cosmic-text flex items-center gap-1.5">
+                <MapPin className="w-4 h-4 text-sacred-gold" />Location &amp; Date
+              </h4>
+              <Button
+                onClick={detectLocation}
+                disabled={detectingLocation}
+                className="btn-sacred bg-sacred-gold text-sacred-gold hover:bg-sacred-gold hover:text-cosmic-bg border border-sacred-gold transition-all text-sm px-4 py-2"
+              >
+                {detectingLocation ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Navigation className="w-4 h-4 mr-1" />}
+                Detect Location
+              </Button>
             </div>
-            <div>
-              <label className="block text-sm text-cosmic-text-secondary mb-1 flex items-center gap-1">
-                <MapPin className="w-3 h-3" />Latitude
-              </label>
-              <input
-                type="number" step="0.0001" value={latitude}
-                onChange={(e) => setLatitude(e.target.value)}
-                className="w-28 px-3 py-2 rounded-xl bg-cosmic-card border border-sacred-gold text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none"
-              />
+            <div className="space-y-3">
+              {/* Date — full width */}
+              <div>
+                <label className="block text-xs font-medium text-cosmic-text-secondary mb-1">Date</label>
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-cosmic-border text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none transition-colors"
+                />
+              </div>
+              {/* Lat / Lon — side by side */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-cosmic-text-secondary mb-1 flex items-center gap-1">
+                    <MapPin className="w-3 h-3" />Latitude
+                  </label>
+                  <input
+                    type="number" step="0.0001" value={latitude}
+                    onChange={(e) => setLatitude(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-cosmic-border text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-cosmic-text-secondary mb-1 flex items-center gap-1">
+                    <MapPin className="w-3 h-3" />Longitude
+                  </label>
+                  <input
+                    type="number" step="0.0001" value={longitude}
+                    onChange={(e) => setLongitude(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-cosmic-border text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none transition-colors"
+                  />
+                </div>
+              </div>
             </div>
-            <div>
-              <label className="block text-sm text-cosmic-text-secondary mb-1 flex items-center gap-1">
-                <MapPin className="w-3 h-3" />Longitude
-              </label>
-              <input
-                type="number" step="0.0001" value={longitude}
-                onChange={(e) => setLongitude(e.target.value)}
-                className="w-28 px-3 py-2 rounded-xl bg-cosmic-card border border-sacred-gold text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none"
-              />
-            </div>
-            <Button
-              onClick={detectLocation}
-              disabled={detectingLocation}
-              className="btn-sacred bg-sacred-gold text-sacred-gold hover:bg-sacred-gold hover:text-cosmic-bg border border-sacred-gold transition-all text-sm px-4 py-2"
-            >
-              {detectingLocation ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Navigation className="w-4 h-4 mr-1" />}
-              Detect Location
-            </Button>
           </div>
         </div>
 

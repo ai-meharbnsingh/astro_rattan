@@ -30,14 +30,14 @@
     --text-micro: 0.75rem;
 
     /* Prismatic Light Base */
-    --parchment: #FAFAFA;
+    --parchment: #FDFBF7;
     --parchment-dark: #F1F5F9;
-    --ink: #1e293b;
-    --ink-light: #64748b;
+    --ink: #1a1a2e;
+    --ink-light: #4b5563;
 
     /* Saffron / Gold Accents */
     --aged-gold: #FF9933;
-    --aged-gold-dim: #B45309;
+    --aged-gold-dim: #92400e;
     --aged-gold-light: #FFD700;
     --aged-gold-hex: #B8860B;  /* Legacy gold for compatibility */
     
@@ -66,7 +66,7 @@
     --brown-light: rgba(120, 113, 108, 0.1);
     --coffee: rgba(120, 113, 108, 0.08);
     
-    /* Dark Theme Backgrounds */
+    /* Dark Theme Backgrounds (kept for optional dark mode toggle) */
     --dark-bg: #1a1a2e;
     --dark-bg-secondary: #16213e;
     --dark-card: rgba(34, 34, 58, 0.8);
@@ -87,27 +87,27 @@
     --warning-light: #fbbf24;
     --warning-pale: #fde68a;
     
-    /* Text Colors Extended */
-    --text-cream: #e8e0d4;
-    --text-warm: #b8b0a4;
-    --text-gold: #D4A052;
+    /* Text Colors Extended — readable on light backgrounds */
+    --text-cream: #78716c;
+    --text-warm: #57534e;
+    --text-gold: #B45309;
 
     /* Text Colors */
-    --text-primary: #1e293b;
-    --text-secondary: #64748b;
-    --text-muted: #94a3b8;
+    --text-primary: #1a1a2e;
+    --text-secondary: #6b7280;
+    --text-muted: #9ca3af;
 
-    /* Semantic surface tokens */
-    --cosmic-bg: #FAFAFA;
+    /* Semantic surface tokens — Light Theme */
+    --cosmic-bg: #FDFBF7;
     --cosmic-bg-light: #FFFFFF;
     --cosmic-surface: #FFFFFF;
     --cosmic-card: rgba(255, 255, 255, 0.95);
     --cosmic-card-hover: rgba(255, 255, 255, 1);
     --cosmic-border: rgba(226, 232, 240, 1);
     --cosmic-border-hover: rgba(203, 213, 225, 1);
-    --cosmic-text: #1e293b;
-    --cosmic-text-secondary: #64748b;
-    --cosmic-text-muted: #94a3b8;
+    --cosmic-text: #1a1a2e;
+    --cosmic-text-secondary: #6b7280;
+    --cosmic-text-muted: #9ca3af;
 
     --sacred-gold: #FF9933;
     --sacred-gold-dark: #B45309;
@@ -120,8 +120,8 @@
     --sacred-violet: #FF9933;
 
     /* shadcn HSL tokens — Prismatic Light */
-    --background: 0 0% 98%;
-    --foreground: 222 47% 11%;
+    --background: 40 50% 98%;
+    --foreground: 240 27% 14%;
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
@@ -166,8 +166,8 @@
     font-size: 16px;
   }
   body {
-    background: #FAFAFA;
-    color: #1e293b;
+    background: #FDFBF7;
+    color: #1a1a2e;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
     line-height: 1.6;

@@ -38,16 +38,20 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Semantic design token aliases
+        surface: 'var(--cosmic-card)',
+        'text-primary': 'var(--cosmic-text)',
+        'text-secondary-alias': 'var(--cosmic-text-secondary)',
         // Digital Patra & Prismatic Light
         cosmic: {
-          bg: '#FAFAFA',
-          'bg-light': '#FFFFFF',
-          surface: '#FFFFFF',
-          card: 'rgba(255, 255, 255, 0.95)',
-          'card-hover': 'rgba(255, 255, 255, 1)',
-          text: '#1e293b',
-          'text-secondary': '#64748b',
-          'text-muted': '#94a3b8',
+          bg: 'var(--cosmic-bg)',
+          'bg-light': 'var(--cosmic-bg-light)',
+          surface: 'var(--cosmic-surface)',
+          card: 'var(--cosmic-card)',
+          'card-hover': 'var(--cosmic-card-hover)',
+          text: 'var(--cosmic-text)',
+          'text-secondary': 'var(--cosmic-text-secondary)',
+          'text-muted': 'var(--cosmic-text-muted)',
         },
         sacred: {
           cream: '#F8FAFC',

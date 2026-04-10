@@ -153,7 +153,7 @@ export default function KundliForm({
           onToggle={handleClientToggle}
         />
       )}
-      {error && <div className="mb-4 p-3 rounded-xl bg-red-900 text-red-400 text-sm">{error}</div>}
+      {error && <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-300 text-red-700 text-sm">{error}</div>}
       <div className="space-y-4">
         <div className="relative">
           <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold-dark" />

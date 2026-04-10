@@ -31,6 +31,7 @@ export default function Dashboard() {
   const [clients, setClients] = useState<Client[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   // Admin state
   const [adminStats, setAdminStats] = useState<AdminStats | null>(null);
@@ -45,10 +46,14 @@ export default function Dashboard() {
 
   const fetchClients = async (q = '') => {
     setLoading(true);
+    setFetchError(null);
     try {
       const data = await api.get(`/api/clients?search=${encodeURIComponent(q)}`);
       setClients(data);
-    } catch (e) { console.error(e); }
+    } catch (e: any) {
+      console.error(e);
+      setFetchError(e?.message === 'Not authenticated' ? 'Session expired. Please log in again.' : 'Failed to load data. Please try again.');
+    }
     setLoading(false);
   };
 
@@ -56,7 +61,10 @@ export default function Dashboard() {
     try {
       const data = await api.get('/api/admin/stats');
       setAdminStats(data);
-    } catch (e) { console.error(e); }
+    } catch (e: any) {
+      console.error(e);
+      setFetchError(e?.message || 'Failed to load admin stats.');
+    }
   };
 
   const handleSearch = (val: string) => {
@@ -144,6 +152,15 @@ export default function Dashboard() {
   function renderClientList() {
     if (loading) {
       return <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-600" /></div>;
+    }
+    if (fetchError) {
+      return (
+        <div className="text-center py-12">
+          <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-3"><span className="text-2xl">⚠️</span></div>
+          <p className="text-red-700 mb-2">{fetchError}</p>
+          <button onClick={() => fetchClients(search)} className="px-4 py-2 bg-sacred-gold-dark text-white rounded-lg text-sm hover:opacity-90">Retry</button>
+        </div>
+      );
     }
     if (clients.length === 0) {
       return (
