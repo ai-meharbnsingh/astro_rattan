@@ -60,13 +60,13 @@ function qualityLabel(quality: string): string {
     case 'excellent':
       return 'bg-sacred-gold/15 text-sacred-gold border-sacred-gold/30';
     case 'good':
-      return 'bg-green-500/15 text-green-400 border-green-500/30';
+      return 'bg-green-500/15 text-green-400 border-green-300/30';
     case 'average':
     case 'neutral':
-      return 'bg-amber-500/15 text-amber-400 border-amber-500/30';
+      return 'bg-amber-500/15 text-amber-400 border-amber-300/30';
     case 'poor':
     case 'inauspicious':
-      return 'bg-red-500/15 text-red-400 border-red-500/30';
+      return 'bg-red-500/15 text-red-400 border-red-300/30';
     default:
       return 'bg-cosmic-text-secondary/15 text-cosmic-text-secondary border-cosmic-text-secondary/30';
   }

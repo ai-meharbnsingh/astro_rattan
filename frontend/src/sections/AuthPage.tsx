@@ -174,8 +174,8 @@ export default function AuthPage() {
           <h2 className="text-2xl sm:text-3xl font-sans font-bold text-cosmic-text mb-2">{t('auth.welcome')}</h2>
           <p className="text-cosmic-text-secondary">{t('auth.subtitle')}</p>
         </div>
-        {error && <div className="mb-4 p-3 rounded-xl bg-red-900 border border-red-500 text-red-400 text-sm text-center">{error}</div>}
-        {success && <div className="mb-4 p-3 rounded-xl bg-green-900 border border-green-500 text-green-400 text-sm text-center">{success}</div>}
+        {error && <div className="mb-4 p-3 rounded-xl bg-red-900 border border-red-300 text-red-400 text-sm text-center">{error}</div>}
+        {success && <div className="mb-4 p-3 rounded-xl bg-green-900 border border-green-300 text-green-400 text-sm text-center">{success}</div>}
         <Tabs defaultValue="login" className="w-full">
           <TabsList className="grid grid-cols-2 bg-cosmic-card mb-6 border border-sacred-gold">
             <TabsTrigger value="login" className="data-[state=active]:bg-sacred-gold data-[state=active]:text-cosmic-bg text-cosmic-text-secondary">{t('auth.signIn')}</TabsTrigger>
@@ -263,7 +263,7 @@ export default function AuthPage() {
             {regStep === 'details' && (
               <div className="space-y-4">
                 <div className="text-center mb-2">
-                  <div className="inline-flex items-center gap-2 bg-green-900 border border-green-500 rounded-full px-4 py-1.5 text-green-400 text-sm">
+                  <div className="inline-flex items-center gap-2 bg-green-900 border border-green-300 rounded-full px-4 py-1.5 text-green-400 text-sm">
                     <ShieldCheck className="w-4 h-4" /> {registerForm.email} verified
                   </div>
                 </div>

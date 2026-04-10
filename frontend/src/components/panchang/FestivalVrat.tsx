@@ -15,7 +15,7 @@ interface FestivalVratProps {
 
 const typeBadgeColors: Record<string, string> = {
   major: 'bg-sacred-gold/15 text-sacred-gold border-sacred-gold/30',
-  fasting: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
+  fasting: 'bg-amber-500/15 text-amber-400 border-amber-300/30',
   auspicious: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
   regional: 'bg-blue-500/15 text-blue-400 border-blue-500/30',
 };

@@ -368,7 +368,7 @@ export default function ReportTab({
                             <td className="p-2 text-cosmic-text">{planet.nakshatra || '\u2014'}</td>
                             <td className="p-2 text-center text-cosmic-text">{planet.sign_degree?.toFixed(1)}&deg;</td>
                             <td className="p-2 text-center">
-                              <span className={`text-sm px-1 py-0.5 rounded ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-500 text-green-400' : 'text-cosmic-text'}`}>
+                              <span className={`text-sm px-1 py-0.5 rounded ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-100 text-green-800' : 'text-cosmic-text'}`}>
                                 {translateLabel(planet.status, language) || '\u2014'}
                               </span>
                             </td>
@@ -615,10 +615,10 @@ export default function ReportTab({
                         </div>
                         <div className="space-y-1">
                           {(yogaDoshaData.yogas || []).filter((y: any) => y.present).slice(0, 8).map((yoga: any, idx: number) => (
-                            <div key={idx} className="rounded-lg p-2 text-sm border border-green-500 bg-green-500">
+                            <div key={idx} className="rounded-lg p-2 text-sm border border-green-300 bg-green-500">
                               <div className="flex items-center justify-between">
                                 <span className="font-medium text-sacred-brown">{translateName(yoga.name, language)}</span>
-                                <span className="text-sm px-1.5 py-0.5 rounded-full bg-green-500 text-green-400">
+                                <span className="text-sm px-1.5 py-0.5 rounded-full bg-green-100 text-green-800">
                                   {t('common.present')}
                                 </span>
                               </div>
@@ -636,10 +636,10 @@ export default function ReportTab({
                         </div>
                         <div className="space-y-1">
                           {(yogaDoshaData.doshas || []).filter((d: any) => d.present).slice(0, 8).map((dosha: any, idx: number) => (
-                            <div key={idx} className="rounded-lg p-2 text-sm border border-red-500 bg-red-500">
+                            <div key={idx} className="rounded-lg p-2 text-sm border border-red-300 bg-red-500">
                               <div className="flex items-center justify-between">
                                 <span className="font-medium text-sacred-brown">{translateName(dosha.name, language)}</span>
-                                <span className="text-sm px-1.5 py-0.5 rounded-full bg-red-500 text-red-400">
+                                <span className="text-sm px-1.5 py-0.5 rounded-full bg-red-100 text-red-800">
                                   {t('common.present')}
                                 </span>
                               </div>
@@ -664,30 +664,30 @@ export default function ReportTab({
                   ) : doshaData ? (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                       {/* Mangal Dosha */}
-                      <div className={`rounded-lg p-3 border ${doshaData.mangal_dosha?.has_dosha ? 'border-red-500 bg-red-500' : 'border-green-500 bg-green-500'}`}>
+                      <div className={`rounded-lg p-3 border ${doshaData.mangal_dosha?.has_dosha ? 'border-red-300 bg-red-500' : 'border-green-300 bg-green-500'}`}>
                         <div className="flex items-center justify-between mb-1">
                           <h5 className="text-sm font-semibold text-sacred-brown">{translateName('Mangal Dosha', language)}</h5>
-                          <span className={`text-sm px-2 py-0.5 rounded-full font-medium ${doshaData.mangal_dosha?.has_dosha ? 'bg-red-500 text-red-400' : 'bg-green-500 text-green-400'}`}>
+                          <span className={`text-sm px-2 py-0.5 rounded-full font-medium ${doshaData.mangal_dosha?.has_dosha ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
                             {doshaData.mangal_dosha?.has_dosha ? translateLabel(doshaData.mangal_dosha.severity, language) || t('common.present') : t('common.absent')}
                           </span>
                         </div>
                         <p className="text-sm text-cosmic-text">{doshaData.mangal_dosha?.description || t('kundli.noMangalDosha')}</p>
                       </div>
                       {/* Kaal Sarp Dosha */}
-                      <div className={`rounded-lg p-3 border ${doshaData.kaal_sarp_dosha?.has_dosha ? 'border-red-500 bg-red-500' : 'border-green-500 bg-green-500'}`}>
+                      <div className={`rounded-lg p-3 border ${doshaData.kaal_sarp_dosha?.has_dosha ? 'border-red-300 bg-red-500' : 'border-green-300 bg-green-500'}`}>
                         <div className="flex items-center justify-between mb-1">
                           <h5 className="text-sm font-semibold text-sacred-brown">{translateName('Kaal Sarp Dosha', language)}</h5>
-                          <span className={`text-sm px-2 py-0.5 rounded-full font-medium ${doshaData.kaal_sarp_dosha?.has_dosha ? 'bg-red-500 text-red-400' : 'bg-green-500 text-green-400'}`}>
+                          <span className={`text-sm px-2 py-0.5 rounded-full font-medium ${doshaData.kaal_sarp_dosha?.has_dosha ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
                             {doshaData.kaal_sarp_dosha?.has_dosha ? translateLabel(doshaData.kaal_sarp_dosha.severity, language) || t('common.present') : t('common.absent')}
                           </span>
                         </div>
                         <p className="text-sm text-cosmic-text">{doshaData.kaal_sarp_dosha?.description || t('kundli.noKaalSarpDosha')}</p>
                       </div>
                       {/* Sade Sati */}
-                      <div className={`rounded-lg p-3 border ${doshaData.sade_sati?.has_sade_sati ? 'border-orange-500 bg-orange-500' : 'border-green-500 bg-green-500'}`}>
+                      <div className={`rounded-lg p-3 border ${doshaData.sade_sati?.has_sade_sati ? 'border-orange-500 bg-orange-500' : 'border-green-300 bg-green-500'}`}>
                         <div className="flex items-center justify-between mb-1">
                           <h5 className="text-sm font-semibold text-sacred-brown">{translateName('Sade Sati', language)}</h5>
-                          <span className={`text-sm px-2 py-0.5 rounded-full font-medium ${doshaData.sade_sati?.has_sade_sati ? 'bg-orange-500 text-orange-600' : 'bg-green-500 text-green-400'}`}>
+                          <span className={`text-sm px-2 py-0.5 rounded-full font-medium ${doshaData.sade_sati?.has_sade_sati ? 'bg-orange-100 text-orange-800' : 'bg-green-100 text-green-800'}`}>
                             {doshaData.sade_sati?.has_sade_sati ? `${t('common.active')} - ${translateLabel(doshaData.sade_sati.phase, language)}` : t('common.inactive')}
                           </span>
                         </div>

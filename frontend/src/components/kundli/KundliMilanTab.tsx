@@ -59,9 +59,9 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
   };
 
   const overallColor = (total: number) => {
-    if (total >= 24) return 'text-green-400 border-green-500';
+    if (total >= 24) return 'text-green-400 border-green-300';
     if (total >= 18) return 'text-yellow-400 border-yellow-500';
-    return 'text-red-400 border-red-500';
+    return 'text-red-400 border-red-300';
   };
 
   return (

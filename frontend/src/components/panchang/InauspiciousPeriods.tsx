@@ -47,7 +47,7 @@ export default function InauspiciousPeriods({
             return (
               <div
                 key={period.key}
-                className="flex items-center justify-between p-3 rounded-xl bg-red-900/10 border border-red-500/20"
+                className="flex items-center justify-between p-3 rounded-xl bg-red-900/10 border border-red-300/20"
               >
                 <div className="flex items-center gap-3">
                   <Icon className="h-4 w-4 text-red-400 shrink-0" />

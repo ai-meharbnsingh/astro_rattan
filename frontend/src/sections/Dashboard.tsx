@@ -119,7 +119,7 @@ export default function Dashboard() {
                     <p className="text-lg font-sans text-cosmic-text font-bold">{astro.kundli_count}</p>
                     <p className="text-sm text-cosmic-text">Kundlis</p>
                   </div>
-                  <span className={`self-center text-sm px-2 py-0.5 border ${astro.role === 'admin' ? 'border-red-500 text-red-500' : 'border-purple-500 text-purple-500'}`}>
+                  <span className={`self-center text-sm px-2 py-0.5 border ${astro.role === 'admin' ? 'border-red-300 text-red-500' : 'border-purple-500 text-purple-500'}`}>
                     {astro.role}
                   </span>
                 </div>

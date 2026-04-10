@@ -70,8 +70,8 @@ export default function LalKitabDoshaTab({ chartData }: Props) {
               key={dosha.key}
               className={`rounded-2xl p-5 border transition-all ${
                 dosha.detected
-                  ? 'border-red-500/30 bg-red-500/5'
-                  : 'border-green-500/30 bg-green-500/5'
+                  ? 'border-red-300/30 bg-red-500/5'
+                  : 'border-green-300/30 bg-green-500/5'
               }`}
             >
               {/* Card header */}

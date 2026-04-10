@@ -134,7 +134,7 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
                   key={conj.house}
                   className={`rounded-xl p-5 border transition-all ${
                     hasClash
-                      ? 'border-red-500/30 bg-red-500/5'
+                      ? 'border-red-300/30 bg-red-500/5'
                       : 'border-blue-500/20 bg-blue-500/5'
                   }`}
                 >
@@ -277,8 +277,8 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
                   key={conj.house}
                   className={`rounded-xl p-4 border ${
                     hasClash
-                      ? 'border-red-500/30 bg-red-500/5'
-                      : 'border-green-500/30 bg-green-500/5'
+                      ? 'border-red-300/30 bg-red-500/5'
+                      : 'border-green-300/30 bg-green-500/5'
                   }`}
                 >
                   <div className="flex items-center gap-2">

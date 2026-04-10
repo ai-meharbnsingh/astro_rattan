@@ -165,7 +165,7 @@ export default function TransitsTab(props: TransitsTabProps) {
                           <td className="p-3" style={{ color: 'var(--ink-light)' }}>{translateSign(tr.current_sign, language)}</td>
                           <td className="p-3 text-center" style={{ color: 'var(--ink-light)' }}>{tr.natal_house_from_moon}</td>
                           <td className="p-3 text-center">
-                            <span className={`inline-flex items-center gap-1 text-sm px-2 py-1 rounded-full font-medium ${tr.effect === 'favorable' ? 'bg-green-500 text-green-400' : 'bg-red-500 text-red-400'}`}>
+                            <span className={`inline-flex items-center gap-1 text-sm px-2 py-1 rounded-full font-medium ${tr.effect === 'favorable' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                               {tr.effect === 'favorable' ? <CheckCircle className="w-3 h-3" /> : <AlertTriangle className="w-3 h-3" />}
                               {tr.effect === 'favorable' ? t('common.favorable') : t('common.unfavorable')}
                             </span>
@@ -181,13 +181,13 @@ export default function TransitsTab(props: TransitsTabProps) {
                   {(transitData.transits || []).map((tr: any, idx: number) => (
                     <div
                       key={idx}
-                      className={`rounded-xl p-4 border ${tr.effect === 'favorable' ? 'border-green-500' : 'border-red-500'}`}
+                      className={`rounded-xl p-4 border ${tr.effect === 'favorable' ? 'border-green-300' : 'border-red-300'}`}
                       style={{ backgroundColor: tr.effect === 'favorable' ? 'rgba(34,197,94,0.03)' : 'rgba(239,68,68,0.03)' }}
                     >
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-display font-semibold" style={{ color: 'var(--ink)' }}>{translatePlanet(tr.planet, language)}</span>
                         <span className="text-sm" style={{ color: 'var(--ink-light)' }}>{translateSign(tr.current_sign, language)}</span>
-                        <span className={`text-sm px-1.5 py-0.5 rounded-full ${tr.effect === 'favorable' ? 'bg-green-500 text-green-400' : 'bg-red-500 text-red-400'}`}>
+                        <span className={`text-sm px-1.5 py-0.5 rounded-full ${tr.effect === 'favorable' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                           {tr.effect === 'favorable' ? t('common.favorable') : t('common.unfavorable')}
                         </span>
                       </div>

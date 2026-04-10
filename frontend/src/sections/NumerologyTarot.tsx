@@ -207,7 +207,7 @@ export default function NumerologyTarot() {
       </div>
 
       {error && (
-        <div className="mb-6 p-3 rounded-xl bg-red-900 border border-red-500 text-red-400 text-sm text-center max-w-xl mx-auto">
+        <div className="mb-6 p-3 rounded-xl bg-red-900 border border-red-300 text-red-400 text-sm text-center max-w-xl mx-auto">
           {error}
         </div>
       )}
@@ -239,7 +239,7 @@ export default function NumerologyTarot() {
                   {[
                     { label: t('numerology.lifePath'), value: numResult.life_path, color: 'bg-purple-100 text-purple-700' },
                     { label: t('numerology.destiny'), value: numResult.destiny ?? numResult.expression, color: 'bg-blue-100 text-blue-700' },
-                    { label: t('numerology.soulUrge'), value: numResult.soul_urge, color: 'bg-green-500 text-green-400' },
+                    { label: t('numerology.soulUrge'), value: numResult.soul_urge, color: 'bg-green-100 text-green-800' },
                     { label: t('numerology.personality'), value: numResult.personality, color: 'bg-yellow-100 text-yellow-700' },
                   ].map((n) => (
                     <div key={n.label} className="text-center p-3 rounded-xl bg-cosmic-card">
@@ -271,8 +271,8 @@ export default function NumerologyTarot() {
                       {[
                         { key: 'life_path' as const, label: t('numerology.lifePath'), headerColor: 'bg-purple-500 text-purple-400', borderColor: 'border-purple-500' },
                         { key: 'destiny' as const, label: t('numerology.destiny'), headerColor: 'bg-blue-500 text-blue-400', borderColor: 'border-blue-500' },
-                        { key: 'soul_urge' as const, label: t('numerology.soulUrge'), headerColor: 'bg-green-500 text-green-400', borderColor: 'border-green-500' },
-                        { key: 'personality' as const, label: t('numerology.personality'), headerColor: 'bg-yellow-500 text-yellow-400', borderColor: 'border-yellow-500' },
+                        { key: 'soul_urge' as const, label: t('numerology.soulUrge'), headerColor: 'bg-green-100 text-green-800', borderColor: 'border-green-300' },
+                        { key: 'personality' as const, label: t('numerology.personality'), headerColor: 'bg-yellow-100 text-yellow-800', borderColor: 'border-yellow-500' },
                       ].map((section) => {
                         const text = (numResult.predictions as NumerologyPredictions)[section.key];
                         if (!text) return null;
@@ -540,7 +540,7 @@ export default function NumerologyTarot() {
                             <span className="text-sm text-cosmic-text-secondary shrink-0">Lucky Colours</span>
                             <div className="flex flex-wrap gap-1.5 justify-end">
                               {mobileResult.lucky_colours.map((c) => (
-                                <Badge key={c} className="bg-green-500 text-green-400 border-green-500 px-2 py-0.5 text-sm">{c}</Badge>
+                                <Badge key={c} className="bg-green-100 text-green-800 border-green-300 px-2 py-0.5 text-sm">{c}</Badge>
                               ))}
                             </div>
                           </div>
@@ -562,7 +562,7 @@ export default function NumerologyTarot() {
                             <span className="text-sm text-cosmic-text-secondary">Lucky Numbers</span>
                             <div className="flex flex-wrap gap-1.5">
                               {mobileResult.lucky_numbers.map((n) => (
-                                <Badge key={n} className="bg-green-500 text-green-400 border-green-500 px-2 py-0.5 text-sm">{n}</Badge>
+                                <Badge key={n} className="bg-green-100 text-green-800 border-green-300 px-2 py-0.5 text-sm">{n}</Badge>
                               ))}
                             </div>
                           </div>
@@ -573,7 +573,7 @@ export default function NumerologyTarot() {
                             <span className="text-sm text-cosmic-text-secondary">Unlucky Numbers</span>
                             <div className="flex flex-wrap gap-1.5">
                               {mobileResult.unlucky_numbers.map((n) => (
-                                <Badge key={n} className="bg-red-500 text-red-400 border-red-500 px-2 py-0.5 text-sm">{n}</Badge>
+                                <Badge key={n} className="bg-red-100 text-red-800 border-red-300 px-2 py-0.5 text-sm">{n}</Badge>
                               ))}
                             </div>
                           </div>
@@ -625,10 +625,10 @@ export default function NumerologyTarot() {
                                   <td className="px-4 py-2">
                                     <Badge className={`text-sm px-2 py-0.5 ${
                                       combo.type === 'Benefic'
-                                        ? 'bg-green-500 text-green-400 border-green-500'
+                                        ? 'bg-green-100 text-green-800 border-green-300'
                                         : combo.type === 'Neutral'
-                                          ? 'bg-amber-500 text-amber-400 border-amber-500'
-                                          : 'bg-red-500 text-red-400 border-red-500'
+                                          ? 'bg-amber-100 text-amber-800 border-amber-300'
+                                          : 'bg-red-100 text-red-800 border-red-300'
                                     }`}>
                                       {combo.type}
                                     </Badge>
@@ -643,8 +643,8 @@ export default function NumerologyTarot() {
                         {mobileResult.recommendation_message && (
                           <div className={`px-4 py-3 text-sm font-medium text-center ${
                             mobileResult.is_recommended
-                              ? 'bg-green-500 text-green-400 border-t border-green-500'
-                              : 'bg-red-500 text-red-400 border-t border-red-500'
+                              ? 'bg-green-100 text-green-800 border-t border-green-300'
+                              : 'bg-red-100 text-red-800 border-t border-red-300'
                           }`}>
                             {mobileResult.recommendation_message}
                           </div>

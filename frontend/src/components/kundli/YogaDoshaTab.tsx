@@ -39,12 +39,12 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
           {(yogaDoshaData.yogas || []).filter((y: any) => y.present).map((yoga: any, idx: number) => (
             <div
               key={idx}
-              className="rounded-xl p-4 border border-green-500"
+              className="rounded-xl p-4 border border-green-300"
               style={{ backgroundColor: 'rgba(34,197,94,0.05)' }}
             >
               <div className="flex items-center justify-between mb-2">
                 <h5 className="font-display font-semibold" style={{ color: 'var(--ink)' }}>{translateName(yoga.name, language)}</h5>
-                <span className="text-sm px-2 py-1 rounded-full font-medium bg-green-500 text-green-400">
+                <span className="text-sm px-2 py-1 rounded-full font-medium bg-green-100 text-green-800">
                   {t('common.present')}
                 </span>
               </div>
@@ -52,7 +52,7 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
               {yoga.planets_involved && yoga.planets_involved.length > 0 && (
                 <div className="mt-2 flex gap-2">
                   {yoga.planets_involved.map((p: string) => (
-                    <span key={p} className="text-sm px-2 py-0.5 rounded-full bg-green-500 text-green-400">{p}</span>
+                    <span key={p} className="text-sm px-2 py-0.5 rounded-full bg-green-100 text-green-800">{p}</span>
                   ))}
                 </div>
               )}
@@ -73,18 +73,18 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
           {(yogaDoshaData.doshas || []).filter((d: any) => d.present).map((dosha: any, idx: number) => (
             <div
               key={idx}
-              className={`rounded-xl p-4 border ${dosha.severity === 'high' ? 'border-red-500' : 'border-amber-400'}`}
+              className={`rounded-xl p-4 border ${dosha.severity === 'high' ? 'border-red-300' : 'border-amber-400'}`}
               style={{ backgroundColor: dosha.severity === 'high' ? 'rgba(196,62,78,0.08)' : 'rgba(245,158,11,0.05)' }}
             >
               <div className="flex items-center justify-between mb-2">
                 <h5 className="font-display font-semibold" style={{ color: 'var(--ink)' }}>{translateName(dosha.name, language)}</h5>
                 <div className="flex items-center gap-2">
                   {dosha.severity !== 'none' && (
-                    <span className={`text-sm px-2 py-0.5 rounded-full ${dosha.severity === 'high' ? 'bg-red-500 text-red-400' : dosha.severity === 'medium' ? 'bg-amber-400 text-amber-600' : 'bg-yellow-500 text-yellow-400'}`}>
+                    <span className={`text-sm px-2 py-0.5 rounded-full ${dosha.severity === 'high' ? 'bg-red-100 text-red-800' : dosha.severity === 'medium' ? 'bg-amber-100 text-amber-800' : 'bg-yellow-100 text-yellow-800'}`}>
                       {translateLabel(dosha.severity, language)}
                     </span>
                   )}
-                  <span className="text-sm px-2 py-1 rounded-full font-medium bg-red-500 text-red-400">
+                  <span className="text-sm px-2 py-1 rounded-full font-medium bg-red-100 text-red-800">
                     {t('common.present')}
                   </span>
                 </div>
@@ -125,10 +125,10 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
           </div>
           <div className="grid gap-3">
             {doshaDisplay.mangal.has_dosha && (
-              <div className="rounded-xl p-4 border border-red-500" style={{ backgroundColor: 'rgba(196,62,78,0.08)' }}>
+              <div className="rounded-xl p-4 border border-red-300" style={{ backgroundColor: 'rgba(196,62,78,0.08)' }}>
                 <div className="flex items-center justify-between mb-2">
                   <h5 className="font-display font-semibold" style={{ color: 'var(--ink)' }}>{translateName('Mangal Dosha', language)}</h5>
-                  <span className="text-sm px-2 py-1 rounded-full bg-red-500 text-red-400">
+                  <span className="text-sm px-2 py-1 rounded-full bg-red-100 text-red-800">
                     {t('common.present')} ({translateLabel(doshaDisplay.mangal.severity, language)})
                   </span>
                 </div>
@@ -136,10 +136,10 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
               </div>
             )}
             {doshaDisplay.kaalsarp.has_dosha && (
-              <div className="rounded-xl p-4 border border-red-500" style={{ backgroundColor: 'rgba(196,62,78,0.08)' }}>
+              <div className="rounded-xl p-4 border border-red-300" style={{ backgroundColor: 'rgba(196,62,78,0.08)' }}>
                 <div className="flex items-center justify-between mb-2">
                   <h5 className="font-display font-semibold" style={{ color: 'var(--ink)' }}>{translateName('Kaal Sarp Dosha', language)}</h5>
-                  <span className="text-sm px-2 py-1 rounded-full bg-red-500 text-red-400">{t('common.present')}</span>
+                  <span className="text-sm px-2 py-1 rounded-full bg-red-100 text-red-800">{t('common.present')}</span>
                 </div>
                 <p className="text-sm" style={{ color: 'var(--ink-light)' }}>{doshaDisplay.kaalsarp.description}</p>
               </div>

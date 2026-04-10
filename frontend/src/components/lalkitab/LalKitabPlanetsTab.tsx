@@ -134,7 +134,7 @@ export default function LalKitabPlanetsTab({ chartData }: Props) {
                       {enemies.map((e) => (
                         <span
                           key={e}
-                          className="bg-red-500/10 text-red-600 border border-red-500/20 px-2 py-0.5 rounded-full text-sm"
+                          className="bg-red-500/10 text-red-600 border border-red-300/20 px-2 py-0.5 rounded-full text-sm"
                         >
                           {getFriendName(e)}
                         </span>

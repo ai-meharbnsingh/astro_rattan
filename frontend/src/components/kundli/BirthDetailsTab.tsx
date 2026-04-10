@@ -67,7 +67,7 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
                   <td className="p-2 text-cosmic-text">{translateLabel(signType, language)}</td>
                   <td className="p-2 text-cosmic-text">{translateLabel(element, language)}</td>
                   <td className="p-2">
-                    <span className={`text-sm px-2 py-0.5 rounded-full ${nature === 'Benefic' ? 'bg-green-500 text-green-400' : 'bg-red-500 text-red-400'}`}>
+                    <span className={`text-sm px-2 py-0.5 rounded-full ${nature === 'Benefic' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                       {language === 'hi' ? (nature === 'Benefic' ? 'शुभ' : 'पापी') : nature}
                     </span>
                   </td>

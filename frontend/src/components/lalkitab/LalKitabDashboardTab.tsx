@@ -182,7 +182,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
                 {isHi ? 'खाली भाव' : 'Empty'}
               </p>
             </div>
-            <div className="text-center p-3 rounded-xl bg-green-500/5 border border-green-500/10">
+            <div className="text-center p-3 rounded-xl bg-green-500/5 border border-green-300/10">
               <p className="text-2xl font-sans font-bold text-green-400">
                 {counts.strong}
               </p>
@@ -190,7 +190,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
                 {isHi ? 'मजबूत' : 'Strong'}
               </p>
             </div>
-            <div className="text-center p-3 rounded-xl bg-red-500/5 border border-red-500/10">
+            <div className="text-center p-3 rounded-xl bg-red-500/5 border border-red-300/10">
               <p className="text-2xl font-sans font-bold text-red-400">
                 {counts.weak}
               </p>
@@ -260,7 +260,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
               {detectedDoshas.map((dosha) => (
                 <div
                   key={dosha.key}
-                  className="flex items-center justify-between p-3 rounded-xl border border-red-500/20 bg-red-500/5"
+                  className="flex items-center justify-between p-3 rounded-xl border border-red-300/20 bg-red-500/5"
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />

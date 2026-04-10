@@ -513,9 +513,9 @@ export default function ConsolidatedReport({
                         <td className="p-1.5 text-center">
                           <span className={`text-sm px-1 py-0.5 rounded ${
                             planet.status === 'Exalted' || planet.status === 'Own Sign'
-                              ? 'bg-green-500 text-green-400'
+                              ? 'bg-green-100 text-green-800'
                               : planet.status === 'Debilitated'
-                              ? 'bg-red-500 text-red-400'
+                              ? 'bg-red-100 text-red-800'
                               : 'text-cosmic-text'
                           }`}>
                             {planet.status ? translateLabel(planet.status, language) : '\u2014'}
@@ -675,7 +675,7 @@ export default function ConsolidatedReport({
               ) : presentYogas.length > 0 ? (
                 <div className="space-y-1">
                   {presentYogas.map((yoga: any, idx: number) => (
-                    <div key={idx} className="bg-green-500 border border-green-500 rounded px-2 py-1">
+                    <div key={idx} className="bg-green-500 border border-green-300 rounded px-2 py-1">
                       <span className="text-sm font-medium text-green-400">{translateName(yoga.name, language)}</span>
                       {yoga.description && (
                          <p className="text-sm text-green-400 mt-0.5">{translateBackend(yoga.description, language)}</p>
@@ -699,7 +699,7 @@ export default function ConsolidatedReport({
               ) : presentDoshas.length > 0 ? (
                 <div className="space-y-1">
                   {presentDoshas.map((dosha: any, idx: number) => (
-                    <div key={idx} className="bg-red-500 border border-red-500 rounded px-2 py-1">
+                    <div key={idx} className="bg-red-500 border border-red-300 rounded px-2 py-1">
                       <span className="text-sm font-medium text-red-400">{translateName(dosha.name, language)}</span>
                       {dosha.remedies && (
                         <p className="text-sm text-red-400 mt-0.5">{t('dosha.remedies')}: {translateRemedy(dosha.remedies, language)}</p>
@@ -1094,10 +1094,10 @@ export default function ConsolidatedReport({
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-sm font-semibold text-cosmic-text">{translatePlanet(planet, language)} <span className="text-sm text-cosmic-text">(H{data.house})</span></span>
                         <div className="flex gap-2">
-                          <span className="text-sm px-1.5 py-0.5 rounded bg-green-500 text-green-400">
+                          <span className="text-sm px-1.5 py-0.5 rounded bg-green-100 text-green-800">
                             {data.benefic_aspects} {t('report.beneficCount')}
                           </span>
-                          <span className="text-sm px-1.5 py-0.5 rounded bg-red-500 text-red-400">
+                          <span className="text-sm px-1.5 py-0.5 rounded bg-red-100 text-red-800">
                             {data.malefic_aspects} {t('report.maleficCount')}
                           </span>
                         </div>

@@ -374,17 +374,17 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
 
               {/* PRESENT Yogas Only - Not showing absent ones */}
               {presentYogas.length > 0 && (
-                <div className="bg-[#111] rounded-xl border border-green-500 p-3 mb-4">
+                <div className="bg-[#111] rounded-xl border border-green-300 p-3 mb-4">
                   <h3 className="text-sm font-semibold text-green-400 mb-2 flex items-center gap-2" style={{ fontFamily: 'var(--font-sacred, Inter, sans-serif)' }}>
                     <span>✦</span> Present Yogas ({presentYogas.length})
                   </h3>
                   <div className="space-y-2">
                     {presentYogas.map((yoga, idx) => (
-                      <div key={idx} className="p-2 rounded bg-green-500 border border-green-500 text-sm">
+                      <div key={idx} className="p-2 rounded bg-green-500 border border-green-300 text-sm">
                         <div className="flex items-center justify-between mb-1">
                           <span className="font-semibold text-white">{yoga.name}</span>
                           <span className={`px-2 py-0.5 rounded-full text-label ${
-                            yoga.strength === 'Strong' ? 'bg-green-500 text-green-400' : 'bg-yellow-500 text-yellow-400'
+                            yoga.strength === 'Strong' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
                           }`}>
                             {yoga.strength}
                           </span>
@@ -398,17 +398,17 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
 
               {/* PRESENT Doshas Only - Not showing absent ones */}
               {presentDoshas.length > 0 && (
-                <div className="bg-[#111] rounded-xl border border-red-500 p-3">
+                <div className="bg-[#111] rounded-xl border border-red-300 p-3">
                   <h3 className="text-sm font-semibold text-red-400 mb-2 flex items-center gap-2" style={{ fontFamily: 'var(--font-sacred, Inter, sans-serif)' }}>
                     <span>⚠</span> Present Doshas ({presentDoshas.length})
                   </h3>
                   <div className="space-y-2">
                     {presentDoshas.map((dosha, idx) => (
-                      <div key={idx} className="p-2 rounded bg-red-500 border border-red-500 text-sm">
+                      <div key={idx} className="p-2 rounded bg-red-500 border border-red-300 text-sm">
                         <div className="flex items-center justify-between mb-1">
                           <span className="font-semibold text-white">{dosha.name}</span>
                           <span className={`px-2 py-0.5 rounded-full text-label ${
-                            dosha.severity === 'High' ? 'bg-red-500 text-red-400' : 'bg-yellow-500 text-yellow-400'
+                            dosha.severity === 'High' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'
                           }`}>
                             {dosha.severity}
                           </span>

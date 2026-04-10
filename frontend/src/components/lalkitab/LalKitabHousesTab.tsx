@@ -167,7 +167,7 @@ export default function LalKitabHousesTab({ chartData }: Props) {
                               {effects ? (
                                 <>
                                   {/* Good Results */}
-                                  <div className="bg-green-500/5 border border-green-500/20 rounded-xl p-4">
+                                  <div className="bg-green-500/5 border border-green-300/20 rounded-xl p-4">
                                     <h6 className="text-sm font-semibold text-green-400 mb-1">
                                       {t('lk.houses.goodResults')}
                                     </h6>
@@ -177,7 +177,7 @@ export default function LalKitabHousesTab({ chartData }: Props) {
                                   </div>
 
                                   {/* Bad Results */}
-                                  <div className="bg-red-500/5 border border-red-500/20 rounded-xl p-4">
+                                  <div className="bg-red-500/5 border border-red-300/20 rounded-xl p-4">
                                     <h6 className="text-sm font-semibold text-red-400 mb-1">
                                       {t('lk.houses.badResults')}
                                     </h6>

@@ -130,7 +130,7 @@ export default function AdminDashboard() {
                       <p className="text-sm text-cosmic-text">{u.name}</p>
                       <p className="text-sm text-cosmic-text">{u.email}</p>
                     </div>
-                    <span className={`text-sm px-2 py-0.5 border ${u.role === 'admin' ? 'border-red-500 text-red-400' : u.role === 'astrologer' ? 'border-purple-500 text-purple-400' : 'border-sacred-gold text-sacred-gold-dark'}`}>
+                    <span className={`text-sm px-2 py-0.5 border ${u.role === 'admin' ? 'border-red-300 text-red-400' : u.role === 'astrologer' ? 'border-purple-500 text-purple-400' : 'border-sacred-gold text-sacred-gold-dark'}`}>
                       {u.role}
                     </span>
                   </div>
