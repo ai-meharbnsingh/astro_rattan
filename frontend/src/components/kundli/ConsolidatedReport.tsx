@@ -494,7 +494,7 @@ export default function ConsolidatedReport({
                   <tr style={{ backgroundColor: 'var(--aged-gold-dim)', color: 'white' }}>
                     <th className="text-left p-1.5 font-medium">{t('table.planet')}</th>
                     <th className="text-left p-1.5 font-medium">{t('table.sign')}</th>
-                    <th className="text-center p-1.5 font-medium">{t('table.degree')}</th>
+                    <th className="text-center p-1.5 font-medium whitespace-nowrap">{t('table.degree')}</th>
                     <th className="text-left p-1.5 font-medium">{t('table.nakshatra')}</th>
                     <th className="text-center p-1.5 font-medium">{t('table.status')}</th>
                     <th className="text-center p-1.5 font-medium">{t('table.nature')}</th>
@@ -508,7 +508,7 @@ export default function ConsolidatedReport({
                       <tr key={index} style={{ borderBottom: '1px solid var(--sacred-purple)' }}>
                         <td className="p-1.5 font-medium" style={{ color: 'var(--ink)' }}>{translatePlanet(planet.planet, language)}</td>
                         <td className="p-1.5" style={{ color: 'var(--ink)' }}>{translateSign(planet.sign, language)}</td>
-                        <td className="p-1.5 text-center">{planet.sign_degree?.toFixed(1)}&deg;</td>
+                        <td className="p-1.5 text-center whitespace-nowrap">{(Number(planet.sign_degree) || 0).toFixed(1)}°</td>
                         <td className="p-1.5">{translateNakshatra(planet.nakshatra, language) || '\u2014'}</td>
                         <td className="p-1.5 text-center">
                           <span className={`text-sm px-1 py-0.5 rounded ${

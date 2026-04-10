@@ -355,7 +355,7 @@ export default function ReportTab({
                           <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.sign')}</th>
                           <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('table.house')}</th>
                           <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.nakshatra')}</th>
-                          <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('table.degree')}</th>
+                          <th className="text-center p-2 text-sacred-gold-dark font-medium whitespace-nowrap">{t('table.degree')}</th>
                           <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('table.status')}</th>
                         </tr>
                       </thead>
@@ -366,7 +366,7 @@ export default function ReportTab({
                             <td className="p-2 text-cosmic-text">{translateSign(planet.sign, language)}</td>
                             <td className="p-2 text-center text-cosmic-text">{planet.house}</td>
                             <td className="p-2 text-cosmic-text">{planet.nakshatra || '\u2014'}</td>
-                            <td className="p-2 text-center text-cosmic-text">{planet.sign_degree?.toFixed(1)}&deg;</td>
+                            <td className="p-2 text-center text-cosmic-text whitespace-nowrap">{(Number(planet.sign_degree) || 0).toFixed(1)}°</td>
                             <td className="p-2 text-center">
                               <span className={`text-sm px-2.5 py-0.5 rounded-full font-medium ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-100 text-green-800' : 'text-cosmic-text'}`}>
                                 {translateLabel(planet.status, language) || '\u2014'}
