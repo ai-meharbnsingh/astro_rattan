@@ -149,14 +149,16 @@ export function translateBackend(text: string | null | undefined, lang: Language
 
 /** Translate a planet name */
 export function translatePlanet(name: string, lang: Language): string {
-  if (lang === 'en') return name;
-  return PLANET_NAMES[name] || name;
+  const n = typeof name === 'string' ? name : '';
+  if (lang === 'en') return n;
+  return PLANET_NAMES[n] || n;
 }
 
 /** Translate a zodiac sign name */
 export function translateSign(name: string, lang: Language): string {
-  if (lang === 'en') return name;
-  return SIGN_NAMES[name] || name;
+  const n = typeof name === 'string' ? name : '';
+  if (lang === 'en') return n;
+  return SIGN_NAMES[n] || n;
 }
 
 /** Translate a nakshatra name */
