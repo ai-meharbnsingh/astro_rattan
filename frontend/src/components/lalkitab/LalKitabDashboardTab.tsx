@@ -355,7 +355,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
                     className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
                       isCurrent
                         ? 'bg-sacred-gold/15 border-sacred-gold/40'
-                        : 'bg-cosmic-card/30 border-sacred-gold/10 opacity-60'
+                        : 'bg-gray-50 border-gray-200'
                     }`}
                   >
                     <div className="flex items-center gap-3">

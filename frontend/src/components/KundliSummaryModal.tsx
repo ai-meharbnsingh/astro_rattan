@@ -211,51 +211,51 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
                     
                     {/* House numbers and planets */}
                     {/* House 1 (Ascendant) - Top */}
-                    <text x="150" y="30" textAnchor="middle" fill="#d4af37" fontSize="12" fontWeight="bold">1</text>
+                    <text x="150" y="30" textAnchor="middle" fill="#d4af37" fontSize="14" fontWeight="bold">1</text>
                     <text x="150" y="55" textAnchor="middle" fill="#FFD700" fontSize="14">Su</text>
-                    <text x="150" y="72" textAnchor="middle" fill="#FF69B4" fontSize="11">Ve</text>
+                    <text x="150" y="72" textAnchor="middle" fill="#FF69B4" fontSize="14">Ve</text>
                     
                     {/* House 2 - Top Right */}
-                    <text x="200" y="60" textAnchor="middle" fill="#d4af37" fontSize="12" fontWeight="bold">2</text>
-                    <text x="200" y="80" textAnchor="middle" fill="#00CED1" fontSize="12">Me</text>
+                    <text x="200" y="60" textAnchor="middle" fill="#d4af37" fontSize="14" fontWeight="bold">2</text>
+                    <text x="200" y="80" textAnchor="middle" fill="#00CED1" fontSize="14">Me</text>
                     
                     {/* House 3 - Right */}
-                    <text x="240" y="110" textAnchor="middle" fill="#d4af37" fontSize="12" fontWeight="bold">3</text>
-                    <text x="240" y="130" textAnchor="middle" fill="#FF69B4" fontSize="12">Ve</text>
+                    <text x="240" y="110" textAnchor="middle" fill="#d4af37" fontSize="14" fontWeight="bold">3</text>
+                    <text x="240" y="130" textAnchor="middle" fill="#FF69B4" fontSize="14">Ve</text>
                     
                     {/* House 4 - Bottom Right */}
-                    <text x="200" y="180" textAnchor="middle" fill="#d4af37" fontSize="12" fontWeight="bold">4</text>
-                    <text x="200" y="200" textAnchor="middle" fill="#4169E1" fontSize="12">Ra</text>
+                    <text x="200" y="180" textAnchor="middle" fill="#d4af37" fontSize="14" fontWeight="bold">4</text>
+                    <text x="200" y="200" textAnchor="middle" fill="#4169E1" fontSize="14">Ra</text>
                     
                     {/* House 5 - Bottom */}
-                    <text x="150" y="230" textAnchor="middle" fill="#d4af37" fontSize="12" fontWeight="bold">5</text>
-                    <text x="150" y="250" textAnchor="middle" fill="#FF4500" fontSize="12" >Ma</text>
+                    <text x="150" y="230" textAnchor="middle" fill="#d4af37" fontSize="14" fontWeight="bold">5</text>
+                    <text x="150" y="250" textAnchor="middle" fill="#FF4500" fontSize="14" >Ma</text>
                     
                     {/* House 6 - Bottom Left */}
-                    <text x="100" y="180" textAnchor="middle" fill="#d4af37" fontSize="12" fontWeight="bold">6</text>
+                    <text x="100" y="180" textAnchor="middle" fill="#d4af37" fontSize="14" fontWeight="bold">6</text>
                     
                     {/* House 7 - Left Bottom */}
-                    <text x="60" y="150" textAnchor="middle" fill="#d4af37" fontSize="12" fontWeight="bold">7</text>
-                    <text x="60" y="170" textAnchor="middle" fill="#808080" fontSize="12">Sa</text>
+                    <text x="60" y="150" textAnchor="middle" fill="#d4af37" fontSize="14" fontWeight="bold">7</text>
+                    <text x="60" y="170" textAnchor="middle" fill="#808080" fontSize="14">Sa</text>
                     
                     {/* House 8 - Left */}
-                    <text x="60" y="110" textAnchor="middle" fill="#d4af37" fontSize="12" fontWeight="bold">8</text>
-                    <text x="60" y="90" textAnchor="middle" fill="#FFA500" fontSize="12">Ju</text>
+                    <text x="60" y="110" textAnchor="middle" fill="#d4af37" fontSize="14" fontWeight="bold">8</text>
+                    <text x="60" y="90" textAnchor="middle" fill="#FFA500" fontSize="14">Ju</text>
                     
                     {/* House 9 - Top Left */}
-                    <text x="100" y="60" textAnchor="middle" fill="#d4af37" fontSize="12" fontWeight="bold">9</text>
-                    <text x="100" y="80" textAnchor="middle" fill="#FF4500" fontSize="12">Ma</text>
+                    <text x="100" y="60" textAnchor="middle" fill="#d4af37" fontSize="14" fontWeight="bold">9</text>
+                    <text x="100" y="80" textAnchor="middle" fill="#FF4500" fontSize="14">Ma</text>
                     
                     {/* House 10 - Top Left Upper */}
-                    <text x="110" y="35" textAnchor="middle" fill="#d4af37" fontSize="12" fontWeight="bold">10</text>
+                    <text x="110" y="35" textAnchor="middle" fill="#d4af37" fontSize="14" fontWeight="bold">10</text>
                     <text x="110" y="50" textAnchor="middle" fill="#C0C0C0" fontSize="14">Mo</text>
-                    <text x="135" y="50" textAnchor="middle" fill="#8B4513" fontSize="11">Ke</text>
+                    <text x="135" y="50" textAnchor="middle" fill="#8B4513" fontSize="14">Ke</text>
                     
                     {/* House 11 - Top Right Upper */}
-                    <text x="190" y="35" textAnchor="middle" fill="#d4af37" fontSize="12" fontWeight="bold">11</text>
+                    <text x="190" y="35" textAnchor="middle" fill="#d4af37" fontSize="14" fontWeight="bold">11</text>
                     
                     {/* House 12 - Right Upper */}
-                    <text x="240" y="70" textAnchor="middle" fill="#d4af37" fontSize="12" fontWeight="bold">12</text>
+                    <text x="240" y="70" textAnchor="middle" fill="#d4af37" fontSize="14" fontWeight="bold">12</text>
                   </svg>
                 </div>
 

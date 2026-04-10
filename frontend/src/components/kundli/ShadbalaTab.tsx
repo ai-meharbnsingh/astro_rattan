@@ -49,7 +49,7 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
             const requiredPct = Math.min((1 / 1.5) * 100, 100);
             return (
               <div key={planet} className="flex flex-col items-center gap-1" style={{ flex: '1 1 0' }}>
-                <span className={`text-xs font-medium ${data.is_strong ? 'text-sacred-brown' : 'text-cosmic-text'}`}>
+                <span className={`text-sm font-medium ${data.is_strong ? 'text-sacred-brown' : 'text-cosmic-text'}`}>
                   {data.total}
                 </span>
                 <div className="relative w-full flex justify-center" style={{ height: '160px' }}>
@@ -68,7 +68,7 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
                     title={`Required: ${data.required}`}
                   />
                 </div>
-                <span className="text-xs font-medium text-sacred-brown text-center leading-tight">
+                <span className="text-sm font-medium text-sacred-brown text-center leading-tight">
                   {translatePlanet(planet, language)}
                 </span>
               </div>
@@ -135,10 +135,10 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
                     </tr>
                     {isExpanded && d.sthana_detail && (
                       <tr className="bg-sacred-cream">
-                        <td className="p-2 pl-6 text-xs text-cosmic-text italic" colSpan={2}>
+                        <td className="p-2 pl-6 text-sm text-cosmic-text italic" colSpan={2}>
                           {language === 'hi' ? 'स्थान विवरण' : 'Sthana Detail'}
                         </td>
-                        <td colSpan={7} className="p-2 text-xs text-cosmic-text">
+                        <td colSpan={7} className="p-2 text-sm text-cosmic-text">
                           {['uchcha', 'saptavargaja', 'ojhayugma', 'kendra', 'drekkana']
                             .filter((k) => d.sthana_detail[k] != null)
                             .map((k) => `${k}: ${d.sthana_detail[k]}`)
@@ -148,10 +148,10 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
                     )}
                     {isExpanded && d.kala_detail && (
                       <tr className="bg-sacred-cream">
-                        <td className="p-2 pl-6 text-xs text-cosmic-text italic" colSpan={2}>
+                        <td className="p-2 pl-6 text-sm text-cosmic-text italic" colSpan={2}>
                           {language === 'hi' ? 'काल विवरण' : 'Kala Detail'}
                         </td>
-                        <td colSpan={7} className="p-2 text-xs text-cosmic-text">
+                        <td colSpan={7} className="p-2 text-sm text-cosmic-text">
                           {['nathonnatha', 'paksha', 'tribhaga', 'abda', 'masa', 'vara', 'hora', 'ayana']
                             .filter((k) => d.kala_detail[k] != null)
                             .map((k) => `${k}: ${d.kala_detail[k]}`)

@@ -134,7 +134,7 @@ export default function ClientSelector({ onSelectClient, isNewClient, onToggle }
                   className="w-full text-left px-4 py-3 hover:bg-sacred-gold/10 transition-colors border-b border-sacred-gold/10 last:border-b-0"
                 >
                   <p className="text-sm font-medium text-cosmic-text">{c.name}</p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-sm text-gray-500">
                     {[c.phone, c.birth_date, c.birth_place].filter(Boolean).join(' | ') || 'No details'}
                   </p>
                 </button>
@@ -143,7 +143,7 @@ export default function ClientSelector({ onSelectClient, isNewClient, onToggle }
           )}
 
           {selectedName && (
-            <p className="text-xs text-green-400 mt-1 px-1">Selected: {selectedName}</p>
+            <p className="text-sm text-green-400 mt-1 px-1">Selected: {selectedName}</p>
           )}
         </div>
       )}

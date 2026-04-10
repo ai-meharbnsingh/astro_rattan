@@ -205,7 +205,7 @@ export default function Panchang() {
             <div className="space-y-3">
               {/* Date — full width */}
               <div>
-                <label className="block text-xs font-medium text-cosmic-text-secondary mb-1">Date</label>
+                <label className="block text-sm font-medium text-cosmic-text-secondary mb-1">Date</label>
                 <input
                   type="date"
                   value={selectedDate}
@@ -216,7 +216,7 @@ export default function Panchang() {
               {/* Lat / Lon — side by side */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-cosmic-text-secondary mb-1 flex items-center gap-1">
+                  <label className="block text-sm font-medium text-cosmic-text-secondary mb-1 flex items-center gap-1">
                     <MapPin className="w-3 h-3" />Latitude
                   </label>
                   <input
@@ -226,7 +226,7 @@ export default function Panchang() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-cosmic-text-secondary mb-1 flex items-center gap-1">
+                  <label className="block text-sm font-medium text-cosmic-text-secondary mb-1 flex items-center gap-1">
                     <MapPin className="w-3 h-3" />Longitude
                   </label>
                   <input

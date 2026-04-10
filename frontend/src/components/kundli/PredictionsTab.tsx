@@ -77,7 +77,7 @@ export default function PredictionsTab({
               activePeriod === key
                 ? 'bg-sacred-gold-dark text-white shadow-md'
                 : 'bg-sacred-cream border border-sacred-gold text-sacred-brown hover:bg-sacred-gold'
-            } ${loadingPredictions ? 'opacity-60 cursor-not-allowed' : ''}`}
+            } ${loadingPredictions ? 'opacity-75 cursor-not-allowed' : ''}`}
           >
             <Icon className="w-4 h-4" />
             {label}

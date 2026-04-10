@@ -105,7 +105,7 @@ export default function AdminDashboard() {
       {/* Overview — empty state */}
       {tab === 'overview' && !stats && !loading && (
         <div className="text-center py-16 border border-dashed border-sacred-gold rounded-lg">
-          <Shield className="w-12 h-12 text-cosmic-text mx-auto mb-4 opacity-50" />
+          <Shield className="w-12 h-12 text-gray-400 mx-auto mb-4" />
           <p className="text-cosmic-text font-medium">No data yet</p>
           <p className="text-sm text-cosmic-text mt-1">Stats will appear once users and kundlis are created.</p>
         </div>

@@ -208,7 +208,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                           {/* Bindu values in each house position */}
                           {housePos.map((pos, i) => (
                             <g key={i}>
-                              <text x={pos.x} y={pos.y - 10} textAnchor="middle" fontSize="10" fill="#8B7355" fontFamily="sans-serif">
+                              <text x={pos.x} y={pos.y - 10} textAnchor="middle" fontSize="14" fill="#8B7355" fontFamily="sans-serif">
                                 {signAbbr[i]}
                               </text>
                               <text x={pos.x} y={pos.y + 8} textAnchor="middle" fontSize="22" fontWeight="bold" fill={binduColor(vals[i])} fontFamily="sans-serif">

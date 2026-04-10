@@ -190,14 +190,14 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
                   <h5 className="font-display font-semibold" style={{ color: 'var(--ink)' }}>
                     {language === 'hi' && gem.gemstone_hi ? gem.gemstone_hi : gem.gemstone}
                   </h5>
-                  <span className={`text-xs px-2 py-0.5 rounded-full ${gem.priority === 'primary' ? 'bg-sacred-gold text-sacred-gold-dark font-semibold' : 'bg-sacred-cream text-cosmic-text'}`}>
+                  <span className={`text-sm px-2 py-0.5 rounded-full ${gem.priority === 'primary' ? 'bg-sacred-gold text-sacred-gold-dark font-semibold' : 'bg-sacred-cream text-cosmic-text'}`}>
                     {gem.priority === 'primary' ? (language === 'hi' ? 'प्राथमिक' : 'Primary') : (language === 'hi' ? 'द्वितीयक' : 'Secondary')}
                   </span>
                 </div>
                 <p className="text-sm mb-2" style={{ color: 'var(--ink-light)' }}>
                   {language === 'hi' ? 'ग्रह' : 'Planet'}: {translatePlanet(gem.planet, language)} — {gem.reason}
                 </p>
-                <div className="flex flex-wrap gap-3 text-xs" style={{ color: 'var(--ink-light)' }}>
+                <div className="flex flex-wrap gap-3 text-sm" style={{ color: 'var(--ink-light)' }}>
                   {gem.metal && <span>{language === 'hi' ? 'धातु' : 'Metal'}: {gem.metal}</span>}
                   {gem.finger && <span>{language === 'hi' ? 'उंगली' : 'Finger'}: {gem.finger}</span>}
                   {gem.day && <span>{language === 'hi' ? 'दिन' : 'Day'}: {gem.day}</span>}
