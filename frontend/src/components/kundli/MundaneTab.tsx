@@ -638,11 +638,11 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
 
             {/* Kundli Chart + Table Side by Side */}
             {birthChartData && analysisData.birth_chart && analysisData.birth_chart.length > 0 ? (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 items-start">
                 {/* Chart */}
                 <div className="flex flex-col items-center">
                   <h5 className="text-sm font-semibold text-sacred-brown mb-3">{T.kundliChart(lang)}</h5>
-                  <div className="max-w-[240px]">
+                  <div className="max-w-[320px] w-full">
                     <InteractiveKundli
                       chartData={birthChartData}
                       compact
@@ -651,9 +651,9 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                 </div>
                 
                 {/* Planet positions table */}
-                <div className="overflow-x-auto max-h-[320px] overflow-y-auto">
+                <div className="overflow-x-auto">
                   <table className="w-full text-sm border-collapse">
-                    <thead className="sticky top-0">
+                    <thead>
                       <tr className="bg-sacred-gold">
                         <th className="text-left p-2 font-medium text-sacred-gold-dark">{T.planet(lang)}</th>
                         <th className="text-left p-2 font-medium text-sacred-gold-dark">{T.sign(lang)}</th>
@@ -696,11 +696,11 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
           <>
             {/* Gochar Chart + Table Side by Side */}
             {transitChartData && analysisData.transits && analysisData.transits.length > 0 ? (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
                 {/* Chart */}
                 <div className="flex flex-col items-center">
                   <h5 className="text-sm font-semibold text-sacred-brown mb-3">{T.gocharChart(lang)}</h5>
-                  <div className="max-w-[240px]">
+                  <div className="max-w-[320px] w-full">
                     <InteractiveKundli
                       chartData={transitChartData}
                       compact
@@ -709,9 +709,9 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                 </div>
                 
                 {/* Transits table */}
-                <div className="overflow-x-auto max-h-[320px] overflow-y-auto">
+                <div className="overflow-x-auto">
                   <table className="w-full text-sm border-collapse">
-                    <thead className="sticky top-0">
+                    <thead>
                       <tr className="bg-sacred-gold">
                         <th className="text-left p-2 font-medium text-sacred-gold-dark">{T.planet(lang)}</th>
                         <th className="text-left p-2 font-medium text-sacred-gold-dark">{T.currentSign(lang)}</th>
