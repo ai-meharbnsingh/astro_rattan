@@ -567,26 +567,45 @@ def get_shadbala(
     chart = _chart_data(row)
     planets = chart.get("planets", {})
 
-    # Build planet_signs and planet_houses
+    # Build planet_signs, planet_houses, and planet_longitudes
     planet_signs = {}
     planet_houses = {}
+    planet_longitudes = {}
     for planet_name, info in planets.items():
         planet_signs[planet_name] = info.get("sign", "Aries")
         planet_houses[planet_name] = info.get("house", 1)
+        if "longitude" in info:
+            planet_longitudes[planet_name] = info["longitude"]
 
-    # Determine if daytime birth (simplified: hour 6-18 = day)
+    # Parse birth_hour as decimal (e.g. "14:30:00" -> 14.5)
     birth_time = row.get("birth_time", "12:00:00")
     try:
-        hour = int(birth_time.split(":")[0])
+        parts = str(birth_time).split(":")
+        birth_hour = int(parts[0]) + int(parts[1]) / 60.0
     except (ValueError, IndexError):
-        hour = 12
-    is_daytime = 6 <= hour < 18
+        birth_hour = 12.0
+    is_daytime = 6.0 <= birth_hour < 18.0
+
+    # Moon-Sun elongation for Paksha Bala
+    sun_lon = planet_longitudes.get("Sun", 0.0)
+    moon_lon = planet_longitudes.get("Moon", 0.0)
+    moon_sun_elongation = (moon_lon - sun_lon) % 360.0
+
+    # Weekday, year, month from birth_date
+    try:
+        bd = datetime.strptime(str(row.get("birth_date", "2000-01-01")), "%Y-%m-%d")
+        weekday = bd.weekday()     # Monday=0 .. Sunday=6
+        birth_year = bd.year
+        birth_month = bd.month
+    except (ValueError, TypeError):
+        weekday, birth_year, birth_month = 0, 2000, 1
 
     # Extract retrograde planets for Cheshta Bala
     retrograde_planets = set()
     for planet_name, info in planets.items():
-        status = info.get("status", "")
-        if "Retrograde" in status or "retrograde" in status:
+        retro_flag = info.get("retrograde", False)
+        retro_status = info.get("status", "")
+        if retro_flag or "Retrograde" in retro_status or "retrograde" in retro_status:
             retrograde_planets.add(planet_name)
 
     result = calculate_shadbala(
@@ -594,6 +613,12 @@ def get_shadbala(
         planet_houses=planet_houses,
         is_daytime=is_daytime,
         retrograde_planets=retrograde_planets,
+        planet_longitudes=planet_longitudes,
+        birth_hour=birth_hour,
+        moon_sun_elongation=moon_sun_elongation,
+        weekday=weekday,
+        birth_year=birth_year,
+        birth_month=birth_month,
     )
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
@@ -1256,19 +1281,43 @@ def _build_kundli_pdf(row: dict, chart: dict) -> bytes:
 
     # ── Shadbala ───────────────────────────────────────────
     planet_houses_map = {}
+    planet_longs_map = {}
+    retro_set = set()
     for pn, pi in planets.items():
         if isinstance(pi, dict):
             planet_houses_map[pn] = pi.get("house", 1)
+            if "longitude" in pi:
+                planet_longs_map[pn] = pi["longitude"]
+            if pi.get("retrograde") or "Retrograde" in pi.get("status", ""):
+                retro_set.add(pn)
     bt = row.get("birth_time", "12:00:00")
     try:
-        hr = int(str(bt).split(":")[0])
+        _bt_parts = str(bt).split(":")
+        _pdf_birth_hour = int(_bt_parts[0]) + int(_bt_parts[1]) / 60.0
     except (ValueError, IndexError):
-        hr = 12
-    is_day = 6 <= hr < 18
+        _pdf_birth_hour = 12.0
+    is_day = 6.0 <= _pdf_birth_hour < 18.0
+    _pdf_sun_lon = planet_longs_map.get("Sun", 0.0)
+    _pdf_moon_lon = planet_longs_map.get("Moon", 0.0)
+    _pdf_elongation = (_pdf_moon_lon - _pdf_sun_lon) % 360.0
+    try:
+        _pdf_bd = datetime.strptime(str(row.get("birth_date", "2000-01-01")), "%Y-%m-%d")
+        _pdf_weekday = _pdf_bd.weekday()
+        _pdf_year = _pdf_bd.year
+        _pdf_month = _pdf_bd.month
+    except (ValueError, TypeError):
+        _pdf_weekday, _pdf_year, _pdf_month = 0, 2000, 1
     shadbala = calculate_shadbala(
         planet_signs=planet_signs_map,
         planet_houses=planet_houses_map,
         is_daytime=is_day,
+        retrograde_planets=retro_set,
+        planet_longitudes=planet_longs_map,
+        birth_hour=_pdf_birth_hour,
+        moon_sun_elongation=_pdf_elongation,
+        weekday=_pdf_weekday,
+        birth_year=_pdf_year,
+        birth_month=_pdf_month,
     )
 
     pdf.section_title("Shadbala (Six-fold Strength)")
@@ -1376,7 +1425,16 @@ def get_kp_analysis(
 ):
     """KP (Krishnamurti Paddhati) analysis — sign lord, star lord, sub lord for planets and cusps."""
     row = _fetch_kundli(db, kundli_id, current_user["sub"])
-    chart = _chart_data(row)
+
+    # Recalculate chart with KP (Krishnamurti) ayanamsa for accurate KP positions
+    chart = calculate_planet_positions(
+        birth_date=row["birth_date"],
+        birth_time=row["birth_time"],
+        latitude=row.get("latitude", 0.0),
+        longitude=row.get("longitude", 0.0),
+        tz_offset=row.get("timezone_offset", 0.0),
+        ayanamsa="kp",
+    )
 
     # Extract planet longitudes
     planet_longitudes = {}

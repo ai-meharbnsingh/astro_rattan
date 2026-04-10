@@ -5,6 +5,7 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.auth import get_current_user
+from app.astro_engine import calculate_planet_positions
 from app.database import get_db
 from app.kp_engine import calculate_kp_cuspal
 from app.lalkitab_engine import get_remedies
@@ -38,7 +39,15 @@ def kp_cuspal(payload: dict, user: dict = Depends(get_current_user), db: Any = D
             detail="Kundli not found",
         )
 
-    chart_data = json.loads(row["chart_data"])
+    # Recalculate chart with KP (Krishnamurti) ayanamsa for accurate KP positions
+    chart_data = calculate_planet_positions(
+        birth_date=row["birth_date"],
+        birth_time=row["birth_time"],
+        latitude=row.get("latitude", 0.0),
+        longitude=row.get("longitude", 0.0),
+        tz_offset=row.get("timezone_offset", 0.0),
+        ayanamsa="kp",
+    )
 
     # Extract planet longitudes from chart_data
     planet_longitudes = {}

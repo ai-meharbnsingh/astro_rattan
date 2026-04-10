@@ -60,6 +60,7 @@ SE_MARS = 4
 SE_JUPITER = 5
 SE_SATURN = 6
 SE_MEAN_NODE = 10  # Rahu (mean node); Ketu = Rahu + 180
+SE_TRUE_NODE = 11  # Rahu (true/osculating node)
 
 PLANETS: Dict[str, int] = {
     "Sun": SE_SUN,
@@ -156,6 +157,8 @@ def calculate_planet_positions(
     latitude: float,
     longitude: float,
     tz_offset: float,
+    ayanamsa: str = "lahiri",
+    node_type: str = "mean",
 ) -> Dict[str, Any]:
     """
     Calculate Vedic (sidereal) planet positions for a birth chart.
@@ -166,19 +169,24 @@ def calculate_planet_positions(
         latitude:   Birth latitude   (-90 to 90)
         longitude:  Birth longitude  (-180 to 180)
         tz_offset:  Hours from UTC   (e.g. 5.5 for IST)
+        ayanamsa:   Ayanamsa system  "lahiri" (default) or "kp" (Krishnamurti)
+        node_type:  "mean" (default) uses SE_MEAN_NODE for Rahu;
+                    "true" uses SE_TRUE_NODE (osculating node).
+                    Ketu is always Rahu + 180.
 
     Returns:
         {
             "planets": {name: {longitude, sign, sign_degree, nakshatra, nakshatra_pada, house}},
             "ascendant": {longitude, sign},
             "houses": [{number, sign, degree}],
+            "ayanamsa_system": "lahiri" | "kp",
         }
     """
     # Parse date + time  ->  UTC datetime
     dt_local = _parse_datetime(birth_date, birth_time, tz_offset)
 
     if _HAS_SWE:
-        result = _calculate_swe(dt_local, latitude, longitude)
+        result = _calculate_swe(dt_local, latitude, longitude, ayanamsa=ayanamsa, node_type=node_type)
         result["_engine"] = "swisseph"
         result["_debug_jd"] = result.get("julian_day")
         result["_debug_ayanamsa"] = result.get("ayanamsa")
@@ -186,6 +194,7 @@ def calculate_planet_positions(
     else:
         result = _calculate_fallback(dt_local, latitude, longitude)
         result["_engine"] = "fallback"
+        result["ayanamsa_system"] = ayanamsa
         return result
 
 
@@ -233,10 +242,14 @@ def _datetime_to_jd(dt_utc: datetime) -> float:
     return int(365.25 * (y + 4716)) + int(30.6001 * (m + 1)) + d + b - 1524.5
 
 
-def _calculate_swe(dt_utc: datetime, lat: float, lon: float) -> Dict[str, Any]:
+def _calculate_swe(dt_utc: datetime, lat: float, lon: float, ayanamsa: str = "lahiri", node_type: str = "mean") -> Dict[str, Any]:
     """Full calculation using Swiss Ephemeris."""
-    # Ensure Lahiri ayanamsa is set (may be reset between requests)
-    swe.set_sid_mode(swe.SIDM_LAHIRI)
+    # Set ayanamsa mode: KP (Krishnamurti) or Lahiri (default for Vedic)
+    ayanamsa_system = ayanamsa  # preserve system name before numeric override
+    if ayanamsa_system == "kp":
+        swe.set_sid_mode(swe.SIDM_KRISHNAMURTI)
+    else:
+        swe.set_sid_mode(swe.SIDM_LAHIRI)
     jd = _datetime_to_jd(dt_utc)
 
     # Ayanamsa for sidereal
@@ -266,6 +279,9 @@ def _calculate_swe(dt_utc: datetime, lat: float, lon: float) -> Dict[str, Any]:
         cusp_sid = (cusps[i] - ayanamsa) % 360.0
         placidus_cusps.append(round(cusp_sid, 4))
 
+    # Resolve Rahu node constant based on node_type parameter
+    rahu_node_id = SE_TRUE_NODE if node_type == "true" else SE_MEAN_NODE
+
     # Planets — use Whole Sign house assignment
     # First pass: compute longitudes and retrograde (need Sun longitude for combust)
     planets_result: Dict[str, Dict[str, Any]] = {}
@@ -273,6 +289,9 @@ def _calculate_swe(dt_utc: datetime, lat: float, lon: float) -> Dict[str, Any]:
     planet_retrograde: Dict[str, bool] = {}
 
     for pname, pid in PLANETS.items():
+        # Override Rahu's planet ID based on node_type
+        if pname == "Rahu":
+            pid = rahu_node_id
         pos, _ret = swe.calc_ut(jd, pid)
         trop_lon = pos[0]
         daily_speed = pos[3]  # daily speed in longitude
@@ -332,6 +351,7 @@ def _calculate_swe(dt_utc: datetime, lat: float, lon: float) -> Dict[str, Any]:
         "houses": houses,
         "placidus_cusps": placidus_cusps,
         "ayanamsa_value": round(ayanamsa, 6),
+        "ayanamsa_system": ayanamsa_system,
     }
 
 
