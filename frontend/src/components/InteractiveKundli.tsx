@@ -1043,7 +1043,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           const housePlanets = planetsByHouse[nh.house] || [];
           const isTrapezoid = [1, 4, 7, 10].includes(nh.house);
           const signPos = NORTH_SIGN_POSITIONS[nh.house];
-          const signAbbr = ZODIAC_ABBREVIATIONS[sign] || sign.slice(0, 3);
+          const signAbbr = ZODIAC_ABBREVIATIONS[sign] || (sign || '').slice(0, 3);
           const rashiNum = ZODIAC_NUMBERS[sign] || '';
 
           // Determine text anchor for sign names based on house position

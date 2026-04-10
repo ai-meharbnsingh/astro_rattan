@@ -75,7 +75,7 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
               {planets.map((p1: string, rowIdx: number) => (
                 <tr key={p1}>
                   <td className="p-1.5 font-semibold border border-slate-200 bg-slate-50 sticky left-0 z-10">
-                    {PLANET_ABBR[p1] || translatePlanet(p1, language).slice(0, 4)}
+                    {PLANET_ABBR[p1] || (translatePlanet(p1, language) || p1 || '').slice(0, 4)}
                   </td>
                   {planets.map((p2: string, colIdx: number) => {
                     // Triangle format: only show upper-right half (colIdx > rowIdx)
