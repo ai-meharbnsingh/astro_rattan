@@ -218,12 +218,46 @@ export default function KundliGenerator() {
             <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-sacred-cream to-transparent z-10 pointer-events-none flex items-center justify-end pr-1 md:hidden">
               <span className="text-sacred-gold-dark text-lg">›</span>
             </div>
-          {/* Mobile: horizontal scroll / Desktop: 2-row grid */}
-          <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1
+          {/* Mobile: horizontal scroll / Desktop: 2-row grid (12 + 11) */}
+          <div className="hidden md:flex md:flex-col md:gap-1">
+            {/* First row - 12 tabs */}
+            <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 grid grid-cols-12
+              [&>button]:whitespace-nowrap [&>button]:min-h-[36px] [&>button]:px-2 [&>button]:py-1.5 [&>button]:text-xs
+              [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
+              <TabsTrigger value="report" onClick={async () => { await fetchDasha(); fetchExtendedDasha(); fetchAvakhada(); fetchYogaDosha(); fetchShadbala(); }}><ScrollText className="w-3 h-3 mr-1" />{t('tab.report')}</TabsTrigger>
+              <TabsTrigger value="planets">{t('tab.planets')}</TabsTrigger>
+              <TabsTrigger value="details">{t('tab.details')}</TabsTrigger>
+              <TabsTrigger value="lordships">{t('tab.lordships')}</TabsTrigger>
+              <TabsTrigger value="iogita" onClick={fetchIogita}>{t('tab.iogita')}</TabsTrigger>
+              <TabsTrigger value="dasha" onClick={() => { fetchDasha(); fetchExtendedDasha(); }}>{t('tab.dasha')}</TabsTrigger>
+              <TabsTrigger value="divisional" onClick={() => fetchDivisional()}>{t('tab.divisional')}</TabsTrigger>
+              <TabsTrigger value="ashtakvarga" onClick={fetchAshtakvarga}>{t('tab.ashtakvarga')}</TabsTrigger>
+              <TabsTrigger value="shadbala" onClick={fetchShadbala}>{t('tab.shadbala')}</TabsTrigger>
+              <TabsTrigger value="avakhada" onClick={fetchAvakhada}>{t('tab.avakhada')}</TabsTrigger>
+              <TabsTrigger value="yoga-dosha" onClick={() => { fetchYogaDosha(); fetchDosha(); }}>{language === 'hi' ? 'योग/दोष' : 'Yogas/Dosha'}</TabsTrigger>
+              <TabsTrigger value="transits" onClick={() => fetchTransit()}>{t('tab.transits')}</TabsTrigger>
+            </TabsList>
+            {/* Second row - 11 tabs */}
+            <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 grid grid-cols-11
+              [&>button]:whitespace-nowrap [&>button]:min-h-[36px] [&>button]:px-2 [&>button]:py-1.5 [&>button]:text-xs
+              [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
+              <TabsTrigger value="varshphal" onClick={() => fetchVarshphal()}>{t('tab.varshphal')}</TabsTrigger>
+              <TabsTrigger value="kp" onClick={fetchKp}>{t('tab.kpSystem')}</TabsTrigger>
+              <TabsTrigger value="yogini" onClick={fetchYogini}>{t('tab.yoginiDasha')}</TabsTrigger>
+              <TabsTrigger value="upagrahas" onClick={fetchUpagrahas}>{t('tab.upagrahas')}</TabsTrigger>
+              <TabsTrigger value="sodashvarga" onClick={fetchSodashvarga}>{t('tab.sodashvarga')}</TabsTrigger>
+              <TabsTrigger value="aspects" onClick={fetchAspects}>{t('tab.aspects')}</TabsTrigger>
+              <TabsTrigger value="aspects-matrix" onClick={fetchWesternAspects}>{language === 'hi' ? 'दृष्टि मैट्रिक्स' : 'Aspects Matrix'}</TabsTrigger>
+              <TabsTrigger value="jaimini" onClick={fetchJaimini}>{language === 'hi' ? 'जैमिनी' : 'Jaimini'}</TabsTrigger>
+              <TabsTrigger value="sadesati" onClick={fetchSadesati}>{t('tab.sadeSati')}</TabsTrigger>
+              <TabsTrigger value="mundane">{language === 'hi' ? 'मुंडन ज्योतिष' : 'Mundane'}</TabsTrigger>
+              <TabsTrigger value="milan">{language === 'hi' ? 'कुंडली मिलान' : 'Kundli Milan'}</TabsTrigger>
+            </TabsList>
+          </div>
+          {/* Mobile: Single scrollable row */}
+          <TabsList className="md:hidden bg-sacred-cream w-full h-auto p-2 gap-1
             flex flex-nowrap overflow-x-auto pb-3 scrollbar-hide
-            md:grid md:grid-cols-11 md:overflow-visible md:pb-2
             [&>button]:flex-shrink-0 [&>button]:flex-grow-0 [&>button]:basis-auto [&>button]:whitespace-nowrap [&>button]:min-h-[36px] [&>button]:px-2 [&>button]:py-1.5 [&>button]:text-xs
-            md:[&>button]:w-full md:[&>button]:flex-shrink-1
             [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
             <TabsTrigger value="report" onClick={async () => { await fetchDasha(); fetchExtendedDasha(); fetchAvakhada(); fetchYogaDosha(); fetchShadbala(); }}><ScrollText className="w-3 h-3 mr-1" />{t('tab.report')}</TabsTrigger>
             <TabsTrigger value="planets">{t('tab.planets')}</TabsTrigger>
