@@ -122,7 +122,7 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
               return items.map((v: any) => (
                 <div key={v.planet} className="space-y-1">
                   <div className="flex items-center gap-3 text-sm">
-                    <span className="w-12 text-sacred-brown font-medium">{translatePlanet(v.planet || '', language).slice(0, 4)}</span>
+                    <span className="w-12 text-sacred-brown font-medium">{(translatePlanet(v.planet || '', language) || v.planet || '').slice(0, 4)}</span>
                     <div className="flex-1 bg-sacred-gold rounded-full h-4">
                       <div className="bg-sacred-gold rounded-full h-4 transition-all" style={{ width: `${Math.min(100, ((typeof v.score === 'number' ? v.score : 0) / 20) * 100)}%` }} />
                     </div>

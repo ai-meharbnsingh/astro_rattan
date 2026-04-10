@@ -66,7 +66,7 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
                 </th>
                 {planets.map((p: string) => (
                   <th key={p} className="p-1.5 text-center font-semibold border border-slate-200 bg-slate-100" style={{ minWidth: '55px' }}>
-                    {PLANET_ABBR[p] || translatePlanet(p, language).slice(0, 4)}
+                    {PLANET_ABBR[p] || (translatePlanet(p, language) || p || '').slice(0, 4)}
                   </th>
                 ))}
               </tr>
@@ -223,7 +223,7 @@ function CuspAspectGrid({ title, cuspData, planetOrder, language }: CuspAspectGr
               return (
                 <tr key={planet}>
                   <td className="p-1.5 font-semibold border border-slate-200 bg-slate-50 sticky left-0 z-10">
-                    {abbr[planet] || translatePlanet(planet, language).slice(0, 4)}
+                    {abbr[planet] || (translatePlanet(planet, language) || planet || '').slice(0, 4)}
                   </td>
                   {row.map((cell) => {
                     const colors = cell.aspect ? ASPECT_COLORS[cell.aspect] : null;

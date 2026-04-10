@@ -862,7 +862,7 @@ export default function JHoraKundliView({
                       fontFamily: SERIF, fontSize: FONT_SIZE,
                     }}>
                       <span style={{ color: planetColor(planet), fontWeight: 700, width: '24px', textAlign: 'right', flexShrink: 0 }}>
-                        {language === 'hi' ? translatePlanet(planet, language).slice(0, 2) : planet.slice(0, 2)}
+                        {language === 'hi' ? (translatePlanet(planet, language) || planet || '').slice(0, 2) : (planet || '').slice(0, 2)}
                       </span>
                       <div style={{
                         flex: 1, height: '14px', background: '#E8E0D0', borderRadius: '2px', overflow: 'hidden',
