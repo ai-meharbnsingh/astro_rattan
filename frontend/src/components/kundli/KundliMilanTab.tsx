@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Heart, AlertTriangle, CheckCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
+import { useTranslation } from '@/lib/i18n';
+import GeneralRemedies from './GeneralRemedies';
 
 interface KundliOption {
   id: string;
@@ -34,6 +36,7 @@ interface Props {
 }
 
 export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props) {
+  const { language } = useTranslation();
   const [kundliId1, setKundliId1] = useState(currentKundliId || '');
   const [kundliId2, setKundliId2] = useState('');
   const [result, setResult] = useState<MatchResult | null>(null);
@@ -226,6 +229,7 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
           )}
         </>
       )}
+      <GeneralRemedies language={language} />
     </div>
   );
 }

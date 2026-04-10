@@ -1,6 +1,7 @@
 import { Loader2, Star, Crown, Eye, Clock, Wallet } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { translatePlanet, translateSign, translateBackend } from '@/lib/backend-translations';
+import GeneralRemedies from './GeneralRemedies';
 
 interface JaiminiTabProps {
   data: any;
@@ -369,6 +370,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
           </div>
         </div>
       )}
+      <GeneralRemedies language={language} />
     </div>
   );
 }

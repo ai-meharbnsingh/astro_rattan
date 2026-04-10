@@ -1,125 +1,65 @@
 import { Loader2 } from 'lucide-react';
 import { translateSign } from '@/lib/backend-translations';
+import GeneralRemedies from './GeneralRemedies';
 
 // Simple SAV Kundli Chart component
 function SAVKundliChart({ savData, language }: { savData: Record<string, number>; language: string }) {
+  // Sign order for North Indian chart (starting from Aries at center-top)
   const signs = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
-  // Hindi sign abbreviations (2 characters)
-  const hindiSignAbbr = ['मे', 'वृ', 'मि', 'कर', 'सिं', 'कन', 'तु', 'वृ', 'धन', 'मक', 'कु', 'मी'];
   
-  // North Indian chart house positions (1-12) in a diamond layout
-  // House 1 = top center, then clockwise
-  const houseLayout = [
-    { house: 11, row: 0, col: 1 }, { house: 12, row: 0, col: 2 },
-    { house: 10, row: 1, col: 0 }, { house: 1, row: 1, col: 1 }, { house: 2, row: 1, col: 2 }, { house: 3, row: 1, col: 3 },
-    { house: 9, row: 2, col: 0 }, { house: 8, row: 2, col: 1 }, { house: 7, row: 2, col: 2 }, { house: 6, row: 2, col: 3 },
-    { house: 5, row: 3, col: 1 }, { house: 4, row: 3, col: 2 },
+  // Grid layout: 4 columns x 4 rows for diamond shape
+  // Positions: null = empty corner, number = house index (0-11)
+  const gridLayout = [
+    [null, 10, 11, null],      // Row 0: empty, Aquarius, Pisces, empty
+    [9, 0, 1, 2],              // Row 1: Capricorn, Aries, Taurus, Gemini
+    [8, 7, 6, 5],              // Row 2: Sagittarius, Scorpio, Libra, Virgo
+    [null, 4, 3, null],        // Row 3: empty, Leo, Cancer, empty
   ];
 
-  const getCellStyle = (house: number) => {
-    // Define borders for diamond shape
-    const borders: Record<number, string> = {
-      11: 'border-r border-b', 12: 'border-b',
-      10: 'border-r border-b', 1: 'border-r border-b', 2: 'border-r border-b', 3: 'border-b',
-      9: 'border-r', 8: 'border-r', 7: '', 6: '',
-      5: 'border-r', 4: '',
-    };
-    return borders[house] || '';
-  };
-
-  const getCellSize = (house: number) => {
-    // Corner houses are smaller, center houses are larger
-    const cornerHouses = [11, 12, 3, 6, 5, 4, 9, 10];
-    const isCorner = cornerHouses.includes(house);
-    return isCorner ? 'p-3' : 'p-4';
-  };
-
   return (
-    <div className="w-full max-w-[320px] mx-auto">
+    <div className="w-full max-w-[280px] mx-auto">
       <div className="grid grid-cols-4 gap-0 border-2 border-sacred-gold rounded-lg overflow-hidden bg-sacred-cream">
-        {/* Row 0: Houses 11, 12 (and empty corners) */}
-        <div className="bg-sacred-gold/20 p-2 text-center border-r border-b border-sacred-gold/50" />
-        <div className="p-3 text-center border-r border-b border-sacred-gold bg-white">
-          <p className="text-[10px] text-cosmic-text">{translateSign('Aquarius', language)}</p>
-          <p className={`text-2xl font-bold ${(savData['Aquarius'] || 0) >= 28 ? 'text-green-600' : 'text-red-600'}`}>
-            {savData['Aquarius'] || 0}
-          </p>
-        </div>
-        <div className="p-3 text-center border-b border-sacred-gold bg-white">
-          <p className="text-[10px] text-cosmic-text">{translateSign('Pisces', language)}</p>
-          <p className={`text-2xl font-bold ${(savData['Pisces'] || 0) >= 28 ? 'text-green-600' : 'text-red-600'}`}>
-            {savData['Pisces'] || 0}
-          </p>
-        </div>
-        <div className="bg-sacred-gold/20 p-2 text-center border-b border-sacred-gold/50" />
-
-        {/* Row 1: Houses 10, 1, 2, 3 */}
-        <div className="p-3 text-center border-r border-b border-sacred-gold bg-white">
-          <p className="text-[10px] text-cosmic-text">{translateSign('Capricorn', language)}</p>
-          <p className={`text-2xl font-bold ${(savData['Capricorn'] || 0) >= 28 ? 'text-green-600' : 'text-red-600'}`}>
-            {savData['Capricorn'] || 0}
-          </p>
-        </div>
-        <div className="p-4 text-center border-r border-b border-sacred-gold bg-sacred-gold/10">
-          <p className="text-[10px] text-cosmic-text font-semibold">{translateSign('Aries', language)}</p>
-          <p className={`text-3xl font-bold ${(savData['Aries'] || 0) >= 28 ? 'text-green-600' : 'text-red-600'}`}>
-            {savData['Aries'] || 0}
-          </p>
-        </div>
-        <div className="p-4 text-center border-r border-b border-sacred-gold bg-sacred-gold/10">
-          <p className="text-[10px] text-cosmic-text font-semibold">{translateSign('Taurus', language)}</p>
-          <p className={`text-3xl font-bold ${(savData['Taurus'] || 0) >= 28 ? 'text-green-600' : 'text-red-600'}`}>
-            {savData['Taurus'] || 0}
-          </p>
-        </div>
-        <div className="p-3 text-center border-b border-sacred-gold bg-white">
-          <p className="text-[10px] text-cosmic-text">{translateSign('Gemini', language)}</p>
-          <p className={`text-2xl font-bold ${(savData['Gemini'] || 0) >= 28 ? 'text-green-600' : 'text-red-600'}`}>
-            {savData['Gemini'] || 0}
-          </p>
-        </div>
-
-        {/* Row 2: Houses 9, 8, 7, 6 */}
-        <div className="p-3 text-center border-r border-sacred-gold bg-white">
-          <p className="text-[10px] text-cosmic-text">{translateSign('Sagittarius', language)}</p>
-          <p className={`text-2xl font-bold ${(savData['Sagittarius'] || 0) >= 28 ? 'text-green-600' : 'text-red-600'}`}>
-            {savData['Sagittarius'] || 0}
-          </p>
-        </div>
-        <div className="p-4 text-center border-r border-sacred-gold bg-sacred-gold/10">
-          <p className="text-[10px] text-cosmic-text font-semibold">{translateSign('Scorpio', language)}</p>
-          <p className={`text-3xl font-bold ${(savData['Scorpio'] || 0) >= 28 ? 'text-green-600' : 'text-red-600'}`}>
-            {savData['Scorpio'] || 0}
-          </p>
-        </div>
-        <div className="p-4 text-center border-r border-sacred-gold bg-sacred-gold/10">
-          <p className="text-[10px] text-cosmic-text font-semibold">{translateSign('Libra', language)}</p>
-          <p className={`text-3xl font-bold ${(savData['Libra'] || 0) >= 28 ? 'text-green-600' : 'text-red-600'}`}>
-            {savData['Libra'] || 0}
-          </p>
-        </div>
-        <div className="p-3 text-center bg-white">
-          <p className="text-[10px] text-cosmic-text">{translateSign('Virgo', language)}</p>
-          <p className={`text-2xl font-bold ${(savData['Virgo'] || 0) >= 28 ? 'text-green-600' : 'text-red-600'}`}>
-            {savData['Virgo'] || 0}
-          </p>
-        </div>
-
-        {/* Row 3: Houses 5, 4 (and empty corners) */}
-        <div className="bg-sacred-gold/20 p-2 text-center border-r border-sacred-gold/50" />
-        <div className="p-3 text-center border-r border-sacred-gold bg-white">
-          <p className="text-[10px] text-cosmic-text">{translateSign('Leo', language)}</p>
-          <p className={`text-2xl font-bold ${(savData['Leo'] || 0) >= 28 ? 'text-green-600' : 'text-red-600'}`}>
-            {savData['Leo'] || 0}
-          </p>
-        </div>
-        <div className="p-3 text-center border-r border-sacred-gold bg-white">
-          <p className="text-[10px] text-cosmic-text">{translateSign('Cancer', language)}</p>
-          <p className={`text-2xl font-bold ${(savData['Cancer'] || 0) >= 28 ? 'text-green-600' : 'text-red-600'}`}>
-            {savData['Cancer'] || 0}
-          </p>
-        </div>
-        <div className="bg-sacred-gold/20 p-2 text-center border-sacred-gold/50" />
+        {gridLayout.map((row, rowIndex) => (
+          row.map((signIndex, colIndex) => {
+            if (signIndex === null) {
+              // Empty corner cell
+              return (
+                <div 
+                  key={`${rowIndex}-${colIndex}`} 
+                  className="bg-sacred-gold/20 aspect-square flex items-center justify-center border-r border-b border-sacred-gold/30 last:border-r-0"
+                />
+              );
+            }
+            
+            const sign = signs[signIndex];
+            const value = savData[sign] || 0;
+            const isStrong = value >= 28;
+            const isCenter = (rowIndex === 1 || rowIndex === 2) && (colIndex === 1 || colIndex === 2);
+            
+            // Border classes
+            const borderClasses = [
+              colIndex < 3 ? 'border-r' : '',
+              rowIndex < 3 ? 'border-b' : '',
+            ].filter(Boolean).join(' ');
+            
+            return (
+              <div 
+                key={`${rowIndex}-${colIndex}`}
+                className={`relative flex flex-col items-center justify-center aspect-square ${borderClasses} border-sacred-gold ${isCenter ? 'bg-sacred-gold/10' : 'bg-white'}`}
+              >
+                {/* Sign name at top */}
+                <span className={`text-[9px] text-cosmic-text ${isCenter ? 'font-semibold' : ''} text-center leading-none mb-0.5`}>
+                  {translateSign(sign, language)}
+                </span>
+                
+                {/* Bindu value - centered and larger */}
+                <span className={`font-bold flex items-center justify-center ${isCenter ? 'text-2xl h-7' : 'text-xl h-6'} ${isStrong ? 'text-green-600' : 'text-red-600'}`}>
+                  {value}
+                </span>
+              </div>
+            );
+          })
+        ))}
       </div>
       
       {/* Legend */}
@@ -402,6 +342,9 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
             </div>
           </div>
         </div>
+        
+        {/* General Remedies */}
+        <GeneralRemedies language={language} t={t} />
       ) : (
         <p className="text-center text-cosmic-text py-8">{t('kundli.clickAshtakvargaTab')}</p>
       )}

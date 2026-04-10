@@ -1,5 +1,6 @@
 import { Loader2, ChevronDown } from 'lucide-react';
 import { translatePlanet } from '@/lib/backend-translations';
+import GeneralRemedies from './GeneralRemedies';
 
 interface DashaTabProps {
   dashaData: any;
@@ -143,6 +144,9 @@ export default function DashaTab({
             </div>
           ))}
         </div>
+        
+        {/* General Remedies */}
+        <GeneralRemedies language={language} t={t} />
       </div>
     );
   }
@@ -177,6 +181,9 @@ export default function DashaTab({
             </tbody>
           </table>
         </div>
+        
+        {/* General Remedies */}
+        <GeneralRemedies language={language} t={t} />
       </div>
     );
   }

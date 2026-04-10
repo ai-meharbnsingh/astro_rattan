@@ -1,6 +1,7 @@
 import { Loader2 } from 'lucide-react';
 import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
 import { translatePlanet, translateSign } from '@/lib/backend-translations';
+import GeneralRemedies from './GeneralRemedies';
 
 interface KPTabProps {
   kpData: any;
@@ -229,6 +230,7 @@ export default function KPTab(props: KPTabProps) {
       ) : (
         <p className="text-center text-cosmic-text py-8">{t('kundli.clickKPTab')}</p>
       )}
+      <GeneralRemedies language={language} />
     </div>
   );
 }
