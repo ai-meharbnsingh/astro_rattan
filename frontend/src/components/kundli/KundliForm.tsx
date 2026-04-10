@@ -188,7 +188,7 @@ export default function KundliForm({
             <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-sacred-gold" />
           )}
           {geocode.showDropdown && geocode.suggestions.length > 0 && (
-            <div className="absolute z-50 left-0 right-0 top-full mt-1 bg-cosmic-bg border border-sacred-gold-dark rounded-xl shadow-lg max-h-60 overflow-y-auto">
+            <div className="absolute z-50 left-0 right-0 bottom-full mb-1 sm:bottom-auto sm:top-full sm:mt-1 sm:mb-0 bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-y-auto">
               {geocode.suggestions.map((s, i) => (
                 <button
                   key={i}
