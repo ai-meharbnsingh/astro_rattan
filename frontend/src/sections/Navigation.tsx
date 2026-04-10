@@ -13,7 +13,7 @@ const serviceLinks = [
 ];
 
 const authOnlyLinks = [
-  { key: 'HOME', href: '/dashboard' },
+  { key: 'nav.home', href: '/dashboard' },
 ];
 
 export default function Navigation() {
