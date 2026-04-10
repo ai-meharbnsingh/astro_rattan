@@ -45,51 +45,56 @@ export default function DivisionalTab({
             <p className="text-sm text-cosmic-text">{t('kundli.division')}: {divisionalData.division}</p>
           </div>
 
-          {divisionalData.planet_positions && (
-            <div className="flex justify-center">
-              <InteractiveKundli
-                chartData={{
-                  planets: divisionalData.planet_positions.map((p: any) => ({
-                    planet: p.planet,
-                    sign: p.sign,
-                    house: p.house,
-                    nakshatra: p.nakshatra || '',
-                    sign_degree: p.sign_degree || 0,
-                    status: '',
-                  })),
-                  houses: divisionalData.houses || Array.from({ length: 12 }, (_, i) => ({
-                    number: i + 1,
-                    sign: ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'][i],
-                  })),
-                } as ChartData}
-                onPlanetClick={handlePlanetClick}
-                onHouseClick={handleHouseClick}
-              />
-            </div>
-          )}
+          {/* Kundli Chart and Table side by side */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Left: Kundli Chart */}
+            {divisionalData.planet_positions && (
+              <div className="flex justify-center items-start">
+                <InteractiveKundli
+                  chartData={{
+                    planets: divisionalData.planet_positions.map((p: any) => ({
+                      planet: p.planet,
+                      sign: p.sign,
+                      house: p.house,
+                      nakshatra: p.nakshatra || '',
+                      sign_degree: p.sign_degree || 0,
+                      status: '',
+                    })),
+                    houses: divisionalData.houses || Array.from({ length: 12 }, (_, i) => ({
+                      number: i + 1,
+                      sign: ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'][i],
+                    })),
+                  } as ChartData}
+                  onPlanetClick={handlePlanetClick}
+                  onHouseClick={handleHouseClick}
+                />
+              </div>
+            )}
 
-          <div className="overflow-x-auto rounded-xl border border-sacred-gold">
-            <table className="w-full">
-              <thead className="bg-sacred-cream">
-                <tr>
-                  <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">{t('table.planet')}</th>
-                  <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">{t('table.sign')}</th>
-                  <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">{t('table.degree')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Object.entries(divisionalData.planet_signs || {}).map(([planet, sign]: [string, any]) => {
-                  const posData = (divisionalData.planet_positions || []).find((p: any) => p.planet === planet);
-                  return (
-                    <tr key={planet} className="border-t border-sacred-gold hover:bg-sacred-gold/5">
-                      <td className="p-3 text-sacred-brown font-medium text-sm">{translatePlanet(planet, language)}</td>
-                      <td className="p-3 text-cosmic-text text-sm">{translateSign(sign as string, language)}</td>
-                      <td className="p-3 text-cosmic-text text-sm">{posData?.sign_degree?.toFixed(1) || '--'}&deg;</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            {/* Right: Planet Table */}
+            <div className="overflow-x-auto rounded-xl border border-sacred-gold h-fit">
+              <table className="w-full">
+                <thead className="bg-sacred-cream">
+                  <tr>
+                    <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">{t('table.planet')}</th>
+                    <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">{t('table.sign')}</th>
+                    <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">{t('table.degree')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(divisionalData.planet_signs || {}).map(([planet, sign]: [string, any]) => {
+                    const posData = (divisionalData.planet_positions || []).find((p: any) => p.planet === planet);
+                    return (
+                      <tr key={planet} className="border-t border-sacred-gold hover:bg-sacred-gold/5">
+                        <td className="p-3 text-sacred-brown font-medium text-sm">{translatePlanet(planet, language)}</td>
+                        <td className="p-3 text-cosmic-text text-sm">{translateSign(sign as string, language)}</td>
+                        <td className="p-3 text-cosmic-text text-sm">{posData?.sign_degree?.toFixed(1) || '--'}&deg;</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       ) : (
