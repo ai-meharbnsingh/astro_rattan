@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Stars, Mail, Lock, User, ChevronRight, Star, ShieldCheck, ArrowLeft } from 'lucide-react';
+import { Stars, Mail, Lock, User, ChevronRight, Star, ShieldCheck, ArrowLeft, Phone } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
@@ -16,7 +16,7 @@ export default function AuthPage() {
   const { login, register } = useAuth();
   const { t } = useTranslation();
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
-  const [registerForm, setRegisterForm] = useState({ name: '', email: '', password: '' });
+  const [registerForm, setRegisterForm] = useState({ name: '', email: '', password: '', phone: '' });
   const [isAstrologer, setIsAstrologer] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -112,6 +112,7 @@ export default function AuthPage() {
 
   const handleRegister = async () => {
     if (!registerForm.name || !registerForm.email || !registerForm.password || !emailToken) return;
+    if (isAstrologer && !registerForm.phone.trim()) { setError('Phone number is required for astrologer registration'); return; }
     setLoading(true); setError(''); setSuccess('');
     try {
       if (isAstrologer) {
@@ -120,6 +121,7 @@ export default function AuthPage() {
           password: registerForm.password,
           name: registerForm.name,
           email_token: emailToken,
+          phone: registerForm.phone.trim(),
         });
         localStorage.setItem('astrovedic_token', data.token);
         if (data.refresh_token) localStorage.setItem('astrovedic_refresh_token', data.refresh_token);
@@ -288,7 +290,13 @@ export default function AuthPage() {
                     <div className={`w-4 h-4 rounded-full bg-cosmic-text shadow-sm transform transition-transform mt-0.5 ${isAstrologer ? 'translate-x-5.5 ml-[22px]' : 'ml-0.5'}`} />
                   </div>
                 </button>
-                <Button onClick={handleRegister} disabled={loading || !registerForm.name || !registerForm.password} className="w-full btn-sacred disabled:opacity-50">
+                {isAstrologer && (
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold" />
+                    <Input type="tel" value={registerForm.phone} onChange={(e) => setRegisterForm({ ...registerForm, phone: e.target.value })} placeholder="Phone number (required)" className="pl-10 input-sacred" />
+                  </div>
+                )}
+                <Button onClick={handleRegister} disabled={loading || !registerForm.name || !registerForm.password || (isAstrologer && !registerForm.phone.trim())} className="w-full btn-sacred disabled:opacity-50">
                   {loading ? t('common.loading') : (isAstrologer ? t('astrologer.registerAsAstrologer') : t('auth.signUp'))}<ChevronRight className="w-5 h-5 ml-2" />
                 </Button>
               </div>

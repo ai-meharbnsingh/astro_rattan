@@ -4,6 +4,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BookOpen, ArrowLeft, Loader2 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
+import { useAuth } from '@/hooks/useAuth';
+import { autoRegisterClient } from '@/components/ClientSelector';
 import NotesWidget from '@/components/NotesWidget';
 import { Button } from '@/components/ui/button';
 import type { LalKitabChartData } from '@/components/lalkitab/lalkitab-data';
@@ -25,6 +27,8 @@ type View = 'form' | 'generating' | 'result';
 
 export default function LalKitabPage() {
   const { t } = useTranslation();
+  const { user } = useAuth();
+  const isAstrologer = user?.role === 'astrologer';
   const location = useLocation();
   const locState = (location.state as { loadKundliId?: string; clientId?: string }) || {};
   const [view, setView] = useState<View>(locState.loadKundliId ? 'generating' : 'form');
@@ -61,7 +65,7 @@ export default function LalKitabPage() {
     setError('');
     setBirthDate(formData.date);
     try {
-      const result = await api.post('/api/kundli/generate', {
+      const payload: any = {
         person_name: formData.name || 'Lal Kitab User',
         birth_date: formData.date,
         birth_time: formData.time,
@@ -71,19 +75,41 @@ export default function LalKitabPage() {
         timezone_offset: -(new Date().getTimezoneOffset() / 60),
         gender: formData.gender,
         chart_type: 'lalkitab',
-      });
+      };
+      // Send phone for astrologers (required for new client auto-creation)
+      if (formData.phone) payload.phone = formData.phone;
+      // Send client_id if an existing client was selected
+      if (formData.selectedClientId) payload.client_id = formData.selectedClientId;
+
+      const result = await api.post('/api/kundli/generate', payload);
       const lkChart = generateLalKitabChart(result);
       setChartData(lkChart);
       setApiResult(result);
       setClientId(result.client_id || '');
       setKundliId(result.id || '');
       setView('result');
+
+      // Auto-register new client for astrologers (the kundli endpoint already does this,
+      // but this is a safety net in case client_id wasn't returned)
+      if (isAstrologer && formData.isNewClient && !formData.selectedClientId && !result.client_id) {
+        autoRegisterClient({
+          name: formData.name || 'Lal Kitab User',
+          phone: formData.phone,
+          birth_date: formData.date,
+          birth_time: formData.time,
+          birth_place: formData.place,
+          latitude: formData.latitude,
+          longitude: formData.longitude,
+          timezone_offset: -(new Date().getTimezoneOffset() / 60),
+          gender: formData.gender,
+        });
+      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : typeof err === 'string' ? err : 'Failed to generate Lal Kitab kundli';
       setError(msg);
       setView('form');
     }
-  }, []);
+  }, [isAstrologer]);
 
   return (
     <div className="min-h-screen bg-cosmic-bg bg-mandala py-24 px-4">

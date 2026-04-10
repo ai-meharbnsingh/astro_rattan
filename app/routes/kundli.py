@@ -83,6 +83,14 @@ def generate_kundli(
     db: Any = Depends(get_db),
 ):
     """Generate a new Vedic birth chart (kundli) and store it. Auto-creates/links client."""
+    # Astrologers must provide phone when creating kundli for a new client
+    user_role = current_user.get("role", "user")
+    if user_role == "astrologer" and not body.client_id and not body.phone:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Phone number is required when creating a kundli for a client.",
+        )
+
     chart_data = calculate_planet_positions(
         birth_date=body.birth_date,
         birth_time=body.birth_time,

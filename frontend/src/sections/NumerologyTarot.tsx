@@ -7,6 +7,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Hash, Sparkles, Loader2, Phone } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
+import { useAuth } from '@/hooks/useAuth';
+import ClientSelector, { autoRegisterClient } from '@/components/ClientSelector';
+import type { ClientData } from '@/components/ClientSelector';
 
 interface NumerologyPredictions {
   life_path: string;
@@ -61,11 +64,35 @@ interface MobileNumerologyResult {
 
 export default function NumerologyTarot() {
   const { t } = useTranslation();
+  const { user } = useAuth();
+  const isAstrologer = user?.role === 'astrologer';
+
+  // Client selector state
+  const [isNewClient, setIsNewClient] = useState(true);
+  const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
+
   // Numerology
   const [numName, setNumName] = useState('');
   const [numDob, setNumDob] = useState('');
   const [numResult, setNumResult] = useState<NumerologyResult | null>(null);
   const [numLoading, setNumLoading] = useState(false);
+
+  const handleClientSelect = (client: ClientData | null) => {
+    setSelectedClient(client);
+    if (client) {
+      setNumName(client.name || '');
+      setNumDob(client.birth_date || '');
+    }
+  };
+
+  const handleClientToggle = (isNew: boolean) => {
+    setIsNewClient(isNew);
+    if (isNew) {
+      setSelectedClient(null);
+      setNumName('');
+      setNumDob('');
+    }
+  };
 
   // Mobile Numerology
   const [firstName, setFirstName] = useState('');
@@ -77,6 +104,38 @@ export default function NumerologyTarot() {
   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
   const [mobileResult, setMobileResult] = useState<MobileNumerologyResult | null>(null);
   const [mobileLoading, setMobileLoading] = useState(false);
+
+  // Mobile section client selector state
+  const [mobileIsNewClient, setMobileIsNewClient] = useState(true);
+  const [mobileSelectedClient, setMobileSelectedClient] = useState<ClientData | null>(null);
+
+  const handleMobileClientSelect = (client: ClientData | null) => {
+    setMobileSelectedClient(client);
+    if (client) {
+      const nameParts = (client.name || '').split(' ');
+      setFirstName(nameParts[0] || '');
+      setMiddleName(nameParts.length > 2 ? nameParts.slice(1, -1).join(' ') : '');
+      setLastName(nameParts.length > 1 ? nameParts[nameParts.length - 1] : '');
+      setMobileDob(client.birth_date || '');
+      if (client.phone) {
+        // Try to parse country code from phone
+        const phoneStr = client.phone || '';
+        if (phoneStr.startsWith('+91')) { setMobileCountryCode('+91'); setMobilePhone(phoneStr.slice(3)); }
+        else if (phoneStr.startsWith('+1')) { setMobileCountryCode('+1'); setMobilePhone(phoneStr.slice(2)); }
+        else if (phoneStr.startsWith('+44')) { setMobileCountryCode('+44'); setMobilePhone(phoneStr.slice(3)); }
+        else { setMobilePhone(phoneStr.replace(/^\+\d{1,3}/, '')); }
+      }
+    }
+  };
+
+  const handleMobileClientToggle = (isNew: boolean) => {
+    setMobileIsNewClient(isNew);
+    if (isNew) {
+      setMobileSelectedClient(null);
+      setFirstName(''); setMiddleName(''); setLastName('');
+      setMobileDob(''); setMobilePhone('');
+    }
+  };
 
   // Error state for user feedback
   const [error, setError] = useState('');
@@ -93,6 +152,10 @@ export default function NumerologyTarot() {
         data.predictions = [data.predictions];
       }
       setNumResult(data);
+      // Auto-register new client for astrologers
+      if (isAstrologer && isNewClient && !selectedClient) {
+        autoRegisterClient({ name: numName.trim(), birth_date: numDob });
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Numerology calculation failed. Please try again.');
     }
@@ -121,6 +184,10 @@ export default function NumerologyTarot() {
         areas_of_struggle: selectedAreas,
       });
       setMobileResult(data);
+      // Auto-register new client for astrologers
+      if (isAstrologer && mobileIsNewClient && !mobileSelectedClient) {
+        autoRegisterClient({ name: fullName, phone: fullPhone, birth_date: mobileDob });
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Mobile numerology analysis failed. Please try again.');
     }
@@ -148,6 +215,13 @@ export default function NumerologyTarot() {
       <Card className="bg-cosmic-card border-0 shadow-soft max-w-xl mx-auto">
         <CardContent className="p-6">
           <h3 className="font-display font-semibold text-cosmic-text mb-4 text-center">{t('numerology.calculateNumbers')}</h3>
+          {isAstrologer && (
+            <ClientSelector
+              onSelectClient={handleClientSelect}
+              isNewClient={isNewClient}
+              onToggle={handleClientToggle}
+            />
+          )}
           <div className="space-y-3">
             <Input placeholder={t('numerology.fullName')} value={numName} onChange={(e) => setNumName(e.target.value)} className="bg-cosmic-card border-sacred-gold" />
             <Input type="date" value={numDob} onChange={(e) => setNumDob(e.target.value)} className="bg-cosmic-card border-sacred-gold" />
@@ -232,6 +306,13 @@ export default function NumerologyTarot() {
             <Card className="bg-cosmic-card border-0 shadow-soft max-w-2xl mx-auto">
               <CardContent className="p-6">
                 <h3 className="font-display font-semibold text-cosmic-text mb-4 text-center">Analyze Your Mobile Number</h3>
+                {isAstrologer && (
+                  <ClientSelector
+                    onSelectClient={handleMobileClientSelect}
+                    isNewClient={mobileIsNewClient}
+                    onToggle={handleMobileClientToggle}
+                  />
+                )}
                 <div className="space-y-4">
                   {/* Name Fields */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">

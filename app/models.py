@@ -79,7 +79,7 @@ class AstrologerRegisterRequest(BaseModel):
     password: str = Field(min_length=8)
     name: str = Field(min_length=1)
     email_token: str = Field(min_length=1)
-    phone: Optional[str] = None
+    phone: str = Field(min_length=4, description="Phone number is required for astrologers")
     display_name: Optional[str] = None
     specializations: str = "Vedic"
     experience_years: int = Field(default=0, ge=0)

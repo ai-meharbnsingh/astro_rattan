@@ -1,8 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
-import { Calendar, Clock, MapPin, User, Loader2 } from 'lucide-react';
+import { Calendar, Clock, MapPin, User, Loader2, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
+import { useAuth } from '@/hooks/useAuth';
+import ClientSelector from '@/components/ClientSelector';
+import type { ClientData } from '@/components/ClientSelector';
 
 export interface LalKitabFormData {
   name: string;
@@ -12,6 +15,9 @@ export interface LalKitabFormData {
   latitude: number;
   longitude: number;
   gender: 'male' | 'female';
+  phone?: string;
+  isNewClient?: boolean;
+  selectedClientId?: string | null;
 }
 
 interface LalKitabFormProps {
@@ -27,6 +33,11 @@ interface GeocodeResult {
 
 export default function LalKitabForm({ onGenerate, loading }: LalKitabFormProps) {
   const { t, language } = useTranslation();
+  const { user } = useAuth();
+  const isAstrologer = user?.role === 'astrologer';
+
+  const [isNewClient, setIsNewClient] = useState(true);
+  const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
 
   const [formData, setFormData] = useState<LalKitabFormData>({
     name: '',
@@ -36,7 +47,46 @@ export default function LalKitabForm({ onGenerate, loading }: LalKitabFormProps)
     latitude: 0,
     longitude: 0,
     gender: 'male',
+    phone: '',
   });
+
+  const handleClientSelect = (client: ClientData | null) => {
+    setSelectedClient(client);
+    if (client) {
+      setFormData((prev) => ({
+        ...prev,
+        name: client.name || '',
+        date: client.birth_date || '',
+        time: client.birth_time || '',
+        place: client.birth_place || '',
+        latitude: client.latitude || 0,
+        longitude: client.longitude || 0,
+        gender: (client.gender === 'female' ? 'female' : 'male') as 'male' | 'female',
+        phone: client.phone || '',
+        selectedClientId: client.id,
+        isNewClient: false,
+      }));
+    }
+  };
+
+  const handleClientToggle = (isNew: boolean) => {
+    setIsNewClient(isNew);
+    if (isNew) {
+      setSelectedClient(null);
+      setFormData({
+        name: '',
+        date: '',
+        time: '',
+        place: '',
+        latitude: 0,
+        longitude: 0,
+        gender: 'male',
+        phone: '',
+        isNewClient: true,
+        selectedClientId: null,
+      });
+    }
+  };
 
   const [suggestions, setSuggestions] = useState<GeocodeResult[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -89,12 +139,17 @@ export default function LalKitabForm({ onGenerate, loading }: LalKitabFormProps)
     setShowDropdown(false);
   };
 
-  const isValid = formData.date && formData.time && formData.place && (formData.latitude !== 0 || formData.longitude !== 0);
+  const isValid = formData.date && formData.time && formData.place && (formData.latitude !== 0 || formData.longitude !== 0)
+    && (!isAstrologer || !isNewClient || !!formData.phone?.trim() || !!selectedClient);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isValid && !loading) {
-      onGenerate(formData);
+      onGenerate({
+        ...formData,
+        isNewClient,
+        selectedClientId: selectedClient?.id || null,
+      });
     }
   };
 
@@ -109,6 +164,14 @@ export default function LalKitabForm({ onGenerate, loading }: LalKitabFormProps)
       <p className="text-sm text-cosmic-text/60 mb-6">
         {t('lk.subtitle')}
       </p>
+
+      {isAstrologer && (
+        <ClientSelector
+          onSelectClient={handleClientSelect}
+          isNewClient={isNewClient}
+          onToggle={handleClientToggle}
+        />
+      )}
 
       <div className="space-y-4">
         {/* Name */}
@@ -243,6 +306,25 @@ export default function LalKitabForm({ onGenerate, loading }: LalKitabFormProps)
             </button>
           </div>
         </div>
+
+        {/* Phone (required for astrologers creating new client kundli) */}
+        {isAstrologer && isNewClient && (
+          <div>
+            <label className="block text-sm font-medium text-sacred-gold mb-2">
+              Client Phone <span className="text-red-400">*</span>
+            </label>
+            <div className="relative">
+              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold/60" />
+              <input
+                type="tel"
+                value={formData.phone || ''}
+                onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
+                placeholder="Client phone number"
+                className={`${inputClass} pl-10`}
+              />
+            </div>
+          </div>
+        )}
 
         {/* Submit */}
         <Button

@@ -558,7 +558,7 @@ export function useKundliData() {
     setStep('generating');
     setError('');
     try {
-      const data = await api.post('/api/kundli/generate', {
+      const payload: any = {
         person_name: formData.name,
         birth_date: formData.date,
         birth_time: formData.time + ':00',
@@ -566,7 +566,10 @@ export function useKundliData() {
         latitude: formData.latitude,
         longitude: formData.longitude,
         timezone_offset: -(new Date().getTimezoneOffset() / 60),
-      });
+      };
+      if (formData.phone) payload.phone = formData.phone;
+      if (formData.clientId) payload.client_id = formData.clientId;
+      const data = await api.post('/api/kundli/generate', payload);
       setResult(data);
       resetTabData();
       setStep('result');

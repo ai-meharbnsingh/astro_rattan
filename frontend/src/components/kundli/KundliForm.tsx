@@ -1,9 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Sparkles, Calendar, Clock, MapPin, User, ChevronRight, ArrowLeft, Loader2 } from 'lucide-react';
+import { Sparkles, Calendar, Clock, MapPin, User, ChevronRight, ArrowLeft, Loader2, Phone } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
+import { useAuth } from '@/hooks/useAuth';
+import ClientSelector from '@/components/ClientSelector';
+import type { ClientData } from '@/components/ClientSelector';
 
 // ── Geocode types & hook ────────────────────────────────────
 interface GeocodeResult {
@@ -53,6 +56,8 @@ export interface KundliFormData {
   latitude: number;
   longitude: number;
   gender: 'male' | 'female';
+  phone?: string;
+  clientId?: string | null;
 }
 
 interface KundliFormProps {
@@ -75,8 +80,42 @@ export default function KundliForm({
   onBackToList,
 }: KundliFormProps) {
   const { t, language } = useTranslation();
+  const { user } = useAuth();
+  const isAstrologer = user?.role === 'astrologer';
+  const [isNewClient, setIsNewClient] = useState(true);
+  const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
   const geocode = useGeocodeAutocomplete();
   const placeWrapperRef = useRef<HTMLDivElement>(null);
+
+  const handleClientSelect = (client: ClientData | null) => {
+    setSelectedClient(client);
+    if (client) {
+      setFormData({
+        ...formData,
+        name: client.name || '',
+        date: client.birth_date || '',
+        time: client.birth_time || '',
+        place: client.birth_place || '',
+        latitude: client.latitude || 28.6139,
+        longitude: client.longitude || 77.2090,
+        gender: (client.gender === 'female' ? 'female' : 'male') as 'male' | 'female',
+        phone: client.phone || '',
+        clientId: client.id,
+      });
+    }
+  };
+
+  const handleClientToggle = (isNew: boolean) => {
+    setIsNewClient(isNew);
+    if (isNew) {
+      setSelectedClient(null);
+      setFormData({
+        name: '', date: '', time: '', place: '',
+        latitude: 28.6139, longitude: 77.2090, gender: 'male',
+        phone: '', clientId: null,
+      });
+    }
+  };
 
   // Close geocode dropdown on outside click
   useEffect(() => {
@@ -107,6 +146,13 @@ export default function KundliForm({
         <Clock className="w-5 h-5 mr-2 text-sacred-gold" />{t('kundli.prashnaKundli')}
         <span className="ml-2 text-sm text-cosmic-text">{t('kundli.prashnaSubtitle')}</span>
       </Button>
+      {isAstrologer && (
+        <ClientSelector
+          onSelectClient={handleClientSelect}
+          isNewClient={isNewClient}
+          onToggle={handleClientToggle}
+        />
+      )}
       {error && <div className="mb-4 p-3 rounded-xl bg-red-900 text-red-400 text-sm">{error}</div>}
       <div className="space-y-4">
         <div className="relative">
@@ -165,7 +211,19 @@ export default function KundliForm({
           <MapPin className="w-3 h-3 text-sacred-gold" />
           <span>Lat: {formData.latitude.toFixed(4)}, Lon: {formData.longitude.toFixed(4)}</span>
         </div>
-        <Button onClick={onGenerate} disabled={!formData.name || !formData.date || !formData.time || !formData.place} className="w-full btn-sacred font-semibold hover:bg-sacred-gold-dark disabled:opacity-50">
+        {isAstrologer && isNewClient && (
+          <div className="relative">
+            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold-dark" />
+            <Input
+              type="tel"
+              value={formData.phone || ''}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              placeholder={language === 'hi' ? 'क्लाइंट फ़ोन नंबर (आवश्यक)' : 'Client phone number (required)'}
+              className="pl-10 bg-sacred-cream border-sacred-gold text-sacred-brown"
+            />
+          </div>
+        )}
+        <Button onClick={onGenerate} disabled={!formData.name || !formData.date || !formData.time || !formData.place || (isAstrologer && isNewClient && !formData.phone?.trim())} className="w-full btn-sacred font-semibold hover:bg-sacred-gold-dark disabled:opacity-50">
           <Sparkles className="w-5 h-5 mr-2" />{language === 'hi' ? 'कुंडली बनाएं' : 'Generate Kundli'}<ChevronRight className="w-5 h-5 ml-2" />
         </Button>
       </div>
