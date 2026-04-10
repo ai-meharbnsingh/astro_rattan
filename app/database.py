@@ -21,8 +21,8 @@ def _get_pool() -> psycopg2.pool.ThreadedConnectionPool:
     global _pool
     if _pool is None:
         _pool = psycopg2.pool.ThreadedConnectionPool(
-            minconn=1,
-            maxconn=3,
+            minconn=2,
+            maxconn=20,
             dsn=DATABASE_URL,
         )
     return _pool
