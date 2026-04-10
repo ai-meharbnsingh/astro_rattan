@@ -830,7 +830,6 @@ const translations: Record<Language, TranslationMap> = {
     'table.transitSign': 'Transit Sign',
     'table.startDate': 'Start Date',
     'table.endDate': 'End Date',
-    'table.type': 'Type',
     'table.details': 'Details',
     'table.period': 'Period',
 
@@ -1784,7 +1783,6 @@ const translations: Record<Language, TranslationMap> = {
     'table.transitSign': 'गोचर राशि',
     'table.startDate': 'आरंभ तिथि',
     'table.endDate': 'समाप्ति तिथि',
-    'table.type': 'प्रकार',
     'table.details': 'विवरण',
     'table.period': 'अवधि',
 
