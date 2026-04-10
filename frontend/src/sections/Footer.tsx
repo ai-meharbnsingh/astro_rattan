@@ -41,9 +41,9 @@ export default function Footer() {
               {t('footer.tagline')}
             </p>
             <div className="space-y-3 mb-6">
-              <a href="mailto:support@astrovedic.com" className="flex items-center gap-3 text-cosmic-text hover:text-sacred-gold-dark transition-colors">
+              <a href="mailto:info@astrorattan.com" className="flex items-center gap-3 text-cosmic-text hover:text-sacred-gold-dark transition-colors">
                 <Mail className="w-5 h-5" />
-                <span className="text-base">support@astrovedic.com</span>
+                <span className="text-base">info@astrorattan.com</span>
               </a>
               <a href="tel:+919911760060" className="flex items-center gap-3 text-cosmic-text hover:text-sacred-gold-dark transition-colors">
                 <Phone className="w-5 h-5" />
