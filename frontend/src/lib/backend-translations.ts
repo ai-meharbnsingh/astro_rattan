@@ -149,6 +149,25 @@ const REMEDY_CATEGORIES: Record<string, string> = {
   'Other Remedies': 'अन्य उपाय',
 };
 
+// Yoga/Prediction Descriptions
+const YOGA_DESCRIPTIONS: Record<string, string> = {
+  // Anapha Yoga
+  'Grants good health, comfort, and a pleasant personality.': 'अच्छे स्वास्थ्य, आराम और सुखद व्यक्तित्व प्रदान करता है।',
+  // Vasi Yoga
+  'Grants generous nature, prosperity, and charitable disposition.': 'उदार स्वभाव, समृद्धि और दानशील प्रवृत्ति प्रदान करता है।',
+  // Surya in Own Sign
+  'Grants authority, leadership qualities, government favors, and strong vitality. Native has commanding presence and administrative abilities.': 'अधिकार, नेतृत्व गुण, सरकार का अनुकूलता और मजबूत जीवन शक्ति प्रदान करता है। जाता के पास आदेश देने की उपस्थिति और प्रशासनिक क्षमताएं होती हैं।',
+  // Shani Uchcha
+  'Grants discipline, hard work, organizational abilities, and success through perseverance. Even without Shasha Yoga, this is a very favorable position for career and longevity.': 'अनुशासन, कड़ी मेहनत, संगठनात्मक क्षमताएं और दृढ़ता के माध्यम से सफलता प्रदान करता है। शश योग के बिना भी, यह करियर और दीर्घायु के लिए अत्यंत अनुकूल स्थिति है।',
+  // Neecha Bhanga
+  'Debilitation cancelled for:': 'निम्नता रद्द हो गई है:',
+  'The negative effects of debilitation are nullified, and the planet(s) can give excellent results like a king. Native overcomes early struggles and rises to prominence.': 'नीचता के नकारात्मक प्रभाव समाप्त हो जाते हैं, और ग्रह राजा की तरह उत्कृष्ट परिणाम दे सकते हैं। जाता प्रारंभिक संघर्षों पर काबू पाता है और प्रसिद्धि प्राप्त करता है।',
+  // Raja Yoga
+  'Grants power and high position.': 'शक्ति और उच्च पद प्रदान करता है।',
+  // Dhan Yoga
+  'Grants financial stability and growth through righteous means.': 'धार्मिक साधनों से वित्तीय स्थिरता और विकास प्रदान करता है।',
+};
+
 const REMEDY_MAP: Record<string, string> = {
   'Wear a coral (Moonga) gemstone after consulting an astrologer': 'ज्योतिषी से परामर्श के बाद मूंगा रत्न धारण करें',
   'Recite Hanuman Chalisa daily': 'प्रतिदिन हनुमान चालीसा का पाठ करें',
@@ -216,6 +235,7 @@ const ALL_LOOKUPS: Record<string, string> = {
   ...PHASE_TYPES, ...REMEDY_MAP, ...YOGINI_NAMES, ...STRENGTH,
   ...NAKSHATRA_NAMES, ...SADE_SATI_CYCLES, ...SADE_SATI_DESCRIPTIONS,
   ...TRANSIT_DETAILS, ...REMEDY_CATEGORIES, ...SADE_SATI_EXPLANATIONS,
+  ...YOGA_DESCRIPTIONS,
 };
 
 /**
@@ -236,6 +256,16 @@ export function translateBackend(text: string | null | undefined, lang: Language
   }
   for (const [en, hi] of Object.entries(SIGN_NAMES)) {
     result = result.replace(new RegExp(`\\b${en}\\b`, 'g'), hi);
+  }
+  for (const [en, hi] of Object.entries(YOGA_NAMES)) {
+    result = result.replace(new RegExp(`\\b${en}\\b`, 'g'), hi);
+  }
+
+  // Try partial phrase matching for descriptions
+  for (const [en, hi] of Object.entries(YOGA_DESCRIPTIONS)) {
+    if (result.includes(en)) {
+      result = result.replace(new RegExp(en.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), hi);
+    }
   }
 
   return result;
