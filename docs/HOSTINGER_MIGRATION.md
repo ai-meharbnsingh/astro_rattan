@@ -9,11 +9,17 @@
 
 ## Hostinger Access
 
-- **API Token:** Available (stored in env, used via REST API)
+- **API Token:** Available (stored in memory, used via REST API)
 - **API Base:** https://developers.hostinger.com/api
 - **DNS Zone:** astrorattan.com managed via Hostinger DNS API
 - **Existing hosting IP:** 82.112.232.116 (shared hosting — test.astrorattan.com lives here)
-- **VPS:** Not yet purchased — API returns empty list
+- **VPS ID:** 1575168
+- **VPS IP:** 145.223.21.39
+- **VPS Hostname:** srv1575168.hstgr.cloud
+- **VPS Plan:** KVM 2 (2 CPU, 8GB RAM, 100GB NVMe)
+- **VPS OS:** Ubuntu 24.04 LTS
+- **VPS Root Password:** @Animal122@vps#
+- **SSH:** `ssh root@145.223.21.39` (use sshpass or key)
 - **MCP Server:** `hostinger-api-mcp` installed globally on Mac
 
 ### Hostinger API endpoints we'll use:
