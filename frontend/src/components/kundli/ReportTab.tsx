@@ -736,53 +736,79 @@ export default function ReportTab({
                   )}
                 </div>
 
-                {/* 9. Shadbala bar chart */}
-                <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
-                  <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.shadbalaStrength')}</h4>
-                  {loadingShadbala ? (
-                    <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-sacred-gold" /></div>
-                  ) : shadbalaData?.planets ? (
-                    <div>
-                      <div className="flex items-end justify-around gap-1" style={{ height: '180px' }}>
-                        {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
-                          const data = shadbalaData.planets[planet];
-                          if (!data) return null;
-                          const ratio = (data.total || 0) / (data.required || 1);
-                          const barHeight = Math.min((ratio / 1.5) * 100, 100);
-                          const isStrong = ratio >= 1.0;
-                          const barColor = isStrong ? '#16a34a' : '#dc2626';
-                          const requiredPct = (1 / 1.5) * 100;
-                          return (
-                            <div key={planet} className="flex flex-col items-center gap-1 flex-1 min-w-[36px]">
-                              <span className={`text-xs font-bold ${isStrong ? 'text-sacred-brown' : 'text-red-600'}`}>
-                                {data.total.toFixed(1)}
-                              </span>
-                              <div className="relative w-full flex justify-center bg-sacred-gold/20 rounded-t-lg" style={{ height: '130px' }}>
-                                <div
-                                  className="absolute w-full border-t-2 border-dashed border-red-500 z-10"
-                                  style={{ bottom: `${requiredPct}%` }}
-                                  title={`Required: ${data.required}`}
-                                />
-                                <div
-                                  className="w-5 rounded-t-lg transition-all duration-500"
-                                  style={{ height: `${barHeight}%`, backgroundColor: barColor, alignSelf: 'flex-end' }}
-                                />
+                {/* 9. Shadbala + Bhav Bala bar charts */}
+                <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4 space-y-4">
+                  {/* Shadbala */}
+                  <div>
+                    <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.shadbalaStrength')}</h4>
+                    {loadingShadbala ? (
+                      <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-sacred-gold" /></div>
+                    ) : shadbalaData?.planets ? (
+                      <div>
+                        <div className="flex items-end justify-around gap-1" style={{ height: '180px' }}>
+                          {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
+                            const data = shadbalaData.planets[planet];
+                            if (!data) return null;
+                            const ratio = (data.total || 0) / (data.required || 1);
+                            const barHeight = Math.min((ratio / 1.5) * 100, 100);
+                            const isStrong = ratio >= 1.0;
+                            const barColor = isStrong ? '#16a34a' : '#dc2626';
+                            const requiredPct = (1 / 1.5) * 100;
+                            return (
+                              <div key={planet} className="flex flex-col items-center gap-1 flex-1 min-w-[36px]">
+                                <span className={`text-xs font-bold ${isStrong ? 'text-green-700' : 'text-red-600'}`}>
+                                  {data.total.toFixed(1)}
+                                </span>
+                                <div className="relative w-full flex justify-center bg-sacred-gold/20 rounded-t-lg" style={{ height: '130px' }}>
+                                  <div className="absolute w-full border-t-2 border-dashed border-red-400 z-10" style={{ bottom: `${requiredPct}%` }} title={`Required: ${data.required}`} />
+                                  <div className="w-5 rounded-t-lg transition-all duration-500" style={{ height: `${barHeight}%`, backgroundColor: barColor, alignSelf: 'flex-end' }} />
+                                </div>
+                                <span className="text-xs font-medium text-sacred-brown text-center leading-tight mt-1">
+                                  {translatePlanet(planet, language).substring(0, 2)}
+                                </span>
                               </div>
-                              <span className="text-xs font-medium text-sacred-brown text-center leading-tight mt-1">
-                                {translatePlanet(planet, language).substring(0, 2)}
-                              </span>
-                            </div>
-                          );
-                        })}
+                            );
+                          })}
+                        </div>
+                        <div className="flex items-center gap-3 mt-2 text-xs text-cosmic-text">
+                          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#16a34a' }} />{t('kundli.strong')}</span>
+                          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#dc2626' }} />{t('kundli.weak')}</span>
+                          <span className="flex items-center gap-1"><span className="w-4 border-t-2 border-dashed border-red-400" />{language === 'hi' ? 'आवश्यक' : 'Required'}</span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-3 mt-2 text-xs text-cosmic-text">
-                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#16a34a' }} />{t('kundli.strong')}</span>
-                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#dc2626' }} />{t('kundli.weak')}</span>
-                        <span className="flex items-center gap-1"><span className="w-4 border-t-2 border-dashed border-red-500" />{language === 'hi' ? 'आवश्यक' : 'Required'}</span>
+                    ) : (
+                      <p className="text-center text-cosmic-text py-4 text-sm">{t('common.loading')}</p>
+                    )}
+                  </div>
+
+                  {/* Bhav Bala */}
+                  {shadbalaData?.bhav_bala && (
+                    <div>
+                      <div className="border-t border-sacred-gold/30 pt-4">
+                        <h4 className="font-display font-semibold text-sacred-brown mb-3">{language === 'hi' ? 'भाव बल' : 'Bhav Bala'}</h4>
+                        <div className="flex items-end justify-around gap-1" style={{ height: '160px' }}>
+                          {Array.from({ length: 12 }, (_, i) => i + 1).map((house) => {
+                            const data = shadbalaData.bhav_bala[house];
+                            if (!data) return null;
+                            const maxVal = Math.max(...Object.values(shadbalaData.bhav_bala as Record<string, {total: number}>).map((d) => d.total), 1);
+                            const barHeight = Math.min((data.total / maxVal) * 100, 100);
+                            const barColor = data.total >= maxVal * 0.5 ? '#16a34a' : '#dc2626';
+                            return (
+                              <div key={house} className="flex flex-col items-center gap-1 flex-1 min-w-[28px]">
+                                <span className="text-xs font-bold" style={{ color: barColor }}>
+                                  {data.total.toFixed(1)}
+                                </span>
+                                <div className="relative w-full flex justify-center bg-sacred-gold/20 rounded-t-lg" style={{ height: '110px' }}>
+                                  <div className="w-4 rounded-t-lg transition-all duration-500" style={{ height: `${barHeight}%`, backgroundColor: barColor, alignSelf: 'flex-end' }} />
+                                </div>
+                                <span className="text-xs font-medium text-sacred-brown text-center leading-tight mt-1">{house}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                        <p className="text-xs text-cosmic-text mt-1 text-center">{language === 'hi' ? 'भाव संख्या (1-12)' : 'House number (1–12)'}</p>
                       </div>
                     </div>
-                  ) : (
-                    <p className="text-center text-cosmic-text py-4 text-sm">{t('common.loading')}</p>
                   )}
                 </div>
 

@@ -21,7 +21,7 @@ from app.divisional_charts import (
     DIVISIONAL_CHARTS,
 )
 from app.ashtakvarga_engine import calculate_ashtakvarga
-from app.shadbala_engine import calculate_shadbala
+from app.shadbala_engine import calculate_shadbala, calculate_bhav_bala
 from app.avakhada_engine import calculate_avakhada
 from app.transit_engine import calculate_transits
 from app.kp_engine import calculate_kp_cuspal
@@ -627,6 +627,21 @@ def get_shadbala(
         birth_year=birth_year,
         birth_month=birth_month,
     )
+    # Bhav Bala — extract house signs from chart data
+    houses_raw = chart.get("houses", [])
+    house_signs: dict = {}
+    for h in houses_raw:
+        if isinstance(h, dict):
+            num = h.get("number") or h.get("house")
+            sign = h.get("sign", "Aries")
+            if num:
+                house_signs[int(num)] = sign
+    result["bhav_bala"] = calculate_bhav_bala(
+        house_signs=house_signs,
+        planet_houses=planet_houses,
+        planets_result=result["planets"],
+    )
+
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result

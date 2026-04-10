@@ -865,3 +865,50 @@ def calculate_shadbala(
         }
 
     return {"planets": planets_result}
+
+
+# ---------------------------------------------------------------------------
+# Bhav Bala (House Strength)
+# ---------------------------------------------------------------------------
+
+_SIGN_LORD: Dict[str, str] = {
+    "Aries": "Mars",     "Taurus": "Venus",   "Gemini": "Mercury",
+    "Cancer": "Moon",    "Leo": "Sun",         "Virgo": "Mercury",
+    "Libra": "Venus",    "Scorpio": "Mars",    "Sagittarius": "Jupiter",
+    "Capricorn": "Saturn", "Aquarius": "Saturn", "Pisces": "Jupiter",
+}
+
+
+def calculate_bhav_bala(
+    house_signs: Dict[int, str],
+    planet_houses: Dict[str, int],
+    planets_result: Dict[str, Any],
+) -> Dict[int, Any]:
+    """
+    Simplified Bhav Bala (house strength) in Rupas.
+
+    Formula:
+      total = (lord_shadbala / 60) * 0.5 + sum(occupant_shadbala / 60 * 0.25)
+
+    Returns {1..12: {"total": float, "sign": str, "lord": str}}
+    """
+    result: Dict[int, Any] = {}
+    for house in range(1, 13):
+        sign = house_signs.get(house, "Aries")
+        lord = _SIGN_LORD.get(sign, "")
+
+        lord_rupas = 0.0
+        if lord and lord in planets_result:
+            lord_rupas = planets_result[lord]["total"] / 60.0
+
+        occupant_rupas = 0.0
+        for planet, ph in planet_houses.items():
+            if ph == house and planet in planets_result:
+                occupant_rupas += planets_result[planet]["total"] / 60.0 * 0.25
+
+        result[house] = {
+            "total": round(lord_rupas * 0.5 + occupant_rupas, 2),
+            "sign": sign,
+            "lord": lord,
+        }
+    return result
