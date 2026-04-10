@@ -2,6 +2,26 @@ import React, { useState } from 'react';
 import { Loader2, ChevronDown, ChevronRight } from 'lucide-react';
 import { translatePlanet } from '@/lib/backend-translations';
 
+// Shadbala detail key translations
+const STHANA_DETAIL_KEYS: Record<string, { en: string; hi: string }> = {
+  uchcha: { en: 'Exaltation', hi: 'उच्च' },
+  saptavargaja: { en: 'Saptavarga', hi: 'सप्तवर्ग' },
+  ojayugma: { en: 'Odd/Even', hi: 'ओजयुग्म' },
+  kendra: { en: 'Kendra', hi: 'केन्द्र' },
+  drekkana: { en: 'Drekkana', hi: 'द्रेक्काण' },
+};
+
+const KALA_DETAIL_KEYS: Record<string, { en: string; hi: string }> = {
+  nathonnatha: { en: 'Day/Night', hi: 'दिन/रात्रि' },
+  paksha: { en: 'Paksha', hi: 'पक्ष' },
+  tribhaga: { en: 'Tribhaga', hi: 'त्रिभाग' },
+  abda: { en: 'Year', hi: 'वर्ष' },
+  masa: { en: 'Month', hi: 'मास' },
+  vara: { en: 'Day', hi: 'वार' },
+  hora: { en: 'Hora', hi: 'होरा' },
+  ayana: { en: 'Ayana', hi: 'अयन' },
+};
+
 interface ShadbalaTabProps {
   shadbalaData: any;
   loadingShadbala: boolean;
@@ -108,18 +128,18 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
       <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
         <h4 className="text-lg font-semibold text-gray-800 mb-4">{t('section.detailedBreakdown')}</h4>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm border-collapse">
             <thead>
-              <tr className="border-b border-sacred-gold">
-                <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
-                <th className="text-center p-2 text-sacred-gold-dark font-medium">{language === 'hi' ? 'स्थान' : 'Sthana'}</th>
-                <th className="text-center p-2 text-sacred-gold-dark font-medium">{language === 'hi' ? 'दिग्' : 'Dig'}</th>
-                <th className="text-center p-2 text-sacred-gold-dark font-medium">{language === 'hi' ? 'काल' : 'Kala'}</th>
-                <th className="text-center p-2 text-sacred-gold-dark font-medium">{language === 'hi' ? 'चेष्टा' : 'Cheshta'}</th>
-                <th className="text-center p-2 text-sacred-gold-dark font-medium">{language === 'hi' ? 'नैसर्गिक' : 'Naisargika'}</th>
-                <th className="text-center p-2 text-sacred-gold-dark font-medium">{language === 'hi' ? 'दृक्' : 'Drik'}</th>
-                <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('table.total')}</th>
-                <th className="text-center p-2 text-sacred-gold-dark font-medium">{language === 'hi' ? 'अनुपात' : 'Ratio'}</th>
+              <tr className="bg-sacred-gold">
+                <th className="text-left p-2 text-sacred-gold-dark font-medium text-xs">{t('table.planet')}</th>
+                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{language === 'hi' ? 'स्थान' : 'Sthana'}</th>
+                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{language === 'hi' ? 'दिग्' : 'Dig'}</th>
+                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{language === 'hi' ? 'काल' : 'Kala'}</th>
+                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{language === 'hi' ? 'चेष्टा' : 'Cheshta'}</th>
+                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{language === 'hi' ? 'नैसर्गिक' : 'Naisargika'}</th>
+                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{language === 'hi' ? 'दृक्' : 'Drik'}</th>
+                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{t('table.total')}</th>
+                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{language === 'hi' ? 'अनुपात' : 'Ratio'}</th>
               </tr>
             </thead>
             <tbody>
@@ -131,21 +151,23 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
                 return (
                   <React.Fragment key={planet}>
                     <tr
-                      className={`border-t border-sacred-gold ${d.is_strong ? '' : 'bg-red-5'} ${hasDetail ? 'cursor-pointer hover:bg-sacred-gold/5' : ''}`}
+                      className={`border-t border-sacred-gold/50 ${d.is_strong ? 'bg-white' : 'bg-red-50/30'} ${hasDetail ? 'cursor-pointer hover:bg-sacred-gold/10' : ''} transition-colors`}
                       onClick={hasDetail ? () => toggleExpand(planet) : undefined}
                     >
-                      <td className="p-2 text-sacred-brown font-medium flex items-center gap-1">
-                        {hasDetail && (isExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />)}
-                        {translatePlanet(planet, language)}
+                      <td className="p-2 text-sacred-brown font-medium">
+                        <div className="flex items-center gap-1">
+                          {hasDetail && (isExpanded ? <ChevronDown className="w-3 h-3 text-sacred-gold-dark" /> : <ChevronRight className="w-3 h-3 text-sacred-gold-dark" />)}
+                          {translatePlanet(planet, language)}
+                        </div>
                       </td>
-                      <td className="text-center p-2 text-cosmic-text">{d.sthana}</td>
-                      <td className="text-center p-2 text-cosmic-text">{d.dig}</td>
-                      <td className="text-center p-2 text-cosmic-text">{d.kala}</td>
-                      <td className="text-center p-2 text-cosmic-text">{d.cheshta}</td>
-                      <td className="text-center p-2 text-cosmic-text">{d.naisargika}</td>
-                      <td className="text-center p-2 text-cosmic-text">{d.drik}</td>
-                      <td className={`text-center p-2 font-semibold ${d.is_strong ? 'text-sacred-gold-dark' : 'text-wax-red-deep'}`}>{d.total}</td>
-                      <td className={`text-center p-2 font-medium ${d.ratio >= 1 ? 'text-sacred-gold-dark' : 'text-wax-red-deep'}`}>{d.ratio}x</td>
+                      <td className="text-center p-2 text-cosmic-text text-xs">{d.sthana?.toFixed ? d.sthana.toFixed(2) : d.sthana}</td>
+                      <td className="text-center p-2 text-cosmic-text text-xs">{d.dig?.toFixed ? d.dig.toFixed(2) : d.dig}</td>
+                      <td className="text-center p-2 text-cosmic-text text-xs">{d.kala?.toFixed ? d.kala.toFixed(2) : d.kala}</td>
+                      <td className="text-center p-2 text-cosmic-text text-xs">{d.cheshta?.toFixed ? d.cheshta.toFixed(2) : d.cheshta}</td>
+                      <td className="text-center p-2 text-cosmic-text text-xs">{d.naisargika?.toFixed ? d.naisargika.toFixed(2) : d.naisargika}</td>
+                      <td className="text-center p-2 text-cosmic-text text-xs">{d.drik?.toFixed ? d.drik.toFixed(2) : d.drik}</td>
+                      <td className={`text-center p-2 font-semibold text-xs ${d.is_strong ? 'text-green-600' : 'text-red-600'}`}>{d.total?.toFixed ? d.total.toFixed(2) : d.total}</td>
+                      <td className={`text-center p-2 font-medium text-xs ${d.ratio >= 1 ? 'text-green-600' : 'text-red-600'}`}>{d.ratio?.toFixed ? d.ratio.toFixed(2) : d.ratio}x</td>
                     </tr>
                     {isExpanded && d.sthana_detail && (
                       <tr className="bg-sacred-cream">
@@ -153,9 +175,12 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
                           {language === 'hi' ? 'स्थान विवरण' : 'Sthana Detail'}
                         </td>
                         <td colSpan={7} className="p-2 text-sm text-cosmic-text">
-                          {['uchcha', 'saptavargaja', 'ojhayugma', 'kendra', 'drekkana']
+                          {(['uchcha', 'saptavargaja', 'ojhayugma', 'kendra', 'drekkana'] as const)
                             .filter((k) => d.sthana_detail[k] != null)
-                            .map((k) => `${k}: ${d.sthana_detail[k]}`)
+                            .map((k) => {
+                              const label = STHANA_DETAIL_KEYS[k]?.[language as 'en' | 'hi'] || k;
+                              return `${label}: ${d.sthana_detail[k]}`;
+                            })
                             .join(' | ')}
                         </td>
                       </tr>
@@ -166,9 +191,12 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
                           {language === 'hi' ? 'काल विवरण' : 'Kala Detail'}
                         </td>
                         <td colSpan={7} className="p-2 text-sm text-cosmic-text">
-                          {['nathonnatha', 'paksha', 'tribhaga', 'abda', 'masa', 'vara', 'hora', 'ayana']
+                          {(['nathonnatha', 'paksha', 'tribhaga', 'abda', 'masa', 'vara', 'hora', 'ayana'] as const)
                             .filter((k) => d.kala_detail[k] != null)
-                            .map((k) => `${k}: ${d.kala_detail[k]}`)
+                            .map((k) => {
+                              const label = KALA_DETAIL_KEYS[k]?.[language as 'en' | 'hi'] || k;
+                              return `${label}: ${d.kala_detail[k]}`;
+                            })
                             .join(' | ')}
                         </td>
                       </tr>
