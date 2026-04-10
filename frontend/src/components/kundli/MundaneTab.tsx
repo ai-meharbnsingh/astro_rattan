@@ -451,9 +451,15 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
   const nextYear = () => setSelectedYear(y => y + 1);
 
   /* ── helper: resolve localized text from API payload ── */
-  const loc = (en: string | undefined, hi: string | undefined): string => {
+  const loc = (en: string | {en?: string; hi?: string} | undefined, hi: string | undefined): string => {
+    // Handle bilingual object {en: "...", hi: "..."}
+    if (en && typeof en === 'object') {
+      if (lang === 'hi' && en.hi) return en.hi;
+      return en.en || '';
+    }
+    // Handle separate en/hi params
     if (lang === 'hi' && hi) return hi;
-    return en || '';
+    return (en as string) || '';
   };
 
   /* ── Indicator icon + color helpers ── */
@@ -783,7 +789,13 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                           {lang === 'hi' ? `भाव ${h.house}` : `House ${h.house}`}
                         </span>
                         <span className="text-sm text-cosmic-text ml-2">
-                          {loc(h.meaning || fallbackMeaning?.en, h.meaning_hi || fallbackMeaning?.hi)}
+                          {(() => {
+                            // Handle meaning as bilingual object
+                            if (h.meaning && typeof h.meaning === 'object') {
+                              return lang === 'hi' ? (h.meaning as any).hi || (h.meaning as any).en : (h.meaning as any).en;
+                            }
+                            return loc(h.meaning || fallbackMeaning?.en, h.meaning_hi || fallbackMeaning?.hi);
+                          })()}
                         </span>
                       </div>
                     </div>
@@ -797,7 +809,12 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                     <div className="px-3 pb-3 border-t border-sacred-gold pt-2 text-sm space-y-2">
                       <div>
                         <span className="font-medium text-sacred-brown">{T.condition(lang)}: </span>
-                        <span className="text-cosmic-text">{loc(h.condition, h.condition_hi)}</span>
+                        <span className="text-cosmic-text">{
+                          // Handle condition as bilingual object or string
+                          typeof h.condition === 'object' && h.condition !== null
+                            ? (lang === 'hi' ? (h.condition as any).hi : (h.condition as any).en) || ''
+                            : loc(h.condition, h.condition_hi)
+                        }</span>
                       </div>
                       {h.transiting_planets && h.transiting_planets.length > 0 && (
                         <div>
