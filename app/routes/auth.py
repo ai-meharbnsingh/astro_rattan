@@ -37,34 +37,60 @@ def _generate_otp() -> str:
 
 
 def _send_otp_email(email: str, otp: str) -> bool:
-    """Send OTP via Resend API. Returns True on success, False on failure."""
+    """Send OTP via SMTP (Gmail) or Resend API. Returns True on success, False on failure."""
     import os
+    import smtplib
+    from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
+
+    html_body = (
+        f"<div style='font-family:Georgia,serif;max-width:480px;margin:0 auto;padding:32px;'>"
+        f"<h2 style='color:#C4A35A;'>Astro Rattan</h2>"
+        f"<p>Your verification code is:</p>"
+        f"<p style='font-size:32px;font-weight:bold;letter-spacing:8px;color:#1a1a2e;'>{otp}</p>"
+        f"<p style='color:#666;'>This code expires in 10 minutes.</p>"
+        f"</div>"
+    )
+
+    # Try SMTP first (Gmail app password — works for all recipients)
+    smtp_user = os.getenv("SMTP_USER", "")
+    smtp_pass = os.getenv("SMTP_PASSWORD", "")
+    if smtp_user and smtp_pass:
+        try:
+            smtp_host = os.getenv("SMTP_HOST", "smtp.gmail.com")
+            smtp_port = int(os.getenv("SMTP_PORT", "587"))
+            msg = MIMEMultipart("alternative")
+            msg["Subject"] = f"Astro Rattan - Verification Code: {otp}"
+            msg["From"] = f"Astro Rattan <{smtp_user}>"
+            msg["To"] = email
+            msg.attach(MIMEText(html_body, "html"))
+            with smtplib.SMTP(smtp_host, smtp_port, timeout=10) as s:
+                s.starttls()
+                s.login(smtp_user, smtp_pass)
+                s.sendmail(smtp_user, [email], msg.as_string())
+            return True
+        except Exception as e:
+            print(f"[OTP] SMTP failed for {email[:3]}***@***: {e}")
+
+    # Fallback to Resend API
     api_key = os.getenv("RESEND_API_KEY", "")
-    if not api_key:
-        print(f"[OTP] Code sent to {email[:3]}***@*** (dev mode)")
-        return True  # Allow registration in dev (OTP logged to console)
-    try:
-        import resend
-        resend.api_key = api_key
-        from_addr = os.getenv("RESEND_FROM", "Astro Rattan <onboarding@resend.dev>")
-        resend.Emails.send({
-            "from": from_addr,
-            "to": [email],
-            "subject": f"Astro Rattan - Verification Code: {otp}",
-            "reply_to": "ai.meharbansingh@gmail.com",
-            "html": (
-                f"<div style='font-family:Georgia,serif;max-width:480px;margin:0 auto;padding:32px;'>"
-                f"<h2 style='color:#C4A35A;'>Astro Rattan</h2>"
-                f"<p>Your verification code is:</p>"
-                f"<p style='font-size:32px;font-weight:bold;letter-spacing:8px;color:#1a1a2e;'>{otp}</p>"
-                f"<p style='color:#666;'>This code expires in 10 minutes.</p>"
-                f"</div>"
-            ),
-        })
-        return True
-    except Exception as e:
-        print(f"[OTP] Failed to send email to {email}: {e}")
-        return False
+    if api_key:
+        try:
+            import resend
+            resend.api_key = api_key
+            from_addr = os.getenv("RESEND_FROM", "Astro Rattan <onboarding@resend.dev>")
+            resend.Emails.send({
+                "from": from_addr, "to": [email],
+                "subject": f"Astro Rattan - Verification Code: {otp}",
+                "html": html_body,
+            })
+            return True
+        except Exception as e:
+            print(f"[OTP] Resend failed for {email[:3]}***@***: {e}")
+
+    # Dev fallback — log to console
+    print(f"[OTP] Code sent to {email[:3]}***@*** (dev mode)")
+    return True
 
 
 def _verify_email_token(email_token: str, expected_email: str):
@@ -530,29 +556,7 @@ def forgot_password(
     )
     db.commit()
 
-    import os
-    api_key = os.getenv("RESEND_API_KEY", "")
-    if api_key:
-        try:
-            import resend
-            resend.api_key = api_key
-            resend.Emails.send({
-                "from": os.getenv("RESEND_FROM", "Astro Rattan <onboarding@resend.dev>"),
-                "to": [body.email],
-                "subject": f"Astro Rattan - Password Reset Code: {otp}",
-                "html": (
-                    f"<div style='font-family:Georgia,serif;max-width:480px;margin:0 auto;padding:32px;'>"
-                    f"<h2 style='color:#C4A35A;'>Password Reset</h2>"
-                    f"<p>Your reset code is:</p>"
-                    f"<p style='font-size:32px;font-weight:bold;letter-spacing:8px;color:#1a1a2e;'>{otp}</p>"
-                    f"<p style='color:#666;'>This code expires in 10 minutes. If you didn't request this, ignore this email.</p>"
-                    f"</div>"
-                ),
-            })
-        except Exception as e:
-            print(f"[RESET] Failed to send email: {e}")
-    else:
-        print(f"[RESET] Code sent to {body.email[:3]}***@*** (dev mode)")
+    _send_otp_email(body.email, otp)  # reuses the same SMTP/Resend/dev fallback
 
     return {"message": "If this email is registered, a reset code has been sent."}
 
