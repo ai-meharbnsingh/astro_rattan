@@ -742,27 +742,43 @@ export default function ReportTab({
                   {loadingShadbala ? (
                     <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-sacred-gold" /></div>
                   ) : shadbalaData?.planets ? (
-                    <div className="space-y-2">
-                      {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
-                        const data = shadbalaData.planets[planet];
-                        if (!data) return null;
-                        const pct = Math.min((data.total / data.required) * 100, 150);
-                        const barColor = data.is_strong ? 'var(--aged-gold-dim)' : '#8B2332';
-                        return (
-                          <div key={planet} className="flex items-center gap-2">
-                            <span className="w-12 text-sm font-medium text-sacred-brown">{translatePlanet(planet, language)}</span>
-                            <div className="flex-1 bg-sacred-gold rounded-full h-4 overflow-hidden">
-                              <div className="h-full rounded-full" style={{ width: `${Math.min(pct, 100)}%`, backgroundColor: barColor }} />
+                    <div>
+                      <div className="flex items-end justify-around gap-1" style={{ height: '180px' }}>
+                        {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
+                          const data = shadbalaData.planets[planet];
+                          if (!data) return null;
+                          const ratio = (data.total || 0) / (data.required || 1);
+                          const barHeight = Math.min((ratio / 1.5) * 100, 100);
+                          const isStrong = ratio >= 1.0;
+                          const barColor = isStrong ? 'var(--aged-gold-dim)' : '#8B2332';
+                          const requiredPct = (1 / 1.5) * 100;
+                          return (
+                            <div key={planet} className="flex flex-col items-center gap-1 flex-1 min-w-[36px]">
+                              <span className={`text-xs font-bold ${isStrong ? 'text-sacred-brown' : 'text-red-600'}`}>
+                                {data.total.toFixed(1)}
+                              </span>
+                              <div className="relative w-full flex justify-center bg-sacred-gold/20 rounded-t-lg" style={{ height: '130px' }}>
+                                <div
+                                  className="absolute w-full border-t-2 border-dashed border-red-500 z-10"
+                                  style={{ bottom: `${requiredPct}%` }}
+                                  title={`Required: ${data.required}`}
+                                />
+                                <div
+                                  className="w-5 rounded-t-lg transition-all duration-500"
+                                  style={{ height: `${barHeight}%`, backgroundColor: barColor, alignSelf: 'flex-end' }}
+                                />
+                              </div>
+                              <span className="text-xs font-medium text-sacred-brown text-center leading-tight mt-1">
+                                {translatePlanet(planet, language).substring(0, 2)}
+                              </span>
                             </div>
-                            <span className={`text-sm w-16 text-right font-medium ${data.is_strong ? 'text-sacred-gold-dark' : 'text-wax-red-deep'}`}>
-                              {data.total}/{data.required}
-                            </span>
-                          </div>
-                        );
-                      })}
-                      <div className="flex items-center gap-3 mt-1 text-sm text-cosmic-text">
+                          );
+                        })}
+                      </div>
+                      <div className="flex items-center gap-3 mt-2 text-xs text-cosmic-text">
                         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: 'var(--aged-gold-dim)' }} />{t('kundli.strong')}</span>
                         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#8B2332' }} />{t('kundli.weak')}</span>
+                        <span className="flex items-center gap-1"><span className="w-4 border-t-2 border-dashed border-red-500" />{language === 'hi' ? 'आवश्यक' : 'Required'}</span>
                       </div>
                     </div>
                   ) : (

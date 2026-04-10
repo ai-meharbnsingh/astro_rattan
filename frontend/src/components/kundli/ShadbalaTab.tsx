@@ -65,11 +65,9 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
             const required = data.required || 1.0;
             const total = data.total || 0;
             const ratio = total / required;
-            const pct = Math.min(ratio * 100, 150);
-            const barHeight = Math.min(pct, 100);
+            const barHeight = Math.min((ratio / 1.5) * 100, 100);
             const isStrong = ratio >= 1.0;
             const barColor = isStrong ? 'var(--sacred-brown)' : 'var(--sacred-gold)';
-            const barBg = isStrong ? 'var(--sacred-brown)' : 'var(--sacred-cream)';
             const requiredPct = (1 / 1.5) * 100;
             return (
               <div key={planet} className="flex flex-col items-center gap-1 flex-1 min-w-[60px]">
