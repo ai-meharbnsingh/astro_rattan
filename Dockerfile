@@ -19,4 +19,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY app/ app/
 COPY static/ static/
 EXPOSE 8028
-CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8028} --workers ${WEB_CONCURRENCY:-2}
+CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8028} --workers ${WEB_CONCURRENCY:-4}
