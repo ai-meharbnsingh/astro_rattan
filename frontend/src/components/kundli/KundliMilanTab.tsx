@@ -74,6 +74,34 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
     return 'text-red-400 border-red-300';
   };
 
+  const getMilanRemedies = (isPerson1: boolean) => {
+    const isHi = language === 'hi';
+    if (!result) return [];
+
+    const hasHighDosha = (result.doshas || []).some((d) => d.present && String(d.severity).toLowerCase() === 'high');
+    const lowMatch = result.total_score < 18;
+
+    if (isPerson1) {
+      if (lowMatch || hasHighDosha) {
+        return isHi
+          ? ['शुक्रवार को मां लक्ष्मी की पूजा करके सफेद मिठाई दान करें।', 'चांदी का छोटा छल्ला पहनें और शुक्रवार को कन्याओं को खीर बांटें।']
+          : ['Offer white sweets on Friday after Lakshmi puja.', 'Wear a small silver ring and donate kheer to girls on Friday.'];
+      }
+      return isHi
+        ? ['प्रति सोमवार शिव-पार्वती का संयुक्त पूजन करें।', 'मंगलवार को गुड़ और चने का दान करें।']
+        : ['Do Shiva-Parvati joint worship every Monday.', 'Donate jaggery and roasted gram on Tuesday.'];
+    }
+
+    if (lowMatch || hasHighDosha) {
+      return isHi
+        ? ['मंगलवार को हनुमान चालीसा का पाठ करें और लाल मसूर दान करें।', 'शनिवार को पीपल वृक्ष के पास सरसों के तेल का दीपक जलाएं।']
+        : ['Recite Hanuman Chalisa on Tuesday and donate red lentils.', 'Light a mustard-oil diya near a Peepal tree on Saturday.'];
+    }
+    return isHi
+      ? ['गुरुवार को विष्णु-लक्ष्मी पूजन करें और हल्दी दान करें।', 'प्रतिदिन 108 बार “ॐ नमः शिवाय” जप करें।']
+      : ['Perform Vishnu-Lakshmi worship on Thursday and donate turmeric.', 'Chant "Om Namah Shivaya" 108 times daily.'];
+  };
+
   return (
     <div className="space-y-6">
       <div className="text-center mb-4">
@@ -224,6 +252,35 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
                   </div>
                 </div>
               )}
+
+              <div className="border border-sacred-gold p-4">
+                <h4 className="text-sm font-sans text-sacred-gold-dark mb-3 uppercase">
+                  {language === 'hi' ? 'लड़का-लड़की उपाय' : 'Remedies For Boy & Girl'}
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="bg-sacred-cream border border-sacred-gold/40 rounded-lg p-3">
+                    <p className="text-sm font-semibold text-sacred-brown mb-2">
+                      {language === 'hi' ? 'लड़की के लिए' : `For ${result.person1_name}`}
+                    </p>
+                    <ul className="space-y-2 text-sm text-cosmic-text">
+                      {getMilanRemedies(true).slice(0, 2).map((item, idx) => (
+                        <li key={`p1-${idx}`}>{idx + 1}. {item}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="bg-sacred-cream border border-sacred-gold/40 rounded-lg p-3">
+                    <p className="text-sm font-semibold text-sacred-brown mb-2">
+                      {language === 'hi' ? 'लड़के के लिए' : `For ${result.person2_name}`}
+                    </p>
+                    <ul className="space-y-2 text-sm text-cosmic-text">
+                      {getMilanRemedies(false).slice(0, 2).map((item, idx) => (
+                        <li key={`p2-${idx}`}>{idx + 1}. {item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </>
