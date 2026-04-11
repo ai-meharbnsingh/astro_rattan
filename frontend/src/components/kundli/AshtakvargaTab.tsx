@@ -85,6 +85,12 @@ interface AshtakvargaTabProps {
 export default function AshtakvargaTab(props: AshtakvargaTabProps) {
   const { ashtakvargaData, loadingAshtakvarga, result, language, t } = props;
 
+  // Derive Lagna-rotated sign arrays once — used by every chart/table in this tab
+  const lagnaSign      = result?.chart_data?.ascendant || 'Aries';
+  const signs          = rotateByLagna(ALL_SIGNS, lagnaSign);
+  const signAbbr       = rotateByLagna(ALL_ABBR,  lagnaSign);
+  const hindiSignAbbr  = rotateByLagna(ALL_HI,    lagnaSign);
+
   return (
     <>
       {loadingAshtakvarga ? (
@@ -106,7 +112,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
             <h4 className="text-lg font-semibold text-gray-800 mb-4">{t('section.sarvashtakvarga')}</h4>
             <div className="overflow-x-auto">
             <div className="flex items-end gap-2 h-48 min-w-[400px]">
-              {['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'].map((sign) => {
+              {signs.map((sign) => {
                 const points = ashtakvargaData.sarvashtakvarga?.[sign] || 0;
                 const maxPoints = 56;
                 const heightPct = Math.round((points / maxPoints) * 100);
@@ -150,10 +156,6 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
             <div className="grid grid-cols-1 gap-5">
               {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Lagna'].map((planet) => {
                 const bindus = ashtakvargaData.planet_bindus?.[planet] || {};
-                const lagnaSign = result?.chart_data?.ascendant || 'Aries';
-                const signs = rotateByLagna(ALL_SIGNS, lagnaSign);
-                const signAbbr = rotateByLagna(ALL_ABBR, lagnaSign);
-                const hindiSignAbbr = rotateByLagna(ALL_HI, lagnaSign);
                 const vals = signs.map((s) => bindus[s] || 0);
                 const total = vals.reduce((sum, v) => sum + v, 0);
 
@@ -195,8 +197,6 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                         {(() => {
                           const contributors = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Lagna'];
                           const contribData = ashtakvargaData.planet_details?.[planet]?.contributors;
-                          // Hindi sign abbreviations
-                          const hindiSignAbbr = ['मे', 'वृ', 'मि', 'कर', 'सिं', 'कन', 'तु', 'वृ', 'धन', 'मक', 'कु', 'मी'];
                           return (
                             <table className="w-full text-sm border-collapse">
                               <thead>
@@ -302,7 +302,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                 <thead>
                   <tr className="border-b border-sacred-gold">
                     <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
-                    {['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'].map((s) => (
+                    {signs.map((s) => (
                       <th key={s} className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{language === 'hi' ? translateSign(s, language).slice(0, 2) : s.slice(0, 3)}</th>
                     ))}
                     <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('table.total')}</th>
@@ -311,7 +311,6 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                 <tbody>
                   {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
                     const bindus = ashtakvargaData.planet_bindus?.[planet] || {};
-                    const signs = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
                     const total = signs.reduce((sum, s) => sum + (bindus[s] || 0), 0);
                     return (
                       <tr key={planet} className="border-t border-sacred-gold hover:bg-sacred-gold/5">
