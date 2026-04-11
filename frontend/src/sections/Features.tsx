@@ -85,19 +85,19 @@ export default function Features() {
     {
       feature: l('Lal Kitab Depth', 'लाल किताब गहराई'),
       us: l('22 specialized tabs', '22 विशेषज्ञता टैब'),
-      them: l('Teva + basic remedies (AstroSage)', 'तेवा + बुनियादी उपाय'),
+      them: l('Teva + basic remedies only', 'केवल तेवा + बुनियादी उपाय'),
       exclusive: false,
     },
     {
       feature: l('Astrologer Dashboard', 'ज्योतिषी डैशबोर्ड'),
       us: l('Client notes, history, per-chart tools', 'क्लाइंट नोट्स, इतिहास, प्रति-चार्ट टूल'),
-      them: l('Marketplace portals only (AstroTalk)', 'केवल मार्केटप्लेस पोर्टल'),
+      them: l('Marketplace portals only', 'केवल मार्केटप्लेस पोर्टल'),
       exclusive: false,
     },
     {
       feature: l('AI Interpretation', 'AI व्याख्या'),
-      us: l('Self-use: Gemini + GPT inline', 'स्व-उपयोग: Gemini + GPT इनलाइन'),
-      them: l('Consultation model or basic chatbot', 'परामर्श मॉडल या बुनियादी चैटबॉट'),
+      us: l('Inline Gemini + GPT for self-use', 'स्व-उपयोग के लिए इनलाइन AI'),
+      them: l('Paid consultation or basic chatbot', 'भुगतान परामर्श या बुनियादी चैटबॉट'),
       exclusive: false,
     },
   ];
