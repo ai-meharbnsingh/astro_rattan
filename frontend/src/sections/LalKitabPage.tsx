@@ -165,23 +165,66 @@ export default function LalKitabPage() {
             </Button>
 
             <Tabs defaultValue="dashboard" className="w-full">
-              <TabsList className="mb-6 bg-sacred-cream flex-wrap justify-start gap-1 h-auto p-2 [&>button]:py-2 [&>button]:text-sm [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
-                <TabsTrigger value="dashboard">{t('lk.tab.dashboard')}</TabsTrigger>
-                <TabsTrigger value="kundli">{t('lk.tab.kundli')}</TabsTrigger>
-                <TabsTrigger value="planets">{t('lk.tab.planets')}</TabsTrigger>
-                <TabsTrigger value="dosha">{t('lk.tab.dosha')}</TabsTrigger>
-                <TabsTrigger value="remedies">{t('lk.tab.remedies')}</TabsTrigger>
-                <TabsTrigger value="houses">{t('lk.tab.houses')}</TabsTrigger>
-                <TabsTrigger value="yearly">{t('lk.tab.yearly')}</TabsTrigger>
-                <TabsTrigger value="varshphal">{t('lk.tab.varshphal')}</TabsTrigger>
-                <TabsTrigger value="relations">{t('lk.tab.relations')}</TabsTrigger>
-                <TabsTrigger value="rules">{t('lk.tab.rules')}</TabsTrigger>
-                <TabsTrigger value="nishaniyan">{t('lk.tab.nishaniyan')}</TabsTrigger>
-                <TabsTrigger value="gochar">{t('lk.tab.gochar')}</TabsTrigger>
-                <TabsTrigger value="studio">{t('lk.tab.studio')}</TabsTrigger>
-                <TabsTrigger value="tracker">{t('lk.tab.tracker')}</TabsTrigger>
-                <TabsTrigger value="chandra">{t('lk.tab.chandra')}</TabsTrigger>
-              </TabsList>
+              <div className="relative mb-6 md:mb-4 md:static">
+                {/* Scroll hint arrows — mobile only */}
+                <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-sacred-cream to-transparent z-10 pointer-events-none flex items-center justify-start pl-1 md:hidden">
+                  <span className="text-sacred-gold-dark text-lg">‹</span>
+                </div>
+                <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-sacred-cream to-transparent z-10 pointer-events-none flex items-center justify-end pr-1 md:hidden">
+                  <span className="text-sacred-gold-dark text-lg">›</span>
+                </div>
+
+                {/* Desktop: two balanced rows */}
+                <div className="hidden md:flex md:flex-col md:gap-1">
+                  {/* Row 1 — 8 tabs */}
+                  <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 grid grid-cols-8
+                    [&>button]:whitespace-nowrap [&>button]:min-h-[36px] [&>button]:px-2 [&>button]:py-1.5 [&>button]:text-xs
+                    [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
+                    <TabsTrigger value="dashboard">{t('lk.tab.dashboard')}</TabsTrigger>
+                    <TabsTrigger value="kundli">{t('lk.tab.kundli')}</TabsTrigger>
+                    <TabsTrigger value="planets">{t('lk.tab.planets')}</TabsTrigger>
+                    <TabsTrigger value="dosha">{t('lk.tab.dosha')}</TabsTrigger>
+                    <TabsTrigger value="remedies">{t('lk.tab.remedies')}</TabsTrigger>
+                    <TabsTrigger value="houses">{t('lk.tab.houses')}</TabsTrigger>
+                    <TabsTrigger value="yearly">{t('lk.tab.yearly')}</TabsTrigger>
+                    <TabsTrigger value="varshphal">{t('lk.tab.varshphal')}</TabsTrigger>
+                  </TabsList>
+                  {/* Row 2 — 7 tabs */}
+                  <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 grid grid-cols-7
+                    [&>button]:whitespace-nowrap [&>button]:min-h-[36px] [&>button]:px-2 [&>button]:py-1.5 [&>button]:text-xs
+                    [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
+                    <TabsTrigger value="relations">{t('lk.tab.relations')}</TabsTrigger>
+                    <TabsTrigger value="rules">{t('lk.tab.rules')}</TabsTrigger>
+                    <TabsTrigger value="nishaniyan">{t('lk.tab.nishaniyan')}</TabsTrigger>
+                    <TabsTrigger value="gochar">{t('lk.tab.gochar')}</TabsTrigger>
+                    <TabsTrigger value="studio">{t('lk.tab.studio')}</TabsTrigger>
+                    <TabsTrigger value="tracker">{t('lk.tab.tracker')}</TabsTrigger>
+                    <TabsTrigger value="chandra">{t('lk.tab.chandra')}</TabsTrigger>
+                  </TabsList>
+                </div>
+
+                {/* Mobile: single horizontally scrollable row */}
+                <TabsList className="md:hidden bg-sacred-cream w-full h-auto p-2 gap-1
+                  flex flex-nowrap overflow-x-auto pb-3 scrollbar-hide
+                  [&>button]:flex-shrink-0 [&>button]:flex-grow-0 [&>button]:basis-auto [&>button]:whitespace-nowrap [&>button]:min-h-[36px] [&>button]:px-3 [&>button]:py-1.5 [&>button]:text-xs
+                  [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
+                  <TabsTrigger value="dashboard">{t('lk.tab.dashboard')}</TabsTrigger>
+                  <TabsTrigger value="kundli">{t('lk.tab.kundli')}</TabsTrigger>
+                  <TabsTrigger value="planets">{t('lk.tab.planets')}</TabsTrigger>
+                  <TabsTrigger value="dosha">{t('lk.tab.dosha')}</TabsTrigger>
+                  <TabsTrigger value="remedies">{t('lk.tab.remedies')}</TabsTrigger>
+                  <TabsTrigger value="houses">{t('lk.tab.houses')}</TabsTrigger>
+                  <TabsTrigger value="yearly">{t('lk.tab.yearly')}</TabsTrigger>
+                  <TabsTrigger value="varshphal">{t('lk.tab.varshphal')}</TabsTrigger>
+                  <TabsTrigger value="relations">{t('lk.tab.relations')}</TabsTrigger>
+                  <TabsTrigger value="rules">{t('lk.tab.rules')}</TabsTrigger>
+                  <TabsTrigger value="nishaniyan">{t('lk.tab.nishaniyan')}</TabsTrigger>
+                  <TabsTrigger value="gochar">{t('lk.tab.gochar')}</TabsTrigger>
+                  <TabsTrigger value="studio">{t('lk.tab.studio')}</TabsTrigger>
+                  <TabsTrigger value="tracker">{t('lk.tab.tracker')}</TabsTrigger>
+                  <TabsTrigger value="chandra">{t('lk.tab.chandra')}</TabsTrigger>
+                </TabsList>
+              </div>
 
               <TabsContent value="dashboard">
                 <LalKitabDashboardTab chartData={chartData} birthDate={birthDate} />

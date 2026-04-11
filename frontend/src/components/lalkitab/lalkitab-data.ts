@@ -9,6 +9,7 @@ export interface LalKitabHouse {
 export interface LalKitabChartData {
   houses: LalKitabHouse[];
   planetPositions: Record<string, number>;
+  planetLongitudes: Record<string, number>;
   doshas: DoshaResult[];
   activePlanet: { planet: string; ageStart: number; ageEnd: number } | null;
 }
@@ -433,17 +434,21 @@ export function getHouseStrength(house: number, planetsInHouse: string[]): 'stro
 // Generate Lal Kitab chart from API data
 export function generateLalKitabChart(apiData: any): LalKitabChartData {
   const planetPositions: Record<string, number> = {};
+  const planetLongitudes: Record<string, number> = {};
   const chartPlanets = apiData?.chart_data?.planets || apiData?.planets || {};
 
-  // Map API planet data to house positions
+  // Map API planet data to house positions and longitudes
   for (const pObj of PLANETS) {
     const pData = chartPlanets[pObj.key] || chartPlanets[pObj.en];
     if (pData) {
       const house = pData.house || pData.House || Math.ceil(((pData.longitude || pData.degree || 0) % 360) / 30) || 1;
       planetPositions[pObj.key] = typeof house === 'number' ? house : parseInt(house) || 1;
+      const rawLon = pData.longitude || pData.degree || 0;
+      planetLongitudes[pObj.key] = typeof rawLon === 'number' ? rawLon : parseFloat(rawLon) || 0;
     } else {
       // Fallback: distribute planets across houses
       planetPositions[pObj.key] = (PLANETS.indexOf(pObj) % 12) + 1;
+      planetLongitudes[pObj.key] = 0;
     }
   }
 
@@ -468,6 +473,7 @@ export function generateLalKitabChart(apiData: any): LalKitabChartData {
   return {
     houses,
     planetPositions,
+    planetLongitudes,
     doshas,
     activePlanet: activePlanet || null,
   };
@@ -653,34 +659,78 @@ export const PREDICTION_AREAS: PredictionArea[] = [
   },
 ];
 
+// Navamsa (D9) exaltation and debilitation signs (0-indexed, 0=Aries)
+const NAVAMSA_EXALT: Record<string, number> = {
+  Sun: 0, Moon: 1, Mars: 9, Mercury: 5, Jupiter: 3, Venus: 11, Saturn: 6, Rahu: 1, Ketu: 8,
+};
+const NAVAMSA_DEBIL: Record<string, number> = {
+  Sun: 6, Moon: 7, Mars: 3, Mercury: 11, Jupiter: 9, Venus: 5, Saturn: 0, Rahu: 7, Ketu: 2,
+};
+
 /** Compute a natal score (0–100) for a life area based on chart data */
-export function computeAreaScore(area: PredictionArea, planetPositions: Record<string, number>, houses: LalKitabHouse[]): number {
+export function computeAreaScore(
+  area: PredictionArea,
+  planetPositions: Record<string, number>,
+  houses: LalKitabHouse[],
+  planetLongitudes?: Record<string, number>,
+): number {
   let totalScore = 0;
   let count = 0;
   const benefics = new Set(['Jupiter', 'Venus', 'Moon', 'Mercury']);
   const malefics = new Set(['Saturn', 'Mars', 'Rahu', 'Ketu', 'Sun']);
+  const dushthanas = new Set([6, 8, 12]);
 
   for (const planetKey of area.primaryPlanets) {
     const house = planetPositions[planetKey];
     if (house == null) continue;
     let score = 50; // neutral base
+
+    // Pakka Ghar: planet in its own LK house — strong dignity
     const isPakka = house === PAKKA_GHAR[planetKey];
-    if (isPakka) score += 25;
+    if (isPakka) score += 30;
+
+    // Planet in a house that directly supports this life area
     const inPrimaryHouse = area.primaryHouses.includes(house);
     if (inPrimaryHouse) score += 20;
+
+    // House strength from chart calculation
     const houseData = houses.find((h) => h.house === house);
-    if (houseData?.strength === 'strong') score += 10;
-    if (houseData?.strength === 'weak') score -= 20;
-    if (benefics.has(planetKey) && area.primaryHouses.includes(house)) score += 10;
-    if (malefics.has(planetKey) && [6, 8, 12].includes(house)) score -= 15;
-    totalScore += Math.max(0, Math.min(100, score));
+    if (houseData?.strength === 'strong') score += 12;
+    if (houseData?.strength === 'weak') score -= 25;
+
+    // Benefic in a primary house → extra support
+    if (benefics.has(planetKey) && inPrimaryHouse) score += 12;
+    // Benefic in dusthana → less effective
+    if (benefics.has(planetKey) && dushthanas.has(house)) score -= 10;
+
+    // Malefic in dusthana → harms the area
+    if (malefics.has(planetKey) && dushthanas.has(house)) score -= 20;
+    // Malefic in primary house without dignity → mixed influence
+    if (malefics.has(planetKey) && inPrimaryHouse && !isPakka) score -= 5;
+
+    // Mutual support: another area planet also placed in a primary house
+    const coSupport = area.primaryPlanets.filter(
+      (p) => p !== planetKey && area.primaryHouses.includes(planetPositions[p] ?? -1),
+    ).length;
+    if (coSupport > 0) score += 5;
+
+    // Navamsa (D9) dignity — vargottama, exaltation, debilitation
+    if (planetLongitudes) {
+      const lon = planetLongitudes[planetKey] ?? 0;
+      const d1Sign = Math.floor(lon / 30) % 12;
+      const pada = Math.floor((lon % 30) * 9 / 30);
+      const navamsaSign = (d1Sign * 9 + pada) % 12;
+      if (d1Sign === navamsaSign) score += 15;                           // vargottama
+      if (NAVAMSA_EXALT[planetKey] === navamsaSign) score += 12;        // navamsa exalted
+      if (NAVAMSA_DEBIL[planetKey] === navamsaSign) score -= 15;        // navamsa debilitated
+    }
+
+    totalScore += Math.max(5, Math.min(100, score));
     count++;
   }
 
   if (count === 0) return 50;
-  const natalScore = totalScore / count;
-  // Final score: 40% natal, 60% assumed baseline
-  return Math.round(natalScore * 0.4 + 50 * 0.6);
+  return Math.round(totalScore / count);
 }
 
 /** Map score 0–100 to a confidence label */

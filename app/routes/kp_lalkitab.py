@@ -1,5 +1,6 @@
 """KP Astrology and Lal Kitab Remedies routes."""
 import json
+from datetime import date as _date
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -11,6 +12,23 @@ from app.kp_engine import calculate_kp_cuspal
 from app.lalkitab_engine import get_remedies
 
 router = APIRouter()
+
+# ─────────────────────────────────────────────────────────────
+# Sign → LK house mapping (sidereal: Aries=1 … Pisces=12)
+# ─────────────────────────────────────────────────────────────
+_SIGN_TO_LK_HOUSE = {
+    'Aries': 1, 'Taurus': 2, 'Gemini': 3, 'Cancer': 4,
+    'Leo': 5, 'Virgo': 6, 'Libra': 7, 'Scorpio': 8,
+    'Sagittarius': 9, 'Capricorn': 10, 'Aquarius': 11, 'Pisces': 12,
+}
+
+_PLANET_SPEED = {
+    'Sun': 'fast', 'Moon': 'fast', 'Mercury': 'fast', 'Venus': 'fast',
+    'Mars': 'medium', 'Jupiter': 'slow', 'Saturn': 'slow',
+    'Rahu': 'slow', 'Ketu': 'slow',
+}
+
+_KNOWN_PLANETS = set(_PLANET_SPEED.keys())
 
 
 @router.post("/api/kp/cuspal")
@@ -288,3 +306,38 @@ def add_chandra_journal(payload: dict, user: dict = Depends(get_current_user), d
     )
     db.commit()
     return {"ok": True}
+
+
+# ─────────────────────────────────────────────────────────────
+# Lal Kitab Gochar (Live Transit Positions)
+# ─────────────────────────────────────────────────────────────
+
+@router.get("/api/lalkitab/gochar")
+def get_gochar_transits(user: dict = Depends(get_current_user)):
+    """Return today's live planetary positions mapped to LK houses (sidereal/Lahiri)."""
+    import logging
+    from app.mundane_engine import _get_current_planet_positions
+
+    logger = logging.getLogger(__name__)
+    try:
+        planets = _get_current_planet_positions()
+    except Exception as exc:
+        logger.error("gochar: failed to compute planet positions: %s", exc, exc_info=True)
+        raise HTTPException(status_code=500, detail="Could not compute planetary positions")
+
+    transits = []
+    for pname, pdata in planets.items():
+        if pname not in _KNOWN_PLANETS:
+            continue
+        sign = pdata.get("sign", "Aries")
+        transits.append({
+            "planet": pname,
+            "sign": sign,
+            "sign_degree": round(pdata.get("sign_degree") or 0.0, 2),
+            "nakshatra": pdata.get("nakshatra"),
+            "retrograde": bool(pdata.get("retrograde", False)),
+            "lk_house": _SIGN_TO_LK_HOUSE.get(sign, 0),
+            "speed_note": _PLANET_SPEED.get(pname, "medium"),
+        })
+
+    return {"transits": transits, "as_of": _date.today().isoformat()}

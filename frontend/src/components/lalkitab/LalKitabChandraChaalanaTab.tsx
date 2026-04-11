@@ -1,7 +1,8 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { CHANDRA_CHAALANA_TASKS } from './lalkitab-data';
 import { Moon, CheckCircle2, RotateCcw, BookOpen, Play, AlertTriangle } from 'lucide-react';
+import { apiFetch } from '@/lib/api';
 
 interface JournalEntry {
   date: string;
@@ -62,6 +63,27 @@ export default function LalKitabChandraChaalanaTab() {
 
   const today = todayStr();
 
+  // Load from API on mount — API wins for cross-device sync
+  useEffect(() => {
+    apiFetch('/api/lalkitab/chandra')
+      .then((res) => res.json())
+      .then((data: { start_date: string | null; completed_days: string[]; journal: JournalEntry[] }) => {
+        if (data.start_date !== undefined) {
+          const apiState: ProtocolState = {
+            startDate: data.start_date,
+            completedDays: data.completed_days || [],
+          };
+          setState(apiState);
+          saveState(apiState);
+        }
+        if (data.journal?.length) {
+          setJournalEntries(data.journal);
+          saveJournal(data.journal);
+        }
+      })
+      .catch(() => {/* silent — localStorage already loaded */});
+  }, []);
+
   const { currentDay, isMissed, isComplete } = useMemo(() => {
     if (!state.startDate) return { currentDay: 0, isMissed: false, isComplete: false };
     const start = new Date(state.startDate);
@@ -81,22 +103,44 @@ export default function LalKitabChandraChaalanaTab() {
     const s: ProtocolState = { startDate: today, completedDays: [] };
     saveState(s);
     setState(s);
+    apiFetch('/api/lalkitab/chandra/start', {
+      method: 'POST',
+      body: JSON.stringify({ start_date: today }),
+    }).catch(() => {});
   };
 
   const restartProtocol = () => {
     const s: ProtocolState = { startDate: today, completedDays: [] };
     saveState(s);
     setState(s);
+    apiFetch('/api/lalkitab/chandra/start', {
+      method: 'POST',
+      body: JSON.stringify({ start_date: today }),
+    }).catch(() => {});
   };
 
   const markDayDone = () => {
     if (isTodayDone) return;
+    // Optimistic update
     const updated: ProtocolState = {
       ...state,
       completedDays: [...state.completedDays, today],
     };
     saveState(updated);
     setState(updated);
+
+    // Sync to API — API reconciles and returns authoritative list
+    apiFetch('/api/lalkitab/chandra/mark-done', {
+      method: 'POST',
+      body: JSON.stringify({ date: today }),
+    })
+      .then((res) => res.json())
+      .then((data: { completed_days: string[] }) => {
+        const reconciled: ProtocolState = { ...updated, completedDays: data.completed_days };
+        saveState(reconciled);
+        setState(reconciled);
+      })
+      .catch(() => {/* keep optimistic state */});
   };
 
   const saveEntry = () => {
@@ -106,6 +150,11 @@ export default function LalKitabChandraChaalanaTab() {
     setJournalEntries(updated);
     saveJournal(updated);
     setJournalNote('');
+
+    apiFetch('/api/lalkitab/chandra/journal', {
+      method: 'POST',
+      body: JSON.stringify({ date: today, note: entry.note }),
+    }).catch(() => {});
   };
 
   const progressPct = state.startDate ? Math.min(100, Math.round((state.completedDays.length / 43) * 100)) : 0;

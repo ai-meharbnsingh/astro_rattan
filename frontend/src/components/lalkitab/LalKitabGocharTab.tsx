@@ -1,12 +1,23 @@
-import { useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import type { LalKitabChartData } from './lalkitab-data';
-import { APPROX_TRANSITS_2026, GOCHAR_ALERTS, PLANETS } from './lalkitab-data';
-import { Navigation, AlertTriangle, Info, Zap } from 'lucide-react';
+import { type ApproxTransit, APPROX_TRANSITS_2026, GOCHAR_ALERTS, PLANETS } from './lalkitab-data';
+import { Navigation, AlertTriangle, Info, Zap, RefreshCw } from 'lucide-react';
+import { apiFetch } from '@/lib/api';
 
 interface Props {
   chartData: LalKitabChartData;
   apiResult?: any;
+}
+
+interface LiveTransit {
+  planet: string;
+  sign: string;
+  sign_degree: number;
+  nakshatra: string | null;
+  retrograde: boolean;
+  lk_house: number;
+  speed_note: 'slow' | 'medium' | 'fast';
 }
 
 const speedColors: Record<string, string> = {
@@ -26,15 +37,59 @@ const PLANET_ABBR: Record<string, string> = {
   Jupiter: 'Ju', Venus: 'Ve', Saturn: 'Sa', Rahu: 'Ra', Ketu: 'Ke',
 };
 
+const SIGN_HI: Record<string, string> = {
+  Aries: 'मेष', Taurus: 'वृष', Gemini: 'मिथुन', Cancer: 'कर्क',
+  Leo: 'सिंह', Virgo: 'कन्या', Libra: 'तुला', Scorpio: 'वृश्चिक',
+  Sagittarius: 'धनु', Capricorn: 'मकर', Aquarius: 'कुंभ', Pisces: 'मीन',
+};
+
 function getPlanetLabel(key: string, language: string): string {
   const p = PLANETS.find((pl) => pl.key === key);
   if (!p) return key;
   return language === 'hi' ? p.hi : p.en;
 }
 
+/** Merge live API data into the static transit list: updates lkHouse + adds sign/nakshatra context */
+function mergeWithLive(live: LiveTransit[]): ApproxTransit[] {
+  const liveMap = Object.fromEntries(live.map((t) => [t.planet, t]));
+  return APPROX_TRANSITS_2026.map((static_t) => {
+    const l = liveMap[static_t.planet];
+    if (!l) return static_t;
+    const deg = l.sign_degree?.toFixed(1) ?? '?';
+    const retro = l.retrograde ? ' (R)' : '';
+    const nak = l.nakshatra ? ` · ${l.nakshatra}` : '';
+    const nak_hi = l.nakshatra ? ` · ${l.nakshatra}` : '';
+    return {
+      ...static_t,
+      lkHouse: l.lk_house,
+      speedNote: l.speed_note,
+      en: `${static_t.planet} in ${l.sign}${retro} ${deg}°${nak}`,
+      hi: `${getPlanetLabel(static_t.planet, 'hi')} ${SIGN_HI[l.sign] || l.sign} में${l.retrograde ? ' (वक्री)' : ''} ${deg}°${nak_hi}`,
+    };
+  });
+}
+
 export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
   const { t, language } = useTranslation();
   const isHi = language === 'hi';
+
+  const [transits, setTransits] = useState<ApproxTransit[]>(APPROX_TRANSITS_2026);
+  const [asOf, setAsOf] = useState<string | null>(null);
+  const [isLive, setIsLive] = useState(false);
+
+  // Fetch live planet positions
+  useEffect(() => {
+    apiFetch('/api/lalkitab/gochar')
+      .then((res) => res.json())
+      .then((data: { transits: LiveTransit[]; as_of: string }) => {
+        if (data.transits?.length) {
+          setTransits(mergeWithLive(data.transits));
+          setAsOf(data.as_of);
+          setIsLive(true);
+        }
+      })
+      .catch(() => {/* keep static fallback */});
+  }, []);
 
   // Lagna sign number (0 = Aries … 11 = Pisces)
   const lagnaSignNum = useMemo(() => {
@@ -45,19 +100,14 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
     return typeof asc === 'number' ? asc : null;
   }, [apiResult]);
 
-  /**
-   * Convert global LK house (1–12) to natal house from lagna.
-   * e.g. if lagna = Cancer (sign 3, index 3), then global house 3 = natal house 1
-   */
   function globalToNatal(globalHouse: number): number | null {
     if (lagnaSignNum === null || globalHouse === 0) return null;
     return ((globalHouse - 1 - lagnaSignNum + 12) % 12) + 1;
   }
 
-  // Map transit planet → natal planets sharing that natal house
   const activatedHouses = useMemo(() => {
     const map: Record<number, string[]> = {};
-    for (const transit of APPROX_TRANSITS_2026) {
+    for (const transit of transits) {
       if (transit.lkHouse === 0) continue;
       const natalH = lagnaSignNum !== null ? globalToNatal(transit.lkHouse) : transit.lkHouse;
       if (!natalH) continue;
@@ -68,25 +118,37 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
       if (!map[natalH].includes(transit.planet)) map[natalH].push(transit.planet);
     }
     return map;
-  }, [chartData, lagnaSignNum]);
+  }, [chartData, lagnaSignNum, transits]);
 
   const houseLabel = (n: number) => (isHi ? `${n}वाँ भाव` : `House ${n}`);
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h2 className="text-xl font-sans font-semibold text-sacred-gold flex items-center gap-2 mb-1">
-          <Navigation className="w-5 h-5" />
-          {t('lk.gochar.title')}
-        </h2>
-        <p className="text-sm text-gray-500">{t('lk.gochar.desc')}</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="text-xl font-sans font-semibold text-sacred-gold flex items-center gap-2 mb-1">
+            <Navigation className="w-5 h-5" />
+            {t('lk.gochar.title')}
+          </h2>
+          <p className="text-sm text-gray-500">{t('lk.gochar.desc')}</p>
+        </div>
+        {isLive && asOf && (
+          <div className="flex items-center gap-1.5 text-xs text-green-600 bg-green-500/10 border border-green-300/30 rounded-full px-2.5 py-1 shrink-0">
+            <RefreshCw className="w-3 h-3" />
+            {isHi ? `लाइव · ${asOf}` : `Live · ${asOf}`}
+          </div>
+        )}
       </div>
 
-      {/* Disclaimer */}
+      {/* Disclaimer / data source notice */}
       <div className="flex items-start gap-3 p-4 rounded-xl border border-blue-300/30 bg-blue-500/5">
         <Info className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
-        <p className="text-xs text-blue-700">{t('lk.gochar.disclaimer')}</p>
+        <p className="text-xs text-blue-700">
+          {isLive
+            ? (isHi ? 'ग्रहों की स्थिति आज की तिथि के अनुसार स्वचालित रूप से गणना की गई है (सायन/लाहिरी)।' : 'Planet positions are live-calculated for today\'s date using sidereal/Lahiri ayanamsa.')
+            : t('lk.gochar.disclaimer')}
+        </p>
       </div>
 
       {/* Transit Alerts */}
@@ -116,7 +178,7 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
           {t('lk.gochar.currentTransits')}
         </h3>
         <div className="space-y-3">
-          {APPROX_TRANSITS_2026.map((transit) => {
+          {transits.map((transit) => {
             const natalH = lagnaSignNum !== null && transit.lkHouse > 0
               ? globalToNatal(transit.lkHouse)
               : transit.lkHouse > 0 ? transit.lkHouse : null;
@@ -132,10 +194,8 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
                 className="rounded-xl border border-sacred-gold/10 bg-sacred-gold/3 overflow-hidden"
               >
                 <div className="flex items-center gap-3 p-3">
-                  {/* Speed dot */}
                   <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${speedDots[transit.speedNote]}`} />
 
-                  {/* Planet name */}
                   <div className="min-w-[70px]">
                     <p className="text-sm font-semibold text-cosmic-text">
                       {getPlanetLabel(transit.planet, language)}
@@ -147,7 +207,6 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
                     </span>
                   </div>
 
-                  {/* House info */}
                   <div className="flex-1 min-w-0">
                     {transit.lkHouse > 0 ? (
                       <div className="flex flex-wrap gap-x-4 gap-y-0.5">
@@ -176,7 +235,6 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
                       {isHi ? transit.hi : transit.en}
                     </p>
 
-                    {/* Natal planets in this house */}
                     {natalPlanets.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-1.5">
                         {natalPlanets.map((p) => (

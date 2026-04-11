@@ -80,7 +80,7 @@ export default function LalKitabPredictionTab({ chartData }: Props) {
   const predictions = useMemo(
     () =>
       PREDICTION_AREAS.map((area) => {
-        const score = computeAreaScore(area, chartData.planetPositions, chartData.houses);
+        const score = computeAreaScore(area, chartData.planetPositions, chartData.houses, chartData.planetLongitudes);
         const confidence = scoreToConfidence(score);
         const isPositive = score >= 55;
         return { area, score, confidence, isPositive };

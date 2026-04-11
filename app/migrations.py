@@ -127,6 +127,12 @@ MIGRATIONS: List[Tuple[int, str, str]] = [
     CREATE INDEX IF NOT EXISTS idx_lk_journal_user ON lk_journal_entries(user_id, source);
     """,
     ),
+    (
+        9,
+        "Add FK constraints with ON DELETE CASCADE for LK tables",
+        # SQL not used — handled via _apply_lk_fk_constraints called in run_migrations
+        "SELECT 1;",
+    ),
 ]
 
 
@@ -321,6 +327,43 @@ def _apply_timestamptz_migration(conn):
     conn.commit()
 
 
+def _apply_lk_fk_constraints(conn):
+    """Add FK ON DELETE CASCADE constraints to LK tables if not already present."""
+    specs = [
+        ("lk_tracker_logs", "user_id", "fk_lk_tracker_logs_user_id"),
+        ("lk_chandra_protocol", "user_id", "fk_lk_chandra_protocol_user_id"),
+        ("lk_journal_entries", "user_id", "fk_lk_journal_entries_user_id"),
+    ]
+    with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+        for table, col, constraint_name in specs:
+            # Skip if table doesn't exist
+            cur.execute("""
+                SELECT 1 FROM information_schema.tables
+                WHERE table_schema = 'public' AND table_name = %s
+            """, (table,))
+            if not cur.fetchone():
+                print(f"[migration] Table {table} not found — skip FK")
+                continue
+            # Skip if constraint already exists
+            cur.execute("""
+                SELECT 1 FROM information_schema.table_constraints
+                WHERE constraint_name = %s AND table_name = %s
+            """, (constraint_name, table))
+            if cur.fetchone():
+                print(f"[migration] FK {constraint_name} already exists — skip")
+                continue
+            try:
+                cur.execute(
+                    f"ALTER TABLE {table} ADD CONSTRAINT {constraint_name} "
+                    f"FOREIGN KEY ({col}) REFERENCES users(id) ON DELETE CASCADE"
+                )
+                print(f"[migration] Added FK {constraint_name}")
+            except Exception as e:
+                print(f"[migration] Warning: {constraint_name}: {e}")
+                conn.rollback()
+    conn.commit()
+
+
 def _ensure_migration_table(conn):
     """Create the applied_migrations table if it does not exist."""
     with conn.cursor() as cur:
@@ -368,7 +411,9 @@ def run_migrations(db_path: str = None):
             continue
 
         # Special handling for specific migrations
-        if version == 6:
+        if version == 9:
+            _apply_lk_fk_constraints(conn)
+        elif version == 6:
             _apply_timestamptz_migration(conn)
         elif version == 5:
             _apply_cascade_migration(conn)

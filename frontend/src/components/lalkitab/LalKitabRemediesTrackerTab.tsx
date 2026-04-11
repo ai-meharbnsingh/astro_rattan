@@ -1,8 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import type { LalKitabChartData } from './lalkitab-data';
 import { PLANETS, REMEDIES } from './lalkitab-data';
 import { CheckCircle2, Circle, Flame, BookOpen, RotateCcw } from 'lucide-react';
+import { apiFetch } from '@/lib/api';
 
 interface Props {
   chartData: LalKitabChartData;
@@ -45,7 +46,7 @@ function saveJournal(j: JournalEntry[]) {
   localStorage.setItem(JOURNAL_KEY, JSON.stringify(j));
 }
 
-export default function LalKitabRemediesTrackerTab({ chartData }: Props) {
+export default function LalKitabRemediesTrackerTab({ chartData, kundliId }: Props) {
   const { t, language } = useTranslation();
   const isHi = language === 'hi';
 
@@ -53,6 +54,25 @@ export default function LalKitabRemediesTrackerTab({ chartData }: Props) {
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>(loadJournal);
   const [journalNote, setJournalNote] = useState('');
   const today = todayStr();
+
+  // Load from API on mount — API wins for synced data
+  useEffect(() => {
+    if (!kundliId) return;
+    apiFetch(`/api/lalkitab/tracker/${kundliId}`)
+      .then((res) => res.json())
+      .then((data: { done_map: Record<string, string[]>; journal: JournalEntry[] }) => {
+        if (data.done_map) {
+          const merged = { ...loadDoneMap(), ...data.done_map };
+          setDoneMap(merged);
+          saveDoneMap(merged);
+        }
+        if (data.journal?.length) {
+          setJournalEntries(data.journal);
+          saveJournal(data.journal);
+        }
+      })
+      .catch(() => {/* silent — localStorage already loaded */});
+  }, [kundliId]);
 
   // Collect all remedies for this chart
   const allRemedies = useMemo(() => {
@@ -80,6 +100,7 @@ export default function LalKitabRemediesTrackerTab({ chartData }: Props) {
   const todayDone = doneMap[today] || [];
 
   const toggleDone = (id: string) => {
+    // Optimistic localStorage update
     setDoneMap((prev) => {
       const dayList = prev[today] || [];
       const next = dayList.includes(id) ? dayList.filter((x) => x !== id) : [...dayList, id];
@@ -87,6 +108,24 @@ export default function LalKitabRemediesTrackerTab({ chartData }: Props) {
       saveDoneMap(updated);
       return updated;
     });
+
+    // Sync to API in background
+    if (kundliId) {
+      apiFetch(`/api/lalkitab/tracker/${kundliId}/toggle`, {
+        method: 'POST',
+        body: JSON.stringify({ date: today, remedy_id: id }),
+      })
+        .then((res) => res.json())
+        .then((data: { date: string; completed_ids: string[] }) => {
+          // Reconcile with server's authoritative list
+          setDoneMap((prev) => {
+            const updated = { ...prev, [data.date]: data.completed_ids };
+            saveDoneMap(updated);
+            return updated;
+          });
+        })
+        .catch(() => {/* keep optimistic state */});
+    }
   };
 
   const resetToday = () => {
@@ -95,6 +134,16 @@ export default function LalKitabRemediesTrackerTab({ chartData }: Props) {
       saveDoneMap(updated);
       return updated;
     });
+    if (kundliId) {
+      // Toggle each done item off on the server
+      const todayIds = [...(doneMap[today] || [])];
+      todayIds.forEach((id) => {
+        apiFetch(`/api/lalkitab/tracker/${kundliId}/toggle`, {
+          method: 'POST',
+          body: JSON.stringify({ date: today, remedy_id: id }),
+        }).catch(() => {});
+      });
+    }
   };
 
   // Streak: count consecutive days with at least one done
@@ -130,6 +179,14 @@ export default function LalKitabRemediesTrackerTab({ chartData }: Props) {
     setJournalEntries(updated);
     saveJournal(updated);
     setJournalNote('');
+
+    // Sync to API in background
+    if (kundliId) {
+      apiFetch(`/api/lalkitab/tracker/${kundliId}/journal`, {
+        method: 'POST',
+        body: JSON.stringify({ date: today, note: entry.note }),
+      }).catch(() => {});
+    }
   };
 
   const getPlanetLabel = (key: string) => {
