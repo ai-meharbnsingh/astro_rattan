@@ -24,9 +24,9 @@ DB_PATH = os.getenv("DB_PATH", "astrovedic.db")
 JWT_SECRET = os.getenv("JWT_SECRET", "")
 if not JWT_SECRET:
     # Strictly mandate secret for any environment that looks like production
-    PROD_ENV_VARS = ["RAILWAY_ENVIRONMENT", "RENDER", "FLY_APP_NAME", "VERCEL", "HOSTINGER_SSH_HOST", "KUBERNETES_SERVICE_HOST"]
+    PROD_ENV_VARS = ["HOSTINGER_SSH_HOST", "KUBERNETES_SERVICE_HOST", "DOCKER_CONTAINER"]
     if any(os.getenv(var) for var in PROD_ENV_VARS):
-        raise RuntimeError("FATAL: JWT_SECRET environment variable is REQUIRED in production to prevent session collision across workers. Set it and redeploy.")
+        raise RuntimeError("FATAL: JWT_SECRET environment variable is REQUIRED in production. Set it and redeploy.")
     
     # Fallback for local development
     import secrets
@@ -60,7 +60,7 @@ STATIC_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
 
 # App
 APP_VERSION = "1.0.0"
-APP_NAME = "AstroVedic"
+APP_NAME = "AstroRattan"
 TESTING = _env_first("TESTING", default="").lower() in {"1", "true", "yes", "on"}
 
 # CORS - Explicit domains only (no wildcards — security hardening)
@@ -72,15 +72,12 @@ CORS_ORIGINS = _env_cors.split(",")
 _production_urls = [
     "https://astrorattan.com",
     "https://www.astrorattan.com",
-    "https://astrorattan-web.vercel.app",
-    "https://astrorattan.vercel.app",
     f"http://localhost:{FRONTEND_PORT}",
 ]
 for url in _production_urls:
     if url not in CORS_ORIGINS:
         CORS_ORIGINS.append(url)
-# Allow Vercel preview deployments (*.vercel.app)
-CORS_ORIGIN_REGEX = r"https://astrorattan-.*\.vercel\.app"
+CORS_ORIGIN_REGEX = None  # No regex needed for Hostinger
 
 # Swiss Ephemeris
 EPHE_PATH = os.getenv("EPHE_PATH", "")  # Path to ephemeris data files

@@ -1,4 +1,4 @@
-"""AstroVedic — FastAPI application entry point."""
+"""AstroRattan — FastAPI application entry point."""
 import os
 import time
 from contextlib import asynccontextmanager
@@ -43,7 +43,8 @@ async def lifespan(app: FastAPI):
     # This prevents hitting AI rate limits on every production restart
     def _background_init():
         auto_seed = os.getenv("AUTO_SEED", "false").lower() in ("true", "1", "t")
-        is_dev = not any(os.getenv(v) for v in ["RAILWAY_ENVIRONMENT", "VERCEL", "RENDER"])
+        # In Hostinger/VPS we usually want init on start
+        is_dev = not os.getenv("HOSTINGER_SSH_HOST")
         
         if auto_seed or is_dev:
             try:
@@ -105,13 +106,10 @@ app.add_middleware(RequestLoggingMiddleware)
 for router in all_routers:
     app.include_router(router)
 
-# Static file serving for uploaded images — skip on Vercel (read-only filesystem)
+# Static file serving for uploaded images
 from app.config import STATIC_DIR
 if os.path.isdir(STATIC_DIR):
-    try:
-        os.makedirs(os.path.join(STATIC_DIR, "uploads"), exist_ok=True)
-    except OSError:
-        pass  # read-only filesystem (Vercel)
+    os.makedirs(os.path.join(STATIC_DIR, "uploads"), exist_ok=True)
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 

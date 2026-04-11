@@ -1,4 +1,4 @@
-# 🪐 AstroVedic — Vedic Astrology Platform
+# 🪐 AstroRattan — Vedic Astrology Platform
 
 > **A comprehensive Vedic Astrology platform with AI-powered insights, e-commerce, consultations, and the unique io-gita semantic gravity engine.**
 
@@ -8,14 +8,9 @@
 
 | Service | Environment | URL | Status |
 |---------|-------------|-----|--------|
-| **Frontend** | Production | https://astrorattan.com | ✅ Live |
-| **Backend API** | Production | https://astrorattan.vercel.app | ✅ Live |
-| **Health Check** | — | https://astrorattan.vercel.app/health | ✅ OK |
-
-### Latest Deployments
-| Deployment | URL | Age |
-|------------|-----|-----|
-| Frontend (Latest) | https://astrovedic-71n53jseg-ai-meharbnsinghs-projects.vercel.app | 20m |
+| **Platform** | Production | https://astrorattan.com | ✅ Live |
+| **API Base** | Production | https://astrorattan.com/api | ✅ Live |
+| **Health Check** | — | https://astrorattan.com/api/health | ✅ OK |
 
 ---
 
@@ -23,7 +18,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                           FRONTEND (Vercel)                             │
+│                           FRONTEND (Hostinger)                          │
 │  React 18 + TypeScript + Vite + Tailwind CSS + shadcn/ui + Three.js    │
 │  ├─ Observatory Theme (Black + Gold)                                    │
 │  ├─ 3D Cosmic Background with Zodiac Symbols                          │
@@ -32,7 +27,7 @@
                                     │
                                     ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                           BACKEND (Render)                              │
+│                           BACKEND (Hostinger)                           │
 │  FastAPI + Python 3.11 + SQLite (WAL Mode) + Swiss Ephemeris           │
 │  ├─ JWT Authentication                                                  │
 │  ├─ 73+ API Endpoints                                                   │
@@ -54,7 +49,7 @@
 
 | Metric | Value |
 |--------|-------|
-| **Project** | AstroVedic (P28) |
+| **Project** | AstroRattan (P28) |
 | **Type** | Hybrid (Web + AI + Astrology + E-commerce + Consultation) |
 | **Stack** | FastAPI + SQLite WAL + React + Swiss Ephemeris + io-gita |
 | **Backend Routes** | 37 API modules |
@@ -96,221 +91,59 @@
 - ✅ **Video/Voice/Chat** — Multiple consultation modes
 - ✅ **Wallet System** — Recharge & manage balance
 
-### Community
-- ✅ **Forum** — Discussion threads & replies
-- ✅ **Blog** — Astrology articles
-- ✅ **Comments & Likes** — Engagement features
-- ✅ **Prashnavali** — Ask questions, get answers
-
-### Additional Features
-- ✅ **Daily Horoscope** — Zodiac predictions
-- ✅ **Panchang** — Daily almanac
-- ✅ **Numerology** — Name/number analysis
-- ✅ **Tarot Reading** — Card predictions
-- ✅ **Palmistry** — Hand analysis
-- ✅ **Cosmic Calendar** — Auspicious dates
-- ✅ **Library** — PDF/eBook access
-- ✅ **Gamification** — Badges, points, levels
-- ✅ **Referral System** — Invite & earn
-- ✅ **Notifications** — In-app & email
-- ✅ **WhatsApp Integration** — Message notifications
-- ✅ **Admin Dashboard** — Full CMS
-
 ---
 
 ## 🛠️ Tech Stack
 
 ### Backend
-| Technology | Purpose |
-|------------|---------|
-| **FastAPI** | Web framework |
-| **Python 3.11** | Language |
-| **SQLite (WAL)** | Database |
-| **Swiss Ephemeris** | Astronomical calculations |
-| **PyJWT** | Authentication |
-| **Passlib** | Password hashing |
-| **FPDF2** | PDF generation |
-| **OpenAI/Gemini** | AI integration |
+- **FastAPI** (Web framework)
+- **Python 3.11** (Language)
+- **SQLite (WAL)** (Database)
+- **Swiss Ephemeris** (Astronomical calculations)
+- **PyJWT** (Authentication)
+- **OpenAI/Gemini** (AI integration)
 
 ### Frontend
-| Technology | Purpose |
-|------------|---------|
-| **React 18** | UI framework |
-| **TypeScript** | Type safety |
-| **Vite** | Build tool |
-| **Tailwind CSS** | Styling |
-| **shadcn/ui** | Component library |
-| **Three.js** | 3D backgrounds |
-| **React Context + useState** | State management |
-
----
-
-## 📁 Project Structure
-
-```
-astrovedic/
-├── app/                          # Backend FastAPI
-│   ├── routes/                   # 37 API route modules
-│   │   ├── kundli.py            # Kundli CRUD + analysis
-│   │   ├── auth.py              # JWT authentication
-│   │   ├── payments.py          # Razorpay/Stripe
-│   │   ├── consultation.py      # Booking system
-│   │   ├── forum.py             # Community forum
-│   │   ├── ai.py                # AI chat & analysis
-│   │   └── ... (30+ more)
-│   ├── engines/                 # Astrology calculation engines
-│   │   ├── astro_engine.py      # Core calculations
-│   │   ├── dasha_engine.py      # Dasha periods
-│   │   ├── matching_engine.py   # Kundli matching
-│   │   ├── dosha_engine.py      # Yoga/dosha analysis
-│   │   └── ... (14+ more)
-│   ├── models.py                # Pydantic models
-│   ├── auth.py                  # JWT utilities
-│   ├── config.py                # App configuration
-│   └── main.py                  # App entry point
-├── frontend/                     # React Frontend
-│   ├── src/
-│   │   ├── sections/            # Page sections (25+)
-│   │   ├── components/          # Reusable components
-│   │   ├── lib/                 # Utilities & API
-│   │   └── App.tsx              # Main app
-│   └── package.json
-├── tests/                        # Test suite (219 tests)
-├── static/                       # Static assets
-├── Dockerfile                    # Container config
-├── render.yaml                   # Render deployment
-└── docker-compose.yml           # Local development
-```
-
----
-
-## 🚀 API Endpoints Overview
-
-### Core Modules (73+ endpoints)
-
-| Module | Endpoints | Description |
-|--------|-----------|-------------|
-| `/api/auth` | 8 | Login, register, JWT, password reset |
-| `/api/kundli` | 18 | Generate, match, dasha, divisional, PDF |
-| `/api/payments` | 6 | Orders, transactions, webhooks |
-| `/api/consultation` | 10 | Booking, slots, reviews |
-| `/api/astrologer` | 8 | Profiles, availability, earnings |
-| `/api/forum` | 10 | Threads, replies, likes, search |
-| `/api/blog` | 6 | Articles, comments |
-| `/api/products` | 8 | Catalog, cart, bundles |
-| `/api/horoscope` | 4 | Daily predictions |
-| `/api/admin/*` | 15 | Dashboard, users, orders, content |
-| `/api/ai` | 5 | Chat, analysis, recommendations |
-| `/ws/notifications` | 1 | WebSocket real-time updates |
-| ... | ... | 20+ more modules |
+- **React 18** (UI framework)
+- **TypeScript** (Type safety)
+- **Vite** (Build tool)
+- **Tailwind CSS** (Styling)
+- **shadcn/ui** (Component library)
+- **Three.js** (3D backgrounds)
 
 ---
 
 ## ⚙️ Configuration
 
-### Environment Variables
-
-#### Backend (.env)
+### Environment Variables (.env)
 ```env
-DATABASE_URL=sqlite:///astrovedic.db
 JWT_SECRET=your-secret-key
-JWT_ALGORITHM=HS256
-JWT_EXPIRE_HOURS=24
-CORS_ORIGINS=https://astrorattan.com,https://www.astrorattan.com,http://localhost:5198
 GEMINI_API_KEY=your-gemini-key
-OPENAI_API_KEY=your-openai-key
 RAZORPAY_KEY_ID=your-razorpay-key
-RAZORPAY_KEY_SECRET=your-razorpay-secret
-```
-
-#### Frontend (.env)
-```env
-VITE_API_URL=https://astrorattan.vercel.app
+SITE_URL=https://astrorattan.com
 ```
 
 ---
 
-## 🧪 Testing
+## 📦 Deployment (Hostinger)
 
-```bash
-# Run all tests
-pytest
+The application is deployed on Hostinger using Nginx as a reverse proxy.
 
-# With coverage
-pytest --cov=app
+### Backend Setup
+1. Clone the repository to the VPS.
+2. Initialize the virtual environment: `python -m venv venv && source venv/bin/activate`
+3. Install dependencies: `pip install -r requirements.txt`
+4. Run using Gunicorn/Uvicorn: `gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app`
 
-# E2E tests
-cd e2e && npm test
-```
-
-**Current Status:** 219 tests passed ✅
-
----
-
-## 📦 Deployment
-
-### Backend (Render)
-```bash
-# Auto-deploy on git push
-git push origin main
-
-# Manual deploy
-render deploys create srv-d73mcuogjchc73apnnl0 --confirm
-```
-
-### Frontend (Vercel)
-```bash
-# Deploy
-cd frontend && vercel --prod
-
-# Environment variables
-vercel env add VITE_API_URL production
-```
-
----
-
-## 🎨 UI/UX Design
-
-- **Theme:** Observatory (Black #000000 + Gold #d4af37)
-- **Background:** 3D floating zodiac symbols with Three.js
-- **Typography:** Traditional Indian aesthetics
-- **Icons:** Lucide React
-- **Components:** shadcn/ui with custom theming
-
----
-
-## 🔐 Security
-
-- JWT-based authentication
-- Password hashing (bcrypt)
-- CORS protection
-- Rate limiting (60 req/min)
-- SQL injection protection (parameterized queries)
-
----
-
-## 📄 License
-
-Private — All rights reserved.
+### Frontend Setup
+1. Build the production bundle: `cd frontend && npm install && npm run build`
+2. Serve the `dist` folder via Nginx.
 
 ---
 
 ## 👨‍💻 Developer
-
 Built with ❤️ by **Meharban Singh**
 
 ---
 
-## 🔗 Quick Links
-
-| Resource | Link |
-|----------|------|
-| 🌐 Live App | https://astrorattan.com |
-| 🔌 API Base | https://astrorattan.vercel.app |
-| 💓 Health | https://astrorattan.vercel.app/health |
-| 📚 API Docs | https://astrorattan.vercel.app/docs |
-| 🧪 Redoc | https://astrorattan.vercel.app/redoc |
-
----
-
-*Last updated: March 29, 2026*
+*Last updated: April 12, 2026*
