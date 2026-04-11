@@ -2,11 +2,22 @@ import { Loader2 } from 'lucide-react';
 import { translateSign } from '@/lib/backend-translations';
 import GeneralRemedies from './GeneralRemedies';
 
-// SAV Kundli Chart — proper North Indian diamond SVG (Aries=H1 fixed)
-function SAVKundliChart({ savData, language }: { savData: Record<string, number>; language: string }) {
-  const signs = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
-  const signAbbr = ['Ari','Tau','Gem','Can','Leo','Vir','Lib','Sco','Sag','Cap','Aqu','Pis'];
-  const hiAbbr   = ['मे','वृ','मि','कर','सिं','कन','तु','वृ','धन','मक','कु','मी'];
+const ALL_SIGNS  = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+const ALL_ABBR   = ['Ari','Tau','Gem','Can','Leo','Vir','Lib','Sco','Sag','Cap','Aqu','Pis'];
+const ALL_HI     = ['मे','वृ','मि','कर','सिं','कन','तु','वृ','धन','मक','कु','मी'];
+
+// Rotate array so lagnaSign is first (H1 = Lagna in North Indian chart)
+function rotateByLagna<T>(arr: T[], lagnaSign: string): T[] {
+  const idx = ALL_SIGNS.indexOf(lagnaSign);
+  if (idx <= 0) return arr;
+  return [...arr.slice(idx), ...arr.slice(0, idx)];
+}
+
+// SAV Kundli Chart — North Indian diamond SVG with Lagna at H1
+function SAVKundliChart({ savData, language, lagnaSign }: { savData: Record<string, number>; language: string; lagnaSign: string }) {
+  const signs    = rotateByLagna(ALL_SIGNS, lagnaSign);
+  const signAbbr = rotateByLagna(ALL_ABBR,  lagnaSign);
+  const hiAbbr   = rotateByLagna(ALL_HI,    lagnaSign);
   // Fixed 12-house outer-ring mapping (Aries..Pisces, 1..12):
   // 1 top-center, 2 top-left, 3 left-top, 4 left-center, 5 left-bottom, 6 bottom-left,
   // 7 bottom-center, 8 bottom-right, 9 right-bottom, 10 right-center, 11 right-top, 12 top-right.
@@ -86,7 +97,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
           {/* SAV Chart — Custom North Indian style with large bindu numbers */}
           <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
             <h4 className="text-lg font-semibold text-gray-800 mb-4">{t('section.sarvashtakvarga')} {t('kundli.chart')}</h4>
-            <SAVKundliChart savData={ashtakvargaData.sarvashtakvarga || {}} language={language} />
+            <SAVKundliChart savData={ashtakvargaData.sarvashtakvarga || {}} language={language} lagnaSign={result?.chart_data?.ascendant || 'Aries'} />
             <p className="text-sm text-center text-cosmic-text mt-2">{t('ashtakvarga.savDescription')}</p>
           </div>
 
@@ -139,9 +150,10 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
             <div className="grid grid-cols-1 gap-5">
               {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Lagna'].map((planet) => {
                 const bindus = ashtakvargaData.planet_bindus?.[planet] || {};
-                const signs = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
-                const signAbbr = ['Ari', 'Tau', 'Gem', 'Can', 'Leo', 'Vir', 'Lib', 'Sco', 'Sag', 'Cap', 'Aqu', 'Pis'];
-                const hindiSignAbbr = ['मे', 'वृ', 'मि', 'कर', 'सिं', 'कन', 'तु', 'वृ', 'धन', 'मक', 'कु', 'मी'];
+                const lagnaSign = result?.chart_data?.ascendant || 'Aries';
+                const signs = rotateByLagna(ALL_SIGNS, lagnaSign);
+                const signAbbr = rotateByLagna(ALL_ABBR, lagnaSign);
+                const hindiSignAbbr = rotateByLagna(ALL_HI, lagnaSign);
                 const vals = signs.map((s) => bindus[s] || 0);
                 const total = vals.reduce((sum, v) => sum + v, 0);
 
