@@ -10,6 +10,12 @@ from app.astro_engine import calculate_planet_positions
 from app.database import get_db
 from app.kp_engine import calculate_kp_cuspal
 from app.lalkitab_engine import get_remedies
+from app.lalkitab_advanced import (
+    calculate_masnui_planets,
+    calculate_karmic_debts,
+    identify_teva_type,
+    get_prohibitions
+)
 
 router = APIRouter()
 
@@ -892,6 +898,34 @@ def get_remedies_master(
             })
 
     return {"remedies": remedies}
+
+
+@router.get("/api/lalkitab/advanced/{kundli_id}")
+def get_lalkitab_advanced(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Return advanced Lal Kitab analysis: Masnui Grah, Karmic Debts, Teva type, and Prohibitions."""
+    positions_map = _get_planet_positions(kundli_id, user["sub"], db)
+    if positions_map is None:
+        raise HTTPException(status_code=404, detail="Kundli not found")
+
+    # Format positions for advanced engine (List[Dict])
+    # Capitalize planet names to match engine expectations
+    formatted_positions = []
+    for p_name, h in positions_map.items():
+        formatted_positions.append({
+            "planet": p_name.capitalize(),
+            "house": h
+        })
+
+    return {
+        "masnui_planets": calculate_masnui_planets(formatted_positions),
+        "karmic_debts": calculate_karmic_debts(formatted_positions),
+        "teva_type": identify_teva_type(formatted_positions),
+        "prohibitions": get_prohibitions(formatted_positions),
+    }
 
 
 # ─────────────────────────────────────────────────────────────

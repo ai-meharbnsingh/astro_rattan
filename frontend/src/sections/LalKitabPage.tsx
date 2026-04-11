@@ -34,6 +34,7 @@ import LalKitabHealthTab from '@/components/lalkitab/LalKitabHealthTab';
 import LalKitabWealthTab from '@/components/lalkitab/LalKitabWealthTab';
 import LalKitabSavedPredictionsTab from '@/components/lalkitab/LalKitabSavedPredictionsTab';
 import LalKitabTevaTab from '@/components/lalkitab/LalKitabTevaTab';
+import LalKitabAdvancedTab from '@/components/lalkitab/LalKitabAdvancedTab';
 
 type View = 'form' | 'generating' | 'result';
 
@@ -208,8 +209,8 @@ export default function LalKitabPage() {
                     <TabsTrigger value="tracker">{t('lk.tab.tracker')}</TabsTrigger>
                     <TabsTrigger value="chandra">{t('lk.tab.chandra')}</TabsTrigger>
                   </TabsList>
-                  {/* Row 3 — 7 tabs */}
-                  <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 grid grid-cols-7
+                  {/* Row 3 — 8 tabs */}
+                  <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 grid grid-cols-8
                     [&>button]:whitespace-nowrap [&>button]:min-h-[36px] [&>button]:px-2 [&>button]:py-1.5 [&>button]:text-xs
                     [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
                     <TabsTrigger value="rin">{t('lk.tab.rin')}</TabsTrigger>
@@ -219,6 +220,7 @@ export default function LalKitabPage() {
                     <TabsTrigger value="wealth">{t('lk.tab.wealth')}</TabsTrigger>
                     <TabsTrigger value="saved">{t('lk.tab.saved')}</TabsTrigger>
                     <TabsTrigger value="teva">{t('lk.tab.teva')}</TabsTrigger>
+                    <TabsTrigger value="advanced">{t('lk.tab.advanced')}</TabsTrigger>
                   </TabsList>
                 </div>
 
@@ -249,6 +251,7 @@ export default function LalKitabPage() {
                   <TabsTrigger value="wealth">{t('lk.tab.wealth')}</TabsTrigger>
                   <TabsTrigger value="saved">{t('lk.tab.saved')}</TabsTrigger>
                   <TabsTrigger value="teva">{t('lk.tab.teva')}</TabsTrigger>
+                  <TabsTrigger value="advanced">{t('lk.tab.advanced')}</TabsTrigger>
                 </TabsList>
               </div>
 
@@ -317,6 +320,9 @@ export default function LalKitabPage() {
               </TabsContent>
               <TabsContent value="teva">
                 <LalKitabTevaTab chartData={chartData} apiResult={apiResult} />
+              </TabsContent>
+              <TabsContent value="advanced">
+                <LalKitabAdvancedTab kundliId={kundliId} />
               </TabsContent>
             </Tabs>
             {clientId && <NotesWidget clientId={clientId} chartType="lalkitab" kundliId={kundliId} />}
