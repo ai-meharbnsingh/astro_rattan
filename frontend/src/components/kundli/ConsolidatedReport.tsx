@@ -58,7 +58,11 @@ export default function ConsolidatedReport({
     }
     return null;
   };
-  const clampPercent = (value: number): number => Math.max(0, Math.min(100, value));
+  const normalizePercent = (value: number): number => {
+    if (!Number.isFinite(value)) return 0;
+    const scaled = value > 0 && value <= 1 ? value * 100 : value;
+    return Math.max(0, Math.min(100, scaled));
+  };
 
   // Local state for transit and D10
   const [transitData, setTransitData] = useState<any>(null);
@@ -1069,7 +1073,7 @@ export default function ConsolidatedReport({
                           const score = toFiniteNumber(data?.vimshopak_bala);
                           const inputPercent = toFiniteNumber(data?.percentage);
                           const scoreBasedPercent = score != null ? (score / 20.0) * 100 : 0;
-                          const pct = clampPercent(inputPercent != null ? inputPercent : scoreBasedPercent);
+                          const pct = normalizePercent(inputPercent != null ? inputPercent : scoreBasedPercent);
                           const barColor = data.strength === 'Strong' ? 'var(--aged-gold-dim)' : data.strength === 'Medium' ? '#f59e0b' : 'var(--wax-red)';
                           return (
                             <div key={planet} className="flex items-center gap-1.5">

@@ -46,7 +46,12 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
     }
     return null;
   };
-  const clampPercent = (value: number): number => Math.max(0, Math.min(100, value));
+  const normalizePercent = (value: number): number => {
+    if (!Number.isFinite(value)) return 0;
+    // Backend may return either 0..1 fraction or 0..100 percentage.
+    const scaled = value > 0 && value <= 1 ? value * 100 : value;
+    return Math.max(0, Math.min(100, scaled));
+  };
 
   return (
     <div className="space-y-6">
@@ -137,7 +142,7 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
                   const score = toFiniteNumber(v?.score);
                   const scoreBasedPercent = score != null ? (score / 20) * 100 : 0;
                   const inputPercent = toFiniteNumber(v?.percentage);
-                  const resolvedPercent = clampPercent(inputPercent != null ? inputPercent : scoreBasedPercent);
+                  const resolvedPercent = normalizePercent(inputPercent != null ? inputPercent : scoreBasedPercent);
                   const showPercent = v?.percentage !== null && v?.percentage !== undefined && v?.percentage !== '';
                   const displayPercent = Number.isInteger(resolvedPercent) ? String(resolvedPercent) : resolvedPercent.toFixed(1);
 
@@ -145,8 +150,8 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
                     <div key={v.planet} className="space-y-1">
                       <div className="flex items-center gap-3 text-sm">
                         <span className="w-12 text-sacred-brown font-medium">{(translatePlanet(v.planet || '', language) || v.planet || '').slice(0, language === 'hi' ? 3 : 4)}</span>
-                        <div className="flex-1 bg-sacred-gold rounded-full h-4">
-                          <div className="bg-sacred-gold rounded-full h-4 transition-all" style={{ width: `${resolvedPercent}%` }} />
+                        <div className="flex-1 bg-sacred-gold/30 rounded-full h-4 overflow-hidden">
+                          <div className="bg-sacred-gold-dark rounded-full h-4 transition-all" style={{ width: `${resolvedPercent}%` }} />
                         </div>
                         <span className="w-16 text-right text-cosmic-text text-sm">{score != null ? score.toFixed(1) : '?'} / 20</span>
                         {showPercent && (
