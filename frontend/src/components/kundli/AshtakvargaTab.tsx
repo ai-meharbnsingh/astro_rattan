@@ -86,7 +86,8 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
   const { ashtakvargaData, loadingAshtakvarga, result, language, t } = props;
 
   // Derive Lagna-rotated sign arrays once — used by every chart/table in this tab
-  const lagnaSign      = result?.chart_data?.ascendant || 'Aries';
+  // ascendant is an object {sign, longitude} — extract .sign
+  const lagnaSign      = result?.chart_data?.ascendant?.sign || 'Aries';
   const signs          = rotateByLagna(ALL_SIGNS, lagnaSign);
   const signAbbr       = rotateByLagna(ALL_ABBR,  lagnaSign);
   const hindiSignAbbr  = rotateByLagna(ALL_HI,    lagnaSign);
@@ -103,7 +104,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
           {/* SAV Chart — Custom North Indian style with large bindu numbers */}
           <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
             <h4 className="text-lg font-semibold text-gray-800 mb-4">{t('section.sarvashtakvarga')} {t('kundli.chart')}</h4>
-            <SAVKundliChart savData={ashtakvargaData.sarvashtakvarga || {}} language={language} lagnaSign={result?.chart_data?.ascendant || 'Aries'} />
+            <SAVKundliChart savData={ashtakvargaData.sarvashtakvarga || {}} language={language} lagnaSign={result?.chart_data?.ascendant?.sign || 'Aries'} />
             <p className="text-sm text-center text-cosmic-text mt-2">{t('ashtakvarga.savDescription')}</p>
           </div>
 
