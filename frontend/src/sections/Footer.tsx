@@ -3,24 +3,25 @@ import { Mail, Phone, Instagram, Youtube, ChevronRight, Heart } from 'lucide-rea
 import { useTranslation } from '@/lib/i18n';
 import { useAuth } from '@/hooks/useAuth';
 
-const serviceLinks = [
-  { label: 'Kundli Generation', href: '/kundli' },
-  { label: 'Dosha Analysis', href: '/kundli' },
-  { label: 'Panchang', href: '/panchang' },
-  { label: 'Lal Kitab', href: '/lal-kitab' },
-  { label: 'Numerology', href: '/numerology' },
-];
-
-const footerLinks = {
-  company: [
-    { label: 'About Us', href: '/' },
-    { label: 'Contact', href: '/' },
-  ],
-};
-
 export default function Footer() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { isAuthenticated } = useAuth();
+  const l = (en: string, hi: string) => (language === 'hi' ? hi : en);
+
+  const serviceLinks = [
+    { label: l('Kundli Generation', 'कुंडली निर्माण'), href: '/kundli' },
+    { label: l('Dosha Analysis', 'दोष विश्लेषण'), href: '/kundli' },
+    { label: l('Panchang', 'पंचांग'), href: '/panchang' },
+    { label: l('Lal Kitab', 'लाल किताब'), href: '/lal-kitab' },
+    { label: l('Numerology', 'अंकशास्त्र'), href: '/numerology' },
+  ];
+
+  const footerLinks = {
+    company: [
+      { label: l('About Us', 'हमारे बारे में'), href: '/' },
+      { label: l('Contact', 'संपर्क'), href: '/' },
+    ],
+  };
 
   const sectionTitleKeys: Record<string, string> = {
     company: 'footer.company',
@@ -104,10 +105,10 @@ export default function Footer() {
         
         <div className="py-6 border-t border-sacred-gold flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-base text-cosmic-text">
-            &copy; {new Date().getFullYear()} Astro Rattan. {t('footer.madeWith')} <Heart className="w-4 h-4 inline text-sacred-gold" /> in India
+            &copy; {new Date().getFullYear()} Astro Rattan. {t('footer.madeWith')} <Heart className="w-4 h-4 inline text-sacred-gold" /> {l('in India', 'भारत में')}
           </p>
           <div className="flex gap-6">
-            <span className="text-base text-cosmic-text">All rights reserved</span>
+            <span className="text-base text-cosmic-text">{l('All rights reserved', 'सर्वाधिकार सुरक्षित')}</span>
           </div>
         </div>
         <div className="pb-4 text-center">

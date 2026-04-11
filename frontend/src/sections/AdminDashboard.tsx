@@ -106,7 +106,7 @@ function WordCloud({ words }: { words: WordCloudWord[] }) {
             key={w.word}
             className={`font-medium cursor-default select-none transition-transform hover:scale-110 ${CLOUD_COLORS[i % CLOUD_COLORS.length]}`}
             style={{ fontSize: `${size}px`, opacity: 0.45 + pct * 0.55 }}
-            title={`"${w.word}" — ${w.count} mention${w.count !== 1 ? 's' : ''}`}
+            title={language === 'hi' ? `"${w.word}" — ${w.count} उल्लेख` : `"${w.word}" — ${w.count} mention${w.count !== 1 ? 's' : ''}`}
           >
             {w.word}
           </span>
@@ -123,6 +123,8 @@ function FeedbackRow({
   item: FeedbackItem;
   onUpdated: (id: string, patch: Partial<FeedbackItem>) => void;
 }) {
+  const { language } = useTranslation();
+  const l = (en: string, hi: string) => (language === 'hi' ? hi : en);
   const [remarks, setRemarks] = useState(item.admin_remarks ?? '');
   const [expanded, setExpanded] = useState(false);
   const hasLong = (item.feedback_text?.length ?? 0) > 100;
@@ -168,9 +170,9 @@ function FeedbackRow({
       {/* Ratings */}
       <td className="py-3 px-4">
         <div className="flex flex-col gap-1 text-xs text-gray-400">
-          <span>UI {ratingCell(item.rating_interface)}</span>
-          <span>Rpt {ratingCell(item.rating_reports)}</span>
-          <span>Calc {ratingCell(item.rating_calculations)}</span>
+          <span>{l('UI', 'इंटरफ़ेस')} {ratingCell(item.rating_interface)}</span>
+          <span>{l('Rpt', 'रिपोर्ट')} {ratingCell(item.rating_reports)}</span>
+          <span>{l('Calc', 'गणना')} {ratingCell(item.rating_calculations)}</span>
         </div>
       </td>
 
@@ -226,7 +228,7 @@ function FeedbackRow({
           onChange={e => setRemarks(e.target.value)}
           onBlur={saveRemarks}
           onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
-          placeholder="Add remark…"
+          placeholder={l('Add remark…', 'टिप्पणी जोड़ें…')}
           className="w-full text-xs border border-sacred-gold/20 rounded-lg px-2 py-1.5 bg-white/80 text-cosmic-text focus:outline-none focus:ring-1 focus:ring-sacred-gold/40 placeholder:text-gray-300"
         />
       </td>
@@ -254,7 +256,12 @@ function formatUptime(s: number): string {
   return `${sec}s`;
 }
 
-function timeAgo(seconds: number): string {
+function timeAgo(seconds: number, language: string): string {
+  if (language === 'hi') {
+    if (seconds < 60) return `${seconds} से पहले`;
+    if (seconds < 3600) return `${Math.floor(seconds / 60)} मि पहले`;
+    return `${Math.floor(seconds / 3600)} घं पहले`;
+  }
   if (seconds < 60) return `${seconds}s ago`;
   if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
   return `${Math.floor(seconds / 3600)}h ago`;
@@ -363,7 +370,7 @@ export default function AdminDashboard() {
     try {
       const data = await api.get('/api/admin/stats');
       setStats(data);
-    } catch (e) { setError('Failed to load stats'); }
+    } catch (e) { setError(l('Failed to load stats', 'आंकड़े लोड नहीं हो सके')); }
     setLoading(false);
   };
 
@@ -457,12 +464,12 @@ export default function AdminDashboard() {
   if (error) return <div className="text-center py-20 text-red-400">{error}</div>;
 
   const tabs = [
-    { key: 'overview',   label: 'Overview' },
-    { key: 'users',      label: 'Users' },
-    { key: 'kundlis',    label: 'Kundlis' },
-    { key: 'live',       label: 'Live' },
-    { key: 'analytics',  label: 'Analytics' },
-    { key: 'feedback',   label: 'Feedback' },
+    { key: 'overview', label: l('Overview', 'अवलोकन') },
+    { key: 'users', label: l('Users', 'उपयोगकर्ता') },
+    { key: 'kundlis', label: l('Kundlis', 'कुंडलियां') },
+    { key: 'live', label: l('Live', 'लाइव') },
+    { key: 'analytics', label: l('Analytics', 'एनालिटिक्स') },
+    { key: 'feedback', label: l('Feedback', 'फीडबैक') },
   ] as const;
 
   return (
@@ -488,16 +495,16 @@ export default function AdminDashboard() {
                 : 'text-gray-500 hover:text-cosmic-text hover:bg-gray-50 rounded-t-lg'
             }`}
           >
-            {t.label === 'Live' && (
+            {t.key === 'live' && (
               <span className="inline-flex items-center gap-1.5">
                 <span className="relative flex h-2 w-2">
                   <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${tab === 'live' ? 'bg-green-400' : 'bg-gray-400'}`} />
                   <span className={`relative inline-flex rounded-full h-2 w-2 ${tab === 'live' ? 'bg-green-500' : 'bg-gray-400'}`} />
                 </span>
-                Live
+                {l('Live', 'लाइव')}
               </span>
             )}
-            {t.label !== 'Live' && t.label}
+            {t.key !== 'live' && t.label}
           </button>
         ))}
       </div>
@@ -514,10 +521,10 @@ export default function AdminDashboard() {
             <>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 {[
-                  { label: 'Total Users',  value: stats.counts.users,           icon: Users,    h: 'amber' },
-                  { label: 'Kundlis',      value: stats.counts.kundlis,          icon: Star,     h: 'blue' },
-                  { label: 'Horoscopes',   value: stats.counts.horoscopes,       icon: Calendar, h: 'green' },
-                  { label: 'Panchang Cache', value: stats.counts.panchang_cached, icon: Activity, h: 'amber' },
+                  { label: l('Total Users', 'कुल उपयोगकर्ता'), value: stats.counts.users, icon: Users, h: 'amber' },
+                  { label: l('Kundlis', 'कुंडलियां'), value: stats.counts.kundlis, icon: Star, h: 'blue' },
+                  { label: l('Horoscopes', 'राशिफल'), value: stats.counts.horoscopes, icon: Calendar, h: 'green' },
+                  { label: l('Panchang Cache', 'पंचांग कैश'), value: stats.counts.panchang_cached, icon: Activity, h: 'amber' },
                 ].map(s => (
                   <StatCard key={s.label} icon={s.icon} label={s.label} value={s.value} highlight={s.h as any} />
                 ))}
@@ -526,7 +533,7 @@ export default function AdminDashboard() {
               <div className="grid lg:grid-cols-2 gap-6">
                 <div className="border border-sacred-gold/30 rounded-xl p-5 bg-white/60">
                   <h3 className="font-semibold text-sacred-gold-dark mb-4 text-sm uppercase tracking-wider flex items-center gap-2">
-                    <Users className="w-4 h-4" /> Recent Users
+                    <Users className="w-4 h-4" /> {l('Recent Users', 'हाल के उपयोगकर्ता')}
                   </h3>
                   <div className="space-y-2">
                     {stats.recent_users.map(u => (
@@ -547,7 +554,7 @@ export default function AdminDashboard() {
 
                 <div className="border border-sacred-gold/30 rounded-xl p-5 bg-white/60">
                   <h3 className="font-semibold text-sacred-gold-dark mb-4 text-sm uppercase tracking-wider flex items-center gap-2">
-                    <Star className="w-4 h-4" /> Recent Kundlis
+                    <Star className="w-4 h-4" /> {l('Recent Kundlis', 'हाल की कुंडलियां')}
                   </h3>
                   <div className="space-y-2">
                     {stats.recent_kundlis.map(k => (
@@ -570,7 +577,9 @@ export default function AdminDashboard() {
       {/* ── USERS ────────────────────────────────────────────────────────── */}
       {tab === 'users' && (
         <div>
-          <p className="text-sm text-gray-500 mb-4">{userTotal} total users</p>
+          <p className="text-sm text-gray-500 mb-4">
+            {userTotal} {l('total users', 'कुल उपयोगकर्ता')}
+          </p>
           <div className="overflow-x-auto rounded-xl border border-sacred-gold/20">
             <table className="w-full text-sm">
               <thead>
@@ -620,7 +629,7 @@ export default function AdminDashboard() {
               <Button variant="outline" size="sm" disabled={userPage <= 1} onClick={() => fetchUsers(userPage - 1)} className="border-sacred-gold/40">
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <span className="text-sm text-gray-500">Page {userPage} of {userPages}</span>
+              <span className="text-sm text-gray-500">{l('Page', 'पेज')} {userPage} {l('of', 'में से')} {userPages}</span>
               <Button variant="outline" size="sm" disabled={userPage >= userPages} onClick={() => fetchUsers(userPage + 1)} className="border-sacred-gold/40">
                 <ChevronRight className="w-4 h-4" />
               </Button>
@@ -661,7 +670,7 @@ export default function AdminDashboard() {
               <Button variant="outline" size="sm" disabled={kundliPage <= 1} onClick={() => fetchKundlis(kundliPage - 1)} className="border-sacred-gold/40">
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <span className="text-sm text-gray-500">Page {kundliPage} of {kundliPages}</span>
+              <span className="text-sm text-gray-500">{l('Page', 'पेज')} {kundliPage} {l('of', 'में से')} {kundliPages}</span>
               <Button variant="outline" size="sm" disabled={kundliPage >= kundliPages} onClick={() => fetchKundlis(kundliPage + 1)} className="border-sacred-gold/40">
                 <ChevronRight className="w-4 h-4" />
               </Button>
@@ -681,20 +690,20 @@ export default function AdminDashboard() {
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500" />
               </span>
               <span className="text-sm font-semibold text-green-700">{l('Live Dashboard', 'लाइव डैशबोर्ड')}</span>
-              <span className="text-xs text-gray-400 ml-1">· auto-refresh every 5s</span>
+              <span className="text-xs text-gray-400 ml-1">{l('· auto-refresh every 5s', '· हर 5 सेकंड में ऑटो-रिफ्रेश')}</span>
             </div>
             <div className="flex items-center gap-3 text-xs text-gray-400">
               {secondsSinceLast !== null && (
                 <span className="flex items-center gap-1">
                   <RefreshCw className="w-3 h-3" />
-                  Updated {secondsSinceLast}s ago
+                  {l('Updated', 'अपडेट')} {secondsSinceLast}{l('s ago', ' सेकंड पहले')}
                 </span>
               )}
               <button
                 onClick={fetchLive}
                 className="flex items-center gap-1 text-sacred-gold-dark hover:underline font-medium"
               >
-                <RefreshCw className="w-3 h-3" /> Refresh now
+                <RefreshCw className="w-3 h-3" /> {l('Refresh now', 'अभी रिफ्रेश करें')}
               </button>
             </div>
           </div>
@@ -703,30 +712,30 @@ export default function AdminDashboard() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard
               icon={Users}
-              label="Online Now"
+              label={l('Online Now', 'अभी ऑनलाइन')}
               value={liveData?.active_users_count ?? '—'}
-              sub="active in last 5 min"
+              sub={l('active in last 5 min', 'पिछले 5 मिनट में सक्रिय')}
               highlight="green"
             />
             <StatCard
               icon={Zap}
-              label="Req / min"
+              label={l('Req / min', 'रिक्वेस्ट / मिनट')}
               value={liveData?.requests_1m ?? '—'}
-              sub={liveData ? `${liveData.requests_5m} in 5 min` : undefined}
+              sub={liveData ? `${liveData.requests_5m} ${l('in 5 min', 'पिछले 5 मिनट में')}` : undefined}
               highlight="blue"
             />
             <StatCard
               icon={AlertTriangle}
-              label="Error Rate"
+              label={l('Error Rate', 'त्रुटि दर')}
               value={liveData ? `${liveData.error_rate_1m}%` : '—'}
-              sub="last 60 seconds"
+              sub={l('last 60 seconds', 'पिछले 60 सेकंड')}
               highlight={liveData && liveData.error_rate_1m > 5 ? 'red' : 'green'}
             />
             <StatCard
               icon={Clock}
-              label="Uptime"
+              label={l('Uptime', 'अपटाइम')}
               value={liveData ? formatUptime(liveData.uptime_seconds) : '—'}
-              sub="this worker process"
+              sub={l('this worker process', 'इस वर्कर प्रोसेस का')}
               highlight="amber"
             />
           </div>
@@ -738,10 +747,10 @@ export default function AdminDashboard() {
               <div className="flex items-center gap-2 px-5 py-3.5 border-b border-sacred-gold/20 bg-sacred-gold/5">
                 <User className="w-4 h-4 text-sacred-gold-dark" />
                 <h3 className="text-sm font-semibold text-sacred-gold-dark uppercase tracking-wider">
-                  Active Users
+                  {l('Active Users', 'सक्रिय उपयोगकर्ता')}
                   {liveData && (
                     <span className="ml-2 text-xs font-normal text-gray-400 normal-case">
-                      ({liveData.active_users_count} online)
+                      ({liveData.active_users_count} {l('online', 'ऑनलाइन')})
                     </span>
                   )}
                 </h3>
@@ -749,7 +758,7 @@ export default function AdminDashboard() {
               <div className="divide-y divide-gray-100 max-h-64 overflow-y-auto">
                 {!liveData || liveData.active_users.length === 0 ? (
                   <div className="py-8 text-center text-sm text-gray-400">
-                    No active users yet
+                    {l('No active users yet', 'अभी कोई सक्रिय उपयोगकर्ता नहीं')}
                   </div>
                 ) : (
                   liveData.active_users.map(u => (
@@ -760,7 +769,7 @@ export default function AdminDashboard() {
                         <p className="text-xs text-blue-500 truncate mt-0.5 font-mono">{u.last_path}</p>
                       </div>
                       <span className="ml-3 text-xs text-gray-400 whitespace-nowrap shrink-0">
-                        {timeAgo(u.seconds_ago)}
+                        {timeAgo(u.seconds_ago, language)}
                       </span>
                     </div>
                   ))
@@ -773,7 +782,7 @@ export default function AdminDashboard() {
               <div className="flex items-center gap-2 px-5 py-3.5 border-b border-sacred-gold/20 bg-sacred-gold/5">
                 <TrendingUp className="w-4 h-4 text-sacred-gold-dark" />
                 <h3 className="text-sm font-semibold text-sacred-gold-dark uppercase tracking-wider">
-                  Top Endpoints <span className="text-xs font-normal text-gray-400 normal-case">(5 min)</span>
+                  {l('Top Endpoints', 'शीर्ष एंडपॉइंट')} <span className="text-xs font-normal text-gray-400 normal-case">(5 min)</span>
                 </h3>
               </div>
               <div className="divide-y divide-gray-100 max-h-64 overflow-y-auto">
@@ -790,7 +799,7 @@ export default function AdminDashboard() {
                             className="h-1 rounded-full bg-sacred-gold/60"
                             style={{ width: `${Math.min(100, (ep.count / (liveData.top_endpoints[0]?.count || 1)) * 100)}%`, maxWidth: '80px' }}
                           />
-                          <span className="text-xs text-gray-400">{ep.count} hits · {ep.avg_ms}ms avg</span>
+                          <span className="text-xs text-gray-400">{ep.count} {l('hits', 'हिट')} · {ep.avg_ms}ms {l('avg', 'औसत')}</span>
                         </div>
                       </div>
                     </div>
@@ -806,7 +815,7 @@ export default function AdminDashboard() {
               <div className="flex items-center gap-2">
                 <Radio className="w-4 h-4 text-sacred-gold-dark" />
                 <h3 className="text-sm font-semibold text-sacred-gold-dark uppercase tracking-wider">
-                  Activity Feed
+                  {l('Activity Feed', 'एक्टिविटी फीड')}
                 </h3>
                 <span className="text-xs font-normal text-gray-400 normal-case">{l('latest 50 requests', 'हाल की 50 रिक्वेस्ट')}</span>
               </div>
@@ -833,7 +842,7 @@ export default function AdminDashboard() {
                     <span className={`font-bold shrink-0 w-8 text-right ${statusColor(r.status)}`}>{r.status}</span>
                     <span className="text-gray-400 shrink-0 w-14 text-right">{r.duration_ms}ms</span>
                     <span className="text-gray-400 shrink-0 max-w-[130px] truncate text-right">
-                      {r.email ? r.email.split('@')[0] : 'anon'}
+                      {r.email ? r.email.split('@')[0] : l('anon', 'अनाम')}
                     </span>
                   </div>
                 ))
@@ -844,7 +853,7 @@ export default function AdminDashboard() {
           {/* Worker note */}
           <p className="text-xs text-gray-400 text-center">
             <Globe className="w-3 h-3 inline mr-1" />
-            Live data reflects traffic on this worker process. With 4 workers, each handles ~25% of total traffic.
+            {l('Live data reflects traffic on this worker process. With 4 workers, each handles ~25% of total traffic.', 'लाइव डेटा इस वर्कर प्रोसेस का ट्रैफिक दिखाता है। 4 वर्कर होने पर हर एक लगभग 25% ट्रैफिक संभालता है।')}
           </p>
         </div>
       )}
@@ -854,10 +863,10 @@ export default function AdminDashboard() {
         <div className="space-y-6">
           {/* Stat cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard icon={Activity}  label="Today Views"    value={analyticsData?.today_views ?? '—'}   sub={`${analyticsData?.today_sessions ?? '—'} sessions`} highlight="amber" />
-            <StatCard icon={Users}     label="This Week"      value={analyticsData?.week_views ?? '—'}    sub={`${analyticsData?.week_sessions ?? '—'} sessions`}  highlight="blue" />
-            <StatCard icon={Calendar}  label="This Month"     value={analyticsData?.month_views ?? '—'}   sub="page views"        highlight="green" />
-            <StatCard icon={TrendingUp} label="All Time"      value={analyticsData?.total_views ?? '—'}   sub={`${analyticsData?.total_sessions ?? '—'} sessions`} highlight="amber" />
+            <StatCard icon={Activity}  label={l('Today Views', 'आज के व्यू')} value={analyticsData?.today_views ?? '—'} sub={`${analyticsData?.today_sessions ?? '—'} ${l('sessions', 'सेशन')}`} highlight="amber" />
+            <StatCard icon={Users}     label={l('This Week', 'इस सप्ताह')} value={analyticsData?.week_views ?? '—'} sub={`${analyticsData?.week_sessions ?? '—'} ${l('sessions', 'सेशन')}`} highlight="blue" />
+            <StatCard icon={Calendar}  label={l('This Month', 'इस माह')} value={analyticsData?.month_views ?? '—'} sub={l('page views', 'पेज व्यू')} highlight="green" />
+            <StatCard icon={TrendingUp} label={l('All Time', 'कुल')} value={analyticsData?.total_views ?? '—'} sub={`${analyticsData?.total_sessions ?? '—'} ${l('sessions', 'सेशन')}`} highlight="amber" />
           </div>
 
           {/* Top pages */}
@@ -865,7 +874,7 @@ export default function AdminDashboard() {
             <div className="flex items-center gap-2 px-5 py-3.5 border-b border-sacred-gold/20 bg-sacred-gold/5">
               <TrendingUp className="w-4 h-4 text-sacred-gold-dark" />
               <h3 className="text-sm font-semibold text-sacred-gold-dark uppercase tracking-wider">
-                Top Pages <span className="text-xs font-normal text-gray-400 normal-case">(last 30 days)</span>
+                {l('Top Pages', 'शीर्ष पेज')} <span className="text-xs font-normal text-gray-400 normal-case">{l('(last 30 days)', '(पिछले 30 दिन)')}</span>
               </h3>
             </div>
             {!analyticsData || analyticsData.top_pages.length === 0 ? (
@@ -909,7 +918,7 @@ export default function AdminDashboard() {
             <div className="flex items-center gap-2 px-5 py-3.5 border-b border-sacred-gold/20 bg-sacred-gold/5">
               <Clock className="w-4 h-4 text-sacred-gold-dark" />
               <h3 className="text-sm font-semibold text-sacred-gold-dark uppercase tracking-wider">
-                Hourly Traffic <span className="text-xs font-normal text-gray-400 normal-case">(today, 24h)</span>
+                {l('Hourly Traffic', 'घंटावार ट्रैफिक')} <span className="text-xs font-normal text-gray-400 normal-case">{l('(today, 24h)', '(आज, 24 घंटे)')}</span>
               </h3>
             </div>
             <div className="px-5 py-4">
@@ -926,7 +935,7 @@ export default function AdminDashboard() {
                           style={{ height: `${Math.round((h.views / maxH) * 80)}px`, minHeight: h.views > 0 ? '2px' : '0' }}
                         />
                         {h.hour % 6 === 0 && (
-                          <span className="text-[9px] text-gray-400 absolute -bottom-4">{h.hour}h</span>
+                          <span className="text-[9px] text-gray-400 absolute -bottom-4">{h.hour}{language === 'hi' ? 'घं' : 'h'}</span>
                         )}
                       </div>
                     ))}
@@ -941,7 +950,7 @@ export default function AdminDashboard() {
             <div className="flex items-center gap-2 px-5 py-3.5 border-b border-sacred-gold/20 bg-sacred-gold/5">
               <TrendingUp className="w-4 h-4 text-sacred-gold-dark" />
               <h3 className="text-sm font-semibold text-sacred-gold-dark uppercase tracking-wider">
-                Daily Traffic <span className="text-xs font-normal text-gray-400 normal-case">(last 30 days)</span>
+                {l('Daily Traffic', 'दैनिक ट्रैफिक')} <span className="text-xs font-normal text-gray-400 normal-case">{l('(last 30 days)', '(पिछले 30 दिन)')}</span>
               </h3>
             </div>
             <div className="px-5 py-4">
@@ -952,7 +961,7 @@ export default function AdminDashboard() {
                 return (
                   <div className="flex items-end gap-0.5 h-20">
                     {analyticsData.daily_last_30.map(d => (
-                      <div key={d.day} className="flex-1 flex flex-col items-center group relative" title={`${d.day}: ${d.views} views`}>
+                      <div key={d.day} className="flex-1 flex flex-col items-center group relative" title={`${d.day}: ${d.views} ${l('views', 'व्यू')}`}>
                         <div
                           className="w-full rounded-t bg-blue-400/60 group-hover:bg-blue-500 transition-colors"
                           style={{ height: `${Math.round((d.views / maxD) * 72)}px`, minHeight: d.views > 0 ? '2px' : '0' }}
@@ -981,7 +990,7 @@ export default function AdminDashboard() {
               <div className="flex items-center gap-2">
                 <MessageSquare className="w-4 h-4 text-sacred-gold-dark" />
                 <h3 className="text-sm font-semibold text-sacred-gold-dark uppercase tracking-wider">
-                  Word Cloud
+                  {l('Word Cloud', 'वर्ड क्लाउड')}
                 </h3>
                 <span className="text-xs font-normal text-amber-600 normal-case bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
                   {l('Open issues only', 'केवल खुले मुद्दे')}
@@ -991,7 +1000,7 @@ export default function AdminDashboard() {
                 onClick={fetchWordCloud}
                 className="flex items-center gap-1 text-xs text-sacred-gold-dark hover:underline font-medium"
               >
-                <RefreshCw className="w-3 h-3" /> Refresh
+                <RefreshCw className="w-3 h-3" /> {l('Refresh', 'रिफ्रेश')}
               </button>
             </div>
             <WordCloud words={wordCloud} />
@@ -1032,7 +1041,7 @@ export default function AdminDashboard() {
               </select>
             </div>
             <span className="text-xs text-gray-400 ml-auto">
-              {feedbackTotal} result{feedbackTotal !== 1 ? 's' : ''}
+              {feedbackTotal} {l(feedbackTotal !== 1 ? 'results' : 'result', feedbackTotal !== 1 ? 'परिणाम' : 'परिणाम')}
             </span>
           </div>
 
