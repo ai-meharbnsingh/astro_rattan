@@ -7,6 +7,7 @@ from app.routes.numerology import router as numerology_router
 from app.routes.mundane import router as mundane_router
 from app.routes.clients import router as clients_router
 from app.routes.admin import router as admin_router
+from app.routes.analytics import router as analytics_router
 
 all_routers = [
     auth_router,
@@ -17,4 +18,5 @@ all_routers = [
     mundane_router,
     clients_router,
     admin_router,
+    analytics_router,
 ]

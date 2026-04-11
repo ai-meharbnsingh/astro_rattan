@@ -46,6 +46,19 @@ interface LiveData {
   uptime_seconds: number;
 }
 
+interface AnalyticsData {
+  total_views: number;
+  total_sessions: number;
+  today_views: number;
+  today_sessions: number;
+  week_views: number;
+  week_sessions: number;
+  month_views: number;
+  top_pages: Array<{ path: string; views: number; visitors: number }>;
+  hourly_today: Array<{ hour: number; views: number }>;
+  daily_last_30: Array<{ day: string; views: number; visitors: number }>;
+}
+
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function formatUptime(s: number): string {
   if (!s) return '—';
@@ -112,7 +125,7 @@ function StatCard({
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [tab, setTab] = useState<'overview' | 'users' | 'kundlis' | 'live'>('overview');
+  const [tab, setTab] = useState<'overview' | 'users' | 'kundlis' | 'live' | 'analytics'>('overview');
 
   // overview
   const [stats, setStats] = useState<Stats | null>(null);
@@ -129,6 +142,9 @@ export default function AdminDashboard() {
   const [kundlis, setKundlis] = useState<any[]>([]);
   const [kundliPage, setKundliPage] = useState(1);
   const [kundliPages, setKundliPages] = useState(1);
+
+  // analytics
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
 
   // live
   const [liveData, setLiveData] = useState<LiveData | null>(null);
@@ -171,6 +187,13 @@ export default function AdminDashboard() {
     } catch (e) { console.error(e); }
   };
 
+  const fetchAnalytics = async () => {
+    try {
+      const data = await api.get('/api/admin/analytics');
+      setAnalyticsData(data);
+    } catch (e) { console.error(e); }
+  };
+
   const fetchLive = useCallback(async () => {
     try {
       const data = await api.get('/api/admin/live');
@@ -182,6 +205,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (tab === 'users') fetchUsers();
     if (tab === 'kundlis') fetchKundlis();
+    if (tab === 'analytics') fetchAnalytics();
     if (tab === 'live') {
       fetchLive();
       liveInterval.current = setInterval(fetchLive, 5000);
@@ -213,10 +237,11 @@ export default function AdminDashboard() {
   if (error) return <div className="text-center py-20 text-red-400">{error}</div>;
 
   const tabs = [
-    { key: 'overview', label: 'Overview' },
-    { key: 'users',    label: 'Users' },
-    { key: 'kundlis',  label: 'Kundlis' },
-    { key: 'live',     label: 'Live' },
+    { key: 'overview',   label: 'Overview' },
+    { key: 'users',      label: 'Users' },
+    { key: 'kundlis',    label: 'Kundlis' },
+    { key: 'live',       label: 'Live' },
+    { key: 'analytics',  label: 'Analytics' },
   ] as const;
 
   return (
@@ -600,6 +625,128 @@ export default function AdminDashboard() {
             <Globe className="w-3 h-3 inline mr-1" />
             Live data reflects traffic on this worker process. With 4 workers, each handles ~25% of total traffic.
           </p>
+        </div>
+      )}
+
+      {/* ── ANALYTICS ────────────────────────────────────────────────── */}
+      {tab === 'analytics' && (
+        <div className="space-y-6">
+          {/* Stat cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatCard icon={Activity}  label="Today Views"    value={analyticsData?.today_views ?? '—'}   sub={`${analyticsData?.today_sessions ?? '—'} sessions`} highlight="amber" />
+            <StatCard icon={Users}     label="This Week"      value={analyticsData?.week_views ?? '—'}    sub={`${analyticsData?.week_sessions ?? '—'} sessions`}  highlight="blue" />
+            <StatCard icon={Calendar}  label="This Month"     value={analyticsData?.month_views ?? '—'}   sub="page views"        highlight="green" />
+            <StatCard icon={TrendingUp} label="All Time"      value={analyticsData?.total_views ?? '—'}   sub={`${analyticsData?.total_sessions ?? '—'} sessions`} highlight="amber" />
+          </div>
+
+          {/* Top pages */}
+          <div className="border border-sacred-gold/25 rounded-xl overflow-hidden bg-white/60">
+            <div className="flex items-center gap-2 px-5 py-3.5 border-b border-sacred-gold/20 bg-sacred-gold/5">
+              <TrendingUp className="w-4 h-4 text-sacred-gold-dark" />
+              <h3 className="text-sm font-semibold text-sacred-gold-dark uppercase tracking-wider">
+                Top Pages <span className="text-xs font-normal text-gray-400 normal-case">(last 30 days)</span>
+              </h3>
+            </div>
+            {!analyticsData || analyticsData.top_pages.length === 0 ? (
+              <div className="py-8 text-center text-sm text-gray-400">No page views recorded yet</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-sacred-gold/10 text-left text-xs text-gray-400 uppercase tracking-wider">
+                      <th className="py-2.5 px-5">Path</th>
+                      <th className="py-2.5 px-4 text-right">Views</th>
+                      <th className="py-2.5 px-4 text-right">Visitors</th>
+                      <th className="py-2.5 px-5 w-32">Bar</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {analyticsData.top_pages.map((p) => {
+                      const maxViews = analyticsData.top_pages[0]?.views || 1;
+                      const pct = Math.round((p.views / maxViews) * 100);
+                      return (
+                        <tr key={p.path} className="border-b border-gray-50 hover:bg-sacred-gold/4 transition-colors">
+                          <td className="py-2.5 px-5 font-mono text-xs text-cosmic-text truncate max-w-[220px]">{p.path}</td>
+                          <td className="py-2.5 px-4 text-right text-sm font-medium text-cosmic-text">{p.views.toLocaleString()}</td>
+                          <td className="py-2.5 px-4 text-right text-sm text-gray-500">{p.visitors.toLocaleString()}</td>
+                          <td className="py-2.5 px-5">
+                            <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
+                              <div className="h-full rounded-full bg-sacred-gold/70" style={{ width: `${pct}%` }} />
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
+          {/* Hourly chart — today */}
+          <div className="border border-sacred-gold/25 rounded-xl overflow-hidden bg-white/60">
+            <div className="flex items-center gap-2 px-5 py-3.5 border-b border-sacred-gold/20 bg-sacred-gold/5">
+              <Clock className="w-4 h-4 text-sacred-gold-dark" />
+              <h3 className="text-sm font-semibold text-sacred-gold-dark uppercase tracking-wider">
+                Hourly Traffic <span className="text-xs font-normal text-gray-400 normal-case">(today, 24h)</span>
+              </h3>
+            </div>
+            <div className="px-5 py-4">
+              {!analyticsData ? (
+                <div className="text-center text-sm text-gray-400 py-4">No data</div>
+              ) : (() => {
+                const maxH = Math.max(...analyticsData.hourly_today.map(h => h.views), 1);
+                return (
+                  <div className="flex items-end gap-0.5 h-24">
+                    {analyticsData.hourly_today.map(h => (
+                      <div key={h.hour} className="flex-1 flex flex-col items-center gap-0.5 group relative">
+                        <div
+                          className="w-full rounded-t bg-sacred-gold/60 group-hover:bg-sacred-gold transition-colors"
+                          style={{ height: `${Math.round((h.views / maxH) * 80)}px`, minHeight: h.views > 0 ? '2px' : '0' }}
+                        />
+                        {h.hour % 6 === 0 && (
+                          <span className="text-[9px] text-gray-400 absolute -bottom-4">{h.hour}h</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
+
+          {/* 30-day sparkline */}
+          <div className="border border-sacred-gold/25 rounded-xl overflow-hidden bg-white/60">
+            <div className="flex items-center gap-2 px-5 py-3.5 border-b border-sacred-gold/20 bg-sacred-gold/5">
+              <TrendingUp className="w-4 h-4 text-sacred-gold-dark" />
+              <h3 className="text-sm font-semibold text-sacred-gold-dark uppercase tracking-wider">
+                Daily Traffic <span className="text-xs font-normal text-gray-400 normal-case">(last 30 days)</span>
+              </h3>
+            </div>
+            <div className="px-5 py-4">
+              {!analyticsData || analyticsData.daily_last_30.length === 0 ? (
+                <div className="text-center text-sm text-gray-400 py-4">No data yet</div>
+              ) : (() => {
+                const maxD = Math.max(...analyticsData.daily_last_30.map(d => d.views), 1);
+                return (
+                  <div className="flex items-end gap-0.5 h-20">
+                    {analyticsData.daily_last_30.map(d => (
+                      <div key={d.day} className="flex-1 flex flex-col items-center group relative" title={`${d.day}: ${d.views} views`}>
+                        <div
+                          className="w-full rounded-t bg-blue-400/60 group-hover:bg-blue-500 transition-colors"
+                          style={{ height: `${Math.round((d.views / maxD) * 72)}px`, minHeight: d.views > 0 ? '2px' : '0' }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+              <div className="flex justify-between mt-2 text-[10px] text-gray-400">
+                <span>{analyticsData?.daily_last_30?.[0]?.day ?? ''}</span>
+                <span>{analyticsData?.daily_last_30?.[analyticsData.daily_last_30.length - 1]?.day ?? ''}</span>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

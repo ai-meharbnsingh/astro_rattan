@@ -128,6 +128,23 @@ MIGRATIONS: List[Tuple[int, str, str]] = [
     """,
     ),
     (
+        10,
+        "Add page_views table for frontend SPA traffic analytics",
+        """
+    CREATE TABLE IF NOT EXISTS page_views (
+        id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+        path TEXT NOT NULL,
+        session_id TEXT NOT NULL,
+        user_id TEXT,
+        referrer TEXT,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS idx_pv_path ON page_views(path);
+    CREATE INDEX IF NOT EXISTS idx_pv_session ON page_views(session_id);
+    CREATE INDEX IF NOT EXISTS idx_pv_created ON page_views(created_at DESC);
+    """,
+    ),
+    (
         9,
         "Add FK constraints with ON DELETE CASCADE for LK tables",
         # SQL not used — handled via _apply_lk_fk_constraints called in run_migrations

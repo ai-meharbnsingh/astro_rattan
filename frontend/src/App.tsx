@@ -1,6 +1,20 @@
 import { useEffect, useRef, lazy, Suspense, Component } from 'react';
 import type { ReactNode, ErrorInfo } from 'react';
-import { Routes, Route, Link, Navigate } from 'react-router-dom';
+import { Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
+
+function usePageTracking() {
+  const location = useLocation();
+  useEffect(() => {
+    let sid = sessionStorage.getItem('_asid');
+    if (!sid) { sid = Math.random().toString(36).slice(2) + Date.now().toString(36); sessionStorage.setItem('_asid', sid); }
+    fetch('/api/analytics/hit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path: location.pathname, session_id: sid, referrer: document.referrer || null }),
+      keepalive: true,
+    }).catch(() => {});
+  }, [location.pathname]);
+}
 import { I18nProvider } from './lib/i18n';
 import { AuthProvider } from './hooks/useAuth';
 import { gsap } from 'gsap';
@@ -131,10 +145,9 @@ function RequireAuth({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
-function App() {
+function AppInner() {
+  usePageTracking();
   return (
-    <AuthProvider>
-    <I18nProvider>
     <div className="min-h-screen bg-cosmic-bg text-cosmic-text overflow-x-hidden">
       <div className="relative">
       <Navigation />
@@ -162,6 +175,14 @@ function App() {
       </div>
       <WhatsAppWidget />
     </div>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+    <I18nProvider>
+      <AppInner />
     </I18nProvider>
     </AuthProvider>
   );
