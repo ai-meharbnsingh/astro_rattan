@@ -302,6 +302,40 @@ export function translatePlanet(name: string, lang: Language): string {
   return PLANET_NAMES[n] || n;
 }
 
+/** Get a 2-3 letter abbreviation for a planet */
+export function translatePlanetAbbr(name: string, lang: Language): string {
+  const n = typeof name === 'string' ? name : '';
+  if (lang === 'hi') {
+    const hiMap: Record<string, string> = {
+      'Sun': 'सू', 'Moon': 'चं', 'Mars': 'मं', 'Mercury': 'बु',
+      'Jupiter': 'बृ', 'Venus': 'शु', 'Saturn': 'श',
+      'Rahu': 'रा', 'Ketu': 'के', 'Lagna': 'ल',
+    };
+    return hiMap[n] || n.slice(0, 2);
+  }
+  return n.slice(0, 3);
+}
+
+/** Get a 2-3 letter abbreviation for a sign */
+
+export function translateSignAbbr(name: string, lang: Language): string {
+  const n = typeof name === 'string' ? name : '';
+  if (lang === 'hi') {
+    const hiMap: Record<string, string> = {
+      'Aries': 'मेष', 'Taurus': 'वृष', 'Gemini': 'मिथि', 'Cancer': 'कर्क',
+      'Leo': 'सिंह', 'Virgo': 'कन्या', 'Libra': 'तुला', 'Scorpio': 'वृश्चि',
+      'Sagittarius': 'धनु', 'Capricorn': 'मकर', 'Aquarius': 'कुंभ', 'Pisces': 'मीन',
+    };
+    return hiMap[n] || n.slice(0, 3);
+  }
+  const enMap: Record<string, string> = {
+    'Aries': 'Ari', 'Taurus': 'Tau', 'Gemini': 'Gem', 'Cancer': 'Can',
+    'Leo': 'Leo', 'Virgo': 'Vir', 'Libra': 'Lib', 'Scorpio': 'Sco',
+    'Sagittarius': 'Sag', 'Capricorn': 'Cap', 'Aquarius': 'Aqu', 'Pisces': 'Pis',
+  };
+  return enMap[n] || n.slice(0, 3);
+}
+
 /** Translate a zodiac sign name */
 export function translateSign(name: string, lang: Language): string {
   const n = typeof name === 'string' ? name : '';

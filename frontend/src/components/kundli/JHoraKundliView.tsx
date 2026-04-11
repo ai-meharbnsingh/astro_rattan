@@ -5,7 +5,7 @@ import { SIGN_LORD, SIGN_ELEMENT, SIGN_TYPE } from '@/components/kundli/kundli-u
 import { calculateJaiminiKarakas, getPlanetColor } from '@/components/kundli/jhora-utils';
 import { api, formatDate } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
-import { translatePlanet, translateSign, translateNakshatra, translateBackend } from '@/lib/backend-translations';
+import { translatePlanet, translateSign, translateNakshatra, translateBackend, translateSignAbbr, translatePlanetAbbr } from '@/lib/backend-translations';
 
 // Available divisional charts
 const DIVISIONAL_OPTIONS_EN = [
@@ -327,24 +327,6 @@ export default function JHoraKundliView({
   // Jaimini Karakas (AK, AmK, BK, etc.)
   const karakas = useMemo(() => calculateJaiminiKarakas(planets), [planets]);
 
-  // Sign abbreviation
-  const signAbbr = (sign: string): string => {
-    if (language === 'hi') {
-      const hiMap: Record<string, string> = {
-        Aries: 'मेष', Taurus: 'वृष', Gemini: 'मिथु', Cancer: 'कर्क',
-        Leo: 'सिंह', Virgo: 'कन्या', Libra: 'तुला', Scorpio: 'वृश्',
-        Sagittarius: 'धनु', Capricorn: 'मकर', Aquarius: 'कुंभ', Pisces: 'मीन',
-      };
-      return hiMap[sign] || (translateSign(sign, language) || (typeof sign === 'string' ? sign : '')).slice(0, 3) || '-';
-    }
-    const map: Record<string, string> = {
-      Aries: 'Ari', Taurus: 'Tau', Gemini: 'Gem', Cancer: 'Can',
-      Leo: 'Leo', Virgo: 'Vir', Libra: 'Lib', Scorpio: 'Sco',
-      Sagittarius: 'Sag', Capricorn: 'Cap', Aquarius: 'Aqu', Pisces: 'Pis',
-    };
-    return map[sign] || sign?.slice(0, 3) || '-';
-  };
-
   // Mahadasha periods
   const mahadashaPeriods = useMemo(() => {
     if (!dasha) return [];
@@ -594,7 +576,7 @@ export default function JHoraKundliView({
                       <td style={{ ...cellCompact, textAlign: 'center', color: hasRetro ? '#DC2626' : hasCombust ? '#D97706' : MUTED, fontWeight: rc !== '-' ? 600 : 400 }}>
                         {rc}
                       </td>
-                      <td style={{ ...cellCompact }}>{signAbbr(p.sign)}</td>
+                      <td style={{ ...cellCompact }}>{translateSignAbbr(p.sign, language)}</td>
                       <td style={{ ...cellCompact, textAlign: 'center' }}>{modAbbr}</td>
                       <td style={{ ...cellCompact, textAlign: 'center' }}>{elem}</td>
                       <td style={{ ...cellCompact }}>{translateNakshatra(p.nakshatra, language) || '-'}</td>
@@ -658,7 +640,7 @@ export default function JHoraKundliView({
                             {md.is_current && <span style={{ color: 'var(--aged-gold-dim)', fontSize: FONT_SIZE }}>\u2190</span>}
                           </span>
                           <span style={{ color: MUTED, fontSize: FONT_SIZE }}>
-                            {formatDate(md.start)} — {formatDate(md.end)} ({md.years}y)
+                            {formatDate(md.start)} — {formatDate(md.end)} ({md.years}{t('report.yearLabel')})
                           </span>
                         </div>
 
@@ -767,7 +749,7 @@ export default function JHoraKundliView({
                   {lordships.map((l, i) => (
                     <tr key={l.houseNum} style={{ background: i % 2 === 0 ? 'transparent' : ALT_ROW }}>
                       <td style={{ ...cellCompact, textAlign: 'center', fontWeight: 600 }}>{l.houseNum}</td>
-                      <td style={cellCompact}>{signAbbr(l.signName)}</td>
+                      <td style={cellCompact}>{translateSignAbbr(l.signName, language)}</td>
                       <td style={{ ...cellCompact, color: planetColor(l.lord), fontWeight: 600 }}>{translatePlanet(l.lord, language)}</td>
                       <td style={{ ...cellCompact, textAlign: 'center' }}>{l.lordHouse}</td>
                     </tr>
@@ -862,7 +844,7 @@ export default function JHoraKundliView({
                       fontFamily: SERIF, fontSize: FONT_SIZE,
                     }}>
                       <span style={{ color: planetColor(planet), fontWeight: 700, width: '24px', textAlign: 'right', flexShrink: 0 }}>
-                        {language === 'hi' ? (translatePlanet(planet, language) || planet || '').slice(0, 2) : (planet || '').slice(0, 2)}
+                        {translatePlanetAbbr(planet, language)}
                       </span>
                       <div style={{
                         flex: 1, height: '14px', background: '#E8E0D0', borderRadius: '2px', overflow: 'hidden',
@@ -880,7 +862,7 @@ export default function JHoraKundliView({
                         }} />
                       </div>
                       <span style={{ color: isStrong ? '#4CAF50' : '#DC2626', fontWeight: 600, fontSize: FONT_SIZE, width: '32px', textAlign: 'left', flexShrink: 0 }}>
-                        {ratio.toFixed(1)}x
+                        {ratio.toFixed(1)}
                       </span>
                     </div>
                   );

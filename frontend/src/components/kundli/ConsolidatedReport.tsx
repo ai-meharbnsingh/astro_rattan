@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { api, formatDate } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
-import { translatePlanet, translateSign, translateNakshatra, translateName, translateRemedy, translateLabel, translateBackend } from '@/lib/backend-translations';
+import { translatePlanet, translateSign, translateNakshatra, translateName, translateRemedy, translateLabel, translateBackend, translateSignAbbr, translatePlanetAbbr } from '@/lib/backend-translations';
 import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
 import LordshipsTab from '@/components/kundli/LordshipsTab';
 
@@ -561,12 +561,12 @@ export default function ConsolidatedReport({
                 <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-sacred-gold-dark" /></div>
               ) : avakhadaData ? (
                 <div className="grid grid-cols-2 gap-1.5">
-                  {[
+                    { [
                     { label: t('avakhada.ascendant'), value: translateSign(avakhadaData.ascendant, language) },
                     { label: t('avakhada.ascendantLord'), value: translatePlanet(avakhadaData.ascendant_lord, language) },
                     { label: t('avakhada.rashi'), value: translateSign(avakhadaData.rashi, language) },
                     { label: t('avakhada.rashiLord'), value: translatePlanet(avakhadaData.rashi_lord, language) },
-                    { label: t('avakhada.nakshatra'), value: `${translateNakshatra(avakhadaData.nakshatra, language)} (P${avakhadaData.nakshatra_pada})` },
+                    { label: t('avakhada.nakshatra'), value: `${translateNakshatra(avakhadaData.nakshatra, language)} (${t('report.padaLabel')}${avakhadaData.nakshatra_pada})` },
                     { label: t('avakhada.yoga'), value: translateBackend(avakhadaData.yoga, language) },
                     { label: t('avakhada.karana'), value: translateBackend(avakhadaData.karana, language) },
                     { label: t('avakhada.yoni'), value: translateBackend(avakhadaData.yoni, language) },
@@ -663,7 +663,7 @@ export default function ConsolidatedReport({
                           backgroundColor: p.name === yoginiData.current_dasha?.name && p.start_date === yoginiData.current_dasha?.start_date ? 'var(--aged-gold-dim-10, rgba(180, 83, 9, 0.06))' : undefined,
                         }}>
                           <td className="p-1 font-medium">{translateName(p.name, language)}{p.name === yoginiData.current_dasha?.name && p.start_date === yoginiData.current_dasha?.start_date ? ' \u2190' : ''}</td>
-                          <td className="p-1 text-cosmic-text">{translatePlanet(p.planet, language)} ({p.span}y)</td>
+                          <td className="p-1 text-cosmic-text">{translatePlanet(p.planet, language)} ({p.span}{t('report.yearLabel')})</td>
                           <td className="p-1 text-cosmic-text">{p.start_date}</td>
                           <td className="p-1 text-cosmic-text">{p.end_date}</td>
                         </tr>
@@ -802,7 +802,7 @@ export default function ConsolidatedReport({
                               style={{ height: `${heightPct}%`, backgroundColor: isStrong ? 'var(--aged-gold-dim)' : 'var(--ink-light)' }}
                             />
                           </div>
-                          <span className="text-micro text-cosmic-text">{(translateSign(sign, language) || sign || '').slice(0, 3)}</span>
+                          <span className="text-micro text-cosmic-text">{translateSignAbbr(sign, language)}</span>
                         </div>
                       );
                     })}
@@ -898,7 +898,7 @@ export default function ConsolidatedReport({
                       <tbody>
                         {(kpData.houses || []).map((h: any) => (
                           <tr key={h.cusp} style={{ borderBottom: '1px solid var(--sacred-purple)' }}>
-                            <td className="p-1 text-cosmic-text">H{h.cusp}</td>
+                            <td className="p-1 text-cosmic-text">{t('report.houseLabel')}{h.cusp}</td>
                             <td className="p-1 text-cosmic-text">{h.nakshatra_lord ? translatePlanet(h.nakshatra_lord, language) : '-'}</td>
                             <td className="p-1 text-cosmic-text">{h.sub_lord ? translatePlanet(h.sub_lord, language) : '-'}</td>
                           </tr>
@@ -924,15 +924,15 @@ export default function ConsolidatedReport({
                   <div className="grid grid-cols-2 gap-2">
                     <div className="bg-cosmic-bg rounded px-2 py-1.5 border border-sacred-purple">
                       <p className="text-sm text-cosmic-text">{t('section.munthaSign')}</p>
-                      <p className="text-data font-bold text-sacred-gold-dark">{varshphalData.muntha?.sign ? translateSign(varshphalData.muntha.sign, language) : 'N/A'}</p>
+                      <p className="text-data font-bold text-sacred-gold-dark">{varshphalData.muntha?.sign ? translateSign(varshphalData.muntha.sign, language) : t('report.notAvailable')}</p>
                     </div>
                     <div className="bg-cosmic-bg rounded px-2 py-1.5 border border-sacred-purple">
                       <p className="text-sm text-cosmic-text">{t('section.munthaLord')}</p>
-                      <p className="text-data font-bold text-sacred-gold-dark">{varshphalData.muntha?.lord ? translatePlanet(varshphalData.muntha.lord, language) : 'N/A'}</p>
+                      <p className="text-data font-bold text-sacred-gold-dark">{varshphalData.muntha?.lord ? translatePlanet(varshphalData.muntha.lord, language) : t('report.notAvailable')}</p>
                     </div>
                     <div className="bg-cosmic-bg rounded px-2 py-1.5 border border-sacred-purple">
                       <p className="text-sm text-cosmic-text">{t('section.yearLord')}</p>
-                      <p className="text-data font-bold text-sacred-gold-dark">{varshphalData.year_lord ? translatePlanet(varshphalData.year_lord, language) : 'N/A'}</p>
+                      <p className="text-data font-bold text-sacred-gold-dark">{varshphalData.year_lord ? translatePlanet(varshphalData.year_lord, language) : t('report.notAvailable')}</p>
                     </div>
                   </div>
                   {varshphalData.mudda_dasha && (
@@ -985,10 +985,10 @@ export default function ConsolidatedReport({
                         const u = upagrahasData.upagrahas[name];
                         return (
                           <tr key={name} style={{ borderBottom: '1px solid var(--sacred-purple)' }}>
-                            <td className="p-1.5 font-medium text-cosmic-text">{name}</td>
+                            <td className="p-1.5 font-medium text-cosmic-text">{translateName(name, language)}</td>
                             <td className="p-1.5 text-cosmic-text">{u.sign_degree?.toFixed(2)}°</td>
                             <td className="p-1.5 text-cosmic-text">{translateSign(u.sign, language)}</td>
-                            <td className="p-1.5 text-cosmic-text">{translateNakshatra(u.nakshatra, language)} P{u.nakshatra_pada}</td>
+                            <td className="p-1.5 text-cosmic-text">{translateNakshatra(u.nakshatra, language)} {t('report.padaLabel')}{u.nakshatra_pada}</td>
                           </tr>
                         );
                       })}
@@ -1018,7 +1018,7 @@ export default function ConsolidatedReport({
                         <tr style={{ backgroundColor: 'var(--aged-gold-dim)', color: 'white' }}>
                           <th className="text-left p-1.5 font-medium sticky left-0" style={{ backgroundColor: 'var(--aged-gold-dim)', minWidth: '80px' }}>{t('table.varga')}</th>
                           {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'].map(p => (
-                            <th key={p} className="text-center p-1.5 font-medium" style={{ minWidth: '50px' }}>{(translatePlanet(p, language) || p).slice(0, 3)}</th>
+                            <th key={p} className="text-center p-1.5 font-medium" style={{ minWidth: '50px' }}>{translatePlanetAbbr(p, language)}</th>
                           ))}
                         </tr>
                       </thead>
@@ -1044,7 +1044,7 @@ export default function ConsolidatedReport({
                                 : { color: 'var(--ink)' };
                               return (
                                 <td key={planet} className="p-1.5 text-center" style={dignityStyle} title={dignity ? translateLabel(dignity, language) : ''}>
-                                  {sign === '-' ? '-' : (translateSign(sign, language) || (typeof sign === 'string' ? sign : '')).slice(0, 3)}
+                                  {sign === '-' ? '-' : translateSignAbbr(sign, language)}
                                 </td>
                               );
                             })}
@@ -1110,7 +1110,7 @@ export default function ConsolidatedReport({
                   {Object.entries(aspectsData.planet_aspects_summary).map(([planet, data]: [string, any]) => (
                     <div key={planet} className="bg-cosmic-bg rounded px-2 py-1.5 border border-sacred-purple">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm font-semibold text-cosmic-text">{translatePlanet(planet, language)} <span className="text-sm text-cosmic-text">(H{data.house})</span></span>
+                        <span className="text-sm font-semibold text-cosmic-text">{translatePlanet(planet, language)} <span className="text-sm text-cosmic-text">({t('report.houseLabel')}{data.house})</span></span>
                         <div className="flex gap-2">
                           <span className="text-sm px-1.5 py-0.5 rounded bg-green-100 text-green-800">
                             {data.benefic_aspects} {t('report.beneficCount')}
@@ -1147,7 +1147,7 @@ export default function ConsolidatedReport({
                           <span className="text-sm text-sacred-gold-dark">{t('report.aspectsTo')} </span>
                           {data.aspects_to.map((a: any, i: number) => (
                             <span key={i} className="text-sm text-cosmic-text">
-                              H{a.house}
+                              {t('report.houseLabel')}{a.house}
                               {a.planets_in_house && a.planets_in_house.length > 0 && (
                                 <span className="text-sacred-gold-dark"> ({a.planets_in_house.map((p: string) => translatePlanet(p, language)).join(', ')})</span>
                               )}
@@ -1179,14 +1179,14 @@ export default function ConsolidatedReport({
                         <th className="text-left p-1.5 text-cosmic-text-secondary">{t('table.bhava')}</th>
                         <th className="text-left p-1.5 text-cosmic-text-secondary">{t('table.planets')}</th>
                         <th className="text-left p-1.5 text-cosmic-text-secondary">{t('table.aspectedBy')}</th>
-                        <th className="text-center p-1.5 text-cosmic-text-secondary">B</th>
-                        <th className="text-center p-1.5 text-cosmic-text-secondary">M</th>
+                        <th className="text-center p-1.5 text-cosmic-text-secondary">{language === 'hi' ? 'शु' : 'B'}</th>
+                        <th className="text-center p-1.5 text-cosmic-text-secondary">{language === 'hi' ? 'अशु' : 'M'}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {(aspectsData.bhava_summary || []).map((bh: any) => (
                         <tr key={bh.house} style={{ borderBottom: '1px solid var(--sacred-purple)' }}>
-                          <td className="p-1.5 font-medium text-sacred-gold-dark">H{bh.house}</td>
+                          <td className="p-1.5 font-medium text-sacred-gold-dark">{t('report.houseLabel')}{bh.house}</td>
                           <td className="p-1.5 text-cosmic-text">
                             {bh.planets_in_house && bh.planets_in_house.length > 0
                               ? bh.planets_in_house.map((p: string) => translatePlanet(p, language)).join(', ')
@@ -1231,7 +1231,7 @@ export default function ConsolidatedReport({
                       <tr style={{ backgroundColor: 'var(--aged-gold-dim)', color: 'white' }}>
                         <th className="text-left p-1.5 font-medium">{t('table.planet')}</th>
                         {['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'].map(s => (
-                          <th key={s} className="text-center p-1 font-medium">{(translateSign(s, language) || s).slice(0, 3)}</th>
+                          <th key={s} className="text-center p-1 font-medium">{translateSignAbbr(s, language)}</th>
                         ))}
                         <th className="text-center p-1.5 font-medium">{t('table.total')}</th>
                       </tr>

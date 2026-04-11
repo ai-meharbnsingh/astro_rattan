@@ -7,7 +7,7 @@ import { calculateJaiminiKarakas } from '@/components/kundli/jhora-utils';
 import LordshipsTab from '@/components/kundli/LordshipsTab';
 import ConsolidatedReport from '@/components/kundli/ConsolidatedReport';
 import JHoraKundliView from '@/components/kundli/JHoraKundliView';
-import { translatePlanet, translateSign, translateLabel, translateName, translateNakshatra, translateBackend } from '@/lib/backend-translations';
+import { translatePlanet, translateSign, translateLabel, translateName, translateNakshatra, translateBackend, translateSignAbbr, translatePlanetAbbr } from '@/lib/backend-translations';
 
 interface ReportTabProps {
   result: any;
@@ -721,7 +721,7 @@ export default function ReportTab({
                                   style={{ height: `${heightPct}%`, backgroundColor: isStrong ? 'var(--aged-gold-dim)' : 'var(--ink-light)' }}
                                 />
                               </div>
-                              <span className="text-sm text-cosmic-text">{(translateSign(sign, language) || sign).slice(0, 3)}</span>
+                              <span className="text-sm text-cosmic-text">{translateSignAbbr(sign, language)}</span>
                             </div>
                           );
                         })}
@@ -764,7 +764,7 @@ export default function ReportTab({
                                   <div className="w-5 rounded-t-lg transition-all duration-500" style={{ height: `${barHeight}%`, backgroundColor: barColor, alignSelf: 'flex-end' }} />
                                 </div>
                                 <span className="text-xs font-medium text-sacred-brown text-center leading-tight mt-1">
-                                  {translatePlanet(planet, language).substring(0, 2)}
+                                  {translatePlanetAbbr(planet, language)}
                                 </span>
                               </div>
                             );
