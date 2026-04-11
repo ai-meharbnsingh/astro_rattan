@@ -18,7 +18,7 @@ def _env_first(*names: str, default: str = "") -> str:
     return default
 
 # Database
-DB_PATH = os.getenv("DB_PATH", "astrovedic.db")
+DB_PATH = os.getenv("DB_PATH", "astrorattan.db")
 
 # Auth
 JWT_SECRET = os.getenv("JWT_SECRET", "")
