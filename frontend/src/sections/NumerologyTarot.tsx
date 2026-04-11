@@ -63,7 +63,7 @@ interface MobileNumerologyResult {
 }
 
 export default function NumerologyTarot() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { user } = useAuth();
   const isAstrologer = user?.role === 'astrologer';
 
@@ -139,6 +139,14 @@ export default function NumerologyTarot() {
 
   // Error state for user feedback
   const [error, setError] = useState('');
+  const comboTypeLabel = (type: 'Benefic' | 'Neutral' | 'Malefic') =>
+    language === 'hi'
+      ? type === 'Benefic'
+        ? 'शुभ'
+        : type === 'Neutral'
+          ? 'सामान्य'
+          : 'पापी'
+      : type;
 
   const calculateNumerology = async () => {
     if (!numName.trim() || !numDob) return;
@@ -157,7 +165,7 @@ export default function NumerologyTarot() {
         autoRegisterClient({ name: numName.trim(), birth_date: numDob });
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Numerology calculation failed. Please try again.');
+      setError(err instanceof Error ? err.message : (language === 'hi' ? 'अंकशास्त्र गणना विफल हुई। कृपया पुनः प्रयास करें।' : 'Numerology calculation failed. Please try again.'));
     }
     setNumLoading(false);
   };
@@ -189,7 +197,7 @@ export default function NumerologyTarot() {
         autoRegisterClient({ name: fullName, phone: fullPhone, birth_date: mobileDob });
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Mobile numerology analysis failed. Please try again.');
+      setError(err instanceof Error ? err.message : (language === 'hi' ? 'मोबाइल अंकशास्त्र विश्लेषण विफल हुआ। कृपया पुनः प्रयास करें।' : 'Mobile numerology analysis failed. Please try again.'));
     }
     setMobileLoading(false);
   };
@@ -630,7 +638,7 @@ export default function NumerologyTarot() {
                                           ? 'bg-amber-100 text-amber-800 border-amber-300'
                                           : 'bg-red-100 text-red-800 border-red-300'
                                     }`}>
-                                      {combo.type}
+                                      {comboTypeLabel(combo.type)}
                                     </Badge>
                                   </td>
                                   <td className="px-4 py-2 text-cosmic-text-secondary text-sm">{combo.description || '-'}</td>
@@ -656,7 +664,7 @@ export default function NumerologyTarot() {
                     {mobileResult.prediction && (
                       <div className="rounded-xl border border-sacred-gold overflow-hidden">
                         <div className="px-4 py-2 bg-sacred-gold-dark text-white font-medium text-sm flex items-center gap-2">
-                          <Sparkles className="w-4 h-4 shrink-0" />Predictions
+                          <Sparkles className="w-4 h-4 shrink-0" />{t('numerology.predictions')}
                         </div>
                         <div className="px-4 py-3">
                           <ul className="space-y-2">
@@ -675,7 +683,7 @@ export default function NumerologyTarot() {
                     {mobileResult.affirmations && typeof mobileResult.affirmations === 'object' && Object.keys(mobileResult.affirmations).length > 0 && (
                       <div className="space-y-3">
                         <p className="text-sm font-medium text-cosmic-text flex items-center gap-2">
-                          <Sparkles className="w-4 h-4 text-sacred-gold" />Affirmations for Your Areas of Struggle
+                          <Sparkles className="w-4 h-4 text-sacred-gold" />{t('numerology.affirmationsTitle')}
                         </p>
                         {Object.entries(mobileResult.affirmations).map(([area, text]: [string, any], i: number) => (
                           <div key={i} className="rounded-xl border border-sacred-gold overflow-hidden">

@@ -1,5 +1,6 @@
 import { ShieldAlert, AlertTriangle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { useTranslation } from '@/lib/i18n';
 
 interface TimePeriod {
   start: string;
@@ -25,8 +26,16 @@ const periods = [
 export default function InauspiciousPeriods({
   rahu_kaal, gulika_kaal, yamaganda, dur_muhurtam, varjyam,
 }: InauspiciousPeriodsProps) {
+  const { language } = useTranslation();
   const values: Record<string, TimePeriod | null | undefined> = {
     rahu_kaal, gulika_kaal, yamaganda, dur_muhurtam, varjyam,
+  };
+  const labelsHi: Record<string, string> = {
+    rahu_kaal: 'राहु काल',
+    gulika_kaal: 'गुलिक काल',
+    yamaganda: 'यमगंड',
+    dur_muhurtam: 'दुर्मुहूर्त',
+    varjyam: 'वर्ज्यम',
   };
 
   return (
@@ -35,7 +44,7 @@ export default function InauspiciousPeriods({
         <div className="flex items-center gap-2 mb-4">
           <ShieldAlert className="h-5 w-5 text-red-400" />
           <h3 className="text-lg font-semibold text-cosmic-text">
-            Inauspicious Periods
+            {language === 'hi' ? 'अशुभ काल' : 'Inauspicious Periods'}
           </h3>
         </div>
 
@@ -53,7 +62,7 @@ export default function InauspiciousPeriods({
                   <Icon className="h-4 w-4 text-red-400 shrink-0" />
                   <div>
                     <span className="text-red-400 font-medium text-sm">
-                      {period.label}
+                      {language === 'hi' ? labelsHi[period.key] : period.label}
                     </span>
                   </div>
                 </div>

@@ -72,7 +72,7 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
                     </span>
                   </td>
                   <td className="p-2" style={{ color: isRetro ? '#dc2626' : 'var(--ink-light)' }}>
-                    {isRetro ? (language === 'hi' ? 'हाँ \u211e' : 'Yes \u211e') : (language === 'hi' ? 'नहीं' : 'No')}
+                    {isRetro ? (language === 'hi' ? 'हाँ \u211e' : `${t('common.yes')} \u211e`) : t('common.no')}
                   </td>
                   <td className="p-2 font-semibold" style={{ color: karaka !== '\u2014' ? 'var(--aged-gold-dim)' : 'var(--ink-light)' }}>
                     {karaka}

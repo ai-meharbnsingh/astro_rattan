@@ -4,6 +4,7 @@ import type { LalKitabChartData } from './lalkitab-data';
 import { PLANETS, REMEDIES } from './lalkitab-data';
 import { api } from '@/lib/api';
 import { Heart, Gift, Home, Zap, Filter, Database, Loader2, Clock } from 'lucide-react';
+import { translateBackend } from '@/lib/backend-translations';
 
 interface Props {
   chartData: LalKitabChartData;
@@ -83,7 +84,7 @@ export default function LalKitabRemediesTab({ chartData, kundliId }: Props) {
             }`}
           >
             {category === 'all'
-              ? 'All'
+              ? t('common.all')
               : t(`lk.remedies.${category}`)}
           </button>
         ))}
@@ -197,7 +198,9 @@ export default function LalKitabRemediesTab({ chartData, kundliId }: Props) {
                     {isHi ? `भाव ${r.house}` : `House ${r.house}`}
                   </span>
                   <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 text-xs border border-blue-300/30">
-                    {r.remedy_type}
+                    {t(`lk.remedies.${r.remedy_type}`) !== `lk.remedies.${r.remedy_type}`
+                      ? t(`lk.remedies.${r.remedy_type}`)
+                      : translateBackend(r.remedy_type, language)}
                   </span>
                 </div>
 

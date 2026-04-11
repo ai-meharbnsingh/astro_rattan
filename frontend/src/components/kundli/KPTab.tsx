@@ -36,10 +36,10 @@ export default function KPTab(props: KPTabProps) {
                   <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.degree')}</th>
                   <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.nakshatra')}</th>
                   <th className="text-center p-1.5 text-sacred-gold-dark font-medium">{t('kundli.pada')}</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium">RL</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium">NL</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium">SL</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium">SS</th>
+                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={language === 'hi' ? 'राशि स्वामी' : 'Rashi Lord'}>RL</th>
+                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={language === 'hi' ? 'नक्षत्र स्वामी' : 'Nakshatra Lord'}>NL</th>
+                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={language === 'hi' ? 'उप स्वामी' : 'Sub Lord'}>SL</th>
+                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={language === 'hi' ? 'उप-उप स्वामी' : 'Sub-Sub Lord'}>SS</th>
                 </tr></thead>
                 <tbody>
                   {(kpData.planets || []).map((p: any) => (
@@ -116,10 +116,10 @@ export default function KPTab(props: KPTabProps) {
                   <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.degree')}</th>
                   <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.nakshatra')}</th>
                   <th className="text-center p-1.5 text-sacred-gold-dark font-medium">{t('kundli.pada')}</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium">RL</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium">NL</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium">SL</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium">SS</th>
+                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={language === 'hi' ? 'राशि स्वामी' : 'Rashi Lord'}>RL</th>
+                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={language === 'hi' ? 'नक्षत्र स्वामी' : 'Nakshatra Lord'}>NL</th>
+                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={language === 'hi' ? 'उप स्वामी' : 'Sub Lord'}>SL</th>
+                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={language === 'hi' ? 'उप-उप स्वामी' : 'Sub-Sub Lord'}>SS</th>
                 </tr></thead>
                 <tbody>
                   {(() => {

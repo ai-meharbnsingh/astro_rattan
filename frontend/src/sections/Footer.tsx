@@ -18,8 +18,8 @@ export default function Footer() {
 
   const footerLinks = {
     company: [
-      { label: l('About Us', 'हमारे बारे में'), href: '/' },
-      { label: l('Contact', 'संपर्क'), href: '/' },
+      { label: t('footer.aboutUs'), href: '/' },
+      { label: t('footer.contactShort'), href: '/' },
     ],
   };
 
@@ -105,10 +105,10 @@ export default function Footer() {
         
         <div className="py-6 border-t border-sacred-gold flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-base text-cosmic-text">
-            &copy; {new Date().getFullYear()} Astro Rattan. {t('footer.madeWith')} <Heart className="w-4 h-4 inline text-sacred-gold" /> {l('in India', 'भारत में')}
+            &copy; {new Date().getFullYear()} Astro Rattan. {t('footer.madeWith')} <Heart className="w-4 h-4 inline text-sacred-gold" /> {t('footer.inIndia')}
           </p>
           <div className="flex gap-6">
-            <span className="text-base text-cosmic-text">{l('All rights reserved', 'सर्वाधिकार सुरक्षित')}</span>
+            <span className="text-base text-cosmic-text">{t('footer.allRightsReserved')}</span>
           </div>
         </div>
         <div className="pb-4 text-center">

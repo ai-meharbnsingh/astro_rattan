@@ -94,6 +94,7 @@ const translations: Record<Language, TranslationMap> = {
     'hero.quickKundli': 'Quick Kundli',
     'hero.birthPlace': 'Birth Place',
     'hero.generateKundli': 'Generate Kundli',
+    'hero.shlokaSupreme': '— Astrology is the Supreme',
 
     // Features Section
     'features.celestialHouses': 'The Celestial Houses',
@@ -191,6 +192,9 @@ const translations: Record<Language, TranslationMap> = {
     'footer.forSeekers': 'for spiritual seekers',
     'footer.poweredBy': 'Powered by',
     'footer.allRightsReserved': 'All rights reserved',
+    'footer.aboutUs': 'About Us',
+    'footer.contactShort': 'Contact',
+    'footer.inIndia': 'in India',
     'whatsapp.tooltip': 'Chat with us on WhatsApp for instant astrology guidance!',
     'whatsapp.aria': 'Chat on WhatsApp',
     'whatsapp.prefill': 'Hi, I want to know about my horoscope and kundli',
@@ -1302,6 +1306,7 @@ const translations: Record<Language, TranslationMap> = {
     'hero.quickKundli': 'त्वरित कुंडली',
     'hero.birthPlace': 'जन्म स्थान',
     'hero.generateKundli': 'कुंडली बनाएं',
+    'hero.shlokaSupreme': '— ज्योतिष सर्वोच्च है',
 
     // Features Section
     'features.celestialHouses': 'खगोलीय भाव',
@@ -1399,6 +1404,9 @@ const translations: Record<Language, TranslationMap> = {
     'footer.forSeekers': 'आध्यात्मिक साधकों के लिए',
     'footer.poweredBy': 'संचालित',
     'footer.allRightsReserved': 'सर्वाधिकार सुरक्षित',
+    'footer.aboutUs': 'हमारे बारे में',
+    'footer.contactShort': 'संपर्क',
+    'footer.inIndia': 'भारत में',
     'whatsapp.tooltip': 'तुरंत ज्योतिष मार्गदर्शन के लिए WhatsApp पर हमसे चैट करें!',
     'whatsapp.aria': 'WhatsApp पर चैट करें',
     'whatsapp.prefill': 'नमस्ते, मैं अपनी कुंडली और राशिफल के बारे में जानना चाहता/चाहती हूं',

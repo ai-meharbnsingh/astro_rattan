@@ -34,7 +34,7 @@ export default function Hero() {
         <div className="hero-shloka opacity-0 mb-8">
           <p className="font-sans text-base tracking-[6px] text-[var(--aged-gold)] uppercase"
             style={{ textShadow: '0 0 15px rgba(255, 170, 51, 0.4)' }}>
-            {'\u091C\u094D\u092F\u094B\u0924\u093F\u0937\u092E\u094D \u0905\u092F\u092E\u094D \u092C\u094D\u0930\u0939\u094D\u092E'} — Astrology is the Supreme
+            {'\u091C\u094D\u092F\u094B\u0924\u093F\u0937\u092E\u094D \u0905\u092F\u092E\u094D \u092C\u094D\u0930\u0939\u094D\u092E'} {t('hero.shlokaSupreme')}
           </p>
         </div>
 

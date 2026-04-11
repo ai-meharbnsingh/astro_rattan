@@ -171,7 +171,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
                 {counts.totalPlanets}
               </p>
               <p className="text-sm text-gray-500">
-                {isHi ? 'ग्रह' : 'Planets'}
+                {isHi ? 'ग्रह' : t('table.planets')}
               </p>
             </div>
             <div className="text-center p-3 rounded-xl bg-sacred-gold/5 border border-sacred-gold/10">
@@ -179,7 +179,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
                 {counts.empty}
               </p>
               <p className="text-sm text-gray-500">
-                {isHi ? 'खाली भाव' : 'Empty'}
+                {isHi ? 'खाली भाव' : t('lk.kundli.empty')}
               </p>
             </div>
             <div className="text-center p-3 rounded-xl bg-green-500/5 border border-green-300/10">
@@ -187,7 +187,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
                 {counts.strong}
               </p>
               <p className="text-sm text-gray-500">
-                {isHi ? 'मजबूत' : 'Strong'}
+                {isHi ? 'मजबूत' : t('lk.kundli.strong')}
               </p>
             </div>
             <div className="text-center p-3 rounded-xl bg-red-500/5 border border-red-300/10">
@@ -195,7 +195,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
                 {counts.weak}
               </p>
               <p className="text-sm text-gray-500">
-                {isHi ? 'कमजोर' : 'Weak'}
+                {isHi ? 'कमजोर' : t('lk.kundli.weak')}
               </p>
             </div>
           </div>
@@ -382,16 +382,17 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
                     {isCurrent && (
                       <span className="px-2.5 py-0.5 rounded-full text-sm font-semibold bg-sacred-gold/20 text-sacred-gold">
                         {isHi ? 'वर्तमान' : 'Active'}
+                        
                       </span>
                     )}
                     {isPrevious && (
                       <span className="px-2.5 py-0.5 rounded-full text-sm text-gray-500">
-                        {isHi ? 'पिछला' : 'Previous'}
+                        {isHi ? 'पिछला' : t('common.previous')}
                       </span>
                     )}
                     {isNext && (
                       <span className="px-2.5 py-0.5 rounded-full text-sm text-gray-500">
-                        {isHi ? 'अगला' : 'Next'}
+                        {isHi ? 'अगला' : t('common.next')}
                       </span>
                     )}
                   </div>

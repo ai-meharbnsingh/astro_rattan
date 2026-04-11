@@ -1,5 +1,6 @@
 import { Sunrise, Sunset, Moon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { useTranslation } from '@/lib/i18n';
 
 interface SunMoonTimesProps {
   sunrise: string;
@@ -45,6 +46,7 @@ export default function SunMoonTimes({
   moonrise,
   moonset,
 }: SunMoonTimesProps) {
+  const { language } = useTranslation();
   const values: Record<string, string> = {
     sunrise,
     sunset,
@@ -58,7 +60,7 @@ export default function SunMoonTimes({
         <div className="flex items-center gap-2 mb-4">
           <Sunrise className="h-5 w-5 text-sacred-gold" />
           <h3 className="text-lg font-semibold text-cosmic-text">
-            Sun &amp; Moon
+            {language === 'hi' ? 'सूर्य और चंद्र' : 'Sun & Moon'}
           </h3>
         </div>
 
@@ -77,7 +79,15 @@ export default function SunMoonTimes({
                 </div>
                 <div className="flex flex-col justify-center">
                   <span className="text-sm text-cosmic-text-secondary">
-                    {item.label}
+                    {language === 'hi'
+                      ? item.key === 'sunrise'
+                        ? 'सूर्योदय'
+                        : item.key === 'sunset'
+                          ? 'सूर्यास्त'
+                          : item.key === 'moonrise'
+                            ? 'चंद्रोदय'
+                            : 'चंद्रास्त'
+                      : item.label}
                   </span>
                   <span className="text-cosmic-text font-medium">
                     {values[item.key]}

@@ -53,7 +53,7 @@ export default function PlanetsTab({
             {sidePanel.type === 'planet' && sidePanel.planet && (() => {
               const p = sidePanel.planet;
               const status = p.status?.toLowerCase() || '';
-              const strengthLabel = status.includes('exalted') ? 'Exalted' : status.includes('debilitated') ? 'Debilitated' : status.includes('own') ? 'Own Sign' : p.status || 'Transiting';
+              const strengthLabel = status.includes('exalted') ? 'Exalted' : status.includes('debilitated') ? 'Debilitated' : status.includes('own') ? 'Own Sign' : p.status || t('kundli.transit');
               const strengthColor = status.includes('exalted') ? 'text-green-500' : status.includes('debilitated') ? 'text-red-500' : status.includes('own') ? 'text-blue-500' : 'text-cosmic-text';
               const aspects = (PLANET_ASPECTS[p.planet] || [7]).map((offset) => {
                 const targetHouse = ((p.house - 1 + offset) % 12) + 1;

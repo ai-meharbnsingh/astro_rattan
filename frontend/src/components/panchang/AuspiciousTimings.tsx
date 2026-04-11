@@ -1,5 +1,7 @@
 import { Sparkles } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { useTranslation } from '@/lib/i18n';
+import { translateBackend } from '@/lib/backend-translations';
 
 interface TimePeriod {
   start: string;
@@ -55,6 +57,15 @@ function qualityClasses(quality: string) {
   }
 }
 
+function qualityLabel(quality: string, language: string): string {
+  if (language !== 'hi') return quality;
+  if (quality === 'Best') return 'श्रेष्ठ';
+  if (quality === 'Good') return 'अच्छा';
+  if (quality === 'Neutral') return 'सामान्य';
+  if (quality === 'Inauspicious') return 'अशुभ';
+  return quality;
+}
+
 function MuhuratCard({
   title,
   period,
@@ -82,32 +93,33 @@ export default function AuspiciousTimings({
   ravi_yoga, vijaya_muhurta, godhuli_muhurta,
   sayahna_sandhya, nishita_muhurta, pratah_sandhya,
 }: AuspiciousTimingsProps) {
+  const { language } = useTranslation();
   return (
     <Card className="bg-white border-sacred-gold/20">
       <CardContent>
         <div className="flex items-center gap-2 mb-4">
           <Sparkles className="h-5 w-5 text-green-700" />
           <h3 className="text-lg font-semibold text-gray-800">
-            Auspicious Timings
+            {language === 'hi' ? 'शुभ समय' : 'Auspicious Timings'}
           </h3>
         </div>
 
         {/* Muhurat highlight cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
-          <MuhuratCard title="Abhijit Muhurat" period={abhijit_muhurat} />
-          <MuhuratCard title="Brahma Muhurat" period={brahma_muhurat} />
-          {ravi_yoga && <MuhuratCard title="Ravi Yoga" period={ravi_yoga} />}
-          {vijaya_muhurta && <MuhuratCard title="Vijaya Muhurta" period={vijaya_muhurta} />}
-          {godhuli_muhurta && <MuhuratCard title="Godhuli Muhurta" period={godhuli_muhurta} />}
-          {sayahna_sandhya && <MuhuratCard title="Sayahna Sandhya" period={sayahna_sandhya} />}
-          {nishita_muhurta && <MuhuratCard title="Nishita Muhurta" period={nishita_muhurta} />}
-          {pratah_sandhya && <MuhuratCard title="Pratah Sandhya" period={pratah_sandhya} />}
+          <MuhuratCard title={language === 'hi' ? 'अभिजीत मुहूर्त' : 'Abhijit Muhurat'} period={abhijit_muhurat} />
+          <MuhuratCard title={language === 'hi' ? 'ब्रह्म मुहूर्त' : 'Brahma Muhurat'} period={brahma_muhurat} />
+          {ravi_yoga && <MuhuratCard title={language === 'hi' ? 'रवि योग' : 'Ravi Yoga'} period={ravi_yoga} />}
+          {vijaya_muhurta && <MuhuratCard title={language === 'hi' ? 'विजय मुहूर्त' : 'Vijaya Muhurta'} period={vijaya_muhurta} />}
+          {godhuli_muhurta && <MuhuratCard title={language === 'hi' ? 'गोधूलि मुहूर्त' : 'Godhuli Muhurta'} period={godhuli_muhurta} />}
+          {sayahna_sandhya && <MuhuratCard title={language === 'hi' ? 'सायाह्न संध्या' : 'Sayahna Sandhya'} period={sayahna_sandhya} />}
+          {nishita_muhurta && <MuhuratCard title={language === 'hi' ? 'निशीथ मुहूर्त' : 'Nishita Muhurta'} period={nishita_muhurta} />}
+          {pratah_sandhya && <MuhuratCard title={language === 'hi' ? 'प्रातः संध्या' : 'Pratah Sandhya'} period={pratah_sandhya} />}
         </div>
 
         {/* Choghadiya periods */}
         <div className="flex flex-col gap-2">
           <span className="text-sm text-cosmic-text-secondary mb-1">
-            Choghadiya
+            {language === 'hi' ? 'चौघड़िया' : 'Choghadiya'}
           </span>
           {choghadiya.map((period, index) => {
             const classes = qualityClasses(period.quality);
@@ -118,7 +130,7 @@ export default function AuspiciousTimings({
               >
                 <div className="flex flex-col">
                   <span className="text-gray-800 font-medium">
-                    {period.name}
+                    {translateBackend(period.name, language)}
                   </span>
                   <span className="text-sm text-gray-600">
                     {period.start} &ndash; {period.end}
@@ -127,7 +139,7 @@ export default function AuspiciousTimings({
                 <span
                   className={`text-sm px-2 py-0.5 rounded-full ${classes.badge}`}
                 >
-                  {period.quality}
+                  {qualityLabel(period.quality, language)}
                 </span>
               </div>
             );

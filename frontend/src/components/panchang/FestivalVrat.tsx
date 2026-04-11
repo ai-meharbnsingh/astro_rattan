@@ -1,5 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Flame } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n';
+import { translateBackend } from '@/lib/backend-translations';
 
 interface Festival {
   name: string;
@@ -21,6 +23,7 @@ const typeBadgeColors: Record<string, string> = {
 };
 
 function TypeBadge({ type }: { type: string }) {
+  const { language } = useTranslation();
   const colors =
     typeBadgeColors[type.toLowerCase()] ??
     'bg-cosmic-text-secondary/15 text-cosmic-text-secondary border-cosmic-text-secondary/30';
@@ -29,25 +32,26 @@ function TypeBadge({ type }: { type: string }) {
     <span
       className={`inline-block text-sm font-medium px-2.5 py-0.5 rounded-full border capitalize ${colors}`}
     >
-      {type}
+      {translateBackend(type, language)}
     </span>
   );
 }
 
 function FestivalVrat({ festivals }: FestivalVratProps) {
+  const { language } = useTranslation();
   return (
     <Card className="bg-cosmic-card border-sacred-gold/10">
       <CardContent>
         <div className="flex items-center gap-2 mb-4">
           <Flame className="h-5 w-5 text-sacred-gold" />
           <h3 className="text-lg font-semibold text-cosmic-text">
-            Festivals &amp; Vrat
+            {language === 'hi' ? 'पर्व एवं व्रत' : 'Festivals & Vrat'}
           </h3>
         </div>
 
         {festivals.length === 0 ? (
           <p className="text-sm text-cosmic-text-secondary italic">
-            No special observance today
+            {language === 'hi' ? 'आज कोई विशेष पर्व/व्रत नहीं' : 'No special observance today'}
           </p>
         ) : (
           <div className="flex flex-col gap-3">
@@ -71,13 +75,13 @@ function FestivalVrat({ festivals }: FestivalVratProps) {
                 </div>
 
                 <p className="text-sm text-cosmic-text-secondary mb-2">
-                  {festival.description}
+                  {translateBackend(festival.description, language)}
                 </p>
 
                 {festival.rituals && (
                   <div className="text-sm text-cosmic-text-secondary bg-sacred-gold/5 rounded-lg px-3 py-2 border border-sacred-gold/10">
-                    <span className="font-medium text-sacred-gold">Rituals: </span>
-                    {festival.rituals}
+                    <span className="font-medium text-sacred-gold">{language === 'hi' ? 'विधि: ' : 'Rituals: '}</span>
+                    {translateBackend(festival.rituals, language)}
                   </div>
                 )}
               </div>

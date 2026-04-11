@@ -1,5 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { BookOpen } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n';
+import { translateBackend } from '@/lib/backend-translations';
 
 interface HinduCalendarProps {
   hindu_calendar: {
@@ -32,29 +34,34 @@ function InfoCell({ label, value }: InfoCellProps) {
 }
 
 function HinduCalendar({ hindu_calendar, vaar }: HinduCalendarProps) {
+  const { language } = useTranslation();
   return (
     <Card className="bg-cosmic-card border-sacred-gold/10">
       <CardContent>
         <div className="flex items-center gap-2 mb-4">
           <BookOpen className="h-5 w-5 text-sacred-gold" />
           <h3 className="text-lg font-semibold text-cosmic-text">
-            Hindu Calendar
+            {language === 'hi' ? 'हिंदू कैलेंडर' : 'Hindu Calendar'}
           </h3>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          <InfoCell label="Vikram Samvat" value={hindu_calendar.vikram_samvat} />
-          <InfoCell label="Shaka Samvat" value={hindu_calendar.shaka_samvat} />
-          <InfoCell label="Maas" value={hindu_calendar.maas} />
-          <InfoCell label="Paksha" value={hindu_calendar.paksha} />
+          <InfoCell label={language === 'hi' ? 'विक्रम संवत' : 'Vikram Samvat'} value={hindu_calendar.vikram_samvat} />
+          <InfoCell label={language === 'hi' ? 'शक संवत' : 'Shaka Samvat'} value={hindu_calendar.shaka_samvat} />
+          <InfoCell label={language === 'hi' ? 'मास' : 'Maas'} value={translateBackend(hindu_calendar.maas, language)} />
+          <InfoCell label={language === 'hi' ? 'पक्ष' : 'Paksha'} value={translateBackend(hindu_calendar.paksha, language)} />
           <InfoCell
-            label="Ritu"
-            value={`${hindu_calendar.ritu} (${hindu_calendar.ritu_english})`}
+            label={language === 'hi' ? 'ऋतु' : 'Ritu'}
+            value={language === 'hi'
+              ? `${translateBackend(hindu_calendar.ritu, language)} (${translateBackend(hindu_calendar.ritu_english, language)})`
+              : `${hindu_calendar.ritu} (${hindu_calendar.ritu_english})`}
           />
-          <InfoCell label="Ayana" value={hindu_calendar.ayana} />
+          <InfoCell label={language === 'hi' ? 'अयन' : 'Ayana'} value={translateBackend(hindu_calendar.ayana, language)} />
           <InfoCell
-            label="Vaar"
-            value={`${vaar.name} (${vaar.english})`}
+            label={language === 'hi' ? 'वार' : 'Vaar'}
+            value={language === 'hi'
+              ? `${translateBackend(vaar.name, language)} (${translateBackend(vaar.english, language)})`
+              : `${vaar.name} (${vaar.english})`}
           />
         </div>
       </CardContent>

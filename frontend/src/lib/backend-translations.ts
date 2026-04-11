@@ -238,6 +238,8 @@ const AVAKHADA_VALUES: Record<string, string> = {
   'Brahmin': 'ब्राह्मण', 'Kshatriya': 'क्षत्रिय', 'Vaishya': 'वैश्य', 'Shudra': 'शूद्र',
   // Yoni
   'Horse': 'अश्व', 'Elephant': 'हाथी', 'Goat': 'बकरी', 'Serpent': 'सर्प',
+  // Nadi types seen in summaries
+  'Kapha': 'कफ', 'Pitta': 'पित्त', 'Vata': 'वात',
   'Dog': 'कुत्ता', 'Cat': 'बिल्ली', 'Rat': 'चूहा', 'Cow': 'गाय',
   'Buffalo': 'भैंस', 'Tiger': 'बाघ', 'Deer': 'हिरण', 'Monkey': 'बंदर',
   'Mongoose': 'नेवला', 'Lion': 'सिंह',

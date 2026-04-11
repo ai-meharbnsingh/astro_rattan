@@ -137,7 +137,7 @@ export default function KundliGenerator() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10">
           <div className="flex items-center gap-3 min-w-0">
-            <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')} title="Dashboard" className="flex-shrink-0">
+            <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')} title={t('nav.dashboard')} className="flex-shrink-0">
               <Home className="w-4 h-4" />
             </Button>
             <div className="min-w-0">
@@ -152,8 +152,8 @@ export default function KundliGenerator() {
                   const fresh = await api.post(`/api/kundli/${result.id}/regenerate`, {});
                   setResult(fresh);
                   resetTabData();
-                  alert('Chart regenerated with latest Swiss Ephemeris data');
-                } catch (e) { console.error(e); alert('Regeneration failed'); }
+                  alert(language === 'hi' ? 'चार्ट नवीनतम Swiss Ephemeris डेटा से पुनः बनाया गया' : 'Chart regenerated with latest Swiss Ephemeris data');
+                } catch (e) { console.error(e); alert(language === 'hi' ? 'पुनः निर्माण विफल' : 'Regeneration failed'); }
               }}>
               <RefreshCw className="w-4 h-4 mr-1" />{language === 'hi' ? 'पुनः गणना' : 'Regenerate'}
             </Button>
@@ -168,7 +168,7 @@ export default function KundliGenerator() {
                   await navigator.share(shareData);
                 } else {
                   await navigator.clipboard.writeText(`${shareData.title}\n${shareData.text}\n${shareData.url}`);
-                  alert(language === 'hi' ? 'लिंक कॉपी हो गया!' : 'Link copied to clipboard!');
+                  alert(language === 'hi' ? 'लिंक क्लिपबोर्ड पर कॉपी हो गया!' : 'Link copied to clipboard!');
                 }
               } catch (e) {
                 if ((e as Error).name !== 'AbortError') console.error(e);
@@ -288,7 +288,7 @@ export default function KundliGenerator() {
           {tabError && (
             <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 flex items-center justify-between">
               <p className="text-sm text-red-700">{tabError}</p>
-              <button onClick={() => setTabError(null)} className="text-red-500 hover:text-red-700 text-sm font-medium ml-3">Dismiss</button>
+              <button onClick={() => setTabError(null)} className="text-red-500 hover:text-red-700 text-sm font-medium ml-3">{language === 'hi' ? 'हटाएँ' : 'Dismiss'}</button>
             </div>
           )}
 

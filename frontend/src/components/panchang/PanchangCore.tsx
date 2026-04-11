@@ -1,5 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Moon, Star, Sparkles, Layers } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n';
+import { translateBackend } from '@/lib/backend-translations';
 
 interface PanchangCoreProps {
   tithi: { name: string; number: number; paksha: string; end_time?: string; next?: string };
@@ -31,6 +33,7 @@ interface ElementCardProps {
 }
 
 function ElementCard({ icon, label, value, subInfo, endTime, nextValue }: ElementCardProps) {
+  const { language } = useTranslation();
   const formatted = formatEndTime(endTime);
 
   return (
@@ -44,11 +47,11 @@ function ElementCard({ icon, label, value, subInfo, endTime, nextValue }: Elemen
         <div className="text-gray-600 text-sm">{subInfo}</div>
         {formatted && (
           <span className="text-sm px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold border border-sacred-gold/20">
-            upto {formatted}
+            {language === 'hi' ? 'तक' : 'upto'} {formatted}
           </span>
         )}
         {nextValue && (
-          <span className="text-sm text-gray-500">→ {nextValue}</span>
+          <span className="text-sm text-gray-500">→ {translateBackend(nextValue, language)}</span>
         )}
       </CardContent>
     </Card>
@@ -56,37 +59,38 @@ function ElementCard({ icon, label, value, subInfo, endTime, nextValue }: Elemen
 }
 
 function PanchangCore({ tithi, nakshatra, yoga, karana }: PanchangCoreProps) {
+  const { language } = useTranslation();
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <ElementCard
         icon={<Moon className="w-4 h-4" />}
-        label="Tithi"
-        value={tithi.name}
-        subInfo={tithi.paksha}
+        label={language === 'hi' ? 'तिथि' : 'Tithi'}
+        value={translateBackend(tithi.name, language)}
+        subInfo={translateBackend(tithi.paksha, language)}
         endTime={tithi.end_time}
-        nextValue={tithi.next}
+        nextValue={translateBackend(tithi.next, language)}
       />
       <ElementCard
         icon={<Star className="w-4 h-4" />}
-        label="Nakshatra"
-        value={nakshatra.name}
-        subInfo={`Pada ${nakshatra.pada} · Lord: ${nakshatra.lord}`}
+        label={language === 'hi' ? 'नक्षत्र' : 'Nakshatra'}
+        value={translateBackend(nakshatra.name, language)}
+        subInfo={`${language === 'hi' ? 'पाद' : 'Pada'} ${nakshatra.pada} · ${language === 'hi' ? 'स्वामी' : 'Lord'}: ${translateBackend(nakshatra.lord, language)}`}
         endTime={nakshatra.end_time}
-        nextValue={nakshatra.next}
+        nextValue={translateBackend(nakshatra.next, language)}
       />
       <ElementCard
         icon={<Sparkles className="w-4 h-4" />}
-        label="Yoga"
-        value={yoga.name}
+        label={language === 'hi' ? 'योग' : 'Yoga'}
+        value={translateBackend(yoga.name, language)}
         subInfo={`#${yoga.number}`}
         endTime={yoga.end_time}
-        nextValue={yoga.next}
+        nextValue={translateBackend(yoga.next, language)}
       />
       <ElementCard
         icon={<Layers className="w-4 h-4" />}
-        label="Karana"
-        value={karana.name}
-        subInfo={karana.second_karana ? `2nd: ${karana.second_karana}` : `#${karana.number}`}
+        label={language === 'hi' ? 'करण' : 'Karana'}
+        value={translateBackend(karana.name, language)}
+        subInfo={karana.second_karana ? `${language === 'hi' ? 'द्वितीय' : '2nd'}: ${translateBackend(karana.second_karana, language)}` : `#${karana.number}`}
         endTime={karana.end_time}
       />
     </div>

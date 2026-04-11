@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Calendar, Clock, Loader2, MapPin, Navigation } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
+import { translateBackend } from '@/lib/backend-translations';
 
 import {
   PanchangCore,
@@ -299,8 +300,8 @@ export default function Panchang() {
                 {/* Sun/Moon Sign + Day/Night Duration */}
                 <Card className="card-sacred border-sacred-gold">
                   <CardContent className="p-4 space-y-2 text-sm">
-                    {panchang.sun_sign && <div className="flex justify-between"><span className="text-cosmic-text">{t('panchang.sunSign')}</span><span className="font-medium text-cosmic-text">{panchang.sun_sign}</span></div>}
-                    {panchang.moon_sign && <div className="flex justify-between"><span className="text-cosmic-text">{t('panchang.moonSign')}</span><span className="font-medium text-cosmic-text">{panchang.moon_sign}</span></div>}
+                    {panchang.sun_sign && <div className="flex justify-between"><span className="text-cosmic-text">{t('panchang.sunSign')}</span><span className="font-medium text-cosmic-text">{translateBackend(panchang.sun_sign, language)}</span></div>}
+                    {panchang.moon_sign && <div className="flex justify-between"><span className="text-cosmic-text">{t('panchang.moonSign')}</span><span className="font-medium text-cosmic-text">{translateBackend(panchang.moon_sign, language)}</span></div>}
                     {panchang.dinamana && <div className="flex justify-between"><span className="text-cosmic-text">{t('panchang.dinamana')}</span><span className="font-medium text-cosmic-text">{panchang.dinamana}</span></div>}
                     {panchang.ratrimana && <div className="flex justify-between"><span className="text-cosmic-text">{t('panchang.ratrimana')}</span><span className="font-medium text-cosmic-text">{panchang.ratrimana}</span></div>}
                     {panchang.madhyahna && <div className="flex justify-between"><span className="text-cosmic-text">{t('panchang.madhyahna')}</span><span className="font-medium text-cosmic-text">{panchang.madhyahna}</span></div>}
@@ -336,7 +337,7 @@ export default function Panchang() {
               {panchang.hora_table && <ExpandableSection title={language === 'hi' ? 'होरा मुहूर्त' : 'Hora Muhurta'} desc={language === 'hi' ? '24 ग्रह घंटे' : '24 planetary hours'}>
                 <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr className="bg-sacred-gold/20"><th className="p-2 text-left text-sacred-gold-dark">{language === 'hi' ? 'होरा' : 'Hora'}</th><th className="p-2 text-left">{t('kundli.lord')}</th><th className="p-2">{t('table.start')}</th><th className="p-2">{t('table.end')}</th><th className="p-2">{t('table.type')}</th></tr></thead><tbody>
                 {(panchang.hora_table as any[]).map((h: any, i: number) => (
-                  <tr key={i} className="border-t border-sacred-gold"><td className="p-2 text-cosmic-text">{h.hora}</td><td className="p-2 text-cosmic-text font-medium">{h.lord}</td><td className="p-2 text-cosmic-text">{h.start}</td><td className="p-2 text-cosmic-text">{h.end}</td><td className="p-2"><span className={`text-sm px-2 py-0.5 rounded ${h.type === 'day' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}>{h.type}</span></td></tr>
+                  <tr key={i} className="border-t border-sacred-gold"><td className="p-2 text-cosmic-text">{h.hora}</td><td className="p-2 text-cosmic-text font-medium">{translateBackend(h.lord, language)}</td><td className="p-2 text-cosmic-text">{h.start}</td><td className="p-2 text-cosmic-text">{h.end}</td><td className="p-2"><span className={`text-sm px-2 py-0.5 rounded ${h.type === 'day' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}>{translateBackend(h.type, language)}</span></td></tr>
                 ))}</tbody></table></div>
               </ExpandableSection>}
 
@@ -344,7 +345,7 @@ export default function Panchang() {
               {panchang.lagna_table && <ExpandableSection title={language === 'hi' ? 'लग्न मुहूर्त' : 'Lagna Muhurta'} desc={language === 'hi' ? 'दिन भर की उदय राशि' : 'Rising sign through the day'}>
                 <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr className="bg-sacred-gold/20"><th className="p-2 text-left text-sacred-gold-dark">{t('section.lagna')}</th><th className="p-2">{t('table.start')}</th><th className="p-2">{t('table.end')}</th></tr></thead><tbody>
                 {(panchang.lagna_table as any[]).map((l: any, i: number) => (
-                  <tr key={i} className="border-t border-sacred-gold"><td className="p-2 text-cosmic-text font-medium">{l.lagna}</td><td className="p-2 text-cosmic-text">{l.start}</td><td className="p-2 text-cosmic-text">{l.end}</td></tr>
+                  <tr key={i} className="border-t border-sacred-gold"><td className="p-2 text-cosmic-text font-medium">{translateBackend(l.lagna, language)}</td><td className="p-2 text-cosmic-text">{l.start}</td><td className="p-2 text-cosmic-text">{l.end}</td></tr>
                 ))}</tbody></table></div>
               </ExpandableSection>}
 
@@ -352,7 +353,7 @@ export default function Panchang() {
               {panchang.gowri_panchang && <ExpandableSection title={language === 'hi' ? 'गौरी पंचांगम' : 'Gowri Panchangam'} desc={language === 'hi' ? 'दिन और रात के गुणवत्ता काल' : 'Day and night quality periods'}>
                 <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr className="bg-sacred-gold/20"><th className="p-2 text-left text-sacred-gold-dark">{t('table.period')}</th><th className="p-2">{t('table.start')}</th><th className="p-2">{t('table.end')}</th><th className="p-2">{t('table.type')}</th><th className="p-2">{language === 'hi' ? 'गुणवत्ता' : 'Quality'}</th></tr></thead><tbody>
                 {(panchang.gowri_panchang as any[]).map((g: any, i: number) => (
-                  <tr key={i} className={`border-t border-sacred-gold ${g.quality === 'good' ? 'bg-green-50' : ''}`}><td className="p-2 text-cosmic-text font-medium">{g.name}</td><td className="p-2 text-cosmic-text">{g.start}</td><td className="p-2 text-cosmic-text">{g.end}</td><td className="p-2"><span className={`text-sm px-2 py-0.5 rounded ${g.type === 'day' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}>{g.type}</span></td><td className="p-2"><span className={`text-sm px-2 py-0.5 rounded ${g.quality === 'good' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{g.quality === 'good' ? (language === 'hi' ? 'शुभ' : 'Shubh') : (language === 'hi' ? 'अशुभ' : 'Ashubh')}</span></td></tr>
+                  <tr key={i} className={`border-t border-sacred-gold ${g.quality === 'good' ? 'bg-green-50' : ''}`}><td className="p-2 text-cosmic-text font-medium">{translateBackend(g.name, language)}</td><td className="p-2 text-cosmic-text">{g.start}</td><td className="p-2 text-cosmic-text">{g.end}</td><td className="p-2"><span className={`text-sm px-2 py-0.5 rounded ${g.type === 'day' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}>{translateBackend(g.type, language)}</span></td><td className="p-2"><span className={`text-sm px-2 py-0.5 rounded ${g.quality === 'good' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{g.quality === 'good' ? (language === 'hi' ? 'शुभ' : 'Shubh') : (language === 'hi' ? 'अशुभ' : 'Ashubh')}</span></td></tr>
                 ))}</tbody></table></div>
               </ExpandableSection>}
 
@@ -361,8 +362,8 @@ export default function Panchang() {
                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                 {(panchang.chandrabalam as any[]).map((c: any, i: number) => (
                   <div key={i} className={`p-3 text-center border rounded ${c.good ? 'border-green-300 bg-green-50' : 'border-red-200 bg-red-50'}`}>
-                    <p className="text-sm font-medium text-cosmic-text">{c.rashi}</p>
-                    <p className={`text-sm font-semibold ${c.good ? 'text-green-600' : 'text-red-500'}`}>{c.balam}</p>
+                    <p className="text-sm font-medium text-cosmic-text">{translateBackend(c.rashi, language)}</p>
+                    <p className={`text-sm font-semibold ${c.good ? 'text-green-600' : 'text-red-500'}`}>{translateBackend(c.balam, language)}</p>
                     <p className="text-sm text-cosmic-text">{t('common.house')} {c.house_from_moon}</p>
                   </div>
                 ))}
@@ -374,8 +375,8 @@ export default function Panchang() {
                 <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2">
                 {(panchang.tarabalam as any[]).map((t: any, i: number) => (
                   <div key={i} className={`p-2 text-center border rounded ${t.good ? 'border-green-300 bg-green-50' : 'border-red-200 bg-red-50'}`}>
-                    <p className="text-sm font-medium text-cosmic-text">{t.nakshatra}</p>
-                    <p className={`text-sm font-semibold ${t.good ? 'text-green-600' : 'text-red-500'}`}>{t.tara}</p>
+                    <p className="text-sm font-medium text-cosmic-text">{translateBackend(t.nakshatra, language)}</p>
+                    <p className={`text-sm font-semibold ${t.good ? 'text-green-600' : 'text-red-500'}`}>{translateBackend(t.tara, language)}</p>
                   </div>
                 ))}
                 </div>
@@ -385,7 +386,7 @@ export default function Panchang() {
               {panchang.do_ghati_muhurta && <ExpandableSection title={language === 'hi' ? 'दो घटी मुहूर्त' : 'Do Ghati Muhurta'} desc={language === 'hi' ? 'दिन का 30 मुहूर्त विभाजन' : '30 Muhurta division of the day'}>
                 <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr className="bg-sacred-gold/20"><th className="p-2 text-left text-sacred-gold-dark">#</th><th className="p-2 text-left">{t('table.name')}</th><th className="p-2">{t('table.start')}</th><th className="p-2">{t('table.end')}</th><th className="p-2">{language === 'hi' ? 'गुणवत्ता' : 'Quality'}</th></tr></thead><tbody>
                 {(panchang.do_ghati_muhurta as any[]).map((m: any, i: number) => (
-                  <tr key={i} className={`border-t border-sacred-gold ${m.quality === 'good' ? 'bg-green-50' : ''}`}><td className="p-2 text-cosmic-text">{m.muhurta}</td><td className="p-2 text-cosmic-text font-medium">{m.name}</td><td className="p-2 text-cosmic-text">{m.start}</td><td className="p-2 text-cosmic-text">{m.end}</td><td className="p-2"><span className={`text-sm px-2 py-0.5 rounded ${m.quality === 'good' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>{m.quality}</span></td></tr>
+                  <tr key={i} className={`border-t border-sacred-gold ${m.quality === 'good' ? 'bg-green-50' : ''}`}><td className="p-2 text-cosmic-text">{m.muhurta}</td><td className="p-2 text-cosmic-text font-medium">{translateBackend(m.name, language)}</td><td className="p-2 text-cosmic-text">{m.start}</td><td className="p-2 text-cosmic-text">{m.end}</td><td className="p-2"><span className={`text-sm px-2 py-0.5 rounded ${m.quality === 'good' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>{translateBackend(m.quality, language)}</span></td></tr>
                 ))}</tbody></table></div>
               </ExpandableSection>}
 

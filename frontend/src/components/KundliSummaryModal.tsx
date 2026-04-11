@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react';
 import { X, Download, Printer, ChevronRight, MapPin, Calendar, Clock, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from '@/lib/i18n';
+import { translateBackend, translatePlanet, translateSign, translateNakshatra, translateLabel } from '@/lib/backend-translations';
 
 interface KundliData {
   name: string;
@@ -72,6 +74,7 @@ interface KundliSummaryModalProps {
 export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullReport }: KundliSummaryModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const [showChart, setShowChart] = useState(true);
+  const { t, language } = useTranslation();
 
   if (!isOpen) return null;
 
@@ -102,9 +105,9 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
             </div>
             <div>
               <h2 className="text-xl font-bold text-white" style={{ fontFamily: 'var(--font-sacred, Inter, sans-serif)' }}>
-                Vedic Birth Chart
+                {t('section.vedicBirthChart')}
               </h2>
-              <p className="text-sm text-[#d4af37]">Complete Analysis Summary</p>
+              <p className="text-sm text-[#d4af37]">{language === 'hi' ? 'पूर्ण विश्लेषण सारांश' : 'Complete Analysis Summary'}</p>
             </div>
           </div>
           
@@ -115,7 +118,7 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
               className="hidden sm:flex items-center gap-2 border-[var(--sacred-gold-hex)] text-[var(--sacred-gold-hex)] hover:bg-[var(--sacred-gold-hex)]"
             >
               <Download className="w-4 h-4" />
-              PDF
+              {language === 'hi' ? 'पीडीएफ' : 'PDF'}
             </Button>
             <Button
               variant="outline"
@@ -123,13 +126,13 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
               className="hidden sm:flex items-center gap-2 border-[var(--sacred-gold-hex)] text-[var(--sacred-gold-hex)] hover:bg-[var(--sacred-gold-hex)]"
             >
               <Printer className="w-4 h-4" />
-              Print
+              {language === 'hi' ? 'प्रिंट' : 'Print'}
             </Button>
             <Button
               onClick={onViewFullReport}
               className="flex items-center gap-2 bg-[var(--sacred-gold-hex)] text-black hover:bg-[var(--sacred-gold)]"
             >
-              Full Report
+              {t('kundli.fullReport')}
               <ChevronRight className="w-4 h-4" />
             </Button>
             <button
@@ -149,28 +152,28 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
             <div className="flex items-center gap-2">
               <User className="w-4 h-4 text-[#d4af37]" />
               <div>
-                <p className="text-sm text-white">Name</p>
+                <p className="text-sm text-white">{language === 'hi' ? 'नाम' : 'Name'}</p>
                 <p className="text-sm font-medium text-white">{data.name}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4 text-[#d4af37]" />
               <div>
-                <p className="text-sm text-white">Birth Date</p>
+                <p className="text-sm text-white">{language === 'hi' ? 'जन्म तिथि' : 'Birth Date'}</p>
                 <p className="text-sm font-medium text-white">{data.date}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-[#d4af37]" />
               <div>
-                <p className="text-sm text-white">Time</p>
+                <p className="text-sm text-white">{language === 'hi' ? 'समय' : 'Time'}</p>
                 <p className="text-sm font-medium text-white">{data.time}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <MapPin className="w-4 h-4 text-[#d4af37]" />
               <div>
-                <p className="text-sm text-white">Place</p>
+                <p className="text-sm text-white">{language === 'hi' ? 'स्थान' : 'Place'}</p>
                 <p className="text-sm font-medium text-white">{data.place}</p>
               </div>
             </div>
@@ -184,7 +187,7 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
               {/* Chart Container */}
               <div className="bg-[#111] rounded-xl border border-[var(--sacred-gold-hex)] p-4">
                 <h3 className="text-lg font-semibold text-[#d4af37] mb-3 text-center" style={{ fontFamily: 'var(--font-sacred, Inter, sans-serif)' }}>
-                  Rashi Chart (D1)
+                  {t('section.rashiD1')}
                 </h3>
                 
                 {/* North Indian Style Chart */}
@@ -263,23 +266,23 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
                 <div className="mt-4 p-3 bg-[var(--sacred-gold-hex)] rounded-lg border border-[var(--sacred-gold-hex)]">
                   <div className="flex flex-wrap gap-4 justify-center text-center">
                     <div>
-                      <p className="text-sm text-white">Ascendant</p>
-                      <p className="text-lg font-bold text-[#d4af37]">Leo</p>
+                      <p className="text-sm text-white">{language === 'hi' ? 'लग्न' : 'Ascendant'}</p>
+                      <p className="text-lg font-bold text-[#d4af37]">{translateSign('Leo', language)}</p>
                     </div>
                     <div className="w-px bg-[var(--sacred-gold-hex)]" />
                     <div>
-                      <p className="text-sm text-white">Moon Sign</p>
-                      <p className="text-lg font-bold text-[#C0C0C0]">Taurus</p>
+                      <p className="text-sm text-white">{language === 'hi' ? 'चंद्र राशि' : 'Moon Sign'}</p>
+                      <p className="text-lg font-bold text-[#C0C0C0]">{translateSign('Taurus', language)}</p>
                     </div>
                     <div className="w-px bg-[var(--sacred-gold-hex)]" />
                     <div>
-                      <p className="text-sm text-white">Sun Sign</p>
-                      <p className="text-lg font-bold text-[#FFD700]">Leo</p>
+                      <p className="text-sm text-white">{language === 'hi' ? 'सूर्य राशि' : 'Sun Sign'}</p>
+                      <p className="text-lg font-bold text-[#FFD700]">{translateSign('Leo', language)}</p>
                     </div>
                     <div className="w-px bg-[var(--sacred-gold-hex)]" />
                     <div>
-                      <p className="text-sm text-white">Nakshatra</p>
-                      <p className="text-lg font-bold text-white">Rohini</p>
+                      <p className="text-sm text-white">{language === 'hi' ? 'नक्षत्र' : 'Nakshatra'}</p>
+                      <p className="text-lg font-bold text-white">{translateNakshatra('Rohini', language)}</p>
                     </div>
                   </div>
                 </div>
@@ -288,16 +291,16 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
               {/* Divisional Charts */}
               <div className="grid grid-cols-3 gap-3">
                 <div className="bg-[#111] rounded-lg border border-[var(--sacred-gold-hex)] p-3 text-center">
-                  <p className="text-sm text-white mb-1">Navamsha (D9)</p>
-                  <p className="text-lg font-semibold text-[#d4af37]">Scorpio</p>
+                  <p className="text-sm text-white mb-1">{t('section.navamshaD9')}</p>
+                  <p className="text-lg font-semibold text-[#d4af37]">{translateSign('Scorpio', language)}</p>
                 </div>
                 <div className="bg-[#111] rounded-lg border border-[var(--sacred-gold-hex)] p-3 text-center">
-                  <p className="text-sm text-white mb-1">Dashamsha (D10)</p>
-                  <p className="text-lg font-semibold text-[#d4af37]">Capricorn</p>
+                  <p className="text-sm text-white mb-1">{language === 'hi' ? 'दशमांश (D10)' : 'Dashamsha (D10)'}</p>
+                  <p className="text-lg font-semibold text-[#d4af37]">{translateSign('Capricorn', language)}</p>
                 </div>
                 <div className="bg-[#111] rounded-lg border border-[var(--sacred-gold-hex)] p-3 text-center">
-                  <p className="text-sm text-white mb-1">Saptamsha (D7)</p>
-                  <p className="text-lg font-semibold text-[#d4af37]">Libra</p>
+                  <p className="text-sm text-white mb-1">{language === 'hi' ? 'सप्तमांश (D7)' : 'Saptamsha (D7)'}</p>
+                  <p className="text-lg font-semibold text-[#d4af37]">{translateSign('Libra', language)}</p>
                 </div>
               </div>
             </div>
@@ -307,7 +310,7 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
               {/* Planet Positions */}
               <div className="bg-[#111] rounded-xl border border-[var(--sacred-gold-hex)] p-3">
                 <h3 className="text-sm font-semibold text-[#d4af37] mb-2" style={{ fontFamily: 'var(--font-sacred, Inter, sans-serif)' }}>
-                  Planetary Positions
+                  {language === 'hi' ? 'ग्रह स्थिति' : 'Planetary Positions'}
                 </h3>
                 <div className="space-y-1 max-h-48 overflow-y-auto">
                   {samplePlanets.map((planet, idx) => (
@@ -320,10 +323,10 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
                           className="w-2 h-2 rounded-full"
                           style={{ backgroundColor: planetColors[planet.planet] || '#fff' }}
                         />
-                        <span className="text-white font-medium">{planet.planet}</span>
+                        <span className="text-white font-medium">{translatePlanet(planet.planet, language)}</span>
                       </div>
                       <div className="text-right">
-                        <span className="text-[#d4af37]">{planet.sign}</span>
+                        <span className="text-[#d4af37]">{translateSign(planet.sign, language)}</span>
                         <span className="text-white ml-1">H{planet.house}</span>
                       </div>
                     </div>
@@ -334,7 +337,7 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
               {/* Current Dasha */}
               <div className="bg-[#111] rounded-xl border border-[var(--sacred-gold-hex)] p-3">
                 <h3 className="text-sm font-semibold text-[#d4af37] mb-2" style={{ fontFamily: 'var(--font-sacred, Inter, sans-serif)' }}>
-                  Vimshottari Dasha
+                  {t('section.vimshottariDasha')}
                 </h3>
                 <div className="space-y-2">
                   {sampleDasha.map((period, idx) => (
@@ -343,8 +346,8 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
                       className={`p-2 rounded text-sm ${idx === 0 ? 'bg-[var(--sacred-gold-hex)] border border-[var(--sacred-gold-hex)]' : 'bg-black'}`}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className="font-semibold text-white">{period.planet} Mahadasha</span>
-                        <span className="text-[#d4af37]">{period.years} Years</span>
+                        <span className="font-semibold text-white">{translatePlanet(period.planet, language)} {t('kundli.mahadasha')}</span>
+                        <span className="text-[#d4af37]">{period.years} {language === 'hi' ? 'वर्ष' : 'Years'}</span>
                       </div>
                       <p className="text-white">{period.startDate} - {period.endDate}</p>
                     </div>
@@ -355,20 +358,20 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
               {/* Quick Stats */}
               <div className="grid grid-cols-2 gap-2 mb-4">
                 <div className="bg-[#111] rounded-lg border border-[var(--sacred-gold-hex)] p-2 text-center">
-                  <p className="text-sm text-white">Gana</p>
-                  <p className="text-sm font-semibold text-white">Manushya</p>
+                  <p className="text-sm text-white">{language === 'hi' ? 'गण' : 'Gana'}</p>
+                  <p className="text-sm font-semibold text-white">{translateBackend('Manushya', language)}</p>
                 </div>
                 <div className="bg-[#111] rounded-lg border border-[var(--sacred-gold-hex)] p-2 text-center">
-                  <p className="text-sm text-white">Yoni</p>
-                  <p className="text-sm font-semibold text-white">Serpent</p>
+                  <p className="text-sm text-white">{language === 'hi' ? 'योनि' : 'Yoni'}</p>
+                  <p className="text-sm font-semibold text-white">{translateBackend('Serpent', language)}</p>
                 </div>
                 <div className="bg-[#111] rounded-lg border border-[var(--sacred-gold-hex)] p-2 text-center">
-                  <p className="text-sm text-white">Nadi</p>
-                  <p className="text-sm font-semibold text-white">Kapha</p>
+                  <p className="text-sm text-white">{language === 'hi' ? 'नाड़ी' : 'Nadi'}</p>
+                  <p className="text-sm font-semibold text-white">{translateBackend('Kapha', language)}</p>
                 </div>
                 <div className="bg-[#111] rounded-lg border border-[var(--sacred-gold-hex)] p-2 text-center">
-                  <p className="text-sm text-white">Varna</p>
-                  <p className="text-sm font-semibold text-white">Kshatriya</p>
+                  <p className="text-sm text-white">{language === 'hi' ? 'वर्ण' : 'Varna'}</p>
+                  <p className="text-sm font-semibold text-white">{translateBackend('Kshatriya', language)}</p>
                 </div>
               </div>
 
@@ -376,20 +379,20 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
               {presentYogas.length > 0 && (
                 <div className="bg-[#111] rounded-xl border border-green-300 p-3 mb-4">
                   <h3 className="text-sm font-semibold text-green-400 mb-2 flex items-center gap-2" style={{ fontFamily: 'var(--font-sacred, Inter, sans-serif)' }}>
-                    <span>✦</span> Present Yogas ({presentYogas.length})
+                    <span>✦</span> {language === 'hi' ? 'उपस्थित योग' : 'Present Yogas'} ({presentYogas.length})
                   </h3>
                   <div className="space-y-2">
                     {presentYogas.map((yoga, idx) => (
                       <div key={idx} className="p-2 rounded bg-green-500 border border-green-300 text-sm">
                         <div className="flex items-center justify-between mb-1">
-                          <span className="font-semibold text-white">{yoga.name}</span>
+                          <span className="font-semibold text-white">{translateBackend(yoga.name, language)}</span>
                           <span className={`px-2 py-0.5 rounded-full text-label ${
                             yoga.strength === 'Strong' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
                           }`}>
-                            {yoga.strength}
+                            {translateLabel(yoga.strength, language)}
                           </span>
                         </div>
-                        <p className="text-green-400">{yoga.planets} • {yoga.effect}</p>
+                        <p className="text-green-400">{translateBackend(yoga.planets, language)} • {translateBackend(yoga.effect, language)}</p>
                       </div>
                     ))}
                   </div>
@@ -400,21 +403,21 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
               {presentDoshas.length > 0 && (
                 <div className="bg-[#111] rounded-xl border border-red-300 p-3">
                   <h3 className="text-sm font-semibold text-red-400 mb-2 flex items-center gap-2" style={{ fontFamily: 'var(--font-sacred, Inter, sans-serif)' }}>
-                    <span>⚠</span> Present Doshas ({presentDoshas.length})
+                    <span>⚠</span> {language === 'hi' ? 'उपस्थित दोष' : 'Present Doshas'} ({presentDoshas.length})
                   </h3>
                   <div className="space-y-2">
                     {presentDoshas.map((dosha, idx) => (
                       <div key={idx} className="p-2 rounded bg-red-500 border border-red-300 text-sm">
                         <div className="flex items-center justify-between mb-1">
-                          <span className="font-semibold text-white">{dosha.name}</span>
+                          <span className="font-semibold text-white">{translateBackend(dosha.name, language)}</span>
                           <span className={`px-2 py-0.5 rounded-full text-label ${
                             dosha.severity === 'High' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'
                           }`}>
-                            {dosha.severity}
+                            {translateLabel(dosha.severity, language)}
                           </span>
                         </div>
-                        <p className="text-red-400 mb-1">{dosha.planet} • {dosha.effect}</p>
-                        <p className="text-label text-white">💡 Remedy: {dosha.remedy}</p>
+                        <p className="text-red-400 mb-1">{translatePlanet(dosha.planet, language)} • {translateBackend(dosha.effect, language)}</p>
+                        <p className="text-label text-white">💡 {language === 'hi' ? 'उपाय' : 'Remedy'}: {translateBackend(dosha.remedy, language)}</p>
                       </div>
                     ))}
                   </div>
@@ -424,7 +427,7 @@ export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullRe
               {/* No Yogas/Doshas Message */}
               {presentYogas.length === 0 && presentDoshas.length === 0 && (
                 <div className="bg-[#111] rounded-xl border border-[var(--sacred-gold-hex)] p-3 text-center">
-                  <p className="text-sm text-white">No significant Yogas or Doshas detected</p>
+                  <p className="text-sm text-white">{language === 'hi' ? 'कोई महत्वपूर्ण योग या दोष नहीं मिला' : 'No significant Yogas or Doshas detected'}</p>
                 </div>
               )}
             </div>
