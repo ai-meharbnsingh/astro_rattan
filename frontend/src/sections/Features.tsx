@@ -1,16 +1,14 @@
 import { useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Card, CardContent } from '@/components/ui/card';
 import { useTranslation } from '@/lib/i18n';
-import { Star, Clock, BookOpen, Shield, Calendar, Calculator, Globe, Users } from 'lucide-react';
+import { Star, Clock, BookOpen, Shield, Calendar, Calculator, Globe, Users, Check, X, Sparkles } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Features() {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
   const { language } = useTranslation();
   const l = (en: string, hi: string) => (language === 'hi' ? hi : en);
 
@@ -65,19 +63,33 @@ export default function Features() {
     },
   ];
 
+  const comparisonData = [
+    { feature: l('Lal Kitab System', 'लाल किताब सिस्टम'), us: l('22 Specialization Tabs', '22 विशेषज्ञता टैब'), them: l('Basic Remedies Only', 'केवल बुनियादी उपाय') },
+    { feature: l('Chandra Chalana Protocol', 'चंद्र चालना प्रोटोकॉल'), us: l('Full 43-Day Tracker', 'पूर्ण 43-दिवसीय ट्रैकर'), them: l('Not Available', 'उपलब्ध नहीं') },
+    { feature: l('Nishaniyan Matcher', 'निशानियां मैचर'), us: l('Physical Sign Mapping', 'भौतिक संकेत मैपिंग'), them: l('Not Available', 'उपलब्ध नहीं') },
+    { feature: l('Remedy Tracker', 'उपाय ट्रैकर'), us: l('With Streaks & Journal', 'स्ट्रीक्स और जर्नल के साथ'), them: l('Static Lists Only', 'केवल स्थिर सूचियां') },
+    { feature: l('Interpretation Depth', 'व्याख्या गहराई'), us: l('Classical Text-Based', 'शास्त्रीय ग्रंथ-आधारित'), them: l('Generic Templates', 'सामान्य टेम्पलेट') },
+    { feature: l('Client Management', 'क्लाइंट प्रबंधन'), us: l('Built-in Dashboard', 'अंतर्निहित डैशबोर्ड'), them: l('Not Available', 'उपलब्ध नहीं') },
+    { feature: l('Divisional Charts', 'विभाजन चार्ट'), us: l('D1-D60 Complete', 'D1-D60 पूर्ण'), them: l('D9 Only', 'केवल D9') },
+    { feature: l('Calculation Engine', 'गणना इंजन'), us: l('Swiss Ephemeris', 'स्विस एफेमेरिस'), them: l('Lookup Tables', 'लुकअप टेबल') },
+  ];
+
   useEffect(() => {
     if (gsap.globalTimeline.timeScale() === 0) return;
     const ctx = gsap.context(() => {
       gsap.fromTo('.features-title', { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out', scrollTrigger: { trigger: sectionRef.current, start: 'top 80%' } });
       gsap.fromTo('.feature-card', { y: 80, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: 'power3.out', scrollTrigger: { trigger: sectionRef.current, start: 'top 70%' } });
+      gsap.fromTo('.compare-row', { x: -30, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, stagger: 0.08, ease: 'power2.out', scrollTrigger: { trigger: '.compare-table', start: 'top 80%' } });
     }, sectionRef);
     return () => ctx.revert();
   }, []);
 
   return (
-    <section ref={sectionRef} id="features" className="relative pt-4 pb-24 bg-cosmic-bg">
+    <section ref={sectionRef} id="features" className="relative py-24 bg-cosmic-bg">
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {/* Section Header */}
         <div className="features-title text-center mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold/10 border border-sacred-gold/30 mb-6">
             <span className="text-sm font-medium text-sacred-gold-dark uppercase tracking-wider">
@@ -88,25 +100,21 @@ export default function Features() {
             {l('Everything You Need', 'आपको जो कुछ भी चाहिए')}<br />
             <span className="text-sacred-gold-dark">{l('In One Platform', 'एक ही प्लेटफॉर्म में')}</span>
           </h2>
-          <div className="max-w-3xl mx-auto space-y-4 text-cosmic-text">
-            <p className="text-lg">
-              {l('Most astrology apps use lookup tables and generic predictions. ', 'अधिकांश ज्योतिष ऐप लुकअप टेबल और सामान्य भविष्यवाणी का उपयोग करते हैं। ')}
-              <strong className="text-sacred-gold-dark">{l('Astro Rattan computes every position from Swiss Ephemeris', 'Astro Rattan Swiss Ephemeris से हर स्थिति की गणना करता है')}</strong>
-              {l(' — the same library used by research astronomers — accurate to arc-seconds.', ' — यही लाइब्रेरी शोध खगोलविद भी उपयोग करते हैं — आर्क-सेकंड तक सटीक।')}
-            </p>
-          </div>
+          <p className="max-w-3xl mx-auto text-lg text-cosmic-text/80">
+            {l('Most astrology apps use lookup tables and generic predictions. ', 'अधिकांश ज्योतिष ऐप लुकअप टेबल और सामान्य भविष्यवाणी का उपयोग करते हैं। ')}
+            <strong className="text-sacred-gold-dark">{l('Astro Rattan computes every position from Swiss Ephemeris', 'Astro Rattan Swiss Ephemeris से हर स्थिति की गणना करता है')}</strong>
+            {l(' — the same library used by research astronomers — accurate to arc-seconds.', ' — यही लाइब्रेरी शोध खगोलविद भी उपयोग करते हैं — आर्क-सेकंड तक सटीक।')}
+          </p>
         </div>
 
+        {/* Feature Cards Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, index) => (
             <Card
               key={index}
-              className={`feature-card group relative bg-cosmic-bg border border-sacred-gold/30 overflow-hidden hover:border-sacred-gold transition-all duration-300 hover:shadow-lg hover:shadow-sacred-gold/10`}
+              className="feature-card group relative bg-cosmic-bg border border-sacred-gold/30 overflow-hidden hover:border-sacred-gold transition-all duration-300 hover:shadow-lg hover:shadow-sacred-gold/10"
             >
-              {/* Gradient background */}
               <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-              
-              {/* Badge */}
               {feature.badge && (
                 <div className="absolute top-4 right-4 z-10">
                   <span className="px-2 py-1 text-xs font-bold text-white bg-sacred-gold-dark rounded">
@@ -114,24 +122,16 @@ export default function Features() {
                   </span>
                 </div>
               )}
-              
               <CardContent className="relative p-6">
-                {/* Icon */}
                 <div className="w-12 h-12 rounded-lg bg-sacred-gold/10 flex items-center justify-center text-sacred-gold-dark mb-4 group-hover:bg-sacred-gold/20 transition-colors">
                   {feature.icon}
                 </div>
-                
-                {/* Subtitle */}
                 <p className="text-xs font-semibold text-sacred-gold-dark uppercase tracking-wider mb-1">
                   {feature.subtitle}
                 </p>
-                
-                {/* Title */}
                 <h3 className="text-lg font-sans font-semibold text-cosmic-text mb-3 uppercase tracking-wide">
                   {feature.title}
                 </h3>
-                
-                {/* Description */}
                 <p className="text-sm text-cosmic-text/70 leading-relaxed">
                   {feature.desc}
                 </p>
@@ -159,10 +159,77 @@ export default function Features() {
             <div className="text-sm text-cosmic-text/70">{l('Scriptural Systems', 'शास्त्रीय प्रणालियां')}</div>
           </div>
         </div>
-      </div>
 
+        {/* Comparison Table */}
+        <div className="compare-table max-w-4xl mx-auto mt-24">
+          <h3 className="text-2xl sm:text-3xl font-sans text-center text-cosmic-text mb-4">
+            {l('Astro Rattan vs Others', 'एस्ट्रो रतन बनाम अन्य')}
+          </h3>
+          <p className="text-center text-cosmic-text/60 mb-10">
+            {l('See exactly what sets us apart', 'देखें हम क्या अलग देते हैं')}
+          </p>
+
+          <div className="bg-cosmic-bg/80 rounded-2xl border border-sacred-gold/20 overflow-hidden">
+            {/* Table Header */}
+            <div className="grid grid-cols-3 gap-4 p-4 bg-sacred-gold/10 border-b border-sacred-gold/20">
+              <div className="text-sm font-semibold text-cosmic-text/70 uppercase tracking-wider">
+                {l('Feature', 'सुविधा')}
+              </div>
+              <div className="text-center">
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sacred-gold/20 text-sacred-gold-dark text-sm font-semibold">
+                  <Sparkles className="w-3 h-3" /> Astro Rattan
+                </span>
+              </div>
+              <div className="text-center text-sm font-semibold text-cosmic-text/50">
+                {l('Other Apps', 'अन्य ऐप्स')}
+              </div>
+            </div>
+
+            {/* Table Rows */}
+            {comparisonData.map((row, index) => (
+              <div
+                key={index}
+                className={`compare-row grid grid-cols-3 gap-4 p-4 items-center ${
+                  index !== comparisonData.length - 1 ? 'border-b border-sacred-gold/10' : ''
+                }`}
+              >
+                <div className="text-sm text-cosmic-text font-medium">{row.feature}</div>
+                <div className="flex items-center justify-center gap-2">
+                  <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                  <span className="text-sm text-cosmic-text text-center">{row.us}</span>
+                </div>
+                <div className="flex items-center justify-center gap-2">
+                  <X className="w-4 h-4 text-red-400 flex-shrink-0" />
+                  <span className="text-sm text-cosmic-text/50 text-center">{row.them}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* CTA */}
+        <div className="text-center mt-16">
+          <p className="text-xl text-cosmic-text mb-6">
+            {l('Ready to experience the difference?', 'अंतर अनुभव करने के लिए तैयार हैं?')}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a
+              href="/login"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-sacred-gold-dark text-white rounded-lg font-semibold hover:bg-sacred-gold transition-all shadow-lg shadow-sacred-gold/20"
+            >
+              {l('Get Started Free', 'मुफ्त शुरू करें')}
+              <Sparkles className="w-4 h-4" />
+            </a>
+            <a
+              href="/kundli"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-sacred-gold/50 text-sacred-gold-dark rounded-lg font-semibold hover:bg-sacred-gold/10 transition-all"
+            >
+              {l('Try Demo Chart', 'डेमो चार्ट देखें')}
+            </a>
+          </div>
+        </div>
+
+      </div>
     </section>
   );
 }
-
-
