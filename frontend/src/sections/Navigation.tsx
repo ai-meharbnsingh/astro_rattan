@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Sparkles, LogOut, Shield } from 'lucide-react';
+import { Menu, X, Sparkles, LogOut, Shield, MessageSquare } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/lib/i18n';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
@@ -53,6 +53,15 @@ export default function Navigation() {
                   {t(link.key)}
                 </Link>
               ))}
+              {isAuthenticated && (
+                <Link
+                  to="/feedback"
+                  className="flex items-center gap-1.5 text-base text-cosmic-text hover:text-sacred-gold-dark transition-colors font-sans tracking-wide uppercase"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  Feedback
+                </Link>
+              )}
               {serviceLinks.map((link) => (
                 <Link
                   key={link.key}
@@ -122,6 +131,16 @@ export default function Navigation() {
                 {t(link.key)}
               </Link>
             ))}
+            {isAuthenticated && (
+              <Link
+                to="/feedback"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-2 py-3 px-3 text-cosmic-text hover:text-sacred-gold-dark hover:bg-gray-50 dark transition-colors font-sans"
+              >
+                <MessageSquare className="w-4 h-4" />
+                Feedback
+              </Link>
+            )}
             {serviceLinks.map((link) => (
               <Link
                 key={link.key}

@@ -150,6 +150,30 @@ MIGRATIONS: List[Tuple[int, str, str]] = [
         # SQL not used — handled via _apply_lk_fk_constraints called in run_migrations
         "SELECT 1;",
     ),
+    (
+        11,
+        "Add feedback table — user ratings, text, action_taken, admin_remarks",
+        """
+    CREATE TABLE IF NOT EXISTS feedback (
+        id           TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+        user_id      TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        rating_interface    INTEGER CHECK(rating_interface    BETWEEN 1 AND 5),
+        rating_reports      INTEGER CHECK(rating_reports      BETWEEN 1 AND 5),
+        rating_calculations INTEGER CHECK(rating_calculations BETWEEN 1 AND 5),
+        feedback_text TEXT,
+        status       TEXT NOT NULL DEFAULT 'open'
+                     CHECK(status IN ('open','closed')),
+        action_taken TEXT NOT NULL DEFAULT 'NR'
+                     CHECK(action_taken IN ('yes','no','NR')),
+        admin_remarks TEXT,
+        created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        updated_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS idx_feedback_user    ON feedback(user_id);
+    CREATE INDEX IF NOT EXISTS idx_feedback_status  ON feedback(status);
+    CREATE INDEX IF NOT EXISTS idx_feedback_created ON feedback(created_at DESC);
+    """,
+    ),
 ]
 
 

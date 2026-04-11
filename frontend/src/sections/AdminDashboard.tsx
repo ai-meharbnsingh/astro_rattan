@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import {
   Users, Star, Calendar, Activity, Shield, ChevronRight, ChevronLeft,
   ToggleLeft, ToggleRight, Zap, AlertTriangle, Clock, Radio,
-  TrendingUp, Globe, User, RefreshCw,
+  TrendingUp, Globe, User, RefreshCw, MessageSquare, CheckCircle2,
+  ChevronDown, ChevronUp, Filter,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { api, formatDate } from '@/lib/api';
@@ -57,6 +58,186 @@ interface AnalyticsData {
   top_pages: Array<{ path: string; views: number; visitors: number }>;
   hourly_today: Array<{ hour: number; views: number }>;
   daily_last_30: Array<{ day: string; views: number; visitors: number }>;
+}
+
+interface FeedbackItem {
+  id: string;
+  user_name: string;
+  user_email: string;
+  rating_interface: number | null;
+  rating_reports: number | null;
+  rating_calculations: number | null;
+  feedback_text: string | null;
+  status: 'open' | 'closed';
+  action_taken: 'yes' | 'no' | 'NR';
+  admin_remarks: string | null;
+  created_at: string;
+}
+
+interface WordCloudWord { word: string; count: number; }
+
+// ── Word cloud (open feedback only) ──────────────────────────────────────────
+const CLOUD_COLORS = [
+  'text-sacred-gold-dark', 'text-amber-500', 'text-orange-500',
+  'text-blue-500', 'text-purple-500', 'text-teal-500',
+  'text-rose-500', 'text-indigo-500', 'text-emerald-600',
+];
+
+function WordCloud({ words }: { words: WordCloudWord[] }) {
+  if (!words.length) {
+    return (
+      <div className="flex flex-col items-center justify-center py-8 text-gray-400 text-sm gap-2">
+        <MessageSquare className="w-6 h-6 text-gray-200" />
+        <span>Word cloud appears when users submit open feedback</span>
+      </div>
+    );
+  }
+  const maxCount = words[0]?.count || 1;
+  return (
+    <div className="flex flex-wrap gap-x-4 gap-y-2 items-center justify-center px-6 py-5 min-h-[80px]">
+      {words.map((w, i) => {
+        const pct = w.count / maxCount;
+        const size = Math.round(12 + pct * 28); // 12–40 px
+        return (
+          <span
+            key={w.word}
+            className={`font-medium cursor-default select-none transition-transform hover:scale-110 ${CLOUD_COLORS[i % CLOUD_COLORS.length]}`}
+            style={{ fontSize: `${size}px`, opacity: 0.45 + pct * 0.55 }}
+            title={`"${w.word}" — ${w.count} mention${w.count !== 1 ? 's' : ''}`}
+          >
+            {w.word}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
+// ── Inline-editable feedback row ──────────────────────────────────────────────
+function FeedbackRow({
+  item, onUpdated,
+}: {
+  item: FeedbackItem;
+  onUpdated: (id: string, patch: Partial<FeedbackItem>) => void;
+}) {
+  const [remarks, setRemarks] = useState(item.admin_remarks ?? '');
+  const [expanded, setExpanded] = useState(false);
+  const hasLong = (item.feedback_text?.length ?? 0) > 100;
+
+  const saveAction = async (action: string) => {
+    try {
+      await api.patch(`/api/admin/feedback/${item.id}`, { action_taken: action });
+      onUpdated(item.id, { action_taken: action as FeedbackItem['action_taken'] });
+    } catch (e) { console.error(e); }
+  };
+
+  const saveRemarks = async () => {
+    const val = remarks.trim();
+    if (val === (item.admin_remarks ?? '')) return;
+    try {
+      await api.patch(`/api/admin/feedback/${item.id}`, { admin_remarks: val });
+      onUpdated(item.id, { admin_remarks: val });
+    } catch (e) { console.error(e); }
+  };
+
+  const ratingCell = (v: number | null) =>
+    v ? (
+      <span className="inline-flex items-center gap-0.5">
+        <Star className="w-3 h-3 text-sacred-gold-dark fill-current" />
+        <span className="text-xs font-medium text-cosmic-text">{v}</span>
+      </span>
+    ) : <span className="text-xs text-gray-300">—</span>;
+
+  const actionStyle: Record<string, string> = {
+    yes: 'text-green-700 bg-green-50 border-green-200',
+    no:  'text-red-600 bg-red-50 border-red-200',
+    NR:  'text-gray-500 bg-gray-50 border-gray-200',
+  };
+
+  return (
+    <tr className="border-b border-gray-50 hover:bg-sacred-gold/4 transition-colors align-top">
+      {/* User */}
+      <td className="py-3 px-4">
+        <p className="text-sm font-medium text-cosmic-text">{item.user_name}</p>
+        <p className="text-xs text-gray-400">{item.user_email}</p>
+      </td>
+
+      {/* Ratings */}
+      <td className="py-3 px-4">
+        <div className="flex flex-col gap-1 text-xs text-gray-400">
+          <span>UI {ratingCell(item.rating_interface)}</span>
+          <span>Rpt {ratingCell(item.rating_reports)}</span>
+          <span>Calc {ratingCell(item.rating_calculations)}</span>
+        </div>
+      </td>
+
+      {/* Feedback text */}
+      <td className="py-3 px-4 max-w-[200px]">
+        {item.feedback_text ? (
+          <div>
+            <p className={`text-xs text-gray-600 leading-relaxed ${expanded ? '' : 'line-clamp-2'}`}>
+              {item.feedback_text}
+            </p>
+            {hasLong && (
+              <button
+                onClick={() => setExpanded(v => !v)}
+                className="flex items-center gap-0.5 text-[10px] text-sacred-gold-dark mt-0.5 hover:underline"
+              >
+                {expanded ? <><ChevronUp className="w-3 h-3" />Less</> : <><ChevronDown className="w-3 h-3" />More</>}
+              </button>
+            )}
+          </div>
+        ) : <span className="text-xs text-gray-300">—</span>}
+      </td>
+
+      {/* Status */}
+      <td className="py-3 px-4 whitespace-nowrap">
+        {item.status === 'closed' ? (
+          <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-green-50 border border-green-200 text-green-700 font-medium">
+            <CheckCircle2 className="w-3 h-3" /> Resolved
+          </span>
+        ) : (
+          <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 font-medium">
+            <Clock className="w-3 h-3" /> Open
+          </span>
+        )}
+      </td>
+
+      {/* Action Taken — inline select */}
+      <td className="py-3 px-4 whitespace-nowrap">
+        <select
+          value={item.action_taken}
+          onChange={e => saveAction(e.target.value)}
+          className={`text-xs border rounded-lg px-2 py-1 font-medium cursor-pointer focus:outline-none ${actionStyle[item.action_taken]}`}
+        >
+          <option value="NR">Not Reviewed</option>
+          <option value="yes">Action Taken</option>
+          <option value="no">No Action</option>
+        </select>
+      </td>
+
+      {/* Admin Remarks — inline text */}
+      <td className="py-3 px-4 min-w-[160px]">
+        <input
+          value={remarks}
+          onChange={e => setRemarks(e.target.value)}
+          onBlur={saveRemarks}
+          onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
+          placeholder="Add remark…"
+          className="w-full text-xs border border-sacred-gold/20 rounded-lg px-2 py-1.5 bg-white/80 text-cosmic-text focus:outline-none focus:ring-1 focus:ring-sacred-gold/40 placeholder:text-gray-300"
+        />
+      </td>
+
+      {/* Date */}
+      <td className="py-3 px-4 whitespace-nowrap">
+        <span className="text-xs text-gray-400">
+          {new Date(item.created_at).toLocaleDateString('en-IN', {
+            day: 'numeric', month: 'short', year: 'numeric',
+          })}
+        </span>
+      </td>
+    </tr>
+  );
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -125,7 +306,7 @@ function StatCard({
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [tab, setTab] = useState<'overview' | 'users' | 'kundlis' | 'live' | 'analytics'>('overview');
+  const [tab, setTab] = useState<'overview' | 'users' | 'kundlis' | 'live' | 'analytics' | 'feedback'>('overview');
 
   // overview
   const [stats, setStats] = useState<Stats | null>(null);
@@ -145,6 +326,15 @@ export default function AdminDashboard() {
 
   // analytics
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
+
+  // feedback
+  const [feedbackItems, setFeedbackItems] = useState<FeedbackItem[]>([]);
+  const [feedbackTotal, setFeedbackTotal] = useState(0);
+  const [feedbackPage, setFeedbackPage] = useState(1);
+  const [feedbackPages, setFeedbackPages] = useState(1);
+  const [feedbackFilterStatus, setFeedbackFilterStatus] = useState('');
+  const [feedbackFilterAction, setFeedbackFilterAction] = useState('');
+  const [wordCloud, setWordCloud] = useState<WordCloudWord[]>([]);
 
   // live
   const [liveData, setLiveData] = useState<LiveData | null>(null);
@@ -194,6 +384,30 @@ export default function AdminDashboard() {
     } catch (e) { console.error(e); }
   };
 
+  const fetchFeedback = async (
+    page = feedbackPage,
+    status = feedbackFilterStatus,
+    action = feedbackFilterAction,
+  ) => {
+    try {
+      const params = new URLSearchParams({ page: String(page), limit: '20' });
+      if (status) params.set('status', status);
+      if (action) params.set('action_taken', action);
+      const data = await api.get(`/api/admin/feedback?${params}`);
+      setFeedbackItems(data.items);
+      setFeedbackTotal(data.total);
+      setFeedbackPage(data.page);
+      setFeedbackPages(data.pages);
+    } catch (e) { console.error(e); }
+  };
+
+  const fetchWordCloud = async () => {
+    try {
+      const data = await api.get('/api/admin/feedback/wordcloud');
+      setWordCloud(data);
+    } catch (e) { console.error(e); }
+  };
+
   const fetchLive = useCallback(async () => {
     try {
       const data = await api.get('/api/admin/live');
@@ -206,6 +420,7 @@ export default function AdminDashboard() {
     if (tab === 'users') fetchUsers();
     if (tab === 'kundlis') fetchKundlis();
     if (tab === 'analytics') fetchAnalytics();
+    if (tab === 'feedback') { fetchFeedback(1, '', ''); fetchWordCloud(); }
     if (tab === 'live') {
       fetchLive();
       liveInterval.current = setInterval(fetchLive, 5000);
@@ -242,6 +457,7 @@ export default function AdminDashboard() {
     { key: 'kundlis',    label: 'Kundlis' },
     { key: 'live',       label: 'Live' },
     { key: 'analytics',  label: 'Analytics' },
+    { key: 'feedback',   label: 'Feedback' },
   ] as const;
 
   return (
@@ -747,6 +963,130 @@ export default function AdminDashboard() {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* ── FEEDBACK ─────────────────────────────────────────────────── */}
+      {tab === 'feedback' && (
+        <div className="space-y-6">
+
+          {/* Word cloud — OPEN feedback only */}
+          <div className="border border-sacred-gold/25 rounded-xl overflow-hidden bg-white/60">
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-sacred-gold/20 bg-sacred-gold/5">
+              <div className="flex items-center gap-2">
+                <MessageSquare className="w-4 h-4 text-sacred-gold-dark" />
+                <h3 className="text-sm font-semibold text-sacred-gold-dark uppercase tracking-wider">
+                  Word Cloud
+                </h3>
+                <span className="text-xs font-normal text-amber-600 normal-case bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+                  Open issues only
+                </span>
+              </div>
+              <button
+                onClick={fetchWordCloud}
+                className="flex items-center gap-1 text-xs text-sacred-gold-dark hover:underline font-medium"
+              >
+                <RefreshCw className="w-3 h-3" /> Refresh
+              </button>
+            </div>
+            <WordCloud words={wordCloud} />
+          </div>
+
+          {/* Filter bar */}
+          <div className="flex flex-wrap items-center gap-3">
+            <Filter className="w-4 h-4 text-gray-400 shrink-0" />
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-gray-500 font-medium">Status</label>
+              <select
+                value={feedbackFilterStatus}
+                onChange={e => {
+                  setFeedbackFilterStatus(e.target.value);
+                  fetchFeedback(1, e.target.value, feedbackFilterAction);
+                }}
+                className="text-xs border border-sacred-gold/30 rounded-lg px-3 py-1.5 bg-white text-cosmic-text focus:outline-none focus:ring-1 focus:ring-sacred-gold/40"
+              >
+                <option value="">All</option>
+                <option value="open">Open</option>
+                <option value="closed">Resolved</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-gray-500 font-medium">Action</label>
+              <select
+                value={feedbackFilterAction}
+                onChange={e => {
+                  setFeedbackFilterAction(e.target.value);
+                  fetchFeedback(1, feedbackFilterStatus, e.target.value);
+                }}
+                className="text-xs border border-sacred-gold/30 rounded-lg px-3 py-1.5 bg-white text-cosmic-text focus:outline-none focus:ring-1 focus:ring-sacred-gold/40"
+              >
+                <option value="">All</option>
+                <option value="NR">Not Reviewed</option>
+                <option value="yes">Action Taken</option>
+                <option value="no">No Action</option>
+              </select>
+            </div>
+            <span className="text-xs text-gray-400 ml-auto">
+              {feedbackTotal} result{feedbackTotal !== 1 ? 's' : ''}
+            </span>
+          </div>
+
+          {/* Table */}
+          <div className="border border-sacred-gold/20 rounded-xl overflow-hidden bg-white/60">
+            {feedbackItems.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+                <MessageSquare className="w-8 h-8 text-gray-200 mb-3" />
+                <p className="text-sm">No feedback yet</p>
+                <p className="text-xs text-gray-300 mt-1">Submissions will appear here</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-sacred-gold/20 bg-sacred-gold/5 text-left text-xs text-gray-500 uppercase tracking-wider">
+                      <th className="py-3 px-4">User</th>
+                      <th className="py-3 px-4">Ratings</th>
+                      <th className="py-3 px-4">Feedback</th>
+                      <th className="py-3 px-4">Status</th>
+                      <th className="py-3 px-4">Action Taken</th>
+                      <th className="py-3 px-4">Admin Remarks</th>
+                      <th className="py-3 px-4">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {feedbackItems.map(item => (
+                      <FeedbackRow
+                        key={item.id}
+                        item={item}
+                        onUpdated={(id, patch) =>
+                          setFeedbackItems(prev =>
+                            prev.map(f => f.id === id ? { ...f, ...patch } : f)
+                          )
+                        }
+                      />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
+          {/* Pagination */}
+          {feedbackPages > 1 && (
+            <div className="flex items-center justify-center gap-4">
+              <Button variant="outline" size="sm" disabled={feedbackPage <= 1}
+                onClick={() => fetchFeedback(feedbackPage - 1, feedbackFilterStatus, feedbackFilterAction)}
+                className="border-sacred-gold/40">
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+              <span className="text-sm text-gray-500">Page {feedbackPage} of {feedbackPages}</span>
+              <Button variant="outline" size="sm" disabled={feedbackPage >= feedbackPages}
+                onClick={() => fetchFeedback(feedbackPage + 1, feedbackFilterStatus, feedbackFilterAction)}
+                className="border-sacred-gold/40">
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -35,6 +35,7 @@ const AuthPage = lazy(() => import('./sections/AuthPage'));
 const NumerologyTarot = lazy(() => import('./sections/NumerologyTarot'));
 const LalKitabPage = lazy(() => import('./sections/LalKitabPage'));
 const AdminDashboard = lazy(() => import('./sections/AdminDashboard'));
+const FeedbackPage = lazy(() => import('./sections/FeedbackPage'));
 const Dashboard = lazy(() => import('./sections/Dashboard'));
 const ClientProfile = lazy(() => import('./sections/ClientProfile'));
 
@@ -165,6 +166,7 @@ function AppInner() {
           <Route path="/numerology" element={<RequireAuth><ErrorBoundary><NumerologyTarot /></ErrorBoundary></RequireAuth>} />
           <Route path="/lal-kitab" element={<RequireAuth><ErrorBoundary><LalKitabPage /></ErrorBoundary></RequireAuth>} />
           <Route path="/admin" element={<RequireAuth><ErrorBoundary><AdminDashboard /></ErrorBoundary></RequireAuth>} />
+          <Route path="/feedback" element={<RequireAuth><ErrorBoundary><FeedbackPage /></ErrorBoundary></RequireAuth>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         </Suspense>
