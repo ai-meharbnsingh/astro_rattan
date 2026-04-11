@@ -178,7 +178,7 @@ export default function KundliGenerator() {
             </Button>
             <Button size="sm" className="btn-sacred" onClick={async () => {
               try {
-                const token = localStorage.getItem('astrovedic_token');
+                const token = localStorage.getItem('astrorattan_token');
                 const API_BASE = import.meta.env.VITE_API_URL || '';
                 const resp = await fetch(`${API_BASE}/api/kundli/${result.id}/pdf`, {
                   headers: token ? { Authorization: `Bearer ${token}` } : {},

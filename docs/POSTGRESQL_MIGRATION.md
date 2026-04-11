@@ -2,7 +2,7 @@
 
 ## Current State
 
-AstroVedic uses **SQLite with WAL mode** (Write-Ahead Logging). This provides:
+Astro Rattan uses **SQLite with WAL mode** (Write-Ahead Logging). This provides:
 - Single-writer concurrency (readers never block)
 - Zero-config setup (no server process)
 - Excellent read performance for MVP scale
@@ -45,13 +45,13 @@ Replace `sqlite3.connect()` with `asyncpg` connection pool:
 ```python
 # Before (SQLite)
 import sqlite3
-conn = sqlite3.connect("astrovedic.db")
+conn = sqlite3.connect("astrorattan.db")
 conn.row_factory = sqlite3.Row
 
 # After (PostgreSQL)
 import asyncpg
 pool = await asyncpg.create_pool(
-    dsn="postgresql://user:pass@localhost:5432/astrovedic",
+    dsn="postgresql://user:pass@localhost:5432/astrorattan",
     min_size=5,
     max_size=20,
 )
@@ -122,7 +122,7 @@ Remove FTS5 virtual tables, triggers, and `_rebuild_fts()` function. Replace wit
 
 ```bash
 # Export from SQLite
-sqlite3 astrovedic.db .dump > astrovedic_dump.sql
+sqlite3 astrorattan.db .dump > astrorattan_dump.sql
 
 # Manual conversion needed for:
 # - hex(randomblob(16)) → gen_random_uuid()
@@ -130,7 +130,7 @@ sqlite3 astrovedic.db .dump > astrovedic_dump.sql
 # - datetime('now') → NOW()
 
 # Or use pgloader (automated):
-pgloader astrovedic.db postgresql://user:pass@localhost/astrovedic
+pgloader astrorattan.db postgresql://user:pass@localhost/astrorattan
 ```
 
 For a clean migration, use a Python script that reads from SQLite and inserts into PostgreSQL, handling type conversions programmatically.
@@ -141,10 +141,10 @@ Update `app/config.py`:
 
 ```python
 # Before
-DB_PATH = os.getenv("DB_PATH", "astrovedic.db")
+DB_PATH = os.getenv("DB_PATH", "astrorattan.db")
 
 # After
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://localhost:5432/astrovedic")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://localhost:5432/astrorattan")
 DB_POOL_MIN = int(os.getenv("DB_POOL_MIN", "5"))
 DB_POOL_MAX = int(os.getenv("DB_POOL_MAX", "20"))
 ```

@@ -126,8 +126,8 @@ export default function AuthPage() {
           email_token: emailToken,
           phone: registerForm.phone.trim(),
         });
-        localStorage.setItem('astrovedic_token', data.token);
-        if (data.refresh_token) localStorage.setItem('astrovedic_refresh_token', data.refresh_token);
+        localStorage.setItem('astrorattan_token', data.token);
+        if (data.refresh_token) localStorage.setItem('astrorattan_refresh_token', data.refresh_token);
         window.location.href = '/';
       } else {
         await register(registerForm.email, registerForm.password, registerForm.name, emailToken);

@@ -1,4 +1,4 @@
-name: AstroVedic CI + Deploy
+name: Astro Rattan CI + Deploy
 
 on:
   push:

@@ -1,4 +1,4 @@
-"""Pydantic request/response models for AstroVedic API."""
+"""Pydantic request/response models for Astro Rattan API."""
 from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing import Any, Optional
 from enum import Enum

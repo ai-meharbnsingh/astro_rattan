@@ -1,4 +1,4 @@
-"""JWT authentication and password hashing for AstroVedic."""
+"""JWT authentication and password hashing for Astro Rattan."""
 import hashlib
 from datetime import datetime, timedelta, timezone
 from typing import Optional

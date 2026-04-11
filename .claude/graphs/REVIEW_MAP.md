@@ -1,4 +1,4 @@
-# REVIEW MAP — Project 28: AstroVedic
+# REVIEW MAP — Project 28: Astro Rattan
 ## Audit Date: 2026-04-05 | AFM Pattern (3 parallel teams + 3 fix agents)
 ## Status: ALL ISSUES CLOSED
 

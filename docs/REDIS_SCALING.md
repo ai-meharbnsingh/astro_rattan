@@ -2,7 +2,7 @@
 
 ## Current Architecture
 
-AstroVedic uses an **in-memory connection dictionary** in `app/routes/messages.py` to manage WebSocket connections for consultation chat:
+Astro Rattan uses an **in-memory connection dictionary** in `app/routes/messages.py` to manage WebSocket connections for consultation chat:
 
 ```python
 _active_connections: dict[str, set[WebSocket]] = {}

@@ -2457,7 +2457,7 @@ const translations: Record<Language, TranslationMap> = {
 
 function getStoredLanguage(): Language {
   if (typeof window !== 'undefined') {
-    const stored = localStorage.getItem('astrovedic-language');
+    const stored = localStorage.getItem('astrorattan-language');
     if (stored === 'hi' || stored === 'en') return stored;
   }
   return 'en';
@@ -2465,7 +2465,7 @@ function getStoredLanguage(): Language {
 
 function storeLanguage(lang: Language) {
   if (typeof window !== 'undefined') {
-    localStorage.setItem('astrovedic-language', lang);
+    localStorage.setItem('astrorattan-language', lang);
   }
 }
 

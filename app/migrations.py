@@ -45,7 +45,7 @@ MIGRATIONS: List[Tuple[int, str, str]] = [
             content TEXT NOT NULL,
             cover_image_url TEXT,
             tags TEXT NOT NULL DEFAULT '[]',
-            author_name TEXT NOT NULL DEFAULT 'AstroVedic Editorial',
+            author_name TEXT NOT NULL DEFAULT 'Astro Rattan Editorial',
             seo_title TEXT,
             seo_description TEXT,
             is_published INTEGER NOT NULL DEFAULT 1,

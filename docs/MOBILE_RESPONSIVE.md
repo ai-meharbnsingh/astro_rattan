@@ -2,7 +2,7 @@
 
 ## Framework and Approach
 
-AstroVedic uses **Tailwind CSS** with responsive utility classes for mobile-first design. The frontend is built with **React + Vite** and uses **shadcn/ui** components, which are accessible and mobile-responsive by default.
+Astro Rattan uses **Tailwind CSS** with responsive utility classes for mobile-first design. The frontend is built with **React + Vite** and uses **shadcn/ui** components, which are accessible and mobile-responsive by default.
 
 ## Responsive Breakpoints (Tailwind Defaults)
 

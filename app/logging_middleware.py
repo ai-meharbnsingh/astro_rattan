@@ -13,7 +13,7 @@ from starlette.responses import Response
 
 from app.auth import decode_token
 
-logger = logging.getLogger("astrovedic.access")
+logger = logging.getLogger("astrorattan.access")
 
 # Configure structured log format
 _handler = logging.StreamHandler()
