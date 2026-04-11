@@ -133,8 +133,8 @@ function HomePage() {
 }
 
 function SmartHome() {
-  const { isAuthenticated } = useAuth();
-  if (isAuthenticated) return <Navigate to="/dashboard" replace />;
+  const { isAuthenticated, user } = useAuth();
+  if (isAuthenticated) return <Navigate to={user?.role === 'admin' ? '/admin' : '/dashboard'} replace />;
   return <HomePage />;
 }
 

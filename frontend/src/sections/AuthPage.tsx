@@ -76,7 +76,7 @@ export default function AuthPage() {
   const handleLogin = async () => {
     if (!loginForm.email || !loginForm.password) return;
     setLoading(true); setError('');
-    try { await login(loginForm.email, loginForm.password); navigate('/'); }
+    try { const data = await login(loginForm.email, loginForm.password); navigate(data.user?.role === 'admin' ? '/admin' : '/'); }
     catch (err) { setError(err instanceof Error ? err.message : 'Login failed'); }
     finally { setLoading(false); }
   };
