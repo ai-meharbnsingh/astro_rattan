@@ -18,6 +18,16 @@ const ASPECT_COLORS: Record<string, { bg: string; text: string }> = {
   sesq: { bg: '#ffedd5', text: '#9a3412' },   // orange
   ququ: { bg: '#ede9fe', text: '#5b21b6' },   // purple
 };
+const ASPECT_ABBR_HI: Record<string, string> = {
+  conj: 'यु',
+  sext: 'षड',
+  squr: 'चतु',
+  trin: 'त्रि',
+  oppo: 'सप्त',
+  ssqr: 'अर्ध',
+  sesq: 'पौने',
+  ququ: 'पंच',
+};
 
 const PLANET_ABBR_EN: Record<string, string> = {
   Sun: 'Ravi', Moon: 'Chan', Mars: 'Mang', Mercury: 'Budh',
@@ -98,7 +108,7 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
                       >
                         <div className="font-mono font-semibold">{cell.degree}</div>
                         {cell.aspect && (
-                          <div className="text-micro font-medium">{cell.aspect}</div>
+                          <div className="text-micro font-medium">{language === 'hi' ? (ASPECT_ABBR_HI[cell.aspect] || cell.aspect) : cell.aspect}</div>
                         )}
                       </td>
                     );
@@ -173,7 +183,7 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
                     {translatePlanet(asp.planet1, language)} — {translatePlanet(asp.planet2, language)}
                   </span>
                   <span className="text-sm font-mono">
-                    {translateBackend(asp.aspect_name, language)} ({asp.degree}° orb:{asp.orb}°)
+                    {translateBackend(asp.aspect_name, language)} ({asp.degree}° {language === 'hi' ? 'ऑर्ब' : 'orb'}:{asp.orb}°)
                   </span>
                 </div>
               );
@@ -236,7 +246,7 @@ function CuspAspectGrid({ title, cuspData, planetOrder, language }: CuspAspectGr
                       >
                         <div className="font-mono font-semibold">{cell.degree}</div>
                         {cell.aspect && (
-                          <div className="text-micro font-medium">{cell.aspect}</div>
+                          <div className="text-micro font-medium">{language === 'hi' ? (ASPECT_ABBR_HI[cell.aspect] || cell.aspect) : cell.aspect}</div>
                         )}
                       </td>
                     );

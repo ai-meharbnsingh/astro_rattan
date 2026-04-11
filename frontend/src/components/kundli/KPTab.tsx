@@ -1,6 +1,6 @@
 import { Loader2 } from 'lucide-react';
 import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
-import { translatePlanet, translateSign, translateNakshatra } from '@/lib/backend-translations';
+import { translatePlanet, translateSign, translateNakshatra, translateBackend } from '@/lib/backend-translations';
 import GeneralRemedies from './GeneralRemedies';
 
 interface KPTabProps {
@@ -13,6 +13,10 @@ interface KPTabProps {
 
 export default function KPTab(props: KPTabProps) {
   const { kpData, loadingKp, result, language, t } = props;
+  const l = (en: string, hi: string) => (language === 'hi' ? hi : en);
+  const planetShort = (name: string) => (translatePlanet(name || '', language) || name || '-').slice(0, 2);
+  const planetList = (items: any[]) =>
+    (items || []).map((x) => translatePlanet(String(x || ''), language)).join(', ');
 
   return (
     <div className="space-y-6">
@@ -41,15 +45,15 @@ export default function KPTab(props: KPTabProps) {
                   {(kpData.planets || []).map((p: any) => (
                     <tr key={p.planet} className="border-t border-sacred-gold">
                       <td className="p-1.5 font-semibold text-sacred-brown">{translatePlanet(p.planet, language)}</td>
-                      <td className="p-1.5 text-center">{p.retrograde ? <span className="text-red-400 font-bold">R</span> : ''}</td>
+                      <td className="p-1.5 text-center">{p.retrograde ? <span className="text-red-400 font-bold">{l('R', 'व')}</span> : ''}</td>
                       <td className="p-1.5 text-cosmic-text">{translateSign(p.sign, language)}</td>
                       <td className="p-1.5 text-cosmic-text font-mono">{p.degree_dms || (typeof p.degree === 'number' ? p.degree.toFixed(2) : p.degree)}</td>
                       <td className="p-1.5 text-cosmic-text">{translateNakshatra(p.nakshatra, language) || '-'}</td>
                       <td className="p-1.5 text-center text-cosmic-text">{p.pada || '-'}</td>
-                      <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{p.sign_lord ? p.sign_lord.slice(0, 2) : '-'}</td>
-                      <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{(p.star_lord || p.nakshatra_lord || '-').slice(0, 2)}</td>
-                      <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{p.sub_lord ? p.sub_lord.slice(0, 2) : '-'}</td>
-                      <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{p.sub_sub_lord ? p.sub_sub_lord.slice(0, 2) : '-'}</td>
+                      <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{p.sign_lord ? planetShort(p.sign_lord) : '-'}</td>
+                      <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{p.star_lord || p.nakshatra_lord ? planetShort(p.star_lord || p.nakshatra_lord) : '-'}</td>
+                      <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{p.sub_lord ? planetShort(p.sub_lord) : '-'}</td>
+                      <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{p.sub_sub_lord ? planetShort(p.sub_sub_lord) : '-'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -162,10 +166,10 @@ export default function KPTab(props: KPTabProps) {
                       return (
                         <tr key={h} className="border-t border-sacred-gold">
                           <td className="p-1.5 font-semibold text-sacred-brown">{h}</td>
-                          <td className="p-1.5 text-cosmic-text">{(sig.planets_in_nak_of_occupants || []).join(', ') || '-'}</td>
-                          <td className="p-1.5 text-cosmic-text font-medium">{(sig.occupants || []).join(', ') || '-'}</td>
-                          <td className="p-1.5 text-cosmic-text">{(sig.planets_in_nak_of_cusp_sign_lord || []).join(', ') || '-'}</td>
-                          <td className="p-1.5 text-sacred-gold-dark font-medium">{sig.cusp_sign_lord || '-'}</td>
+                          <td className="p-1.5 text-cosmic-text">{planetList(sig.planets_in_nak_of_occupants || []) || '-'}</td>
+                          <td className="p-1.5 text-cosmic-text font-medium">{planetList(sig.occupants || []) || '-'}</td>
+                          <td className="p-1.5 text-cosmic-text">{planetList(sig.planets_in_nak_of_cusp_sign_lord || []) || '-'}</td>
+                          <td className="p-1.5 text-sacred-gold-dark font-medium">{sig.cusp_sign_lord ? translatePlanet(sig.cusp_sign_lord, language) : '-'}</td>
                         </tr>
                       );
                     })}
@@ -192,10 +196,10 @@ export default function KPTab(props: KPTabProps) {
                     {Object.entries(kpData.planet_significator_strengths).map(([planet, levels]: [string, any]) => (
                       <tr key={planet} className="border-t border-sacred-gold">
                         <td className="p-1.5 font-semibold text-sacred-brown">{translatePlanet(planet, language)}</td>
-                        <td className="p-1.5 text-green-500 font-medium">{(levels.very_strong || []).join(' ')}</td>
-                        <td className="p-1.5 text-blue-400 font-medium">{(levels.strong || []).join(' ')}</td>
-                        <td className="p-1.5 text-cosmic-text">{(levels.normal || []).join(' ')}</td>
-                        <td className="p-1.5 text-orange-400">{(levels.weak || []).join(' ')}</td>
+                        <td className="p-1.5 text-green-500 font-medium">{planetList(levels.very_strong || [])}</td>
+                        <td className="p-1.5 text-blue-400 font-medium">{planetList(levels.strong || [])}</td>
+                        <td className="p-1.5 text-cosmic-text">{planetList(levels.normal || [])}</td>
+                        <td className="p-1.5 text-orange-400">{planetList(levels.weak || [])}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -219,8 +223,8 @@ export default function KPTab(props: KPTabProps) {
                   ['moon_sub_lord', language === 'hi' ? 'चंद्र उप स्वामी' : 'Moon Sub Lord'],
                 ].map(([key, label]) => (
                   <div key={key} className="flex items-center justify-between bg-white rounded-lg p-2">
-                    <span className="text-cosmic-text">{label}</span>
-                    <span className="font-semibold text-sacred-gold-dark">{translatePlanet(kpData.ruling_planets[key] || '-', language)}</span>
+                    <span className="text-cosmic-text">{translateBackend(label, language)}</span>
+                    <span className="font-semibold text-sacred-gold-dark">{kpData.ruling_planets[key] ? translatePlanet(kpData.ruling_planets[key], language) : '-'}</span>
                   </div>
                 ))}
               </div>

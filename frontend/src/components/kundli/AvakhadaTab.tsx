@@ -158,7 +158,7 @@ export default function AvakhadaTab({ avakhadaData, loadingAvakhada, language, t
                           ? 'bg-sacred-gold text-white border-sacred-gold-dark shadow-sm'
                           : 'bg-sacred-gold/10 text-sacred-brown border-sacred-gold/30'
                       }`}
-                      title={idx + 1 === pada ? (language === 'hi' ? 'आपका पाद' : 'Your pada') : `Pada ${idx + 1}`}
+                      title={idx + 1 === pada ? (language === 'hi' ? 'आपका पाद' : 'Your pada') : (language === 'hi' ? `पाद ${idx + 1}` : `Pada ${idx + 1}`)}
                     >
                       {s}
                       {idx + 1 === pada && (

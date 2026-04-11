@@ -20,6 +20,7 @@ export default function DashaTab({
   expandedMahadasha, setExpandedMahadasha, expandedAntardasha, setExpandedAntardasha,
   language, t,
 }: DashaTabProps) {
+  const l = (en: string, hi: string) => (language === 'hi' ? hi : en);
   if (loadingDasha || loadingExtendedDasha) {
     return (
       <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-cosmic-text">{t('kundli.calculatingDasha')}</span></div>
@@ -38,7 +39,7 @@ export default function DashaTab({
         <div className="bg-gradient-to-r from-sacred-gold to-sacred-gold-light rounded-xl p-4 border-2 border-sacred-gold-dark">
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm font-medium text-sacred-brown uppercase tracking-wide">{t('section.currentDashaStatus')}</p>
-            <span className="px-3 py-1 bg-sacred-brown text-white text-xs font-bold rounded-full animate-pulse">● LIVE</span>
+            <span className="px-3 py-1 bg-sacred-brown text-white text-xs font-bold rounded-full animate-pulse">● {l('LIVE', 'लाइव')}</span>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

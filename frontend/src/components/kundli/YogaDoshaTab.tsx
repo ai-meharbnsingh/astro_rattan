@@ -195,12 +195,12 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
                   </span>
                 </div>
                 <p className="text-sm mb-2" style={{ color: 'var(--ink-light)' }}>
-                  {language === 'hi' ? 'ग्रह' : 'Planet'}: {translatePlanet(gem.planet, language)} — {gem.reason}
+                  {language === 'hi' ? 'ग्रह' : 'Planet'}: {translatePlanet(gem.planet, language)} — {translateBackend(gem.reason, language)}
                 </p>
                 <div className="flex flex-wrap gap-3 text-sm" style={{ color: 'var(--ink-light)' }}>
-                  {gem.metal && <span>{language === 'hi' ? 'धातु' : 'Metal'}: {gem.metal}</span>}
-                  {gem.finger && <span>{language === 'hi' ? 'उंगली' : 'Finger'}: {gem.finger}</span>}
-                  {gem.day && <span>{language === 'hi' ? 'दिन' : 'Day'}: {gem.day}</span>}
+                  {gem.metal && <span>{language === 'hi' ? 'धातु' : 'Metal'}: {translateBackend(gem.metal, language)}</span>}
+                  {gem.finger && <span>{language === 'hi' ? 'उंगली' : 'Finger'}: {translateBackend(gem.finger, language)}</span>}
+                  {gem.day && <span>{language === 'hi' ? 'दिन' : 'Day'}: {translateBackend(gem.day, language)}</span>}
                 </div>
               </div>
             ))}

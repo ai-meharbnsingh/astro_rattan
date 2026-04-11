@@ -1,7 +1,7 @@
 import { Loader2 } from 'lucide-react';
 import InteractiveKundli, { type ChartData } from '@/components/InteractiveKundli';
 import { getDivisionalChartOptions } from '@/components/kundli/kundli-utils';
-import { translatePlanet, translateSign } from '@/lib/backend-translations';
+import { translatePlanet, translateSign, translateBackend } from '@/lib/backend-translations';
 
 interface DivisionalTabProps {
   divisionalData: any;
@@ -41,7 +41,7 @@ export default function DivisionalTab({
       ) : divisionalData ? (
         <div className="space-y-6">
           <div className="bg-gradient-to-r from-sacred-cream to-sacred-gold rounded-xl p-4 border border-sacred-gold">
-            <h4 className="font-display font-bold text-sacred-brown text-lg">{divisionalData.chart_name || divisionalData.chart_type}</h4>
+            <h4 className="font-display font-bold text-sacred-brown text-lg">{translateBackend(divisionalData.chart_name || divisionalData.chart_type, language)}</h4>
             <p className="text-sm text-cosmic-text">{t('kundli.division')}: {divisionalData.division}</p>
           </div>
 

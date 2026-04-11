@@ -1,5 +1,5 @@
 import { Loader2 } from 'lucide-react';
-import { translatePlanet } from '@/lib/backend-translations';
+import { translatePlanet, translateSign } from '@/lib/backend-translations';
 
 interface SodashvargaTabProps {
   sodashvargaData: any;
@@ -9,6 +9,11 @@ interface SodashvargaTabProps {
 }
 
 export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, language, t }: SodashvargaTabProps) {
+  const signShort = (sign: string) => {
+    const translated = translateSign(sign || '', language) || sign || '';
+    return language === 'hi' ? translated.slice(0, 2) : translated.slice(0, 3);
+  };
+
   if (loadingSodashvarga) {
     return (
       <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-cosmic-text">{t('kundli.loadingSodashvarga')}</span></div>
@@ -81,7 +86,8 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
                       <tr key={row.varga || row.division || row.name} className="border-t border-sacred-gold">
                         <td className="p-2 font-semibold text-sacred-brown whitespace-nowrap">{row.varga || row.name || `D${row.division}`}</td>
                         {planetEntries.map((pl: any, i: number) => {
-                          const sign = typeof pl === 'string' ? pl.slice(0, 3) : (pl?.sign_abbr || (typeof pl?.sign === 'string' ? pl.sign.slice(0, 3) : '') || '');
+                          const signRaw = typeof pl === 'string' ? pl : (pl?.sign || '');
+                          const sign = signRaw ? signShort(signRaw) : (pl?.sign_abbr || '');
                           const dignity = typeof pl === 'object' ? pl?.dignity?.toLowerCase() : '';
                           const dignityColors: Record<string, string> = {
                             exalted: 'bg-green-100 text-green-800', own: 'bg-blue-100 text-blue-800',
@@ -103,9 +109,9 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
                 {Object.entries(sodashvargaData.by_sign).map(([planet, data]: [string, any]) => (
                   <div key={planet} className="bg-white rounded-lg p-3">
-                    <p className="font-semibold text-sacred-brown mb-1">{planet}</p>
+                    <p className="font-semibold text-sacred-brown mb-1">{translatePlanet(planet, language)}</p>
                     {typeof data === 'object' && Object.entries(data as Record<string, any>).map(([varga, sign]) => (
-                      <p key={varga} className="text-cosmic-text">{varga}: {String(sign)}</p>
+                      <p key={varga} className="text-cosmic-text">{varga}: {translateSign(String(sign), language)}</p>
                     ))}
                   </div>
                 ))}
