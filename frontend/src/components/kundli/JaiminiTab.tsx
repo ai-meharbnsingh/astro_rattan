@@ -291,7 +291,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
               <p className="text-2xl font-bold" style={{
                 color: data.longevity.category === 'Purna' ? '#065f46' : data.longevity.category === 'Madhyama' ? '#92400e' : '#991b1b',
               }}>
-                {data.longevity.category}
+                {translateBackend(data.longevity.category, language)}
               </p>
               <p className="text-sm" style={{ color: data.longevity.category === 'Purna' ? '#065f46' : data.longevity.category === 'Madhyama' ? '#92400e' : '#991b1b' }}>
                 {language === 'hi' ? data.longevity.description_hi : data.longevity.description_en}

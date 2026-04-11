@@ -46,19 +46,19 @@ export default function AuthPage() {
     try {
       await api.post('/api/auth/forgot-password', { email: resetEmail });
       setResetStep('otp');
-      setSuccess('If this email is registered, a reset code has been sent.');
-    } catch (err) { setError(err instanceof Error ? err.message : 'Failed'); }
+      setSuccess(t('auth.resetCodeSentIfRegistered'));
+    } catch (err) { setError(err instanceof Error ? err.message : t('auth.failed')); }
     finally { setLoading(false); }
   };
 
   const handleResetPassword = async () => {
-    if (!resetOtp || !newPassword || newPassword.length < 8) { setError('Password must be at least 8 characters'); return; }
+    if (!resetOtp || !newPassword || newPassword.length < 8) { setError(t('auth.passwordMinLength')); return; }
     setLoading(true); setError('');
     try {
       await api.post('/api/auth/reset-password', { email: resetEmail, otp: resetOtp, new_password: newPassword });
       setResetStep('done');
-      setSuccess('Password reset! You can now log in.');
-    } catch (err) { setError(err instanceof Error ? err.message : 'Reset failed'); }
+      setSuccess(t('auth.passwordResetSuccess'));
+    } catch (err) { setError(err instanceof Error ? err.message : t('auth.resetFailed')); }
     finally { setLoading(false); }
   };
 
@@ -77,7 +77,7 @@ export default function AuthPage() {
     if (!loginForm.email || !loginForm.password) return;
     setLoading(true); setError('');
     try { const data = await login(loginForm.email, loginForm.password); navigate(data.user?.role === 'admin' ? '/admin' : '/'); }
-    catch (err) { setError(err instanceof Error ? err.message : 'Login failed'); }
+    catch (err) { setError(err instanceof Error ? err.message : t('auth.loginFailed')); }
     finally { setLoading(false); }
   };
 
@@ -87,10 +87,10 @@ export default function AuthPage() {
     try {
       await api.post('/api/auth/send-otp', { email: registerForm.email });
       setRegStep('otp');
-      setSuccess('Verification code sent to your email');
+      setSuccess(t('auth.verificationCodeSent'));
       startCountdown();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to send verification code');
+      setError(err instanceof Error ? err.message : t('auth.failedToSendVerificationCode'));
     } finally { setLoading(false); }
   };
 
@@ -102,9 +102,9 @@ export default function AuthPage() {
       const data = await api.post('/api/auth/verify-otp', { email: registerForm.email, otp: otpValue });
       setEmailToken(data.email_token);
       setRegStep('details');
-      setSuccess('Email verified! Complete your registration.');
+      setSuccess(t('auth.emailVerifiedCompleteRegistration'));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Invalid verification code');
+      setError(err instanceof Error ? err.message : t('auth.invalidVerificationCode'));
     } finally { setLoading(false); }
   };
 
@@ -115,7 +115,7 @@ export default function AuthPage() {
 
   const handleRegister = async () => {
     if (!registerForm.name || !registerForm.email || !registerForm.password || !emailToken) return;
-    if (isAstrologer && !registerForm.phone.trim()) { setError('Phone number is required for astrologer registration'); return; }
+    if (isAstrologer && !registerForm.phone.trim()) { setError(t('auth.phoneRequiredForAstrologerRegistration')); return; }
     setLoading(true); setError(''); setSuccess('');
     try {
       if (isAstrologer) {
@@ -134,7 +134,7 @@ export default function AuthPage() {
         navigate('/');
       }
     }
-    catch (err) { setError(err instanceof Error ? err.message : 'Registration failed'); }
+    catch (err) { setError(err instanceof Error ? err.message : t('auth.registrationFailed')); }
     finally { setLoading(false); }
   };
 
@@ -200,7 +200,7 @@ export default function AuthPage() {
                 {loading ? t('common.loading') : t('auth.signIn')}<ChevronRight className="w-5 h-5 ml-2" />
               </Button>
               <button onClick={() => { setShowForgotPassword(true); setResetStep('email'); setError(''); setSuccess(''); }} className="w-full text-center text-sm text-sacred-gold hover:underline mt-2">
-                Forgot Password?
+                {t('auth.forgotPassword')}
               </button>
             </div>
           </TabsContent>
@@ -210,14 +210,14 @@ export default function AuthPage() {
               <div className="space-y-4">
                 <div className="text-center mb-2">
                   <ShieldCheck className="w-8 h-8 text-sacred-gold mx-auto mb-2" />
-                  <p className="text-sm text-cosmic-text-secondary">Enter your email to receive a verification code</p>
+                  <p className="text-sm text-cosmic-text-secondary">{t('auth.enterEmailToReceiveCode')}</p>
                 </div>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold" />
                   <Input type="email" value={registerForm.email} onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })} placeholder={t('auth.email')} onKeyDown={(e) => e.key === 'Enter' && handleSendOtp()} className="pl-10 input-sacred" />
                 </div>
                 <Button onClick={handleSendOtp} disabled={loading || !registerForm.email} className="w-full btn-sacred disabled:opacity-50">
-                  {loading ? t('common.loading') : 'Send Verification Code'}<ChevronRight className="w-5 h-5 ml-2" />
+                  {loading ? t('common.loading') : t('auth.sendVerificationCode')}<ChevronRight className="w-5 h-5 ml-2" />
                 </Button>
               </div>
             )}
@@ -226,12 +226,12 @@ export default function AuthPage() {
             {regStep === 'otp' && (
               <div className="space-y-4">
                 <button onClick={() => { setRegStep('email'); setError(''); setSuccess(''); }} className="flex items-center gap-1 text-sm text-cosmic-text-secondary hover:text-sacred-gold transition-colors">
-                  <ArrowLeft className="w-4 h-4" /> Change email
+                  <ArrowLeft className="w-4 h-4" /> {t('auth.changeEmail')}
                 </button>
                 <div className="text-center mb-2">
                   <ShieldCheck className="w-8 h-8 text-sacred-gold mx-auto mb-2" />
                   <p className="text-sm text-cosmic-text-secondary">
-                    Enter the 6-digit code sent to<br />
+                    {t('auth.enterOtp')}<br />
                     <span className="text-sacred-gold font-medium">{registerForm.email}</span>
                   </p>
                 </div>
@@ -255,17 +255,17 @@ export default function AuthPage() {
                 </div>
                 {otpPasted && (
                   <p className="text-center text-sm text-green-600 font-medium animate-fadeIn">
-                    Code pasted
+                    {t('auth.codePasted')}
                   </p>
                 )}
                 <Button onClick={handleVerifyOtp} disabled={loading || otp.join('').length !== 6} className="w-full btn-sacred disabled:opacity-50">
-                  {loading ? t('common.loading') : 'Verify Code'}<ShieldCheck className="w-5 h-5 ml-2" />
+                  {loading ? t('common.loading') : t('auth.verifyCode')}<ShieldCheck className="w-5 h-5 ml-2" />
                 </Button>
                 <div className="text-center">
                   {countdown > 0 ? (
-                    <p className="text-sm text-cosmic-text">Resend code in {countdown}s</p>
+                    <p className="text-sm text-cosmic-text">{t('auth.resendIn')} {countdown}s</p>
                   ) : (
-                    <button onClick={handleResendOtp} className="text-sm text-sacred-gold hover:underline">Resend verification code</button>
+                    <button onClick={handleResendOtp} className="text-sm text-sacred-gold hover:underline">{t('auth.resendCode')}</button>
                   )}
                 </div>
               </div>
@@ -276,7 +276,7 @@ export default function AuthPage() {
               <div className="space-y-4">
                 <div className="text-center mb-2">
                   <div className="inline-flex items-center gap-2 bg-green-50 border border-green-300 rounded-full px-4 py-1.5 text-green-700 text-sm">
-                    <ShieldCheck className="w-4 h-4" /> {registerForm.email} verified
+                    <ShieldCheck className="w-4 h-4" /> {registerForm.email} {t('auth.emailVerified')}
                   </div>
                 </div>
                 <div className="relative">
@@ -285,7 +285,7 @@ export default function AuthPage() {
                 </div>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold" />
-                  <Input type="password" value={registerForm.password} onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })} placeholder={t('auth.password') + ' (min 8 characters)'} onKeyDown={(e) => e.key === 'Enter' && handleRegister()} className="pl-10 input-sacred" />
+                  <Input type="password" value={registerForm.password} onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })} placeholder={t('auth.passwordMinLength')} onKeyDown={(e) => e.key === 'Enter' && handleRegister()} className="pl-10 input-sacred" />
                 </div>
                 {/* Astrologer toggle */}
                 <button
@@ -305,7 +305,7 @@ export default function AuthPage() {
                 {isAstrologer && (
                   <div className="relative">
                     <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold" />
-                    <Input type="tel" value={registerForm.phone} onChange={(e) => setRegisterForm({ ...registerForm, phone: e.target.value })} placeholder="Phone number (required)" className="pl-10 input-sacred" />
+                    <Input type="tel" value={registerForm.phone} onChange={(e) => setRegisterForm({ ...registerForm, phone: e.target.value })} placeholder={t('auth.phoneNumberRequired')} className="pl-10 input-sacred" />
                   </div>
                 )}
                 <Button onClick={handleRegister} disabled={loading || !registerForm.name || !registerForm.password || (isAstrologer && !registerForm.phone.trim())} className="w-full btn-sacred disabled:opacity-50">
@@ -320,37 +320,37 @@ export default function AuthPage() {
         {showForgotPassword && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-cosmic-bg backdrop-blur-sm px-4" onClick={() => setShowForgotPassword(false)}>
             <div className="bg-cosmic-bg border border-sacred-gold p-6 max-w-sm w-full space-y-4" onClick={e => e.stopPropagation()}>
-              <h3 className="text-lg font-sans text-sacred-gold-dark text-center">Reset Password</h3>
+              <h3 className="text-lg font-sans text-sacred-gold-dark text-center">{t('auth.resetPassword')}</h3>
               {error && <p className="text-red-700 text-sm text-center">{error}</p>}
               {success && <p className="text-green-700 text-sm text-center">{success}</p>}
 
               {resetStep === 'email' && (
                 <>
-                  <Input type="email" value={resetEmail} onChange={e => setResetEmail(e.target.value)} placeholder="Your email" className="input-sacred" />
+                  <Input type="email" value={resetEmail} onChange={e => setResetEmail(e.target.value)} placeholder={t('auth.yourEmail')} className="input-sacred" />
                   <Button onClick={handleForgotPassword} disabled={loading || !resetEmail} className="w-full btn-sacred">
-                    {loading ? 'Sending...' : 'Send Reset Code'}
+                    {loading ? t('auth.sending') : t('auth.sendResetCode')}
                   </Button>
                 </>
               )}
 
               {resetStep === 'otp' && (
                 <>
-                  <p className="text-sm text-cosmic-text text-center">Enter the 6-digit code sent to {resetEmail}</p>
+                  <p className="text-sm text-cosmic-text text-center">{t('auth.enterOtp')} {resetEmail}</p>
                   <Input type="text" value={resetOtp} onChange={e => setResetOtp(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="000000" maxLength={6} className="input-sacred text-center text-2xl tracking-widest" />
-                  <Input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder="New password (min 8 chars)" className="input-sacred" />
+                  <Input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder={t('auth.newPassword')} className="input-sacred" />
                   <Button onClick={handleResetPassword} disabled={loading || resetOtp.length !== 6 || newPassword.length < 8} className="w-full btn-sacred">
-                    {loading ? 'Resetting...' : 'Reset Password'}
+                    {loading ? t('auth.resetting') : t('auth.resetPassword')}
                   </Button>
                 </>
               )}
 
               {resetStep === 'done' && (
                 <Button onClick={() => { setShowForgotPassword(false); setError(''); setSuccess(''); }} className="w-full btn-sacred">
-                  Back to Login
+                  {t('auth.backToLogin')}
                 </Button>
               )}
 
-              <button onClick={() => setShowForgotPassword(false)} className="w-full text-center text-sm text-cosmic-text hover:text-cosmic-text">Cancel</button>
+              <button onClick={() => setShowForgotPassword(false)} className="w-full text-center text-sm text-cosmic-text hover:text-cosmic-text">{t('auth.cancel')}</button>
             </div>
           </div>
         )}

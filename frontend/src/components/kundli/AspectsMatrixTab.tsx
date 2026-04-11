@@ -1,6 +1,6 @@
 import { Loader2 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
-import { translatePlanet } from '@/lib/backend-translations';
+import { translatePlanet, translateBackend } from '@/lib/backend-translations';
 
 interface AspectsMatrixTabProps {
   data: any;
@@ -94,7 +94,7 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
                         key={p2}
                         className="p-1 text-center border border-slate-200"
                         style={colors ? { backgroundColor: colors.bg, color: colors.text } : undefined}
-                        title={cell.aspect_name ? `${cell.aspect_name} (orb: ${cell.orb}°)` : `${cell.degree}°`}
+                        title={cell.aspect_name ? `${translateBackend(cell.aspect_name, language)} (orb: ${cell.orb}°)` : `${cell.degree}°`}
                       >
                         <div className="font-mono font-semibold">{cell.degree}</div>
                         {cell.aspect && (
@@ -173,7 +173,7 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
                     {translatePlanet(asp.planet1, language)} — {translatePlanet(asp.planet2, language)}
                   </span>
                   <span className="text-sm font-mono">
-                    {asp.aspect_name} ({asp.degree}° orb:{asp.orb}°)
+                    {translateBackend(asp.aspect_name, language)} ({asp.degree}° orb:{asp.orb}°)
                   </span>
                 </div>
               );
@@ -232,7 +232,7 @@ function CuspAspectGrid({ title, cuspData, planetOrder, language }: CuspAspectGr
                         key={cell.cusp}
                         className="p-1 text-center border border-slate-200"
                         style={colors ? { backgroundColor: colors.bg, color: colors.text } : undefined}
-                        title={cell.aspect_name ? `${cell.aspect_name} (orb: ${cell.orb}°)` : `${cell.degree}°`}
+                        title={cell.aspect_name ? `${translateBackend(cell.aspect_name, language)} (orb: ${cell.orb}°)` : `${cell.degree}°`}
                       >
                         <div className="font-mono font-semibold">{cell.degree}</div>
                         {cell.aspect && (

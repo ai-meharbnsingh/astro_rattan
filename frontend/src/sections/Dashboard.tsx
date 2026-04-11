@@ -52,7 +52,7 @@ export default function Dashboard() {
       setClients(data);
     } catch (e: any) {
       console.error(e);
-      setFetchError(e?.message === 'Not authenticated' ? 'Session expired. Please log in again.' : 'Failed to load data. Please try again.');
+      setFetchError(e?.message === 'Not authenticated' ? t('dashboard.sessionExpired') : t('dashboard.loadFailed'));
     }
     setLoading(false);
   };
@@ -63,7 +63,7 @@ export default function Dashboard() {
       setAdminStats(data);
     } catch (e: any) {
       console.error(e);
-      setFetchError(e?.message || 'Failed to load admin stats.');
+      setFetchError(e?.message || t('dashboard.adminStatsLoadFailed'));
     }
   };
 
@@ -79,10 +79,10 @@ export default function Dashboard() {
         <div className="flex items-center justify-end mb-8">
           <div className="flex gap-2">
             <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-cosmic-bg hover:bg-gray-50 text-sm font-sans uppercase tracking-wider px-4 py-2 rounded-lg">
-              <Plus className="w-4 h-4 mr-1" /> New Kundli
+              <Plus className="w-4 h-4 mr-1" /> {t('dashboard.newKundli')}
             </Button>
             <Button onClick={() => navigate('/admin')} variant="outline" className="border-sacred-gold text-sacred-gold-dark text-sm font-sans uppercase tracking-wider px-4 py-2 rounded-lg">
-              <BarChart3 className="w-4 h-4 mr-1" /> Full Admin
+              <BarChart3 className="w-4 h-4 mr-1" /> {t('dashboard.fullAdmin')}
             </Button>
           </div>
         </div>
@@ -90,10 +90,10 @@ export default function Dashboard() {
         {/* Summary Boxes */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {[
-            { label: 'Astrologers', value: adminStats.counts.astrologers, icon: Star, color: 'text-amber-500' },
-            { label: 'Clients Added', value: adminStats.counts.clients, icon: Users, color: 'text-blue-500' },
-            { label: 'Total Kundlis', value: adminStats.counts.kundlis, icon: BarChart3, color: 'text-green-500' },
-            { label: 'Registered Users', value: adminStats.counts.users, icon: User, color: 'text-purple-500' },
+            { label: t('dashboard.stats.astrologers'), value: adminStats.counts.astrologers, icon: Star, color: 'text-amber-500' },
+            { label: t('dashboard.stats.clientsAdded'), value: adminStats.counts.clients, icon: Users, color: 'text-blue-500' },
+            { label: t('dashboard.stats.totalKundlis'), value: adminStats.counts.kundlis, icon: BarChart3, color: 'text-green-500' },
+            { label: t('dashboard.stats.registeredUsers'), value: adminStats.counts.users, icon: User, color: 'text-purple-500' },
           ].map(s => (
             <div key={s.label} className="border border-sacred-gold p-5 bg-cosmic-bg">
               <s.icon className={`w-5 h-5 ${s.color} mb-2`} />
@@ -104,7 +104,7 @@ export default function Dashboard() {
         </div>
 
         {/* Astrologers List */}
-        <h2 className="text-sm font-sans text-cosmic-text uppercase tracking-wider mb-4">Astrologers & Their Clients</h2>
+        <h2 className="text-sm font-sans text-cosmic-text uppercase tracking-wider mb-4">{t('dashboard.astrologersAndTheirClients')}</h2>
         <div className="space-y-3 mb-10">
           {adminStats.astrologers.map(astro => (
             <div key={astro.id} className="border border-sacred-gold p-4 bg-cosmic-bg">
@@ -121,11 +121,11 @@ export default function Dashboard() {
                 <div className="flex gap-6 text-right">
                   <div>
                     <p className="text-lg font-sans text-cosmic-text font-bold">{astro.client_count}</p>
-                    <p className="text-sm text-cosmic-text">Clients</p>
+                    <p className="text-sm text-cosmic-text">{t('dashboard.clients')}</p>
                   </div>
                   <div>
                     <p className="text-lg font-sans text-cosmic-text font-bold">{astro.kundli_count}</p>
-                    <p className="text-sm text-cosmic-text">Kundlis</p>
+                    <p className="text-sm text-cosmic-text">{t('dashboard.kundlis')}</p>
                   </div>
                   <span className={`self-center text-sm px-2 py-0.5 border ${astro.role === 'admin' ? 'border-red-300 text-red-500' : 'border-purple-500 text-purple-500'}`}>
                     {astro.role}
@@ -137,7 +137,7 @@ export default function Dashboard() {
         </div>
 
         {/* Admin's own clients below */}
-        <h2 className="text-sm font-sans text-cosmic-text uppercase tracking-wider mb-4">My Clients</h2>
+        <h2 className="text-sm font-sans text-cosmic-text uppercase tracking-wider mb-4">{t('dashboard.myClients')}</h2>
         <div className="relative mb-4">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cosmic-text" />
           <Input type="text" value={search} onChange={e => handleSearch(e.target.value)}
@@ -171,7 +171,7 @@ export default function Dashboard() {
         <div className="text-center py-12">
           <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-3"><span className="text-2xl">⚠️</span></div>
           <p className="text-red-700 mb-2">{fetchError}</p>
-          <button onClick={() => fetchClients(search)} className="px-4 py-2 bg-sacred-gold-dark text-white rounded-lg text-sm hover:opacity-90">Retry</button>
+          <button onClick={() => fetchClients(search)} className="px-4 py-2 bg-sacred-gold-dark text-white rounded-lg text-sm hover:opacity-90">{t('common.retry')}</button>
         </div>
       );
     }
@@ -206,7 +206,7 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-sm text-cosmic-text">{client.kundli_count} chart{client.kundli_count !== 1 ? 's' : ''}</span>
+              <span className="text-sm text-cosmic-text">{client.kundli_count} {client.kundli_count !== 1 ? t('dashboard.charts') : t('dashboard.chart')}</span>
               <ChevronRight className="w-4 h-4 text-cosmic-text group-hover:text-sacred-gold-dark transition-colors" />
             </div>
           </div>
@@ -220,16 +220,16 @@ export default function Dashboard() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-sans text-cosmic-text">
-            {user?.name ? `${t('dashboard.welcome')}, ${user.name}` : 'Dashboard'}
+            {user?.name ? `${t('dashboard.welcome')}, ${user.name}` : t('nav.dashboard')}
           </h1>
           <p className="text-sm text-cosmic-text mt-1">{clients.length} {t('dashboard.clientsRegistered')}</p>
         </div>
         <div className="flex gap-2">
           <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-cosmic-bg hover:bg-gray-50 text-sm font-sans uppercase tracking-wider px-4 py-2 rounded-lg">
-            <Plus className="w-4 h-4 mr-1" /> New Kundli
+            <Plus className="w-4 h-4 mr-1" /> {t('dashboard.newKundli')}
           </Button>
           <Button onClick={() => navigate('/lal-kitab')} variant="outline" className="border-sacred-gold text-sacred-gold-dark text-sm font-sans uppercase tracking-wider px-4 py-2 rounded-lg">
-            <BookOpen className="w-4 h-4 mr-1" /> Lal Kitab
+            <BookOpen className="w-4 h-4 mr-1" /> {t('nav.lalKitab')}
           </Button>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import { Loader2, Gem } from 'lucide-react';
-import { translatePlanet, translateLabel, translateName } from '@/lib/backend-translations';
+import { translatePlanet, translateLabel, translateName, translateBackend } from '@/lib/backend-translations';
 
 interface DoshaTabProps {
   doshaData: any;
@@ -30,7 +30,7 @@ export default function DoshaTab({ doshaData, doshaDisplay, loadingDosha, langua
               {t('common.present')} ({translateLabel(doshaDisplay.mangal.severity, language)})
             </span>
           </div>
-          <p className="text-sm text-gray-600">{doshaDisplay.mangal.description}</p>
+          <p className="text-sm text-gray-600">{translateBackend(doshaDisplay.mangal.description, language)}</p>
         </div>
       )}
       {doshaDisplay.kaalsarp.has_dosha && (
@@ -39,7 +39,7 @@ export default function DoshaTab({ doshaData, doshaDisplay, loadingDosha, langua
             <h4 className="text-base font-semibold text-gray-800">{translateName('Kaal Sarp Dosha', language)}</h4>
             <span className="text-sm px-2.5 py-0.5 rounded-full font-medium bg-red-100 text-red-800">{t('common.present')}</span>
           </div>
-          <p className="text-sm text-gray-600">{doshaDisplay.kaalsarp.description}</p>
+          <p className="text-sm text-gray-600">{translateBackend(doshaDisplay.kaalsarp.description, language)}</p>
         </div>
       )}
       {doshaDisplay.sadesati.has_sade_sati && (
@@ -50,7 +50,7 @@ export default function DoshaTab({ doshaData, doshaDisplay, loadingDosha, langua
               {t('common.active')} - {translateLabel(doshaDisplay.sadesati.phase, language)}
             </span>
           </div>
-          <p className="text-sm text-gray-600">{doshaDisplay.sadesati.description}</p>
+          <p className="text-sm text-gray-600">{translateBackend(doshaDisplay.sadesati.description, language)}</p>
         </div>
       )}
       {!doshaDisplay.mangal.has_dosha && !doshaDisplay.kaalsarp.has_dosha && !doshaDisplay.sadesati.has_sade_sati && (

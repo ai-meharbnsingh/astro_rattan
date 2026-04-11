@@ -1115,7 +1115,7 @@ export default function ConsolidatedReport({
                                   color: isBenefic ? '#4ade80' : '#f87171',
                                 }}
                               >
-                                {translatePlanet(a.planet, language)} ({a.type})
+                                {translatePlanet(a.planet, language)} ({translateBackend(a.type, language)})
                               </span>
                             );
                           })}

@@ -6,6 +6,7 @@ import {
 import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from '@/lib/i18n';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface FeedbackRecord {
@@ -21,13 +22,13 @@ interface FeedbackRecord {
 }
 
 // ── StarRating (interactive) ──────────────────────────────────────────────────
-const LABELS = ['', 'Poor', 'Fair', 'Good', 'Great', 'Excellent'];
-
 function StarRating({
   value, onChange, label, sublabel,
 }: {
   value: number; onChange: (v: number) => void; label: string; sublabel: string;
 }) {
+  const { t } = useTranslation();
+  const labels = ['', t('feedback.rating.poor'), t('feedback.rating.fair'), t('feedback.rating.good'), t('feedback.rating.great'), t('feedback.rating.excellent')];
   const [hover, setHover] = useState(0);
   const active = hover || value;
   return (
@@ -56,7 +57,7 @@ function StarRating({
           </button>
         ))}
         <span className="ml-2 w-16 text-xs text-gray-400">
-          {active > 0 ? LABELS[active] : ''}
+          {active > 0 ? labels[active] : ''}
         </span>
       </div>
     </div>
@@ -65,6 +66,7 @@ function StarRating({
 
 // ── StarDisplay (read-only, compact) ─────────────────────────────────────────
 function StarDisplay({ value }: { value: number | null }) {
+  const { t } = useTranslation();
   if (!value) return <span className="text-xs text-gray-300">—</span>;
   return (
     <span className="inline-flex items-center gap-0.5">
@@ -80,13 +82,14 @@ function StarDisplay({ value }: { value: number | null }) {
 
 // ── Badges ────────────────────────────────────────────────────────────────────
 function StatusBadge({ status }: { status: 'open' | 'closed' }) {
+  const { t } = useTranslation();
   return status === 'closed' ? (
     <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-green-50 border border-green-200 text-green-700 font-medium">
-      <CheckCircle2 className="w-3 h-3" /> Resolved
+      <CheckCircle2 className="w-3 h-3" /> {t('feedback.status.resolved')}
     </span>
   ) : (
     <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 font-medium">
-      <Clock className="w-3 h-3" /> Open
+      <Clock className="w-3 h-3" /> {t('feedback.status.open')}
     </span>
   );
 }
@@ -97,7 +100,8 @@ function ActionBadge({ action }: { action: 'yes' | 'no' | 'NR' }) {
     no:  'bg-red-50 border-red-200 text-red-600',
     NR:  'bg-gray-50 border-gray-200 text-gray-500',
   };
-  const labels = { yes: 'Action Taken', no: 'No Action', NR: 'Not Reviewed' };
+  const { t } = useTranslation();
+  const labels = { yes: t('feedback.action.yes'), no: t('feedback.action.no'), NR: t('feedback.action.nr') };
   return (
     <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${styles[action]}`}>
       {labels[action]}
@@ -113,6 +117,7 @@ function FeedbackHistoryCard({
   item: FeedbackRecord;
   onClosed: (id: string) => void;
 }) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const [closing, setClosing] = useState(false);
 
@@ -151,7 +156,7 @@ function FeedbackHistoryCard({
             ) : (
               <CheckCircle2 className="w-3.5 h-3.5" />
             )}
-            {closing ? 'Saving…' : 'Mark as Resolved'}
+            {closing ? t('feedback.saving') : t('feedback.markResolved')}
           </button>
         )}
       </div>
@@ -159,9 +164,9 @@ function FeedbackHistoryCard({
       {/* Ratings row */}
       <div className="grid grid-cols-3 gap-3 mb-3">
         {[
-          { label: 'Interface', val: item.rating_interface },
-          { label: 'Reports', val: item.rating_reports },
-          { label: 'Calculations', val: item.rating_calculations },
+          { label: t('feedback.interface'), val: item.rating_interface },
+          { label: t('feedback.reports'), val: item.rating_reports },
+          { label: t('feedback.calculations'), val: item.rating_calculations },
         ].map(r => (
           <div key={r.label}>
             <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">{r.label}</p>
@@ -182,8 +187,8 @@ function FeedbackHistoryCard({
               className="mt-1 flex items-center gap-0.5 text-xs text-sacred-gold-dark hover:underline"
             >
               {expanded
-                ? <><ChevronUp className="w-3 h-3" /> Show less</>
-                : <><ChevronDown className="w-3 h-3" /> Read more</>}
+                ? <><ChevronUp className="w-3 h-3" /> {t('feedback.showLess')}</>
+                : <><ChevronDown className="w-3 h-3" /> {t('feedback.readMore')}</>}
             </button>
           )}
         </div>
@@ -193,7 +198,7 @@ function FeedbackHistoryCard({
       {item.admin_remarks && (
         <div className="bg-blue-50 border border-blue-100 rounded-lg px-4 py-3">
           <p className="text-[10px] font-semibold text-blue-500 uppercase tracking-wider mb-1">
-            Admin Response
+            {t('feedback.adminResponse')}
           </p>
           <p className="text-sm text-blue-800">{item.admin_remarks}</p>
         </div>
@@ -206,6 +211,7 @@ function FeedbackHistoryCard({
 export default function FeedbackPage() {
   const { isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [ratingInterface, setRatingInterface] = useState(0);
   const [ratingReports, setRatingReports] = useState(0);
@@ -233,7 +239,7 @@ export default function FeedbackPage() {
 
   const handleSubmit = async () => {
     if (!ratingInterface && !ratingReports && !ratingCalc && !text.trim()) {
-      setSubmitError('Please give at least one rating or write a comment');
+      setSubmitError(t('feedback.validation.oneRequired'));
       return;
     }
     setSubmitting(true); setSubmitError('');
@@ -250,7 +256,7 @@ export default function FeedbackPage() {
       // refresh history
       api.get('/api/feedback/my').then(setHistory).catch(console.error);
     } catch (e: any) {
-      setSubmitError(e.message || 'Submission failed — please try again');
+      setSubmitError(e.message || t('feedback.submitFailed'));
     }
     setSubmitting(false);
   };
@@ -277,38 +283,38 @@ export default function FeedbackPage() {
       <div className="flex items-center gap-3 mb-8">
         <MessageSquare className="w-7 h-7 text-sacred-gold-dark" />
         <div>
-          <h1 className="text-2xl font-sans font-semibold text-cosmic-text">Share Your Feedback</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Your input helps us improve astrorattan.com</p>
+          <h1 className="text-2xl font-sans font-semibold text-cosmic-text">{t('feedback.title')}</h1>
+          <p className="text-sm text-gray-500 mt-0.5">{t('feedback.subtitle')}</p>
         </div>
       </div>
 
       {/* ── Submit form ──────────────────────────────────────────────── */}
       <div className="border border-sacred-gold/30 rounded-2xl bg-white/60 backdrop-blur-sm p-6 mb-8 shadow-sm">
         <h2 className="text-xs font-semibold text-sacred-gold-dark uppercase tracking-wider mb-5">
-          Rate Your Experience
+          {t('feedback.rateYourExperience')}
         </h2>
 
         <div className="space-y-5 divide-y divide-gray-100">
           <StarRating
             value={ratingInterface}
             onChange={setRatingInterface}
-            label="Interface"
-            sublabel="Design, layout, ease of navigation"
+            label={t('feedback.interface')}
+            sublabel={t('feedback.interfaceHelp')}
           />
           <div className="pt-5">
             <StarRating
               value={ratingReports}
               onChange={setRatingReports}
-              label="Reports"
-              sublabel="Kundli, horoscope quality & detail"
+              label={t('feedback.reports')}
+              sublabel={t('feedback.reportsHelp')}
             />
           </div>
           <div className="pt-5">
             <StarRating
               value={ratingCalc}
               onChange={setRatingCalc}
-              label="Calculations"
-              sublabel="Accuracy of planetary & vedic calculations"
+              label={t('feedback.calculations')}
+              sublabel={t('feedback.calculationsHelp')}
             />
           </div>
         </div>
@@ -316,13 +322,13 @@ export default function FeedbackPage() {
         {/* Text area */}
         <div className="mt-6">
           <label className="block text-sm font-medium text-cosmic-text mb-2">
-            Overall feedback
-            <span className="ml-1 text-xs font-normal text-gray-400">(optional)</span>
+            {t('feedback.overall')}
+            <span className="ml-1 text-xs font-normal text-gray-400">({t('feedback.optional')})</span>
           </label>
           <textarea
             value={text}
             onChange={e => setText(e.target.value)}
-            placeholder="Tell us what you loved, what needs work, or any bugs you noticed…"
+            placeholder={t('feedback.placeholder')}
             rows={4}
             maxLength={2000}
             className="w-full px-4 py-3 border border-sacred-gold/30 rounded-xl bg-white text-cosmic-text text-sm focus:outline-none focus:ring-2 focus:ring-sacred-gold/40 resize-none placeholder:text-gray-300"
@@ -339,7 +345,7 @@ export default function FeedbackPage() {
         {submitted && (
           <div className="flex items-center gap-2 mt-4 bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl px-4 py-3">
             <CheckCircle2 className="w-4 h-4 shrink-0" />
-            Thank you! Your feedback has been submitted.
+            {t('feedback.thankYou')}
           </div>
         )}
 
@@ -353,7 +359,7 @@ export default function FeedbackPage() {
           ) : (
             <Send className="w-4 h-4" />
           )}
-          {submitting ? 'Submitting…' : 'Submit Feedback'}
+          {submitting ? t('feedback.submitting') : t('feedback.submit')}
         </button>
       </div>
 
@@ -361,18 +367,18 @@ export default function FeedbackPage() {
       <div>
         <div className="flex items-center gap-3 mb-4">
           <h2 className="text-xs font-semibold text-sacred-gold-dark uppercase tracking-wider">
-            My Feedback History
+            {t('feedback.history')}
           </h2>
           {history.length > 0 && (
             <div className="flex gap-1.5 text-[10px]">
               {openCount > 0 && (
                 <span className="px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700">
-                  {openCount} open
+                  {openCount} {t('feedback.open')}
                 </span>
               )}
               {closedCount > 0 && (
                 <span className="px-2 py-0.5 rounded-full bg-green-50 border border-green-200 text-green-700">
-                  {closedCount} resolved
+                  {closedCount} {t('feedback.resolved')}
                 </span>
               )}
             </div>
@@ -386,8 +392,8 @@ export default function FeedbackPage() {
         ) : history.length === 0 ? (
           <div className="text-center py-14 border border-dashed border-sacred-gold/30 rounded-2xl">
             <MessageSquare className="w-8 h-8 text-gray-300 mx-auto mb-3" />
-            <p className="text-sm text-gray-400">No feedback submitted yet</p>
-            <p className="text-xs text-gray-300 mt-1">Your submissions will appear here</p>
+            <p className="text-sm text-gray-400">{t('feedback.empty')}</p>
+            <p className="text-xs text-gray-300 mt-1">{t('feedback.emptySub')}</p>
           </div>
         ) : (
           <div className="space-y-3">

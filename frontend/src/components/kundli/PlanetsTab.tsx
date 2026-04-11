@@ -1,7 +1,7 @@
 import { Sparkles, X } from 'lucide-react';
 import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
 import { PLANET_ASPECTS, toDMS } from '@/components/kundli/kundli-utils';
-import { translatePlanet, translateSign, translateLabel } from '@/lib/backend-translations';
+import { translatePlanet, translateSign, translateLabel, translateNakshatra } from '@/lib/backend-translations';
 import type { SidePanelState } from '@/hooks/useKundliData';
 
 interface PlanetsTabProps {
@@ -78,7 +78,7 @@ export default function PlanetsTab({
                     <div className="bg-cosmic-card rounded-lg p-3">
                       <p className="text-sm text-cosmic-text">{t('kundli.nakshatra')}</p>
                       <p className="font-semibold text-sacred-brown">
-                        {p.nakshatra || t('common.noData')}
+                        {translateNakshatra(p.nakshatra, language) || t('common.noData')}
                         {p.nakshatra_pada ? ` (${language === 'hi' ? 'पाद' : 'Pada'} ${p.nakshatra_pada})` : ''}
                       </p>
                     </div>
@@ -180,7 +180,7 @@ export default function PlanetsTab({
                   <td className="p-3 text-cosmic-text text-sm">{translateSign(planet.sign, language)}</td>
                   <td className="p-3 text-cosmic-text text-sm">{planet.house}</td>
                   <td className="p-3 text-cosmic-text text-sm">
-                    {planet.nakshatra || '\u2014'}
+                    {translateNakshatra(planet.nakshatra, language) || '\u2014'}
                     {planet.nakshatra_pada ? ` (${language === 'hi' ? 'पाद' : 'P'}${planet.nakshatra_pada})` : ''}
                   </td>
                   <td className="p-3">

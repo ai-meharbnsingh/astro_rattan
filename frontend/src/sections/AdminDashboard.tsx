@@ -9,6 +9,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { api, formatDate } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from '@/lib/i18n';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 interface Stats {
@@ -84,11 +85,13 @@ const CLOUD_COLORS = [
 ];
 
 function WordCloud({ words }: { words: WordCloudWord[] }) {
+  const { language } = useTranslation();
+  const l = (en: string, hi: string) => (language === 'hi' ? hi : en);
   if (!words.length) {
     return (
       <div className="flex flex-col items-center justify-center py-8 text-gray-400 text-sm gap-2">
         <MessageSquare className="w-6 h-6 text-gray-200" />
-        <span>Word cloud appears when users submit open feedback</span>
+        <span>{l('Word cloud appears when users submit open feedback', 'जब उपयोगकर्ता खुला फीडबैक भेजते हैं तब वर्ड क्लाउड दिखेगा')}</span>
       </div>
     );
   }
@@ -183,7 +186,7 @@ function FeedbackRow({
                 onClick={() => setExpanded(v => !v)}
                 className="flex items-center gap-0.5 text-[10px] text-sacred-gold-dark mt-0.5 hover:underline"
               >
-                {expanded ? <><ChevronUp className="w-3 h-3" />Less</> : <><ChevronDown className="w-3 h-3" />More</>}
+                {expanded ? <><ChevronUp className="w-3 h-3" />{l('Less', 'कम')}</> : <><ChevronDown className="w-3 h-3" />{l('More', 'अधिक')}</>}
               </button>
             )}
           </div>
@@ -194,11 +197,11 @@ function FeedbackRow({
       <td className="py-3 px-4 whitespace-nowrap">
         {item.status === 'closed' ? (
           <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-green-50 border border-green-200 text-green-700 font-medium">
-            <CheckCircle2 className="w-3 h-3" /> Resolved
+            <CheckCircle2 className="w-3 h-3" /> {l('Resolved', 'सुलझा')}
           </span>
         ) : (
           <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 font-medium">
-            <Clock className="w-3 h-3" /> Open
+            <Clock className="w-3 h-3" /> {l('Open', 'खुला')}
           </span>
         )}
       </td>
@@ -210,9 +213,9 @@ function FeedbackRow({
           onChange={e => saveAction(e.target.value)}
           className={`text-xs border rounded-lg px-2 py-1 font-medium cursor-pointer focus:outline-none ${actionStyle[item.action_taken]}`}
         >
-          <option value="NR">Not Reviewed</option>
-          <option value="yes">Action Taken</option>
-          <option value="no">No Action</option>
+          <option value="NR">{l('Not Reviewed', 'समीक्षा नहीं')}</option>
+          <option value="yes">{l('Action Taken', 'कार्यवाही हुई')}</option>
+          <option value="no">{l('No Action', 'कोई कार्यवाही नहीं')}</option>
         </select>
       </td>
 
@@ -306,6 +309,8 @@ function StatCard({
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { language } = useTranslation();
+  const l = (en: string, hi: string) => (language === 'hi' ? hi : en);
   const [tab, setTab] = useState<'overview' | 'users' | 'kundlis' | 'live' | 'analytics' | 'feedback'>('overview');
 
   // overview
@@ -466,8 +471,8 @@ export default function AdminDashboard() {
       <div className="flex items-center gap-3 mb-8">
         <Shield className="w-8 h-8 text-sacred-gold-dark" />
         <div>
-          <h1 className="text-2xl font-sans font-semibold text-cosmic-text">Admin Dashboard</h1>
-          <p className="text-xs text-gray-500 mt-0.5">astrorattan.com management panel</p>
+          <h1 className="text-2xl font-sans font-semibold text-cosmic-text">{l('Admin Dashboard', 'एडमिन डैशबोर्ड')}</h1>
+          <p className="text-xs text-gray-500 mt-0.5">{l('astrorattan.com management panel', 'astrorattan.com प्रबंधन पैनल')}</p>
         </div>
       </div>
 
@@ -503,7 +508,7 @@ export default function AdminDashboard() {
           {!stats ? (
             <div className="text-center py-16 border border-dashed border-sacred-gold/40 rounded-xl">
               <Shield className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-cosmic-text font-medium">No data yet</p>
+              <p className="text-cosmic-text font-medium">{l('No data yet', 'अभी डेटा नहीं है')}</p>
             </div>
           ) : (
             <>
@@ -570,12 +575,12 @@ export default function AdminDashboard() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-sacred-gold/20 bg-sacred-gold/5 text-left text-xs text-gray-500 uppercase tracking-wider">
-                  <th className="py-3 px-4">Name</th>
-                  <th className="py-3 px-4">Email</th>
-                  <th className="py-3 px-4">Role</th>
-                  <th className="py-3 px-4">Active</th>
-                  <th className="py-3 px-4">Joined</th>
-                  <th className="py-3 px-4">Actions</th>
+                  <th className="py-3 px-4">{l('Name', 'नाम')}</th>
+                  <th className="py-3 px-4">{l('Email', 'ईमेल')}</th>
+                  <th className="py-3 px-4">{l('Role', 'भूमिका')}</th>
+                  <th className="py-3 px-4">{l('Active', 'सक्रिय')}</th>
+                  <th className="py-3 px-4">{l('Joined', 'जुड़ने की तारीख')}</th>
+                  <th className="py-3 px-4">{l('Actions', 'कार्य')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -589,9 +594,9 @@ export default function AdminDashboard() {
                         onChange={e => changeRole(u.id, e.target.value)}
                         className="bg-white border border-sacred-gold/30 text-cosmic-text text-xs px-2 py-1 rounded-lg"
                       >
-                        <option value="user">user</option>
-                        <option value="astrologer">astrologer</option>
-                        <option value="admin">admin</option>
+                        <option value="user">{l('user', 'यूज़र')}</option>
+                        <option value="astrologer">{l('astrologer', 'ज्योतिषी')}</option>
+                        <option value="admin">{l('admin', 'एडमिन')}</option>
                       </select>
                     </td>
                     <td className="py-3 px-4">
@@ -603,7 +608,7 @@ export default function AdminDashboard() {
                     </td>
                     <td className="py-3 px-4 text-gray-400 text-xs">{formatDate(u.created_at)}</td>
                     <td className="py-3 px-4">
-                      <button className="text-xs text-sacred-gold-dark hover:underline">View</button>
+                      <button className="text-xs text-sacred-gold-dark hover:underline">{l('View', 'देखें')}</button>
                     </td>
                   </tr>
                 ))}
@@ -631,11 +636,11 @@ export default function AdminDashboard() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-sacred-gold/20 bg-sacred-gold/5 text-left text-xs text-gray-500 uppercase tracking-wider">
-                  <th className="py-3 px-4">Person</th>
-                  <th className="py-3 px-4">Birth Date</th>
-                  <th className="py-3 px-4">Place</th>
-                  <th className="py-3 px-4">User</th>
-                  <th className="py-3 px-4">Created</th>
+                  <th className="py-3 px-4">{l('Person', 'व्यक्ति')}</th>
+                  <th className="py-3 px-4">{l('Birth Date', 'जन्म तिथि')}</th>
+                  <th className="py-3 px-4">{l('Place', 'स्थान')}</th>
+                  <th className="py-3 px-4">{l('User', 'उपयोगकर्ता')}</th>
+                  <th className="py-3 px-4">{l('Created', 'निर्मित')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -675,7 +680,7 @@ export default function AdminDashboard() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500" />
               </span>
-              <span className="text-sm font-semibold text-green-700">Live Dashboard</span>
+              <span className="text-sm font-semibold text-green-700">{l('Live Dashboard', 'लाइव डैशबोर्ड')}</span>
               <span className="text-xs text-gray-400 ml-1">· auto-refresh every 5s</span>
             </div>
             <div className="flex items-center gap-3 text-xs text-gray-400">
@@ -773,7 +778,7 @@ export default function AdminDashboard() {
               </div>
               <div className="divide-y divide-gray-100 max-h-64 overflow-y-auto">
                 {!liveData || liveData.top_endpoints.length === 0 ? (
-                  <div className="py-8 text-center text-sm text-gray-400">No traffic yet</div>
+                  <div className="py-8 text-center text-sm text-gray-400">{l('No traffic yet', 'अभी ट्रैफिक नहीं है')}</div>
                 ) : (
                   liveData.top_endpoints.map((ep, i) => (
                     <div key={ep.path} className="flex items-center gap-3 px-5 py-3 hover:bg-sacred-gold/4 transition-colors">
@@ -803,7 +808,7 @@ export default function AdminDashboard() {
                 <h3 className="text-sm font-semibold text-sacred-gold-dark uppercase tracking-wider">
                   Activity Feed
                 </h3>
-                <span className="text-xs font-normal text-gray-400 normal-case">latest 50 requests</span>
+                <span className="text-xs font-normal text-gray-400 normal-case">{l('latest 50 requests', 'हाल की 50 रिक्वेस्ट')}</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="text-xs text-gray-400 flex items-center gap-1">
@@ -816,7 +821,7 @@ export default function AdminDashboard() {
 
             <div ref={activityRef} className="font-mono text-xs divide-y divide-gray-50 max-h-[420px] overflow-y-auto">
               {!liveData || liveData.recent_activity.length === 0 ? (
-                <div className="py-10 text-center text-sm text-gray-400">No requests recorded yet</div>
+                <div className="py-10 text-center text-sm text-gray-400">{l('No requests recorded yet', 'अभी तक कोई रिक्वेस्ट दर्ज नहीं हुई')}</div>
               ) : (
                 liveData.recent_activity.map((r, i) => (
                   <div key={i} className={`flex items-center gap-3 px-4 py-2 hover:brightness-95 transition-all ${statusBg(r.status)}`}>
@@ -864,16 +869,16 @@ export default function AdminDashboard() {
               </h3>
             </div>
             {!analyticsData || analyticsData.top_pages.length === 0 ? (
-              <div className="py-8 text-center text-sm text-gray-400">No page views recorded yet</div>
+              <div className="py-8 text-center text-sm text-gray-400">{l('No page views recorded yet', 'अभी तक कोई पेज व्यू दर्ज नहीं हुआ')}</div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-sacred-gold/10 text-left text-xs text-gray-400 uppercase tracking-wider">
-                      <th className="py-2.5 px-5">Path</th>
-                      <th className="py-2.5 px-4 text-right">Views</th>
-                      <th className="py-2.5 px-4 text-right">Visitors</th>
-                      <th className="py-2.5 px-5 w-32">Bar</th>
+                      <th className="py-2.5 px-5">{l('Path', 'पाथ')}</th>
+                      <th className="py-2.5 px-4 text-right">{l('Views', 'व्यू')}</th>
+                      <th className="py-2.5 px-4 text-right">{l('Visitors', 'विज़िटर')}</th>
+                      <th className="py-2.5 px-5 w-32">{l('Bar', 'बार')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -909,7 +914,7 @@ export default function AdminDashboard() {
             </div>
             <div className="px-5 py-4">
               {!analyticsData ? (
-                <div className="text-center text-sm text-gray-400 py-4">No data</div>
+                <div className="text-center text-sm text-gray-400 py-4">{l('No data', 'कोई डेटा नहीं')}</div>
               ) : (() => {
                 const maxH = Math.max(...analyticsData.hourly_today.map(h => h.views), 1);
                 return (
@@ -941,7 +946,7 @@ export default function AdminDashboard() {
             </div>
             <div className="px-5 py-4">
               {!analyticsData || analyticsData.daily_last_30.length === 0 ? (
-                <div className="text-center text-sm text-gray-400 py-4">No data yet</div>
+                <div className="text-center text-sm text-gray-400 py-4">{l('No data yet', 'अभी डेटा नहीं है')}</div>
               ) : (() => {
                 const maxD = Math.max(...analyticsData.daily_last_30.map(d => d.views), 1);
                 return (
@@ -979,7 +984,7 @@ export default function AdminDashboard() {
                   Word Cloud
                 </h3>
                 <span className="text-xs font-normal text-amber-600 normal-case bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
-                  Open issues only
+                  {l('Open issues only', 'केवल खुले मुद्दे')}
                 </span>
               </div>
               <button
@@ -996,7 +1001,7 @@ export default function AdminDashboard() {
           <div className="flex flex-wrap items-center gap-3">
             <Filter className="w-4 h-4 text-gray-400 shrink-0" />
             <div className="flex items-center gap-2">
-              <label className="text-xs text-gray-500 font-medium">Status</label>
+              <label className="text-xs text-gray-500 font-medium">{l('Status', 'स्थिति')}</label>
               <select
                 value={feedbackFilterStatus}
                 onChange={e => {
@@ -1005,13 +1010,13 @@ export default function AdminDashboard() {
                 }}
                 className="text-xs border border-sacred-gold/30 rounded-lg px-3 py-1.5 bg-white text-cosmic-text focus:outline-none focus:ring-1 focus:ring-sacred-gold/40"
               >
-                <option value="">All</option>
-                <option value="open">Open</option>
-                <option value="closed">Resolved</option>
+                <option value="">{l('All', 'सभी')}</option>
+                <option value="open">{l('Open', 'खुला')}</option>
+                <option value="closed">{l('Resolved', 'सुलझा')}</option>
               </select>
             </div>
             <div className="flex items-center gap-2">
-              <label className="text-xs text-gray-500 font-medium">Action</label>
+              <label className="text-xs text-gray-500 font-medium">{l('Action', 'कार्यवाही')}</label>
               <select
                 value={feedbackFilterAction}
                 onChange={e => {
@@ -1020,10 +1025,10 @@ export default function AdminDashboard() {
                 }}
                 className="text-xs border border-sacred-gold/30 rounded-lg px-3 py-1.5 bg-white text-cosmic-text focus:outline-none focus:ring-1 focus:ring-sacred-gold/40"
               >
-                <option value="">All</option>
-                <option value="NR">Not Reviewed</option>
-                <option value="yes">Action Taken</option>
-                <option value="no">No Action</option>
+                <option value="">{l('All', 'सभी')}</option>
+                <option value="NR">{l('Not Reviewed', 'समीक्षा नहीं')}</option>
+                <option value="yes">{l('Action Taken', 'कार्यवाही हुई')}</option>
+                <option value="no">{l('No Action', 'कोई कार्यवाही नहीं')}</option>
               </select>
             </div>
             <span className="text-xs text-gray-400 ml-auto">
@@ -1036,21 +1041,21 @@ export default function AdminDashboard() {
             {feedbackItems.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 text-gray-400">
                 <MessageSquare className="w-8 h-8 text-gray-200 mb-3" />
-                <p className="text-sm">No feedback yet</p>
-                <p className="text-xs text-gray-300 mt-1">Submissions will appear here</p>
+                <p className="text-sm">{l('No feedback yet', 'अभी कोई फीडबैक नहीं')}</p>
+                <p className="text-xs text-gray-300 mt-1">{l('Submissions will appear here', 'सबमिशन यहां दिखेंगे')}</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-sacred-gold/20 bg-sacred-gold/5 text-left text-xs text-gray-500 uppercase tracking-wider">
-                      <th className="py-3 px-4">User</th>
-                      <th className="py-3 px-4">Ratings</th>
-                      <th className="py-3 px-4">Feedback</th>
-                      <th className="py-3 px-4">Status</th>
-                      <th className="py-3 px-4">Action Taken</th>
-                      <th className="py-3 px-4">Admin Remarks</th>
-                      <th className="py-3 px-4">Date</th>
+                      <th className="py-3 px-4">{l('User', 'उपयोगकर्ता')}</th>
+                      <th className="py-3 px-4">{l('Ratings', 'रेटिंग्स')}</th>
+                      <th className="py-3 px-4">{l('Feedback', 'फीडबैक')}</th>
+                      <th className="py-3 px-4">{l('Status', 'स्थिति')}</th>
+                      <th className="py-3 px-4">{l('Action Taken', 'कार्यवाही हुई')}</th>
+                      <th className="py-3 px-4">{l('Admin Remarks', 'एडमिन टिप्पणी')}</th>
+                      <th className="py-3 px-4">{l('Date', 'तिथि')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1079,7 +1084,7 @@ export default function AdminDashboard() {
                 className="border-sacred-gold/40">
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <span className="text-sm text-gray-500">Page {feedbackPage} of {feedbackPages}</span>
+              <span className="text-sm text-gray-500">{l('Page', 'पेज')} {feedbackPage} {l('of', 'में से')} {feedbackPages}</span>
               <Button variant="outline" size="sm" disabled={feedbackPage >= feedbackPages}
                 onClick={() => fetchFeedback(feedbackPage + 1, feedbackFilterStatus, feedbackFilterAction)}
                 className="border-sacred-gold/40">

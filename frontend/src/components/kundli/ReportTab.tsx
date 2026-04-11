@@ -471,12 +471,12 @@ export default function ReportTab({
                       <div className="rounded-lg p-3 bg-gold-10">
                         <p className="text-sm" style={{ color: 'var(--ink-light)' }}>{t('section.currentMahadasha')}</p>
                         <p className="text-sm font-display font-bold" style={{ color: 'var(--aged-gold)' }}>
-                          {(extendedDashaData || dashaData).current_dasha}
+                          {translatePlanet((extendedDashaData || dashaData).current_dasha, language)}
                         </p>
                         {(extendedDashaData || dashaData).current_antardasha && (extendedDashaData || dashaData).current_antardasha !== 'Unknown' && (
                           <p className="text-sm" style={{ color: 'var(--aged-gold)' }}>
-                            {t('report.adLabel')} {(extendedDashaData || dashaData).current_antardasha}
-                            {extendedDashaData?.current_pratyantar && extendedDashaData.current_pratyantar !== 'Unknown' && ` / ${t('report.pdLabel')} ${extendedDashaData.current_pratyantar}`}
+                            {t('report.adLabel')} {translatePlanet((extendedDashaData || dashaData).current_antardasha, language)}
+                            {extendedDashaData?.current_pratyantar && extendedDashaData.current_pratyantar !== 'Unknown' && ` / ${t('report.pdLabel')} ${translatePlanet(extendedDashaData.current_pratyantar, language)}`}
                           </p>
                         )}
                       </div>

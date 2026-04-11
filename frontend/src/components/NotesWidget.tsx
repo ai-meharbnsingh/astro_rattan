@@ -117,7 +117,7 @@ export default function NotesWidget({ clientId, chartType, kundliId }: NotesWidg
           {/* Header */}
           <div className="flex items-center justify-between p-3 border-b border-sacred-gold bg-sacred-gold-dark">
             <h3 className="text-sm font-sans text-sacred-gold-dark uppercase tracking-wider">{t('notes.header')}</h3>
-            <button onClick={() => setOpen(false)} className="text-cosmic-text hover:text-cosmic-text">
+            <button onClick={() => setOpen(false)} aria-label={t('common.close')} className="text-cosmic-text hover:text-cosmic-text">
               <X className="w-4 h-4" />
             </button>
           </div>

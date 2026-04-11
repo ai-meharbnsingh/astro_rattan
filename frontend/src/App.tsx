@@ -15,7 +15,7 @@ function usePageTracking() {
     }).catch(() => {});
   }, [location.pathname]);
 }
-import { I18nProvider } from './lib/i18n';
+import { I18nProvider, useTranslation } from './lib/i18n';
 import { AuthProvider } from './hooks/useAuth';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -60,24 +60,25 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
   }
   render() {
     if (this.state.hasError) {
+      const lang = (typeof window !== 'undefined' && localStorage.getItem('astrovedic-language') === 'hi') ? 'hi' : 'en';
       return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
           <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mb-4">
             <span className="text-3xl">⚠️</span>
           </div>
-          <h2 className="text-2xl font-sans text-gray-800 mb-2">Something went wrong</h2>
-          <p className="text-gray-500 mb-2 max-w-md">This section encountered an error. Your data is safe — try refreshing.</p>
+          <h2 className="text-2xl font-sans text-gray-800 mb-2">{lang === 'hi' ? 'कुछ गलत हो गया' : 'Something went wrong'}</h2>
+          <p className="text-gray-500 mb-2 max-w-md">{lang === 'hi' ? 'इस सेक्शन में त्रुटि आई है। आपका डेटा सुरक्षित है, कृपया रिफ्रेश करें।' : 'This section encountered an error. Your data is safe, try refreshing.'}</p>
           {this.state.error && (
             <p className="text-sm text-red-600 bg-red-50 px-3 py-1 rounded mb-4 max-w-md truncate">{this.state.error.message}</p>
           )}
           <div className="flex gap-3">
             <button onClick={() => this.setState({ hasError: false, error: null })}
               className="px-6 py-2.5 bg-sacred-gold-dark text-white rounded-lg hover:opacity-90 transition-all font-medium">
-              Try Again
+              {lang === 'hi' ? 'फिर से प्रयास करें' : 'Try Again'}
             </button>
             <button onClick={() => window.location.href = '/'}
               className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-medium">
-              Go Home
+              {lang === 'hi' ? 'होम जाएं' : 'Go Home'}
             </button>
           </div>
         </div>
@@ -88,12 +89,13 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
 }
 
 function NotFound() {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
       <h2 className="text-6xl font-sans text-sacred-gold-dark mb-4">404</h2>
-      <p className="text-xl text-gray-600 mb-6">Page not found</p>
+      <p className="text-xl text-gray-600 mb-6">{t('app.notFound')}</p>
       <Link to="/" className="px-6 py-2 border border-sacred-gold text-sacred-gold-dark hover:bg-gray-50 dark hover:text-cosmic-bg transition-all">
-        Return Home
+        {t('app.returnHome')}
       </Link>
     </div>
   );

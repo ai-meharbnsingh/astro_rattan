@@ -43,7 +43,7 @@ export default function ClientProfile() {
   }, [clientId]);
 
   if (loading) return <div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-600" /></div>;
-  if (!client) return <div className="text-center py-20 text-cosmic-text">Client not found</div>;
+  if (!client) return <div className="text-center py-20 text-cosmic-text">{t('client.notFound')}</div>;
 
   const birthState = {
     clientId: client.id, clientName: client.name,
@@ -55,7 +55,7 @@ export default function ClientProfile() {
     <div className="min-h-screen pt-24 pb-16 px-4 max-w-4xl mx-auto">
       {/* Back */}
       <button onClick={() => navigate('/dashboard')} className="flex items-center gap-1 text-sm text-cosmic-text hover:text-sacred-gold-dark mb-6">
-        <ArrowLeft className="w-4 h-4" /> Back to Dashboard
+        <ArrowLeft className="w-4 h-4" /> {t('client.backToDashboard')}
       </button>
 
       {/* Client Info */}
@@ -82,29 +82,29 @@ export default function ClientProfile() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
         <Button onClick={() => navigate('/kundli', { state: { ...birthState, chartType: 'vedic' } })}
           className="bg-sacred-gold-dark text-cosmic-bg hover:bg-gray-50 h-14 rounded-lg font-sans uppercase tracking-wider text-sm">
-          <Star className="w-4 h-4 mr-2" /> New Kundli
+          <Star className="w-4 h-4 mr-2" /> {t('client.newKundli')}
         </Button>
         <Button onClick={() => navigate('/lal-kitab', { state: birthState })}
           variant="outline" className="border-sacred-gold text-sacred-gold-dark h-14 rounded-lg font-sans uppercase tracking-wider text-sm">
-          <BookOpen className="w-4 h-4 mr-2" /> Lal Kitab
+          <BookOpen className="w-4 h-4 mr-2" /> {t('nav.lalKitab')}
         </Button>
         <Button onClick={() => navigate('/numerology', { state: { clientName: client.name, birthDate: client.birth_date } })}
           variant="outline" className="border-sacred-gold text-sacred-gold-dark h-14 rounded-lg font-sans uppercase tracking-wider text-sm">
-          <Hash className="w-4 h-4 mr-2" /> Numerology
+          <Hash className="w-4 h-4 mr-2" /> {t('nav.numerology')}
         </Button>
       </div>
 
       {/* Charts */}
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-sm font-sans text-cosmic-text uppercase tracking-wider">Charts ({kundlis.length})</h2>
+        <h2 className="text-sm font-sans text-cosmic-text uppercase tracking-wider">{t('client.charts')} ({kundlis.length})</h2>
       </div>
 
       {kundlis.length === 0 ? (
         <div className="text-center py-12 border border-dashed border-sacred-gold">
-          <p className="text-cosmic-text mb-4">No charts generated yet</p>
+          <p className="text-cosmic-text mb-4">{t('client.noCharts')}</p>
           <Button onClick={() => navigate('/kundli', { state: { ...birthState, chartType: 'vedic' } })}
             className="bg-sacred-gold-dark text-cosmic-bg hover:bg-gray-50 text-sm font-sans uppercase rounded-lg">
-            <Plus className="w-4 h-4 mr-1" /> Generate First Chart
+            <Plus className="w-4 h-4 mr-1" /> {t('client.generateFirst')}
           </Button>
         </div>
       ) : (
@@ -144,7 +144,7 @@ export default function ClientProfile() {
         <>
           <div className="mb-4 mt-8 flex items-center gap-2">
             <StickyNote className="w-4 h-4 text-sacred-gold-dark" />
-            <h2 className="text-sm font-sans text-cosmic-text uppercase tracking-wider">Notes ({notes.length})</h2>
+            <h2 className="text-sm font-sans text-cosmic-text uppercase tracking-wider">{t('notes.header')} ({notes.length})</h2>
           </div>
           <div className="space-y-2">
             {notes.map(note => (
@@ -155,7 +155,12 @@ export default function ClientProfile() {
                     {note.created_at ? formatDateTime(note.created_at) : ''}
                   </span>
                   <span className="text-sm px-1.5 py-0.5 bg-sacred-gold-dark text-white rounded">
-                    {{ vedic: 'Kundli', lalkitab: 'Lal Kitab', numerology: 'Numerology', general: 'General' }[note.chart_type] || note.chart_type}
+                    {{
+                      vedic: t('notes.chartType.vedic'),
+                      lalkitab: t('notes.chartType.lalkitab'),
+                      numerology: t('notes.chartType.numerology'),
+                      general: t('notes.chartType.general')
+                    }[note.chart_type] || note.chart_type}
                   </span>
                 </div>
               </div>

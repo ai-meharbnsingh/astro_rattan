@@ -1,6 +1,6 @@
 import { Loader2 } from 'lucide-react';
 import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
-import { translatePlanet, translateSign } from '@/lib/backend-translations';
+import { translatePlanet, translateSign, translateNakshatra } from '@/lib/backend-translations';
 import GeneralRemedies from './GeneralRemedies';
 
 interface KPTabProps {
@@ -44,7 +44,7 @@ export default function KPTab(props: KPTabProps) {
                       <td className="p-1.5 text-center">{p.retrograde ? <span className="text-red-400 font-bold">R</span> : ''}</td>
                       <td className="p-1.5 text-cosmic-text">{translateSign(p.sign, language)}</td>
                       <td className="p-1.5 text-cosmic-text font-mono">{p.degree_dms || (typeof p.degree === 'number' ? p.degree.toFixed(2) : p.degree)}</td>
-                      <td className="p-1.5 text-cosmic-text">{p.nakshatra || '-'}</td>
+                      <td className="p-1.5 text-cosmic-text">{translateNakshatra(p.nakshatra, language) || '-'}</td>
                       <td className="p-1.5 text-center text-cosmic-text">{p.pada || '-'}</td>
                       <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{p.sign_lord ? p.sign_lord.slice(0, 2) : '-'}</td>
                       <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{(p.star_lord || p.nakshatra_lord || '-').slice(0, 2)}</td>
@@ -128,7 +128,7 @@ export default function KPTab(props: KPTabProps) {
                         <td className="p-1.5 font-semibold text-sacred-brown">{(c.house || i + 1)}.{houseNames[i] || ''}</td>
                         <td className="p-1.5 text-cosmic-text">{translateSign(c.sign || '', language)}</td>
                         <td className="p-1.5 text-cosmic-text font-mono">{c.degree_dms || (typeof c.degree === 'number' ? c.degree.toFixed(2) : c.degree || '-')}</td>
-                        <td className="p-1.5 text-cosmic-text">{c.nakshatra || '-'}</td>
+                        <td className="p-1.5 text-cosmic-text">{translateNakshatra(c.nakshatra, language) || '-'}</td>
                         <td className="p-1.5 text-center text-cosmic-text">{c.pada || '-'}</td>
                         <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{c.sign_lord ? c.sign_lord.slice(0, 2) : '-'}</td>
                         <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{(c.star_lord || '-').slice(0, 2)}</td>
