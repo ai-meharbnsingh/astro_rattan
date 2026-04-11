@@ -9,7 +9,7 @@ interface BirthDetailsTabProps {
 }
 
 export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
-  const { language } = useTranslation();
+  const { language, t } = useTranslation();
   const karakas = useMemo(() => calculateJaiminiKarakas(planets), [planets]);
 
   // Reverse map: planet -> karaka abbreviation
@@ -54,7 +54,7 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
                 <tr key={idx} className={`border-t border-sacred-gold text-sm ${idx % 2 === 0 ? '' : 'bg-sacred-gold/[0.02]'}`}>
                   <td className="p-2 font-medium text-sacred-brown font-display">
                     {translatePlanet(p.planet, language)}
-                    {isRetro && <span className="text-red-500 ml-0.5" title="Retrograde">*</span>}
+                    {isRetro && <span className="text-red-500 ml-0.5" title={t('kundli.retrograde')}>*</span>}
                   </td>
                   <td className="p-2 text-sacred-brown">{translateSign(p.sign, language)}</td>
                   <td className="p-2 text-sacred-brown">

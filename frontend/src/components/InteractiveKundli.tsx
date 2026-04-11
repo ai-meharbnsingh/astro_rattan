@@ -718,9 +718,9 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
     const aspects = PLANET_ASPECTS[planet.planet] || [7];
     return aspects.map((offset) => {
       const targetHouse = ((planet.house - 1 + offset) % 12) + 1;
-      return `House ${targetHouse}`;
+      return `${t('table.house')} ${targetHouse}`;
     });
-  }, []);
+  }, [t]);
 
   const showPlanetTooltip = useCallback((p: PlanetData, x: number, y: number) => {
     const strength = getStrength(p.status, t);
@@ -729,18 +729,18 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
       x, y,
       content: (
         <div className="space-y-1.5">
-          <div className="font-display font-bold text-sacred-gold text-sm">{p.planet}</div>
+          <div className="font-display font-bold text-sacred-gold text-sm">{t(`planet.${p.planet}`)}</div>
           <div className="text-sm text-cosmic-text">
             {ZODIAC_NUMBERS[p.sign] || ''} {p.sign} {p.sign_degree?.toFixed(1)}&deg;
           </div>
-          <div className="text-sm text-cosmic-text">{t('table.nakshatra')}: {p.nakshatra || 'N/A'}</div>
+          <div className="text-sm text-cosmic-text">{t('table.nakshatra')}: {p.nakshatra || t('common.noData')}</div>
           <div className="text-sm text-cosmic-text">{t('table.house')}: {p.house}</div>
           <div className="text-sm" style={{ color: strength.color }}>{strength.label}</div>
           <div className="text-sm text-cosmic-text">{t('table.aspects')}: {aspects.join(', ')}</div>
         </div>
       ),
     });
-  }, [aspectsFor]);
+  }, [aspectsFor, t]);
 
   const showHouseTooltip = useCallback((house: number, x: number, y: number) => {
     const sign = houseSign(house);
@@ -752,16 +752,16 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           <div className="font-display font-bold text-sacred-gold text-sm">
             {t('table.house')} {house}
           </div>
-          <div className="text-sm text-cosmic-text">{t(`house.${house}`)}</div>
+          <div className="text-sm text-cosmic-text">{t(`kundli.house${house}`)}</div>
           {housePlanets.length > 0 && (
             <div className="text-sm text-cosmic-text">
-              {t('table.planet')}: {housePlanets.map((p) => p.planet).join(', ')}
+              {t('table.planet')}: {housePlanets.map((p) => t(`planet.${p.planet}`)).join(', ')}
             </div>
           )}
         </div>
       ),
     });
-  }, [houseSign, planetsByHouse]);
+  }, [houseSign, planetsByHouse, t]);
 
   const hideTooltip = useCallback(() => {
     setTooltip(null);

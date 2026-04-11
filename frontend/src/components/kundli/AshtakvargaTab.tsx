@@ -2,74 +2,51 @@ import { Loader2 } from 'lucide-react';
 import { translateSign } from '@/lib/backend-translations';
 import GeneralRemedies from './GeneralRemedies';
 
-// Simple SAV Kundli Chart component
+// SAV Kundli Chart — proper North Indian diamond SVG (Aries=H1 fixed)
 function SAVKundliChart({ savData, language }: { savData: Record<string, number>; language: string }) {
-  // Sign order for North Indian chart (starting from Aries at center-top)
-  const signs = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
-  
-  // Grid layout: 4 columns x 4 rows for diamond shape
-  // Positions: null = empty corner, number = house index (0-11)
-  const gridLayout = [
-    [null, 10, 11, null],      // Row 0: empty, Aquarius, Pisces, empty
-    [9, 0, 1, 2],              // Row 1: Capricorn, Aries, Taurus, Gemini
-    [8, 7, 6, 5],              // Row 2: Sagittarius, Scorpio, Libra, Virgo
-    [null, 4, 3, null],        // Row 3: empty, Leo, Cancer, empty
+  const signs = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+  const signAbbr = ['Ari','Tau','Gem','Can','Leo','Vir','Lib','Sco','Sag','Cap','Aqu','Pis'];
+  const hiAbbr   = ['मे','वृ','मि','कर','सिं','कन','तु','वृ','धन','मक','कु','मी'];
+  // house centroids (280×280 SVG) — true triangle/rhombus centroids to avoid line overlap
+  // Key geometry: midpoints T(140,2) R(278,140) Bot(140,278) L(2,140)
+  // Diagonal intersections: P1(71,71) P2(209,71) P3(209,209) P4(71,209) Center(140,140)
+  const housePos = [
+    {x:140,y:66},{x:200,y:35},{x:248,y:78},{x:248,y:202},
+    {x:200,y:245},{x:140,y:215},{x:80,y:245},{x:32,y:202},
+    {x:32,y:78},{x:80,y:35},{x:140,y:108},{x:140,y:172},
   ];
+  const binduColor = (v: number) => v >= 28 ? '#166534' : '#991b1b';
 
   return (
     <div className="w-full max-w-[280px] mx-auto">
-      <div className="grid grid-cols-4 gap-0 border-2 border-sacred-gold rounded-lg overflow-hidden bg-sacred-cream">
-        {gridLayout.map((row, rowIndex) => (
-          row.map((signIndex, colIndex) => {
-            if (signIndex === null) {
-              // Empty corner cell
-              return (
-                <div 
-                  key={`${rowIndex}-${colIndex}`} 
-                  className="bg-sacred-gold/20 aspect-square flex items-center justify-center border-r border-b border-sacred-gold/30 last:border-r-0"
-                />
-              );
-            }
-            
-            const sign = signs[signIndex];
-            const value = savData[sign] || 0;
-            const isStrong = value >= 28;
-            const isCenter = (rowIndex === 1 || rowIndex === 2) && (colIndex === 1 || colIndex === 2);
-            
-            // Border classes
-            const borderClasses = [
-              colIndex < 3 ? 'border-r' : '',
-              rowIndex < 3 ? 'border-b' : '',
-            ].filter(Boolean).join(' ');
-            
-            return (
-              <div 
-                key={`${rowIndex}-${colIndex}`}
-                className={`relative flex flex-col items-center justify-center aspect-square ${borderClasses} border-sacred-gold ${isCenter ? 'bg-sacred-gold/10' : 'bg-white'}`}
-              >
-                {/* Sign name at top */}
-                <span className={`text-[9px] text-cosmic-text ${isCenter ? 'font-semibold' : ''} text-center leading-none mb-0.5`}>
-                  {translateSign(sign, language)}
-                </span>
-                
-                {/* Bindu value - centered and larger */}
-                <span className={`font-bold flex items-center justify-center ${isCenter ? 'text-2xl h-7' : 'text-xl h-6'} ${isStrong ? 'text-green-600' : 'text-red-600'}`}>
-                  {value}
-                </span>
-              </div>
-            );
-          })
-        ))}
-      </div>
-      
-      {/* Legend */}
-      <div className="flex justify-center gap-4 mt-3 text-xs">
-        <span className="flex items-center gap-1">
-          <span className="w-3 h-3 rounded-full bg-green-600" /> ≥28 {language === 'hi' ? 'प्रबल' : 'Strong'}
-        </span>
-        <span className="flex items-center gap-1">
-          <span className="w-3 h-3 rounded-full bg-red-600" /> &lt;28 {language === 'hi' ? 'दुर्बल' : 'Weak'}
-        </span>
+      <svg viewBox="0 0 280 280" className="w-full h-auto block">
+        {/* outer square */}
+        <rect x="2" y="2" width="276" height="276" fill="white" stroke="#c8a96e" strokeWidth="1.5"/>
+        {/* diagonal lines */}
+        <line x1="2"   y1="2"   x2="278" y2="278" stroke="#c8a96e" strokeWidth="0.75"/>
+        <line x1="278" y1="2"   x2="2"   y2="278" stroke="#c8a96e" strokeWidth="0.75"/>
+        <line x1="140" y1="2"   x2="278" y2="140" stroke="#c8a96e" strokeWidth="0.75"/>
+        <line x1="278" y1="140" x2="140" y2="278" stroke="#c8a96e" strokeWidth="0.75"/>
+        <line x1="140" y1="278" x2="2"   y2="140" stroke="#c8a96e" strokeWidth="0.75"/>
+        <line x1="2"   y1="140" x2="140" y2="2"   stroke="#c8a96e" strokeWidth="0.75"/>
+        {housePos.map((pos, i) => {
+          const val = savData[signs[i]] || 0;
+          return (
+            <g key={i}>
+              <rect x={pos.x - 17} y={pos.y - 16} width="34" height="30" fill="white" rx="2" opacity="0.9"/>
+              <text x={pos.x} y={pos.y - 4} textAnchor="middle" fontSize="9" fill="#8B7355" fontFamily="sans-serif">
+                {language === 'hi' ? hiAbbr[i] : signAbbr[i]}
+              </text>
+              <text x={pos.x} y={pos.y + 10} textAnchor="middle" fontSize="15" fontWeight="bold" fill={binduColor(val)} fontFamily="sans-serif">
+                {val}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+      <div className="flex justify-center gap-4 mt-2 text-xs">
+        <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-green-700"/>&ge;28 {language==='hi'?'प्रबल':'Strong'}</span>
+        <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-red-700"/>&lt;28 {language==='hi'?'दुर्बल':'Weak'}</span>
       </div>
     </div>
   );
@@ -168,22 +145,22 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                 // Houses: 1=top-center(Asc), 2=top-right, 3=right-top, 4=right-bottom
                 // 5=bottom-right, 6=bottom-center, 7=bottom-left, 8=left-bottom
                 // 9=left-top, 10=top-left, 11=center-top, 12=center-bottom
-                // House centroids for North Indian diamond chart (280x280)
-                // Key vertices: corners (2,2)(278,2)(278,278)(2,278),
-                // midpoints (140,2)(278,140)(140,278)(2,140),
-                // inner intersections (71,71)(209,71)(209,209)(71,209), center (140,140)
-                // Centroids pulled inward so text fits inside each triangle/rhombus
+                // True triangle/rhombus centroids to avoid text overlapping diagonal lines.
+                // Key geometry: midpoints T(140,2) R(278,140) Bot(140,278) L(2,140)
+                // Diagonal intersections: P1(71,71) P2(209,71) P3(209,209) P4(71,209) Center(140,140)
+                // H3/H9 were at y=90 but their bounding lines pass at y≈102 at those x coords.
+                // H4/H8 were at y=190 but their bounding lines pass at y≈178 at those x coords.
                 const housePos: { x: number; y: number }[] = [
-                  { x: 140, y: 52 },   // 1 — top center rhombus
-                  { x: 196, y: 36 },   // 2 — top right triangle (inward from corner)
-                  { x: 240, y: 90 },   // 3 — right upper triangle
-                  { x: 240, y: 190 },  // 4 — right lower triangle
-                  { x: 196, y: 244 },  // 5 — bottom right triangle
-                  { x: 140, y: 228 },  // 6 — bottom center rhombus
-                  { x: 84, y: 244 },   // 7 — bottom left triangle
-                  { x: 40, y: 190 },   // 8 — left lower triangle
-                  { x: 40, y: 90 },    // 9 — left upper triangle
-                  { x: 84, y: 36 },    // 10 — top left triangle
+                  { x: 140, y: 66 },   // 1 — top center rhombus  (centroid ~y71)
+                  { x: 200, y: 35 },   // 2 — top right corner triangle
+                  { x: 248, y: 78 },   // 3 — right upper triangle (pushed to true centroid ~255,71)
+                  { x: 248, y: 202 },  // 4 — right lower triangle (pushed to true centroid ~255,209)
+                  { x: 200, y: 245 },  // 5 — bottom right corner triangle
+                  { x: 140, y: 215 },  // 6 — bottom center rhombus (centroid ~y209)
+                  { x: 80,  y: 245 },  // 7 — bottom left corner triangle
+                  { x: 32,  y: 202 },  // 8 — left lower triangle  (pushed to true centroid ~25,209)
+                  { x: 32,  y: 78 },   // 9 — left upper triangle  (pushed to true centroid ~25,71)
+                  { x: 80,  y: 35 },   // 10 — top left corner triangle
                   { x: 140, y: 108 },  // 11 — inner top diamond
                   { x: 140, y: 172 },  // 12 — inner bottom diamond
                 ];
@@ -267,10 +244,11 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                           <line x1="278" y1="140" x2="140" y2="278" stroke="#c8a96e" strokeWidth="0.75" />
                           <line x1="140" y1="278" x2="2" y2="140" stroke="#c8a96e" strokeWidth="0.75" />
                           <line x1="2" y1="140" x2="140" y2="2" stroke="#c8a96e" strokeWidth="0.75" />
-                          {/* Bindu values in each house position */}
+                          {/* Bindu values in each house position — white bg rect prevents overlap with lines */}
                           {housePos.map((pos, i) => (
                             <g key={i}>
-                              <text x={pos.x} y={pos.y - 5} textAnchor="middle" fontSize="9" fill="#8B7355" fontFamily="sans-serif">
+                              <rect x={pos.x - 17} y={pos.y - 16} width="34" height="30" fill="white" rx="2" opacity="0.9"/>
+                              <text x={pos.x} y={pos.y - 4} textAnchor="middle" fontSize="9" fill="#8B7355" fontFamily="sans-serif">
                                 {language === 'hi' ? hindiSignAbbr[i] : signAbbr[i]}
                               </text>
                               <text x={pos.x} y={pos.y + 10} textAnchor="middle" fontSize="14" fontWeight="bold" fill={binduColor(vals[i])} fontFamily="sans-serif">

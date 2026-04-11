@@ -552,12 +552,12 @@ export default function ConsolidatedReport({
                     { label: t('avakhada.rashi'), value: translateSign(avakhadaData.rashi, language) },
                     { label: t('avakhada.rashiLord'), value: translatePlanet(avakhadaData.rashi_lord, language) },
                     { label: t('avakhada.nakshatra'), value: `${translateNakshatra(avakhadaData.nakshatra, language)} (P${avakhadaData.nakshatra_pada})` },
-                    { label: t('avakhada.yoga'), value: avakhadaData.yoga },
-                    { label: t('avakhada.karana'), value: avakhadaData.karana },
-                    { label: t('avakhada.yoni'), value: avakhadaData.yoni },
-                    { label: t('avakhada.gana'), value: avakhadaData.gana },
-                    { label: t('avakhada.nadi'), value: avakhadaData.nadi },
-                    { label: t('avakhada.varna'), value: avakhadaData.varna },
+                    { label: t('avakhada.yoga'), value: translateBackend(avakhadaData.yoga, language) },
+                    { label: t('avakhada.karana'), value: translateBackend(avakhadaData.karana, language) },
+                    { label: t('avakhada.yoni'), value: translateBackend(avakhadaData.yoni, language) },
+                    { label: t('avakhada.gana'), value: translateBackend(avakhadaData.gana, language) },
+                    { label: t('avakhada.nadi'), value: translateBackend(avakhadaData.nadi, language) },
+                    { label: t('avakhada.varna'), value: translateBackend(avakhadaData.varna, language) },
                     { label: t('avakhada.naamakshar'), value: avakhadaData.naamakshar },
                   ].map((item) => (
                     <div key={item.label} className="bg-cosmic-bg rounded px-2 py-1">

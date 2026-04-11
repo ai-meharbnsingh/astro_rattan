@@ -97,7 +97,7 @@ export default function DashaTab({
                 </div>
                 <div className="text-right text-sm text-cosmic-text">
                   <span>{md.start} {'\u2014'} {md.end}</span>
-                  <span className="ml-2 text-sacred-gold-dark">({md.years}y)</span>
+                  <span className="ml-2 text-sacred-gold-dark">({md.years} {t('table.years')})</span>
                 </div>
               </button>
 
@@ -175,7 +175,7 @@ export default function DashaTab({
                   <td className="p-3 text-sacred-brown">{translatePlanet(p.planet, language)} {p.planet === dashaData.current_dasha ? '\u2190' : ''}</td>
                   <td className="p-3 text-cosmic-text text-sm">{p.start_date}</td>
                   <td className="p-3 text-cosmic-text text-sm">{p.end_date}</td>
-                  <td className="p-3 text-cosmic-text text-sm">{p.years}y</td>
+                  <td className="p-3 text-cosmic-text text-sm">{p.years} {t('table.years')}</td>
                 </tr>
               ))}
             </tbody>
@@ -190,10 +190,10 @@ export default function DashaTab({
 
   return (
     <div className="flex flex-col items-center justify-center py-12">
-      <p className="text-cosmic-text mb-3 text-sm">Dasha periods have not been loaded yet.</p>
+      <p className="text-cosmic-text mb-3 text-sm">{t('kundli.clickDashaTab')}</p>
       <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-sacred-gold/10 border border-sacred-gold text-sacred-gold-dark text-sm font-medium cursor-default">
         <ChevronDown className="w-4 h-4" />
-        Click the Dasha tab above to load analysis
+        {t('kundli.clickDashaTab')}
       </span>
     </div>
   );

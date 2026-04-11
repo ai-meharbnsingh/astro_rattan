@@ -5,7 +5,7 @@ import { SIGN_LORD, SIGN_ELEMENT, SIGN_TYPE } from '@/components/kundli/kundli-u
 import { calculateJaiminiKarakas, getPlanetColor } from '@/components/kundli/jhora-utils';
 import { api, formatDate } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
-import { translatePlanet, translateSign, translateNakshatra } from '@/lib/backend-translations';
+import { translatePlanet, translateSign, translateNakshatra, translateBackend } from '@/lib/backend-translations';
 
 // Available divisional charts
 const DIVISIONAL_OPTIONS_EN = [
@@ -793,9 +793,9 @@ export default function JHoraKundliView({
                   { k: t('avakhada.ascendantSlashLord'), v: `${translateSign(avakhadaData.ascendant || '-', language)}/${translatePlanet(avakhadaData.ascendant_lord || '-', language)}` },
                   { k: t('avakhada.signLord'), v: `${translateSign(avakhadaData.rashi || '-', language)}/${translatePlanet(avakhadaData.rashi_lord || '-', language)}` },
                   { k: t('avakhada.nakshatraPada'), v: avakhadaData.nakshatra ? `${translateNakshatra(avakhadaData.nakshatra, language)}/${avakhadaData.nakshatra_pada}` : '-' },
-                  { k: t('avakhada.yogaKarana'), v: `${avakhadaData.yoga || '-'}/${avakhadaData.karana || '-'}` },
-                  { k: t('avakhada.yoniGana'), v: `${avakhadaData.yoni || '-'}/${avakhadaData.gana || '-'}` },
-                  { k: t('avakhada.nadiVarna'), v: avakhadaData.nadi || '-' },
+                  { k: t('avakhada.yogaKarana'), v: `${translateBackend(avakhadaData.yoga, language) || '-'}/${translateBackend(avakhadaData.karana, language) || '-'}` },
+                  { k: t('avakhada.yoniGana'), v: `${translateBackend(avakhadaData.yoni, language) || '-'}/${translateBackend(avakhadaData.gana, language) || '-'}` },
+                  { k: t('avakhada.nadiVarna'), v: `${translateBackend(avakhadaData.nadi, language) || '-'} / ${translateBackend(avakhadaData.varna, language) || '-'}` },
                 ].map((item) => (
                   <div key={item.k} style={{
                     display: 'flex', justifyContent: 'space-between',

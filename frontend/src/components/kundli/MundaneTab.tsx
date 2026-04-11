@@ -991,7 +991,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
             type="button"
             onClick={prevYear}
             className="p-1.5 rounded-lg border border-sacred-gold hover:bg-sacred-gold/10 text-sacred-brown transition-colors"
-            aria-label="Previous year"
+            aria-label={lang === 'hi' ? 'पिछला वर्ष' : 'Previous year'}
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
@@ -1002,7 +1002,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
             type="button"
             onClick={nextYear}
             className="p-1.5 rounded-lg border border-sacred-gold hover:bg-sacred-gold/10 text-sacred-brown transition-colors"
-            aria-label="Next year"
+            aria-label={lang === 'hi' ? 'अगला वर्ष' : 'Next year'}
           >
             <ChevronRight className="w-4 h-4" />
           </button>

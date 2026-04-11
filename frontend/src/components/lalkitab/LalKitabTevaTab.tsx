@@ -1,9 +1,12 @@
+import { useMemo } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import type { LalKitabChartData } from './lalkitab-data';
-import { Eye, EyeOff, Star, Baby, Info } from 'lucide-react';
+import { EyeOff, Star, Baby, Info } from 'lucide-react';
+import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
 
 interface Props {
   chartData: LalKitabChartData;
+  apiResult?: any;
 }
 
 type TevaType = 'ratandh' | 'dharmi' | 'nabalik' | 'normal';
@@ -12,6 +15,11 @@ const PLANET_HI: Record<string, string> = {
   Sun: 'सूर्य', Moon: 'चंद्र', Mars: 'मंगल', Mercury: 'बुध',
   Jupiter: 'गुरु', Venus: 'शुक्र', Saturn: 'शनि', Rahu: 'राहु', Ketu: 'केतु',
 };
+
+const ZODIAC_SIGNS = [
+  'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
+  'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces',
+];
 
 const TEVA_CONFIG: Record<TevaType, { color: string; bgColor: string; borderColor: string }> = {
   ratandh: { color: 'text-red-700',         bgColor: 'bg-red-500/8',         borderColor: 'border-red-300/40' },
@@ -85,7 +93,7 @@ function PlanetChip({ planet, house, isHi, colorClass }: PlanetChipProps) {
   );
 }
 
-export default function LalKitabTevaTab({ chartData }: Props) {
+export default function LalKitabTevaTab({ chartData, apiResult }: Props) {
   const { t, language } = useTranslation();
   const isHi = language === 'hi';
   const positions = chartData.planetPositions;
@@ -98,6 +106,49 @@ export default function LalKitabTevaTab({ chartData }: Props) {
   const cfg = TEVA_CONFIG[tevaType];
 
   const tevaLabel = t(`lk.teva.${tevaType}`);
+
+  const interactiveChartData: ChartData | null = useMemo(() => {
+    const planetsRaw = apiResult?.chart_data?.planets;
+    if (!planetsRaw) return null;
+
+    const planets: PlanetData[] = Array.isArray(planetsRaw)
+      ? planetsRaw.map((p: any) => ({
+          planet: p.planet,
+          sign: p.sign || 'Unknown',
+          house: p.house || 0,
+          nakshatra: p.nakshatra || '',
+          sign_degree: p.sign_degree || 0,
+          status: p.status || '',
+          is_retrograde: p.is_retrograde || false,
+          is_combust: p.is_combust || false,
+          is_vargottama: p.is_vargottama || false,
+        }))
+      : Object.entries(planetsRaw).map(([name, data]: [string, any]) => ({
+          planet: name,
+          sign: data?.sign || 'Unknown',
+          house: data?.house || 0,
+          nakshatra: data?.nakshatra || '',
+          sign_degree: data?.sign_degree || 0,
+          status: data?.status || '',
+          is_retrograde: data?.is_retrograde || false,
+          is_combust: data?.is_combust || false,
+          is_vargottama: data?.is_vargottama || false,
+        }));
+
+    const asc = apiResult.chart_data?.ascendant;
+    const ascSign = asc?.sign || 'Aries';
+    const ascIdx = ZODIAC_SIGNS.indexOf(ascSign);
+    const houses = Array.from({ length: 12 }, (_, i) => ({
+      number: i + 1,
+      sign: ZODIAC_SIGNS[(ascIdx + i) % 12],
+    }));
+
+    return {
+      planets,
+      houses,
+      ascendant: asc ? { longitude: asc.longitude || 0, sign: ascSign, sign_degree: asc.sign_degree } : undefined,
+    };
+  }, [apiResult]);
 
   return (
     <div className="space-y-6">
@@ -216,23 +267,32 @@ export default function LalKitabTevaTab({ chartData }: Props) {
         </div>
       </div>
 
-      {/* Full planet position reference */}
-      <div className="card-sacred rounded-xl border border-sacred-gold/20 p-5">
-        <h3 className="font-sans font-semibold text-sacred-gold mb-4 text-sm">
-          {isHi ? 'ग्रह स्थान (लाल किताब भाव)' : 'Planet Positions (Lal Kitab Houses)'}
-        </h3>
-        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-          {Object.entries(positions).map(([planet, house]) => (
-            <div key={planet} className="flex flex-col items-center p-2 rounded-lg bg-sacred-gold/5 border border-sacred-gold/10">
-              <span className="text-xs font-semibold text-sacred-gold-dark">
-                {isHi ? (PLANET_HI[planet] ?? planet) : planet}
-              </span>
-              <span className="text-lg font-bold text-cosmic-text">{house}</span>
-              <span className="text-xs text-gray-400">{isHi ? 'भाव' : 'H'}</span>
-            </div>
-          ))}
+      {/* Kundli chart */}
+      {interactiveChartData ? (
+        <div className="card-sacred rounded-xl border border-sacred-gold/20 p-5">
+          <h3 className="font-sans font-semibold text-sacred-gold mb-4 text-sm">
+            {isHi ? 'लाल किताब कुंडली (तेवा चार्ट)' : 'Lal Kitab Kundli (Teva Chart)'}
+          </h3>
+          <InteractiveKundli chartData={interactiveChartData} compact />
         </div>
-      </div>
+      ) : (
+        <div className="card-sacred rounded-xl border border-sacred-gold/20 p-5">
+          <h3 className="font-sans font-semibold text-sacred-gold mb-4 text-sm">
+            {isHi ? 'ग्रह स्थान (लाल किताब भाव)' : 'Planet Positions (Lal Kitab Houses)'}
+          </h3>
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+            {Object.entries(positions).map(([planet, house]) => (
+              <div key={planet} className="flex flex-col items-center p-2 rounded-lg bg-sacred-gold/5 border border-sacred-gold/10">
+                <span className="text-xs font-semibold text-sacred-gold-dark">
+                  {isHi ? (PLANET_HI[planet] ?? planet) : planet}
+                </span>
+                <span className="text-lg font-bold text-cosmic-text">{house}</span>
+                <span className="text-xs text-gray-400">{isHi ? 'भाव' : 'H'}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

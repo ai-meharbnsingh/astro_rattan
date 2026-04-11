@@ -57,7 +57,7 @@ export default function PlanetsTab({
               const strengthColor = status.includes('exalted') ? 'text-green-500' : status.includes('debilitated') ? 'text-red-500' : status.includes('own') ? 'text-blue-500' : 'text-cosmic-text';
               const aspects = (PLANET_ASPECTS[p.planet] || [7]).map((offset) => {
                 const targetHouse = ((p.house - 1 + offset) % 12) + 1;
-                return `${language === 'hi' ? 'भाव' : 'House'} ${targetHouse}`;
+                return `${t('table.house')} ${targetHouse}`;
               });
 
               return (
@@ -78,7 +78,7 @@ export default function PlanetsTab({
                     <div className="bg-cosmic-card rounded-lg p-3">
                       <p className="text-sm text-cosmic-text">{t('kundli.nakshatra')}</p>
                       <p className="font-semibold text-sacred-brown">
-                        {p.nakshatra || 'N/A'}
+                        {p.nakshatra || t('common.noData')}
                         {p.nakshatra_pada ? ` (${language === 'hi' ? 'पाद' : 'Pada'} ${p.nakshatra_pada})` : ''}
                       </p>
                     </div>
@@ -94,7 +94,7 @@ export default function PlanetsTab({
                   <div className="bg-cosmic-card rounded-lg p-3">
                     <p className="text-sm text-cosmic-text">{t('kundli.housePlacement')}</p>
                     <p className="text-sm text-sacred-brown">
-                      {translatePlanet(p.planet, language)} — {t('kundli.house')} {p.house} ({HOUSE_SIGNIFICANCE[p.house] || (language === 'hi' ? 'अज्ञात' : 'Unknown')})
+                      {translatePlanet(p.planet, language)} — {t('kundli.house')} {p.house} ({HOUSE_SIGNIFICANCE[p.house] || t('common.noData')})
                     </p>
                   </div>
                 </div>
@@ -116,7 +116,7 @@ export default function PlanetsTab({
                 <div className="bg-cosmic-card rounded-lg p-3">
                   <p className="text-sm text-cosmic-text">{t('kundli.significance')}</p>
                   <p className="font-semibold text-sacred-brown">
-                    {HOUSE_SIGNIFICANCE[sidePanel.house || 0] || (language === 'hi' ? 'अज्ञात' : 'Unknown')}
+                    {HOUSE_SIGNIFICANCE[sidePanel.house || 0] || t('common.noData')}
                   </p>
                 </div>
                 <div className="bg-cosmic-card rounded-lg p-3">
@@ -175,7 +175,7 @@ export default function PlanetsTab({
                 >
                   <td className="p-3 text-sacred-brown font-medium text-sm">
                     {translatePlanet(planet.planet, language)}
-                    {(planet.status || '').toLowerCase().includes('retrograde') && <span className="text-red-500 ml-0.5" title="Retrograde">*</span>}
+                    {(planet.status || '').toLowerCase().includes('retrograde') && <span className="text-red-500 ml-0.5" title={t('kundli.retrograde')}>*</span>}
                   </td>
                   <td className="p-3 text-cosmic-text text-sm">{translateSign(planet.sign, language)}</td>
                   <td className="p-3 text-cosmic-text text-sm">{planet.house}</td>

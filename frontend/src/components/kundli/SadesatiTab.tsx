@@ -238,7 +238,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                   {/* Fallback General Remedies */}
                   {(!sadesatiData.detailed_remedies) && sadesatiData.remedies && (
                     <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
-                      <h4 className="font-display font-semibold text-sacred-brown mb-3">Remedies</h4>
+                      <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.remedies')}</h4>
                       <ul className="space-y-2">
                         {sadesatiData.remedies.map((remedy: string, idx: number) => (
                           <li key={idx} className="text-sm text-cosmic-text flex items-start gap-2">

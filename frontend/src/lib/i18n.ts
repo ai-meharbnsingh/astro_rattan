@@ -20,6 +20,7 @@ const translations: Record<Language, TranslationMap> = {
     'nav.shop': 'Shop',
     'nav.consultation': 'Consultation',
     'nav.community': 'Community',
+    'nav.feedback': 'Feedback',
     'nav.reports': 'Reports',
     'nav.aiChat': 'AI Chat',
     'nav.askAI': 'Ask AI',
@@ -77,6 +78,8 @@ const translations: Record<Language, TranslationMap> = {
     'common.retry': 'Retry',
     'common.yes': 'Yes',
     'common.no': 'No',
+    'common.openMenu': 'Open menu',
+    'common.closeMenu': 'Close menu',
 
     // Hero Section
     'hero.badge': 'Sidereal Astrology',
@@ -187,6 +190,9 @@ const translations: Record<Language, TranslationMap> = {
     'footer.forSeekers': 'for spiritual seekers',
     'footer.poweredBy': 'Powered by',
     'footer.allRightsReserved': 'All rights reserved',
+    'whatsapp.tooltip': 'Chat with us on WhatsApp for instant astrology guidance!',
+    'whatsapp.aria': 'Chat on WhatsApp',
+    'whatsapp.prefill': 'Hi, I want to know about my horoscope and kundli',
 
     // Dashboard
     'dashboard.welcome': 'Welcome',
@@ -196,6 +202,12 @@ const translations: Record<Language, TranslationMap> = {
     'dashboard.createPrompt': 'Create a kundli to register your first client',
     'dashboard.createFirst': 'Create First Kundli',
     'dashboard.charts': 'charts',
+    'clientSelector.clientType': 'Client Type',
+    'clientSelector.existingClient': 'Existing Client',
+    'clientSelector.newClient': 'New Client',
+    'clientSelector.searchByName': 'Search clients by name...',
+    'clientSelector.noClientsFound': 'No clients found',
+    'clientSelector.selected': 'Selected',
 
     // Client Profile
     'client.backToDashboard': 'Back to Dashboard',
@@ -835,6 +847,7 @@ const translations: Record<Language, TranslationMap> = {
     'section.aspectsOnPlanets': 'Aspects on Planets',
     'section.aspectsOnBhavas': 'Aspects on Bhavas (Houses)',
     'section.bhinnashtakvarga': 'Bhinnashtakvarga (Individual Planet Bindus)',
+    'section.bhavBala': 'Bhav Bala',
     'section.remediesGemstone': 'Remedies & Gemstone Recommendations',
     'section.dhaiyaPanauti': 'Dhaiya & Panauti Phases',
     'section.solarReturn': 'Varsha Pravesh (Solar Return)',
@@ -877,12 +890,16 @@ const translations: Record<Language, TranslationMap> = {
     'report.beneficAspectsLabel': 'B = Benefic Aspects',
     'report.maleficAspectsLabel': 'M = Malefic Aspects',
     'report.adLabel': 'AD:',
+    'report.pdLabel': 'PD:',
     'report.untilLabel': 'Until:',
     'report.currentDasha': 'Current Dasha',
     'report.phaseLabel': 'Phase',
     'report.beneficCount': 'benefic',
     'report.maleficCount': 'malefic',
     'report.ownMT': 'Own/MT',
+    'report.houseNumberRange': 'House number (1-12)',
+    'report.pdfDownloadFailed': 'PDF download failed',
+    'report.failedToDownloadPDF': 'Failed to download PDF',
 
     // JHora view keys
     'table.lord': 'Lord',
@@ -1115,6 +1132,7 @@ const translations: Record<Language, TranslationMap> = {
     'nav.shop': 'दुकान',
     'nav.consultation': 'परामर्श',
     'nav.community': 'समुदाय',
+    'nav.feedback': 'फीडबैक',
     'nav.reports': 'रिपोर्ट',
     'nav.aiChat': 'AI चैट',
     'nav.askAI': 'AI से पूछें',
@@ -1172,6 +1190,8 @@ const translations: Record<Language, TranslationMap> = {
     'common.retry': 'पुनः प्रयास',
     'common.yes': 'हाँ',
     'common.no': 'नहीं',
+    'common.openMenu': 'मेनू खोलें',
+    'common.closeMenu': 'मेनू बंद करें',
 
     // Hero Section
     'hero.badge': 'सायन ज्योतिष',
@@ -1282,6 +1302,9 @@ const translations: Record<Language, TranslationMap> = {
     'footer.forSeekers': 'आध्यात्मिक साधकों के लिए',
     'footer.poweredBy': 'संचालित',
     'footer.allRightsReserved': 'सर्वाधिकार सुरक्षित',
+    'whatsapp.tooltip': 'तुरंत ज्योतिष मार्गदर्शन के लिए WhatsApp पर हमसे चैट करें!',
+    'whatsapp.aria': 'WhatsApp पर चैट करें',
+    'whatsapp.prefill': 'नमस्ते, मैं अपनी कुंडली और राशिफल के बारे में जानना चाहता/चाहती हूं',
 
     // Dashboard
     'dashboard.welcome': 'स्वागत',
@@ -1291,6 +1314,12 @@ const translations: Record<Language, TranslationMap> = {
     'dashboard.createPrompt': 'अपना पहला ग्राहक पंजीकृत करने के लिए कुंडली बनाएं',
     'dashboard.createFirst': 'पहली कुंडली बनाएं',
     'dashboard.charts': 'चार्ट',
+    'clientSelector.clientType': 'क्लाइंट प्रकार',
+    'clientSelector.existingClient': 'मौजूदा क्लाइंट',
+    'clientSelector.newClient': 'नया क्लाइंट',
+    'clientSelector.searchByName': 'नाम से क्लाइंट खोजें...',
+    'clientSelector.noClientsFound': 'कोई क्लाइंट नहीं मिला',
+    'clientSelector.selected': 'चयनित',
 
     // Client Profile
     'client.backToDashboard': 'डैशबोर्ड पर वापस',
@@ -1930,6 +1959,7 @@ const translations: Record<Language, TranslationMap> = {
     'section.aspectsOnPlanets': 'ग्रहों पर दृष्टि',
     'section.aspectsOnBhavas': 'भावों पर दृष्टि',
     'section.bhinnashtakvarga': 'भिन्नाष्टकवर्ग (व्यक्तिगत ग्रह बिंदु)',
+    'section.bhavBala': 'भाव बल',
     'section.remediesGemstone': 'उपाय एवं रत्न सुझाव',
     'section.dhaiyaPanauti': 'ढैया एवं पनौती चरण',
     'section.solarReturn': 'वर्ष प्रवेश (सोलर रिटर्न)',
@@ -1972,12 +2002,16 @@ const translations: Record<Language, TranslationMap> = {
     'report.beneficAspectsLabel': 'B = शुभ दृष्टि',
     'report.maleficAspectsLabel': 'M = अशुभ दृष्टि',
     'report.adLabel': 'अंतर्दशा:',
+    'report.pdLabel': 'प्रत्यंतर:',
     'report.untilLabel': 'तक:',
     'report.currentDasha': 'वर्तमान दशा',
     'report.phaseLabel': 'चरण',
     'report.beneficCount': 'शुभ',
     'report.maleficCount': 'अशुभ',
     'report.ownMT': 'स्व/मूलत्रिकोण',
+    'report.houseNumberRange': 'भाव संख्या (1-12)',
+    'report.pdfDownloadFailed': 'PDF डाउनलोड विफल हुआ',
+    'report.failedToDownloadPDF': 'PDF डाउनलोड नहीं हो सका',
 
     // JHora view keys
     'table.lord': 'स्वामी',

@@ -53,15 +53,6 @@ export default function Navigation() {
                   {t(link.key)}
                 </Link>
               ))}
-              {isAuthenticated && (
-                <Link
-                  to="/feedback"
-                  className="flex items-center gap-1.5 text-base text-cosmic-text hover:text-sacred-gold-dark transition-colors font-sans tracking-wide uppercase"
-                >
-                  <MessageSquare className="w-4 h-4" />
-                  Feedback
-                </Link>
-              )}
               {serviceLinks.map((link) => (
                 <Link
                   key={link.key}
@@ -71,6 +62,15 @@ export default function Navigation() {
                   {t(link.key)}
                 </Link>
               ))}
+              {isAuthenticated && (
+                <Link
+                  to="/feedback"
+                  className="flex items-center gap-1.5 text-base text-cosmic-text hover:text-sacred-gold-dark transition-colors font-sans tracking-wide uppercase"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  {t('nav.feedback')}
+                </Link>
+              )}
             </div>
 
             {/* Action buttons */}
@@ -82,7 +82,7 @@ export default function Navigation() {
               {isAuthenticated ? (
                 <>
                   {user?.role === 'admin' && (
-                    <Link to="/admin" className="p-2.5 text-cosmic-text hover:text-sacred-gold-dark transition-colors hidden sm:block" title="Admin">
+                    <Link to="/admin" className="p-2.5 text-cosmic-text hover:text-sacred-gold-dark transition-colors hidden sm:block" title={t('nav.admin')}>
                       <Shield className="w-5 h-5" />
                     </Link>
                   )}
@@ -107,7 +107,7 @@ export default function Navigation() {
                 className="lg:hidden p-2 text-cosmic-text ml-1"
                 aria-expanded={isMobileMenuOpen}
                 aria-controls="mobile-menu"
-                aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+                aria-label={isMobileMenuOpen ? t('common.closeMenu') : t('common.openMenu')}
               >
                 {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
@@ -131,16 +131,6 @@ export default function Navigation() {
                 {t(link.key)}
               </Link>
             ))}
-            {isAuthenticated && (
-              <Link
-                to="/feedback"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-2 py-3 px-3 text-cosmic-text hover:text-sacred-gold-dark hover:bg-gray-50 dark transition-colors font-sans"
-              >
-                <MessageSquare className="w-4 h-4" />
-                Feedback
-              </Link>
-            )}
             {serviceLinks.map((link) => (
               <Link
                 key={link.key}
@@ -151,6 +141,16 @@ export default function Navigation() {
                 {t(link.key)}
               </Link>
             ))}
+            {isAuthenticated && (
+              <Link
+                to="/feedback"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-2 py-3 px-3 text-cosmic-text hover:text-sacred-gold-dark hover:bg-gray-50 dark transition-colors font-sans"
+              >
+                <MessageSquare className="w-4 h-4" />
+                {t('nav.feedback')}
+              </Link>
+            )}
             <div className="pt-4 mt-4 border-t border-sacred-gold space-y-3">
               <LanguageSwitcher />
               {isAuthenticated ? (

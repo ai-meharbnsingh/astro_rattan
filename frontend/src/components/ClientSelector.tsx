@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Users, UserPlus, Search, Loader2 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from '@/lib/i18n';
 
 export interface ClientData {
   id: string;
@@ -24,6 +25,7 @@ interface ClientSelectorProps {
 }
 
 export default function ClientSelector({ onSelectClient, isNewClient, onToggle }: ClientSelectorProps) {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [clients, setClients] = useState<ClientData[]>([]);
   const [loading, setLoading] = useState(false);
@@ -76,7 +78,7 @@ export default function ClientSelector({ onSelectClient, isNewClient, onToggle }
 
   return (
     <div className="mb-6 rounded-xl border border-sacred-gold/30 p-4 bg-cosmic-card/50">
-      <p className="text-sm font-medium text-sacred-gold mb-3">Client Type</p>
+      <p className="text-sm font-medium text-sacred-gold mb-3">{t('clientSelector.clientType')}</p>
       <div className="grid grid-cols-2 gap-3 mb-3">
         <button
           type="button"
@@ -88,7 +90,7 @@ export default function ClientSelector({ onSelectClient, isNewClient, onToggle }
           }`}
         >
           <Users className="w-4 h-4" />
-          Existing Client
+          {t('clientSelector.existingClient')}
         </button>
         <button
           type="button"
@@ -100,7 +102,7 @@ export default function ClientSelector({ onSelectClient, isNewClient, onToggle }
           }`}
         >
           <UserPlus className="w-4 h-4" />
-          New Client
+          {t('clientSelector.newClient')}
         </button>
       </div>
 
@@ -113,7 +115,7 @@ export default function ClientSelector({ onSelectClient, isNewClient, onToggle }
               value={search || selectedName}
               onChange={(e) => { setSearch(e.target.value); setSelectedName(''); setShowDropdown(true); onSelectClient(null); }}
               onFocus={() => { if (!selectedName) setShowDropdown(true); }}
-              placeholder="Search clients by name..."
+              placeholder={t('clientSelector.searchByName')}
               className="w-full rounded-xl bg-cosmic-card border border-sacred-gold/20 text-cosmic-text px-4 py-2.5 pl-10 text-sm focus:outline-none focus:border-sacred-gold/50 transition-colors"
             />
             {loading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-sacred-gold" />}
@@ -123,7 +125,7 @@ export default function ClientSelector({ onSelectClient, isNewClient, onToggle }
             <div className="absolute z-50 left-0 right-0 mt-1 bg-cosmic-bg border border-sacred-gold/30 rounded-xl shadow-lg max-h-60 overflow-y-auto">
               {clients.length === 0 && !loading && (
                 <div className="px-4 py-3 text-sm text-gray-500 text-center">
-                  {search ? 'No clients found' : 'No clients yet'}
+                  {search ? t('clientSelector.noClientsFound') : t('dashboard.noClients')}
                 </div>
               )}
               {clients.map((c) => (
@@ -135,7 +137,7 @@ export default function ClientSelector({ onSelectClient, isNewClient, onToggle }
                 >
                   <p className="text-sm font-medium text-cosmic-text">{c.name}</p>
                   <p className="text-sm text-gray-500">
-                    {[c.phone, c.birth_date, c.birth_place].filter(Boolean).join(' | ') || 'No details'}
+                    {[c.phone, c.birth_date, c.birth_place].filter(Boolean).join(' | ') || t('common.noData')}
                   </p>
                 </button>
               ))}
@@ -143,7 +145,7 @@ export default function ClientSelector({ onSelectClient, isNewClient, onToggle }
           )}
 
           {selectedName && (
-            <p className="text-sm text-green-400 mt-1 px-1">Selected: {selectedName}</p>
+            <p className="text-sm text-green-400 mt-1 px-1">{t('clientSelector.selected')}: {selectedName}</p>
           )}
         </div>
       )}

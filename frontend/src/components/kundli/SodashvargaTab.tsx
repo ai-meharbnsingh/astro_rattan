@@ -25,15 +25,17 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
     Weak: 'text-red-800 bg-red-100',
   };
 
-  const dignityLabels: Record<string, { label: string; color: string }> = {
-    exalted: { label: 'Ex', color: 'text-green-800 bg-green-100' },
-    own: { label: 'Own', color: 'text-blue-800 bg-blue-100' },
-    moolatrikona: { label: 'Moo', color: 'text-blue-800 bg-blue-100' },
-    friend: { label: 'Fr', color: 'text-amber-800 bg-amber-100' },
-    neutral: { label: 'Neu', color: 'text-slate-700 bg-slate-200' },
-    enemy: { label: 'En', color: 'text-orange-800 bg-orange-100' },
-    debilitated: { label: 'Deb', color: 'text-red-800 bg-red-100' },
+  const dignityLabels: Record<string, { label: string; hiLabel: string; color: string }> = {
+    exalted:      { label: 'Ex',  hiLabel: 'उच्च', color: 'text-green-800 bg-green-100' },
+    own:          { label: 'Own', hiLabel: 'स्व',  color: 'text-blue-800 bg-blue-100' },
+    moolatrikona: { label: 'Moo', hiLabel: 'मू',   color: 'text-blue-800 bg-blue-100' },
+    friend:       { label: 'Fr',  hiLabel: 'मि',   color: 'text-amber-800 bg-amber-100' },
+    neutral:      { label: 'Neu', hiLabel: 'सम',   color: 'text-slate-700 bg-slate-200' },
+    enemy:        { label: 'En',  hiLabel: 'श',    color: 'text-orange-800 bg-orange-100' },
+    debilitated:  { label: 'Deb', hiLabel: 'नी',   color: 'text-red-800 bg-red-100' },
   };
+  const strengthHi: Record<string, string> = { Strong: 'प्रबल', Medium: 'मध्यम', Weak: 'दुर्बल' };
+  const strLabel = (s: string) => language === 'hi' ? (strengthHi[s] || s) : s;
 
   return (
     <div className="space-y-6">
@@ -107,9 +109,9 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
 
       {/* Vimshopak Bala */}
       {(sodashvargaData.by_planet || sodashvargaData.vimshopak) && (
-        <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
+        <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4 overflow-x-auto">
           <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.vimshopakBala')}</h4>
-          <div className="space-y-3">
+          <div className="space-y-3 min-w-[420px]">
             {(() => {
               const items = Array.isArray(sodashvargaData.vimshopak) ? sodashvargaData.vimshopak
                 : Object.entries(sodashvargaData.by_planet || {}).map(([planet, data]: [string, any]) => ({
@@ -122,7 +124,7 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
               return items.map((v: any) => (
                 <div key={v.planet} className="space-y-1">
                   <div className="flex items-center gap-3 text-sm">
-                    <span className="w-12 text-sacred-brown font-medium">{(translatePlanet(v.planet || '', language) || v.planet || '').slice(0, 4)}</span>
+                    <span className="w-12 text-sacred-brown font-medium">{(translatePlanet(v.planet || '', language) || v.planet || '').slice(0, language === 'hi' ? 3 : 4)}</span>
                     <div className="flex-1 bg-sacred-gold rounded-full h-4">
                       <div className="bg-sacred-gold rounded-full h-4 transition-all" style={{ width: `${Math.min(100, ((typeof v.score === 'number' ? v.score : 0) / 20) * 100)}%` }} />
                     </div>
@@ -131,7 +133,7 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
                       <span className="w-12 text-right text-sacred-brown font-semibold text-sm">{v.percentage}%</span>
                     )}
                     {v.strength && (
-                      <span className={`px-1.5 py-0.5 rounded text-label font-semibold ${strengthColors[v.strength] || 'text-gray-500 bg-gray-500'}`}>{v.strength}</span>
+                      <span className={`px-1.5 py-0.5 rounded text-label font-semibold ${strengthColors[v.strength] || 'text-gray-500 bg-gray-500'}`}>{strLabel(v.strength)}</span>
                     )}
                   </div>
                   {v.dignities && typeof v.dignities === 'object' && (
@@ -139,10 +141,10 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
                       {Object.entries(v.dignities as Record<string, number>)
                         .filter(([, count]) => (count as number) > 0)
                         .map(([dignity, count]) => {
-                          const info = dignityLabels[dignity] || { label: dignity.slice(0, 3), color: 'text-gray-500 bg-gray-500' };
+                          const info = dignityLabels[dignity] || { label: dignity.slice(0, 3), hiLabel: dignity.slice(0, 3), color: 'text-gray-500 bg-gray-500' };
                           return (
                             <span key={dignity} className={`px-1.5 py-0.5 rounded text-label font-medium ${info.color}`}>
-                              {info.label}:{count as number}
+                              {language === 'hi' ? info.hiLabel : info.label}:{count as number}
                             </span>
                           );
                         })}

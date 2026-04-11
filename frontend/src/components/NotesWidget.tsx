@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { StickyNote, X, Send, Loader2 } from 'lucide-react';
 import { api, formatDateTime } from '@/lib/api';
+import { useTranslation } from '@/lib/i18n';
 
 interface Note {
   id: string;
@@ -16,6 +17,7 @@ interface NotesWidgetProps {
 }
 
 export default function NotesWidget({ clientId, chartType, kundliId }: NotesWidgetProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [notes, setNotes] = useState<Note[]>([]);
   const [newNote, setNewNote] = useState('');
@@ -83,7 +85,10 @@ export default function NotesWidget({ clientId, chartType, kundliId }: NotesWidg
   const formatNoteDate = (d: string) => formatDateTime(d) || d;
 
   const chartLabel: Record<string, string> = {
-    vedic: 'Kundli', lalkitab: 'Lal Kitab', numerology: 'Numerology', general: 'General',
+    vedic: t('notes.chartType.vedic'),
+    lalkitab: t('notes.chartType.lalkitab'),
+    numerology: t('notes.chartType.numerology'),
+    general: t('notes.chartType.general'),
   };
 
   return (
@@ -95,7 +100,7 @@ export default function NotesWidget({ clientId, chartType, kundliId }: NotesWidg
         onClick={() => !dragging.current && (open ? setOpen(false) : handleOpen())}
         className="fixed z-50 w-12 h-12 bg-sacred-gold-dark text-cosmic-bg rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors cursor-grab active:cursor-grabbing"
         style={{ left: position.x, top: position.y }}
-        title="Astrologer Notes"
+        title={t('notes.title')}
       >
         <StickyNote className="w-5 h-5" />
         {notes.length > 0 && (
@@ -111,7 +116,7 @@ export default function NotesWidget({ clientId, chartType, kundliId }: NotesWidg
           style={{ width: '360px', maxHeight: '500px', right: '20px', bottom: '80px' }}>
           {/* Header */}
           <div className="flex items-center justify-between p-3 border-b border-sacred-gold bg-sacred-gold-dark">
-            <h3 className="text-sm font-sans text-sacred-gold-dark uppercase tracking-wider">Notes</h3>
+            <h3 className="text-sm font-sans text-sacred-gold-dark uppercase tracking-wider">{t('notes.header')}</h3>
             <button onClick={() => setOpen(false)} className="text-cosmic-text hover:text-cosmic-text">
               <X className="w-4 h-4" />
             </button>
@@ -122,7 +127,7 @@ export default function NotesWidget({ clientId, chartType, kundliId }: NotesWidg
             <textarea
               value={newNote}
               onChange={e => setNewNote(e.target.value)}
-              placeholder="Add a note..."
+              placeholder={t('notes.addPlaceholder')}
               rows={3}
               className="w-full bg-transparent border border-sacred-gold text-cosmic-text text-sm p-2 resize-none focus:border-sacred-gold outline-none"
             />
@@ -132,7 +137,7 @@ export default function NotesWidget({ clientId, chartType, kundliId }: NotesWidg
               className="mt-2 w-full flex items-center justify-center gap-2 bg-sacred-gold-dark text-cosmic-bg text-sm py-2 font-sans uppercase tracking-wider disabled:opacity-50 hover:bg-gray-50 transition-colors"
             >
               {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
-              Save Note
+              {t('notes.save')}
             </button>
           </div>
 
@@ -141,7 +146,7 @@ export default function NotesWidget({ clientId, chartType, kundliId }: NotesWidg
             {loading ? (
               <div className="text-center py-4"><Loader2 className="w-4 h-4 animate-spin text-sacred-gold mx-auto" /></div>
             ) : notes.length === 0 ? (
-              <p className="text-center text-cosmic-text text-sm py-4">No notes yet</p>
+              <p className="text-center text-cosmic-text text-sm py-4">{t('notes.noNotes')}</p>
             ) : (
               notes.map(note => (
                 <div key={note.id} className="border-l-2 border-sacred-gold pl-3 py-1">
