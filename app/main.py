@@ -38,14 +38,23 @@ async def lifespan(app: FastAPI):
     import threading
     init_db()
     run_migrations()
-    # Heavy work in background so health check passes quickly
+    
+    # Heavy work in background only if explicitely enabled or in dev
+    # This prevents hitting AI rate limits on every production restart
     def _background_init():
-        try:
-            seed_all()
-            generate_daily_horoscopes()
-            seed_weekly_horoscopes()
-        except Exception as e:
-            print(f"[startup] Background init error: {e}")
+        auto_seed = os.getenv("AUTO_SEED", "false").lower() in ("true", "1", "t")
+        is_dev = not any(os.getenv(v) for v in ["RAILWAY_ENVIRONMENT", "VERCEL", "RENDER"])
+        
+        if auto_seed or is_dev:
+            try:
+                seed_all()
+                generate_daily_horoscopes()
+                seed_weekly_horoscopes()
+            except Exception as e:
+                print(f"[startup] Background init error: {e}")
+        else:
+            print("[startup] Skipping background seeding (AUTO_SEED=false).")
+            
     threading.Thread(target=_background_init, daemon=True).start()
     yield
     # Graceful shutdown — close connection pool

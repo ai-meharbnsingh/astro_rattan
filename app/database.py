@@ -235,47 +235,6 @@ CREATE TABLE IF NOT EXISTS consultations (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Orders
-CREATE TABLE IF NOT EXISTS orders (
-    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    status TEXT DEFAULT 'pending',
-    total FLOAT DEFAULT 0,
-    payment_status TEXT DEFAULT 'pending',
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS order_items (
-    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-    order_id TEXT NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
-    product_name TEXT,
-    quantity INTEGER DEFAULT 1,
-    price FLOAT DEFAULT 0
-);
-
--- Products
-CREATE TABLE IF NOT EXISTS products (
-    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-    name TEXT NOT NULL,
-    description TEXT,
-    price FLOAT DEFAULT 0,
-    category TEXT,
-    image_url TEXT,
-    is_active BOOLEAN DEFAULT true,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
--- Payments
-CREATE TABLE IF NOT EXISTS payments (
-    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-    order_id TEXT REFERENCES orders(id) ON DELETE SET NULL,
-    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    amount FLOAT DEFAULT 0,
-    status TEXT DEFAULT 'pending',
-    provider TEXT,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
 -- Reports
 CREATE TABLE IF NOT EXISTS reports (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),

@@ -1,5 +1,5 @@
 import { Loader2 } from 'lucide-react';
-import { translateSign } from '@/lib/backend-translations';
+import { translatePlanet, translateSign, translateSignAbbr } from '@/lib/backend-translations';
 import GeneralRemedies from './GeneralRemedies';
 
 const ALL_SIGNS  = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
@@ -72,8 +72,6 @@ function SAVKundliChart({ savData, language, lagnaSign }: { savData: Record<stri
   );
 }
 
-import { translatePlanet } from '@/lib/backend-translations';
-
 interface AshtakvargaTabProps {
   ashtakvargaData: any;
   loadingAshtakvarga: boolean;
@@ -131,7 +129,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                       />
                     </div>
                     <span className="text-sm text-cosmic-text truncate w-full text-center" title={translateSign(sign, language)}>
-                      {language === 'hi' ? translateSign(sign, language).slice(0, 2) : sign.slice(0, 3)}
+                      {translateSignAbbr(sign, language)}
                     </span>
                   </div>
                 );
@@ -304,7 +302,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                   <tr className="border-b border-sacred-gold">
                     <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
                     {signs.map((s) => (
-                      <th key={s} className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{language === 'hi' ? translateSign(s, language).slice(0, 2) : s.slice(0, 3)}</th>
+                      <th key={s} className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{translateSignAbbr(s, language)}</th>
                     ))}
                     <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('table.total')}</th>
                   </tr>

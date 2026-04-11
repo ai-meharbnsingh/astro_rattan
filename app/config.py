@@ -23,11 +23,15 @@ DB_PATH = os.getenv("DB_PATH", "astrovedic.db")
 # Auth
 JWT_SECRET = os.getenv("JWT_SECRET", "")
 if not JWT_SECRET:
-    if os.getenv("RAILWAY_ENVIRONMENT") or os.getenv("RENDER") or os.getenv("FLY_APP_NAME") or os.getenv("VERCEL"):
-        raise RuntimeError("FATAL: JWT_SECRET env var is required in production. Set it and redeploy.")
+    # Strictly mandate secret for any environment that looks like production
+    PROD_ENV_VARS = ["RAILWAY_ENVIRONMENT", "RENDER", "FLY_APP_NAME", "VERCEL", "HOSTINGER_SSH_HOST", "KUBERNETES_SERVICE_HOST"]
+    if any(os.getenv(var) for var in PROD_ENV_VARS):
+        raise RuntimeError("FATAL: JWT_SECRET environment variable is REQUIRED in production to prevent session collision across workers. Set it and redeploy.")
+    
+    # Fallback for local development
     import secrets
-    JWT_SECRET = secrets.token_hex(32)
-    print("[WARNING] JWT_SECRET not set — using random secret (dev only).")
+    JWT_SECRET = "dev-secret-key-12345" # Use a stable dev key instead of random to avoid logout on reload
+    print(f"[WARNING] JWT_SECRET not set. Using stable dev key. DO NOT USE IN PRODUCTION.")
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRE_HOURS = 24
 

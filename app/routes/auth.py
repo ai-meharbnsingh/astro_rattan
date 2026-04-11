@@ -114,7 +114,7 @@ def _verify_email_token(email_token: str, expected_email: str):
 
 
 @router.post("/send-otp", status_code=status.HTTP_200_OK)
-@limiter.limit("3/minute")
+@limiter.limit("3/minute; 10/hour")
 def send_otp(
     request: Request,
     body: SendOtpRequest,
