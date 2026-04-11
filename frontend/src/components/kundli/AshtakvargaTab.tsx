@@ -7,13 +7,22 @@ function SAVKundliChart({ savData, language }: { savData: Record<string, number>
   const signs = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
   const signAbbr = ['Ari','Tau','Gem','Can','Leo','Vir','Lib','Sco','Sag','Cap','Aqu','Pis'];
   const hiAbbr   = ['मे','वृ','मि','कर','सिं','कन','तु','वृ','धन','मक','कु','मी'];
-  // house centroids (280×280 SVG) — true triangle/rhombus centroids to avoid line overlap
-  // Key geometry: midpoints T(140,2) R(278,140) Bot(140,278) L(2,140)
-  // Diagonal intersections: P1(71,71) P2(209,71) P3(209,209) P4(71,209) Center(140,140)
+  // Fixed 12-house outer-ring mapping (Aries..Pisces, 1..12):
+  // 1 top-center, 2 top-left, 3 left-top, 4 left-center, 5 left-bottom, 6 bottom-left,
+  // 7 bottom-center, 8 bottom-right, 9 right-bottom, 10 right-center, 11 right-top, 12 top-right.
   const housePos = [
-    {x:140,y:66},{x:200,y:35},{x:248,y:78},{x:248,y:202},
-    {x:200,y:245},{x:140,y:215},{x:80,y:245},{x:32,y:202},
-    {x:32,y:78},{x:80,y:35},{x:140,y:108},{x:140,y:172},
+    { x: 140, y: 66 },   // 1
+    { x: 80,  y: 35 },   // 2
+    { x: 32,  y: 78 },   // 3
+    { x: 32,  y: 140 },  // 4
+    { x: 32,  y: 202 },  // 5
+    { x: 80,  y: 245 },  // 6
+    { x: 140, y: 215 },  // 7
+    { x: 200, y: 245 },  // 8
+    { x: 248, y: 202 },  // 9
+    { x: 248, y: 140 },  // 10
+    { x: 248, y: 78 },   // 11
+    { x: 200, y: 35 },   // 12
   ];
   const binduColor = (v: number) => v >= 28 ? '#166534' : '#991b1b';
 
@@ -141,28 +150,22 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                 const binduBg = (v: number) =>
                   v >= 5 ? '#dcfce7' : v >= 3 ? '#fef3c7' : '#fee2e2';
 
-                // North Indian diamond chart — house centers (280x280 SVG)
-                // Houses: 1=top-center(Asc), 2=top-right, 3=right-top, 4=right-bottom
-                // 5=bottom-right, 6=bottom-center, 7=bottom-left, 8=left-bottom
-                // 9=left-top, 10=top-left, 11=center-top, 12=center-bottom
-                // True triangle/rhombus centroids to avoid text overlapping diagonal lines.
-                // Key geometry: midpoints T(140,2) R(278,140) Bot(140,278) L(2,140)
-                // Diagonal intersections: P1(71,71) P2(209,71) P3(209,209) P4(71,209) Center(140,140)
-                // H3/H9 were at y=90 but their bounding lines pass at y≈102 at those x coords.
-                // H4/H8 were at y=190 but their bounding lines pass at y≈178 at those x coords.
+                // Fixed 12-house outer-ring mapping (Aries..Pisces, 1..12):
+                // 1 top-center, 2 top-left, 3 left-top, 4 left-center, 5 left-bottom, 6 bottom-left,
+                // 7 bottom-center, 8 bottom-right, 9 right-bottom, 10 right-center, 11 right-top, 12 top-right.
                 const housePos: { x: number; y: number }[] = [
-                  { x: 140, y: 66 },   // 1 — top center rhombus  (centroid ~y71)
-                  { x: 200, y: 35 },   // 2 — top right corner triangle
-                  { x: 248, y: 78 },   // 3 — right upper triangle (pushed to true centroid ~255,71)
-                  { x: 248, y: 202 },  // 4 — right lower triangle (pushed to true centroid ~255,209)
-                  { x: 200, y: 245 },  // 5 — bottom right corner triangle
-                  { x: 140, y: 215 },  // 6 — bottom center rhombus (centroid ~y209)
-                  { x: 80,  y: 245 },  // 7 — bottom left corner triangle
-                  { x: 32,  y: 202 },  // 8 — left lower triangle  (pushed to true centroid ~25,209)
-                  { x: 32,  y: 78 },   // 9 — left upper triangle  (pushed to true centroid ~25,71)
-                  { x: 80,  y: 35 },   // 10 — top left corner triangle
-                  { x: 140, y: 108 },  // 11 — inner top diamond
-                  { x: 140, y: 172 },  // 12 — inner bottom diamond
+                  { x: 140, y: 66 },   // 1
+                  { x: 80,  y: 35 },   // 2
+                  { x: 32,  y: 78 },   // 3
+                  { x: 32,  y: 140 },  // 4
+                  { x: 32,  y: 202 },  // 5
+                  { x: 80,  y: 245 },  // 6
+                  { x: 140, y: 215 },  // 7
+                  { x: 200, y: 245 },  // 8
+                  { x: 248, y: 202 },  // 9
+                  { x: 248, y: 140 },  // 10
+                  { x: 248, y: 78 },   // 11
+                  { x: 200, y: 35 },   // 12
                 ];
 
                 return (

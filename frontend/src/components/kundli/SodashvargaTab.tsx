@@ -36,6 +36,17 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
   };
   const strengthHi: Record<string, string> = { Strong: 'प्रबल', Medium: 'मध्यम', Weak: 'दुर्बल' };
   const strLabel = (s: string) => language === 'hi' ? (strengthHi[s] || s) : s;
+  const toFiniteNumber = (value: unknown): number | null => {
+    if (typeof value === 'number') return Number.isFinite(value) ? value : null;
+    if (typeof value === 'string') {
+      const cleaned = value.replace('%', '').trim();
+      if (!cleaned) return null;
+      const parsed = Number.parseFloat(cleaned);
+      return Number.isFinite(parsed) ? parsed : null;
+    }
+    return null;
+  };
+  const clampPercent = (value: number): number => Math.max(0, Math.min(100, value));
 
   return (
     <div className="space-y-6">
@@ -122,35 +133,46 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
                     dignities: data?.dignities,
                   }));
               return items.map((v: any) => (
-                <div key={v.planet} className="space-y-1">
-                  <div className="flex items-center gap-3 text-sm">
-                    <span className="w-12 text-sacred-brown font-medium">{(translatePlanet(v.planet || '', language) || v.planet || '').slice(0, language === 'hi' ? 3 : 4)}</span>
-                    <div className="flex-1 bg-sacred-gold rounded-full h-4">
-                      <div className="bg-sacred-gold rounded-full h-4 transition-all" style={{ width: `${Math.min(100, ((typeof v.score === 'number' ? v.score : 0) / 20) * 100)}%` }} />
+                (() => {
+                  const score = toFiniteNumber(v?.score);
+                  const scoreBasedPercent = score != null ? (score / 20) * 100 : 0;
+                  const inputPercent = toFiniteNumber(v?.percentage);
+                  const resolvedPercent = clampPercent(inputPercent != null ? inputPercent : scoreBasedPercent);
+                  const showPercent = v?.percentage !== null && v?.percentage !== undefined && v?.percentage !== '';
+                  const displayPercent = Number.isInteger(resolvedPercent) ? String(resolvedPercent) : resolvedPercent.toFixed(1);
+
+                  return (
+                    <div key={v.planet} className="space-y-1">
+                      <div className="flex items-center gap-3 text-sm">
+                        <span className="w-12 text-sacred-brown font-medium">{(translatePlanet(v.planet || '', language) || v.planet || '').slice(0, language === 'hi' ? 3 : 4)}</span>
+                        <div className="flex-1 bg-sacred-gold rounded-full h-4">
+                          <div className="bg-sacred-gold rounded-full h-4 transition-all" style={{ width: `${resolvedPercent}%` }} />
+                        </div>
+                        <span className="w-16 text-right text-cosmic-text text-sm">{score != null ? score.toFixed(1) : '?'} / 20</span>
+                        {showPercent && (
+                          <span className="w-12 text-right text-sacred-brown font-semibold text-sm">{displayPercent}%</span>
+                        )}
+                        {v.strength && (
+                          <span className={`px-1.5 py-0.5 rounded text-label font-semibold ${strengthColors[v.strength] || 'text-gray-500 bg-gray-500'}`}>{strLabel(v.strength)}</span>
+                        )}
+                      </div>
+                      {v.dignities && typeof v.dignities === 'object' && (
+                        <div className="flex items-center gap-1 ml-[60px] flex-wrap">
+                          {Object.entries(v.dignities as Record<string, number>)
+                            .filter(([, count]) => (count as number) > 0)
+                            .map(([dignity, count]) => {
+                              const info = dignityLabels[dignity] || { label: dignity.slice(0, 3), hiLabel: dignity.slice(0, 3), color: 'text-gray-500 bg-gray-500' };
+                              return (
+                                <span key={dignity} className={`px-1.5 py-0.5 rounded text-label font-medium ${info.color}`}>
+                                  {language === 'hi' ? info.hiLabel : info.label}:{count as number}
+                                </span>
+                              );
+                            })}
+                        </div>
+                      )}
                     </div>
-                    <span className="w-16 text-right text-cosmic-text text-sm">{typeof v.score === 'number' ? v.score.toFixed(1) : '?'} / 20</span>
-                    {v.percentage != null && (
-                      <span className="w-12 text-right text-sacred-brown font-semibold text-sm">{v.percentage}%</span>
-                    )}
-                    {v.strength && (
-                      <span className={`px-1.5 py-0.5 rounded text-label font-semibold ${strengthColors[v.strength] || 'text-gray-500 bg-gray-500'}`}>{strLabel(v.strength)}</span>
-                    )}
-                  </div>
-                  {v.dignities && typeof v.dignities === 'object' && (
-                    <div className="flex items-center gap-1 ml-[60px] flex-wrap">
-                      {Object.entries(v.dignities as Record<string, number>)
-                        .filter(([, count]) => (count as number) > 0)
-                        .map(([dignity, count]) => {
-                          const info = dignityLabels[dignity] || { label: dignity.slice(0, 3), hiLabel: dignity.slice(0, 3), color: 'text-gray-500 bg-gray-500' };
-                          return (
-                            <span key={dignity} className={`px-1.5 py-0.5 rounded text-label font-medium ${info.color}`}>
-                              {language === 'hi' ? info.hiLabel : info.label}:{count as number}
-                            </span>
-                          );
-                        })}
-                    </div>
-                  )}
-                </div>
+                  );
+                })()
               ));
             })()}
           </div>

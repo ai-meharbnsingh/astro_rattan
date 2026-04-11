@@ -48,6 +48,17 @@ export default function ConsolidatedReport({
   loadingDivisional,
 }: ConsolidatedReportProps) {
   const { t, language } = useTranslation();
+  const toFiniteNumber = (value: unknown): number | null => {
+    if (typeof value === 'number') return Number.isFinite(value) ? value : null;
+    if (typeof value === 'string') {
+      const cleaned = value.replace('%', '').trim();
+      if (!cleaned) return null;
+      const parsed = Number.parseFloat(cleaned);
+      return Number.isFinite(parsed) ? parsed : null;
+    }
+    return null;
+  };
+  const clampPercent = (value: number): number => Math.max(0, Math.min(100, value));
 
   // Local state for transit and D10
   const [transitData, setTransitData] = useState<any>(null);
@@ -1055,7 +1066,10 @@ export default function ConsolidatedReport({
                         .filter(p => sodashvargaData.by_planet?.[p])
                         .map(planet => {
                           const data = sodashvargaData.by_planet[planet];
-                          const pct = Math.min((data.vimshopak_bala / 20.0) * 100, 100);
+                          const score = toFiniteNumber(data?.vimshopak_bala);
+                          const inputPercent = toFiniteNumber(data?.percentage);
+                          const scoreBasedPercent = score != null ? (score / 20.0) * 100 : 0;
+                          const pct = clampPercent(inputPercent != null ? inputPercent : scoreBasedPercent);
                           const barColor = data.strength === 'Strong' ? 'var(--aged-gold-dim)' : data.strength === 'Medium' ? '#f59e0b' : 'var(--wax-red)';
                           return (
                             <div key={planet} className="flex items-center gap-1.5">
@@ -1064,7 +1078,7 @@ export default function ConsolidatedReport({
                                 <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: barColor }} />
                               </div>
                               <span className={`text-sm w-16 text-right font-medium`} style={{ color: barColor }}>
-                                {data.vimshopak_bala} ({translateLabel(data.strength, language)})
+                                {score != null ? score : data.vimshopak_bala} ({translateLabel(data.strength, language)})
                               </span>
                             </div>
                           );
