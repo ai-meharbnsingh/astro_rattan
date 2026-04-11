@@ -29,7 +29,6 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
     exalted: { label: 'Ex', color: 'text-green-800 bg-green-100' },
     own: { label: 'Own', color: 'text-blue-800 bg-blue-100' },
     moolatrikona: { label: 'Moo', color: 'text-blue-800 bg-blue-100' },
-<<<<<<< HEAD
     friend: { label: 'Fr', color: 'text-amber-800 bg-amber-100' },
     neutral: { label: 'Neu', color: 'text-slate-700 bg-slate-200' },
     enemy: { label: 'En', color: 'text-orange-800 bg-orange-100' },

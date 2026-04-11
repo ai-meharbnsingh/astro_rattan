@@ -472,3 +472,308 @@ export function generateLalKitabChart(apiData: any): LalKitabChartData {
     activePlanet: activePlanet || null,
   };
 }
+
+// ─────────────────────────────────────────────────────────────────
+// NISHANIYAN MATCHER DATA
+// ─────────────────────────────────────────────────────────────────
+export interface NishaniyaSign {
+  id: string;
+  en: string;
+  hi: string;
+  category: 'body' | 'household' | 'behavior' | 'family' | 'recurring';
+  planet: string;
+  badHouses: number[];
+  ruleId: string;
+}
+
+export const NISHANIYAN_SIGNS: NishaniyaSign[] = [
+  // Sun
+  { id: 'sun_eye', en: 'Frequent eye strain or weak eyesight', hi: 'बार-बार आँखों में थकान या कमजोर नज़र', category: 'body', planet: 'Sun', badHouses: [4, 6, 8, 12], ruleId: 'N-SUN-001' },
+  { id: 'sun_authority', en: 'Obstacles from bosses or authority figures', hi: 'अधिकारियों या वरिष्ठों से बाधाएं', category: 'recurring', planet: 'Sun', badHouses: [4, 8], ruleId: 'N-SUN-002' },
+  { id: 'sun_father', en: "Father's health issues or conflicts with father", hi: 'पिता का स्वास्थ्य खराब या पिता से विवाद', category: 'family', planet: 'Sun', badHouses: [4, 9, 12], ruleId: 'N-SUN-003' },
+  { id: 'sun_govt', en: 'Legal or government-related problems', hi: 'कानूनी या सरकारी समस्याएं', category: 'recurring', planet: 'Sun', badHouses: [6, 8, 12], ruleId: 'N-SUN-004' },
+  // Moon
+  { id: 'moon_sleep', en: 'Irregular sleep or vivid disturbing dreams', hi: 'अनियमित नींद या परेशान करने वाले सपने', category: 'body', planet: 'Moon', badHouses: [6, 8, 12], ruleId: 'N-MON-001' },
+  { id: 'moon_mother', en: "Mother has frequent health issues", hi: 'माता को बार-बार स्वास्थ्य समस्याएं', category: 'family', planet: 'Moon', badHouses: [6, 8], ruleId: 'N-MON-002' },
+  { id: 'moon_emotion', en: 'Strong emotional instability or mood swings', hi: 'भावनात्मक अस्थिरता या मनोदशा में उतार-चढ़ाव', category: 'behavior', planet: 'Moon', badHouses: [1, 6, 8], ruleId: 'N-MON-003' },
+  { id: 'moon_water', en: 'Water-related problems at home (leaks, floods)', hi: 'घर में पानी की समस्याएं (रिसाव, बाढ़)', category: 'household', planet: 'Moon', badHouses: [4, 8, 12], ruleId: 'N-MON-004' },
+  // Mars
+  { id: 'mars_accident', en: 'Frequent minor cuts, burns, or accidents', hi: 'बार-बार छोटे कट, जलन या दुर्घटनाएं', category: 'body', planet: 'Mars', badHouses: [1, 6, 8], ruleId: 'N-MAR-001' },
+  { id: 'mars_brother', en: 'Disputes with brothers or male relatives', hi: 'भाइयों या पुरुष रिश्तेदारों से विवाद', category: 'family', planet: 'Mars', badHouses: [3, 6], ruleId: 'N-MAR-002' },
+  { id: 'mars_land', en: 'Land or property disputes recurring', hi: 'जमीन या संपत्ति विवाद बार-बार', category: 'recurring', planet: 'Mars', badHouses: [4, 7, 12], ruleId: 'N-MAR-003' },
+  { id: 'mars_anger', en: 'Uncontrollable anger causing problems', hi: 'बेकाबू गुस्से से समस्याएं', category: 'behavior', planet: 'Mars', badHouses: [1, 4, 7], ruleId: 'N-MAR-004' },
+  // Mercury
+  { id: 'merc_memory', en: 'Memory lapses or difficulty concentrating', hi: 'स्मृति हानि या एकाग्रता में कठिनाई', category: 'body', planet: 'Mercury', badHouses: [6, 8, 12], ruleId: 'N-MER-001' },
+  { id: 'merc_speech', en: 'Speech issues or communication misunderstandings', hi: 'वाणी समस्या या संवाद में गलतफहमी', category: 'behavior', planet: 'Mercury', badHouses: [2, 6, 8], ruleId: 'N-MER-002' },
+  { id: 'merc_skin', en: 'Recurring skin rashes or nervous system issues', hi: 'बार-बार त्वचा पर चकत्ते या तंत्रिका समस्याएं', category: 'body', planet: 'Mercury', badHouses: [6, 8], ruleId: 'N-MER-003' },
+  // Jupiter
+  { id: 'jupi_children', en: 'Children face educational or health difficulties', hi: 'बच्चों को शैक्षिक या स्वास्थ्य कठिनाइयां', category: 'family', planet: 'Jupiter', badHouses: [5, 6, 8], ruleId: 'N-JUP-001' },
+  { id: 'jupi_finance', en: 'Unexpected financial losses despite honest effort', hi: 'ईमानदार प्रयास के बावजूद अप्रत्याशित वित्तीय हानि', category: 'recurring', planet: 'Jupiter', badHouses: [6, 8, 12], ruleId: 'N-JUP-002' },
+  { id: 'jupi_weight', en: 'Unexplained weight gain or liver issues', hi: 'अकारण वजन बढ़ना या लीवर की समस्या', category: 'body', planet: 'Jupiter', badHouses: [1, 2, 6], ruleId: 'N-JUP-003' },
+  // Venus
+  { id: 'venu_marriage', en: 'Marriage delays or repeated relationship breakdowns', hi: 'विवाह में देरी या बार-बार रिश्ते टूटना', category: 'recurring', planet: 'Venus', badHouses: [6, 8, 12], ruleId: 'N-VEN-001' },
+  { id: 'venu_female', en: 'Female relatives (wife/sister) face frequent health issues', hi: 'पत्नी या बहन को बार-बार स्वास्थ्य समस्याएं', category: 'family', planet: 'Venus', badHouses: [6, 8], ruleId: 'N-VEN-002' },
+  { id: 'venu_luxury', en: 'Repeated loss of valuables or luxury items', hi: 'बार-बार कीमती या विलास वस्तुओं का नुकसान', category: 'household', planet: 'Venus', badHouses: [8, 12], ruleId: 'N-VEN-003' },
+  // Saturn
+  { id: 'satu_delay', en: 'Projects and plans get endlessly delayed', hi: 'परियोजनाएं और योजनाएं बार-बार टलती रहती हैं', category: 'recurring', planet: 'Saturn', badHouses: [1, 4, 7], ruleId: 'N-SAT-001' },
+  { id: 'satu_joints', en: 'Chronic joint pain, back pain, or bone issues', hi: 'पुराना जोड़ दर्द, कमर दर्द या हड्डी की समस्या', category: 'body', planet: 'Saturn', badHouses: [1, 6, 8], ruleId: 'N-SAT-002' },
+  { id: 'satu_servant', en: 'Repeated issues with employees or servants', hi: 'कर्मचारियों या सेवकों से बार-बार समस्याएं', category: 'recurring', planet: 'Saturn', badHouses: [6, 10], ruleId: 'N-SAT-003' },
+  { id: 'satu_isolation', en: 'Feeling of loneliness or social isolation', hi: 'अकेलेपन या सामाजिक एकांत की भावना', category: 'behavior', planet: 'Saturn', badHouses: [1, 12], ruleId: 'N-SAT-004' },
+  // Rahu
+  { id: 'rahu_fear', en: 'Unexplained fears or anxiety, especially at night', hi: 'रात को अकारण भय या चिंता', category: 'behavior', planet: 'Rahu', badHouses: [4, 8, 12], ruleId: 'N-RAH-001' },
+  { id: 'rahu_tech', en: 'Technology devices repeatedly malfunction or break', hi: 'तकनीकी उपकरण बार-बार खराब होते हैं', category: 'household', planet: 'Rahu', badHouses: [3, 8], ruleId: 'N-RAH-002' },
+  { id: 'rahu_foreign', en: 'Unexpected foreign connections or confusing situations', hi: 'अप्रत्याशित विदेशी संपर्क या भ्रामक स्थितियां', category: 'recurring', planet: 'Rahu', badHouses: [7, 9, 12], ruleId: 'N-RAH-003' },
+  // Ketu
+  { id: 'ketu_health', en: 'Mysterious illnesses doctors cannot easily diagnose', hi: 'रहस्यमय बीमारियां जो डॉक्टर पहचान नहीं सकते', category: 'body', planet: 'Ketu', badHouses: [1, 6, 8], ruleId: 'N-KET-001' },
+  { id: 'ketu_pets', en: 'Pets fall ill or die repeatedly', hi: 'पालतू जानवर बार-बार बीमार पड़ते या मरते हैं', category: 'household', planet: 'Ketu', badHouses: [6, 8], ruleId: 'N-KET-002' },
+  { id: 'ketu_detach', en: 'Feeling disconnected from material goals', hi: 'भौतिक लक्ष्यों से अलगाव की भावना', category: 'behavior', planet: 'Ketu', badHouses: [1, 7, 10], ruleId: 'N-KET-003' },
+];
+
+// ─────────────────────────────────────────────────────────────────
+// PREDICTION STUDIO — life area categories
+// ─────────────────────────────────────────────────────────────────
+export interface PredictionArea {
+  key: string;
+  en: string;
+  hi: string;
+  primaryHouses: number[];
+  primaryPlanets: string[];
+  positiveEn: string;
+  positiveHi: string;
+  cautionEn: string;
+  cautionHi: string;
+  remedyEn: string;
+  remedyHi: string;
+}
+
+export const PREDICTION_AREAS: PredictionArea[] = [
+  {
+    key: 'career',
+    en: 'Career & Authority',
+    hi: 'करियर और अधिकार',
+    primaryHouses: [10, 1, 6],
+    primaryPlanets: ['Sun', 'Saturn', 'Mars'],
+    positiveEn: 'Career advancement and recognition in authority roles likely.',
+    positiveHi: 'करियर में उन्नति और अधिकार पदों में पहचान संभव।',
+    cautionEn: 'Avoid confrontations at workplace. Delays in promotions possible.',
+    cautionHi: 'कार्यस्थल पर टकराव से बचें। पदोन्नति में देरी संभव।',
+    remedyEn: 'Offer water to the Sun every morning. Donate wheat on Sundays.',
+    remedyHi: 'प्रतिदिन सुबह सूर्य को जल चढ़ाएं। रविवार को गेहूं दान करें।',
+  },
+  {
+    key: 'money',
+    en: 'Money & Finance',
+    hi: 'धन और वित्त',
+    primaryHouses: [2, 11, 8],
+    primaryPlanets: ['Jupiter', 'Venus', 'Mercury'],
+    positiveEn: 'Financial gains and wealth accumulation favored.',
+    positiveHi: 'वित्तीय लाभ और धन संचय अनुकूल।',
+    cautionEn: 'Avoid risky investments. Unexpected expenses possible.',
+    cautionHi: 'जोखिम भरे निवेश से बचें। अप्रत्याशित खर्च संभव।',
+    remedyEn: 'Apply saffron tilak daily. Keep gold in your home.',
+    remedyHi: 'प्रतिदिन केसर का तिलक लगाएं। घर में सोना रखें।',
+  },
+  {
+    key: 'relationship',
+    en: 'Relationship & Marriage',
+    hi: 'रिश्ते और विवाह',
+    primaryHouses: [7, 5, 2],
+    primaryPlanets: ['Venus', 'Moon', 'Jupiter'],
+    positiveEn: 'Harmonious relationships and marital happiness likely.',
+    positiveHi: 'सामंजस्यपूर्ण रिश्ते और वैवाहिक सुख संभव।',
+    cautionEn: 'Communication gaps in relationships. Avoid major decisions.',
+    cautionHi: 'रिश्तों में संवाद की कमी। बड़े फैसलों से बचें।',
+    remedyEn: 'Keep home fragrant. Donate white items on Fridays.',
+    remedyHi: 'घर को सुगंधित रखें। शुक्रवार को सफेद वस्तुएं दान करें।',
+  },
+  {
+    key: 'family',
+    en: 'Family & Home',
+    hi: 'परिवार और घर',
+    primaryHouses: [4, 2, 9],
+    primaryPlanets: ['Moon', 'Jupiter', 'Mercury'],
+    positiveEn: 'Domestic happiness and family harmony. Property gains possible.',
+    positiveHi: 'गृह सुख और पारिवारिक सामंजस्य। संपत्ति लाभ संभव।',
+    cautionEn: "Family conflicts possible. Take care of mother's health.",
+    cautionHi: 'पारिवारिक विवाद संभव। माता के स्वास्थ्य का ध्यान रखें।',
+    remedyEn: 'Keep silver items at home. Offer water to plants daily.',
+    remedyHi: 'घर में चांदी की वस्तुएं रखें। प्रतिदिन पौधों को जल दें।',
+  },
+  {
+    key: 'health',
+    en: 'Health & Vitality',
+    hi: 'स्वास्थ्य और जीवन शक्ति',
+    primaryHouses: [1, 6, 8],
+    primaryPlanets: ['Sun', 'Mars', 'Saturn'],
+    positiveEn: 'Good health and physical vitality. Fast recovery from illness.',
+    positiveHi: 'अच्छा स्वास्थ्य और शारीरिक जीवन शक्ति। बीमारी से जल्दी ठीक होना।',
+    cautionEn: 'Health needs attention. Avoid stress and overwork.',
+    cautionHi: 'स्वास्थ्य पर ध्यान दें। तनाव और अति-परिश्रम से बचें।',
+    remedyEn: 'Apply mustard oil before bath. Feed crows on Saturdays.',
+    remedyHi: 'नहाने से पहले सरसों का तेल लगाएं। शनिवार को कौओं को खिलाएं।',
+  },
+  {
+    key: 'travel',
+    en: 'Travel & Foreign',
+    hi: 'यात्रा और विदेश',
+    primaryHouses: [9, 12, 3],
+    primaryPlanets: ['Jupiter', 'Rahu', 'Mercury'],
+    positiveEn: 'Beneficial travels and foreign opportunities.',
+    positiveHi: 'लाभदायक यात्राएं और विदेशी अवसर।',
+    cautionEn: 'Travel disruptions possible. Verify documents before trips.',
+    cautionHi: 'यात्रा में बाधाएं संभव। यात्रा से पहले दस्तावेज जांचें।',
+    remedyEn: 'Float coconut in flowing water. Keep a silver ball in pocket.',
+    remedyHi: 'बहते पानी में नारियल बहाएं। जेब में चांदी की गोली रखें।',
+  },
+  {
+    key: 'legal',
+    en: 'Legal & Conflicts',
+    hi: 'कानूनी और विवाद',
+    primaryHouses: [6, 8, 12],
+    primaryPlanets: ['Mars', 'Saturn', 'Rahu'],
+    positiveEn: 'Legal matters resolve favorably. Enemies are defeated.',
+    positiveHi: 'कानूनी मामले अनुकूल रूप से सुलझते हैं। शत्रुओं पर विजय।',
+    cautionEn: 'Avoid legal disputes. Be careful of hidden enemies.',
+    cautionHi: 'कानूनी विवादों से बचें। छिपे शत्रुओं से सावधान रहें।',
+    remedyEn: 'Donate red lentils on Tuesdays. Float red items in water.',
+    remedyHi: 'मंगलवार को मसूर दाल दान करें। पानी में लाल वस्तुएं बहाएं।',
+  },
+  {
+    key: 'spiritual',
+    en: 'Spiritual Growth',
+    hi: 'आध्यात्मिक विकास',
+    primaryHouses: [9, 12, 5],
+    primaryPlanets: ['Jupiter', 'Ketu', 'Sun'],
+    positiveEn: 'Strong spiritual progress and inner growth. Guru connection.',
+    positiveHi: 'मजबूत आध्यात्मिक प्रगति और आंतरिक विकास। गुरु संबंध।',
+    cautionEn: 'Spiritual practice needed. Connect with a mentor or teacher.',
+    cautionHi: 'आध्यात्मिक अभ्यास आवश्यक। किसी गुरु या शिक्षक से जुड़ें।',
+    remedyEn: 'Feed stray dogs. Apply turmeric tilak on Thursdays.',
+    remedyHi: 'आवारा कुत्तों को खिलाएं। गुरुवार को हल्दी का तिलक लगाएं।',
+  },
+];
+
+/** Compute a natal score (0–100) for a life area based on chart data */
+export function computeAreaScore(area: PredictionArea, planetPositions: Record<string, number>, houses: LalKitabHouse[]): number {
+  let totalScore = 0;
+  let count = 0;
+  const benefics = new Set(['Jupiter', 'Venus', 'Moon', 'Mercury']);
+  const malefics = new Set(['Saturn', 'Mars', 'Rahu', 'Ketu', 'Sun']);
+
+  for (const planetKey of area.primaryPlanets) {
+    const house = planetPositions[planetKey];
+    if (house == null) continue;
+    let score = 50; // neutral base
+    const isPakka = house === PAKKA_GHAR[planetKey];
+    if (isPakka) score += 25;
+    const inPrimaryHouse = area.primaryHouses.includes(house);
+    if (inPrimaryHouse) score += 20;
+    const houseData = houses.find((h) => h.house === house);
+    if (houseData?.strength === 'strong') score += 10;
+    if (houseData?.strength === 'weak') score -= 20;
+    if (benefics.has(planetKey) && area.primaryHouses.includes(house)) score += 10;
+    if (malefics.has(planetKey) && [6, 8, 12].includes(house)) score -= 15;
+    totalScore += Math.max(0, Math.min(100, score));
+    count++;
+  }
+
+  if (count === 0) return 50;
+  const natalScore = totalScore / count;
+  // Final score: 40% natal, 60% assumed baseline
+  return Math.round(natalScore * 0.4 + 50 * 0.6);
+}
+
+/** Map score 0–100 to a confidence label */
+export function scoreToConfidence(score: number): 'high' | 'moderate' | 'low' | 'speculative' {
+  if (score >= 70) return 'high';
+  if (score >= 55) return 'moderate';
+  if (score >= 40) return 'low';
+  return 'speculative';
+}
+
+// ─────────────────────────────────────────────────────────────────
+// GOCHAR (TRANSIT) — approximate slow-planet positions
+// ─────────────────────────────────────────────────────────────────
+export interface ApproxTransit {
+  planet: string;
+  lkHouse: number; // global LK house (1=Aries … 12=Pisces)
+  speedNote: 'slow' | 'medium' | 'fast';
+  en: string;
+  hi: string;
+}
+
+/** Approximate transit positions for 2026 Q1-Q2 (sidereal Lahiri) */
+export const APPROX_TRANSITS_2026: ApproxTransit[] = [
+  { planet: 'Jupiter', lkHouse: 3, speedNote: 'slow', en: 'Jupiter in Gemini — communication, short travel, siblings highlighted', hi: 'गुरु मिथुन में — संवाद, छोटी यात्रा, भाई-बहनों पर ध्यान' },
+  { planet: 'Saturn', lkHouse: 11, speedNote: 'slow', en: 'Saturn in Aquarius — steady gains, elder siblings, disciplined earnings', hi: 'शनि कुंभ में — स्थिर लाभ, बड़े भाई-बहन, अनुशासित कमाई' },
+  { planet: 'Rahu', lkHouse: 11, speedNote: 'slow', en: 'Rahu in Aquarius — unexpected gains, technology-driven income', hi: 'राहु कुंभ में — अप्रत्याशित लाभ, तकनीक-आधारित आय' },
+  { planet: 'Ketu', lkHouse: 5, speedNote: 'slow', en: 'Ketu in Leo — past-life karma with children and education', hi: 'केतु सिंह में — संतान और शिक्षा का पूर्व जन्म कर्म' },
+  { planet: 'Mars', lkHouse: 4, speedNote: 'medium', en: 'Mars in Cancer — property and home focus, mother care needed', hi: 'मंगल कर्क में — संपत्ति और घर पर ध्यान, माता की देखभाल' },
+  { planet: 'Sun', lkHouse: 12, speedNote: 'fast', en: 'Sun in Pisces — expenses, spiritual focus, travel', hi: 'सूर्य मीन में — खर्च, आध्यात्मिक ध्यान, यात्रा' },
+  { planet: 'Mercury', lkHouse: 12, speedNote: 'fast', en: 'Mercury in Pisces — introspective communication, foreign connections', hi: 'बुध मीन में — आत्म-चिंतन, विदेशी संबंध' },
+  { planet: 'Venus', lkHouse: 1, speedNote: 'fast', en: 'Venus in Aries — personality charm, new beginnings in relationships', hi: 'शुक्र मेष में — व्यक्तित्व आकर्षण, रिश्तों में नई शुरुआत' },
+  { planet: 'Moon', lkHouse: 0, speedNote: 'fast', en: 'Moon changes sign every 2.5 days — see daily panchang', hi: 'चंद्रमा हर 2.5 दिन में राशि बदलता है — दैनिक पंचांग देखें' },
+];
+
+export const GOCHAR_ALERTS = [
+  { en: 'Saturn + Rahu both in house 11: Gains possible but through unconventional means. Stay ethical.', hi: 'शनि + राहु दोनों 11वें भाव में: लाभ संभव लेकिन अपरंपरागत तरीकों से। नैतिक रहें।' },
+  { en: 'Jupiter in 3rd house: Favorable for short travel, media, and sibling-related matters.', hi: 'गुरु तीसरे भाव में: छोटी यात्रा, मीडिया और भाई-बहन संबंधी मामलों के लिए अनुकूल।' },
+  { en: 'Ketu in 5th house: Past-life karmas with children activated. Education matters need attention.', hi: 'केतु पाँचवें भाव में: संतान के साथ पूर्व जन्म कर्म सक्रिय। शिक्षा पर ध्यान दें।' },
+  { en: 'Multiple planets in Pisces (house 12): Spiritual window open. Expenses may rise.', hi: 'मीन राशि (12वें भाव) में अनेक ग्रह: आध्यात्मिक खिड़की खुली है। खर्च बढ़ सकता है।' },
+];
+
+// ─────────────────────────────────────────────────────────────────
+// CHANDRA CHALANA — 43-day protocol tasks
+// ─────────────────────────────────────────────────────────────────
+export interface ChandraChaalanaTask {
+  day: number;
+  en: string;
+  hi: string;
+  category: 'action' | 'donation' | 'meditation' | 'fasting' | 'mantra';
+}
+
+export const CHANDRA_CHAALANA_TASKS: ChandraChaalanaTask[] = [
+  { day: 1, en: 'Begin with a cold water bath at sunrise. Offer white flowers to Moon image.', hi: 'सूर्योदय पर ठंडे पानी से स्नान करें। चंद्रमा की छवि पर सफेद फूल चढ़ाएं।', category: 'action' },
+  { day: 2, en: 'Donate white rice and milk to a needy family.', hi: 'किसी जरूरतमंद परिवार को सफेद चावल और दूध दान करें।', category: 'donation' },
+  { day: 3, en: 'Recite "Om Som Somaya Namaha" 108 times after moonrise.', hi: 'चंद्रोदय के बाद "ॐ सोम सोमाय नमः" 108 बार जपें।', category: 'mantra' },
+  { day: 4, en: 'Keep a silver glass of water by your bedside. Pour it on a plant in the morning.', hi: 'बिस्तर के पास चांदी के गिलास में पानी रखें। सुबह पौधे पर डालें।', category: 'action' },
+  { day: 5, en: 'Fast on rice and milk only. No fried or spicy food.', hi: 'केवल चावल और दूध पर उपवास रखें। तला या मसालेदार नहीं।', category: 'fasting' },
+  { day: 6, en: 'Feed fish or birds with rice at a water body.', hi: 'नदी या तालाब में मछलियों या पक्षियों को चावल खिलाएं।', category: 'action' },
+  { day: 7, en: 'Meditate on a full moon image for 15 minutes. Visualize calm blue light.', hi: 'पूर्णिमा की छवि पर 15 मिनट ध्यान करें। शांत नीली रोशनी की कल्पना करें।', category: 'meditation' },
+  { day: 8, en: 'Wear white or cream clothes all day. Avoid black and red.', hi: 'पूरे दिन सफेद या क्रीम कपड़े पहनें। काले और लाल से बचें।', category: 'action' },
+  { day: 9, en: 'Donate a white bedsheet or white cloth to an elderly woman.', hi: 'किसी बुजुर्ग महिला को सफेद चादर या सफेद कपड़ा दान करें।', category: 'donation' },
+  { day: 10, en: 'Offer milk to a Shivling. If no temple nearby, pour milk on a plant root.', hi: 'शिवलिंग पर दूध चढ़ाएं। नजदीक मंदिर न हो तो पौधे की जड़ में दूध डालें।', category: 'action' },
+  { day: 11, en: 'Recite "Om Chandraya Namaha" 108 times while holding a silver piece.', hi: 'चांदी का टुकड़ा पकड़कर "ॐ चंद्राय नमः" 108 बार जपें।', category: 'mantra' },
+  { day: 12, en: 'Avoid alcohol and non-vegetarian food strictly today.', hi: 'आज शराब और मांसाहारी भोजन से सख्ती से परहेज करें।', category: 'fasting' },
+  { day: 13, en: 'Write a letter of gratitude to your mother. Keep it with you.', hi: 'अपनी माँ को कृतज्ञता का पत्र लिखें। उसे अपने पास रखें।', category: 'meditation' },
+  { day: 14, en: 'Wash a square piece of silver and keep it on you all day.', hi: 'चांदी के चौकोर टुकड़े को धोएं और पूरे दिन अपने पास रखें।', category: 'action' },
+  { day: 15, en: 'Mid-point milestone: donate white sweets to at least 7 people.', hi: 'मध्य बिंदु: कम से कम 7 लोगों को सफेद मिठाई दान करें।', category: 'donation' },
+  { day: 16, en: 'Take a bath with sandalwood-mixed water. Avoid soap today.', hi: 'चंदन मिले पानी से स्नान करें। आज साबुन से बचें।', category: 'action' },
+  { day: 17, en: 'Meditate near open water (river, lake, or fountain) for 20 minutes.', hi: 'खुले पानी (नदी, झील, फव्वारे) के पास 20 मिनट ध्यान करें।', category: 'meditation' },
+  { day: 18, en: 'Recite "Om Hreem Chandraya Namaha" 108 times.', hi: '"ॐ ह्रीं चंद्राय नमः" 108 बार जपें।', category: 'mantra' },
+  { day: 19, en: 'Donate milk and rice to a temple or orphanage.', hi: 'किसी मंदिर या अनाथालय में दूध और चावल दान करें।', category: 'donation' },
+  { day: 20, en: 'Keep your home clean and free of clutter. Light a white candle.', hi: 'अपना घर साफ और गंदगी मुक्त रखें। एक सफेद मोमबत्ती जलाएं।', category: 'action' },
+  { day: 21, en: 'Three-week milestone: observe silence for 2 hours in the evening.', hi: 'तीन सप्ताह का मील का पत्थर: शाम को 2 घंटे मौन रखें।', category: 'meditation' },
+  { day: 22, en: 'Feed crows and birds with white rice in the morning.', hi: 'सुबह कौओं और पक्षियों को सफेद चावल खिलाएं।', category: 'action' },
+  { day: 23, en: 'Donate a white umbrella or white cloth to a needy person.', hi: 'किसी जरूरतमंद को सफेद छाता या सफेद कपड़ा दान करें।', category: 'donation' },
+  { day: 24, en: 'Recite the Chandra Gayatri Mantra 21 times after moonrise.', hi: 'चंद्रोदय के बाद चंद्र गायत्री मंत्र 21 बार जपें।', category: 'mantra' },
+  { day: 25, en: 'Eat only sattvic food (no garlic or onion). Drink coconut water.', hi: 'केवल सात्विक भोजन करें (लहसुन-प्याज नहीं)। नारियल पानी पीएं।', category: 'fasting' },
+  { day: 26, en: 'Spend time near a water body or watch the moon rise today.', hi: 'पानी के पास समय बिताएं या आज चंद्रोदय देखें।', category: 'meditation' },
+  { day: 27, en: 'Write down 27 things you are grateful for in your life.', hi: 'अपने जीवन में जिन 27 चीजों के लिए आभारी हैं उन्हें लिखें।', category: 'meditation' },
+  { day: 28, en: 'Float a coconut with white flowers in flowing water.', hi: 'बहते पानी में सफेद फूलों के साथ नारियल बहाएं।', category: 'action' },
+  { day: 29, en: 'Donate a silver coin to a place of worship.', hi: 'किसी पूजा स्थल पर चांदी का सिक्का दान करें।', category: 'donation' },
+  { day: 30, en: 'Recite Moon mantra 108 times. Meditate for 15 minutes.', hi: 'चंद्र मंत्र 108 बार जपें। 15 मिनट ध्यान करें।', category: 'mantra' },
+  { day: 31, en: 'Keep a bowl of milk on your rooftop under moonlight overnight.', hi: 'रात भर छत पर दूध का कटोरा चांदनी में रखें।', category: 'action' },
+  { day: 32, en: 'Complete fast today. Consume only water and milk.', hi: 'आज पूर्ण उपवास रखें। केवल पानी और दूध लें।', category: 'fasting' },
+  { day: 33, en: 'Write a letter of intention — what change you want from this protocol.', hi: 'एक इरादे का पत्र लिखें — इस प्रोटोकॉल से आप क्या बदलाव चाहते हैं।', category: 'meditation' },
+  { day: 34, en: 'Donate white sesame seeds and rice to a Shiva temple.', hi: 'शिव मंदिर में सफेद तिल और चावल दान करें।', category: 'donation' },
+  { day: 35, en: 'Recite Moon mantra 108 times walking barefoot on grass at dawn.', hi: 'भोर में घास पर नंगे पांव चलते हुए चंद्र मंत्र 108 बार जपें।', category: 'mantra' },
+  { day: 36, en: 'Keep your water intake high. Drink from a silver cup if possible.', hi: 'पानी की मात्रा अधिक रखें। हो सके तो चांदी के कप से पीएं।', category: 'action' },
+  { day: 37, en: 'Donate food (rice, lentils, milk) to at least 43 people.', hi: 'कम से कम 43 लोगों को खाना (चावल, दाल, दूध) दान करें।', category: 'donation' },
+  { day: 38, en: 'Meditate on white light filling your body for 20 minutes.', hi: 'सफेद रोशनी से अपना शरीर भरने पर 20 मिनट ध्यान करें।', category: 'meditation' },
+  { day: 39, en: 'Recite "Om Shrim Chandra Namaha" 1008 times today.', hi: '"ॐ श्रीम् चंद्र नमः" आज 1008 बार जपें।', category: 'mantra' },
+  { day: 40, en: 'Offer white flowers and milk at a Shiva or Devi temple.', hi: 'शिव या देवी मंदिर में सफेद फूल और दूध चढ़ाएं।', category: 'action' },
+  { day: 41, en: 'Reflect on the last 40 days. Write what has changed or improved.', hi: 'पिछले 40 दिनों पर विचार करें। लिखें क्या बदला या बेहतर हुआ।', category: 'meditation' },
+  { day: 42, en: 'Donate a small pearl or white cloth to a senior female family member.', hi: 'परिवार की वरिष्ठ महिला को छोटा मोती या सफेद कपड़ा दान करें।', category: 'donation' },
+  { day: 43, en: 'Final day: Float 43 white flowers in flowing water. Chandra Chalana complete!', hi: 'अंतिम दिन: बहते पानी में 43 सफेद फूल बहाएं। चंद्र चालना पूर्ण!', category: 'action' },
+];

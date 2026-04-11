@@ -89,6 +89,44 @@ MIGRATIONS: List[Tuple[int, str, str]] = [
         "Enhance panchang_cache with extended data support via ON CONFLICT",
         "SELECT 1;",
     ),
+    (
+        8,
+        "Add Lal Kitab tracker, chandra protocol, and journal tables",
+        """
+    CREATE TABLE IF NOT EXISTS lk_tracker_logs (
+        id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+        user_id TEXT NOT NULL,
+        kundli_id TEXT NOT NULL,
+        date TEXT NOT NULL,
+        completed_ids TEXT NOT NULL DEFAULT '[]',
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        UNIQUE(user_id, kundli_id, date)
+    );
+    CREATE INDEX IF NOT EXISTS idx_lk_tracker_user_kundli ON lk_tracker_logs(user_id, kundli_id);
+
+    CREATE TABLE IF NOT EXISTS lk_chandra_protocol (
+        id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+        user_id TEXT NOT NULL UNIQUE,
+        start_date TEXT,
+        completed_days TEXT NOT NULL DEFAULT '[]',
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS idx_lk_chandra_user ON lk_chandra_protocol(user_id);
+
+    CREATE TABLE IF NOT EXISTS lk_journal_entries (
+        id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+        user_id TEXT NOT NULL,
+        source TEXT NOT NULL,
+        kundli_id TEXT,
+        date TEXT NOT NULL,
+        note TEXT NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS idx_lk_journal_user ON lk_journal_entries(user_id, source);
+    """,
+    ),
 ]
 
 

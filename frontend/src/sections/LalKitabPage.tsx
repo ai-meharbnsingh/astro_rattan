@@ -22,6 +22,11 @@ import LalKitabYearlyTab from '@/components/lalkitab/LalKitabYearlyTab';
 import LalKitabVarshphalTab from '@/components/lalkitab/LalKitabVarshphalTab';
 import LalKitabRelationsTab from '@/components/lalkitab/LalKitabRelationsTab';
 import LalKitabRulesTab from '@/components/lalkitab/LalKitabRulesTab';
+import LalKitabNishaniyaTab from '@/components/lalkitab/LalKitabNishaniyaTab';
+import LalKitabGocharTab from '@/components/lalkitab/LalKitabGocharTab';
+import LalKitabPredictionTab from '@/components/lalkitab/LalKitabPredictionTab';
+import LalKitabRemediesTrackerTab from '@/components/lalkitab/LalKitabRemediesTrackerTab';
+import LalKitabChandraChaalanaTab from '@/components/lalkitab/LalKitabChandraChaalanaTab';
 
 type View = 'form' | 'generating' | 'result';
 
@@ -171,6 +176,11 @@ export default function LalKitabPage() {
                 <TabsTrigger value="varshphal">{t('lk.tab.varshphal')}</TabsTrigger>
                 <TabsTrigger value="relations">{t('lk.tab.relations')}</TabsTrigger>
                 <TabsTrigger value="rules">{t('lk.tab.rules')}</TabsTrigger>
+                <TabsTrigger value="nishaniyan">{t('lk.tab.nishaniyan')}</TabsTrigger>
+                <TabsTrigger value="gochar">{t('lk.tab.gochar')}</TabsTrigger>
+                <TabsTrigger value="studio">{t('lk.tab.studio')}</TabsTrigger>
+                <TabsTrigger value="tracker">{t('lk.tab.tracker')}</TabsTrigger>
+                <TabsTrigger value="chandra">{t('lk.tab.chandra')}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="dashboard">
@@ -202,6 +212,21 @@ export default function LalKitabPage() {
               </TabsContent>
               <TabsContent value="rules">
                 <LalKitabRulesTab chartData={chartData} />
+              </TabsContent>
+              <TabsContent value="nishaniyan">
+                <LalKitabNishaniyaTab chartData={chartData} />
+              </TabsContent>
+              <TabsContent value="gochar">
+                <LalKitabGocharTab chartData={chartData} apiResult={apiResult} />
+              </TabsContent>
+              <TabsContent value="studio">
+                <LalKitabPredictionTab chartData={chartData} />
+              </TabsContent>
+              <TabsContent value="tracker">
+                <LalKitabRemediesTrackerTab chartData={chartData} kundliId={kundliId} />
+              </TabsContent>
+              <TabsContent value="chandra">
+                <LalKitabChandraChaalanaTab />
               </TabsContent>
             </Tabs>
             {clientId && <NotesWidget clientId={clientId} chartType="lalkitab" kundliId={kundliId} />}
