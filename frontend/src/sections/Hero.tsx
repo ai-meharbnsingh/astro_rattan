@@ -114,7 +114,7 @@ export default function Hero() {
           </div>
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-green-500"></span>
-            {l('Gemini + OpenAI Powered', 'जेमिनी + ओपनएआई संचालित')}
+            {l('Parashari + Jaimini + KP', 'पाराशरी + जैमिनी + केपी')}
           </div>
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-green-500"></span>

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Check, X, Sparkles, Moon, Scroll, Users, Brain, Award } from 'lucide-react';
+import { Check, X, Sparkles, Moon, Scroll, Users, BookOpen, Award } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -55,7 +55,7 @@ export default function WhyDifferent() {
     { feature: l('Chandra Chalana Protocol', 'चंद्र चालना प्रोटोकॉल'), us: 'Full 43-Day Tracker', them: 'Not Available' },
     { feature: l('Nishaniyan Matcher', 'निशानियां मैचर'), us: 'Physical Sign Mapping', them: 'Not Available' },
     { feature: l('Remedy Tracker', 'उपाय ट्रैकर'), us: 'With Streaks & Journal', them: 'Static Lists Only' },
-    { feature: l('AI Integration', 'AI एकीकरण'), us: 'Gemini + OpenAI', them: 'Rule-Based Only' },
+    { feature: l('Interpretation Depth', 'व्याख्या गहराई'), us: 'Classical Text-Based', them: 'Generic Templates' },
     { feature: l('Client Management', 'क्लाइंट प्रबंधन'), us: 'Built-in Dashboard', them: 'Not Available' },
     { feature: l('Divisional Charts', 'विभाजन चार्ट'), us: 'D1-D60 Complete', them: 'D9 Only' },
     { feature: l('Calculation Engine', 'गणना इंजन'), us: 'Swiss Ephemeris', them: 'Lookup Tables' },

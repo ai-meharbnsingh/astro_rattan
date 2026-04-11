@@ -4,7 +4,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Card, CardContent } from '@/components/ui/card';
 import { useTranslation } from '@/lib/i18n';
-import { Star, Clock, BookOpen, Shield, Calendar, Calculator, Zap, Globe, Users } from 'lucide-react';
+import { Star, Clock, BookOpen, Shield, Calendar, Calculator, Globe, Users } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -32,11 +32,11 @@ export default function Features() {
       color: 'from-blue-500/20 to-cyan-500/10',
     },
     {
-      icon: <Zap className="w-6 h-6" />,
-      title: l('AI-Powered Insights', 'AI-संचालित अंतर्दृष्टि'),
-      subtitle: l('Gemini + OpenAI', 'जेमिनी + ओपनएआई'),
-      desc: l('Not lookup tables — real AI interpretation of your chart. Ask questions, get Gita wisdom, receive personalized remedy suggestions based on your unique placements.', 'लुकअप टेबल नहीं — आपके चार्ट की वास्तविक AI व्याख्या। प्रश्न पूछें, गीता ज्ञान प्राप्त करें, अपनी अद्वितीय स्थितियों के आधार पर व्यक्तिगत उपाय सुझाव प्राप्त करें।'),
-      badge: l('SMART', 'स्मार्ट'),
+      icon: <BookOpen className="w-6 h-6" />,
+      title: l('Classical Interpretations', 'शास्त्रीय व्याख्याएं'),
+      subtitle: l('Authentic Wisdom', 'प्रामाणिक ज्ञान'),
+      desc: l('Expert-crafted predictions based on Brihat Parashara Hora Shastra and Lal Kitab. Detailed analysis of planetary yogas, doshas, and remedial measures.', 'बृहत् पराशर होरा शास्त्र और लाल किताब पर आधारित विशेषज्ञ-निर्मित भविष्यवाणियां। ग्रह योगों, दोषों और उपायों का विस्तृत विश्लेषण।'),
+      badge: l('SCRIPTURAL', 'शास्त्रीय'),
       color: 'from-purple-500/20 to-pink-500/10',
     },
     {
@@ -155,8 +155,8 @@ export default function Features() {
             <div className="text-sm text-cosmic-text/70">{l('Day Protocol', 'दिवसीय प्रोटोकॉल')}</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-sacred-gold-dark">2</div>
-            <div className="text-sm text-cosmic-text/70">{l('AI Providers', 'AI प्रोवाइडर्स')}</div>
+            <div className="text-3xl font-bold text-sacred-gold-dark">3</div>
+            <div className="text-sm text-cosmic-text/70">{l('Scriptural Systems', 'शास्त्रीय प्रणालियां')}</div>
           </div>
         </div>
       </div>
