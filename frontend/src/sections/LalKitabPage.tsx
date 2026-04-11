@@ -27,6 +27,13 @@ import LalKitabGocharTab from '@/components/lalkitab/LalKitabGocharTab';
 import LalKitabPredictionTab from '@/components/lalkitab/LalKitabPredictionTab';
 import LalKitabRemediesTrackerTab from '@/components/lalkitab/LalKitabRemediesTrackerTab';
 import LalKitabChandraChaalanaTab from '@/components/lalkitab/LalKitabChandraChaalanaTab';
+import LalKitabRinTab from '@/components/lalkitab/LalKitabRinTab';
+import LalKitabMarriageTab from '@/components/lalkitab/LalKitabMarriageTab';
+import LalKitabCareerTab from '@/components/lalkitab/LalKitabCareerTab';
+import LalKitabHealthTab from '@/components/lalkitab/LalKitabHealthTab';
+import LalKitabWealthTab from '@/components/lalkitab/LalKitabWealthTab';
+import LalKitabSavedPredictionsTab from '@/components/lalkitab/LalKitabSavedPredictionsTab';
+import LalKitabTevaTab from '@/components/lalkitab/LalKitabTevaTab';
 
 type View = 'form' | 'generating' | 'result';
 
@@ -201,6 +208,18 @@ export default function LalKitabPage() {
                     <TabsTrigger value="tracker">{t('lk.tab.tracker')}</TabsTrigger>
                     <TabsTrigger value="chandra">{t('lk.tab.chandra')}</TabsTrigger>
                   </TabsList>
+                  {/* Row 3 — 7 tabs */}
+                  <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 grid grid-cols-7
+                    [&>button]:whitespace-nowrap [&>button]:min-h-[36px] [&>button]:px-2 [&>button]:py-1.5 [&>button]:text-xs
+                    [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
+                    <TabsTrigger value="rin">{t('lk.tab.rin')}</TabsTrigger>
+                    <TabsTrigger value="marriage">{t('lk.tab.marriage')}</TabsTrigger>
+                    <TabsTrigger value="career">{t('lk.tab.career')}</TabsTrigger>
+                    <TabsTrigger value="health">{t('lk.tab.health')}</TabsTrigger>
+                    <TabsTrigger value="wealth">{t('lk.tab.wealth')}</TabsTrigger>
+                    <TabsTrigger value="saved">{t('lk.tab.saved')}</TabsTrigger>
+                    <TabsTrigger value="teva">{t('lk.tab.teva')}</TabsTrigger>
+                  </TabsList>
                 </div>
 
                 {/* Mobile: single horizontally scrollable row */}
@@ -223,6 +242,13 @@ export default function LalKitabPage() {
                   <TabsTrigger value="studio">{t('lk.tab.studio')}</TabsTrigger>
                   <TabsTrigger value="tracker">{t('lk.tab.tracker')}</TabsTrigger>
                   <TabsTrigger value="chandra">{t('lk.tab.chandra')}</TabsTrigger>
+                  <TabsTrigger value="rin">{t('lk.tab.rin')}</TabsTrigger>
+                  <TabsTrigger value="marriage">{t('lk.tab.marriage')}</TabsTrigger>
+                  <TabsTrigger value="career">{t('lk.tab.career')}</TabsTrigger>
+                  <TabsTrigger value="health">{t('lk.tab.health')}</TabsTrigger>
+                  <TabsTrigger value="wealth">{t('lk.tab.wealth')}</TabsTrigger>
+                  <TabsTrigger value="saved">{t('lk.tab.saved')}</TabsTrigger>
+                  <TabsTrigger value="teva">{t('lk.tab.teva')}</TabsTrigger>
                 </TabsList>
               </div>
 
@@ -239,7 +265,7 @@ export default function LalKitabPage() {
                 <LalKitabDoshaTab chartData={chartData} />
               </TabsContent>
               <TabsContent value="remedies">
-                <LalKitabRemediesTab chartData={chartData} />
+                <LalKitabRemediesTab chartData={chartData} kundliId={kundliId} />
               </TabsContent>
               <TabsContent value="houses">
                 <LalKitabHousesTab chartData={chartData} />
@@ -257,7 +283,7 @@ export default function LalKitabPage() {
                 <LalKitabRulesTab chartData={chartData} />
               </TabsContent>
               <TabsContent value="nishaniyan">
-                <LalKitabNishaniyaTab chartData={chartData} />
+                <LalKitabNishaniyaTab kundliId={kundliId} />
               </TabsContent>
               <TabsContent value="gochar">
                 <LalKitabGocharTab chartData={chartData} apiResult={apiResult} />
@@ -270,6 +296,27 @@ export default function LalKitabPage() {
               </TabsContent>
               <TabsContent value="chandra">
                 <LalKitabChandraChaalanaTab />
+              </TabsContent>
+              <TabsContent value="rin">
+                <LalKitabRinTab kundliId={kundliId} />
+              </TabsContent>
+              <TabsContent value="marriage">
+                <LalKitabMarriageTab kundliId={kundliId} />
+              </TabsContent>
+              <TabsContent value="career">
+                <LalKitabCareerTab kundliId={kundliId} />
+              </TabsContent>
+              <TabsContent value="health">
+                <LalKitabHealthTab kundliId={kundliId} />
+              </TabsContent>
+              <TabsContent value="wealth">
+                <LalKitabWealthTab kundliId={kundliId} />
+              </TabsContent>
+              <TabsContent value="saved">
+                <LalKitabSavedPredictionsTab kundliId={kundliId} />
+              </TabsContent>
+              <TabsContent value="teva">
+                <LalKitabTevaTab chartData={chartData} />
               </TabsContent>
             </Tabs>
             {clientId && <NotesWidget clientId={clientId} chartType="lalkitab" kundliId={kundliId} />}
