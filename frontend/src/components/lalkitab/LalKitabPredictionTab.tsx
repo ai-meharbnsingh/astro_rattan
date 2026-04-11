@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import type { LalKitabChartData } from './lalkitab-data';
 import {
@@ -19,63 +19,42 @@ import {
   TrendingUp,
   AlertTriangle,
   Info,
+  CheckCircle2,
+  Clock,
+  ThumbsUp,
+  ThumbsDown,
+  Meh
 } from 'lucide-react';
 
 interface Props {
   chartData: LalKitabChartData;
 }
 
-const areaIcons: Record<string, React.ElementType> = {
-  career: Briefcase,
-  money: Coins,
-  relationship: Heart,
-  family: Home,
-  health: Activity,
-  travel: Plane,
-  legal: Scale,
-  spiritual: Star,
-};
-
-const confidenceConfig = {
-  high: {
-    bar: 'bg-green-500',
-    badge: 'bg-green-500/15 text-green-700 border-green-300/40',
-    border: 'border-green-300/30',
-    bg: 'bg-green-500/5',
-    icon: TrendingUp,
-  },
-  moderate: {
-    bar: 'bg-sacred-gold',
-    badge: 'bg-sacred-gold/15 text-sacred-gold-dark border-sacred-gold/40',
-    border: 'border-sacred-gold/30',
-    bg: 'bg-sacred-gold/5',
-    icon: TrendingUp,
-  },
-  low: {
-    bar: 'bg-orange-400',
-    badge: 'bg-orange-400/15 text-orange-700 border-orange-300/40',
-    border: 'border-orange-300/30',
-    bg: 'bg-orange-400/5',
-    icon: AlertTriangle,
-  },
-  speculative: {
-    bar: 'bg-gray-400',
-    badge: 'bg-gray-400/15 text-gray-600 border-gray-300/40',
-    border: 'border-gray-200/50',
-    bg: 'bg-gray-50/50',
-    icon: Info,
-  },
-};
-
-function getPlanetLabel(key: string, language: string): string {
-  const p = PLANETS.find((pl) => pl.key === key);
-  if (!p) return key;
-  return language === 'hi' ? p.hi : p.en;
-}
+const STORAGE_KEY_PREFIX = 'lk_prediction_feedback_';
 
 export default function LalKitabPredictionTab({ chartData }: Props) {
   const { t, language } = useTranslation();
   const isHi = language === 'hi';
+
+  const [feedback, setFeedback] = useState<Record<string, string>>({});
+
+  // Load feedback from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem(`${STORAGE_KEY_PREFIX}`);
+    if (stored) {
+      try {
+        setFeedback(JSON.parse(stored));
+      } catch (e) {
+        console.error('Failed to parse prediction feedback', e);
+      }
+    }
+  }, []);
+
+  const saveFeedback = (areaKey: string, value: string) => {
+    const next = { ...feedback, [areaKey]: value };
+    setFeedback(next);
+    localStorage.setItem(`${STORAGE_KEY_PREFIX}`, JSON.stringify(next));
+  };
 
   const predictions = useMemo(
     () =>
@@ -111,6 +90,7 @@ export default function LalKitabPredictionTab({ chartData }: Props) {
           const cfg = confidenceConfig[confidence];
           const Icon = areaIcons[area.key] ?? Star;
           const StatusIcon = cfg.icon;
+          const userRating = feedback[area.key];
 
           // Planets implicated in this area
           const implicated = area.primaryPlanets.map((pKey) => {
@@ -121,82 +101,131 @@ export default function LalKitabPredictionTab({ chartData }: Props) {
           return (
             <div
               key={area.key}
-              className={`card-sacred rounded-xl border p-5 ${cfg.border} ${cfg.bg}`}
+              className={`card-sacred rounded-xl border p-5 flex flex-col h-full transition-all ${cfg.border} ${cfg.bg}`}
             >
-              {/* Card header */}
-              <div className="flex items-start justify-between gap-3 mb-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-9 h-9 rounded-xl bg-sacred-gold/10 flex items-center justify-center shrink-0">
-                    <Icon className="w-4 h-4 text-sacred-gold" />
+              <div className="flex-1">
+                {/* Card header */}
+                <div className="flex items-start justify-between gap-3 mb-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-9 h-9 rounded-xl bg-sacred-gold/10 flex items-center justify-center shrink-0">
+                      <Icon className="w-4 h-4 text-sacred-gold" />
+                    </div>
+                    <div>
+                      <p className="font-sans font-semibold text-cosmic-text text-sm">
+                        {isHi ? area.hi : area.en}
+                      </p>
+                      <span
+                        className={`inline-block text-xs px-2 py-0.5 rounded-full border font-medium mt-0.5 ${cfg.badge}`}
+                      >
+                        {t(`lk.studio.${confidence}`)}
+                      </span>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-sans font-semibold text-cosmic-text text-sm">
-                      {isHi ? area.hi : area.en}
-                    </p>
-                    <span
-                      className={`inline-block text-xs px-2 py-0.5 rounded-full border font-medium mt-0.5 ${cfg.badge}`}
-                    >
-                      {t(`lk.studio.${confidence}`)}
+                  <div className="text-right shrink-0">
+                    <p className="text-xl font-bold text-cosmic-text">{score}</p>
+                    <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Score</p>
+                  </div>
+                </div>
+
+                {/* Score bar */}
+                <div className="w-full bg-gray-200/60 rounded-full h-1.5 mb-4">
+                  <div
+                    className={`h-1.5 rounded-full transition-all duration-1000 ${cfg.bar}`}
+                    style={{ width: `${score}%` }}
+                  />
+                </div>
+
+                {/* Tone badge */}
+                <div className={`flex items-start gap-2 mb-4 p-3 rounded-lg ${isPositive ? 'bg-green-500/8' : 'bg-orange-400/8'}`}>
+                  <StatusIcon className={`w-4 h-4 shrink-0 mt-0.5 ${isPositive ? 'text-green-600' : 'text-orange-500'}`} />
+                  <p className="text-xs font-medium text-cosmic-text/80 leading-relaxed">
+                    <span className={`font-bold ${isPositive ? 'text-green-600' : 'text-orange-600'} uppercase tracking-tight`}>
+                      {isPositive ? t('lk.studio.positive') : t('lk.studio.caution')}:{' '}
+                    </span>
+                    {isPositive
+                      ? (isHi ? area.positiveHi : area.positiveEn)
+                      : (isHi ? area.cautionHi : area.cautionEn)}
+                  </p>
+                </div>
+
+                {/* Remedy */}
+                <div className="mb-4">
+                  <p className="text-xs font-bold text-sacred-gold uppercase tracking-widest mb-1.5">
+                    {t('lk.studio.actionLabel')}
+                  </p>
+                  <p className="text-sm text-cosmic-text/70 leading-snug">
+                    {isHi ? area.remedyHi : area.remedyEn}
+                  </p>
+                </div>
+
+                {/* Why — planet trace */}
+                <div className="mb-6">
+                  <p className="text-xs font-bold text-sacred-gold uppercase tracking-widest mb-2">
+                    {t('lk.studio.whyLabel')}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {implicated.map(({ key, house }) => (
+                      <span
+                        key={key}
+                        className="text-[10px] px-2 py-0.5 rounded bg-sacred-gold/10 text-sacred-gold-dark font-bold"
+                      >
+                        {getPlanetLabel(key, language)} {isHi ? `भाव ${house}` : `H${house}`}
+                      </span>
+                    ))}
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-gray-100 text-gray-500 font-medium">
+                      {isHi
+                        ? `मुख्य भाव: ${area.primaryHouses.join(', ')}`
+                        : `Key Houses: ${area.primaryHouses.join(', ')}`}
                     </span>
                   </div>
                 </div>
-                <div className="text-right shrink-0">
-                  <p className="text-xl font-bold text-cosmic-text">{score}</p>
-                  <p className="text-xs text-gray-400">/100</p>
+              </div>
+
+              {/* Feedback Section */}
+              <div className="mt-auto pt-4 border-t border-sacred-gold/10">
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
+                  {t('lk.prediction.feedbackTitle')}
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => saveFeedback(area.key, 'happened')}
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[10px] font-bold transition-all border ${
+                      userRating === 'happened'
+                        ? 'bg-green-600 text-white border-green-600 shadow-md'
+                        : 'bg-white/50 text-gray-500 border-gray-200 hover:border-green-300'
+                    }`}
+                  >
+                    <ThumbsUp className="w-3 h-3" />
+                    {t('lk.prediction.happened')}
+                  </button>
+                  <button
+                    onClick={() => saveFeedback(area.key, 'partially')}
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[10px] font-bold transition-all border ${
+                      userRating === 'partially'
+                        ? 'bg-sacred-gold text-white border-sacred-gold shadow-md'
+                        : 'bg-white/50 text-gray-500 border-gray-200 hover:border-sacred-gold/30'
+                    }`}
+                  >
+                    <Meh className="w-3 h-3" />
+                    {t('lk.prediction.partially')}
+                  </button>
+                  <button
+                    onClick={() => saveFeedback(area.key, 'not_yet')}
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[10px] font-bold transition-all border ${
+                      userRating === 'not_yet'
+                        ? 'bg-gray-600 text-white border-gray-600 shadow-md'
+                        : 'bg-white/50 text-gray-500 border-gray-200 hover:border-gray-400'
+                    }`}
+                  >
+                    <Clock className="w-3 h-3" />
+                    {t('lk.prediction.notYet')}
+                  </button>
                 </div>
-              </div>
-
-              {/* Score bar */}
-              <div className="w-full bg-gray-200/60 rounded-full h-1.5 mb-4">
-                <div
-                  className={`h-1.5 rounded-full transition-all ${cfg.bar}`}
-                  style={{ width: `${score}%` }}
-                />
-              </div>
-
-              {/* Tone badge */}
-              <div className={`flex items-center gap-2 mb-3 p-2.5 rounded-lg ${isPositive ? 'bg-green-500/8' : 'bg-orange-400/8'}`}>
-                <StatusIcon className={`w-3.5 h-3.5 shrink-0 ${isPositive ? 'text-green-600' : 'text-orange-500'}`} />
-                <p className="text-xs font-medium text-cosmic-text/80 leading-snug">
-                  <span className={`font-semibold ${isPositive ? 'text-green-600' : 'text-orange-600'}`}>
-                    {isPositive ? t('lk.studio.positive') : t('lk.studio.caution')}:{' '}
-                  </span>
-                  {isPositive
-                    ? (isHi ? area.positiveHi : area.positiveEn)
-                    : (isHi ? area.cautionHi : area.cautionEn)}
-                </p>
-              </div>
-
-              {/* Remedy */}
-              <div className="mb-3">
-                <p className="text-xs font-semibold text-sacred-gold mb-1">
-                  {t('lk.studio.actionLabel')}
-                </p>
-                <p className="text-xs text-cosmic-text/70 leading-snug">
-                  {isHi ? area.remedyHi : area.remedyEn}
-                </p>
-              </div>
-
-              {/* Why — planet trace */}
-              <div>
-                <p className="text-xs font-semibold text-sacred-gold mb-1.5">
-                  {t('lk.studio.whyLabel')}
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {implicated.map(({ key, house }) => (
-                    <span
-                      key={key}
-                      className="text-xs px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold-dark"
-                    >
-                      {getPlanetLabel(key, language)} {isHi ? `भाव ${house}` : `H${house}`}
-                    </span>
-                  ))}
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
-                    {isHi
-                      ? `मुख्य भाव: ${area.primaryHouses.join(', ')}`
-                      : `Key Houses: ${area.primaryHouses.join(', ')}`}
-                  </span>
-                </div>
+                {userRating && (
+                  <p className="text-[10px] text-green-600 font-bold mt-2 text-center animate-pulse">
+                    ✓ {t('lk.prediction.ratingSaved')}
+                  </p>
+                )}
               </div>
             </div>
           );

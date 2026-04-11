@@ -801,6 +801,24 @@ const translations: Record<Language, TranslationMap> = {
     'lk.advanced.highConfidence': 'High Resilience',
     'lk.advanced.midConfidence': 'Mixed Balance',
     'lk.advanced.lowConfidence': 'High Karmic Pressure',
+
+    // Nishaniyan Matcher
+    'lk.nishani.verifyTitle': 'Verify Your Chart',
+    'lk.nishani.verifyDesc': 'Check the signs that you observe in your real life to verify the accuracy of this birth chart.',
+    'lk.nishani.accuracyMeter': 'Chart Accuracy Score',
+    'lk.nishani.accuracyDesc': 'Percentage of observable signs confirmed by you.',
+    'lk.nishani.confirmed': 'Confirmed',
+    'lk.nishani.notConfirmed': 'Not Observed',
+    'lk.nishani.confirmBtn': 'Confirm this sign',
+    'lk.nishani.unconfirmBtn': 'Undo confirmation',
+
+    // Prediction Feedback
+    'lk.prediction.feedbackTitle': 'Is this happening?',
+    'lk.prediction.feedbackDesc': 'Help us calibrate our engine by rating this prediction.',
+    'lk.prediction.happened': 'Happened',
+    'lk.prediction.partially': 'Partially',
+    'lk.prediction.notYet': 'Not Yet',
+    'lk.prediction.ratingSaved': 'Thank you for your feedback!',
     // Saved Predictions
     'lk.saved.title': 'Saved Predictions',
     'lk.saved.desc': 'Your bookmarked marriage, career, health and wealth predictions',
@@ -2052,6 +2070,24 @@ const translations: Record<Language, TranslationMap> = {
     'lk.advanced.highConfidence': 'उच्च कर्मिक शक्ति',
     'lk.advanced.midConfidence': 'मिश्रित संतुलन',
     'lk.advanced.lowConfidence': 'उच्च कर्मिक दबाव',
+
+    // Nishaniyan Matcher
+    'lk.nishani.verifyTitle': 'कुंडली का सत्यापन करें',
+    'lk.nishani.verifyDesc': 'उन संकेतों की जाँच करें जिन्हें आप अपने वास्तविक जीवन में देखते हैं ताकि इस जन्म कुंडली की सटीकता की पुष्टि हो सके।',
+    'lk.nishani.accuracyMeter': 'कुंडली सटीकता स्कोर',
+    'lk.nishani.accuracyDesc': 'आपके द्वारा पुष्टि किए गए अवलोकन योग्य संकेतों का प्रतिशत।',
+    'lk.nishani.confirmed': 'पुष्टि की गई',
+    'lk.nishani.notConfirmed': 'नहीं देखा गया',
+    'lk.nishani.confirmBtn': 'इस संकेत की पुष्टि करें',
+    'lk.nishani.unconfirmBtn': 'पुष्टि हटाएँ',
+
+    // Prediction Feedback
+    'lk.prediction.feedbackTitle': 'क्या यह हो रहा है?',
+    'lk.prediction.feedbackDesc': 'इस भविष्यवाणी को रेटिंग देकर हमारे इंजन को बेहतर बनाने में मदद करें।',
+    'lk.prediction.happened': 'हुआ है',
+    'lk.prediction.partially': 'आंशिक रूप से',
+    'lk.prediction.notYet': 'अभी नहीं',
+    'lk.prediction.ratingSaved': 'आपकी प्रतिक्रिया के लिए धन्यवाद!',
     // Saved Predictions
     'lk.saved.title': 'सेव भविष्यवाणियां',
     'lk.saved.desc': 'आपकी बुकमार्क की गई विवाह, करियर, स्वास्थ्य और धन भविष्यवाणियां',

@@ -1,7 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
-import { BookOpen, Loader2, AlertTriangle, Flame, Minus } from 'lucide-react';
+import { 
+  BookOpen, 
+  Loader2, 
+  AlertTriangle, 
+  Flame, 
+  Minus, 
+  CheckCircle2, 
+  Circle,
+  TrendingUp,
+  Target
+} from 'lucide-react';
 
 interface Props {
   kundliId: string;
@@ -16,42 +26,37 @@ interface Nishani {
   severity: string;
 }
 
-type CategoryFilter = 'all' | 'general' | 'health' | 'wealth' | 'marriage' | 'career' | 'family';
-type SeverityFilter = 'all' | 'mild' | 'moderate' | 'strong';
+const STORAGE_KEY_PREFIX = 'lk_nishani_verify_';
 
-const PLANET_HI: Record<string, string> = {
-  sun: 'सूर्य', moon: 'चंद्र', mars: 'मंगल', mercury: 'बुध',
-  jupiter: 'गुरु', venus: 'शुक्र', saturn: 'शनि', rahu: 'राहु', ketu: 'केतु',
-};
-
-const severityConfig: Record<string, { label: string; labelHi: string; cls: string; icon: React.ElementType }> = {
-  mild:     { label: 'Mild',     labelHi: 'सौम्य',    cls: 'bg-green-500/10 text-green-700 border-green-300/40',   icon: Minus },
-  moderate: { label: 'Moderate', labelHi: 'मध्यम',   cls: 'bg-sacred-gold/10 text-sacred-gold-dark border-sacred-gold/30', icon: AlertTriangle },
-  strong:   { label: 'Strong',   labelHi: 'प्रबल',   cls: 'bg-red-500/10 text-red-700 border-red-300/40',          icon: Flame },
-};
-
-const categoryLabels: Record<string, { en: string; hi: string }> = {
-  all:      { en: 'All',      hi: 'सभी' },
-  general:  { en: 'General',  hi: 'सामान्य' },
-  health:   { en: 'Health',   hi: 'स्वास्थ्य' },
-  wealth:   { en: 'Wealth',   hi: 'धन' },
-  marriage: { en: 'Marriage', hi: 'विवाह' },
-  career:   { en: 'Career',   hi: 'करियर' },
-  family:   { en: 'Family',   hi: 'परिवार' },
-};
-
-const CATEGORIES: CategoryFilter[] = ['all', 'general', 'health', 'wealth', 'marriage', 'career', 'family'];
-const SEVERITIES: SeverityFilter[] = ['all', 'mild', 'moderate', 'strong'];
-
-export default function LalKitabNishaniyaTab({ kundliId }: Props) {  // chartData prop removed — tab uses DB API
-  const { language } = useTranslation();
+export default function LalKitabNishaniyaTab({ kundliId }: Props) {
+  const { t, language } = useTranslation();
   const isHi = language === 'hi';
 
   const [nishaniyan, setNishaniyan] = useState<Nishani[]>([]);
+  const [confirmedIds, setConfirmedIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [activeCategory, setActiveCategory] = useState<CategoryFilter>('all');
-  const [activeSeverity, setActiveSeverity] = useState<SeverityFilter>('all');
+  const [activeCategory, setActiveCategory] = useState<string>('all');
+  const [activeSeverity, setActiveSeverity] = useState<string>('all');
+
+  // Load confirmed IDs from localStorage
+  useEffect(() => {
+    if (!kundliId) return;
+    const stored = localStorage.getItem(`${STORAGE_KEY_PREFIX}${kundliId}`);
+    if (stored) {
+      try {
+        setConfirmedIds(new Set(JSON.parse(stored)));
+      } catch (e) {
+        console.error('Failed to parse stored nishani verification', e);
+      }
+    }
+  }, [kundliId]);
+
+  // Save confirmed IDs to localStorage
+  useEffect(() => {
+    if (!kundliId) return;
+    localStorage.setItem(`${STORAGE_KEY_PREFIX}${kundliId}`, JSON.stringify(Array.from(confirmedIds)));
+  }, [confirmedIds, kundliId]);
 
   useEffect(() => {
     if (!kundliId) {
@@ -67,11 +72,26 @@ export default function LalKitabNishaniyaTab({ kundliId }: Props) {  // chartDat
       .finally(() => setLoading(false));
   }, [kundliId]);
 
+  const toggleConfirm = (id: string) => {
+    const next = new Set(confirmedIds);
+    if (next.has(id)) {
+      next.delete(id);
+    } else {
+      next.add(id);
+    }
+    setConfirmedIds(next);
+  };
+
   const filtered = nishaniyan.filter((n) => {
     if (activeCategory !== 'all' && n.category !== activeCategory) return false;
     if (activeSeverity !== 'all' && n.severity !== activeSeverity) return false;
     return true;
   });
+
+  const accuracyScore = useMemo(() => {
+    if (nishaniyan.length === 0) return 0;
+    return Math.round((confirmedIds.size / nishaniyan.length) * 100);
+  }, [confirmedIds, nishaniyan]);
 
   const strongCount = nishaniyan.filter((n) => n.severity === 'strong').length;
   const moderateCount = nishaniyan.filter((n) => n.severity === 'moderate').length;
@@ -91,37 +111,59 @@ export default function LalKitabNishaniyaTab({ kundliId }: Props) {  // chartDat
         </p>
       </div>
 
-      {/* Summary badges */}
+      {/* Accuracy Meter */}
       {!loading && nishaniyan.length > 0 && (
-        <div className="flex flex-wrap gap-3">
-          <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-sacred-gold/10 border border-sacred-gold/20">
-            <BookOpen className="w-4 h-4 text-sacred-gold" />
-            <span className="text-sm font-semibold text-sacred-gold">
-              {nishaniyan.length} {isHi ? 'निशानियां' : 'Nishaniyan'}
-            </span>
+        <div className="card-sacred p-5 rounded-2xl border border-sacred-gold/30 bg-gradient-to-br from-white to-sacred-gold/5">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-sacred-gold/10 flex items-center justify-center shrink-0">
+                <Target className="w-6 h-6 text-sacred-gold" />
+              </div>
+              <div>
+                <h3 className="font-sans font-bold text-cosmic-text">{t('lk.nishani.accuracyMeter')}</h3>
+                <p className="text-xs text-cosmic-text/60">{t('lk.nishani.accuracyDesc')}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="text-right">
+                <p className="text-2xl font-sans font-black text-sacred-gold leading-none">{accuracyScore}%</p>
+                <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mt-1">VERIFIED</p>
+              </div>
+              <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-sacred-gold transition-all duration-1000"
+                  style={{ width: `${accuracyScore}%` }}
+                />
+              </div>
+            </div>
           </div>
-          {strongCount > 0 && (
-            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500/10 border border-red-300/20">
-              <Flame className="w-4 h-4 text-red-600" />
-              <span className="text-sm font-semibold text-red-700">
-                {strongCount} {isHi ? 'प्रबल' : 'Strong'}
-              </span>
-            </div>
-          )}
-          {moderateCount > 0 && (
-            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-sacred-gold/10 border border-sacred-gold/20">
-              <AlertTriangle className="w-4 h-4 text-sacred-gold" />
-              <span className="text-sm font-semibold text-sacred-gold-dark">
-                {moderateCount} {isHi ? 'मध्यम' : 'Moderate'}
-              </span>
-            </div>
-          )}
         </div>
       )}
 
+      {/* Summary badges */}
+      {!loading && nishaniyan.length > 0 && (
+        <div className="flex flex-wrap gap-3">
+          <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-sacred-gold/10 border border-sacred-gold/20 text-sacred-gold text-sm font-semibold">
+            <BookOpen className="w-4 h-4" />
+            {nishaniyan.length} {isHi ? 'निशानियां' : 'Nishaniyan'}
+          </div>
+          <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-green-500/10 border border-green-300/20 text-green-700 text-sm font-semibold">
+            <CheckCircle2 className="w-4 h-4" />
+            {confirmedIds.size} {t('lk.nishani.confirmed')}
+          </div>
+        </div>
+      )}
+
+      {/* Checklist instructions */}
+      <div className="p-4 rounded-xl bg-sacred-gold/5 border border-dashed border-sacred-gold/30">
+        <p className="text-xs text-sacred-gold-dark font-medium leading-relaxed">
+          <strong>{t('lk.nishani.verifyTitle')}:</strong> {t('lk.nishani.verifyDesc')}
+        </p>
+      </div>
+
       {/* Category filter */}
       <div className="flex flex-wrap gap-2">
-        {CATEGORIES.map((cat) => (
+        {['all', 'general', 'health', 'wealth', 'marriage', 'career', 'family'].map((cat) => (
           <button
             key={cat}
             onClick={() => setActiveCategory(cat)}
@@ -131,31 +173,9 @@ export default function LalKitabNishaniyaTab({ kundliId }: Props) {  // chartDat
                 : 'bg-sacred-gold/10 text-sacred-gold hover:bg-sacred-gold/20'
             }`}
           >
-            {isHi ? categoryLabels[cat].hi : categoryLabels[cat].en}
+            {isHi ? (cat === 'all' ? 'सभी' : cat) : cat.charAt(0).toUpperCase() + cat.slice(1)}
           </button>
         ))}
-      </div>
-
-      {/* Severity filter */}
-      <div className="flex flex-wrap gap-2">
-        {SEVERITIES.map((sev) => {
-          const cfg = sev === 'all' ? null : severityConfig[sev];
-          return (
-            <button
-              key={sev}
-              onClick={() => setActiveSeverity(sev)}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
-                activeSeverity === sev
-                  ? 'bg-cosmic-text text-white border-cosmic-text'
-                  : 'bg-white/40 text-gray-600 border-gray-200/60 hover:bg-gray-100'
-              }`}
-            >
-              {sev === 'all'
-                ? (isHi ? 'सभी स्तर' : 'All Severity')
-                : (isHi ? cfg?.labelHi : cfg?.label)}
-            </button>
-          );
-        })}
       </div>
 
       {/* Loading */}
@@ -172,47 +192,47 @@ export default function LalKitabNishaniyaTab({ kundliId }: Props) {  // chartDat
         </div>
       )}
 
-      {/* Empty */}
-      {!loading && !error && nishaniyan.length === 0 && (
-        <div className="text-center py-12 text-gray-400 text-sm">
-          {isHi ? 'कोई निशानियां नहीं मिलीं' : 'No nishaniyan found for this chart'}
-        </div>
-      )}
-
       {/* Grid */}
       {!loading && filtered.length > 0 && (
         <div className="grid gap-4 md:grid-cols-2">
           {filtered.map((n) => {
-            const sev = severityConfig[n.severity] ?? severityConfig.moderate;
-            const SevIcon = sev.icon;
+            const isConfirmed = confirmedIds.has(n.id);
+            const planetLabel = isHi 
+              ? ({sun:'सूर्य', moon:'चंद्र', mars:'मंगल', mercury:'बुध', jupiter:'गुरु', venus:'शुक्र', saturn:'शनि', rahu:'राहु', ketu:'केतु'}[n.planet] || n.planet)
+              : n.planet.charAt(0).toUpperCase() + n.planet.slice(1);
+
             return (
               <div
                 key={n.id}
-                className="card-sacred rounded-xl border border-sacred-gold/20 p-4 bg-white/30"
+                onClick={() => toggleConfirm(n.id)}
+                className={`card-sacred rounded-xl border p-4 transition-all cursor-pointer group hover:scale-[1.01] ${
+                  isConfirmed 
+                    ? 'border-green-500 bg-green-50/30' 
+                    : 'border-sacred-gold/20 bg-white/30'
+                }`}
               >
-                {/* Planet + house row */}
-                <div className="flex items-center justify-between mb-3">
+                <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-1 rounded-full bg-sacred-gold/15 text-sacred-gold-dark text-xs font-semibold">
-                      {isHi ? (PLANET_HI[n.planet] ?? n.planet) : n.planet.charAt(0).toUpperCase() + n.planet.slice(1)}
+                    <span className="px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold-dark text-[10px] font-bold uppercase tracking-tight">
+                      {planetLabel} · H{n.house}
                     </span>
-                    <span className="px-2.5 py-1 rounded-full bg-cosmic-text/8 text-cosmic-text text-xs font-medium">
-                      {isHi ? `भाव ${n.house}` : `House ${n.house}`}
-                    </span>
+                    <span className="text-[10px] text-gray-400 font-medium uppercase">{n.category}</span>
                   </div>
-                  <span className={`flex items-center gap-1 px-2 py-0.5 rounded-full border text-xs font-medium ${sev.cls}`}>
-                    <SevIcon className="w-3 h-3" />
-                    {isHi ? sev.labelHi : sev.label}
-                  </span>
+                  <div className={`shrink-0 ${isConfirmed ? 'text-green-600' : 'text-gray-300 group-hover:text-sacred-gold/50'}`}>
+                    {isConfirmed ? <CheckCircle2 className="w-5 h-5 fill-green-50" /> : <Circle className="w-5 h-5" />}
+                  </div>
                 </div>
 
-                {/* Text */}
-                <p className="text-sm text-cosmic-text leading-relaxed">{n.nishani_text}</p>
+                <p className="text-sm text-cosmic-text leading-relaxed font-medium">
+                  {n.nishani_text}
+                </p>
 
-                {/* Category badge */}
-                <div className="mt-3">
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
-                    {isHi ? categoryLabels[n.category]?.hi ?? n.category : categoryLabels[n.category]?.en ?? n.category}
+                <div className="mt-4 flex items-center justify-between">
+                  <span className={`text-[10px] font-bold uppercase tracking-widest ${isConfirmed ? 'text-green-600' : 'text-gray-400'}`}>
+                    {isConfirmed ? t('lk.nishani.confirmed') : t('lk.nishani.notConfirmed')}
+                  </span>
+                  <span className="text-[10px] text-sacred-gold font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+                    {isConfirmed ? t('lk.nishani.unconfirmBtn') : t('lk.nishani.confirmBtn')} →
                   </span>
                 </div>
               </div>
@@ -221,10 +241,10 @@ export default function LalKitabNishaniyaTab({ kundliId }: Props) {  // chartDat
         </div>
       )}
 
-      {/* Filtered empty */}
-      {!loading && !error && nishaniyan.length > 0 && filtered.length === 0 && (
-        <div className="text-center py-8 text-gray-400 text-sm">
-          {isHi ? 'इस फ़िल्टर में कोई निशानियां नहीं हैं' : 'No nishaniyan match the selected filters'}
+      {/* Empty */}
+      {!loading && !error && nishaniyan.length === 0 && (
+        <div className="text-center py-12 text-gray-400 text-sm">
+          {isHi ? 'कोई निशानियां नहीं मिलीं' : 'No nishaniyan found for this chart'}
         </div>
       )}
     </div>
