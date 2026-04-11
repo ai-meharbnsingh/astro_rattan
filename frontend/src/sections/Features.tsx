@@ -64,14 +64,42 @@ export default function Features() {
   ];
 
   const comparisonData = [
-    { feature: l('Lal Kitab System', 'लाल किताब सिस्टम'), us: l('22 Specialization Tabs', '22 विशेषज्ञता टैब'), them: l('Basic Remedies Only', 'केवल बुनियादी उपाय') },
-    { feature: l('Chandra Chalana Protocol', 'चंद्र चालना प्रोटोकॉल'), us: l('Full 43-Day Tracker', 'पूर्ण 43-दिवसीय ट्रैकर'), them: l('Not Available', 'उपलब्ध नहीं') },
-    { feature: l('Nishaniyan Matcher', 'निशानियां मैचर'), us: l('Physical Sign Mapping', 'भौतिक संकेत मैपिंग'), them: l('Not Available', 'उपलब्ध नहीं') },
-    { feature: l('Remedy Tracker', 'उपाय ट्रैकर'), us: l('With Streaks & Journal', 'स्ट्रीक्स और जर्नल के साथ'), them: l('Static Lists Only', 'केवल स्थिर सूचियां') },
-    { feature: l('Interpretation Depth', 'व्याख्या गहराई'), us: l('Classical Text-Based', 'शास्त्रीय ग्रंथ-आधारित'), them: l('Generic Templates', 'सामान्य टेम्पलेट') },
-    { feature: l('Client Management', 'क्लाइंट प्रबंधन'), us: l('Built-in Dashboard', 'अंतर्निहित डैशबोर्ड'), them: l('Not Available', 'उपलब्ध नहीं') },
-    { feature: l('Divisional Charts', 'विभाजन चार्ट'), us: l('D1-D60 Complete', 'D1-D60 पूर्ण'), them: l('D9 Only', 'केवल D9') },
-    { feature: l('Calculation Engine', 'गणना इंजन'), us: l('Swiss Ephemeris', 'स्विस एफेमेरिस'), them: l('Lookup Tables', 'लुकअप टेबल') },
+    {
+      feature: l('Chandra Chalana Protocol', 'चंद्र चालना प्रोटोकॉल'),
+      us: l('Full 43-Day Moon Tracker', 'पूर्ण 43-दिवसीय चंद्र ट्रैकर'),
+      them: l('Not available anywhere', 'कहीं उपलब्ध नहीं'),
+      exclusive: true,
+    },
+    {
+      feature: l('Nishaniyan Matcher', 'निशानियां मैचर'),
+      us: l('Physical sign ↔ chart mapping', 'भौतिक संकेत ↔ चार्ट मैपिंग'),
+      them: l('Not available anywhere', 'कहीं उपलब्ध नहीं'),
+      exclusive: true,
+    },
+    {
+      feature: l('Remedy Tracker', 'उपाय ट्रैकर'),
+      us: l('Streaks + daily journal', 'स्ट्रीक्स + दैनिक जर्नल'),
+      them: l('Static remedy lists only', 'केवल स्थिर सूचियां'),
+      exclusive: true,
+    },
+    {
+      feature: l('Lal Kitab Depth', 'लाल किताब गहराई'),
+      us: l('22 specialized tabs', '22 विशेषज्ञता टैब'),
+      them: l('Teva + basic remedies (AstroSage)', 'तेवा + बुनियादी उपाय'),
+      exclusive: false,
+    },
+    {
+      feature: l('Astrologer Dashboard', 'ज्योतिषी डैशबोर्ड'),
+      us: l('Client notes, history, per-chart tools', 'क्लाइंट नोट्स, इतिहास, प्रति-चार्ट टूल'),
+      them: l('Marketplace portals only (AstroTalk)', 'केवल मार्केटप्लेस पोर्टल'),
+      exclusive: false,
+    },
+    {
+      feature: l('AI Interpretation', 'AI व्याख्या'),
+      us: l('Self-use: Gemini + GPT inline', 'स्व-उपयोग: Gemini + GPT इनलाइन'),
+      them: l('Consultation model or basic chatbot', 'परामर्श मॉडल या बुनियादी चैटबॉट'),
+      exclusive: false,
+    },
   ];
 
   useEffect(() => {
@@ -191,9 +219,16 @@ export default function Features() {
                 key={index}
                 className={`compare-row grid grid-cols-3 gap-4 p-4 items-center ${
                   index !== comparisonData.length - 1 ? 'border-b border-sacred-gold/10' : ''
-                }`}
+                } ${row.exclusive ? 'bg-sacred-gold/5' : ''}`}
               >
-                <div className="text-sm text-cosmic-text font-medium">{row.feature}</div>
+                <div className="text-sm text-cosmic-text font-medium flex items-center gap-2">
+                  {row.feature}
+                  {row.exclusive && (
+                    <span className="hidden sm:inline px-1.5 py-0.5 text-[10px] font-bold text-sacred-gold-dark border border-sacred-gold/40 rounded uppercase tracking-wide">
+                      {l('Only us', 'सिर्फ हम')}
+                    </span>
+                  )}
+                </div>
                 <div className="flex items-center justify-center gap-2">
                   <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
                   <span className="text-sm text-cosmic-text text-center">{row.us}</span>
