@@ -1,4 +1,5 @@
-"""Admin routes — user management, stats, kundli overview."""
+"""Admin routes — user management, stats, kundli overview, live traffic panel."""
+import time
 from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from app.auth import get_current_user, require_role
@@ -133,6 +134,71 @@ def toggle_user_active(
     )
     db.commit()
     return {"message": "User status toggled"}
+
+
+@router.get("/live")
+def get_live_dashboard(
+    current_user: dict = Depends(require_role("admin")),
+    db: Any = Depends(get_db),
+):
+    """Live traffic panel — active users, req/min, error rate, activity feed."""
+    from app.logging_middleware import get_traffic_snapshot
+
+    snap = get_traffic_snapshot()
+
+    # Bulk-fetch user emails/names for active users and activity feed
+    all_user_ids = list({
+        *snap["active_user_ids"],
+        *(r["user_id"] for r in snap["recent_activity"] if r["user_id"]),
+    })
+    user_info: dict = {}
+    if all_user_ids:
+        placeholders = ",".join(["%s"] * len(all_user_ids))
+        rows = db.execute(
+            f"SELECT id, email, name FROM users WHERE id IN ({placeholders})",
+            all_user_ids,
+        ).fetchall()
+        for r in rows:
+            user_info[r["id"]] = {"email": r["email"], "name": r["name"]}
+
+    # Build active users list
+    now = time.time()
+    active_users = []
+    for uid, details in snap["active_user_details"].items():
+        info = user_info.get(uid, {})
+        active_users.append({
+            "user_id": uid,
+            "email": info.get("email", "unknown"),
+            "name": info.get("name", "Unknown"),
+            "last_path": details["last_path"],
+            "seconds_ago": int(now - details["last_seen"]),
+        })
+    active_users.sort(key=lambda x: x["seconds_ago"])
+
+    # Build enriched activity feed
+    recent_activity = []
+    for r in snap["recent_activity"]:
+        info = user_info.get(r["user_id"]) if r["user_id"] else None
+        recent_activity.append({
+            "ts_iso": time.strftime("%H:%M:%S", time.localtime(r["ts"])),
+            "method": r["method"],
+            "path": r["path"],
+            "status": r["status"],
+            "duration_ms": r["duration_ms"],
+            "is_error": r["is_error"],
+            "email": info["email"] if info else None,
+        })
+
+    return {
+        "active_users": active_users,
+        "active_users_count": len(active_users),
+        "requests_1m": snap["requests_1m"],
+        "requests_5m": snap["requests_5m"],
+        "error_rate_1m": snap["error_rate_1m"],
+        "top_endpoints": snap["top_endpoints"],
+        "recent_activity": recent_activity,
+        "uptime_seconds": snap["uptime_seconds"],
+    }
 
 
 @router.get("/kundlis")
