@@ -18,6 +18,7 @@ interface Nishani {
   planet: string;
   house: number;
   nishani_text: string;
+  nishani_text_en: string;
   category: string;
   severity: string;
 }
@@ -215,7 +216,7 @@ export default function LalKitabNishaniyaTab({ kundliId }: Props) {
                 </div>
 
                 <p className="text-sm text-cosmic-text leading-relaxed font-medium">
-                  {n.nishani_text}
+                  {isHi ? n.nishani_text : (n.nishani_text_en || n.nishani_text)}
                 </p>
 
                 <div className="mt-4 flex items-center justify-between">

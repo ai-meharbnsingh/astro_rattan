@@ -410,6 +410,7 @@ def get_nishaniyan(
             "planet": r["planet"],
             "house": r["house"],
             "nishani_text": r["nishani_text"],
+            "nishani_text_en": r["nishani_text_en"],
             "category": r["category"],
             "severity": r["severity"],
         }

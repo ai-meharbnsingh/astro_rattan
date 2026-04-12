@@ -383,6 +383,157 @@ MIGRATIONS: List[Tuple[int, str, str]] = [
     CREATE INDEX IF NOT EXISTS idx_feedback_created ON feedback(created_at DESC);
     """,
     ),
+    (
+        14,
+        "Add nishani_text_en column to nishaniyan_master and populate English translations",
+        """
+    ALTER TABLE nishaniyan_master ADD COLUMN IF NOT EXISTS nishani_text_en TEXT NOT NULL DEFAULT '';
+
+    UPDATE nishaniyan_master SET nishani_text_en = CASE house
+        WHEN 1  THEN 'Short-tempered by nature. Hair tends to be sparse. Very courageous. Wife will often be unwell or subdued.'
+        WHEN 2  THEN 'Two marriages will occur in the family. Brother''s marriage may end in divorce. Women will be fewer in the family.'
+        WHEN 3  THEN 'Neighbor''s house will be empty or neighbor will be in trouble. Disagreements with brothers and friends persist.'
+        WHEN 4  THEN 'Native is fond of sweets. Jaggery, gachak, and chocolates frequently come to the home.'
+        WHEN 5  THEN 'Stomach is frequently disturbed. Two marriages will certainly occur in the family.'
+        WHEN 6  THEN 'Native is born at maternal grandparents'' home or they bear the delivery expenses. Many hidden enemies.'
+        WHEN 7  THEN 'Jaggery, gachak, chocolates come as gifts at home. Chances of a love marriage.'
+        WHEN 8  THEN 'Wife will reveal family secrets to others. Repeated defeats in court cases.'
+        WHEN 9  THEN 'Large brass utensils will lie empty at home. Whenever the house changes, hardship comes to self or father.'
+        WHEN 10 THEN 'Counterfeit coins will be found at home. Will pay more for work that could be done cheaply.'
+        WHEN 11 THEN 'Father-in-law will not survive long. Acts of kindness will bring disrepute.'
+        WHEN 12 THEN 'Native receives a mobile phone as a gift. High blood pressure is likely.'
+        ELSE '' END
+    WHERE planet = 'sun';
+
+    UPDATE nishaniyan_master SET nishani_text_en = CASE house
+        WHEN 1  THEN 'Native becomes wealthy. Even with less education will be wiser than the educated. Healthy and fearless of enemies.'
+        WHEN 2  THEN 'Road outside home will be broken or have a drain cover. Walls will be multicolored or with peeling paint. Alternates between worldly pleasures and spiritual practice.'
+        WHEN 3  THEN 'Mattress or car seat will be burnt or scorched. Three doors or windows in one direction. Three pressure cookers or pots in the home.'
+        WHEN 4  THEN 'A boat photo or statuette will be in the home. An elderly family member will be a renunciant. Mother''s face will be round and radiant.'
+        WHEN 5  THEN 'Teeth will be yellowish. A teacher or coaching instructor will be in the family. A friend will be an astrologer or religious person.'
+        WHEN 6  THEN 'A religious place will be near the home. Will overcome enemies. If Jupiter is malefic, digestive ailments will arise.'
+        WHEN 7  THEN 'Fortune opens after marriage. Wife will be religious and cultured. In-laws will have a large house or land.'
+        WHEN 8  THEN 'Ancestral property will be inherited. Progress after age 42. Interest in occult sciences.'
+        WHEN 9  THEN 'Fortune will be bright. Gain from religious travel. Blessings of elders will continue.'
+        WHEN 10 THEN 'Will hold government or senior position. Fame and renown. Will carry forward father''s business.'
+        WHEN 11 THEN 'Progress with help of elder sibling. Wide circle of friends. Multiple sources of income.'
+        WHEN 12 THEN 'Chance of foreign travel. Inclination toward spiritual life. High expenses but in religious work.'
+        ELSE '' END
+    WHERE planet = 'jupiter';
+
+    UPDATE nishaniyan_master SET nishani_text_en = CASE house
+        WHEN 1  THEN 'Prone to colds and sinus issues. Antibiotics often found at home. Fond of eating green vegetables.'
+        WHEN 2  THEN 'Shiva idols, conch shells, and Shivalingas will be in the home. May use intoxicants or sleep medication. A burnt iron or broken mixer in the house.'
+        WHEN 3  THEN 'Emotionally sensitive. Disagreements with relatives and brothers persist. Mother will have nerve-related issues.'
+        WHEN 4  THEN 'Undershirt will often be torn. Disrespects mother. Tends to be miserly.'
+        WHEN 5  THEN 'Affectionate toward children. Children will be religious and obedient. Chances of digestive disturbances.'
+        WHEN 6  THEN 'Mother''s health will be weak. Enemies will be hidden. Mental restlessness will persist.'
+        WHEN 7  THEN 'Wife will be beautiful and emotional. Ups and downs in married life. Wife''s health needs attention.'
+        WHEN 8  THEN 'Mother may face hardship. Sudden financial gain or loss. Secret matters will become known to others.'
+        WHEN 9  THEN 'Fortune depends on mother''s blessings. Gains from religious travel. Chances of money coming from abroad.'
+        WHEN 10 THEN 'Compassionate and soft-hearted like mother. Fluctuations in business. Popular among the masses.'
+        WHEN 11 THEN 'Friends will continue to help. Likely to have an elder sister. Business in water and milk is auspicious.'
+        WHEN 12 THEN 'Chances of foreign travel. Will feel loneliness. Expenditure control is necessary.'
+        ELSE '' END
+    WHERE planet = 'moon';
+
+    UPDATE nishaniyan_master SET nishani_text_en = CASE house
+        WHEN 1  THEN 'Wife remains unwell. Will sacrifice everything for someone they fall in love with. Daydreams about romance constantly.'
+        WHEN 2  THEN 'House will be triangular or sher-mukhi shaped. Wife will be the boss at home. Fond of wearing blue jeans and white shirt.'
+        WHEN 3  THEN 'A devotee of the arts. Tends to fear enemies. Excessive closeness with household help or neighbor.'
+        WHEN 4  THEN 'Chances of two marriages. Very fond of comforts and luxuries. Fortune rises 4 years after marriage.'
+        WHEN 5  THEN 'Romantic by nature. Children will be beautiful and virtuous. Interest in arts and music.'
+        WHEN 6  THEN 'Health troubles. Prone to taking on debt. Must be cautious of opponents.'
+        WHEN 7  THEN 'Beautiful and cultured wife. Happy married life. Gains from business partnerships.'
+        WHEN 8  THEN 'Financial gain from in-laws. Chances of secret relationships. Fear of accidents.'
+        WHEN 9  THEN 'Lucky. Interest in religious activities. Gains from foreign travel.'
+        WHEN 10 THEN 'Success in arts, film, or fashion. Benefits from government. Growth in business.'
+        WHEN 11 THEN 'Support from friends. Will have an elder sister. Chances of wealth accumulation.'
+        WHEN 12 THEN 'Chances of permanent settlement abroad. Secret love affairs. Expenditure will be high.'
+        ELSE '' END
+    WHERE planet = 'venus';
+
+    UPDATE nishaniyan_master SET nishani_text_en = CASE house
+        WHEN 1  THEN 'Someone in the family works in uniform. Physically fit and active. Scar on head or forehead.'
+        WHEN 2  THEN 'Fond of spicy, fast food, and tandoori food. Pretends to be sweet-natured while deceiving others. Stands by truth and speaks honestly.'
+        WHEN 3  THEN 'Disputes with brothers. Courageous and fearless. Risk of accidents.'
+        WHEN 4  THEN 'Disputes with mother. Fire hazard at home. Property dispute chances.'
+        WHEN 5  THEN 'First child likely to be a boy. Less happiness from children. Losses from gambling or speculation.'
+        WHEN 6  THEN 'Victory over enemies. Blood-related disorders in the body. Good prospects for army or police service.'
+        WHEN 7  THEN 'Manglik yoga. Disputes between husband and wife. Delay or trouble in marriage.'
+        WHEN 8  THEN 'Fear of sudden trauma. Dispute over ancestral property. Progress after age 28.'
+        WHEN 9  THEN 'Does not agree with father. Skeptical about religion. Obstacles in foreign travel.'
+        WHEN 10 THEN 'Competition in the workplace. Success in government work. Career in engineering or armed forces.'
+        WHEN 11 THEN 'Opposition from elder brother. Friends will betray. Financial gain after struggle.'
+        WHEN 12 THEN 'Many hidden enemies. Uncontrolled expenses. Struggles abroad.'
+        ELSE '' END
+    WHERE planet = 'mars';
+
+    UPDATE nishaniyan_master SET nishani_text_en = CASE house
+        WHEN 1  THEN 'Someone in the family is a singer or is a bathroom singer. Loose-tongued. Flattering and mischievous.'
+        WHEN 2  THEN 'Stopped clocks, old spectacles, green bottles found at home. Crooked or overlapping teeth. Broken headphones or charging cables in the bedside drawer.'
+        WHEN 3  THEN 'Skilled in reading and writing. Sharp business mind. Harmonious relations with siblings.'
+        WHEN 4  THEN 'Mother is educated and intelligent. Books and study atmosphere at home. Arguments over property.'
+        WHEN 5  THEN 'Children will be intelligent and well-educated. Interest in writing, education, mathematics. Losses from speculation.'
+        WHEN 6  THEN 'Will defeat enemies with intelligence. Uses cleverness at work. Health issues related to stomach and skin.'
+        WHEN 7  THEN 'Wife is intelligent and business-minded. Risk of betrayal in partnerships. Uses cleverness in marriage matters.'
+        WHEN 8  THEN 'Interest in occult knowledge. Dispute over ancestral property. Sudden changes during lifetime.'
+        WHEN 9  THEN 'Success in writing, teaching, and astrology. Sharp religious intellect. Acquiring knowledge from abroad.'
+        WHEN 10 THEN 'Success in business. Chances of becoming writer, journalist, or lawyer. High position through intellect.'
+        WHEN 11 THEN 'Business-minded friends are beneficial. Special support from sister. Multiple sources of income.'
+        WHEN 12 THEN 'Chances of settling abroad. Interest in secret studies. Expenditure control is necessary.'
+        ELSE '' END
+    WHERE planet = 'mercury';
+
+    UPDATE nishaniyan_master SET nishani_text_en = CASE house
+        WHEN 1  THEN 'Alcohol will be kept at home. Weak eyesight and irritable temperament. Will not easily reveal personal secrets.'
+        WHEN 2  THEN 'Incomplete education. Wife will be cunning. Chances of falling from roof or head injury.'
+        WHEN 3  THEN 'Opposition from brothers. Success only after hard work. Obstacles in journeys.'
+        WHEN 4  THEN 'Hardship to mother. Delay in owning a home. Old house or land will be there.'
+        WHEN 5  THEN 'Late child happiness. First child in distress. Obstacles in education.'
+        WHEN 6  THEN 'Victory over enemies will come late. Chronic illness. Troubles from servants.'
+        WHEN 7  THEN 'Late marriage. Wife will be older. Struggle in married life.'
+        WHEN 8  THEN 'Long life. Dispute over ancestral property. Progress after age 36.'
+        WHEN 9  THEN 'Hardship to father. Indifferent toward religion. Fortune will awaken late.'
+        WHEN 10 THEN 'Senior position will come late. Success through hard work. Fear of demotion.'
+        WHEN 11 THEN 'Elder brother in difficulty. Risk of betrayal by friends. Wealth accumulation is slow.'
+        WHEN 12 THEN 'Chances of prison, hospital, or foreign country. Desire for seclusion. Many hidden enemies.'
+        ELSE '' END
+    WHERE planet = 'saturn';
+
+    UPDATE nishaniyan_master SET nishani_text_en = CASE house
+        WHEN 1  THEN 'Will never settle in one place for long. Chances of two marriages. Talks excessively and unnecessarily.'
+        WHEN 2  THEN 'Will run away from home at least once. Day-time theft can happen at home. Suffers from eye disease; disrespects mother or wife.'
+        WHEN 3  THEN 'Disputes with brothers. Habit of lying. Financial losses from travel.'
+        WHEN 4  THEN 'Mother''s health may deteriorate suddenly. Frequent changes in home. Property disputes.'
+        WHEN 5  THEN 'Children face hardship. Losses in gambling and speculation. Betrayal in love relationships.'
+        WHEN 6  THEN 'Hidden enemies. Skin disease or addiction. Troubles from debt.'
+        WHEN 7  THEN 'Delay or trouble in marriage. Betrayal by partner. Wife''s health not good.'
+        WHEN 8  THEN 'Sudden financial loss. Fear of accidents. Hidden enemies are dangerous.'
+        WHEN 9  THEN 'Hardship to father. Confusion about religion. Obstacles in foreign travel.'
+        WHEN 10 THEN 'Sudden rise or fall in career. Obstacles in government work. Will use deception to manage.'
+        WHEN 11 THEN 'Treacherous friends. Money will come and go suddenly. Elder brother in hardship.'
+        WHEN 12 THEN 'Chances of settling abroad but with hardship. Hidden enemies. Very high expenditure.'
+        ELSE '' END
+    WHERE planet = 'rahu';
+
+    UPDATE nishaniyan_master SET nishani_text_en = CASE house
+        WHEN 1  THEN 'Vata disorders and headaches; quarrelsome with widows. Someone in family may have diabetes. Disputes with relatives.'
+        WHEN 2  THEN 'Someone in family will be very ill-tempered. Native or family member was raised by someone else. Kite strings, cable bundles, or wool balls found in the house.'
+        WHEN 3  THEN 'Tension with siblings. Lack of courage. Obstacles in religious journeys.'
+        WHEN 4  THEN 'Hardship to mother. Likely to live in an old house. Mother''s health is concerning.'
+        WHEN 5  THEN 'Few children. First child faces hardship. Children will be spiritually inclined.'
+        WHEN 6  THEN 'Diseases will heal quickly. Hidden enemies will be destroyed. Caution regarding stomach ailments.'
+        WHEN 7  THEN 'Trouble in marriage. Distance between husband and wife. Disputes with partner.'
+        WHEN 8  THEN 'Long life. Loss in ancestral property. Mysterious life.'
+        WHEN 9  THEN 'Will not receive father''s support. Doubt about religion. Fortune will not be supportive.'
+        WHEN 10 THEN 'Obstacles in career. Mind will wander. Success through spiritual work.'
+        WHEN 11 THEN 'Less benefit from friends. Elder brother''s hardship. Wealth accumulation is difficult.'
+        WHEN 12 THEN 'Will seek spiritual liberation. Happiness abroad. Interest in solitude.'
+        ELSE '' END
+    WHERE planet = 'ketu';
+    """,
+    ),
 ]
 
 
