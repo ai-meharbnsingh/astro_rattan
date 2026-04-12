@@ -21,9 +21,9 @@ interface Props {
   dharmiData?: { is_dharmi: boolean };
 }
 
-const NI_SIZE = 400;
-const NI_PAD = 10;
-const NI_INNER = NI_SIZE - NI_PAD * 2; // 380
+const NI_SIZE = 500;
+const NI_PAD = 25;
+const NI_INNER = NI_SIZE - NI_PAD * 2; // 450
 
 // Key points
 const TL = { x: NI_PAD, y: NI_PAD };
@@ -60,18 +60,18 @@ const HOUSE_POLYGONS: Record<number, string> = {
 };
 
 const HOUSE_CENTROIDS: Record<number, { x: number; y: number }> = {
-  1: { x: 200, y: 130 },
-  2: { x: 100, y: 50 },
-  3: { x: 50, y: 100 },
-  4: { x: 130, y: 200 },
-  5: { x: 50, y: 300 },
-  6: { x: 100, y: 350 },
-  7: { x: 200, y: 270 },
-  8: { x: 300, y: 350 },
-  9: { x: 350, y: 300 },
-  10: { x: 270, y: 200 },
-  11: { x: 350, y: 100 },
-  12: { x: 300, y: 50 },
+  1: { x: 250, y: 165 },
+  2: { x: 125, y: 65 },
+  3: { x: 65, y: 125 },
+  4: { x: 165, y: 250 },
+  5: { x: 65, y: 375 },
+  6: { x: 125, y: 435 },
+  7: { x: 250, y: 335 },
+  8: { x: 375, y: 435 },
+  9: { x: 435, y: 375 },
+  10: { x: 335, y: 250 },
+  11: { x: 435, y: 125 },
+  12: { x: 375, y: 65 },
 };
 
 const PLANET_COLORS: Record<string, string> = {
@@ -93,7 +93,7 @@ export default function LalKitabDiagnosticChart({ type, planetPositions, masnuiD
   }, [planetPositions]);
 
   return (
-    <div className="relative w-full max-w-[260px] mx-auto bg-parchment rounded-xl shadow-inner border border-sacred-gold/20 overflow-hidden">
+    <div className="relative w-full max-w-[380px] mx-auto bg-parchment rounded-xl shadow-inner border border-sacred-gold/20 overflow-hidden">
       <svg viewBox={`0 0 ${NI_SIZE} ${NI_SIZE}`} className="w-full h-auto">
         <defs>
           <filter id="glow-gold">
@@ -125,7 +125,7 @@ export default function LalKitabDiagnosticChart({ type, planetPositions, masnuiD
 
         {/* House Numbers */}
         {Object.entries(HOUSE_CENTROIDS).map(([h, pos]) => (
-          <text key={h} x={pos.x} y={pos.y + 20} textAnchor="middle" fontSize="12" fill="#8B7355" opacity="0.4" fontWeight="bold">
+          <text key={h} x={pos.x} y={pos.y + 25} textAnchor="middle" fontSize="14" fill="#8B7355" opacity="0.4" fontWeight="bold">
             {h}
           </text>
         ))}
@@ -161,8 +161,18 @@ export default function LalKitabDiagnosticChart({ type, planetPositions, masnuiD
           return planets.map((p, idx) => {
             const isMasnuiIngredient = type === 'masnui' && masnuiData?.some(m => m.house === houseNum && m.formed_by.includes(p));
             const color = PLANET_COLORS[p] || '#3D2B1F';
-            const x = centroid.x + (idx % 2 === 0 ? -12 : 12);
-            const y = centroid.y + (idx < 2 ? -8 : 12);
+            // Better spacing for multiple planets in one house
+            const offsets = [
+              { x: -18, y: -12 },
+              { x: 18, y: -12 },
+              { x: -18, y: 14 },
+              { x: 18, y: 14 },
+              { x: 0, y: -20 },
+              { x: 0, y: 22 },
+            ];
+            const offset = offsets[idx % offsets.length];
+            const x = centroid.x + offset.x;
+            const y = centroid.y + offset.y;
 
             return (
               <text
@@ -171,7 +181,7 @@ export default function LalKitabDiagnosticChart({ type, planetPositions, masnuiD
                 y={y}
                 textAnchor="middle"
                 fill={color}
-                fontSize="14"
+                fontSize="13"
                 fontWeight="bold"
                 opacity={isMasnuiIngredient ? 0.3 : 1}
               >
@@ -186,18 +196,18 @@ export default function LalKitabDiagnosticChart({ type, planetPositions, masnuiD
           const centroid = HOUSE_CENTROIDS[m.house];
           return (
             <g key={`masnui-${idx}`} filter="url(#glow-gold)">
-              <circle cx={centroid.x} cy={centroid.y} r="18" fill="white" fillOpacity="0.8" stroke="#D4AF37" strokeWidth="1" />
+              <circle cx={centroid.x} cy={centroid.y} r="22" fill="white" fillOpacity="0.9" stroke="#D4AF37" strokeWidth="2" />
               <text
                 x={centroid.x}
-                y={centroid.y + 5}
+                y={centroid.y + 6}
                 textAnchor="middle"
                 fill={PLANET_COLORS[m.masnui_planet] || '#D4AF37'}
-                fontSize="16"
-                fontWeight="black"
+                fontSize="18"
+                fontWeight="bold"
               >
                 {translatePlanetAbbr(m.masnui_planet, language)}
               </text>
-              <text x={centroid.x} y={centroid.y - 12} textAnchor="middle" fontSize="8" fill="#D4AF37" fontWeight="bold">MASNUI</text>
+              <text x={centroid.x} y={centroid.y - 14} textAnchor="middle" fontSize="9" fill="#D4AF37" fontWeight="bold">MASNUI</text>
             </g>
           );
         })}

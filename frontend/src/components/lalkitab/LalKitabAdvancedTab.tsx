@@ -140,7 +140,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
             </p>
           </div>
           {data.teva_type.is_andha && (
-            <div className="mt-2 scale-90 origin-top">
+            <div className="mt-2">
               <LalKitabDiagnosticChart type="andha" planetPositions={planetPositions} />
             </div>
           )}
@@ -157,7 +157,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
             </p>
           </div>
           {data.teva_type.is_ratondha && (
-            <div className="mt-2 scale-90 origin-top">
+            <div className="mt-2">
               <LalKitabDiagnosticChart type="andha" planetPositions={planetPositions} />
             </div>
           )}
@@ -174,7 +174,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
             </p>
           </div>
           {data.teva_type.is_dharmi && (
-            <div className="mt-2 scale-90 origin-top">
+            <div className="mt-2">
               <LalKitabDiagnosticChart type="dharmi" planetPositions={planetPositions} dharmiData={data.teva_type} />
             </div>
           )}
@@ -267,9 +267,9 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
           </div>
         )}
 
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="grid lg:grid-cols-5 gap-6">
           {masnuiList.length > 0 && (
-            <div className="lg:col-span-1 p-4 rounded-2xl bg-sacred-gold/5 border border-sacred-gold/20 flex flex-col items-center">
+            <div className="lg:col-span-2 p-4 rounded-2xl bg-sacred-gold/5 border border-sacred-gold/20 flex flex-col items-center">
               <p className="text-[10px] font-bold text-sacred-gold uppercase tracking-widest mb-4">Visual Alchemy Map</p>
               <LalKitabDiagnosticChart type="masnui" planetPositions={planetPositions} masnuiData={masnuiList} />
               <p className="text-[10px] text-cosmic-text/50 mt-4 text-center px-4 italic">
@@ -278,7 +278,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
             </div>
           )}
 
-          <div className={`grid gap-4 ${masnuiList.length > 0 ? 'lg:col-span-2 sm:grid-cols-2' : 'sm:grid-cols-2 lg:grid-cols-3 w-full'}`}>
+          <div className={`grid gap-4 ${masnuiList.length > 0 ? 'lg:col-span-3 sm:grid-cols-2' : 'sm:grid-cols-2 lg:grid-cols-3 w-full'}`}>
             {masnuiList.map((m: any, i: number) => (
               <div key={i} className="card-sacred p-4 rounded-xl border border-sacred-gold/20 bg-white/40">
                 <div className="flex justify-between items-start mb-2">
