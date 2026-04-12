@@ -286,6 +286,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
   const [loading, setLoading] = useState(false);
   const [loadingEclipse, setLoadingEclipse] = useState(false);
   const [loadingIngress, setLoadingIngress] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [expandedHouses, setExpandedHouses] = useState<Set<number>>(new Set());
   /* ── fetch country list ── */
   useEffect(() => {
@@ -321,6 +322,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
   /* ── fetch main analysis ── */
   const fetchAnalysis = useCallback(async (country: string, year: number) => {
     setLoading(true);
+    setError(null);
     setAnalysisData(null);
     try {
       const raw = await api.get(`/api/mundane/${country}/analysis?year=${year}`);
@@ -397,8 +399,9 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
         economic_analysis: flat.economic_analysis || flat.economic_indicators,
       };
       setAnalysisData(normalized);
-    } catch {
+    } catch (err) {
       setAnalysisData(null);
+      setError(err instanceof Error ? err.message : 'Failed to load analysis');
     }
     setLoading(false);
   }, [lang]);
