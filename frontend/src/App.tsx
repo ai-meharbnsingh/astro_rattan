@@ -24,9 +24,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Navigation from './sections/Navigation';
 import Hero from './sections/Hero';
 import Features from './sections/Features';
-import HowItWorks from './sections/HowItWorks';
-import Testimonials from './sections/Testimonials';
-import FAQ from './sections/FAQ';
 import Footer from './sections/Footer';
 import WhatsAppWidget from './components/WhatsAppWidget';
 import { useAuth } from './hooks/useAuth';
@@ -133,10 +130,7 @@ function HomePage() {
   return (
     <div ref={mainRef}>
       <Hero />
-      <HowItWorks />
       <Features />
-      <Testimonials />
-      <FAQ />
     </div>
   );
 }
