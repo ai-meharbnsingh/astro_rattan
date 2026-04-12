@@ -13,6 +13,7 @@ from app.lalkitab_engine import get_remedies
 from app.lalkitab_advanced import (
     calculate_masnui_planets,
     calculate_karmic_debts,
+    calculate_karmic_debts_with_hora,
     identify_teva_type,
     get_prohibitions,
     calculate_lk_aspects,
@@ -910,19 +911,48 @@ def get_lalkitab_advanced(
     user: dict = Depends(get_current_user),
     db: Any = Depends(get_db),
 ):
-    """Return advanced Lal Kitab analysis: Masnui Grah, Karmic Debts, Teva type, and Prohibitions."""
-    positions_map = _get_planet_positions(kundli_id, user["sub"], db)
-    if positions_map is None:
+    """Return advanced Lal Kitab analysis: Masnui Grah, Karmic Debts (with Hora), Teva type, and Prohibitions."""
+    # Fetch full kundli data including birth datetime for Hora calculation
+    row = db.execute(
+        "SELECT chart_data, birth_date, birth_time FROM kundlis WHERE id = %s AND user_id = %s",
+        (kundli_id, user["sub"]),
+    ).fetchone()
+    
+    if not row:
         raise HTTPException(status_code=404, detail="Kundli not found")
+    
+    # Get planet positions
+    chart_data = json.loads(row["chart_data"])
+    positions_map = {}
+    for planet_name, info in chart_data.get("planets", {}).items():
+        if planet_name not in _KNOWN_PLANETS:
+            continue
+        sign = info.get("sign", "Aries")
+        house = _SIGN_TO_LK_HOUSE.get(sign, 0)
+        positions_map[planet_name.lower()] = house
 
     # Format positions for advanced engine (List[Dict])
-    # Capitalize planet names to match engine expectations
     formatted_positions = []
     for p_name, h in positions_map.items():
         formatted_positions.append({
             "planet": p_name.capitalize(),
             "house": h
         })
+
+    # Calculate Hora-based karmic debts if birth datetime available
+    hora_debt_analysis = None
+    try:
+        from datetime import datetime
+        birth_datetime = datetime.combine(
+            datetime.strptime(row["birth_date"], "%Y-%m-%d").date(),
+            datetime.strptime(row["birth_time"], "%H:%M:%S").time()
+        )
+        hora_debt_analysis = calculate_karmic_debts_with_hora(
+            formatted_positions, 
+            birth_datetime=birth_datetime
+        )
+    except Exception:
+        pass  # Hora calculation is optional
 
     # Calculate new logic
     lk_aspects = calculate_lk_aspects(formatted_positions)
@@ -931,7 +961,8 @@ def get_lalkitab_advanced(
 
     return {
         "masnui_planets": calculate_masnui_planets(formatted_positions),
-        "karmic_debts": calculate_karmic_debts(formatted_positions),
+        "karmic_debts": hora_debt_analysis["final_debts"] if hora_debt_analysis else calculate_karmic_debts(formatted_positions),
+        "karmic_debts_hora_analysis": hora_debt_analysis,
         "teva_type": identify_teva_type(formatted_positions),
         "prohibitions": get_prohibitions(formatted_positions),
         "aspects": lk_aspects,
