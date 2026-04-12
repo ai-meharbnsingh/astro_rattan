@@ -1,4 +1,4 @@
-import { Loader2, Star, Crown, Eye, Clock, Wallet, ChevronDown, ChevronRight } from 'lucide-react';
+import { Loader2, Star, Crown, Eye, Clock, Wallet, ChevronDown, ChevronRight, Sparkles } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { translatePlanet, translateSign, translateBackend } from '@/lib/backend-translations';
 import GeneralRemedies from './GeneralRemedies';
