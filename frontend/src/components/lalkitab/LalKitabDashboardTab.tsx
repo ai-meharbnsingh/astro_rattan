@@ -1,5 +1,6 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n';
+import { api } from '@/lib/api';
 import {
   LayoutGrid,
   AlertTriangle,
@@ -17,6 +18,7 @@ import { PLANETS, AGE_PLANET_ACTIVATION, REMEDIES } from './lalkitab-data';
 interface Props {
   chartData: LalKitabChartData;
   birthDate: string;
+  kundliId?: string;
 }
 
 interface DoshaResult {
@@ -77,9 +79,18 @@ function calculateAge(birthDate: string): number {
   return age;
 }
 
-export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
+export default function LalKitabDashboardTab({ chartData, birthDate, kundliId }: Props) {
   const { t, language } = useTranslation();
   const isHi = language === 'hi';
+  const [advancedData, setAdvancedData] = useState<any>(null);
+
+  useEffect(() => {
+    if (kundliId) {
+      api.get(`/api/lalkitab/advanced/${kundliId}`)
+        .then(setAdvancedData)
+        .catch(console.error);
+    }
+  }, [kundliId]);
 
   // House counts
   const counts = useMemo(() => {
@@ -196,6 +207,22 @@ export default function LalKitabDashboardTab({ chartData, birthDate }: Props) {
               </p>
               <p className="text-sm text-gray-500">
                 {isHi ? 'कमजोर' : t('lk.kundli.weak')}
+              </p>
+            </div>
+            <div className="text-center p-3 rounded-xl bg-orange-500/5 border border-orange-300/10">
+              <p className="text-2xl font-sans font-bold text-orange-400">
+                {advancedData?.sleeping?.sleeping_planets?.length ?? '—'}
+              </p>
+              <p className="text-sm text-gray-500">
+                {isHi ? 'सोए हुए' : 'Sleeping'}
+              </p>
+            </div>
+            <div className="text-center p-3 rounded-xl bg-sacred-gold/5 border border-sacred-gold/10">
+              <p className="text-2xl font-sans font-bold text-sacred-gold">
+                {advancedData?.kayam?.length ?? '—'}
+              </p>
+              <p className="text-sm text-gray-500">
+                {isHi ? 'कायम' : 'Stable'}
               </p>
             </div>
           </div>

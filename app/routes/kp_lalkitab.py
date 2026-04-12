@@ -14,7 +14,10 @@ from app.lalkitab_advanced import (
     calculate_masnui_planets,
     calculate_karmic_debts,
     identify_teva_type,
-    get_prohibitions
+    get_prohibitions,
+    calculate_lk_aspects,
+    calculate_sleeping_status,
+    calculate_kayam_grah
 )
 
 router = APIRouter()
@@ -920,11 +923,19 @@ def get_lalkitab_advanced(
             "house": h
         })
 
+    # Calculate new logic
+    lk_aspects = calculate_lk_aspects(formatted_positions)
+    sleeping_info = calculate_sleeping_status(formatted_positions)
+    kayam_planets = calculate_kayam_grah(formatted_positions, lk_aspects)
+
     return {
         "masnui_planets": calculate_masnui_planets(formatted_positions),
         "karmic_debts": calculate_karmic_debts(formatted_positions),
         "teva_type": identify_teva_type(formatted_positions),
         "prohibitions": get_prohibitions(formatted_positions),
+        "aspects": lk_aspects,
+        "sleeping": sleeping_info,
+        "kayam": kayam_planets
     }
 
 

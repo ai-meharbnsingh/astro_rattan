@@ -6,6 +6,9 @@ Implements "Pundit-level" logic including:
 2. Lal Kitab Rin (Karmic Debts)
 3. Teva Typology (Andha/Dharmi Teva)
 4. Prohibited Remedies (Precautions)
+5. Lal Kitab Aspects (Drishti)
+6. Sleeping Planets & Houses (Soya Grah / Ghar)
+7. Kayam Grah (Established Planets)
 """
 
 from typing import Dict, List, Optional, Any
@@ -204,10 +207,6 @@ def calculate_karmic_debts(planet_positions: List[Dict[str, Any]]) -> List[Dict[
 
     return debts
 
-# ============================================================
-# 3. TEVA TYPOLOGY (ANDHA / DHARMI) - Placeholder for next step
-# ============================================================
-
 def identify_teva_type(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
     Detects if the chart is an Andha Teva (Blind) or Dharmi Teva (Religious).
@@ -244,8 +243,136 @@ def identify_teva_type(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]
     }
 
 # ============================================================
-# 4. PROHIBITED REMEDIES (PRECAUTIONS) - Placeholder for next step
+# 5. LAL KITAB ASPECTS (DRISHTI)
+# One-way fixed house aspects. Reference: PDF structural
 # ============================================================
+
+LK_ASPECTS = {
+    1:  {7: 1.0},
+    4:  {10: 1.0},
+    7:  {1: 1.0},
+    10: {4: 1.0},
+    3:  {9: 0.5, 11: 0.5},
+    5:  {9: 0.5},
+    2:  {6: 0.25},
+    6:  {12: 0.25},
+    8:  {12: 0.25},
+}
+
+def calculate_lk_aspects(planet_positions: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, Any]]]:
+    """
+    Calculates one-way Lal Kitab aspects between planets.
+    """
+    house_to_planets = {}
+    for p in planet_positions:
+        h = p["house"]
+        if h not in house_to_planets: house_to_planets[h] = []
+        house_to_planets[h].append(p["planet"])
+
+    aspects = {p["planet"]: [] for p in planet_positions}
+
+    for p in planet_positions:
+        source_h = p["house"]
+        if source_h in LK_ASPECTS:
+            for target_h, strength in LK_ASPECTS[source_h].items():
+                target_planets = house_to_planets.get(target_h, [])
+                for tp in target_planets:
+                    aspects[p["planet"]].append({
+                        "aspects_to": tp,
+                        "house": target_h,
+                        "strength": strength
+                    })
+    
+    return aspects
+
+# ============================================================
+# 6. SLEEPING PLANETS & HOUSES (SOYA GRAH / GHAR)
+# ============================================================
+
+def calculate_sleeping_status(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    Identifies which houses and planets are 'sleeping' (inactive).
+    """
+    occupied_houses = {p["house"] for p in planet_positions}
+    
+    # 1. Sleeping Houses
+    sleeping_houses = []
+    for h in range(1, 13):
+        if h not in occupied_houses:
+            # Special activation rules
+            is_sleeping = True
+            if h == 1 and 7 in occupied_houses: is_sleeping = False
+            if h == 2 and 8 in occupied_houses: is_sleeping = False
+            if h == 3 and 9 in occupied_houses: is_sleeping = False
+            if h == 4 and 10 in occupied_houses: is_sleeping = False
+            
+            if is_sleeping:
+                sleeping_houses.append(h)
+
+    # 2. Sleeping Planets (Soya Grah)
+    ACTIVATION_HOUSE = {1: 7, 2: 8, 3: 9, 4: 10, 5: 11, 6: 12, 7: 1, 8: 2, 9: 3, 10: 4, 11: 5, 12: 6}
+    
+    sleeping_planets = []
+    for p in planet_positions:
+        name = p["planet"]
+        h = p["house"]
+        activation_h = ACTIVATION_HOUSE.get(h)
+        
+        if activation_h not in occupied_houses:
+            sleeping_planets.append({
+                "planet": name,
+                "reason": {
+                    "en": f"No planet in activation house {activation_h}",
+                    "hi": f"सक्रियण भाव {activation_h} में कोई ग्रह नहीं है"
+                },
+                "trigger": {
+                    "en": f"Wakes up when a planet enters house {activation_h}",
+                    "hi": f"भाव {activation_h} में किसी ग्रह के प्रवेश करने पर सक्रिय होगा"
+                }
+            })
+
+    return {
+        "sleeping_houses": sleeping_houses,
+        "sleeping_planets": sleeping_planets
+    }
+
+# ============================================================
+# 7. KAYAM GRAH (ESTABLISHED PLANETS)
+# ============================================================
+
+def calculate_kayam_grah(planet_positions: List[Dict[str, Any]], lk_aspects: Dict[str, List[Dict[str, Any]]]) -> List[str]:
+    """
+    A planet is Kayam if it is not aspected by any enemy planet.
+    """
+    ENEMIES = {
+        "Sun": {"Saturn", "Venus", "Rahu", "Ketu"},
+        "Moon": {"Rahu", "Ketu"},
+        "Mars": {"Mercury", "Ketu"},
+        "Mercury": {"Moon"},
+        "Jupiter": {"Mercury", "Venus"},
+        "Venus": {"Sun", "Moon", "Rahu"},
+        "Saturn": {"Sun", "Moon", "Mars"},
+        "Rahu": {"Sun", "Moon", "Jupiter"},
+        "Ketu": {"Moon", "Mars"},
+    }
+    
+    kayam = []
+    for p in planet_positions:
+        name = p["planet"]
+        aspected_by_enemies = False
+        
+        for source_p, targets in lk_aspects.items():
+            for t in targets:
+                if t["aspects_to"] == name:
+                    if source_p in ENEMIES.get(name, set()):
+                        aspected_by_enemies = True
+                        break
+            if aspected_by_enemies: break
+            
+        if not aspected_by_enemies:
+            kayam.append(name)
+            
+    return kayam
 
 def get_prohibitions(planet_positions: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
@@ -299,7 +426,7 @@ def get_prohibitions(planet_positions: List[Dict[str, Any]]) -> List[Dict[str, A
         {
             "planet": "Mercury", "house": {3, 8, 9, 12}, "category": {"en": "Green items", "hi": "हरी वस्तुएं"}, 
             "item": {"en": "Money plant, green cloth, emerald", "hi": "मनी प्लांट, हरा कपड़ा, पन्ना"}, 
-            "risk": {"en": "Sibling conflict, travel accidents", "hi": "भाई-बहनों से विवाद, यात्रा दुर्घटनाएं"}
+            "risk": {"en": "Sibling conflict, travel accidents", "hi": "भाई-बैनों से विवाद, यात्रा दुर्घटनाएं"}
         },
         {
             "planet": "Saturn", "house": {10}, "category": {"en": "Construction", "hi": "निर्माण"}, 

@@ -1,23 +1,34 @@
-import { useState } from 'react';
-import { Star, ChevronDown, ChevronUp } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Star, ChevronDown, ChevronUp, Moon, ShieldCheck, Zap, Info } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
+import { api } from '@/lib/api';
 import type { LalKitabChartData } from './lalkitab-data';
 import {
   PLANETS,
   PAKKA_GHAR,
   PLANET_FRIENDS,
   PLANET_ENEMIES,
-  getPlanetStatus,
   PLANET_EFFECTS_IN_HOUSES,
 } from './lalkitab-data';
 
 interface Props {
   chartData: LalKitabChartData;
+  kundliId?: string;
 }
 
-export default function LalKitabPlanetsTab({ chartData }: Props) {
+export default function LalKitabPlanetsTab({ chartData, kundliId }: Props) {
   const { t, language } = useTranslation();
+  const isHi = language === 'hi';
   const [expandedPlanet, setExpandedPlanet] = useState<string | null>(null);
+  const [advancedData, setAdvancedData] = useState<any>(null);
+
+  useEffect(() => {
+    if (kundliId) {
+      api.get(`/api/lalkitab/advanced/${kundliId}`)
+        .then(setAdvancedData)
+        .catch(console.error);
+    }
+  }, [kundliId]);
 
   const togglePlanet = (key: string) => {
     setExpandedPlanet((prev) => (prev === key ? null : key));
@@ -45,12 +56,27 @@ export default function LalKitabPlanetsTab({ chartData }: Props) {
         </p>
       </div>
 
+      {/* Legend */}
+      <div className="flex flex-wrap justify-center gap-4 py-2 border-y border-sacred-gold/10">
+        <div className="flex items-center gap-1.5 text-xs text-cosmic-text/70">
+          <Zap className="w-3.5 h-3.5 text-green-500" />
+          <span>{t('lk.planets.active')}</span>
+        </div>
+        <div className="flex items-center gap-1.5 text-xs text-cosmic-text/70">
+          <Moon className="w-3.5 h-3.5 text-orange-500" />
+          <span>{t('lk.planets.sleeping')}</span>
+        </div>
+        <div className="flex items-center gap-1.5 text-xs text-cosmic-text/70">
+          <ShieldCheck className="w-3.5 h-3.5 text-sacred-gold" />
+          <span>{t('lk.planets.stable')}</span>
+        </div>
+      </div>
+
       {/* Planet Cards Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {PLANETS.map((planet) => {
           const house = chartData.planetPositions[planet.key];
           const pakkaGhar = PAKKA_GHAR[planet.key];
-          const status = getPlanetStatus(planet.key, chartData);
           const isExpanded = expandedPlanet === planet.key;
           const friends = PLANET_FRIENDS[planet.key] || [];
           const enemies = PLANET_ENEMIES[planet.key] || [];
@@ -58,39 +84,55 @@ export default function LalKitabPlanetsTab({ chartData }: Props) {
             ? PLANET_EFFECTS_IN_HOUSES[planet.key]?.[house]
             : null;
 
+          // Advanced statuses
+          const isSleeping = advancedData?.sleeping?.sleeping_planets?.find((p: any) => p.planet === planet.key);
+          const isKayam = advancedData?.kayam?.includes(planet.key);
+
           return (
             <div
               key={planet.key}
               onClick={() => togglePlanet(planet.key)}
-              className="card-sacred rounded-xl p-5 border border-sacred-gold/20 cursor-pointer hover:border-sacred-gold/40 transition-all"
+              className={`card-sacred rounded-xl p-5 border transition-all cursor-pointer hover:shadow-md ${
+                isExpanded ? 'border-sacred-gold/50 bg-sacred-gold/5' : 'border-sacred-gold/20'
+              }`}
             >
-              {/* Collapsed View — always visible */}
+              {/* Collapsed View */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Star className="w-5 h-5 text-sacred-gold" />
+                  <Star className={`w-5 h-5 ${isKayam ? 'text-sacred-gold fill-sacred-gold/20' : 'text-sacred-gold/40'}`} />
                   <div>
                     <h3 className="font-sans text-sacred-gold text-lg">
                       {getPlanetName(planet)}
                     </h3>
-                    <p className="text-gray-500 text-sm">
+                    <p className="text-gray-500 text-xs">
                       {t('lk.planets.housePlacement')}: {house ?? '—'}
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  {status === 'active' ? (
-                    <span className="bg-green-500/20 text-green-600 px-2 py-0.5 rounded-full text-sm">
-                      {t('lk.planets.active')}
-                    </span>
-                  ) : (
-                    <span className="bg-orange-500/20 text-orange-600 px-2 py-0.5 rounded-full text-sm">
-                      {t('lk.planets.sleeping')}
-                    </span>
-                  )}
+                <div className="flex items-center gap-1.5">
+                  <div className="flex flex-col items-end">
+                    {isSleeping ? (
+                      <span className="flex items-center gap-1 text-[10px] font-bold text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded border border-orange-100">
+                        <Moon className="w-2.5 h-2.5" />
+                        {isHi ? 'सोया' : 'SLEEPING'}
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1 text-[10px] font-bold text-green-600 bg-green-50 px-1.5 py-0.5 rounded border border-green-100">
+                        <Zap className="w-2.5 h-2.5" />
+                        {isHi ? 'जागा' : 'ACTIVE'}
+                      </span>
+                    )}
+                    {isKayam && (
+                      <span className="mt-1 flex items-center gap-1 text-[10px] font-bold text-sacred-gold-dark bg-sacred-gold/10 px-1.5 py-0.5 rounded border border-sacred-gold/20">
+                        <ShieldCheck className="w-2.5 h-2.5" />
+                        {isHi ? 'कायम' : 'KAYAM'}
+                      </span>
+                    )}
+                  </div>
                   {isExpanded ? (
-                    <ChevronUp className="w-4 h-4 text-sacred-gold/60" />
+                    <ChevronUp className="w-4 h-4 text-sacred-gold/60 ml-1" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-sacred-gold/60" />
+                    <ChevronDown className="w-4 h-4 text-sacred-gold/60 ml-1" />
                   )}
                 </div>
               </div>
@@ -98,9 +140,31 @@ export default function LalKitabPlanetsTab({ chartData }: Props) {
               {/* Expanded View */}
               {isExpanded && (
                 <div className="mt-4 space-y-4 border-t border-sacred-gold/10 pt-4">
+                  {/* Status Badges with Explanation */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className={`p-2 rounded-lg border ${isSleeping ? 'bg-orange-50 border-orange-100' : 'bg-green-50 border-green-100'}`}>
+                      <p className={`text-[10px] font-bold uppercase tracking-widest ${isSleeping ? 'text-orange-700' : 'text-green-700'}`}>
+                        {isSleeping ? t('lk.planets.sleeping') : t('lk.planets.active')}
+                      </p>
+                      <p className="text-[10px] text-cosmic-text/60 mt-1">
+                        {isSleeping 
+                          ? (isHi ? isSleeping.reason.hi : isSleeping.reason.en)
+                          : (isHi ? 'स्वयं सक्रिय और फलदायी' : 'Self-activated and fruitful')}
+                      </p>
+                    </div>
+                    <div className={`p-2 rounded-lg border ${isKayam ? 'bg-sacred-gold/10 border-sacred-gold/30' : 'bg-gray-50 border-gray-200'}`}>
+                      <p className={`text-[10px] font-bold uppercase tracking-widest ${isKayam ? 'text-sacred-gold-dark' : 'text-gray-500'}`}>
+                        {isKayam ? t('lk.planets.stable') : t('lk.planets.unstable')}
+                      </p>
+                      <p className="text-[10px] text-cosmic-text/60 mt-1">
+                        {isKayam ? t('lk.planets.kayamDesc') : (isHi ? 'शत्रु ग्रहों के प्रभाव में' : 'Under influence of enemy planets')}
+                      </p>
+                    </div>
+                  </div>
+
                   {/* Pakka Ghar */}
                   <div>
-                    <span className="text-sm text-gray-600 uppercase tracking-wide">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                       {t('lk.planets.pakkaGhar')}
                     </span>
                     <p className="text-sacred-gold font-sans text-sm mt-0.5">
@@ -108,49 +172,64 @@ export default function LalKitabPlanetsTab({ chartData }: Props) {
                     </p>
                   </div>
 
-                  {/* Friendly Planets */}
-                  <div>
-                    <span className="text-sm text-gray-600 uppercase tracking-wide">
-                      {t('lk.planets.friends')}
-                    </span>
-                    <div className="flex flex-wrap gap-1.5 mt-1.5">
-                      {friends.map((f) => (
-                        <span
-                          key={f}
-                          className="bg-blue-500/10 text-blue-600 border border-blue-500/20 px-2 py-0.5 rounded-full text-sm"
-                        >
-                          {getFriendName(f)}
-                        </span>
-                      ))}
+                  {/* Friendly / Enemies */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                        {t('lk.planets.friends')}
+                      </span>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {friends.map((f) => (
+                          <span key={f} className="text-[10px] text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">
+                            {getFriendName(f)}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-
-                  {/* Enemy Planets */}
-                  <div>
-                    <span className="text-sm text-gray-600 uppercase tracking-wide">
-                      {t('lk.planets.enemies')}
-                    </span>
-                    <div className="flex flex-wrap gap-1.5 mt-1.5">
-                      {enemies.map((e) => (
-                        <span
-                          key={e}
-                          className="bg-red-500/10 text-red-600 border border-red-300/20 px-2 py-0.5 rounded-full text-sm"
-                        >
-                          {getFriendName(e)}
-                        </span>
-                      ))}
+                    <div>
+                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                        {t('lk.planets.enemies')}
+                      </span>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {enemies.map((e) => (
+                          <span key={e} className="text-[10px] text-red-600 bg-red-50 px-1.5 py-0.5 rounded">
+                            {getFriendName(e)}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
 
                   {/* Effect */}
                   {effect && (
-                    <div>
-                      <span className="text-sm text-gray-600 uppercase tracking-wide">
+                    <div className="bg-white/60 p-3 rounded-lg border border-sacred-gold/10 shadow-inner">
+                      <span className="text-[10px] font-bold text-sacred-gold uppercase tracking-widest">
                         {t('lk.planets.effect')}
                       </span>
-                      <p className="text-cosmic-text text-sm mt-1 leading-relaxed">
-                        {language === 'hi' ? effect.hi : effect.en}
+                      <p className="text-sm text-cosmic-text mt-1 leading-relaxed italic">
+                        "{language === 'hi' ? effect.hi : effect.en}"
                       </p>
+                    </div>
+                  )}
+
+                  {/* Lal Kitab Aspects */}
+                  {advancedData?.aspects?.[planet.key] && advancedData.aspects[planet.key].length > 0 && (
+                    <div>
+                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                        {isHi ? 'लाल किताब दृष्टि' : 'Lal Kitab Aspects'}
+                      </span>
+                      <div className="space-y-1.5 mt-1.5">
+                        {advancedData.aspects[planet.key].map((asp: any, idx: number) => (
+                          <div key={idx} className="flex items-center justify-between text-xs p-2 rounded bg-sacred-gold/5 border border-sacred-gold/10">
+                            <span className="font-medium text-cosmic-text">
+                              {isHi ? 'दृष्टि → ' : 'Aspects ➔ '} {getFriendName(asp.aspects_to)}
+                            </span>
+                            <span className="text-sacred-gold-dark font-bold">
+                              {asp.strength * 100}% {isHi ? 'शक्ति' : 'Power'}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>

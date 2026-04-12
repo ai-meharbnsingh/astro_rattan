@@ -254,13 +254,13 @@ export default function LalKitabPage() {
               </div>
 
               <TabsContent value="dashboard">
-                <LalKitabDashboardTab chartData={chartData} birthDate={birthDate} />
+                <LalKitabDashboardTab chartData={chartData} birthDate={birthDate} kundliId={kundliId} />
               </TabsContent>
               <TabsContent value="kundli">
                 <LalKitabKundliTab chartData={chartData} apiResult={apiResult} />
               </TabsContent>
               <TabsContent value="planets">
-                <LalKitabPlanetsTab chartData={chartData} />
+                <LalKitabPlanetsTab chartData={chartData} kundliId={kundliId} />
               </TabsContent>
               <TabsContent value="dosha">
                 <LalKitabDoshaTab chartData={chartData} />
