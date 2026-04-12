@@ -274,7 +274,7 @@ export default function LalKitabTevaTab({ chartData, apiResult }: Props) {
             {isHi ? 'लाल किताब कुंडली (तेवा चार्ट)' : 'Lal Kitab Kundli (Teva Chart)'}
           </h3>
           <div className="flex justify-center">
-            <div className="w-52 h-52">
+            <div className="w-64 h-64">
               <InteractiveKundli chartData={interactiveChartData} compact />
             </div>
           </div>
