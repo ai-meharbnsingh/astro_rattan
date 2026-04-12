@@ -66,7 +66,7 @@ export default function ConcentricChart({ natalPlanets, transitPlanets, lagnaLon
   };
 
   return (
-    <div className="w-full max-w-xs mx-auto bg-white rounded-2xl shadow-lg border border-sacred-gold p-3">
+    <div className="w-full max-w-lg mx-auto bg-white rounded-2xl shadow-lg border border-sacred-gold p-3">
       <svg viewBox={`0 0 ${size} ${size}`} className="w-full h-auto font-sans">
         {/* Zodiac Ring with Correct Rotation */}
         {ZODIAC_SIGNS.map((sign, i) => {
