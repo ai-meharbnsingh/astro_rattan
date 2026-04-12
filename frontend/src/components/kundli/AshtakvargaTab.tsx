@@ -333,6 +333,66 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
             </div>
           </div>
           
+          <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
+            <h4 className="text-lg font-semibold text-gray-800 mb-2">{t('ashtakvarga.purifiedPoints')}</h4>
+            <p className="text-sm text-gray-600 mb-4">{t('ashtakvarga.purificationDesc')}</p>
+            
+            <div className="space-y-8">
+              {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
+                const purified = ashtakvargaData.purified?.[planet];
+                if (!purified) return null;
+
+                return (
+                  <div key={planet} className="bg-white rounded-lg border border-sacred-gold overflow-hidden">
+                    <div className="bg-sacred-gold px-4 py-2 flex items-center justify-between">
+                      <h5 className="font-display font-semibold text-sacred-brown text-sm">
+                        {translatePlanet(planet, language)} - {t('ashtakvarga.purifiedPoints')}
+                      </h5>
+                      <div className="text-sm font-bold text-sacred-gold-dark">
+                        {t('ashtakvarga.shodhyaPinda')}: <span className="text-sacred-brown text-lg">{purified.shodhya_pinda}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="overflow-x-auto p-3">
+                      <table className="w-full text-sm border-collapse">
+                        <thead>
+                          <tr>
+                            <th className="text-left p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold">{language === 'hi' ? 'प्रक्रिया' : 'Process'}</th>
+                            {signs.map((s, i) => (
+                              <th key={i} className="text-center p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold min-w-[26px] text-xs">
+                                {translateSignAbbr(s, language)}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr className="border-t border-sacred-gold hover:bg-sacred-gold/5">
+                            <td className="p-1 text-sacred-brown font-medium whitespace-nowrap">{t('ashtakvarga.trikonaShodhana')}</td>
+                            {signs.map((s, i) => (
+                              <td key={i} className="text-center p-1 text-cosmic-text font-semibold">
+                                {purified.trikona[s]}
+                              </td>
+                            ))}
+                          </tr>
+                          <tr className="border-t border-sacred-gold hover:bg-sacred-gold/5 bg-sacred-gold/5">
+                            <td className="p-1 text-sacred-brown font-bold whitespace-nowrap">{t('ashtakvarga.ekadhipatyaShodhana')}</td>
+                            {signs.map((s, i) => (
+                              <td key={i} className="text-center p-1">
+                                <span className={`inline-block w-6 h-6 leading-6 rounded text-sm font-bold bg-sacred-gold/20 text-sacred-gold-dark`}>
+                                  {purified.ekadhipatya[s]}
+                                </span>
+                              </td>
+                            ))}
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
           {/* General Remedies */}
           <GeneralRemedies language={language} t={t} />
         </div>

@@ -118,30 +118,7 @@ def _sign_name_to_index(sign_name: str) -> int:
 def calculate_ashtakvarga(planet_signs: Dict[str, str]) -> Dict[str, Any]:
     """
     Calculate the Ashtakvarga system for a given chart.
-
-    Args:
-        planet_signs: dict of {planet_name: sign_name}
-                      Must include: Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn
-                      May include: Ascendant (sign of the ascendant)
-
-    Returns:
-        {
-            "planet_bindus": {
-                planet: {sign: points}  -- for each of the 7 planets
-            },
-            "sarvashtakvarga": {sign: total_points}  -- summed across all planets,
-            "planet_details": {
-                planet: {
-                    "contributors": {
-                        contributor: {sign: 0_or_1}  -- 8 contributors per planet
-                    },
-                    "totals": {sign: points}  -- same as planet_bindus[planet]
-                }
-            }
-        }
-
-        Contributors are keyed as: Sun, Moon, Mars, Mercury, Jupiter, Venus,
-        Saturn, Lagna (Ascendant mapped to "Lagna" in output).
+    Includes Trikona Shodhana, Ekadhipatya Shodhana and Shodhya Pinda.
     """
     # Validate required planets
     required = {"Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"}
@@ -156,21 +133,17 @@ def calculate_ashtakvarga(planet_signs: Dict[str, str]) -> Dict[str, Any]:
         if name in required or name == "Ascendant":
             positions[name] = _sign_name_to_index(sign)
 
-    # If Ascendant not provided, use Aries as default
     if "Ascendant" not in positions:
         positions["Ascendant"] = 0
 
-    # Contributing bodies (7 planets + Ascendant)
     contributors = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Ascendant"]
-
-    # Display name mapping: internal "Ascendant" -> output "Lagna"
     _CONTRIB_DISPLAY = {c: ("Lagna" if c == "Ascendant" else c) for c in contributors}
 
     planet_bindus: Dict[str, Dict[str, int]] = {}
     planet_details: Dict[str, Dict[str, Any]] = {}
     sarvashtakvarga: Dict[str, int] = {sign: 0 for sign in _SIGN_NAMES}
 
-    # Calculate for each receiving planet (7 planets + Lagna)
+    # 1. Calculate base Bindus
     for recv_planet in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Lagna"]:
         recv_table = BENEFIC_POINTS[recv_planet]
         bindus: Dict[str, int] = {sign: 0 for sign in _SIGN_NAMES}
@@ -178,16 +151,13 @@ def calculate_ashtakvarga(planet_signs: Dict[str, str]) -> Dict[str, Any]:
 
         for contrib in contributors:
             display_name = _CONTRIB_DISPLAY[contrib]
-            # Initialise this contributor's row to all zeros
             contrib_row: Dict[str, int] = {sign: 0 for sign in _SIGN_NAMES}
 
             if contrib in recv_table and contrib in positions:
                 benefic_houses = recv_table[contrib]
                 contrib_sign_index = positions[contrib]
 
-                # For each benefic house, mark the corresponding sign
                 for house_num in benefic_houses:
-                    # House N from contributor = sign at (contributor_sign + N - 1) mod 12
                     target_sign_index = (contrib_sign_index + house_num - 1) % 12
                     target_sign = _SIGN_NAMES[target_sign_index]
                     contrib_row[target_sign] = 1
@@ -201,13 +171,115 @@ def calculate_ashtakvarga(planet_signs: Dict[str, str]) -> Dict[str, Any]:
             "totals": bindus,
         }
 
-        # Accumulate into sarvashtakvarga (SAV = 7 planets only, not Lagna)
         if recv_planet != "Lagna":
             for sign in _SIGN_NAMES:
                 sarvashtakvarga[sign] += bindus[sign]
+
+    # 2. Purification (Shodhana) for each of the 7 planets
+    purified_data: Dict[str, Any] = {}
+    for planet in required:
+        raw_bindus = list(planet_bindus[planet].values()) # 12 values
+        
+        # A. Trikona Shodhana (Trine Reduction)
+        trikona = _apply_trikona_shodhana(raw_bindus)
+        
+        # B. Ekadhipatya Shodhana (Lordship Reduction)
+        # Needs planet positions to check for occupancy
+        ekadhipatya = _apply_ekadhipatya_shodhana(trikona, positions)
+        
+        # C. Shodhya Pinda (Purified Index)
+        shodhya_pinda = _calculate_shodhya_pinda(planet, ekadhipatya, positions)
+        
+        purified_data[planet] = {
+            "trikona": {sign: val for sign, val in zip(_SIGN_NAMES, trikona)},
+            "ekadhipatya": {sign: val for sign, val in zip(_SIGN_NAMES, ekadhipatya)},
+            "shodhya_pinda": shodhya_pinda
+        }
 
     return {
         "planet_bindus": planet_bindus,
         "sarvashtakvarga": sarvashtakvarga,
         "planet_details": planet_details,
+        "purified": purified_data
     }
+
+def _apply_trikona_shodhana(bindus: List[int]) -> List[int]:
+    """
+    Reduces bindus in trine signs.
+    Trines: (0,4,8), (1,5,9), (2,6,10), (3,7,11)
+    """
+    res = list(bindus)
+    trines = [(0, 4, 8), (1, 5, 9), (2, 6, 10), (3, 7, 11)]
+    for t in trines:
+        v1, v2, v3 = res[t[0]], res[t[1]], res[t[2]]
+        if v1 == 0 or v2 == 0 or v3 == 0:
+            continue
+        m = min(v1, v2, v3)
+        res[t[0]] -= m
+        res[t[1]] -= m
+        res[t[2]] -= m
+    return res
+
+def _apply_ekadhipatya_shodhana(bindus: List[int], positions: Dict[str, int]) -> List[int]:
+    """
+    Lordship reduction for pairs of signs owned by the same planet.
+    """
+    res = list(bindus)
+    # Pairs of sign indices: Mars(0,7), Mercury(2,5), Jupiter(8,11), Venus(1,6), Saturn(9,10)
+    pairs = [(0, 7), (2, 5), (8, 11), (1, 6), (9, 10)]
+    
+    # Check occupancy
+    occupied = set(positions.values())
+    
+    for s1, s2 in pairs:
+        v1, v2 = res[s1], res[s2]
+        occ1, occ2 = s1 in occupied, s2 in occupied
+        
+        if v1 > 0 and v2 > 0:
+            if not occ1 and not occ2:
+                # Both unoccupied: subtract smaller from both
+                m = min(v1, v2)
+                res[s1] -= m
+                res[s2] -= m
+            elif occ1 and occ2:
+                # Both occupied: No reduction
+                pass
+            elif occ1 and not occ2:
+                # Sign 1 occupied, Sign 2 unoccupied
+                if v2 > v1: res[s2] = v1
+                else: res[s2] = 0
+            elif not occ1 and occ2:
+                # Sign 2 occupied, Sign 1 unoccupied
+                if v1 > v2: res[s1] = v2
+                else: res[s1] = 0
+        elif (v1 > 0 and v2 == 0) or (v1 == 0 and v2 > 0):
+            # One is zero
+            idx = s1 if v1 > 0 else s2
+            if idx not in occupied:
+                # Unoccupied sign with bindus: potentially reduce based on other sign's trines?
+                # Simplified scriptural rule: if one is 0 and other is unoccupied, reduce to 0
+                res[idx] = 0
+                
+    return res
+
+def _calculate_shodhya_pinda(planet: str, purified: List[int], positions: Dict[str, int]) -> int:
+    """
+    Calculate Shodhya Pinda (Purified Index).
+    """
+    sign_multipliers = [7, 10, 8, 4, 10, 5, 7, 8, 9, 5, 11, 12]
+    planet_multipliers = {
+        "Sun": 5, "Moon": 5, "Mars": 8, "Mercury": 5, 
+        "Jupiter": 10, "Venus": 7, "Saturn": 5
+    }
+    
+    # 1. Rashi Pinda
+    rashi_pinda = sum(p * m for p, m in zip(purified, sign_multipliers))
+    
+    # 2. Graha Pinda
+    # Sum of (Purified points in sign where planet X is) * (Multiplier of planet X)
+    graha_pinda = 0
+    for p_name, sign_idx in positions.items():
+        if p_name in planet_multipliers:
+            graha_pinda += purified[sign_idx] * planet_multipliers[p_name]
+            
+    return rashi_pinda + graha_pinda

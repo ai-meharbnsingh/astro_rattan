@@ -3,7 +3,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Card, CardContent } from '@/components/ui/card';
 import { useTranslation } from '@/lib/i18n';
-import { Star, Clock, BookOpen, Shield, Calendar, Calculator, Globe, Users, Check, X, Sparkles } from 'lucide-react';
+import { Star, Clock, BookOpen, Calculator, Globe, Users, Check, X, Sparkles } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 

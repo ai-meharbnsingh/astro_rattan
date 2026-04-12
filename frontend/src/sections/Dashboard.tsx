@@ -1,10 +1,10 @@
 import { useTranslation } from '@/lib/i18n';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, Plus, Search, BookOpen, ChevronRight, User, Shield, Star, BarChart3 } from 'lucide-react';
+import { Users, Plus, Search, BookOpen, ChevronRight, User, Star, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { api, formatDate } from '@/lib/api';
+import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 
 interface Client {
@@ -36,36 +36,38 @@ export default function Dashboard() {
   // Admin state
   const [adminStats, setAdminStats] = useState<AdminStats | null>(null);
 
+  const fetchClients = useCallback(async (q = '') => {
+    setLoading(true);
+    setFetchError(null);
+    try {
+      const data = await api.get(`/api/clients?search=${encodeURIComponent(q)}`);
+      setClients(data);
+    } catch (e: unknown) {
+      console.error(e);
+      const msg = e instanceof Error ? e.message : '';
+      setFetchError(msg === 'Not authenticated' ? t('dashboard.sessionExpired') : t('dashboard.loadFailed'));
+    }
+    setLoading(false);
+  }, [t]);
+
+  const fetchAdminStats = useCallback(async () => {
+    try {
+      const data = await api.get('/api/admin/stats');
+      setAdminStats(data);
+    } catch (e: unknown) {
+      console.error(e);
+      const msg = e instanceof Error ? e.message : '';
+      setFetchError(msg || t('dashboard.adminStatsLoadFailed'));
+    }
+  }, [t]);
+
   useEffect(() => {
     if (!isAuthenticated) { navigate('/login'); return; }
     if (isAdmin) {
       fetchAdminStats();
     }
     fetchClients();
-  }, [isAuthenticated, isAdmin]);
-
-  const fetchClients = async (q = '') => {
-    setLoading(true);
-    setFetchError(null);
-    try {
-      const data = await api.get(`/api/clients?search=${encodeURIComponent(q)}`);
-      setClients(data);
-    } catch (e: any) {
-      console.error(e);
-      setFetchError(e?.message === 'Not authenticated' ? t('dashboard.sessionExpired') : t('dashboard.loadFailed'));
-    }
-    setLoading(false);
-  };
-
-  const fetchAdminStats = async () => {
-    try {
-      const data = await api.get('/api/admin/stats');
-      setAdminStats(data);
-    } catch (e: any) {
-      console.error(e);
-      setFetchError(e?.message || t('dashboard.adminStatsLoadFailed'));
-    }
-  };
+  }, [isAuthenticated, isAdmin, navigate, fetchAdminStats, fetchClients]);
 
   const handleSearch = (val: string) => {
     setSearch(val);

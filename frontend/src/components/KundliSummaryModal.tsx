@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { X, Download, Printer, ChevronRight, MapPin, Calendar, Clock, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/lib/i18n';
@@ -73,7 +73,6 @@ interface KundliSummaryModalProps {
 
 export default function KundliSummaryModal({ isOpen, onClose, data, onViewFullReport }: KundliSummaryModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
-  const [showChart, setShowChart] = useState(true);
   const { t, language } = useTranslation();
 
   if (!isOpen) return null;

@@ -98,6 +98,64 @@ export default function DivisionalTab({
               </table>
             </div>
           </div>
+
+          {/* D60 Special Analysis */}
+          {divisionalData.d60_analysis && (
+            <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold shadow-sm animate-in fade-in slide-in-from-bottom-4">
+              <div className="flex items-center gap-2 mb-4 border-b border-sacred-gold/30 pb-3">
+                <h4 className="text-lg font-bold text-sacred-gold-dark">{language === 'hi' ? 'षष्टयंश (D60) कर्मिक विश्लेषण' : 'D60 Karmic Analysis'}</h4>
+                <span className="text-xs px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold-dark border border-sacred-gold/20 font-bold uppercase tracking-tighter">EXPERT</span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm border-collapse">
+                  <thead>
+                    <tr className="bg-sacred-gold/10">
+                      <th className="text-left p-2.5 text-sacred-gold-dark font-bold border-b border-sacred-gold">{t('table.planet')}</th>
+                      <th className="text-center p-2.5 text-sacred-gold-dark font-bold border-b border-sacred-gold">{language === 'hi' ? 'इकाई' : 'Unit'}</th>
+                      <th className="text-left p-2.5 text-sacred-gold-dark font-bold border-b border-sacred-gold">{language === 'hi' ? 'संस्कृत नाम' : 'Sanskrit Name'}</th>
+                      <th className="text-center p-2.5 text-sacred-gold-dark font-bold border-b border-sacred-gold">{language === 'hi' ? 'प्रकृति' : 'Nature'}</th>
+                      <th className="text-left p-2.5 text-sacred-gold-dark font-bold border-b border-sacred-gold">{language === 'hi' ? 'व्याख्या' : 'Meaning'}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.entries(divisionalData.d60_analysis).map(([planet, info]: [string, any]) => {
+                      const isMalefic = info.nature === 'Malefic';
+                      const isBenefic = info.nature === 'Benefic';
+                      const natureLabel = language === 'hi' 
+                        ? (isBenefic ? 'शुभ' : isMalefic ? 'पाप' : 'मिश्रित') 
+                        : info.nature;
+
+                      return (
+                        <tr key={planet} className="border-t border-sacred-gold/20 hover:bg-sacred-gold/5 transition-colors">
+                          <td className="p-2.5 text-sacred-brown font-bold whitespace-nowrap">{translatePlanet(planet, language)}</td>
+                          <td className="p-2.5 text-center text-cosmic-text font-mono">{info.unit}</td>
+                          <td className="p-2.5 text-sacred-gold-dark font-bold italic">{language === 'hi' ? info.name_hi : info.name}</td>
+                          <td className="p-2.5 text-center">
+                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase ${
+                              isBenefic ? 'bg-green-100 text-green-700 border border-green-200' :
+                              isMalefic ? 'bg-red-100 text-red-700 border border-red-200' :
+                              'bg-blue-50 text-blue-700 border border-blue-100'
+                            }`}>
+                              {natureLabel}
+                            </span>
+                          </td>
+                          <td className="p-2.5 text-cosmic-text text-xs leading-relaxed">
+                            {info.description}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <div className="mt-4 p-3 bg-white/50 rounded-lg border border-sacred-gold/10 text-xs text-cosmic-text italic leading-relaxed">
+                {language === 'hi' 
+                  ? "* पराशर ऋषि के अनुसार, षष्टयंश (D60) विश्लेषण के बिना किसी भी जन्म कुंडली पर अंतिम निर्णय नहीं सुनाया जाना चाहिए। यह चार्ट पूर्व जन्म के संचित कर्मों को प्रकट करता है।"
+                  : "* According to Sage Parashara, no final judgment should be pronounced on any horoscope without Shashtiamsa (D60) analysis. This chart reveals the accumulated Sanchita Karma from past incarnations."
+                }
+              </div>
+            </div>
+          )}
         </div>
       ) : (
         <p className="text-center text-cosmic-text py-8">{t('kundli.selectChartToLoad')}</p>

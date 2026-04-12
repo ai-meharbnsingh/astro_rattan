@@ -157,7 +157,12 @@ def calculate_special_lagnas(planets: Dict, ascendant: Dict, d9_planets: Optiona
         d9_index = int((float(ak_lon) % 360.0) / (360.0 / 108.0)) % 12
         karakamsha_sign = ZODIAC[d9_index]
 
-    # --- Hora Lagna ---
+    # Karakamsha-based house positions (treating Karakamsha as H1)
+    karakamsha_houses = {}
+    for p_name in planets:
+        p_sign = _get_planet_sign(planets, p_name)
+        karakamsha_houses[p_name] = _sign_distance(karakamsha_sign, p_sign)
+
     # Based on Sun's longitude: each hora = 15° of Sun movement from sunrise
     # Approximate: Sun longitude / 15 → sign offset from ascendant
     sun_lon = float(planets.get("Sun", {}).get("longitude", 0.0))
@@ -310,8 +315,6 @@ def calculate_chara_dasha(planets: Dict, ascendant: Dict, birth_date: str) -> Di
     try:
         start = datetime.strptime(str(birth_date).split("T")[0].split(" ")[0], "%Y-%m-%d")
     except Exception as e:
-        print(f"ERROR in calculate_chara_dasha (date parse): {e}")
-        print(traceback.format_exc())
         start = datetime(2000, 1, 1)
 
     total_years_covered = 0
@@ -323,6 +326,32 @@ def calculate_chara_dasha(planets: Dict, ascendant: Dict, birth_date: str) -> Di
             years = entry["years"]
             modality = _sign_type(sign)
             end = start + timedelta(days=years * 365.25)
+            
+            # --- CALCULATE ANTARDASHAS (Sub-periods) ---
+            # Each mahadasha sign is divided into 12 sub-periods of equal length.
+            # Order follows the same forward/backward logic as Mahadasha.
+            ad_days = (years * 365.25) / 12.0
+            antardashas = []
+            ad_start = start
+            
+            # Order for sub-periods: if Mahadasha sign is odd, forward. If even, backward.
+            sign_idx = _sign_index(sign)
+            is_odd_ad = (sign_idx % 2 == 0)
+            
+            for j in range(12):
+                if is_odd_ad:
+                    ad_sign = ZODIAC[(sign_idx + j) % 12]
+                else:
+                    ad_sign = ZODIAC[(sign_idx - j) % 12]
+                
+                ad_end = ad_start + timedelta(days=ad_days)
+                antardashas.append({
+                    "sign": ad_sign,
+                    "start_date": ad_start.strftime("%Y-%m-%d"),
+                    "end_date": ad_end.strftime("%Y-%m-%d")
+                })
+                ad_start = ad_end
+
             periods.append({
                 "sign": sign,
                 "lord": lord,
@@ -333,6 +362,7 @@ def calculate_chara_dasha(planets: Dict, ascendant: Dict, birth_date: str) -> Di
                 "sign_type_hi": modality["sign_type_hi"],
                 "sign_type_san": modality["sign_type_san"],
                 "cycle": cycle + 1,
+                "antardashas": antardashas
             })
             total_years_covered += years
             start = end
@@ -709,6 +739,8 @@ def calculate_longevity(planets: Dict, ascendant: Dict) -> Dict:
 # MASTER FUNCTION
 # ============================================================
 
+from app.nadi_engine import calculate_nadi_insights
+
 def calculate_jaimini(chart_data: Dict, birth_date: str = "") -> Dict:
     """Calculate all Jaimini components from chart data."""
     planets = chart_data.get("planets", {})
@@ -723,4 +755,5 @@ def calculate_jaimini(chart_data: Dict, birth_date: str = "") -> Dict:
         "argala": calculate_argala(planets, ascendant),
         "jaimini_yogas": calculate_jaimini_yogas(planets, ascendant),
         "longevity": calculate_longevity(planets, ascendant),
+        "nadi_insights": calculate_nadi_insights(chart_data),
     }

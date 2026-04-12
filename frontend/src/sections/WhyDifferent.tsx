@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Check, X, Sparkles, Moon, Scroll, Users, BookOpen, Award, Brain } from 'lucide-react';
+import { Check, X, Sparkles, Moon, Scroll, Users, Award, Brain } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 
 gsap.registerPlugin(ScrollTrigger);

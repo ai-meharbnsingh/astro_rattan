@@ -40,6 +40,7 @@ export default function KPTab(props: KPTabProps) {
                   <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={language === 'hi' ? 'नक्षत्र स्वामी' : 'Nakshatra Lord'}>NL</th>
                   <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={language === 'hi' ? 'उप स्वामी' : 'Sub Lord'}>SL</th>
                   <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={language === 'hi' ? 'उप-उप स्वामी' : 'Sub-Sub Lord'}>SS</th>
+                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={language === 'hi' ? 'उप-स्वामी का नक्षत्र स्वामी' : 'Star Lord of Sub Lord'}>SSSL</th>
                 </tr></thead>
                 <tbody>
                   {(kpData.planets || []).map((p: any) => (
@@ -54,6 +55,7 @@ export default function KPTab(props: KPTabProps) {
                       <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{p.star_lord || p.nakshatra_lord ? planetShort(p.star_lord || p.nakshatra_lord) : '-'}</td>
                       <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{p.sub_lord ? planetShort(p.sub_lord) : '-'}</td>
                       <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{p.sub_sub_lord ? planetShort(p.sub_sub_lord) : '-'}</td>
+                      <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{p.star_lord_of_sub_lord ? planetShort(p.star_lord_of_sub_lord) : '-'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -120,6 +122,7 @@ export default function KPTab(props: KPTabProps) {
                   <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={language === 'hi' ? 'नक्षत्र स्वामी' : 'Nakshatra Lord'}>NL</th>
                   <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={language === 'hi' ? 'उप स्वामी' : 'Sub Lord'}>SL</th>
                   <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={language === 'hi' ? 'उप-उप स्वामी' : 'Sub-Sub Lord'}>SS</th>
+                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={language === 'hi' ? 'उप-स्वामी का नक्षत्र स्वामी' : 'Star Lord of Sub Lord'}>SSSL</th>
                 </tr></thead>
                 <tbody>
                   {(() => {
@@ -138,6 +141,7 @@ export default function KPTab(props: KPTabProps) {
                         <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{(c.star_lord || '-').slice(0, 2)}</td>
                         <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{(c.sub_lord || '-').slice(0, 2)}</td>
                         <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{(c.sub_sub_lord || '-').slice(0, 2)}</td>
+                        <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{(c.star_lord_of_sub_lord || '-').slice(0, 2)}</td>
                       </tr>
                     );
                   });

@@ -38,6 +38,110 @@ DIVISIONAL_CHARTS: Dict[int, str] = {
     60: "Shashtiamsha (D60)",
 }
 
+# ============================================================
+# D60 SHASHTIAMSA SANSKRIT NAMES & NATURE
+# Reference: PDF 1.1.3 (Ancient Vedic Logic)
+# ============================================================
+D60_NAMES = [
+    {"name": "Ghora", "nature": "Malefic", "hi": "घोर", "desc": "Terrible, intense suffering"},
+    {"name": "Rakshasa", "nature": "Malefic", "hi": "राक्षस", "desc": "Demonic, cruel tendencies"},
+    {"name": "Deva", "nature": "Benefic", "hi": "देव", "desc": "Divine, virtuous, enlightened"},
+    {"name": "Kubera", "nature": "Benefic", "hi": "कुबेर", "desc": "Wealthy, lord of riches"},
+    {"name": "Yaksha", "nature": "Mixed", "hi": "यक्ष", "desc": "Protector of wealth, mystical"},
+    {"name": "Kinnara", "nature": "Benefic", "hi": "किन्नर", "desc": "Artistic, musical, harmonious"},
+    {"name": "Bhrashta", "nature": "Malefic", "hi": "भ्रष्ट", "desc": "Fallen, corrupt, loss of status"},
+    {"name": "Kulaghna", "nature": "Malefic", "hi": "कुलघ्न", "desc": "Destroyer of lineage"},
+    {"name": "Garala", "nature": "Malefic", "hi": "गरल", "desc": "Poisonous, toxic environments"},
+    {"name": "Vahni", "nature": "Malefic", "hi": "वह्नि", "desc": "Fire, burning, digestive issues"},
+    {"name": "Maya", "nature": "Mixed", "hi": "माया", "desc": "Illusion, deceptive success"},
+    {"name": "Purishaka", "nature": "Malefic", "hi": "पुरीषक", "desc": "Impure, difficult circumstances"},
+    {"name": "Apampati", "nature": "Benefic", "hi": "अपाम्पति", "desc": "Lord of waters, calm, stable"},
+    {"name": "Marutvan", "nature": "Benefic", "hi": "मरुत्वान्", "desc": "Lord of winds, influential"},
+    {"name": "Kaala", "nature": "Malefic", "hi": "काल", "desc": "Time, end, restrictive"},
+    {"name": "Sarpa", "nature": "Malefic", "hi": "सर्प", "desc": "Serpentine, hidden enemies"},
+    {"name": "Amrita", "nature": "Benefic", "hi": "अमृत", "desc": "Nectar, immortality, great health"},
+    {"name": "Indu", "nature": "Benefic", "hi": "इन्दु", "desc": "Moon-like, peaceful, nourishing"},
+    {"name": "Mridu", "nature": "Benefic", "hi": "मृदु", "desc": "Soft, gentle, kind"},
+    {"name": "Komala", "nature": "Benefic", "hi": "कोमल", "desc": "Delicate, refined, aesthetic"},
+    {"name": "Heramba", "nature": "Benefic", "hi": "हेरम्ब", "desc": "Ganesha-like, removing obstacles"},
+    {"name": "Brahma", "nature": "Benefic", "hi": "ब्रह्मा", "desc": "Creative, knowledge-oriented"},
+    {"name": "Vishnu", "nature": "Benefic", "hi": "विष्णु", "desc": "Protective, expansive, lucky"},
+    {"name": "Maheshwara", "nature": "Benefic", "hi": "महेश्वर", "desc": "Powerful, transformative, grand"},
+    {"name": "Devadeva", "nature": "Benefic", "hi": "देवदेव", "desc": "Lord of lords, supreme status"},
+    {"name": "Ardra", "nature": "Mixed", "hi": "आर्द्रा", "desc": "Moist, emotional, sensitive"},
+    {"name": "Kalinasa", "nature": "Benefic", "hi": "कलिनाश", "desc": "Destroyer of strife"},
+    {"name": "Kshiteeshwara", "nature": "Benefic", "hi": "क्षितीश्वर", "desc": "Ruler of earth, landed property"},
+    {"name": "Kamalakara", "nature": "Benefic", "hi": "कमलाकर", "desc": "Lotus-like, purity, beauty"},
+    {"name": "Gulika", "nature": "Malefic", "hi": "गुलिका", "desc": "Saturn's son, karmic delays"},
+    {"name": "Mrityu", "nature": "Malefic", "hi": "मृत्यु", "desc": "Death-like, end of cycles"},
+    {"name": "Kaala", "nature": "Malefic", "hi": "काल", "desc": "Time, finite, ending"},
+    {"name": "Davagni", "nature": "Malefic", "hi": "दवाग्नि", "desc": "Forest fire, sudden destruction"},
+    {"name": "Ghora", "nature": "Malefic", "hi": "घोर", "desc": "Intense, terrible"},
+    {"name": "Adhama", "nature": "Malefic", "hi": "अधम", "desc": "Lowly, degraded results"},
+    {"name": "Kantaka", "nature": "Malefic", "hi": "कंटक", "desc": "Thorn, painful obstacles"},
+    {"name": "Sudha", "nature": "Benefic", "hi": "सुधा", "desc": "Nectar, pure, satisfying"},
+    {"name": "Amrita", "nature": "Benefic", "hi": "अमृत", "desc": "Immortality, nectar"},
+    {"name": "Poornachandra", "nature": "Benefic", "hi": "पूर्णचन्द्र", "desc": "Full moon, abundance, fame"},
+    {"name": "Vishadagdha", "nature": "Malefic", "hi": "विषदिग्ध", "desc": "Consumed by poison"},
+    {"name": "Kulanasa", "nature": "Malefic", "hi": "कुलनाश", "desc": "Linage destroyer"},
+    {"name": "Vamshakshaya", "nature": "Malefic", "hi": "वंशक्षय", "desc": "Family decay"},
+    {"name": "Utpata", "nature": "Malefic", "hi": "उत्पात", "desc": "Calamity, sudden upheaval"},
+    {"name": "Kaala", "nature": "Malefic", "hi": "काल", "desc": "Time constraint"},
+    {"name": "Saumya", "nature": "Benefic", "hi": "सौम्य", "desc": "Gentle, benefic results"},
+    {"name": "Komala", "nature": "Benefic", "hi": "कोमल", "desc": "Soft, pleasant"},
+    {"name": "Sheetala", "nature": "Benefic", "hi": "शीतल", "desc": "Cool, soothing"},
+    {"name": "Karaladamshstra", "nature": "Malefic", "hi": "करालदंष्ट्र", "desc": "Fierce teeth, aggressive"},
+    {"name": "Chandramukhi", "nature": "Benefic", "hi": "चन्द्रमुखी", "desc": "Moon-faced, attractive"},
+    {"name": "Praveena", "nature": "Benefic", "hi": "प्रवीण", "desc": "Skilled, expert"},
+    {"name": "Kalapavaka", "nature": "Malefic", "hi": "कालपावक", "desc": "Fire of time"},
+    {"name": "Dandayudha", "nature": "Malefic", "hi": "दंडायुध", "desc": "Staff-bearing, punishment"},
+    {"name": "Nirmala", "nature": "Benefic", "hi": "निर्मल", "desc": "Pure, stainless"},
+    {"name": "Saumya", "nature": "Benefic", "hi": "सौम्य", "desc": "Gentle"},
+    {"name": "Kshura", "nature": "Malefic", "hi": "क्षुर", "desc": "Razor-sharp, cutting"},
+    {"name": "Atisheetala", "nature": "Benefic", "hi": "अतिशीतल", "desc": "Very cool, highly soothing"},
+    {"name": "Amrita", "nature": "Benefic", "hi": "अमृत", "desc": "Nectar"},
+    {"name": "Payodhi", "nature": "Benefic", "hi": "पयोधि", "desc": "Ocean, depth, vast wealth"},
+    {"name": "Bhramana", "nature": "Mixed", "hi": "भ्रमण", "desc": "Wandering, travel"},
+    {"name": "Chandrarekha", "nature": "Benefic", "hi": "चन्द्ररेखा", "desc": "Moon-streak, fame, soft aura"},
+]
+
+def calculate_d60_analysis(planet_longitudes: Dict[str, float]) -> Dict[str, Any]:
+    """
+    Identifies the D60 Shashtiamsa division for each planet and its meaning.
+    Reference: PDF 1.1.3
+    """
+    analysis = {}
+    for planet, lon in planet_longitudes.items():
+        # D60 = 30 / 60 = 0.5 degrees per division
+        # 1. Degrees within sign
+        deg_in_sign = lon % 30.0
+        # 2. Shashtiamsa unit (0-59)
+        unit = int(deg_in_sign * 2) # 0.5 deg = 1 unit, so 1 deg = 2 units
+        
+        # 3. Determine if sign is ODD or EVEN
+        sign_idx = int(lon / 30.0) % 12
+        is_odd = (sign_idx % 2 == 0) # 0=Aries (odd), 1=Taurus (even)
+        
+        # 4. Map to D60 name
+        # If ODD: 1 to 60 directly
+        # If EVEN: Reverse (60 to 1)
+        if is_odd:
+            name_idx = unit
+        else:
+            name_idx = 59 - unit
+            
+        if 0 <= name_idx < 60:
+            info = D60_NAMES[name_idx]
+            analysis[planet] = {
+                "unit": unit + 1,
+                "name": info["name"],
+                "name_hi": info["hi"],
+                "nature": info["nature"],
+                "description": info["desc"]
+            }
+            
+    return analysis
+
 
 def _sign_index(sign_name: str) -> int:
     """Return the 0-based index of a zodiac sign."""

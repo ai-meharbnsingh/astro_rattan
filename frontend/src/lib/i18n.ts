@@ -541,6 +541,13 @@ const translations: Record<Language, TranslationMap> = {
     'transit.sadeSatiInactive': 'Sade Sati is Not Active',
     'transit.phase': 'Phase',
     'transit.transitDate': 'Transit Date',
+    'transit.heatMapTitle': 'Temporal Heat Map',
+    'transit.heatMapDesc': 'Daily intensity of transits for the next 30 days. Plan your activities accordingly.',
+    'transit.intensity': 'Intensity',
+    'transit.good': 'Auspicious',
+    'transit.average': 'Average',
+    'transit.challenging': 'Challenging',
+    'transit.forecastLoading': 'Calculating 30-day forecast...',
     'transit.natalMoon': 'Natal Moon Sign',
 
     // KP System
@@ -1821,6 +1828,13 @@ const translations: Record<Language, TranslationMap> = {
     'transit.sadeSatiInactive': 'साढ़े साती सक्रिय नहीं है',
     'transit.phase': 'चरण',
     'transit.transitDate': 'गोचर तिथि',
+    'transit.heatMapTitle': 'समय आधारित ताप मानचित्र (Heat Map)',
+    'transit.heatMapDesc': 'अगले 30 दिनों के लिए गोचर की दैनिक तीव्रता। अपनी गतिविधियों की तदनुसार योजना बनाएं।',
+    'transit.intensity': 'तीव्रता',
+    'transit.good': 'शुभ',
+    'transit.average': 'सामान्य',
+    'transit.challenging': 'चुनौतीपूर्ण',
+    'transit.forecastLoading': '30-दिन के गोचर फल की गणना की जा रही है...',
     'transit.natalMoon': 'जन्म चंद्र राशि',
 
     // KP System

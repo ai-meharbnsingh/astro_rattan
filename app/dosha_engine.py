@@ -6,6 +6,8 @@ Also detects positive Yogas: Gajakesari, Budhaditya, Chandra-Mangal,
 and Panch Mahapurusha Yogas.
 """
 
+import re
+
 # Zodiac signs in order (0-indexed for arithmetic)
 ZODIAC_SIGNS = [
     "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
@@ -40,6 +42,73 @@ OWN_SIGNS = {
 
 # Malefic planets
 MALEFICS = {"Sun", "Mars", "Saturn", "Rahu", "Ketu"}
+
+
+_TERM_KEY_OVERRIDES = {
+    # Doshas
+    "mangal dosha": "DOSHA_MANGAL",
+    "kaal sarp dosha": "DOSHA_KAAL_SARP",
+    "kal sarp dosha": "DOSHA_KAAL_SARP",
+    "sade sati": "DOSHA_SADE_SATI",
+    "pitra dosha": "DOSHA_PITRA",
+    "kemdrum dosha": "DOSHA_KEMDRUM",
+    "kemadrum dosha": "DOSHA_KEMDRUM",
+    "angarak dosha": "DOSHA_ANGARAK",
+    "guru chandal dosha": "DOSHA_GURU_CHANDAL",
+    "vish dosha": "DOSHA_VISH",
+    "shrapit dosha": "DOSHA_SHRAPIT",
+    "grahan dosha": "DOSHA_GRAHAN",
+    "ghatak dosha": "DOSHA_GHATAK",
+    "daridra dosha": "DOSHA_DARIDRA",
+    # Yogas
+    "gajakesari yoga": "YOGA_GAJAKESARI",
+    "gaj kesari yoga": "YOGA_GAJAKESARI",
+    "budhaditya yoga": "YOGA_BUDHADITYA",
+    "chandra mangal yoga": "YOGA_CHANDRA_MANGAL",
+    "chandra-mangal yoga": "YOGA_CHANDRA_MANGAL",
+    "ruchaka yoga": "YOGA_RUCHAKA",
+    "bhadra yoga": "YOGA_BHADRA",
+    "hamsa yoga": "YOGA_HAMSA",
+    "malavya yoga": "YOGA_MALAVYA",
+    "shasha yoga": "YOGA_SHASHA",
+    "sunapha yoga": "YOGA_SUNAPHA",
+    "anapha yoga": "YOGA_ANAPHA",
+    "durudhara yoga": "YOGA_DURUDHARA",
+    "shakata yoga": "YOGA_SHAKATA",
+    "adhi yoga": "YOGA_ADHI",
+    "amala yoga": "YOGA_AMALA",
+    "raja yoga": "YOGA_RAJA",
+    "lakshmi yoga": "YOGA_LAKSHMI",
+    "dhana yoga": "YOGA_DHANA",
+    "saraswati yoga": "YOGA_SARASWATI",
+    "neecha bhanga raja yoga": "YOGA_NEECHA_BHANGA_RAJA",
+    "panch mahapurusha yoga": "YOGA_PANCH_MAHAPURUSHA",
+    "viparit raja yoga": "YOGA_VIPARIT_RAJA",
+    "danda yoga": "YOGA_DANDA",
+    "kemadruma yoga": "YOGA_KEMADRUMA",
+    "vasi yoga": "YOGA_VASI",
+    "parashari raja yoga": "YOGA_PARASHARI_RAJA",
+    "surya in swa rashi": "YOGA_SURYA_IN_SWA_RASHI_SUN_IN_OWN_SIGN",
+    "shani uchcha": "YOGA_SHANI_UCHCHA_SATURN_EXALTED",
+}
+
+
+def to_translation_key(prefix: str, text: str) -> str:
+    """Create a stable, API-safe translation key from a label."""
+    if not text:
+        return prefix
+    normalized = re.sub(r"[^a-z0-9]+", " ", text.lower()).strip()
+    normalized = re.sub(r"\s+", " ", normalized)
+    if normalized in _TERM_KEY_OVERRIDES:
+        return _TERM_KEY_OVERRIDES[normalized]
+
+    base = re.sub(r"\s*\([^)]*\)\s*$", "", text.strip())
+    slug = re.sub(r"[^A-Za-z0-9]+", "_", base.upper()).strip("_")
+    if prefix == "YOGA" and slug.endswith("_YOGA"):
+        slug = slug[:-5]
+    if prefix == "DOSHA" and slug.endswith("_DOSHA"):
+        slug = slug[:-6]
+    return f"{prefix}_{slug}" if slug else prefix
 
 
 def check_mangal_dosha(mars_house: int) -> dict:
@@ -1162,6 +1231,16 @@ def analyze_yogas_and_doshas(planets: dict, asc_sign: str = "") -> dict:
     doshas.append(check_grahan_dosha(planets))
     doshas.append(check_ghatak_dosha(planets))
     doshas.append(check_daridra_dosha(planets, asc_sign))
+
+    for yoga in yogas:
+        yoga_name = yoga.get("name")
+        if isinstance(yoga_name, str) and yoga_name and "name_key" not in yoga:
+            yoga["name_key"] = to_translation_key("YOGA", yoga_name)
+
+    for dosha in doshas:
+        dosha_name = dosha.get("name")
+        if isinstance(dosha_name, str) and dosha_name and "name_key" not in dosha:
+            dosha["name_key"] = to_translation_key("DOSHA", dosha_name)
 
     return {
         "yogas": yogas,

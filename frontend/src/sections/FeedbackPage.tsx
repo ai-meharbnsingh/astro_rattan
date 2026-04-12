@@ -66,7 +66,6 @@ function StarRating({
 
 // ── StarDisplay (read-only, compact) ─────────────────────────────────────────
 function StarDisplay({ value }: { value: number | null }) {
-  const { t } = useTranslation();
   if (!value) return <span className="text-xs text-gray-300">—</span>;
   return (
     <span className="inline-flex items-center gap-0.5">
@@ -126,7 +125,7 @@ function FeedbackHistoryCard({
     try {
       await api.patch(`/api/feedback/${item.id}/close`, {});
       onClosed(item.id);
-    } catch (e) { console.error(e); }
+    } catch (e: unknown) { console.error(e); }
     setClosing(false);
   };
 
@@ -255,8 +254,9 @@ export default function FeedbackPage() {
       setTimeout(() => setSubmitted(false), 5000);
       // refresh history
       api.get('/api/feedback/my').then(setHistory).catch(console.error);
-    } catch (e: any) {
-      setSubmitError(e.message || t('feedback.submitFailed'));
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : '';
+      setSubmitError(msg || t('feedback.submitFailed'));
     }
     setSubmitting(false);
   };

@@ -132,36 +132,7 @@ def _check_sade_sati(moon_sign: str, saturn_sign: str) -> Dict[str, Any]:
 def calculate_transits(natal_chart_data: Dict[str, Any], latitude: float = 0.0, longitude: float = 0.0, transit_date: str = None, transit_time: str = None) -> Dict[str, Any]:
     """
     Calculate planetary transits and their Gochara effects on a natal chart.
-
-    Args:
-        natal_chart_data: The stored chart_data dict from a kundli row.
-        latitude:  Observer latitude for ascendant calculation.
-        longitude: Observer longitude for ascendant calculation.
-        transit_date: Optional date string "YYYY-MM-DD". Defaults to today.
-        transit_time: Optional time string "HH:MM:SS". Defaults to current time.
-
-    Returns:
-        {
-            "transits": [
-                {
-                    "planet": str,
-                    "current_sign": str,
-                    "natal_house_from_moon": int,
-                    "effect": "favorable" | "unfavorable",
-                    "description": str,
-                }
-            ],
-            "sade_sati": {
-                "active": bool,
-                "phase": str,
-                "description": str,
-            },
-            "transit_date": str,  # ISO date of transit calculation
-        }
     """
-    # Calculate current planetary positions using the birth location for correct ascendant.
-    # Planet longitudes are nearly location-independent, but the ascendant (Lagna)
-    # depends heavily on the observer's latitude and longitude.
     # Approximate timezone offset from longitude (15° per hour)
     tz_offset = round(longitude / 15.0 * 2) / 2  # round to nearest 0.5
 
@@ -195,6 +166,9 @@ def calculate_transits(natal_chart_data: Dict[str, Any], latitude: float = 0.0, 
     current_planets = current_positions.get("planets", {})
     saturn_current_sign = "Capricorn"  # fallback
 
+    favorable_count = 0
+    total_planets = 0
+
     for planet_name in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]:
         planet_info = current_planets.get(planet_name, {})
         current_sign = planet_info.get("sign", "Aries")
@@ -205,6 +179,16 @@ def calculate_transits(natal_chart_data: Dict[str, Any], latitude: float = 0.0, 
         house_from_moon = _house_from_moon(natal_moon_sign, current_sign)
         favorable_houses = GOCHARA_FAVORABLE.get(planet_name, set())
         is_favorable = house_from_moon in favorable_houses
+        
+        if is_favorable:
+            # Weighted score: slower planets count more
+            weight = 3 if planet_name in ["Jupiter", "Saturn", "Rahu", "Ketu"] else 1
+            favorable_count += weight
+            total_planets += weight
+        else:
+            weight = 3 if planet_name in ["Jupiter", "Saturn", "Rahu", "Ketu"] else 1
+            total_planets += weight
+
         effect = "favorable" if is_favorable else "unfavorable"
 
         description = (
@@ -212,7 +196,6 @@ def calculate_transits(natal_chart_data: Dict[str, Any], latitude: float = 0.0, 
             if is_favorable
             else _UNFAVORABLE_DESC.get(planet_name, "")
         )
-        # Add house context to description
         description += f" (Transiting house {house_from_moon} from Moon in {natal_moon_sign})"
 
         transits.append({
@@ -227,6 +210,9 @@ def calculate_transits(natal_chart_data: Dict[str, Any], latitude: float = 0.0, 
             "description": description,
         })
 
+    # Intensity score (0-100)
+    score = int((favorable_count / total_planets) * 100) if total_planets > 0 else 50
+
     # Sade Sati check
     sade_sati = _check_sade_sati(natal_moon_sign, saturn_current_sign)
 
@@ -234,9 +220,33 @@ def calculate_transits(natal_chart_data: Dict[str, Any], latitude: float = 0.0, 
         "transits": transits,
         "sade_sati": sade_sati,
         "transit_date": today_str,
+        "daily_score": score,
         "natal_moon_sign": natal_moon_sign,
         "chart_data": {
             "ascendant": current_positions.get("ascendant"),
             "houses": current_positions.get("houses"),
         },
     }
+
+
+def calculate_transit_forecast(natal_chart_data: Dict[str, Any], latitude: float = 0.0, longitude: float = 0.0, days: int = 30) -> List[Dict[str, Any]]:
+    """
+    Calculate transit intensity scores for the next N days.
+    """
+    forecast = []
+    now = datetime.now()
+    
+    for i in range(days):
+        target_date = now + timedelta(days=i)
+        date_str = target_date.strftime("%Y-%m-%d")
+        
+        # Fast calculation (simplified for performance)
+        res = calculate_transits(natal_chart_data, latitude, longitude, transit_date=date_str, transit_time="12:00:00")
+        
+        forecast.append({
+            "date": date_str,
+            "score": res["daily_score"],
+            "summary": "Good" if res["daily_score"] >= 70 else "Average" if res["daily_score"] >= 40 else "Challenging"
+        })
+        
+    return forecast

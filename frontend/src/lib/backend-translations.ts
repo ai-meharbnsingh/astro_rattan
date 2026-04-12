@@ -262,33 +262,146 @@ const ALL_LOOKUPS: Record<string, string> = {
   ...YOGA_DESCRIPTIONS, ...AVAKHADA_VALUES,
 };
 
+type TranslationId = string;
+type CategoryPrefix = 'PLANET' | 'SIGN' | 'DOSHA' | 'YOGA' | 'NAKSHATRA' | 'YOGINI' | 'LABEL' | 'PHASE';
+type TranslationEntry = { en: string; hi: string };
+
+const CORE_TRANSLATION_SOURCES: Array<{ prefix: CategoryPrefix; map: Record<string, string> }> = [
+  { prefix: 'PLANET', map: PLANET_NAMES },
+  { prefix: 'SIGN', map: SIGN_NAMES },
+  { prefix: 'DOSHA', map: DOSHA_NAMES },
+  { prefix: 'YOGA', map: YOGA_NAMES },
+  { prefix: 'NAKSHATRA', map: NAKSHATRA_NAMES },
+  { prefix: 'YOGINI', map: YOGINI_NAMES },
+  { prefix: 'LABEL', map: { ...SEVERITY, ...DIGNITY, ...SIGN_TYPE_LABELS, ...ELEMENT_LABELS, ...STRENGTH } },
+  { prefix: 'PHASE', map: PHASE_TYPES },
+];
+
+const CORE_PHRASE_ALIASES: Record<string, string> = {
+  'Gaj Kesari Yoga': 'Gajakesari Yoga',
+  'Gaja Kesari Yoga': 'Gajakesari Yoga',
+  'Gajkeshari Yoga': 'Gajakesari Yoga',
+  'Chandra Mangal Yoga': 'Chandra-Mangal Yoga',
+  'Kaal Sarp Dosha': 'Kaal Sarp Dosha',
+  'Kal Sarp Dosha': 'Kaal Sarp Dosha',
+  'Kemadrum Dosha': 'Kemdrum Dosha',
+  'Sadesati': 'Sade Sati',
+  'Sade Sathi': 'Sade Sati',
+  'Saturn Exalted': 'Shani Uchcha (Saturn Exalted)',
+};
+
+function normalizeKey(value: string): string {
+  return value.trim().toLowerCase().replace(/[_\-()]+/g, ' ').replace(/\s+/g, ' ');
+}
+
+function compactAsciiKey(value: string): string {
+  return value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function makeTranslationId(prefix: CategoryPrefix, text: string): TranslationId {
+  const slug = text
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+  if (prefix === 'YOGA' && slug.endsWith('_YOGA')) return `${prefix}_${slug.slice(0, -5)}`;
+  if (prefix === 'DOSHA' && slug.endsWith('_DOSHA')) return `${prefix}_${slug.slice(0, -6)}`;
+  return `${prefix}_${slug}`;
+}
+
+const CORE_TRANSLATIONS_BY_ID: Record<TranslationId, TranslationEntry> = {};
+const CORE_ENGLISH_TO_ID: Record<string, TranslationId> = {};
+
+for (const source of CORE_TRANSLATION_SOURCES) {
+  for (const [en, hi] of Object.entries(source.map)) {
+    const id = makeTranslationId(source.prefix, en);
+    CORE_TRANSLATIONS_BY_ID[id] = { en, hi };
+    CORE_ENGLISH_TO_ID[en] = id;
+  }
+}
+
+const CORE_LOOKUP_TO_ID: Record<string, TranslationId> = {};
+for (const [id, entry] of Object.entries(CORE_TRANSLATIONS_BY_ID)) {
+  CORE_LOOKUP_TO_ID[id] = id;
+  CORE_LOOKUP_TO_ID[normalizeKey(id)] = id;
+  CORE_LOOKUP_TO_ID[compactAsciiKey(id)] = id;
+  CORE_LOOKUP_TO_ID[normalizeKey(entry.en)] = id;
+  CORE_LOOKUP_TO_ID[compactAsciiKey(entry.en)] = id;
+}
+
+for (const [alias, canonical] of Object.entries(CORE_PHRASE_ALIASES)) {
+  const id = CORE_ENGLISH_TO_ID[canonical];
+  if (id) {
+    CORE_LOOKUP_TO_ID[normalizeKey(alias)] = id;
+    CORE_LOOKUP_TO_ID[compactAsciiKey(alias)] = id;
+  }
+}
+
+function resolveTranslationId(text: string, category?: CategoryPrefix): TranslationId | null {
+  const trimmed = text.trim();
+  if (!trimmed) return null;
+  const compact = compactAsciiKey(trimmed);
+  const candidates = [
+    CORE_LOOKUP_TO_ID[trimmed],
+    CORE_LOOKUP_TO_ID[normalizeKey(trimmed)],
+    CORE_LOOKUP_TO_ID[compact],
+    trimmed.startsWith('YOGA_') ? CORE_LOOKUP_TO_ID[`${trimmed}_YOGA`] : undefined,
+    trimmed.startsWith('DOSHA_') ? CORE_LOOKUP_TO_ID[`${trimmed}_DOSHA`] : undefined,
+  ];
+  let resolved = candidates.find(Boolean) || null;
+  if (!resolved && (trimmed.startsWith('YOGA_') || trimmed.startsWith('DOSHA_'))) {
+    const prefix = trimmed.startsWith('YOGA_') ? 'YOGA_' : 'DOSHA_';
+    const similar = Object.keys(CORE_TRANSLATIONS_BY_ID)
+      .filter((id) => id.startsWith(prefix))
+      .sort((a, b) => a.length - b.length)
+      .find((id) => compactAsciiKey(id).includes(compact) || compact.includes(compactAsciiKey(id)));
+    resolved = similar ?? null;
+  }
+  if (!resolved) return null;
+  if (!category) return resolved;
+  return resolved.startsWith(`${category}_`) ? resolved : null;
+}
+
+function translateById(id: TranslationId, lang: Language): string {
+  const entry = CORE_TRANSLATIONS_BY_ID[id];
+  if (!entry) return id;
+  return lang === 'hi' ? entry.hi : entry.en;
+}
+
 /**
  * Translate a backend-returned string to Hindi.
  * Returns original text if no translation found (graceful degradation).
  */
 export function translateBackend(text: string | null | undefined, lang: Language): string {
   if (!text) return '';
-  if (lang === 'en') return text;
+  const raw = typeof text === 'string' ? text : '';
+  const id = resolveTranslationId(raw);
+  if (id) return translateById(id, lang);
+  if (lang === 'en') return raw;
 
   // Exact match first
-  if (ALL_LOOKUPS[text]) return ALL_LOOKUPS[text];
+  if (ALL_LOOKUPS[raw]) return ALL_LOOKUPS[raw];
 
   // Try matching planet/sign names within the text (for composite strings)
-  let result = text;
+  let result = raw;
   for (const [en, hi] of Object.entries(PLANET_NAMES)) {
-    result = result.replace(new RegExp(`\\b${en}\\b`, 'g'), hi);
+    result = result.replace(new RegExp(`\\b${escapeRegExp(en)}\\b`, 'gi'), hi);
   }
   for (const [en, hi] of Object.entries(SIGN_NAMES)) {
-    result = result.replace(new RegExp(`\\b${en}\\b`, 'g'), hi);
+    result = result.replace(new RegExp(`\\b${escapeRegExp(en)}\\b`, 'gi'), hi);
   }
   for (const [en, hi] of Object.entries(YOGA_NAMES)) {
-    result = result.replace(new RegExp(`\\b${en}\\b`, 'g'), hi);
+    result = result.replace(new RegExp(`\\b${escapeRegExp(en)}\\b`, 'gi'), hi);
   }
 
   // Try partial phrase matching for descriptions
   for (const [en, hi] of Object.entries(YOGA_DESCRIPTIONS)) {
     if (result.includes(en)) {
-      result = result.replace(new RegExp(en.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), hi);
+      result = result.replace(new RegExp(escapeRegExp(en), 'g'), hi);
     }
   }
 
@@ -298,6 +411,8 @@ export function translateBackend(text: string | null | undefined, lang: Language
 /** Translate a planet name */
 export function translatePlanet(name: string, lang: Language): string {
   const n = typeof name === 'string' ? name : '';
+  const id = resolveTranslationId(n, 'PLANET');
+  if (id) return translateById(id, lang);
   if (lang === 'en') return n;
   return PLANET_NAMES[n] || n;
 }
@@ -339,6 +454,8 @@ export function translateSignAbbr(name: string, lang: Language): string {
 /** Translate a zodiac sign name */
 export function translateSign(name: string, lang: Language): string {
   const n = typeof name === 'string' ? name : '';
+  const id = resolveTranslationId(n, 'SIGN');
+  if (id) return translateById(id, lang);
   if (lang === 'en') return n;
   return SIGN_NAMES[n] || n;
 }
@@ -346,12 +463,16 @@ export function translateSign(name: string, lang: Language): string {
 /** Translate a nakshatra name */
 export function translateNakshatra(name: string | null | undefined, lang: Language): string {
   if (!name) return '';
+  const id = resolveTranslationId(name, 'NAKSHATRA');
+  if (id) return translateById(id, lang);
   if (lang === 'en') return name;
   return NAKSHATRA_NAMES[name] || name;
 }
 
 /** Translate a dosha or yoga name */
 export function translateName(name: string, lang: Language): string {
+  const id = resolveTranslationId(name);
+  if (id) return translateById(id, lang);
   if (lang === 'en') return name;
   return DOSHA_NAMES[name] || YOGA_NAMES[name] || YOGINI_NAMES[name] || name;
 }
@@ -364,6 +485,8 @@ export function translateRemedy(text: string, lang: Language): string {
 
 /** Translate severity/dignity/strength/sign-type/element */
 export function translateLabel(text: string, lang: Language): string {
+  const id = resolveTranslationId(text, 'LABEL') || resolveTranslationId(text, 'PHASE');
+  if (id) return translateById(id, lang);
   if (lang === 'en') return text;
   return SEVERITY[text] || DIGNITY[text] || STRENGTH[text] || SIGN_TYPE_LABELS[text] || ELEMENT_LABELS[text] || PHASE_TYPES[text] || text;
 }

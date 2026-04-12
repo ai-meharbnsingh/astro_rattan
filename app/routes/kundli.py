@@ -12,21 +12,29 @@ from app.database import get_db
 from app.models import KundliRequest, KundliMatchRequest, DivisionalChartRequest
 from app.astro_engine import calculate_planet_positions
 from app.astro_iogita_engine import run_astro_analysis
-from app.dosha_engine import check_mangal_dosha, check_kaal_sarp, check_sade_sati, analyze_yogas_and_doshas
+from app.dosha_engine import (
+    check_mangal_dosha,
+    check_kaal_sarp,
+    check_sade_sati,
+    analyze_yogas_and_doshas,
+    to_translation_key,
+)
 from app.dasha_engine import calculate_dasha, calculate_extended_dasha
 from app.varshphal_engine import calculate_varshphal
 from app.divisional_charts import (
     calculate_divisional_chart_detailed,
     calculate_divisional_houses,
+    calculate_d60_analysis,
     DIVISIONAL_CHARTS,
 )
 from app.ashtakvarga_engine import calculate_ashtakvarga
 from app.shadbala_engine import calculate_shadbala, calculate_bhav_bala
 from app.avakhada_engine import calculate_avakhada
-from app.transit_engine import calculate_transits
+from app.transit_engine import calculate_transits, calculate_transit_forecast
 from app.kp_engine import calculate_kp_cuspal
 from app.lifelong_sade_sati import calculate_lifelong_sade_sati
 from app.yogini_dasha_engine import calculate_yogini_dasha
+from app.nadi_engine import calculate_nadi_insights
 from datetime import datetime
 
 router = APIRouter(prefix="/api/kundli", tags=["kundli"])
@@ -362,6 +370,12 @@ def check_doshas(
     )
     saturn_transit_sign = _today_positions.get("planets", {}).get("Saturn", {}).get("sign", "Capricorn")
     sade_sati = check_sade_sati(moon_sign, saturn_transit_sign)
+    mangal["name_key"] = "DOSHA_MANGAL"
+    kaal_sarp["name_key"] = "DOSHA_KAAL_SARP"
+    sade_sati["name_key"] = "DOSHA_SADE_SATI"
+    phase = sade_sati.get("phase")
+    if isinstance(phase, str) and phase and phase != "none":
+        sade_sati["phase_key"] = to_translation_key("PHASE", phase)
 
     # Gemstone recommendations based on ascendant lord and weak planets
     SIGN_LORDS = {
@@ -526,6 +540,11 @@ def get_divisional_chart(
 
     chart_name = DIVISIONAL_CHARTS.get(division, f"D{division}")
 
+    # Special logic for D60 interpretive analysis
+    d60_analysis = None
+    if division == 60:
+        d60_analysis = calculate_d60_analysis(planet_longitudes)
+
     return {
         "kundli_id": kundli_id,
         "person_name": row["person_name"],
@@ -535,6 +554,7 @@ def get_divisional_chart(
         "planet_signs": planet_signs,
         "planet_positions": planet_positions,
         "houses": houses,
+        "d60_analysis": d60_analysis,
     }
 
 
@@ -561,6 +581,23 @@ def get_ashtakvarga(
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result
+
+
+@router.post("/{kundli_id}/transit-forecast", status_code=status.HTTP_200_OK)
+def get_transit_forecast(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Calculate 30-day transit intensity forecast."""
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    
+    lat = float(row.get("latitude", 0.0))
+    lon = float(row.get("longitude", 0.0))
+    
+    forecast = calculate_transit_forecast(chart, lat, lon, days=30)
+    return {"forecast": forecast}
 
 
 @router.post("/{kundli_id}/shadbala", status_code=status.HTTP_200_OK)

@@ -1,7 +1,8 @@
-import { Loader2, Star, Crown, Eye, Clock, Wallet } from 'lucide-react';
+import { Loader2, Star, Crown, Eye, Clock, Wallet, ChevronDown, ChevronRight } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { translatePlanet, translateSign, translateBackend } from '@/lib/backend-translations';
 import GeneralRemedies from './GeneralRemedies';
+import { useState, Fragment } from 'react';
 
 interface JaiminiTabProps {
   data: any;
@@ -10,6 +11,8 @@ interface JaiminiTabProps {
 
 export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
   const { t, language } = useTranslation();
+  const isHi = language === 'hi';
+  const [expandedDasha, setExpandedDasha] = useState<number | null>(null);
 
   if (loading) {
     return (
@@ -116,7 +119,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
             const lagna = data.special_lagnas[key];
             if (!lagna) return null;
             return (
-              <div key={key} className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
+              <div key={key} className="bg-sacred-cream rounded-xl border border-sacred-gold p-4 shadow-sm hover:shadow-md transition-all">
                 <div className="flex items-center gap-2 mb-2">
                   {icon}
                   <h5 className="font-display font-semibold text-sacred-brown text-sm">
@@ -126,14 +129,39 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
                 <p className="text-2xl font-bold" style={{ color: 'var(--aged-gold-dim)' }}>
                   {translateSign(lagna.sign, language)}
                 </p>
-                <p className="text-sm text-slate-500 mt-1">
-                  {language === 'hi' ? `भाव ${lagna.house}` : `House ${lagna.house}`}
-                  {lagna.atmakaraka && ` — AK: ${translatePlanet(lagna.atmakaraka, language)}`}
-                </p>
-                <p className="text-sm text-slate-400 mt-1">{language === 'hi' ? desc_hi : desc_en}</p>
+                <div className="flex items-center justify-between mt-1">
+                  <p className="text-sm text-slate-500">
+                    {language === 'hi' ? `भाव ${lagna.house}` : `House ${lagna.house}`}
+                  </p>
+                  {lagna.atmakaraka && (
+                    <span className="text-[10px] bg-sacred-gold/10 text-sacred-gold-dark px-1.5 py-0.5 rounded font-bold uppercase">AK: {translatePlanet(lagna.atmakaraka, language)}</span>
+                  )}
+                </div>
+                <p className="text-xs text-slate-400 mt-2 italic leading-snug">{language === 'hi' ? desc_hi : desc_en}</p>
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Karakamsha Detail (PDF 1.1.2) */}
+      {data.special_lagnas?.karakamsha?.planet_houses && (
+        <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
+          <h4 className="font-display font-semibold text-sacred-brown mb-3 flex items-center gap-2">
+            <Crown className="w-5 h-5 text-sacred-gold" />
+            {isHi ? 'कारकांश कुंडली (आत्मा का लक्ष्य)' : 'Karakamsha Analysis (Soul Purpose)'}
+          </h4>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            {Object.entries(data.special_lagnas.karakamsha.planet_houses).map(([planet, house]: [string, any]) => (
+              <div key={planet} className="bg-white/60 p-2.5 rounded-lg border border-sacred-gold/20 flex flex-col items-center">
+                <span className="text-[10px] font-bold text-gray-400 uppercase">{translatePlanet(planet, language)}</span>
+                <span className="text-lg font-black text-sacred-gold-dark mt-1">{isHi ? `भाव ${house}` : `H${house}`}</span>
+              </div>
+            ))}
+          </div>
+          <p className="text-[10px] text-cosmic-text/50 mt-3 italic text-center uppercase tracking-widest">
+            {isHi ? "* आत्माकारक के नवांश स्थान को लग्न मानकर गणना की गई है" : "* Houses calculated treating the AK's Navamsha sign as the Ascendant"}
+          </p>
         </div>
       )}
 
@@ -167,7 +195,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
         </div>
       )}
 
-      {/* Chara Dasha */}
+      {/* Chara Dasha (PDF 1.1.2) */}
       {data.chara_dasha?.periods && (
         <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
           <h4 className="font-display font-semibold text-sacred-brown mb-3 flex items-center gap-2">
@@ -178,6 +206,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className="bg-slate-100">
+                  <th className="p-2 w-8"></th>
                   <th className="text-left p-2 font-medium text-slate-600">{language === 'hi' ? 'राशि' : 'Sign'}</th>
                   <th className="text-left p-2 font-medium text-slate-600">{language === 'hi' ? 'प्रकार' : 'Type'}</th>
                   <th className="text-left p-2 font-medium text-slate-600">{language === 'hi' ? 'स्वामी' : 'Lord'}</th>
@@ -189,33 +218,53 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
               <tbody>
                 {data.chara_dasha.periods.map((p: any, i: number) => {
                   const isCurrent = i === data.chara_dasha.current_period_index;
+                  const isExpanded = expandedDasha === i;
                   return (
-                    <tr
-                      key={i}
-                      className={`border-b border-slate-100 ${isCurrent ? 'bg-amber-50 font-semibold' : ''}`}
-                    >
-                      <td className="p-2">
-                        {translateSign(p.sign, language)}
-                        {isCurrent && <span className="ml-1 text-sm text-amber-700">← {language === 'hi' ? 'वर्तमान' : 'Current'}</span>}
-                      </td>
-                      <td className="p-2">
-                        {p.sign_type && (
-                          <span
-                            className="text-sm px-2 py-0.5 rounded-full font-medium"
-                            style={{
-                              backgroundColor: p.sign_type === 'Cardinal' ? '#dbeafe' : p.sign_type === 'Fixed' ? '#fef3c7' : '#d1fae5',
-                              color: p.sign_type === 'Cardinal' ? '#1e40af' : p.sign_type === 'Fixed' ? '#92400e' : '#065f46',
-                            }}
-                          >
-                            {language === 'hi' ? p.sign_type_hi : p.sign_type}
-                          </span>
-                        )}
-                      </td>
-                      <td className="p-2">{translatePlanet(p.lord, language)}</td>
-                      <td className="p-2 text-center font-mono">{p.years}</td>
-                      <td className="p-2 font-mono text-sm">{p.start_date}</td>
-                      <td className="p-2 font-mono text-sm">{p.end_date}</td>
-                    </tr>
+                    <Fragment key={i}>
+                      <tr
+                        onClick={() => setExpandedDasha(isExpanded ? null : i)}
+                        className={`border-b border-slate-100 cursor-pointer transition-colors ${isCurrent ? 'bg-amber-50 font-semibold' : 'hover:bg-sacred-gold/5'}`}
+                      >
+                        <td className="p-2 text-center text-slate-400">
+                          {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                        </td>
+                        <td className="p-2">
+                          {translateSign(p.sign, language)}
+                          {isCurrent && <span className="ml-1 text-sm text-amber-700">← {language === 'hi' ? 'वर्तमान' : 'Current'}</span>}
+                        </td>
+                        <td className="p-2">
+                          {p.sign_type && (
+                            <span
+                              className="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-tight"
+                              style={{
+                                backgroundColor: p.sign_type === 'Cardinal' ? '#dbeafe' : p.sign_type === 'Fixed' ? '#fef3c7' : '#d1fae5',
+                                color: p.sign_type === 'Cardinal' ? '#1e40af' : p.sign_type === 'Fixed' ? '#92400e' : '#065f46',
+                              }}
+                            >
+                              {language === 'hi' ? p.sign_type_hi : p.sign_type}
+                            </span>
+                          )}
+                        </td>
+                        <td className="p-2 text-slate-600 font-medium">{translatePlanet(p.lord, language)}</td>
+                        <td className="p-2 text-center font-mono">{p.years}</td>
+                        <td className="p-2 font-mono text-xs">{p.start_date}</td>
+                        <td className="p-2 font-mono text-xs">{p.end_date}</td>
+                      </tr>
+                      {isExpanded && p.antardashas && (
+                        <tr>
+                          <td colSpan={7} className="p-3 bg-slate-50/50">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                              {p.antardashas.map((ad: any, j: number) => (
+                                <div key={j} className="bg-white p-2 rounded border border-slate-200 shadow-sm flex flex-col items-center">
+                                  <span className="text-xs font-bold text-sacred-brown">{translateSign(ad.sign, language)}</span>
+                                  <span className="text-[10px] text-gray-400 mt-1 font-mono">{ad.start_date}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
                   );
                 })}
               </tbody>
@@ -370,6 +419,38 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
           </div>
         </div>
       )}
+
+      {/* Nadi Insights (PDF 1.2.2) */}
+      {data.nadi_insights && data.nadi_insights.length > 0 && (
+        <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
+          <div className="flex items-center gap-2 mb-4 border-b border-sacred-gold/30 pb-3">
+            <Sparkles className="w-5 h-5 text-sacred-gold" />
+            <h4 className="text-lg font-bold text-sacred-brown">{isHi ? 'नाड़ी भविष्यवाणियाँ (प्राचीन सूत्र)' : 'Nadi Astrology Insights'}</h4>
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold-dark border border-sacred-gold/20 font-bold uppercase tracking-widest ml-auto">ANCIENT</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {data.nadi_insights.map((n: any, i: number) => (
+              <div key={i} className="bg-white/60 p-4 rounded-xl border border-sacred-gold/20 shadow-sm hover:shadow-md transition-all">
+                <div className="flex items-center justify-between mb-2">
+                  <h5 className="font-display font-bold text-sacred-gold-dark">{isHi ? n.title_hi : n.title_en}</h5>
+                  <span className="text-[10px] font-bold text-cosmic-text/40">{isHi ? `भाव ${n.house}` : `H${n.house}`}</span>
+                </div>
+                <p className="text-sm text-cosmic-text leading-relaxed italic mb-3">
+                  "{isHi ? n.desc_hi : n.desc_en}"
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {n.planets.map((p: string) => (
+                    <span key={p} className="text-[10px] px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold-dark font-bold uppercase">
+                      {translatePlanet(p, language)}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <GeneralRemedies language={language} />
     </div>
   );
