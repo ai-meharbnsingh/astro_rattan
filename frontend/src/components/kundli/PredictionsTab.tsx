@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sparkles, Loader2, Calendar, CalendarDays, CalendarRange } from 'lucide-react';
 import { isPuterAvailable } from '@/lib/puter-ai';
@@ -6,7 +5,8 @@ import { useTranslation } from '@/lib/i18n';
 
 // Simple markdown-to-JSX renderer for prediction text
 function renderMarkdown(text: string) {
-  return text.split('\n').filter(l => l.trim()).map((line, idx) => {
+  if (typeof text !== 'string') return null;
+  return text.split('\n').filter(l => l && typeof l.trim === 'function' && l.trim()).map((line, idx) => {
     // Bold: **text**
     const parts = line.split(/\*\*(.*?)\*\*/g);
     const rendered = parts.map((part, i) =>

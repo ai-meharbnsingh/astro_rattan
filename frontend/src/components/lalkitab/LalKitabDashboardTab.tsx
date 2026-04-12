@@ -109,7 +109,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate, kundliId, o
   }, [chartData.houses]);
 
   // Doshas
-  const doshas: DoshaResult[] = (chartData as any).doshas ?? [];
+  const doshas: DoshaResult[] = useMemo(() => (chartData as any).doshas ?? [], [chartData]);
   const detectedDoshas = useMemo(
     () => doshas.filter((d) => d.detected),
     [doshas],

@@ -71,7 +71,7 @@ export default function LalKitabWealthTab({ kundliId }: Props) {
       .then((res: any) => setData(res))
       .catch(() => setError(isHi ? 'धन भविष्यवाणी लोड नहीं हो सकी' : 'Failed to load wealth prediction'))
       .finally(() => setLoading(false));
-  }, [kundliId]);
+  }, [kundliId, isHi]);
 
   if (loading) return (
     <div className="flex items-center justify-center py-20">

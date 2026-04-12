@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import {
   Calendar,
@@ -126,7 +126,7 @@ export default function LalKitabVarshphalTab({ chartData, birthDate, apiResult }
   }, [annualPositions]);
 
   // Build InteractiveKundli ChartData from house-to-planets map
-  const buildChartData = (housePlanets: Record<number, string[]>): ChartData | null => {
+  const buildChartData = useCallback((housePlanets: Record<number, string[]>): ChartData | null => {
     // Use API result for ascendant sign, or default to Aries (house 1)
     const asc = apiResult?.chart_data?.ascendant;
     const ascSign = asc?.sign || 'Aries';
@@ -153,10 +153,10 @@ export default function LalKitabVarshphalTab({ chartData, birthDate, apiResult }
     }
 
     return { planets, houses, ascendant: asc ? { longitude: asc.longitude || 0, sign: ascSign } : undefined };
-  };
+  }, [apiResult]);
 
-  const birthChartData = useMemo(() => buildChartData(birthHousePlanets), [birthHousePlanets, apiResult]);
-  const annualChartData = useMemo(() => buildChartData(annualHousePlanets), [annualHousePlanets, apiResult]);
+  const birthChartData = useMemo(() => buildChartData(birthHousePlanets), [birthHousePlanets, buildChartData]);
+  const annualChartData = useMemo(() => buildChartData(annualHousePlanets), [annualHousePlanets, buildChartData]);
 
   return (
     <div className="space-y-8">

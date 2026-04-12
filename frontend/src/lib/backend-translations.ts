@@ -290,19 +290,28 @@ const CORE_PHRASE_ALIASES: Record<string, string> = {
   'Saturn Exalted': 'Shani Uchcha (Saturn Exalted)',
 };
 
-function normalizeKey(value: string): string {
+function normalizeKey(value: any): string {
+  if (typeof value !== 'string') return '';
   return value.trim().toLowerCase().replace(/[_\-()]+/g, ' ').replace(/\s+/g, ' ');
 }
 
-function compactAsciiKey(value: string): string {
+function compactAsciiKey(value: any): string {
+  if (typeof value !== 'string') return '';
   return value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
+function normalizeIdLike(value: any): string {
+  if (typeof value !== 'string') return '';
+  return value.trim().toUpperCase().replace(/[.\-:\s]+/g, '_');
+}
+
 function escapeRegExp(value: string): string {
+  if (typeof value !== 'string') return '';
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-function makeTranslationId(prefix: CategoryPrefix, text: string): TranslationId {
+function makeTranslationId(prefix: CategoryPrefix, text: any): TranslationId {
+  if (typeof text !== 'string') return `${prefix}_UNKNOWN`;
   const slug = text
     .trim()
     .toUpperCase()
@@ -327,6 +336,7 @@ for (const source of CORE_TRANSLATION_SOURCES) {
 const CORE_LOOKUP_TO_ID: Record<string, TranslationId> = {};
 for (const [id, entry] of Object.entries(CORE_TRANSLATIONS_BY_ID)) {
   CORE_LOOKUP_TO_ID[id] = id;
+  CORE_LOOKUP_TO_ID[normalizeIdLike(id)] = id;
   CORE_LOOKUP_TO_ID[normalizeKey(id)] = id;
   CORE_LOOKUP_TO_ID[compactAsciiKey(id)] = id;
   CORE_LOOKUP_TO_ID[normalizeKey(entry.en)] = id;
@@ -341,18 +351,21 @@ for (const [alias, canonical] of Object.entries(CORE_PHRASE_ALIASES)) {
   }
 }
 
-function resolveTranslationId(text: string, category?: CategoryPrefix): TranslationId | null {
+function resolveTranslationId(text: any, category?: CategoryPrefix): TranslationId | null {
+  if (typeof text !== 'string') return null;
   const trimmed = text.trim();
   if (!trimmed) return null;
+  const idLike = normalizeIdLike(trimmed);
   const compact = compactAsciiKey(trimmed);
   const candidates = [
     CORE_LOOKUP_TO_ID[trimmed],
+    CORE_LOOKUP_TO_ID[idLike],
     CORE_LOOKUP_TO_ID[normalizeKey(trimmed)],
     CORE_LOOKUP_TO_ID[compact],
     trimmed.startsWith('YOGA_') ? CORE_LOOKUP_TO_ID[`${trimmed}_YOGA`] : undefined,
     trimmed.startsWith('DOSHA_') ? CORE_LOOKUP_TO_ID[`${trimmed}_DOSHA`] : undefined,
   ];
-  let resolved = candidates.find(Boolean) || null;
+  let resolved = (candidates.find(Boolean) as string) || null;
   if (!resolved && (trimmed.startsWith('YOGA_') || trimmed.startsWith('DOSHA_'))) {
     const prefix = trimmed.startsWith('YOGA_') ? 'YOGA_' : 'DOSHA_';
     const similar = Object.keys(CORE_TRANSLATIONS_BY_ID)
@@ -370,6 +383,16 @@ function translateById(id: TranslationId, lang: Language): string {
   const entry = CORE_TRANSLATIONS_BY_ID[id];
   if (!entry) return id;
   return lang === 'hi' ? entry.hi : entry.en;
+}
+
+const missingTranslationWarnings = new Set<string>();
+function warnMissingTranslation(text: any) {
+  if (!import.meta.env.DEV) return;
+  if (typeof text !== 'string') return;
+  const key = text.trim();
+  if (!key || missingTranslationWarnings.has(key)) return;
+  missingTranslationWarnings.add(key);
+  console.warn(`[i18n] Missing backend translation mapping for: "${text}"`);
 }
 
 /**
@@ -405,11 +428,12 @@ export function translateBackend(text: string | null | undefined, lang: Language
     }
   }
 
+  if (result === raw) warnMissingTranslation(raw);
   return result;
 }
 
 /** Translate a planet name */
-export function translatePlanet(name: string, lang: Language): string {
+export function translatePlanet(name: any, lang: Language): string {
   const n = typeof name === 'string' ? name : '';
   const id = resolveTranslationId(n, 'PLANET');
   if (id) return translateById(id, lang);
@@ -418,7 +442,7 @@ export function translatePlanet(name: string, lang: Language): string {
 }
 
 /** Get a 2-3 letter abbreviation for a planet */
-export function translatePlanetAbbr(name: string, lang: Language): string {
+export function translatePlanetAbbr(name: any, lang: Language): string {
   const n = typeof name === 'string' ? name : '';
   if (lang === 'hi') {
     const hiMap: Record<string, string> = {
@@ -433,7 +457,7 @@ export function translatePlanetAbbr(name: string, lang: Language): string {
 
 /** Get a 2-3 letter abbreviation for a sign */
 
-export function translateSignAbbr(name: string, lang: Language): string {
+export function translateSignAbbr(name: any, lang: Language): string {
   const n = typeof name === 'string' ? name : '';
   if (lang === 'hi') {
     const hiMap: Record<string, string> = {
@@ -452,7 +476,7 @@ export function translateSignAbbr(name: string, lang: Language): string {
 }
 
 /** Translate a zodiac sign name */
-export function translateSign(name: string, lang: Language): string {
+export function translateSign(name: any, lang: Language): string {
   const n = typeof name === 'string' ? name : '';
   const id = resolveTranslationId(n, 'SIGN');
   if (id) return translateById(id, lang);
@@ -461,7 +485,7 @@ export function translateSign(name: string, lang: Language): string {
 }
 
 /** Translate a nakshatra name */
-export function translateNakshatra(name: string | null | undefined, lang: Language): string {
+export function translateNakshatra(name: any, lang: Language): string {
   if (!name) return '';
   const id = resolveTranslationId(name, 'NAKSHATRA');
   if (id) return translateById(id, lang);
@@ -470,7 +494,8 @@ export function translateNakshatra(name: string | null | undefined, lang: Langua
 }
 
 /** Translate a dosha or yoga name */
-export function translateName(name: string, lang: Language): string {
+export function translateName(name: any, lang: Language): string {
+  if (typeof name !== 'string') return '';
   const id = resolveTranslationId(name);
   if (id) return translateById(id, lang);
   if (lang === 'en') return name;
@@ -478,13 +503,15 @@ export function translateName(name: string, lang: Language): string {
 }
 
 /** Translate a remedy string */
-export function translateRemedy(text: string, lang: Language): string {
+export function translateRemedy(text: any, lang: Language): string {
+  if (typeof text !== 'string') return '';
   if (lang === 'en') return text;
   return REMEDY_MAP[text] || text;
 }
 
 /** Translate severity/dignity/strength/sign-type/element */
-export function translateLabel(text: string, lang: Language): string {
+export function translateLabel(text: any, lang: Language): string {
+  if (typeof text !== 'string') return '';
   const id = resolveTranslationId(text, 'LABEL') || resolveTranslationId(text, 'PHASE');
   if (id) return translateById(id, lang);
   if (lang === 'en') return text;

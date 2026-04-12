@@ -57,7 +57,7 @@ export default function LalKitabMarriageTab({ kundliId }: Props) {
       .then((res: any) => setData(res))
       .catch(() => setError(isHi ? 'विवाह भविष्यवाणी लोड नहीं हो सकी' : 'Failed to load marriage prediction'))
       .finally(() => setLoading(false));
-  }, [kundliId]);
+  }, [kundliId, isHi]);
 
   if (loading) return (
     <div className="flex items-center justify-center py-20">

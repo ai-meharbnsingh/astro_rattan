@@ -56,16 +56,16 @@ const PLANET_ABBREVIATIONS_HI: Record<string, string> = {
   Uranus: 'Ur', Neptune: 'Ne', Pluto: 'Pl',
 };
 
-const ZODIAC_ABBREVIATIONS: Record<string, string> = {
+const _ZODIAC_ABBREVIATIONS: Record<string, string> = {
   Aries: 'Ari', Taurus: 'Tau', Gemini: 'Gem', Cancer: 'Can',
   Leo: 'Leo', Virgo: 'Vir', Libra: 'Lib', Scorpio: 'Sco',
   Sagittarius: 'Sag', Capricorn: 'Cap', Aquarius: 'Aqu', Pisces: 'Pis',
 };
 
-const BENEFIC_PLANETS = ['Jupiter', 'Venus', 'Moon', 'Mercury'];
-const MALEFIC_PLANETS = ['Saturn', 'Mars', 'Rahu', 'Ketu', 'Sun'];
+const _BENEFIC_PLANETS = ['Jupiter', 'Venus', 'Moon', 'Mercury'];
+const _MALEFIC_PLANETS = ['Saturn', 'Mars', 'Rahu', 'Ketu', 'Sun'];
 
-const HOUSE_SIGNIFICANCE: Record<number, string> = {
+const _HOUSE_SIGNIFICANCE: Record<number, string> = {
   1: 'Self, Personality, Appearance',
   2: 'Wealth, Family, Speech',
   3: 'Courage, Siblings, Communication',
@@ -389,13 +389,13 @@ const NORTH_HOUSES: NorthHouse[] = (() => {
   // = (308, 108)
   const P_TR_CC_x_MR_MB = { x: NI_PAD + NI_HALF + NI_HALF / 2, y: NI_PAD + NI_HALF + NI_HALF / 2 };
   // = (308, 308)
-  const P_BL_CC_x_MB_ML = { x: NI_PAD + NI_HALF / 2, y: NI_PAD + NI_HALF + NI_HALF / 2 };
+  const _P_BL_CC_x_MB_ML = { x: NI_PAD + NI_HALF / 2, y: NI_PAD + NI_HALF + NI_HALF / 2 };
   // = (108, 308)
 
   // Shorthand aliases:
   const P1 = P_TL_CC_x_MT_ML;  // (108, 108) -- on TL-CC diagonal, where MT-ML crosses
   const P2 = P_TR_CC_x_MT_MR;  // (308, 108) -- on TR-CC diagonal, where MT-MR crosses
-  const P3 = P_TR_CC_x_MR_MB;  // (308, 308) -- on TR-CC diagonal (lower), where MR-MB crosses
+  const _P3 = P_TR_CC_x_MR_MB;  // (308, 308) -- on TR-CC diagonal (lower), where MR-MB crosses
   // Wait, P_TR_CC is the line from TR to CC. But MR-MB crosses... let me recalc.
   //
   // Actually for the right large triangle (TR, BR, CC):
@@ -544,7 +544,7 @@ const JHORA_CURVE = 28;            // bezier curve inward offset for concave arc
 
 // Sign name positions for each house — placed at OUTER EDGES near corners/borders
 // house -> { x, y } for the sign label
-const NORTH_SIGN_POSITIONS: Record<number, { x: number; y: number }> = {
+const _NORTH_SIGN_POSITIONS: Record<number, { x: number; y: number }> = {
   1:  { x: CC.x,        y: NI_PAD + 16 },              // top center, near top border
   2:  { x: NI_PAD + 24, y: NI_PAD + 16 },              // top-left corner
   12: { x: NI_PAD + NI_INNER - 24, y: NI_PAD + 16 },   // top-right corner
@@ -669,7 +669,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
   const [tooltip, setTooltip] = useState<{ x: number; y: number; content: React.ReactNode } | null>(null);
   const [chartStyle, setChartStyle] = useState<ChartStyle>('north');
 
-  const planets = chartData.planets || [];
+  const planets = useMemo(() => chartData.planets || [], [chartData.planets]);
 
   // Inject Lagna as a pseudo-planet in House 1 if ascendant data is available
   const planetsWithLagna = useMemo(() => {
@@ -743,7 +743,6 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
   }, [aspectsFor, t]);
 
   const showHouseTooltip = useCallback((house: number, x: number, y: number) => {
-    const sign = houseSign(house);
     const housePlanets = planetsByHouse[house] || [];
     setTooltip({
       x, y,
@@ -761,7 +760,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
         </div>
       ),
     });
-  }, [houseSign, planetsByHouse, t]);
+  }, [planetsByHouse, t]);
 
   const hideTooltip = useCallback(() => {
     setTooltip(null);
@@ -1042,14 +1041,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           const isHovered = hoveredHouse === nh.house;
           const housePlanets = planetsByHouse[nh.house] || [];
           const isTrapezoid = [1, 4, 7, 10].includes(nh.house);
-          const signPos = NORTH_SIGN_POSITIONS[nh.house];
-          const signAbbr = ZODIAC_ABBREVIATIONS[sign] || (sign || '').slice(0, 3);
           const rashiNum = ZODIAC_NUMBERS[sign] || '';
-
-          // Determine text anchor for sign names based on house position
-          let signAnchor: string = 'middle';
-          if ([3, 4, 5].includes(nh.house)) signAnchor = 'start';       // left side houses
-          if ([9, 10, 11].includes(nh.house)) signAnchor = 'end';       // right side houses
 
           return (
             <g

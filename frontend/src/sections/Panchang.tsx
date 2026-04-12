@@ -68,14 +68,21 @@ interface FullPanchangData {
   pratah_sandhya?: TimePeriod | null;
   dur_muhurtam?: TimePeriod | null;
   varjyam?: TimePeriod | null;
-  hora_table?: any[] | null;
-  lagna_table?: any[] | null;
-  chandrabalam?: any[] | null;
-  tarabalam?: any[] | null;
-  gowri_panchang?: any[] | null;
-  do_ghati_muhurta?: any[] | null;
+  hora_table?: HoraRow[] | null;
+  lagna_table?: LagnaRow[] | null;
+  chandrabalam?: ChandrabalamRow[] | null;
+  tarabalam?: TarabalamRow[] | null;
+  gowri_panchang?: GowriRow[] | null;
+  do_ghati_muhurta?: DoGhatiRow[] | null;
   panchaka?: { active: boolean; rahita: boolean } | null;
 }
+
+interface HoraRow { hora: string; lord: string; start: string; end: string; type: string }
+interface LagnaRow { lagna: string; start: string; end: string }
+interface GowriRow { name: string; start: string; end: string; type: string; quality: string }
+interface ChandrabalamRow { rashi: string; balam: string; good: boolean; house_from_moon: number }
+interface TarabalamRow { nakshatra: string; tara: string; good: boolean }
+interface DoGhatiRow { muhurta: string; name: string; start: string; end: string; quality: string }
 
 const DEFAULT_LAT = '28.6139';
 const DEFAULT_LON = '77.2090';
@@ -336,7 +343,7 @@ export default function Panchang() {
               {/* Hora Table */}
               {panchang.hora_table && <ExpandableSection title={language === 'hi' ? 'होरा मुहूर्त' : 'Hora Muhurta'} desc={language === 'hi' ? '24 ग्रह घंटे' : '24 planetary hours'}>
                 <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr className="bg-sacred-gold/20"><th className="p-2 text-left text-sacred-gold-dark">{language === 'hi' ? 'होरा' : 'Hora'}</th><th className="p-2 text-left">{t('kundli.lord')}</th><th className="p-2">{t('table.start')}</th><th className="p-2">{t('table.end')}</th><th className="p-2">{t('table.type')}</th></tr></thead><tbody>
-                {(panchang.hora_table as any[]).map((h: any, i: number) => (
+                {(panchang.hora_table as HoraRow[]).map((h, i) => (
                   <tr key={i} className="border-t border-sacred-gold"><td className="p-2 text-cosmic-text">{h.hora}</td><td className="p-2 text-cosmic-text font-medium">{translateBackend(h.lord, language)}</td><td className="p-2 text-cosmic-text">{h.start}</td><td className="p-2 text-cosmic-text">{h.end}</td><td className="p-2"><span className={`text-sm px-2 py-0.5 rounded ${h.type === 'day' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}>{translateBackend(h.type, language)}</span></td></tr>
                 ))}</tbody></table></div>
               </ExpandableSection>}
@@ -344,7 +351,7 @@ export default function Panchang() {
               {/* Lagna Table */}
               {panchang.lagna_table && <ExpandableSection title={language === 'hi' ? 'लग्न मुहूर्त' : 'Lagna Muhurta'} desc={language === 'hi' ? 'दिन भर की उदय राशि' : 'Rising sign through the day'}>
                 <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr className="bg-sacred-gold/20"><th className="p-2 text-left text-sacred-gold-dark">{t('section.lagna')}</th><th className="p-2">{t('table.start')}</th><th className="p-2">{t('table.end')}</th></tr></thead><tbody>
-                {(panchang.lagna_table as any[]).map((l: any, i: number) => (
+                {(panchang.lagna_table as LagnaRow[]).map((l, i) => (
                   <tr key={i} className="border-t border-sacred-gold"><td className="p-2 text-cosmic-text font-medium">{translateBackend(l.lagna, language)}</td><td className="p-2 text-cosmic-text">{l.start}</td><td className="p-2 text-cosmic-text">{l.end}</td></tr>
                 ))}</tbody></table></div>
               </ExpandableSection>}
@@ -352,7 +359,7 @@ export default function Panchang() {
               {/* Gowri Panchangam */}
               {panchang.gowri_panchang && <ExpandableSection title={language === 'hi' ? 'गौरी पंचांगम' : 'Gowri Panchangam'} desc={language === 'hi' ? 'दिन और रात के गुणवत्ता काल' : 'Day and night quality periods'}>
                 <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr className="bg-sacred-gold/20"><th className="p-2 text-left text-sacred-gold-dark">{t('table.period')}</th><th className="p-2">{t('table.start')}</th><th className="p-2">{t('table.end')}</th><th className="p-2">{t('table.type')}</th><th className="p-2">{language === 'hi' ? 'गुणवत्ता' : 'Quality'}</th></tr></thead><tbody>
-                {(panchang.gowri_panchang as any[]).map((g: any, i: number) => (
+                {(panchang.gowri_panchang as GowriRow[]).map((g, i) => (
                   <tr key={i} className={`border-t border-sacred-gold ${g.quality === 'good' ? 'bg-green-50' : ''}`}><td className="p-2 text-cosmic-text font-medium">{translateBackend(g.name, language)}</td><td className="p-2 text-cosmic-text">{g.start}</td><td className="p-2 text-cosmic-text">{g.end}</td><td className="p-2"><span className={`text-sm px-2 py-0.5 rounded ${g.type === 'day' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}>{translateBackend(g.type, language)}</span></td><td className="p-2"><span className={`text-sm px-2 py-0.5 rounded ${g.quality === 'good' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{g.quality === 'good' ? (language === 'hi' ? 'शुभ' : 'Shubh') : (language === 'hi' ? 'अशुभ' : 'Ashubh')}</span></td></tr>
                 ))}</tbody></table></div>
               </ExpandableSection>}
@@ -360,7 +367,7 @@ export default function Panchang() {
               {/* Chandrabalam */}
               {panchang.chandrabalam && <ExpandableSection title={language === 'hi' ? 'चंद्रबल' : 'Chandrabalam'} desc={language === 'hi' ? 'सभी 12 राशियों के लिए चंद्र बल' : 'Moon strength for all 12 Rashi'}>
                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                {(panchang.chandrabalam as any[]).map((c: any, i: number) => (
+                {(panchang.chandrabalam as ChandrabalamRow[]).map((c, i) => (
                   <div key={i} className={`p-3 text-center border rounded ${c.good ? 'border-green-300 bg-green-50' : 'border-red-200 bg-red-50'}`}>
                     <p className="text-sm font-medium text-cosmic-text">{translateBackend(c.rashi, language)}</p>
                     <p className={`text-sm font-semibold ${c.good ? 'text-green-600' : 'text-red-500'}`}>{translateBackend(c.balam, language)}</p>
@@ -373,7 +380,7 @@ export default function Panchang() {
               {/* Tarabalam */}
               {panchang.tarabalam && <ExpandableSection title={language === 'hi' ? 'ताराबल' : 'Tarabalam'} desc={language === 'hi' ? 'सभी 27 नक्षत्रों का बल' : 'Star strength for all 27 Nakshatra'}>
                 <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2">
-                {(panchang.tarabalam as any[]).map((t: any, i: number) => (
+                {(panchang.tarabalam as TarabalamRow[]).map((t, i) => (
                   <div key={i} className={`p-2 text-center border rounded ${t.good ? 'border-green-300 bg-green-50' : 'border-red-200 bg-red-50'}`}>
                     <p className="text-sm font-medium text-cosmic-text">{translateBackend(t.nakshatra, language)}</p>
                     <p className={`text-sm font-semibold ${t.good ? 'text-green-600' : 'text-red-500'}`}>{translateBackend(t.tara, language)}</p>
@@ -385,7 +392,7 @@ export default function Panchang() {
               {/* Do Ghati Muhurta */}
               {panchang.do_ghati_muhurta && <ExpandableSection title={language === 'hi' ? 'दो घटी मुहूर्त' : 'Do Ghati Muhurta'} desc={language === 'hi' ? 'दिन का 30 मुहूर्त विभाजन' : '30 Muhurta division of the day'}>
                 <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr className="bg-sacred-gold/20"><th className="p-2 text-left text-sacred-gold-dark">#</th><th className="p-2 text-left">{t('table.name')}</th><th className="p-2">{t('table.start')}</th><th className="p-2">{t('table.end')}</th><th className="p-2">{language === 'hi' ? 'गुणवत्ता' : 'Quality'}</th></tr></thead><tbody>
-                {(panchang.do_ghati_muhurta as any[]).map((m: any, i: number) => (
+                {(panchang.do_ghati_muhurta as DoGhatiRow[]).map((m, i) => (
                   <tr key={i} className={`border-t border-sacred-gold ${m.quality === 'good' ? 'bg-green-50' : ''}`}><td className="p-2 text-cosmic-text">{m.muhurta}</td><td className="p-2 text-cosmic-text font-medium">{translateBackend(m.name, language)}</td><td className="p-2 text-cosmic-text">{m.start}</td><td className="p-2 text-cosmic-text">{m.end}</td><td className="p-2"><span className={`text-sm px-2 py-0.5 rounded ${m.quality === 'good' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>{translateBackend(m.quality, language)}</span></td></tr>
                 ))}</tbody></table></div>
               </ExpandableSection>}
@@ -430,15 +437,15 @@ function ExpandableSection({ title, desc, children }: { title: string; desc: str
 }
 
 function normalizePanchang(data: Record<string, unknown>): FullPanchangData {
-  const d = data as Record<string, any>;
+  const d = data as Partial<FullPanchangData>;
   return {
     date: d.date || '',
-    tithi: d.tithi || { name: 'Pratipada', number: 1, paksha: 'Shukla' },
-    nakshatra: d.nakshatra || { name: 'Ashwini', pada: 1, lord: 'Ketu' },
-    yoga: d.yoga || { name: 'Vishkambha', number: 1 },
-    karana: d.karana || { name: 'Bava', number: 1 },
-    sunrise: d.sunrise || '06:00',
-    sunset: d.sunset || '18:00',
+    tithi: d.tithi || { name: '', number: 0, paksha: '' },
+    nakshatra: d.nakshatra || { name: '', pada: 0, lord: '' },
+    yoga: d.yoga || { name: '', number: 0 },
+    karana: d.karana || { name: '', number: 0 },
+    sunrise: d.sunrise || '--:--',
+    sunset: d.sunset || '--:--',
     moonrise: d.moonrise || '--:--',
     moonset: d.moonset || '--:--',
     vaar: d.vaar || { name: 'Somvar', english: 'Monday', number: 0 },

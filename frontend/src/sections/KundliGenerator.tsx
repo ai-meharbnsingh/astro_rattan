@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { formatDate, api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Sparkles, Download, Share2, FileText, Heart, Briefcase, Activity, ArrowLeft, Loader2, ScrollText, Home, RefreshCw } from 'lucide-react';
+import { Download, Share2, Loader2, ScrollText, Home, RefreshCw } from 'lucide-react';
 import { useKundliData } from '@/hooks/useKundliData';
 import KundliForm from '@/components/kundli/KundliForm';
 import KundliSummaryModal from '@/components/KundliSummaryModal';
@@ -47,7 +47,7 @@ export default function KundliGenerator() {
     upagrahasData, loadingUpagrahas, sodashvargaData, loadingSodashvarga,
     aspectsData, loadingAspects, westernAspectsData, loadingWesternAspects,
     jaiminiData, loadingJaimini, sadesatiData, loadingSadesati,
-    predictionsData, loadingPredictions, activePredictionPeriod,
+    predictionsData: _predictionsData, loadingPredictions: _loadingPredictions, activePredictionPeriod: _activePredictionPeriod,
     // UI state
     selectedDivision, expandedMahadasha, setExpandedMahadasha,
     expandedAntardasha, setExpandedAntardasha,
@@ -66,13 +66,13 @@ export default function KundliGenerator() {
     fetchD10, fetchVarshphal, fetchYogini, fetchKp,
     fetchUpagrahas, fetchSodashvarga, fetchAspects,
     fetchWesternAspects, fetchJaimini, fetchSadesati,
-    fetchPredictions, fetchSavedKundlis,
+    fetchPredictions: _fetchPredictions, fetchSavedKundlis: _fetchSavedKundlis,
     // Convenience
     changeDivision, refreshTransit, changeVarshphalYear, resetTransitFilters,
     // Handlers
     handlePlanetClick, handleHouseClick,
     handleGenerate, handlePrashnaKundli,
-    loadKundli, resetTabData,
+    loadKundli: _loadKundli, resetTabData,
     // Computed
     HOUSE_SIGNIFICANCE,
     // i18n
@@ -196,9 +196,10 @@ export default function KundliGenerator() {
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
-              } catch (e: any) {
+              } catch (e: unknown) {
                 console.error('PDF download error:', e);
-                alert(e.message || 'Failed to download PDF');
+                const message = e instanceof Error ? e.message : 'Failed to download PDF';
+                alert(message);
               }
             }}>
               <Download className="w-4 h-4 mr-1" />{t('common.download')}
@@ -461,6 +462,11 @@ export default function KundliGenerator() {
             longitude: formData.longitude.toString(),
             timezone: 'IST'
           }}
+          result={result}
+          dashaData={dashaData}
+          yogaDoshaData={yogaDoshaData}
+          doshaData={doshaData}
+          avakhadaData={avakhadaData}
           onViewFullReport={() => {
             setSummaryOpen(false);
           }}

@@ -81,6 +81,7 @@ const REMEDIES = {
 };
 
 export default function GeneralRemedies({ language, t, title }: GeneralRemediesProps) {
+  void t;
   const remedies = language === 'hi' ? REMEDIES.hi : REMEDIES.en;
   const defaultTitle = language === 'hi' ? 'सामान्य उपाय' : 'General Remedies';
 

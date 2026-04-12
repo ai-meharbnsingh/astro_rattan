@@ -60,7 +60,7 @@ interface ReportTabProps {
 }
 
 export default function ReportTab({
-  result, planets, formData, language, t,
+  result, planets, formData: _formData, language, t,
   doshaData, loadingDosha,
   dashaData, loadingDasha,
   extendedDashaData, loadingExtendedDasha,

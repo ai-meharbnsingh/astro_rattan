@@ -76,7 +76,7 @@ export default function LalKitabHealthTab({ kundliId }: Props) {
       .then((res: any) => setData(res))
       .catch(() => setError(isHi ? 'स्वास्थ्य भविष्यवाणी लोड नहीं हो सकी' : 'Failed to load health prediction'))
       .finally(() => setLoading(false));
-  }, [kundliId]);
+  }, [kundliId, isHi]);
 
   if (loading) return (
     <div className="flex items-center justify-center py-20">

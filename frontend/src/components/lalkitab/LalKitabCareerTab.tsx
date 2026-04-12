@@ -60,7 +60,7 @@ export default function LalKitabCareerTab({ kundliId }: Props) {
       .then((res: any) => setData(res))
       .catch(() => setError(isHi ? 'करियर भविष्यवाणी लोड नहीं हो सकी' : 'Failed to load career prediction'))
       .finally(() => setLoading(false));
-  }, [kundliId]);
+  }, [kundliId, isHi]);
 
   if (loading) return (
     <div className="flex items-center justify-center py-20">

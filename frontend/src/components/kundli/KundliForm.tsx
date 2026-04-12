@@ -83,7 +83,7 @@ export default function KundliForm({
   const { user } = useAuth();
   const isAstrologer = user?.role === 'astrologer';
   const [isNewClient, setIsNewClient] = useState(true);
-  const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
+  const [_selectedClient, setSelectedClient] = useState<ClientData | null>(null);
   const geocode = useGeocodeAutocomplete();
   const placeWrapperRef = useRef<HTMLDivElement>(null);
 

@@ -71,7 +71,7 @@ export default function LalKitabRinTab({ kundliId }: Props) {
       })
       .catch(() => setError(isHi ? 'ऋण जानकारी लोड नहीं हो सकी' : 'Failed to load debt data'))
       .finally(() => setLoading(false));
-  }, [kundliId]);
+  }, [kundliId, isHi]);
 
   const activeDebts = debts.filter((d) => d.active);
   const inactiveDebts = debts.filter((d) => !d.active);

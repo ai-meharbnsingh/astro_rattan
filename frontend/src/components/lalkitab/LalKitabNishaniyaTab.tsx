@@ -45,7 +45,7 @@ export default function LalKitabNishaniyaTab({ kundliId }: Props) {
         console.error('Failed to parse stored nishani verification', e);
       }
     }
-  }, [kundliId]);
+  }, [kundliId, isHi]);
 
   // Save confirmed IDs to localStorage
   useEffect(() => {
@@ -65,7 +65,7 @@ export default function LalKitabNishaniyaTab({ kundliId }: Props) {
       .then((res: any) => setNishaniyan(Array.isArray(res?.nishaniyan) ? res.nishaniyan : []))
       .catch(() => setError(isHi ? 'निशानियां लोड नहीं हो सकीं' : 'Failed to load nishaniyan'))
       .finally(() => setLoading(false));
-  }, [kundliId]);
+  }, [kundliId, isHi]);
 
   const toggleConfirm = (id: string) => {
     const next = new Set(confirmedIds);

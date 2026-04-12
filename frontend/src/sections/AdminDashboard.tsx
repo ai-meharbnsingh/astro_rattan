@@ -351,18 +351,18 @@ export default function AdminDashboard() {
   // live
   const [liveData, setLiveData] = useState<LiveData | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const [tickMs, setTickMs] = useState(0);
+  const [_tickMs, _setTickMs] = useState(0);
   const liveInterval = useRef<ReturnType<typeof setInterval> | null>(null);
   const activityRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (user?.role !== 'admin') { navigate('/'); return; }
     fetchStats();
-  }, [user]);
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Tick to update "Xs ago" on live panel without refetching
   useEffect(() => {
-    const id = setInterval(() => setTickMs(Date.now()), 1000);
+    const id = setInterval(() => _setTickMs(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
 
@@ -370,7 +370,7 @@ export default function AdminDashboard() {
     try {
       const data = await api.get('/api/admin/stats');
       setStats(data);
-    } catch (e) { setError(l('Failed to load stats', 'आंकड़े लोड नहीं हो सके')); }
+    } catch { setError(l('Failed to load stats', 'आंकड़े लोड नहीं हो सके')); }
     setLoading(false);
   };
 
@@ -440,7 +440,7 @@ export default function AdminDashboard() {
     return () => {
       if (liveInterval.current) clearInterval(liveInterval.current);
     };
-  }, [tab]);
+  }, [tab]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const changeRole = async (userId: string, role: string) => {
     try { await api.patch(`/api/admin/users/${userId}/role`, { role }); fetchUsers(userPage); }

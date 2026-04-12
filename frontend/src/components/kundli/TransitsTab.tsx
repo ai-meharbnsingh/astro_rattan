@@ -5,7 +5,7 @@ import { api } from '@/lib/api';
 import InteractiveKundli from '@/components/InteractiveKundli';
 import ConcentricChart from '@/components/kundli/ConcentricChart';
 import RetrogradeStationsSection from '@/components/kundli/RetrogradeStationsSection';
-import { translatePlanet, translateSign, translateLabel } from '@/lib/backend-translations';
+import { translatePlanet, translateSign } from '@/lib/backend-translations';
 
 interface TransitsTabProps {
   transitData: any;
@@ -265,7 +265,11 @@ export default function TransitsTab(props: TransitsTabProps) {
                         </div>
                       ) : (
                         <div className="w-full animate-in fade-in zoom-in-95 duration-500">
-                          <ConcentricChart natalPlanets={natalPlanets} transitPlanets={transitPlanets} />
+                          <ConcentricChart 
+                            natalPlanets={natalPlanets} 
+                            transitPlanets={transitPlanets} 
+                            lagnaLongitude={result?.chart_data?.ascendant?.longitude || 0}
+                          />
                         </div>
                       )}
                     </div>

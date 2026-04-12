@@ -98,7 +98,7 @@ export default function LalKitabSavedPredictionsTab({ kundliId }: Props) {
       .then((res: any) => setPredictions(Array.isArray(res?.predictions) ? res.predictions : []))
       .catch(() => setError(isHi ? 'सेव भविष्यवाणियां लोड नहीं हो सकीं' : 'Failed to load saved predictions'))
       .finally(() => setLoading(false));
-  }, [kundliId]);
+  }, [kundliId, isHi]);
 
   const handleDelete = async (id: string) => {
     setDeletingId(id);

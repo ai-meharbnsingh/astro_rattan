@@ -9,6 +9,8 @@ from app.routes.clients import router as clients_router
 from app.routes.admin import router as admin_router
 from app.routes.analytics import router as analytics_router
 from app.routes.feedback import router as feedback_router
+from app.routes.ai import router as ai_router
+from app.routes.muhurat import router as muhurat_router
 
 all_routers = [
     auth_router,
@@ -21,4 +23,6 @@ all_routers = [
     admin_router,
     analytics_router,
     feedback_router,
+    ai_router,
+    muhurat_router,
 ]

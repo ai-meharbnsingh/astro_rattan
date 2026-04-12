@@ -93,7 +93,7 @@ export default function LalKitabDiagnosticChart({ type, planetPositions, masnuiD
   }, [planetPositions]);
 
   return (
-    <div className="relative w-full max-w-[300px] mx-auto bg-parchment rounded-xl shadow-inner border border-sacred-gold/20 overflow-hidden">
+    <div className="relative w-full max-w-[260px] mx-auto bg-parchment rounded-xl shadow-inner border border-sacred-gold/20 overflow-hidden">
       <svg viewBox={`0 0 ${NI_SIZE} ${NI_SIZE}`} className="w-full h-auto">
         <defs>
           <filter id="glow-gold">

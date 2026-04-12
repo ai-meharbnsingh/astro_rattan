@@ -168,23 +168,6 @@ const T = {
   gocharChart: (l: string) => l === 'hi' ? 'गोचर चार्ट' : 'Gochar (Transit) Chart',
 };
 
-/* ────────────────────────────── Mundane house meanings ────────────────────────────── */
-
-const MUNDANE_HOUSE_MEANINGS: { en: string; hi: string }[] = [
-  { en: 'Nation & People', hi: 'राष्ट्र और जनता' },
-  { en: 'National Wealth & Economy', hi: 'राष्ट्रीय धन और अर्थव्यवस्था' },
-  { en: 'Communication & Media', hi: 'संचार और मीडिया' },
-  { en: 'Land, Agriculture & Opposition', hi: 'भूमि, कृषि और विपक्ष' },
-  { en: 'Entertainment, Sports & Youth', hi: 'मनोरंजन, खेल और युवा' },
-  { en: 'Public Health & Defence', hi: 'जन स्वास्थ्य और रक्षा' },
-  { en: 'Foreign Affairs & War', hi: 'विदेश मामले और युद्ध' },
-  { en: 'Death, Disasters & Taxes', hi: 'आपदाएं, कर और मृत्यु' },
-  { en: 'Law, Religion & Higher Learning', hi: 'कानून, धर्म और उच्च शिक्षा' },
-  { en: 'Government & Ruler', hi: 'सरकार और शासक' },
-  { en: 'Parliament & Allies', hi: 'संसद और मित्र राष्ट्र' },
-  { en: 'Enemies, Secrets & Expenditure', hi: 'शत्रु, रहस्य और व्यय' },
-];
-
 /* ────────────────────────────── Default fallback countries ────────────────────────────── */
 
 const DEFAULT_COUNTRIES: CountryOption[] = [
@@ -269,21 +252,22 @@ function DataUnavailable({ lang }: { lang: string }) {
 }
 
 /* ── Deep-flatten {en, hi} objects in API responses ── */
-function flattenBilingual(obj: any, lang: string): any {
+function flattenBilingual<T = unknown>(obj: unknown, lang: string): T {
   if (obj === null || obj === undefined) return obj;
   if (typeof obj !== 'object') return obj;
-  if (Array.isArray(obj)) return obj.map((item) => flattenBilingual(item, lang));
+  if (Array.isArray(obj)) return obj.map((item) => flattenBilingual(item, lang)) as T;
+  const record = obj as Record<string, unknown>;
   // If this object IS a bilingual pair, pick the right language
-  const keys = Object.keys(obj);
+  const keys = Object.keys(record);
   if (keys.length <= 3 && keys.includes('en') && keys.includes('hi')) {
-    return lang === 'hi' ? (obj.hi || obj.en) : obj.en;
+    return (lang === 'hi' ? (record.hi || record.en) : record.en) as T;
   }
   // Otherwise recurse into all values
-  const result: any = {};
-  for (const [k, v] of Object.entries(obj)) {
+  const result: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(record)) {
     result[k] = flattenBilingual(v, lang);
   }
-  return result;
+  return result as T;
 }
 
 /* ────────────────────────────── Main Component ────────────────────────────── */
@@ -303,8 +287,6 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
   const [loadingEclipse, setLoadingEclipse] = useState(false);
   const [loadingIngress, setLoadingIngress] = useState(false);
   const [expandedHouses, setExpandedHouses] = useState<Set<number>>(new Set());
-  const [error, setError] = useState<string | null>(null);
-
   /* ── fetch country list ── */
   useEffect(() => {
     let cancelled = false;
@@ -313,13 +295,17 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
         const raw = await api.get('/api/mundane/countries');
         const list = Array.isArray(raw) ? raw : raw?.countries;
         if (!cancelled && Array.isArray(list) && list.length > 0) {
-          const normalized: CountryOption[] = list.map((c: any) => {
-            const flat = flattenBilingual(c, lang);
+          const normalized: CountryOption[] = list.map((c) => {
+            const country = c as Record<string, unknown>;
+            const flat = flattenBilingual<Record<string, unknown>>(country, lang);
+            const flatName = flat.name;
+            const countryName = country.name;
+            const key = country.key as string | undefined;
             return {
-              code: c.key || flat.code || c.code,
-              name: typeof flat.name === 'string' ? flat.name : (typeof c.name === 'object' ? c.name.en : c.name) || c.key,
-              name_hi: typeof c.name === 'object' ? c.name.hi : c.name_hi,
-              flag: flat.flag || c.flag,
+              code: key || (flat.code as string | undefined) || (country.code as string | undefined) || '',
+              name: typeof flatName === 'string' ? flatName : (typeof countryName === 'object' && countryName ? (countryName as Record<string, string>).en : (countryName as string)) || key || '',
+              name_hi: typeof countryName === 'object' && countryName ? (countryName as Record<string, string>).hi : (country.name_hi as string | undefined),
+              flag: (flat.flag as string | undefined) || (country.flag as string | undefined),
             };
           });
           setCountries(normalized);
@@ -330,7 +316,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
     }
     fetchCountries();
     return () => { cancelled = true; };
-  }, []);
+  }, [lang]);
 
   /* ── fetch main analysis ── */
   const fetchAnalysis = useCallback(async (country: string, year: number) => {
@@ -338,34 +324,42 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
     setAnalysisData(null);
     try {
       const raw = await api.get(`/api/mundane/${country}/analysis?year=${year}`);
-      const flat = flattenBilingual(raw, lang);
+      const flat = flattenBilingual<Record<string, unknown>>(raw, lang);
       // Normalize API field names to match component expectations
       // Extract birth chart planets into flat array
       const rawBirthChart = raw?.birth_chart?.planets || raw?.birth_chart || {};
       const birthChartArr = typeof rawBirthChart === 'object' && !Array.isArray(rawBirthChart)
-        ? Object.entries(rawBirthChart).map(([name, data]: [string, any]) => ({
+        ? Object.entries(rawBirthChart).map(([name, data]) => {
+            const d = (data || {}) as Record<string, unknown>;
+            return ({
             planet: name,
-            sign: data?.sign || '',
-            degree: data?.sign_degree != null ? Number(data.sign_degree).toFixed(2) + '\u00b0' : (data?.longitude != null ? (data.longitude % 30).toFixed(2) + '\u00b0' : ''),
-            house: data?.house || 0,
-            nakshatra: data?.nakshatra || '',
-            retrograde: data?.retrograde || false,
-          }))
+            sign: (d.sign as string) || '',
+            degree: d.sign_degree != null ? Number(d.sign_degree).toFixed(2) + '\u00b0' : (d.longitude != null ? (Number(d.longitude) % 30).toFixed(2) + '\u00b0' : ''),
+            house: (d.house as number) || 0,
+            nakshatra: (d.nakshatra as string) || '',
+            retrograde: Boolean(d.retrograde),
+          });
+        })
         : Array.isArray(rawBirthChart) ? rawBirthChart : [];
 
       // Extract transits
       const rawTransits = raw?.current_transits || [];
-      const transitsArr = Array.isArray(rawTransits) ? rawTransits.map((t: any) => ({
-        planet: t.planet || '',
-        sign: t.sign || '',
-        current_sign: t.sign || t.current_sign || '',
-        sign_degree: t.sign_degree || 0,
-        house: t.house_in_country_chart || t.house || 0,
-        impact: typeof t.house_meaning === 'object' ? (t.house_meaning[lang] || t.house_meaning.en) : (t.impact || t.house_meaning || ''),
-        impact_hi: typeof t.house_meaning === 'object' ? t.house_meaning.hi : undefined,
-        type: t.type || 'neutral',
-        retrograde: t.retrograde || false,
-      })) : [];
+      const transitsArr = Array.isArray(rawTransits) ? rawTransits.map((t) => {
+        const tr = (t || {}) as Record<string, unknown>;
+        const houseMeaning = tr.house_meaning;
+        const hm = typeof houseMeaning === 'object' && houseMeaning ? (houseMeaning as Record<string, string>) : null;
+        return {
+          planet: (tr.planet as string) || '',
+          sign: (tr.sign as string) || '',
+          current_sign: (tr.sign as string) || (tr.current_sign as string) || '',
+          sign_degree: (tr.sign_degree as number) || 0,
+          house: (tr.house_in_country_chart as number) || (tr.house as number) || 0,
+          impact: hm ? (hm[lang] || hm.en || '') : ((tr.impact as string) || (tr.house_meaning as string) || ''),
+          impact_hi: hm ? hm.hi : undefined,
+          type: ((tr.type as TransitImpact['type']) || 'neutral'),
+          retrograde: Boolean(tr.retrograde),
+        };
+      }) : [];
 
       // Preserve ascendant and houses from birth_chart for visual chart rendering
       const birthAscendant = raw?.birth_chart?.ascendant || null;
@@ -381,10 +375,15 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
         birth_chart_ascendant: birthAscendant,
         birth_chart_houses: birthHouses,
         transits: transitsArr,
-        houses: (raw?.house_analysis || []).map((h: any) => ({
-          ...h,
-          mundane_meaning: typeof h.mundane_meaning === 'object' ? (h.mundane_meaning[lang] || h.mundane_meaning.en) : h.mundane_meaning,
-        })),
+        houses: (raw?.house_analysis || []).map((h: unknown) => {
+          const house = (h || {}) as Record<string, unknown>;
+          return {
+            ...house,
+            mundane_meaning: typeof house.mundane_meaning === 'object' && house.mundane_meaning
+              ? ((house.mundane_meaning as Record<string, string>)[lang] || (house.mundane_meaning as Record<string, string>).en)
+              : house.mundane_meaning,
+          };
+        }),
         // build indicators from summary
         indicators: flat.indicators || (flat.summary ? [
           { label: T.nationalMood(lang), label_hi: T.nationalMood('hi'), value: flat.summary.national_mood || '-', status: flat.summary.national_mood === 'positive' ? 'positive' : flat.summary.national_mood === 'negative' ? 'negative' : 'neutral' },
@@ -402,33 +401,33 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
       setAnalysisData(null);
     }
     setLoading(false);
-  }, []);
+  }, [lang]);
 
   /* ── fetch eclipses ── */
   const fetchEclipses = useCallback(async (year: number) => {
     setLoadingEclipse(true);
     try {
       const raw = await api.get(`/api/mundane/eclipses?year=${year}`);
-      const data = flattenBilingual(raw, lang);
+      const data = flattenBilingual<{ eclipses?: EclipseEntry[] } | EclipseEntry[]>(raw, lang);
       setEclipseData(Array.isArray(data) ? data : data?.eclipses ?? null);
     } catch {
       setEclipseData(null);
     }
     setLoadingEclipse(false);
-  }, []);
+  }, [lang]);
 
   /* ── fetch ingress ── */
   const fetchIngress = useCallback(async (year: number) => {
     setLoadingIngress(true);
     try {
       const raw = await api.get(`/api/mundane/ingress?year=${year}`);
-      const data = flattenBilingual(raw, lang);
+      const data = flattenBilingual<{ ingresses?: IngressEntry[] } | IngressEntry[]>(raw, lang);
       setIngressData(Array.isArray(data) ? data : data?.ingresses ?? null);
     } catch {
       setIngressData(null);
     }
     setLoadingIngress(false);
-  }, []);
+  }, [lang]);
 
   /* ── initial load + reload on country/year change ── */
   useEffect(() => {
@@ -772,7 +771,6 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
           <div className="space-y-2">
             {analysisData.houses.map(h => {
               const isExpanded = expandedHouses.has(h.house);
-              const fallbackMeaning = MUNDANE_HOUSE_MEANINGS[h.house - 1];
               return (
                 <div key={h.house} className="border border-sacred-gold rounded-lg bg-white overflow-hidden">
                   <button
@@ -792,9 +790,13 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                           {(() => {
                             // Handle meaning as bilingual object
                             if (h.meaning && typeof h.meaning === 'object') {
-                              return lang === 'hi' ? (h.meaning as any).hi || (h.meaning as any).en : (h.meaning as any).en;
+                              const meaning = h.meaning as Record<string, string>;
+                              return lang === 'hi' ? meaning.hi || meaning.en : meaning.en;
                             }
-                            return loc(h.meaning || fallbackMeaning?.en, h.meaning_hi || fallbackMeaning?.hi);
+                            return loc(
+                              h.meaning || (lang === 'hi' ? 'उपलब्ध नहीं' : 'Unavailable'),
+                              h.meaning_hi || 'उपलब्ध नहीं',
+                            );
                           })()}
                         </span>
                       </div>
@@ -812,7 +814,10 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                         <span className="text-cosmic-text">{
                           // Handle condition as bilingual object or string
                           typeof h.condition === 'object' && h.condition !== null
-                            ? (lang === 'hi' ? (h.condition as any).hi : (h.condition as any).en) || ''
+                            ? (() => {
+                              const condition = h.condition as Record<string, string>;
+                              return (lang === 'hi' ? condition.hi : condition.en) || '';
+                            })()
                             : loc(h.condition, h.condition_hi)
                         }</span>
                       </div>
@@ -831,17 +836,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
             })}
           </div>
         ) : (
-          /* fallback: show 12 houses from static meanings */
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-            {MUNDANE_HOUSE_MEANINGS.map((h, idx) => (
-              <div key={idx} className="border border-sacred-gold rounded-lg bg-white p-3 flex items-start gap-2">
-                <span className="w-7 h-7 flex items-center justify-center rounded-full bg-sacred-gold-dark text-white-dark font-bold text-sm shrink-0">
-                  {idx + 1}
-                </span>
-                <span className="text-sm text-cosmic-text">{lang === 'hi' ? h.hi : h.en}</span>
-              </div>
-            ))}
-          </div>
+          <DataUnavailable lang={lang} />
         )}
       </div>
 

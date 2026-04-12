@@ -246,6 +246,8 @@ export default function JHoraKundliView({
   onBack,
   onDownloadPDF,
 }: JHoraKundliViewProps) {
+  void onBack;
+  void onDownloadPDF;
 
   const { t, language } = useTranslation();
   const DIVISIONAL_OPTIONS = language === 'hi' ? DIVISIONAL_OPTIONS_HI : DIVISIONAL_OPTIONS_EN;

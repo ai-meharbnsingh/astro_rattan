@@ -61,13 +61,6 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
     setLoading(false);
   };
 
-  const scoreColor = (score: number, max: number) => {
-    const pct = score / max;
-    if (pct >= 0.8) return 'text-green-400';
-    if (pct >= 0.5) return 'text-yellow-400';
-    return 'text-red-400';
-  };
-
   const overallColor = (total: number) => {
     if (total >= 24) return 'text-green-400 border-green-300';
     if (total >= 18) return 'text-yellow-400 border-yellow-500';

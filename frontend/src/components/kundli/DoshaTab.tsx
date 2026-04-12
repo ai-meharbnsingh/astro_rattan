@@ -1,5 +1,5 @@
-import { Loader2, Gem } from 'lucide-react';
-import { translatePlanet, translateLabel, translateName, translateBackend } from '@/lib/backend-translations';
+import { Loader2 } from 'lucide-react';
+import { translateLabel, translateName, translateBackend } from '@/lib/backend-translations';
 
 interface DoshaTabProps {
   doshaData: any;
@@ -10,6 +10,7 @@ interface DoshaTabProps {
 }
 
 export default function DoshaTab({ doshaData, doshaDisplay, loadingDosha, language, t }: DoshaTabProps) {
+  void doshaData;
   if (loadingDosha) {
     return (
       <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-cosmic-text">{t('kundli.analyzingDoshas')}</span></div>

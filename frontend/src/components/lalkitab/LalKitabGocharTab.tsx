@@ -1,7 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import type { LalKitabChartData } from './lalkitab-data';
-import { type ApproxTransit, APPROX_TRANSITS_2026, GOCHAR_ALERTS, PLANETS } from './lalkitab-data';
+import { type ApproxTransit, GOCHAR_ALERTS, PLANETS } from './lalkitab-data';
 import { Navigation, AlertTriangle, Info, Zap, RefreshCw } from 'lucide-react';
 import { apiFetch } from '@/lib/api';
 
@@ -49,47 +49,58 @@ function getPlanetLabel(key: string, language: string): string {
   return language === 'hi' ? p.hi : p.en;
 }
 
-/** Merge live API data into the static transit list: updates lkHouse + adds sign/nakshatra context */
-function mergeWithLive(live: LiveTransit[]): ApproxTransit[] {
-  const liveMap = Object.fromEntries(live.map((t) => [t.planet, t]));
-  return APPROX_TRANSITS_2026.map((static_t) => {
-    const l = liveMap[static_t.planet];
-    if (!l) return static_t;
-    const deg = l.sign_degree?.toFixed(1) ?? '?';
-    const retro = l.retrograde ? ' (R)' : '';
-    const nak = l.nakshatra ? ` · ${l.nakshatra}` : '';
-    const nak_hi = l.nakshatra ? ` · ${l.nakshatra}` : '';
-    return {
-      ...static_t,
-      lkHouse: l.lk_house,
-      speedNote: l.speed_note,
-      en: `${static_t.planet} in ${l.sign}${retro} ${deg}°${nak}`,
-      hi: `${getPlanetLabel(static_t.planet, 'hi')} ${SIGN_HI[l.sign] || l.sign} में${l.retrograde ? ' (वक्री)' : ''} ${deg}°${nak_hi}`,
-    };
-  });
+function mapLiveTransit(t: LiveTransit): ApproxTransit {
+  const deg = typeof t.sign_degree === 'number' ? t.sign_degree.toFixed(1) : '?';
+  const retro = t.retrograde ? ' (R)' : '';
+  const nak = t.nakshatra ? ` · ${t.nakshatra}` : '';
+  const nakHi = t.nakshatra ? ` · ${t.nakshatra}` : '';
+  return {
+    planet: t.planet,
+    lkHouse: t.lk_house,
+    speedNote: t.speed_note,
+    en: `${t.planet} in ${t.sign}${retro} ${deg}°${nak}`,
+    hi: `${getPlanetLabel(t.planet, 'hi')} ${SIGN_HI[t.sign] || t.sign} में${t.retrograde ? ' (वक्री)' : ''} ${deg}°${nakHi}`,
+  };
 }
 
 export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
   const { t, language } = useTranslation();
   const isHi = language === 'hi';
 
-  const [transits, setTransits] = useState<ApproxTransit[]>(APPROX_TRANSITS_2026);
+  const [transits, setTransits] = useState<ApproxTransit[]>([]);
   const [asOf, setAsOf] = useState<string | null>(null);
-  const [isLive, setIsLive] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   // Fetch live planet positions
   useEffect(() => {
+    let isMounted = true;
     apiFetch('/api/lalkitab/gochar')
-      .then((res) => res.json())
+      .then(async (res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
       .then((data: { transits: LiveTransit[]; as_of: string }) => {
-        if (data.transits?.length) {
-          setTransits(mergeWithLive(data.transits));
-          setAsOf(data.as_of);
-          setIsLive(true);
+        if (!isMounted) return;
+        const live = Array.isArray(data.transits) ? data.transits.map(mapLiveTransit) : [];
+        setTransits(live);
+        setAsOf(data.as_of || null);
+        if (!live.length) {
+          setLoadError(isHi ? 'गोचर डेटा उपलब्ध नहीं है।' : 'Transit data is unavailable.');
         }
       })
-      .catch(() => {/* keep static fallback */});
-  }, []);
+      .catch(() => {
+        if (!isMounted) return;
+        setLoadError(isHi ? 'लाइव गोचर लोड नहीं हो पाया। कृपया बाद में पुनः प्रयास करें।' : 'Unable to load live transits. Please try again later.');
+        setTransits([]);
+      })
+      .finally(() => {
+        if (isMounted) setIsLoading(false);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, [isHi]);
 
   // Lagna sign number (0 = Aries … 11 = Pisces)
   const lagnaSignNum = useMemo(() => {
@@ -100,10 +111,10 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
     return typeof asc === 'number' ? asc : null;
   }, [apiResult]);
 
-  function globalToNatal(globalHouse: number): number | null {
+  const globalToNatal = useCallback((globalHouse: number): number | null => {
     if (lagnaSignNum === null || globalHouse === 0) return null;
     return ((globalHouse - 1 - lagnaSignNum + 12) % 12) + 1;
-  }
+  }, [lagnaSignNum]);
 
   const activatedHouses = useMemo(() => {
     const map: Record<number, string[]> = {};
@@ -115,7 +126,7 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
       if (!map[natalH].includes(transit.planet)) map[natalH].push(transit.planet);
     }
     return map;
-  }, [lagnaSignNum, transits]);
+  }, [lagnaSignNum, transits, globalToNatal]);
 
   const houseLabel = (n: number) => (isHi ? `${n}वाँ भाव` : `House ${n}`);
 
@@ -130,7 +141,7 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
           </h2>
           <p className="text-sm text-gray-500">{t('lk.gochar.desc')}</p>
         </div>
-        {isLive && asOf && (
+        {asOf && (
           <div className="flex items-center gap-1.5 text-xs text-green-600 bg-green-500/10 border border-green-300/30 rounded-full px-2.5 py-1 shrink-0">
             <RefreshCw className="w-3 h-3" />
             {isHi ? `लाइव · ${asOf}` : `Live · ${asOf}`}
@@ -142,9 +153,7 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
       <div className="flex items-start gap-3 p-4 rounded-xl border border-blue-300/30 bg-blue-500/5">
         <Info className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
         <p className="text-xs text-blue-700">
-          {isLive
-            ? (isHi ? 'ग्रहों की स्थिति आज की तिथि के अनुसार स्वचालित रूप से गणना की गई है (सायन/लाहिरी)।' : 'Planet positions are live-calculated for today\'s date using sidereal/Lahiri ayanamsa.')
-            : t('lk.gochar.disclaimer')}
+          {isHi ? 'ग्रहों की स्थिति आज की तिथि के अनुसार स्वचालित रूप से गणना की गई है (सायन/लाहिरी)।' : 'Planet positions are live-calculated for today\'s date using sidereal/Lahiri ayanamsa.'}
         </p>
       </div>
 
@@ -174,7 +183,14 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
         <h3 className="font-sans font-semibold text-sacred-gold mb-4">
           {t('lk.gochar.currentTransits')}
         </h3>
-        <div className="space-y-3">
+        {isLoading ? (
+          <p className="text-sm text-cosmic-text/70">{isHi ? 'गोचर लोड हो रहा है...' : 'Loading transits...'}</p>
+        ) : loadError ? (
+          <p className="text-sm text-red-500">{loadError}</p>
+        ) : transits.length === 0 ? (
+          <p className="text-sm text-cosmic-text/70">{isHi ? 'आज के लिए कोई गोचर डेटा उपलब्ध नहीं है।' : 'No transit data available for today.'}</p>
+        ) : (
+          <div className="space-y-3">
           {transits.map((transit) => {
             const natalH = lagnaSignNum !== null && transit.lkHouse > 0
               ? globalToNatal(transit.lkHouse)
@@ -249,7 +265,8 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
               </div>
             );
           })}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Activated Natal Houses summary */}

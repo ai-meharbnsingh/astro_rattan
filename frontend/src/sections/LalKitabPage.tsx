@@ -73,7 +73,7 @@ export default function LalKitabPage() {
         setView('form');
       }
     })();
-  }, []);
+  }, [locState.loadKundliId]);
 
   const handleGenerate = useCallback(async (formData: LalKitabFormData) => {
     setView('generating');

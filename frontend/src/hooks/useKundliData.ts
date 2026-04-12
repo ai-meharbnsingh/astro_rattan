@@ -104,7 +104,7 @@ export function useKundliData() {
     setSidePanel({ type: 'house', house, sign, planets });
   }, []);
 
-  const resetTabData = () => {
+  const resetTabData = useCallback(() => {
     setDoshaData(null);
     setIogitaData(null);
     setDashaData(null);
@@ -126,9 +126,29 @@ export function useKundliData() {
     setJaiminiData(null);
     setSadesatiData(null);
     setVarshphalData(null);
-  };
+  }, []);
 
   // On mount: load existing kundlis if logged in, auto-open if loadKundliId passed
+  const loadKundli = useCallback(async (kundli: any) => {
+    try {
+      const full = await api.get(`/api/kundli/${kundli.id}`);
+      setResult(full);
+      setFormData({
+        name: full.person_name || kundli.person_name || '',
+        date: full.birth_date || '',
+        time: full.birth_time || '',
+        place: full.birth_place || '',
+        latitude: full.latitude || 28.6139,
+        longitude: full.longitude || 77.2090,
+        gender: 'male',
+      });
+      resetTabData();
+      setStep('result');
+    } catch {
+      setError('Failed to load kundli');
+    }
+  }, [resetTabData]);
+
   useEffect(() => {
     if (!isAuthenticated) {
       setStep('form');
@@ -156,27 +176,7 @@ export function useKundliData() {
         }
       })
       .catch(() => setStep('form'));
-  }, [isAuthenticated]);
-
-  const loadKundli = async (kundli: any) => {
-    try {
-      const full = await api.get(`/api/kundli/${kundli.id}`);
-      setResult(full);
-      setFormData({
-        name: full.person_name || kundli.person_name || '',
-        date: full.birth_date || '',
-        time: full.birth_time || '',
-        place: full.birth_place || '',
-        latitude: full.latitude || 28.6139,
-        longitude: full.longitude || 77.2090,
-        gender: 'male',
-      });
-      resetTabData();
-      setStep('result');
-    } catch {
-      setError('Failed to load kundli');
-    }
-  };
+  }, [isAuthenticated, loadKundli, prefill.birthDate, prefill.birthPlace, prefill.birthTime, prefill.clientName, prefill.loadKundliId]);
 
   const fetchSavedKundlis = async () => {
     if (!isAuthenticated) return;

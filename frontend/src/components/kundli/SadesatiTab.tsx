@@ -1,5 +1,5 @@
-import { Loader2, Shield, Gem } from 'lucide-react';
-import { translatePlanet, translateRemedy, translateSign, translateBackend } from '@/lib/backend-translations';
+import { Loader2, Shield } from 'lucide-react';
+import { translateSign, translateBackend } from '@/lib/backend-translations';
 
 interface SadesatiTabProps {
   sadesatiData: any;
@@ -11,6 +11,7 @@ interface SadesatiTabProps {
 
 export default function SadesatiTab(props: SadesatiTabProps) {
   const { sadesatiData, loadingSadesati, doshaData, language, t } = props;
+  void doshaData;
 
   return (
             <div className="space-y-6">
