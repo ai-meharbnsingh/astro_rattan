@@ -1,0 +1,11 @@
+services:
+  backend-staging:
+    build: .
+    container_name: astro_rattan-backend-staging
+    ports:
+      - "8029:8028"
+    volumes:
+      - ./data-staging:/app/data
+      - ./static:/app/static
+    env_file: .env.staging
+    restart: unless-stopped
