@@ -317,7 +317,7 @@ export default function LalKitabPage() {
                 <LalKitabTevaTab chartData={chartData} apiResult={apiResult} />
               </TabsContent>
               <TabsContent value="advanced">
-                <LalKitabAdvancedTab kundliId={kundliId} />
+                <LalKitabAdvancedTab kundliId={kundliId} chartData={chartData} />
               </TabsContent>
             </Tabs>
             {clientId && <NotesWidget clientId={clientId} chartType="lalkitab" kundliId={kundliId} />}

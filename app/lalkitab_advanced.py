@@ -209,19 +209,39 @@ def calculate_karmic_debts(planet_positions: List[Dict[str, Any]]) -> List[Dict[
 
 def identify_teva_type(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
-    Detects if the chart is an Andha Teva (Blind) or Dharmi Teva (Religious).
+    Detects if the chart is an Andha Teva (Blind), Ratondha (Half-Blind), or Dharmi Teva (Religious).
     Reference: PDF 2.1.1, 2.1.2
     """
     p_map = {p["planet"]: p["house"] for p in planet_positions}
     
-    # 1. Andha Teva Detection (Two or more enemies in 10th)
-    planets_in_10 = [p["planet"] for p in planet_positions if p["house"] == 10]
-    is_andha = len(planets_in_10) >= 2
+    # 1. Andha Teva (Blind Chart)
+    # Trigger: Two or more enemy planets in 10th house
+    ENEMY_PAIRS = [
+        {"Sun", "Saturn"}, {"Sun", "Venus"}, {"Moon", "Rahu"},
+        {"Mars", "Mercury"}, {"Mars", "Rahu"}, {"Jupiter", "Mercury"},
+        {"Jupiter", "Venus"}, {"Saturn", "Moon"}
+    ]
     
-    # 2. Dharmi Teva Detection
+    planets_in_10 = {p["planet"] for p in planet_positions if p["house"] == 10}
+    is_andha = False
+    if len(planets_in_10) >= 2:
+        for pair in ENEMY_PAIRS:
+            if pair.issubset(planets_in_10):
+                is_andha = True
+                break
+
+    # 2. Ratondha Teva (Half-Blind Chart)
+    # Trigger: Sun in 4th and Saturn in 7th (Classical example)
+    is_ratondha = (p_map.get("Sun") == 4 and p_map.get("Saturn") == 7)
+
+    # 3. Dharmi Teva (Religious Chart)
     is_dharmi = False
-    # Path A: Jupiter + Saturn together
+    # Path A: Jupiter + Saturn mutual association (conjunction or 1/7 aspect)
     if p_map.get("Jupiter") == p_map.get("Saturn") and p_map.get("Jupiter") is not None:
+        is_dharmi = True
+    elif (p_map.get("Jupiter") == 1 and p_map.get("Saturn") == 7) or (p_map.get("Jupiter") == 7 and p_map.get("Saturn") == 1):
+        is_dharmi = True
+    elif (p_map.get("Jupiter") == 4 and p_map.get("Saturn") == 10) or (p_map.get("Jupiter") == 10 and p_map.get("Saturn") == 4):
         is_dharmi = True
     # Path B: Specific auspicious placements
     elif p_map.get("Jupiter") in {6, 9, 11} or p_map.get("Saturn") in {9, 11}:
@@ -229,11 +249,16 @@ def identify_teva_type(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]
 
     return {
         "is_andha": is_andha,
+        "is_ratondha": is_ratondha,
         "is_dharmi": is_dharmi,
         "description": {
             "andha": {
                 "hi": "करियर और सार्वजनिक छवि में मौलिक बाधा। सफलता के लिए गहन शनिवार के उपायों की आवश्यकता है।" if is_andha else "सामान्य कुंडली दृष्टि।",
                 "en": "Fundamental obstruction in career and public image. Success requires intensive Saturday remedies." if is_andha else "Normal chart vision."
+            },
+            "ratondha": {
+                "hi": "रात में काम करने या अनैतिक कार्यों से भाग्य की हानि। दिन के समय की गतिविधियाँ ही फलदायी होंगी।" if is_ratondha else "सामान्य समय-चक्र प्रभाव।",
+                "en": "Loss of fortune through night-work or unethical deeds. Daytime activities will be fruitful." if is_ratondha else "Standard time-cycle influence."
             },
             "dharmi": {
                 "hi": "पूर्व जन्म के पुण्यों से जन्मजात सुरक्षा। यहाँ तक कि पापी ग्रह भी 'धर्मी ग्रह' (सुरक्षात्मक) के रूप में कार्य करते हैं।" if is_dharmi else "मानक कर्मिक प्रतिक्रिया।",

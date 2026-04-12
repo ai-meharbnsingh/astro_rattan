@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import { 
@@ -9,21 +9,31 @@ import {
   Loader2, 
   AlertTriangle,
   History,
-  Scale
+  Scale,
+  Moon
 } from 'lucide-react';
 import { translatePlanet, translateSign } from '@/lib/backend-translations';
+import LalKitabDiagnosticChart from './LalKitabDiagnosticChart';
 
 interface Props {
   kundliId: string;
+  chartData: any;
 }
 
-export default function LalKitabAdvancedTab({ kundliId }: Props) {
+export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
   const { t, language } = useTranslation();
   const isHi = language === 'hi';
 
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const planetPositions = useMemo(() => {
+    return Object.entries(chartData?.planetPositions || {}).map(([planet, house]) => ({
+      planet,
+      house: house as number
+    }));
+  }, [chartData]);
 
   useEffect(() => {
     if (!kundliId) return;
@@ -32,7 +42,7 @@ export default function LalKitabAdvancedTab({ kundliId }: Props) {
       .then(setData)
       .catch(() => setError(isHi ? 'उन्नत विश्लेषण लोड करने में विफल' : 'Failed to load advanced analysis'))
       .finally(() => setLoading(false));
-  }, [kundliId]);
+  }, [kundliId, isHi]);
 
   if (loading) {
     return (
@@ -54,16 +64,12 @@ export default function LalKitabAdvancedTab({ kundliId }: Props) {
   if (!data) return null;
 
   // Calculate Karmic Confidence Score
-  // Base 100
-  // -10 per active debt (max 90)
-  // -20 if Andha Teva
-  // +20 if Dharmi Teva
-  let score = 80; // Start at 80 (Bhalai)
+  let score = 80;
   score -= (data.karmic_debts.length * 8);
   if (data.teva_type.is_andha) score -= 20;
+  if (data.teva_type.is_ratondha) score -= 10;
   if (data.teva_type.is_dharmi) score += 20;
   
-  // Masnui factor
   data.masnui_planets.forEach((m: any) => {
     if (['Jupiter', 'Sun', 'Moon'].includes(m.masnui_planet)) score += 5;
     if (['Rahu', 'Saturn'].includes(m.masnui_planet)) score -= 5;
@@ -120,58 +126,109 @@ export default function LalKitabAdvancedTab({ kundliId }: Props) {
       </div>
 
       {/* Teva Typology */}
-      <div className="grid md:grid-cols-2 gap-4">
-        <div className={`p-5 rounded-xl border ${data.teva_type.is_andha ? 'bg-red-500/5 border-red-200' : 'bg-gray-50 border-gray-100'}`}>
-          <div className="flex items-center gap-3 mb-3">
-            <EyeOff className={`w-6 h-6 ${data.teva_type.is_andha ? 'text-red-600' : 'text-gray-400'}`} />
-            <h3 className="font-sans font-bold text-lg">{t('lk.advanced.andhaTeva')}</h3>
+      <div className="grid md:grid-cols-3 gap-4">
+        <div className={`p-5 rounded-xl border flex flex-col justify-between ${data.teva_type.is_andha ? 'bg-red-500/5 border-red-200' : 'bg-gray-50 border-gray-100'}`}>
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <EyeOff className={`w-6 h-6 ${data.teva_type.is_andha ? 'text-red-600' : 'text-gray-400'}`} />
+              <h3 className="font-sans font-bold text-lg">{t('lk.advanced.andhaTeva')}</h3>
+            </div>
+            <p className="text-xs text-cosmic-text/80 leading-relaxed mb-4">
+              {isHi ? data.teva_type.description.andha.hi : data.teva_type.description.andha.en}
+            </p>
           </div>
-          <p className="text-sm text-cosmic-text/80 leading-relaxed">
-            {isHi ? data.teva_type.description.andha.hi : data.teva_type.description.andha.en}
-          </p>
+          {data.teva_type.is_andha && (
+            <div className="mt-2 scale-90 origin-top">
+              <LalKitabDiagnosticChart type="andha" planetPositions={planetPositions} />
+            </div>
+          )}
         </div>
 
-        <div className={`p-5 rounded-xl border ${data.teva_type.is_dharmi ? 'bg-green-500/5 border-green-200' : 'bg-gray-50 border-gray-100'}`}>
-          <div className="flex items-center gap-3 mb-3">
-            <HandMetal className={`w-6 h-6 ${data.teva_type.is_dharmi ? 'text-green-600' : 'text-gray-400'}`} />
-            <h3 className="font-sans font-bold text-lg">{t('lk.advanced.dharmiTeva')}</h3>
+        <div className={`p-5 rounded-xl border flex flex-col justify-between ${data.teva_type.is_ratondha ? 'bg-orange-500/5 border-orange-200' : 'bg-gray-50 border-gray-100'}`}>
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <Moon className={`w-6 h-6 ${data.teva_type.is_ratondha ? 'text-orange-600' : 'text-gray-400'}`} />
+              <h3 className="font-sans font-bold text-lg">{t('lk.advanced.ratondhaTeva')}</h3>
+            </div>
+            <p className="text-xs text-cosmic-text/80 leading-relaxed mb-4">
+              {isHi ? data.teva_type.description.ratondha.hi : data.teva_type.description.ratondha.en}
+            </p>
           </div>
-          <p className="text-sm text-cosmic-text/80 leading-relaxed">
-            {isHi ? data.teva_type.description.dharmi.hi : data.teva_type.description.dharmi.en}
-          </p>
+          {data.teva_type.is_ratondha && (
+            <div className="mt-2 scale-90 origin-top">
+              <LalKitabDiagnosticChart type="andha" planetPositions={planetPositions} />
+            </div>
+          )}
+        </div>
+
+        <div className={`p-5 rounded-xl border flex flex-col justify-between ${data.teva_type.is_dharmi ? 'bg-green-500/5 border-green-200' : 'bg-gray-50 border-gray-100'}`}>
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <HandMetal className={`w-6 h-6 ${data.teva_type.is_dharmi ? 'text-green-600' : 'text-gray-400'}`} />
+              <h3 className="font-sans font-bold text-lg">{t('lk.advanced.dharmiTeva')}</h3>
+            </div>
+            <p className="text-xs text-cosmic-text/80 leading-relaxed mb-4">
+              {isHi ? data.teva_type.description.dharmi.hi : data.teva_type.description.dharmi.en}
+            </p>
+          </div>
+          {data.teva_type.is_dharmi && (
+            <div className="mt-2 scale-90 origin-top">
+              <LalKitabDiagnosticChart type="dharmi" planetPositions={planetPositions} dharmiData={data.teva_type} />
+            </div>
+          )}
         </div>
       </div>
 
       {/* Masnui Grah */}
       <section>
-        <div className="flex items-center gap-2 mb-4">
-          <Zap className="w-5 h-5 text-sacred-gold" />
-          <h3 className="text-xl font-sans font-bold text-cosmic-text">{t('lk.advanced.masnuiGrah')}</h3>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+          <div className="flex items-center gap-2">
+            <Zap className="w-5 h-5 text-sacred-gold" />
+            <h3 className="text-xl font-sans font-bold text-cosmic-text">{t('lk.advanced.masnuiGrah')}</h3>
+          </div>
+          {data.masnui_planets.length > 0 && (
+            <span className="text-[10px] font-bold text-sacred-gold-dark bg-sacred-gold/10 px-2 py-1 rounded border border-sacred-gold/20 uppercase tracking-widest animate-pulse">
+              ALCHEMICAL SYNTHESIS ACTIVE
+            </span>
+          )}
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {data.masnui_planets.map((m: any, i: number) => (
-            <div key={i} className="card-sacred p-4 rounded-xl border border-sacred-gold/20 bg-white/40">
-              <div className="flex justify-between items-start mb-2">
-                <span className="text-xs font-bold text-sacred-gold-dark uppercase tracking-wider">{t('lk.kundli.house')} {m.house}</span>
-                <span className="px-2 py-0.5 rounded bg-sacred-gold/10 text-sacred-gold-dark text-[10px] font-bold">MASNUI</span>
-              </div>
-              <p className="text-sm font-bold text-cosmic-text mb-1">
-                {m.formed_by.map((p: string) => translatePlanet(p, language)).join(' + ')}
+
+        <div className="grid lg:grid-cols-3 gap-6">
+          {data.masnui_planets.length > 0 && (
+            <div className="lg:col-span-1 p-4 rounded-2xl bg-sacred-gold/5 border border-sacred-gold/20 flex flex-col items-center">
+              <p className="text-[10px] font-bold text-sacred-gold uppercase tracking-widest mb-4">Visual Alchemy Map</p>
+              <LalKitabDiagnosticChart type="masnui" planetPositions={planetPositions} masnuiData={data.masnui_planets} />
+              <p className="text-[10px] text-cosmic-text/50 mt-4 text-center px-4 italic">
+                Glowing circles indicate synthetic planets formed by alchemical conjunctions.
               </p>
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-xs text-cosmic-text/60">→</span>
-                <span className="text-lg font-bold text-sacred-gold-dark">{translatePlanet(m.masnui_planet, language)}</span>
-              </div>
-              <p className="text-xs text-cosmic-text/70 italic border-t border-sacred-gold/10 pt-2">
-                {t('lk.advanced.affectedDomain')}: {isHi ? m.affected_domain.hi : m.affected_domain.en}
-              </p>
-            </div>
-          ))}
-          {data.masnui_planets.length === 0 && (
-            <div className="col-span-full py-10 text-center border border-dashed border-gray-200 rounded-xl">
-              <p className="text-gray-400 italic">{isHi ? 'कोई मसनुई ग्रह नहीं मिला' : 'No artificial planets detected'}</p>
             </div>
           )}
+
+          <div className={`grid gap-4 ${data.masnui_planets.length > 0 ? 'lg:col-span-2 sm:grid-cols-2' : 'sm:grid-cols-2 lg:grid-cols-3 w-full'}`}>
+            {data.masnui_planets.map((m: any, i: number) => (
+              <div key={i} className="card-sacred p-4 rounded-xl border border-sacred-gold/20 bg-white/40">
+                <div className="flex justify-between items-start mb-2">
+                  <span className="text-xs font-bold text-sacred-gold-dark uppercase tracking-wider">{t('lk.kundli.house')} {m.house}</span>
+                  <span className="px-2 py-0.5 rounded bg-sacred-gold/10 text-sacred-gold-dark text-[10px] font-bold">MASNUI</span>
+                </div>
+                <p className="text-sm font-bold text-cosmic-text mb-1">
+                  {m.formed_by.map((p: string) => translatePlanet(p, language)).join(' + ')}
+                </p>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-xs text-cosmic-text/60">→</span>
+                  <span className="text-lg font-bold text-sacred-gold-dark">{translatePlanet(m.masnui_planet, language)}</span>
+                </div>
+                <p className="text-xs text-cosmic-text/70 italic border-t border-sacred-gold/10 pt-2">
+                  {t('lk.advanced.affectedDomain')}: {isHi ? m.affected_domain.hi : m.affected_domain.en}
+                </p>
+              </div>
+            ))}
+            {data.masnui_planets.length === 0 && (
+              <div className="col-span-full py-10 text-center border border-dashed border-gray-200 rounded-xl">
+                <p className="text-gray-400 italic">{isHi ? 'कोई मसनुई ग्रह नहीं मिला' : 'No artificial planets detected'}</p>
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
@@ -203,8 +260,7 @@ export default function LalKitabAdvancedTab({ kundliId }: Props) {
                 <p className="text-xs font-bold text-green-800 mb-1 uppercase tracking-tighter">{t('lk.advanced.remedy')}</p>
                 <p className="text-sm text-cosmic-text leading-relaxed font-medium">{isHi ? debt.remedy.hi : debt.remedy.en}</p>
               </div>
-              </div>
-
+            </div>
           ))}
           {data.karmic_debts.length === 0 && (
             <div className="py-10 text-center border border-dashed border-gray-200 rounded-xl bg-green-500/5">
