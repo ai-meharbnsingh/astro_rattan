@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import type { LalKitabChartData } from './lalkitab-data';
-import { HOUSE_MEANINGS, PLANETS, PLANET_EFFECTS_IN_HOUSES } from './lalkitab-data';
+import { HOUSE_MEANINGS, PLANET_EFFECTS_IN_HOUSES } from './lalkitab-data';
 import { ChevronDown, ChevronUp, Home } from 'lucide-react';
 
 interface Props {
@@ -165,27 +165,11 @@ export default function LalKitabHousesTab({ chartData }: Props) {
                               </h5>
 
                               {effects ? (
-                                <>
-                                  {/* Good Results */}
-                                  <div className="bg-green-500/5 border border-green-300/20 rounded-xl p-4">
-                                    <h6 className="text-sm font-semibold text-green-400 mb-1">
-                                      {t('lk.houses.goodResults')}
-                                    </h6>
-                                    <p className="text-sm text-cosmic-text/80">
-                                      {language === 'hi' ? effects.good.hi : effects.good.en}
-                                    </p>
-                                  </div>
-
-                                  {/* Bad Results */}
-                                  <div className="bg-red-500/5 border border-red-300/20 rounded-xl p-4">
-                                    <h6 className="text-sm font-semibold text-red-400 mb-1">
-                                      {t('lk.houses.badResults')}
-                                    </h6>
-                                    <p className="text-sm text-cosmic-text/80">
-                                      {language === 'hi' ? effects.bad.hi : effects.bad.en}
-                                    </p>
-                                  </div>
-                                </>
+                                <div className="bg-sacred-gold/5 border border-sacred-gold/20 rounded-xl p-4">
+                                  <p className="text-sm text-cosmic-text/80 leading-relaxed">
+                                    {language === 'hi' ? effects.hi : effects.en}
+                                  </p>
+                                </div>
                               ) : (
                                 <p className="text-sm text-gray-600 italic">
                                   {language === 'hi'

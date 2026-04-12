@@ -37,21 +37,6 @@ function getPlanetLabel(key: string, language: string): string {
   return language === 'hi' ? planet.hi : planet.en;
 }
 
-function getPlanetAbbr(key: string): string {
-  const abbrs: Record<string, string> = {
-    Sun: 'Su',
-    Moon: 'Mo',
-    Mars: 'Ma',
-    Mercury: 'Me',
-    Jupiter: 'Ju',
-    Venus: 'Ve',
-    Saturn: 'Sa',
-    Rahu: 'Ra',
-    Ketu: 'Ke',
-  };
-  return abbrs[key] ?? key.slice(0, 2);
-}
-
 /** Build the current year and +/- 5 years range. */
 function getYearRange(): number[] {
   const current = new Date().getFullYear();

@@ -4,12 +4,8 @@ import { api } from '@/lib/api';
 import { 
   BookOpen, 
   Loader2, 
-  AlertTriangle, 
-  Flame, 
-  Minus, 
   CheckCircle2, 
   Circle,
-  TrendingUp,
   Target
 } from 'lucide-react';
 
@@ -37,7 +33,6 @@ export default function LalKitabNishaniyaTab({ kundliId }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>('all');
-  const [activeSeverity, setActiveSeverity] = useState<string>('all');
 
   // Load confirmed IDs from localStorage
   useEffect(() => {
@@ -84,7 +79,6 @@ export default function LalKitabNishaniyaTab({ kundliId }: Props) {
 
   const filtered = nishaniyan.filter((n) => {
     if (activeCategory !== 'all' && n.category !== activeCategory) return false;
-    if (activeSeverity !== 'all' && n.severity !== activeSeverity) return false;
     return true;
   });
 
@@ -92,9 +86,6 @@ export default function LalKitabNishaniyaTab({ kundliId }: Props) {
     if (nishaniyan.length === 0) return 0;
     return Math.round((confirmedIds.size / nishaniyan.length) * 100);
   }, [confirmedIds, nishaniyan]);
-
-  const strongCount = nishaniyan.filter((n) => n.severity === 'strong').length;
-  const moderateCount = nishaniyan.filter((n) => n.severity === 'moderate').length;
 
   return (
     <div className="space-y-6">

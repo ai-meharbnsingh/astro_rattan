@@ -456,7 +456,7 @@ export function generateLalKitabChart(apiData: any): LalKitabChartData {
   const houses: LalKitabHouse[] = [];
   for (let h = 1; h <= 12; h++) {
     const planetsInHouse = Object.entries(planetPositions)
-      .filter(([_, hNum]) => hNum === h)
+      .filter(([, hNum]) => hNum === h)
       .map(([planet]) => planet);
     houses.push({
       house: h,

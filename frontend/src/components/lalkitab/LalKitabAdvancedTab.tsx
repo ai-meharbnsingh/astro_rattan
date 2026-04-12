@@ -12,7 +12,7 @@ import {
   Scale,
   Moon
 } from 'lucide-react';
-import { translatePlanet, translateSign } from '@/lib/backend-translations';
+import { translatePlanet } from '@/lib/backend-translations';
 import LalKitabDiagnosticChart from './LalKitabDiagnosticChart';
 
 interface Props {

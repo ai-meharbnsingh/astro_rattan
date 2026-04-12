@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Star, ChevronDown, ChevronUp, Moon, ShieldCheck, Zap, Info } from 'lucide-react';
+import { Star, ChevronDown, ChevronUp, Moon, ShieldCheck, Zap } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import type { LalKitabChartData } from './lalkitab-data';

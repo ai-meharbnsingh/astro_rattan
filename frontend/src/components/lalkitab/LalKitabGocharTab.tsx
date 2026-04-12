@@ -111,14 +111,11 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
       if (transit.lkHouse === 0) continue;
       const natalH = lagnaSignNum !== null ? globalToNatal(transit.lkHouse) : transit.lkHouse;
       if (!natalH) continue;
-      const planetsInHouse = Object.entries(chartData.planetPositions)
-        .filter(([, h]) => h === natalH)
-        .map(([p]) => p);
       if (!map[natalH]) map[natalH] = [];
       if (!map[natalH].includes(transit.planet)) map[natalH].push(transit.planet);
     }
     return map;
-  }, [chartData, lagnaSignNum, transits]);
+  }, [lagnaSignNum, transits]);
 
   const houseLabel = (n: number) => (isHi ? `${n}वाँ भाव` : `House ${n}`);
 

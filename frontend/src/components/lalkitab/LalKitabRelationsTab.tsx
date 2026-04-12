@@ -5,7 +5,6 @@ import {
   PLANETS,
   PLANET_FRIENDS,
   PLANET_ENEMIES,
-  PAKKA_GHAR,
 } from './lalkitab-data';
 import { Users, Eye, AlertTriangle, CheckCircle } from 'lucide-react';
 

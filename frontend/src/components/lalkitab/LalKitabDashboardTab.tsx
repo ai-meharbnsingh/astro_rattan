@@ -19,6 +19,7 @@ interface Props {
   chartData: LalKitabChartData;
   birthDate: string;
   kundliId?: string;
+  onNavigateTab?: (tab: string) => void;
 }
 
 interface DoshaResult {
@@ -79,7 +80,7 @@ function calculateAge(birthDate: string): number {
   return age;
 }
 
-export default function LalKitabDashboardTab({ chartData, birthDate, kundliId }: Props) {
+export default function LalKitabDashboardTab({ chartData, birthDate, kundliId, onNavigateTab }: Props) {
   const { t, language } = useTranslation();
   const isHi = language === 'hi';
   const [advancedData, setAdvancedData] = useState<any>(null);
@@ -143,13 +144,13 @@ export default function LalKitabDashboardTab({ chartData, birthDate, kundliId }:
 
   const timelinePeriods = useMemo(() => {
     if (!AGE_PLANET_ACTIVATION || AGE_PLANET_ACTIVATION.length === 0) return [];
-    const sorted = [...AGE_PLANET_ACTIVATION].sort((a, b) => a.startAge - b.startAge);
+    const sorted = [...AGE_PLANET_ACTIVATION].sort((a, b) => a.ageStart - b.ageStart);
     return sorted;
   }, []);
 
   const currentPeriodIndex = useMemo(() => {
     return timelinePeriods.findIndex(
-      (p) => age >= p.startAge && age <= p.endAge,
+      (p) => age >= p.ageStart && age <= p.ageEnd,
     );
   }, [age, timelinePeriods]);
 
@@ -341,9 +342,13 @@ export default function LalKitabDashboardTab({ chartData, birthDate, kundliId }:
               })}
 
               {/* View all link */}
-              <p className="text-sm text-sacred-gold cursor-pointer hover:text-sacred-gold-dark transition-colors text-center pt-2">
+              <button
+                type="button"
+                onClick={() => onNavigateTab?.('upay')}
+                className="w-full text-sm text-sacred-gold hover:text-sacred-gold-dark transition-colors text-center pt-2"
+              >
                 {isHi ? 'सभी उपाय देखें →' : 'View all remedies →'}
-              </p>
+              </button>
             </div>
           )}
         </div>
@@ -400,7 +405,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate, kundliId }:
                           {planetLabel}
                         </p>
                         <p className="text-sm text-gray-600">
-                          {period.startAge}–{period.endAge}{' '}
+                          {period.ageStart}–{period.ageEnd}{' '}
                           {isHi ? 'वर्ष' : 'years'}
                         </p>
                       </div>

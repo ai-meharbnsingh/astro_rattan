@@ -39,7 +39,8 @@ import LalKitabAdvancedTab from '@/components/lalkitab/LalKitabAdvancedTab';
 type View = 'form' | 'generating' | 'result';
 
 export default function LalKitabPage() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const isHi = language === 'hi';
   const { user } = useAuth();
   const isAstrologer = user?.role === 'astrologer';
   const location = useLocation();
@@ -51,6 +52,7 @@ export default function LalKitabPage() {
   const [error, setError] = useState('');
   const [clientId, setClientId] = useState(locState.clientId || '');
   const [kundliId, setKundliId] = useState(locState.loadKundliId || '');
+  const [activeTopTab, setActiveTopTab] = useState('dashboard');
 
   // Auto-load existing kundli if navigated with loadKundliId
   useEffect(() => {
@@ -172,7 +174,7 @@ export default function LalKitabPage() {
               {t('lk.backToForm')}
             </Button>
 
-            <Tabs defaultValue="dashboard" className="w-full">
+            <Tabs value={activeTopTab} onValueChange={setActiveTopTab} className="w-full">
               <div className="relative mb-6 md:mb-4 md:static">
                 {/* Scroll hint arrows — mobile only */}
                 <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-sacred-cream to-transparent z-10 pointer-events-none flex items-center justify-start pl-1 md:hidden">
@@ -182,43 +184,22 @@ export default function LalKitabPage() {
                   <span className="text-sacred-gold-dark text-lg">›</span>
                 </div>
 
-                {/* Desktop: two balanced rows */}
+                {/* Desktop: grouped tabs */}
                 <div className="hidden md:flex md:flex-col md:gap-1">
-                  {/* Row 1 — 8 tabs */}
-                  <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 grid grid-cols-8
+                  <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 grid grid-cols-4
                     [&>button]:whitespace-nowrap [&>button]:min-h-[36px] [&>button]:px-2 [&>button]:py-1.5 [&>button]:text-xs
                     [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
                     <TabsTrigger value="dashboard">{t('lk.tab.dashboard')}</TabsTrigger>
-                    <TabsTrigger value="kundli">{t('lk.tab.kundli')}</TabsTrigger>
-                    <TabsTrigger value="planets">{t('lk.tab.planets')}</TabsTrigger>
-                    <TabsTrigger value="dosha">{t('lk.tab.dosha')}</TabsTrigger>
-                    <TabsTrigger value="remedies">{t('lk.tab.remedies')}</TabsTrigger>
-                    <TabsTrigger value="houses">{t('lk.tab.houses')}</TabsTrigger>
-                    <TabsTrigger value="yearly">{t('lk.tab.yearly')}</TabsTrigger>
-                    <TabsTrigger value="varshphal">{t('lk.tab.varshphal')}</TabsTrigger>
+                    <TabsTrigger value="chart">{isHi ? 'चार्ट' : 'Chart'}</TabsTrigger>
+                    <TabsTrigger value="analysis">{isHi ? 'विश्लेषण' : 'Analysis'}</TabsTrigger>
+                    <TabsTrigger value="timing">{isHi ? 'समय व गोचर' : 'Timing & Gochar'}</TabsTrigger>
                   </TabsList>
-                  {/* Row 2 — 7 tabs */}
-                  <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 grid grid-cols-7
+                  <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 grid grid-cols-4
                     [&>button]:whitespace-nowrap [&>button]:min-h-[36px] [&>button]:px-2 [&>button]:py-1.5 [&>button]:text-xs
                     [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
-                    <TabsTrigger value="relations">{t('lk.tab.relations')}</TabsTrigger>
-                    <TabsTrigger value="rules">{t('lk.tab.rules')}</TabsTrigger>
+                    <TabsTrigger value="upay">{isHi ? 'उपाय' : 'Upay'}</TabsTrigger>
+                    <TabsTrigger value="predictions">{isHi ? 'भविष्यवाणी' : 'Predictions'}</TabsTrigger>
                     <TabsTrigger value="nishaniyan">{t('lk.tab.nishaniyan')}</TabsTrigger>
-                    <TabsTrigger value="gochar">{t('lk.tab.gochar')}</TabsTrigger>
-                    <TabsTrigger value="studio">{t('lk.tab.studio')}</TabsTrigger>
-                    <TabsTrigger value="tracker">{t('lk.tab.tracker')}</TabsTrigger>
-                    <TabsTrigger value="chandra">{t('lk.tab.chandra')}</TabsTrigger>
-                  </TabsList>
-                  {/* Row 3 — 7 tabs */}
-                  <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 grid grid-cols-7
-                    [&>button]:whitespace-nowrap [&>button]:min-h-[36px] [&>button]:px-2 [&>button]:py-1.5 [&>button]:text-xs
-                    [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
-                    <TabsTrigger value="marriage">{t('lk.tab.marriage')}</TabsTrigger>
-                    <TabsTrigger value="career">{t('lk.tab.career')}</TabsTrigger>
-                    <TabsTrigger value="health">{t('lk.tab.health')}</TabsTrigger>
-                    <TabsTrigger value="wealth">{t('lk.tab.wealth')}</TabsTrigger>
-                    <TabsTrigger value="saved">{t('lk.tab.saved')}</TabsTrigger>
-                    <TabsTrigger value="teva">{t('lk.tab.teva')}</TabsTrigger>
                     <TabsTrigger value="advanced">{t('lk.tab.advanced')}</TabsTrigger>
                   </TabsList>
                 </div>
@@ -229,95 +210,158 @@ export default function LalKitabPage() {
                   [&>button]:flex-shrink-0 [&>button]:flex-grow-0 [&>button]:basis-auto [&>button]:whitespace-nowrap [&>button]:min-h-[36px] [&>button]:px-3 [&>button]:py-1.5 [&>button]:text-xs
                   [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
                   <TabsTrigger value="dashboard">{t('lk.tab.dashboard')}</TabsTrigger>
-                  <TabsTrigger value="kundli">{t('lk.tab.kundli')}</TabsTrigger>
-                  <TabsTrigger value="planets">{t('lk.tab.planets')}</TabsTrigger>
-                  <TabsTrigger value="dosha">{t('lk.tab.dosha')}</TabsTrigger>
-                  <TabsTrigger value="remedies">{t('lk.tab.remedies')}</TabsTrigger>
-                  <TabsTrigger value="houses">{t('lk.tab.houses')}</TabsTrigger>
-                  <TabsTrigger value="yearly">{t('lk.tab.yearly')}</TabsTrigger>
-                  <TabsTrigger value="varshphal">{t('lk.tab.varshphal')}</TabsTrigger>
-                  <TabsTrigger value="relations">{t('lk.tab.relations')}</TabsTrigger>
-                  <TabsTrigger value="rules">{t('lk.tab.rules')}</TabsTrigger>
+                  <TabsTrigger value="chart">{isHi ? 'चार्ट' : 'Chart'}</TabsTrigger>
+                  <TabsTrigger value="analysis">{isHi ? 'विश्लेषण' : 'Analysis'}</TabsTrigger>
+                  <TabsTrigger value="timing">{isHi ? 'समय व गोचर' : 'Timing & Gochar'}</TabsTrigger>
+                  <TabsTrigger value="upay">{isHi ? 'उपाय' : 'Upay'}</TabsTrigger>
+                  <TabsTrigger value="predictions">{isHi ? 'भविष्यवाणी' : 'Predictions'}</TabsTrigger>
                   <TabsTrigger value="nishaniyan">{t('lk.tab.nishaniyan')}</TabsTrigger>
-                  <TabsTrigger value="gochar">{t('lk.tab.gochar')}</TabsTrigger>
-                  <TabsTrigger value="studio">{t('lk.tab.studio')}</TabsTrigger>
-                  <TabsTrigger value="tracker">{t('lk.tab.tracker')}</TabsTrigger>
-                  <TabsTrigger value="chandra">{t('lk.tab.chandra')}</TabsTrigger>
-                  <TabsTrigger value="marriage">{t('lk.tab.marriage')}</TabsTrigger>
-                  <TabsTrigger value="career">{t('lk.tab.career')}</TabsTrigger>
-                  <TabsTrigger value="health">{t('lk.tab.health')}</TabsTrigger>
-                  <TabsTrigger value="wealth">{t('lk.tab.wealth')}</TabsTrigger>
-                  <TabsTrigger value="saved">{t('lk.tab.saved')}</TabsTrigger>
-                  <TabsTrigger value="teva">{t('lk.tab.teva')}</TabsTrigger>
                   <TabsTrigger value="advanced">{t('lk.tab.advanced')}</TabsTrigger>
                 </TabsList>
               </div>
 
               <TabsContent value="dashboard">
-                <LalKitabDashboardTab chartData={chartData} birthDate={birthDate} kundliId={kundliId} />
+                <LalKitabDashboardTab
+                  chartData={chartData}
+                  birthDate={birthDate}
+                  kundliId={kundliId}
+                  onNavigateTab={setActiveTopTab}
+                />
               </TabsContent>
-              <TabsContent value="kundli">
-                <LalKitabKundliTab chartData={chartData} apiResult={apiResult} />
+              <TabsContent value="chart">
+                <Tabs defaultValue="kundli" className="w-full">
+                  <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 flex flex-nowrap overflow-x-auto md:grid md:grid-cols-3
+                    [&>button]:whitespace-nowrap [&>button]:text-xs [&>button]:min-h-[34px] [&>button]:px-3
+                    [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white">
+                    <TabsTrigger value="kundli">{t('lk.tab.kundli')}</TabsTrigger>
+                    <TabsTrigger value="planets">{t('lk.tab.planets')}</TabsTrigger>
+                    <TabsTrigger value="houses">{t('lk.tab.houses')}</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="kundli">
+                    <LalKitabKundliTab chartData={chartData} apiResult={apiResult} />
+                  </TabsContent>
+                  <TabsContent value="planets">
+                    <LalKitabPlanetsTab chartData={chartData} kundliId={kundliId} />
+                  </TabsContent>
+                  <TabsContent value="houses">
+                    <LalKitabHousesTab chartData={chartData} />
+                  </TabsContent>
+                </Tabs>
               </TabsContent>
-              <TabsContent value="planets">
-                <LalKitabPlanetsTab chartData={chartData} kundliId={kundliId} />
+              <TabsContent value="analysis">
+                <Tabs defaultValue="dosha" className="w-full">
+                  <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 flex flex-nowrap overflow-x-auto md:grid md:grid-cols-3
+                    [&>button]:whitespace-nowrap [&>button]:text-xs [&>button]:min-h-[34px] [&>button]:px-3
+                    [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white">
+                    <TabsTrigger value="dosha">{t('lk.tab.dosha')}</TabsTrigger>
+                    <TabsTrigger value="relations">{t('lk.tab.relations')}</TabsTrigger>
+                    <TabsTrigger value="rules">{t('lk.tab.rules')}</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="dosha">
+                    <LalKitabDoshaTab chartData={chartData} />
+                  </TabsContent>
+                  <TabsContent value="relations">
+                    <LalKitabRelationsTab chartData={chartData} />
+                  </TabsContent>
+                  <TabsContent value="rules">
+                    <LalKitabRulesTab chartData={chartData} />
+                  </TabsContent>
+                </Tabs>
               </TabsContent>
-              <TabsContent value="dosha">
-                <LalKitabDoshaTab chartData={chartData} />
+              <TabsContent value="timing">
+                <Tabs defaultValue="yearly" className="w-full">
+                  <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 flex flex-nowrap overflow-x-auto md:grid md:grid-cols-3
+                    [&>button]:whitespace-nowrap [&>button]:text-xs [&>button]:min-h-[34px] [&>button]:px-3
+                    [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white">
+                    <TabsTrigger value="yearly">{t('lk.tab.yearly')}</TabsTrigger>
+                    <TabsTrigger value="varshphal">{t('lk.tab.varshphal')}</TabsTrigger>
+                    <TabsTrigger value="gochar">{t('lk.tab.gochar')}</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="yearly">
+                    <LalKitabYearlyTab chartData={chartData} birthDate={birthDate} />
+                  </TabsContent>
+                  <TabsContent value="varshphal">
+                    <LalKitabVarshphalTab chartData={chartData} birthDate={birthDate} apiResult={apiResult} />
+                  </TabsContent>
+                  <TabsContent value="gochar">
+                    <LalKitabGocharTab chartData={chartData} apiResult={apiResult} />
+                  </TabsContent>
+                </Tabs>
               </TabsContent>
-              <TabsContent value="remedies">
-                <LalKitabRemediesTab chartData={chartData} kundliId={kundliId} />
+              <TabsContent value="upay">
+                <Tabs defaultValue="remedies" className="w-full">
+                  <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 flex flex-nowrap overflow-x-auto md:grid md:grid-cols-3
+                    [&>button]:whitespace-nowrap [&>button]:text-xs [&>button]:min-h-[34px] [&>button]:px-3
+                    [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white">
+                    <TabsTrigger value="remedies">{t('lk.tab.remedies')}</TabsTrigger>
+                    <TabsTrigger value="tracker">{t('lk.tab.tracker')}</TabsTrigger>
+                    <TabsTrigger value="chandra">{t('lk.tab.chandra')}</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="remedies">
+                    <LalKitabRemediesTab chartData={chartData} kundliId={kundliId} />
+                  </TabsContent>
+                  <TabsContent value="tracker">
+                    <LalKitabRemediesTrackerTab chartData={chartData} kundliId={kundliId} />
+                  </TabsContent>
+                  <TabsContent value="chandra">
+                    <LalKitabChandraChaalanaTab />
+                  </TabsContent>
+                </Tabs>
               </TabsContent>
-              <TabsContent value="houses">
-                <LalKitabHousesTab chartData={chartData} />
-              </TabsContent>
-              <TabsContent value="yearly">
-                <LalKitabYearlyTab chartData={chartData} birthDate={birthDate} />
-              </TabsContent>
-              <TabsContent value="varshphal">
-                <LalKitabVarshphalTab chartData={chartData} birthDate={birthDate} apiResult={apiResult} />
-              </TabsContent>
-              <TabsContent value="relations">
-                <LalKitabRelationsTab chartData={chartData} />
-              </TabsContent>
-              <TabsContent value="rules">
-                <LalKitabRulesTab chartData={chartData} />
+              <TabsContent value="predictions">
+                <Tabs defaultValue="studio" className="w-full">
+                  <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 flex flex-nowrap overflow-x-auto md:grid md:grid-cols-6
+                    [&>button]:whitespace-nowrap [&>button]:text-xs [&>button]:min-h-[34px] [&>button]:px-3
+                    [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white">
+                    <TabsTrigger value="studio">{t('lk.tab.studio')}</TabsTrigger>
+                    <TabsTrigger value="marriage">{t('lk.tab.marriage')}</TabsTrigger>
+                    <TabsTrigger value="career">{t('lk.tab.career')}</TabsTrigger>
+                    <TabsTrigger value="health">{t('lk.tab.health')}</TabsTrigger>
+                    <TabsTrigger value="wealth">{t('lk.tab.wealth')}</TabsTrigger>
+                    <TabsTrigger value="saved">{t('lk.tab.saved')}</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="studio">
+                    <LalKitabPredictionTab chartData={chartData} />
+                  </TabsContent>
+                  <TabsContent value="marriage">
+                    <LalKitabMarriageTab kundliId={kundliId} />
+                  </TabsContent>
+                  <TabsContent value="career">
+                    <LalKitabCareerTab kundliId={kundliId} />
+                  </TabsContent>
+                  <TabsContent value="health">
+                    <LalKitabHealthTab kundliId={kundliId} />
+                  </TabsContent>
+                  <TabsContent value="wealth">
+                    <LalKitabWealthTab kundliId={kundliId} />
+                  </TabsContent>
+                  <TabsContent value="saved">
+                    <LalKitabSavedPredictionsTab kundliId={kundliId} />
+                  </TabsContent>
+                </Tabs>
               </TabsContent>
               <TabsContent value="nishaniyan">
                 <LalKitabNishaniyaTab kundliId={kundliId} />
               </TabsContent>
-              <TabsContent value="gochar">
-                <LalKitabGocharTab chartData={chartData} apiResult={apiResult} />
-              </TabsContent>
-              <TabsContent value="studio">
-                <LalKitabPredictionTab chartData={chartData} />
-              </TabsContent>
-              <TabsContent value="tracker">
-                <LalKitabRemediesTrackerTab chartData={chartData} kundliId={kundliId} />
-              </TabsContent>
-              <TabsContent value="chandra">
-                <LalKitabChandraChaalanaTab />
-              </TabsContent>
-              <TabsContent value="marriage">
-                <LalKitabMarriageTab kundliId={kundliId} />
-              </TabsContent>
-              <TabsContent value="career">
-                <LalKitabCareerTab kundliId={kundliId} />
-              </TabsContent>
-              <TabsContent value="health">
-                <LalKitabHealthTab kundliId={kundliId} />
-              </TabsContent>
-              <TabsContent value="wealth">
-                <LalKitabWealthTab kundliId={kundliId} />
-              </TabsContent>
-              <TabsContent value="saved">
-                <LalKitabSavedPredictionsTab kundliId={kundliId} />
-              </TabsContent>
-              <TabsContent value="teva">
-                <LalKitabTevaTab chartData={chartData} apiResult={apiResult} />
-              </TabsContent>
               <TabsContent value="advanced">
-                <LalKitabAdvancedTab kundliId={kundliId} chartData={chartData} />
+                <Tabs defaultValue="advanced-main" className="w-full">
+                  <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 flex flex-nowrap overflow-x-auto md:grid md:grid-cols-3
+                    [&>button]:whitespace-nowrap [&>button]:text-xs [&>button]:min-h-[34px] [&>button]:px-3
+                    [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white">
+                    <TabsTrigger value="advanced-main">{t('lk.tab.advanced')}</TabsTrigger>
+                    <TabsTrigger value="teva">{t('lk.tab.teva')}</TabsTrigger>
+                    <TabsTrigger value="rin">{t('lk.tab.rin')}</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="advanced-main">
+                    <LalKitabAdvancedTab kundliId={kundliId} chartData={chartData} />
+                  </TabsContent>
+                  <TabsContent value="teva">
+                    <LalKitabTevaTab chartData={chartData} apiResult={apiResult} />
+                  </TabsContent>
+                  <TabsContent value="rin">
+                    <LalKitabRinTab kundliId={kundliId} />
+                  </TabsContent>
+                </Tabs>
               </TabsContent>
             </Tabs>
             {clientId && <NotesWidget clientId={clientId} chartType="lalkitab" kundliId={kundliId} />}

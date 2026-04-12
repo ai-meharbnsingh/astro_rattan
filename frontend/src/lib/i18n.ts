@@ -1210,6 +1210,11 @@ const translations: Record<Language, TranslationMap> = {
 
     // Ashtakvarga
     'ashtakvarga.savDescription': 'Numbers show SAV points per sign (28+ = strong)',
+    'ashtakvarga.trikonaShodhana': 'Trikona Shodhana (Trine Reduction)',
+    'ashtakvarga.ekadhipatyaShodhana': 'Ekadhipatya Shodhana (Lordship Reduction)',
+    'ashtakvarga.shodhyaPinda': 'Shodhya Pinda (Purified Index)',
+    'ashtakvarga.purifiedPoints': 'Purified Points',
+    'ashtakvarga.purificationDesc': 'These are the refined bindus used for advanced predictive techniques and timing of events.',
 
     // Numerology page
     'numerology.badge': 'Numerology',
@@ -2484,6 +2489,11 @@ const translations: Record<Language, TranslationMap> = {
 
     // Ashtakvarga
     'ashtakvarga.savDescription': 'संख्या प्रति राशि SAV अंक दर्शाती है (28+ = बलवान)',
+    'ashtakvarga.trikonaShodhana': 'त्रिकोण शोधन (त्रिकोण न्यूनीकरण)',
+    'ashtakvarga.ekadhipatyaShodhana': 'एकाधिपत्य शोधन (आधिपत्य न्यूनीकरण)',
+    'ashtakvarga.shodhyaPinda': 'शोध्य पिण्ड (शुद्ध सूचकांक)',
+    'ashtakvarga.purifiedPoints': 'शुद्ध बिंदु',
+    'ashtakvarga.purificationDesc': 'ये परिष्कृत बिंदु हैं जिनका उपयोग उन्नत भविष्य कहने वाली तकनीकों और घटनाओं के समय के लिए किया जाता है।',
 
     // Numerology page
     'numerology.badge': 'अंक ज्योतिष',

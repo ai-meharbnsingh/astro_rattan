@@ -22,7 +22,6 @@ interface Props {
 }
 
 const NI_SIZE = 400;
-const NI_HALF = 200;
 const NI_PAD = 10;
 const NI_INNER = NI_SIZE - NI_PAD * 2; // 380
 

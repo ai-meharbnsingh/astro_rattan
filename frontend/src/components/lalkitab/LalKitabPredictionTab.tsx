@@ -3,26 +3,14 @@ import { useTranslation } from '@/lib/i18n';
 import type { LalKitabChartData } from './lalkitab-data';
 import {
   PREDICTION_AREAS,
-  PLANETS,
   computeAreaScore,
   scoreToConfidence,
 } from './lalkitab-data';
 import {
-  Briefcase,
-  Coins,
-  Heart,
-  Home,
-  Activity,
-  Plane,
-  Scale,
   Star,
-  TrendingUp,
-  AlertTriangle,
   Info,
-  CheckCircle2,
   Clock,
   ThumbsUp,
-  ThumbsDown,
   Meh
 } from 'lucide-react';
 
