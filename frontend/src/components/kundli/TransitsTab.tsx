@@ -35,7 +35,7 @@ function TransitHeatMap({ kundliId, t, language }: { kundliId: string; t: any; l
   useEffect(() => {
     if (!kundliId) return;
     setLoading(true);
-    api.post(`/${kundliId}/transit-forecast`)
+    api.post(`/api/kundli/${kundliId}/transit-forecast`, {})
       .then(res => setForecast(res.forecast || []))
       .catch(console.error)
       .finally(() => setLoading(false));
