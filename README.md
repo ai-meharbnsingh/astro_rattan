@@ -125,19 +125,119 @@ SITE_URL=https://astrorattan.com
 
 ---
 
-## 📦 Deployment (Hostinger)
+## 📦 Deployment (Hostinger VPS)
 
-The application is deployed on Hostinger using Nginx as a reverse proxy.
+### Infrastructure Overview
 
-### Backend Setup
-1. Clone the repository to the VPS.
-2. Initialize the virtual environment: `python -m venv venv && source venv/bin/activate`
-3. Install dependencies: `pip install -r requirements.txt`
-4. Run using Gunicorn/Uvicorn: `gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app`
+```
+Internet → Nginx (SSL/443) → /app/astro_rattan/frontend/dist  (static files)
+                           → http://127.0.0.1:8028             (API proxy)
 
-### Frontend Setup
-1. Build the production bundle: `cd frontend && npm install && npm run build`
-2. Serve the `dist` folder via Nginx.
+Backend: Docker container   (Python / FastAPI)
+Frontend: Built by Node.js directly on server → frontend/dist
+Server:   Hostinger VPS — root@145.223.21.39
+Domain:   astrorattan.com (Certbot SSL)
+```
+
+---
+
+### Production Deploy — One Command
+
+SSH into the server and run:
+
+```bash
+bash /app/astro_rattan/deploy.sh
+```
+
+That script does everything automatically:
+1. `git fetch && git reset --hard origin/main` — pulls latest code
+2. `npm ci && npm run build` — builds frontend into `frontend/dist`
+3. `docker compose up -d --build backend` — rebuilds & restarts backend
+4. `nginx -s reload` — nginx picks up the new frontend immediately
+
+**No manual steps. No `docker cp`. No container restarts needed for frontend changes.**
+
+---
+
+### SSH Access
+
+```bash
+ssh root@145.223.21.39
+# Password: see .env → HOSTINGER_SSH_PASSWORD
+# Or: sshpass -p 'PASSWORD' ssh root@145.223.21.39
+```
+
+---
+
+### First-Time Server Setup
+
+Only needed once on a fresh VPS:
+
+```bash
+# 1. Clone repo
+git clone https://github.com/ai-meharbnsingh/astro_rattan.git /app/astro_rattan
+cd /app/astro_rattan
+
+# 2. Create production .env (copy from .env.example and fill values)
+cp .env.example .env
+nano .env
+
+# 3. Install Node.js 20+ (required by Vite 7)
+curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+apt-get install -y nodejs
+
+# 4. Install Docker + Docker Compose
+apt-get install -y docker.io docker-compose-plugin
+
+# 5. Run deploy
+bash deploy.sh
+
+# 6. Configure Nginx (copy nginx.conf then get SSL via Certbot)
+cp nginx.conf /etc/nginx/sites-available/astrorattan
+ln -s /etc/nginx/sites-available/astrorattan /etc/nginx/sites-enabled/
+certbot --nginx -d astrorattan.com -d www.astrorattan.com
+```
+
+---
+
+### Useful Server Commands
+
+```bash
+# Full redeploy (code + frontend + backend)
+bash /app/astro_rattan/deploy.sh
+
+# Backend logs
+docker logs astro_rattan-backend-1 -f
+
+# Backend status
+docker ps
+
+# Restart backend only (no rebuild)
+docker compose restart backend
+
+# Nginx status / reload
+systemctl status nginx
+nginx -s reload
+
+# Check site is live
+curl -I https://astrorattan.com
+```
+
+---
+
+### Local Development
+
+```bash
+# Backend
+python -m venv venv && source venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8028
+
+# Frontend (separate terminal)
+cd frontend
+npm install
+npm run dev    # runs on http://localhost:5198
+```
 
 ---
 
