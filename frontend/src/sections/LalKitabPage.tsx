@@ -209,11 +209,10 @@ export default function LalKitabPage() {
                     <TabsTrigger value="tracker">{t('lk.tab.tracker')}</TabsTrigger>
                     <TabsTrigger value="chandra">{t('lk.tab.chandra')}</TabsTrigger>
                   </TabsList>
-                  {/* Row 3 — 8 tabs */}
-                  <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 grid grid-cols-8
+                  {/* Row 3 — 7 tabs */}
+                  <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 grid grid-cols-7
                     [&>button]:whitespace-nowrap [&>button]:min-h-[36px] [&>button]:px-2 [&>button]:py-1.5 [&>button]:text-xs
                     [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
-                    <TabsTrigger value="rin">{t('lk.tab.rin')}</TabsTrigger>
                     <TabsTrigger value="marriage">{t('lk.tab.marriage')}</TabsTrigger>
                     <TabsTrigger value="career">{t('lk.tab.career')}</TabsTrigger>
                     <TabsTrigger value="health">{t('lk.tab.health')}</TabsTrigger>
@@ -244,7 +243,6 @@ export default function LalKitabPage() {
                   <TabsTrigger value="studio">{t('lk.tab.studio')}</TabsTrigger>
                   <TabsTrigger value="tracker">{t('lk.tab.tracker')}</TabsTrigger>
                   <TabsTrigger value="chandra">{t('lk.tab.chandra')}</TabsTrigger>
-                  <TabsTrigger value="rin">{t('lk.tab.rin')}</TabsTrigger>
                   <TabsTrigger value="marriage">{t('lk.tab.marriage')}</TabsTrigger>
                   <TabsTrigger value="career">{t('lk.tab.career')}</TabsTrigger>
                   <TabsTrigger value="health">{t('lk.tab.health')}</TabsTrigger>
@@ -299,9 +297,6 @@ export default function LalKitabPage() {
               </TabsContent>
               <TabsContent value="chandra">
                 <LalKitabChandraChaalanaTab />
-              </TabsContent>
-              <TabsContent value="rin">
-                <LalKitabRinTab kundliId={kundliId} />
               </TabsContent>
               <TabsContent value="marriage">
                 <LalKitabMarriageTab kundliId={kundliId} />

@@ -118,7 +118,8 @@ def calculate_karmic_debts(planet_positions: List[Dict[str, Any]]) -> List[Dict[
             "name": {"hi": "पितृ ऋण", "en": "Pitru Rin"},
             "type": {"hi": "पिता / पूर्वज का ऋण", "en": "Father's / Forefather's Debt"},
             "reason": {"hi": "२, ५, ९, या १२वें भाव में शुक्र, बुध, राहु, या केतु", "en": "Venus, Mercury, Rahu, or Ketu in 2, 5, 9, or 12th house"},
-            "manifestation": {"hi": "पारिवारिक इतिहास में मंदिर का विनाश, पीपल के पेड़ को नुकसान, पैतृक वंश में बाधाएं।", "en": "Temple destruction in family history, peepal tree damage, paternal lineage disruptions."}
+            "manifestation": {"hi": "पारिवारिक इतिहास में मंदिर का विनाश, पीपल के पेड़ को नुकसान, पैतृक वंश में बाधाएं।", "en": "Temple destruction in family history, peepal tree damage, paternal lineage disruptions."},
+            "remedy": {"hi": "पूरे परिवार से बराबर धन इकट्ठा करें और उसे एक ही दिन में किसी मंदिर में दान करें।", "en": "Collect equal money from all family members and donate it to a temple on the same day."}
         })
 
     # 2. Matru Rin (Mother's Debt)
@@ -127,7 +128,8 @@ def calculate_karmic_debts(planet_positions: List[Dict[str, Any]]) -> List[Dict[
             "name": {"hi": "मातृ ऋण", "en": "Matru Rin"},
             "type": {"hi": "माता / मातृ ऋण", "en": "Mother's / Maternal Debt"},
             "reason": {"hi": "चौथे भाव में केतु", "en": "Ketu in 4th house"},
-            "manifestation": {"hi": "मातृ उपेक्षा पैटर्न, माँ-बच्चे के संबंधों में कठिनाइयाँ, भावनात्मक सुरक्षा की कमी।", "en": "Maternal neglect patterns, mother-child relationship difficulties, emotional security deficits."}
+            "manifestation": {"hi": "मातृ उपेक्षा पैटर्न, माँ-बच्चे के संबंधों में कठिनाइयाँ, भावनात्मक सुरक्षा की कमी।", "en": "Maternal neglect patterns, mother-child relationship difficulties, emotional security deficits."},
+            "remedy": {"hi": "पूरे परिवार से बराबर मात्रा में चांदी (या सिक्के) इकट्ठा करें और उसे बहते पानी में प्रवाहित करें।", "en": "Collect equal amounts of silver (or coins) from all family members and immerse it in flowing water."}
         })
 
     # 3. Sva Rin (Self Debt)
@@ -136,7 +138,8 @@ def calculate_karmic_debts(planet_positions: List[Dict[str, Any]]) -> List[Dict[
             "name": {"hi": "स्व ऋण", "en": "Sva Rin"},
             "type": {"hi": "स्वयं का ऋण", "en": "Self Debt"},
             "reason": {"hi": "५वें भाव में शुक्र, शनि, या राहु", "en": "Venus, Saturn, or Rahu in 5th house"},
-            "manifestation": {"hi": "नास्तिक प्रवृत्तियाँ, हृदय रोग, निर्दोष होने के बावजूद कानूनी दंड।", "en": "Atheistic tendencies, heart disease, legal penalties despite innocence."}
+            "manifestation": {"hi": "नास्तिक प्रवृत्तियाँ, हृदय रोग, निर्दोष होने के बावजूद कानूनी दंड।", "en": "Atheistic tendencies, heart disease, legal penalties despite innocence."},
+            "remedy": {"hi": "परिजनों से समान धन राशि एकत्र कर यज्ञ या सामूहिक पूजन कराएं।", "en": "Collect equal money from family members and perform a Yajna or community prayer."}
         })
 
     # 4. Bhratri Rin (Brother's Debt)
@@ -145,7 +148,8 @@ def calculate_karmic_debts(planet_positions: List[Dict[str, Any]]) -> List[Dict[
             "name": {"hi": "भ्रातृ ऋण", "en": "Bhratri Rin"},
             "type": {"hi": "भाई / मित्र का ऋण", "en": "Brother's / Friend's Debt"},
             "reason": {"hi": "३, ६, ८, या १२वें भाव में मंगल और शनि", "en": "Mars and Saturn in 3, 6, 8, or 12th house"},
-            "manifestation": {"hi": "बड़े भाई की अकाल मृत्यु, दोस्तों द्वारा विश्वासघात, भाई-बहनों द्वारा संपत्ति पर कब्जा।", "en": "Elder brother's early death, betrayal by friends, property seizure by siblings."}
+            "manifestation": {"hi": "बड़े भाई की अकाल मृत्यु, दोस्तों द्वारा विश्वासघात, भाई-बहनों द्वारा संपत्ति पर कब्जा।", "en": "Elder brother's early death, betrayal by friends, property seizure by siblings."},
+            "remedy": {"hi": "परिजनों से समान मात्रा में तांबा या गुड़ एकत्र कर किसी धार्मिक स्थान पर दान करें।", "en": "Collect equal amounts of copper or jaggery from family members and donate to a religious place."}
         })
 
     # 5. Bhagini Rin (Sister's Debt)
@@ -154,7 +158,8 @@ def calculate_karmic_debts(planet_positions: List[Dict[str, Any]]) -> List[Dict[
             "name": {"hi": "भगिनी ऋण", "en": "Bhagini Rin"},
             "type": {"hi": "बहन / पुत्री का ऋण", "en": "Sister's / Daughter's Debt"},
             "reason": {"hi": "३/६ में चंद्रमा या ३, ४, ६ में राहु-बुध की युति", "en": "Moon in 3/6 or Rahu-Mercury conjunction in 3, 4, 6"},
-            "manifestation": {"hi": "बालिकाओं का शोषण, बहन के जन्म पर अशुभ घटनाएँ।", "en": "Exploitation of female children, inauspicious events at sister's birth."}
+            "manifestation": {"hi": "बालिकाओं का शोषण, बहन के जन्म पर अशुभ घटनाएँ।", "en": "Exploitation of female children, inauspicious events at sister's birth."},
+            "remedy": {"hi": "परिजनों से बराबर मात्रा में पीले रंग की कौड़ियाँ इकट्ठा करें, उन्हें जलाकर राख करें और उसी दिन बहते पानी में बहा दें।", "en": "Collect equal yellow sea shells (Kaudis) from family, burn them to ash, and immerse in flowing water on the same day."}
         })
 
     # 6. Deva Rin (Divine Debt)
@@ -163,7 +168,8 @@ def calculate_karmic_debts(planet_positions: List[Dict[str, Any]]) -> List[Dict[
             "name": {"hi": "देव ऋण", "en": "Deva Rin"},
             "type": {"hi": "दिव्य / शिक्षक का ऋण", "en": "Divine / Teacher's Debt"},
             "reason": {"hi": "६, ८, या १२वें भाव में गुरु", "en": "Jupiter in 6, 8, or 12th house"},
-            "manifestation": {"hi": "गुरु का विश्वासघात, पुजारी का अनादर, पवित्र वृक्ष का विनाश, गौ हत्या।", "en": "Guru betrayal, priest disrespect, sacred tree destruction, cow killing."}
+            "manifestation": {"hi": "गुरु का विश्वासघात, पुजारी का अनादर, पवित्र वृक्ष का विनाश, गौ हत्या।", "en": "Guru betrayal, priest disrespect, sacred tree destruction, cow killing."},
+            "remedy": {"hi": "परिजनों से बराबर मात्रा में हल्दी की गांठें या चने की दाल एकत्र कर किसी पुराने मंदिर में दान करें।", "en": "Collect equal pieces of turmeric or chana dal from family and donate to an old temple."}
         })
 
     # 7. Stree Rin (Women's Debt)
@@ -172,7 +178,8 @@ def calculate_karmic_debts(planet_positions: List[Dict[str, Any]]) -> List[Dict[
             "name": {"hi": "स्त्री ऋण", "en": "Stree Rin"},
             "type": {"hi": "स्त्री ऋण", "en": "Women's Debt"},
             "reason": {"hi": "दूसरे या ७वें भाव में सूर्य, चंद्रमा, या राहु", "en": "Sun, Moon, or Rahu in 2nd or 7th house"},
-            "manifestation": {"hi": "संबंधों में संघर्ष, विवाह में बाधाएं, महिलाओं के शोषण के पैटर्न।", "en": "Relationship conflicts, marriage obstacles, female exploitation patterns."}
+            "manifestation": {"hi": "संबंधों में संघर्ष, विवाह में बाधाएं, महिलाओं के शोषण के पैटर्न।", "en": "Relationship conflicts, marriage obstacles, female exploitation patterns."},
+            "remedy": {"hi": "परिजनों से बराबर धन एकत्र कर १०० सफेद गायों को एक समय का भोजन खिलाएं।", "en": "Collect equal money from family and feed 100 white cows once."}
         })
 
     # 8. Nara Rin (Humanity Debt)
@@ -181,7 +188,8 @@ def calculate_karmic_debts(planet_positions: List[Dict[str, Any]]) -> List[Dict[
             "name": {"hi": "नरा ऋण", "en": "Nara Rin"},
             "type": {"hi": "मानवता का ऋण", "en": "Humanity Debt"},
             "reason": {"hi": "केंद्र या दुस्थान भावों में शनि", "en": "Saturn in angular or dusthana houses"},
-            "manifestation": {"hi": "सामान्यीकृत जीवन बाधाएं, पुराना कष्ट, शापित होने की भावना।", "en": "Generalized life obstacles, chronic suffering, feeling of being cursed."}
+            "manifestation": {"hi": "सामान्यीकृत जीवन बाधाएं, पुराना कष्ट, शापित होने की भावना।", "en": "Generalized life obstacles, chronic suffering, feeling of being cursed."},
+            "remedy": {"hi": "परिजनों से बराबर राशि एकत्र कर अनाथालय या कोढ़ी आश्रम में दान करें।", "en": "Collect equal money from family and donate to an orphanage or leprosy center."}
         })
 
     # 9. Prakriti Rin (Nature Debt)
@@ -190,7 +198,8 @@ def calculate_karmic_debts(planet_positions: List[Dict[str, Any]]) -> List[Dict[
             "name": {"hi": "प्रकृति ऋण", "en": "Prakriti Rin"},
             "type": {"hi": "प्रकृति का ऋण", "en": "Nature Debt"},
             "reason": {"hi": "३, ६, १०, १२ में राहु/केतु के साथ पीड़ित बुध", "en": "Afflicted Mercury with Rahu/Ketu in 3, 6, 10, 12"},
-            "manifestation": {"hi": "पिछले जन्मों में पर्यावरण का विनाश, पशु क्रूरता, प्राकृतिक आपदा की संवेदनशीलता।", "en": "Environmental destruction in past lives, animal cruelty, natural disaster vulnerability."}
+            "manifestation": {"hi": "पिछले जन्मों में पर्यावरण का विनाश, पशु क्रूरता, प्राकृतिक आपदा की संवेदनशीलता।", "en": "Environmental destruction in past lives, animal cruelty, natural disaster vulnerability."},
+            "remedy": {"hi": "परिजनों से बराबर धन एकत्र कर ४३ दिनों तक १०० कुत्तों को दूध और ब्रेड खिलाएं।", "en": "Collect equal money from family and feed 100 dogs milk and bread for 43 days."}
         })
 
     return debts

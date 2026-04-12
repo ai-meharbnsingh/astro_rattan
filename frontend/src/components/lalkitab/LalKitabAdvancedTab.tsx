@@ -195,11 +195,16 @@ export default function LalKitabAdvancedTab({ kundliId }: Props) {
                 </div>
                 <span className="px-3 py-1 rounded-full bg-red-600 text-white text-xs font-bold self-start">{isHi ? 'सक्रिय' : 'ACTIVE DEBT'}</span>
               </div>
-              <div className="bg-white/60 p-3 rounded-lg border border-red-100">
+              <div className="bg-white/60 p-3 rounded-lg border border-red-100 mb-3">
                 <p className="text-xs font-bold text-red-800 mb-1 uppercase tracking-tighter">{t('lk.advanced.manifestation')}</p>
                 <p className="text-sm text-cosmic-text leading-relaxed">{isHi ? debt.manifestation.hi : debt.manifestation.en}</p>
               </div>
-            </div>
+              <div className="bg-green-600/5 p-3 rounded-lg border border-green-600/20">
+                <p className="text-xs font-bold text-green-800 mb-1 uppercase tracking-tighter">{t('lk.advanced.remedy')}</p>
+                <p className="text-sm text-cosmic-text leading-relaxed font-medium">{isHi ? debt.remedy.hi : debt.remedy.en}</p>
+              </div>
+              </div>
+
           ))}
           {data.karmic_debts.length === 0 && (
             <div className="py-10 text-center border border-dashed border-gray-200 rounded-xl bg-green-500/5">
