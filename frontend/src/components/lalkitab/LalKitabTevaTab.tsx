@@ -270,10 +270,14 @@ export default function LalKitabTevaTab({ chartData, apiResult }: Props) {
       {/* Kundli chart */}
       {interactiveChartData ? (
         <div className="card-sacred rounded-xl border border-sacred-gold/20 p-5">
-          <h3 className="font-sans font-semibold text-sacred-gold mb-4 text-sm">
+          <h3 className="font-sans font-semibold text-sacred-gold mb-3 text-sm">
             {isHi ? 'लाल किताब कुंडली (तेवा चार्ट)' : 'Lal Kitab Kundli (Teva Chart)'}
           </h3>
-          <InteractiveKundli chartData={interactiveChartData} compact />
+          <div className="flex justify-center">
+            <div className="w-52 h-52">
+              <InteractiveKundli chartData={interactiveChartData} compact />
+            </div>
+          </div>
         </div>
       ) : (
         <div className="card-sacred rounded-xl border border-sacred-gold/20 p-5">
