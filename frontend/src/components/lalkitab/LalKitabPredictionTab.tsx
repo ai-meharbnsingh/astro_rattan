@@ -19,6 +19,59 @@ interface Props {
 }
 
 const STORAGE_KEY_PREFIX = 'lk_prediction_feedback_';
+const confidenceConfig: Record<
+  string,
+  { border: string; bg: string; badge: string; bar: string; icon: typeof Star }
+> = {
+  high: {
+    border: 'border-green-300/30',
+    bg: 'bg-green-500/5',
+    badge: 'bg-green-500/10 text-green-700 border-green-300/30',
+    bar: 'bg-green-500',
+    icon: Star,
+  },
+  moderate: {
+    border: 'border-sacred-gold/30',
+    bg: 'bg-sacred-gold/5',
+    badge: 'bg-sacred-gold/10 text-sacred-gold-dark border-sacred-gold/30',
+    bar: 'bg-sacred-gold',
+    icon: Star,
+  },
+  low: {
+    border: 'border-orange-300/30',
+    bg: 'bg-orange-500/5',
+    badge: 'bg-orange-500/10 text-orange-700 border-orange-300/30',
+    bar: 'bg-orange-500',
+    icon: Star,
+  },
+  speculative: {
+    border: 'border-gray-300/30',
+    bg: 'bg-gray-500/5',
+    badge: 'bg-gray-500/10 text-gray-700 border-gray-300/30',
+    bar: 'bg-gray-500',
+    icon: Star,
+  },
+};
+
+const areaIcons: Record<string, typeof Star> = {};
+
+const PLANET_LABELS: Record<string, { en: string; hi: string }> = {
+  Sun: { en: 'Sun', hi: 'सूर्य' },
+  Moon: { en: 'Moon', hi: 'चंद्र' },
+  Mars: { en: 'Mars', hi: 'मंगल' },
+  Mercury: { en: 'Mercury', hi: 'बुध' },
+  Jupiter: { en: 'Jupiter', hi: 'गुरु' },
+  Venus: { en: 'Venus', hi: 'शुक्र' },
+  Saturn: { en: 'Saturn', hi: 'शनि' },
+  Rahu: { en: 'Rahu', hi: 'राहु' },
+  Ketu: { en: 'Ketu', hi: 'केतु' },
+};
+
+function getPlanetLabel(key: string, language: string): string {
+  const p = PLANET_LABELS[key];
+  if (!p) return key;
+  return language === 'hi' ? p.hi : p.en;
+}
 
 export default function LalKitabPredictionTab({ chartData }: Props) {
   const { t, language } = useTranslation();
@@ -75,7 +128,7 @@ export default function LalKitabPredictionTab({ chartData }: Props) {
       {/* Prediction cards grid */}
       <div className="grid gap-4 md:grid-cols-2">
         {predictions.map(({ area, score, confidence, isPositive }) => {
-          const cfg = confidenceConfig[confidence];
+          const cfg = confidenceConfig[confidence] ?? confidenceConfig.speculative;
           const Icon = areaIcons[area.key] ?? Star;
           const StatusIcon = cfg.icon;
           const userRating = feedback[area.key];
