@@ -202,13 +202,6 @@ export default function TransitsTab(props: TransitsTabProps) {
               </div>
             ) : transitData ? (
               <div className="space-y-6">
-                {/* 30-Day Forecast Heat Map */}
-                {result?.id && (
-                  <div className="mb-2 animate-in fade-in slide-in-from-top-4 duration-700">
-                    <TransitHeatMap kundliId={result.id} t={t} language={language} />
-                  </div>
-                )}
-
                 {/* Transit Chart + Table Side by Side */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
                   {/* Transit Chart — with view toggle */}
@@ -231,7 +224,7 @@ export default function TransitsTab(props: TransitsTabProps) {
                       </div>
                     </div>
 
-                    <div className="w-full max-w-[450px] mx-auto min-h-[400px] flex items-center justify-center">
+                    <div className="w-full max-w-[600px] mx-auto min-h-[520px] flex items-center justify-center">
                       {viewMode === 'diamond' ? (
                         <div className="w-full animate-in fade-in zoom-in-95 duration-500">
                           <p className="text-sm mb-3 text-center" style={{ color: 'var(--ink-light)' }}>{t('kundli.clickHouseToRotate')}</p>
@@ -317,6 +310,13 @@ export default function TransitsTab(props: TransitsTabProps) {
                     </table>
                   </div>
                 </div>
+
+                {/* 30-Day Forecast Heat Map — below transit chart */}
+                {result?.id && (
+                  <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    <TransitHeatMap kundliId={result.id} t={t} language={language} />
+                  </div>
+                )}
 
                 {/* Detailed descriptions */}
                 <div className="grid gap-3">
