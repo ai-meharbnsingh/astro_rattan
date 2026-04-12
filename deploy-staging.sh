@@ -2,8 +2,8 @@
 # deploy-staging.sh — AstroRattan STAGING deploy
 # Usage: bash deploy-staging.sh
 # Run from: /app/astro_rattan on the Hostinger VPS
-# Staging site: http://145.223.21.39:3001
-# Staging API:  http://145.223.21.39:8029
+# Staging site: http://testing.astrorattan.com
+# Staging API:  http://testing.astrorattan.com/api (proxied to port 8029)
 
 set -e
 
@@ -50,7 +50,7 @@ echo "      Staging API health: $STATUS"
 echo ""
 echo "=== STAGING DEPLOYED ==="
 echo "Commit  : $(git log --oneline -1)"
-echo "Site    : http://145.223.21.39:3001"
-echo "API     : http://145.223.21.39:8029"
+echo "Site    : http://testing.astrorattan.com"
+echo "API     : http://testing.astrorattan.com/api"
 echo "DB      : astrorattan_staging"
 echo ""
