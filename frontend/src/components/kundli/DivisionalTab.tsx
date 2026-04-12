@@ -101,12 +101,121 @@ export default function DivisionalTab({
 
           {/* D60 Special Analysis */}
           {divisionalData.d60_analysis && (
-            <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold shadow-sm animate-in fade-in slide-in-from-bottom-4">
+            <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold shadow-sm animate-in fade-in slide-in-from-bottom-4 space-y-6">
               <div className="flex items-center gap-2 mb-4 border-b border-sacred-gold/30 pb-3">
-                <h4 className="text-lg font-bold text-sacred-gold-dark">{language === 'hi' ? 'षष्टयंश (D60) कर्मिक विश्लेषण' : 'D60 Karmic Analysis'}</h4>
+                <h4 className="text-lg font-bold text-sacred-gold-dark">{language === 'hi' ? 'षष्टयंश (D60) कर्मिक विश्लेषण' : 'D60 Shashtiamsa Karmic Analysis'}</h4>
                 <span className="text-xs px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold-dark border border-sacred-gold/20 font-bold uppercase tracking-tighter">EXPERT</span>
               </div>
+
+              {/* Birth Time Sensitivity Warning */}
+              {divisionalData.d60_analysis.birth_time_assessment && (
+                <div className={`p-4 rounded-lg border ${
+                  divisionalData.d60_analysis.birth_time_assessment.confidence_level === 'high' 
+                    ? 'bg-green-50 border-green-200' :
+                  divisionalData.d60_analysis.birth_time_assessment.confidence_level === 'moderate'
+                    ? 'bg-yellow-50 border-yellow-200' :
+                  divisionalData.d60_analysis.birth_time_assessment.confidence_level === 'low'
+                    ? 'bg-orange-50 border-orange-200' :
+                  'bg-red-50 border-red-200'
+                }`}>
+                  <div className="flex items-start gap-3">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                      divisionalData.d60_analysis.birth_time_assessment.confidence_level === 'high' 
+                        ? 'bg-green-100 text-green-700' :
+                      divisionalData.d60_analysis.birth_time_assessment.confidence_level === 'moderate'
+                        ? 'bg-yellow-100 text-yellow-700' :
+                      divisionalData.d60_analysis.birth_time_assessment.confidence_level === 'low'
+                        ? 'bg-orange-100 text-orange-700' :
+                        'bg-red-100 text-red-700'
+                    }`}>
+                      ⚠
+                    </div>
+                    <div className="flex-1">
+                      <h5 className="font-bold text-sm mb-1">
+                        {language === 'hi' ? 'जन्म समय सटीकता' : 'Birth Time Accuracy'}
+                        <span className="ml-2 text-xs uppercase tracking-wider opacity-70">
+                          ({divisionalData.d60_analysis.birth_time_assessment.confidence_level})
+                        </span>
+                      </h5>
+                      <p className="text-sm mb-2">
+                        {language === 'hi' 
+                          ? divisionalData.d60_analysis.birth_time_assessment.assessment?.hi 
+                          : divisionalData.d60_analysis.birth_time_assessment.assessment?.en}
+                      </p>
+                      <p className="text-xs opacity-80 mb-2">
+                        {language === 'hi'
+                          ? divisionalData.d60_analysis.birth_time_assessment.time_sensitivity?.hi
+                          : divisionalData.d60_analysis.birth_time_assessment.time_sensitivity?.en}
+                      </p>
+                      {divisionalData.d60_analysis.birth_time_assessment.recommendations?.length > 0 && (
+                        <ul className="text-xs space-y-1 mt-2">
+                          {divisionalData.d60_analysis.birth_time_assessment.recommendations.map((rec: any, idx: number) => (
+                            <li key={idx} className="flex items-start gap-1">
+                              <span>•</span>
+                              <span>{language === 'hi' ? rec.hi : rec.en}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Karmic Summary */}
+              {divisionalData.d60_analysis.karmic_summary && (
+                <div className="bg-white rounded-lg p-4 border border-sacred-gold/20">
+                  <h5 className="font-bold text-sacred-brown mb-3">
+                    {language === 'hi' ? 'कर्मिक सारांश' : 'Karmic Summary'}
+                  </h5>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div className="bg-green-50 p-3 rounded-lg">
+                      <div className="text-xs text-green-700 uppercase font-bold">
+                        {language === 'hi' ? 'पुण्य स्कोर (शुभ)' : 'Punya Score (Benefic)'}
+                      </div>
+                      <div className="text-2xl font-bold text-green-800">
+                        {divisionalData.d60_analysis.karmic_summary.punya_score}%
+                      </div>
+                    </div>
+                    <div className="bg-red-50 p-3 rounded-lg">
+                      <div className="text-xs text-red-700 uppercase font-bold">
+                        {language === 'hi' ? 'पाप स्कोर (पाप)' : 'Papa Score (Malefic)'}
+                      </div>
+                      <div className="text-2xl font-bold text-red-800">
+                        {divisionalData.d60_analysis.karmic_summary.papa_score}%
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-sm text-cosmic-text mb-3">
+                    {language === 'hi'
+                      ? divisionalData.d60_analysis.karmic_summary.overall_description?.hi
+                      : divisionalData.d60_analysis.karmic_summary.overall_description?.en}
+                  </p>
+                  
+                  {/* Life Purpose */}
+                  {divisionalData.d60_analysis.karmic_summary.life_purpose && (
+                    <div className="mt-4 p-3 bg-sacred-gold/10 rounded-lg">
+                      <h6 className="font-bold text-sacred-gold-dark text-sm mb-1">
+                        {language === 'hi' ? 'जीवन उद्देश्य' : 'Life Purpose'}: {' '}
+                        {language === 'hi'
+                          ? divisionalData.d60_analysis.karmic_summary.life_purpose.primary_hi
+                          : divisionalData.d60_analysis.karmic_summary.life_purpose.primary}
+                      </h6>
+                      <p className="text-xs text-cosmic-text">
+                        {language === 'hi'
+                          ? divisionalData.d60_analysis.karmic_summary.life_purpose.description_hi
+                          : divisionalData.d60_analysis.karmic_summary.life_purpose.description}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Planetary Analysis Table */}
               <div className="overflow-x-auto">
+                <h5 className="font-bold text-sacred-brown mb-3 text-sm">
+                  {language === 'hi' ? 'ग्रह-वार कर्मिक विश्लेषण' : 'Planet-wise Karmic Analysis'}
+                </h5>
                 <table className="w-full text-sm border-collapse">
                   <thead>
                     <tr className="bg-sacred-gold/10">
@@ -114,16 +223,17 @@ export default function DivisionalTab({
                       <th className="text-center p-2.5 text-sacred-gold-dark font-bold border-b border-sacred-gold">{language === 'hi' ? 'इकाई' : 'Unit'}</th>
                       <th className="text-left p-2.5 text-sacred-gold-dark font-bold border-b border-sacred-gold">{language === 'hi' ? 'संस्कृत नाम' : 'Sanskrit Name'}</th>
                       <th className="text-center p-2.5 text-sacred-gold-dark font-bold border-b border-sacred-gold">{language === 'hi' ? 'प्रकृति' : 'Nature'}</th>
-                      <th className="text-left p-2.5 text-sacred-gold-dark font-bold border-b border-sacred-gold">{language === 'hi' ? 'व्याख्या' : 'Meaning'}</th>
+                      <th className="text-left p-2.5 text-sacred-gold-dark font-bold border-b border-sacred-gold">{language === 'hi' ? 'पिछले जन्म का विषय' : 'Past Life Theme'}</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {Object.entries(divisionalData.d60_analysis).map(([planet, info]: [string, any]) => {
+                    {Object.entries(divisionalData.d60_analysis.planetary_analysis || {}).map(([planet, info]: [string, any]) => {
                       const isMalefic = info.nature === 'Malefic';
                       const isBenefic = info.nature === 'Benefic';
                       const natureLabel = language === 'hi' 
                         ? (isBenefic ? 'शुभ' : isMalefic ? 'पाप' : 'मिश्रित') 
                         : info.nature;
+                      const theme = language === 'hi' ? info.past_life_theme?.theme_hi : info.past_life_theme?.theme;
 
                       return (
                         <tr key={planet} className="border-t border-sacred-gold/20 hover:bg-sacred-gold/5 transition-colors">
@@ -140,7 +250,7 @@ export default function DivisionalTab({
                             </span>
                           </td>
                           <td className="p-2.5 text-cosmic-text text-xs leading-relaxed">
-                            {info.description}
+                            {theme || info.description}
                           </td>
                         </tr>
                       );
@@ -148,10 +258,68 @@ export default function DivisionalTab({
                   </tbody>
                 </table>
               </div>
+
+              {/* Karmic Debts */}
+              {divisionalData.d60_analysis.karmic_summary?.karmic_debts?.length > 0 && (
+                <div className="bg-red-50 rounded-lg p-4 border border-red-100">
+                  <h5 className="font-bold text-red-800 mb-3">
+                    {language === 'hi' ? 'पहचाने गए कर्मिक ऋण' : 'Identified Karmic Debts'}
+                  </h5>
+                  <div className="space-y-3">
+                    {divisionalData.d60_analysis.karmic_summary.karmic_debts.map((debt: any, idx: number) => (
+                      <div key={idx} className="bg-white p-3 rounded border border-red-100">
+                        <h6 className="font-bold text-red-700 text-sm">
+                          {language === 'hi' ? debt.debt_type_hi : debt.debt_type}
+                        </h6>
+                        <p className="text-xs text-cosmic-text mt-1">
+                          <span className="font-semibold">{language === 'hi' ? 'ग्रह: ' : 'Planets: '}</span>
+                          {debt.planets_involved?.join(', ')}
+                        </p>
+                        <p className="text-xs text-cosmic-text mt-1">
+                          {language === 'hi' ? debt.manifestation_hi : debt.manifestation}
+                        </p>
+                        <p className="text-xs text-green-700 mt-2 font-medium">
+                          <span className="font-semibold">{language === 'hi' ? 'समाधान: ' : 'Resolution: '}</span>
+                          {language === 'hi' ? debt.resolution_hi : debt.resolution}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Remedy Accessibility */}
+              {divisionalData.d60_analysis.karmic_summary?.remedy_accessibility && (
+                <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
+                  <h5 className="font-bold text-blue-800 mb-2">
+                    {language === 'hi' ? 'उपाय पहुंचनीयता' : 'Remedy Accessibility'}: {' '}
+                    {language === 'hi' 
+                      ? divisionalData.d60_analysis.karmic_summary.remedy_accessibility.level_hi
+                      : divisionalData.d60_analysis.karmic_summary.remedy_accessibility.level}
+                  </h5>
+                  <p className="text-sm text-cosmic-text mb-3">
+                    {language === 'hi'
+                      ? divisionalData.d60_analysis.karmic_summary.remedy_accessibility.description_hi
+                      : divisionalData.d60_analysis.karmic_summary.remedy_accessibility.description}
+                  </p>
+                  {divisionalData.d60_analysis.karmic_summary.remedy_accessibility.recommendations?.length > 0 && (
+                    <ul className="text-xs space-y-1">
+                      {divisionalData.d60_analysis.karmic_summary.remedy_accessibility.recommendations.map((rec: any, idx: number) => (
+                        <li key={idx} className="flex items-start gap-2 text-blue-800">
+                          <span>•</span>
+                          <span>{language === 'hi' ? rec.hi : rec.en}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+
+              {/* Footer Note */}
               <div className="mt-4 p-3 bg-white/50 rounded-lg border border-sacred-gold/10 text-xs text-cosmic-text italic leading-relaxed">
                 {language === 'hi' 
-                  ? "* पराशर ऋषि के अनुसार, षष्टयंश (D60) विश्लेषण के बिना किसी भी जन्म कुंडली पर अंतिम निर्णय नहीं सुनाया जाना चाहिए। यह चार्ट पूर्व जन्म के संचित कर्मों को प्रकट करता है।"
-                  : "* According to Sage Parashara, no final judgment should be pronounced on any horoscope without Shashtiamsa (D60) analysis. This chart reveals the accumulated Sanchita Karma from past incarnations."
+                  ? "* पराशर ऋषि के अनुसार, षष्टयंश (D60) विश्लेषण के बिना किसी भी जन्म कुंडली पर अंतिम निर्णय नहीं सुनाया जाना चाहिए। यह चार्ट पूर्व जन्म के संचित कर्मों (संचित कर्म) को प्रकट करता है और उपाय की प्रभावशीलता का निर्धारण करता है।"
+                  : "* According to Sage Parashara, no final judgment should be pronounced on any horoscope without Shashtiamsa (D60) analysis. This chart reveals the accumulated Sanchita Karma from past incarnations and determines remedy effectiveness."
                 }
               </div>
             </div>

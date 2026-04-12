@@ -105,22 +105,48 @@ D60_NAMES = [
     {"name": "Chandrarekha", "nature": "Benefic", "hi": "चन्द्ररेखा", "desc": "Moon-streak, fame, soft aura"},
 ]
 
-def calculate_d60_analysis(planet_longitudes: Dict[str, float]) -> Dict[str, Any]:
+def calculate_d60_analysis(
+    planet_longitudes: Dict[str, float],
+    birth_time_uncertainty_seconds: Optional[float] = None
+) -> Dict[str, Any]:
     """
     Identifies the D60 Shashtiamsa division for each planet and its meaning.
-    Reference: PDF 1.1.3
+    Includes comprehensive past-life karma analysis and birth time sensitivity warnings.
+    
+    Reference: PDF 1.1.3 - D60 Shashtiamsa for Past-Life Karma
+    
+    Args:
+        planet_longitudes: Dict of planet names to sidereal longitudes
+        birth_time_uncertainty_seconds: Optional uncertainty in birth time (for warnings)
+    
+    Returns:
+        Dict with planetary_analysis, karmic_summary, birth_time_assessment, and recommendations
     """
-    analysis = {}
+    # ============================================================
+    # 1. PER-PLANET D60 ANALYSIS
+    # ============================================================
+    planetary_analysis = {}
+    benefic_count = 0
+    malefic_count = 0
+    mixed_count = 0
+    
+    # Track karmic themes by planet
+    karmic_themes = {
+        "punya": [],  # Meritorious karma carriers
+        "papa": [],   # Sinful karma carriers
+        "mixed": []   # Mixed karma carriers
+    }
+    
     for planet, lon in planet_longitudes.items():
         # D60 = 30 / 60 = 0.5 degrees per division
         # 1. Degrees within sign
         deg_in_sign = lon % 30.0
         # 2. Shashtiamsa unit (0-59)
-        unit = int(deg_in_sign * 2) # 0.5 deg = 1 unit, so 1 deg = 2 units
+        unit = int(deg_in_sign * 2)  # 0.5 deg = 1 unit, so 1 deg = 2 units
         
         # 3. Determine if sign is ODD or EVEN
         sign_idx = int(lon / 30.0) % 12
-        is_odd = (sign_idx % 2 == 0) # 0=Aries (odd), 1=Taurus (even)
+        is_odd = (sign_idx % 2 == 0)  # 0=Aries (odd), 1=Taurus (even)
         
         # 4. Map to D60 name
         # If ODD: 1 to 60 directly
@@ -129,18 +155,578 @@ def calculate_d60_analysis(planet_longitudes: Dict[str, float]) -> Dict[str, Any
             name_idx = unit
         else:
             name_idx = 59 - unit
-            
+        
         if 0 <= name_idx < 60:
             info = D60_NAMES[name_idx]
-            analysis[planet] = {
+            
+            # Count nature types
+            if info["nature"] == "Benefic":
+                benefic_count += 1
+                karmic_themes["punya"].append(planet)
+            elif info["nature"] == "Malefic":
+                malefic_count += 1
+                karmic_themes["papa"].append(planet)
+            else:
+                mixed_count += 1
+                karmic_themes["mixed"].append(planet)
+            
+            # Planet-specific karmic interpretation
+            past_life_interpretation = _get_planet_d60_interpretation(planet, info["name"], info["nature"])
+            
+            planetary_analysis[planet] = {
                 "unit": unit + 1,
                 "name": info["name"],
                 "name_hi": info["hi"],
                 "nature": info["nature"],
-                "description": info["desc"]
+                "description": info["desc"],
+                "past_life_theme": past_life_interpretation,
+                "longitude": round(lon, 4),
+                "degree_in_sign": round(deg_in_sign, 2)
             }
-            
-    return analysis
+    
+    # ============================================================
+    # 2. KARMIC SUMMARY ANALYSIS
+    # ============================================================
+    total_planets = len(planetary_analysis)
+    punya_score = (benefic_count / total_planets * 100) if total_planets > 0 else 0
+    papa_score = (malefic_count / total_planets * 100) if total_planets > 0 else 0
+    
+    # Overall karmic nature assessment
+    if punya_score >= 60:
+        overall_nature = "Highly Benefic"
+        overall_desc = "Strong accumulated merit from past lives. Protection and grace available."
+        overall_desc_hi = "पिछले जन्मों से अर्जित पुण्य अधिक। सुरक्षा और कृपा उपलब्ध।"
+    elif punya_score >= 40:
+        overall_nature = "Mixed-Benefic"
+        overall_desc = "Balanced karmic ledger with slight merit advantage."
+        overall_desc_hi = "संतुलित कर्मिक खाता थोड़े पुण्य लाभ के साथ।"
+    elif papa_score >= 60:
+        overall_nature = "Highly Malefic"
+        overall_desc = "Significant karmic burdens requiring remedial attention."
+        overall_desc_hi = "उपाय ध्यान देने की आवश्यकता वाले महत्वपूर्ण कर्मिक बोझ।"
+    elif papa_score >= 40:
+        overall_nature = "Mixed-Malefic"
+        overall_desc = "Karmic challenges present but manageable with effort."
+        overall_desc_hi = "कर्मिक चुनौतियां मौजूद हैं लेकिन प्रयास से प्रबंधनीय।"
+    else:
+        overall_nature = "Balanced"
+        overall_desc = "Neutral karmic pattern - results depend on current actions."
+        overall_desc_hi = "तटस्थ कर्मिक पैटर्न - परिणाम वर्तमान क्रियाओं पर निर्भर।"
+    
+    # Life purpose derivation
+    life_purpose = _derive_life_purpose(karmic_themes, planetary_analysis)
+    
+    # Karmic debt identification from D60
+    karmic_debts = _identify_d60_karmic_debts(planetary_analysis)
+    
+    # Remedy accessibility assessment
+    remedy_accessibility = _assess_remedy_accessibility(punya_score, papa_score)
+    
+    karmic_summary = {
+        "overall_nature": overall_nature,
+        "overall_description": {"en": overall_desc, "hi": overall_desc_hi},
+        "punya_score": round(punya_score, 1),
+        "papa_score": round(papa_score, 1),
+        "benefic_planets": karmic_themes["punya"],
+        "malefic_planets": karmic_themes["papa"],
+        "mixed_planets": karmic_themes["mixed"],
+        "life_purpose": life_purpose,
+        "karmic_debts": karmic_debts,
+        "remedy_accessibility": remedy_accessibility
+    }
+    
+    # ============================================================
+    # 3. BIRTH TIME SENSITIVITY ASSESSMENT
+    # ============================================================
+    # D60 has 0.5 degree = 30 arc-minutes per division
+    # Birth time error of ~30 seconds can shift planet to different D60
+    # This is because Moon moves ~0.5 degrees in ~1 hour
+    # So 30 seconds = ~0.004 degrees (approximate)
+    
+    sensitivity_warning = {
+        "is_critical": True,
+        "division_size_degrees": 0.5,
+        "division_size_arcminutes": 30,
+        "time_sensitivity": {
+            "en": "D60 is extremely sensitive to birth time accuracy. Errors as small as 30-60 seconds can alter planetary placements entirely.",
+            "hi": "डी60 जन्म समय की सटीकता के प्रति अत्यंत संवेदनशील है। 30-60 सेकंड की छोटी त्रुटि भी ग्रहों की स्थिति पूरी तरह बदल सकती है।"
+        },
+        "confidence_level": "unknown",
+        "recommendations": []
+    }
+    
+    # Assess based on provided uncertainty
+    if birth_time_uncertainty_seconds is not None:
+        if birth_time_uncertainty_seconds <= 10:
+            sensitivity_warning["confidence_level"] = "high"
+            sensitivity_warning["assessment"] = {
+                "en": "Birth time precision is excellent for D60 analysis.",
+                "hi": "डी60 विश्लेषण के लिए जन्म समय की सटीकता उत्कृष्ट है।"
+            }
+        elif birth_time_uncertainty_seconds <= 30:
+            sensitivity_warning["confidence_level"] = "moderate"
+            sensitivity_warning["assessment"] = {
+                "en": "Birth time acceptable but borderline for D60 precision.",
+                "hi": "जन्म समय स्वीकार्य लेकिन डी60 सटीकता के लिए सीमा पर है।"
+            }
+            sensitivity_warning["recommendations"].append({
+                "en": "Consider birth time rectification through life event verification for maximum accuracy.",
+                "hi": "अधिकतम सटीकता के लिए जीवन की घटनाओं के माध्यम से जन्म समय सुधार पर विचार करें।"
+            })
+        elif birth_time_uncertainty_seconds <= 120:
+            sensitivity_warning["confidence_level"] = "low"
+            sensitivity_warning["assessment"] = {
+                "en": "Birth time uncertainty may affect D60 accuracy. Results should be interpreted with caution.",
+                "hi": "जन्म समय की अनिश्चितता डी60 की सटीकता को प्रभावित कर सकती है। परिणामों की सावधानी से व्याख्या करनी चाहिए।"
+            }
+            sensitivity_warning["recommendations"].extend([
+                {
+                    "en": "Strongly recommend birth time rectification (BTR) before relying on D60 predictions.",
+                    "hi": "डी60 भविष्यवाणियों पर भरोसा करने से पहले जन्म समय सुधार (बीटीआर) की दृढ़ता से अनुशंसा करें।"
+                },
+                {
+                    "en": "Cross-verify D60 indications with D1 (Rashi) and D9 (Navamsa) charts.",
+                    "hi": "डी60 संकेतों की डी1 (राशि) और डी9 (नवांश) कुंडली के साथ क्रॉस-सत्यापन करें।"
+                }
+            ])
+        else:
+            sensitivity_warning["confidence_level"] = "very_low"
+            sensitivity_warning["assessment"] = {
+                "en": "D60 analysis unreliable with current birth time accuracy. Rectification essential.",
+                "hi": "वर्तमान जन्म समय सटीकता के साथ डी60 विश्लेषण अविश्वसनीय। सुधार आवश्यक।"
+            }
+            sensitivity_warning["recommendations"].extend([
+                {
+                    "en": "DO NOT rely on D60 predictions without proper birth time rectification.",
+                    "hi": "उचित जन्म समय सुधार के बिना डी60 भविष्यवाणियों पर भरोसा न करें।"
+                },
+                {
+                    "en": "Use D1, D9, and D10 charts as primary references instead.",
+                    "hi": "इसके बजाय डी1, डी9 और डी10 चार्ट作为主要 संदर्भ के रूप में उपयोग करें।"
+                },
+                {
+                    "en": "Consult a professional astrologer for birth time rectification using life events.",
+                    "hi": "जीवन की घटनाओं का उपयोग करके जन्म समय सुधार के लिए एक पेशेवर ज्योतिषी से परामर्श करें।"
+                }
+            ])
+    else:
+        # No uncertainty provided - default warning
+        sensitivity_warning["confidence_level"] = "unknown"
+        sensitivity_warning["assessment"] = {
+            "en": "Birth time uncertainty not provided. D60 results should be verified for accuracy.",
+            "hi": "जन्म समय की अनिश्चितता प्रदान नहीं की गई। डी60 परिणामों की सटीकता के लिए सत्यापन किया जाना चाहिए।"
+        }
+        sensitivity_warning["recommendations"].append({
+            "en": "Provide birth time accuracy (e.g., from birth certificate) for reliable D60 analysis.",
+            "hi": "विश्वसनीय डी60 विश्लेषण के लिए जन्म समय की सटीकता प्रदान करें (जन्म प्रमाण पत्र से)।"
+        })
+    
+    # Add general recommendations
+    sensitivity_warning["recommendations"].append({
+        "en": "Verify D60 placements with major life events (career peaks, marriage, health crises) for validation.",
+        "hi": "सत्यापन के लिए प्रमुख जीवन घटनाओं (करियर चरम, विवाह, स्वास्थ्य संकट) के साथ डी60 स्थितियों की पुष्टि करें।"
+    })
+    
+    # ============================================================
+    # 4. FINAL ASSEMBLY
+    # ============================================================
+    return {
+        "planetary_analysis": planetary_analysis,
+        "karmic_summary": karmic_summary,
+        "birth_time_assessment": sensitivity_warning,
+        "metadata": {
+            "chart_type": "Shashtiamsa (D60)",
+            "chart_type_hi": "षष्ट्यांश (डी60)",
+            "purpose": "Past-life karma and accumulated merit/sin analysis",
+            "purpose_hi": "पिछले जन्म का कर्म और अर्जित पुण्य/पाप विश्लेषण",
+            "authority": "Sage Parashara - highest authority for final judgment",
+            "authority_hi": "ऋषि पराशर - अंतिम निर्णय के लिए सर्वोच्च प्राधिकरण"
+        }
+    }
+
+
+def _get_planet_d60_interpretation(planet: str, d60_name: str, nature: str) -> Dict[str, Any]:
+    """
+    Generate planet-specific past-life interpretation based on D60 placement.
+    Reference: PDF 1.1.3 - Planetary placements in D60 divisions
+    """
+    interpretations = {
+        "Sun": {
+            "benefic": {
+                "theme": "Righteous authority and leadership in past lives",
+                "theme_hi": "पिछले जन्मों में धार्मिक अधिकार और नेतृत्व",
+                "manifestation": "Natural respect from authority figures, government favor"
+            },
+            "malefic": {
+                "theme": "Misuse of authority or ego-driven leadership failures",
+                "theme_hi": "अधिकार का दुरुपयोग या अहंकार-प्रेरित नेतृत्व विफलताएं",
+                "manifestation": "Struggles with authority, father relationship challenges"
+            },
+            "mixed": {
+                "theme": "Complex relationship with power and responsibility",
+                "theme_hi": "शक्ति और जिम्मेदारी के साथ जटिल संबंध",
+                "manifestation": "Alternating success and challenges in leadership"
+            }
+        },
+        "Moon": {
+            "benefic": {
+                "theme": "Nurturing and emotional wisdom accumulated",
+                "theme_hi": "पालन-पोषण और भावनात्मक बुद्धि का संचय",
+                "manifestation": "Natural emotional security, strong maternal bonds"
+            },
+            "malefic": {
+                "theme": "Emotional trauma or maternal relationship disruptions",
+                "theme_hi": "भावनात्मक आघात या मातृ संबंध व्यवधान",
+                "manifestation": "Emotional instability, mother-related challenges"
+            },
+            "mixed": {
+                "theme": "Fluctuating emotional patterns across lifetimes",
+                "theme_hi": "जीवनकालों में भावनात्मक पैटर्न में उतार-चढ़ाव",
+                "manifestation": "Periods of emotional fulfillment and challenges"
+            }
+        },
+        "Mars": {
+            "benefic": {
+                "theme": "Courageous protection of dharma and righteousness",
+                "theme_hi": "धर्म और धार्मिकता की साहसी रक्षा",
+                "manifestation": "Natural courage, protection from accidents, strong siblings"
+            },
+            "malefic": {
+                "theme": "Violence, cruelty, or misused strength",
+                "theme_hi": "हिंसा, क्रूरता, या दुरुपयोग की गई शक्ति",
+                "manifestation": "Accident proneness, sibling conflicts, anger issues"
+            },
+            "mixed": {
+                "theme": "Conflicts between aggression and protection",
+                "theme_hi": "आक्रामकता और सुरक्षा के बीच संघर्ष",
+                "manifestation": "Courage used sometimes constructively, sometimes destructively"
+            }
+        },
+        "Mercury": {
+            "benefic": {
+                "theme": "Wisdom sharing and intellectual service",
+                "theme_hi": "बुद्धि साझा करना और बौद्धिक सेवा",
+                "manifestation": "Natural communication skills, learning ease"
+            },
+            "malefic": {
+                "theme": "Deceptive speech or misused intellect",
+                "theme_hi": "भ्रामक भाषण या दुरुपयोग की गई बुद्धि",
+                "manifestation": "Communication challenges, nervous system issues"
+            },
+            "mixed": {
+                "theme": "Intellect used for both truth and deception",
+                "theme_hi": "बुद्धि का सच और छल दोनों के लिए उपयोग",
+                "manifestation": "Skilled but sometimes manipulative communication"
+            }
+        },
+        "Jupiter": {
+            "benefic": {
+                "theme": "Spiritual teaching and wisdom transmission",
+                "theme_hi": "आध्यात्मिक शिक्षण और ज्ञान प्रसारण",
+                "manifestation": "Natural wisdom, guru blessings, prosperity"
+            },
+            "malefic": {
+                "theme": "False wisdom or betrayal of teacher's trust",
+                "theme_hi": "झूठी बुद्धि या गुरु के विश्वास का विश्वासघात",
+                "manifestation": "Challenges with teachers, wisdom misapplication"
+            },
+            "mixed": {
+                "theme": "Alternating between true and false wisdom",
+                "theme_hi": "सच्ची और झूठी बुद्धि के बीच बदलाव",
+                "manifestation": "Periods of clarity and confusion in beliefs"
+            }
+        },
+        "Venus": {
+            "benefic": {
+                "theme": "Artistic and relational harmony cultivated",
+                "theme_hi": "कलात्मक और संबंधात्मक सामंजस्य का विकास",
+                "manifestation": "Natural charm, relationship harmony, artistic talent"
+            },
+            "malefic": {
+                "theme": "Sensual excess or relationship betrayals",
+                "theme_hi": "वैभविक अत्यधिकता या संबंध विश्वासघात",
+                "manifestation": "Relationship challenges, indulgence issues"
+            },
+            "mixed": {
+                "theme": "Complex relationship patterns across lifetimes",
+                "theme_hi": "जीवनकालों में जटिल संबंध पैटर्न",
+                "manifestation": "Alternating fulfillment and disappointment in love"
+            }
+        },
+        "Saturn": {
+            "benefic": {
+                "theme": "Disciplined service and karmic responsibility",
+                "theme_hi": "अनुशासित सेवा और कर्मिक जिम्मेदारी",
+                "manifestation": "Steady progress, respect for elders, stability"
+            },
+            "malefic": {
+                "theme": "Neglected duties or abuse of power over vulnerable",
+                "theme_hi": "उपेक्षित कर्तव्य या कमजोरों पर शक्ति का दुरुपयोग",
+                "manifestation": "Delays, chronic challenges, authority conflicts"
+            },
+            "mixed": {
+                "theme": "Inconsistent approach to responsibility",
+                "theme_hi": "जिम्मेदारी के प्रति असंगत दृष्टिकोण",
+                "manifestation": "Periods of discipline and negligence"
+            }
+        },
+        "Rahu": {
+            "benefic": {
+                "theme": "Unconventional wisdom and breaking limitations",
+                "theme_hi": "अपरंपरागत बुद्धि और सीमाओं को तोड़ना",
+                "manifestation": "Innovation, foreign connections, unique insights"
+            },
+            "malefic": {
+                "theme": "Obsessive desires and illusion (Maya)",
+                "theme_hi": "व्यामोहजनक desires और माया",
+                "manifestation": "Addictions, confusion, unrealistic ambitions"
+            },
+            "mixed": {
+                "theme": "Ambition alternating between constructive and destructive",
+                "theme_hi": "रचनात्मक और विनाशकारी के बीच बदलती महत्वाकांक्षा",
+                "manifestation": "Unconventional paths with mixed results"
+            }
+        },
+        "Ketu": {
+            "benefic": {
+                "theme": "Spiritual liberation and detachment cultivated",
+                "theme_hi": "आध्यात्मिक मुक्ति और वैराग्य का विकास",
+                "manifestation": "Intuitive wisdom, spiritual inclinations, detachment from material"
+            },
+            "malefic": {
+                "theme": "Forced separation or incomplete spiritual growth",
+                "theme_hi": "जबरदस्ती अलावा या अधूरी आध्यात्मिक वृद्धि",
+                "manifestation": "Losses, isolation, spiritual confusion"
+            },
+            "mixed": {
+                "theme": "Alternating between attachment and detachment",
+                "theme_hi": "आसक्ति और वैराग्य के बीच बदलाव",
+                "manifestation": "Periods of spiritual growth and material entanglement"
+            }
+        }
+    }
+    
+    nature_key = nature.lower()
+    planet_interp = interpretations.get(planet, {}).get(nature_key, {})
+    
+    return {
+        "planet": planet,
+        "d60_division": d60_name,
+        "nature": nature,
+        "theme": planet_interp.get("theme", "General karmic pattern"),
+        "theme_hi": planet_interp.get("theme_hi", "सामान्य कर्मिक पैटर्न"),
+        "manifestation": planet_interp.get("manifestation", "Varies by chart context")
+    }
+
+
+def _derive_life_purpose(karmic_themes: Dict, planetary_analysis: Dict) -> Dict[str, Any]:
+    """
+    Derive current life purpose based on D60 karmic patterns.
+    """
+    # Analyze which planets carry benefic vs malefic karma
+    benefic_planets = karmic_themes["punya"]
+    malefic_planets = karmic_themes["papa"]
+    
+    # Count by planet type
+    luminaries_benefic = sum(1 for p in benefic_planets if p in ["Sun", "Moon"])
+    luminaries_malefic = sum(1 for p in malefic_planets if p in ["Sun", "Moon"])
+    
+    # Determine primary life theme
+    if luminaries_benefic >= 1 and len(benefic_planets) >= 4:
+        purpose = {
+            "primary": "Spiritual Leadership and Service",
+            "primary_hi": "आध्यात्मिक नेतृत्व और सेवा",
+            "description": "Your accumulated merit supports a path of guidance, teaching, and uplifting others.",
+            "description_hi": "आपके अर्जित पुण्य मार्गदर्शन, शिक्षण और दूसरों को उठाने के पथ का समर्थन करते हैं।",
+            "focus_areas": ["Teaching", "Mentoring", "Spiritual practice", "Community service"]
+        }
+    elif len(malefic_planets) >= 5:
+        purpose = {
+            "primary": "Karmic Purification and Transformation",
+            "primary_hi": "कर्मिक शुद्धिकरण और परिवर्तन",
+            "description": "This life focuses on resolving past burdens through conscious effort and remedial practices.",
+            "description_hi": "यह जीवन सचेत प्रयास और उपाय अभ्यास के माध्यम से पिछले बोझ को हल करने पर केंद्रित है।",
+            "focus_areas": ["Remedial measures", "Self-discipline", "Service to suffering", "Spiritual practice"]
+        }
+    elif "Jupiter" in benefic_planets and "Saturn" in benefic_planets:
+        purpose = {
+            "primary": "Wisdom through Responsibility",
+            "primary_hi": "जिम्मेदारी के माध्यम से बुद्धि",
+            "description": "Combine practical responsibility with higher learning for meaningful contribution.",
+            "description_hi": "अर्थपूर्ण योगदान के लिए व्यावहारिक जिम्मेदारी को उच्च学习 के साथ जोड़ें।",
+            "focus_areas": ["Education", "Counseling", "Administration", "Ethical business"]
+        }
+    elif "Mars" in malefic_planets and "Saturn" in malefic_planets:
+        purpose = {
+            "primary": "Channeling Energy Constructively",
+            "primary_hi": "रचनात्मक रूप से ऊर्जा को चैनल करना",
+            "description": "Transform aggressive or restrictive patterns into disciplined action and protection of others.",
+            "description_hi": "आक्रामक या प्रतिबंधात्मक पैटर्न को अनुशासित कार्रवाई और दूसरों की सुरक्षा में बदलें।",
+            "focus_areas": ["Physical disciplines", "Protective services", "Engineering", "Sports"]
+        }
+    elif "Venus" in benefic_planets and "Mercury" in benefic_planets:
+        purpose = {
+            "primary": "Creative Expression and Communication",
+            "primary_hi": "रचनात्मक अभिव्यक्ति और संचार",
+            "description": "Use artistic and intellectual gifts to inspire and connect with others.",
+            "description_hi": "दूसरों को प्रेरित करने और जुड़ने के लिए कलात्मक और बौद्धिक उपहारों का उपयोग करें।",
+            "focus_areas": ["Arts", "Writing", "Media", "Design", "Diplomacy"]
+        }
+    else:
+        purpose = {
+            "primary": "Balanced Growth through Experience",
+            "primary_hi": "अनुभव के माध्यम से संतुलित विकास",
+            "description": "Your mixed karmic pattern offers opportunities for growth across multiple life domains.",
+            "description_hi": "आपका मिश्रित कर्मिक पैटर्न कई जीवन क्षेत्रों में विकास के अवसर प्रदान करता है।",
+            "focus_areas": ["Self-awareness", "Relationship building", "Skill development", "Service"]
+        }
+    
+    return purpose
+
+
+def _identify_d60_karmic_debts(planetary_analysis: Dict) -> List[Dict[str, Any]]:
+    """
+    Identify specific karmic debts based on D60 planetary placements.
+    """
+    debts = []
+    
+    # Check for specific malefic patterns
+    malefic_planets = [p for p, data in planetary_analysis.items() if data.get("nature") == "Malefic"]
+    
+    # Sun + Saturn both malefic = authority abuse debt
+    if "Sun" in malefic_planets and "Saturn" in malefic_planets:
+        debts.append({
+            "debt_type": "Authority-Power Debt",
+            "debt_type_hi": "अधिकार-शक्ति ऋण",
+            "planets_involved": ["Sun", "Saturn"],
+            "manifestation": "Challenges with authority figures, career blocks, father issues",
+            "manifestation_hi": "अधिकारियों के साथ चुनौतियां, करियर में बाधाएं, पिता के मुद्दे",
+            "resolution": "Respect elders, serve those in power with integrity, practice humility",
+            "resolution_hi": "बड़ों का सम्मान करें, शक्ति में रहने वालों की ईमानदारी से सेवा करें, विनम्रता का अभ्यास करें"
+        })
+    
+    # Moon + Rahu/Ketu malefic = emotional/maternal debt
+    if "Moon" in malefic_planets and ("Rahu" in malefic_planets or "Ketu" in malefic_planets):
+        debts.append({
+            "debt_type": "Emotional-Maternal Debt",
+            "debt_type_hi": "भावनात्मक-मातृ ऋण",
+            "planets_involved": ["Moon", "Rahu" if "Rahu" in malefic_planets else "Ketu"],
+            "manifestation": "Emotional instability, mother relationship challenges, mental confusion",
+            "manifestation_hi": "भावनात्मक अस्थिरता, माँ के संबंध में चुनौतियां, मानसिक भ्रम",
+            "resolution": "Nurture relationships, practice emotional awareness, honor mother figures",
+            "resolution_hi": "संबंधों को पोषित करें, भावनात्मक जागरूकता का अभ्यास करें, मातृ आंकड़ों का सम्मान करें"
+        })
+    
+    # Mars + Mercury malefic = speech-action debt
+    if "Mars" in malefic_planets and "Mercury" in malefic_planets:
+        debts.append({
+            "debt_type": "Speech-Action Debt",
+            "debt_type_hi": "वाणी-कर्म ऋण",
+            "planets_involved": ["Mars", "Mercury"],
+            "manifestation": "Harsh speech leading to conflicts, impulsive decisions, sibling rivalry",
+            "manifestation_hi": "संघर्षों का कारण बनने वाली कठोर वाणी, आवेगपूर्ण निर्णय, भाई-बहन प्रतिद्वंद्विता",
+            "resolution": "Practice mindful speech, channel aggression constructively, serve siblings",
+            "resolution_hi": "सचेत वाणी का अभ्यास करें, आक्रामकता को रचनात्मक रूप से चैनल करें, भाई-बहनों की सेवा करें"
+        })
+    
+    # Venus + Jupiter malefic = wisdom-wealth debt
+    if "Venus" in malefic_planets and "Jupiter" in malefic_planets:
+        debts.append({
+            "debt_type": "Wisdom-Wealth Debt",
+            "debt_type_hi": "बुद्धि-धन ऋण",
+            "planets_involved": ["Venus", "Jupiter"],
+            "manifestation": "Challenges in education, wealth fluctuations, teacher/mentor conflicts",
+            "manifestation_hi": "शिक्षा में चुनौतियां, धन में उतार-चढ़ाव, शिक्षक/गुरु संघर्ष",
+            "resolution": "Respect teachers, use wealth ethically, share knowledge generously",
+            "resolution_hi": "शिक्षकों का सम्मान करें, नैतिक रूप से धन का उपयोग करें, ज्ञान उदारतापूर्वक साझा करें"
+        })
+    
+    # If no specific debt pattern, check general malefic load
+    if not debts and len(malefic_planets) >= 3:
+        debts.append({
+            "debt_type": "General Karmic Purification",
+            "debt_type_hi": "सामान्य कर्मिक शुद्धिकरण",
+            "planets_involved": malefic_planets,
+            "manifestation": "Multiple life areas requiring conscious effort and remedial attention",
+            "manifestation_hi": "कई जीवन क्षेत्र जिन्हें सचेत प्रयास और उपाय ध्यान की आवश्यकता है",
+            "resolution": "Regular spiritual practice, selfless service, and planetary remedies",
+            "resolution_hi": "नियमित आध्यात्मिक अभ्यास, निस्वार्थ सेवा, और ग्रह उपाय"
+        })
+    
+    return debts
+
+
+def _assess_remedy_accessibility(punya_score: float, papa_score: float) -> Dict[str, Any]:
+    """
+    Assess how accessible and effective remedies will be based on karmic balance.
+    Reference: PDF 1.1.3 - D60 governs remedy effectiveness
+    """
+    if punya_score >= 60:
+        return {
+            "level": "High",
+            "level_hi": "उच्च",
+            "description": "Strong accumulated merit accelerates spiritual practices and remedial results.",
+            "description_hi": "मजबूत अर्जित पुण्य आध्यात्मिक अभ्यासों और उपाय परिणामों को तेज करता है।",
+            "effectiveness": "Remedies will yield quick and noticeable results",
+            "effectiveness_hi": "उपाय त्वरित और स्पष्ट परिणाम देंगे",
+            "recommendations": [
+                {"en": "Engage in advanced spiritual practices", "hi": "उन्नत आध्यात्मिक अभ्यासों में लगें"},
+                {"en": "Take on mentoring roles to share your merit", "hi": "अपने पुण्य को साझा करने के लिए मेंटरिंग की भूमिका निभाएं"}
+            ]
+        }
+    elif punya_score >= 40:
+        return {
+            "level": "Moderate-High",
+            "level_hi": "मध्यम-उच्च",
+            "description": "Good karmic foundation supports steady progress with remedies.",
+            "description_hi": "अच्छा कर्मिक आधार उपायों के साथ स्थिर प्रगति का समर्थन करता है।",
+            "effectiveness": "Remedies will work with consistent practice over time",
+            "effectiveness_hi": "उपाय समय के साथ लगातार अभ्यास से काम करेंगे",
+            "recommendations": [
+                {"en": "Maintain regular remedial practices", "hi": "नियमित उपाय अभ्यास बनाए रखें"},
+                {"en": "Combine remedies with selfless service", "hi": "उपायों को निस्वार्थ सेवा के साथ जोड़ें"}
+            ]
+        }
+    elif papa_score >= 60:
+        return {
+            "level": "Low",
+            "level_hi": "कम",
+            "description": "Heavy karmic burdens may delay or dilute remedial results. Patience required.",
+            "description_hi": "भारी कर्मिक बोझ उपाय परिणामों में देरी या कमी कर सकता है। धैर्य आवश्यक।",
+            "effectiveness": "Remedies require sustained effort and may show delayed results",
+            "effectiveness_hi": "उपायों को sustained प्रयास की आवश्यकता है और देरी से परिणाम दिख सकते हैं",
+            "recommendations": [
+                {"en": "Perform intensive remedial measures (fire rituals, charities)", "hi": "गहन उपाय उपाय करें (यज्ञ, दान)"},
+                {"en": "Focus on purification practices", "hi": "शुद्धिकरण अभ्यास पर ध्यान केंद्रित करें"},
+                {"en": "Seek guidance from experienced practitioners", "hi": "अनुभवी व्यवसायियों से मार्गदर्शन खोजें"}
+            ]
+        }
+    elif papa_score >= 40:
+        return {
+            "level": "Moderate",
+            "level_hi": "मध्यम",
+            "description": "Mixed karmic accessibility - remedies work but require dedicated effort.",
+            "description_hi": "मिश्रित कर्मिक पहुंच - उपाय काम करते हैं लेकिन समर्पित प्रयास की आवश्यकता होती है।",
+            "effectiveness": "Remedies effective with proper guidance and consistency",
+            "effectiveness_hi": "उचित मार्गदर्शन और स्थिरता के साथ उपाय प्रभावी",
+            "recommendations": [
+                {"en": "Follow structured remedial protocols", "hi": "संरचित उपाय प्रोटोकॉल का पालन करें"},
+                {"en": "Combine multiple remedial approaches", "hi": "कई उपाय दृष्टिकोणों को जोड़ें"}
+            ]
+        }
+    else:
+        return {
+            "level": "Moderate",
+            "level_hi": "मध्यम",
+            "description": "Balanced karmic pattern - standard remedial approaches will yield results.",
+            "description_hi": "संतुलित कर्मिक पैटर्न - मानक उपाय दृष्टिकोण परिणाम देंगे।",
+            "effectiveness": "Remedies effective with regular practice",
+            "effectiveness_hi": "नियमित अभ्यास के साथ उपाय प्रभावी",
+            "recommendations": [
+                {"en": "Maintain consistent spiritual practice", "hi": "लगातार आध्यात्मिक अभ्यास बनाए रखें"},
+                {"en": "Balance material and spiritual pursuits", "hi": "भौतिक और आध्यात्मिक गतिविधियों को संतुलित करें"}
+            ]
+        }
 
 
 def _sign_index(sign_name: str) -> int:

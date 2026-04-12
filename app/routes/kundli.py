@@ -543,7 +543,9 @@ def get_divisional_chart(
     # Special logic for D60 interpretive analysis
     d60_analysis = None
     if division == 60:
-        d60_analysis = calculate_d60_analysis(planet_longitudes)
+        # Pass birth time uncertainty for accuracy assessment
+        birth_time_uncertainty = body.birth_time_uncertainty_seconds
+        d60_analysis = calculate_d60_analysis(planet_longitudes, birth_time_uncertainty)
 
     return {
         "kundli_id": kundli_id,

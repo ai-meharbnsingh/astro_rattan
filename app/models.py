@@ -132,6 +132,11 @@ class KundliMatchRequest(BaseModel):
 
 class DivisionalChartRequest(BaseModel):
     chart_type: str = "D9"  # D9, D10, etc.
+    birth_time_uncertainty_seconds: Optional[float] = Field(
+        default=None,
+        ge=0,
+        description="Estimated uncertainty in birth time in seconds (e.g., 30 for ±30s). Used for D60 Shashtiamsa accuracy assessment."
+    )
 
 
 # ============================================================
