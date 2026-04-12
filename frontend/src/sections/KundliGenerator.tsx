@@ -443,12 +443,6 @@ export default function KundliGenerator() {
           </TabsContent>
         </Tabs>
 
-        <div className="mt-8 mb-16 text-center">
-          <Button onClick={() => { setStep('form'); setResult(null); resetTabData(); }} variant="outline" className="border-cosmic-text-muted text-cosmic-text">
-            {t('common.generateAnother')}
-          </Button>
-        </div>
-
         {/* Summary Modal */}
         <KundliSummaryModal
           isOpen={summaryOpen}
