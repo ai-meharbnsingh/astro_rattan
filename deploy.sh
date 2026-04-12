@@ -16,6 +16,7 @@ echo ""
 echo "[1/4] Pulling latest code..."
 cd "$REPO_DIR"
 git fetch origin
+git checkout main
 git reset --hard origin/main
 echo "      $(git log --oneline -1)"
 
