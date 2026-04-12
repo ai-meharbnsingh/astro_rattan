@@ -1472,3 +1472,303 @@ def calculate_karmic_debts_with_hora(
         result["time_sensitivity_warning"] = hora_info["boundary_warning"]
     
     return result
+
+
+# ============================================================
+# ALTERNATIVE REMEDY SUGGESTIONS
+# Reference: PDF 2.4.2 - Alternative generation for prohibited remedies
+# ============================================================
+
+ALTERNATIVE_REMEDIES = {
+    # Moon in 12th - prohibits religious charity
+    ("Moon", 12): {
+        "prohibited_category": {"en": "Religious charity", "hi": "धार्मिक दान"},
+        "alternatives": [
+            {
+                "action": {"en": "Personal spiritual practice without institutional involvement", "hi": "संस्थागत भागीदारी के बिना व्यक्तिगत आध्यात्मिक अभ्यास"},
+                "benefit": {"en": "Develops inner connection without karmic entanglement", "hi": "कर्मिक उलझन के बिना आंतरिक संबंध विकसित करता है"}
+            },
+            {
+                "action": {"en": "Nature-based meditation in isolated settings", "hi": "एकांत स्थानों में प्रकृति-आधारित ध्यान"},
+                "benefit": {"en": "Grounding energy that 12th house Moon needs", "hi": "12वें भाव के चंद्रमा को आवश्यक ग्राउंडिंग ऊर्जा"}
+            },
+            {
+                "action": {"en": "Anonymous digital donations to verified causes", "hi": "सत्यापित कारणों के लिए गुमनाम डिजिटल दान"},
+                "benefit": {"en": "Bypasses prohibited direct contact requirement", "hi": "प्रतिबंधित प्रत्यक्ष संपर्क आवश्यकता को बायपास करता है"}
+            }
+        ]
+    },
+    # Jupiter in 7th - prohibits clothing charity
+    ("Jupiter", 7): {
+        "prohibited_category": {"en": "Clothing charity", "hi": "वस्त्र दान"},
+        "alternatives": [
+            {
+                "action": {"en": "Educational material donations instead of clothing", "hi": "वस्त्रों के बजाय शैक्षिक सामग्री दान"},
+                "benefit": {"en": "Jupiter's wisdom domain remains active without partnership destruction", "hi": "साझेदारी विनाश के बिना गुरु का बुद्धि क्षेत्र सक्रिय रहता है"}
+            },
+            {
+                "action": {"en": "Mentoring and knowledge sharing", "hi": "मेंटरिंग और ज्ञान साझा करना"},
+                "benefit": {"en": "Immaterial giving aligns with Jupiter's true nature", "hi": "अमूर्त देना गुरु की true प्रकृति के साथ संरेखित होता है"}
+            },
+            {
+                "action": {"en": "Support for educational institutions", "hi": "शैक्षणिक संस्थानों के लिए समर्थन"},
+                "benefit": {"en": "Institutional rather than personal giving avoids backlash", "hi": "व्यक्तिगत देने के बजाय संस्थागत प्रतिकूलता से बचता है"}
+            }
+        ]
+    },
+    # Sun in 7th or 8th - prohibits timed donations
+    ("Sun", 7): {
+        "prohibited_category": {"en": "Morning/Evening donations", "hi": "सुबह/शाम का दान"},
+        "alternatives": [
+            {
+                "action": {"en": "Midday donations only (10 AM - 3 PM)", "hi": "केवल मध्याह्न दान (सुबह 10 - दोपहर 3)"},
+                "benefit": {"en": "Avoids twilight period when Sun is weak", "hi": "जब सूर्य कमजोर होता है तो गोधूलि अवधि से बचता है"}
+            },
+            {
+                "action": {"en": "Solar practices: Surya Namaskar, Aditya Hridayam", "hi": "सौर अभ्यास: सूर्य नमस्कार, आदित्य हृदयम्"},
+                "benefit": {"en": "Strengthens Sun directly without charity backlash", "hi": "दान प्रतिकूलता के बिना सीधे सूर्य को मजबूत करता है"}
+            }
+        ]
+    },
+    ("Sun", 8): {
+        "prohibited_category": {"en": "Morning/Evening donations", "hi": "सुबह/शाम का दान"},
+        "alternatives": [
+            {
+                "action": {"en": "Midday donations only (10 AM - 3 PM)", "hi": "केवल मध्याह्न दान (सुबह 10 - दोपहर 3)"},
+                "benefit": {"en": "Avoids twilight period when Sun is weak", "hi": "जब सूर्य कमजोर होता है तो गोधूलि अवधि से बचता है"}
+            },
+            {
+                "action": {"en": "Deep meditation on self-identity", "hi": "आत्म-पहचान पर गहन ध्यान"},
+                "benefit": {"en": "8th house Sun requires internal rather than external focus", "hi": "8वें भाव का सूर्य बाहरी के बजाय आंतरिक फोकस की आवश्यकता है"}
+            }
+        ]
+    },
+    # Venus in 9th - prohibits female-targeted charity
+    ("Venus", 9): {
+        "prohibited_category": {"en": "Female-targeted charity", "hi": "स्त्री-केंद्रित दान"},
+        "alternatives": [
+            {
+                "action": {"en": "Arts and culture sponsorships", "hi": "कला और संस्कृतिर प्रायोजन"},
+                "benefit": {"en": "Venus's creative domain without progeny complications", "hi": "संतान जटिलताओं के बिना शुक्र का रचनात्मक क्षेत्र"}
+            },
+            {
+                "action": {"en": "Support for beauty/nature conservation", "hi": "सौंदर्य/प्रकृति संरक्षण के लिए समर्थन"},
+                "benefit": {"en": "Elevates Venus through natural expression", "hi": "प्राकृतिक अभिव्यक्ति के माध्यम से शुक्र को उन्नत करता है"}
+            },
+            {
+                "action": {"en": "General education charities (gender-neutral)", "hi": "सामान्य शिक्षा धर्मार्थ (लिंग-तटस्थ)"},
+                "benefit": {"en": "Avoids specific feminine targeting that triggers 9th house Venus", "hi": "9वें भाव के शुक्र को ट्रिगर करने वाले विशिष्ट स्त्री लक्ष्यीकरण से बचता है"}
+            }
+        ]
+    },
+    # Saturn in 4th - prohibits oil/alcohol-related
+    ("Saturn", 4): {
+        "prohibited_category": {"en": "Oil/Alcohol donations", "hi": "तेल/शराब दान"},
+        "alternatives": [
+            {
+                "action": {"en": "Dry food charity (grains, pulses)", "hi": "शुष्क खाद्य दान (अनाज, दालें)"},
+                "benefit": {"en": "Nourishment without liquid element that harms mother", "hi": "पोषण बिना तरल तत्व के जो माता को हानि पहुंचाता है"}
+            },
+            {
+                "action": {"en": "Educational material donations", "hi": "शैक्षिक सामग्री दान"},
+                "benefit": {"en": "Saturn's discipline expressed through knowledge", "hi": "ज्ञान के माध्यम से व्यक्त शनि का अनुशासन"}
+            },
+            {
+                "action": {"en": "Time-based service (seva) rather than material giving", "hi": "भौतिक देने के बजाय समय-आधारित सेवा (सेवा)"},
+                "benefit": {"en": "Honors 4th house foundation without property risk", "hi": "संपत्ति जोखिम के बिना 4वें भाव की नींव का सम्मान करता है"}
+            }
+        ]
+    },
+    # Mars in 8th - prohibits red/copper items
+    ("Mars", 8): {
+        "prohibited_category": {"en": "Red/Copper items", "hi": "लाल/तांबे की वस्तुएं"},
+        "alternatives": [
+            {
+                "action": {"en": "White or blue colored charity items", "hi": "सफेद या नीले रंग की दान वस्तुएं"},
+                "benefit": {"en": "Cooling colors balance 8th house Mars heat", "hi": "शीतल रंग 8वें भाव के मंगल की गर्मी को संतुलित करते हैं"}
+            },
+            {
+                "action": {"en": "Silver or steel items instead of copper", "hi": "तांबे के बजाय चांदी या इस्पात की वस्तुएं"},
+                "benefit": {"en": "Different metallic energy avoids accident proneness", "hi": "अलग धातु ऊर्जा दुर्घटना की संभावना से बचती है"}
+            },
+            {
+                "action": {"en": "Physical exercise and martial arts", "hi": "शारीरिक व्यायाम और मार्शल आर्ट्स"},
+                "benefit": {"en": "Channels Mars energy constructively", "hi": "मंगल ऊर्जा को रचनात्मक रूप से चैनल करता है"}
+            }
+        ]
+    },
+    # Rahu in 6th - prohibits dark-colored items
+    ("Rahu", 6): {
+        "prohibited_category": {"en": "Dark-colored items", "hi": "गहरे रंग की वस्तुएं"},
+        "alternatives": [
+            {
+                "action": {"en": "Light/pastel colored donations", "hi": "हल्के/पेस्टल रंग का दान"},
+                "benefit": {"en": "Clarity instead of Rahu's shadow confusion", "hi": "राहु की छाया भ्रम के बजाय स्पष्टता"}
+            },
+            {
+                "action": {"en": "Feeding birds (especially crows)", "hi": "पक्षियों को खिलाना (विशेष रूप से कौए)"},
+                "benefit": {"en": "Rahu's natural remedy without legal entanglement", "hi": "कानूनी उलझन के बिना राहु का प्राकृतिक उपाय"}
+            },
+            {
+                "action": {"en": "Helping foreigners or outsiders", "hi": "विदेशियों या बाहरी लोगों की मदद करना"},
+                "benefit": {"en": "Honors Rahu's foreign nature positively", "hi": "सकारात्मक रूप से राहु के विदेशी स्वभाव का सम्मान करता है"}
+            }
+        ]
+    },
+    # Ketu in 12th - prohibits warmth-related charity
+    ("Ketu", 12): {
+        "prohibited_category": {"en": "Warmth/blanket donations", "hi": "गर्मी/कंबल दान"},
+        "alternatives": [
+            {
+                "action": {"en": "Spiritual books and knowledge donation", "hi": "आध्यात्मिक पुस्तकें और ज्ञान दान"},
+                "benefit": {"en": "Ketu's moksha domain through wisdom", "hi": "बुद्धि के माध्यम से केतु का मोक्ष क्षेत्र"}
+            },
+            {
+                "action": {"en": "Meditation retreat support", "hi": "ध्यान सेवा समर्थन"},
+                "benefit": {"en": "Isolation needs of Ketu in 12th honored", "hi": "12वें में केतु की एकांत आवश्यकताओं का सम्मान"}
+            },
+            {
+                "action": {"en": "Animal shelter support (especially dogs)", "hi": "पशु आश्रय समर्थन (विशेष रूप से कुत्ते)"},
+                "benefit": {"en": "Ketu's connection to dogs utilized beneficially", "hi": "कुत्तों के साथ केतु का संबंध लाभदायक रूप से उपयोग किया गया"}
+            }
+        ]
+    },
+    # Mercury in 3/8/9/12 - prohibits green items
+    ("Mercury", 3): {
+        "prohibited_category": {"en": "Green items/plants", "hi": "हरी वस्तुएं/पौधे"},
+        "alternatives": [
+            {
+                "action": {"en": "Books and educational materials", "hi": "किताबें और शैक्षिक सामग्री"},
+                "benefit": {"en": "Mercury's true domain of knowledge", "hi": "बुध का ज्ञान का true क्षेत्र"}
+            },
+            {
+                "action": {"en": "Writing instruments donation", "hi": "लेखन साधन दान"},
+                "benefit": {"en": "Communication tools without sibling conflict", "hi": "भाई-बहन संघर्ष के बिना संचार उपकरण"}
+            }
+        ]
+    },
+    ("Mercury", 8): {
+        "prohibited_category": {"en": "Green items/plants", "hi": "हरी वस्तुएं/पौधे"},
+        "alternatives": [
+            {
+                "action": {"en": "Research and analytical skill development", "hi": "अनुसंधान और विश्लेषणात्मक कौशल विकास"},
+                "benefit": {"en": "Deep Mercury in 8th through investigation", "hi": "जांच के माध्यम से 8वें में गहरा बुध"}
+            }
+        ]
+    },
+    ("Mercury", 9): {
+        "prohibited_category": {"en": "Green items/plants", "hi": "हरी वस्तुएं/पौधे"},
+        "alternatives": [
+            {
+                "action": {"en": "Philosophical and religious text study", "hi": "दार्शनिक और धार्मिक पाठ अध्ययन"},
+                "benefit": {"en": "9th house wisdom through Mercury's intellect", "hi": "बुध की बुद्धि के माध्यम से 9वें भाव की बुद्धि"}
+            }
+        ]
+    },
+    ("Mercury", 12): {
+        "prohibited_category": {"en": "Green items/plants", "hi": "हरी वस्तुएं/पौधे"},
+        "alternatives": [
+            {
+                "action": {"en": "Foreign language learning", "hi": "विदेशी भाषा सीखना"},
+                "benefit": {"en": "Mercury in 12th through foreign communication", "hi": "विदेशी संचार के माध्यम से 12वें में बुध"}
+            }
+        ]
+    },
+    # Saturn in 10th - prohibits construction timing
+    ("Saturn", 10): {
+        "prohibited_category": {"en": "Construction before age 48", "hi": "48 वर्ष से पहले निर्माण"},
+        "alternatives": [
+            {
+                "action": {"en": "Renting until age 48, then purchase", "hi": "48 वर्ष तक किराए पर, फिर खरीद"},
+                "benefit": {"en": "Avoids Saturn's career destruction", "hi": "शनि के करियर विनाश से बचता है"}
+            },
+            {
+                "action": {"en": "Joint property with elder family members", "hi": "बड़े परिवार के सदस्यों के साथ संयुक्त संपत्ति"},
+                "benefit": {"en": "Distributes Saturn's restriction burden", "hi": "शनि के प्रतिबंध बोझ को वितरित करता है"}
+            },
+            {
+                "action": {"en": "Focus on career building first, property later", "hi": "पहले करियर निर्माण पर ध्यान दें, बाद में संपत्ति"},
+                "benefit": {"en": "Saturn in 10th rewards patience", "hi": "10वें में शनि धैर्य का इनाम देता है"}
+            }
+        ]
+    },
+    # Jupiter in 10th - prohibits sympathetic feeding
+    ("Jupiter", 10): {
+        "prohibited_category": {"en": "Sympathetic/conditional feeding", "hi": "सहानुभूतिपूर्ण/शर्ती भोजन"},
+        "alternatives": [
+            {
+                "action": {"en": "Anonymous feeding without emotional display", "hi": "भावनात्मक प्रदर्शन के बिना गुमनाम भोजन"},
+                "benefit": {"en": "Pure Jupiterian charity without poison effect", "hi": "जहर प्रभाव के बिना शुद्ध गुरु दान"}
+            },
+            {
+                "action": {"en": "Systematic institutional feeding programs", "hi": " व्यवस्थित संस्थागत भोजन कार्यक्रम"},
+                "benefit": {"en": "Professional approach avoids Jupiter 10th backlash", "hi": "पेशेवर दृष्टिकोण 10वें के गुरु प्रतिकूलता से बचता है"}
+            },
+            {
+                "action": {"en": "Teaching and education instead of food charity", "hi": "खाद्य दान के बजाय शिक्षण और शिक्षा"},
+                "benefit": {"en": "Jupiter's higher expression through knowledge", "hi": "ज्ञान के माध्यम से गुरु की उच्च अभिव्यक्ति"}
+            }
+        ]
+    }
+}
+
+
+def get_prohibitions_with_alternatives(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    Returns prohibitions with alternative remedy suggestions.
+    Reference: PDF 2.4.2 - Alternative generation follows Lal Kitab's principle of "energetic equivalence"
+    
+    Returns:
+        {
+            "prohibitions": [...],  # Standard prohibitions
+            "alternatives_by_prohibition": {...},  # Planet+House → alternatives
+            "general_guidance": {...}
+        }
+    """
+    # Get standard prohibitions
+    standard_prohibitions = get_prohibitions(planet_positions)
+    
+    # Build lookup for quick access
+    p_map = {p["planet"]: p["house"] for p in planet_positions}
+    
+    # Find applicable alternatives
+    alternatives_by_prohibition = {}
+    
+    for prohibition in standard_prohibitions:
+        planet = prohibition.get("planet")
+        house = prohibition.get("house")
+        key = (planet, house)
+        
+        if key in ALTERNATIVE_REMEDIES:
+            alt_data = ALTERNATIVE_REMEDIES[key]
+            alternatives_by_prohibition[f"{planet}_{house}"] = {
+                "planet": planet,
+                "house": house,
+                "prohibited_category": alt_data["prohibited_category"],
+                "alternatives": alt_data["alternatives"],
+                "backlash_risk": prohibition.get("backlash_risk")
+            }
+    
+    # Generate general guidance
+    general_guidance = {
+        "principle": {
+            "en": "Lal Kitab's principle of 'energetic equivalence' - address the same karmic need through permitted channels",
+            "hi": "लाल किताब का 'ऊर्जा समकक्षता' सिद्धांत - अनुमत चैनलों के माध्यम से समान कर्मिक आवश्यकता को संबोधित करें"
+        },
+        "approach": {
+            "en": "When prohibitions are triggered, alternatives address the same karmic need through permitted channels",
+            "hi": "जब प्रतिबंध ट्रिगर होते हैं, तो विकल्प अनुमत चैनलों के माध्यम से समान कर्मिक आवश्यकता को संबोधित करते हैं"
+        },
+        "philosophy": {
+            "en": "Prohibitions are protective rather than punitive - they prevent 'short-circuit' effects",
+            "hi": "प्रतिबंध दंडात्मक के बजाय सुरक्षात्मक हैं - वे 'शॉर्ट-सर्किट' प्रभावों को रोकते हैं"
+        }
+    }
+    
+    return {
+        "prohibitions": standard_prohibitions,
+        "alternatives_by_prohibition": alternatives_by_prohibition,
+        "total_alternatives": len(alternatives_by_prohibition),
+        "general_guidance": general_guidance,
+        "has_alternatives": len(alternatives_by_prohibition) > 0
+    }
