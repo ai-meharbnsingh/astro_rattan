@@ -86,8 +86,10 @@ export default function LalKitabKundliTab({ chartData, apiResult }: Props) {
 
       {/* North Indian Kundli Chart via InteractiveKundli */}
       {interactiveChartData ? (
-        <div className="card-sacred rounded-xl p-6 border border-sacred-gold/20">
-          <InteractiveKundli chartData={interactiveChartData} compact />
+        <div className="card-sacred rounded-xl p-6 border border-sacred-gold/20 flex justify-center">
+          <div className="w-1/2">
+            <InteractiveKundli chartData={interactiveChartData} compact />
+          </div>
         </div>
       ) : (
         <div className="text-center text-gray-600 py-12 text-sm">
