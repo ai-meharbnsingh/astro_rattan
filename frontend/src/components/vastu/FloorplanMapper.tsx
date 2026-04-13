@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { useTranslation } from '@/lib/i18n';
-import { X, Grid3X3, Compass, ZoomIn, ZoomOut, Undo2 } from 'lucide-react';
+import { api } from '@/lib/api';
+import { X, Grid3X3, Compass, ZoomIn, ZoomOut, Undo2, Sparkles, Loader2 } from 'lucide-react';
 
 interface RoomMarker {
   id: string;
@@ -47,6 +48,7 @@ export default function FloorplanMapper({
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
   const panStart = useRef({ x: 0, y: 0, panX: 0, panY: 0 });
+  const [autoDetecting, setAutoDetecting] = useState(false);
 
   const handleWheel = useCallback((e: React.WheelEvent) => {
     e.preventDefault();
@@ -147,6 +149,34 @@ export default function FloorplanMapper({
           </button>
         )}
 
+        {/* Auto-Detect Rooms */}
+        <button
+          disabled={autoDetecting}
+          onClick={async () => {
+            setAutoDetecting(true);
+            try {
+              const res = await api.post('/api/vastu/auto-detect', {
+                image_url: imageUrl,
+                image_width: imageWidth,
+                image_height: imageHeight,
+              });
+              if (res.markers?.length > 0) {
+                for (const m of res.markers) {
+                  onAddMarker(m.room_type, m.x, m.y);
+                }
+              }
+            } catch (e) {
+              console.error('Auto-detect failed:', e);
+            } finally {
+              setAutoDetecting(false);
+            }
+          }}
+          className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-medium hover:bg-amber-500/20 transition-colors disabled:opacity-40"
+        >
+          {autoDetecting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+          {isHi ? 'AI पहचान' : 'AI Detect'}
+        </button>
+
         <span className="text-[10px] text-cosmic-text/40 ml-auto">
           {isHi ? 'क्लिक=कमरा, स्क्रॉल=ज़ूम, Alt+ड्रैग=पैन' : 'Click=room, Scroll=zoom, Alt+drag=pan'}
         </span>
@@ -222,7 +252,7 @@ export default function FloorplanMapper({
               style={{ left: `${px}%`, top: `${py}%` }}
             >
               <span className="text-sm">{opt?.icon || '🏠'}</span>
-              <span className="text-[9px] text-white font-medium whitespace-nowrap">
+              <span className="text-[9px] text-cosmic-text font-medium whitespace-nowrap">
                 {isHi ? (opt?.hi || m.room_type) : (opt?.en || m.room_type)}
               </span>
               <button
@@ -257,7 +287,7 @@ export default function FloorplanMapper({
               <button
                 key={opt.key}
                 onClick={() => selectRoom(opt.key)}
-                className="w-full flex items-center gap-2 px-2 py-1.5 text-xs text-white hover:bg-white/10 rounded-lg transition-colors"
+                className="w-full flex items-center gap-2 px-2 py-1.5 text-xs text-cosmic-text hover:bg-white/10 rounded-lg transition-colors"
               >
                 <span>{opt.icon}</span>
                 <span className="font-medium">{isHi ? opt.hi : opt.en}</span>
@@ -274,7 +304,7 @@ export default function FloorplanMapper({
           {markers.map(m => {
             const opt = ROOM_OPTIONS.find(r => r.key === m.room_type);
             return (
-              <span key={m.id} className="flex items-center gap-1 px-2 py-1 bg-white/5 border border-white/10 rounded-lg text-[10px] text-white">
+              <span key={m.id} className="flex items-center gap-1 px-2 py-1 bg-white/5 border border-white/10 rounded-lg text-[10px] text-cosmic-text">
                 {opt?.icon} {isHi ? opt?.hi : opt?.en}
                 <button onClick={() => onRemoveMarker(m.id)} className="text-cosmic-text/30 hover:text-red-400 ml-1">
                   <X className="w-2.5 h-2.5" />

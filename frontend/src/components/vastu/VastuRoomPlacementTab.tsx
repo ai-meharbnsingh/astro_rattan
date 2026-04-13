@@ -34,7 +34,7 @@ export default function VastuRoomPlacementTab({ data }: Props) {
           <div className="flex items-center gap-2 mb-4">
             <span className="text-2xl">{ROOM_ICONS[key] || '🏠'}</span>
             <div>
-              <h4 className="text-base font-bold text-white">{isHi ? room.room_name_hi : room.room_name_en}</h4>
+              <h4 className="text-base font-bold text-cosmic-text">{isHi ? room.room_name_hi : room.room_name_en}</h4>
             </div>
           </div>
 

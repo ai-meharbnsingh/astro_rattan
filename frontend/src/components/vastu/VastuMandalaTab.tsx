@@ -31,15 +31,15 @@ export default function VastuMandalaTab({ data }: Props) {
         <div className="grid grid-cols-3 gap-4 text-sm">
           <div>
             <p className="text-cosmic-text/60">{isHi ? 'ग्रिड प्रकार' : 'Grid Type'}</p>
-            <p className="font-semibold text-white">{isHi ? mandala?.grid_type_hi : mandala?.grid_type}</p>
+            <p className="font-semibold text-cosmic-text">{isHi ? mandala?.grid_type_hi : mandala?.grid_type}</p>
           </div>
           <div>
             <p className="text-cosmic-text/60">{isHi ? 'कुल वर्ग' : 'Total Squares'}</p>
-            <p className="font-semibold text-white">{mandala?.total_squares}</p>
+            <p className="font-semibold text-cosmic-text">{mandala?.total_squares}</p>
           </div>
           <div>
             <p className="text-cosmic-text/60">{isHi ? 'कुल देवता' : 'Total Devtas'}</p>
-            <p className="font-semibold text-white">45</p>
+            <p className="font-semibold text-cosmic-text">45</p>
           </div>
         </div>
       </div>
@@ -57,7 +57,7 @@ export default function VastuMandalaTab({ data }: Props) {
       {/* Energy Balance */}
       {energy && (
         <div className="bg-white/5 border border-white/10 rounded-xl p-5">
-          <h3 className="text-base font-bold text-white mb-3">{isHi ? 'ऊर्जा संतुलन' : 'Energy Balance'}</h3>
+          <h3 className="text-base font-bold text-cosmic-text mb-3">{isHi ? 'ऊर्जा संतुलन' : 'Energy Balance'}</h3>
           <div className="flex gap-4 mb-3">
             <div className="flex-1 bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 text-center">
               <p className="text-2xl font-bold text-emerald-400">{energy.positive}</p>
@@ -84,7 +84,7 @@ export default function VastuMandalaTab({ data }: Props) {
             {Object.entries(body).map(([part, info]: [string, any]) => (
               <div key={part} className="bg-white/5 rounded-lg p-3">
                 <p className="text-xs text-sacred-gold font-semibold capitalize">{part.replace('_', ' ')}</p>
-                <p className="text-sm font-bold text-white">{isHi ? info.direction_hi : info.direction}</p>
+                <p className="text-sm font-bold text-cosmic-text">{isHi ? info.direction_hi : info.direction}</p>
                 <p className="text-[11px] text-cosmic-text/70 mt-1">{isHi ? info.significance_hi : info.significance_en}</p>
               </div>
             ))}
@@ -96,7 +96,7 @@ export default function VastuMandalaTab({ data }: Props) {
       {Object.entries(zones).map(([zoneName, zone]: [string, any]) => (
         <div key={zoneName} className="bg-white/5 border border-white/10 rounded-xl p-5">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-bold text-white">
+            <h3 className="text-base font-bold text-cosmic-text">
               {isHi ? zone.zone_hi : zone.zone_en}
             </h3>
             <div className="flex gap-2 text-xs">
@@ -113,10 +113,10 @@ export default function VastuMandalaTab({ data }: Props) {
                 <div key={d.id} className={`${style.bg} border border-white/5 rounded-lg p-3`}>
                   <div className="flex items-center gap-2 mb-1">
                     <Icon className={`w-4 h-4 ${style.text}`} />
-                    <span className="font-bold text-sm text-white">{d.name}</span>
+                    <span className="font-bold text-sm text-cosmic-text">{d.name}</span>
                     <span className="text-xs text-cosmic-text/60">({isHi ? d.name_hi : d.name})</span>
                   </div>
-                  {isHi && <p className="text-sm font-semibold text-white/80 mb-1">{d.name_hi}</p>}
+                  {isHi && <p className="text-sm font-semibold text-cosmic-text/80 mb-1">{d.name_hi}</p>}
                   <p className="text-[11px] text-cosmic-text/70 mb-2">{isHi ? d.description_hi : d.description_en}</p>
                   <div className="flex flex-wrap gap-2 text-[10px]">
                     <span className="px-1.5 py-0.5 rounded bg-white/5 text-cosmic-text">{isHi ? d.element_hi : d.element}</span>

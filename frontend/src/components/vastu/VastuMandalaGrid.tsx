@@ -264,7 +264,7 @@ export default function VastuMandalaGrid({ zones }: Props) {
                 border: `2px solid ${(NATURE_COLORS[selected.nature] || NATURE_COLORS.neutral).stroke}`,
               }}
             />
-            <h4 className="text-lg font-bold text-white">{selected.name}</h4>
+            <h4 className="text-lg font-bold text-cosmic-text">{selected.name}</h4>
             <span className="text-sm text-cosmic-text/60">{selected.name_hi}</span>
             <span className="ml-auto text-xs px-2 py-0.5 rounded bg-white/10 text-cosmic-text capitalize">{selected.nature}</span>
           </div>
@@ -274,19 +274,19 @@ export default function VastuMandalaGrid({ zones }: Props) {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
             <div>
               <p className="text-cosmic-text/50">{isHi ? 'क्षेत्र' : 'Zone'}</p>
-              <p className="font-semibold text-white">{isHi ? selected.zone_hi : selected.zone}</p>
+              <p className="font-semibold text-cosmic-text">{isHi ? selected.zone_hi : selected.zone}</p>
             </div>
             <div>
               <p className="text-cosmic-text/50">{isHi ? 'दिशा' : 'Direction'}</p>
-              <p className="font-semibold text-white">{isHi ? selected.direction_hi : selected.direction}</p>
+              <p className="font-semibold text-cosmic-text">{isHi ? selected.direction_hi : selected.direction}</p>
             </div>
             <div>
               <p className="text-cosmic-text/50">{isHi ? 'तत्व' : 'Element'}</p>
-              <p className="font-semibold text-white">{isHi ? selected.element_hi : selected.element}</p>
+              <p className="font-semibold text-cosmic-text">{isHi ? selected.element_hi : selected.element}</p>
             </div>
             <div>
               <p className="text-cosmic-text/50">{isHi ? 'शरीर अंग' : 'Body Part'}</p>
-              <p className="font-semibold text-white">{isHi ? selected.body_part_hi : selected.body_part}</p>
+              <p className="font-semibold text-cosmic-text">{isHi ? selected.body_part_hi : selected.body_part}</p>
             </div>
           </div>
           <p className="text-xs text-sacred-gold/60 italic mt-3">{selected.mantra}</p>

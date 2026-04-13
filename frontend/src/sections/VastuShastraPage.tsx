@@ -53,7 +53,7 @@ export default function VastuShastraPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#1a1a2e] py-24 px-4">
+    <div className="min-h-screen bg-cosmic-bg bg-mandala py-24 px-4">
       <div className="max-w-5xl mx-auto">
 
         {/* Header */}
@@ -64,7 +64,7 @@ export default function VastuShastraPage() {
               {isHi ? 'वास्तु शास्त्र' : 'Vastu Shastra'}
             </span>
           </div>
-          <h1 className="text-4xl font-bold text-white mb-2">
+          <h1 className="text-4xl font-bold text-cosmic-text mb-2">
             {isHi ? 'वास्तु शास्त्र विश्लेषण' : 'Vastu Shastra Analysis'}
           </h1>
           <p className="text-cosmic-text/70 max-w-xl mx-auto">
@@ -85,7 +85,7 @@ export default function VastuShastraPage() {
               <div className="w-12 h-12 rounded-xl bg-sacred-gold/10 border border-sacred-gold/20 flex items-center justify-center mb-4 group-hover:bg-sacred-gold/20 transition-colors">
                 <Compass className="w-6 h-6 text-sacred-gold" />
               </div>
-              <h3 className="text-lg font-bold text-white mb-1">
+              <h3 className="text-lg font-bold text-cosmic-text mb-1">
                 {isHi ? 'वास्तु विश्लेषण' : 'Vastu Analysis'}
               </h3>
               <p className="text-sm text-cosmic-text/60">
@@ -108,7 +108,7 @@ export default function VastuShastraPage() {
               <div className="w-12 h-12 rounded-xl bg-emerald-400/10 border border-emerald-400/20 flex items-center justify-center mb-4 group-hover:bg-emerald-400/20 transition-colors">
                 <LayoutGrid className="w-6 h-6 text-emerald-400" />
               </div>
-              <h3 className="text-lg font-bold text-white mb-1">
+              <h3 className="text-lg font-bold text-cosmic-text mb-1">
                 {isHi ? 'मेरा घर — 3×3 ग्रिड' : 'My Home Grid'}
               </h3>
               <p className="text-sm text-cosmic-text/60">
@@ -131,7 +131,7 @@ export default function VastuShastraPage() {
               <div className="w-12 h-12 rounded-xl bg-blue-400/10 border border-blue-400/20 flex items-center justify-center mb-4 group-hover:bg-blue-400/20 transition-colors">
                 <Upload className="w-6 h-6 text-blue-400" />
               </div>
-              <h3 className="text-lg font-bold text-white mb-1">
+              <h3 className="text-lg font-bold text-cosmic-text mb-1">
                 {isHi ? 'फ्लोर प्लान अपलोड' : 'Floor Plan Upload'}
               </h3>
               <p className="text-sm text-cosmic-text/60">
@@ -181,7 +181,7 @@ export default function VastuShastraPage() {
             {analysisView === 'generating' && (
               <div className="text-center py-20">
                 <Loader2 className="w-10 h-10 animate-spin text-sacred-gold mx-auto mb-4" />
-                <p className="text-lg text-white font-semibold mb-1">
+                <p className="text-lg text-cosmic-text font-semibold mb-1">
                   {isHi ? 'वास्तु विश्लेषण हो रहा है...' : 'Analyzing Vastu...'}
                 </p>
                 <p className="text-sm text-cosmic-text/60">

@@ -77,7 +77,7 @@ export default function HomeComplianceReport({ result }: Props) {
             ? <Sparkles className="w-4 h-4 text-sacred-gold" />
             : <AlertTriangle className="w-4 h-4 text-red-400" />
           }
-          <span className="text-sm font-semibold text-white">
+          <span className="text-sm font-semibold text-cosmic-text">
             {isHi ? 'ब्रह्म स्थान' : 'Brahma Sthana'}
           </span>
         </div>
@@ -88,7 +88,7 @@ export default function HomeComplianceReport({ result }: Props) {
 
       {/* Per-Room Cards */}
       <div className="space-y-3">
-        <h3 className="text-sm font-bold text-white">{isHi ? 'कमरा-वार विश्लेषण' : 'Room-by-Room Analysis'}</h3>
+        <h3 className="text-sm font-bold text-cosmic-text">{isHi ? 'कमरा-वार विश्लेषण' : 'Room-by-Room Analysis'}</h3>
         {result.room_results.map((r: any, i: number) => {
           const ui = COMPLIANCE_UI[r.compliance] || COMPLIANCE_UI.neutral;
           const Icon = ui.icon;
@@ -97,7 +97,7 @@ export default function HomeComplianceReport({ result }: Props) {
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-lg">{ROOM_ICONS[r.room_type] || '🏠'}</span>
                 <div className="flex-1">
-                  <p className="text-sm font-bold text-white">{isHi ? r.room_name_hi : r.room_name_en}</p>
+                  <p className="text-sm font-bold text-cosmic-text">{isHi ? r.room_name_hi : r.room_name_en}</p>
                   <p className="text-[10px] text-cosmic-text/50">
                     {isHi ? r.assigned_direction_hi : r.assigned_direction_en} ({r.assigned_direction})
                   </p>
@@ -139,7 +139,7 @@ export default function HomeComplianceReport({ result }: Props) {
                   <p className="text-[10px] font-bold text-red-400 uppercase">
                     {isHi ? 'उपाय' : 'Remedies'}
                   </p>
-                  <p className="text-xs text-white">{isHi ? r.remedies.relocation_hi : r.remedies.relocation_en}</p>
+                  <p className="text-xs text-cosmic-text">{isHi ? r.remedies.relocation_hi : r.remedies.relocation_en}</p>
                   {r.remedies.explanation_en && (
                     <p className="text-[10px] text-cosmic-text/60 italic">
                       {isHi ? r.remedies.explanation_hi : r.remedies.explanation_en}
@@ -148,14 +148,14 @@ export default function HomeComplianceReport({ result }: Props) {
                   {r.remedies.metal_strip && (
                     <div className="flex items-center gap-2 text-[10px]">
                       <span className="text-sacred-gold font-semibold">{isHi ? 'धातु:' : 'Metal:'}</span>
-                      <span className="text-white">{isHi ? r.remedies.metal_strip.metal_hi : r.remedies.metal_strip.metal}</span>
+                      <span className="text-cosmic-text">{isHi ? r.remedies.metal_strip.metal_hi : r.remedies.metal_strip.metal}</span>
                     </div>
                   )}
                   {r.remedies.color_therapy && (
                     <div className="flex items-center gap-2 text-[10px] flex-wrap">
                       <span className="text-sacred-gold font-semibold">{isHi ? 'रंग:' : 'Colors:'}</span>
                       {(isHi ? r.remedies.color_therapy.colors_hi : r.remedies.color_therapy.colors).map((c: string, ci: number) => (
-                        <span key={ci} className="px-1.5 py-0.5 rounded bg-white/10 text-white text-[9px]">{c}</span>
+                        <span key={ci} className="px-1.5 py-0.5 rounded bg-white/10 text-cosmic-text text-[9px]">{c}</span>
                       ))}
                     </div>
                   )}
@@ -199,7 +199,7 @@ export default function HomeComplianceReport({ result }: Props) {
           {result.missing_critical_rooms.map((m: any, i: number) => (
             <div key={i} className="flex items-center gap-2 mb-1">
               <span className="text-sm">{ROOM_ICONS[m.room_type] || '🏠'}</span>
-              <span className="text-xs text-white">{isHi ? m.room_name_hi : m.room_name_en}</span>
+              <span className="text-xs text-cosmic-text">{isHi ? m.room_name_hi : m.room_name_en}</span>
               <span className="text-[9px] text-cosmic-text/40">→ {(isHi ? m.ideal_directions_hi : m.ideal_directions).join(', ')}</span>
             </div>
           ))}

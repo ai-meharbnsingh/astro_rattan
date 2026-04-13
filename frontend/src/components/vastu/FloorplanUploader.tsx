@@ -91,7 +91,7 @@ export default function FloorplanUploader({ onUploaded }: Props) {
               <Upload className="w-6 h-6 text-sacred-gold" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-white">
+              <p className="text-sm font-semibold text-cosmic-text">
                 {isHi ? 'फ्लोर प्लान अपलोड करें' : 'Upload Floor Plan'}
               </p>
               <p className="text-xs text-cosmic-text/50 mt-1">

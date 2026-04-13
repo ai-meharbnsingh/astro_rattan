@@ -130,7 +130,7 @@ export default function HomeGrid({ assignments, onAssign, onRemove, layoutResult
                 return (
                   <div key={`${roomKey}-${i}`} className={`flex items-center gap-1.5 bg-white/5 rounded-lg px-2 py-1.5 border ${style.border}/30`}>
                     <span className="text-sm">{opt?.icon || '🏠'}</span>
-                    <span className="text-[10px] font-medium text-white flex-1 truncate">
+                    <span className="text-[10px] font-medium text-cosmic-text flex-1 truncate">
                       {isHi ? (opt?.hi || roomKey) : (opt?.en || roomKey)}
                     </span>
                     <div className={`w-2 h-2 rounded-full ${style.dot}`} title={isHi ? style.labelHi : style.label} />
@@ -178,7 +178,7 @@ export default function HomeGrid({ assignments, onAssign, onRemove, layoutResult
                           }`}
                         >
                           <span>{opt.icon}</span>
-                          <span className="flex-1 text-white font-medium">
+                          <span className="flex-1 text-cosmic-text font-medium">
                             {isHi ? opt.hi : opt.en}
                           </span>
                           <div className={`w-2 h-2 rounded-full ${style.dot}`} />
