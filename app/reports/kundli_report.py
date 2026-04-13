@@ -203,18 +203,37 @@ def _fmt_num(v: Any, decimals: int = 2) -> str:
 
 def _sanitize(text: str) -> str:
     """Replace Unicode characters that Helvetica cannot render."""
-    return (str(text)
-            .replace("\u2014", "-")
-            .replace("\u2013", "-")
-            .replace("\u2018", "'")
-            .replace("\u2019", "'")
-            .replace("\u201c", '"')
-            .replace("\u201d", '"')
-            .replace("\u2022", "*")
-            .replace("\u2026", "...")
-            .replace("\u00b0", "deg")
-            .replace("\u2265", ">=")
-            .replace("\u2264", "<="))
+    import re
+    s = str(text)
+    s = (s.replace("\u2014", " - ")
+          .replace("\u2013", "-")
+          .replace("\u2018", "'")
+          .replace("\u2019", "'")
+          .replace("\u201c", '"')
+          .replace("\u201d", '"')
+          .replace("\u2022", "*")
+          .replace("\u2026", "...")
+          .replace("\u00b0", " deg")
+          .replace("\u2265", ">=")
+          .replace("\u2264", "<=")
+          .replace("\u2010", "-")
+          .replace("\u2011", "-")
+          .replace("\u2012", "-")
+          .replace("\u2015", "-")
+          .replace("\u00a0", " ")
+          .replace("\u200b", "")
+          .replace("\u200c", "")
+          .replace("\u200d", "")
+          .replace("\u2009", " ")
+          .replace("\u202f", " ")
+          .replace("\u00d7", "x")
+          .replace("\u2192", "->")
+          .replace("\u2190", "<-")
+          .replace("\u2191", "^")
+          .replace("\u2193", "v"))
+    # Strip any remaining non-latin1 characters for Helvetica safety
+    s = re.sub(r'[^\x00-\xff]', '', s)
+    return s
 
 
 def _find_hindi_font() -> Optional[str]:
@@ -703,16 +722,12 @@ def build_full_report(data: dict) -> bytes:
                 self._has_hindi = True
 
         def cell(self, w=0, h=0, txt="", *a, **kw):
-            if not self._has_hindi or kw.get("_raw"):
-                kw.pop("_raw", None)
-                return super().cell(w, h, _sanitize(str(txt)), *a, **kw)
             kw.pop("_raw", None)
-            return super().cell(w, h, str(txt), *a, **kw)
+            # Always sanitize — even with Hindi font, Helvetica sections need it
+            return super().cell(w, h, _sanitize(str(txt)), *a, **kw)
 
         def multi_cell(self, w, h=0, txt="", *a, **kw):
-            if not self._has_hindi:
-                return super().multi_cell(w, h, _sanitize(str(txt)), *a, **kw)
-            return super().multi_cell(w, h, str(txt), *a, **kw)
+            return super().multi_cell(w, h, _sanitize(str(txt)), *a, **kw)
 
         def header(self):
             self.set_font("Helvetica", "B", 8)
