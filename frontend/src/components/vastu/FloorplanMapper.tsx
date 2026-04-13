@@ -252,12 +252,12 @@ export default function FloorplanMapper({
               style={{ left: `${px}%`, top: `${py}%` }}
             >
               <span className="text-sm">{opt?.icon || '🏠'}</span>
-              <span className="text-[9px] text-cosmic-text font-medium whitespace-nowrap">
+              <span className="text-[9px] text-white font-medium whitespace-nowrap">
                 {isHi ? (opt?.hi || m.room_type) : (opt?.en || m.room_type)}
               </span>
               <button
                 onClick={(e) => { e.stopPropagation(); onRemoveMarker(m.id); }}
-                className="text-cosmic-text/30 hover:text-red-400 ml-0.5"
+                className="text-white/40 hover:text-red-400 ml-0.5"
               >
                 <X className="w-3 h-3" />
               </button>
@@ -287,7 +287,7 @@ export default function FloorplanMapper({
               <button
                 key={opt.key}
                 onClick={() => selectRoom(opt.key)}
-                className="w-full flex items-center gap-2 px-2 py-1.5 text-xs text-cosmic-text hover:bg-white/10 rounded-lg transition-colors"
+                className="w-full flex items-center gap-2 px-2 py-1.5 text-xs text-white hover:bg-white/10 rounded-lg transition-colors"
               >
                 <span>{opt.icon}</span>
                 <span className="font-medium">{isHi ? opt.hi : opt.en}</span>
