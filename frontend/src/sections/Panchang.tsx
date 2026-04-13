@@ -3,18 +3,21 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Calendar, Clock, Download, Loader2, MapPin, Navigation, Share2 } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Calendar, Clock, Download, Loader2, MapPin, Navigation, Share2, Sun, Moon, Star, Sparkles, Timer, AlignLeft, CalendarDays, ChevronRight } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
 import { translateBackend } from '@/lib/backend-translations';
-import HinduCalendar from '@/components/panchang/HinduCalendar';
-import FestivalVrat from '@/components/panchang/FestivalVrat';
-import PanchangCore from '@/components/panchang/PanchangCore';
-import SunMoonTimes from '@/components/panchang/SunMoonTimes';
-import InauspiciousPeriods from '@/components/panchang/InauspiciousPeriods';
-import AuspiciousTimings from '@/components/panchang/AuspiciousTimings';
-import PlanetaryPositions from '@/components/panchang/PlanetaryPositions';
-import MuhuratFinder from '@/components/panchang/MuhuratFinder';
+import PanchangCoreTab from '@/components/panchang/PanchangCoreTab';
+import MuhuratTab from '@/components/panchang/MuhuratTab';
+import PlanetaryPositionsTab from '@/components/panchang/PlanetaryPositionsTab';
+import HoraTab from '@/components/panchang/HoraTab';
+import LagnaTab from '@/components/panchang/LagnaTab';
+import ChoghadiyaTab from '@/components/panchang/ChoghadiyaTab';
+import GowriTab from '@/components/panchang/GowriTab';
+import FestivalsTab from '@/components/panchang/FestivalsTab';
+import CalendarTab from '@/components/panchang/CalendarTab';
+import MonthlyCalendarTab from '@/components/panchang/MonthlyCalendarTab';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -31,12 +34,12 @@ interface HinduCalendarData {
 }
 interface VaarData { name: string; english: string; number: number; }
 
-interface FullPanchangData {
+export interface FullPanchangData {
   date: string;
-  tithi: { name: string; number: number; paksha: string; end_time?: string };
-  nakshatra: { name: string; pada: number; lord: string; end_time?: string };
-  yoga: { name: string; number: number; end_time?: string };
-  karana: { name: string; number: number; end_time?: string };
+  tithi: { name: string; number: number; paksha: string; end_time?: string; [key: string]: any };
+  nakshatra: { name: string; pada: number; lord: string; end_time?: string; [key: string]: any };
+  yoga: { name: string; number: number; end_time?: string; [key: string]: any };
+  karana: { name: string; number: number; end_time?: string; [key: string]: any };
   sunrise: string;
   sunset: string;
   moonrise: string;
@@ -84,18 +87,10 @@ interface DoGhatiRow { muhurta: string; name: string; start: string; end: string
 const DEFAULT_LAT = '28.6139';
 const DEFAULT_LON = '77.2090';
 
-// Get timezone offset from longitude (approximate)
-const getTimezoneOffsetFromLongitude = (lon: number) => {
-  return Math.round(lon / 15) * 60; // Convert to minutes
-};
-
 // Helper: Get local date as YYYY-MM-DD (fixes UTC timezone issue)
 const getLocalDateString = () => {
   const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 };
 
 export default function Panchang() {
@@ -108,9 +103,14 @@ export default function Panchang() {
   const [longitude, setLongitude] = useState(DEFAULT_LON);
   const [detectingLocation, setDetectingLocation] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [activeTab, setActiveTab] = useState('core');
 
-  // Calculate timezone offset from longitude for accurate "current" highlighting
-  const timezoneOffset = getTimezoneOffsetFromLongitude(parseFloat(longitude));
+  // Calculate timezone offset from longitude (IST for India, otherwise approximate)
+  const tzOffset = useMemo(() => {
+    const lon = parseFloat(longitude) || 77.2090;
+    if (lon >= 68 && lon <= 97.5) return 5.5 * 60; // IST in minutes
+    return Math.round(lon / 15) * 60; // approximate
+  }, [longitude]);
 
   // Format date in Hindi for WhatsApp sharing
   const formatDateHindi = (dateStr: string) => {
@@ -141,10 +141,10 @@ export default function Panchang() {
     if (!panchang) return;
     const p = panchang;
     const hc = p.hindu_calendar || {} as HinduCalendarData;
-    const tithiLine = `${p.tithi?.name || ''} ${p.tithi?.end_time || ''} तक${p.tithi?.next ? ' तत्पश्चात् ' + p.tithi.next : ''}`;
-    const nakLine = `${p.nakshatra?.name || ''} ${p.nakshatra?.end_time || ''} तक${p.nakshatra?.next ? ' तत्पश्चात् ' + p.nakshatra.next : ''}`;
-    const yogaLine = `${p.yoga?.name || ''} ${p.yoga?.end_time || ''} तक${p.yoga?.next ? ' तत्पश्चात् ' + p.yoga.next : ''}`;
-    const karanaLine = `${p.karana?.name || ''}${p.karana?.second_karana ? ' तत्पश्चात् ' + p.karana.second_karana : ''}`;
+    const tithiLine = `${p.tithi?.name || ''} ${p.tithi?.end_time || ''} तक${(p.tithi as any)?.next ? ' तत्पश्चात् ' + (p.tithi as any).next : ''}`;
+    const nakLine = `${p.nakshatra?.name || ''} ${p.nakshatra?.end_time || ''} तक${(p.nakshatra as any)?.next ? ' तत्पश्चात् ' + (p.nakshatra as any).next : ''}`;
+    const yogaLine = `${p.yoga?.name || ''} ${p.yoga?.end_time || ''} तक${(p.yoga as any)?.next ? ' तत्पश्चात् ' + (p.yoga as any).next : ''}`;
+    const karanaLine = `${p.karana?.name || ''}${(p.karana as any)?.second_karana ? ' तत्पश्चात् ' + (p.karana as any).second_karana : ''}`;
 
     const text = `*卐~ हिन्दू पंचांग ~卐*
 
@@ -164,7 +164,7 @@ export default function Panchang() {
 *⛅सूर्यास्त - ${p.sunset || ''}*
 *⛅ब्रह्ममुहूर्त - ${p.brahma_muhurat?.start || ''} से ${p.brahma_muhurat?.end || ''} तक*
 *⛅अभिजीत मुहूर्त - ${p.abhijit_muhurat?.start || ''} से ${p.abhijit_muhurat?.end || ''} तक*
-*⛅निशिता मुहूर्त - ${p.nishita_muhurta?.start || p.nishita_muhurat?.start || ''} से ${p.nishita_muhurta?.end || p.nishita_muhurat?.end || ''} तक*
+*⛅निशिता मुहूर्त - ${(p as any).nishita_muhurta?.start || (p as any).nishita_muhurat?.start || ''} से ${(p as any).nishita_muhurta?.end || (p as any).nishita_muhurat?.end || ''} तक*
 *⛅सूर्य राशि - ${p.sun_sign || ''}*
 *⛅चन्द्र राशि - ${p.moon_sign || ''}*
 ${p.festivals?.length ? '*🌥️व्रत पर्व - ' + p.festivals.map((f: any) => f.name_hindi || f.name).join(', ') + '*' : ''}
@@ -366,147 +366,61 @@ _Generated by AstroRattan.com_`;
               </button>
             </div>
 
-            {/* ROW 1: Hindu Calendar + Core Panchang */}
-            <div className="grid lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-1 space-y-6">
-                <HinduCalendar
-                  hindu_calendar={panchang.hindu_calendar}
-                  vaar={panchang.vaar}
-                />
-                <FestivalVrat festivals={panchang.festivals} />
-              </div>
-              <div className="lg:col-span-2">
-                <Card className="card-sacred border-sacred-gold h-full">
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-sans font-semibold text-cosmic-text mb-6 flex items-center gap-2">
-                      <Calendar className="w-5 h-5 text-sacred-gold" />{t('panchang.todayPanchang')}
-                    </h3>
-                    <PanchangCore
-                      tithi={panchang.tithi}
-                      nakshatra={panchang.nakshatra}
-                      yoga={panchang.yoga}
-                      karana={panchang.karana}
-                    />
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-
-            {/* ROW 2: Sun/Moon + Inauspicious + Auspicious */}
-            <div className="grid lg:grid-cols-3 gap-6">
-              <div className="space-y-4">
-                <SunMoonTimes
-                  sunrise={panchang.sunrise}
-                  sunset={panchang.sunset}
-                  moonrise={panchang.moonrise}
-                  moonset={panchang.moonset}
-                />
-                {/* Sun/Moon Sign + Day/Night Duration */}
-                <Card className="card-sacred border-sacred-gold">
-                  <CardContent className="p-4 space-y-2 text-sm">
-                    {panchang.sun_sign && <div className="flex justify-between"><span className="text-cosmic-text">{t('panchang.sunSign')}</span><span className="font-medium text-cosmic-text">{translateBackend(panchang.sun_sign, language)}</span></div>}
-                    {panchang.moon_sign && <div className="flex justify-between"><span className="text-cosmic-text">{t('panchang.moonSign')}</span><span className="font-medium text-cosmic-text">{translateBackend(panchang.moon_sign, language)}</span></div>}
-                    {panchang.dinamana && <div className="flex justify-between"><span className="text-cosmic-text">{t('panchang.dinamana')}</span><span className="font-medium text-cosmic-text">{panchang.dinamana}</span></div>}
-                    {panchang.ratrimana && <div className="flex justify-between"><span className="text-cosmic-text">{t('panchang.ratrimana')}</span><span className="font-medium text-cosmic-text">{panchang.ratrimana}</span></div>}
-                    {panchang.madhyahna && <div className="flex justify-between"><span className="text-cosmic-text">{t('panchang.madhyahna')}</span><span className="font-medium text-cosmic-text">{panchang.madhyahna}</span></div>}
-                  </CardContent>
-                </Card>
-              </div>
-              <InauspiciousPeriods
-                rahu_kaal={panchang.rahu_kaal}
-                gulika_kaal={panchang.gulika_kaal}
-                yamaganda={panchang.yamaganda}
-                dur_muhurtam={panchang.dur_muhurtam}
-                varjyam={panchang.varjyam}
-              />
-              <AuspiciousTimings
-                abhijit_muhurat={panchang.abhijit_muhurat}
-                brahma_muhurat={panchang.brahma_muhurat}
-                choghadiya={panchang.choghadiya}
-                ravi_yoga={panchang.ravi_yoga}
-                vijaya_muhurta={panchang.vijaya_muhurta}
-                godhuli_muhurta={panchang.godhuli_muhurta}
-                sayahna_sandhya={panchang.sayahna_sandhya}
-                nishita_muhurta={panchang.nishita_muhurta}
-                pratah_sandhya={panchang.pratah_sandhya}
-              />
-            </div>
-
-            {/* ROW 3: Planetary Positions */}
-            <PlanetaryPositions planets={panchang.planetary_positions} />
-
-            {/* ROW 4: Advanced Panchang — Expandable Sections */}
-            <div className="space-y-4">
-              {/* Hora Table */}
-              {panchang.hora_table && <ExpandableSection title={language === 'hi' ? 'होरा मुहूर्त' : 'Hora Muhurta'} desc={language === 'hi' ? '24 ग्रह घंटे' : '24 planetary hours'}>
-                <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr className="bg-sacred-gold/20"><th className="p-2 text-left text-sacred-gold-dark">{language === 'hi' ? 'होरा' : 'Hora'}</th><th className="p-2 text-left">{t('kundli.lord')}</th><th className="p-2">{t('table.start')}</th><th className="p-2">{t('table.end')}</th><th className="p-2">{t('table.type')}</th></tr></thead><tbody>
-                {(panchang.hora_table as HoraRow[]).map((h, i) => (
-                  <tr key={i} className="border-t border-sacred-gold"><td className="p-2 text-cosmic-text">{h.hora}</td><td className="p-2 text-cosmic-text font-medium">{translateBackend(h.lord, language)}</td><td className="p-2 text-cosmic-text">{h.start}</td><td className="p-2 text-cosmic-text">{h.end}</td><td className="p-2"><span className={`text-sm px-2 py-0.5 rounded ${h.type === 'day' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}>{translateBackend(h.type, language)}</span></td></tr>
-                ))}</tbody></table></div>
-              </ExpandableSection>}
-
-              {/* Lagna Table */}
-              {panchang.lagna_table && <ExpandableSection title={language === 'hi' ? 'लग्न मुहूर्त' : 'Lagna Muhurta'} desc={language === 'hi' ? 'दिन भर की उदय राशि' : 'Rising sign through the day'}>
-                <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr className="bg-sacred-gold/20"><th className="p-2 text-left text-sacred-gold-dark">{t('section.lagna')}</th><th className="p-2">{t('table.start')}</th><th className="p-2">{t('table.end')}</th></tr></thead><tbody>
-                {(panchang.lagna_table as LagnaRow[]).map((l, i) => (
-                  <tr key={i} className="border-t border-sacred-gold"><td className="p-2 text-cosmic-text font-medium">{translateBackend(l.lagna, language)}</td><td className="p-2 text-cosmic-text">{l.start}</td><td className="p-2 text-cosmic-text">{l.end}</td></tr>
-                ))}</tbody></table></div>
-              </ExpandableSection>}
-
-              {/* Gowri Panchangam */}
-              {panchang.gowri_panchang && <ExpandableSection title={language === 'hi' ? 'गौरी पंचांगम' : 'Gowri Panchangam'} desc={language === 'hi' ? 'दिन और रात के गुणवत्ता काल' : 'Day and night quality periods'}>
-                <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr className="bg-sacred-gold/20"><th className="p-2 text-left text-sacred-gold-dark">{t('table.period')}</th><th className="p-2">{t('table.start')}</th><th className="p-2">{t('table.end')}</th><th className="p-2">{t('table.type')}</th><th className="p-2">{language === 'hi' ? 'गुणवत्ता' : 'Quality'}</th></tr></thead><tbody>
-                {(panchang.gowri_panchang as GowriRow[]).map((g, i) => (
-                  <tr key={i} className={`border-t border-sacred-gold ${g.quality === 'good' ? 'bg-green-50' : ''}`}><td className="p-2 text-cosmic-text font-medium">{translateBackend(g.name, language)}</td><td className="p-2 text-cosmic-text">{g.start}</td><td className="p-2 text-cosmic-text">{g.end}</td><td className="p-2"><span className={`text-sm px-2 py-0.5 rounded ${g.type === 'day' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}>{translateBackend(g.type, language)}</span></td><td className="p-2"><span className={`text-sm px-2 py-0.5 rounded ${g.quality === 'good' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{g.quality === 'good' ? (language === 'hi' ? 'शुभ' : 'Shubh') : (language === 'hi' ? 'अशुभ' : 'Ashubh')}</span></td></tr>
-                ))}</tbody></table></div>
-              </ExpandableSection>}
-
-              {/* Chandrabalam */}
-              {panchang.chandrabalam && <ExpandableSection title={language === 'hi' ? 'चंद्रबल' : 'Chandrabalam'} desc={language === 'hi' ? 'सभी 12 राशियों के लिए चंद्र बल' : 'Moon strength for all 12 Rashi'}>
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                {(panchang.chandrabalam as ChandrabalamRow[]).map((c, i) => (
-                  <div key={i} className={`p-3 text-center border rounded ${c.good ? 'border-green-300 bg-green-50' : 'border-red-200 bg-red-50'}`}>
-                    <p className="text-sm font-medium text-cosmic-text">{translateBackend(c.rashi, language)}</p>
-                    <p className={`text-sm font-semibold ${c.good ? 'text-green-600' : 'text-red-500'}`}>{translateBackend(c.balam, language)}</p>
-                    <p className="text-sm text-cosmic-text">{t('common.house')} {c.house_from_moon}</p>
-                  </div>
+            {/* Tab Navigation */}
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid grid-cols-5 sm:grid-cols-10 gap-1 h-auto p-1 bg-cosmic-card rounded-xl">
+                {[
+                  { id: 'core', label: language === 'hi' ? 'पंचांग' : 'Core', icon: AlignLeft },
+                  { id: 'muhurat', label: language === 'hi' ? 'मुहूर्त' : 'Muhurat', icon: Timer },
+                  { id: 'planets', label: language === 'hi' ? 'ग्रह' : 'Planets', icon: Star },
+                  { id: 'hora', label: language === 'hi' ? 'होरा' : 'Hora', icon: Clock },
+                  { id: 'lagna', label: language === 'hi' ? 'लग्न' : 'Lagna', icon: Sun },
+                  { id: 'choghadiya', label: language === 'hi' ? 'चौघड़िया' : 'Choghadiya', icon: Sparkles },
+                  { id: 'gowri', label: language === 'hi' ? 'गौरी' : 'Gowri', icon: Moon },
+                  { id: 'festivals', label: language === 'hi' ? 'त्योहार' : 'Festivals', icon: CalendarDays },
+                  { id: 'calendar', label: language === 'hi' ? 'कैलेंडर' : 'Calendar', icon: Calendar },
+                  { id: 'monthly', label: language === 'hi' ? 'मासिक' : 'Monthly', icon: Navigation },
+                ].map(tab => (
+                  <TabsTrigger key={tab.id} value={tab.id} className="flex flex-col items-center gap-0.5 py-2 px-1 text-xs data-[state=active]:bg-sacred-gold data-[state=active]:text-white rounded-lg">
+                    <tab.icon className="w-4 h-4" />
+                    <span className="hidden sm:block">{tab.label}</span>
+                  </TabsTrigger>
                 ))}
-                </div>
-              </ExpandableSection>}
+              </TabsList>
 
-              {/* Tarabalam */}
-              {panchang.tarabalam && <ExpandableSection title={language === 'hi' ? 'ताराबल' : 'Tarabalam'} desc={language === 'hi' ? 'सभी 27 नक्षत्रों का बल' : 'Star strength for all 27 Nakshatra'}>
-                <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2">
-                {(panchang.tarabalam as TarabalamRow[]).map((t, i) => (
-                  <div key={i} className={`p-2 text-center border rounded ${t.good ? 'border-green-300 bg-green-50' : 'border-red-200 bg-red-50'}`}>
-                    <p className="text-sm font-medium text-cosmic-text">{translateBackend(t.nakshatra, language)}</p>
-                    <p className={`text-sm font-semibold ${t.good ? 'text-green-600' : 'text-red-500'}`}>{translateBackend(t.tara, language)}</p>
-                  </div>
-                ))}
-                </div>
-              </ExpandableSection>}
-
-              {/* Do Ghati Muhurta */}
-              {panchang.do_ghati_muhurta && <ExpandableSection title={language === 'hi' ? 'दो घटी मुहूर्त' : 'Do Ghati Muhurta'} desc={language === 'hi' ? 'दिन का 30 मुहूर्त विभाजन' : '30 Muhurta division of the day'}>
-                <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr className="bg-sacred-gold/20"><th className="p-2 text-left text-sacred-gold-dark">#</th><th className="p-2 text-left">{t('table.name')}</th><th className="p-2">{t('table.start')}</th><th className="p-2">{t('table.end')}</th><th className="p-2">{language === 'hi' ? 'गुणवत्ता' : 'Quality'}</th></tr></thead><tbody>
-                {(panchang.do_ghati_muhurta as DoGhatiRow[]).map((m, i) => (
-                  <tr key={i} className={`border-t border-sacred-gold ${m.quality === 'good' ? 'bg-green-50' : ''}`}><td className="p-2 text-cosmic-text">{m.muhurta}</td><td className="p-2 text-cosmic-text font-medium">{translateBackend(m.name, language)}</td><td className="p-2 text-cosmic-text">{m.start}</td><td className="p-2 text-cosmic-text">{m.end}</td><td className="p-2"><span className={`text-sm px-2 py-0.5 rounded ${m.quality === 'good' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>{translateBackend(m.quality, language)}</span></td></tr>
-                ))}</tbody></table></div>
-              </ExpandableSection>}
-
-              {/* Panchaka */}
-              {panchang.panchaka && <div className={`p-4 rounded-xl border ${panchang.panchaka.active ? 'border-red-300 bg-red-50' : 'border-green-300 bg-green-50'}`}>
-                <p className="text-sm font-medium text-cosmic-text">{language === 'hi' ? 'पंचक रहित' : 'Panchaka Rahita'}: <span className={`font-semibold ${panchang.panchaka.rahita ? 'text-green-600' : 'text-red-500'}`}>{panchang.panchaka.rahita ? (language === 'hi' ? 'सुरक्षित — आज पंचक नहीं' : 'Safe — No Panchaka today') : (language === 'hi' ? 'पंचक सक्रिय — सावधानी रखें' : 'Panchaka Active — Caution advised')}</span></p>
-              </div>}
-            </div>
-
-            {/* ROW 5: Muhurat Finder */}
-            <MuhuratFinder
-              latitude={latitude}
-              longitude={longitude}
-              onLatChange={setLatitude}
-              onLonChange={setLongitude}
-            />
+              <div className="mt-4">
+                <TabsContent value="core">
+                  <PanchangCoreTab panchang={panchang} language={language} t={t} />
+                </TabsContent>
+                <TabsContent value="muhurat">
+                  <MuhuratTab panchang={panchang} language={language} t={t} />
+                </TabsContent>
+                <TabsContent value="planets">
+                  <PlanetaryPositionsTab panchang={panchang} language={language} t={t} />
+                </TabsContent>
+                <TabsContent value="hora">
+                  <HoraTab panchang={panchang} language={language} t={t} timezoneOffset={tzOffset} />
+                </TabsContent>
+                <TabsContent value="lagna">
+                  <LagnaTab panchang={panchang} language={language} t={t} timezoneOffset={tzOffset} />
+                </TabsContent>
+                <TabsContent value="choghadiya">
+                  <ChoghadiyaTab panchang={panchang} language={language} t={t} timezoneOffset={tzOffset} />
+                </TabsContent>
+                <TabsContent value="gowri">
+                  <GowriTab panchang={panchang} language={language} t={t} timezoneOffset={tzOffset} />
+                </TabsContent>
+                <TabsContent value="festivals">
+                  <FestivalsTab panchang={panchang} language={language} t={t} selectedDate={selectedDate} />
+                </TabsContent>
+                <TabsContent value="calendar">
+                  <CalendarTab panchang={panchang} language={language} t={t} />
+                </TabsContent>
+                <TabsContent value="monthly">
+                  <MonthlyCalendarTab language={language} t={t} latitude={latitude} longitude={longitude} />
+                </TabsContent>
+              </div>
+            </Tabs>
           </div>
         )}
       </div>
@@ -517,22 +431,6 @@ _Generated by AstroRattan.com_`;
 // ============================================================
 // Normalize API response to match FullPanchangData
 // ============================================================
-function ExpandableSection({ title, desc, children }: { title: string; desc: string; children: React.ReactNode }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="border border-sacred-gold rounded-xl overflow-hidden bg-sacred-cream">
-      <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
-        <div className="text-left">
-          <h4 className="font-display font-semibold text-sacred-brown text-sm">{title}</h4>
-          <p className="text-sm text-cosmic-text">{desc}</p>
-        </div>
-        <span className={`text-sacred-gold-dark transition-transform ${open ? 'rotate-180' : ''}`}>▼</span>
-      </button>
-      {open && <div className="p-4 pt-0 border-t border-sacred-gold">{children}</div>}
-    </div>
-  );
-}
-
 function normalizePanchang(data: Record<string, unknown>): FullPanchangData {
   const d = data as Partial<FullPanchangData>;
   return {

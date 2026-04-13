@@ -148,6 +148,7 @@ CREATE TABLE IF NOT EXISTS panchang_cache (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE(date, latitude, longitude)
 );
+CREATE INDEX IF NOT EXISTS idx_panchang_cache_date ON panchang_cache(date);
 
 -- Spiritual Content Library
 CREATE TABLE IF NOT EXISTS content_library (
