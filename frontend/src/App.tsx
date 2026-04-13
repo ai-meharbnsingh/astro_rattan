@@ -29,16 +29,35 @@ import WhatsAppWidget from './components/WhatsAppWidget';
 import TodaysSkyWidget from './components/TodaysSkyWidget';
 import { useAuth } from './hooks/useAuth';
 
-// Lazy imports — code-split per route
-const Panchang = lazy(() => import('./sections/Panchang'));
-const KundliGenerator = lazy(() => import('./sections/KundliGenerator'));
-const AuthPage = lazy(() => import('./sections/AuthPage'));
-const NumerologyTarot = lazy(() => import('./sections/NumerologyTarot'));
-const LalKitabPage = lazy(() => import('./sections/LalKitabPage'));
-const AdminDashboard = lazy(() => import('./sections/AdminDashboard'));
-const FeedbackPage = lazy(() => import('./sections/FeedbackPage'));
-const Dashboard = lazy(() => import('./sections/Dashboard'));
-const ClientProfile = lazy(() => import('./sections/ClientProfile'));
+// Lazy imports — code-split per route.
+// The catch + reload handles stale SPA sessions: if a user had the old JS loaded
+// before a deploy, dynamic imports for renamed chunks get 404s. Reloading fetches
+// the fresh index.html which references the new chunk hashes.
+function lazyWithReload<T extends React.ComponentType<any>>(
+  importFn: () => Promise<{ default: T }>
+) {
+  return lazy(() =>
+    importFn().catch(() => {
+      // Avoid infinite reload loops: only reload once per session per key
+      const key = `_chunk_reload_${importFn.toString().slice(0, 60)}`;
+      if (!sessionStorage.getItem(key)) {
+        sessionStorage.setItem(key, '1');
+        window.location.reload();
+      }
+      return new Promise<{ default: T }>(() => {}); // suspend until reload
+    })
+  );
+}
+
+const Panchang        = lazyWithReload(() => import('./sections/Panchang'));
+const KundliGenerator = lazyWithReload(() => import('./sections/KundliGenerator'));
+const AuthPage        = lazyWithReload(() => import('./sections/AuthPage'));
+const NumerologyTarot = lazyWithReload(() => import('./sections/NumerologyTarot'));
+const LalKitabPage    = lazyWithReload(() => import('./sections/LalKitabPage'));
+const AdminDashboard  = lazyWithReload(() => import('./sections/AdminDashboard'));
+const FeedbackPage    = lazyWithReload(() => import('./sections/FeedbackPage'));
+const Dashboard       = lazyWithReload(() => import('./sections/Dashboard'));
+const ClientProfile   = lazyWithReload(() => import('./sections/ClientProfile'));
 
 gsap.registerPlugin(ScrollTrigger);
 
