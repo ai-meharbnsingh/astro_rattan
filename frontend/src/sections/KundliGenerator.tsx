@@ -316,33 +316,16 @@ export default function KundliGenerator() {
             </Button>
             <Button size="sm"
               className="bg-gradient-to-r from-sacred-gold to-sacred-gold-dark text-white hover:from-sacred-gold/90 hover:to-sacred-gold-dark/90 font-semibold border border-sacred-gold-dark/30 shadow-md"
-              onClick={async () => {
+              onClick={() => {
                 if (!result?.id) return;
-                try {
-                  const token = localStorage.getItem('astrorattan_token');
-                  const API_BASE = import.meta.env.VITE_API_URL || '';
-                  const resp = await fetch(`${API_BASE}/api/kundli/${result.id}/full-report`, {
-                    headers: token ? { Authorization: `Bearer ${token}` } : {},
-                  });
-                  if (!resp.ok) {
-                    const err = await resp.json().catch(() => ({ detail: resp.statusText }));
-                    throw new Error(err.detail || 'Full report download failed');
-                  }
-                  const blob = await resp.blob();
-                  const url = URL.createObjectURL(blob);
-                  const a = document.createElement('a');
-                  a.href = url;
-                  a.download = `Kundli_Report_${result.person_name || 'chart'}.pdf`;
-                  a.style.display = 'none';
-                  document.body.appendChild(a);
-                  a.click();
-                  // Delay cleanup — Chrome needs time to finish the download
-                  setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 60000);
-                } catch (e: unknown) {
-                  console.error('Full report download error:', e);
-                  const message = e instanceof Error ? e.message : 'Failed to download full report';
-                  alert(message);
-                }
+                const token = localStorage.getItem('astrorattan_token') || '';
+                const a = document.createElement('a');
+                a.href = `/api/kundli/${result.id}/full-report?token=${encodeURIComponent(token)}`;
+                a.download = `Kundli_Report_${result.person_name || 'chart'}.pdf`;
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => document.body.removeChild(a), 1000);
               }}>
               <BookOpen className="w-4 h-4 mr-1" />{language === 'hi' ? 'पूर्ण रिपोर्ट (PDF)' : 'Download Full Report (PDF)'}
             </Button>

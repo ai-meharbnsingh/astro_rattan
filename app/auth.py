@@ -48,6 +48,16 @@ def decode_token(token: str) -> Optional[dict]:
     return None
 
 
+def get_current_user_optional(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Like get_current_user but returns None instead of raising 401."""
+    if credentials is None:
+        return None
+    payload = decode_token(credentials.credentials)
+    if payload is None or payload.get("type") == "refresh":
+        return None
+    return payload
+
+
 def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     if credentials is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")

@@ -7,7 +7,7 @@ import httpx
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import StreamingResponse
 
-from app.auth import get_current_user
+from app.auth import get_current_user, get_current_user_optional
 from app.database import get_db
 from app.models import KundliRequest, KundliMatchRequest, DivisionalChartRequest
 from app.astro_engine import calculate_planet_positions
@@ -1500,16 +1500,24 @@ def download_kundli_pdf(
 @router.get("/{kundli_id}/full-report", status_code=status.HTTP_200_OK)
 def download_full_report(
     kundli_id: str,
-    current_user: dict = Depends(get_current_user),
+    token: str = Query(default=None, description="JWT token for direct download links"),
+    current_user: dict = Depends(get_current_user_optional),
     db: Any = Depends(get_db),
 ):
     """Generate and stream a comprehensive Full Kundli Report PDF.
 
-    Calls ALL available engines (dasha, yogas/doshas, shadbala, ashtakvarga,
-    avakhada, aspects, jaimini, KP, sade-sati) and bundles the results into
-    a multi-page professional report.  Individual engine failures are caught
-    so the report always returns with whatever data is available.
+    Accepts auth via Authorization header OR ?token= query param (for direct <a> links).
+    Calls ALL available engines and bundles results into a multi-page professional report.
     """
+    # Support token as query param for direct download (no blob needed)
+    if current_user is None and token:
+        from app.auth import decode_token
+        payload = decode_token(token)
+        if payload is None or payload.get("type") == "refresh":
+            raise HTTPException(status_code=401, detail="Invalid token")
+        current_user = payload
+    if current_user is None:
+        raise HTTPException(status_code=401, detail="Not authenticated")
     row = _fetch_kundli(db, kundli_id, current_user["sub"])
     chart = _chart_data(row)
     planets = chart.get("planets", {})
