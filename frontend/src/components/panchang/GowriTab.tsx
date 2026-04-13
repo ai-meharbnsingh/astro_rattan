@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Moon, Sun, CheckCircle2, XCircle } from 'lucide-react';
 import type { FullPanchangData } from '@/sections/Panchang';
@@ -6,22 +7,28 @@ interface Props {
   panchang: FullPanchangData;
   language: string;
   t: (key: string) => string;
+  timezoneOffset: number;
 }
 
-export default function GowriTab({ panchang, language, t }: Props) {
+export default function GowriTab({ panchang, language, t, timezoneOffset }: Props) {
   const gowriPanchang = panchang.gowri_panchang || [];
   
-  // Separate day and night gowri
-  const dayGowri = gowriPanchang.filter(g => g.type === 'Day' || g.type === 'दिन');
-  const nightGowri = gowriPanchang.filter(g => g.type === 'Night' || g.type === 'रात्रि');
+  // Memoize day/night separation and current gowri calculation
+  const { dayGowri, nightGowri, currentGowri } = useMemo(() => {
+    // Separate day and night gowri
+    const day = gowriPanchang.filter(g => g.type === 'Day' || g.type === 'दिन');
+    const night = gowriPanchang.filter(g => g.type === 'Night' || g.type === 'रात्रि');
 
-  // Find current gowri period
-  const now = new Date();
-  const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-  
-  const currentGowri = gowriPanchang.find(g => {
-    return currentTime >= g.start && currentTime < g.end;
-  });
+    // Find current gowri period (based on panchang location time, not browser local time)
+    const currentTimeAtLocation = new Date(Date.now() + (timezoneOffset * 60 * 1000));
+    const currentTime = `${currentTimeAtLocation.getHours().toString().padStart(2, '0')}:${currentTimeAtLocation.getMinutes().toString().padStart(2, '0')}`;
+    
+    const current = gowriPanchang.find(g => {
+      return currentTime >= g.start && currentTime < g.end;
+    });
+    
+    return { dayGowri: day, nightGowri: night, currentGowri: current };
+  }, [gowriPanchang, timezoneOffset]);
 
   const getQualityStyle = (quality: string) => {
     if (quality.toLowerCase().includes('good') || quality === 'शुभ') {

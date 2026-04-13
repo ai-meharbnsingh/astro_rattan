@@ -481,6 +481,21 @@ def _compute_karana_end(jd_sunrise: float, tz_offset: float) -> str:
     return _jd_to_local_time_str(jd, tz_offset)
 
 
+def _compute_second_karana_end(jd_sunrise: float, tz_offset: float, tithi_end_str: str) -> str:
+    """
+    Calculate the end time of the second karana.
+    The second karana ends when the tithi ends (at the tithi boundary).
+    We estimate this as halfway between first karana end and tithi end,
+    or more precisely, the tithi end time itself since second karana ends with the tithi.
+    """
+    # The second karana ends at the tithi boundary
+    # First, find when the current tithi ends (same as _compute_tithi_end)
+    jd_tithi_end = _find_boundary_time(jd_sunrise, _get_elongation, 0.0, 12.0)
+    if jd_tithi_end is None:
+        return "--:--"
+    return _jd_to_local_time_str(jd_tithi_end, tz_offset)
+
+
 NAKSHATRA_SPAN = 360.0 / 27.0  # 13.3333 degrees
 
 
@@ -880,6 +895,8 @@ def calculate_panchang(
     if second_karana_idx >= 60:
         second_karana_idx = 0
     second_karana_name = _get_karana_name(second_karana_idx)
+    # Calculate second karana end time (approximately halfway between first karana end and tithi end)
+    second_karana_end = _compute_second_karana_end(jd_sunrise, tz_offset, tithi_end)
 
     # 17. Sun sign + Moon sign
     sun_sign = get_sign_from_longitude(sun_sid)
@@ -945,16 +962,89 @@ def calculate_panchang(
         hora_table.append({"hora": i + 13, "lord": lord, "start": start, "end": end, "type": "night"})
 
     # 23. Lagna Table (Udaya Lagna — rising sign changes through the day)
+    # Calculate proper Ascendant using sidereal time (NOT Sun position)
+    # Lagna = rising sign on eastern horizon, changes every ~2 hours
     lagna_table = []
     _RASHI_NAMES = ["Mesha", "Vrishabha", "Mithuna", "Karka", "Simha", "Kanya",
                     "Tula", "Vrishchika", "Dhanu", "Makara", "Kumbha", "Meena"]
-    # Approximate: each lagna lasts ~2 hours, starting from ascendant at sunrise
-    asc_sign_idx = int(sun_sid / 30) % 12
+    _RASHI_NAMES_HINDI = ["मेष", "वृषभ", "मिथुन", "कर्क", "सिंह", "कन्या",
+                          "तुला", "वृश्चिक", "धनु", "मकर", "कुंभ", "मीन"]
+    
+    def _calculate_ascendant(jd, lat, lon):
+        """
+        Calculate Ascendant (Lagna) using sidereal time.
+        Returns sign index (0-11) and exact longitude.
+        """
+        # Julian centuries from J2000.0
+        T = (jd - 2451545.0) / 36525.0
+        
+        # Greenwich Mean Sidereal Time at 0h UT (in degrees)
+        # Formula: GMST = 280.46061837 + 360.98564736629 * (JD - 2451545.0) + ...
+        gmst_deg = 280.46061837 + 360.98564736629 * (jd - 2451545.0)
+        
+        # Add higher order terms for better accuracy
+        gmst_deg += 0.000387933 * T * T - T * T * T / 38710000.0
+        
+        # Normalize to 0-360
+        gmst_deg = gmst_deg % 360.0
+        
+        # Local Sidereal Time (add longitude, positive east)
+        lst_deg = (gmst_deg + lon) % 360.0
+        
+        # Convert LST to radians for calculation
+        lst_rad = math.radians(lst_deg)
+        lat_rad = math.radians(lat)
+        
+        # Obliquity of ecliptic (approximate, in radians)
+        # Mean obliquity: ε = 23°26'21.448" - 46.815"*T - 0.00059"*T² + 0.001813"*T³
+        eps_deg = 23.439291111 - 0.013004167 * T - 1.6389e-7 * T * T + 5.0361e-7 * T * T * T
+        eps_rad = math.radians(eps_deg)
+        
+        # Calculate Ascendant using standard formula
+        # tan(ASC) = cos(LST) / -(sin(LST) * cos(ε) + tan(φ) * sin(ε))
+        # where φ = latitude, ε = obliquity, LST = local sidereal time
+        
+        denom = -(math.sin(lst_rad) * math.cos(eps_rad) + math.tan(lat_rad) * math.sin(eps_rad))
+        numer = math.cos(lst_rad)
+        
+        # Handle special cases to avoid division issues
+        if abs(denom) < 1e-10:
+            asc_rad = math.pi / 2 if numer > 0 else -math.pi / 2
+        else:
+            asc_rad = math.atan2(numer, denom)
+        
+        # Convert to degrees and normalize
+        asc_deg = math.degrees(asc_rad) % 360.0
+        
+        # Apply ayanamsa correction for sidereal zodiac
+        asc_sid = (asc_deg - ayanamsa) % 360.0
+        
+        sign_idx = int(asc_sid / 30) % 12
+        return {"sign": sign_idx, "longitude": asc_sid}
+    
+    # Calculate ascendant at sunrise
+    ascendant_sunrise = _calculate_ascendant(jd_sunrise, latitude, longitude)
+    asc_sign_idx = ascendant_sunrise["sign"]
+    
+    # Generate lagna table: each lagna lasts ~2 hours (30 degrees / 15 deg per hour)
+    # Start from the ascendant at sunrise, then progress through all 12 signs
+    lagna_duration_mins = 120  # 2 hours per lagna
+    
     for i in range(12):
         sign_idx = (asc_sign_idx + i) % 12
-        start = _minutes_to_time(sunrise_mins + i * (1440 / 12))
-        end = _minutes_to_time(sunrise_mins + (i + 1) * (1440 / 12))
-        lagna_table.append({"lagna": _RASHI_NAMES[sign_idx], "start": start, "end": end})
+        start_mins = sunrise_mins + i * lagna_duration_mins
+        end_mins = start_mins + lagna_duration_mins
+        
+        # Handle wrap-around past midnight
+        start_str = _minutes_to_time(start_mins % 1440)
+        end_str = _minutes_to_time(end_mins % 1440)
+        
+        lagna_table.append({
+            "lagna": _RASHI_NAMES[sign_idx],
+            "lagna_hindi": _RASHI_NAMES_HINDI[sign_idx],
+            "start": start_str,
+            "end": end_str
+        })
 
     # 24. Chandrabalam (Moon strength for each Rashi)
     moon_rashi_idx = int(moon_sid / 30)
@@ -1056,6 +1146,7 @@ def calculate_panchang(
             "number": karana_index + 1,
             "end_time": karana_end,
             "second_karana": second_karana_name,
+            "second_karana_end_time": second_karana_end,
         },
         "sunrise": sunrise_str,
         "sunset": sunset_str,

@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Clock, Sun, Moon, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
 import type { FullPanchangData } from '@/sections/Panchang';
@@ -6,6 +7,7 @@ interface Props {
   panchang: FullPanchangData;
   language: string;
   t: (key: string) => string;
+  timezoneOffset: number;
 }
 
 const CHOGHADIYA_QUALITY: Record<string, { color: string; bg: string; icon: typeof CheckCircle2 }> = {
@@ -23,28 +25,34 @@ const CHOGHADIYA_HINDI: Record<string, string> = {
   'Udveg': 'उद्वेग', 'Kaal': 'काल', 'Rog': 'रोग',
 };
 
-export default function ChoghadiyaTab({ panchang, language, t }: Props) {
+export default function ChoghadiyaTab({ panchang, language, t, timezoneOffset }: Props) {
   const choghadiya = panchang.choghadiya || [];
   
-  // Separate day and night choghadiya
-  const dayChoghadiya = choghadiya.filter(c => {
-    const startHour = parseInt(c.start.split(':')[0]);
-    return startHour >= 6 && startHour < 18;
-  });
-  
-  const nightChoghadiya = choghadiya.filter(c => {
-    const startHour = parseInt(c.start.split(':')[0]);
-    return startHour < 6 || startHour >= 18;
-  });
+  // Memoize day/night separation and current choghadiya calculation
+  const { dayChoghadiya, nightChoghadiya, currentChoghadiya } = useMemo(() => {
+    // Separate day and night choghadiya
+    const day = choghadiya.filter(c => {
+      const startHour = parseInt(c.start.split(':')[0]);
+      return startHour >= 6 && startHour < 18;
+    });
+    
+    const night = choghadiya.filter(c => {
+      const startHour = parseInt(c.start.split(':')[0]);
+      return startHour < 6 || startHour >= 18;
+    });
 
-  // Find current choghadiya
-  const currentHour = new Date().getHours();
-  const currentMinute = new Date().getMinutes();
-  const currentTime = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
-  
-  const currentChoghadiya = choghadiya.find(c => {
-    return currentTime >= c.start && currentTime < c.end;
-  });
+    // Find current choghadiya (based on panchang location time, not browser local time)
+    const currentTimeAtLocation = new Date(Date.now() + (timezoneOffset * 60 * 1000));
+    const currentHour = currentTimeAtLocation.getHours();
+    const currentMinute = currentTimeAtLocation.getMinutes();
+    const currentTime = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
+    
+    const current = choghadiya.find(c => {
+      return currentTime >= c.start && currentTime < c.end;
+    });
+    
+    return { dayChoghadiya: day, nightChoghadiya: night, currentChoghadiya: current };
+  }, [choghadiya, timezoneOffset]);
 
   const renderChoghadiyaCard = (period: typeof choghadiya[0], isCurrent: boolean) => {
     const quality = CHOGHADIYA_QUALITY[period.name] || { color: 'text-gray-500', bg: 'bg-gray-500/10', icon: AlertCircle };

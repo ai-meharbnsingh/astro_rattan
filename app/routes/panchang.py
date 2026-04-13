@@ -130,9 +130,11 @@ def get_panchang(
     target_date = date_str or _today()
     _parse_date(target_date)
 
-    # Check cache first
+    # Check cache first (with TTL - 7 days)
     cached = db.execute(
-        "SELECT * FROM panchang_cache WHERE date = %s AND latitude = %s AND longitude = %s",
+        """SELECT * FROM panchang_cache 
+           WHERE date = %s AND latitude = %s AND longitude = %s 
+           AND created_at > NOW() - INTERVAL '7 days'""",
         (target_date, latitude, longitude),
     ).fetchone()
 
@@ -265,9 +267,12 @@ def get_monthly_panchang(
     start_date = date(target_year, target_month, 1).isoformat()
     end_date = date(target_year, target_month, days_in_month).isoformat()
 
-    # Batch-query all cached days for this month in ONE query
+    # Batch-query all cached days for this month in ONE query (with TTL - 7 days)
     cached_rows = db.execute(
-        "SELECT date, tithi, nakshatra, yoga, sunrise, sunset FROM panchang_cache WHERE date >= %s AND date <= %s AND latitude = %s AND longitude = %s",
+        """SELECT date, tithi, nakshatra, yoga, sunrise, sunset 
+           FROM panchang_cache 
+           WHERE date >= %s AND date <= %s AND latitude = %s AND longitude = %s 
+           AND created_at > NOW() - INTERVAL '7 days'""",
         (start_date, end_date, latitude, longitude),
     ).fetchall()
     cached_dates = {row["date"]: row for row in cached_rows}
@@ -748,3 +753,24 @@ async def download_panchang_pdf(
         media_type="application/pdf",
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )
+
+
+@router.post("/api/admin/panchang/cleanup-cache", status_code=status.HTTP_200_OK)
+def cleanup_panchang_cache(
+    max_age_days: int = Query(default=7, ge=1),
+    db: Any = Depends(get_db),
+):
+    """
+    Remove panchang cache entries older than max_age_days.
+    Requires admin privileges.
+    """
+    result = db.execute(
+        "DELETE FROM panchang_cache WHERE created_at < NOW() - INTERVAL '%s days'",
+        (max_age_days,)
+    )
+    db.commit()
+    return {
+        "message": f"Cleaned up {result.rowcount} old cache entries",
+        "deleted_count": result.rowcount,
+        "max_age_days": max_age_days,
+    }

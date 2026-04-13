@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { api } from '@/lib/api';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -164,8 +164,16 @@ export default function MuhuratFinder({
     return quality;
   };
 
+  const abortControllerRef = useRef<AbortController | null>(null);
+
   async function findMuhurat() {
     if (!selectedEventType || !muhuratDate) return;
+    // Cancel any pending request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    abortControllerRef.current = new AbortController();
+    
     setMuhuratLoading(true);
     setMuhuratWindows([]);
     try {
@@ -175,7 +183,9 @@ export default function MuhuratFinder({
         latitude,
         longitude,
       });
-      const data = await api.get(`/api/muhurat/find?${params.toString()}`);
+      const data = await api.get(`/api/muhurat/find?${params.toString()}`, {
+        signal: abortControllerRef.current.signal,
+      });
       setMuhuratWindows(Array.isArray(data.windows) ? data.windows : []);
     } catch {
       setMuhuratWindows([]);
@@ -183,8 +193,16 @@ export default function MuhuratFinder({
     setMuhuratLoading(false);
   }
 
+  const monthlyAbortControllerRef = useRef<AbortController | null>(null);
+
   async function fetchMonthlyView() {
     if (!selectedEventType) return;
+    // Cancel any pending request
+    if (monthlyAbortControllerRef.current) {
+      monthlyAbortControllerRef.current.abort();
+    }
+    monthlyAbortControllerRef.current = new AbortController();
+    
     setMonthlyLoading(true);
     setMonthlyView([]);
     setShowMonthly(true);
@@ -197,13 +215,27 @@ export default function MuhuratFinder({
         latitude,
         longitude,
       });
-      const data = await api.get(`/api/muhurat/monthly?${params.toString()}`);
+      const data = await api.get(`/api/muhurat/monthly?${params.toString()}`, {
+        signal: monthlyAbortControllerRef.current.signal,
+      });
       setMonthlyView(Array.isArray(data) ? data : data.days ?? []);
     } catch {
       setMonthlyView([]);
     }
     setMonthlyLoading(false);
   }
+
+  // Cleanup abort controllers on unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      if (monthlyAbortControllerRef.current) {
+        monthlyAbortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const weekDaysHi = ['रवि', 'सोम', 'मंगल', 'बुध', 'गुरु', 'शुक्र', 'शनि'];

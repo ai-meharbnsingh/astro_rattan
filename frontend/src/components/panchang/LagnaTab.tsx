@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Sunrise, ArrowRight, Info } from 'lucide-react';
 import type { FullPanchangData } from '@/sections/Panchang';
@@ -6,6 +7,7 @@ interface Props {
   panchang: FullPanchangData;
   language: string;
   t: (key: string) => string;
+  timezoneOffset: number;
 }
 
 // Lagna (Ascendant) descriptions
@@ -30,18 +32,21 @@ const RASHI_HINDI: Record<string, string> = {
   'Sagittarius': 'धनु', 'Capricorn': 'मकर', 'Aquarius': 'कुंभ', 'Pisces': 'मीन',
 };
 
-export default function LagnaTab({ panchang, language, t }: Props) {
+export default function LagnaTab({ panchang, language, t, timezoneOffset }: Props) {
   const lagnaTable = panchang.lagna_table || [];
   
-  // Find current lagna
-  const now = new Date();
-  const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-  
-  const currentLagna = lagnaTable.find(l => {
-    const start = l.start;
-    const end = l.end;
-    return currentTime >= start && currentTime < end;
-  });
+  // Memoize current lagna calculation to avoid running on every render
+  const currentLagna = useMemo(() => {
+    // Find current lagna (based on panchang location time, not browser local time)
+    const currentTimeAtLocation = new Date(Date.now() + (timezoneOffset * 60 * 1000));
+    const currentTime = `${currentTimeAtLocation.getHours().toString().padStart(2, '0')}:${currentTimeAtLocation.getMinutes().toString().padStart(2, '0')}`;
+    
+    return lagnaTable.find(l => {
+      const start = l.start;
+      const end = l.end;
+      return currentTime >= start && currentTime < end;
+    });
+  }, [lagnaTable, timezoneOffset]);
 
   return (
     <div className="space-y-6">

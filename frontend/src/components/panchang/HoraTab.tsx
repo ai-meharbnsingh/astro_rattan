@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Clock, Sun, Moon, AlertCircle } from 'lucide-react';
 import type { FullPanchangData } from '@/sections/Panchang';
@@ -6,18 +7,24 @@ interface Props {
   panchang: FullPanchangData;
   language: string;
   t: (key: string) => string;
+  timezoneOffset: number;
 }
 
-export default function HoraTab({ panchang, language, t }: Props) {
+export default function HoraTab({ panchang, language, t, timezoneOffset }: Props) {
   const horaTable = panchang.hora_table || [];
-  const currentHour = new Date().getHours();
   
-  // Determine current Hora
-  const currentHora = horaTable.find(h => {
-    const startHour = parseInt(h.start.split(':')[0]);
-    const endHour = parseInt(h.end.split(':')[0]);
-    return currentHour >= startHour && currentHour < endHour;
-  });
+  // Memoize current Hora calculation to avoid running on every render
+  const currentHora = useMemo(() => {
+    // Calculate current time at the panchang location (not browser local time)
+    const currentTimeAtLocation = new Date(Date.now() + (timezoneOffset * 60 * 1000));
+    const currentHour = currentTimeAtLocation.getHours();
+    
+    return horaTable.find(h => {
+      const startHour = parseInt(h.start.split(':')[0]);
+      const endHour = parseInt(h.end.split(':')[0]);
+      return currentHour >= startHour && currentHour < endHour;
+    });
+  }, [horaTable, timezoneOffset]);
 
   // Get quality color
   const getQualityColor = (type: string) => {
