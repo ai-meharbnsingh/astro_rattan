@@ -7,8 +7,14 @@ import { Calendar, Clock, Download, Loader2, MapPin, Navigation, Share2 } from '
 import { api } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
 import { translateBackend } from '@/lib/backend-translations';
-
-// Tab components are imported individually below
+import HinduCalendar from '@/components/panchang/HinduCalendar';
+import FestivalVrat from '@/components/panchang/FestivalVrat';
+import PanchangCore from '@/components/panchang/PanchangCore';
+import SunMoonTimes from '@/components/panchang/SunMoonTimes';
+import InauspiciousPeriods from '@/components/panchang/InauspiciousPeriods';
+import AuspiciousTimings from '@/components/panchang/AuspiciousTimings';
+import PlanetaryPositions from '@/components/panchang/PlanetaryPositions';
+import MuhuratFinder from '@/components/panchang/MuhuratFinder';
 
 gsap.registerPlugin(ScrollTrigger);
 
