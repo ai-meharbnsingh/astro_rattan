@@ -40,7 +40,7 @@ export default function Navigation() {
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 shrink-0">
-              <img src="/logo.png" alt="Astro Rattan" className="h-12 w-auto" />
+              <img src="/logo.png" alt="Astro Rattan" className="h-14 sm:h-16 w-auto" />
             </Link>
 
             {/* Desktop Navigation - Service links always visible, Dashboard only when authenticated */}
