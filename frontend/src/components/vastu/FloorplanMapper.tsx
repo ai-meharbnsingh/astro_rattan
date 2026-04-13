@@ -123,6 +123,9 @@ export default function FloorplanMapper({
             className="w-24 accent-amber-500"
           />
           <span className="text-sm text-sacred-gold font-mono w-8">{northRotation}°</span>
+          <span className="text-sm text-cosmic-text/40">
+            {northRotation === 0 ? '↑' : northRotation < 90 ? '↗' : northRotation === 90 ? '→' : northRotation < 180 ? '↘' : northRotation === 180 ? '↓' : northRotation < 270 ? '↙' : northRotation === 270 ? '←' : '↖'}
+          </span>
         </div>
 
         {/* Grid toggle */}
@@ -238,29 +241,48 @@ export default function FloorplanMapper({
         {/* Translucent 3x3 Grid Overlay */}
         {showGrid && (
           <div className="absolute inset-0 pointer-events-none">
-            {/* Vertical lines at 1/3 and 2/3 */}
+            {/* Grid lines — fixed pixel zone boundaries */}
             <div className="absolute top-0 bottom-0 left-1/3 w-px bg-sacred-gold/25" />
             <div className="absolute top-0 bottom-0 left-2/3 w-px bg-sacred-gold/25" />
-            {/* Horizontal lines at 1/3 and 2/3 */}
             <div className="absolute left-0 right-0 top-1/3 h-px bg-sacred-gold/25" />
             <div className="absolute left-0 right-0 top-2/3 h-px bg-sacred-gold/25" />
-            {/* Direction labels */}
-            <span className="absolute top-1 left-1 text-sm text-sacred-gold/40 font-bold">NW</span>
-            <span className="absolute top-1 left-1/2 -translate-x-1/2 text-sm text-sacred-gold/40 font-bold">N</span>
-            <span className="absolute top-1 right-1 text-sm text-sacred-gold/40 font-bold">NE</span>
-            <span className="absolute top-1/2 -translate-y-1/2 left-1 text-sm text-sacred-gold/40 font-bold">W</span>
-            <span className="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 text-sm text-sacred-gold/40 font-bold">C</span>
-            <span className="absolute top-1/2 -translate-y-1/2 right-1 text-sm text-sacred-gold/40 font-bold">E</span>
-            <span className="absolute bottom-1 left-1 text-sm text-sacred-gold/40 font-bold">SW</span>
-            <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-sm text-sacred-gold/40 font-bold">S</span>
-            <span className="absolute bottom-1 right-1 text-sm text-sacred-gold/40 font-bold">SE</span>
-            {/* North arrow */}
+
+            {/* Direction labels — rotate with northRotation so they always show
+                the correct zone. Uses polar coordinates: r=44% from center. */}
+            {([
+              { d: 'N',  a: 0   },
+              { d: 'NE', a: 45  },
+              { d: 'E',  a: 90  },
+              { d: 'SE', a: 135 },
+              { d: 'S',  a: 180 },
+              { d: 'SW', a: 225 },
+              { d: 'W',  a: 270 },
+              { d: 'NW', a: 315 },
+            ] as { d: string; a: number }[]).map(({ d, a }) => {
+              const rad = ((a + northRotation) * Math.PI) / 180;
+              const r = 43;
+              const x = 50 + r * Math.sin(rad);
+              const y = 50 - r * Math.cos(rad);
+              return (
+                <span
+                  key={d}
+                  className="absolute text-sm font-bold text-sacred-gold/70"
+                  style={{ left: `${x}%`, top: `${y}%`, transform: 'translate(-50%, -50%)' }}
+                >
+                  {d}
+                </span>
+              );
+            })}
+            {/* Center label — always at center */}
+            <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-sm font-bold text-sacred-gold/40">C</span>
+
+            {/* North arrow — confirms physical north direction */}
             <div
-              className="absolute top-2 right-10 flex items-center gap-1"
+              className="absolute top-2 right-2 flex flex-col items-center"
               style={{ transform: `rotate(${northRotation}deg)`, transformOrigin: 'center' }}
             >
-              <div className="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-b-[8px] border-b-red-500" />
-              <span className="text-sm text-red-400 font-bold">N</span>
+              <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-b-[10px] border-b-red-500" />
+              <span className="text-sm text-red-400 font-bold leading-none mt-0.5">N</span>
             </div>
           </div>
         )}
