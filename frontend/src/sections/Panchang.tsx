@@ -112,8 +112,14 @@ export default function Panchang() {
       latitude: String(latitude),
       longitude: String(longitude),
     });
-    // Open directly — backend sets Content-Disposition: attachment
-    window.open(`/api/panchang/pdf?${params}`, '_blank');
+    const a = document.createElement('a');
+    a.href = `/api/panchang/pdf?${params}`;
+    a.download = `Panchang_${selectedDate}.pdf`;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    // Remove after a delay so browser can initiate download
+    setTimeout(() => document.body.removeChild(a), 1000);
   };
 
   // Share Panchang via WhatsApp
