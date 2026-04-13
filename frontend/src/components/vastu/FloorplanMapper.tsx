@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import { X, Grid3X3, Compass, ZoomIn, ZoomOut, Undo2, Sparkles, Loader2 } from 'lucide-react';
@@ -50,9 +50,16 @@ export default function FloorplanMapper({
   const panStart = useRef({ x: 0, y: 0, panX: 0, panY: 0 });
   const [autoDetecting, setAutoDetecting] = useState(false);
 
-  const handleWheel = useCallback((e: React.WheelEvent) => {
-    e.preventDefault();
-    setZoom(prev => Math.min(3, Math.max(0.5, prev - e.deltaY * 0.001)));
+  // Attach wheel as non-passive so preventDefault() actually works (stops page scroll)
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      setZoom(prev => Math.min(3, Math.max(0.5, prev - e.deltaY * 0.001)));
+    };
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
   }, []);
 
   const handlePanStart = useCallback((e: React.MouseEvent) => {
@@ -187,7 +194,6 @@ export default function FloorplanMapper({
         ref={containerRef}
         className="relative border border-white/10 rounded-xl overflow-hidden bg-black"
         style={{ maxHeight: 500, cursor: isPanning ? 'grabbing' : 'crosshair' }}
-        onWheel={handleWheel}
         onMouseDown={handlePanStart}
         onMouseMove={handlePanMove}
         onMouseUp={handlePanEnd}
