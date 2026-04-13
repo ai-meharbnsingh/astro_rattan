@@ -183,7 +183,7 @@ export default function AuthPage() {
           </div>
           <h2 className="text-xl sm:text-2xl md:text-3xl font-sans font-bold text-cosmic-text mb-2">{t('auth.welcome')}</h2>
           <p className="text-cosmic-text-secondary">{t('auth.subtitle')}</p>
-          <p className="text-xs text-gray-400 mt-2">Your data is encrypted and never shared</p>
+          <p className="text-xs text-gray-500 mt-2">Your data is encrypted and never shared</p>
         </div>
         {error && <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-300 text-red-700 text-sm text-center">{error}</div>}
         {success && <div className="mb-4 p-3 rounded-xl bg-green-50 border border-green-300 text-green-700 text-sm text-center">{success}</div>}
@@ -205,10 +205,10 @@ export default function AuthPage() {
                   {showLoginPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
-              <Button onClick={handleLogin} disabled={loading || !loginForm.email || !loginForm.password} className="w-full btn-sacred disabled:opacity-50">
+              <Button onClick={handleLogin} disabled={loading || !loginForm.email || !loginForm.password} className="w-full bg-sacred-gold text-white hover:bg-sacred-gold/90 font-semibold disabled:opacity-50">
                 {loading ? t('common.loading') : t('auth.signIn')}<ChevronRight className="w-5 h-5 ml-2" />
               </Button>
-              <button onClick={() => { setShowForgotPassword(true); setResetStep('email'); setError(''); setSuccess(''); }} className="w-full text-center text-sm text-sacred-gold hover:underline mt-2">
+              <button onClick={() => { setShowForgotPassword(true); setResetStep('email'); setError(''); setSuccess(''); }} className="w-full text-center text-sm text-sacred-gold-dark font-medium hover:underline mt-2">
                 {t('auth.forgotPassword')}
               </button>
             </div>
@@ -225,7 +225,7 @@ export default function AuthPage() {
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold" />
                   <Input type="email" value={registerForm.email} onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })} placeholder={t('auth.email')} onKeyDown={(e) => e.key === 'Enter' && handleSendOtp()} className="pl-10 input-sacred" />
                 </div>
-                <Button onClick={handleSendOtp} disabled={loading || !registerForm.email} className="w-full btn-sacred disabled:opacity-50">
+                <Button onClick={handleSendOtp} disabled={loading || !registerForm.email} className="w-full bg-sacred-gold text-white hover:bg-sacred-gold/90 font-semibold disabled:opacity-50">
                   {loading ? t('common.loading') : t('auth.sendVerificationCode')}<ChevronRight className="w-5 h-5 ml-2" />
                 </Button>
               </div>
@@ -269,7 +269,7 @@ export default function AuthPage() {
                     {t('auth.codePasted')}
                   </p>
                 )}
-                <Button onClick={handleVerifyOtp} disabled={loading || otp.join('').length !== 6} className="w-full btn-sacred disabled:opacity-50">
+                <Button onClick={handleVerifyOtp} disabled={loading || otp.join('').length !== 6} className="w-full bg-sacred-gold text-white hover:bg-sacred-gold/90 font-semibold disabled:opacity-50">
                   {loading ? t('common.loading') : t('auth.verifyCode')}<ShieldCheck className="w-5 h-5 ml-2" />
                 </Button>
                 <div className="text-center">
@@ -322,7 +322,7 @@ export default function AuthPage() {
                     <Input type="tel" value={registerForm.phone} onChange={(e) => setRegisterForm({ ...registerForm, phone: e.target.value })} placeholder={t('auth.phoneNumberRequired')} className="pl-10 input-sacred" />
                   </div>
                 )}
-                <Button onClick={handleRegister} disabled={loading || !registerForm.name || !registerForm.password || (isAstrologer && !registerForm.phone.trim())} className="w-full btn-sacred disabled:opacity-50">
+                <Button onClick={handleRegister} disabled={loading || !registerForm.name || !registerForm.password || (isAstrologer && !registerForm.phone.trim())} className="w-full bg-sacred-gold text-white hover:bg-sacred-gold/90 font-semibold disabled:opacity-50">
                   {loading ? t('common.loading') : (isAstrologer ? t('astrologer.registerAsAstrologer') : t('auth.signUp'))}<ChevronRight className="w-5 h-5 ml-2" />
                 </Button>
               </div>
@@ -341,7 +341,7 @@ export default function AuthPage() {
               {resetStep === 'email' && (
                 <>
                   <Input type="email" value={resetEmail} onChange={e => setResetEmail(e.target.value)} placeholder={t('auth.yourEmail')} className="input-sacred" />
-                  <Button onClick={handleForgotPassword} disabled={loading || !resetEmail} className="w-full btn-sacred">
+                  <Button onClick={handleForgotPassword} disabled={loading || !resetEmail} className="w-full bg-sacred-gold text-white hover:bg-sacred-gold/90 font-semibold disabled:opacity-50">
                     {loading ? t('auth.sending') : t('auth.sendResetCode')}
                   </Button>
                 </>
@@ -357,14 +357,14 @@ export default function AuthPage() {
                       {showResetPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
                   </div>
-                  <Button onClick={handleResetPassword} disabled={loading || resetOtp.length !== 6 || newPassword.length < 8} className="w-full btn-sacred">
+                  <Button onClick={handleResetPassword} disabled={loading || resetOtp.length !== 6 || newPassword.length < 8} className="w-full bg-sacred-gold text-white hover:bg-sacred-gold/90 font-semibold disabled:opacity-50">
                     {loading ? t('auth.resetting') : t('auth.resetPassword')}
                   </Button>
                 </>
               )}
 
               {resetStep === 'done' && (
-                <Button onClick={() => { setShowForgotPassword(false); setError(''); setSuccess(''); }} className="w-full btn-sacred">
+                <Button onClick={() => { setShowForgotPassword(false); setError(''); setSuccess(''); }} className="w-full bg-sacred-gold text-white hover:bg-sacred-gold/90 font-semibold">
                   {t('auth.backToLogin')}
                 </Button>
               )}

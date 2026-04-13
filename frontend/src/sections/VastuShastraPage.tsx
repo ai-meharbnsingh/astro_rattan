@@ -60,14 +60,14 @@ export default function VastuShastraPage() {
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sacred-gold/10 border border-sacred-gold/20 mb-4">
             <Compass className="w-4 h-4 text-sacred-gold" />
-            <span className="text-sm font-semibold text-sacred-gold tracking-wider uppercase">
+            <span className="text-sm font-bold text-sacred-gold-dark tracking-wider uppercase">
               {isHi ? 'वास्तु शास्त्र' : 'Vastu Shastra'}
             </span>
           </div>
           <h1 className="text-4xl font-bold text-cosmic-text mb-2">
             {isHi ? 'वास्तु शास्त्र विश्लेषण' : 'Vastu Shastra Analysis'}
           </h1>
-          <p className="text-cosmic-text/70 max-w-xl mx-auto">
+          <p className="text-gray-600 max-w-xl mx-auto">
             {isHi
               ? '45 देवताओं का वास्तु पुरुष मंडल, 32 प्रवेश पद, और प्राचीन उपाय प्रणाली'
               : '45 Devtas Vastu Purusha Mandala, 32 Entrance Padas, and Ancient Remedial System'}
@@ -88,14 +88,14 @@ export default function VastuShastraPage() {
               <h3 className="text-lg font-bold text-cosmic-text mb-1">
                 {isHi ? 'वास्तु विश्लेषण' : 'Vastu Analysis'}
               </h3>
-              <p className="text-sm text-cosmic-text/60">
+              <p className="text-sm text-gray-600">
                 {isHi
                   ? 'भवन प्रकार, प्रवेश दिशा और समस्याएं दर्ज करें — मंडल, पद, उपाय पाएं'
                   : 'Enter building type, entrance direction & problems — get mandala, pada, remedies'}
               </p>
               <div className="mt-4 flex flex-wrap gap-1.5">
                 {['45 Devtas', '32 Padas', 'Remedies', 'Rooms'].map(t => (
-                  <span key={t} className="text-sm px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold/70 border border-sacred-gold/20">{t}</span>
+                  <span key={t} className="text-sm px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold-dark border border-sacred-gold/20">{t}</span>
                 ))}
               </div>
             </button>
@@ -111,14 +111,14 @@ export default function VastuShastraPage() {
               <h3 className="text-lg font-bold text-cosmic-text mb-1">
                 {isHi ? 'मेरा घर — 3×3 ग्रिड' : 'My Home Grid'}
               </h3>
-              <p className="text-sm text-cosmic-text/60">
+              <p className="text-sm text-gray-600">
                 {isHi
                   ? '3×3 ग्रिड पर कमरे रखें — तुरंत अनुपालन रिपोर्ट पाएं'
                   : 'Click a 3×3 direction grid to assign rooms — get instant room-by-room compliance'}
               </p>
               <div className="mt-4 flex flex-wrap gap-1.5">
                 {['No upload needed', 'Instant report', 'Devta remedies'].map(t => (
-                  <span key={t} className="text-sm px-2 py-0.5 rounded-full bg-emerald-400/10 text-emerald-400/70 border border-emerald-400/20">{t}</span>
+                  <span key={t} className="text-sm px-2 py-0.5 rounded-full bg-emerald-400/10 text-emerald-600 border border-emerald-400/20">{t}</span>
                 ))}
               </div>
             </button>
@@ -134,14 +134,14 @@ export default function VastuShastraPage() {
               <h3 className="text-lg font-bold text-cosmic-text mb-1">
                 {isHi ? 'फ्लोर प्लान अपलोड' : 'Floor Plan Upload'}
               </h3>
-              <p className="text-sm text-cosmic-text/60">
+              <p className="text-sm text-gray-600">
                 {isHi
                   ? 'अपने घर का फोटो अपलोड करें — उत्तर दिशा सेट करें — कमरे क्लिक करके रखें'
                   : 'Upload your home photo, set north rotation, click to place rooms on the image'}
               </p>
               <div className="mt-4 flex flex-wrap gap-1.5">
                 {['Image upload', 'North rotation', 'Click to place', 'Zoom & pan'].map(t => (
-                  <span key={t} className="text-sm px-2 py-0.5 rounded-full bg-blue-400/10 text-blue-400/70 border border-blue-400/20">{t}</span>
+                  <span key={t} className="text-sm px-2 py-0.5 rounded-full bg-blue-400/10 text-blue-600 border border-blue-400/20">{t}</span>
                 ))}
               </div>
             </button>
@@ -152,7 +152,7 @@ export default function VastuShastraPage() {
         {mainMode !== 'select' && (
           <button
             onClick={resetToSelect}
-            className="flex items-center gap-1.5 text-sm text-cosmic-text/60 hover:text-white mb-6 transition-colors"
+            className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-cosmic-text mb-6 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             {isHi ? 'वापस जाएं' : 'Back to modes'}
@@ -184,7 +184,7 @@ export default function VastuShastraPage() {
                 <p className="text-lg text-cosmic-text font-semibold mb-1">
                   {isHi ? 'वास्तु विश्लेषण हो रहा है...' : 'Analyzing Vastu...'}
                 </p>
-                <p className="text-sm text-cosmic-text/60">
+                <p className="text-sm text-gray-600">
                   {isHi ? '45 देवताओं और 32 पदों का गहन विश्लेषण' : 'Deep analysis of 45 Devtas and 32 Padas'}
                 </p>
               </div>
@@ -203,8 +203,8 @@ export default function VastuShastraPage() {
                       <ArrowLeft className="w-4 h-4 mr-1" />
                       {isHi ? 'नया विश्लेषण' : 'New Analysis'}
                     </Button>
-                    <p className="text-sm text-cosmic-text/60">{isHi ? 'वास्तु स्कोर' : 'Vastu Score'}</p>
-                    <p className="text-sm text-cosmic-text/70 mt-1">
+                    <p className="text-sm text-gray-600">{isHi ? 'वास्तु स्कोर' : 'Vastu Score'}</p>
+                    <p className="text-sm text-gray-600 mt-1">
                       {isHi ? analysisData.score_label_hi : analysisData.score_label_en}
                     </p>
                   </div>
@@ -215,7 +215,7 @@ export default function VastuShastraPage() {
                     }`}>
                       {analysisData.score}
                     </div>
-                    <p className="text-sm text-cosmic-text/40">/100</p>
+                    <p className="text-sm text-gray-500">/100</p>
                   </div>
                 </div>
 

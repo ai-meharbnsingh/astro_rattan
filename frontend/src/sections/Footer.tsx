@@ -110,7 +110,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="pb-2 text-center">
-          <p className="text-xs text-cosmic-text/50">
+          <p className="text-xs text-gray-500">
             {l('Your birth data is encrypted and never shared with third parties.', 'आपका जन्म डेटा एन्क्रिप्टेड है और कभी भी तीसरे पक्ष के साथ साझा नहीं किया जाता।')}
           </p>
         </div>

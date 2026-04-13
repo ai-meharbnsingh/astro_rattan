@@ -178,7 +178,7 @@ export default function KundliList({
         </button>
       )}
 
-      <Button onClick={onNewKundli} className="w-full btn-sacred">
+      <Button onClick={onNewKundli} className="w-full bg-sacred-gold text-white hover:bg-sacred-gold/90 font-semibold">
         <Sparkles className="w-5 h-5 mr-2" />{language === 'hi' ? 'नई कुंडली बनाएं' : 'Generate New Kundli'}
       </Button>
 

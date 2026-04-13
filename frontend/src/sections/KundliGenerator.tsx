@@ -287,7 +287,7 @@ export default function KundliGenerator() {
             }}>
               <Share2 className="w-4 h-4 mr-1" />{t('common.share')}
             </Button>
-            <Button size="sm" className="btn-sacred" onClick={async () => {
+            <Button size="sm" className="bg-sacred-gold text-white hover:bg-sacred-gold/90 font-semibold" onClick={async () => {
               try {
                 const token = localStorage.getItem('astrorattan_token');
                 const API_BASE = import.meta.env.VITE_API_URL || '';

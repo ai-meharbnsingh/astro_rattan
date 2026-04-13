@@ -144,7 +144,7 @@ export default function Features() {
             {l('Everything You Need', 'आपको जो कुछ भी चाहिए')}<br />
             <span className="text-sacred-gold-dark">{l('In One Platform', 'एक ही प्लेटफॉर्म में')}</span>
           </h2>
-          <p className="max-w-3xl mx-auto text-lg text-cosmic-text/80">
+          <p className="max-w-3xl mx-auto text-lg text-gray-600">
             {l('Most astrology apps use lookup tables and generic predictions. ', 'अधिकांश ज्योतिष ऐप लुकअप टेबल और सामान्य भविष्यवाणी का उपयोग करते हैं। ')}
             <strong className="text-sacred-gold-dark">{l('Astro Rattan computes every position from Swiss Ephemeris', 'Astro Rattan Swiss Ephemeris से हर स्थिति की गणना करता है')}</strong>
             {l(' — the same library used by research astronomers — accurate to arc-seconds.', ' — यही लाइब्रेरी शोध खगोलविद भी उपयोग करते हैं — आर्क-सेकंड तक सटीक।')}
@@ -176,7 +176,7 @@ export default function Features() {
                 <p className="text-xs font-semibold text-sacred-gold-dark uppercase tracking-wider mb-3">
                   {feature.subtitle}
                 </p>
-                <p className="text-sm text-cosmic-text/70 leading-relaxed">
+                <p className="text-sm text-gray-600 leading-relaxed">
                   {feature.desc}
                 </p>
               </CardContent>
@@ -188,19 +188,19 @@ export default function Features() {
         <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 p-6 rounded-2xl bg-sacred-gold/5 border border-sacred-gold/20">
           <div className="text-center">
             <div className="text-3xl font-bold text-sacred-gold-dark">5</div>
-            <div className="text-sm text-cosmic-text/70">{l('Platform Modules', 'प्लेटफॉर्म मॉड्यूल')}</div>
+            <div className="text-sm text-gray-600">{l('Platform Modules', 'प्लेटफॉर्म मॉड्यूल')}</div>
           </div>
           <div className="text-center">
             <div className="text-3xl font-bold text-sacred-gold-dark">8</div>
-            <div className="text-sm text-cosmic-text/70">{l('Kundli Analysis Tools', 'कुंडली विश्लेषण टूल')}</div>
+            <div className="text-sm text-gray-600">{l('Kundli Analysis Tools', 'कुंडली विश्लेषण टूल')}</div>
           </div>
           <div className="text-center">
             <div className="text-3xl font-bold text-sacred-gold-dark">43</div>
-            <div className="text-sm text-cosmic-text/70">{l('-Day Moon Discipline', '-दिवसीय चंद्र अनुशासन')}</div>
+            <div className="text-sm text-gray-600">{l('-Day Moon Discipline', '-दिवसीय चंद्र अनुशासन')}</div>
           </div>
           <div className="text-center">
             <div className="text-3xl font-bold text-sacred-gold-dark">3</div>
-            <div className="text-sm text-cosmic-text/70">{l('Vedic Traditions', 'वैदिक परंपराएं')}</div>
+            <div className="text-sm text-gray-600">{l('Vedic Traditions', 'वैदिक परंपराएं')}</div>
           </div>
         </div>
 
@@ -209,14 +209,14 @@ export default function Features() {
           <h3 className="text-2xl sm:text-3xl font-sans text-center text-cosmic-text mb-4">
             {l('Astro Rattan vs Others', 'एस्ट्रो रतन बनाम अन्य')}
           </h3>
-          <p className="text-center text-cosmic-text/60 mb-10">
+          <p className="text-center text-gray-600 mb-10">
             {l('See exactly what sets us apart', 'देखें हम क्या अलग देते हैं')}
           </p>
 
           <div className="bg-cosmic-bg/80 rounded-2xl border border-sacred-gold/20 overflow-hidden">
             {/* Table Header */}
             <div className="grid grid-cols-3 gap-4 p-4 bg-sacred-gold/10 border-b border-sacred-gold/20">
-              <div className="text-sm font-semibold text-cosmic-text/70 uppercase tracking-wider">
+              <div className="text-sm font-semibold text-gray-700 uppercase tracking-wider">
                 {l('Feature', 'सुविधा')}
               </div>
               <div className="text-center">
@@ -224,7 +224,7 @@ export default function Features() {
                   <Sparkles className="w-3 h-3" /> Astro Rattan
                 </span>
               </div>
-              <div className="text-center text-sm font-semibold text-cosmic-text/50">
+              <div className="text-center text-sm font-semibold text-gray-500">
                 {l('Other Apps', 'अन्य ऐप्स')}
               </div>
             </div>
@@ -251,7 +251,7 @@ export default function Features() {
                 </div>
                 <div className="flex items-center justify-center gap-2">
                   <X className="w-4 h-4 text-red-400 flex-shrink-0" />
-                  <span className="text-sm text-cosmic-text/50 text-center">{row.them}</span>
+                  <span className="text-sm text-gray-500 text-center">{row.them}</span>
                 </div>
               </div>
             ))}
@@ -263,7 +263,7 @@ export default function Features() {
           <h3 className="text-2xl sm:text-3xl font-sans text-center text-cosmic-text mb-3">
             {l("See What's Inside", 'अंदर क्या है देखें')}
           </h3>
-          <p className="text-center text-cosmic-text/60 mb-10 text-sm">
+          <p className="text-center text-gray-600 mb-10 text-sm">
             {l('Real screens from the platform', 'प्लेटफॉर्म की वास्तविक स्क्रीन')}
           </p>
 

@@ -73,7 +73,7 @@ export default function Hero() {
 
         {/* Shloka */}
         <div className="hero-shloka opacity-0 mb-6 mt-4">
-          <p className="font-sans text-xs opacity-60 tracking-[4px] text-[var(--aged-gold)] uppercase"
+          <p className="font-sans text-xs opacity-70 tracking-[4px] text-gray-600 uppercase"
             style={{ textShadow: '0 0 15px rgba(255, 170, 51, 0.4)' }}>
             {'\u091C\u094D\u092F\u094B\u0924\u093F\u0937\u092E\u094D \u0905\u092F\u092E\u094D \u092C\u094D\u0930\u0939\u094D\u092E'} {t('hero.shlokaSupreme')}
           </p>
@@ -81,7 +81,7 @@ export default function Hero() {
 
         {/* Subtitle */}
         <div className="hero-subtitle opacity-0 mt-8 max-w-2xl mx-auto">
-          <p className="text-lg text-cosmic-text/80 leading-relaxed">
+          <p className="text-lg text-gray-600 leading-relaxed">
             {l(
               'Deep Kundli analysis, Lal Kitab remedies & predictions, Vastu floor plan scoring, live Panchang, and Numerology & Tarot — all in one platform powered by AI and authentic Vedic traditions.',
               'गहरी कुंडली विश्लेषण, लाल किताब उपाय और भविष्यवाणियां, वास्तु फ्लोर प्लान स्कोरिंग, लाइव पंचांग और अंकशास्त्र — AI और प्रामाणिक वैदिक परंपराओं द्वारा संचालित एक ही प्लेटफॉर्म।'
@@ -107,17 +107,17 @@ export default function Hero() {
         </div>
 
         {/* Trust indicators */}
-        <div className="hero-cta opacity-0 mt-12 flex flex-wrap justify-center gap-8 text-sm text-cosmic-text/60">
+        <div className="hero-cta opacity-0 mt-12 flex flex-wrap justify-center gap-8 text-sm text-gray-600">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-green-500"></span>
+            <span className="w-2 h-2 rounded-full bg-green-600"></span>
             {l('10,000+ Kundlis Generated', '10,000+ कुंडलियां बनाई गईं')}
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-green-500"></span>
+            <span className="w-2 h-2 rounded-full bg-green-600"></span>
             {l('Trusted by Astrologers Across India', 'पूरे भारत के ज्योतिषियों द्वारा विश्वसनीय')}
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-green-500"></span>
+            <span className="w-2 h-2 rounded-full bg-green-600"></span>
             {l('5 Modules in One Platform', 'एक प्लेटफॉर्म में 5 मॉड्यूल')}
           </div>
         </div>
