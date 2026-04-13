@@ -18,8 +18,8 @@ SIGNS: List[str] = [
 # Ruling planets per sign (used in template generation)
 _RULERS = {
     "aries": "Mars", "taurus": "Venus", "gemini": "Mercury", "cancer": "Moon",
-    "leo": "Sun", "virgo": "Mercury", "libra": "Venus", "scorpio": "Pluto",
-    "sagittarius": "Jupiter", "capricorn": "Saturn", "aquarius": "Uranus", "pisces": "Neptune",
+    "leo": "Sun", "virgo": "Mercury", "libra": "Venus", "scorpio": "Mars",
+    "sagittarius": "Jupiter", "capricorn": "Saturn", "aquarius": "Saturn", "pisces": "Jupiter",
 }
 
 # Elements per sign
@@ -76,10 +76,70 @@ _CHALLENGES = [
 ]
 
 
-def _generate_template_horoscope(sign: str) -> str:
-    """Generate a horoscope using template pools with sign-specific planetary context."""
-    ruler = _RULERS[sign]
+from app.astro_engine import calculate_planet_positions
+
+# ---------------------------------------------------------------------------
+# Vedic Rulership and Dignities
+# ---------------------------------------------------------------------------
+_EXALTED_SIGNS = {
+    "Sun": "aries", "Moon": "taurus", "Mars": "capricorn",
+    "Mercury": "virgo", "Jupiter": "cancer", "Venus": "pisces",
+    "Saturn": "libra", "Rahu": "gemini", "Ketu": "sagittarius",
+}
+
+_DEBILITATED_SIGNS = {
+    "Sun": "libra", "Moon": "scorpio", "Mars": "cancer",
+    "Mercury": "pisces", "Jupiter": "capricorn", "Venus": "virgo",
+    "Saturn": "aries", "Rahu": "sagittarius", "Ketu": "gemini",
+}
+
+_OWN_SIGNS = {
+    "Sun": ["leo"],
+    "Moon": ["cancer"],
+    "Mars": ["aries", "scorpio"],
+    "Mercury": ["gemini", "virgo"],
+    "Jupiter": ["sagittarius", "pisces"],
+    "Venus": ["taurus", "libra"],
+    "Saturn": ["capricorn", "aquarius"],
+}
+
+def _get_current_transits() -> Dict[str, str]:
+    """Calculate today's planetary positions (signs) for horoscope weighting."""
+    today = date.today().isoformat()
+    # Delhi, India for global standard IST/transit calculation
+    res = calculate_planet_positions(today, "12:00:00", 28.6, 77.2, 5.5)
+    transits = {}
+    for p_name, p_data in res.get("planets", {}).items():
+        transits[p_name] = p_data.get("sign", "Aries").lower()
+    return transits
+
+def _generate_template_horoscope(sign: str, transits: Optional[Dict[str, str]] = None) -> str:
+    """
+    Generate a horoscope using template pools, weighted by the 
+    current transit position of the sign's ruler.
+    """
+    if not transits:
+        transits = {}
+        
+    ruler = _RULERS.get(sign)
+    ruler_sign = transits.get(ruler, "aries").lower()
     element = _ELEMENTS[sign]
+
+    # Calculate dignity for weighting
+    is_exalted = _EXALTED_SIGNS.get(ruler) == ruler_sign
+    is_debilitated = _DEBILITATED_SIGNS.get(ruler) == ruler_sign
+    is_own = ruler_sign in _OWN_SIGNS.get(ruler, [])
+
+    # Relative house calculation (1-indexed)
+    sign_idx = SIGNS.index(sign)
+    ruler_idx = SIGNS.index(ruler_sign)
+    rel_house = ((ruler_idx - sign_idx) % 12) + 1
+
+    # Weighting pools based on dignity
+    # 6/8/12 = challenges
+    # 1/5/9/10 = strength
+    has_challenge = is_debilitated or rel_house in [6, 8, 12]
+    is_strong = is_exalted or is_own or rel_house in [1, 5, 9, 10]
 
     intro_templates = [
         f"{ruler}'s influence brings transformative energy to {sign.title()} today.",
@@ -89,14 +149,27 @@ def _generate_template_horoscope(sign: str) -> str:
     ]
 
     intro = random.choice(intro_templates)
+    
+    # Pick templates with bias
     career = random.choice(_CAREER)
+    if is_strong:
+        career = _CAREER[random.randint(4, 5)] # Favor high-success templates
+        
     love = random.choice(_LOVE)
+    if rel_house == 5:
+        love = _LOVE[0] # "Romance is in the air"
+        
     health = random.choice(_HEALTH)
+    if has_challenge:
+        health = _HEALTH[0] # "Pay attention to rest"
+        
     spiritual = random.choice(_SPIRITUAL)
+    if is_own:
+        spiritual = _SPIRITUAL[random.randint(2, 4)]
 
-    # 50% chance of including a challenge
+    # Include a challenge if planetary alignment is difficult
     challenge = ""
-    if random.random() < 0.5:
+    if has_challenge or random.random() < 0.2:
         challenge = f" {random.choice(_CHALLENGES)}"
 
     return f"{intro} {career} {love} {health} {spiritual}{challenge}"
@@ -113,6 +186,7 @@ def generate_daily_horoscopes(db_path: str = None):
     conn.autocommit = False
 
     today = date.today().isoformat()
+    transits = _get_current_transits()
 
     with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
         cur.execute(
@@ -138,7 +212,7 @@ def generate_daily_horoscopes(db_path: str = None):
         # Try AI first, fall back to templates
         content = _try_ai_horoscope(sign, today)
         if not content:
-            content = _generate_template_horoscope(sign)
+            content = _generate_template_horoscope(sign, transits)
 
         with conn.cursor() as cur:
             cur.execute(

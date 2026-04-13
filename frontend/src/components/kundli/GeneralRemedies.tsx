@@ -1,13 +1,17 @@
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { apiFetch } from '@/lib/api';
+import { translatePlanet, translateRemedy } from '@/lib/backend-translations';
 
 interface GeneralRemediesProps {
   language: string;
   t?: (key: string) => string;
   title?: string;
+  kundliId?: string;
 }
 
-// General remedies for all tabs
-const REMEDIES = {
+// General remedies as fallback
+const STATIC_REMEDIES = {
   hi: [
     {
       category: 'मंत्र जाप',
@@ -80,20 +84,73 @@ const REMEDIES = {
   ],
 };
 
-export default function GeneralRemedies({ language, t, title }: GeneralRemediesProps) {
+export default function GeneralRemedies({ language, t, title, kundliId }: GeneralRemediesProps) {
   void t;
-  const remedies = language === 'hi' ? REMEDIES.hi : REMEDIES.en;
-  const defaultTitle = language === 'hi' ? 'सामान्य उपाय' : 'General Remedies';
+  const lang = language as any;
+  const isHi = language === 'hi';
+  const [dynamicRemedies, setDynamicRemedies] = useState<any[] | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (kundliId) {
+      setLoading(true);
+      apiFetch('/api/lalkitab/remedies', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ kundli_id: kundliId }),
+      })
+        .then(async (res) => {
+          if (!res.ok) return null;
+          return res.json();
+        })
+        .then((data) => {
+          if (data?.remedies) setDynamicRemedies(data.remedies);
+        })
+        .catch((err) => console.error('Remedies fetch failed:', err))
+        .finally(() => setLoading(false));
+    }
+  }, [kundliId]);
+
+  const staticRemedies = isHi ? STATIC_REMEDIES.hi : STATIC_REMEDIES.en;
+  const defaultTitle = isHi ? 'ज्योतिष उपाय' : 'Astrological Remedies';
 
   return (
     <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold mt-6">
-      <div className="flex items-center gap-2 mb-4">
-        <Sparkles className="w-5 h-5 text-sacred-gold-dark" />
-        <h4 className="text-lg font-semibold text-gray-800">{title || defaultTitle}</h4>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-5 h-5 text-sacred-gold-dark" />
+          <h4 className="text-lg font-semibold text-gray-800">{title || defaultTitle}</h4>
+        </div>
+        {loading && <Loader2 className="w-4 h-4 animate-spin text-sacred-gold-dark" />}
       </div>
       
+      {/* Dynamic Results if available */}
+      {dynamicRemedies && dynamicRemedies.length > 0 && (
+        <div className="mb-6 space-y-3">
+          <h5 className="text-sm font-bold text-sacred-gold-dark border-b border-sacred-gold/30 pb-1">
+            {isHi ? 'आपके चार्ट के आधार पर' : 'Based on Your Chart'}
+          </h5>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {dynamicRemedies.map((rem, idx) => (
+              <div key={idx} className="bg-sacred-gold/5 rounded-lg p-3 border border-sacred-gold/20">
+                <p className="text-sm font-semibold text-sacred-brown">
+                  {translatePlanet(rem.planet_en, lang)}
+                </p>
+                <p className="text-xs text-cosmic-text mt-1">
+                  {translateRemedy(rem.remedy_en, lang)}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Baseline / General */}
+      <h5 className="text-xs font-bold text-gray-400 mb-3 uppercase tracking-wider">
+        {isHi ? 'सामान्य मार्गदर्शन' : 'General Guidance'}
+      </h5>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {remedies.map((category, idx) => (
+        {staticRemedies.map((category, idx) => (
           <div key={idx} className="bg-white rounded-lg p-3 border border-sacred-gold/30">
             <h5 className="font-semibold text-sacred-brown mb-2 text-sm">{category.category}</h5>
             <ul className="space-y-1">
@@ -109,9 +166,9 @@ export default function GeneralRemedies({ language, t, title }: GeneralRemediesP
       </div>
       
       <p className="text-xs text-cosmic-text mt-4 italic">
-        {language === 'hi' 
-          ? 'नोट: ये सामान्य उपाय हैं। व्यक्तिगत परामर्श के लिए किसी अनुभवी ज्योतिषी से मिलें।'
-          : 'Note: These are general remedies. Consult an experienced astrologer for personalized guidance.'}
+        {isHi 
+          ? 'नोट: ये उपाय मार्गदर्शन के लिए हैं। व्यक्तिगत परामर्श की सलाह दी जाती है।'
+          : 'Note: These remedies are for guidance. Personalized consultation is advised.'}
       </p>
     </div>
   );

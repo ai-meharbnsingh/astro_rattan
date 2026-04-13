@@ -394,7 +394,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
           </div>
 
           {/* General Remedies */}
-          <GeneralRemedies language={language} t={t} />
+          <GeneralRemedies language={language} t={t} kundliId={ashtakvargaData.kundli_id} />
         </div>
       ) : (
         <p className="text-center text-cosmic-text py-8">{t('kundli.clickAshtakvargaTab')}</p>

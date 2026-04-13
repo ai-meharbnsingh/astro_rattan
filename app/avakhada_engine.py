@@ -69,9 +69,9 @@ YONI_BY_NAKSHATRA = [
 ]
 
 # Gana by nakshatra index
-_DEVA_INDICES = {0, 1, 4, 6, 7, 12, 14, 21, 26}
-_MANUSHYA_INDICES = {2, 3, 5, 10, 11, 16, 17, 19, 22}
-_RAKSHASA_INDICES = {8, 9, 13, 15, 18, 20, 23, 24, 25}
+_DEVA_INDICES = {0, 4, 6, 7, 12, 14, 16, 21, 26}
+_MANUSHYA_INDICES = {1, 3, 5, 10, 11, 19, 20, 24, 25}
+_RAKSHASA_INDICES = {2, 8, 9, 13, 15, 17, 18, 22, 23}
 
 # Nadi by nakshatra index
 _AADI_INDICES = {0, 5, 6, 11, 12, 17, 18, 23, 24}

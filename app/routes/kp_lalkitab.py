@@ -153,14 +153,26 @@ def lalkitab_remedies(payload: dict, user: dict = Depends(get_current_user), db:
         )
 
     try:
-        result = get_remedies(planet_positions)
+        res = get_remedies(planet_positions)
+        # Transform into flat list for frontend with translations
+        remedies_list = []
+        for planet, info in res.items():
+            if info.get("remedies"):
+                for r_text in info["remedies"]:
+                    # In a real app, we'd have a translation table for remedies too.
+                    # For now, we'll return the same text for both or use a simple map if available.
+                    remedies_list.append({
+                        "planet_en": planet,
+                        "planet_hi": planet, # Will be translated by frontend translatePlanet
+                        "remedy_en": r_text,
+                        "remedy_hi": r_text, # Same here or use backend translation if possible
+                    })
+        return {"remedies": remedies_list}
     except Exception as exc:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Calculation error — please try again",
         )
-
-    return {"remedies_by_planet": result}
 
 
 # ─────────────────────────────────────────────────────────────

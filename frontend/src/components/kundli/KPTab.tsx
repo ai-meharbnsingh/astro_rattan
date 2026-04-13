@@ -238,7 +238,7 @@ export default function KPTab(props: KPTabProps) {
       ) : (
         <p className="text-center text-cosmic-text py-8">{t('kundli.clickKPTab')}</p>
       )}
-      <GeneralRemedies language={language} />
+      <GeneralRemedies language={language} kundliId={kpData?.kundli_id} />
     </div>
   );
 }
