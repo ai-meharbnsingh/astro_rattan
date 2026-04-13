@@ -83,8 +83,8 @@ export default function Hero() {
         <div className="hero-subtitle opacity-0 mt-8 max-w-2xl mx-auto">
           <p className="text-lg text-cosmic-text/80 leading-relaxed">
             {l(
-              'Kundli with 23 analysis tabs, 22 Lal Kitab specializations, Vastu floor plan analysis, live Panchang, Numerology & Tarot — all in one platform powered by AI and authentic Vedic traditions.',
-              'AI और प्रामाणिक वैदिक परंपराओं द्वारा संचालित एक ही प्लेटफॉर्म पर — 23 विश्लेषण टैब के साथ कुंडली, 22 लाल किताब विशेषज्ञताएं, वास्तु फ्लोर प्लान विश्लेषण, लाइव पंचांग और अंकशास्त्र।'
+              'Deep Kundli analysis, Lal Kitab remedies & predictions, Vastu floor plan scoring, live Panchang, and Numerology & Tarot — all in one platform powered by AI and authentic Vedic traditions.',
+              'गहरी कुंडली विश्लेषण, लाल किताब उपाय और भविष्यवाणियां, वास्तु फ्लोर प्लान स्कोरिंग, लाइव पंचांग और अंकशास्त्र — AI और प्रामाणिक वैदिक परंपराओं द्वारा संचालित एक ही प्लेटफॉर्म।'
             )}
           </p>
         </div>
