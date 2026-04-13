@@ -21,18 +21,31 @@ interface Props {
   onNorthRotationChange: (deg: number) => void;
 }
 
-const ROOM_OPTIONS: { key: string; en: string; hi: string; icon: string }[] = [
+const ROOM_OPTIONS: { key: string; en: string; hi: string; icon: string; special?: boolean }[] = [
+  // ── Special marker ───────────────────────────────────────────────────
+  { key: 'main_entrance',          en: 'Main Entrance',    hi: 'मुख्य द्वार',    icon: '🚪', special: true },
+  // ── Vastu room types ─────────────────────────────────────────────────
   { key: 'pooja',                  en: 'Pooja Room',       hi: 'पूजा कक्ष',     icon: '🙏' },
   { key: 'kitchen',                en: 'Kitchen',          hi: 'रसोई',          icon: '🍳' },
-  { key: 'master_bedroom',        en: 'Master Bedroom',   hi: 'मुख्य शयनकक्ष', icon: '🛏️' },
-  { key: 'living_room',           en: 'Living Room',      hi: 'बैठक',          icon: '🛋️' },
-  { key: 'bathroom',              en: 'Bathroom',         hi: 'स्नानघर',       icon: '🚿' },
-  { key: 'staircase',             en: 'Staircase',        hi: 'सीढ़ी',         icon: '🪜' },
-  { key: 'water_tank_underground', en: 'UG Water Tank',   hi: 'भूमिगत टंकी',   icon: '💧' },
-  { key: 'water_tank_overhead',   en: 'OH Water Tank',    hi: 'ऊपरी टंकी',     icon: '🏗️' },
-  { key: 'study_room',            en: 'Study Room',       hi: 'अध्ययन कक्ष',   icon: '📚' },
-  { key: 'children_bedroom',      en: 'Children Room',    hi: 'बच्चों का कमरा', icon: '🧒' },
+  { key: 'dining_room',            en: 'Dining Room',      hi: 'भोजन कक्ष',     icon: '🍽️' },
+  { key: 'master_bedroom',         en: 'Master Bedroom',   hi: 'मुख्य शयनकक्ष', icon: '🛏️' },
+  { key: 'children_bedroom',       en: 'Children Room',    hi: 'बच्चों का कमरा', icon: '🧒' },
+  { key: 'living_room',            en: 'Living Room',      hi: 'बैठक',          icon: '🛋️' },
+  { key: 'balcony',                en: 'Balcony',          hi: 'बालकनी',        icon: '🌿' },
+  { key: 'bathroom',               en: 'Bathroom',         hi: 'स्नानघर',       icon: '🚿' },
+  { key: 'toilet',                 en: 'Toilet / WC',      hi: 'शौचालय',        icon: '🚽' },
+  { key: 'staircase',              en: 'Staircase',        hi: 'सीढ़ी',         icon: '🪜' },
+  { key: 'study_room',             en: 'Study Room',       hi: 'अध्ययन कक्ष',   icon: '📚' },
+  { key: 'water_tank_underground', en: 'UG Water Tank',    hi: 'भूमिगत टंकी',   icon: '💧' },
+  { key: 'water_tank_overhead',    en: 'OH Water Tank',    hi: 'ऊपरी टंकी',     icon: '🏗️' },
 ];
+
+// Map display types → valid Vastu API types
+export const ROOM_TYPE_ALIAS: Record<string, string> = {
+  dining_room: 'kitchen',
+  toilet:      'bathroom',
+  balcony:     'living_room',
+};
 
 export default function FloorplanMapper({
   imageUrl, imageWidth, imageHeight,
@@ -273,8 +286,15 @@ export default function FloorplanMapper({
                 </span>
               );
             })}
-            {/* Center label — always at center */}
-            <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-sm font-bold text-sacred-gold/40">C</span>
+            {/* Brahmasthana — geometric center, source of all direction measurements */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center pointer-events-none">
+              {/* Pulsing golden dot */}
+              <div className="relative w-5 h-5 flex items-center justify-center">
+                <div className="absolute w-5 h-5 rounded-full bg-sacred-gold/20 animate-ping" />
+                <div className="w-3 h-3 rounded-full bg-sacred-gold border-2 border-sacred-gold/80 z-10" />
+              </div>
+              <span className="text-sm font-bold text-sacred-gold mt-0.5 whitespace-nowrap drop-shadow">✦ Brahmasthana</span>
+            </div>
 
             {/* North arrow — confirms physical north direction */}
             <div

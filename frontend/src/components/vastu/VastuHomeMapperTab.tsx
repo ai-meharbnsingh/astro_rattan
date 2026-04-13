@@ -6,7 +6,25 @@ import { Button } from '@/components/ui/button';
 import HomeGrid from './HomeGrid';
 import HomeComplianceReport from './HomeComplianceReport';
 import FloorplanUploader from './FloorplanUploader';
-import FloorplanMapper from './FloorplanMapper';
+import FloorplanMapper, { ROOM_TYPE_ALIAS } from './FloorplanMapper';
+
+// Client-side direction calc — mirrors backend pixel_to_direction
+function calcDirection(x: number, y: number, w: number, h: number, northRot: number): string {
+  const nx = (x - w / 2) / (w / 2);
+  const ny = (y - h / 2) / (h / 2);
+  const rad = (-northRot * Math.PI) / 180;
+  const rx = nx * Math.cos(rad) - ny * Math.sin(rad);
+  const ry = nx * Math.sin(rad) + ny * Math.cos(rad);
+  const T = 1 / 3;
+  const row = ry < -T ? 'N' : ry > T ? 'S' : 'C';
+  const col = rx < -T ? 'W' : rx > T ? 'E' : 'C';
+  const map: Record<string, string> = {
+    'N-W': 'NW', 'N-C': 'N', 'N-E': 'NE',
+    'C-W': 'W',  'C-C': 'Center', 'C-E': 'E',
+    'S-W': 'SW', 'S-C': 'S', 'S-E': 'SE',
+  };
+  return map[`${row}-${col}`] ?? 'Center';
+}
 
 interface LayoutResult {
   overall_score: number;
@@ -96,7 +114,9 @@ export default function VastuHomeMapperTab({ data, initialMode = 'grid' }: Props
   useEffect(() => { saveToDisk(assignments); }, [assignments]);
 
   const gridRooms = Object.values(assignments).reduce((s, r) => s + r.length, 0);
-  const totalRooms = mode === 'floorplan' ? fpMarkers.length : gridRooms;
+  // main_entrance is not a room — exclude from count
+  const fpRoomMarkers = fpMarkers.filter(m => m.room_type !== 'main_entrance');
+  const totalRooms = mode === 'floorplan' ? fpRoomMarkers.length : gridRooms;
 
   const handleAssign = useCallback((direction: string, roomType: string) => {
     setAssignments(prev => {
@@ -166,15 +186,29 @@ export default function VastuHomeMapperTab({ data, initialMode = 'grid' }: Props
     setError('');
     try {
       if (mode === 'floorplan' && fpImageUrl) {
-        // Floorplan mode — send pixel markers
+        // Separate entrance marker from room markers
+        const entranceMarker = fpMarkers.find(m => m.room_type === 'main_entrance');
+        const entranceDir = entranceMarker
+          ? calcDirection(entranceMarker.x, entranceMarker.y, fpWidth, fpHeight, northRotation)
+          : (data?.entrance_analysis?.direction || null);
+
+        // Alias display types → valid Vastu API types, skip main_entrance
+        const apiMarkers = fpMarkers
+          .filter(m => m.room_type !== 'main_entrance')
+          .map(m => ({
+            room_type: ROOM_TYPE_ALIAS[m.room_type] ?? m.room_type,
+            x: m.x,
+            y: m.y,
+          }));
+
         const payload = {
           image_url: fpImageUrl,
           image_width: fpWidth,
           image_height: fpHeight,
           north_rotation: northRotation,
-          room_markers: fpMarkers.map(m => ({ room_type: m.room_type, x: m.x, y: m.y })),
+          room_markers: apiMarkers,
           building_type: data?.building_type || 'residential',
-          entrance_direction: data?.entrance_analysis?.direction || null,
+          entrance_direction: entranceDir,
         };
         const result = await api.post('/api/vastu/analyze-floorplan', payload);
         setLayoutResult(result);
