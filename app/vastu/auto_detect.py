@@ -88,34 +88,55 @@ _OCR_KEYWORDS: list[tuple[str, str]] = [
     ("kitchen",             "kitchen"),
     ("rasoi",               "kitchen"),
     ("cooking",             "kitchen"),
-    ("bedroom 2",           "children_bedroom"),  # second bedroom → children's
+    # Numbered bedrooms — must come BEFORE generic "bedroom"/"bed"
+    ("bedroom 2",           "children_bedroom"),
     ("bedroom 3",           "children_bedroom"),
     ("bed room 2",          "children_bedroom"),
-    ("bedroom",             "master_bedroom"),   # generic bedroom → master
+    ("bed room 3",          "children_bedroom"),
+    ("room 2",              "children_bedroom"),
+    ("room 3",              "children_bedroom"),
+    ("bedroom",             "master_bedroom"),
     ("bed",                 "master_bedroom"),
     ("children",            "children_bedroom"),
     ("child",               "children_bedroom"),
     ("kids",                "children_bedroom"),
+    # Bathroom / WC
     ("bathroom",            "bathroom"),
     ("toilet",              "bathroom"),
     ("washroom",            "bathroom"),
     ("bath",                "bathroom"),
     ("shower",              "bathroom"),
     ("wc",                  "bathroom"),
+    ("w.c",                 "bathroom"),
+    ("lavatory",            "bathroom"),
+    ("restroom",            "bathroom"),
+    # Living / Hall / Balcony
     ("living",              "living_room"),
+    ("hall",                "living_room"),
     ("drawing",             "living_room"),
     ("baithak",             "living_room"),
     ("lounge",              "living_room"),
+    ("balcony",             "living_room"),
+    ("veranda",             "living_room"),
+    ("verandah",            "living_room"),
+    ("terrace",             "living_room"),
+    # Pooja
     ("pooja",               "pooja"),
     ("puja",                "pooja"),
     ("mandir",              "pooja"),
     ("temple",              "pooja"),
+    # Study / Store
     ("study",               "study_room"),
     ("office",              "study_room"),
     ("library",             "study_room"),
+    ("store",               "study_room"),   # storage → study zone (nearest valid type)
+    ("storage",             "study_room"),
+    ("utility",             "study_room"),
+    # Dining
     ("dining room",         "kitchen"),
     ("dining",              "kitchen"),
     ("dine",                "kitchen"),
+    # Staircase
     ("stair",               "staircase"),
     # OCR typo variants for "living"
     ("livine",              "living_room"),
@@ -132,7 +153,7 @@ _SKIP_WORDS = {
     "checklist", "click", "detect", "button", "should", "verify",
     "detection", "upload", "image", "entrance", "scale", "feet", "meter",
     "north", "south", "east", "west", "area", "sq", "ft", "door",
-    "window", "wall", "column", "dimension", "total", "plan", "drawing",
+    "window", "wall", "column", "dimension", "total", "plan",
     "neighbour", "neighbor", "road", "street", "plot", "compound",
 }
 
