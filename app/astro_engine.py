@@ -245,29 +245,28 @@ def _datetime_to_jd(dt_utc: datetime) -> float:
 def _calculate_swe(dt_utc: datetime, lat: float, lon: float, ayanamsa: str = "lahiri", node_type: str = "mean") -> Dict[str, Any]:
     """Full calculation using Swiss Ephemeris."""
     # Set ayanamsa mode: KP (Krishnamurti) or Lahiri (default for Vedic)
+    # Note: swisseph doesn't have get_sid_mode(), so we always set the mode explicitly
     ayanamsa_system = ayanamsa  # preserve system name before numeric override
-    original_mode = swe.get_sid_mode()
-    try:
-        if ayanamsa_system == "kp":
-            swe.set_sid_mode(swe.SIDM_KRISHNAMURTI)
-        else:
-            swe.set_sid_mode(swe.SIDM_LAHIRI)
-        jd = _datetime_to_jd(dt_utc)
+    if ayanamsa_system == "kp":
+        swe.set_sid_mode(swe.SIDM_KRISHNAMURTI)
+    else:
+        swe.set_sid_mode(swe.SIDM_LAHIRI)
+    jd = _datetime_to_jd(dt_utc)
 
-        # Ayanamsa for sidereal
-        ayanamsa = swe.get_ayanamsa(jd)
+    # Ayanamsa for sidereal
+    ayanamsa = swe.get_ayanamsa(jd)
 
-        # Ascendant (use Placidus just for Ascendant degree, then Whole Sign houses)
-        cusps, ascmc = swe.houses(jd, lat, lon, b"P")
-        asc_sid = (ascmc[0] - ayanamsa) % 360.0
+    # Ascendant (use Placidus just for Ascendant degree, then Whole Sign houses)
+    cusps, ascmc = swe.houses(jd, lat, lon, b"P")
+    asc_sid = (ascmc[0] - ayanamsa) % 360.0
 
-        # Whole Sign house system (Vedic standard): House 1 = Ascendant's sign
-        asc_sign_index = int(asc_sid // 30)
-        houses = []
-        for i in range(12):
-            sign_index = (asc_sign_index + i) % 12
-            sign_degree = float(sign_index * 30)
-            houses.append(
+    # Whole Sign house system (Vedic standard): House 1 = Ascendant's sign
+    asc_sign_index = int(asc_sid // 30)
+    houses = []
+    for i in range(12):
+        sign_index = (asc_sign_index + i) % 12
+        sign_degree = float(sign_index * 30)
+        houses.append(
                 {
                     "number": i + 1,
                     "sign": _SIGN_NAMES[sign_index],
@@ -275,88 +274,86 @@ def _calculate_swe(dt_utc: datetime, lat: float, lon: float, ayanamsa: str = "la
                 }
             )
 
-        # Store Placidus cusps for KP system (needs unequal cusps)
-        placidus_cusps = []
-        for i in range(12):
-            cusp_sid = (cusps[i] - ayanamsa) % 360.0
-            placidus_cusps.append(round(cusp_sid, 4))
+    # Store Placidus cusps for KP system (needs unequal cusps)
+    placidus_cusps = []
+    for i in range(12):
+        cusp_sid = (cusps[i] - ayanamsa) % 360.0
+        placidus_cusps.append(round(cusp_sid, 4))
 
-        # Resolve Rahu node constant based on node_type parameter
-        rahu_node_id = SE_TRUE_NODE if node_type == "true" else SE_MEAN_NODE
+    # Resolve Rahu node constant based on node_type parameter
+    rahu_node_id = SE_TRUE_NODE if node_type == "true" else SE_MEAN_NODE
 
-        # Planets — use Whole Sign house assignment
-        # First pass: compute longitudes and retrograde (need Sun longitude for combust)
-        planets_result: Dict[str, Dict[str, Any]] = {}
-        planet_longitudes: Dict[str, float] = {}
-        planet_retrograde: Dict[str, bool] = {}
+    # Planets — use Whole Sign house assignment
+    # First pass: compute longitudes and retrograde (need Sun longitude for combust)
+    planets_result: Dict[str, Dict[str, Any]] = {}
+    planet_longitudes: Dict[str, float] = {}
+    planet_retrograde: Dict[str, bool] = {}
 
-        for pname, pid in PLANETS.items():
-            # Override Rahu's planet ID based on node_type
-            if pname == "Rahu":
-                pid = rahu_node_id
-            pos, _ret = swe.calc_ut(jd, pid)
-            trop_lon = pos[0]
-            daily_speed = pos[3]  # daily speed in longitude
-            sid_lon = (trop_lon - ayanamsa) % 360.0
-            planet_longitudes[pname] = sid_lon
+    for pname, pid in PLANETS.items():
+        # Override Rahu's planet ID based on node_type
+        if pname == "Rahu":
+            pid = rahu_node_id
+        pos, _ret = swe.calc_ut(jd, pid)
+        trop_lon = pos[0]
+        daily_speed = pos[3]  # daily speed in longitude
+        sid_lon = (trop_lon - ayanamsa) % 360.0
+        planet_longitudes[pname] = sid_lon
 
-            # Retrograde: negative daily speed means the planet appears to move backward
-            # Rahu (mean node) is always retrograde by nature
-            is_retrograde = daily_speed < 0 or pname == "Rahu"
-            planet_retrograde[pname] = is_retrograde
+        # Retrograde: negative daily speed means the planet appears to move backward
+        # Rahu (mean node) is always retrograde by nature
+        is_retrograde = daily_speed < 0 or pname == "Rahu"
+        planet_retrograde[pname] = is_retrograde
 
-        # Ketu longitude
-        rahu_lon = planet_longitudes["Rahu"]
-        ketu_lon = (rahu_lon + 180.0) % 360.0
-        planet_longitudes["Ketu"] = ketu_lon
-        planet_retrograde["Ketu"] = True
+    # Ketu longitude
+    rahu_lon = planet_longitudes["Rahu"]
+    ketu_lon = (rahu_lon + 180.0) % 360.0
+    planet_longitudes["Ketu"] = ketu_lon
+    planet_retrograde["Ketu"] = True
 
-        # Get Sun longitude for combust checks
-        sun_lon = planet_longitudes.get("Sun", 0.0)
+    # Get Sun longitude for combust checks
+    sun_lon = planet_longitudes.get("Sun", 0.0)
 
-        # Second pass: compute combust, vargottama, build full result
-        for pname in list(PLANETS.keys()) + ["Ketu"]:
-            sid_lon = planet_longitudes[pname]
-            is_retrograde = planet_retrograde[pname]
+    # Second pass: compute combust, vargottama, build full result
+    for pname in list(PLANETS.keys()) + ["Ketu"]:
+        sid_lon = planet_longitudes[pname]
+        is_retrograde = planet_retrograde[pname]
 
-            nak = get_nakshatra_from_longitude(sid_lon)
-            sign = get_sign_from_longitude(sid_lon)
-            sign_deg = sid_lon % 30.0
-            planet_sign_index = int(sid_lon // 30)
-            house = ((planet_sign_index - asc_sign_index) % 12) + 1
+        nak = get_nakshatra_from_longitude(sid_lon)
+        sign = get_sign_from_longitude(sid_lon)
+        sign_deg = sid_lon % 30.0
+        planet_sign_index = int(sid_lon // 30)
+        house = ((planet_sign_index - asc_sign_index) % 12) + 1
 
-            combust = _is_combust(pname, sid_lon, sun_lon, is_retrograde)
-            vargottama = _is_vargottama(sid_lon)
-            sandhi = sign_deg < 1.0 or sign_deg > 29.0
+        combust = _is_combust(pname, sid_lon, sun_lon, is_retrograde)
+        vargottama = _is_vargottama(sid_lon)
+        sandhi = sign_deg < 1.0 or sign_deg > 29.0
 
-            planets_result[pname] = {
-                "longitude": round(sid_lon, 4),
-                "sign": sign,
-                "sign_degree": round(sign_deg, 4),
-                "nakshatra": nak["name"],
-                "nakshatra_pada": nak["pada"],
-                "house": house,
-                "retrograde": is_retrograde,
-                "is_combust": combust,
-                "is_vargottama": vargottama,
-                "is_sandhi": sandhi,
-                "status": _build_status(pname, sign, is_retrograde, combust, vargottama, sandhi),
-            }
-
-        return {
-            "planets": planets_result,
-            "ascendant": {
-                "longitude": round(asc_sid, 4),
-                "sign": get_sign_from_longitude(asc_sid),
-                "sign_degree": round(asc_sid % 30.0, 4),
-            },
-            "houses": houses,
-            "placidus_cusps": placidus_cusps,
-            "ayanamsa_value": round(ayanamsa, 6),
-            "ayanamsa_system": ayanamsa_system,
+        planets_result[pname] = {
+            "longitude": round(sid_lon, 4),
+            "sign": sign,
+            "sign_degree": round(sign_deg, 4),
+            "nakshatra": nak["name"],
+            "nakshatra_pada": nak["pada"],
+            "house": house,
+            "retrograde": is_retrograde,
+            "is_combust": combust,
+            "is_vargottama": vargottama,
+            "is_sandhi": sandhi,
+            "status": _build_status(pname, sign, is_retrograde, combust, vargottama, sandhi),
         }
-    finally:
-        swe.set_sid_mode(original_mode)
+
+    return {
+        "planets": planets_result,
+        "ascendant": {
+            "longitude": round(asc_sid, 4),
+            "sign": get_sign_from_longitude(asc_sid),
+            "sign_degree": round(asc_sid % 30.0, 4),
+        },
+        "houses": houses,
+        "placidus_cusps": placidus_cusps,
+        "ayanamsa_value": round(ayanamsa, 6),
+        "ayanamsa_system": ayanamsa_system,
+    }
 
 
 # ============================================================
