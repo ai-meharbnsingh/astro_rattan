@@ -64,10 +64,10 @@ export default function Hero() {
         <div className="hero-title-main opacity-0">
           <h1 className="font-sans text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-cosmic-text leading-[0.95] tracking-wide"
             style={{ textShadow: '0 0 60px rgba(255, 153, 51, 0.15)' }}>
-            {l('The Only Complete Lal Kitab Platform', 'इकलौता पूर्ण लाल किताब प्लेटफॉर्म')}
+            {l('Your Complete Vedic Astrology Platform', 'आपका पूर्ण वैदिक ज्योतिष प्लेटफॉर्म')}
           </h1>
           <p className="font-sans text-base tracking-[4px] text-sacred-gold-dark mt-4 uppercase">
-            {t('hero.ofDestiny')}
+            {l('Kundli · Lal Kitab · Vastu · Panchang · Numerology', 'कुंडली · लाल किताब · वास्तु · पंचांग · अंकशास्त्र')}
           </p>
         </div>
 
@@ -83,8 +83,8 @@ export default function Hero() {
         <div className="hero-subtitle opacity-0 mt-8 max-w-2xl mx-auto">
           <p className="text-lg text-cosmic-text/80 leading-relaxed">
             {l(
-              '22 Lal Kitab specializations including Chandra Chalana protocol, Nishaniyan Matcher, and AI-powered insights. Not just another astrology app — a complete karmic operating system.',
-              'चंद्र चालना प्रोटोकॉल, निशानियां मैचर और AI-संचालित अंतर्दृष्टि सहित 22 लाल किताब विशेषज्ञताएं। केवल एक और ज्योतिष ऐप नहीं — एक पूर्ण कर्मिक ऑपरेटिंग सिस्टम।'
+              'Kundli with 23 analysis tabs, 22 Lal Kitab specializations, Vastu floor plan analysis, live Panchang, Numerology & Tarot — all in one platform powered by AI and authentic Vedic traditions.',
+              'AI और प्रामाणिक वैदिक परंपराओं द्वारा संचालित एक ही प्लेटफॉर्म पर — 23 विश्लेषण टैब के साथ कुंडली, 22 लाल किताब विशेषज्ञताएं, वास्तु फ्लोर प्लान विश्लेषण, लाइव पंचांग और अंकशास्त्र।'
             )}
           </p>
         </div>
@@ -118,7 +118,7 @@ export default function Hero() {
           </div>
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-green-500"></span>
-            {l('22 Lal Kitab Specializations', '22 लाल किताब विशेषज्ञताएं')}
+            {l('5 Modules in One Platform', 'एक प्लेटफॉर्म में 5 मॉड्यूल')}
           </div>
         </div>
       </div>
