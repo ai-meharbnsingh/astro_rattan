@@ -78,12 +78,21 @@ interface DoGhatiRow { muhurta: string; name: string; start: string; end: string
 const DEFAULT_LAT = '28.6139';
 const DEFAULT_LON = '77.2090';
 
+// Helper: Get local date as YYYY-MM-DD (fixes UTC timezone issue)
+const getLocalDateString = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 export default function Panchang() {
   const { t, language } = useTranslation();
   const sectionRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
   const [panchang, setPanchang] = useState<FullPanchangData | null>(null);
-  const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState(() => getLocalDateString());
   const [latitude, setLatitude] = useState(DEFAULT_LAT);
   const [longitude, setLongitude] = useState(DEFAULT_LON);
   const [detectingLocation, setDetectingLocation] = useState(false);

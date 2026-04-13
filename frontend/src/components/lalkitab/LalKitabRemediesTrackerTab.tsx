@@ -19,7 +19,11 @@ const STORAGE_KEY = 'lk_tracker_v1';
 const JOURNAL_KEY = 'lk_journal_v1';
 
 function todayStr(): string {
-  return new Date().toISOString().split('T')[0];
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 function loadDoneMap(): Record<string, string[]> {
@@ -151,7 +155,7 @@ export default function LalKitabRemediesTrackerTab({ chartData, kundliId }: Prop
     let count = 0;
     const d = new Date();
     while (true) {
-      const key = d.toISOString().split('T')[0];
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
       const done = doneMap[key];
       if (!done || done.length === 0) break;
       count++;
@@ -165,7 +169,7 @@ export default function LalKitabRemediesTrackerTab({ chartData, kundliId }: Prop
     let doneCount = 0;
     const d = new Date();
     for (let i = 0; i < 7; i++) {
-      const key = d.toISOString().split('T')[0];
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
       if (doneMap[key]?.length) doneCount++;
       d.setDate(d.getDate() - 1);
     }

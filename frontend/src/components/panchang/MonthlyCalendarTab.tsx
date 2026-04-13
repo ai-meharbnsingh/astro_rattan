@@ -25,6 +25,15 @@ interface DayPanchang {
   festival_hindi?: string;
 }
 
+// Helper: Get local date as YYYY-MM-DD (fixes UTC timezone issue)
+const getLocalDateString = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 export default function MonthlyCalendarTab({ language, t, latitude, longitude }: Props) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [monthlyData, setMonthlyData] = useState<DayPanchang[]>([]);
@@ -82,7 +91,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
         setMonthlyData(data);
         
         // Select today if current month
-        const today = new Date().toISOString().split('T')[0];
+        const today = getLocalDateString();
         const todayData = data.find(d => d.date === today);
         setSelectedDay(todayData || data[0] || null);
       } catch (e) {
@@ -97,7 +106,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
   // Calendar grid
   const firstDayOfMonth = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const today = new Date().toISOString().split('T')[0];
+  const today = getLocalDateString();
 
   const prevMonth = () => setCurrentDate(new Date(year, month - 1, 1));
   const nextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
