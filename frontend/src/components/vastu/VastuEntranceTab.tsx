@@ -54,7 +54,7 @@ export default function VastuEntranceTab({ data }: Props) {
             <h3 className="text-lg font-bold text-cosmic-text">
               {isHi ? 'प्रवेश पद विश्लेषण' : 'Entrance Pada Analysis'}
             </h3>
-            <p className="text-xs text-cosmic-text/60">
+            <p className="text-sm text-cosmic-text/60">
               {isHi ? '32 पद प्रणाली के अनुसार' : 'Based on the 32 Pada system'}
             </p>
           </div>
@@ -62,11 +62,11 @@ export default function VastuEntranceTab({ data }: Props) {
 
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
-            <p className="text-xs text-cosmic-text/60">{isHi ? 'पद कोड' : 'Pada Code'}</p>
+            <p className="text-sm text-cosmic-text/60">{isHi ? 'पद कोड' : 'Pada Code'}</p>
             <p className="text-2xl font-bold text-sacred-gold">{entrance.pada}</p>
           </div>
           <div>
-            <p className="text-xs text-cosmic-text/60">{isHi ? 'पद नाम' : 'Pada Name'}</p>
+            <p className="text-sm text-cosmic-text/60">{isHi ? 'पद नाम' : 'Pada Name'}</p>
             <p className="text-xl font-bold text-cosmic-text">{entrance.pada_name}</p>
             {isHi && <p className="text-sm text-cosmic-text/70">{entrance.pada_name_hi}</p>}
           </div>
@@ -118,7 +118,7 @@ export default function VastuEntranceTab({ data }: Props) {
           <p className="text-sm text-cosmic-text/70 mt-1">
             {isHi ? entrance.ruling_devta.description_hi : entrance.ruling_devta.description_en}
           </p>
-          <p className="text-xs text-sacred-gold/60 italic mt-2">{entrance.ruling_devta.mantra}</p>
+          <p className="text-sm text-sacred-gold/60 italic mt-2">{entrance.ruling_devta.mantra}</p>
         </div>
       )}
 
@@ -139,9 +139,9 @@ export default function VastuEntranceTab({ data }: Props) {
                     isCurrent ? `${pStyle} border-2 ring-1 ring-white/20` : 'border-white/5 bg-white/5'
                   }`}
                 >
-                  <p className={`text-xs font-bold ${isCurrent ? '' : 'text-cosmic-text/60'}`}>{p.pada}</p>
+                  <p className={`text-sm font-bold ${isCurrent ? '' : 'text-cosmic-text/60'}`}>{p.pada}</p>
                   <p className={`text-sm font-semibold ${isCurrent ? '' : 'text-cosmic-text/70'}`}>{p.name}</p>
-                  {isHi && <p className="text-[10px] text-cosmic-text/50">{p.name_hi}</p>}
+                  {isHi && <p className="text-sm text-cosmic-text/50">{p.name_hi}</p>}
                   <ScoreBar score={p.score} />
                 </div>
               );
@@ -154,18 +154,18 @@ export default function VastuEntranceTab({ data }: Props) {
       <div className="grid grid-cols-2 gap-4">
         {entrance.best_pada_in_direction && (
           <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-4">
-            <p className="text-xs text-emerald-400 font-semibold mb-1">{isHi ? 'सर्वश्रेष्ठ पद' : 'Best Pada'}</p>
+            <p className="text-sm text-emerald-400 font-semibold mb-1">{isHi ? 'सर्वश्रेष्ठ पद' : 'Best Pada'}</p>
             <p className="text-lg font-bold text-cosmic-text">{entrance.best_pada_in_direction.pada}</p>
             <p className="text-sm text-cosmic-text">{entrance.best_pada_in_direction.name}</p>
-            {isHi && <p className="text-xs text-cosmic-text/60">{entrance.best_pada_in_direction.name_hi}</p>}
+            {isHi && <p className="text-sm text-cosmic-text/60">{entrance.best_pada_in_direction.name_hi}</p>}
           </div>
         )}
         {entrance.worst_pada_in_direction && (
           <div className="bg-red-500/5 border border-red-500/20 rounded-xl p-4">
-            <p className="text-xs text-red-400 font-semibold mb-1">{isHi ? 'सबसे कमजोर पद' : 'Worst Pada'}</p>
+            <p className="text-sm text-red-400 font-semibold mb-1">{isHi ? 'सबसे कमजोर पद' : 'Worst Pada'}</p>
             <p className="text-lg font-bold text-cosmic-text">{entrance.worst_pada_in_direction.pada}</p>
             <p className="text-sm text-cosmic-text">{entrance.worst_pada_in_direction.name}</p>
-            {isHi && <p className="text-xs text-cosmic-text/60">{entrance.worst_pada_in_direction.name_hi}</p>}
+            {isHi && <p className="text-sm text-cosmic-text/60">{entrance.worst_pada_in_direction.name_hi}</p>}
           </div>
         )}
       </div>
@@ -181,7 +181,7 @@ export default function VastuEntranceTab({ data }: Props) {
               <div key={i} className="flex items-start gap-2">
                 <ChevronRight className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-xs font-semibold text-cosmic-text/60 uppercase">{isHi ? r.type_hi : r.type}</p>
+                  <p className="text-sm font-semibold text-cosmic-text/60 uppercase">{isHi ? r.type_hi : r.type}</p>
                   <p className="text-sm text-cosmic-text">{isHi ? r.remedy_hi : r.remedy_en}</p>
                 </div>
               </div>

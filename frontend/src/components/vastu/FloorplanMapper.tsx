@@ -109,7 +109,7 @@ export default function FloorplanMapper({
         {/* North rotation */}
         <div className="flex items-center gap-2">
           <Compass className="w-4 h-4 text-sacred-gold" />
-          <label className="text-xs text-cosmic-text/60">{isHi ? 'उत्तर दिशा' : 'North'}</label>
+          <label className="text-sm text-cosmic-text/60">{isHi ? 'उत्तर दिशा' : 'North'}</label>
           <input
             type="range"
             min={0}
@@ -118,13 +118,13 @@ export default function FloorplanMapper({
             onChange={(e) => onNorthRotationChange(parseInt(e.target.value))}
             className="w-24 accent-amber-500"
           />
-          <span className="text-xs text-sacred-gold font-mono w-8">{northRotation}°</span>
+          <span className="text-sm text-sacred-gold font-mono w-8">{northRotation}°</span>
         </div>
 
         {/* Grid toggle */}
         <button
           onClick={() => setShowGrid(!showGrid)}
-          className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors ${
+          className={`flex items-center gap-1 px-2 py-1 rounded text-sm transition-colors ${
             showGrid ? 'bg-sacred-gold/20 text-sacred-gold' : 'bg-white/5 text-cosmic-text/40'
           }`}
         >
@@ -137,12 +137,12 @@ export default function FloorplanMapper({
           <button onClick={() => setZoom(z => Math.max(0.5, z - 0.25))} className="p-1 rounded bg-white/5 text-cosmic-text/50 hover:text-white">
             <ZoomOut className="w-3.5 h-3.5" />
           </button>
-          <span className="text-[10px] text-cosmic-text/40 w-8 text-center">{Math.round(zoom * 100)}%</span>
+          <span className="text-sm text-cosmic-text/40 w-8 text-center">{Math.round(zoom * 100)}%</span>
           <button onClick={() => setZoom(z => Math.min(3, z + 0.25))} className="p-1 rounded bg-white/5 text-cosmic-text/50 hover:text-white">
             <ZoomIn className="w-3.5 h-3.5" />
           </button>
           {zoom !== 1 && (
-            <button onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }} className="text-[9px] text-cosmic-text/40 hover:text-white ml-1">
+            <button onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }} className="text-sm text-cosmic-text/40 hover:text-white ml-1">
               {isHi ? 'रीसेट' : 'Reset'}
             </button>
           )}
@@ -150,7 +150,7 @@ export default function FloorplanMapper({
 
         {/* Undo */}
         {markers.length > 0 && (
-          <button onClick={handleUndo} className="flex items-center gap-1 px-2 py-1 rounded bg-white/5 text-cosmic-text/50 hover:text-white text-xs">
+          <button onClick={handleUndo} className="flex items-center gap-1 px-2 py-1 rounded bg-white/5 text-cosmic-text/50 hover:text-white text-sm">
             <Undo2 className="w-3 h-3" />
             {isHi ? 'पूर्ववत' : 'Undo'}
           </button>
@@ -178,13 +178,13 @@ export default function FloorplanMapper({
               setAutoDetecting(false);
             }
           }}
-          className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-medium hover:bg-amber-500/20 transition-colors disabled:opacity-40"
+          className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm font-medium hover:bg-amber-500/20 transition-colors disabled:opacity-40"
         >
           {autoDetecting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
           {isHi ? 'AI पहचान' : 'AI Detect'}
         </button>
 
-        <span className="text-[10px] text-cosmic-text/40 ml-auto">
+        <span className="text-sm text-cosmic-text/40 ml-auto">
           {isHi ? 'क्लिक=कमरा, स्क्रॉल=ज़ूम, Alt+ड्रैग=पैन' : 'Click=room, Scroll=zoom, Alt+drag=pan'}
         </span>
       </div>
@@ -217,22 +217,22 @@ export default function FloorplanMapper({
             <div className="absolute left-0 right-0 top-1/3 h-px bg-sacred-gold/25" />
             <div className="absolute left-0 right-0 top-2/3 h-px bg-sacred-gold/25" />
             {/* Direction labels */}
-            <span className="absolute top-1 left-1 text-[9px] text-sacred-gold/40 font-bold">NW</span>
-            <span className="absolute top-1 left-1/2 -translate-x-1/2 text-[9px] text-sacred-gold/40 font-bold">N</span>
-            <span className="absolute top-1 right-1 text-[9px] text-sacred-gold/40 font-bold">NE</span>
-            <span className="absolute top-1/2 -translate-y-1/2 left-1 text-[9px] text-sacred-gold/40 font-bold">W</span>
-            <span className="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 text-[9px] text-sacred-gold/40 font-bold">C</span>
-            <span className="absolute top-1/2 -translate-y-1/2 right-1 text-[9px] text-sacred-gold/40 font-bold">E</span>
-            <span className="absolute bottom-1 left-1 text-[9px] text-sacred-gold/40 font-bold">SW</span>
-            <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[9px] text-sacred-gold/40 font-bold">S</span>
-            <span className="absolute bottom-1 right-1 text-[9px] text-sacred-gold/40 font-bold">SE</span>
+            <span className="absolute top-1 left-1 text-sm text-sacred-gold/40 font-bold">NW</span>
+            <span className="absolute top-1 left-1/2 -translate-x-1/2 text-sm text-sacred-gold/40 font-bold">N</span>
+            <span className="absolute top-1 right-1 text-sm text-sacred-gold/40 font-bold">NE</span>
+            <span className="absolute top-1/2 -translate-y-1/2 left-1 text-sm text-sacred-gold/40 font-bold">W</span>
+            <span className="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 text-sm text-sacred-gold/40 font-bold">C</span>
+            <span className="absolute top-1/2 -translate-y-1/2 right-1 text-sm text-sacred-gold/40 font-bold">E</span>
+            <span className="absolute bottom-1 left-1 text-sm text-sacred-gold/40 font-bold">SW</span>
+            <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-sm text-sacred-gold/40 font-bold">S</span>
+            <span className="absolute bottom-1 right-1 text-sm text-sacred-gold/40 font-bold">SE</span>
             {/* North arrow */}
             <div
               className="absolute top-2 right-10 flex items-center gap-1"
               style={{ transform: `rotate(${northRotation}deg)`, transformOrigin: 'center' }}
             >
               <div className="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-b-[8px] border-b-red-500" />
-              <span className="text-[8px] text-red-400 font-bold">N</span>
+              <span className="text-sm text-red-400 font-bold">N</span>
             </div>
           </div>
         )}
@@ -258,7 +258,7 @@ export default function FloorplanMapper({
               style={{ left: `${px}%`, top: `${py}%` }}
             >
               <span className="text-sm">{opt?.icon || '🏠'}</span>
-              <span className="text-[9px] text-white font-medium whitespace-nowrap">
+              <span className="text-sm text-white font-medium whitespace-nowrap">
                 {isHi ? (opt?.hi || m.room_type) : (opt?.en || m.room_type)}
               </span>
               <button
@@ -282,7 +282,7 @@ export default function FloorplanMapper({
             }}
           >
             <div className="px-2 py-1 flex items-center justify-between border-b border-white/10 mb-1">
-              <span className="text-[9px] text-sacred-gold font-semibold">
+              <span className="text-sm text-sacred-gold font-semibold">
                 {isHi ? 'कमरा चुनें' : 'Select Room'}
               </span>
               <button onClick={() => setClickPos(null)} className="text-cosmic-text/40 hover:text-white">
@@ -293,7 +293,7 @@ export default function FloorplanMapper({
               <button
                 key={opt.key}
                 onClick={() => selectRoom(opt.key)}
-                className="w-full flex items-center gap-2 px-2 py-1.5 text-xs text-white hover:bg-white/10 rounded-lg transition-colors"
+                className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-white hover:bg-white/10 rounded-lg transition-colors"
               >
                 <span>{opt.icon}</span>
                 <span className="font-medium">{isHi ? opt.hi : opt.en}</span>
@@ -310,7 +310,7 @@ export default function FloorplanMapper({
           {markers.map(m => {
             const opt = ROOM_OPTIONS.find(r => r.key === m.room_type);
             return (
-              <span key={m.id} className="flex items-center gap-1 px-2 py-1 bg-white/5 border border-white/10 rounded-lg text-[10px] text-cosmic-text">
+              <span key={m.id} className="flex items-center gap-1 px-2 py-1 bg-white/5 border border-white/10 rounded-lg text-sm text-cosmic-text">
                 {opt?.icon} {isHi ? opt?.hi : opt?.en}
                 <button onClick={() => onRemoveMarker(m.id)} className="text-cosmic-text/30 hover:text-red-400 ml-1">
                   <X className="w-2.5 h-2.5" />

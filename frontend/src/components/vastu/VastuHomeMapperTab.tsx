@@ -208,7 +208,7 @@ export default function VastuHomeMapperTab({ data, initialMode = 'grid' }: Props
             {isHi ? 'मेरे घर का नक्शा' : 'My Home Layout'}
           </h3>
           {totalRooms > 0 && (
-            <button onClick={handleReset} className="flex items-center gap-1 text-xs text-cosmic-text/50 hover:text-red-400 transition-colors">
+            <button onClick={handleReset} className="flex items-center gap-1 text-sm text-cosmic-text/50 hover:text-red-400 transition-colors">
               <RotateCcw className="w-3 h-3" />
               {isHi ? 'रीसेट' : 'Reset'}
             </button>
@@ -219,7 +219,7 @@ export default function VastuHomeMapperTab({ data, initialMode = 'grid' }: Props
         <div className="flex gap-2 mb-3">
           <button
             onClick={() => { setMode('grid'); setLayoutResult(null); }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
               mode === 'grid'
                 ? 'bg-sacred-gold/20 text-sacred-gold border border-sacred-gold/30'
                 : 'bg-white/5 text-cosmic-text/50 border border-white/10 hover:border-white/20'
@@ -230,7 +230,7 @@ export default function VastuHomeMapperTab({ data, initialMode = 'grid' }: Props
           </button>
           <button
             onClick={() => { setMode('floorplan'); setLayoutResult(null); }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
               mode === 'floorplan'
                 ? 'bg-sacred-gold/20 text-sacred-gold border border-sacred-gold/30'
                 : 'bg-white/5 text-cosmic-text/50 border border-white/10 hover:border-white/20'
@@ -241,7 +241,7 @@ export default function VastuHomeMapperTab({ data, initialMode = 'grid' }: Props
           </button>
         </div>
 
-        <p className="text-xs text-cosmic-text/60">
+        <p className="text-sm text-cosmic-text/60">
           {mode === 'grid'
             ? (isHi
                 ? 'प्रत्येक क्षेत्र पर क्लिक करें और अपने कमरे जोड़ें — हरा=आदर्श, लाल=गलत'
@@ -303,7 +303,7 @@ export default function VastuHomeMapperTab({ data, initialMode = 'grid' }: Props
           )}
         </Button>
         {totalRooms < 2 && (
-          <p className="text-[10px] text-cosmic-text/40 mt-1">
+          <p className="text-sm text-cosmic-text/40 mt-1">
             {isHi ? 'कम से कम 2 कमरे जोड़ें' : 'Assign at least 2 rooms'}
           </p>
         )}
@@ -311,7 +311,7 @@ export default function VastuHomeMapperTab({ data, initialMode = 'grid' }: Props
 
       {/* Error */}
       {error && (
-        <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-xs">
+        <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
           {error}
         </div>
       )}

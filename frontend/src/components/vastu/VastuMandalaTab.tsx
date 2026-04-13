@@ -61,15 +61,15 @@ export default function VastuMandalaTab({ data }: Props) {
           <div className="flex gap-4 mb-3">
             <div className="flex-1 bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 text-center">
               <p className="text-2xl font-bold text-emerald-400">{energy.positive}</p>
-              <p className="text-xs text-emerald-300">{isHi ? 'सकारात्मक' : 'Positive'}</p>
+              <p className="text-sm text-emerald-300">{isHi ? 'सकारात्मक' : 'Positive'}</p>
             </div>
             <div className="flex-1 bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-center">
               <p className="text-2xl font-bold text-red-400">{energy.negative}</p>
-              <p className="text-xs text-red-300">{isHi ? 'नकारात्मक' : 'Negative'}</p>
+              <p className="text-sm text-red-300">{isHi ? 'नकारात्मक' : 'Negative'}</p>
             </div>
             <div className="flex-1 bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 text-center">
               <p className="text-2xl font-bold text-blue-400">{energy.neutral}</p>
-              <p className="text-xs text-blue-300">{isHi ? 'तटस्थ' : 'Neutral'}</p>
+              <p className="text-sm text-blue-300">{isHi ? 'तटस्थ' : 'Neutral'}</p>
             </div>
           </div>
           <p className="text-sm text-cosmic-text">{isHi ? energy.assessment_hi : energy.assessment_en}</p>
@@ -83,9 +83,9 @@ export default function VastuMandalaTab({ data }: Props) {
           <div className="grid grid-cols-3 gap-3">
             {Object.entries(body).map(([part, info]: [string, any]) => (
               <div key={part} className="bg-white/5 rounded-lg p-3">
-                <p className="text-xs text-sacred-gold font-semibold capitalize">{part.replace('_', ' ')}</p>
+                <p className="text-sm text-sacred-gold font-semibold capitalize">{part.replace('_', ' ')}</p>
                 <p className="text-sm font-bold text-cosmic-text">{isHi ? info.direction_hi : info.direction}</p>
-                <p className="text-[11px] text-cosmic-text/70 mt-1">{isHi ? info.significance_hi : info.significance_en}</p>
+                <p className="text-sm text-cosmic-text/70 mt-1">{isHi ? info.significance_hi : info.significance_en}</p>
               </div>
             ))}
           </div>
@@ -99,7 +99,7 @@ export default function VastuMandalaTab({ data }: Props) {
             <h3 className="text-base font-bold text-cosmic-text">
               {isHi ? zone.zone_hi : zone.zone_en}
             </h3>
-            <div className="flex gap-2 text-xs">
+            <div className="flex gap-2 text-sm">
               {zone.positive_count > 0 && <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400">+{zone.positive_count}</span>}
               {zone.negative_count > 0 && <span className="px-2 py-0.5 rounded bg-red-500/20 text-red-400">-{zone.negative_count}</span>}
               {zone.neutral_count > 0 && <span className="px-2 py-0.5 rounded bg-blue-500/20 text-blue-400">~{zone.neutral_count}</span>}
@@ -114,16 +114,16 @@ export default function VastuMandalaTab({ data }: Props) {
                   <div className="flex items-center gap-2 mb-1">
                     <Icon className={`w-4 h-4 ${style.text}`} />
                     <span className="font-bold text-sm text-cosmic-text">{d.name}</span>
-                    <span className="text-xs text-cosmic-text/60">({isHi ? d.name_hi : d.name})</span>
+                    <span className="text-sm text-cosmic-text/60">({isHi ? d.name_hi : d.name})</span>
                   </div>
                   {isHi && <p className="text-sm font-semibold text-cosmic-text/80 mb-1">{d.name_hi}</p>}
-                  <p className="text-[11px] text-cosmic-text/70 mb-2">{isHi ? d.description_hi : d.description_en}</p>
-                  <div className="flex flex-wrap gap-2 text-[10px]">
+                  <p className="text-sm text-cosmic-text/70 mb-2">{isHi ? d.description_hi : d.description_en}</p>
+                  <div className="flex flex-wrap gap-2 text-sm">
                     <span className="px-1.5 py-0.5 rounded bg-white/5 text-cosmic-text">{isHi ? d.element_hi : d.element}</span>
                     <span className="px-1.5 py-0.5 rounded bg-white/5 text-cosmic-text">{isHi ? d.direction_hi : d.direction}</span>
                     <span className="px-1.5 py-0.5 rounded bg-white/5 text-cosmic-text">{isHi ? d.body_part_hi : d.body_part}</span>
                   </div>
-                  <p className="text-[10px] text-sacred-gold/60 mt-1.5 italic">{d.mantra}</p>
+                  <p className="text-sm text-sacred-gold/60 mt-1.5 italic">{d.mantra}</p>
                 </div>
               );
             })}

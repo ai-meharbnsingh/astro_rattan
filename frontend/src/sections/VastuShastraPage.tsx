@@ -60,7 +60,7 @@ export default function VastuShastraPage() {
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sacred-gold/10 border border-sacred-gold/20 mb-4">
             <Compass className="w-4 h-4 text-sacred-gold" />
-            <span className="text-xs font-semibold text-sacred-gold tracking-wider uppercase">
+            <span className="text-sm font-semibold text-sacred-gold tracking-wider uppercase">
               {isHi ? 'वास्तु शास्त्र' : 'Vastu Shastra'}
             </span>
           </div>
@@ -95,7 +95,7 @@ export default function VastuShastraPage() {
               </p>
               <div className="mt-4 flex flex-wrap gap-1.5">
                 {['45 Devtas', '32 Padas', 'Remedies', 'Rooms'].map(t => (
-                  <span key={t} className="text-[10px] px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold/70 border border-sacred-gold/20">{t}</span>
+                  <span key={t} className="text-sm px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold/70 border border-sacred-gold/20">{t}</span>
                 ))}
               </div>
             </button>
@@ -118,7 +118,7 @@ export default function VastuShastraPage() {
               </p>
               <div className="mt-4 flex flex-wrap gap-1.5">
                 {['No upload needed', 'Instant report', 'Devta remedies'].map(t => (
-                  <span key={t} className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-400/10 text-emerald-400/70 border border-emerald-400/20">{t}</span>
+                  <span key={t} className="text-sm px-2 py-0.5 rounded-full bg-emerald-400/10 text-emerald-400/70 border border-emerald-400/20">{t}</span>
                 ))}
               </div>
             </button>
@@ -141,7 +141,7 @@ export default function VastuShastraPage() {
               </p>
               <div className="mt-4 flex flex-wrap gap-1.5">
                 {['Image upload', 'North rotation', 'Click to place', 'Zoom & pan'].map(t => (
-                  <span key={t} className="text-[10px] px-2 py-0.5 rounded-full bg-blue-400/10 text-blue-400/70 border border-blue-400/20">{t}</span>
+                  <span key={t} className="text-sm px-2 py-0.5 rounded-full bg-blue-400/10 text-blue-400/70 border border-blue-400/20">{t}</span>
                 ))}
               </div>
             </button>
@@ -215,30 +215,30 @@ export default function VastuShastraPage() {
                     }`}>
                       {analysisData.score}
                     </div>
-                    <p className="text-xs text-cosmic-text/40">/100</p>
+                    <p className="text-sm text-cosmic-text/40">/100</p>
                   </div>
                 </div>
 
                 {/* Tabs */}
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
                   <TabsList className="grid grid-cols-5 mb-6 bg-white/5 border border-white/10 rounded-xl p-1">
-                    <TabsTrigger value="home" className="data-[state=active]:bg-sacred-gold/20 data-[state=active]:text-sacred-gold rounded-lg text-xs">
+                    <TabsTrigger value="home" className="data-[state=active]:bg-sacred-gold/20 data-[state=active]:text-sacred-gold rounded-lg text-sm">
                       <LayoutGrid className="w-3.5 h-3.5 mr-1" />
                       {isHi ? 'मेरा घर' : 'My Home'}
                     </TabsTrigger>
-                    <TabsTrigger value="mandala" className="data-[state=active]:bg-sacred-gold/20 data-[state=active]:text-sacred-gold rounded-lg text-xs">
+                    <TabsTrigger value="mandala" className="data-[state=active]:bg-sacred-gold/20 data-[state=active]:text-sacred-gold rounded-lg text-sm">
                       <Grid3X3 className="w-3.5 h-3.5 mr-1" />
                       {isHi ? '45 देवता' : '45 Devtas'}
                     </TabsTrigger>
-                    <TabsTrigger value="entrance" className="data-[state=active]:bg-sacred-gold/20 data-[state=active]:text-sacred-gold rounded-lg text-xs">
+                    <TabsTrigger value="entrance" className="data-[state=active]:bg-sacred-gold/20 data-[state=active]:text-sacred-gold rounded-lg text-sm">
                       <DoorOpen className="w-3.5 h-3.5 mr-1" />
                       {isHi ? 'प्रवेश पद' : 'Entrance'}
                     </TabsTrigger>
-                    <TabsTrigger value="remedies" className="data-[state=active]:bg-sacred-gold/20 data-[state=active]:text-sacred-gold rounded-lg text-xs">
+                    <TabsTrigger value="remedies" className="data-[state=active]:bg-sacred-gold/20 data-[state=active]:text-sacred-gold rounded-lg text-sm">
                       <Wrench className="w-3.5 h-3.5 mr-1" />
                       {isHi ? 'उपाय' : 'Remedies'}
                     </TabsTrigger>
-                    <TabsTrigger value="rooms" className="data-[state=active]:bg-sacred-gold/20 data-[state=active]:text-sacred-gold rounded-lg text-xs">
+                    <TabsTrigger value="rooms" className="data-[state=active]:bg-sacred-gold/20 data-[state=active]:text-sacred-gold rounded-lg text-sm">
                       <Home className="w-3.5 h-3.5 mr-1" />
                       {isHi ? 'कमरा' : 'Rooms'}
                     </TabsTrigger>

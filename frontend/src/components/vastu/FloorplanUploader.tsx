@@ -94,13 +94,13 @@ export default function FloorplanUploader({ onUploaded }: Props) {
               <p className="text-sm font-semibold text-cosmic-text">
                 {isHi ? 'फ्लोर प्लान अपलोड करें' : 'Upload Floor Plan'}
               </p>
-              <p className="text-xs text-cosmic-text/50 mt-1">
+              <p className="text-sm text-cosmic-text/50 mt-1">
                 {isHi
                   ? 'PNG, JPG, या WebP — खींचकर छोड़ें या क्लिक करें — अधिकतम 5MB'
                   : 'PNG, JPG, or WebP — drag & drop or click — max 5MB'}
               </p>
             </div>
-            <div className="flex items-center gap-2 text-[10px] text-cosmic-text/40">
+            <div className="flex items-center gap-2 text-sm text-cosmic-text/40">
               <ImageIcon className="w-3 h-3" />
               {isHi ? 'फ़ोन से ली गई फोटो भी चलेगी' : 'Phone photos work too'}
             </div>
@@ -108,7 +108,7 @@ export default function FloorplanUploader({ onUploaded }: Props) {
         )}
       </div>
       {error && (
-        <div className="flex items-center gap-2 px-3 py-2 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-xs">
+        <div className="flex items-center gap-2 px-3 py-2 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
           <X className="w-3 h-3 flex-shrink-0" />
           {error}
         </div>

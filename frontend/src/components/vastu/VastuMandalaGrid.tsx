@@ -109,7 +109,7 @@ export default function VastuMandalaGrid({ zones }: Props) {
   return (
     <div className="space-y-4">
       {/* Legend */}
-      <div className="flex flex-wrap gap-3 justify-center text-[10px]">
+      <div className="flex flex-wrap gap-3 justify-center text-sm">
         {Object.entries(NATURE_COLORS).map(([nature, c]) => (
           <div key={nature} className="flex items-center gap-1.5">
             <div className="w-3 h-3 rounded" style={{ background: c.fill, border: `1px solid ${c.stroke}` }} />
@@ -266,12 +266,12 @@ export default function VastuMandalaGrid({ zones }: Props) {
             />
             <h4 className="text-lg font-bold text-cosmic-text">{selected.name}</h4>
             <span className="text-sm text-cosmic-text/60">{selected.name_hi}</span>
-            <span className="ml-auto text-xs px-2 py-0.5 rounded bg-white/10 text-cosmic-text capitalize">{selected.nature}</span>
+            <span className="ml-auto text-sm px-2 py-0.5 rounded bg-white/10 text-cosmic-text capitalize">{selected.nature}</span>
           </div>
           <p className="text-sm text-cosmic-text leading-relaxed mb-3">
             {isHi ? selected.description_hi : selected.description_en}
           </p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
             <div>
               <p className="text-cosmic-text/50">{isHi ? 'क्षेत्र' : 'Zone'}</p>
               <p className="font-semibold text-cosmic-text">{isHi ? selected.zone_hi : selected.zone}</p>
@@ -289,7 +289,7 @@ export default function VastuMandalaGrid({ zones }: Props) {
               <p className="font-semibold text-cosmic-text">{isHi ? selected.body_part_hi : selected.body_part}</p>
             </div>
           </div>
-          <p className="text-xs text-sacred-gold/60 italic mt-3">{selected.mantra}</p>
+          <p className="text-sm text-sacred-gold/60 italic mt-3">{selected.mantra}</p>
         </div>
       )}
     </div>

@@ -108,15 +108,15 @@ export default function HomeGrid({ assignments, onAssign, onRemove, layoutResult
           >
             {/* Direction Label */}
             <div className="text-center mb-2">
-              <span className="text-[10px] font-bold text-sacred-gold">{dir}</span>
-              <span className="text-[9px] text-cosmic-text/50 ml-1">
+              <span className="text-sm font-bold text-sacred-gold">{dir}</span>
+              <span className="text-sm text-cosmic-text/50 ml-1">
                 {isHi ? ZONE_LABELS[dir].hi : ZONE_LABELS[dir].en}
               </span>
             </div>
 
             {/* Brahma Sthana label */}
             {isCenter && rooms.length === 0 && (
-              <p className="text-[9px] text-sacred-gold/50 text-center italic">
+              <p className="text-sm text-sacred-gold/50 text-center italic">
                 {isHi ? 'ब्रह्म स्थान — खुला रखें' : 'Brahma Sthana — keep open'}
               </p>
             )}
@@ -130,7 +130,7 @@ export default function HomeGrid({ assignments, onAssign, onRemove, layoutResult
                 return (
                   <div key={`${roomKey}-${i}`} className={`flex items-center gap-1.5 bg-white/5 rounded-lg px-2 py-1.5 border ${style.border}/30`}>
                     <span className="text-sm">{opt?.icon || '🏠'}</span>
-                    <span className="text-[10px] font-medium text-cosmic-text flex-1 truncate">
+                    <span className="text-sm font-medium text-cosmic-text flex-1 truncate">
                       {isHi ? (opt?.hi || roomKey) : (opt?.en || roomKey)}
                     </span>
                     <div className={`w-2 h-2 rounded-full ${style.dot}`} title={isHi ? style.labelHi : style.label} />
@@ -150,7 +150,7 @@ export default function HomeGrid({ assignments, onAssign, onRemove, layoutResult
               <div className="mt-2 relative">
                 <button
                   onClick={() => setOpenDropdown(openDropdown === dir ? null : dir)}
-                  className="w-full flex items-center justify-center gap-1 py-1.5 rounded-lg border border-dashed border-white/15 text-[10px] text-cosmic-text/50 hover:border-sacred-gold/40 hover:text-sacred-gold transition-all"
+                  className="w-full flex items-center justify-center gap-1 py-1.5 rounded-lg border border-dashed border-white/15 text-sm text-cosmic-text/50 hover:border-sacred-gold/40 hover:text-sacred-gold transition-all"
                 >
                   <Plus className="w-3 h-3" />
                   {isHi ? 'कमरा जोड़ें' : 'Add Room'}
@@ -171,7 +171,7 @@ export default function HomeGrid({ assignments, onAssign, onRemove, layoutResult
                             onAssign(dir, opt.key);
                             setOpenDropdown(null);
                           }}
-                          className={`w-full flex items-center gap-2 px-3 py-2 text-left text-xs transition-colors ${
+                          className={`w-full flex items-center gap-2 px-3 py-2 text-left text-sm transition-colors ${
                             isBlocked
                               ? 'opacity-40 cursor-not-allowed'
                               : 'hover:bg-white/10'
@@ -182,7 +182,7 @@ export default function HomeGrid({ assignments, onAssign, onRemove, layoutResult
                             {isHi ? opt.hi : opt.en}
                           </span>
                           <div className={`w-2 h-2 rounded-full ${style.dot}`} />
-                          <span className={`text-[9px] ${
+                          <span className={`text-sm ${
                             comp === 'ideal' ? 'text-emerald-400' :
                             comp === 'acceptable' ? 'text-blue-400' :
                             comp === 'avoid' || comp === 'blocked' ? 'text-red-400' :
@@ -196,7 +196,7 @@ export default function HomeGrid({ assignments, onAssign, onRemove, layoutResult
                     {isCenter && (
                       <div className="px-3 py-2 flex items-center gap-1.5 border-t border-white/10">
                         <AlertTriangle className="w-3 h-3 text-amber-400" />
-                        <span className="text-[9px] text-amber-400">
+                        <span className="text-sm text-amber-400">
                           {isHi ? 'ब्रह्म स्थान खुला रहना चाहिए' : 'Brahma Sthana should remain open'}
                         </span>
                       </div>

@@ -105,7 +105,7 @@ export default function VastuForm({ onGenerate, loading }: Props) {
           <Compass className="w-4 h-4 inline mr-1" />
           {isHi ? 'मुख्य प्रवेश द्वार की दिशा' : 'Main Entrance Direction'}
         </label>
-        <p className="text-xs text-cosmic-text/50 mb-2">
+        <p className="text-sm text-cosmic-text/50 mb-2">
           {isHi ? 'कम्पास पर दिशा क्लिक करें — बाहरी रिंग 32 पद दिखाती है' : 'Click a direction on the compass — outer ring shows 32 padas'}
         </p>
         <VastuCompass
@@ -141,7 +141,7 @@ export default function VastuForm({ onGenerate, loading }: Props) {
         <label className="block text-sm font-semibold text-sacred-gold mb-3">
           {isHi ? 'समस्याएँ चुनें (वैकल्पिक)' : 'Select Problems (optional)'}
         </label>
-        <p className="text-xs text-cosmic-text/60 mb-3">
+        <p className="text-sm text-cosmic-text/60 mb-3">
           {isHi
             ? 'अपनी समस्याएँ चुनें — हम विशिष्ट वास्तु उपाय सुझाएँगे'
             : 'Select your concerns — we\'ll suggest specific Vastu remedies'}
@@ -152,7 +152,7 @@ export default function VastuForm({ onGenerate, loading }: Props) {
               key={p.key}
               type="button"
               onClick={() => toggleProblem(p.key)}
-              className={`p-2.5 rounded-lg border text-xs font-medium transition-all ${
+              className={`p-2.5 rounded-lg border text-sm font-medium transition-all ${
                 formData.problems.includes(p.key)
                   ? 'border-amber-500 bg-amber-500/10 text-amber-400'
                   : 'border-white/10 bg-white/5 text-cosmic-text hover:border-white/30'
