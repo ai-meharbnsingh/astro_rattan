@@ -127,13 +127,19 @@ export default function VastuHomeMapperTab({ data, initialMode = 'grid' }: Props
 
   const handleReset = () => {
     const msg = language === 'hi'
-      ? 'क्या आप सभी कमरे हटाना चाहते हैं?'
-      : 'Remove all room assignments?';
+      ? 'क्या आप सभी कमरे और नक्शा हटाना चाहते हैं?'
+      : 'Remove all rooms and the uploaded map?';
     if (!window.confirm(msg)) return;
     setAssignments({});
     setLayoutResult(null);
     setError('');
     localStorage.removeItem(STORAGE_KEY);
+    // Clear floorplan state too
+    setFpImageUrl(null);
+    setFpWidth(0);
+    setFpHeight(0);
+    setFpMarkers([]);
+    setNorthRotation(0);
   };
 
   // Floorplan handlers
