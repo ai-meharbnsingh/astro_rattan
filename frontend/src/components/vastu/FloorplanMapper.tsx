@@ -49,6 +49,8 @@ export default function FloorplanMapper({
   const [isPanning, setIsPanning] = useState(false);
   const panStart = useRef({ x: 0, y: 0, panX: 0, panY: 0 });
   const [autoDetecting, setAutoDetecting] = useState(false);
+  const [editingMarkerId, setEditingMarkerId] = useState<string | null>(null);
+  const [aiDone, setAiDone] = useState(false);
 
   // Attach wheel as non-passive so preventDefault() actually works (stops page scroll)
   useEffect(() => {
@@ -87,6 +89,8 @@ export default function FloorplanMapper({
   }, [markers, onRemoveMarker]);
 
   const handleImageClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    // Close any open edit dropdown first
+    setEditingMarkerId(null);
     const rect = e.currentTarget.getBoundingClientRect();
     const scaleX = imageWidth / rect.width;
     const scaleY = imageHeight / rect.height;
@@ -172,8 +176,10 @@ export default function FloorplanMapper({
                   onAddMarker(m.room_type, m.x, m.y);
                 }
               }
+              setAiDone(true);
             } catch (e) {
               console.error('Auto-detect failed:', e);
+              setAiDone(true); // still show manual hint on failure
             } finally {
               setAutoDetecting(false);
             }
@@ -184,10 +190,32 @@ export default function FloorplanMapper({
           {isHi ? 'AI पहचान' : 'AI Detect'}
         </button>
 
-        <span className="text-sm text-cosmic-text/40 ml-auto">
-          {isHi ? 'क्लिक=कमरा, स्क्रॉल=ज़ूम, Alt+ड्रैग=पैन' : 'Click=room, Scroll=zoom, Alt+drag=pan'}
+        <span className="text-[10px] text-cosmic-text/40 ml-auto">
+          {isHi ? 'क्लिक=कमरा जोड़ें, मार्कर क्लिक=बदलें' : 'Click=add room, Click marker=edit'}
         </span>
       </div>
+
+      {/* AI Done — Manual Edit Hint */}
+      {aiDone && markers.length > 0 && (
+        <div className="flex items-center gap-2 px-3 py-2 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+          <Sparkles className="w-4 h-4 text-amber-400 flex-shrink-0" />
+          <p className="text-xs text-amber-300">
+            {isHi
+              ? `AI ने ${markers.length} कमरे पहचाने। गलत मार्कर पर क्लिक करके बदलें, X से हटाएँ, या खाली जगह क्लिक करके नया जोड़ें।`
+              : `AI detected ${markers.length} rooms. Click any marker to change its type, X to remove, or click empty area to add more.`}
+          </p>
+        </div>
+      )}
+      {aiDone && markers.length === 0 && (
+        <div className="flex items-center gap-2 px-3 py-2 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+          <Compass className="w-4 h-4 text-blue-400 flex-shrink-0" />
+          <p className="text-xs text-blue-300">
+            {isHi
+              ? 'AI कोई कमरा नहीं पहचान पाया। चिंता न करें — इमेज पर क्लिक करके मैन्युअली कमरे रखें।'
+              : 'AI could not detect rooms. No worries — click anywhere on the image to manually place rooms.'}
+          </p>
+        </div>
+      )}
 
       {/* Image Canvas */}
       <div
@@ -240,33 +268,65 @@ export default function FloorplanMapper({
         {/* Click layer */}
         <div className="absolute inset-0" onClick={handleImageClick} />
 
-        {/* Room Markers */}
+        {/* Room Markers — click to edit room type, X to remove */}
         {markers.map((m) => {
-          const rect = containerRef.current?.querySelector('img')?.getBoundingClientRect();
-          const imgEl = containerRef.current?.querySelector('img');
-          if (!imgEl) return null;
-          const displayW = imgEl.clientWidth;
-          const displayH = imgEl.clientHeight;
           const px = (m.x / imageWidth) * 100;
           const py = (m.y / imageHeight) * 100;
           const opt = ROOM_OPTIONS.find(r => r.key === m.room_type);
+          const isEditing = editingMarkerId === m.id;
 
           return (
-            <div
-              key={m.id}
-              className="absolute flex items-center gap-1 bg-black/80 border border-sacred-gold/40 rounded-lg px-2 py-1 -translate-x-1/2 -translate-y-1/2 pointer-events-auto z-10"
-              style={{ left: `${px}%`, top: `${py}%` }}
-            >
-              <span className="text-sm">{opt?.icon || '🏠'}</span>
-              <span className="text-sm text-white font-medium whitespace-nowrap">
-                {isHi ? (opt?.hi || m.room_type) : (opt?.en || m.room_type)}
-              </span>
-              <button
-                onClick={(e) => { e.stopPropagation(); onRemoveMarker(m.id); }}
-                className="text-white/40 hover:text-red-400 ml-0.5"
+            <div key={m.id} className="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-auto z-10" style={{ left: `${px}%`, top: `${py}%` }}>
+              {/* Marker chip — click to open edit dropdown */}
+              <div
+                onClick={(e) => { e.stopPropagation(); setEditingMarkerId(isEditing ? null : m.id); setClickPos(null); }}
+                className={`flex items-center gap-1 rounded-lg px-2 py-1 cursor-pointer transition-all ${
+                  isEditing
+                    ? 'bg-sacred-gold/30 border-2 border-sacred-gold ring-2 ring-sacred-gold/20'
+                    : 'bg-black/80 border border-sacred-gold/40 hover:border-sacred-gold'
+                }`}
               >
-                <X className="w-3 h-3" />
-              </button>
+                <span className="text-sm">{opt?.icon || '🏠'}</span>
+                <span className="text-[10px] text-white font-medium whitespace-nowrap">
+                  {isHi ? (opt?.hi || m.room_type) : (opt?.en || m.room_type)}
+                </span>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onRemoveMarker(m.id); setEditingMarkerId(null); }}
+                  className="text-white/40 hover:text-red-400 ml-0.5"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+
+              {/* Edit dropdown — change room type */}
+              {isEditing && (
+                <div className="absolute z-30 left-1/2 -translate-x-1/2 mt-1 bg-[#1a1a2e] border border-sacred-gold/30 rounded-xl shadow-2xl p-1 max-h-[200px] overflow-y-auto w-44">
+                  <div className="px-2 py-1 border-b border-white/10 mb-1">
+                    <span className="text-[9px] text-sacred-gold font-semibold">
+                      {isHi ? 'कमरा बदलें' : 'Change Room Type'}
+                    </span>
+                  </div>
+                  {ROOM_OPTIONS.map(ro => (
+                    <button
+                      key={ro.key}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        // Remove old, add new at same position
+                        onRemoveMarker(m.id);
+                        onAddMarker(ro.key, m.x, m.y);
+                        setEditingMarkerId(null);
+                      }}
+                      className={`w-full flex items-center gap-2 px-2 py-1.5 text-xs rounded-lg transition-colors ${
+                        ro.key === m.room_type ? 'bg-sacred-gold/20 text-sacred-gold' : 'text-white hover:bg-white/10'
+                      }`}
+                    >
+                      <span>{ro.icon}</span>
+                      <span className="font-medium">{isHi ? ro.hi : ro.en}</span>
+                      {ro.key === m.room_type && <span className="ml-auto text-[9px] text-sacred-gold">current</span>}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           );
         })}
