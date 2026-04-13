@@ -6,11 +6,13 @@ const WHATSAPP_NUMBER = '918076025521';
 
 export default function WhatsAppWidget() {
   const { t } = useTranslation();
-  const [showTooltip, setShowTooltip] = useState(true);
+  const [showTooltip, setShowTooltip] = useState(() => window.innerWidth >= 640);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowTooltip(false), 5000);
-    return () => clearTimeout(timer);
+    if (window.innerWidth >= 640) {
+      const timer = setTimeout(() => setShowTooltip(false), 5000);
+      return () => clearTimeout(timer);
+    }
   }, []);
 
   const handleClick = () => {
@@ -19,7 +21,7 @@ export default function WhatsAppWidget() {
   };
 
   return (
-    <div className="fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] right-4 sm:bottom-6 sm:right-6 z-50 flex items-end gap-3 ai-chat-hide">
+    <div className="fixed bottom-20 right-4 sm:bottom-[calc(1.5rem+env(safe-area-inset-bottom))] sm:right-6 z-50 flex items-end gap-3 ai-chat-hide">
       {showTooltip && (
         <div className="relative bg-cosmic-card border border-sacred-gold rounded-xl rounded-br-sm px-4 py-3 shadow-lg max-w-[200px] animate-fade-in">
           <button onClick={() => setShowTooltip(false)} aria-label={t('common.close')} className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-cosmic-surface border border-sacred-gold flex items-center justify-center text-cosmic-text hover:text-cosmic-text">

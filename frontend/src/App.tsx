@@ -154,7 +154,7 @@ function HomePage() {
       <Hero />
 
       {/* ── Live Transit Chart ─────────────────────────────────── */}
-      <section className="animate-section py-16 bg-cosmic-bg border-t border-sacred-gold/10">
+      <section className="animate-section py-8 bg-cosmic-bg border-t border-sacred-gold/10">
         <div className="max-w-2xl mx-auto px-4">
           <TodaysSkyWidget />
         </div>

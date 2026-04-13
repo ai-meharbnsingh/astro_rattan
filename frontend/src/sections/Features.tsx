@@ -259,7 +259,7 @@ export default function Features() {
         </div>
 
         {/* ── See What's Inside — Screenshot Showcase ─────────────── */}
-        <div className="mt-24">
+        <div className="mt-12">
           <h3 className="text-2xl sm:text-3xl font-sans text-center text-cosmic-text mb-3">
             {l("See What's Inside", 'अंदर क्या है देखें')}
           </h3>

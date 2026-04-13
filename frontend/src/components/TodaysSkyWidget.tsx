@@ -64,6 +64,10 @@ export default function TodaysSkyWidget() {
 
   return (
     <div ref={containerRef} className="w-full max-w-lg mx-auto">
+      {/* Context heading for visitors */}
+      <h2 className="text-2xl font-bold text-center mb-2">Today's Planetary Positions</h2>
+      <p className="text-sm text-gray-500 text-center mb-6">Live positions of planets in the sky right now</p>
+
       {/* Header */}
       <div className="text-center mb-4">
         <p className="text-[11px] font-semibold text-sacred-gold-dark uppercase tracking-[4px] mb-1">
@@ -100,6 +104,13 @@ export default function TodaysSkyWidget() {
           {hi ? 'स्थान: भारत' : 'Location: India'}
         </p>
       )}
+
+      {/* CTA */}
+      <p className="text-center mt-4">
+        <a href="/kundli" className="text-sacred-gold hover:underline text-sm font-medium">
+          See how today's sky affects your chart &rarr;
+        </a>
+      </p>
     </div>
   );
 }

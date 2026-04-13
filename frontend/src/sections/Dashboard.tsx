@@ -223,7 +223,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen pt-24 pb-16 px-4 max-w-6xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
         <div>
           <h1 className="text-2xl font-sans text-cosmic-text">
             {user?.name ? `${t('dashboard.welcome')}, ${user.name}` : t('nav.dashboard')}
@@ -231,10 +231,10 @@ export default function Dashboard() {
           <p className="text-sm text-cosmic-text mt-1">{clients.length} {t('dashboard.clientsRegistered')}</p>
         </div>
         <div className="flex gap-2">
-          <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-cosmic-bg hover:bg-gray-50 text-sm font-sans uppercase tracking-wider px-4 py-2 rounded-lg">
+          <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-cosmic-bg hover:bg-gray-50 text-sm font-sans uppercase tracking-wider px-4 py-2 rounded-lg whitespace-nowrap">
             <Plus className="w-4 h-4 mr-1" /> {t('dashboard.newKundli')}
           </Button>
-          <Button onClick={() => navigate('/lal-kitab')} variant="outline" className="border-sacred-gold text-sacred-gold-dark text-sm font-sans uppercase tracking-wider px-4 py-2 rounded-lg">
+          <Button onClick={() => navigate('/lal-kitab')} variant="outline" className="border-sacred-gold text-sacred-gold-dark text-sm font-sans uppercase tracking-wider px-4 py-2 rounded-lg whitespace-nowrap">
             <BookOpen className="w-4 h-4 mr-1" /> {t('nav.lalKitab')}
           </Button>
         </div>
