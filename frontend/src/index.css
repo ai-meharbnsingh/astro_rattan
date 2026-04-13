@@ -210,14 +210,14 @@
 
 /* Buttons — Prismatic Light */
 .btn-sacred {
-  background: transparent;
-  color: var(--aged-gold);
-  font-weight: 500;
+  background: var(--aged-gold);
+  color: #ffffff;
+  font-weight: 600;
   border: 1px solid var(--aged-gold);
   transition: all 0.3s ease;
 }
 .btn-sacred:hover {
-  background: var(--aged-gold);
+  background: var(--sacred-gold-dark, #B45309);
   color: #ffffff;
   box-shadow: 0 4px 12px rgba(255, 153, 51, 0.2);
 }
