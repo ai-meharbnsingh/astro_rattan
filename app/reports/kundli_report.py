@@ -367,21 +367,26 @@ def _draw_north_indian_chart(pdf, x: float, y: float, size: float,
         12: (x + size - q * 0.7, y + q * 0.7),
     }
 
-    # Planet text in houses
-    pdf.set_font("Helvetica", "B", 5.5)
+    # Planet text in houses — split into lines of max 3 to avoid overlap
+    pdf.set_font("Helvetica", "B", 5)
     pdf.set_text_color(40, 40, 40)
+    line_h = 2.8  # vertical spacing between lines
+    max_per_line = 3
     for h_num in range(1, 13):
         plist = planets_in_houses.get(h_num, [])
         if not plist:
             continue
         hx, hy = house_positions[h_num]
-        text = " ".join(plist[:4])
-        tw = pdf.get_string_width(_sanitize(text))
-        pdf.text(hx - tw / 2, hy + 1, _sanitize(text))
-        if len(plist) > 4:
-            text2 = " ".join(plist[4:])
-            tw2 = pdf.get_string_width(_sanitize(text2))
-            pdf.text(hx - tw2 / 2, hy + 4, _sanitize(text2))
+        # Split into chunks of max_per_line
+        lines = []
+        for i in range(0, len(plist), max_per_line):
+            lines.append(" ".join(plist[i:i + max_per_line]))
+        # Centre the block vertically around the house position
+        total_h = len(lines) * line_h
+        start_y = hy - total_h / 2 + line_h * 0.6
+        for li, line_text in enumerate(lines):
+            tw = pdf.get_string_width(_sanitize(line_text))
+            pdf.text(hx - tw / 2, start_y + li * line_h, _sanitize(line_text))
 
 
 def _build_planets_in_houses(planets: dict, asc_house: int = 1) -> Dict[int, List[str]]:
