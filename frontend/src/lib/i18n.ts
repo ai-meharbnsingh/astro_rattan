@@ -1397,6 +1397,21 @@ const translations: Record<Language, TranslationMap> = {
     'numerology.neutralMatch': 'Neutral - No strong influence',
     'numerology.remedies': 'Recommended Remedies',
     'numerology.enhancementTips': 'Home Enhancement Tips',
+
+    // Vastu Shastra
+    'nav.vastu': 'Vastu',
+    'vastu.title': 'Vastu Shastra Analysis',
+    'vastu.subtitle': '45 Devtas Vastu Purusha Mandala, 32 Entrance Padas, and Ancient Remedial System',
+    'vastu.buildingType': 'Building Type',
+    'vastu.entranceDirection': 'Main Entrance Direction',
+    'vastu.problems': 'Select Problems (optional)',
+    'vastu.analyze': 'Analyze Vastu',
+    'vastu.mandala': '45 Devtas',
+    'vastu.entrance': 'Entrance',
+    'vastu.remedies': 'Remedies',
+    'vastu.rooms': 'Rooms',
+    'vastu.score': 'Vastu Score',
+    'vastu.newAnalysis': 'New Analysis',
   },
 
   hi: {
@@ -2790,6 +2805,21 @@ const translations: Record<Language, TranslationMap> = {
     'numerology.neutralMatch': 'तटस्थ - कोई प्रबल प्रभाव नहीं',
     'numerology.remedies': 'अनुशंसित उपाय',
     'numerology.enhancementTips': 'घर सुधार के टिप्स',
+
+    // Vastu Shastra
+    'nav.vastu': 'वास्तु',
+    'vastu.title': 'वास्तु शास्त्र विश्लेषण',
+    'vastu.subtitle': '45 देवताओं का वास्तु पुरुष मंडल, 32 प्रवेश पद, और प्राचीन उपाय प्रणाली',
+    'vastu.buildingType': 'भवन का प्रकार',
+    'vastu.entranceDirection': 'मुख्य प्रवेश द्वार की दिशा',
+    'vastu.problems': 'समस्याएँ चुनें (वैकल्पिक)',
+    'vastu.analyze': 'वास्तु विश्लेषण करें',
+    'vastu.mandala': '45 देवता',
+    'vastu.entrance': 'प्रवेश पद',
+    'vastu.remedies': 'उपाय',
+    'vastu.rooms': 'कमरा',
+    'vastu.score': 'वास्तु स्कोर',
+    'vastu.newAnalysis': 'नया विश्लेषण',
   },
 };
 
