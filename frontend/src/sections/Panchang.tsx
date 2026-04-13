@@ -8,16 +8,7 @@ import { api } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
 import { translateBackend } from '@/lib/backend-translations';
 
-import {
-  PanchangCore,
-  SunMoonTimes,
-  InauspiciousPeriods,
-  AuspiciousTimings,
-  PlanetaryPositions,
-  FestivalVrat,
-  HinduCalendar,
-  MuhuratFinder,
-} from '@/components/panchang';
+// Tab components are imported individually below
 
 gsap.registerPlugin(ScrollTrigger);
 
