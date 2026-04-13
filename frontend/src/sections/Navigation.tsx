@@ -10,7 +10,7 @@ const serviceLinks = [
   { key: 'nav.panchang', href: '/panchang' },
   { key: 'nav.lalKitab', href: '/lal-kitab' },
   { key: 'nav.numerology', href: '/numerology' },
-  { key: 'nav.vastu', href: '/vastu' },
+  // { key: 'nav.vastu', href: '/vastu' }, // disabled for production
 ];
 
 const authOnlyLinks = [
