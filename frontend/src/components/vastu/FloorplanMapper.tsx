@@ -24,26 +24,46 @@ interface Props {
 const ROOM_OPTIONS: { key: string; en: string; hi: string; icon: string; special?: boolean }[] = [
   // ── Special marker ───────────────────────────────────────────────────
   { key: 'main_entrance',          en: 'Main Entrance',    hi: 'मुख्य द्वार',    icon: '🚪', special: true },
-  // ── Vastu room types ─────────────────────────────────────────────────
+  // ── Common rooms ─────────────────────────────────────────────────────
   { key: 'pooja',                  en: 'Pooja Room',       hi: 'पूजा कक्ष',     icon: '🙏' },
   { key: 'kitchen',                en: 'Kitchen',          hi: 'रसोई',          icon: '🍳' },
   { key: 'dining_room',            en: 'Dining Room',      hi: 'भोजन कक्ष',     icon: '🍽️' },
-  { key: 'master_bedroom',         en: 'Master Bedroom',   hi: 'मुख्य शयनकक्ष', icon: '🛏️' },
-  { key: 'children_bedroom',       en: 'Children Room',    hi: 'बच्चों का कमरा', icon: '🧒' },
   { key: 'living_room',            en: 'Living Room',      hi: 'बैठक',          icon: '🛋️' },
   { key: 'balcony',                en: 'Balcony',          hi: 'बालकनी',        icon: '🌿' },
-  { key: 'bathroom',               en: 'Bathroom',         hi: 'स्नानघर',       icon: '🚿' },
+  // ── Bedrooms (Bedroom 1 = Master; 2–6 = Children's zones) ───────────
+  { key: 'bedroom_1',              en: 'Bedroom 1',        hi: 'शयनकक्ष 1',     icon: '🛏️' },
+  { key: 'bedroom_2',              en: 'Bedroom 2',        hi: 'शयनकक्ष 2',     icon: '🛏️' },
+  { key: 'bedroom_3',              en: 'Bedroom 3',        hi: 'शयनकक्ष 3',     icon: '🛏️' },
+  { key: 'bedroom_4',              en: 'Bedroom 4',        hi: 'शयनकक्ष 4',     icon: '🛏️' },
+  { key: 'bedroom_5',              en: 'Bedroom 5',        hi: 'शयनकक्ष 5',     icon: '🛏️' },
+  { key: 'bedroom_6',              en: 'Bedroom 6',        hi: 'शयनकक्ष 6',     icon: '🛏️' },
+  // ── Bathrooms / Toilets ──────────────────────────────────────────────
+  { key: 'bathroom',               en: 'Bathroom 1',       hi: 'स्नानघर 1',     icon: '🚿' },
+  { key: 'bathroom_2',             en: 'Bathroom 2',       hi: 'स्नानघर 2',     icon: '🚿' },
+  { key: 'bathroom_3',             en: 'Bathroom 3',       hi: 'स्नानघर 3',     icon: '🚿' },
   { key: 'toilet',                 en: 'Toilet / WC',      hi: 'शौचालय',        icon: '🚽' },
+  { key: 'toilet_2',               en: 'Toilet 2',         hi: 'शौचालय 2',      icon: '🚽' },
+  // ── Other ────────────────────────────────────────────────────────────
   { key: 'staircase',              en: 'Staircase',        hi: 'सीढ़ी',         icon: '🪜' },
   { key: 'study_room',             en: 'Study Room',       hi: 'अध्ययन कक्ष',   icon: '📚' },
   { key: 'water_tank_underground', en: 'UG Water Tank',    hi: 'भूमिगत टंकी',   icon: '💧' },
   { key: 'water_tank_overhead',    en: 'OH Water Tank',    hi: 'ऊपरी टंकी',     icon: '🏗️' },
 ];
 
-// Map display types → valid Vastu API types
+// Map display types → valid Vastu API types.
+// bedroom_1 = master (SW ideal); bedroom_2+ = children's (NW/W ideal).
 export const ROOM_TYPE_ALIAS: Record<string, string> = {
+  bedroom_1:   'master_bedroom',
+  bedroom_2:   'children_bedroom',
+  bedroom_3:   'children_bedroom',
+  bedroom_4:   'children_bedroom',
+  bedroom_5:   'children_bedroom',
+  bedroom_6:   'children_bedroom',
   dining_room: 'kitchen',
   toilet:      'bathroom',
+  toilet_2:    'bathroom',
+  bathroom_2:  'bathroom',
+  bathroom_3:  'bathroom',
   balcony:     'living_room',
 };
 
