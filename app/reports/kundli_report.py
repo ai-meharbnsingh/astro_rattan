@@ -651,13 +651,18 @@ def build_full_report(data: dict) -> bytes:
     kp_data = data.get("kp") or {}
     sodashvarga_data = data.get("sodashvarga") or {}
     varshphal_data = data.get("varshphal") or {}
-    sadesati_data = data.get("sadesati") or {}
+    sadesati_data = data.get("sade_sati") or data.get("sadesati") or {}
+    hindu_calendar = data.get("hindu_calendar") or {}
+    panchang_data = data.get("panchang") or {}
 
     planets = chart_data.get("planets") or {}
     houses = chart_data.get("houses") or {}
     ascendant = chart_data.get("ascendant") or {}
     asc_sign = ascendant.get("sign", "Aries")
-    asc_degree = ascendant.get("degree", 0.0)
+    asc_lon_raw = ascendant.get("longitude", 0.0)
+    asc_degree = ascendant.get("sign_degree", ascendant.get("degree", 0.0))
+    if asc_degree == 0.0 and asc_lon_raw:
+        asc_degree = float(asc_lon_raw) % 30.0
     ayanamsa_val = chart_data.get("ayanamsa", ayanamsa_input)
 
     # ── Colours (Parashara's Light style) ─────────────────
@@ -869,20 +874,23 @@ def build_full_report(data: dict) -> bytes:
     pdf.set_xy(right_x, col_start_y)
     pdf.sub_section("Hindu Calendar")
 
+    # Hindu calendar: prefer panchang engine data, fall back to avakhada
+    _hc = hindu_calendar  # from panchang_engine -> hindu_calendar
+    _pc = panchang_data   # full panchang output
     hindu_items = [
-        ("Vikram Samvat", _sg(avakhada, "vikram_samvat", default="N/A")),
-        ("Saka Samvat", _sg(avakhada, "saka_samvat", default="N/A")),
-        ("Lunar Month", _sg(avakhada, "lunar_month", default="N/A")),
-        ("Sun's Ayana", _sg(avakhada, "ayana", default="N/A")),
-        ("Season (Ritu)", _sg(avakhada, "ritu", default="N/A")),
-        ("Paksha", _sg(avakhada, "paksha", default="N/A")),
-        ("Hindu Weekday", _sg(avakhada, "weekday", default=day_of_week)),
-        ("Tithi", _sg(avakhada, "tithi", default="N/A")),
-        ("Nakshatra", _sg(avakhada, "nakshatra", default="N/A")),
-        ("Yoga", _sg(avakhada, "yoga", default="N/A")),
-        ("Karana", _sg(avakhada, "karana", default="N/A")),
-        ("Sunrise", _sg(avakhada, "sunrise", default="N/A")),
-        ("Sunset", _sg(avakhada, "sunset", default="N/A")),
+        ("Vikram Samvat", _sg(_hc, "vikram_samvat", default=_sg(avakhada, "vikram_samvat", default="N/A"))),
+        ("Saka Samvat", _sg(_hc, "shaka_samvat", default=_sg(_hc, "saka_samvat", default=_sg(avakhada, "saka_samvat", default="N/A")))),
+        ("Lunar Month", _sg(_hc, "maas", default=_sg(avakhada, "lunar_month", default="N/A"))),
+        ("Sun's Ayana", _sg(_hc, "ayana", default=_sg(avakhada, "ayana", default="N/A"))),
+        ("Season (Ritu)", _sg(_hc, "ritu", default=_sg(_hc, "ritu_english", default=_sg(avakhada, "ritu", default="N/A")))),
+        ("Paksha", _sg(_hc, "paksha", default=_sg(_pc, "tithi", "paksha", default=_sg(avakhada, "paksha", default="N/A")))),
+        ("Hindu Weekday", _sg(_pc, "vaar", "name", default=_sg(avakhada, "weekday", default=day_of_week))),
+        ("Tithi", _sg(_pc, "tithi", "name", default=_sg(avakhada, "tithi", default="N/A"))),
+        ("Nakshatra", _sg(_pc, "nakshatra", "name", default=_sg(avakhada, "nakshatra", default="N/A"))),
+        ("Yoga", _sg(_pc, "yoga", "name", default=_sg(avakhada, "yoga", default="N/A"))),
+        ("Karana", _sg(_pc, "karana", "name", default=_sg(avakhada, "karana", default="N/A"))),
+        ("Sunrise", _sg(_pc, "sunrise", default=_sg(avakhada, "sunrise", default="N/A"))),
+        ("Sunset", _sg(_pc, "sunset", default=_sg(avakhada, "sunset", default="N/A"))),
     ]
     for label, val in hindu_items:
         pdf.set_x(right_x)
@@ -1005,7 +1013,7 @@ def build_full_report(data: dict) -> bytes:
     pdf.ln(6)
 
     # ==================================================================
-    # PAGE 3: BHAVA CHART + BHAVA SPASHTA + LORDSHIPS
+    # BHAVA CHART + BHAVA SPASHTA + LORDSHIPS
     # ==================================================================
     current_section[0] = "Bhava Chart"
     pdf.add_page()
@@ -1027,19 +1035,50 @@ def build_full_report(data: dict) -> bytes:
     pdf.table_header(bh_headers, bh_widths)
 
     houses_list = houses if isinstance(houses, list) else []
+    placidus_cusps = chart_data.get("placidus_cusps", [])
+
+    def _lon_to_sign_deg(lon: float) -> str:
+        """Convert longitude to Sign DD:MM format."""
+        lon = lon % 360.0
+        sign_idx_v = int(lon / 30) % 12
+        deg_in_sign = lon % 30
+        deg_whole = int(deg_in_sign)
+        mins = int((deg_in_sign - deg_whole) * 60)
+        return f"{SIGN_SHORT[sign_idx_v]} {deg_whole:02d}:{mins:02d}"
+
     for bnum in range(1, 13):
         sign = SIGN_ORDER[(asc_idx + bnum - 1) % 12]
         lord = SIGN_LORD.get(sign, "N/A")
-        if bnum <= len(houses_list) and isinstance(houses_list[bnum - 1], dict):
+
+        if placidus_cusps and len(placidus_cusps) == 12:
+            # Use placidus cusps for accurate Madhya; compute Arambha/Antya as midpoints
+            cusp_lon = float(placidus_cusps[bnum - 1])
+            prev_cusp = float(placidus_cusps[(bnum - 2) % 12])
+            next_cusp = float(placidus_cusps[bnum % 12])
+            # Arambha = midpoint of previous cusp and this cusp
+            arambha = (prev_cusp + cusp_lon) / 2.0
+            if abs(prev_cusp - cusp_lon) > 180:
+                arambha = ((prev_cusp + cusp_lon + 360) / 2.0) % 360
+            # Antya = midpoint of this cusp and next cusp
+            antya = (cusp_lon + next_cusp) / 2.0
+            if abs(cusp_lon - next_cusp) > 180:
+                antya = ((cusp_lon + next_cusp + 360) / 2.0) % 360
+            begin = _lon_to_sign_deg(arambha)
+            middle = _lon_to_sign_deg(cusp_lon)
+            end = _lon_to_sign_deg(antya)
+            # Update sign from actual cusp longitude
+            sign = SIGN_ORDER[int(cusp_lon / 30) % 12]
+            lord = SIGN_LORD.get(sign, "N/A")
+        elif bnum <= len(houses_list) and isinstance(houses_list[bnum - 1], dict):
             h_info = houses_list[bnum - 1]
             begin = _fmt_num(h_info.get("begin", h_info.get("start", "N/A")))
             middle = _fmt_num(h_info.get("middle", h_info.get("cusp", "N/A")))
             end = _fmt_num(h_info.get("end", "N/A"))
         else:
             cusp_lon = (asc_idx * 30 + asc_degree + (bnum - 1) * 30) % 360
-            begin = _fmt_num(cusp_lon - 15)
-            middle = _fmt_num(cusp_lon)
-            end = _fmt_num(cusp_lon + 15)
+            begin = _lon_to_sign_deg(cusp_lon - 15)
+            middle = _lon_to_sign_deg(cusp_lon)
+            end = _lon_to_sign_deg(cusp_lon + 15)
         pdf.table_row([str(bnum), begin, middle, end, sign, lord], bh_widths, bnum)
     pdf.ln(4)
 
@@ -1068,6 +1107,14 @@ def build_full_report(data: dict) -> bytes:
         cols = 4
         start_x, start_y = 10, pdf.get_y() + 2
 
+        # Sodashvarga data lookups
+        _dv_by_sign = sodashvarga_data.get("by_sign", {})
+        _dv_varga_table = sodashvarga_data.get("varga_table", [])
+        _dv_vt_map: Dict[int, dict] = {}
+        for vt_entry in _dv_varga_table:
+            if isinstance(vt_entry, dict):
+                _dv_vt_map[vt_entry.get("division", 0)] = vt_entry.get("planets", {})
+
         for ci, vk in enumerate(varga_keys):
             row_i = ci // cols
             col_i = ci % cols
@@ -1079,19 +1126,33 @@ def build_full_report(data: dict) -> bytes:
                 start_y = pdf.get_y() + 2
                 cy = start_y
 
-            varga_info = sodashvarga_data.get(vk, {})
             varga_planets: Dict[int, List[str]] = {}
-            if isinstance(varga_info, dict):
-                vp = varga_info.get("planets", varga_info)
-                for vpn, vpd in vp.items():
-                    if isinstance(vpd, dict):
-                        h = vpd.get("house", vpd.get("sign_num", 1))
-                        varga_planets.setdefault(int(h) if isinstance(h, (int, float)) else 1, []).append(
-                            PLANET_ABBR.get(vpn, vpn[:2]))
-                    elif isinstance(vpd, (int, float)):
-                        varga_planets.setdefault(int(vpd), []).append(PLANET_ABBR.get(vpn, vpn[:2]))
-            elif vk == "D1":
+            div_num_str = vk.replace("D", "")
+            div_num = int(div_num_str)
+
+            if vk == "D1":
+                # Always use main chart for D1
                 varga_planets = _build_planets_in_houses(planets, 1)
+            else:
+                # Try sodashvarga engine data
+                # by_sign gives us {planet: {div: {sign, dignity}}}
+                # We need to convert sign to house number (1-based from Aries)
+                for pn in PLANET_LIST_9:
+                    p_sv = _dv_by_sign.get(pn, {})
+                    div_info = p_sv.get(div_num_str, p_sv.get(str(div_num), {})) if isinstance(p_sv, dict) else {}
+                    sign_name = ""
+                    if isinstance(div_info, dict):
+                        sign_name = div_info.get("sign", "")
+                    # Fallback: varga_table
+                    if not sign_name and div_num in _dv_vt_map:
+                        vt_p = _dv_vt_map[div_num].get(pn, {})
+                        if isinstance(vt_p, dict):
+                            sign_name = vt_p.get("sign", "")
+                    if sign_name and sign_name in SIGN_INDEX:
+                        h = SIGN_INDEX[sign_name] + 1  # 1-based house
+                        abbr = PLANET_ABBR.get(pn, pn[:2])
+                        varga_planets.setdefault(h, []).append(abbr)
+
             _draw_north_indian_chart(pdf, cx, cy, chart_w, varga_planets,
                                       f"{vk}: {VARGA_NAMES.get(vk, vk)}")
 
@@ -1102,10 +1163,10 @@ def build_full_report(data: dict) -> bytes:
     _draw_varga_page(VARGA_PAGE2, "Divisional Charts (Shodashvarga) II")
 
     # ==================================================================
-    # PAGE 6: PLANETARY FRIENDSHIP
+    # PLANETARY FRIENDSHIP
     # ==================================================================
     current_section[0] = "Planetary Friendship"
-    pdf.add_page()
+    pdf.check_space(50)
     pdf.section_title("Planetary Friendship (Maitri Chakra)")
     friendship_planets = PLANET_LIST_9
 
@@ -1167,37 +1228,50 @@ def build_full_report(data: dict) -> bytes:
     pdf.ln(3)
 
     # ==================================================================
-    # PAGE 7: SHODASHVARGA SUMMARY
+    # SHODASHVARGA SUMMARY
     # ==================================================================
     current_section[0] = "Shodashvarga Summary"
-    pdf.add_page()
+    pdf.check_space(50)
     pdf.section_title("Shodashvarga Summary")
 
-    # Signs in each varga
+    # Signs in each varga — read from sodashvarga_data["by_sign"] or varga_table
     pdf.sub_section("Signs Occupied in 16 Divisional Charts")
-    all_vargas = list(VARGA_NAMES.keys())
+    all_vargas = list(VARGA_NAMES.keys())  # ["D1", "D2", ...]
     sv_cw = 10
     sv_headers = ["Planet"] + [v.replace("D", "") for v in all_vargas]
     sv_widths = [18] + [sv_cw] * len(all_vargas)
     pdf.table_header(sv_headers, sv_widths, font_size=5.5)
 
+    # Build lookup: varga_table indexed by division number for easy access
+    _sv_by_sign = sodashvarga_data.get("by_sign", {})
+    _sv_varga_table = sodashvarga_data.get("varga_table", [])
+    _sv_vt_map: Dict[int, dict] = {}
+    for vt_entry in _sv_varga_table:
+        if isinstance(vt_entry, dict):
+            _sv_vt_map[vt_entry.get("division", 0)] = vt_entry.get("planets", {})
+
     for idx, pname in enumerate(PLANET_LIST_9):
         row_vals = [PLANET_ABBR.get(pname, pname[:2])]
         for vk in all_vargas:
-            vdata = sodashvarga_data.get(vk, {})
-            if isinstance(vdata, dict):
-                vp = vdata.get("planets", vdata)
-                pdata = vp.get(pname, {})
-                if isinstance(pdata, dict):
-                    s = pdata.get("sign", "")
-                    row_vals.append(SIGN_SHORT[SIGN_INDEX[s]] if s in SIGN_INDEX else "?")
-                elif isinstance(pdata, (int, float)):
-                    si = int(pdata) - 1
-                    row_vals.append(SIGN_SHORT[si % 12] if 0 <= si < 12 else "?")
-                else:
-                    row_vals.append("?")
-            else:
-                row_vals.append("?")
+            div_num_str = vk.replace("D", "")  # "D1" -> "1"
+            div_num = int(div_num_str)
+            sign_found = ""
+            # Try by_sign first: by_sign[planet][str(division)] = {sign, dignity}
+            p_sv = _sv_by_sign.get(pname, {})
+            if isinstance(p_sv, dict):
+                div_info = p_sv.get(div_num_str, p_sv.get(str(div_num), {}))
+                if isinstance(div_info, dict):
+                    sign_found = div_info.get("sign", "")
+            # Fallback: varga_table
+            if not sign_found and div_num in _sv_vt_map:
+                vt_planets = _sv_vt_map[div_num]
+                vt_p = vt_planets.get(pname, {})
+                if isinstance(vt_p, dict):
+                    sign_found = vt_p.get("sign", "")
+            # Fallback for D1: use main chart
+            if not sign_found and vk == "D1":
+                sign_found = planet_signs.get(pname, "")
+            row_vals.append(SIGN_SHORT[SIGN_INDEX[sign_found]] if sign_found in SIGN_INDEX else "N/A")
         pdf.table_row(row_vals, sv_widths, idx, font_size=5)
     pdf.ln(4)
 
@@ -1211,44 +1285,54 @@ def build_full_report(data: dict) -> bytes:
     for idx, pname in enumerate(PLANET_LIST_7):
         row_vals = [pname]
         for vk in all_vargas[:8]:
-            vdata = sodashvarga_data.get(vk, {})
-            if isinstance(vdata, dict):
-                vp = vdata.get("planets", vdata)
-                pdata = vp.get(pname, {})
-                if isinstance(pdata, dict):
-                    s = pdata.get("sign", "")
-                    d = _get_dignity(pname, s) if s else "?"
-                    row_vals.append(dig_abbr.get(d, d[:3]))
-                else:
-                    row_vals.append("?")
-            else:
-                row_vals.append("?")
+            div_num_str = vk.replace("D", "")
+            div_num = int(div_num_str)
+            sign_found = ""
+            dignity_found = ""
+            p_sv = _sv_by_sign.get(pname, {})
+            if isinstance(p_sv, dict):
+                div_info = p_sv.get(div_num_str, p_sv.get(str(div_num), {}))
+                if isinstance(div_info, dict):
+                    sign_found = div_info.get("sign", "")
+                    dignity_found = div_info.get("dignity", "")
+            if not sign_found and div_num in _sv_vt_map:
+                vt_p = _sv_vt_map[div_num].get(pname, {})
+                if isinstance(vt_p, dict):
+                    sign_found = vt_p.get("sign", "")
+                    dignity_found = vt_p.get("dignity", "")
+            if not sign_found and vk == "D1":
+                sign_found = planet_signs.get(pname, "")
+            if sign_found and not dignity_found:
+                dignity_found = _get_dignity(pname, sign_found)
+            row_vals.append(dig_abbr.get(dignity_found, dignity_found[:3] if dignity_found else "N/A"))
         pdf.table_row(row_vals, dig_widths, idx, font_size=5.5)
     pdf.ln(4)
 
-    # Vimshopaka Bala
+    # Vimshopaka Bala — from sodashvarga_data["by_planet"][planet]
     pdf.sub_section("Vimshopaka Bala")
     vim_headers = ["Planet", "Shadavarga", "Saptavarga", "Dashavarga", "Shodashavarga"]
     vim_widths = [30, 38, 38, 38, 38]
     pdf.table_header(vim_headers, vim_widths)
+    _sv_by_planet = sodashvarga_data.get("by_planet", {})
     vimshopaka = sodashvarga_data.get("vimshopaka", {})
     for idx, pname in enumerate(PLANET_LIST_7):
-        pv = vimshopaka.get(pname, {})
+        pv = _sv_by_planet.get(pname, vimshopaka.get(pname, {}))
         if isinstance(pv, dict):
-            row = [pname, _fmt_num(pv.get("shadavarga", "N/A")),
+            row = [pname,
+                   _fmt_num(pv.get("shadavarga", pv.get("vimshopak_bala", "N/A"))),
                    _fmt_num(pv.get("saptavarga", "N/A")),
                    _fmt_num(pv.get("dashavarga", "N/A")),
-                   _fmt_num(pv.get("shodashavarga", "N/A"))]
+                   _fmt_num(pv.get("shodashavarga", pv.get("vimshopak_bala", "N/A")))]
         else:
             row = [pname, "N/A", "N/A", "N/A", "N/A"]
         pdf.table_row(row, vim_widths, idx)
     pdf.ln(4)
 
     # ==================================================================
-    # PAGE 8: SHAD BALA + BHAVA BALA
+    # SHAD BALA + BHAVA BALA
     # ==================================================================
     current_section[0] = "Shad Bala"
-    pdf.add_page()
+    pdf.check_space(50)
     pdf.section_title("Shadbala (Six-fold Planetary Strength)")
 
     sb_planets = shadbala_data.get("planets", {})
@@ -1317,69 +1401,101 @@ def build_full_report(data: dict) -> bytes:
     # PAGE 9: ASPECTS
     # ==================================================================
     current_section[0] = "Aspects"
-    pdf.add_page()
+    pdf.check_space(40)
     pdf.section_title("Aspects on Planets (Graha Drishti)")
 
-    aspect_planets = aspects_data.get("planet_aspects", aspects_data.get("graha_drishti", {}))
+    # Build aspect matrix from aspects_on_planets list
+    # Engine returns: [{aspecting, aspected, strength, type, ...}]
+    aspects_on_planets_list = aspects_data.get("aspects_on_planets", [])
+    aspect_matrix: Dict[str, Dict[str, float]] = {}
+    if isinstance(aspects_on_planets_list, list) and aspects_on_planets_list:
+        for asp in aspects_on_planets_list:
+            if isinstance(asp, dict):
+                a_from = asp.get("aspecting", "")
+                a_to = asp.get("aspected", "")
+                a_str = asp.get("strength", 1.0)
+                if a_from and a_to:
+                    aspect_matrix.setdefault(a_from, {})[a_to] = a_str
+
     ap_cw = 17
     ap_headers = ["Aspecting"] + [PLANET_ABBR.get(p, p[:2]) for p in PLANET_LIST_9]
     ap_widths = [22] + [ap_cw] * 9
     pdf.table_header(ap_headers, ap_widths, font_size=6)
 
-    if isinstance(aspect_planets, dict):
+    if aspect_matrix:
         for idx, p1 in enumerate(PLANET_LIST_9):
             row_vals = [PLANET_ABBR.get(p1, p1[:2])]
-            p1_asp = aspect_planets.get(p1, {})
+            p1_asp = aspect_matrix.get(p1, {})
             for p2 in PLANET_LIST_9:
                 if p1 == p2:
                     row_vals.append("-")
                 else:
                     val = p1_asp.get(p2, "")
-                    if isinstance(val, dict):
-                        val = val.get("aspect_strength", val.get("strength", ""))
-                    row_vals.append(_fmt_num(val, 1) if isinstance(val, (int, float)) else str(val)[:4] if val else "")
+                    row_vals.append(_fmt_num(val, 1) if isinstance(val, (int, float)) else "")
             pdf.table_row(row_vals, ap_widths, idx, font_size=5.5)
-    elif isinstance(aspect_planets, list):
-        a_headers = ["Planet", "Aspects On", "Type", "Strength"]
-        a_widths = [30, 40, 40, 30]
-        pdf.table_header(a_headers, a_widths)
-        for idx, asp in enumerate(aspect_planets[:40]):
-            if isinstance(asp, dict):
-                pdf.table_row([
-                    str(asp.get("planet", asp.get("from", "?"))),
-                    str(asp.get("aspected", asp.get("to", "?"))),
-                    str(asp.get("type", asp.get("aspect_type", ""))),
-                    _fmt_num(asp.get("strength", ""), 1),
-                ], a_widths, idx)
+    else:
+        # Fallback: try old dict-based format
+        aspect_planets_dict = aspects_data.get("planet_aspects", aspects_data.get("graha_drishti", {}))
+        if isinstance(aspect_planets_dict, dict):
+            for idx, p1 in enumerate(PLANET_LIST_9):
+                row_vals = [PLANET_ABBR.get(p1, p1[:2])]
+                p1_asp = aspect_planets_dict.get(p1, {})
+                for p2 in PLANET_LIST_9:
+                    if p1 == p2:
+                        row_vals.append("-")
+                    else:
+                        val = p1_asp.get(p2, "")
+                        if isinstance(val, dict):
+                            val = val.get("strength", "")
+                        row_vals.append(_fmt_num(val, 1) if isinstance(val, (int, float)) else str(val)[:4] if val else "")
+                pdf.table_row(row_vals, ap_widths, idx, font_size=5.5)
     pdf.ln(4)
 
     # Aspects on Bhavas
     pdf.check_space(70)
     pdf.section_title("Aspects on Bhavas (House Aspects)")
-    bhava_aspects = aspects_data.get("bhava_aspects", aspects_data.get("house_aspects", {}))
+
+    # Engine returns: aspects_on_bhavas = {"1": [{planet, from_house, strength, ...}], ...}
+    aspects_on_bhavas_data = aspects_data.get("aspects_on_bhavas", {})
     ba_cw = 13.5
     ba_headers = ["Planet"] + [str(i) for i in range(1, 13)]
     ba_widths = [22] + [ba_cw] * 12
     pdf.table_header(ba_headers, ba_widths, font_size=6)
 
-    if isinstance(bhava_aspects, dict):
+    if isinstance(aspects_on_bhavas_data, dict) and aspects_on_bhavas_data:
+        # Build planet->house matrix from the house-keyed data
+        planet_house_aspects: Dict[str, Dict[int, float]] = {}
+        for house_key, asp_list in aspects_on_bhavas_data.items():
+            h_num = int(house_key) if str(house_key).isdigit() else 0
+            if not isinstance(asp_list, list):
+                continue
+            for asp in asp_list:
+                if isinstance(asp, dict):
+                    pn = asp.get("planet", "")
+                    strength = asp.get("strength", 1.0)
+                    if pn:
+                        planet_house_aspects.setdefault(pn, {})[h_num] = strength
+
         for idx, pname in enumerate(PLANET_LIST_9):
             row_vals = [PLANET_ABBR.get(pname, pname[:2])]
-            pa = bhava_aspects.get(pname, {})
+            pa = planet_house_aspects.get(pname, {})
             for bnum in range(1, 13):
-                val = pa.get(str(bnum), pa.get(bnum, ""))
-                if isinstance(val, dict):
-                    val = val.get("strength", "")
-                row_vals.append(_fmt_num(val, 1) if isinstance(val, (int, float)) else str(val)[:3] if val else "")
+                val = pa.get(bnum, "")
+                row_vals.append(_fmt_num(val, 1) if isinstance(val, (int, float)) else "")
             pdf.table_row(row_vals, ba_widths, idx, font_size=5.5)
-    elif isinstance(bhava_aspects, list):
-        for idx, hasp in enumerate(bhava_aspects[:40]):
-            if isinstance(hasp, dict):
-                row = [str(hasp.get("planet", "?")), str(hasp.get("house", "?")),
-                       str(hasp.get("type", "")), _fmt_num(hasp.get("strength", ""), 1)]
-                # pad to 12 columns
-                row_padded = [row[0]] + [""] * 12
-                pdf.table_row(row_padded, ba_widths, idx, font_size=5.5)
+    else:
+        # Fallback: try old dict format
+        bhava_aspects = aspects_data.get("bhava_aspects", aspects_data.get("house_aspects", {}))
+        if isinstance(bhava_aspects, dict):
+            for idx, pname in enumerate(PLANET_LIST_9):
+                row_vals = [PLANET_ABBR.get(pname, pname[:2])]
+                pa = bhava_aspects.get(pname, {})
+                for bnum in range(1, 13):
+                    val = pa.get(str(bnum), pa.get(bnum, ""))
+                    if isinstance(val, dict):
+                        val = val.get("strength", "")
+                    row_vals.append(_fmt_num(val, 1) if isinstance(val, (int, float)) else str(val)[:3] if val else "")
+                pdf.table_row(row_vals, ba_widths, idx, font_size=5.5)
     pdf.ln(4)
 
     # ==================================================================
@@ -1389,56 +1505,54 @@ def build_full_report(data: dict) -> bytes:
         current_section[0] = page_title
         pdf.add_page()
         pdf.section_title(page_title)
-        bav = ashtakvarga_data.get("planet_bindus", ashtakvarga_data.get("bav", {}))
-        contributors = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Lagna"]
+        # planet_details has the contributor-level 0/1 grids
+        details = ashtakvarga_data.get("planet_details", {})
+        # planet_bindus has per-sign totals (fallback)
+        bav_totals = ashtakvarga_data.get("planet_bindus", ashtakvarga_data.get("bav", {}))
+        contributors_display = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Lagna"]
 
         for pi_idx, planet in enumerate(planet_list):
             pdf.check_space(50)
+            # Map "Ascendant" to "Lagna" key used by engine
+            planet_key = "Lagna" if planet == "Ascendant" else planet
             pdf.sub_section(f"Bhinnashtakvarga: {planet}")
-            bav_grid = bav.get(planet, {})
             bav_h = ["Contrib."] + SIGN_SHORT + ["Total"]
             bav_cw = 12
             bav_ws = [17] + [bav_cw] * 12 + [14]
             pdf.table_header(bav_h, bav_ws, font_size=5)
 
-            for ci, contrib in enumerate(contributors):
+            # Get contributor matrix from planet_details
+            planet_detail = details.get(planet_key, {})
+            contributors_matrix = planet_detail.get("contributors", {})
+
+            for ci, contrib in enumerate(contributors_display):
                 row_vals = [PLANET_ABBR.get(contrib, contrib[:2])]
                 row_total = 0
-                if isinstance(bav_grid, dict):
-                    contrib_data = bav_grid.get(contrib, {})
-                    if isinstance(contrib_data, dict):
-                        for sign in SIGN_ORDER:
-                            v = contrib_data.get(sign, 0)
-                            row_vals.append(str(v))
-                            row_total += int(v) if isinstance(v, (int, float)) else 0
-                    else:
-                        for sign in SIGN_ORDER:
-                            sign_data = bav_grid.get(sign, {})
-                            v = sign_data.get(contrib, 0) if isinstance(sign_data, dict) else 0
-                            row_vals.append(str(v))
-                            row_total += int(v) if isinstance(v, (int, float)) else 0
+                # The contributor matrix keys use "Lagna" not "Ascendant"
+                contrib_data = contributors_matrix.get(contrib, {})
+                if not contrib_data and contrib == "Lagna":
+                    contrib_data = contributors_matrix.get("Ascendant", {})
+                if isinstance(contrib_data, dict) and contrib_data:
+                    for sign in SIGN_ORDER:
+                        v = contrib_data.get(sign, 0)
+                        row_vals.append(str(v))
+                        row_total += int(v) if isinstance(v, (int, float)) else 0
                 else:
                     row_vals += ["0"] * 12
                 row_vals.append(str(row_total))
                 pdf.table_row(row_vals, bav_ws, ci, font_size=5)
 
-            # Totals row
+            # Totals row from planet_details totals or planet_bindus
             pdf.set_font("Helvetica", "B", 5)
             pdf.set_fill_color(*GOLD_LIGHT)
             totals_row = ["Total"]
             grand_total = 0
-            if isinstance(bav_grid, dict):
+            totals_data = planet_detail.get("totals", bav_totals.get(planet_key, {}))
+            if isinstance(totals_data, dict):
                 for sign in SIGN_ORDER:
-                    sign_total = 0
-                    for contrib in contributors:
-                        cd = bav_grid.get(contrib, {})
-                        if isinstance(cd, dict):
-                            sign_total += int(cd.get(sign, 0))
-                        else:
-                            sd = bav_grid.get(sign, {})
-                            sign_total += int(sd.get(contrib, 0)) if isinstance(sd, dict) else 0
-                    totals_row.append(str(sign_total))
-                    grand_total += sign_total
+                    v = int(totals_data.get(sign, 0))
+                    totals_row.append(str(v))
+                    grand_total += v
             else:
                 totals_row += ["0"] * 12
             totals_row.append(str(grand_total))
@@ -1450,10 +1564,10 @@ def build_full_report(data: dict) -> bytes:
     _draw_bav_page(["Jupiter", "Venus", "Saturn", "Ascendant"], "Bhinnashtakvarga II")
 
     # ==================================================================
-    # PAGE 12: SARVASHTAKVARGA + REDUCTIONS
+    # SARVASHTAKVARGA + REDUCTIONS
     # ==================================================================
     current_section[0] = "Sarvashtakvarga"
-    pdf.add_page()
+    pdf.check_space(50)
     pdf.section_title("Sarvashtakvarga (SAV)")
 
     sav = ashtakvarga_data.get("sarvashtakvarga", ashtakvarga_data.get("sav", {}))
@@ -1462,27 +1576,20 @@ def build_full_report(data: dict) -> bytes:
     sav_widths_t = [20] + [sav_cw] * 12 + [16]
     pdf.table_header(sav_headers, sav_widths_t, font_size=5.5)
 
+    # Show per-planet BAV totals (sum of bindus per sign for each planet)
     bav_all = ashtakvarga_data.get("planet_bindus", ashtakvarga_data.get("bav", {}))
     for idx, contrib in enumerate(PLANET_LIST_7 + ["Lagna"]):
         row_vals = [PLANET_ABBR.get(contrib, contrib[:2])]
         row_total = 0
         bav_c = bav_all.get(contrib, {})
-        for sign in SIGN_ORDER:
-            if isinstance(bav_c, dict):
-                sign_total = 0
-                for sub_c in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Lagna"]:
-                    sub_d = bav_c.get(sub_c, {})
-                    if isinstance(sub_d, dict):
-                        sign_total += int(sub_d.get(sign, 0))
-                    else:
-                        sd2 = bav_c.get(sign, {})
-                        sign_total += int(sd2.get(sub_c, 0)) if isinstance(sd2, dict) else 0
-                row_vals.append(str(sign_total))
-                row_total += sign_total
-            else:
-                v = sav.get(sign, 0) if isinstance(sav, dict) else 0
+        if isinstance(bav_c, dict):
+            for sign in SIGN_ORDER:
+                v = int(bav_c.get(sign, 0))
                 row_vals.append(str(v))
-                row_total += int(v) if isinstance(v, (int, float)) else 0
+                row_total += v
+        else:
+            for sign in SIGN_ORDER:
+                row_vals.append("0")
         row_vals.append(str(row_total))
         pdf.table_row(row_vals, sav_widths_t, idx, font_size=5.5)
 
@@ -1509,20 +1616,25 @@ def build_full_report(data: dict) -> bytes:
     _draw_north_indian_chart(pdf, 55, pdf.get_y() + 2, 70, sav_chart, "SAV Bindus")
     pdf.set_y(pdf.get_y() + 78)
 
-    # Trikona Shodhana
+    # Trikona Shodhana — from ashtakvarga["purified"][planet]["trikona"]
     pdf.check_space(45)
     pdf.sub_section("Trikona Shodhana")
-    trikona = ashtakvarga_data.get("trikona_shodhana", {})
-    if trikona and isinstance(trikona, dict):
+    purified = ashtakvarga_data.get("purified", {})
+    trikona_available = any(
+        isinstance(purified.get(p, {}), dict) and "trikona" in purified.get(p, {})
+        for p in PLANET_LIST_7
+    )
+    if trikona_available:
         tr_headers = ["Planet"] + SIGN_SHORT + ["Pinda"]
         tr_widths = [20] + [sav_cw] * 12 + [16]
         pdf.table_header(tr_headers, tr_widths, font_size=5.5)
         for idx, pname in enumerate(PLANET_LIST_7):
-            pd = trikona.get(pname, {})
+            pd_purified = purified.get(pname, {})
+            trik_data = pd_purified.get("trikona", {}) if isinstance(pd_purified, dict) else {}
             row_vals = [PLANET_ABBR.get(pname, pname[:2])]
             pinda = 0
             for sign in SIGN_ORDER:
-                v = pd.get(sign, 0) if isinstance(pd, dict) else 0
+                v = trik_data.get(sign, 0) if isinstance(trik_data, dict) else 0
                 row_vals.append(str(v))
                 pinda += int(v) if isinstance(v, (int, float)) else 0
             row_vals.append(str(pinda))
@@ -1532,23 +1644,26 @@ def build_full_report(data: dict) -> bytes:
         pdf.cell(0, 5, "Trikona Shodhana data not available.", new_x="LMARGIN", new_y="NEXT")
     pdf.ln(3)
 
-    # Ekadhipatya Shodhana
+    # Ekadhipatya Shodhana — from ashtakvarga["purified"][planet]["ekadhipatya"]
     pdf.check_space(40)
     pdf.sub_section("Ekadhipatya Shodhana")
-    ekadhipatya = ashtakvarga_data.get("ekadhipatya_shodhana", {})
-    if ekadhipatya and isinstance(ekadhipatya, dict):
+    ekadhipatya_available = any(
+        isinstance(purified.get(p, {}), dict) and "ekadhipatya" in purified.get(p, {})
+        for p in PLANET_LIST_7
+    )
+    if ekadhipatya_available:
         ek_headers = ["Planet"] + SIGN_SHORT + ["Pinda"]
         ek_widths = [20] + [sav_cw] * 12 + [16]
         pdf.table_header(ek_headers, ek_widths, font_size=5.5)
         for idx, pname in enumerate(PLANET_LIST_7):
-            pd = ekadhipatya.get(pname, {})
+            pd_purified = purified.get(pname, {})
+            ek_data = pd_purified.get("ekadhipatya", {}) if isinstance(pd_purified, dict) else {}
             row_vals = [PLANET_ABBR.get(pname, pname[:2])]
-            pinda = 0
+            pinda_val = pd_purified.get("shodhya_pinda", 0) if isinstance(pd_purified, dict) else 0
             for sign in SIGN_ORDER:
-                v = pd.get(sign, 0) if isinstance(pd, dict) else 0
+                v = ek_data.get(sign, 0) if isinstance(ek_data, dict) else 0
                 row_vals.append(str(v))
-                pinda += int(v) if isinstance(v, (int, float)) else 0
-            row_vals.append(str(pinda))
+            row_vals.append(str(pinda_val))
             pdf.table_row(row_vals, ek_widths, idx, font_size=5.5)
     else:
         pdf.set_font("Helvetica", "I", 7)
@@ -1556,10 +1671,10 @@ def build_full_report(data: dict) -> bytes:
     pdf.ln(3)
 
     # ==================================================================
-    # PAGES 13-17: VIMSHOTTARI DASHA TIMELINE
+    # VIMSHOTTARI DASHA TIMELINE
     # ==================================================================
     current_section[0] = "Vimshottari Dasha"
-    pdf.add_page()
+    pdf.check_space(50)
     pdf.section_title("Vimshottari Dasha Timeline")
 
     current_md_name = _sg(dasha_data, "current_dasha", default="N/A")
@@ -1576,32 +1691,30 @@ def build_full_report(data: dict) -> bytes:
     md_headers = ["Planet", "Begin", "End", "Years"]
     md_widths = [30, 45, 45, 20]
     pdf.table_header(md_headers, md_widths)
-    md_periods = dasha_data.get("mahadasha_periods", [])
+    md_periods = dasha_data.get("mahadasha", dasha_data.get("mahadasha_periods", []))
     for idx, period in enumerate(md_periods):
         planet = period.get("planet", "?")
-        start = _fmt_date(period.get("start_date", "?"))
-        end = _fmt_date(period.get("end_date", "?"))
-        years = str(period.get("years", DASHA_YEARS.get(planet, "?")))
+        start = _fmt_date(period.get("start", period.get("start_date", "?")))
+        end = _fmt_date(period.get("end", period.get("end_date", "?")))
+        yrs = period.get("years", DASHA_YEARS.get(planet, "?"))
+        years = f"{yrs:.1f}" if isinstance(yrs, float) else str(yrs)
         marker = " <" if planet == current_md_name else ""
         pdf.table_row([planet + marker, start, end, years], md_widths, idx)
     pdf.ln(4)
 
-    # Antardasha detail pages
-    ad_periods = dasha_data.get("antardasha_periods", dasha_data.get("antardasha", dasha_data.get("antardashas", {})))
+    # Antardasha — build dict {md_planet: [ad_list]} from embedded structure
+    ad_periods: Dict[str, list] = {}
+    for md in md_periods:
+        mp = md.get("planet", "")
+        ads = md.get("antardasha", md.get("antardashas", []))
+        if ads:
+            ad_periods[mp] = ads
+    # Fallback: try top-level antardasha keys
+    if not ad_periods:
+        ad_periods = dasha_data.get("antardasha_periods", dasha_data.get("antardasha", {}))
+        if isinstance(ad_periods, list):
+            ad_periods = {current_md_name: ad_periods}
     md_names = [p.get("planet", "") for p in md_periods] if md_periods else list(DASHA_YEARS.keys())
-
-    # If ad_periods is a list (old format), convert it
-    if isinstance(ad_periods, list):
-        # Try to find antardashas embedded in mahadasha_periods
-        ad_dict: Dict[str, list] = {}
-        for md in md_periods:
-            mp = md.get("planet", "")
-            ads = md.get("antardashas", md.get("antardasha", []))
-            if ads:
-                ad_dict[mp] = ads
-        if not ad_dict and ad_periods:
-            ad_dict[current_md_name] = ad_periods
-        ad_periods = ad_dict
 
     if isinstance(ad_periods, dict):
         mds_per_page = 3
@@ -1621,8 +1734,8 @@ def build_full_report(data: dict) -> bytes:
                         if isinstance(ad, dict):
                             pdf.table_row([
                                 ad.get("planet", ad.get("antardasha", ad.get("sub_lord", "?"))),
-                                _fmt_date(ad.get("start_date", ad.get("begin", "?"))),
-                                _fmt_date(ad.get("end_date", ad.get("end", "?"))),
+                                _fmt_date(ad.get("start", ad.get("start_date", ad.get("begin", "?")))),
+                                _fmt_date(ad.get("end", ad.get("end_date", "?"))),
                             ], ad_w, ai)
                     pdf.ln(3)
                 else:
@@ -1630,20 +1743,30 @@ def build_full_report(data: dict) -> bytes:
                     pdf.cell(0, 4, f"No antardasha data for {md_name}.", new_x="LMARGIN", new_y="NEXT")
                     pdf.ln(2)
 
-    # Pratyantar dasha
-    pratyantar = dasha_data.get("pratyantar", dasha_data.get("pratyantar_periods", {}))
-    if pratyantar and isinstance(pratyantar, dict):
-        pdf.add_page()
+    # Pratyantar dasha — extract from embedded MD > AD > pratyantar structure
+    has_pratyantar = False
+    for md in md_periods:
+        for ad in md.get("antardasha", []):
+            if ad.get("pratyantar"):
+                has_pratyantar = True
+                break
+        if has_pratyantar:
+            break
+
+    if has_pratyantar:
         current_section[0] = "Pratyantar Dasha"
+        pdf.check_space(50)
         pdf.section_title("Pratyantar Dasha (Sub-Sub Periods)")
-        for md_key, ad_dict_inner in pratyantar.items():
-            if not isinstance(ad_dict_inner, dict):
+        # Show pratyantars for current MD's antardashas
+        for md in md_periods:
+            if not md.get("is_current"):
                 continue
-            for ad_key, pd_list in ad_dict_inner.items():
-                if not isinstance(pd_list, list) or not pd_list:
+            for ad in md.get("antardasha", []):
+                pd_list = ad.get("pratyantar", [])
+                if not pd_list:
                     continue
                 pdf.check_space(25)
-                pdf.sub_section(f"{md_key} - {ad_key}")
+                pdf.sub_section(f"{md.get('planet','?')}-{ad.get('planet','?')}")
                 pd_h = ["Pratyantar", "Begin", "End"]
                 pd_w = [30, 50, 50]
                 pdf.table_header(pd_h, pd_w)
@@ -1651,16 +1774,16 @@ def build_full_report(data: dict) -> bytes:
                     if isinstance(pd, dict):
                         pdf.table_row([
                             pd.get("planet", "?"),
-                            _fmt_date(pd.get("start_date", "?")),
-                            _fmt_date(pd.get("end_date", "?")),
+                            _fmt_date(pd.get("start", pd.get("start_date", "?"))),
+                            _fmt_date(pd.get("end", pd.get("end_date", "?"))),
                         ], pd_w, pi_idx)
                 pdf.ln(2)
 
     # ==================================================================
-    # PAGE 18: YOGINI DASHA
+    # YOGINI DASHA
     # ==================================================================
     current_section[0] = "Yogini Dasha"
-    pdf.add_page()
+    pdf.check_space(50)
     pdf.section_title("Yogini Dasha")
 
     yogini_current = _sg(yogini_data, "current_yogini", default="N/A")
@@ -1689,8 +1812,8 @@ def build_full_report(data: dict) -> bytes:
                 pdf.table_row([
                     yp.get("yogini", yp.get("name", "?")),
                     yp.get("lord", "?"),
-                    _fmt_date(yp.get("start_date", yp.get("begin", "?"))),
-                    _fmt_date(yp.get("end_date", yp.get("end", "?"))),
+                    _fmt_date(yp.get("start", yp.get("start_date", yp.get("begin", "?")))),
+                    _fmt_date(yp.get("end", yp.get("end_date", "?"))),
                     str(yp.get("years", "?")),
                 ], yp_widths, idx)
         pdf.ln(3)
@@ -1715,10 +1838,10 @@ def build_full_report(data: dict) -> bytes:
             pdf.ln(2)
 
     # ==================================================================
-    # PAGE 19: YOGAS & DOSHAS
+    # YOGAS & DOSHAS
     # ==================================================================
     current_section[0] = "Yogas & Doshas"
-    pdf.add_page()
+    pdf.check_space(40)
     pdf.section_title("Yogas Found (Positive Combinations)")
 
     yogas = yogas_doshas.get("yogas", [])
@@ -1799,10 +1922,10 @@ def build_full_report(data: dict) -> bytes:
     pdf.ln(4)
 
     # ==================================================================
-    # PAGE 20: MANGALA DOSHA
+    # MANGALA DOSHA
     # ==================================================================
     current_section[0] = "Mangala Dosha"
-    pdf.add_page()
+    pdf.check_space(40)
     pdf.section_title("Mangala Dosha (Manglik) Consideration")
 
     mars_house = planet_houses.get("Mars", 0)
@@ -1913,10 +2036,10 @@ def build_full_report(data: dict) -> bytes:
     pdf.ln(4)
 
     # ==================================================================
-    # PAGE 21: SADE SATI
+    # SADE SATI
     # ==================================================================
     current_section[0] = "Sade Sati"
-    pdf.add_page()
+    pdf.check_space(40)
     pdf.section_title("Sade Sati of Saturn")
 
     moon_sign_ss = planet_signs.get("Moon", "Aries")
@@ -1970,8 +2093,8 @@ def build_full_report(data: dict) -> bytes:
 
     pdf.check_space(15)
     pdf.sub_section("Current Status")
-    ss_active = sadesati_data.get("is_active", sadesati_data.get("active", False))
-    ss_phase = sadesati_data.get("current_phase", "N/A")
+    ss_active = sadesati_data.get("has_sade_sati", sadesati_data.get("is_active", sadesati_data.get("active", False)))
+    ss_phase = sadesati_data.get("phase", sadesati_data.get("current_phase", "N/A"))
     pdf.set_font("Helvetica", "B", 9)
     if ss_active:
         pdf.set_text_color(*RED)
@@ -2002,7 +2125,7 @@ def build_full_report(data: dict) -> bytes:
     # ==================================================================
     if kp_data and isinstance(kp_data, dict):
         current_section[0] = "KP System"
-        pdf.add_page()
+        pdf.check_space(50)
         pdf.section_title("Krishnamurti Paddhati (KP) Summary")
 
         kp_planets = kp_data.get("planets", kp_data.get("significators", {}))
@@ -2051,7 +2174,7 @@ def build_full_report(data: dict) -> bytes:
     # ==================================================================
     if jaimini_data and isinstance(jaimini_data, dict):
         current_section[0] = "Jaimini System"
-        pdf.add_page()
+        pdf.check_space(50)
         pdf.section_title("Jaimini Astrology Summary")
 
         karakas = jaimini_data.get("chara_karakas", jaimini_data.get("karakas", {}))
@@ -2109,7 +2232,7 @@ def build_full_report(data: dict) -> bytes:
     # ==================================================================
     if varshphal_data and isinstance(varshphal_data, dict):
         current_section[0] = "Varshphal"
-        pdf.add_page()
+        pdf.check_space(50)
         pdf.section_title("Varshphal (Annual Chart / Solar Return)")
 
         vp_year = _sg(varshphal_data, "year", default="N/A")
@@ -2169,7 +2292,7 @@ def build_full_report(data: dict) -> bytes:
     # PLANETARY PLACEMENT INTERPRETATIONS
     # ==================================================================
     current_section[0] = "Interpretations"
-    pdf.add_page()
+    pdf.check_space(40)
     pdf.section_title("Planetary Placement Interpretations")
 
     for pname in PLANET_LIST_9:
@@ -2194,7 +2317,7 @@ def build_full_report(data: dict) -> bytes:
     # NAKSHATRA ANALYSIS
     # ==================================================================
     current_section[0] = "Nakshatra Analysis"
-    pdf.add_page()
+    pdf.check_space(40)
     pdf.section_title("Nakshatra Analysis")
 
     moon_nak = planets.get("Moon", {}).get("nakshatra", "")
@@ -2232,7 +2355,7 @@ def build_full_report(data: dict) -> bytes:
     # GEMSTONE RECOMMENDATIONS
     # ==================================================================
     current_section[0] = "Gemstone Guide"
-    pdf.add_page()
+    pdf.check_space(40)
     pdf.section_title("Gemstone Recommendations")
 
     pdf.set_font("Helvetica", "I", 7)
@@ -2281,7 +2404,7 @@ def build_full_report(data: dict) -> bytes:
     # GENERAL PREDICTIONS BY HOUSE
     # ==================================================================
     current_section[0] = "House Predictions"
-    pdf.add_page()
+    pdf.check_space(40)
     pdf.section_title("General Predictions by Bhava (House)")
 
     for bnum in range(1, 13):
@@ -2314,7 +2437,7 @@ def build_full_report(data: dict) -> bytes:
     # PLANETARY AVASTHAS
     # ==================================================================
     current_section[0] = "Planetary Avasthas"
-    pdf.add_page()
+    pdf.check_space(40)
     pdf.section_title("Planetary Avasthas (Planetary States)")
 
     pdf.set_font("Helvetica", "", 7)

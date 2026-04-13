@@ -1528,6 +1528,10 @@ def download_full_report(
         "birth_date": row.get("birth_date", "N/A"),
         "birth_time": row.get("birth_time", "N/A"),
         "birth_place": row.get("birth_place", "N/A"),
+        "latitude": row.get("latitude", 0.0),
+        "longitude": row.get("longitude", 0.0),
+        "gender": row.get("gender", ""),
+        "timezone_offset": row.get("timezone_offset", 5.5),
         "ayanamsa": row.get("ayanamsa", "lahiri"),
     }
 
@@ -1683,6 +1687,32 @@ def download_full_report(
         )
         saturn_sign = _today.get("planets", {}).get("Saturn", {}).get("sign", "Capricorn")
         kundli_data["sade_sati"] = check_sade_sati(moon_sign, saturn_sign)
+    except Exception:
+        pass
+
+    # ── Panchang / Hindu Calendar ─────────────────────────
+    try:
+        from app.panchang_engine import calculate_panchang
+        _lat = row.get("latitude", 28.6)
+        _lon = row.get("longitude", 77.2)
+        _tz = row.get("timezone_offset", 5.5)
+        panchang = calculate_panchang(
+            str(row["birth_date"]), _lat, _lon, tz_offset=_tz,
+        )
+        kundli_data["hindu_calendar"] = panchang.get("hindu_calendar", {})
+        kundli_data["panchang"] = panchang
+    except Exception:
+        pass
+
+    # ── Sodashvarga ───────────────────────────────────────
+    try:
+        from app.sodashvarga_engine import calculate_sodashvarga
+        _sv_longs = {}
+        for pn, pi in planets.items():
+            if isinstance(pi, dict) and "longitude" in pi:
+                _sv_longs[pn] = pi["longitude"]
+        if _sv_longs:
+            kundli_data["sodashvarga"] = calculate_sodashvarga(_sv_longs)
     except Exception:
         pass
 
