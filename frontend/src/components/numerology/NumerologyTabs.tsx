@@ -67,12 +67,12 @@ interface MobileNumerologyResult {
 
 type TabType = 'life_path' | 'mobile' | 'name' | 'vehicle' | 'house';
 
-const tabs = [
-  { id: 'life_path' as TabType, label: 'Life Path', icon: Hash },
-  { id: 'mobile' as TabType, label: 'Mobile', icon: Phone },
-  { id: 'name' as TabType, label: 'Name', icon: User },
-  { id: 'vehicle' as TabType, label: 'Vehicle', icon: Car },
-  { id: 'house' as TabType, label: 'House', icon: Home },
+const tabConfig = [
+  { id: 'life_path' as TabType, labelKey: 'numerology.lifePath', icon: Hash },
+  { id: 'mobile' as TabType, labelKey: 'numerology.mobileHeading', icon: Phone },
+  { id: 'name' as TabType, labelKey: 'numerology.nameHeading', icon: User },
+  { id: 'vehicle' as TabType, labelKey: 'numerology.vehicleHeading', icon: Car },
+  { id: 'house' as TabType, labelKey: 'numerology.houseHeading', icon: Home },
 ];
 
 export default function NumerologyTabs() {
@@ -211,7 +211,7 @@ export default function NumerologyTabs() {
     <div className="space-y-6">
       {/* Tabs */}
       <div className="flex flex-wrap justify-center gap-2">
-        {tabs.map((tab) => (
+        {tabConfig.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
@@ -222,7 +222,7 @@ export default function NumerologyTabs() {
             }`}
           >
             <tab.icon className="w-4 h-4" />
-            {tab.label}
+            {t(tab.labelKey)}
           </button>
         ))}
       </div>
