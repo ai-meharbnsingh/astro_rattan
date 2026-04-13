@@ -91,6 +91,7 @@ export default function FloorplanMapper({
   const containerRef = useRef<HTMLDivElement>(null);
   const [clickPos, setClickPos] = useState<{ x: number; y: number } | null>(null);
   const [showGrid, setShowGrid] = useState(true);
+  const [gridOffset, setGridOffset] = useState({ x: 0, y: 0 }); // % offset for grid/brahmasthana
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
@@ -290,6 +291,20 @@ export default function FloorplanMapper({
           {isHi ? 'ग्रिड' : 'Grid'}
         </button>
 
+        {/* Grid position — move Brahmasthana */}
+        {showGrid && (
+          <div className="flex items-center gap-1">
+            <span className="text-xs text-cosmic-text/50 mr-1">{isHi ? 'केंद्र' : 'Center'}</span>
+            <button onClick={() => setGridOffset(o => ({ ...o, y: o.y - 3 }))} className="min-w-[28px] min-h-[28px] flex items-center justify-center rounded bg-white/5 text-cosmic-text/50 hover:text-sacred-gold text-xs" title="Move up">↑</button>
+            <button onClick={() => setGridOffset(o => ({ ...o, y: o.y + 3 }))} className="min-w-[28px] min-h-[28px] flex items-center justify-center rounded bg-white/5 text-cosmic-text/50 hover:text-sacred-gold text-xs" title="Move down">↓</button>
+            <button onClick={() => setGridOffset(o => ({ ...o, x: o.x - 3 }))} className="min-w-[28px] min-h-[28px] flex items-center justify-center rounded bg-white/5 text-cosmic-text/50 hover:text-sacred-gold text-xs" title="Move left">←</button>
+            <button onClick={() => setGridOffset(o => ({ ...o, x: o.x + 3 }))} className="min-w-[28px] min-h-[28px] flex items-center justify-center rounded bg-white/5 text-cosmic-text/50 hover:text-sacred-gold text-xs" title="Move right">→</button>
+            {(gridOffset.x !== 0 || gridOffset.y !== 0) && (
+              <button onClick={() => setGridOffset({ x: 0, y: 0 })} className="text-xs text-cosmic-text/40 hover:text-white ml-1">{isHi ? 'रीसेट' : 'Reset'}</button>
+            )}
+          </div>
+        )}
+
         {/* Zoom controls */}
         <div className="flex items-center gap-1">
           <button onClick={() => setZoom(z => Math.max(0.5, z - 0.25))} className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded bg-white/5 text-cosmic-text/50 hover:text-white">
@@ -402,9 +417,11 @@ export default function FloorplanMapper({
           draggable={false}
         />
 
-        {/* Translucent 3x3 Grid Overlay */}
+        {/* Translucent 3x3 Grid Overlay — offset by gridOffset */}
         {showGrid && (
-          <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-0 pointer-events-none" style={{
+            transform: `translate(${gridOffset.x}%, ${gridOffset.y}%)`,
+          }}>
             {/* Grid lines — fixed pixel zone boundaries */}
             <div className="absolute top-0 bottom-0 left-1/3 w-px bg-sacred-gold/50" />
             <div className="absolute top-0 bottom-0 left-2/3 w-px bg-sacred-gold/50" />
