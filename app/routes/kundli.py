@@ -35,6 +35,7 @@ from app.kp_engine import calculate_kp_cuspal
 from app.lifelong_sade_sati import calculate_lifelong_sade_sati
 from app.yogini_dasha_engine import calculate_yogini_dasha
 from app.nadi_engine import calculate_nadi_insights
+from app.reports.kundli_report import build_full_report
 from datetime import datetime
 
 router = APIRouter(prefix="/api/kundli", tags=["kundli"])
@@ -1488,6 +1489,206 @@ def download_kundli_pdf(
 
     safe_name = (row.get("person_name") or "kundli").replace(" ", "_")
     filename = f"kundli-{safe_name}.pdf"
+
+    return StreamingResponse(
+        io.BytesIO(pdf_bytes),
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+@router.get("/{kundli_id}/full-report", status_code=status.HTTP_200_OK)
+def download_full_report(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Generate and stream a comprehensive Full Kundli Report PDF.
+
+    Calls ALL available engines (dasha, yogas/doshas, shadbala, ashtakvarga,
+    avakhada, aspects, jaimini, KP, sade-sati) and bundles the results into
+    a multi-page professional report.  Individual engine failures are caught
+    so the report always returns with whatever data is available.
+    """
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    planets = chart.get("planets", {})
+
+    # ── Birth info ────────────────────────────────────────
+    birth_info = {
+        "person_name": row.get("person_name", "N/A"),
+        "birth_date": row.get("birth_date", "N/A"),
+        "birth_time": row.get("birth_time", "N/A"),
+        "birth_place": row.get("birth_place", "N/A"),
+        "ayanamsa": row.get("ayanamsa", "lahiri"),
+    }
+
+    kundli_data: dict = {
+        "birth_info": birth_info,
+        "chart_data": chart,
+    }
+
+    # ── Extended Dasha ────────────────────────────────────
+    try:
+        moon_info = planets.get("Moon", {})
+        moon_nakshatra = moon_info.get("nakshatra", "Ashwini")
+        moon_longitude = moon_info.get("longitude", None)
+        kundli_data["dasha"] = calculate_extended_dasha(
+            moon_nakshatra, str(row["birth_date"]), moon_longitude=moon_longitude
+        )
+    except Exception:
+        pass
+
+    # ── Yogas & Doshas ────────────────────────────────────
+    try:
+        asc_sign = chart.get("ascendant", {}).get("sign", "")
+        kundli_data["yogas_doshas"] = analyze_yogas_and_doshas(planets, asc_sign)
+    except Exception:
+        pass
+
+    # ── Shadbala ──────────────────────────────────────────
+    try:
+        planet_signs = {}
+        planet_houses = {}
+        planet_longitudes = {}
+        retro_set: set = set()
+        for pn, pi in planets.items():
+            if not isinstance(pi, dict):
+                continue
+            planet_signs[pn] = pi.get("sign", "Aries")
+            planet_houses[pn] = pi.get("house", 1)
+            if "longitude" in pi:
+                planet_longitudes[pn] = pi["longitude"]
+            if pi.get("retrograde") or "Retrograde" in pi.get("status", ""):
+                retro_set.add(pn)
+
+        bt = row.get("birth_time", "12:00:00")
+        bt_parts = str(bt).split(":")
+        birth_hour = int(bt_parts[0]) + int(bt_parts[1]) / 60.0
+        is_daytime = 6.0 <= birth_hour < 18.0
+        sun_lon = planet_longitudes.get("Sun", 0.0)
+        moon_lon = planet_longitudes.get("Moon", 0.0)
+        elongation = (moon_lon - sun_lon) % 360.0
+        bd = datetime.strptime(str(row.get("birth_date", "2000-01-01")), "%Y-%m-%d")
+
+        sb_result = calculate_shadbala(
+            planet_signs=planet_signs,
+            planet_houses=planet_houses,
+            is_daytime=is_daytime,
+            retrograde_planets=retro_set,
+            planet_longitudes=planet_longitudes,
+            birth_hour=birth_hour,
+            moon_sun_elongation=elongation,
+            weekday=bd.weekday(),
+            birth_year=bd.year,
+            birth_month=bd.month,
+        )
+        # Bhav Bala
+        houses_raw = chart.get("houses", [])
+        house_signs: dict = {}
+        for h in houses_raw:
+            if isinstance(h, dict):
+                num = h.get("number") or h.get("house")
+                sign = h.get("sign", "Aries")
+                if num:
+                    house_signs[int(num)] = sign
+        sb_result["bhav_bala"] = calculate_bhav_bala(
+            house_signs=house_signs,
+            planet_houses=planet_houses,
+            planets_result=sb_result["planets"],
+        )
+        kundli_data["shadbala"] = sb_result
+    except Exception:
+        pass
+
+    # ── Ashtakvarga ───────────────────────────────────────
+    try:
+        ps_map = {}
+        for pn, pi in planets.items():
+            if isinstance(pi, dict):
+                ps_map[pn] = pi.get("sign", "Aries")
+        asc_sign_av = chart.get("ascendant", {}).get("sign")
+        if asc_sign_av:
+            ps_map["Ascendant"] = asc_sign_av
+        kundli_data["ashtakvarga"] = calculate_ashtakvarga(ps_map)
+    except Exception:
+        pass
+
+    # ── Avakhada Chakra ───────────────────────────────────
+    try:
+        kundli_data["avakhada"] = calculate_avakhada(
+            chart, birth_date=str(row.get("birth_date", ""))
+        )
+    except Exception:
+        pass
+
+    # ── Aspects ───────────────────────────────────────────
+    try:
+        from app.aspects_engine import calculate_aspects
+        houses_for_aspects = chart.get("houses", None)
+        kundli_data["aspects"] = calculate_aspects(planets, houses_for_aspects)
+    except Exception:
+        pass
+
+    # ── Jaimini ───────────────────────────────────────────
+    try:
+        from app.jaimini_engine import calculate_jaimini
+        kundli_data["jaimini"] = calculate_jaimini(
+            chart, str(row.get("birth_date", ""))
+        )
+    except Exception:
+        pass
+
+    # ── KP Cuspal ─────────────────────────────────────────
+    try:
+        kp_chart = calculate_planet_positions(
+            birth_date=row["birth_date"],
+            birth_time=row["birth_time"],
+            latitude=row.get("latitude", 0.0),
+            longitude=row.get("longitude", 0.0),
+            tz_offset=row.get("timezone_offset", 0.0),
+            ayanamsa="kp",
+        )
+        kp_longs = {}
+        for pn, pi in kp_chart.get("planets", {}).items():
+            kp_longs[pn] = pi.get("longitude", 0.0)
+        kp_cusps = kp_chart.get("placidus_cusps", kp_chart.get("house_cusps", []))
+        if not kp_cusps or len(kp_cusps) != 12:
+            asc_lon = kp_chart.get("ascendant", {}).get("longitude", 0.0)
+            kp_cusps = [(asc_lon + i * 30.0) % 360.0 for i in range(12)]
+        kundli_data["kp"] = calculate_kp_cuspal(
+            kp_longs, kp_cusps, chart_data=kp_chart, birth_date=row.get("birth_date")
+        )
+    except Exception:
+        pass
+
+    # ── Sade Sati ─────────────────────────────────────────
+    try:
+        moon_sign = planets.get("Moon", {}).get("sign", "Aries")
+        from datetime import timezone as _tz
+        _now = datetime.now(_tz.utc)
+        _today = calculate_planet_positions(
+            _now.strftime("%Y-%m-%d"), _now.strftime("%H:%M:%S"),
+            latitude=row.get("latitude", 0.0),
+            longitude=row.get("longitude", 0.0),
+            tz_offset=round(row.get("longitude", 0.0) / 15.0 * 2) / 2,
+        )
+        saturn_sign = _today.get("planets", {}).get("Saturn", {}).get("sign", "Capricorn")
+        kundli_data["sade_sati"] = check_sade_sati(moon_sign, saturn_sign)
+    except Exception:
+        pass
+
+    # ── Build PDF ─────────────────────────────────────────
+    try:
+        pdf_bytes = build_full_report(kundli_data)
+    except ImportError:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="PDF generation unavailable -- fpdf2 not installed",
+        )
+
+    safe_name = (row.get("person_name") or "kundli").replace(" ", "_")
+    filename = f"Kundli_Full_Report_{safe_name}.pdf"
 
     return StreamingResponse(
         io.BytesIO(pdf_bytes),
