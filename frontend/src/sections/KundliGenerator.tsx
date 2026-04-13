@@ -305,8 +305,7 @@ export default function KundliGenerator() {
                 a.download = `kundli-${result.person_name || 'report'}.pdf`;
                 document.body.appendChild(a);
                 a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
+                setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 60000);
               } catch (e: unknown) {
                 console.error('PDF download error:', e);
                 const message = e instanceof Error ? e.message : 'Failed to download PDF';
@@ -337,7 +336,8 @@ export default function KundliGenerator() {
                   a.style.display = 'none';
                   document.body.appendChild(a);
                   a.click();
-                  setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+                  // Delay cleanup — Chrome needs time to finish the download
+                  setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 60000);
                 } catch (e: unknown) {
                   console.error('Full report download error:', e);
                   const message = e instanceof Error ? e.message : 'Failed to download full report';
