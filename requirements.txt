@@ -16,8 +16,8 @@ resend==2.7.0
 sentry-sdk[fastapi]==2.19.2
 
 # Image processing & AI room detection (Vastu floor plan upload)
-Pillow==11.2.1
-numpy==2.2.4
-opencv-python-headless==4.11.0.86
-pytesseract==0.3.13
-ultralytics==8.3.107
+Pillow>=10.0.0
+numpy>=1.26.0
+opencv-python-headless>=4.8.0
+pytesseract>=0.3.10
+ultralytics>=8.0.0
