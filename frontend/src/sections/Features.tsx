@@ -24,17 +24,17 @@ export default function Features() {
   const features = [
     {
       icon: <Star className="w-6 h-6" />,
-      title: l('22 Lal Kitab Specializations', '22 लाल किताब विशेषताएं'),
+      title: l('Lal Kitab — Complete System', 'लाल किताब — पूर्ण सिस्टम'),
       subtitle: l('ONLY here', 'केवल यहाँ'),
-      desc: l('Nishaniyan Matcher, Chandra Chalana 43-day protocol, Remedy Tracker with streaks, Teva classification, Dosha analysis — the most complete Lal Kitab system available.', 'निशानियां मैचर, चंद्र चालना 43-दिवसीय प्रोटोकॉल, स्ट्रीक्स के साथ उपाय ट्रैकर, तेवा वर्गीकरण, दोष विश्लेषण — उपलब्ध सबसे पूर्ण लाल किताब सिस्टम।'),
+      desc: l('Nishaniyan Matcher, Chandra Chalana 43-day protocol, Remedy Tracker with streaks, Teva classification, Dosha analysis, Annual Gochar, Planet analysis — the most complete Lal Kitab toolkit available.', 'निशानियां मैचर, चंद्र चालना 43-दिवसीय प्रोटोकॉल, स्ट्रीक्स के साथ उपाय ट्रैकर, तेवा वर्गीकरण, दोष विश्लेषण, वार्षिक गोचर — उपलब्ध सबसे पूर्ण लाल किताब टूलकिट।'),
       badge: l('EXCLUSIVE', 'विशेष'),
       color: 'from-amber-500/20 to-orange-500/10',
     },
     {
       icon: <Calculator className="w-6 h-6" />,
-      title: l('21 Kundli Engines', '21 कुंडली इंजन'),
+      title: l('Kundli — 3 Vedic Systems', 'कुंडली — 3 वैदिक सिस्टम'),
       subtitle: l('Unmatched Depth', 'बेजोड़ गहराई'),
-      desc: l('Parashari + Jaimini + KP System. Divisional charts D1-D60, Shadbala strength analysis, Ashtakvarga bindu calculations — depth no other app matches.', 'पाराशरी + जैमिनी + केपी सिस्टम। विभाजन चार्ट D1-D60, शडबल शक्ति विश्लेषण, अष्टकवर्ग बिंदु गणना — ऐसी गहराई कोई अन्य ऐप नहीं मिलती।'),
+      desc: l('Parashari, Jaimini & KP System in one place. Ashtakvarga, Dasha timeline, Varshphal annual chart, Kundli Milan compatibility, General Remedies — 8 deep-analysis tools, not just a birth chart.', 'पाराशरी, जैमिनी और केपी सिस्टम एक जगह। अष्टकवर्ग, दशा टाइमलाइन, वर्षफल, कुंडली मिलान, सामान्य उपाय — केवल जन्म कुंडली नहीं, 8 गहन विश्लेषण टूल।'),
       badge: null,
       color: 'from-blue-500/20 to-cyan-500/10',
     },
@@ -93,8 +93,14 @@ export default function Features() {
     },
     {
       feature: l('Lal Kitab Depth', 'लाल किताब गहराई'),
-      us: l('22 specialized tabs', '22 विशेषज्ञता टैब'),
+      us: l('Teva · Gochar · Dosha · Remedies · Dasha · Planet analysis', 'तेवा · गोचर · दोष · उपाय · दशा · ग्रह विश्लेषण'),
       them: l('Teva + basic remedies only', 'केवल तेवा + बुनियादी उपाय'),
+      exclusive: false,
+    },
+    {
+      feature: l('Vastu Analysis', 'वास्तु विश्लेषण'),
+      us: l('Floor plan upload → zone scoring → remedies', 'फ्लोर प्लान अपलोड → ज़ोन स्कोरिंग → उपाय'),
+      them: l('Direction tips only, no floor plan', 'केवल दिशा सुझाव, फ्लोर प्लान नहीं'),
       exclusive: false,
     },
     {
@@ -181,12 +187,12 @@ export default function Features() {
         {/* Stats Bar */}
         <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 p-6 rounded-2xl bg-sacred-gold/5 border border-sacred-gold/20">
           <div className="text-center">
-            <div className="text-3xl font-bold text-sacred-gold-dark">22</div>
-            <div className="text-sm text-cosmic-text/70">{l('Lal Kitab Tabs', 'लाल किताब टैब्स')}</div>
+            <div className="text-3xl font-bold text-sacred-gold-dark">5</div>
+            <div className="text-sm text-cosmic-text/70">{l('Platform Modules', 'प्लेटफॉर्म मॉड्यूल')}</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-sacred-gold-dark">21</div>
-            <div className="text-sm text-cosmic-text/70">{l('Kundli Engines', 'कुंडली इंजन')}</div>
+            <div className="text-3xl font-bold text-sacred-gold-dark">8</div>
+            <div className="text-sm text-cosmic-text/70">{l('Kundli Analysis Tools', 'कुंडली विश्लेषण टूल')}</div>
           </div>
           <div className="text-center">
             <div className="text-3xl font-bold text-sacred-gold-dark">43</div>
