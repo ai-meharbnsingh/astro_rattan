@@ -88,7 +88,10 @@ _OCR_KEYWORDS: list[tuple[str, str]] = [
     ("kitchen",             "kitchen"),
     ("rasoi",               "kitchen"),
     ("cooking",             "kitchen"),
-    ("bedroom",             "master_bedroom"),   # after "master bedroom" checked
+    ("bedroom 2",           "children_bedroom"),  # second bedroom → children's
+    ("bedroom 3",           "children_bedroom"),
+    ("bed room 2",          "children_bedroom"),
+    ("bedroom",             "master_bedroom"),   # generic bedroom → master
     ("bed",                 "master_bedroom"),
     ("children",            "children_bedroom"),
     ("child",               "children_bedroom"),
@@ -110,6 +113,9 @@ _OCR_KEYWORDS: list[tuple[str, str]] = [
     ("study",               "study_room"),
     ("office",              "study_room"),
     ("library",             "study_room"),
+    ("dining room",         "kitchen"),
+    ("dining",              "kitchen"),
+    ("dine",                "kitchen"),
     ("stair",               "staircase"),
     # OCR typo variants for "living"
     ("livine",              "living_room"),
@@ -514,6 +520,16 @@ def auto_detect_rooms(image_bytes: bytes, image_width: int, image_height: int) -
         )
         if not too_close:
             deduped.append(marker)
+
+    # Clamp coordinates to image bounds (avoid markers in black border area)
+    margin = 0.05  # 5% inset from each edge
+    x_min = int(image_width * margin)
+    x_max = int(image_width * (1 - margin))
+    y_min = int(image_height * margin)
+    y_max = int(image_height * (1 - margin))
+    for m in deduped:
+        m["x"] = max(x_min, min(x_max, m["x"]))
+        m["y"] = max(y_min, min(y_max, m["y"]))
 
     # Add IDs
     for i, m in enumerate(deduped):
