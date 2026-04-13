@@ -256,18 +256,29 @@ export default function FloorplanMapper({
       {/* Image Canvas */}
       <div
         ref={containerRef}
-        className="relative border border-white/10 rounded-xl overflow-hidden bg-black"
-        style={{ maxHeight: 500, cursor: isPanning ? 'grabbing' : 'crosshair' }}
+        className="relative border border-white/10 rounded-xl overflow-hidden bg-black flex items-center justify-center"
+        style={{ cursor: isPanning ? 'grabbing' : 'crosshair' }}
         onMouseDown={handlePanStart}
         onMouseMove={handlePanMove}
         onMouseUp={handlePanEnd}
         onMouseLeave={handlePanEnd}
       >
-        <div style={{ transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)`, transformOrigin: 'center', transition: isPanning ? 'none' : 'transform 0.1s' }}>
+        {/* Inner wrapper sized exactly to the image aspect ratio — prevents grid/markers
+            from bleeding into letterbox black areas that object-contain would create */}
+        <div style={{
+          transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)`,
+          transformOrigin: 'center',
+          transition: isPanning ? 'none' : 'transform 0.1s',
+          position: 'relative',
+          maxWidth: '100%',
+          maxHeight: 500,
+          aspectRatio: `${imageWidth} / ${imageHeight}`,
+          flexShrink: 0,
+        }}>
         <img
           src={imageUrl}
           alt="Floor plan"
-          className="w-full h-auto max-h-[500px] object-contain"
+          style={{ width: '100%', height: '100%', display: 'block' }}
           draggable={false}
         />
 
