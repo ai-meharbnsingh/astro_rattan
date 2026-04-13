@@ -71,28 +71,43 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
     const isHi = language === 'hi';
     if (!result) return [];
 
-    const hasHighDosha = (result.doshas || []).some((d) => d.present && String(d.severity).toLowerCase() === 'high');
-    const lowMatch = result.total_score < 18;
+    const doshas = result.doshas || [];
+    const hasNadiDosha = doshas.some((d) => d.name === 'Nadi Dosha' && d.present && !d.cancelled);
+    const hasBhakootDosha = doshas.some((d) => d.name === 'Bhakoot Dosha' && d.present && !d.cancelled);
+    const hasGanaDosha = doshas.some((d) => d.name === 'Gana Dosha' && d.present);
 
-    if (isPerson1) {
-      if (lowMatch || hasHighDosha) {
-        return isHi
-          ? ['शुक्रवार को मां लक्ष्मी की पूजा करके सफेद मिठाई दान करें।', 'चांदी का छोटा छल्ला पहनें और शुक्रवार को कन्याओं को खीर बांटें।']
-          : ['Offer white sweets on Friday after Lakshmi puja.', 'Wear a small silver ring and donate kheer to girls on Friday.'];
+    const remedies: string[] = [];
+
+    if (hasNadiDosha) {
+      remedies.push(isHi 
+        ? 'नाड़ी दोष निवारण के लिए महामृत्युंजय मंत्र का जप करें और अन्न दान करें।' 
+        : 'Perform Mahamrityunjaya Japa and donate grains to mitigate Nadi Dosha.');
+    }
+    if (hasBhakootDosha) {
+      remedies.push(isHi 
+        ? 'भकूट दोष के लिए शिव-पार्वती की संयुक्त पूजा और सफेद वस्तुओं का दान करें।' 
+        : 'Worship Shiva-Parvati together and donate white items for Bhakoot Dosha.');
+    }
+    if (hasGanaDosha) {
+      remedies.push(isHi 
+        ? 'गण दोष के लिए प्रतिदिन नारायण कवच का पाठ करें।' 
+        : 'Recite Narayana Kavach daily to balance Gana mismatch.');
+    }
+
+    // Add general fallback if no specific doshas but low score
+    if (remedies.length === 0) {
+      if (isPerson1) {
+        remedies.push(isHi
+          ? 'शुक्रवार को मां लक्ष्मी की पूजा करके सफेद मिठाई दान करें।'
+          : 'Offer white sweets on Friday after Lakshmi puja.');
+      } else {
+        remedies.push(isHi
+          ? 'मंगलवार को हनुमान चालीसा का पाठ करें और लाल मसूर दान करें।'
+          : 'Recite Hanuman Chalisa on Tuesday and donate red lentils.');
       }
-      return isHi
-        ? ['प्रति सोमवार शिव-पार्वती का संयुक्त पूजन करें।', 'मंगलवार को गुड़ और चने का दान करें।']
-        : ['Do Shiva-Parvati joint worship every Monday.', 'Donate jaggery and roasted gram on Tuesday.'];
     }
 
-    if (lowMatch || hasHighDosha) {
-      return isHi
-        ? ['मंगलवार को हनुमान चालीसा का पाठ करें और लाल मसूर दान करें।', 'शनिवार को पीपल वृक्ष के पास सरसों के तेल का दीपक जलाएं।']
-        : ['Recite Hanuman Chalisa on Tuesday and donate red lentils.', 'Light a mustard-oil diya near a Peepal tree on Saturday.'];
-    }
-    return isHi
-      ? ['गुरुवार को विष्णु-लक्ष्मी पूजन करें और हल्दी दान करें।', 'प्रतिदिन 108 बार “ॐ नमः शिवाय” जप करें।']
-      : ['Perform Vishnu-Lakshmi worship on Thursday and donate turmeric.', 'Chant "Om Namah Shivaya" 108 times daily.'];
+    return remedies;
   };
 
   return (

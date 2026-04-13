@@ -451,7 +451,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
         </div>
       )}
 
-      <GeneralRemedies language={language} />
+      <GeneralRemedies language={language} kundliId={data.kundli_id} />
     </div>
   );
 }

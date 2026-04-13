@@ -147,7 +147,7 @@ export default function DashaTab({
         </div>
         
         {/* General Remedies */}
-        <GeneralRemedies language={language} t={t} />
+        <GeneralRemedies language={language} t={t} kundliId={extendedDashaData.kundli_id} />
       </div>
     );
   }
@@ -184,7 +184,7 @@ export default function DashaTab({
         </div>
         
         {/* General Remedies */}
-        <GeneralRemedies language={language} t={t} />
+        <GeneralRemedies language={language} t={t} kundliId={dashaData.kundli_id} />
       </div>
     );
   }

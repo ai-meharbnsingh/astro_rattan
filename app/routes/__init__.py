@@ -11,6 +11,7 @@ from app.routes.analytics import router as analytics_router
 from app.routes.feedback import router as feedback_router
 from app.routes.ai import router as ai_router
 from app.routes.muhurat import router as muhurat_router
+from app.vastu.routes import router as vastu_router
 
 all_routers = [
     auth_router,
@@ -25,4 +26,5 @@ all_routers = [
     feedback_router,
     ai_router,
     muhurat_router,
+    vastu_router,
 ]

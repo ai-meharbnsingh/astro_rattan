@@ -143,7 +143,7 @@ export default function VarshphalTab({
       ) : (
         <p className="text-center text-cosmic-text py-8">{t('varshphal.clickTab')}</p>
       )}
-      <GeneralRemedies language={language} />
+      <GeneralRemedies language={language} kundliId={varshphalData?.kundli_id} />
     </div>
   );
 }

@@ -742,37 +742,6 @@ export function scoreToConfidence(score: number): 'high' | 'moderate' | 'low' | 
 }
 
 // ─────────────────────────────────────────────────────────────────
-// GOCHAR (TRANSIT) — approximate slow-planet positions
-// ─────────────────────────────────────────────────────────────────
-export interface ApproxTransit {
-  planet: string;
-  lkHouse: number; // global LK house (1=Aries … 12=Pisces)
-  speedNote: 'slow' | 'medium' | 'fast';
-  en: string;
-  hi: string;
-}
-
-/** Approximate transit positions for 2026 Q1-Q2 (sidereal Lahiri) */
-export const APPROX_TRANSITS_2026: ApproxTransit[] = [
-  { planet: 'Jupiter', lkHouse: 3, speedNote: 'slow', en: 'Jupiter in Gemini — communication, short travel, siblings highlighted', hi: 'गुरु मिथुन में — संवाद, छोटी यात्रा, भाई-बहनों पर ध्यान' },
-  { planet: 'Saturn', lkHouse: 11, speedNote: 'slow', en: 'Saturn in Aquarius — steady gains, elder siblings, disciplined earnings', hi: 'शनि कुंभ में — स्थिर लाभ, बड़े भाई-बहन, अनुशासित कमाई' },
-  { planet: 'Rahu', lkHouse: 11, speedNote: 'slow', en: 'Rahu in Aquarius — unexpected gains, technology-driven income', hi: 'राहु कुंभ में — अप्रत्याशित लाभ, तकनीक-आधारित आय' },
-  { planet: 'Ketu', lkHouse: 5, speedNote: 'slow', en: 'Ketu in Leo — past-life karma with children and education', hi: 'केतु सिंह में — संतान और शिक्षा का पूर्व जन्म कर्म' },
-  { planet: 'Mars', lkHouse: 4, speedNote: 'medium', en: 'Mars in Cancer — property and home focus, mother care needed', hi: 'मंगल कर्क में — संपत्ति और घर पर ध्यान, माता की देखभाल' },
-  { planet: 'Sun', lkHouse: 12, speedNote: 'fast', en: 'Sun in Pisces — expenses, spiritual focus, travel', hi: 'सूर्य मीन में — खर्च, आध्यात्मिक ध्यान, यात्रा' },
-  { planet: 'Mercury', lkHouse: 12, speedNote: 'fast', en: 'Mercury in Pisces — introspective communication, foreign connections', hi: 'बुध मीन में — आत्म-चिंतन, विदेशी संबंध' },
-  { planet: 'Venus', lkHouse: 1, speedNote: 'fast', en: 'Venus in Aries — personality charm, new beginnings in relationships', hi: 'शुक्र मेष में — व्यक्तित्व आकर्षण, रिश्तों में नई शुरुआत' },
-  { planet: 'Moon', lkHouse: 0, speedNote: 'fast', en: 'Moon changes sign every 2.5 days — see daily panchang', hi: 'चंद्रमा हर 2.5 दिन में राशि बदलता है — दैनिक पंचांग देखें' },
-];
-
-export const GOCHAR_ALERTS = [
-  { en: 'Saturn + Rahu both in house 11: Gains possible but through unconventional means. Stay ethical.', hi: 'शनि + राहु दोनों 11वें भाव में: लाभ संभव लेकिन अपरंपरागत तरीकों से। नैतिक रहें।' },
-  { en: 'Jupiter in 3rd house: Favorable for short travel, media, and sibling-related matters.', hi: 'गुरु तीसरे भाव में: छोटी यात्रा, मीडिया और भाई-बहन संबंधी मामलों के लिए अनुकूल।' },
-  { en: 'Ketu in 5th house: Past-life karmas with children activated. Education matters need attention.', hi: 'केतु पाँचवें भाव में: संतान के साथ पूर्व जन्म कर्म सक्रिय। शिक्षा पर ध्यान दें।' },
-  { en: 'Multiple planets in Pisces (house 12): Spiritual window open. Expenses may rise.', hi: 'मीन राशि (12वें भाव) में अनेक ग्रह: आध्यात्मिक खिड़की खुली है। खर्च बढ़ सकता है।' },
-];
-
-// ─────────────────────────────────────────────────────────────────
 // CHANDRA CHALANA — 43-day protocol tasks
 // ─────────────────────────────────────────────────────────────────
 export interface ChandraChaalanaTask {

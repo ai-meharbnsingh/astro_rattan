@@ -1,9 +1,17 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import type { LalKitabChartData } from './lalkitab-data';
-import { type ApproxTransit, GOCHAR_ALERTS, PLANETS } from './lalkitab-data';
+import { PLANETS } from './lalkitab-data';
 import { Navigation, AlertTriangle, Info, Zap, RefreshCw } from 'lucide-react';
 import { apiFetch } from '@/lib/api';
+
+interface ApproxTransit {
+  planet: string;
+  lkHouse: number;
+  speedNote: 'slow' | 'medium' | 'fast';
+  en: string;
+  hi: string;
+}
 
 interface Props {
   chartData: LalKitabChartData;
@@ -103,6 +111,48 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
   }, [isHi]);
 
   // Lagna sign number (0 = Aries … 11 = Pisces)
+  // Calculate alerts dynamically based on transits
+  const alerts = useMemo(() => {
+    const houseToPlanets: Record<number, string[]> = {};
+    for (const t of transits) {
+      if (t.lkHouse > 0) {
+        if (!houseToPlanets[t.lkHouse]) houseToPlanets[t.lkHouse] = [];
+        houseToPlanets[t.lkHouse].push(t.planet);
+      }
+    }
+
+    const calculated: { en: string; hi: string }[] = [];
+    for (const [house, planets] of Object.entries(houseToPlanets)) {
+      const hNum = parseInt(house);
+      if (planets.includes('Saturn') && planets.includes('Rahu')) {
+        calculated.push({
+          en: `Saturn + Rahu both in house ${hNum}: Potential for unexpected shifts. Stay ethical.`,
+          hi: `शनि + राहु दोनों ${hNum}वें भाव में: अप्रत्याशित बदलावों की संभावना। नैतिक बने रहें।`
+        });
+      }
+      if (planets.includes('Jupiter') && hNum === 3) {
+        calculated.push({
+          en: 'Jupiter in 3rd house: Favorable for short travel and siblings.',
+          hi: 'गुरु तीसरे भाव में: छोटी यात्रा और भाई-बहनों के लिए अनुकूल।'
+        });
+      }
+      if (planets.includes('Ketu') && hNum === 5) {
+        calculated.push({
+          en: 'Ketu in 5th house: Focus on education and children needed.',
+          hi: 'केतु ५वें भाव में: शिक्षा और संतान पर ध्यान देने की आवश्यकता।'
+        });
+      }
+    }
+
+    if (calculated.length === 0) {
+      calculated.push({
+        en: 'No major transit alerts for current alignment.',
+        hi: 'वर्तमान संरेखण के लिए कोई प्रमुख गोचर अलर्ट नहीं है।'
+      });
+    }
+    return calculated;
+  }, [transits]);
+
   const lagnaSignNum = useMemo(() => {
     const asc =
       apiResult?.chart_data?.ascendant?.sign_number ??
@@ -164,7 +214,7 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
           {t('lk.gochar.alerts')}
         </h3>
         <div className="space-y-3">
-          {GOCHAR_ALERTS.map((alert, idx) => (
+          {alerts.map((alert, idx) => (
             <div
               key={idx}
               className="flex items-start gap-3 p-3 rounded-xl bg-orange-500/5 border border-orange-300/20"
