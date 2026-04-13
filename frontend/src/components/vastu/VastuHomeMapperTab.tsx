@@ -47,6 +47,7 @@ interface Props {
     entrance_analysis?: { direction?: string };
     room_placement?: { rooms?: Record<string, { ideal_directions?: string[]; acceptable_directions?: string[]; avoid_directions?: string[] }> };
   };
+  initialMode?: 'grid' | 'floorplan';
 }
 
 const STORAGE_KEY = 'astro_vastu_room_layout';
@@ -74,11 +75,11 @@ interface FloorplanMarker {
   y: number;
 }
 
-export default function VastuHomeMapperTab({ data }: Props) {
+export default function VastuHomeMapperTab({ data, initialMode = 'grid' }: Props) {
   const { language } = useTranslation();
   const isHi = language === 'hi';
 
-  const [mode, setMode] = useState<MapperMode>('grid');
+  const [mode, setMode] = useState<MapperMode>(initialMode);
   const [assignments, setAssignments] = useState<Record<string, string[]>>(loadSaved);
   const [layoutResult, setLayoutResult] = useState<LayoutResult | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
