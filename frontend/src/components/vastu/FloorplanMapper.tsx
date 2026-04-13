@@ -221,13 +221,18 @@ export default function FloorplanMapper({
   const handleImageClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     // Close any open edit dropdown first
     setEditingMarkerId(null);
+    // If a room selector popup is already open, just close it (don't open a new one)
+    if (clickPos) {
+      setClickPos(null);
+      return;
+    }
     const rect = e.currentTarget.getBoundingClientRect();
     const scaleX = imageWidth / rect.width;
     const scaleY = imageHeight / rect.height;
     const x = Math.round((e.clientX - rect.left) * scaleX);
     const y = Math.round((e.clientY - rect.top) * scaleY);
     setClickPos({ x, y });
-  }, [imageWidth, imageHeight]);
+  }, [imageWidth, imageHeight, clickPos]);
 
   const selectRoom = useCallback((roomType: string) => {
     if (clickPos) {
@@ -235,6 +240,29 @@ export default function FloorplanMapper({
       setClickPos(null);
     }
   }, [clickPos, onAddMarker]);
+
+  // Close dropdown/popup when clicking outside the entire component
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setClickPos(null);
+        setEditingMarkerId(null);
+      }
+    };
+    // Also close on Escape key
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setClickPos(null);
+        setEditingMarkerId(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEsc);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEsc);
+    };
+  }, []);
 
   return (
     <div className="space-y-4">
