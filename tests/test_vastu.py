@@ -484,3 +484,153 @@ def test_no_duplicate_devta_names():
     from collections import Counter
     dupes = {n: c for n, c in Counter(names).items() if c > 1}
     assert not dupes, f"Duplicate devta names found: {dupes}"
+
+
+# ============================================================
+# HOME LAYOUT ANALYSIS TESTS
+# ============================================================
+def test_home_layout_kitchen_in_se_is_ideal():
+    """Kitchen in SE (Agni zone) must be scored as ideal."""
+    from app.vastu.engine import analyze_home_layout
+    result = analyze_home_layout({"SE": ["kitchen"], "SW": ["master_bedroom"]})
+    kitchen = [r for r in result["room_results"] if r["room_type"] == "kitchen"][0]
+    assert kitchen["compliance"] == "ideal"
+    assert kitchen["score_contribution"] == 10
+
+
+def test_home_layout_kitchen_in_ne_is_avoid():
+    """Kitchen in NE (Ishanya — water/spiritual zone) must be avoid with remedies."""
+    from app.vastu.engine import analyze_home_layout
+    result = analyze_home_layout({"NE": ["kitchen"], "SW": ["master_bedroom"]})
+    kitchen = [r for r in result["room_results"] if r["room_type"] == "kitchen"][0]
+    assert kitchen["compliance"] == "avoid"
+    assert kitchen["remedies"] is not None
+    assert "relocation_en" in kitchen["remedies"]
+    assert kitchen["remedies"]["severity"] == "misplaced"
+
+
+def test_home_layout_center_bathroom_is_blocked():
+    """Bathroom in Center (Brahma Sthana) must be hard-blocked."""
+    from app.vastu.engine import analyze_home_layout
+    result = analyze_home_layout({"Center": ["bathroom"], "SE": ["kitchen"]})
+    bath = [r for r in result["room_results"] if r["room_type"] == "bathroom"][0]
+    assert bath["compliance"] == "blocked"
+    assert bath["remedies"]["severity"] == "hard_block"
+    assert result["center_status"]["is_open"] is False
+
+
+def test_home_layout_all_ideal_scores_100():
+    """All rooms in ideal positions must score 100."""
+    from app.vastu.engine import analyze_home_layout
+    result = analyze_home_layout({
+        "NE": ["pooja"],
+        "SE": ["kitchen"],
+        "SW": ["master_bedroom"],
+        "NW": ["bathroom"],
+    })
+    assert result["overall_score"] == 100
+    assert result["ideal_count"] == 4
+    assert result["avoid_count"] == 0
+
+
+def test_home_layout_missing_critical_rooms():
+    """Missing kitchen/bathroom/bedroom should be flagged."""
+    from app.vastu.engine import analyze_home_layout
+    result = analyze_home_layout({"NE": ["pooja"], "E": ["study_room"]})
+    missing_types = [m["room_type"] for m in result["missing_critical_rooms"]]
+    assert "kitchen" in missing_types
+    assert "bathroom" in missing_types
+    assert "master_bedroom" in missing_types
+
+
+def test_home_layout_duplicate_rooms_flagged():
+    """Two kitchens should trigger a duplicate warning."""
+    from app.vastu.engine import analyze_home_layout
+    result = analyze_home_layout({"SE": ["kitchen"], "NW": ["kitchen"]})
+    assert len(result["duplicate_warnings"]) > 0
+    assert result["duplicate_warnings"][0]["room_type"] == "kitchen"
+    assert result["duplicate_warnings"][0]["count"] == 2
+
+
+def test_home_layout_devta_aware_remedies():
+    """Misplaced room remedies must include zone devta mantras."""
+    from app.vastu.engine import analyze_home_layout
+    result = analyze_home_layout({"NE": ["kitchen"], "SW": ["master_bedroom"]})
+    kitchen = [r for r in result["room_results"] if r["room_type"] == "kitchen"][0]
+    assert kitchen["remedies"] is not None
+    assert "mantras" in kitchen["remedies"]
+    assert len(kitchen["remedies"]["mantras"]) > 0
+    assert "mantra" in kitchen["remedies"]["mantras"][0]
+    assert "Om" in kitchen["remedies"]["mantras"][0]["mantra"]
+
+
+def test_home_layout_center_open_is_excellent():
+    """Empty center should report Brahma Sthana is open."""
+    from app.vastu.engine import analyze_home_layout
+    result = analyze_home_layout({"SE": ["kitchen"], "SW": ["master_bedroom"]})
+    assert result["center_status"]["is_open"] is True
+    assert "excellent" in result["center_status"]["assessment_en"].lower()
+
+
+def test_home_layout_score_clamped_at_10():
+    """Worst possible layout should score minimum 10, not negative."""
+    from app.vastu.engine import analyze_home_layout
+    result = analyze_home_layout({
+        "NE": ["kitchen", "bathroom"],
+        "SW": ["pooja"],
+        "Center": ["staircase"],
+    })
+    assert result["overall_score"] >= 10
+
+
+# ============================================================
+# FLOORPLAN PIXEL-TO-DIRECTION TESTS
+# ============================================================
+def test_floorplan_center_pixel_is_center():
+    """Center of image must map to 'Center' (Brahma Sthana)."""
+    from app.vastu.floorplan import pixel_to_direction
+    assert pixel_to_direction(500, 400, 1000, 800) == "Center"
+
+
+def test_floorplan_corners_map_correctly():
+    """Four corners of the image must map to NW, NE, SW, SE."""
+    from app.vastu.floorplan import pixel_to_direction
+    w, h = 1000, 800
+    assert pixel_to_direction(50, 50, w, h) == "NW"
+    assert pixel_to_direction(950, 50, w, h) == "NE"
+    assert pixel_to_direction(50, 750, w, h) == "SW"
+    assert pixel_to_direction(950, 750, w, h) == "SE"
+
+
+def test_floorplan_cardinal_edges():
+    """Cardinal edge centers must map to N, S, E, W."""
+    from app.vastu.floorplan import pixel_to_direction
+    w, h = 1000, 800
+    assert pixel_to_direction(500, 50, w, h) == "N"
+    assert pixel_to_direction(500, 750, w, h) == "S"
+    assert pixel_to_direction(950, 400, w, h) == "E"
+    assert pixel_to_direction(50, 400, w, h) == "W"
+
+
+def test_floorplan_north_rotation_90():
+    """With 90° rotation (North = right), top-center should become West."""
+    from app.vastu.floorplan import pixel_to_direction
+    w, h = 1000, 800
+    # Top-center without rotation = N, with 90° rotation = W
+    assert pixel_to_direction(500, 50, w, h, north_rotation=90) == "W"
+    # Right-center without rotation = E, with 90° rotation = N
+    assert pixel_to_direction(950, 400, w, h, north_rotation=90) == "N"
+
+
+def test_floorplan_map_room_placements():
+    """map_room_placements must convert pixel markers to direction assignments."""
+    from app.vastu.floorplan import map_room_placements
+    markers = [
+        {"room_type": "kitchen", "x": 900, "y": 700},
+        {"room_type": "pooja", "x": 900, "y": 100},
+        {"room_type": "master_bedroom", "x": 100, "y": 700},
+    ]
+    result = map_room_placements(markers, 1000, 800)
+    assert "SE" in result and "kitchen" in result["SE"]
+    assert "NE" in result and "pooja" in result["NE"]
+    assert "SW" in result and "master_bedroom" in result["SW"]

@@ -5,4 +5,5 @@ from app.vastu.engine import (
     suggest_remedies,
     get_room_placement,
     get_complete_vastu_analysis,
+    analyze_home_layout,
 )

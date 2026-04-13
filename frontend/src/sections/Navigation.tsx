@@ -9,8 +9,8 @@ const serviceLinks = [
   { key: 'nav.kundli', href: '/kundli' },
   { key: 'nav.panchang', href: '/panchang' },
   { key: 'nav.lalKitab', href: '/lal-kitab' },
-  { key: 'nav.vastu', href: '/vastu' },
   { key: 'nav.numerology', href: '/numerology' },
+  { key: 'nav.vastu', href: '/vastu' },
 ];
 
 const authOnlyLinks = [

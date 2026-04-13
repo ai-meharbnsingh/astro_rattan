@@ -100,7 +100,9 @@ export default function VastuMandalaGrid({ zones }: Props) {
 
   const gridMap = buildGridMap(zones);
 
-  const cellSize = 50;
+  const [hovered, setHovered] = useState<string | null>(null);
+
+  const cellSize = 62;
   const gap = 0;
   const gridPx = 9 * cellSize;
 
@@ -122,11 +124,11 @@ export default function VastuMandalaGrid({ zones }: Props) {
 
       {/* SVG Grid */}
       <div className="overflow-x-auto">
-        <div className="min-w-[480px] mx-auto" style={{ maxWidth: gridPx + 40 }}>
+        <div className="min-w-[560px] mx-auto" style={{ maxWidth: gridPx + 50 }}>
           <svg
-            viewBox={`-20 -20 ${gridPx + 40} ${gridPx + 40}`}
+            viewBox={`-25 -25 ${gridPx + 50} ${gridPx + 50}`}
             className="w-full"
-            style={{ maxHeight: 520 }}
+            style={{ maxHeight: 640 }}
           >
             {/* Direction labels */}
             {DIR_LABELS.map((lbl, i) => (
@@ -136,8 +138,8 @@ export default function VastuMandalaGrid({ zones }: Props) {
                 y={lbl.y}
                 textAnchor={lbl.anchor as any}
                 fill="#d97706"
-                fontSize="9"
-                fontWeight="600"
+                fontSize="11"
+                fontWeight="700"
                 transform={lbl.rotate ? `rotate(${lbl.rotate}, ${lbl.x}, ${lbl.y})` : undefined}
               >
                 {lbl.text}
@@ -154,70 +156,64 @@ export default function VastuMandalaGrid({ zones }: Props) {
                 const y = r * cellSize;
                 const isCenter = r >= 3 && r <= 5 && c >= 3 && c <= 5;
                 const isSelected = selected?.id === devta?.id;
+                const isHov = hovered === key && !!devta;
 
                 return (
-                  <g key={key}>
+                  <g
+                    key={key}
+                    onMouseEnter={() => devta && setHovered(key)}
+                    onMouseLeave={() => setHovered(null)}
+                  >
                     <rect
                       x={x + 0.5}
                       y={y + 0.5}
                       width={cellSize - 1}
                       height={cellSize - 1}
-                      rx={3}
-                      fill={colors.fill}
-                      stroke={isSelected ? '#fbbf24' : colors.stroke}
-                      strokeWidth={isSelected ? 2 : isCenter && devta ? 1.5 : 0.5}
-                      opacity={devta ? 1 : 0.3}
-                      className={devta ? 'cursor-pointer' : ''}
+                      rx={4}
+                      fill={isHov ? colors.stroke : colors.fill}
+                      stroke={isSelected ? '#fbbf24' : isHov ? '#fbbf24' : colors.stroke}
+                      strokeWidth={isSelected ? 2.5 : isHov ? 1.5 : isCenter && devta ? 1.5 : 0.5}
+                      opacity={devta ? 1 : 0.25}
+                      className={devta ? 'cursor-pointer transition-all duration-150' : ''}
                       onClick={() => devta && setSelected(devta)}
                     />
                     {devta && (
                       <>
                         <text
                           x={x + cellSize / 2}
-                          y={y + (isHi ? 20 : 22)}
+                          y={y + 18}
                           textAnchor="middle"
-                          fill={colors.text}
-                          fontSize={devta.name.length > 6 ? 7 : 8}
+                          fill={isHov ? '#fff' : colors.text}
+                          fontSize={devta.name.length > 8 ? 8 : 10}
                           fontWeight="700"
                           className="pointer-events-none select-none"
                         >
-                          {isHi ? devta.name_hi : devta.name}
+                          {devta.name}
                         </text>
-                        {!isHi && (
-                          <text
-                            x={x + cellSize / 2}
-                            y={y + 33}
-                            textAnchor="middle"
-                            fill={colors.text}
-                            fontSize="6"
-                            opacity={0.6}
-                            className="pointer-events-none select-none"
-                          >
-                            {devta.name_hi}
-                          </text>
-                        )}
                         <text
                           x={x + cellSize / 2}
-                          y={y + cellSize - 6}
+                          y={y + 32}
+                          textAnchor="middle"
+                          fill={isHov ? '#fde68a' : colors.text}
+                          fontSize={devta.name_hi.length > 6 ? 8 : 9}
+                          fontWeight="600"
+                          opacity={0.85}
+                          className="pointer-events-none select-none"
+                        >
+                          {devta.name_hi}
+                        </text>
+                        <text
+                          x={x + cellSize / 2}
+                          y={y + cellSize - 10}
                           textAnchor="middle"
                           fill={colors.text}
-                          fontSize="6"
+                          fontSize="8"
                           opacity={0.5}
                           className="pointer-events-none select-none"
                         >
                           {isHi ? devta.element_hi : devta.element}
                         </text>
                       </>
-                    )}
-                    {!devta && isCenter && (
-                      <text
-                        x={x + cellSize / 2}
-                        y={y + cellSize / 2 + 3}
-                        textAnchor="middle"
-                        fill="#475569"
-                        fontSize="7"
-                        className="pointer-events-none"
-                      />
                     )}
                   </g>
                 );
@@ -226,24 +222,24 @@ export default function VastuMandalaGrid({ zones }: Props) {
 
             {/* Brahma Sthana border */}
             <rect
-              x={3 * cellSize}
-              y={3 * cellSize}
-              width={3 * cellSize}
-              height={3 * cellSize}
-              rx={4}
+              x={3 * cellSize - 1}
+              y={3 * cellSize - 1}
+              width={3 * cellSize + 2}
+              height={3 * cellSize + 2}
+              rx={5}
               fill="none"
               stroke="#d97706"
-              strokeWidth={2}
-              strokeDasharray="6 3"
-              opacity={0.6}
+              strokeWidth={2.5}
+              strokeDasharray="8 4"
+              opacity={0.7}
             />
             <text
               x={4.5 * cellSize}
-              y={3 * cellSize - 4}
+              y={3 * cellSize - 6}
               textAnchor="middle"
               fill="#d97706"
-              fontSize="8"
-              fontWeight="600"
+              fontSize="10"
+              fontWeight="700"
             >
               {isHi ? 'ब्रह्म स्थान' : 'Brahma Sthana'}
             </text>

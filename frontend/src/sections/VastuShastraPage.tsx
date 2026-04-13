@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Loader2, Compass, Grid3X3, DoorOpen, Wrench, Home } from 'lucide-react';
+import { ArrowLeft, Loader2, Compass, Grid3X3, DoorOpen, Wrench, Home, LayoutGrid } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,7 @@ import VastuMandalaTab from '@/components/vastu/VastuMandalaTab';
 import VastuEntranceTab from '@/components/vastu/VastuEntranceTab';
 import VastuRemediesTab from '@/components/vastu/VastuRemediesTab';
 import VastuRoomPlacementTab from '@/components/vastu/VastuRoomPlacementTab';
+import VastuHomeMapperTab from '@/components/vastu/VastuHomeMapperTab';
 
 type View = 'form' | 'generating' | 'result';
 
@@ -20,7 +21,7 @@ export default function VastuShastraPage() {
   const [view, setView] = useState<View>('form');
   const [analysisData, setAnalysisData] = useState<any>(null);
   const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState('mandala');
+  const [activeTab, setActiveTab] = useState('home');
 
   const handleGenerate = useCallback(async (formData: VastuFormData) => {
     setView('generating');
@@ -120,7 +121,11 @@ export default function VastuShastraPage() {
 
             {/* Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid grid-cols-4 mb-6 bg-white/5 border border-white/10 rounded-xl p-1">
+              <TabsList className="grid grid-cols-5 mb-6 bg-white/5 border border-white/10 rounded-xl p-1">
+                <TabsTrigger value="home" className="data-[state=active]:bg-sacred-gold/20 data-[state=active]:text-sacred-gold rounded-lg text-xs">
+                  <LayoutGrid className="w-3.5 h-3.5 mr-1" />
+                  {isHi ? 'मेरा घर' : 'My Home'}
+                </TabsTrigger>
                 <TabsTrigger value="mandala" className="data-[state=active]:bg-sacred-gold/20 data-[state=active]:text-sacred-gold rounded-lg text-xs">
                   <Grid3X3 className="w-3.5 h-3.5 mr-1" />
                   {isHi ? '45 देवता' : '45 Devtas'}
@@ -139,6 +144,9 @@ export default function VastuShastraPage() {
                 </TabsTrigger>
               </TabsList>
 
+              <TabsContent value="home">
+                <VastuHomeMapperTab data={analysisData} />
+              </TabsContent>
               <TabsContent value="mandala">
                 <VastuMandalaTab data={analysisData} />
               </TabsContent>

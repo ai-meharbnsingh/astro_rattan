@@ -696,6 +696,308 @@ def get_room_placement(room_type: Optional[str] = None) -> dict:
 
 
 # ============================================================
+# HOME LAYOUT ANALYSIS — user's actual room placement
+# ============================================================
+
+# Rooms that MUST NOT be in Center (Brahma Sthana) — hard block
+_CENTER_HARD_BLOCK = {"kitchen", "bathroom", "staircase"}
+# Rooms every home should have
+_CRITICAL_ROOMS = {"kitchen", "bathroom", "master_bedroom"}
+
+# Scoring weights
+_SCORE_IDEAL = 10
+_SCORE_ACCEPTABLE = 5
+_SCORE_NEUTRAL = 2
+_SCORE_AVOID = -8
+
+
+def analyze_home_layout(
+    room_assignments: dict[str, list[str]],
+    building_type: str = "residential",
+    entrance_direction: Optional[str] = None,
+) -> dict:
+    """
+    Analyze a user's actual room layout against Vastu principles.
+
+    Args:
+        room_assignments: direction → list of room_type keys
+                          e.g. {"NE": ["pooja"], "SE": ["kitchen"], "SW": ["master_bedroom"]}
+        building_type: "residential", "commercial", or "temple"
+        entrance_direction: optional entrance direction for cross-referencing
+
+    Returns:
+        dict with overall_score, per-room compliance, remedies, center status,
+        missing critical rooms, duplicate warnings
+    """
+    room_results = []
+    total_score = 0
+    max_possible = 0
+    ideal_count = 0
+    acceptable_count = 0
+    neutral_count = 0
+    avoid_count = 0
+    all_assigned_types = []
+    direction_summary = {}
+
+    for direction, rooms in room_assignments.items():
+        dir_rooms_status = []
+
+        for room_type in rooms:
+            all_assigned_types.append(room_type)
+            room_data = ROOM_PLACEMENT.get(room_type)
+            if not room_data:
+                continue
+
+            max_possible += _SCORE_IDEAL  # best case for this room
+
+            # Determine compliance
+            if direction == "Center":
+                # Brahma Sthana special handling
+                if room_type in _CENTER_HARD_BLOCK:
+                    compliance = "blocked"
+                    score_contrib = _SCORE_AVOID - 5  # extra penalty
+                elif "Center" in room_data.get("avoid", []):
+                    compliance = "avoid"
+                    score_contrib = _SCORE_AVOID
+                else:
+                    compliance = "warning"
+                    score_contrib = 0  # not penalized but warned
+            elif direction in room_data["ideal"]:
+                compliance = "ideal"
+                score_contrib = _SCORE_IDEAL
+            elif direction in room_data["acceptable"]:
+                compliance = "acceptable"
+                score_contrib = _SCORE_ACCEPTABLE
+            elif direction in room_data["avoid"]:
+                compliance = "avoid"
+                score_contrib = _SCORE_AVOID
+            else:
+                compliance = "neutral"
+                score_contrib = _SCORE_NEUTRAL
+
+            total_score += score_contrib
+            if compliance == "ideal":
+                ideal_count += 1
+            elif compliance == "acceptable":
+                acceptable_count += 1
+            elif compliance == "neutral" or compliance == "warning":
+                neutral_count += 1
+            else:
+                avoid_count += 1
+
+            # Build per-room result
+            dir_info = DIRECTIONS.get(direction, {})
+            result_entry = {
+                "room_type": room_type,
+                "room_name_en": room_data["name_en"],
+                "room_name_hi": room_data["name_hi"],
+                "assigned_direction": direction,
+                "assigned_direction_en": dir_info.get("en", direction),
+                "assigned_direction_hi": dir_info.get("hi", direction),
+                "compliance": compliance,
+                "score_contribution": score_contrib,
+                "ideal_directions": room_data["ideal"],
+                "ideal_directions_hi": room_data["ideal_hi"],
+                "reason_en": room_data["reason_en"],
+                "reason_hi": room_data["reason_hi"],
+                "tips_en": room_data["tips_en"],
+                "tips_hi": room_data["tips_hi"],
+                "remedies": None,
+                "zone_devtas": [],
+            }
+
+            # Find zone devtas
+            zone_devtas = []
+            for d in DEVTAS_45:
+                if d["direction"] == direction or d["direction"].startswith(direction):
+                    zone_devtas.append({
+                        "name": d["name"],
+                        "name_hi": d["name_hi"],
+                        "energy_type": d["energy_type"],
+                        "mantra": d["mantra"],
+                        "nature": d["nature"],
+                    })
+            result_entry["zone_devtas"] = zone_devtas[:3]  # top 3
+
+            # Generate remedies for misplaced rooms
+            if compliance in ("avoid", "blocked"):
+                result_entry["remedies"] = _build_room_remedies(
+                    room_type, room_data, direction, zone_devtas, compliance
+                )
+
+            # Brahma Sthana warning for "warning" compliance
+            if compliance == "warning":
+                result_entry["remedies"] = {
+                    "severity": "soft_warning",
+                    "relocation_en": f"Consider moving {room_data['name_en']} away from the center. Brahma Sthana should remain open for cosmic energy flow.",
+                    "relocation_hi": f"{room_data['name_hi']} को केंद्र से हटाने पर विचार करें। ब्रह्म स्थान ब्रह्मांडीय ऊर्जा प्रवाह के लिए खुला रहना चाहिए।",
+                }
+
+            room_results.append(result_entry)
+            dir_rooms_status.append(compliance)
+
+        # Direction summary
+        if rooms:
+            worst = "ideal"
+            for s in dir_rooms_status:
+                if s in ("blocked", "avoid"):
+                    worst = "misplaced"
+                    break
+                elif s in ("neutral", "warning") and worst == "ideal":
+                    worst = "neutral"
+                elif s == "acceptable" and worst == "ideal":
+                    worst = "acceptable"
+            d_info = DIRECTIONS.get(direction, {})
+            direction_summary[direction] = {
+                "rooms": rooms,
+                "element": d_info.get("element", ""),
+                "element_hi": d_info.get("element_hi", ""),
+                "status": worst,
+            }
+
+    # Overall score (clamped 10-100)
+    if max_possible > 0:
+        overall = int((total_score / max_possible) * 100)
+    else:
+        overall = 50
+    overall = max(10, min(100, overall))
+
+    # Center (Brahma Sthana) check
+    center_rooms = room_assignments.get("Center", [])
+    center_open = len(center_rooms) == 0
+    if center_open:
+        center_msg_en = "Brahma Sthana is open — excellent! Cosmic energy flows freely."
+        center_msg_hi = "ब्रह्म स्थान खुला है — उत्कृष्ट! ब्रह्मांडीय ऊर्जा स्वतंत्र रूप से प्रवाहित हो रही है।"
+    else:
+        center_msg_en = f"Brahma Sthana has {len(center_rooms)} room(s) — center should be kept open for cosmic energy."
+        center_msg_hi = f"ब्रह्म स्थान में {len(center_rooms)} कमरा/कमरे हैं — ब्रह्मांडीय ऊर्जा के लिए केंद्र खुला रहना चाहिए।"
+
+    # Missing critical rooms
+    missing = []
+    for cr in _CRITICAL_ROOMS:
+        if cr not in all_assigned_types:
+            rd = ROOM_PLACEMENT.get(cr, {})
+            missing.append({
+                "room_type": cr,
+                "room_name_en": rd.get("name_en", cr),
+                "room_name_hi": rd.get("name_hi", cr),
+                "ideal_directions": rd.get("ideal", []),
+                "ideal_directions_hi": rd.get("ideal_hi", []),
+            })
+
+    # Duplicate room warnings
+    from collections import Counter
+    type_counts = Counter(all_assigned_types)
+    duplicates = []
+    for rt, count in type_counts.items():
+        if count > 1:
+            rd = ROOM_PLACEMENT.get(rt, {})
+            duplicates.append({
+                "room_type": rt,
+                "room_name_en": rd.get("name_en", rt),
+                "room_name_hi": rd.get("name_hi", rt),
+                "count": count,
+                "message_en": f"Multiple {rd.get('name_en', rt)}s detected ({count}) — verify if accurate.",
+                "message_hi": f"एकाधिक {rd.get('name_hi', rt)} पाए गए ({count}) — सत्यापित करें कि यह सही है।",
+            })
+
+    # Unassigned room types
+    assigned_set = set(all_assigned_types)
+    unassigned = []
+    for key, rd in ROOM_PLACEMENT.items():
+        if key not in assigned_set:
+            unassigned.append({
+                "room_type": key,
+                "room_name_en": rd["name_en"],
+                "room_name_hi": rd["name_hi"],
+                "ideal_directions": rd["ideal"],
+                "ideal_directions_hi": rd["ideal_hi"],
+            })
+
+    return {
+        "overall_score": overall,
+        "overall_label_en": _score_label(overall),
+        "overall_label_hi": _score_label_hi(overall),
+        "total_rooms": len(all_assigned_types),
+        "ideal_count": ideal_count,
+        "acceptable_count": acceptable_count,
+        "neutral_count": neutral_count,
+        "avoid_count": avoid_count,
+        "room_results": room_results,
+        "direction_summary": direction_summary,
+        "center_status": {
+            "is_open": center_open,
+            "rooms": center_rooms,
+            "assessment_en": center_msg_en,
+            "assessment_hi": center_msg_hi,
+        },
+        "missing_critical_rooms": missing,
+        "duplicate_warnings": duplicates,
+        "unassigned_rooms": unassigned,
+    }
+
+
+def _build_room_remedies(
+    room_type: str,
+    room_data: dict,
+    direction: str,
+    zone_devtas: list,
+    compliance: str,
+) -> dict:
+    """Build detailed devta-aware remedies for a misplaced room."""
+    ideal_str = ", ".join(room_data["ideal"])
+    ideal_str_hi = ", ".join(room_data["ideal_hi"])
+    dir_info = DIRECTIONS.get(direction, {})
+    dir_en = dir_info.get("en", direction)
+    dir_hi = dir_info.get("hi", direction)
+    element = dir_info.get("element", "")
+    element_hi = dir_info.get("element_hi", "")
+
+    remedies: dict = {
+        "severity": "hard_block" if compliance == "blocked" else "misplaced",
+        "relocation_en": f"Move {room_data['name_en']} to {ideal_str} direction for optimal Vastu compliance.",
+        "relocation_hi": f"इष्टतम वास्तु अनुपालन के लिए {room_data['name_hi']} को {ideal_str_hi} दिशा में ले जाएँ।",
+        "explanation_en": f"{room_data['name_en']} in {dir_en} ({element} element zone) conflicts with its energy requirements. {room_data['reason_en']}",
+        "explanation_hi": f"{dir_hi} ({element_hi} तत्व क्षेत्र) में {room_data['name_hi']} इसकी ऊर्जा आवश्यकताओं से टकराता है। {room_data['reason_hi']}",
+    }
+
+    # Metal strip remedy for the zone
+    metal = METAL_REMEDIES.get(direction)
+    if metal:
+        remedies["metal_strip"] = {
+            "metal": metal["metal"],
+            "metal_hi": metal["metal_hi"],
+            "placement_en": metal["placement"],
+            "placement_hi": metal["placement_hi"],
+        }
+
+    # Color therapy for the zone
+    colors = COLOR_THERAPY.get(direction)
+    if colors:
+        remedies["color_therapy"] = {
+            "colors": colors["colors"],
+            "colors_hi": colors["colors_hi"],
+            "reasoning_en": colors["reasoning_en"],
+            "reasoning_hi": colors["reasoning_hi"],
+        }
+
+    # Devta mantras
+    if zone_devtas:
+        remedies["mantras"] = [
+            {
+                "devta": d["name"],
+                "devta_hi": d["name_hi"],
+                "mantra": d["mantra"],
+                "method_en": f"Chant '{d['mantra']}' 108 times daily to appease {d['name']} energy in this zone.",
+                "method_hi": f"इस क्षेत्र में {d['name_hi']} ऊर्जा को शांत करने के लिए प्रतिदिन '{d['mantra']}' का 108 बार जाप करें।",
+            }
+            for d in zone_devtas[:2]
+        ]
+
+    return remedies
+
+
+# ============================================================
 # COMPLETE ANALYSIS — combines everything
 # ============================================================
 def get_complete_vastu_analysis(
