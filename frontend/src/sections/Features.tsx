@@ -164,12 +164,12 @@ export default function Features() {
                 <div className="w-12 h-12 rounded-lg bg-sacred-gold/10 flex items-center justify-center text-sacred-gold-dark mb-4 group-hover:bg-sacred-gold/20 transition-colors">
                   {feature.icon}
                 </div>
-                <p className="text-xs font-semibold text-sacred-gold-dark uppercase tracking-wider mb-1">
-                  {feature.subtitle}
-                </p>
-                <h3 className="text-lg font-sans font-semibold text-cosmic-text mb-3 uppercase tracking-wide">
+                <h3 className="text-lg font-sans font-semibold text-cosmic-text mb-1 uppercase tracking-wide">
                   {feature.title}
                 </h3>
+                <p className="text-xs font-semibold text-sacred-gold-dark uppercase tracking-wider mb-3">
+                  {feature.subtitle}
+                </p>
                 <p className="text-sm text-cosmic-text/70 leading-relaxed">
                   {feature.desc}
                 </p>
@@ -190,11 +190,11 @@ export default function Features() {
           </div>
           <div className="text-center">
             <div className="text-3xl font-bold text-sacred-gold-dark">43</div>
-            <div className="text-sm text-cosmic-text/70">{l('Day Protocol', 'दिवसीय प्रोटोकॉल')}</div>
+            <div className="text-sm text-cosmic-text/70">{l('-Day Moon Discipline', '-दिवसीय चंद्र अनुशासन')}</div>
           </div>
           <div className="text-center">
             <div className="text-3xl font-bold text-sacred-gold-dark">3</div>
-            <div className="text-sm text-cosmic-text/70">{l('Scriptural Systems', 'शास्त्रीय प्रणालियां')}</div>
+            <div className="text-sm text-cosmic-text/70">{l('Vedic Traditions', 'वैदिक परंपराएं')}</div>
           </div>
         </div>
 
@@ -234,7 +234,7 @@ export default function Features() {
                 <div className="text-sm text-cosmic-text font-medium flex items-center gap-2">
                   {row.feature}
                   {row.exclusive && (
-                    <span className="hidden sm:inline px-1.5 py-0.5 text-[10px] font-bold text-sacred-gold-dark border border-sacred-gold/40 rounded uppercase tracking-wide">
+                    <span className="inline px-1.5 py-0.5 text-[10px] font-bold text-sacred-gold-dark border border-sacred-gold/40 rounded uppercase tracking-wide">
                       {l('Only us', 'सिर्फ हम')}
                     </span>
                   )}
@@ -261,7 +261,7 @@ export default function Features() {
             {l('Real screens from the platform', 'प्लेटफॉर्म की वास्तविक स्क्रीन')}
           </p>
 
-          <div className="rounded-2xl p-6 sm:p-8" style={{ background: '#FAF7F2' }}>
+          <div className="rounded-2xl p-6 sm:p-8 bg-[#1a1625] border border-sacred-gold/10">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {[
                 { label: l('Kundli Engine', 'कुंडली इंजन'),           file: 'showcase-kundli.png'     },
@@ -276,7 +276,7 @@ export default function Features() {
                   type="button"
                   onClick={() => setLightbox({ file, label })}
                   className="group overflow-hidden rounded-xl text-left w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-sacred-gold"
-                  style={{ border: '1px solid #e0d5c5' }}
+                  style={{ border: '1px solid rgba(196, 164, 105, 0.2)' }}
                 >
                   <div className="overflow-hidden relative" style={{ height: '220px' }}>
                     <img
@@ -292,7 +292,7 @@ export default function Features() {
                       </span>
                     </div>
                   </div>
-                  <div className="px-4 py-3" style={{ background: '#FAF7F2', borderTop: '1px solid #e0d5c5' }}>
+                  <div className="px-4 py-3" style={{ background: '#1a1625', borderTop: '1px solid rgba(196, 164, 105, 0.15)' }}>
                     <p className="text-sm font-semibold text-center uppercase tracking-wider" style={{ color: '#C4611F' }}>
                       {label}
                     </p>
@@ -313,14 +313,14 @@ export default function Features() {
               href="/login"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-sacred-gold-dark text-white rounded-lg font-semibold hover:bg-sacred-gold transition-all shadow-lg shadow-sacred-gold/20"
             >
-              {l('Get Started Free', 'मुफ्त शुरू करें')}
+              {l('Create Your Account', 'अपना अकाउंट बनाएं')}
               <Sparkles className="w-4 h-4" />
             </a>
             <a
               href="/kundli"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-sacred-gold/50 text-sacred-gold-dark rounded-lg font-semibold hover:bg-sacred-gold/10 transition-all"
             >
-              {l('Try Demo Chart', 'डेमो चार्ट देखें')}
+              {l('Try Free Kundli', 'मुफ्त कुंडली देखें')}
             </a>
           </div>
         </div>
@@ -346,7 +346,7 @@ export default function Features() {
             className="w-full h-auto block"
           />
           {/* Label bar */}
-          <div className="px-6 py-4 flex items-center justify-between" style={{ background: '#FAF7F2' }}>
+          <div className="px-6 py-4 flex items-center justify-between" style={{ background: '#1a1625' }}>
             <p className="text-sm font-bold uppercase tracking-widest" style={{ color: '#C4611F' }}>
               {lightbox.label}
             </p>

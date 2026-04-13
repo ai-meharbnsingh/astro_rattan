@@ -1,7 +1,7 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BookOpen, ArrowLeft, Loader2 } from 'lucide-react';
+import { BookOpen, ArrowLeft, Loader2, ChevronDown } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
@@ -53,6 +53,16 @@ export default function LalKitabPage() {
   const [clientId, setClientId] = useState(locState.clientId || '');
   const [kundliId, setKundliId] = useState(locState.loadKundliId || '');
   const [activeTopTab, setActiveTopTab] = useState('dashboard');
+  const mobileTabsRef = useRef<HTMLDivElement>(null);
+  const [scrollHints, setScrollHints] = useState({ showLeft: false, showRight: true });
+
+  const handleMobileTabScroll = useCallback(() => {
+    const el = mobileTabsRef.current;
+    if (!el) return;
+    const atStart = el.scrollLeft <= 4;
+    const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4;
+    setScrollHints({ showLeft: !atStart, showRight: !atEnd });
+  }, []);
 
   // Auto-load existing kundli if navigated with loadKundliId
   useEffect(() => {
@@ -168,7 +178,7 @@ export default function LalKitabPage() {
             <Button
               variant="outline"
               onClick={() => { setView('form'); setChartData(null); }}
-              className="mb-6 border-sacred-gold text-sacred-gold hover:bg-gray-50"
+              className="mb-6 border-sacred-gold text-sacred-gold hover:bg-white/10"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               {t('lk.backToForm')}
@@ -176,13 +186,17 @@ export default function LalKitabPage() {
 
             <Tabs value={activeTopTab} onValueChange={setActiveTopTab} className="w-full">
               <div className="relative mb-6 md:mb-4 md:static">
-                {/* Scroll hint arrows — mobile only */}
-                <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-sacred-cream to-transparent z-10 pointer-events-none flex items-center justify-start pl-1 md:hidden">
-                  <span className="text-sacred-gold-dark text-lg">‹</span>
-                </div>
-                <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-sacred-cream to-transparent z-10 pointer-events-none flex items-center justify-end pr-1 md:hidden">
-                  <span className="text-sacred-gold-dark text-lg">›</span>
-                </div>
+                {/* Scroll hint arrows — mobile only, hidden when scrolled to edge */}
+                {scrollHints.showLeft && (
+                  <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-sacred-cream to-transparent z-10 pointer-events-none flex items-center justify-start pl-1 md:hidden">
+                    <span className="text-sacred-gold-dark text-lg">‹</span>
+                  </div>
+                )}
+                {scrollHints.showRight && (
+                  <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-sacred-cream to-transparent z-10 pointer-events-none flex items-center justify-end pr-1 md:hidden">
+                    <span className="text-sacred-gold-dark text-lg">›</span>
+                  </div>
+                )}
 
                 {/* Desktop: grouped tabs */}
                 <div className="hidden md:flex md:flex-col md:gap-1">
@@ -205,8 +219,8 @@ export default function LalKitabPage() {
                 </div>
 
                 {/* Mobile: single horizontally scrollable row */}
-                <TabsList className="md:hidden bg-sacred-cream w-full h-auto p-2 gap-1
-                  flex flex-nowrap overflow-x-auto pb-3 scrollbar-hide
+                <TabsList ref={mobileTabsRef} onScroll={handleMobileTabScroll} className="md:hidden bg-sacred-cream w-full h-auto p-2 gap-1
+                  flex flex-nowrap overflow-x-auto pb-3 scrollbar-thin scrollbar-thumb-sacred-gold/30 scrollbar-track-transparent
                   [&>button]:flex-shrink-0 [&>button]:flex-grow-0 [&>button]:basis-auto [&>button]:whitespace-nowrap [&>button]:min-h-[36px] [&>button]:px-3 [&>button]:py-1.5 [&>button]:text-xs
                   [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
                   <TabsTrigger value="dashboard">{t('lk.tab.dashboard')}</TabsTrigger>
@@ -248,13 +262,61 @@ export default function LalKitabPage() {
                 <LalKitabRemediesTrackerTab chartData={chartData} kundliId={kundliId} />
                 <LalKitabChandraChaalanaTab />
               </TabsContent>
-              <TabsContent value="predictions" className="space-y-8">
-                <LalKitabPredictionTab chartData={chartData} />
-                <LalKitabMarriageTab kundliId={kundliId} />
-                <LalKitabCareerTab kundliId={kundliId} />
-                <LalKitabHealthTab kundliId={kundliId} />
-                <LalKitabWealthTab kundliId={kundliId} />
-                <LalKitabSavedPredictionsTab kundliId={kundliId} />
+              <TabsContent value="predictions" className="space-y-4">
+                <details open className="border border-sacred-gold/20 rounded-xl overflow-hidden">
+                  <summary className="p-4 bg-cosmic-card cursor-pointer font-semibold text-sacred-gold flex items-center justify-between">
+                    {isHi ? 'सामान्य भविष्यवाणी' : 'General Predictions'}
+                    <ChevronDown className="w-4 h-4" />
+                  </summary>
+                  <div className="p-4">
+                    <LalKitabPredictionTab chartData={chartData} />
+                  </div>
+                </details>
+                <details className="border border-sacred-gold/20 rounded-xl overflow-hidden">
+                  <summary className="p-4 bg-cosmic-card cursor-pointer font-semibold text-sacred-gold flex items-center justify-between">
+                    {isHi ? 'विवाह भविष्यवाणी' : 'Marriage Predictions'}
+                    <ChevronDown className="w-4 h-4" />
+                  </summary>
+                  <div className="p-4">
+                    <LalKitabMarriageTab kundliId={kundliId} />
+                  </div>
+                </details>
+                <details className="border border-sacred-gold/20 rounded-xl overflow-hidden">
+                  <summary className="p-4 bg-cosmic-card cursor-pointer font-semibold text-sacred-gold flex items-center justify-between">
+                    {isHi ? 'करियर भविष्यवाणी' : 'Career Predictions'}
+                    <ChevronDown className="w-4 h-4" />
+                  </summary>
+                  <div className="p-4">
+                    <LalKitabCareerTab kundliId={kundliId} />
+                  </div>
+                </details>
+                <details className="border border-sacred-gold/20 rounded-xl overflow-hidden">
+                  <summary className="p-4 bg-cosmic-card cursor-pointer font-semibold text-sacred-gold flex items-center justify-between">
+                    {isHi ? 'स्वास्थ्य भविष्यवाणी' : 'Health Predictions'}
+                    <ChevronDown className="w-4 h-4" />
+                  </summary>
+                  <div className="p-4">
+                    <LalKitabHealthTab kundliId={kundliId} />
+                  </div>
+                </details>
+                <details className="border border-sacred-gold/20 rounded-xl overflow-hidden">
+                  <summary className="p-4 bg-cosmic-card cursor-pointer font-semibold text-sacred-gold flex items-center justify-between">
+                    {isHi ? 'धन भविष्यवाणी' : 'Wealth Predictions'}
+                    <ChevronDown className="w-4 h-4" />
+                  </summary>
+                  <div className="p-4">
+                    <LalKitabWealthTab kundliId={kundliId} />
+                  </div>
+                </details>
+                <details className="border border-sacred-gold/20 rounded-xl overflow-hidden">
+                  <summary className="p-4 bg-cosmic-card cursor-pointer font-semibold text-sacred-gold flex items-center justify-between">
+                    {isHi ? 'सहेजी गई भविष्यवाणियाँ' : 'Saved Predictions'}
+                    <ChevronDown className="w-4 h-4" />
+                  </summary>
+                  <div className="p-4">
+                    <LalKitabSavedPredictionsTab kundliId={kundliId} />
+                  </div>
+                </details>
               </TabsContent>
               <TabsContent value="nishaniyan">
                 <LalKitabNishaniyaTab kundliId={kundliId} />

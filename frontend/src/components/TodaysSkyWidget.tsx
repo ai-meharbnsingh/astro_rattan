@@ -2,7 +2,7 @@
  * TodaysSkyWidget — live concentric / diamond transit chart for the homepage.
  * Fetches today's planetary positions from GET /api/kundli/current-sky (no auth).
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import ConcentricChart from '@/components/kundli/ConcentricChart';
 
@@ -26,6 +26,19 @@ export default function TodaysSkyWidget() {
   const hi = language === 'hi';
   const [sky, setSky] = useState<SkyData | null>(null);
   const [error, setError] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [chartSize, setChartSize] = useState(380);
+
+  useEffect(() => {
+    const updateSize = () => {
+      if (containerRef.current) {
+        setChartSize(Math.min(480, containerRef.current.clientWidth - 32));
+      }
+    };
+    updateSize();
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
+  }, []);
 
   useEffect(() => {
     fetch('/api/kundli/current-sky')
@@ -40,10 +53,17 @@ export default function TodaysSkyWidget() {
       })
     : '';
 
-  if (error) return null; // fail silently on homepage
+  if (error) return (
+    <div className="text-center py-8 text-gray-400">
+      <p className="text-sm">Unable to load sky data</p>
+      <button onClick={() => window.location.reload()} className="mt-2 text-xs text-sacred-gold hover:underline">
+        Retry
+      </button>
+    </div>
+  );
 
   return (
-    <div className="w-full max-w-lg mx-auto">
+    <div ref={containerRef} className="w-full max-w-lg mx-auto">
       {/* Header */}
       <div className="text-center mb-4">
         <p className="text-[11px] font-semibold text-sacred-gold-dark uppercase tracking-[4px] mb-1">
@@ -63,7 +83,7 @@ export default function TodaysSkyWidget() {
             is_retrograde: p.is_retrograde,
           }))}
           lagnaLongitude={sky.lagna_longitude}
-          size={480}
+          size={chartSize}
         />
       ) : (
         /* Skeleton */

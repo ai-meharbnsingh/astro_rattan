@@ -74,14 +74,14 @@ export default function VastuForm({ onGenerate, loading }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto">
+    <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto px-4 sm:px-6">
       {/* Building Type */}
       <div>
         <label className="block text-sm font-semibold text-sacred-gold mb-3">
           <Home className="w-4 h-4 inline mr-1" />
           {isHi ? 'भवन का प्रकार' : 'Building Type'}
         </label>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {BUILDING_TYPES.map(bt => (
             <button
               key={bt.key}
@@ -146,7 +146,7 @@ export default function VastuForm({ onGenerate, loading }: Props) {
             ? 'अपनी समस्याएँ चुनें — हम विशिष्ट वास्तु उपाय सुझाएँगे'
             : 'Select your concerns — we\'ll suggest specific Vastu remedies'}
         </p>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {PROBLEMS.map(p => (
             <button
               key={p.key}

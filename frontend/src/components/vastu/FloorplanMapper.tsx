@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
-import { X, Grid3X3, Compass, ZoomIn, ZoomOut, Undo2, Sparkles, Loader2 } from 'lucide-react';
+import { X, Grid3X3, Compass, ZoomIn, ZoomOut, Undo2, Sparkles, Loader2, Move, MousePointer } from 'lucide-react';
 
 interface RoomMarker {
   id: string;
@@ -20,6 +20,20 @@ interface Props {
   northRotation: number;
   onNorthRotationChange: (deg: number) => void;
 }
+
+/** Extract clientX/clientY from either mouse or touch events */
+const getEventCoords = (e: React.MouseEvent | React.TouchEvent) => {
+  if ('touches' in e && e.touches.length > 0) {
+    return { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY };
+  }
+  if ('changedTouches' in e && e.changedTouches.length > 0) {
+    return { clientX: e.changedTouches[0].clientX, clientY: e.changedTouches[0].clientY };
+  }
+  if ('clientX' in e) {
+    return { clientX: e.clientX, clientY: e.clientY };
+  }
+  return { clientX: 0, clientY: 0 };
+};
 
 const ROOM_OPTIONS: { key: string; en: string; hi: string; icon: string; special?: boolean }[] = [
   // ── Special marker ───────────────────────────────────────────────────
@@ -84,6 +98,9 @@ export default function FloorplanMapper({
   const [autoDetecting, setAutoDetecting] = useState(false);
   const [editingMarkerId, setEditingMarkerId] = useState<string | null>(null);
   const [aiDone, setAiDone] = useState(false);
+  const [mobileMode, setMobileMode] = useState<'pan' | 'place'>('place');
+  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+  const isTouchPanningRef = useRef(false);
 
   // Attach wheel as non-passive so preventDefault() actually works (stops page scroll)
   useEffect(() => {
@@ -115,6 +132,85 @@ export default function FloorplanMapper({
 
   const handlePanEnd = useCallback(() => setIsPanning(false), []);
 
+  // ── Touch event handlers ─────────────────────────────────────────────
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      const coords = getEventCoords(e);
+      touchStartRef.current = { x: coords.clientX, y: coords.clientY, time: Date.now() };
+      // In pan mode, start panning immediately on single finger
+      if (mobileMode === 'pan') {
+        e.preventDefault();
+        setIsPanning(true);
+        isTouchPanningRef.current = true;
+        panStart.current = { x: coords.clientX, y: coords.clientY, panX: pan.x, panY: pan.y };
+      }
+    } else if (e.touches.length === 2) {
+      // Two-finger drag always pans regardless of mode
+      e.preventDefault();
+      const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      setIsPanning(true);
+      isTouchPanningRef.current = true;
+      panStart.current = { x: midX, y: midY, panX: pan.x, panY: pan.y };
+    }
+  }, [pan, mobileMode]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      setPan({
+        x: panStart.current.panX + (midX - panStart.current.x),
+        y: panStart.current.panY + (midY - panStart.current.y),
+      });
+      return;
+    }
+    if (isTouchPanningRef.current && e.touches.length === 1) {
+      e.preventDefault();
+      const coords = getEventCoords(e);
+      setPan({
+        x: panStart.current.panX + (coords.clientX - panStart.current.x),
+        y: panStart.current.panY + (coords.clientY - panStart.current.y),
+      });
+    }
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (isTouchPanningRef.current) {
+      setIsPanning(false);
+      isTouchPanningRef.current = false;
+      touchStartRef.current = null;
+      return;
+    }
+    // Detect tap (not a drag) — open room selector in place mode
+    if (mobileMode === 'place' && touchStartRef.current && e.changedTouches.length > 0) {
+      const coords = getEventCoords(e);
+      const dx = coords.clientX - touchStartRef.current.x;
+      const dy = coords.clientY - touchStartRef.current.y;
+      const dt = Date.now() - touchStartRef.current.time;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      // Tap = less than 10px movement and under 300ms
+      if (dist < 10 && dt < 300) {
+        setEditingMarkerId(null);
+        const container = containerRef.current;
+        if (container) {
+          // Find the inner image wrapper (first child div inside container)
+          const innerWrapper = container.querySelector('[data-image-wrapper]') as HTMLElement;
+          if (innerWrapper) {
+            const rect = innerWrapper.getBoundingClientRect();
+            const scaleX = imageWidth / rect.width;
+            const scaleY = imageHeight / rect.height;
+            const x = Math.round((coords.clientX - rect.left) * scaleX);
+            const y = Math.round((coords.clientY - rect.top) * scaleY);
+            setClickPos({ x, y });
+          }
+        }
+      }
+    }
+    touchStartRef.current = null;
+  }, [mobileMode, imageWidth, imageHeight]);
+
   const handleUndo = useCallback(() => {
     if (markers.length > 0) {
       onRemoveMarker(markers[markers.length - 1].id);
@@ -142,10 +238,32 @@ export default function FloorplanMapper({
   return (
     <div className="space-y-4">
       {/* Controls */}
-      <div className="flex items-center gap-4 flex-wrap">
+      <div className="flex flex-wrap items-center gap-2">
+        {/* Mobile mode toggle (visible on touch devices) */}
+        <div className="flex items-center gap-1 sm:hidden">
+          <button
+            onClick={() => setMobileMode('place')}
+            className={`flex items-center gap-1 min-w-[40px] min-h-[40px] px-2 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              mobileMode === 'place' ? 'bg-sacred-gold/20 text-sacred-gold border border-sacred-gold/40' : 'bg-white/5 text-cosmic-text/40 border border-white/10'
+            }`}
+          >
+            <MousePointer className="w-3.5 h-3.5" />
+            {isHi ? 'रखें' : 'Place'}
+          </button>
+          <button
+            onClick={() => setMobileMode('pan')}
+            className={`flex items-center gap-1 min-w-[40px] min-h-[40px] px-2 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              mobileMode === 'pan' ? 'bg-sacred-gold/20 text-sacred-gold border border-sacred-gold/40' : 'bg-white/5 text-cosmic-text/40 border border-white/10'
+            }`}
+          >
+            <Move className="w-3.5 h-3.5" />
+            {isHi ? 'खिसकाएँ' : 'Pan'}
+          </button>
+        </div>
+
         {/* North rotation */}
-        <div className="flex items-center gap-2">
-          <Compass className="w-4 h-4 text-sacred-gold" />
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <Compass className="w-4 h-4 text-sacred-gold flex-shrink-0" />
           <label className="text-sm text-cosmic-text/60">{isHi ? 'उत्तर दिशा' : 'North'}</label>
           <input
             type="range"
@@ -153,7 +271,7 @@ export default function FloorplanMapper({
             max={359}
             value={northRotation}
             onChange={(e) => onNorthRotationChange(parseInt(e.target.value))}
-            className="w-24 accent-amber-500"
+            className="w-full sm:w-24 accent-amber-500"
           />
           <span className="text-sm text-sacred-gold font-mono w-8">{northRotation}°</span>
           <span className="text-sm text-cosmic-text/40">
@@ -164,25 +282,25 @@ export default function FloorplanMapper({
         {/* Grid toggle */}
         <button
           onClick={() => setShowGrid(!showGrid)}
-          className={`flex items-center gap-1 px-2 py-1 rounded text-sm transition-colors ${
+          className={`flex items-center gap-1 min-w-[40px] min-h-[40px] px-2 py-1.5 rounded text-sm transition-colors ${
             showGrid ? 'bg-sacred-gold/20 text-sacred-gold' : 'bg-white/5 text-cosmic-text/40'
           }`}
         >
-          <Grid3X3 className="w-3 h-3" />
+          <Grid3X3 className="w-3.5 h-3.5" />
           {isHi ? 'ग्रिड' : 'Grid'}
         </button>
 
         {/* Zoom controls */}
         <div className="flex items-center gap-1">
-          <button onClick={() => setZoom(z => Math.max(0.5, z - 0.25))} className="p-1 rounded bg-white/5 text-cosmic-text/50 hover:text-white">
-            <ZoomOut className="w-3.5 h-3.5" />
+          <button onClick={() => setZoom(z => Math.max(0.5, z - 0.25))} className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded bg-white/5 text-cosmic-text/50 hover:text-white">
+            <ZoomOut className="w-4 h-4" />
           </button>
-          <span className="text-sm text-cosmic-text/40 w-8 text-center">{Math.round(zoom * 100)}%</span>
-          <button onClick={() => setZoom(z => Math.min(3, z + 0.25))} className="p-1 rounded bg-white/5 text-cosmic-text/50 hover:text-white">
-            <ZoomIn className="w-3.5 h-3.5" />
+          <span className="text-sm text-cosmic-text/40 w-10 text-center">{Math.round(zoom * 100)}%</span>
+          <button onClick={() => setZoom(z => Math.min(3, z + 0.25))} className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded bg-white/5 text-cosmic-text/50 hover:text-white">
+            <ZoomIn className="w-4 h-4" />
           </button>
           {zoom !== 1 && (
-            <button onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }} className="text-sm text-cosmic-text/40 hover:text-white ml-1">
+            <button onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }} className="text-sm text-cosmic-text/40 hover:text-white ml-1 min-h-[40px] flex items-center">
               {isHi ? 'रीसेट' : 'Reset'}
             </button>
           )}
@@ -190,8 +308,8 @@ export default function FloorplanMapper({
 
         {/* Undo */}
         {markers.length > 0 && (
-          <button onClick={handleUndo} className="flex items-center gap-1 px-2 py-1 rounded bg-white/5 text-cosmic-text/50 hover:text-white text-sm">
-            <Undo2 className="w-3 h-3" />
+          <button onClick={handleUndo} className="flex items-center gap-1 min-w-[40px] min-h-[40px] px-2 py-1.5 rounded bg-white/5 text-cosmic-text/50 hover:text-white text-sm">
+            <Undo2 className="w-3.5 h-3.5" />
             {isHi ? 'पूर्ववत' : 'Undo'}
           </button>
         )}
@@ -220,13 +338,13 @@ export default function FloorplanMapper({
               setAutoDetecting(false);
             }
           }}
-          className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm font-medium hover:bg-amber-500/20 transition-colors disabled:opacity-40"
+          className="flex items-center gap-1 min-w-[40px] min-h-[40px] px-2.5 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm font-medium hover:bg-amber-500/20 transition-colors disabled:opacity-40"
         >
-          {autoDetecting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+          {autoDetecting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
           {isHi ? 'AI पहचान' : 'AI Detect'}
         </button>
 
-        <span className="text-[10px] text-cosmic-text/40 ml-auto">
+        <span className="text-[10px] text-cosmic-text/40 ml-auto hidden sm:inline">
           {isHi ? 'क्लिक=कमरा जोड़ें, मार्कर क्लिक=बदलें' : 'Click=add room, Click marker=edit'}
         </span>
       </div>
@@ -256,25 +374,27 @@ export default function FloorplanMapper({
       {/* Image Canvas */}
       <div
         ref={containerRef}
-        className="relative border border-white/10 rounded-xl overflow-hidden bg-black flex items-center justify-center"
+        className="relative border border-white/10 rounded-xl overflow-hidden bg-black flex items-center justify-center touch-none"
         style={{ cursor: isPanning ? 'grabbing' : 'crosshair' }}
         onMouseDown={handlePanStart}
         onMouseMove={handlePanMove}
         onMouseUp={handlePanEnd}
         onMouseLeave={handlePanEnd}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         {/* Inner wrapper sized exactly to the image aspect ratio — prevents grid/markers
             from bleeding into letterbox black areas that object-contain would create */}
-        <div style={{
+        <div data-image-wrapper style={{
           transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)`,
           transformOrigin: 'center',
           transition: isPanning ? 'none' : 'transform 0.1s',
           position: 'relative',
           maxWidth: '100%',
-          maxHeight: 500,
           aspectRatio: `${imageWidth} / ${imageHeight}`,
           flexShrink: 0,
-        }}>
+        }} className="max-h-[50vh] sm:max-h-[500px]">
         <img
           src={imageUrl}
           alt="Floor plan"
@@ -410,14 +530,20 @@ export default function FloorplanMapper({
           );
         })}
 
-        {/* Click Position — Room Selector Popup */}
-        {clickPos && (
+        {/* Click Position — Room Selector Popup (with edge collision avoidance) */}
+        {clickPos && (() => {
+          const pctX = (clickPos.x / imageWidth) * 100;
+          const pctY = (clickPos.y / imageHeight) * 100;
+          // Flip popup left if too close to right edge, flip up if too close to bottom
+          const flipH = pctX > 70; // popup is ~176px (w-44), flip if in right 30%
+          const flipV = pctY > 60; // popup is ~200px max-height, flip if in bottom 40%
+          return (
           <div
             className="absolute z-20 bg-[#1a1a2e] border border-sacred-gold/30 rounded-xl shadow-2xl p-1 max-h-[200px] overflow-y-auto w-44"
             style={{
-              left: `${(clickPos.x / imageWidth) * 100}%`,
-              top: `${(clickPos.y / imageHeight) * 100}%`,
-              transform: 'translate(-50%, 4px)',
+              left: `${pctX}%`,
+              top: `${pctY}%`,
+              transform: `translate(${flipH ? '-100%' : '-50%'}, ${flipV ? 'calc(-100% - 4px)' : '4px'})`,
             }}
           >
             <div className="px-2 py-1 flex items-center justify-between border-b border-white/10 mb-1">
@@ -439,7 +565,8 @@ export default function FloorplanMapper({
               </button>
             ))}
           </div>
-        )}
+          );
+        })()}
         </div>{/* close zoom transform div */}
       </div>
 

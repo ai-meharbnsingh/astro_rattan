@@ -1,5 +1,5 @@
 import { useTranslation } from '@/lib/i18n';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, Plus, Search, BookOpen, ChevronRight, User, Star, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -36,6 +36,9 @@ export default function Dashboard() {
   // Admin state
   const [adminStats, setAdminStats] = useState<AdminStats | null>(null);
 
+  // Debounce ref for search
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+
   const fetchClients = useCallback(async (q = '') => {
     setLoading(true);
     setFetchError(null);
@@ -71,7 +74,8 @@ export default function Dashboard() {
 
   const handleSearch = (val: string) => {
     setSearch(val);
-    fetchClients(val);
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => fetchClients(val), 300);
   };
 
   // ─── ADMIN DASHBOARD ─────────────────────────────────────
@@ -113,7 +117,7 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-sacred-gold-dark border border-sacred-gold flex items-center justify-center">
-                    <Star className="w-5 h-5 text-sacred-gold-dark" />
+                    <Star className="w-5 h-5 text-white" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-cosmic-text">{astro.name}</p>
@@ -157,12 +161,12 @@ export default function Dashboard() {
         <div className="space-y-3 py-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="flex items-center gap-4 p-4 border border-sacred-gold">
-              <div className="w-10 h-10 animate-pulse bg-gray-200 rounded" />
+              <div className="w-10 h-10 animate-pulse bg-sacred-gold/15 rounded" />
               <div className="flex-1 space-y-2">
-                <div className="h-4 w-32 animate-pulse bg-gray-200 rounded" />
-                <div className="h-3 w-48 animate-pulse bg-gray-200 rounded" />
+                <div className="h-4 w-32 animate-pulse bg-sacred-gold/15 rounded" />
+                <div className="h-3 w-48 animate-pulse bg-sacred-gold/15 rounded" />
               </div>
-              <div className="h-4 w-16 animate-pulse bg-gray-200 rounded" />
+              <div className="h-4 w-16 animate-pulse bg-sacred-gold/15 rounded" />
             </div>
           ))}
         </div>
@@ -171,7 +175,7 @@ export default function Dashboard() {
     if (fetchError) {
       return (
         <div className="text-center py-12">
-          <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-3"><span className="text-2xl">⚠️</span></div>
+          <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-3"><span className="text-2xl">!</span></div>
           <p className="text-red-700 mb-2">{fetchError}</p>
           <button onClick={() => fetchClients(search)} className="px-4 py-2 bg-sacred-gold-dark text-white rounded-lg text-sm hover:opacity-90">{t('common.retry')}</button>
         </div>
@@ -197,12 +201,12 @@ export default function Dashboard() {
             onClick={() => navigate(`/client/${client.id}`)}>
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 bg-sacred-gold-dark border border-sacred-gold flex items-center justify-center shrink-0">
-                <User className="w-5 h-5 text-sacred-gold-dark" />
+                <User className="w-5 h-5 text-white" />
               </div>
               <div>
                 <p className="text-sm font-medium text-cosmic-text">{client.name}</p>
                 <p className="text-sm text-cosmic-text">
-                  {client.birth_date || t('common.noData')} {client.birth_place ? `· ${client.birth_place}` : ''}
+                  {client.birth_date || t('common.noData')} {client.birth_place ? ` · ${client.birth_place}` : ''}
                   {client.phone ? ` · ${client.phone}` : ''}
                 </p>
               </div>

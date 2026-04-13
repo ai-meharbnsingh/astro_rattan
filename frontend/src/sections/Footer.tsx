@@ -1,11 +1,9 @@
 import { Link } from 'react-router-dom';
 import { Mail, Phone, Instagram, Youtube, ChevronRight, Heart } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
-import { useAuth } from '@/hooks/useAuth';
 
 export default function Footer() {
   const { t, language } = useTranslation();
-  const { isAuthenticated } = useAuth();
   const l = (en: string, hi: string) => (language === 'hi' ? hi : en);
 
   const serviceLinks = [
@@ -20,6 +18,8 @@ export default function Footer() {
     company: [
       { label: t('footer.aboutUs'), href: '/about' },
       { label: t('footer.contactShort'), href: '/' },
+      { label: l('Privacy Policy', 'गोपनीयता नीति'), href: '/privacy' },
+      { label: l('Terms of Service', 'सेवा की शर्तें'), href: '/terms' },
     ],
   };
 
@@ -69,20 +69,18 @@ export default function Footer() {
             </div>
           </div>
           
-          {isAuthenticated && (
-            <div>
-              <h4 className="font-sans font-semibold text-sacred-gold-dark mb-4">{t('footer.services')}</h4>
-              <ul className="space-y-2">
-                {serviceLinks.map((link, i) => (
-                  <li key={i}>
-                    <Link to={link.href} className="text-base text-cosmic-text hover:text-sacred-gold-dark transition-colors flex items-center gap-1">
-                      <ChevronRight className="w-4 h-4" />{link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          <div>
+            <h4 className="font-sans font-semibold text-sacred-gold-dark mb-4">{t('footer.services')}</h4>
+            <ul className="space-y-2">
+              {serviceLinks.map((link, i) => (
+                <li key={i}>
+                  <Link to={link.href} className="text-base text-cosmic-text hover:text-sacred-gold-dark transition-colors flex items-center gap-1">
+                    <ChevronRight className="w-4 h-4" />{link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
           {Object.entries(footerLinks).map(([title, links]) => (
             <div key={title}>
               <h4 className="font-sans font-semibold text-sacred-gold-dark mb-4 capitalize">{t(sectionTitleKeys[title] || title)}</h4>
@@ -110,6 +108,11 @@ export default function Footer() {
           <div className="flex gap-6">
             <span className="text-base text-cosmic-text">{t('footer.allRightsReserved')}</span>
           </div>
+        </div>
+        <div className="pb-2 text-center">
+          <p className="text-xs text-cosmic-text/50">
+            {l('Your birth data is encrypted and never shared with third parties.', 'आपका जन्म डेटा एन्क्रिप्टेड है और कभी भी तीसरे पक्ष के साथ साझा नहीं किया जाता।')}
+          </p>
         </div>
         <div className="pb-4 text-center">
           <p className="text-base text-cosmic-text-secondary" style={{ fontFamily: "'IM Fell English', serif" }}>

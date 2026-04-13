@@ -221,26 +221,26 @@ export default function VastuShastraPage() {
 
                 {/* Tabs */}
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
-                  <TabsList className="grid grid-cols-5 mb-6 bg-white/5 border border-white/10 rounded-xl p-1">
+                  <TabsList className="grid grid-cols-3 sm:grid-cols-5 mb-6 bg-white/5 border border-white/10 rounded-xl p-1">
                     <TabsTrigger value="home" className="data-[state=active]:bg-sacred-gold/20 data-[state=active]:text-sacred-gold rounded-lg text-sm">
-                      <LayoutGrid className="w-3.5 h-3.5 mr-1" />
-                      {isHi ? 'मेरा घर' : 'My Home'}
+                      <LayoutGrid className="w-3.5 h-3.5 sm:mr-1" />
+                      <span className="hidden sm:inline">{isHi ? 'मेरा घर' : 'My Home'}</span>
                     </TabsTrigger>
                     <TabsTrigger value="mandala" className="data-[state=active]:bg-sacred-gold/20 data-[state=active]:text-sacred-gold rounded-lg text-sm">
-                      <Grid3X3 className="w-3.5 h-3.5 mr-1" />
-                      {isHi ? '45 देवता' : '45 Devtas'}
+                      <Grid3X3 className="w-3.5 h-3.5 sm:mr-1" />
+                      <span className="hidden sm:inline">{isHi ? '45 देवता' : '45 Devtas'}</span>
                     </TabsTrigger>
                     <TabsTrigger value="entrance" className="data-[state=active]:bg-sacred-gold/20 data-[state=active]:text-sacred-gold rounded-lg text-sm">
-                      <DoorOpen className="w-3.5 h-3.5 mr-1" />
-                      {isHi ? 'प्रवेश पद' : 'Entrance'}
+                      <DoorOpen className="w-3.5 h-3.5 sm:mr-1" />
+                      <span className="hidden sm:inline">{isHi ? 'प्रवेश पद' : 'Entrance'}</span>
                     </TabsTrigger>
                     <TabsTrigger value="remedies" className="data-[state=active]:bg-sacred-gold/20 data-[state=active]:text-sacred-gold rounded-lg text-sm">
-                      <Wrench className="w-3.5 h-3.5 mr-1" />
-                      {isHi ? 'उपाय' : 'Remedies'}
+                      <Wrench className="w-3.5 h-3.5 sm:mr-1" />
+                      <span className="hidden sm:inline">{isHi ? 'उपाय' : 'Remedies'}</span>
                     </TabsTrigger>
                     <TabsTrigger value="rooms" className="data-[state=active]:bg-sacred-gold/20 data-[state=active]:text-sacred-gold rounded-lg text-sm">
-                      <Home className="w-3.5 h-3.5 mr-1" />
-                      {isHi ? 'कमरा' : 'Rooms'}
+                      <Home className="w-3.5 h-3.5 sm:mr-1" />
+                      <span className="hidden sm:inline">{isHi ? 'कमरा' : 'Rooms'}</span>
                     </TabsTrigger>
                   </TabsList>
 

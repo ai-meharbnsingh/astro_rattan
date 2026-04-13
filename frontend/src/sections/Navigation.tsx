@@ -40,7 +40,7 @@ export default function Navigation() {
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 shrink-0">
-              <img src="/logo.png" alt="Astro Rattan" className="h-20 w-auto" />
+              <img src="/logo.png" alt="Astro Rattan" className="h-12 w-auto" />
             </Link>
 
             {/* Desktop Navigation - Service links always visible, Dashboard only when authenticated */}
@@ -49,7 +49,7 @@ export default function Navigation() {
                 <Link
                   key={link.key}
                   to={link.href}
-                  className="text-base text-cosmic-text hover:text-sacred-gold-dark transition-colors font-sans tracking-wide uppercase"
+                  className="text-base text-cosmic-text hover:text-sacred-gold-dark transition-colors font-sans tracking-wide"
                 >
                   {t(link.key)}
                 </Link>
@@ -58,7 +58,7 @@ export default function Navigation() {
                 <Link
                   key={link.key}
                   to={link.href}
-                  className="text-base text-cosmic-text hover:text-sacred-gold-dark transition-colors font-sans tracking-wide uppercase"
+                  className="text-base text-cosmic-text hover:text-sacred-gold-dark transition-colors font-sans tracking-wide"
                 >
                   {t(link.key)}
                 </Link>
@@ -66,7 +66,7 @@ export default function Navigation() {
               {isAuthenticated && (
                 <Link
                   to="/feedback"
-                  className="flex items-center gap-1.5 text-base text-cosmic-text hover:text-sacred-gold-dark transition-colors font-sans tracking-wide uppercase"
+                  className="flex items-center gap-1.5 text-base text-cosmic-text hover:text-sacred-gold-dark transition-colors font-sans tracking-wide"
                 >
                   <MessageSquare className="w-4 h-4" />
                   {t('nav.feedback')}
@@ -76,7 +76,7 @@ export default function Navigation() {
 
             {/* Action buttons */}
             <div className="flex items-center gap-1">
-              <div className="hidden sm:block -mt-8">
+              <div className="hidden sm:block">
                 <LanguageSwitcher />
               </div>
 
@@ -96,7 +96,7 @@ export default function Navigation() {
                   </button>
                 </>
               ) : (
-                <Link to="/login" className="ml-2 px-4 py-2 bg-transparent border border-sacred-gold text-sacred-gold-dark text-base font-medium hover:bg-gray-50 dark hover:text-cosmic-bg transition-all hidden sm:flex items-center gap-1.5">
+                <Link to="/login" className="ml-2 px-4 py-2 bg-transparent border border-sacred-gold text-sacred-gold-dark text-base font-medium hover:bg-gray-50 hover:text-cosmic-bg transition-all hidden sm:flex items-center gap-1.5">
                   <Sparkles className="w-4 h-4" />
                   {t('auth.signIn')}
                 </Link>
@@ -119,7 +119,7 @@ export default function Navigation() {
 
       {/* Mobile Menu */}
       <div id="mobile-menu" className={`fixed inset-0 z-40 lg:hidden transition-all duration-500 ${isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}>
-        <div className="absolute inset-0 bg-cosmic-bg backdrop-blur-xl" onClick={() => setIsMobileMenuOpen(false)} />
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
         <div className={`absolute top-20 left-4 right-4 bg-cosmic-bg backdrop-blur-lg border border-sacred-gold rounded-lg p-6 transition-all duration-500 ${isMobileMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}`}>
           <div className="space-y-1">
             {isAuthenticated && authOnlyLinks.map((link) => (
@@ -127,7 +127,7 @@ export default function Navigation() {
                 key={link.key}
                 to={link.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block py-3 px-3 text-cosmic-text hover:text-sacred-gold-dark hover:bg-gray-50 dark transition-colors font-sans"
+                className="block py-3 px-3 text-cosmic-text hover:text-sacred-gold-dark hover:bg-gray-50 transition-colors font-sans"
               >
                 {t(link.key)}
               </Link>
@@ -137,7 +137,7 @@ export default function Navigation() {
                 key={link.key}
                 to={link.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block py-3 px-3 text-cosmic-text hover:text-sacred-gold-dark hover:bg-gray-50 dark transition-colors font-sans"
+                className="block py-3 px-3 text-cosmic-text hover:text-sacred-gold-dark hover:bg-gray-50 transition-colors font-sans"
               >
                 {t(link.key)}
               </Link>
@@ -146,7 +146,7 @@ export default function Navigation() {
               <Link
                 to="/feedback"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-2 py-3 px-3 text-cosmic-text hover:text-sacred-gold-dark hover:bg-gray-50 dark transition-colors font-sans"
+                className="flex items-center gap-2 py-3 px-3 text-cosmic-text hover:text-sacred-gold-dark hover:bg-gray-50 transition-colors font-sans"
               >
                 <MessageSquare className="w-4 h-4" />
                 {t('nav.feedback')}
@@ -157,7 +157,7 @@ export default function Navigation() {
               {isAuthenticated ? (
                 <button
                   onClick={() => { logout(); setIsMobileMenuOpen(false); }}
-                  className="flex items-center gap-2 w-full px-4 py-3 border border-sacred-gold text-sacred-gold-dark font-medium text-center justify-center hover:bg-gray-50 dark transition-colors"
+                  className="flex items-center gap-2 w-full px-4 py-3 border border-sacred-gold text-sacred-gold-dark font-medium text-center justify-center hover:bg-gray-50 transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
                   {t('auth.signOut')}
@@ -166,7 +166,7 @@ export default function Navigation() {
                 <Link
                   to="/login"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-2 w-full px-4 py-3 border border-sacred-gold text-sacred-gold-dark font-medium text-center justify-center hover:bg-gray-50 dark transition-colors"
+                  className="flex items-center gap-2 w-full px-4 py-3 border border-sacred-gold text-sacred-gold-dark font-medium text-center justify-center hover:bg-gray-50 transition-colors"
                 >
                   <Sparkles className="w-4 h-4" />
                   {t('auth.signIn')}

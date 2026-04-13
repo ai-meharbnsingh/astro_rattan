@@ -67,7 +67,7 @@ export default function FloorplanUploader({ onUploaded }: Props) {
         onDragLeave={() => setDragging(false)}
         onDrop={onDrop}
         onClick={() => inputRef.current?.click()}
-        className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${
+        className={`border-2 border-dashed rounded-xl p-4 sm:p-8 text-center cursor-pointer transition-all min-h-[120px] flex items-center justify-center ${
           dragging
             ? 'border-sacred-gold bg-sacred-gold/10'
             : 'border-white/15 bg-white/5 hover:border-sacred-gold/40'
@@ -91,16 +91,16 @@ export default function FloorplanUploader({ onUploaded }: Props) {
               <Upload className="w-6 h-6 text-sacred-gold" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-cosmic-text">
+              <p className="text-sm sm:text-base font-semibold text-cosmic-text">
                 {isHi ? 'फ्लोर प्लान अपलोड करें' : 'Upload Floor Plan'}
               </p>
-              <p className="text-sm text-cosmic-text/50 mt-1">
+              <p className="text-xs sm:text-sm text-cosmic-text/50 mt-1">
                 {isHi
                   ? 'PNG, JPG, या WebP — खींचकर छोड़ें या क्लिक करें — अधिकतम 5MB'
                   : 'PNG, JPG, or WebP — drag & drop or click — max 5MB'}
               </p>
             </div>
-            <div className="flex items-center gap-2 text-sm text-cosmic-text/40">
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-cosmic-text/40">
               <ImageIcon className="w-3 h-3" />
               {isHi ? 'फ़ोन से ली गई फोटो भी चलेगी' : 'Phone photos work too'}
             </div>
