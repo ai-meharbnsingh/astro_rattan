@@ -196,6 +196,7 @@ def get_panchang(
         paksha=panchang["tithi"]["paksha"],
         nakshatra_name=panchang["nakshatra"]["name"],
         maas=panchang.get("hindu_calendar", {}).get("maas", ""),
+        gregorian_date=target_date,
     )
     panchang["festivals"] = festivals
 
@@ -289,16 +290,27 @@ def get_monthly_panchang(
             tithi = json.loads(cached["tithi"]) if isinstance(cached["tithi"], str) else cached["tithi"]
             nak = json.loads(cached["nakshatra"]) if isinstance(cached["nakshatra"], str) else cached["nakshatra"]
             yoga = json.loads(cached["yoga"]) if isinstance(cached["yoga"], str) else cached["yoga"]
+            t_name = tithi.get("name", "") if isinstance(tithi, dict) else str(tithi)
+            t_paksha = tithi.get("paksha", "") if isinstance(tithi, dict) else ""
+            n_name = nak.get("name", "") if isinstance(nak, dict) else str(nak)
+            # Run festival detection even for cached data
+            cached_festivals = detect_festivals(
+                tithi_name=t_name,
+                paksha=t_paksha,
+                nakshatra_name=n_name,
+                maas="",  # maas not stored in cache; tithi+solar still match
+                gregorian_date=d_str,
+            )
             days.append({
                 "date": d_str,
                 "weekday": d.strftime("%A"),
-                "tithi": tithi.get("name", "") if isinstance(tithi, dict) else str(tithi),
-                "paksha": tithi.get("paksha", "") if isinstance(tithi, dict) else "",
-                "nakshatra": nak.get("name", "") if isinstance(nak, dict) else str(nak),
+                "tithi": t_name,
+                "paksha": t_paksha,
+                "nakshatra": n_name,
                 "yoga": yoga.get("name", "") if isinstance(yoga, dict) else str(yoga),
                 "sunrise": cached["sunrise"],
                 "sunset": cached["sunset"],
-                "festivals": [],
+                "festivals": [f["name"] for f in cached_festivals],
             })
             continue
 
@@ -308,6 +320,7 @@ def get_monthly_panchang(
             paksha=panchang["tithi"]["paksha"],
             nakshatra_name=panchang["nakshatra"]["name"],
             maas=panchang.get("hindu_calendar", {}).get("maas", ""),
+            gregorian_date=d_str,
         )
         days.append({
             "date": d_str,
@@ -741,6 +754,7 @@ async def download_panchang_pdf(
         paksha=panchang["tithi"]["paksha"],
         nakshatra_name=panchang["nakshatra"]["name"],
         maas=panchang.get("hindu_calendar", {}).get("maas", ""),
+        gregorian_date=target_date,
     )
     panchang["festivals"] = festivals
 

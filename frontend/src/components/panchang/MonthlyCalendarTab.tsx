@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, Calendar, Moon, Sun } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, Moon, Sun, Star, Flame, Flag } from 'lucide-react';
 import { api } from '@/lib/api';
 
 interface Props {
@@ -21,7 +21,7 @@ interface DayPanchang {
   paksha_hindi?: string;
   sunrise: string;
   sunset: string;
-  festival?: string;
+  festivals: string[];
   festival_hindi?: string;
 }
 
@@ -32,6 +32,16 @@ const getLocalDateString = () => {
   const month = String(now.getMonth() + 1).padStart(2, '0');
   const day = String(now.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
+};
+
+// Festival type icon helper
+const festivalIcon = (name: string) => {
+  const lower = name.toLowerCase();
+  if (lower.includes('republic') || lower.includes('independence') || lower.includes('gandhi') || lower.includes('ambedkar'))
+    return <Flag className="h-3 w-3 text-green-400 inline-block flex-shrink-0" />;
+  if (lower.includes('diwali') || lower.includes('deepawali') || lower.includes('holika') || lower.includes('dahan'))
+    return <Flame className="h-3 w-3 text-orange-400 inline-block flex-shrink-0" />;
+  return <Star className="h-3 w-3 text-purple-400 inline-block flex-shrink-0" />;
 };
 
 export default function MonthlyCalendarTab({ language, t, latitude, longitude }: Props) {
@@ -45,7 +55,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
 
   // Month names
   const monthNames = useMemo(() => ({
-    en: ['January', 'February', 'March', 'April', 'May', 'June', 
+    en: ['January', 'February', 'March', 'April', 'May', 'June',
          'July', 'August', 'September', 'October', 'November', 'December'],
     hi: ['जनवरी', 'फरवरी', 'मार्च', 'अप्रैल', 'मई', 'जून',
          'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर']
@@ -57,49 +67,73 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
     hi: ['रवि', 'सोम', 'मंगल', 'बुध', 'गुरु', 'शुक्र', 'शनि']
   }), []);
 
-  // Fetch monthly data
+  // Fetch monthly data using batch endpoint
   useEffect(() => {
     const fetchMonthly = async () => {
       setLoading(true);
       try {
-        // Generate array of dates for the month
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        const data: DayPanchang[] = [];
-        
-        for (let day = 1; day <= daysInMonth; day++) {
-          const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-          try {
-            const res = await api.get(`/api/panchang?date=${dateStr}&lat=${latitude}&lon=${longitude}`);
-            const p = res.data;
-            data.push({
-              date: dateStr,
-              tithi: p.tithi?.name || '',
-              tithi_hindi: p.tithi?.name_hindi,
-              nakshatra: p.nakshatra?.name || '',
-              nakshatra_hindi: p.nakshatra?.name_hindi,
-              paksha: p.tithi?.paksha || '',
-              paksha_hindi: p.tithi?.paksha_hindi,
-              sunrise: p.sunrise || '',
-              sunset: p.sunset || '',
-              festival: p.festivals?.[0]?.name,
-              festival_hindi: p.festivals?.[0]?.name_hindi,
-            });
-          } catch (e) {
-            // Skip failed days
-          }
-        }
+        const res = await api.get(`/api/panchang/month?month=${month + 1}&year=${year}&lat=${latitude}&lon=${longitude}`);
+        const rawDays = res.data?.days || [];
+
+        const data: DayPanchang[] = rawDays.map((p: any) => ({
+          date: p.date || '',
+          tithi: p.tithi || '',
+          tithi_hindi: p.tithi_hindi,
+          nakshatra: p.nakshatra || '',
+          nakshatra_hindi: p.nakshatra_hindi,
+          paksha: p.paksha || '',
+          paksha_hindi: p.paksha_hindi,
+          sunrise: p.sunrise || '',
+          sunset: p.sunset || '',
+          festivals: Array.isArray(p.festivals) ? p.festivals : (p.festivals ? [p.festivals] : []),
+        }));
+
         setMonthlyData(data);
-        
+
         // Select today if current month
         const today = getLocalDateString();
-        const todayData = data.find(d => d.date === today);
+        const todayData = data.find((d: DayPanchang) => d.date === today);
         setSelectedDay(todayData || data[0] || null);
       } catch (e) {
-        setMonthlyData([]);
+        // Fallback: fetch individual days if batch endpoint fails
+        try {
+          const daysInMonth = new Date(year, month + 1, 0).getDate();
+          const data: DayPanchang[] = [];
+
+          for (let day = 1; day <= daysInMonth; day++) {
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            try {
+              const dayRes = await api.get(`/api/panchang?date=${dateStr}&lat=${latitude}&lon=${longitude}`);
+              const p = dayRes.data;
+              const fests = p.festivals || [];
+              data.push({
+                date: dateStr,
+                tithi: p.tithi?.name || '',
+                tithi_hindi: p.tithi?.name_hindi,
+                nakshatra: p.nakshatra?.name || '',
+                nakshatra_hindi: p.nakshatra?.name_hindi,
+                paksha: p.tithi?.paksha || '',
+                paksha_hindi: p.tithi?.paksha_hindi,
+                sunrise: p.sunrise || '',
+                sunset: p.sunset || '',
+                festivals: fests.map((f: any) => typeof f === 'string' ? f : f.name || ''),
+              });
+            } catch (_) {
+              // Skip failed days
+            }
+          }
+          setMonthlyData(data);
+
+          const today = getLocalDateString();
+          const todayData = data.find(d => d.date === today);
+          setSelectedDay(todayData || data[0] || null);
+        } catch (_) {
+          setMonthlyData([]);
+        }
       }
       setLoading(false);
     };
-    
+
     fetchMonthly();
   }, [year, month, latitude, longitude]);
 
@@ -116,6 +150,9 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
     return monthlyData.find(d => d.date === dateStr);
   };
 
+  // Count total festivals in the month
+  const festivalCount = monthlyData.reduce((sum, d) => sum + d.festivals.length, 0);
+
   return (
     <div className="space-y-6">
       {/* Month Navigation */}
@@ -125,9 +162,16 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
             <Button variant="outline" size="icon" onClick={prevMonth} className="border-sacred-gold/30">
               <ChevronLeft className="h-5 w-5" />
             </Button>
-            <h3 className="text-xl font-bold text-cosmic-text-primary">
-              {language === 'hi' ? monthNames.hi[month] : monthNames.en[month]} {year}
-            </h3>
+            <div className="text-center">
+              <h3 className="text-xl font-bold text-cosmic-text-primary">
+                {language === 'hi' ? monthNames.hi[month] : monthNames.en[month]} {year}
+              </h3>
+              {festivalCount > 0 && (
+                <p className="text-xs text-purple-400 mt-1">
+                  {festivalCount} {language === 'hi' ? 'त्योहार / व्रत' : 'festivals / observances'}
+                </p>
+              )}
+            </div>
             <Button variant="outline" size="icon" onClick={nextMonth} className="border-sacred-gold/30">
               <ChevronRight className="h-5 w-5" />
             </Button>
@@ -160,7 +204,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                   {Array.from({ length: firstDayOfMonth }).map((_, i) => (
                     <div key={`empty-${i}`} className="aspect-square" />
                   ))}
-                  
+
                   {/* Day cells */}
                   {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day) => {
                     const dayData = getDayData(day);
@@ -168,17 +212,22 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                     const isToday = dateStr === today;
                     const isSelected = selectedDay?.date === dateStr;
                     const isShukla = dayData?.paksha === 'Shukla';
+                    const hasFestivals = dayData && dayData.festivals.length > 0;
+                    const hasMajorFestival = hasFestivals && dayData.festivals.some(
+                      f => !['Ekadashi Vrat', 'Purnima', 'Amavasya', 'Pradosh Vrat', 'Sankashti Chaturthi',
+                             'Masik Shivaratri', 'Kalashtami', 'Vivah Panchami / Surya Saptami'].includes(f)
+                    );
 
                     return (
                       <button
                         key={day}
                         onClick={() => dayData && setSelectedDay(dayData)}
                         className={`
-                          aspect-square p-1 rounded-lg text-left text-sm relative
+                          aspect-square p-1 rounded-lg text-left text-xs sm:text-sm relative
                           transition-all hover:scale-105
                           ${isToday ? 'ring-2 ring-sacred-gold' : ''}
                           ${isSelected ? 'bg-sacred-gold/20 border border-sacred-gold' : 'bg-cosmic-card/30 hover:bg-cosmic-card/50'}
-                          ${dayData?.festival ? 'border-l-2 border-l-purple-500' : ''}
+                          ${hasMajorFestival ? 'border-l-2 border-l-amber-500' : hasFestivals ? 'border-l-2 border-l-purple-500/60' : ''}
                         `}
                       >
                         <span className={`font-semibold ${isToday ? 'text-sacred-gold' : 'text-cosmic-text-primary'}`}>
@@ -186,14 +235,27 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                         </span>
                         {dayData && (
                           <>
-                            <div className="text-xs text-cosmic-text-secondary truncate mt-1">
+                            <div className="text-[10px] text-cosmic-text-secondary truncate mt-0.5 leading-tight">
                               {language === 'hi' ? dayData.tithi_hindi || dayData.tithi : dayData.tithi}
                             </div>
-                            <div className="absolute bottom-1 right-1">
+                            {/* Show first festival name if any */}
+                            {hasFestivals && (
+                              <div className="text-[9px] text-purple-400 truncate leading-tight mt-0.5 flex items-center gap-0.5">
+                                {festivalIcon(dayData.festivals[0])}
+                                <span className="truncate">{dayData.festivals[0]}</span>
+                              </div>
+                            )}
+                            {/* Badge for multiple festivals */}
+                            {dayData.festivals.length > 1 && (
+                              <span className="absolute top-0.5 right-0.5 bg-purple-500 text-white text-[8px] rounded-full w-3.5 h-3.5 flex items-center justify-center font-bold">
+                                {dayData.festivals.length}
+                              </span>
+                            )}
+                            <div className="absolute bottom-0.5 right-0.5">
                               {isShukla ? (
-                                <Sun className="h-3 w-3 text-orange-400" />
+                                <Sun className="h-2.5 w-2.5 text-orange-400" />
                               ) : (
-                                <Moon className="h-3 w-3 text-indigo-400" />
+                                <Moon className="h-2.5 w-2.5 text-indigo-400" />
                               )}
                             </div>
                           </>
@@ -204,7 +266,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                 </div>
 
                 {/* Legend */}
-                <div className="flex items-center gap-4 mt-4 text-xs">
+                <div className="flex flex-wrap items-center gap-4 mt-4 text-xs">
                   <div className="flex items-center gap-1">
                     <Sun className="h-3 w-3 text-orange-400" />
                     <span className="text-cosmic-text-secondary">{language === 'hi' ? 'शुक्ल' : 'Shukla'}</span>
@@ -214,8 +276,12 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                     <span className="text-cosmic-text-secondary">{language === 'hi' ? 'कृष्ण' : 'Krishna'}</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 rounded-full bg-purple-500" />
-                    <span className="text-cosmic-text-secondary">{language === 'hi' ? 'त्योहार' : 'Festival'}</span>
+                    <div className="w-1 h-3 rounded-sm bg-amber-500" />
+                    <span className="text-cosmic-text-secondary">{language === 'hi' ? 'प्रमुख त्योहार' : 'Major Festival'}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-1 h-3 rounded-sm bg-purple-500/60" />
+                    <span className="text-cosmic-text-secondary">{language === 'hi' ? 'व्रत / पर्व' : 'Vrat / Observance'}</span>
                   </div>
                 </div>
               </>
@@ -230,13 +296,13 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
               <Calendar className="h-4 w-4 text-sacred-gold" />
               {language === 'hi' ? 'विवरण' : 'Details'}
             </h4>
-            
+
             {selectedDay ? (
               <div className="space-y-4">
                 <div className="text-center pb-4 border-b border-cosmic-border">
                   <p className="text-sm text-cosmic-text-secondary">
-                    {new Date(selectedDay.date).toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-US', { 
-                      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+                    {new Date(selectedDay.date + 'T00:00:00').toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-US', {
+                      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
                     })}
                   </p>
                 </div>
@@ -248,37 +314,48 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                       {language === 'hi' ? selectedDay.tithi_hindi || selectedDay.tithi : selectedDay.tithi}
                     </span>
                   </div>
-                  
+
                   <div className="flex justify-between">
                     <span className="text-sm text-cosmic-text-secondary">{language === 'hi' ? 'नक्षत्र' : 'Nakshatra'}</span>
                     <span className="text-sm font-medium text-cosmic-text-primary">
                       {language === 'hi' ? selectedDay.nakshatra_hindi || selectedDay.nakshatra : selectedDay.nakshatra}
                     </span>
                   </div>
-                  
+
                   <div className="flex justify-between">
                     <span className="text-sm text-cosmic-text-secondary">{language === 'hi' ? 'पक्ष' : 'Paksha'}</span>
                     <span className="text-sm font-medium text-cosmic-text-primary">
                       {language === 'hi' ? selectedDay.paksha_hindi || selectedDay.paksha : selectedDay.paksha}
                     </span>
                   </div>
-                  
+
                   <div className="flex justify-between">
                     <span className="text-sm text-cosmic-text-secondary">{language === 'hi' ? 'सूर्योदय' : 'Sunrise'}</span>
                     <span className="text-sm font-medium text-cosmic-text-primary">{selectedDay.sunrise}</span>
                   </div>
-                  
+
                   <div className="flex justify-between">
                     <span className="text-sm text-cosmic-text-secondary">{language === 'hi' ? 'सूर्यास्त' : 'Sunset'}</span>
                     <span className="text-sm font-medium text-cosmic-text-primary">{selectedDay.sunset}</span>
                   </div>
 
-                  {selectedDay.festival && (
-                    <div className="p-3 rounded-lg bg-purple-500/10 border border-purple-500/30 mt-4">
-                      <span className="text-xs text-purple-400">{language === 'hi' ? 'त्योहार' : 'Festival'}</span>
-                      <p className="font-medium text-cosmic-text-primary">
-                        {language === 'hi' ? selectedDay.festival_hindi || selectedDay.festival : selectedDay.festival}
-                      </p>
+                  {/* Festival list -- show ALL festivals for the day */}
+                  {selectedDay.festivals.length > 0 && (
+                    <div className="mt-4 space-y-2">
+                      <span className="text-xs font-semibold text-purple-400 uppercase tracking-wide">
+                        {language === 'hi' ? 'त्योहार / व्रत' : 'Festivals & Observances'}
+                      </span>
+                      {selectedDay.festivals.map((fest, idx) => (
+                        <div
+                          key={idx}
+                          className="p-2.5 rounded-lg bg-purple-500/10 border border-purple-500/30 flex items-start gap-2"
+                        >
+                          {festivalIcon(fest)}
+                          <p className="text-sm font-medium text-cosmic-text-primary leading-tight">
+                            {fest}
+                          </p>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>
