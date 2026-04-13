@@ -5,6 +5,7 @@ import { Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
 function usePageTracking() {
   const location = useLocation();
   useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     let sid = sessionStorage.getItem('_asid');
     if (!sid) { sid = Math.random().toString(36).slice(2) + Date.now().toString(36); sessionStorage.setItem('_asid', sid); }
     fetch('/api/analytics/hit', {
