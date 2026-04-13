@@ -286,10 +286,10 @@ export default function FloorplanMapper({
         {showGrid && (
           <div className="absolute inset-0 pointer-events-none">
             {/* Grid lines — fixed pixel zone boundaries */}
-            <div className="absolute top-0 bottom-0 left-1/3 w-px bg-sacred-gold/25" />
-            <div className="absolute top-0 bottom-0 left-2/3 w-px bg-sacred-gold/25" />
-            <div className="absolute left-0 right-0 top-1/3 h-px bg-sacred-gold/25" />
-            <div className="absolute left-0 right-0 top-2/3 h-px bg-sacred-gold/25" />
+            <div className="absolute top-0 bottom-0 left-1/3 w-px bg-sacred-gold/50" />
+            <div className="absolute top-0 bottom-0 left-2/3 w-px bg-sacred-gold/50" />
+            <div className="absolute left-0 right-0 top-1/3 h-px bg-sacred-gold/50" />
+            <div className="absolute left-0 right-0 top-2/3 h-px bg-sacred-gold/50" />
 
             {/* Direction labels — rotate with northRotation so they always show
                 the correct zone. Uses polar coordinates: r=44% from center. */}
@@ -310,8 +310,14 @@ export default function FloorplanMapper({
               return (
                 <span
                   key={d}
-                  className="absolute text-sm font-bold text-sacred-gold/70"
-                  style={{ left: `${x}%`, top: `${y}%`, transform: 'translate(-50%, -50%)' }}
+                  className="absolute text-xs font-extrabold text-amber-300 bg-black/60 rounded px-1 py-0.5 leading-none"
+                  style={{
+                    left: `${x}%`,
+                    top: `${y}%`,
+                    transform: 'translate(-50%, -50%)',
+                    textShadow: '0 0 6px rgba(0,0,0,0.9)',
+                    letterSpacing: '0.05em',
+                  }}
                 >
                   {d}
                 </span>
