@@ -180,7 +180,7 @@ export default function HomeComplianceReport({ result }: Props) {
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {r.zone_devtas.map((d: any, di: number) => (
                     <span key={di} className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-cosmic-text/40">
-                      {d.name} {d.name_hi}
+                      {isHi ? d.name_hi : d.name}
                     </span>
                   ))}
                 </div>

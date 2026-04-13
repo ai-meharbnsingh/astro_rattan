@@ -5,13 +5,18 @@ Handles floor plan image upload, storage, and coordinate-to-Vastu-direction
 conversion for manual room placement on uploaded images.
 """
 import io
+import logging
 import math
 import os
+import shutil
+import subprocess
 import time
 import uuid
 from typing import Optional
 
 from app.config import STATIC_DIR
+
+log = logging.getLogger(__name__)
 
 # Upload config
 UPLOAD_DIR = os.path.join(STATIC_DIR, "uploads", "vastu")
@@ -20,10 +25,55 @@ MAX_DIMENSION = 6000  # max 6000px per side — prevents memory DOS
 ALLOWED_TYPES = {"image/png", "image/jpeg", "image/jpg", "image/webp"}
 CLEANUP_AGE_SECONDS = 30 * 24 * 3600  # 30 days
 
+# ClamAV — free, open-source virus scanner (brew install clamav)
+_CLAMSCAN_PATH = shutil.which("clamscan")
+
 
 def ensure_upload_dir():
     """Create vastu upload directory if it doesn't exist."""
     os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+
+def scan_file_for_viruses(file_bytes: bytes) -> bool:
+    """
+    Scan file bytes with ClamAV (clamscan).
+    Returns True if file is CLEAN, raises ValueError if infected.
+    Silently passes if ClamAV is not installed (graceful degradation).
+    """
+    if not _CLAMSCAN_PATH:
+        log.debug("ClamAV not installed — skipping virus scan (install: brew install clamav)")
+        return True
+
+    # Write to temp file for scanning
+    tmp_path = os.path.join(UPLOAD_DIR, f"_scan_{uuid.uuid4().hex[:8]}.tmp")
+    try:
+        ensure_upload_dir()
+        with open(tmp_path, "wb") as f:
+            f.write(file_bytes)
+
+        result = subprocess.run(
+            [_CLAMSCAN_PATH, "--no-summary", tmp_path],
+            capture_output=True, text=True, timeout=30,
+        )
+        # clamscan exit codes: 0=clean, 1=infected, 2=error
+        if result.returncode == 1:
+            log.warning(f"ClamAV detected threat: {result.stdout.strip()}")
+            raise ValueError("File rejected — potential security threat detected")
+        elif result.returncode == 2:
+            log.warning(f"ClamAV scan error: {result.stderr.strip()}")
+            # Don't block on scanner errors
+        return True
+    except subprocess.TimeoutExpired:
+        log.warning("ClamAV scan timed out — allowing upload")
+        return True
+    except ValueError:
+        raise  # re-raise infection detection
+    except Exception as e:
+        log.warning(f"ClamAV scan failed: {e} — allowing upload")
+        return True
+    finally:
+        if os.path.exists(tmp_path):
+            os.rename(tmp_path, tmp_path + ".scanned")  # safe cleanup, not rm
 
 
 def cleanup_old_uploads():
@@ -101,6 +151,9 @@ def save_floorplan(file_bytes: bytes, content_type: str) -> dict:
         dict with file_id, image_url, filename, width, height
     """
     ensure_upload_dir()
+
+    # Virus scan (uses ClamAV if installed, skips gracefully if not)
+    scan_file_for_viruses(file_bytes)
 
     # Validate dimensions
     width, height = _validate_image_dimensions(file_bytes)
