@@ -12,6 +12,13 @@ PYTHAGOREAN_MAP = {
     'S': 1, 'T': 2, 'U': 3, 'V': 4, 'W': 5, 'X': 6, 'Y': 7, 'Z': 8,
 }
 
+# Chaldean mapping (alternative system used for names)
+CHALDEAN_MAP = {
+    'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5, 'F': 8, 'G': 3, 'H': 5, 'I': 1,
+    'J': 1, 'K': 2, 'L': 3, 'M': 4, 'N': 5, 'O': 7, 'P': 8, 'Q': 1, 'R': 2,
+    'S': 3, 'T': 4, 'U': 6, 'V': 6, 'W': 6, 'X': 5, 'Y': 1, 'Z': 7,
+}
+
 VOWELS = set('AEIOU')
 MASTER_NUMBERS = {11, 22, 33}
 
@@ -125,6 +132,351 @@ PERSONALITY_PREDICTIONS = {
         "organizer with the power to transform ideas into reality. Your presence inspires confidence in large endeavors.",
     33: "Others perceive you as deeply compassionate and selflessly devoted. You project an almost saintly "
         "warmth that draws people seeking guidance. Your exterior radiates unconditional love and healing energy.",
+}
+
+
+# ============================================================
+# NAME NUMEROLOGY - Detailed Name Analysis
+# ============================================================
+
+NAME_NUMBER_PREDICTIONS = {
+    1: {
+        "title": "The Leader",
+        "ruling_planet": "Sun",
+        "traits": ["Independent", "Ambitious", "Innovative", "Self-reliant", "Determined"],
+        "career": "Entrepreneurship, Management, Politics, Military, Sports, Any leadership role",
+        "relationships": "You need a partner who respects your independence. You tend to take charge in relationships.",
+        "health": "Heart, circulation, eyes. Avoid stress and overwork.",
+        "lucky_colors": ["Gold", "Orange", "Yellow"],
+        "lucky_days": ["Sunday", "Monday"],
+        "advice": "Learn to delegate and listen to others. Your strength is in leading, not controlling."
+    },
+    2: {
+        "title": "The Peacemaker",
+        "ruling_planet": "Moon",
+        "traits": ["Diplomatic", "Sensitive", "Cooperative", "Intuitive", "Gentle"],
+        "career": "Diplomacy, Counseling, Psychology, Art, Music, Nursing, Teaching",
+        "relationships": "You thrive in partnerships and need emotional connection. Avoid being overly dependent.",
+        "health": "Digestive system, fluids in body, emotional well-being. Practice meditation.",
+        "lucky_colors": ["White", "Silver", "Cream", "Green"],
+        "lucky_days": ["Sunday", "Monday"],
+        "advice": "Trust your intuition but don't let others take advantage of your kindness."
+    },
+    3: {
+        "title": "The Creator",
+        "ruling_planet": "Jupiter",
+        "traits": ["Creative", "Expressive", "Optimistic", "Social", "Artistic"],
+        "career": "Writing, Acting, Singing, Teaching, Journalism, Marketing, Design",
+        "relationships": "You are charming and popular. Seek depth in relationships beyond surface charm.",
+        "health": "Liver, skin, nervous system. Avoid excess in food and drink.",
+        "lucky_colors": ["Yellow", "Orange", "Purple"],
+        "lucky_days": ["Thursday", "Wednesday"],
+        "advice": "Focus your creative energy. Completion is as important as starting new projects."
+    },
+    4: {
+        "title": "The Builder",
+        "ruling_planet": "Rahu",
+        "traits": ["Practical", "Disciplined", "Reliable", "Organized", "Hardworking"],
+        "career": "Engineering, Architecture, Accounting, Banking, Construction, IT",
+        "relationships": "You are loyal and dependable. You need a partner who values stability.",
+        "health": "Bones, joints, digestion. Regular exercise and routine are essential.",
+        "lucky_colors": ["Blue", "Grey", "Black"],
+        "lucky_days": ["Saturday", "Sunday"],
+        "advice": "Embrace change when necessary. Perfectionism can delay progress."
+    },
+    5: {
+        "title": "The Adventurer",
+        "ruling_planet": "Mercury",
+        "traits": ["Versatile", "Curious", "Communicative", "Dynamic", "Freedom-loving"],
+        "career": "Sales, Marketing, Travel, Journalism, Trading, Communication, Writing",
+        "relationships": "You need variety and mental stimulation. Boredom is your enemy in relationships.",
+        "health": "Nervous system, respiratory system. Practice breathing exercises.",
+        "lucky_colors": ["Green", "Light Grey"],
+        "lucky_days": ["Wednesday", "Friday"],
+        "advice": "Commitment brings its own freedom. Don't run from stability."
+    },
+    6: {
+        "title": "The Nurturer",
+        "ruling_planet": "Venus",
+        "traits": ["Loving", "Responsible", "Harmonious", "Artistic", "Protective"],
+        "career": "Teaching, Healing, Arts, Design, Hospitality, Counseling, Beauty Industry",
+        "relationships": "Family and love are central to your life. You are devoted but avoid over-sacrifice.",
+        "health": "Throat, kidneys, reproductive system. Maintain balance in lifestyle.",
+        "lucky_colors": ["Pink", "Blue", "White"],
+        "lucky_days": ["Friday", "Tuesday"],
+        "advice": "Love yourself first. You cannot pour from an empty cup."
+    },
+    7: {
+        "title": "The Seeker",
+        "ruling_planet": "Ketu",
+        "traits": ["Spiritual", "Analytical", "Introspective", "Wise", "Mysterious"],
+        "career": "Research, Science, Philosophy, Spirituality, Occult, Psychology, Analysis",
+        "relationships": "You need intellectual and spiritual connection. Surface relationships don't satisfy you.",
+        "health": "Nervous system, mental health. Meditation and solitude are healing.",
+        "lucky_colors": ["Green", "White", "Yellow"],
+        "lucky_days": ["Sunday", "Monday"],
+        "advice": "Balance solitude with social connection. Share your wisdom with the world."
+    },
+    8: {
+        "title": "The Powerhouse",
+        "ruling_planet": "Saturn",
+        "traits": ["Ambitious", "Authoritative", "Practical", "Karmic", "Determined"],
+        "career": "Business, Law, Real Estate, Banking, Mining, Politics, Management",
+        "relationships": "Success comes later in life. Relationships require patience and maturity.",
+        "health": "Bones, joints, chronic conditions. Discipline in health routine is essential.",
+        "lucky_colors": ["Black", "Dark Blue", "Dark Grey"],
+        "lucky_days": ["Saturday", "Sunday"],
+        "advice": "Success comes through persistent effort. Don't take shortcuts."
+    },
+    9: {
+        "title": "The Humanitarian",
+        "ruling_planet": "Mars",
+        "traits": ["Compassionate", "Generous", "Passionate", "Brave", "Idealistic"],
+        "career": "Social Work, Medicine, Teaching, Military, Engineering, Sports, NGO",
+        "relationships": "You love deeply and passionately. Channel Mars energy constructively.",
+        "health": "Blood, muscles, head. Regular exercise is essential for you.",
+        "lucky_colors": ["Red", "Coral", "Pink"],
+        "lucky_days": ["Tuesday", "Thursday"],
+        "advice": "Letting go is as important as holding on. Forgiveness liberates you."
+    },
+    11: {
+        "title": "The Master Intuitive",
+        "ruling_planet": "Moon (Amplified)",
+        "traits": ["Visionary", "Intuitive", "Inspirational", "Sensitive", "Spiritual"],
+        "career": "Spiritual Leadership, Counseling, Art, Healing, Innovation, Teaching",
+        "relationships": "You need a partner who understands your sensitivity and spiritual nature.",
+        "health": "Nervous system, anxiety management. Ground your visions in reality.",
+        "lucky_colors": ["Silver", "White", "Cream"],
+        "lucky_days": ["Sunday", "Monday"],
+        "advice": "Your intuition is a gift. Learn to trust it while staying grounded."
+    },
+    22: {
+        "title": "The Master Builder",
+        "ruling_planet": "Rahu (Amplified)",
+        "traits": ["Practical Visionary", "Organized", "Influential", "Ambitious", "Systematic"],
+        "career": "Large-scale Projects, Architecture, Social Reform, International Business",
+        "relationships": "Your mission may overshadow relationships. Find someone who shares your vision.",
+        "health": "Nervous exhaustion from big projects. Balance work with rest.",
+        "lucky_colors": ["Blue", "Grey", "White"],
+        "lucky_days": ["Thursday", "Saturday"],
+        "advice": "You are here to build what lasts. Think big but don't overwhelm yourself."
+    },
+    33: {
+        "title": "The Master Teacher",
+        "ruling_planet": "Jupiter (Amplified)",
+        "traits": ["Selfless", "Healing", "Compassionate", "Wise", "Uplifting"],
+        "career": "Healing, Teaching, Spiritual Guidance, Counseling, Humanitarian Work",
+        "relationships": "Your love is unconditional. Set boundaries to avoid burnout.",
+        "health": "Emotional health tied to giving. Self-care is not selfish for you.",
+        "lucky_colors": ["Pink", "White", "Light Blue"],
+        "lucky_days": ["Thursday", "Friday"],
+        "advice": "Your purpose is to heal and teach. Remember you are also worthy of receiving love."
+    },
+}
+
+
+# ============================================================
+# CAR/VEHICLE NUMEROLOGY
+# ============================================================
+
+VEHICLE_PREDICTIONS = {
+    1: {
+        "energy": "Leadership & Independence",
+        "prediction": "Your vehicle carries the vibration of independence and authority. It suits those who drive alone or in leadership positions. The vehicle may attract attention and commands respect on the road.",
+        "driving_style": "Confident, sometimes aggressive. You take charge on the road.",
+        "best_for": "Business owners, CEOs, politicians, independent professionals",
+        "caution": "Avoid road rage. Your dominant energy may intimidate other drivers.",
+        "lucky_directions": ["East", "North"],
+        "vehicle_color": ["Gold", "Orange", "Red", "White"],
+    },
+    2: {
+        "energy": "Cooperation & Harmony",
+        "prediction": "This vehicle vibration brings smooth, harmonious journeys. Ideal for family vehicles and those who often travel with passengers. Creates peaceful energy inside the car.",
+        "driving_style": "Cautious and considerate. You yield and cooperate with other drivers.",
+        "best_for": "Families, diplomats, counselors, those seeking peaceful commutes",
+        "caution": "Don't be too passive. Stand your ground when necessary for safety.",
+        "lucky_directions": ["West", "North-West"],
+        "vehicle_color": ["White", "Silver", "Cream"],
+    },
+    3: {
+        "energy": "Creativity & Expression",
+        "prediction": "A joyful, sociable vehicle vibration. Perfect for those in creative fields or who enjoy road trips with friends. The car becomes a social hub and conversation starter.",
+        "driving_style": "Enthusiastic, sometimes distracted by music or conversations.",
+        "best_for": "Artists, writers, marketers, social butterflies, entertainers",
+        "caution": "Focus on the road. Your love of variety may lead to distraction.",
+        "lucky_directions": ["East", "North-East"],
+        "vehicle_color": ["Yellow", "Orange", "Purple", "Bright Colors"],
+    },
+    4: {
+        "energy": "Stability & Reliability",
+        "prediction": "This is a practical, dependable vehicle number. The car will be reliable but may require regular maintenance. Journeys are generally safe and uneventful.",
+        "driving_style": "Methodical and rule-following. You prefer familiar routes.",
+        "best_for": "Engineers, accountants, those who value reliability over speed",
+        "caution": "Rigidity can cause stress. Be flexible with routes and timing.",
+        "lucky_directions": ["South", "West"],
+        "vehicle_color": ["Blue", "Grey", "Black"],
+    },
+    5: {
+        "energy": "Freedom & Adventure",
+        "prediction": "The perfect vibration for travel lovers and adventure seekers. This vehicle loves highways and new destinations. Expect frequent short trips and spontaneous journeys.",
+        "driving_style": "Fast, adaptable, loves overtaking. You get restless in traffic.",
+        "best_for": "Salespeople, travelers, journalists, those who love road trips",
+        "caution": "Speeding tickets are likely. Slow down and enjoy the journey.",
+        "lucky_directions": ["North", "East", "Any direction"],
+        "vehicle_color": ["Green", "Grey", "Multi-color"],
+    },
+    6: {
+        "energy": "Love & Nurturing",
+        "prediction": "The ultimate family vehicle number. Creates a warm, protective environment. Ideal for parents, especially mothers. The car feels like a second home.",
+        "driving_style": "Careful and protective, especially with children in the car.",
+        "best_for": "Parents, teachers, healers, those in caregiving professions",
+        "caution": "Over-protectiveness can cause anxiety. Trust in safety measures.",
+        "lucky_directions": ["South-East", "South"],
+        "vehicle_color": ["Pink", "White", "Light Blue", "Silver"],
+    },
+    7: {
+        "energy": "Wisdom & Introspection",
+        "prediction": "A contemplative vehicle vibration. The car becomes a space for thinking and reflection. Ideal for long solo drives and commutes to spiritual or educational places.",
+        "driving_style": "Thoughtful, sometimes lost in thought. Plan routes carefully.",
+        "best_for": "Researchers, spiritual seekers, philosophers, deep thinkers",
+        "caution": "Daydreaming while driving is dangerous. Stay present on the road.",
+        "lucky_directions": ["West", "North-West"],
+        "vehicle_color": ["Green", "White", "Silver"],
+    },
+    8: {
+        "energy": "Power & Authority",
+        "prediction": "This vehicle commands respect and may be expensive or luxury class. It attracts business opportunities and denotes success. Karma is at play - ethical driving brings rewards.",
+        "driving_style": "Assertive and commanding. Other drivers make way for you.",
+        "best_for": "Executives, lawyers, real estate professionals, business owners",
+        "caution": "Karmic energy is strong. Drive ethically and avoid using power recklessly.",
+        "lucky_directions": ["West", "South-West"],
+        "vehicle_color": ["Black", "Dark Blue", "Dark Grey", "Burgundy"],
+    },
+    9: {
+        "energy": "Courage & Compassion",
+        "prediction": "A vehicle with protective warrior energy. Good for emergency responders and those in helping professions. The car seems to 'protect' its occupants in challenging situations.",
+        "driving_style": "Bold and confident, sometimes impulsive. Quick reflexes.",
+        "best_for": "Doctors, military personnel, social workers, athletes, emergency services",
+        "caution": "Impulsiveness can lead to accidents. Count to 10 before reacting.",
+        "lucky_directions": ["South", "East"],
+        "vehicle_color": ["Red", "Coral", "Pink", "Maroon"],
+    },
+}
+
+
+# ============================================================
+# HOUSE NUMBER NUMEROLOGY
+# ============================================================
+
+HOUSE_PREDICTIONS = {
+    1: {
+        "energy": "Independence & New Beginnings",
+        "prediction": "This home carries strong, independent energy. It's perfect for self-starters, entrepreneurs, and those building new lives. The house fosters ambition and leadership.",
+        "best_for": "Entrepreneurs, leaders, independent professionals, singles seeking self-discovery",
+        "family_life": "Members tend to be self-reliant. Everyone needs their own space. Respect individuality.",
+        "career_impact": "Excellent for home offices. Business ventures started here have strong potential.",
+        "relationships": "Partners must maintain independence. Co-dependency struggles may arise.",
+        "health": "Good vitality but watch for stress-related issues. Create spaces for relaxation.",
+        "vastu_tip": "Keep the East direction open and well-lit. Place a red object near the entrance.",
+        "lucky_colors": ["Red", "Orange", "Gold", "Yellow"],
+        "remedies": ["Keep a water feature in North", "Place Sun symbol in East", "Avoid clutter in center"],
+    },
+    2: {
+        "energy": "Harmony & Partnership",
+        "prediction": "A nurturing, peaceful home perfect for couples and families. The energy here promotes cooperation, emotional bonding, and diplomatic resolutions to conflicts.",
+        "best_for": "Couples, newlyweds, families with young children, diplomats, counselors",
+        "family_life": "Strong emotional bonds. The home becomes a sanctuary. Sensitive to moods.",
+        "career_impact": "Best for collaborative work from home. Partnerships formed here are blessed.",
+        "relationships": "Deepens romantic bonds. Brings peace to troubled relationships over time.",
+        "health": "Emotional well-being affects physical health. Create a peaceful bedroom environment.",
+        "vastu_tip": "North-West is favorable. Keep pairs of objects for harmony. White flowers help.",
+        "lucky_colors": ["White", "Silver", "Cream", "Light Green"],
+        "remedies": ["Place two white candles in living room", "Keep North-West clean", "Moonstone in North-East"],
+    },
+    3: {
+        "energy": "Joy & Creativity",
+        "prediction": "A vibrant, social home filled with laughter and creativity. Perfect for artists, writers, and social butterflies. The house loves gatherings and celebrations.",
+        "best_for": "Artists, writers, entertainers, families with children, social hosts",
+        "family_life": "Lively, sometimes chaotic. Children thrive here. Lots of activities and projects.",
+        "career_impact": "Excellent for creative professionals. Ideas flow abundantly in this space.",
+        "relationships": "Fun and romance, but depth may need conscious effort. Keep communication open.",
+        "health": "Mental stimulation is high. Ensure adequate rest and avoid over-commitment.",
+        "vastu_tip": "East and North-East are powerful directions. Display artwork and creative pieces.",
+        "lucky_colors": ["Yellow", "Orange", "Purple", "Gold"],
+        "remedies": ["Place yellow flowers in East", "Keep space for creative work", "Wind chimes in North"],
+    },
+    4: {
+        "energy": "Stability & Foundation",
+        "prediction": "A solid, secure home that provides grounding and structure. Perfect for building long-term security. The energy here is reliable but can resist change.",
+        "best_for": "Those seeking stability, retirees, accountants, engineers, long-term planners",
+        "family_life": "Structured routines benefit everyone. Traditional values are honored here.",
+        "career_impact": "Slow but steady progress. Excellent for detailed, methodical work.",
+        "relationships": "Loyalty and commitment are strong. Changes in relationship status are resisted.",
+        "health": "Chronic conditions may stabilize. Focus on routine health maintenance.",
+        "vastu_tip": "South and West directions are favorable. Heavy furniture can be placed here.",
+        "lucky_colors": ["Blue", "Grey", "Brown", "Green"],
+        "remedies": ["Square-shaped objects stabilize energy", "Plants in East bring growth", "Avoid irregular shapes"],
+    },
+    5: {
+        "energy": "Change & Freedom",
+        "prediction": "A dynamic, ever-changing home environment. Perfect for those who love variety and travel. The house rarely stays the same for long - renovations, moves, or frequent guests.",
+        "best_for": "Travelers, salespeople, young professionals, those in transition, journalists",
+        "family_life": "Flexible and adaptable. Good for families who move frequently or love variety.",
+        "career_impact": "Multiple income streams possible. Great for communication-based businesses.",
+        "relationships": "Exciting but unstable. Partners must embrace change and variety.",
+        "health": "Nervous energy is high. Meditation and grounding practices are essential.",
+        "vastu_tip": "Center of home should be open. North is favorable for opportunities.",
+        "lucky_colors": ["Green", "Turquoise", "Light Grey", "White"],
+        "remedies": ["Keep center of house empty", "Green plants in East", "Mercury symbol in North"],
+    },
+    6: {
+        "energy": "Love & Responsibility",
+        "prediction": "The ultimate family home. Nurturing, beautiful, and filled with love. Perfect for raising children and creating a beautiful living space. Strong maternal energy.",
+        "best_for": "Families, parents, teachers, healers, artists, interior designers",
+        "family_life": "Warm and nurturing. Children feel secure. The home is the heart of family life.",
+        "career_impact": "Good for caregiving professions, teaching, healing, and artistic work from home.",
+        "relationships": "Deep love and commitment. Marriage and family life are blessed here.",
+        "health": "Generally good for family health. Pay attention to women's health in particular.",
+        "vastu_tip": "South-East is favorable. Create beautiful, comfortable spaces. Venus energy here.",
+        "lucky_colors": ["Pink", "White", "Light Blue", "Pastels"],
+        "remedies": ["Pink roses in South-East", "Comfortable seating for family", "Balance of 5 elements"],
+    },
+    7: {
+        "energy": "Contemplation & Wisdom",
+        "prediction": "A peaceful, spiritual sanctuary perfect for study, meditation, and introspection. The energy here turns inward, making it ideal for seekers of wisdom.",
+        "best_for": "Spiritual seekers, researchers, writers, scientists, those needing solitude",
+        "family_life": "Quiet and respectful. Members value privacy. Deep conversations happen here.",
+        "career_impact": "Excellent for research, writing, and spiritual teaching from home.",
+        "relationships": "Soulful connections form here. Superficial relationships don't last in this energy.",
+        "health": "Mental and spiritual health improve. Physical exercise may need conscious effort.",
+        "vastu_tip": "South-West provides grounding. Create a dedicated meditation or study space.",
+        "lucky_colors": ["Green", "White", "Purple", "Silver"],
+        "remedies": ["Study room in West or South-West", "Keep North-East clean and spiritual", "Books enhance energy"],
+    },
+    8: {
+        "energy": "Abundance & Authority",
+        "prediction": "A powerful home that attracts wealth and success. The energy here demands discipline and rewards hard work. Karma operates strongly - ethical living brings rewards.",
+        "best_for": "Business owners, executives, those seeking material success, lawyers",
+        "family_life": "Authoritative structure. Respect is important. Traditional roles may be emphasized.",
+        "career_impact": "Exceptional for business success. Home office can become very prosperous.",
+        "relationships": "Power dynamics may emerge. Partners should be equals to avoid conflicts.",
+        "health": "Stress from overwork is the main concern. Balance material pursuits with rest.",
+        "vastu_tip": "South-West is most powerful direction. Keep this area heavy and stable.",
+        "lucky_colors": ["Black", "Dark Blue", "Dark Grey", "Burgundy"],
+        "remedies": ["Heavy furniture in South-West", "Blue stone or crystal", "Avoid South-West cuts"],
+    },
+    9: {
+        "energy": "Completion & Humanitarianism",
+        "prediction": "A home of completion, ideal for ending old cycles and preparing for new ones. Compassionate energy that welcomes all. Perfect for those in service professions.",
+        "best_for": "Humanitarians, doctors, social workers, those completing life phases, elders",
+        "family_life": "Inclusive and welcoming. Extended family and friends often gather here.",
+        "career_impact": "Good for service-oriented work from home. Teaching and healing thrive.",
+        "relationships": "Universal love dominates. Romantic relationships need conscious cultivation.",
+        "health": "Healing energy is strong. Good for recovery from illness. Physical exercise needed.",
+        "vastu_tip": "South is favorable. The home should feel open and welcoming to all.",
+        "lucky_colors": ["Red", "Coral", "Pink", "Maroon"],
+        "remedies": ["Red accents in South", "Welcome guests warmly", "Donation corner in North-East"],
+    },
 }
 
 
@@ -983,6 +1335,469 @@ def _consonants_number(name: str) -> int:
         if ch in PYTHAGOREAN_MAP and ch not in VOWELS:
             total += PYTHAGOREAN_MAP[ch]
     return _reduce_to_single(total)
+
+
+def _chaldean_number(name: str) -> int:
+    """Sum all letter values using Chaldean mapping, then reduce."""
+    total = 0
+    for ch in name.upper():
+        if ch in CHALDEAN_MAP:
+            total += CHALDEAN_MAP[ch]
+    return _reduce_to_single(total)
+
+
+def analyze_name_numerology(
+    full_name: str,
+    birth_date: str = "",
+    name_type: str = "full_name"
+) -> dict:
+    """
+    Comprehensive Name Numerology Analysis
+    
+    Args:
+        full_name: The name to analyze (first, last, or full)
+        birth_date: Optional DOB for compatibility analysis
+        name_type: Type of name - 'first_name', 'last_name', 'full_name', 'business_name'
+    
+    Returns:
+        dict with detailed name analysis including:
+        - Pythagorean and Chaldean calculations
+        - Vowel/Consonant analysis
+        - First name / Last name breakdown
+        - Detailed predictions
+    """
+    if not full_name or not full_name.strip():
+        raise ValueError("Name cannot be empty")
+    
+    name_clean = full_name.strip()
+    name_upper = name_clean.upper()
+    
+    # Split name into parts
+    name_parts = name_clean.split()
+    first_name = name_parts[0] if name_parts else ""
+    last_name = name_parts[-1] if len(name_parts) > 1 else ""
+    
+    # Calculate numbers using different systems
+    pythagorean_total = _name_to_number(name_clean)
+    chaldean_total = _chaldean_number(name_clean)
+    soul_urge = _vowels_number(name_clean)
+    personality = _consonants_number(name_clean)
+    
+    # Individual name parts analysis
+    first_name_number = _name_to_number(first_name) if first_name else 0
+    last_name_number = _name_to_number(last_name) if last_name else 0
+    
+    # Get predictions
+    pythagorean_prediction = NAME_NUMBER_PREDICTIONS.get(
+        pythagorean_total, NAME_NUMBER_PREDICTIONS[1]
+    )
+    soul_urge_prediction = SOUL_URGE_PREDICTIONS.get(
+        soul_urge, SOUL_URGE_PREDICTIONS[1]
+    )
+    personality_prediction = PERSONALITY_PREDICTIONS.get(
+        personality, PERSONALITY_PREDICTIONS[1]
+    )
+    
+    # Letter-by-letter breakdown
+    letter_breakdown = []
+    for ch in name_upper:
+        if ch in PYTHAGOREAN_MAP:
+            letter_breakdown.append({
+                "letter": ch,
+                "pythagorean": PYTHAGOREAN_MAP[ch],
+                "chaldean": CHALDEAN_MAP.get(ch, 0),
+                "is_vowel": ch in VOWELS
+            })
+    
+    # Calculate compatibility with life path if birth_date provided
+    life_path_compat = None
+    if birth_date and '-' in birth_date:
+        try:
+            life_path = _life_path(birth_date)
+            life_path_compat = {
+                "life_path": life_path,
+                "name_number": pythagorean_total,
+                "is_compatible": pythagorean_total in PLANET_RELATIONSHIPS.get(life_path, {}).get("friends", set())
+                               or pythagorean_total == life_path,
+                "compatibility_note": _get_name_life_path_compatibility(pythagorean_total, life_path)
+            }
+        except (ValueError, IndexError):
+            pass
+    
+    result = {
+        "name": name_clean,
+        "name_type": name_type,
+        "name_parts": {
+            "first_name": first_name,
+            "last_name": last_name,
+            "total_parts": len(name_parts)
+        },
+        "numerology": {
+            "pythagorean": {
+                "number": pythagorean_total,
+                "calculation": "A=1, B=2, C=3... (Western system)"
+            },
+            "chaldean": {
+                "number": chaldean_total,
+                "calculation": "Ancient Babylonian system"
+            },
+            "soul_urge": {
+                "number": soul_urge,
+                "description": "Inner desires from vowels"
+            },
+            "personality": {
+                "number": personality,
+                "description": "Outer expression from consonants"
+            }
+        },
+        "first_name_analysis": {
+            "name": first_name,
+            "number": first_name_number,
+            "traits": NAME_NUMBER_PREDICTIONS.get(first_name_number, {}).get("traits", [])
+        } if first_name else None,
+        "last_name_analysis": {
+            "name": last_name,
+            "number": last_name_number,
+            "meaning": "Family karma and inherited traits"
+        } if last_name else None,
+        "predictions": {
+            "primary": pythagorean_prediction,
+            "soul_urge": soul_urge_prediction,
+            "personality": personality_prediction
+        },
+        "letter_breakdown": letter_breakdown,
+        "life_path_compatibility": life_path_compat
+    }
+    
+    return result
+
+
+def _get_name_life_path_compatibility(name_num: int, life_path: int) -> str:
+    """Get compatibility note between name number and life path."""
+    if name_num == life_path:
+        return "Perfect alignment! Your name naturally supports your life purpose."
+    elif name_num in PLANET_RELATIONSHIPS.get(life_path, {}).get("friends", set()):
+        return "Harmonious compatibility. Your name supports your life path."
+    elif name_num in PLANET_RELATIONSHIPS.get(life_path, {}).get("enemies", set()):
+        return "Challenging combination. Consider name spelling adjustments for better alignment."
+    else:
+        return "Neutral relationship. No major conflicts or special harmonies."
+
+
+def calculate_vehicle_numerology(vehicle_number: str, owner_name: str = "", birth_date: str = "") -> dict:
+    """
+    Vehicle/Car Number Plate Numerology Analysis
+    
+    Args:
+        vehicle_number: Vehicle registration number (e.g., "MH 01 AB 1234", "DL4CAX1234")
+        owner_name: Optional owner's name
+        birth_date: Optional owner's DOB for compatibility
+    
+    Returns:
+        dict with vehicle numerology analysis
+    """
+    if not vehicle_number:
+        raise ValueError("Vehicle number cannot be empty")
+    
+    # Extract digits from vehicle number
+    digits_only = ''.join(ch for ch in vehicle_number if ch.isdigit())
+    
+    if not digits_only:
+        raise ValueError("Vehicle number must contain at least one digit")
+    
+    # Calculate vehicle number (sum of all digits)
+    total = sum(int(d) for d in digits_only)
+    vehicle_number_vibration = _reduce_to_single(total)
+    
+    # Extract letters for analysis
+    letters_only = ''.join(ch for ch in vehicle_number.upper() if ch.isalpha())
+    letter_value = _name_to_number(letters_only) if letters_only else 0
+    
+    # Get prediction
+    prediction = VEHICLE_PREDICTIONS.get(
+        vehicle_number_vibration, VEHICLE_PREDICTIONS[1]
+    )
+    
+    # Calculate owner compatibility if birth_date provided
+    owner_compat = None
+    if birth_date and '-' in birth_date:
+        try:
+            life_path = _life_path(birth_date)
+            owner_compat = {
+                "owner_life_path": life_path,
+                "vehicle_number": vehicle_number_vibration,
+                "is_favorable": vehicle_number_vibration in RECOMMENDED_TOTALS.get(life_path, []),
+                "recommendation": _get_vehicle_recommendation(vehicle_number_vibration, life_path)
+            }
+        except (ValueError, IndexError):
+            pass
+    
+    # Analyze number patterns
+    digit_analysis = []
+    for i, d in enumerate(digits_only):
+        digit_analysis.append({
+            "position": i + 1,
+            "digit": int(d),
+            "meaning": _get_digit_meaning(int(d))
+        })
+    
+    # Check for special combinations
+    special_combinations = _check_special_combinations(digits_only)
+    
+    result = {
+        "vehicle_number": vehicle_number,
+        "digits_extracted": digits_only,
+        "letters_extracted": letters_only,
+        "vibration": {
+            "number": vehicle_number_vibration,
+            "digit_sum": total,
+            "letter_value": letter_value
+        },
+        "prediction": prediction,
+        "digit_analysis": digit_analysis,
+        "special_combinations": special_combinations,
+        "owner_compatibility": owner_compat,
+        "lucky_days": NAME_NUMBER_PREDICTIONS.get(vehicle_number_vibration, {}).get("lucky_days", []),
+        "lucky_colors": NAME_NUMBER_PREDICTIONS.get(vehicle_number_vibration, {}).get("lucky_colors", [])
+    }
+    
+    return result
+
+
+def _get_digit_meaning(digit: int) -> str:
+    """Get the meaning of an individual digit."""
+    meanings = {
+        0: "Potential, void, cosmic connection",
+        1: "Leadership, new beginnings, Sun energy",
+        2: "Cooperation, Moon energy, diplomacy",
+        3: "Creativity, Jupiter energy, expression",
+        4: "Stability, Rahu energy, foundation",
+        5: "Change, Mercury energy, freedom",
+        6: "Love, Venus energy, harmony",
+        7: "Mystery, Ketu energy, spirituality",
+        8: "Power, Saturn energy, karma",
+        9: "Completion, Mars energy, courage"
+    }
+    return meanings.get(digit, "Unknown")
+
+
+def _check_special_combinations(digits: str) -> list:
+    """Check for special number combinations in vehicle number."""
+    combinations = []
+    
+    # Check for repeated digits
+    for i in range(len(digits) - 1):
+        if digits[i] == digits[i+1]:
+            combinations.append({
+                "type": "repeated_digit",
+                "digits": digits[i:i+2],
+                "meaning": f"Double {digits[i]} - Amplified {_get_digit_meaning(int(digits[i]))}"
+            })
+    
+    # Check for ascending sequence
+    if len(digits) >= 3:
+        for i in range(len(digits) - 2):
+            if int(digits[i+1]) == int(digits[i]) + 1 and int(digits[i+2]) == int(digits[i]) + 2:
+                combinations.append({
+                    "type": "ascending_sequence",
+                    "digits": digits[i:i+3],
+                    "meaning": "Ascending sequence - Progress and growth energy"
+                })
+    
+    # Check for descending sequence
+    if len(digits) >= 3:
+        for i in range(len(digits) - 2):
+            if int(digits[i+1]) == int(digits[i]) - 1 and int(digits[i+2]) == int(digits[i]) - 2:
+                combinations.append({
+                    "type": "descending_sequence",
+                    "digits": digits[i:i+3],
+                    "meaning": "Descending sequence - Release and completion energy"
+                })
+    
+    # Master number check
+    for master in ["11", "22", "33"]:
+        if master in digits:
+            combinations.append({
+                "type": "master_number",
+                "digits": master,
+                "meaning": f"Master Number {master} - Special spiritual significance"
+            })
+    
+    return combinations
+
+
+def _get_vehicle_recommendation(vehicle_num: int, life_path: int) -> str:
+    """Get vehicle recommendation based on life path."""
+    recommended = RECOMMENDED_TOTALS.get(life_path, [])
+    if vehicle_num in recommended:
+        return "This vehicle number is highly favorable for you."
+    elif vehicle_num in PLANET_RELATIONSHIPS.get(life_path, {}).get("friends", set()):
+        return "This vehicle number is compatible with your life path."
+    elif vehicle_num in PLANET_RELATIONSHIPS.get(life_path, {}).get("enemies", set()):
+        return "This vehicle number may create challenges. Consider alternatives if possible."
+    else:
+        return "Neutral compatibility. No major concerns."
+
+
+def calculate_house_numerology(address: str, birth_date: str = "") -> dict:
+    """
+    House/Property Address Numerology Analysis
+    
+    Args:
+        address: Full address (e.g., "123 Main Street, Apt 4B")
+        birth_date: Optional resident's DOB for compatibility
+    
+    Returns:
+        dict with house numerology analysis
+    """
+    if not address:
+        raise ValueError("Address cannot be empty")
+    
+    # Extract house number (digits at the beginning or standalone)
+    address_upper = address.upper()
+    
+    # Try to extract house number - usually digits at start or before letters
+    import re
+    
+    # Pattern to match house numbers (various formats: 123, 12B, A-123, etc.)
+    patterns = [
+        r'^(\d+)',  # Digits at start
+        r'\b(\d+)[A-Z]?\b',  # Standalone digits optionally followed by letter
+        r'APT\s*(\d+)',  # Apartment number
+        r'UNIT\s*(\d+)',  # Unit number
+        r'FLAT\s*(\d+)',  # Flat number
+        r'#\s*(\d+)',  # # followed by number
+    ]
+    
+    house_number = None
+    house_number_raw = None
+    
+    for pattern in patterns:
+        match = re.search(pattern, address_upper)
+        if match:
+            house_number_raw = match.group(1)
+            house_number = int(house_number_raw)
+            break
+    
+    if house_number is None:
+        # If no house number found, use all digits
+        all_digits = ''.join(ch for ch in address if ch.isdigit())
+        if all_digits:
+            house_number = int(all_digits)
+            house_number_raw = all_digits
+        else:
+            raise ValueError("Could not extract house number from address")
+    
+    # Calculate house vibration
+    house_vibration = _reduce_to_single(sum(int(d) for d in str(house_number)))
+    
+    # Get prediction
+    prediction = HOUSE_PREDICTIONS.get(house_vibration, HOUSE_PREDICTIONS[1])
+    
+    # Street name analysis
+    street_name = _extract_street_name(address)
+    street_number = _name_to_number(street_name) if street_name else 0
+    
+    # Resident compatibility
+    resident_compat = None
+    if birth_date and '-' in birth_date:
+        try:
+            life_path = _life_path(birth_date)
+            resident_compat = {
+                "resident_life_path": life_path,
+                "house_number": house_vibration,
+                "is_ideal": house_vibration in RECOMMENDED_TOTALS.get(life_path, []),
+                "compatibility_score": _calculate_house_compatibility(house_vibration, life_path),
+                "recommendation": _get_house_recommendation(house_vibration, life_path)
+            }
+        except (ValueError, IndexError):
+            pass
+    
+    # Analyze house number components
+    house_digit_analysis = []
+    for d in str(house_number):
+        house_digit_analysis.append({
+            "digit": int(d),
+            "meaning": _get_digit_meaning(int(d))
+        })
+    
+    result = {
+        "address": address,
+        "house_number": {
+            "raw": house_number_raw,
+            "numeric": house_number,
+            "vibration": house_vibration
+        },
+        "street_name": {
+            "name": street_name,
+            "numerology": street_number,
+            "influence": "Secondary influence from street energy"
+        } if street_name else None,
+        "prediction": prediction,
+        "digit_analysis": house_digit_analysis,
+        "resident_compatibility": resident_compat,
+        "remedies": prediction.get("remedies", []),
+        "enhancement_tips": _get_house_enhancement_tips(house_vibration)
+    }
+    
+    return result
+
+
+def _extract_street_name(address: str) -> str:
+    """Extract street name from address."""
+    import re
+    
+    # Remove house number and common suffixes
+    cleaned = re.sub(r'^\d+[A-Z]?\s*', '', address.upper())
+    cleaned = re.sub(r'\b(STREET|ST|ROAD|RD|AVENUE|AVE|BOULEVARD|BLVD|LANE|LN|DRIVE|DR|WAY|COURT|CT|PLACE|PL)\b.*', '', cleaned)
+    cleaned = re.sub(r'\b(APARTMENT|APT|UNIT|FLAT|#)\b.*', '', cleaned)
+    cleaned = re.sub(r',.*', '', cleaned)
+    
+    return cleaned.strip()
+
+
+def _calculate_house_compatibility(house_num: int, life_path: int) -> str:
+    """Calculate compatibility score between house and resident."""
+    if house_num == life_path:
+        return "Excellent - Perfect match for your life path"
+    elif house_num in RECOMMENDED_TOTALS.get(life_path, []):
+        return "Very Good - Highly favorable for you"
+    elif house_num in PLANET_RELATIONSHIPS.get(life_path, {}).get("friends", set()):
+        return "Good - Harmonious energy"
+    elif house_num in PLANET_RELATIONSHIPS.get(life_path, {}).get("enemies", set()):
+        return "Challenging - May require remedies"
+    else:
+        return "Neutral - No strong influence"
+
+
+def _get_house_recommendation(house_num: int, life_path: int) -> str:
+    """Get house recommendation based on life path."""
+    score = _calculate_house_compatibility(house_num, life_path)
+    
+    if "Excellent" in score or "Very Good" in score:
+        return "This house is ideal for you. The energy supports your life path perfectly."
+    elif "Good" in score:
+        return "This house is favorable. You should thrive here with minimal adjustments."
+    elif "Challenging" in score:
+        return "This house presents challenges. Consider Vastu remedies or keep looking."
+    else:
+        return "This house has neutral energy. Personal effort will determine your experience."
+
+
+def _get_house_enhancement_tips(house_num: int) -> list:
+    """Get tips to enhance house energy."""
+    tips = {
+        1: ["Place a red doormat", "Keep East direction open", "Display awards and achievements"],
+        2: ["Use pairs of decorative items", "Place white flowers in North-West", "Create cozy nooks"],
+        3: ["Display artwork and creative pieces", "Use yellow accents", "Create a social space"],
+        4: ["Organize and declutter", "Use square-shaped furniture", "Create structured spaces"],
+        5: ["Keep center of home empty or light", "Use green plants", "Allow for flexibility"],
+        6: ["Create a beautiful entrance", "Use pink or white flowers", "Focus on family spaces"],
+        7: ["Create a meditation corner", "Use purple or green accents", "Keep a library or study"],
+        8: ["Place heavy furniture in South-West", "Use dark colors sparingly", "Create an office space"],
+        9: ["Place red accents in South", "Welcome guests warmly", "Create space for gatherings"],
+    }
+    return tips.get(house_num, ["Keep home clean and organized", "Balance the 5 elements"])
 
 
 def calculate_numerology(name: str, birth_date: str) -> dict:

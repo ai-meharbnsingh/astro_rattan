@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Card, CardContent } from '@/components/ui/card';
@@ -11,6 +11,15 @@ export default function Features() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const { language } = useTranslation();
   const l = (en: string, hi: string) => (language === 'hi' ? hi : en);
+
+  const [lightbox, setLightbox] = useState<{ file: string; label: string } | null>(null);
+
+  useEffect(() => {
+    if (!lightbox) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setLightbox(null); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [lightbox]);
 
   const features = [
     {
@@ -113,6 +122,7 @@ export default function Features() {
   }, []);
 
   return (
+    <>
     <section ref={sectionRef} id="features" className="relative py-24 bg-cosmic-bg">
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -242,6 +252,57 @@ export default function Features() {
           </div>
         </div>
 
+        {/* ── See What's Inside — Screenshot Showcase ─────────────── */}
+        <div className="mt-24">
+          <h3 className="text-2xl sm:text-3xl font-sans text-center text-cosmic-text mb-3">
+            {l("See What's Inside", 'अंदर क्या है देखें')}
+          </h3>
+          <p className="text-center text-cosmic-text/60 mb-10 text-sm">
+            {l('Real screens from the platform', 'प्लेटफॉर्म की वास्तविक स्क्रीन')}
+          </p>
+
+          <div className="rounded-2xl p-6 sm:p-8" style={{ background: '#FAF7F2' }}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {[
+                { label: l('Kundli Engine', 'कुंडली इंजन'),           file: 'showcase-kundli.png'     },
+                { label: l('Lal Kitab Workspace', 'लाल किताब वर्कस्पेस'), file: 'showcase-lalkitab.png'  },
+                { label: l('Live Panchang', 'लाइव पंचांग'),            file: 'showcase-panchang.png'   },
+                { label: l('Numerology Grid', 'न्यूमेरोलॉजी ग्रिड'),   file: 'showcase-numerology.png' },
+                { label: l('Client Manager', 'क्लाइंट मैनेजर'),        file: 'showcase-clients.png'    },
+                { label: l('Chandra Chalana', 'चंद्र चालना'),          file: 'showcase-chandra.png'    },
+              ].map(({ label, file }) => (
+                <button
+                  key={file}
+                  type="button"
+                  onClick={() => setLightbox({ file, label })}
+                  className="group overflow-hidden rounded-xl text-left w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-sacred-gold"
+                  style={{ border: '1px solid #e0d5c5' }}
+                >
+                  <div className="overflow-hidden relative" style={{ height: '220px' }}>
+                    <img
+                      src={`/images/showcase/${file}`}
+                      alt={label}
+                      className="w-full h-full object-cover object-top group-hover:scale-[1.02] transition-transform duration-300"
+                      loading="lazy"
+                    />
+                    {/* Zoom hint on hover */}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                      <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 text-gray-800 text-xs font-semibold px-3 py-1.5 rounded-full shadow">
+                        {l('Click to enlarge', 'बड़ा देखें')}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="px-4 py-3" style={{ background: '#FAF7F2', borderTop: '1px solid #e0d5c5' }}>
+                    <p className="text-sm font-semibold text-center uppercase tracking-wider" style={{ color: '#C4611F' }}>
+                      {label}
+                    </p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {/* CTA */}
         <div className="text-center mt-16">
           <p className="text-xl text-cosmic-text mb-6">
@@ -266,5 +327,46 @@ export default function Features() {
 
       </div>
     </section>
+
+    {/* ── Lightbox ─────────────────────────────────────────────── */}
+    {lightbox && (
+      <div
+        className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-8"
+        style={{ background: 'rgba(0,0,0,0.85)' }}
+        onClick={() => setLightbox(null)}
+      >
+        {/* Card — stops propagation so clicking the image doesn't close */}
+        <div
+          className="relative max-w-5xl w-full rounded-2xl overflow-hidden shadow-2xl"
+          onClick={e => e.stopPropagation()}
+        >
+          <img
+            src={`/images/showcase/${lightbox.file}`}
+            alt={lightbox.label}
+            className="w-full h-auto block"
+          />
+          {/* Label bar */}
+          <div className="px-6 py-4 flex items-center justify-between" style={{ background: '#FAF7F2' }}>
+            <p className="text-sm font-bold uppercase tracking-widest" style={{ color: '#C4611F' }}>
+              {lightbox.label}
+            </p>
+            <button
+              type="button"
+              onClick={() => setLightbox(null)}
+              className="text-gray-500 hover:text-gray-800 transition-colors"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* ESC hint */}
+        <p className="absolute bottom-4 left-0 right-0 text-center text-white/50 text-xs pointer-events-none">
+          {l('Press ESC or click outside to close', 'बंद करने के लिए ESC दबाएं या बाहर क्लिक करें')}
+        </p>
+      </div>
+    )}
+  </>
   );
 }
