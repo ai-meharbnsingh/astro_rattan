@@ -84,6 +84,49 @@ def _chart_data(row: dict) -> dict:
 
 # ── routes ───────────────────────────────────────────────────
 
+@router.get("/current-sky", status_code=status.HTTP_200_OK)
+def get_current_sky():
+    """
+    Return today's planetary positions (no auth required).
+    Used by the homepage live transit widget.
+    """
+    from datetime import datetime, timezone, timedelta
+    now_utc = datetime.now(timezone.utc)
+    # IST = UTC + 5:30
+    now_ist = now_utc + timedelta(hours=5, minutes=30)
+    today_str = now_ist.strftime("%Y-%m-%d")
+    time_str  = now_ist.strftime("%H:%M:%S")
+
+    chart = calculate_planet_positions(
+        birth_date=today_str,
+        birth_time=time_str,
+        latitude=20.5937,   # India centre (no natal chart — just sky)
+        longitude=78.9629,
+        tz_offset=5.5,
+    )
+
+    planets_out = []
+    for name in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]:
+        p = chart.get("planets", {}).get(name, {})
+        if p:
+            planets_out.append({
+                "planet": name,
+                "sign": p.get("sign", "Aries"),
+                "longitude": round(float(p.get("longitude", 0)), 4),
+                "sign_degree": round(float(p.get("sign_degree", 0)), 2),
+                "is_retrograde": bool(p.get("is_retrograde", False)),
+            })
+
+    ascendant = chart.get("ascendant", {})
+    return {
+        "date": today_str,
+        "time": time_str,
+        "lagna_longitude": round(float(ascendant.get("longitude", 0)), 4),
+        "lagna_sign": ascendant.get("sign", "Aries"),
+        "planets": planets_out,
+    }
+
+
 @router.post("/generate", status_code=status.HTTP_201_CREATED)
 def generate_kundli(
     body: KundliRequest,

@@ -26,6 +26,7 @@ import Hero from './sections/Hero';
 import Features from './sections/Features';
 import Footer from './sections/Footer';
 import WhatsAppWidget from './components/WhatsAppWidget';
+import TodaysSkyWidget from './components/TodaysSkyWidget';
 import { useAuth } from './hooks/useAuth';
 
 // Lazy imports — code-split per route
@@ -130,6 +131,14 @@ function HomePage() {
   return (
     <div ref={mainRef}>
       <Hero />
+
+      {/* ── Live Transit Chart ─────────────────────────────────── */}
+      <section className="animate-section py-16 bg-cosmic-bg border-t border-sacred-gold/10">
+        <div className="max-w-2xl mx-auto px-4">
+          <TodaysSkyWidget />
+        </div>
+      </section>
+
       <Features />
     </div>
   );
