@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Card, CardContent } from '@/components/ui/card';
@@ -11,6 +11,15 @@ export default function Features() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const { language } = useTranslation();
   const l = (en: string, hi: string) => (language === 'hi' ? hi : en);
+
+  const [lightbox, setLightbox] = useState<{ file: string; label: string } | null>(null);
+
+  useEffect(() => {
+    if (!lightbox) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setLightbox(null); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [lightbox]);
 
   const features = [
     {
@@ -113,6 +122,7 @@ export default function Features() {
   }, []);
 
   return (
+    <>
     <section ref={sectionRef} id="features" className="relative py-24 bg-cosmic-bg">
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -261,25 +271,33 @@ export default function Features() {
                 { label: l('Client Manager', 'क्लाइंट मैनेजर'),        file: 'showcase-clients.png'    },
                 { label: l('Chandra Chalana', 'चंद्र चालना'),          file: 'showcase-chandra.png'    },
               ].map(({ label, file }) => (
-                <div
+                <button
                   key={file}
-                  className="group overflow-hidden rounded-xl"
+                  type="button"
+                  onClick={() => setLightbox({ file, label })}
+                  className="group overflow-hidden rounded-xl text-left w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-sacred-gold"
                   style={{ border: '1px solid #e0d5c5' }}
                 >
-                  <div className="overflow-hidden" style={{ height: '220px' }}>
+                  <div className="overflow-hidden relative" style={{ height: '220px' }}>
                     <img
                       src={`/images/showcase/${file}`}
                       alt={label}
                       className="w-full h-full object-cover object-top group-hover:scale-[1.02] transition-transform duration-300"
                       loading="lazy"
                     />
+                    {/* Zoom hint on hover */}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                      <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 text-gray-800 text-xs font-semibold px-3 py-1.5 rounded-full shadow">
+                        {l('Click to enlarge', 'बड़ा देखें')}
+                      </span>
+                    </div>
                   </div>
                   <div className="px-4 py-3" style={{ background: '#FAF7F2', borderTop: '1px solid #e0d5c5' }}>
                     <p className="text-sm font-semibold text-center uppercase tracking-wider" style={{ color: '#C4611F' }}>
                       {label}
                     </p>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           </div>
@@ -309,5 +327,46 @@ export default function Features() {
 
       </div>
     </section>
+
+    {/* ── Lightbox ─────────────────────────────────────────────── */}
+    {lightbox && (
+      <div
+        className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-8"
+        style={{ background: 'rgba(0,0,0,0.85)' }}
+        onClick={() => setLightbox(null)}
+      >
+        {/* Card — stops propagation so clicking the image doesn't close */}
+        <div
+          className="relative max-w-5xl w-full rounded-2xl overflow-hidden shadow-2xl"
+          onClick={e => e.stopPropagation()}
+        >
+          <img
+            src={`/images/showcase/${lightbox.file}`}
+            alt={lightbox.label}
+            className="w-full h-auto block"
+          />
+          {/* Label bar */}
+          <div className="px-6 py-4 flex items-center justify-between" style={{ background: '#FAF7F2' }}>
+            <p className="text-sm font-bold uppercase tracking-widest" style={{ color: '#C4611F' }}>
+              {lightbox.label}
+            </p>
+            <button
+              type="button"
+              onClick={() => setLightbox(null)}
+              className="text-gray-500 hover:text-gray-800 transition-colors"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* ESC hint */}
+        <p className="absolute bottom-4 left-0 right-0 text-center text-white/50 text-xs pointer-events-none">
+          {l('Press ESC or click outside to close', 'बंद करने के लिए ESC दबाएं या बाहर क्लिक करें')}
+        </p>
+      </div>
+    )}
+  </>
   );
 }
