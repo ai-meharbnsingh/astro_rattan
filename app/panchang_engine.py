@@ -792,6 +792,11 @@ def calculate_panchang(
     Returns the original contract keys (tithi, nakshatra, yoga, karana, sunrise, sunset)
     plus extended data for the enhanced UI.
     """
+    # CRITICAL: Reset to Lahiri ayanamsa. Other engines (KP) may have
+    # switched swe to Krishnamurti mode in the same worker process.
+    if _HAS_SWE:
+        swe.set_sid_mode(swe.SIDM_LAHIRI)
+
     if tz_offset is None:
         # Default to IST for India, otherwise approximate from longitude
         if 68.0 <= longitude <= 97.5:
