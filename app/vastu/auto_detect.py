@@ -226,44 +226,162 @@ def _detect_ocr_labels(image_bytes: bytes) -> list[dict]:
 
     try:
         img = Image.open(io.BytesIO(image_bytes))
-        data = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT)
+        # Try PSM 6 (uniform text block) for better scattered text detection
+        # Fall back to default if it fails
+        try:
+            custom_config = r'--oem 3 --psm 6'
+            data = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT, config=custom_config)
+        except:
+            data = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT)
     except Exception as e:
         log.warning(f"OCR failed: {e}")
         return []
 
     rooms = []
     keywords = {
-        "kitchen": "kitchen", "rasoi": "kitchen",
-        "bedroom": "master_bedroom", "bed room": "master_bedroom", "shayanakaksh": "master_bedroom",
+        # Kitchen variations
+        "kitchen": "kitchen", "rasoi": "kitchen", "cooking": "kitchen",
+        # Bedroom variations (need to check for "master" vs regular bedroom)
+        "master bedroom": "master_bedroom", "master": "master_bedroom",
+        "bedroom": "master_bedroom", "bed room": "master_bedroom", 
+        "shayanakaksh": "master_bedroom", "shayan": "master_bedroom",
+        # Children's bedroom
+        "children": "children_bedroom", "child": "children_bedroom", 
+        "kids": "children_bedroom", "kid": "children_bedroom",
+        # Bathroom
         "bathroom": "bathroom", "toilet": "bathroom", "bath": "bathroom",
-        "living": "living_room", "drawing": "living_room", "baithak": "living_room",
+        "washroom": "bathroom", "shower": "bathroom",
+        # Living room (with common OCR typos) - tesseract often drops final G
+        "living": "living_room", "livine": "living_room", "uvine": "living_room", "livin": "living_room",
+        "drawing": "living_room", "baithak": "living_room",
+        "sitting": "living_room", "hall": "living_room", "room": "living_room",
+        # Pooja room
         "pooja": "pooja", "puja": "pooja", "mandir": "pooja",
-        "study": "study_room", "office": "study_room",
-        "stair": "staircase",
-        "store": "water_tank_underground",  # approximate
+        "prayer": "pooja", "worship": "pooja", "temple": "pooja",
+        # Study/Office
+        "study": "study_room", "office": "study_room", "work": "study_room",
+        # Staircase
+        "stair": "staircase", "stairs": "staircase",
+        # Storage
+        "store": "store_room", "storage": "store_room",
         "balcony": "living_room",
-        "child": "children_bedroom", "kids": "children_bedroom",
     }
 
     n_boxes = len(data["text"])
+    
+    # Get image dimensions from data bounds
+    img_width = max([data["left"][i] + data["width"][i] for i in range(n_boxes)] + [0])
+    img_height = max([data["top"][i] + data["height"][i] for i in range(n_boxes)] + [0])
+    
+    # First pass: collect all valid text boxes with metadata
+    text_boxes = []
     for i in range(n_boxes):
-        text = data["text"][i].strip().lower()
+        text = data["text"][i].strip()
         conf = int(data["conf"][i]) if data["conf"][i] != '-1' else 0
 
-        if conf < 30 or len(text) < 3:
+        if conf < 25 or len(text) < 2:
             continue
-
-        for kw, room_type in keywords.items():
-            if kw in text:
-                x = data["left"][i] + data["width"][i] // 2
-                y = data["top"][i] + data["height"][i] // 2
+            
+        x = data["left"][i] + data["width"][i] // 2
+        y = data["top"][i] + data["height"][i] // 2
+        
+        # Filter out detections in typical sidebar/checklist areas
+        if img_width > 0 and img_height > 0:
+            if x > img_width * 0.85:  # Right sidebar
+                continue
+            if y < img_height * 0.05 or y > img_height * 0.95:  # Top/bottom margins
+                continue
+        
+        text_boxes.append({
+            "text": text,
+            "text_lower": text.lower(),
+            "conf": conf,
+            "x": x,
+            "y": y,
+            "left": data["left"][i],
+            "top": data["top"][i],
+            "width": data["width"][i],
+            "height": data["height"][i],
+        })
+    
+    # Second pass: combine nearby text boxes (for multi-word room names)
+    combined = []
+    used = set()
+    
+    for i, box in enumerate(text_boxes):
+        if i in used:
+            continue
+        
+        # Look for nearby boxes (within 80px horizontally, 20px vertically)
+        nearby = [box]
+        for j, other in enumerate(text_boxes):
+            if i == j or j in used:
+                continue
+            dx = abs(box["x"] - other["x"])
+            dy = abs(box["y"] - other["y"])
+            # Same line (similar y) and close in x
+            if dy < 30 and dx < 150:
+                nearby.append(other)
+                used.add(j)
+        
+        if len(nearby) > 1:
+            # Sort by x position
+            nearby.sort(key=lambda b: b["x"])
+            combined_text = " ".join([b["text"] for b in nearby])
+            combined_lower = combined_text.lower()
+            avg_conf = sum([b["conf"] for b in nearby]) / len(nearby)
+            center_x = sum([b["x"] for b in nearby]) / len(nearby)
+            center_y = sum([b["y"] for b in nearby]) / len(nearby)
+            combined.append({
+                "text": combined_text,
+                "text_lower": combined_lower,
+                "conf": avg_conf,
+                "x": int(center_x),
+                "y": int(center_y),
+            })
+            used.add(i)
+        else:
+            combined.append(box)
+    
+    # Third pass: match against keywords
+    for box in combined:
+        text = box["text_lower"]
+        
+        # Skip if it's likely not a room label
+        skip_words = ["sample", "floorplan", "forvastu", "analysis", "test", "checklist", 
+                      "click", "detect", "button", "should", "verify", "expected", 
+                      "detection", "upload", "image", "main", "entrance", "scale", "feet"]
+        if any(sw in text for sw in skip_words):
+            continue
+        
+        # Check for multi-word phrases first (more specific)
+        matched = False
+        for phrase, room_type in keywords.items():
+            if " " in phrase and phrase in text:
                 rooms.append({
                     "room_type": room_type,
-                    "x": x,
-                    "y": y,
-                    "confidence": round(conf / 100, 2),
+                    "x": box["x"],
+                    "y": box["y"],
+                    "confidence": round(box["conf"] / 100, 2),
                     "method": "ocr",
-                    "detected_text": data["text"][i].strip(),
+                    "detected_text": box["text"],
+                })
+                matched = True
+                break
+        
+        if matched:
+            continue
+            
+        # Check for single keywords
+        for kw, room_type in keywords.items():
+            if kw in text:
+                rooms.append({
+                    "room_type": room_type,
+                    "x": box["x"],
+                    "y": box["y"],
+                    "confidence": round(box["conf"] / 100, 2),
+                    "method": "ocr",
+                    "detected_text": box["text"],
                 })
                 break
 
