@@ -76,7 +76,9 @@ class VastuAnalyzeRequest(BaseModel):
 # GET /api/vastu/mandala — Vastu Purusha Mandala (45 Devtas)
 # ============================================================
 @router.get("/api/vastu/mandala", status_code=status.HTTP_200_OK)
+@limiter.limit("30/minute")
 def vastu_mandala(
+    request: Request,
     building_type: BuildingType = Query(default=BuildingType.residential),
     entrance_direction: Optional[str] = Query(default=None, description="Direction code: N, NE, E, SE, S, SW, W, NW or pada like N3"),
     entrance_degrees: Optional[float] = Query(default=None, ge=0, lt=360, description="Precise compass degrees 0-360"),
@@ -93,7 +95,9 @@ def vastu_mandala(
 # GET /api/vastu/entrance — 32 Entrance Padas Analysis
 # ============================================================
 @router.get("/api/vastu/entrance", status_code=status.HTTP_200_OK)
+@limiter.limit("30/minute")
 def vastu_entrance(
+    request: Request,
     direction: str = Query(description="Direction code: N, NE, E, SE, S, SW, W, NW or pada code like N3, E5"),
     degrees: Optional[float] = Query(default=None, ge=0, lt=360, description="Precise compass degrees 0-360"),
 ):
@@ -131,7 +135,9 @@ def vastu_remedies(request: Request, req: VastuRemediesRequest, user: dict = Dep
 # GET /api/vastu/room-placement — Room placement guide
 # ============================================================
 @router.get("/api/vastu/room-placement", status_code=status.HTTP_200_OK)
+@limiter.limit("30/minute")
 def vastu_room_placement(
+    request: Request,
     room_type: Optional[str] = Query(default=None, description="Room type: pooja, kitchen, master_bedroom, living_room, bathroom, staircase, water_tank_underground, water_tank_overhead, study_room, children_bedroom"),
 ):
     """
@@ -328,4 +334,46 @@ def analyze_floorplan(
         },
     }
 
+    return result
+
+
+# ============================================================
+# POST /api/vastu/auto-detect — AI room detection on floor plan
+# ============================================================
+from app.vastu.auto_detect import auto_detect_rooms
+
+
+class AutoDetectRequest(BaseModel):
+    image_url: str = Field(min_length=1)
+    image_width: int = Field(gt=0)
+    image_height: int = Field(gt=0)
+
+
+@router.post("/api/vastu/auto-detect", status_code=status.HTTP_200_OK)
+@limiter.limit("5/minute")
+def vastu_auto_detect(
+    request: Request,
+    req: AutoDetectRequest,
+    user: dict = Depends(get_current_user),
+):
+    """
+    Auto-detect rooms on an uploaded floor plan using AI/CV.
+    Uses OCR → YOLOv8 → OpenCV cascade with graceful fallbacks.
+    """
+    import os as _os
+    from app.config import STATIC_DIR as _SD
+
+    # Resolve image path from URL
+    if req.image_url.startswith("/static/"):
+        image_path = _os.path.join(_SD, req.image_url.replace("/static/", "", 1))
+    else:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid image_url")
+
+    if not _os.path.isfile(image_path):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Image not found")
+
+    with open(image_path, "rb") as f:
+        image_bytes = f.read()
+
+    result = auto_detect_rooms(image_bytes, req.image_width, req.image_height)
     return result
