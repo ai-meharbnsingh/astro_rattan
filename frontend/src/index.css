@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=IM+Fell+English&family=Inter:wght@300;400;500;600;700&family=Laila:wght@400;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -115,9 +115,11 @@
     --sacred-saffron: #FF9933;
     --sacred-saffron-dark: #B45309;
     --sacred-saffron-light: #FFD700;
-    --sacred-purple: #e2e8f0;
+    --sacred-purple: #e2e8f0; /* legacy: actually light gray, use --sacred-gray-light instead */
+    --sacred-gray-light: #e2e8f0;
     --sacred-purple-light: #f1f5f9;
-    --sacred-violet: #FF9933;
+    --sacred-violet: #FF9933; /* legacy: actually gold, use --sacred-gold-accent instead */
+    --sacred-gold-accent: #FF9933;
 
     /* shadcn HSL tokens — Prismatic Light */
     --background: 40 50% 98%;
@@ -208,14 +210,14 @@
 
 /* Buttons — Prismatic Light */
 .btn-sacred {
-  background: transparent;
-  color: var(--aged-gold);
-  font-weight: 500;
+  background: var(--aged-gold);
+  color: #ffffff;
+  font-weight: 600;
   border: 1px solid var(--aged-gold);
   transition: all 0.3s ease;
 }
 .btn-sacred:hover {
-  background: var(--aged-gold);
+  background: var(--sacred-gold-dark, #B45309);
   color: #ffffff;
   box-shadow: 0 4px 12px rgba(255, 153, 51, 0.2);
 }

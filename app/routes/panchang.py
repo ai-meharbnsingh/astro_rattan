@@ -1,10 +1,13 @@
-"""Panchang routes — daily panchang, choghadiya, muhurat, sunrise, festivals, and monthly view."""
+"""Panchang routes — daily panchang, choghadiya, muhurat, sunrise, festivals, monthly view, and PDF download."""
+import io
 import json
+import os
 import calendar
 from typing import Any
 from datetime import date, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi.responses import StreamingResponse
 
 from app.database import get_db
 from app.panchang_engine import (
@@ -13,6 +16,86 @@ from app.panchang_engine import (
     calculate_choghadiya,
 )
 from app.festival_engine import detect_festivals
+
+
+# ============================================================
+# Hindi translation mappings for bilingual PDF
+# ============================================================
+
+HINDI_DAYS = {
+    'Sunday': 'रविवार', 'Monday': 'सोमवार', 'Tuesday': 'मंगलवार',
+    'Wednesday': 'बुधवार', 'Thursday': 'गुरुवार', 'Friday': 'शुक्रवार',
+    'Saturday': 'शनिवार',
+}
+
+HINDI_MONTHS_ENG = {
+    1: 'जनवरी', 2: 'फरवरी', 3: 'मार्च', 4: 'अप्रैल', 5: 'मई', 6: 'जून',
+    7: 'जुलाई', 8: 'अगस्त', 9: 'सितंबर', 10: 'अक्टूबर', 11: 'नवंबर', 12: 'दिसंबर',
+}
+
+HINDI_NAKSHATRAS = {
+    'Ashwini': 'अश्विनी', 'Bharani': 'भरणी', 'Krittika': 'कृत्तिका',
+    'Rohini': 'रोहिणी', 'Mrigashira': 'मृगशिरा', 'Ardra': 'आर्द्रा',
+    'Punarvasu': 'पुनर्वसु', 'Pushya': 'पुष्य', 'Ashlesha': 'अश्लेषा',
+    'Magha': 'मघा', 'Purva Phalguni': 'पूर्व फाल्गुनी', 'Uttara Phalguni': 'उत्तर फाल्गुनी',
+    'Hasta': 'हस्त', 'Chitra': 'चित्रा', 'Swati': 'स्वाति',
+    'Vishakha': 'विशाखा', 'Anuradha': 'अनुराधा', 'Jyeshtha': 'ज्येष्ठा',
+    'Mula': 'मूल', 'Purva Ashadha': 'पूर्व आषाढ़ा', 'Uttara Ashadha': 'उत्तर आषाढ़ा',
+    'Shravana': 'श्रवण', 'Dhanishta': 'धनिष्ठा', 'Shatabhisha': 'शतभिषा',
+    'Purva Bhadrapada': 'पूर्व भाद्रपद', 'Uttara Bhadrapada': 'उत्तर भाद्रपद', 'Revati': 'रेवती',
+}
+
+HINDI_MAAS = {
+    'Chaitra': 'चैत्र', 'Vaishakha': 'वैशाख', 'Jyeshtha': 'ज्येष्ठ',
+    'Ashadha': 'आषाढ़', 'Shravana': 'श्रावण', 'Bhadrapada': 'भाद्रपद',
+    'Ashwin': 'आश्विन', 'Kartik': 'कार्तिक', 'Margashirsha': 'मार्गशीर्ष',
+    'Pausha': 'पौष', 'Magha': 'माघ', 'Phalguna': 'फाल्गुन',
+}
+
+HINDI_TITHIS = {
+    'Pratipada': 'प्रतिपदा', 'Dwitiya': 'द्वितीया', 'Tritiya': 'तृतीया',
+    'Chaturthi': 'चतुर्थी', 'Panchami': 'पंचमी', 'Shashthi': 'षष्ठी',
+    'Saptami': 'सप्तमी', 'Ashtami': 'अष्टमी', 'Navami': 'नवमी',
+    'Dashami': 'दशमी', 'Ekadashi': 'एकादशी', 'Dwadashi': 'द्वादशी',
+    'Trayodashi': 'त्रयोदशी', 'Chaturdashi': 'चतुर्दशी',
+    'Purnima': 'पूर्णिमा', 'Amavasya': 'अमावस्या',
+}
+
+HINDI_PAKSHA = {'Shukla': 'शुक्ल', 'Krishna': 'कृष्ण'}
+HINDI_AYANA = {'Uttarayana': 'उत्तरायण', 'Dakshinayana': 'दक्षिणायन'}
+HINDI_RITU = {
+    'Vasanta': 'वसंत', 'Grishma': 'ग्रीष्म', 'Varsha': 'वर्षा',
+    'Sharad': 'शरद', 'Hemanta': 'हेमंत', 'Shishira': 'शिशिर',
+}
+
+HINDI_RASHIS = {
+    'Aries': 'मेष', 'Taurus': 'वृषभ', 'Gemini': 'मिथुन', 'Cancer': 'कर्क',
+    'Leo': 'सिंह', 'Virgo': 'कन्या', 'Libra': 'तुला', 'Scorpio': 'वृश्चिक',
+    'Sagittarius': 'धनु', 'Capricorn': 'मकर', 'Aquarius': 'कुम्भ', 'Pisces': 'मीन',
+}
+
+HINDI_YOGAS = {
+    'Vishkumbha': 'विष्कम्भ', 'Priti': 'प्रीति', 'Ayushman': 'आयुष्मान',
+    'Saubhagya': 'सौभाग्य', 'Shobhana': 'शोभन', 'Atiganda': 'अतिगण्ड',
+    'Sukarma': 'सुकर्मा', 'Dhriti': 'धृति', 'Shula': 'शूल',
+    'Ganda': 'गण्ड', 'Vriddhi': 'वृद्धि', 'Dhruva': 'ध्रुव',
+    'Vyaghata': 'व्याघात', 'Harshana': 'हर्षण', 'Vajra': 'वज्र',
+    'Siddhi': 'सिद्धि', 'Vyatipata': 'व्यतिपात', 'Variyan': 'वरीयान',
+    'Parigha': 'परिघ', 'Shiva': 'शिव', 'Siddha': 'सिद्ध',
+    'Sadhya': 'साध्य', 'Shubha': 'शुभ', 'Shukla': 'शुक्ल',
+    'Brahma': 'ब्रह्म', 'Indra': 'इन्द्र', 'Vaidhriti': 'वैधृति',
+}
+
+HINDI_PLANETS = {
+    'Sun': 'सूर्य', 'Moon': 'चन्द्र', 'Mars': 'मंगल', 'Mercury': 'बुध',
+    'Jupiter': 'गुरु', 'Venus': 'शुक्र', 'Saturn': 'शनि',
+    'Rahu': 'राहु', 'Ketu': 'केतु',
+}
+
+HINDI_CHOGHADIYA_QUALITY = {
+    'Amrit': 'अमृत', 'Shubh': 'शुभ', 'Labh': 'लाभ', 'Char': 'चर',
+    'Rog': 'रोग', 'Kaal': 'काल', 'Udveg': 'उद्वेग',
+}
 
 router = APIRouter(tags=["panchang"])
 
@@ -395,3 +478,273 @@ def list_festivals(
         }
         for r in rows
     ]
+
+
+# ============================================================
+# GET /api/panchang/pdf -- Download Panchang as PDF
+# ============================================================
+
+def _find_hindi_font():
+    """Locate a Devanagari-capable TTF font on disk."""
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    candidates = [
+        os.path.join(base_dir, "fonts", "NotoSansDevanagari-Regular.ttf"),
+        "/usr/share/fonts/truetype/noto/NotoSansDevanagari-Regular.ttf",
+        "/usr/share/fonts/noto/NotoSansDevanagari-Regular.ttf",
+    ]
+    for p in candidates:
+        if os.path.exists(p):
+            return p
+    return None
+
+
+def _build_panchang_pdf(panchang: dict, date_str: str) -> bytes:
+    """Build a clean single-page Panchang summary PDF (like WhatsApp text style)."""
+    from fpdf import FPDF
+
+    SAFFRON = (255, 153, 51)
+    DARK = (51, 51, 51)
+    WHITE = (255, 255, 255)
+    MUTED = (120, 100, 80)
+
+    hindi_font_path = _find_hindi_font()
+    has_hindi = hindi_font_path is not None
+
+    dt = datetime.strptime(date_str, "%Y-%m-%d")
+    day_en = dt.strftime("%A")
+    day_hi = HINDI_DAYS.get(day_en, day_en)
+    month_hi = HINDI_MONTHS_ENG.get(dt.month, "")
+    date_hi = f"{dt.day} {month_hi} {dt.year}"
+    date_en = dt.strftime("%d %B %Y")
+
+    tithi = panchang.get("tithi", {})
+    nakshatra = panchang.get("nakshatra", {})
+    yoga = panchang.get("yoga", {})
+    karana = panchang.get("karana", {})
+    hc = panchang.get("hindu_calendar", {})
+    rahu = panchang.get("rahu_kaal", {})
+    gulika = panchang.get("gulika_kaal", {})
+    yamag = panchang.get("yamaganda", {})
+    brahma = panchang.get("brahma_muhurat", {})
+    abhijit = panchang.get("abhijit_muhurat", {})
+    nishita = panchang.get("nishita_muhurta", panchang.get("nishita_muhurat", {}))
+    festivals = panchang.get("festivals", [])
+    choghadiya = panchang.get("choghadiya", [])
+    planets = panchang.get("planetary_positions", [])
+
+    def _hi(m, k):
+        return m.get(k, k) if has_hindi else k
+
+    def _period(m):
+        if isinstance(m, dict):
+            return f"{m.get('start', '')} - {m.get('end', '')}"
+        return str(m) if m else "--"
+
+    # Build tithi string
+    t_name = tithi.get("name", "")
+    t_hi = _hi(HINDI_TITHIS, t_name)
+    t_str_hi = f"{t_hi} {tithi.get('end_time', '')} तक"
+    t_str_en = f"{t_name} until {tithi.get('end_time', '')}"
+    if tithi.get("next"):
+        t_str_hi += f" तत्पश्चात् {_hi(HINDI_TITHIS, tithi['next'])}"
+        t_str_en += f", then {tithi['next']}"
+
+    # Nakshatra string
+    n_name = nakshatra.get("name", "")
+    n_hi = _hi(HINDI_NAKSHATRAS, n_name)
+    n_str_hi = f"{n_hi} (पद {nakshatra.get('pada', '')}) {nakshatra.get('end_time', '')} तक"
+    n_str_en = f"{n_name} (Pada {nakshatra.get('pada', '')}) until {nakshatra.get('end_time', '')}"
+    if nakshatra.get("next"):
+        n_str_hi += f" तत्पश्चात् {_hi(HINDI_NAKSHATRAS, nakshatra['next'])}"
+        n_str_en += f", then {nakshatra['next']}"
+
+    # Yoga string
+    y_name = yoga.get("name", "")
+    y_hi = _hi(HINDI_YOGAS, y_name)
+    y_str_hi = f"{y_hi} {yoga.get('end_time', '')} तक"
+    y_str_en = f"{y_name} until {yoga.get('end_time', '')}"
+    if yoga.get("next"):
+        y_str_hi += f" तत्पश्चात् {_hi(HINDI_YOGAS, yoga['next'])}"
+        y_str_en += f", then {yoga['next']}"
+
+    # Karana string
+    k_name = karana.get("name", "")
+    k_str_en = f"{k_name} until {karana.get('end_time', '')}"
+    k_str_hi = f"{k_name} {karana.get('end_time', '')} तक"
+    if karana.get("second_karana"):
+        k_str_en += f", then {karana['second_karana']}"
+        k_str_hi += f" तत्पश्चात् {karana['second_karana']}"
+
+    # ── PDF ──────────────────────────────────────────────────────
+    class SummaryPDF(FPDF):
+        def __init__(self):
+            super().__init__()
+            self._h = False
+            if has_hindi:
+                self.add_font("Hi", "", hindi_font_path, uni=True)
+                self._h = True
+
+        def footer(self):
+            self.set_y(-10)
+            self.set_font("Helvetica", "I", 7)
+            self.set_text_color(*MUTED)
+            self.cell(0, 6, f"Generated by AstroRattan.com  |  {datetime.now().strftime('%d %b %Y, %I:%M %p')}", align="C")
+
+        def _use_font(self, sz=10):
+            if self._h:
+                self.set_font("Hi", "", sz)
+            else:
+                self.set_font("Helvetica", "", sz)
+
+        def line_item(self, label_hi, label_en, val_hi, val_en):
+            """Print one summary line: Hindi label — Hindi value / English label — English value"""
+            self._use_font(10)
+            self.set_text_color(*DARK)
+            if self._h:
+                self.cell(0, 6.5, f"  {label_hi} — {val_hi}", new_x="LMARGIN", new_y="NEXT")
+                self.set_text_color(*MUTED)
+                self._use_font(8)
+                self.cell(0, 5, f"     {label_en} — {val_en}", new_x="LMARGIN", new_y="NEXT")
+            else:
+                self.cell(0, 6.5, f"  {label_en} — {val_en}", new_x="LMARGIN", new_y="NEXT")
+            self.ln(1)
+
+        def section_sep(self, title_hi, title_en):
+            self.ln(2)
+            self.set_fill_color(*SAFFRON)
+            self.set_text_color(*WHITE)
+            self._use_font(11)
+            lbl = f"  {title_hi}  |  {title_en}" if self._h else f"  {title_en}"
+            self.cell(0, 7, lbl, fill=True, new_x="LMARGIN", new_y="NEXT")
+            self.set_text_color(*DARK)
+            self.ln(3)
+
+    pdf = SummaryPDF()
+    pdf.set_auto_page_break(auto=True, margin=12)
+    pdf.add_page()
+
+    # ── Header ───────────────────────────────────────────────────
+    pdf.set_fill_color(*SAFFRON)
+    pdf.rect(0, 0, 210, 30, "F")
+    pdf.set_text_color(*WHITE)
+    pdf._use_font(20)
+    pdf.set_y(5)
+    title = "卐  हिन्दू पंचांग  卐" if pdf._h else "Hindu Panchang"
+    pdf.cell(0, 10, title, align="C", new_x="LMARGIN", new_y="NEXT")
+    pdf._use_font(10)
+    pdf.cell(0, 7, f"{date_hi}  |  {date_en}  |  {day_hi} / {day_en}", align="C", new_x="LMARGIN", new_y="NEXT")
+    pdf.set_y(33)
+    pdf.set_text_color(*DARK)
+
+    # ── Hindu Calendar ───────────────────────────────────────────
+    pdf.section_sep("हिन्दू पंचांग", "Hindu Calendar")
+    pdf.line_item("विक्रम संवत्", "Vikram Samvat", str(hc.get("vikram_samvat", "")), str(hc.get("vikram_samvat", "")))
+    pdf.line_item("शक संवत्", "Shaka Samvat", str(hc.get("shaka_samvat", "")), str(hc.get("shaka_samvat", "")))
+    pdf.line_item("अयन", "Ayana", _hi(HINDI_AYANA, hc.get("ayana", "")), hc.get("ayana", ""))
+    pdf.line_item("ऋतु", "Ritu", _hi(HINDI_RITU, hc.get("ritu", "")), f"{hc.get('ritu', '')} ({hc.get('ritu_english', '')})")
+    pdf.line_item("मास", "Month", _hi(HINDI_MAAS, hc.get("maas", "")), hc.get("maas", ""))
+    pdf.line_item("पक्ष", "Paksha", _hi(HINDI_PAKSHA, hc.get("paksha", "")), hc.get("paksha", ""))
+
+    # ── Panchang Details ─────────────────────────────────────────
+    pdf.section_sep("पंचांग विवरण", "Panchang Details")
+    pdf.line_item("तिथि", "Tithi", t_str_hi, t_str_en)
+    pdf.line_item("नक्षत्र", "Nakshatra", n_str_hi, n_str_en)
+    pdf.line_item("योग", "Yoga", y_str_hi, y_str_en)
+    pdf.line_item("करण", "Karana", k_str_hi, k_str_en)
+
+    # ── Timings ──────────────────────────────────────────────────
+    pdf.section_sep("समय", "Timings")
+    pdf.line_item("सूर्योदय", "Sunrise", panchang.get("sunrise", "--"), panchang.get("sunrise", "--"))
+    pdf.line_item("सूर्यास्त", "Sunset", panchang.get("sunset", "--"), panchang.get("sunset", "--"))
+    pdf.line_item("चन्द्रोदय", "Moonrise", panchang.get("moonrise", "--"), panchang.get("moonrise", "--"))
+    pdf.line_item("चन्द्रास्त", "Moonset", panchang.get("moonset", "--"), panchang.get("moonset", "--"))
+    pdf.line_item("दिनमान", "Day Duration", panchang.get("dinamana", "--"), panchang.get("dinamana", "--"))
+    pdf.line_item("रात्रिमान", "Night Duration", panchang.get("ratrimana", "--"), panchang.get("ratrimana", "--"))
+
+    # ── Muhurat ──────────────────────────────────────────────────
+    pdf.section_sep("मुहूर्त", "Muhurat & Inauspicious Periods")
+    pdf.line_item("राहुकाल", "Rahu Kaal", _period(rahu), _period(rahu))
+    pdf.line_item("गुलिक काल", "Gulika Kaal", _period(gulika), _period(gulika))
+    pdf.line_item("यमगण्ड", "Yamaganda", _period(yamag), _period(yamag))
+    pdf.line_item("ब्रह्ममुहूर्त", "Brahma Muhurat", _period(brahma), _period(brahma))
+    pdf.line_item("अभिजीत मुहूर्त", "Abhijit Muhurat", _period(abhijit), _period(abhijit))
+    pdf.line_item("निशिता मुहूर्त", "Nishita Muhurat", _period(nishita), _period(nishita))
+
+    # ── Sun & Moon ───────────────────────────────────────────────
+    sun_s = panchang.get("sun_sign", "")
+    moon_s = panchang.get("moon_sign", "")
+    pdf.section_sep("ग्रह स्थिति", "Sun & Moon")
+    pdf.line_item("सूर्य राशि", "Sun Sign", f"{_hi(HINDI_RASHIS, sun_s)}", sun_s)
+    pdf.line_item("चन्द्र राशि", "Moon Sign", f"{_hi(HINDI_RASHIS, moon_s)}", moon_s)
+
+    # ── Festivals ────────────────────────────────────────────────
+    if festivals:
+        pdf.section_sep("व्रत / पर्व", "Festivals & Observances")
+        for f in festivals:
+            fname = f.get("name", f) if isinstance(f, dict) else str(f)
+            fname_hi = f.get("name_hindi", f.get("hindi_name", fname)) if isinstance(f, dict) else fname
+            pdf._use_font(10)
+            pdf.set_text_color(*DARK)
+            if pdf._h and fname_hi != fname:
+                pdf.cell(0, 6, f"  • {fname_hi} / {fname}", new_x="LMARGIN", new_y="NEXT")
+            else:
+                pdf.cell(0, 6, f"  • {fname}", new_x="LMARGIN", new_y="NEXT")
+
+    # ── Choghadiya (compact) ─────────────────────────────────────
+    if choghadiya:
+        pdf.section_sep("चौघडिया", "Choghadiya")
+        pdf._use_font(9)
+        for i, c in enumerate(choghadiya):
+            name = c.get("name", "")
+            q = c.get("quality", "")
+            hi_name = HINDI_CHOGHADIYA_QUALITY.get(name, name) if has_hindi else name
+            line = f"  {i+1}. {hi_name} / {name}  ({q})  {c.get('start', '')} - {c.get('end', '')}"
+            pdf.cell(0, 5.5, line, new_x="LMARGIN", new_y="NEXT")
+
+    # ── Planetary Positions (compact) ────────────────────────────
+    if planets:
+        pdf.section_sep("नवग्रह स्थिति", "Planetary Positions")
+        pdf._use_font(9)
+        for p in planets:
+            n = p.get("name", "")
+            hi_n = HINDI_PLANETS.get(n, n) if has_hindi else n
+            r = p.get("rashi", "")
+            hi_r = _hi(HINDI_RASHIS, r)
+            d = p.get("degree", 0)
+            line = f"  {hi_n} / {n}  —  {d:.1f}°  {hi_r} / {r}"
+            pdf.cell(0, 5.5, line, new_x="LMARGIN", new_y="NEXT")
+
+    return pdf.output()
+
+
+@router.get("/api/panchang/pdf", status_code=status.HTTP_200_OK)
+async def download_panchang_pdf(
+    date_str: str = Query(..., alias="date"),
+    latitude: float = Query(default=28.6139),
+    longitude: float = Query(default=77.2090),
+):
+    """Generate and download a bilingual Hindi+English Panchang PDF report."""
+    target_date = date_str
+    _parse_date(target_date)
+
+    # Calculate full panchang
+    panchang = calculate_panchang(target_date, latitude, longitude)
+
+    # Detect festivals
+    festivals = detect_festivals(
+        tithi_name=panchang["tithi"]["name"],
+        paksha=panchang["tithi"]["paksha"],
+        nakshatra_name=panchang["nakshatra"]["name"],
+        maas=panchang.get("hindu_calendar", {}).get("maas", ""),
+    )
+    panchang["festivals"] = festivals
+
+    # Build PDF
+    pdf_bytes = _build_panchang_pdf(panchang, target_date)
+
+    filename = f"Panchang_{target_date}.pdf"
+    return StreamingResponse(
+        io.BytesIO(pdf_bytes),
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )

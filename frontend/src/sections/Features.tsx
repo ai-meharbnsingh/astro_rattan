@@ -24,17 +24,17 @@ export default function Features() {
   const features = [
     {
       icon: <Star className="w-6 h-6" />,
-      title: l('22 Lal Kitab Specializations', '22 लाल किताब विशेषताएं'),
+      title: l('Lal Kitab — Complete System', 'लाल किताब — पूर्ण सिस्टम'),
       subtitle: l('ONLY here', 'केवल यहाँ'),
-      desc: l('Nishaniyan Matcher, Chandra Chalana 43-day protocol, Remedy Tracker with streaks, Teva classification, Dosha analysis — the most complete Lal Kitab system available.', 'निशानियां मैचर, चंद्र चालना 43-दिवसीय प्रोटोकॉल, स्ट्रीक्स के साथ उपाय ट्रैकर, तेवा वर्गीकरण, दोष विश्लेषण — उपलब्ध सबसे पूर्ण लाल किताब सिस्टम।'),
+      desc: l('Nishaniyan Matcher, Chandra Chalana 43-day protocol, Remedy Tracker with streaks, Teva classification, Dosha analysis, Annual Gochar, Planet analysis — the most complete Lal Kitab toolkit available.', 'निशानियां मैचर, चंद्र चालना 43-दिवसीय प्रोटोकॉल, स्ट्रीक्स के साथ उपाय ट्रैकर, तेवा वर्गीकरण, दोष विश्लेषण, वार्षिक गोचर — उपलब्ध सबसे पूर्ण लाल किताब टूलकिट।'),
       badge: l('EXCLUSIVE', 'विशेष'),
       color: 'from-amber-500/20 to-orange-500/10',
     },
     {
       icon: <Calculator className="w-6 h-6" />,
-      title: l('21 Kundli Engines', '21 कुंडली इंजन'),
+      title: l('Kundli — 3 Vedic Systems', 'कुंडली — 3 वैदिक सिस्टम'),
       subtitle: l('Unmatched Depth', 'बेजोड़ गहराई'),
-      desc: l('Parashari + Jaimini + KP System. Divisional charts D1-D60, Shadbala strength analysis, Ashtakvarga bindu calculations — depth no other app matches.', 'पाराशरी + जैमिनी + केपी सिस्टम। विभाजन चार्ट D1-D60, शडबल शक्ति विश्लेषण, अष्टकवर्ग बिंदु गणना — ऐसी गहराई कोई अन्य ऐप नहीं मिलती।'),
+      desc: l('Parashari, Jaimini & KP System in one place. Ashtakvarga, Dasha timeline, Varshphal annual chart, Kundli Milan compatibility, General Remedies — 8 deep-analysis tools, not just a birth chart.', 'पाराशरी, जैमिनी और केपी सिस्टम एक जगह। अष्टकवर्ग, दशा टाइमलाइन, वर्षफल, कुंडली मिलान, सामान्य उपाय — केवल जन्म कुंडली नहीं, 8 गहन विश्लेषण टूल।'),
       badge: null,
       color: 'from-blue-500/20 to-cyan-500/10',
     },
@@ -93,8 +93,14 @@ export default function Features() {
     },
     {
       feature: l('Lal Kitab Depth', 'लाल किताब गहराई'),
-      us: l('22 specialized tabs', '22 विशेषज्ञता टैब'),
+      us: l('Teva · Gochar · Dosha · Remedies · Dasha · Planet analysis', 'तेवा · गोचर · दोष · उपाय · दशा · ग्रह विश्लेषण'),
       them: l('Teva + basic remedies only', 'केवल तेवा + बुनियादी उपाय'),
+      exclusive: false,
+    },
+    {
+      feature: l('Vastu Analysis', 'वास्तु विश्लेषण'),
+      us: l('Floor plan upload → zone scoring → remedies', 'फ्लोर प्लान अपलोड → ज़ोन स्कोरिंग → उपाय'),
+      them: l('Direction tips only, no floor plan', 'केवल दिशा सुझाव, फ्लोर प्लान नहीं'),
       exclusive: false,
     },
     {
@@ -138,7 +144,7 @@ export default function Features() {
             {l('Everything You Need', 'आपको जो कुछ भी चाहिए')}<br />
             <span className="text-sacred-gold-dark">{l('In One Platform', 'एक ही प्लेटफॉर्म में')}</span>
           </h2>
-          <p className="max-w-3xl mx-auto text-lg text-cosmic-text/80">
+          <p className="max-w-3xl mx-auto text-lg text-gray-600">
             {l('Most astrology apps use lookup tables and generic predictions. ', 'अधिकांश ज्योतिष ऐप लुकअप टेबल और सामान्य भविष्यवाणी का उपयोग करते हैं। ')}
             <strong className="text-sacred-gold-dark">{l('Astro Rattan computes every position from Swiss Ephemeris', 'Astro Rattan Swiss Ephemeris से हर स्थिति की गणना करता है')}</strong>
             {l(' — the same library used by research astronomers — accurate to arc-seconds.', ' — यही लाइब्रेरी शोध खगोलविद भी उपयोग करते हैं — आर्क-सेकंड तक सटीक।')}
@@ -164,13 +170,13 @@ export default function Features() {
                 <div className="w-12 h-12 rounded-lg bg-sacred-gold/10 flex items-center justify-center text-sacred-gold-dark mb-4 group-hover:bg-sacred-gold/20 transition-colors">
                   {feature.icon}
                 </div>
-                <p className="text-xs font-semibold text-sacred-gold-dark uppercase tracking-wider mb-1">
-                  {feature.subtitle}
-                </p>
-                <h3 className="text-lg font-sans font-semibold text-cosmic-text mb-3 uppercase tracking-wide">
+                <h3 className="text-lg font-sans font-semibold text-cosmic-text mb-1 uppercase tracking-wide">
                   {feature.title}
                 </h3>
-                <p className="text-sm text-cosmic-text/70 leading-relaxed">
+                <p className="text-xs font-semibold text-sacred-gold-dark uppercase tracking-wider mb-3">
+                  {feature.subtitle}
+                </p>
+                <p className="text-sm text-gray-600 leading-relaxed">
                   {feature.desc}
                 </p>
               </CardContent>
@@ -181,20 +187,20 @@ export default function Features() {
         {/* Stats Bar */}
         <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 p-6 rounded-2xl bg-sacred-gold/5 border border-sacred-gold/20">
           <div className="text-center">
-            <div className="text-3xl font-bold text-sacred-gold-dark">22</div>
-            <div className="text-sm text-cosmic-text/70">{l('Lal Kitab Tabs', 'लाल किताब टैब्स')}</div>
+            <div className="text-3xl font-bold text-sacred-gold-dark">5</div>
+            <div className="text-sm text-gray-600">{l('Platform Modules', 'प्लेटफॉर्म मॉड्यूल')}</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-sacred-gold-dark">21</div>
-            <div className="text-sm text-cosmic-text/70">{l('Kundli Engines', 'कुंडली इंजन')}</div>
+            <div className="text-3xl font-bold text-sacred-gold-dark">8</div>
+            <div className="text-sm text-gray-600">{l('Kundli Analysis Tools', 'कुंडली विश्लेषण टूल')}</div>
           </div>
           <div className="text-center">
             <div className="text-3xl font-bold text-sacred-gold-dark">43</div>
-            <div className="text-sm text-cosmic-text/70">{l('Day Protocol', 'दिवसीय प्रोटोकॉल')}</div>
+            <div className="text-sm text-gray-600">{l('-Day Moon Discipline', '-दिवसीय चंद्र अनुशासन')}</div>
           </div>
           <div className="text-center">
             <div className="text-3xl font-bold text-sacred-gold-dark">3</div>
-            <div className="text-sm text-cosmic-text/70">{l('Scriptural Systems', 'शास्त्रीय प्रणालियां')}</div>
+            <div className="text-sm text-gray-600">{l('Vedic Traditions', 'वैदिक परंपराएं')}</div>
           </div>
         </div>
 
@@ -203,14 +209,14 @@ export default function Features() {
           <h3 className="text-2xl sm:text-3xl font-sans text-center text-cosmic-text mb-4">
             {l('Astro Rattan vs Others', 'एस्ट्रो रतन बनाम अन्य')}
           </h3>
-          <p className="text-center text-cosmic-text/60 mb-10">
+          <p className="text-center text-gray-600 mb-10">
             {l('See exactly what sets us apart', 'देखें हम क्या अलग देते हैं')}
           </p>
 
           <div className="bg-cosmic-bg/80 rounded-2xl border border-sacred-gold/20 overflow-hidden">
             {/* Table Header */}
             <div className="grid grid-cols-3 gap-4 p-4 bg-sacred-gold/10 border-b border-sacred-gold/20">
-              <div className="text-sm font-semibold text-cosmic-text/70 uppercase tracking-wider">
+              <div className="text-sm font-semibold text-gray-700 uppercase tracking-wider">
                 {l('Feature', 'सुविधा')}
               </div>
               <div className="text-center">
@@ -218,7 +224,7 @@ export default function Features() {
                   <Sparkles className="w-3 h-3" /> Astro Rattan
                 </span>
               </div>
-              <div className="text-center text-sm font-semibold text-cosmic-text/50">
+              <div className="text-center text-sm font-semibold text-gray-500">
                 {l('Other Apps', 'अन्य ऐप्स')}
               </div>
             </div>
@@ -234,7 +240,7 @@ export default function Features() {
                 <div className="text-sm text-cosmic-text font-medium flex items-center gap-2">
                   {row.feature}
                   {row.exclusive && (
-                    <span className="hidden sm:inline px-1.5 py-0.5 text-[10px] font-bold text-sacred-gold-dark border border-sacred-gold/40 rounded uppercase tracking-wide">
+                    <span className="inline px-1.5 py-0.5 text-[10px] font-bold text-sacred-gold-dark border border-sacred-gold/40 rounded uppercase tracking-wide">
                       {l('Only us', 'सिर्फ हम')}
                     </span>
                   )}
@@ -245,7 +251,7 @@ export default function Features() {
                 </div>
                 <div className="flex items-center justify-center gap-2">
                   <X className="w-4 h-4 text-red-400 flex-shrink-0" />
-                  <span className="text-sm text-cosmic-text/50 text-center">{row.them}</span>
+                  <span className="text-sm text-gray-500 text-center">{row.them}</span>
                 </div>
               </div>
             ))}
@@ -253,15 +259,15 @@ export default function Features() {
         </div>
 
         {/* ── See What's Inside — Screenshot Showcase ─────────────── */}
-        <div className="mt-24">
+        <div className="mt-12">
           <h3 className="text-2xl sm:text-3xl font-sans text-center text-cosmic-text mb-3">
             {l("See What's Inside", 'अंदर क्या है देखें')}
           </h3>
-          <p className="text-center text-cosmic-text/60 mb-10 text-sm">
+          <p className="text-center text-gray-600 mb-10 text-sm">
             {l('Real screens from the platform', 'प्लेटफॉर्म की वास्तविक स्क्रीन')}
           </p>
 
-          <div className="rounded-2xl p-6 sm:p-8" style={{ background: '#FAF7F2' }}>
+          <div className="rounded-2xl p-6 sm:p-8 bg-[#1a1625] border border-sacred-gold/10">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {[
                 { label: l('Kundli Engine', 'कुंडली इंजन'),           file: 'showcase-kundli.png'     },
@@ -276,7 +282,7 @@ export default function Features() {
                   type="button"
                   onClick={() => setLightbox({ file, label })}
                   className="group overflow-hidden rounded-xl text-left w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-sacred-gold"
-                  style={{ border: '1px solid #e0d5c5' }}
+                  style={{ border: '1px solid rgba(196, 164, 105, 0.2)' }}
                 >
                   <div className="overflow-hidden relative" style={{ height: '220px' }}>
                     <img
@@ -292,7 +298,7 @@ export default function Features() {
                       </span>
                     </div>
                   </div>
-                  <div className="px-4 py-3" style={{ background: '#FAF7F2', borderTop: '1px solid #e0d5c5' }}>
+                  <div className="px-4 py-3" style={{ background: '#1a1625', borderTop: '1px solid rgba(196, 164, 105, 0.15)' }}>
                     <p className="text-sm font-semibold text-center uppercase tracking-wider" style={{ color: '#C4611F' }}>
                       {label}
                     </p>
@@ -313,14 +319,14 @@ export default function Features() {
               href="/login"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-sacred-gold-dark text-white rounded-lg font-semibold hover:bg-sacred-gold transition-all shadow-lg shadow-sacred-gold/20"
             >
-              {l('Get Started Free', 'मुफ्त शुरू करें')}
+              {l('Create Your Account', 'अपना अकाउंट बनाएं')}
               <Sparkles className="w-4 h-4" />
             </a>
             <a
               href="/kundli"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-sacred-gold/50 text-sacred-gold-dark rounded-lg font-semibold hover:bg-sacred-gold/10 transition-all"
             >
-              {l('Try Demo Chart', 'डेमो चार्ट देखें')}
+              {l('Try Free Kundli', 'मुफ्त कुंडली देखें')}
             </a>
           </div>
         </div>
@@ -346,7 +352,7 @@ export default function Features() {
             className="w-full h-auto block"
           />
           {/* Label bar */}
-          <div className="px-6 py-4 flex items-center justify-between" style={{ background: '#FAF7F2' }}>
+          <div className="px-6 py-4 flex items-center justify-between" style={{ background: '#1a1625' }}>
             <p className="text-sm font-bold uppercase tracking-widest" style={{ color: '#C4611F' }}>
               {lightbox.label}
             </p>

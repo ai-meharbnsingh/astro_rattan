@@ -22,15 +22,14 @@ export default function KundliList({
   const { t, language } = useTranslation();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [showDeleteAllConfirm, setShowDeleteAllConfirm] = useState(false);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
-  const handleDelete = async (kundliId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!confirm(language === 'hi' ? 'क्या आप यह कुंडली हटाना चाहते हैं?' : 'Are you sure you want to delete this kundli?')) return;
-    
+  const handleDelete = async (kundliId: string) => {
     setDeletingId(kundliId);
     try {
       await api.delete(`/api/kundli/${kundliId}`);
+      setDeleteConfirmId(null);
       onDeleteKundli?.();
     } catch (err: any) {
       alert((language === 'hi' ? 'हटाने में विफल: ' : 'Failed to delete: ') + (err.message || 'Unknown error'));
@@ -52,6 +51,9 @@ export default function KundliList({
     }
   };
 
+  // Find the name for single-delete confirmation
+  const deleteConfirmKundli = deleteConfirmId ? savedKundlis.find(k => k.id === deleteConfirmId) : null;
+
   return (
     <div className="max-w-2xl mx-auto py-24 px-4">
       <div className="text-center mb-8">
@@ -64,7 +66,7 @@ export default function KundliList({
 
       {/* Delete All Confirmation Modal */}
       {showDeleteAllConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
           <div className="bg-cosmic-surface rounded-xl border border-red-300 p-6 max-w-md w-full shadow-xl">
             <div className="flex items-center gap-3 mb-4 text-red-400">
               <AlertTriangle className="w-8 h-8" />
@@ -93,6 +95,41 @@ export default function KundliList({
         </div>
       )}
 
+      {/* Single Delete Confirmation Modal */}
+      {deleteConfirmId && deleteConfirmKundli && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-cosmic-surface rounded-xl border border-red-300 p-6 max-w-md w-full shadow-xl">
+            <div className="flex items-center gap-3 mb-4 text-red-400">
+              <AlertTriangle className="w-6 h-6" />
+              <h4 className="text-lg font-bold">{language === 'hi' ? 'कुंडली हटाएं?' : 'Delete Kundli?'}</h4>
+            </div>
+            <p className="text-cosmic-text-secondary mb-6">
+              {language === 'hi'
+                ? `क्या आप "${deleteConfirmKundli.person_name}" की कुंडली हटाना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती।`
+                : `Are you sure you want to delete the kundli for "${deleteConfirmKundli.person_name}"? This action cannot be undone.`}
+            </p>
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setDeleteConfirmId(null)}
+                className="flex-1"
+              >
+                {language === 'hi' ? 'रद्द करें' : 'Cancel'}
+              </Button>
+              <Button
+                onClick={() => handleDelete(deleteConfirmId)}
+                disabled={deletingId === deleteConfirmId}
+                className="flex-1 bg-red-500 hover:bg-red-600 text-white"
+              >
+                {deletingId === deleteConfirmId
+                  ? (language === 'hi' ? 'हटा रहे हैं...' : 'Deleting...')
+                  : (language === 'hi' ? 'हटाएं' : 'Delete')}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="space-y-3 mb-6">
         {savedKundlis.map((k: any) => (
           <div
@@ -108,12 +145,12 @@ export default function KundliList({
                 <ChevronRight className="w-5 h-5 text-sacred-gold" />
               </div>
             </button>
-            
-            {/* Delete Button */}
+
+            {/* Delete Button — always visible on mobile, hover on desktop */}
             <button
-              onClick={(e) => handleDelete(k.id, e)}
+              onClick={(e) => { e.stopPropagation(); setDeleteConfirmId(k.id); }}
               disabled={deletingId === k.id}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-red-500 hover:bg-red-600 border border-red-300 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-red-500 hover:bg-red-600 border border-red-300 flex items-center justify-center text-white opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
               title={language === 'hi' ? 'कुंडली हटाएं' : 'Delete Kundli'}
             >
               {deletingId === k.id ? (
@@ -141,10 +178,10 @@ export default function KundliList({
         </button>
       )}
 
-      <Button onClick={onNewKundli} className="w-full btn-sacred">
+      <Button onClick={onNewKundli} className="w-full bg-sacred-gold text-white hover:bg-sacred-gold/90 font-semibold">
         <Sparkles className="w-5 h-5 mr-2" />{language === 'hi' ? 'नई कुंडली बनाएं' : 'Generate New Kundli'}
       </Button>
-      
+
       <Button onClick={onPrashnaKundli} variant="outline" className="w-full mt-3 border-sacred-gold text-sacred-brown hover:bg-sacred-gold/10">
         <Clock className="w-5 h-5 mr-2 text-sacred-gold" />{t('kundli.prashnaKundli')}
         <span className="ml-2 text-sm text-cosmic-text">{t('kundli.prashnaSubtitle')}</span>

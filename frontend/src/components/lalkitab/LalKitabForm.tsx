@@ -330,7 +330,7 @@ export default function LalKitabForm({ onGenerate, loading }: LalKitabFormProps)
         <Button
           type="submit"
           disabled={!isValid || loading}
-          className="btn-sacred w-full font-semibold disabled:opacity-50"
+          className="bg-sacred-gold text-white hover:bg-sacred-gold/90 w-full font-semibold disabled:opacity-50"
         >
           {loading ? (
             <>

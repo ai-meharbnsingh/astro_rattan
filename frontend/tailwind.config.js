@@ -71,11 +71,13 @@ module.exports = {
             DEFAULT: '#1e293b',
             secondary: '#64748b',
           },
-          purple: {
+          purple: { // legacy: actually light gray, use sacred.grayLight instead
             DEFAULT: '#e2e8f0',
             light: '#f1f5f9',
           },
-          violet: '#FF9933',
+          violet: '#FF9933', // legacy: actually gold, use sacred.goldAccent instead
+          grayLight: '#e2e8f0',
+          goldAccent: '#FF9933',
         },
         whatsapp: {
           green: {

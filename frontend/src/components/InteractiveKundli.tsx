@@ -722,11 +722,14 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
     });
   }, [t]);
 
+  const isTouchDevice = typeof window !== 'undefined' && 'ontouchstart' in window;
+
   const showPlanetTooltip = useCallback((p: PlanetData, x: number, y: number) => {
     const strength = getStrength(p.status, t);
     const aspects = aspectsFor(p);
+    const adjustedY = isTouchDevice ? Math.max(0, y - 80) : y;
     setTooltip({
-      x, y,
+      x, y: adjustedY,
       content: (
         <div className="space-y-1.5">
           <div className="font-display font-bold text-sacred-gold text-sm">{t(`planet.${p.planet}`)}</div>
@@ -744,8 +747,9 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
 
   const showHouseTooltip = useCallback((house: number, x: number, y: number) => {
     const housePlanets = planetsByHouse[house] || [];
+    const adjustedY = isTouchDevice ? Math.max(0, y - 80) : y;
     setTooltip({
-      x, y,
+      x, y: adjustedY,
       content: (
         <div className="space-y-1.5">
           <div className="font-display font-bold text-sacred-gold text-sm">
@@ -775,6 +779,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
 
     return (
       <svg
+        width="100%"
         viewBox={`0 0 ${svgWidth} ${svgHeight}`}
         className="relative z-10"
         style={compact
@@ -978,6 +983,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
 
     return (
       <svg
+        width="100%"
         viewBox={`0 0 ${svgSize} ${svgSize}`}
         className="relative z-10"
         style={compact

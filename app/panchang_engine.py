@@ -648,15 +648,31 @@ def _compute_hindu_calendar(date_str: str, tithi_index: int, sun_sid: float) -> 
     year = int(parts[0])
     month = int(parts[1])
 
-    # Solar month index (0-11) from Sun sidereal longitude
-    solar_month_idx = int(sun_sid / 30.0) % 12
-    # Map: Aries=0 -> Chaitra, etc. (Mesh Sankranti starts Chaitra)
-    # Traditional: Chaitra starts when Sun enters Pisces/Aries boundary
-    maas_index = solar_month_idx  # 0=Mesha->Chaitra
-    maas_name = _HINDU_MONTHS[maas_index]
+    # Lunar month (Purnimant system, North Indian tradition).
+    # The lunar month is named after the solar month in which the
+    # full moon (Purnima) falls.  A practical mapping from the
+    # Sun's sidereal sign:
+    #   Mesha  (0)  -> Vaishakha     Tula   (6)  -> Kartik
+    #   Vrishabha(1)-> Jyeshtha      Vrischika(7)-> Margashirsha
+    #   Mithuna(2)  -> Ashadha       Dhanu  (8)  -> Pausha
+    #   Karka  (3)  -> Shravana      Makara (9)  -> Magha
+    #   Simha  (4)  -> Bhadrapada    Kumbha(10)  -> Phalguna
+    #   Kanya  (5)  -> Ashwin        Meena (11)  -> Chaitra
+    #
+    # For Krishna paksha (dark fortnight, 2nd half of lunar month)
+    # the month has ALREADY advanced by one from the full moon,
+    # so we add +1.
+    solar_sign_idx = int(sun_sid / 30.0) % 12
+    base_maas = (solar_sign_idx + 1) % 12          # Mesha->Vaishakha
 
-    # Paksha
     paksha = "Shukla" if tithi_index < 15 else "Krishna"
+
+    # Purnimant: Krishna paksha belongs to the NEXT month
+    if paksha == "Krishna":
+        maas_index = (base_maas + 1) % 12
+    else:
+        maas_index = base_maas
+    maas_name = _HINDU_MONTHS[maas_index]
 
     # Vikram Samvat (starts ~March/April, Chaitra Shukla Pratipada)
     vikram_samvat = year + 57
@@ -672,8 +688,8 @@ def _compute_hindu_calendar(date_str: str, tithi_index: int, sun_sid: float) -> 
     ritu_index = maas_index // 2
     ritu_name, ritu_english = _RITU[ritu_index]
 
-    # Ayana -- Uttarayana (Capricorn to Gemini = months 9-2), Dakshinayana (Cancer to Sagittarius = 3-8)
-    if solar_month_idx >= 9 or solar_month_idx <= 2:
+    # Ayana -- Uttarayana (Capricorn to Gemini = signs 9-2), Dakshinayana (Cancer to Sagittarius = 3-8)
+    if solar_sign_idx >= 9 or solar_sign_idx <= 2:
         ayana = _AYANA[0]  # Uttarayana
     else:
         ayana = _AYANA[1]  # Dakshinayana
@@ -776,6 +792,11 @@ def calculate_panchang(
     Returns the original contract keys (tithi, nakshatra, yoga, karana, sunrise, sunset)
     plus extended data for the enhanced UI.
     """
+    # CRITICAL: Reset to Lahiri ayanamsa. Other engines (KP) may have
+    # switched swe to Krishnamurti mode in the same worker process.
+    if _HAS_SWE:
+        swe.set_sid_mode(swe.SIDM_LAHIRI)
+
     if tz_offset is None:
         # Default to IST for India, otherwise approximate from longitude
         if 68.0 <= longitude <= 97.5:

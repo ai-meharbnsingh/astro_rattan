@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Stars, Mail, Lock, User, ChevronRight, Star, ShieldCheck, ArrowLeft, Phone } from 'lucide-react';
+import { Stars, Mail, Lock, User, ChevronRight, Star, ShieldCheck, ArrowLeft, Phone, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
@@ -21,6 +21,11 @@ export default function AuthPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Password visibility state
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
+  const [showResetPassword, setShowResetPassword] = useState(false);
 
   // OTP verification state
   const [regStep, setRegStep] = useState<RegStep>('email');
@@ -170,14 +175,15 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center py-24 px-4 bg-transparent">
-      <div className="w-full max-w-md">
+    <div className="min-h-[80vh] flex items-center justify-center py-24 px-4 sm:px-8 bg-transparent">
+      <div className="w-full max-w-md mx-4 sm:mx-auto">
         <div className="text-center mb-8">
           <div className="w-16 h-16 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center mx-auto mb-4 shadow-glow-gold">
             <Stars className="w-8 h-8 text-cosmic-bg" />
           </div>
-          <h2 className="text-2xl sm:text-3xl font-sans font-bold text-cosmic-text mb-2">{t('auth.welcome')}</h2>
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-sans font-bold text-cosmic-text mb-2">{t('auth.welcome')}</h2>
           <p className="text-cosmic-text-secondary">{t('auth.subtitle')}</p>
+          <p className="text-xs text-gray-500 mt-2">Your data is encrypted and never shared</p>
         </div>
         {error && <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-300 text-red-700 text-sm text-center">{error}</div>}
         {success && <div className="mb-4 p-3 rounded-xl bg-green-50 border border-green-300 text-green-700 text-sm text-center">{success}</div>}
@@ -187,19 +193,22 @@ export default function AuthPage() {
             <TabsTrigger value="register" onClick={() => { setRegStep('email'); setOtp(['','','','','','']); setEmailToken(''); setError(''); setSuccess(''); }} className="data-[state=active]:bg-sacred-gold data-[state=active]:text-cosmic-bg text-cosmic-text-secondary">{t('auth.signUp')}</TabsTrigger>
           </TabsList>
           <TabsContent value="login" className="mt-0">
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold" />
                 <Input type="email" value={loginForm.email} onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })} placeholder={t('auth.email')} className="pl-10 input-sacred" />
               </div>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold" />
-                <Input type="password" value={loginForm.password} onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })} placeholder={t('auth.password')} onKeyDown={(e) => e.key === 'Enter' && handleLogin()} className="pl-10 input-sacred" />
+                <Input type={showLoginPassword ? 'text' : 'password'} value={loginForm.password} onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })} placeholder={t('auth.password')} onKeyDown={(e) => e.key === 'Enter' && handleLogin()} className="pl-10 pr-10 input-sacred" />
+                <button type="button" onClick={() => setShowLoginPassword(!showLoginPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-sacred-gold hover:text-sacred-gold-dark transition-colors" tabIndex={-1}>
+                  {showLoginPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
               </div>
-              <Button onClick={handleLogin} disabled={loading || !loginForm.email || !loginForm.password} className="w-full btn-sacred disabled:opacity-50">
+              <Button onClick={handleLogin} disabled={loading || !loginForm.email || !loginForm.password} className="w-full bg-sacred-gold text-white hover:bg-sacred-gold/90 font-semibold disabled:opacity-50">
                 {loading ? t('common.loading') : t('auth.signIn')}<ChevronRight className="w-5 h-5 ml-2" />
               </Button>
-              <button onClick={() => { setShowForgotPassword(true); setResetStep('email'); setError(''); setSuccess(''); }} className="w-full text-center text-sm text-sacred-gold hover:underline mt-2">
+              <button onClick={() => { setShowForgotPassword(true); setResetStep('email'); setError(''); setSuccess(''); }} className="w-full text-center text-sm text-sacred-gold-dark font-medium hover:underline mt-2">
                 {t('auth.forgotPassword')}
               </button>
             </div>
@@ -207,7 +216,7 @@ export default function AuthPage() {
           <TabsContent value="register" className="mt-0">
             {/* Step 1: Enter email */}
             {regStep === 'email' && (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <div className="text-center mb-2">
                   <ShieldCheck className="w-8 h-8 text-sacred-gold mx-auto mb-2" />
                   <p className="text-sm text-cosmic-text-secondary">{t('auth.enterEmailToReceiveCode')}</p>
@@ -216,7 +225,7 @@ export default function AuthPage() {
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold" />
                   <Input type="email" value={registerForm.email} onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })} placeholder={t('auth.email')} onKeyDown={(e) => e.key === 'Enter' && handleSendOtp()} className="pl-10 input-sacred" />
                 </div>
-                <Button onClick={handleSendOtp} disabled={loading || !registerForm.email} className="w-full btn-sacred disabled:opacity-50">
+                <Button onClick={handleSendOtp} disabled={loading || !registerForm.email} className="w-full bg-sacred-gold text-white hover:bg-sacred-gold/90 font-semibold disabled:opacity-50">
                   {loading ? t('common.loading') : t('auth.sendVerificationCode')}<ChevronRight className="w-5 h-5 ml-2" />
                 </Button>
               </div>
@@ -224,7 +233,7 @@ export default function AuthPage() {
 
             {/* Step 2: Enter OTP */}
             {regStep === 'otp' && (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <button onClick={() => { setRegStep('email'); setError(''); setSuccess(''); }} className="flex items-center gap-1 text-sm text-cosmic-text-secondary hover:text-sacred-gold transition-colors">
                   <ArrowLeft className="w-4 h-4" /> {t('auth.changeEmail')}
                 </button>
@@ -243,6 +252,8 @@ export default function AuthPage() {
                       ref={(el) => { otpRefs.current[i] = el; }}
                       type="text"
                       inputMode="numeric"
+                      pattern="[0-9]*"
+                      {...(i === 0 ? { autoComplete: 'one-time-code' } : {})}
                       maxLength={1}
                       value={digit}
                       onChange={(e) => handleOtpChange(i, e.target.value)}
@@ -258,7 +269,7 @@ export default function AuthPage() {
                     {t('auth.codePasted')}
                   </p>
                 )}
-                <Button onClick={handleVerifyOtp} disabled={loading || otp.join('').length !== 6} className="w-full btn-sacred disabled:opacity-50">
+                <Button onClick={handleVerifyOtp} disabled={loading || otp.join('').length !== 6} className="w-full bg-sacred-gold text-white hover:bg-sacred-gold/90 font-semibold disabled:opacity-50">
                   {loading ? t('common.loading') : t('auth.verifyCode')}<ShieldCheck className="w-5 h-5 ml-2" />
                 </Button>
                 <div className="text-center">
@@ -273,7 +284,7 @@ export default function AuthPage() {
 
             {/* Step 3: Complete registration */}
             {regStep === 'details' && (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <div className="text-center mb-2">
                   <div className="inline-flex items-center gap-2 bg-green-50 border border-green-300 rounded-full px-4 py-1.5 text-green-700 text-sm">
                     <ShieldCheck className="w-4 h-4" /> {registerForm.email} {t('auth.emailVerified')}
@@ -285,7 +296,10 @@ export default function AuthPage() {
                 </div>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold" />
-                  <Input type="password" value={registerForm.password} onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })} placeholder={t('auth.passwordMinLength')} onKeyDown={(e) => e.key === 'Enter' && handleRegister()} className="pl-10 input-sacred" />
+                  <Input type={showRegisterPassword ? 'text' : 'password'} value={registerForm.password} onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })} placeholder={t('auth.passwordMinLength')} onKeyDown={(e) => e.key === 'Enter' && handleRegister()} className="pl-10 pr-10 input-sacred" />
+                  <button type="button" onClick={() => setShowRegisterPassword(!showRegisterPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-sacred-gold hover:text-sacred-gold-dark transition-colors" tabIndex={-1}>
+                    {showRegisterPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
                 </div>
                 {/* Astrologer toggle */}
                 <button
@@ -299,7 +313,7 @@ export default function AuthPage() {
                   <Star className={`w-5 h-5 ${isAstrologer ? 'text-sacred-gold-dark' : 'text-gray-400'}`} />
                   <span className="text-sm font-medium">{t('astrologer.registerAsAstrologer')}</span>
                   <div className={`ml-auto w-10 h-5 rounded-full transition-colors ${isAstrologer ? 'bg-sacred-gold-dark' : 'bg-gray-300'}`}>
-                    <div className={`w-4 h-4 rounded-full bg-white shadow-sm transform transition-transform mt-0.5 ${isAstrologer ? 'translate-x-5.5 ml-[22px]' : 'ml-0.5'}`} />
+                    <div className={`w-4 h-4 rounded-full bg-white shadow-sm transform transition-transform mt-0.5 ${isAstrologer ? 'translate-x-5 ml-[22px]' : 'ml-0.5'}`} />
                   </div>
                 </button>
                 {isAstrologer && (
@@ -308,7 +322,7 @@ export default function AuthPage() {
                     <Input type="tel" value={registerForm.phone} onChange={(e) => setRegisterForm({ ...registerForm, phone: e.target.value })} placeholder={t('auth.phoneNumberRequired')} className="pl-10 input-sacred" />
                   </div>
                 )}
-                <Button onClick={handleRegister} disabled={loading || !registerForm.name || !registerForm.password || (isAstrologer && !registerForm.phone.trim())} className="w-full btn-sacred disabled:opacity-50">
+                <Button onClick={handleRegister} disabled={loading || !registerForm.name || !registerForm.password || (isAstrologer && !registerForm.phone.trim())} className="w-full bg-sacred-gold text-white hover:bg-sacred-gold/90 font-semibold disabled:opacity-50">
                   {loading ? t('common.loading') : (isAstrologer ? t('astrologer.registerAsAstrologer') : t('auth.signUp'))}<ChevronRight className="w-5 h-5 ml-2" />
                 </Button>
               </div>
@@ -319,7 +333,7 @@ export default function AuthPage() {
         {/* Forgot Password Flow */}
         {showForgotPassword && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-cosmic-bg backdrop-blur-sm px-4" onClick={() => setShowForgotPassword(false)}>
-            <div className="bg-cosmic-bg border border-sacred-gold p-6 max-w-sm w-full space-y-4" onClick={e => e.stopPropagation()}>
+            <div className="bg-cosmic-bg border border-sacred-gold rounded-2xl p-6 max-w-sm w-full space-y-4" onClick={e => e.stopPropagation()}>
               <h3 className="text-lg font-sans text-sacred-gold-dark text-center">{t('auth.resetPassword')}</h3>
               {error && <p className="text-red-700 text-sm text-center">{error}</p>}
               {success && <p className="text-green-700 text-sm text-center">{success}</p>}
@@ -327,7 +341,7 @@ export default function AuthPage() {
               {resetStep === 'email' && (
                 <>
                   <Input type="email" value={resetEmail} onChange={e => setResetEmail(e.target.value)} placeholder={t('auth.yourEmail')} className="input-sacred" />
-                  <Button onClick={handleForgotPassword} disabled={loading || !resetEmail} className="w-full btn-sacred">
+                  <Button onClick={handleForgotPassword} disabled={loading || !resetEmail} className="w-full bg-sacred-gold text-white hover:bg-sacred-gold/90 font-semibold disabled:opacity-50">
                     {loading ? t('auth.sending') : t('auth.sendResetCode')}
                   </Button>
                 </>
@@ -337,15 +351,20 @@ export default function AuthPage() {
                 <>
                   <p className="text-sm text-cosmic-text text-center">{t('auth.enterOtp')} {resetEmail}</p>
                   <Input type="text" value={resetOtp} onChange={e => setResetOtp(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="000000" maxLength={6} className="input-sacred text-center text-2xl tracking-widest" />
-                  <Input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder={t('auth.newPassword')} className="input-sacred" />
-                  <Button onClick={handleResetPassword} disabled={loading || resetOtp.length !== 6 || newPassword.length < 8} className="w-full btn-sacred">
+                  <div className="relative">
+                    <Input type={showResetPassword ? 'text' : 'password'} value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder={t('auth.newPassword')} className="pr-10 input-sacred" />
+                    <button type="button" onClick={() => setShowResetPassword(!showResetPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-sacred-gold hover:text-sacred-gold-dark transition-colors" tabIndex={-1}>
+                      {showResetPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
+                  <Button onClick={handleResetPassword} disabled={loading || resetOtp.length !== 6 || newPassword.length < 8} className="w-full bg-sacred-gold text-white hover:bg-sacred-gold/90 font-semibold disabled:opacity-50">
                     {loading ? t('auth.resetting') : t('auth.resetPassword')}
                   </Button>
                 </>
               )}
 
               {resetStep === 'done' && (
-                <Button onClick={() => { setShowForgotPassword(false); setError(''); setSuccess(''); }} className="w-full btn-sacred">
+                <Button onClick={() => { setShowForgotPassword(false); setError(''); setSuccess(''); }} className="w-full bg-sacred-gold text-white hover:bg-sacred-gold/90 font-semibold">
                   {t('auth.backToLogin')}
                 </Button>
               )}

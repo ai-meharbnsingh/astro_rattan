@@ -59,6 +59,7 @@ const AdminDashboard  = lazyWithReload(() => import('./sections/AdminDashboard')
 const FeedbackPage    = lazyWithReload(() => import('./sections/FeedbackPage'));
 const Dashboard       = lazyWithReload(() => import('./sections/Dashboard'));
 const ClientProfile   = lazyWithReload(() => import('./sections/ClientProfile'));
+const VastuShastraPage = lazyWithReload(() => import('./sections/VastuShastraPage'));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -153,7 +154,7 @@ function HomePage() {
       <Hero />
 
       {/* ── Live Transit Chart ─────────────────────────────────── */}
-      <section className="animate-section py-16 bg-cosmic-bg border-t border-sacred-gold/10">
+      <section className="animate-section py-8 bg-cosmic-bg border-t border-sacred-gold/10">
         <div className="max-w-2xl mx-auto px-4">
           <TodaysSkyWidget />
         </div>
@@ -189,14 +190,16 @@ function AppInner() {
         <Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-600"></div></div>}>
         <Routes>
           <Route path="/" element={<SmartHome />} />
+          {/* TODO: replace with a dedicated About page component */}
           <Route path="/about" element={<HomePage />} />
           <Route path="/dashboard" element={<RequireAuth><ErrorBoundary><Dashboard /></ErrorBoundary></RequireAuth>} />
           <Route path="/client/:clientId" element={<RequireAuth><ClientProfile /></RequireAuth>} />
-          <Route path="/kundli" element={<RequireAuth><ErrorBoundary><KundliGenerator /></ErrorBoundary></RequireAuth>} />
-          <Route path="/panchang" element={<RequireAuth><ErrorBoundary><Panchang /></ErrorBoundary></RequireAuth>} />
+          <Route path="/kundli" element={<ErrorBoundary><KundliGenerator /></ErrorBoundary>} />
+          <Route path="/panchang" element={<ErrorBoundary><Panchang /></ErrorBoundary>} />
           <Route path="/login" element={<AuthPage />} />
           <Route path="/numerology" element={<RequireAuth><ErrorBoundary><NumerologyTarot /></ErrorBoundary></RequireAuth>} />
           <Route path="/lal-kitab" element={<RequireAuth><ErrorBoundary><LalKitabPage /></ErrorBoundary></RequireAuth>} />
+          <Route path="/vastu" element={<RequireAuth><ErrorBoundary><VastuShastraPage /></ErrorBoundary></RequireAuth>} />
           <Route path="/admin" element={<RequireAuth><ErrorBoundary><AdminDashboard /></ErrorBoundary></RequireAuth>} />
           <Route path="/feedback" element={<RequireAuth><ErrorBoundary><FeedbackPage /></ErrorBoundary></RequireAuth>} />
           <Route path="*" element={<NotFound />} />

@@ -157,7 +157,7 @@ export default function PredictionsTab({
                  activePeriod === 'yearly' ? "Get your yearly outlook" :
                  'Get AI Predictions')}
           </p>
-          <Button onClick={() => onFetchPredictions(activePeriod)} className="btn-sacred">
+          <Button onClick={() => onFetchPredictions(activePeriod)} className="bg-sacred-gold text-white hover:bg-sacred-gold/90 font-semibold">
             <Sparkles className="w-4 h-4 mr-2" />
             {language === 'hi'
               ? (activePeriod === 'daily' ? 'आज का फल' :

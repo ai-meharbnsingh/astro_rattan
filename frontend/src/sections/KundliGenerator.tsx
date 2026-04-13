@@ -1,8 +1,9 @@
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { formatDate, api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Download, Share2, Loader2, ScrollText, Home, RefreshCw } from 'lucide-react';
+import { Download, Share2, Loader2, ScrollText, Home, RefreshCw, ChevronDown, X, BookOpen } from 'lucide-react';
 import { useKundliData } from '@/hooks/useKundliData';
 import KundliForm from '@/components/kundli/KundliForm';
 import KundliSummaryModal from '@/components/KundliSummaryModal';
@@ -30,6 +31,56 @@ import SodashvargaTab from '@/components/kundli/SodashvargaTab';
 import AspectsTab from '@/components/kundli/AspectsTab';
 import SadesatiTab from '@/components/kundli/SadesatiTab';
 import MundaneTab from '@/components/kundli/MundaneTab';
+
+// ── Single source of truth for ALL tab definitions ──────────
+interface TabDef {
+  value: string;
+  labelEn: string;
+  labelHi: string;
+  i18nKey?: string; // if we use t() for label
+  primary: boolean;
+  category?: 'charts' | 'timing' | 'analysis' | 'advanced';
+  icon?: React.ComponentType<{ className?: string }>;
+  onActivate?: () => void; // set dynamically below
+}
+
+const TAB_DEFS: Omit<TabDef, 'onActivate'>[] = [
+  // Primary tabs
+  { value: 'report',        labelEn: 'Report',         labelHi: 'रिपोर्ट',          primary: true, icon: ScrollText },
+  { value: 'planets',       labelEn: 'Planets',        labelHi: 'ग्रह',             primary: true },
+  { value: 'dasha',         labelEn: 'Dasha',          labelHi: 'दशा',             primary: true },
+  { value: 'yoga-dosha',    labelEn: 'Yogas/Dosha',    labelHi: 'योग/दोष',          primary: true },
+  { value: 'divisional',    labelEn: 'Divisional',     labelHi: 'विभाजन चार्ट',     primary: true },
+  { value: 'aspects',       labelEn: 'Aspects',        labelHi: 'दृष्टि',           primary: true },
+  // Charts
+  { value: 'ashtakvarga',   labelEn: 'Ashtakvarga',    labelHi: 'अष्टकवर्ग',        primary: false, category: 'charts' },
+  { value: 'sodashvarga',   labelEn: 'Sodashvarga',    labelHi: 'षोडशवर्ग',         primary: false, category: 'charts' },
+  // Timing
+  { value: 'yogini',        labelEn: 'Yogini Dasha',   labelHi: 'योगिनी दशा',       primary: false, category: 'timing' },
+  { value: 'varshphal',     labelEn: 'Varshphal',      labelHi: 'वर्षफल',           primary: false, category: 'timing' },
+  { value: 'transits',      labelEn: 'Transits',       labelHi: 'गोचर',            primary: false, category: 'timing' },
+  { value: 'sadesati',      labelEn: 'Sade Sati',      labelHi: 'साढ़े साती',        primary: false, category: 'timing' },
+  // Analysis
+  { value: 'shadbala',      labelEn: 'Shadbala',       labelHi: 'षड्बल',            primary: false, category: 'analysis' },
+  { value: 'kp',            labelEn: 'KP System',      labelHi: 'केपी सिस्टम',      primary: false, category: 'analysis' },
+  { value: 'jaimini',       labelEn: 'Jaimini',        labelHi: 'जैमिनी',           primary: false, category: 'analysis' },
+  { value: 'iogita',        labelEn: 'Iogita',         labelHi: 'आयोगिता',          primary: false, category: 'analysis' },
+  { value: 'aspects-matrix',labelEn: 'Aspects Matrix',  labelHi: 'दृष्टि मैट्रिक्स', primary: false, category: 'analysis' },
+  // Advanced
+  { value: 'mundane',       labelEn: 'Mundane',        labelHi: 'मुंडन ज्योतिष',    primary: false, category: 'advanced' },
+  { value: 'upagrahas',     labelEn: 'Upagrahas',      labelHi: 'उपग्रह',           primary: false, category: 'advanced' },
+  { value: 'lordships',     labelEn: 'Lordships',      labelHi: 'लॉर्डशिप',         primary: false, category: 'advanced' },
+  { value: 'details',       labelEn: 'Birth Details',   labelHi: 'विवरण',            primary: false, category: 'advanced' },
+  { value: 'avakhada',      labelEn: 'Avakhada',       labelHi: 'अवखड़ा',           primary: false, category: 'advanced' },
+  { value: 'milan',         labelEn: 'Kundli Milan',   labelHi: 'कुंडली मिलान',     primary: false, category: 'advanced' },
+];
+
+const CATEGORY_LABELS: Record<string, { en: string; hi: string }> = {
+  charts:   { en: 'Charts',   hi: 'चार्ट' },
+  timing:   { en: 'Timing',   hi: 'समय' },
+  analysis: { en: 'Analysis', hi: 'विश्लेषण' },
+  advanced: { en: 'Advanced', hi: 'उन्नत' },
+};
 
 export default function KundliGenerator() {
   const data = useKundliData();
@@ -80,6 +131,66 @@ export default function KundliGenerator() {
   } = data;
 
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('report');
+  const [showMoreTabs, setShowMoreTabs] = useState(false);
+  const [showMobileMoreSheet, setShowMobileMoreSheet] = useState(false);
+  const moreDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close desktop dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (moreDropdownRef.current && !moreDropdownRef.current.contains(e.target as Node)) {
+        setShowMoreTabs(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  // Map of tab value -> onActivate fetch function
+  const tabActivateMap: Record<string, () => void> = {
+    'report': async () => { await fetchDasha(); fetchExtendedDasha(); fetchAvakhada(); fetchYogaDosha(); fetchShadbala(); },
+    'iogita': fetchIogita,
+    'dasha': () => { fetchDasha(); fetchExtendedDasha(); },
+    'divisional': () => fetchDivisional(),
+    'ashtakvarga': fetchAshtakvarga,
+    'shadbala': fetchShadbala,
+    'avakhada': fetchAvakhada,
+    'yoga-dosha': () => { fetchYogaDosha(); fetchDosha(); },
+    'transits': () => fetchTransit(),
+    'varshphal': () => fetchVarshphal(),
+    'kp': fetchKp,
+    'yogini': fetchYogini,
+    'upagrahas': fetchUpagrahas,
+    'sodashvarga': fetchSodashvarga,
+    'aspects': fetchAspects,
+    'aspects-matrix': fetchWesternAspects,
+    'jaimini': fetchJaimini,
+    'sadesati': fetchSadesati,
+  };
+
+  const handleTabChange = (tabValue: string) => {
+    setActiveTab(tabValue);
+    setShowMoreTabs(false);
+    setShowMobileMoreSheet(false);
+    const activator = tabActivateMap[tabValue];
+    if (activator) activator();
+  };
+
+  const hi = language === 'hi';
+  const primaryTabs = TAB_DEFS.filter(t => t.primary);
+  const moreTabs = TAB_DEFS.filter(t => !t.primary);
+
+  // Group secondary tabs by category
+  const groupedMoreTabs = (['charts', 'timing', 'analysis', 'advanced'] as const).map(cat => ({
+    category: cat,
+    label: CATEGORY_LABELS[cat],
+    tabs: moreTabs.filter(t => t.category === cat),
+  })).filter(g => g.tabs.length > 0);
+
+  // Check if current active tab is a "more" tab
+  const isMoreTabActive = moreTabs.some(t => t.value === activeTab);
+  const activeMoreTab = moreTabs.find(t => t.value === activeTab);
 
   // --- LOADING ---
   if (step === 'loading') {
@@ -90,7 +201,7 @@ export default function KundliGenerator() {
     );
   }
 
-  // --- LIST → go to dashboard ---
+  // --- LIST -> go to dashboard ---
   if (step === 'list') {
     navigate('/dashboard');
     return null;
@@ -102,27 +213,27 @@ export default function KundliGenerator() {
       <div className="max-w-7xl mx-auto pt-24 pb-48 px-4">
         {/* Header skeleton */}
         <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 animate-pulse bg-gray-200 rounded" />
+          <div className="w-10 h-10 animate-pulse bg-sacred-gold/15 rounded" />
           <div className="space-y-2 flex-1">
-            <div className="h-6 w-48 animate-pulse bg-gray-200 rounded" />
-            <div className="h-4 w-72 animate-pulse bg-gray-200 rounded" />
+            <div className="h-6 w-48 animate-pulse bg-sacred-gold/15 rounded" />
+            <div className="h-4 w-72 animate-pulse bg-sacred-gold/15 rounded" />
           </div>
         </div>
         {/* Tab bar skeleton */}
         <div className="flex gap-2 mb-6 overflow-hidden">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="h-10 w-24 animate-pulse bg-gray-200 rounded flex-shrink-0" />
+            <div key={i} className="h-10 w-24 animate-pulse bg-sacred-gold/15 rounded flex-shrink-0" />
           ))}
         </div>
         {/* Content skeleton cards */}
         <div className="grid lg:grid-cols-2 gap-6">
           <div className="space-y-4">
-            <div className="h-40 animate-pulse bg-gray-200 rounded-xl" />
-            <div className="h-28 animate-pulse bg-gray-200 rounded-xl" />
+            <div className="h-40 animate-pulse bg-sacred-gold/15 rounded-xl" />
+            <div className="h-28 animate-pulse bg-sacred-gold/15 rounded-xl" />
           </div>
           <div className="space-y-4">
-            <div className="h-52 animate-pulse bg-gray-200 rounded-xl" />
-            <div className="h-16 animate-pulse bg-gray-200 rounded-xl" />
+            <div className="h-52 animate-pulse bg-sacred-gold/15 rounded-xl" />
+            <div className="h-16 animate-pulse bg-sacred-gold/15 rounded-xl" />
           </div>
         </div>
         <p className="text-center text-cosmic-text mt-8 animate-pulse">{t('kundli.analyzingPositions')}</p>
@@ -176,7 +287,7 @@ export default function KundliGenerator() {
             }}>
               <Share2 className="w-4 h-4 mr-1" />{t('common.share')}
             </Button>
-            <Button size="sm" className="btn-sacred" onClick={async () => {
+            <Button size="sm" className="bg-sacred-gold text-white hover:bg-sacred-gold/90 font-semibold" onClick={async () => {
               try {
                 const token = localStorage.getItem('astrorattan_token');
                 const API_BASE = import.meta.env.VITE_API_URL || '';
@@ -194,8 +305,7 @@ export default function KundliGenerator() {
                 a.download = `kundli-${result.person_name || 'report'}.pdf`;
                 document.body.appendChild(a);
                 a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
+                setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 60000);
               } catch (e: unknown) {
                 console.error('PDF download error:', e);
                 const message = e instanceof Error ? e.message : 'Failed to download PDF';
@@ -204,87 +314,165 @@ export default function KundliGenerator() {
             }}>
               <Download className="w-4 h-4 mr-1" />{t('common.download')}
             </Button>
+            <Button size="sm"
+              className="bg-gradient-to-r from-sacred-gold to-sacred-gold-dark text-white hover:from-sacred-gold/90 hover:to-sacred-gold-dark/90 font-semibold border border-sacred-gold-dark/30 shadow-md"
+              onClick={() => {
+                if (!result?.id) return;
+                const token = localStorage.getItem('astrorattan_token') || '';
+                const a = document.createElement('a');
+                a.href = `/api/kundli/${result.id}/full-report?token=${encodeURIComponent(token)}`;
+                a.download = `Kundli_Report_${result.person_name || 'chart'}.pdf`;
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => document.body.removeChild(a), 1000);
+              }}>
+              <BookOpen className="w-4 h-4 mr-1" />{language === 'hi' ? 'पूर्ण रिपोर्ट (PDF)' : 'Download Full Report (PDF)'}
+            </Button>
           </div>
         </div>
 
-        {/* Tabs */}
-        <Tabs defaultValue="report" className="w-full kundli-tabs">
-          {/* Mobile: relative wrapper for scroll arrows */}
-          <div className="relative mb-8 md:mb-4 md:static">
-            {/* Left arrow hint — mobile only */}
-            <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-sacred-cream to-transparent z-10 pointer-events-none flex items-center justify-start pl-1 md:hidden">
-              <span className="text-sacred-gold-dark text-lg">‹</span>
-            </div>
-            {/* Right arrow hint — mobile only */}
-            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-sacred-cream to-transparent z-10 pointer-events-none flex items-center justify-end pr-1 md:hidden">
-              <span className="text-sacred-gold-dark text-lg">›</span>
-            </div>
-          {/* Mobile: horizontal scroll / Desktop: 2-row grid (12 + 11) */}
-          <div className="hidden md:flex md:flex-col md:gap-1">
-            {/* First row - 12 tabs */}
-            <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 grid grid-cols-12
-              [&>button]:whitespace-nowrap [&>button]:min-h-[36px] [&>button]:px-2 [&>button]:py-1.5 [&>button]:text-xs
+        {/* Tabs — controlled mode */}
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full kundli-tabs">
+          {/* ── Desktop tab bar ─────────────────────────── */}
+          <div className="hidden md:block mb-4">
+            <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 flex flex-wrap
+              [&>button]:whitespace-nowrap [&>button]:min-h-[36px] [&>button]:px-3 [&>button]:py-1.5 [&>button]:text-xs
               [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
-              <TabsTrigger value="report" onClick={async () => { await fetchDasha(); fetchExtendedDasha(); fetchAvakhada(); fetchYogaDosha(); fetchShadbala(); }}><ScrollText className="w-3 h-3 mr-1" />{t('tab.report')}</TabsTrigger>
-              <TabsTrigger value="planets">{t('tab.planets')}</TabsTrigger>
-              <TabsTrigger value="details">{t('tab.details')}</TabsTrigger>
-              <TabsTrigger value="lordships">{t('tab.lordships')}</TabsTrigger>
-              <TabsTrigger value="iogita" onClick={fetchIogita}>{t('tab.iogita')}</TabsTrigger>
-              <TabsTrigger value="dasha" onClick={() => { fetchDasha(); fetchExtendedDasha(); }}>{t('tab.dasha')}</TabsTrigger>
-              <TabsTrigger value="divisional" onClick={() => fetchDivisional()}>{t('tab.divisional')}</TabsTrigger>
-              <TabsTrigger value="ashtakvarga" onClick={fetchAshtakvarga}>{t('tab.ashtakvarga')}</TabsTrigger>
-              <TabsTrigger value="shadbala" onClick={fetchShadbala}>{t('tab.shadbala')}</TabsTrigger>
-              <TabsTrigger value="avakhada" onClick={fetchAvakhada}>{t('tab.avakhada')}</TabsTrigger>
-              <TabsTrigger value="yoga-dosha" onClick={() => { fetchYogaDosha(); fetchDosha(); }}>{language === 'hi' ? 'योग/दोष' : 'Yogas/Dosha'}</TabsTrigger>
-              <TabsTrigger value="transits" onClick={() => fetchTransit()}>{t('tab.transits')}</TabsTrigger>
+              {primaryTabs.map(tab => (
+                <TabsTrigger key={tab.value} value={tab.value}>
+                  {tab.icon && <tab.icon className="w-3 h-3 mr-1" />}
+                  {hi ? tab.labelHi : tab.labelEn}
+                </TabsTrigger>
+              ))}
+              {/* Show active "more" tab as a visible trigger if selected */}
+              {isMoreTabActive && activeMoreTab && (
+                <TabsTrigger key={activeMoreTab.value} value={activeMoreTab.value}>
+                  {hi ? activeMoreTab.labelHi : activeMoreTab.labelEn}
+                </TabsTrigger>
+              )}
             </TabsList>
-            {/* Second row - 11 tabs */}
-            <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 grid grid-cols-11
-              [&>button]:whitespace-nowrap [&>button]:min-h-[36px] [&>button]:px-2 [&>button]:py-1.5 [&>button]:text-xs
+            {/* "More Analysis" dropdown button */}
+            <div className="relative mt-1" ref={moreDropdownRef}>
+              <button
+                onClick={() => setShowMoreTabs(prev => !prev)}
+                className={`inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium rounded-md border transition-colors ${
+                  isMoreTabActive
+                    ? 'bg-sacred-gold/20 border-sacred-gold text-sacred-gold-dark'
+                    : 'bg-sacred-cream border-sacred-gold/40 text-cosmic-text hover:bg-sacred-gold/10'
+                }`}
+              >
+                {hi ? 'और विश्लेषण' : 'More Analysis'}
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showMoreTabs ? 'rotate-180' : ''}`} />
+              </button>
+              {showMoreTabs && (
+                <div className="absolute top-full left-0 mt-1 z-50 bg-white border border-sacred-gold/30 rounded-xl shadow-xl p-4 min-w-[420px] grid grid-cols-2 gap-4">
+                  {groupedMoreTabs.map(group => (
+                    <div key={group.category}>
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-sacred-gold-dark mb-2">
+                        {hi ? group.label.hi : group.label.en}
+                      </p>
+                      <div className="space-y-0.5">
+                        {group.tabs.map(tab => (
+                          <button
+                            key={tab.value}
+                            onClick={() => handleTabChange(tab.value)}
+                            className={`w-full text-left px-3 py-1.5 rounded-md text-xs transition-colors ${
+                              activeTab === tab.value
+                                ? 'bg-sacred-gold-dark text-white font-medium'
+                                : 'text-cosmic-text hover:bg-sacred-gold/10'
+                            }`}
+                          >
+                            {hi ? tab.labelHi : tab.labelEn}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* ── Mobile tab bar ──────────────────────────── */}
+          <div className="relative mb-8 md:hidden">
+            {/* Left arrow hint */}
+            <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-sacred-cream to-transparent z-10 pointer-events-none flex items-center justify-start pl-1">
+              <span className="text-sacred-gold-dark text-lg">&lsaquo;</span>
+            </div>
+            {/* Right arrow hint */}
+            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-sacred-cream to-transparent z-10 pointer-events-none flex items-center justify-end pr-1">
+              <span className="text-sacred-gold-dark text-lg">&rsaquo;</span>
+            </div>
+            <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1
+              flex flex-nowrap overflow-x-auto pb-3 scrollbar-hide
+              [&>button]:flex-shrink-0 [&>button]:flex-grow-0 [&>button]:basis-auto [&>button]:whitespace-nowrap [&>button]:min-h-[36px] [&>button]:px-2 [&>button]:py-1.5 [&>button]:text-xs
               [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
-              <TabsTrigger value="varshphal" onClick={() => fetchVarshphal()}>{t('tab.varshphal')}</TabsTrigger>
-              <TabsTrigger value="kp" onClick={fetchKp}>{t('tab.kpSystem')}</TabsTrigger>
-              <TabsTrigger value="yogini" onClick={fetchYogini}>{t('tab.yoginiDasha')}</TabsTrigger>
-              <TabsTrigger value="upagrahas" onClick={fetchUpagrahas}>{t('tab.upagrahas')}</TabsTrigger>
-              <TabsTrigger value="sodashvarga" onClick={fetchSodashvarga}>{t('tab.sodashvarga')}</TabsTrigger>
-              <TabsTrigger value="aspects" onClick={fetchAspects}>{t('tab.aspects')}</TabsTrigger>
-              <TabsTrigger value="aspects-matrix" onClick={fetchWesternAspects}>{language === 'hi' ? 'दृष्टि मैट्रिक्स' : 'Aspects Matrix'}</TabsTrigger>
-              <TabsTrigger value="jaimini" onClick={fetchJaimini}>{language === 'hi' ? 'जैमिनी' : 'Jaimini'}</TabsTrigger>
-              <TabsTrigger value="sadesati" onClick={fetchSadesati}>{t('tab.sadeSati')}</TabsTrigger>
-              <TabsTrigger value="mundane">{language === 'hi' ? 'मुंडन ज्योतिष' : 'Mundane'}</TabsTrigger>
-              <TabsTrigger value="milan">{language === 'hi' ? 'कुंडली मिलान' : 'Kundli Milan'}</TabsTrigger>
+              {primaryTabs.map(tab => (
+                <TabsTrigger key={tab.value} value={tab.value}>
+                  {tab.icon && <tab.icon className="w-3 h-3 mr-1" />}
+                  {hi ? tab.labelHi : tab.labelEn}
+                </TabsTrigger>
+              ))}
+              {/* Show active "more" tab inline if selected */}
+              {isMoreTabActive && activeMoreTab && (
+                <TabsTrigger key={activeMoreTab.value} value={activeMoreTab.value}>
+                  {hi ? activeMoreTab.labelHi : activeMoreTab.labelEn}
+                </TabsTrigger>
+              )}
+              {/* "More" button at the end */}
+              <button
+                onClick={() => setShowMobileMoreSheet(true)}
+                className={`flex-shrink-0 flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md border transition-colors ${
+                  isMoreTabActive
+                    ? 'bg-sacred-gold/20 border-sacred-gold text-sacred-gold-dark'
+                    : 'border-sacred-gold/40 text-cosmic-text'
+                }`}
+              >
+                {hi ? 'और' : 'More'}
+                <ChevronDown className="w-3 h-3" />
+              </button>
             </TabsList>
           </div>
-          {/* Mobile: Single scrollable row */}
-          <TabsList className="md:hidden bg-sacred-cream w-full h-auto p-2 gap-1
-            flex flex-nowrap overflow-x-auto pb-3 scrollbar-hide
-            [&>button]:flex-shrink-0 [&>button]:flex-grow-0 [&>button]:basis-auto [&>button]:whitespace-nowrap [&>button]:min-h-[36px] [&>button]:px-2 [&>button]:py-1.5 [&>button]:text-xs
-            [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
-            <TabsTrigger value="report" onClick={async () => { await fetchDasha(); fetchExtendedDasha(); fetchAvakhada(); fetchYogaDosha(); fetchShadbala(); }}><ScrollText className="w-3 h-3 mr-1" />{t('tab.report')}</TabsTrigger>
-            <TabsTrigger value="planets">{t('tab.planets')}</TabsTrigger>
-            <TabsTrigger value="details">{t('tab.details')}</TabsTrigger>
-            <TabsTrigger value="lordships">{t('tab.lordships')}</TabsTrigger>
-            <TabsTrigger value="iogita" onClick={fetchIogita}>{t('tab.iogita')}</TabsTrigger>
-            <TabsTrigger value="dasha" onClick={() => { fetchDasha(); fetchExtendedDasha(); }}>{t('tab.dasha')}</TabsTrigger>
-            <TabsTrigger value="divisional" onClick={() => fetchDivisional()}>{t('tab.divisional')}</TabsTrigger>
-            <TabsTrigger value="ashtakvarga" onClick={fetchAshtakvarga}>{t('tab.ashtakvarga')}</TabsTrigger>
-            <TabsTrigger value="shadbala" onClick={fetchShadbala}>{t('tab.shadbala')}</TabsTrigger>
-            <TabsTrigger value="avakhada" onClick={fetchAvakhada}>{t('tab.avakhada')}</TabsTrigger>
-            <TabsTrigger value="yoga-dosha" onClick={() => { fetchYogaDosha(); fetchDosha(); }}>{language === 'hi' ? 'योग/दोष' : 'Yogas/Dosha'}</TabsTrigger>
-            <TabsTrigger value="transits" onClick={() => fetchTransit()}>{t('tab.transits')}</TabsTrigger>
-            <TabsTrigger value="varshphal" onClick={() => fetchVarshphal()}>{t('tab.varshphal')}</TabsTrigger>
-            <TabsTrigger value="kp" onClick={fetchKp}>{t('tab.kpSystem')}</TabsTrigger>
-            <TabsTrigger value="yogini" onClick={fetchYogini}>{t('tab.yoginiDasha')}</TabsTrigger>
-            <TabsTrigger value="upagrahas" onClick={fetchUpagrahas}>{t('tab.upagrahas')}</TabsTrigger>
-            <TabsTrigger value="sodashvarga" onClick={fetchSodashvarga}>{t('tab.sodashvarga')}</TabsTrigger>
-            <TabsTrigger value="aspects" onClick={fetchAspects}>{t('tab.aspects')}</TabsTrigger>
-            <TabsTrigger value="aspects-matrix" onClick={fetchWesternAspects}>{language === 'hi' ? 'दृष्टि मैट्रिक्स' : 'Aspects Matrix'}</TabsTrigger>
-            <TabsTrigger value="jaimini" onClick={fetchJaimini}>{language === 'hi' ? 'जैमिनी' : 'Jaimini'}</TabsTrigger>
-            <TabsTrigger value="sadesati" onClick={fetchSadesati}>{t('tab.sadeSati')}</TabsTrigger>
-            <TabsTrigger value="mundane">{language === 'hi' ? 'मुंडन ज्योतिष' : 'Mundane'}</TabsTrigger>
-            <TabsTrigger value="milan">{language === 'hi' ? 'कुंडली मिलान' : 'Kundli Milan'}</TabsTrigger>
-          </TabsList>
-          </div>
+
+          {/* Mobile "More" bottom sheet overlay */}
+          {showMobileMoreSheet && (
+            <div className="fixed inset-0 z-50 md:hidden">
+              <div className="absolute inset-0 bg-black/50" onClick={() => setShowMobileMoreSheet(false)} />
+              <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[70vh] overflow-y-auto p-5 pb-8 animate-in slide-in-from-bottom">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-base font-semibold text-sacred-brown">
+                    {hi ? 'और विश्लेषण' : 'More Analysis'}
+                  </h3>
+                  <button onClick={() => setShowMobileMoreSheet(false)} className="p-1 rounded-full hover:bg-sacred-gold/10">
+                    <X className="w-5 h-5 text-cosmic-text" />
+                  </button>
+                </div>
+                {groupedMoreTabs.map(group => (
+                  <div key={group.category} className="mb-4">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-sacred-gold-dark mb-2">
+                      {hi ? group.label.hi : group.label.en}
+                    </p>
+                    <div className="grid grid-cols-2 gap-1.5">
+                      {group.tabs.map(tab => (
+                        <button
+                          key={tab.value}
+                          onClick={() => handleTabChange(tab.value)}
+                          className={`text-left px-3 py-2.5 rounded-lg text-sm transition-colors ${
+                            activeTab === tab.value
+                              ? 'bg-sacred-gold-dark text-white font-medium'
+                              : 'text-cosmic-text bg-sacred-cream hover:bg-sacred-gold/10'
+                          }`}
+                        >
+                          {hi ? tab.labelHi : tab.labelEn}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {tabError && (
             <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 flex items-center justify-between">
@@ -380,7 +568,6 @@ export default function KundliGenerator() {
             <YogaDoshaTab yogaDoshaData={yogaDoshaData} loadingYogaDosha={loadingYogaDosha} doshaDisplay={doshaDisplay} doshaData={doshaData} loadingDosha={loadingDosha} language={language} t={t} />
           </TabsContent>
 
-
           <TabsContent value="transits" className="min-h-[300px]">
             <TransitsTab
               transitData={transitData} loadingTransit={loadingTransit}
@@ -424,7 +611,6 @@ export default function KundliGenerator() {
           <TabsContent value="aspects-matrix" className="min-h-[300px]">
             <AspectsMatrixTab data={westernAspectsData} loading={loadingWesternAspects} />
           </TabsContent>
-
 
           <TabsContent value="jaimini" className="min-h-[300px]">
             <JaiminiTab data={jaiminiData} loading={loadingJaimini} />
@@ -471,7 +657,6 @@ export default function KundliGenerator() {
   }
 
   // --- FORM VIEW ---
-  const hi = language === 'hi';
   return (
     <>
       <KundliForm
@@ -484,7 +669,7 @@ export default function KundliGenerator() {
         onBackToList={() => setStep('list')}
       />
 
-      {/* ── What's inside: tab preview ─────────────────────────── */}
+      {/* -- What's inside: tab preview --------------------------------- */}
       <section className="max-w-3xl mx-auto px-4 pb-20 pt-2">
         <div className="text-center mb-6">
           <p className="text-[11px] font-semibold text-sacred-gold-dark uppercase tracking-[4px] mb-2">
@@ -496,36 +681,12 @@ export default function KundliGenerator() {
         </div>
 
         <div className="flex flex-wrap gap-2 justify-center">
-          {[
-            { en: 'Report',          hi: 'रिपोर्ट' },
-            { en: 'Planets',         hi: 'ग्रह' },
-            { en: 'Details',         hi: 'विवरण' },
-            { en: 'Lordships',       hi: 'लॉर्डशिप' },
-            { en: 'Iogita',          hi: 'आयोगिता' },
-            { en: 'Dasha',           hi: 'दशा' },
-            { en: 'Divisional',      hi: 'विभाजन चार्ट' },
-            { en: 'Ashtakvarga',     hi: 'अष्टकवर्ग' },
-            { en: 'Shadbala',        hi: 'षड्बल' },
-            { en: 'Avakhada',        hi: 'अवखड़ा' },
-            { en: 'Yogas / Dosha',   hi: 'योग / दोष' },
-            { en: 'Transits',        hi: 'गोचर' },
-            { en: 'Varshphal',       hi: 'वर्षफल' },
-            { en: 'KP System',       hi: 'केपी सिस्टम' },
-            { en: 'Yogini Dasha',    hi: 'योगिनी दशा' },
-            { en: 'Upagrahas',       hi: 'उपग्रह' },
-            { en: 'Sodashvarga',     hi: 'षोडशवर्ग' },
-            { en: 'Aspects',         hi: 'दृष्टि' },
-            { en: 'Aspects Matrix',  hi: 'दृष्टि मैट्रिक्स' },
-            { en: 'Jaimini',         hi: 'जैमिनी' },
-            { en: 'Sade Sati',       hi: 'साढ़े साती' },
-            { en: 'Mundane',         hi: 'मुंडन ज्योतिष' },
-            { en: 'Kundli Milan',    hi: 'कुंडली मिलान' },
-          ].map(({ en, hi: hiLabel }) => (
+          {TAB_DEFS.map(tab => (
             <span
-              key={en}
+              key={tab.value}
               className="px-3 py-1.5 rounded-full text-xs font-medium border border-sacred-gold/40 text-sacred-gold-dark bg-sacred-gold/5 hover:bg-sacred-gold/15 transition-colors"
             >
-              {hi ? hiLabel : en}
+              {hi ? tab.labelHi : tab.labelEn}
             </span>
           ))}
         </div>
