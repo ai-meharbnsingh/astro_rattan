@@ -66,7 +66,7 @@ interface Props {
 }
 
 export default function NameNumerology({ birthDate }: Props) {
-  const { t, language } = useTranslation();
+  const { t } = useTranslation();
   const [fullName, setFullName] = useState('');
   const [nameType, setNameType] = useState('full_name');
   const [dob, setDob] = useState(birthDate || '');
@@ -87,10 +87,7 @@ export default function NameNumerology({ birthDate }: Props) {
       });
       setResult(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : language === 'hi' 
-        ? 'नाम अंकशास्त्र विश्लेषण विफल। कृपया पुनः प्रयास करें।'
-        : 'Name numerology analysis failed. Please try again.'
-      );
+      setError(err instanceof Error ? err.message : t('numerology.errorName'));
     }
     setLoading(false);
   };
@@ -148,7 +145,7 @@ export default function NameNumerology({ birthDate }: Props) {
             {/* Optional DOB */}
             <div>
               <label className="block text-sm text-cosmic-text-secondary mb-1">
-                {language === 'hi' ? 'जन्म तिथि (वैकल्पिक - अनुकूलता जांच के लिए)' : 'Date of Birth (Optional - for compatibility check)'}
+                {t('numerology.dobOptionalCompatibility')}
               </label>
               <Input
                 type="date"
@@ -164,7 +161,7 @@ export default function NameNumerology({ birthDate }: Props) {
               className="w-full bg-sacred-gold text-cosmic-bg hover:bg-gray-50"
             >
               {loading ? (
-                <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{language === 'hi' ? 'विश्लेषण हो रहा है...' : 'Analyzing...'}</>
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{t('numerology.analyzing')}</>
               ) : (
                 <><Calculator className="w-4 h-4 mr-2" />{t('numerology.analyzeName')}</>
               )}
@@ -239,7 +236,7 @@ export default function NameNumerology({ birthDate }: Props) {
               <div className="flex items-center gap-2 pb-3 border-b border-sacred-gold/20">
                 <Sparkles className="w-5 h-5 text-sacred-gold" />
                 <h4 className="font-display font-semibold text-cosmic-text">
-                  {result.predictions.primary.title} {language === 'hi' ? 'ऊर्जा' : 'Energy'}
+                  {result.predictions.primary.title} {t('numerology.energy')}
                 </h4>
                 <Badge className="ml-auto bg-sacred-gold/20 text-sacred-gold border-sacred-gold">
                   {t('numerology.rulingPlanet')}: {result.predictions.primary.ruling_planet}
@@ -328,8 +325,8 @@ export default function NameNumerology({ birthDate }: Props) {
               <CardContent className="p-4">
                 <p className="text-sm font-medium text-cosmic-text mb-3">{t('numerology.lifePathCompatibility')}</p>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-cosmic-text-secondary">{language === 'hi' ? 'नाम अंक' : 'Name Number'}: {result.life_path_compatibility.name_number}</span>
-                  <span className="text-sm text-cosmic-text-secondary">{language === 'hi' ? 'जीवन पथ' : 'Life Path'}: {result.life_path_compatibility.life_path}</span>
+                  <span className="text-sm text-cosmic-text-secondary">{t('numerology.nameNumber')}: {result.life_path_compatibility.name_number}</span>
+                  <span className="text-sm text-cosmic-text-secondary">{t('numerology.lifePathShort')}: {result.life_path_compatibility.life_path}</span>
                 </div>
                 <Badge className={result.life_path_compatibility.is_compatible 
                   ? 'bg-green-100 text-green-800' 
@@ -351,7 +348,7 @@ export default function NameNumerology({ birthDate }: Props) {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-sacred-gold/20">
-                        <th className="text-left py-2 text-cosmic-text-secondary">{language === 'hi' ? 'अक्षर' : 'Letter'}</th>
+                        <th className="text-left py-2 text-cosmic-text-secondary">{t('numerology.letter')}</th>
                         <th className="text-center py-2 text-cosmic-text-secondary">{t('numerology.pythagorean')}</th>
                         <th className="text-center py-2 text-cosmic-text-secondary">{t('numerology.chaldean')}</th>
                         <th className="text-center py-2 text-cosmic-text-secondary">{t('numerology.type')}</th>

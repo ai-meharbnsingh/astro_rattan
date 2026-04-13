@@ -51,7 +51,7 @@ interface Props {
 }
 
 export default function HouseNumerology({ birthDate }: Props) {
-  const { t, language } = useTranslation();
+  const { t } = useTranslation();
   const [address, setAddress] = useState('');
   const [dob, setDob] = useState(birthDate || '');
   const [loading, setLoading] = useState(false);
@@ -70,10 +70,7 @@ export default function HouseNumerology({ birthDate }: Props) {
       });
       setResult(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : language === 'hi'
-        ? 'मकान अंकशास्त्र विश्लेषण विफल। कृपया पुनः प्रयास करें।'
-        : 'House numerology analysis failed. Please try again.'
-      );
+      setError(err instanceof Error ? err.message : t('numerology.errorHouse'));
     }
     setLoading(false);
   };
@@ -108,7 +105,7 @@ export default function HouseNumerology({ birthDate }: Props) {
             {/* Optional DOB */}
             <div>
               <label className="block text-sm text-cosmic-text-secondary mb-1">
-                {language === 'hi' ? 'निवासी की जन्म तिथि (वैकल्पिक - अनुकूलता के लिए)' : "Resident's Date of Birth (Optional - for compatibility)"}
+                {t('numerology.dobOptionalCompatibility')}
               </label>
               <Input
                 type="date"
@@ -124,7 +121,7 @@ export default function HouseNumerology({ birthDate }: Props) {
               className="w-full bg-sacred-gold text-cosmic-bg hover:bg-gray-50"
             >
               {loading ? (
-                <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{language === 'hi' ? 'विश्लेषण हो रहा है...' : 'Analyzing...'}</>
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{t('numerology.analyzing')}</>
               ) : (
                 <><Home className="w-4 h-4 mr-2" />{t('numerology.analyzeHouse')}</>
               )}
@@ -151,10 +148,10 @@ export default function HouseNumerology({ birthDate }: Props) {
               <p className="text-sm text-cosmic-text mt-1">{result.address}</p>
               <div className="flex items-center justify-center gap-4 mt-3">
                 <Badge className="text-xl px-4 py-1 bg-sacred-gold text-cosmic-bg">
-                  {language === 'hi' ? 'मकान #' : 'House #'}{result.house_number.raw}
+                  {t('numerology.house')} #{result.house_number.raw}
                 </Badge>
                 <Badge className="text-lg px-3 py-1 bg-purple-100 text-purple-700">
-                  {language === 'hi' ? 'कंपन' : 'Vibration'}: {result.house_number.vibration}
+                  {t('numerology.vehicleVibration')}: {result.house_number.vibration}
                 </Badge>
               </div>
             </div>
@@ -244,7 +241,7 @@ export default function HouseNumerology({ birthDate }: Props) {
           {/* Lucky Colors */}
           <Card className="bg-cosmic-card border-0 shadow-soft">
             <CardContent className="p-4">
-              <p className="text-sm font-medium text-cosmic-text mb-3">{language === 'hi' ? 'इस घर के लिए भाग्यशाली रंग' : 'Lucky Colors for This Home'}</p>
+              <p className="text-sm font-medium text-cosmic-text mb-3">{t('numerology.luckyColors')}</p>
               <div className="flex flex-wrap gap-2">
                 {result.prediction.lucky_colors.map((color, i) => (
                   <Badge key={i} className="bg-sacred-gold/20 text-sacred-gold-dark border-sacred-gold px-3 py-1">
@@ -297,8 +294,8 @@ export default function HouseNumerology({ birthDate }: Props) {
                   <p className="text-sm font-medium text-cosmic-text">{t('numerology.residentCompatibility')}</p>
                 </div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-cosmic-text-secondary">{language === 'hi' ? 'आपका जीवन पथ' : 'Your Life Path'}: {result.resident_compatibility.resident_life_path}</span>
-                  <span className="text-sm text-cosmic-text-secondary">{language === 'hi' ? 'मकान' : 'House'}: {result.resident_compatibility.house_number}</span>
+                  <span className="text-sm text-cosmic-text-secondary">{t('numerology.yourLifePath')}: {result.resident_compatibility.resident_life_path}</span>
+                  <span className="text-sm text-cosmic-text-secondary">{t('numerology.house')}: {result.resident_compatibility.house_number}</span>
                 </div>
                 <Badge className={result.resident_compatibility.is_ideal 
                   ? 'bg-green-100 text-green-800' 

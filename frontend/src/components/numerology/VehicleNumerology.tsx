@@ -50,7 +50,7 @@ interface Props {
 }
 
 export default function VehicleNumerology({ birthDate }: Props) {
-  const { t, language } = useTranslation();
+  const { t } = useTranslation();
   const [vehicleNumber, setVehicleNumber] = useState('');
   const [ownerName, setOwnerName] = useState('');
   const [dob, setDob] = useState(birthDate || '');
@@ -71,10 +71,7 @@ export default function VehicleNumerology({ birthDate }: Props) {
       });
       setResult(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : language === 'hi'
-        ? 'वाहन अंकशास्त्र विश्लेषण विफल। कृपया पुनः प्रयास करें।'
-        : 'Vehicle numerology analysis failed. Please try again.'
-      );
+      setError(err instanceof Error ? err.message : t('numerology.errorVehicle'));
     }
     setLoading(false);
   };
@@ -137,7 +134,7 @@ export default function VehicleNumerology({ birthDate }: Props) {
                 {t('numerology.ownerName')} ({t('numerology.optional')})
               </label>
               <Input
-                placeholder={language === 'hi' ? 'वाहन मालिक का नाम' : 'Vehicle owner\'s name'}
+                placeholder={t('numerology.ownerName')}
                 value={ownerName}
                 onChange={(e) => setOwnerName(e.target.value)}
                 className="bg-cosmic-card border-sacred-gold"
@@ -147,7 +144,7 @@ export default function VehicleNumerology({ birthDate }: Props) {
             {/* Optional DOB */}
             <div>
               <label className="block text-sm text-cosmic-text-secondary mb-1">
-                {language === 'hi' ? 'मालिक की जन्म तिथि (वैकल्पिक - अनुकूलता के लिए)' : 'Owner\'s Date of Birth (Optional - for compatibility)'}
+                {t('numerology.dobOptionalCompatibility')}
               </label>
               <Input
                 type="date"
@@ -163,7 +160,7 @@ export default function VehicleNumerology({ birthDate }: Props) {
               className="w-full bg-sacred-gold text-cosmic-bg hover:bg-gray-50"
             >
               {loading ? (
-                <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{language === 'hi' ? 'विश्लेषण हो रहा है...' : 'Analyzing...'}</>
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{t('numerology.analyzing')}</>
               ) : (
                 <><Car className="w-4 h-4 mr-2" />{t('numerology.analyzeVehicle')}</>
               )}
@@ -190,7 +187,7 @@ export default function VehicleNumerology({ birthDate }: Props) {
               <p className="text-xl font-display font-bold text-cosmic-text mt-2">{result.vehicle_number}</p>
               {result.letters_extracted && (
                 <p className="text-xs text-cosmic-text-secondary mt-1">
-                  {language === 'hi' ? 'अक्षर' : 'Letters'}: {result.letters_extracted} | {language === 'hi' ? 'अंक' : 'Digits'}: {result.digits_extracted}
+                  {t('numerology.letters')}: {result.letters_extracted} | {t('numerology.digits')}: {result.digits_extracted}
                 </p>
               )}
             </div>
@@ -209,14 +206,14 @@ export default function VehicleNumerology({ birthDate }: Props) {
               <CardContent className="p-4 text-center">
                 <p className="text-xs text-cosmic-text-secondary mb-1">{t('numerology.digitSum')}</p>
                 <Badge className="text-xl px-3 py-1 bg-blue-100 text-blue-700">{result.vibration.digit_sum}</Badge>
-                <p className="text-xs text-cosmic-text-secondary mt-2">{language === 'hi' ? 'न्यूनीकरण से पहले' : 'Before reduction'}</p>
+                <p className="text-xs text-cosmic-text-secondary mt-2">{t('numerology.beforeReduction')}</p>
               </CardContent>
             </Card>
             <Card className="bg-cosmic-card border-0 shadow-soft">
               <CardContent className="p-4 text-center">
                 <p className="text-xs text-cosmic-text-secondary mb-1">{t('numerology.letterValue')}</p>
                 <Badge className="text-xl px-3 py-1 bg-purple-100 text-purple-700">{result.vibration.letter_value}</Badge>
-                <p className="text-xs text-cosmic-text-secondary mt-2">{language === 'hi' ? 'पंजीकरण से' : 'From registration'}</p>
+                <p className="text-xs text-cosmic-text-secondary mt-2">{t('numerology.fromRegistration')}</p>
               </CardContent>
             </Card>
           </div>
@@ -341,8 +338,8 @@ export default function VehicleNumerology({ birthDate }: Props) {
                   <p className="text-sm font-medium text-cosmic-text">{t('numerology.ownerCompatibility')}</p>
                 </div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-cosmic-text-secondary">{language === 'hi' ? 'आपका जीवन पथ' : 'Your Life Path'}: {result.owner_compatibility.owner_life_path}</span>
-                  <span className="text-sm text-cosmic-text-secondary">{language === 'hi' ? 'वाहन' : 'Vehicle'}: {result.owner_compatibility.vehicle_number}</span>
+                  <span className="text-sm text-cosmic-text-secondary">{t('numerology.yourLifePath')}: {result.owner_compatibility.owner_life_path}</span>
+                  <span className="text-sm text-cosmic-text-secondary">{t('numerology.vehicle')}: {result.owner_compatibility.vehicle_number}</span>
                 </div>
                 <Badge className={result.owner_compatibility.is_favorable 
                   ? 'bg-green-100 text-green-800' 
