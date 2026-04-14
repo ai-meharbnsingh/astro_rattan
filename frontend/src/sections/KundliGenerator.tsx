@@ -7,6 +7,8 @@ import { Download, Share2, Loader2, ScrollText, Home, RefreshCw, ChevronDown, X,
 import { useKundliData } from '@/hooks/useKundliData';
 import KundliForm from '@/components/kundli/KundliForm';
 import KundliSummaryModal from '@/components/KundliSummaryModal';
+import ConsolidatedReport from '@/components/kundli/ConsolidatedReport';
+import JHoraKundliView from '@/components/kundli/JHoraKundliView';
 import BirthDetailsTab from '@/components/kundli/BirthDetailsTab';
 import LordshipsTab from '@/components/kundli/LordshipsTab';
 import AspectsMatrixTab from '@/components/kundli/AspectsMatrixTab';
@@ -276,14 +278,14 @@ export default function KundliGenerator() {
                 fetchExtendedDasha();
                 setJhoraOpen(true);
               }}>
-              <ScrollText className="w-4 h-4 mr-1" />{language === 'hi' ? 'जेहोरा व्यू' : 'JHora View'}
+              <ScrollText className="w-4 h-4 mr-1" />{t('kundli.jhoraView')}
             </Button>
             <Button variant="outline" size="sm" className="border-sacred-gold text-sacred-brown"
               onClick={() => {
                 fetchTransit();
                 setReportOpen(true);
               }}>
-              <ScrollText className="w-4 h-4 mr-1" />{language === 'hi' ? 'पूर्ण रिपोर्ट' : 'Full Report'}
+              <ScrollText className="w-4 h-4 mr-1" />{t('kundli.fullReport')}
             </Button>
             <Button size="sm"
               className="bg-gradient-to-r from-sacred-gold to-sacred-gold-dark text-white hover:from-sacred-gold/90 hover:to-sacred-gold-dark/90 font-semibold border border-sacred-gold-dark/30 shadow-md"
@@ -471,8 +473,6 @@ export default function KundliGenerator() {
               reportGocharShift={reportGocharShift} setReportGocharShift={setReportGocharShift}
               expandedMahadasha={expandedMahadasha} setExpandedMahadasha={setExpandedMahadasha}
               expandedAntardasha={expandedAntardasha} setExpandedAntardasha={setExpandedAntardasha}
-              jhoraOpen={jhoraOpen} setJhoraOpen={setJhoraOpen}
-              reportOpen={reportOpen} setReportOpen={setReportOpen}
               fetchTransit={fetchTransit} fetchD10={fetchD10}
               fetchDasha={fetchDasha} fetchExtendedDasha={fetchExtendedDasha}
               changeDivision={changeDivision}
@@ -622,6 +622,60 @@ export default function KundliGenerator() {
             setSummaryOpen(false);
           }}
         />
+
+        {/* JHora-style Fullscreen Overlay */}
+        {jhoraOpen && (
+          <div className="fixed inset-0 z-[9999] bg-parchment" style={{ width: '100vw', height: '100vh' }}>
+            <button onClick={() => setJhoraOpen(false)} className="absolute top-2 right-3 z-10 p-1.5 hover:bg-black rounded text-sacred-gold text-sm font-bold" title={t('common.close')}>
+              <X className="w-5 h-5" />
+            </button>
+            <JHoraKundliView
+              result={result}
+              planets={planets}
+              dashaData={dashaData}
+              extendedDashaData={extendedDashaData}
+              avakhadaData={avakhadaData}
+              yogaDoshaData={yogaDoshaData}
+              ashtakvargaData={ashtakvargaData}
+              shadbalaData={shadbalaData}
+              divisionalData={divisionalData}
+              d10Data={d10Data}
+              transitData={transitData}
+              loadingDasha={loadingDasha}
+              loadingExtendedDasha={loadingExtendedDasha}
+              loadingAvakhada={loadingAvakhada}
+              loadingYogaDosha={loadingYogaDosha}
+              loadingAshtakvarga={loadingAshtakvarga}
+              loadingShadbala={loadingShadbala}
+              loadingDivisional={loadingDivisional}
+              loadingD10={loadingD10}
+              loadingTransit={loadingTransit}
+              onBack={() => setJhoraOpen(false)}
+              onDownloadPDF={async () => {}}
+            />
+          </div>
+        )}
+
+        {/* Consolidated Report Popup */}
+        <ConsolidatedReport
+          open={reportOpen}
+          onOpenChange={setReportOpen}
+          result={result}
+          planets={planets}
+          dashaData={dashaData}
+          avakhadaData={avakhadaData}
+          yogaDoshaData={yogaDoshaData}
+          ashtakvargaData={ashtakvargaData}
+          shadbalaData={shadbalaData}
+          divisionalData={divisionalData}
+          loadingDasha={loadingDasha}
+          loadingAvakhada={loadingAvakhada}
+          loadingYogaDosha={loadingYogaDosha}
+          loadingAshtakvarga={loadingAshtakvarga}
+          loadingShadbala={loadingShadbala}
+          loadingDivisional={loadingDivisional}
+        />
+
         {result?.client_id && <NotesWidget clientId={result.client_id} chartType="vedic" kundliId={result.id} />}
       </div>
     );

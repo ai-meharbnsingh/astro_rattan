@@ -1,12 +1,10 @@
-import { Loader2, X, Download, Printer, CheckCircle, Shield, ScrollText, ChevronDown } from 'lucide-react';
+import { Loader2, CheckCircle, Shield, ChevronDown } from 'lucide-react';
 import { formatDate } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import InteractiveKundli, { ChartLegend, type PlanetData, type ChartData } from '@/components/InteractiveKundli';
 import { DIVISIONAL_CHART_OPTIONS } from '@/components/kundli/kundli-utils';
 import { calculateJaiminiKarakas } from '@/components/kundli/jhora-utils';
 import LordshipsTab from '@/components/kundli/LordshipsTab';
-import ConsolidatedReport from '@/components/kundli/ConsolidatedReport';
-import JHoraKundliView from '@/components/kundli/JHoraKundliView';
 import { translatePlanet, translateSign, translateLabel, translateName, translateNakshatra, translateBackend, translateSignAbbr, translatePlanetAbbr } from '@/lib/backend-translations';
 
 interface ReportTabProps {
@@ -46,10 +44,6 @@ interface ReportTabProps {
   setExpandedMahadasha: (v: string | null) => void;
   expandedAntardasha: string | null;
   setExpandedAntardasha: (v: string | null) => void;
-  jhoraOpen: boolean;
-  setJhoraOpen: (v: boolean) => void;
-  reportOpen: boolean;
-  setReportOpen: (v: boolean) => void;
   fetchTransit: () => void;
   fetchD10: () => void;
   fetchDasha: () => void;
@@ -77,67 +71,12 @@ export default function ReportTab({
   reportGocharShift, setReportGocharShift,
   expandedMahadasha, setExpandedMahadasha,
   expandedAntardasha, setExpandedAntardasha,
-  jhoraOpen, setJhoraOpen,
-  reportOpen, setReportOpen,
   fetchTransit, fetchD10, fetchDasha, fetchExtendedDasha,
   changeDivision,
   handlePlanetClick, handleHouseClick,
 }: ReportTabProps) {
   return (
             <div className="space-y-6">
-              {/* JHora-style Fullscreen Overlay */}
-              {jhoraOpen && (
-                <div className="fixed inset-0 z-[9999] bg-parchment" style={{ width: '100vw', height: '100vh' }}>
-                  <button onClick={() => setJhoraOpen(false)} className="absolute top-2 right-3 z-10 p-1.5 hover:bg-black rounded text-sacred-gold text-sm font-bold" title={t('common.close')}>
-                    <X className="w-5 h-5" />
-                  </button>
-                    <JHoraKundliView
-                      result={result}
-                      planets={planets}
-                      dashaData={dashaData}
-                      extendedDashaData={extendedDashaData}
-                      avakhadaData={avakhadaData}
-                      yogaDoshaData={yogaDoshaData}
-                      ashtakvargaData={ashtakvargaData}
-                      shadbalaData={shadbalaData}
-                      divisionalData={divisionalData}
-                      d10Data={d10Data}
-                      transitData={transitData}
-                      loadingDasha={loadingDasha}
-                      loadingExtendedDasha={loadingExtendedDasha}
-                      loadingAvakhada={loadingAvakhada}
-                      loadingYogaDosha={loadingYogaDosha}
-                      loadingAshtakvarga={loadingAshtakvarga}
-                      loadingShadbala={loadingShadbala}
-                      loadingDivisional={loadingDivisional}
-                      loadingD10={loadingD10}
-                      loadingTransit={loadingTransit}
-                      onBack={() => setJhoraOpen(false)}
-                      onDownloadPDF={async () => {}}
-                    />
-                </div>
-              )}
-
-              {/* Consolidated Report Popup */}
-              <ConsolidatedReport
-                open={reportOpen}
-                onOpenChange={setReportOpen}
-                result={result}
-                planets={planets}
-                dashaData={dashaData}
-                avakhadaData={avakhadaData}
-                yogaDoshaData={yogaDoshaData}
-                ashtakvargaData={ashtakvargaData}
-                shadbalaData={shadbalaData}
-                divisionalData={divisionalData}
-                loadingDasha={loadingDasha}
-                loadingAvakhada={loadingAvakhada}
-                loadingYogaDosha={loadingYogaDosha}
-                loadingAshtakvarga={loadingAshtakvarga}
-                loadingShadbala={loadingShadbala}
-                loadingDivisional={loadingDivisional}
-              />
-
 
 
               {/* Report title */}

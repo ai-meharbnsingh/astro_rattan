@@ -12,6 +12,12 @@ interface Props {
 export default function HoraTab({ panchang, language, t, timezoneOffset }: Props) {
   const horaTable = panchang.hora_table || [];
 
+  const toMinutes = (time: string): number => {
+    const [h, m] = String(time || '').split(':').map(Number);
+    if (Number.isNaN(h) || Number.isNaN(m)) return -1;
+    return h * 60 + m;
+  };
+
   // Memoize current Hora calculation to avoid running on every render
   const currentHora = useMemo(() => {
     // Calculate current time at the panchang location (not browser local time)
@@ -24,6 +30,24 @@ export default function HoraTab({ panchang, language, t, timezoneOffset }: Props
       return currentHour >= startHour && currentHour < endHour;
     });
   }, [horaTable, timezoneOffset]);
+
+  const sunriseMin = toMinutes(panchang.sunrise || '');
+  const sunsetMin = toMinutes(panchang.sunset || '');
+  const hasValidSunWindow = sunriseMin >= 0 && sunsetMin >= 0 && sunriseMin !== sunsetMin;
+  const isDayStart = (startTime: string) => {
+    const mins = toMinutes(startTime);
+    if (mins < 0) return false;
+    if (!hasValidSunWindow) return false;
+    if (sunriseMin < sunsetMin) return mins >= sunriseMin && mins < sunsetMin;
+    return mins >= sunriseMin || mins < sunsetMin;
+  };
+
+  const dayHora = hasValidSunWindow
+    ? horaTable.filter((h) => isDayStart(h.start))
+    : horaTable.slice(0, Math.ceil(horaTable.length / 2));
+  const nightHora = hasValidSunWindow
+    ? horaTable.filter((h) => !isDayStart(h.start))
+    : horaTable.slice(Math.ceil(horaTable.length / 2));
 
   // Get quality color
   const getQualityColor = (type: string) => {
@@ -62,73 +86,92 @@ export default function HoraTab({ panchang, language, t, timezoneOffset }: Props
         </div>
       )}
 
-      {/* Hora Table */}
+      {/* Day + Night tables side-by-side */}
       <div className="rounded-lg border border-cosmic-border overflow-hidden">
-        <h3 className="font-bold text-cosmic-text-primary p-2 flex items-center gap-1 bg-cosmic-card/30">
-          <Clock className="h-4 w-4 text-sacred-gold" />
-          {language === 'hi' ? 'होरा तालिका' : 'Hora Table'}
-        </h3>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-sacred-gold/15">
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                  {language === 'hi' ? 'होरा' : 'Hora'}
-                </th>
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                  {language === 'hi' ? 'स्वामी' : 'Lord'}
-                </th>
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                  {language === 'hi' ? 'समय' : 'Time'}
-                </th>
-                <th className="text-center px-2 py-1 text-sacred-gold-dark font-semibold">
-                  {language === 'hi' ? 'फल' : 'Result'}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {horaTable.map((hora, index) => {
-                const isCurrent = currentHora?.hora === hora.hora;
-                const LordIcon = getLordIcon(hora.lord);
-
-                return (
-                  <tr
-                    key={index}
-                    className={`
-                      border-b border-cosmic-border/50 last:border-0
-                      ${isCurrent ? 'bg-sacred-gold/10' : index % 2 === 0 ? 'bg-cosmic-card/30' : ''}
-                    `}
-                  >
-                    <td className="px-2 py-1">
-                      <div className="flex items-center gap-1">
-                        <LordIcon className={`h-3 w-3 ${hora.type.toLowerCase().includes('good') ? 'text-yellow-500' : 'text-slate-400'}`} />
-                        <span className={`font-medium ${isCurrent ? 'text-sacred-gold' : 'text-cosmic-text-primary'}`}>
-                          {language === 'hi' ? hora.hora_hindi || hora.hora : hora.hora}
-                        </span>
-                        {isCurrent && (
-                          <span className="px-1.5 py-0.5 text-xs bg-sacred-gold text-cosmic-bg rounded-full">
-                            {language === 'hi' ? 'अभी' : 'Now'}
+        <div className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-cosmic-border">
+          <div className="flex-1 p-2">
+            <h3 className="font-bold text-cosmic-text-primary mb-1 flex items-center gap-1">
+              <Sun className="h-4 w-4 text-orange-500" />
+              {language === 'hi' ? 'दिन होरा' : 'Day Hora'}
+            </h3>
+            <table className="w-full table-fixed text-xs sm:text-sm">
+              <thead>
+                <tr className="bg-sacred-gold/15">
+                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[25%]">{language === 'hi' ? 'होरा' : 'Hora'}</th>
+                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[23%]">{language === 'hi' ? 'स्वामी' : 'Lord'}</th>
+                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[30%]">{language === 'hi' ? 'समय' : 'Time'}</th>
+                  <th className="text-center px-2 py-1 text-sacred-gold-dark font-semibold w-[22%]">{language === 'hi' ? 'फल' : 'Result'}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dayHora.map((hora, index) => {
+                  const isCurrent = currentHora?.hora === hora.hora;
+                  const LordIcon = getLordIcon(hora.lord);
+                  return (
+                    <tr key={`day-${index}`} className={`border-b border-cosmic-border/50 last:border-0 ${isCurrent ? 'bg-sacred-gold/10' : ''}`}>
+                      <td className="px-2 py-1">
+                        <div className="flex items-center gap-1">
+                          <LordIcon className={`h-3 w-3 ${hora.type.toLowerCase().includes('good') ? 'text-yellow-500' : 'text-slate-400'}`} />
+                          <span className={`font-medium whitespace-normal break-words ${isCurrent ? 'text-sacred-gold' : 'text-cosmic-text-primary'}`}>
+                            {language === 'hi' ? hora.hora_hindi || hora.hora : hora.hora}
                           </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-2 py-1 text-cosmic-text-secondary">
-                      {language === 'hi' ? hora.lord_hindi || hora.lord : hora.lord}
-                    </td>
-                    <td className="px-2 py-1 text-cosmic-text-secondary">
-                      {hora.start} - {hora.end}
-                    </td>
-                    <td className="px-2 py-1 text-center">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getQualityColor(hora.type)}`}>
-                        {language === 'hi' ? hora.type_hindi || hora.type : hora.type}
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                        </div>
+                      </td>
+                      <td className="px-2 py-1 text-cosmic-text-secondary whitespace-normal break-words">{language === 'hi' ? hora.lord_hindi || hora.lord : hora.lord}</td>
+                      <td className="px-2 py-1 text-cosmic-text-secondary whitespace-normal break-words">{hora.start} - {hora.end}</td>
+                      <td className="px-2 py-1 text-center">
+                        <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium ${getQualityColor(hora.type)}`}>
+                          {language === 'hi' ? hora.type_hindi || hora.type : hora.type}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="flex-1 p-2">
+            <h3 className="font-bold text-cosmic-text-primary mb-1 flex items-center gap-1">
+              <Moon className="h-4 w-4 text-indigo-400" />
+              {language === 'hi' ? 'रात्रि होरा' : 'Night Hora'}
+            </h3>
+            <table className="w-full table-fixed text-xs sm:text-sm">
+              <thead>
+                <tr className="bg-sacred-gold/15">
+                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[25%]">{language === 'hi' ? 'होरा' : 'Hora'}</th>
+                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[23%]">{language === 'hi' ? 'स्वामी' : 'Lord'}</th>
+                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[30%]">{language === 'hi' ? 'समय' : 'Time'}</th>
+                  <th className="text-center px-2 py-1 text-sacred-gold-dark font-semibold w-[22%]">{language === 'hi' ? 'फल' : 'Result'}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {nightHora.map((hora, index) => {
+                  const isCurrent = currentHora?.hora === hora.hora;
+                  const LordIcon = getLordIcon(hora.lord);
+                  return (
+                    <tr key={`night-${index}`} className={`border-b border-cosmic-border/50 last:border-0 ${isCurrent ? 'bg-sacred-gold/10' : ''}`}>
+                      <td className="px-2 py-1">
+                        <div className="flex items-center gap-1">
+                          <LordIcon className={`h-3 w-3 ${hora.type.toLowerCase().includes('good') ? 'text-yellow-500' : 'text-slate-400'}`} />
+                          <span className={`font-medium whitespace-normal break-words ${isCurrent ? 'text-sacred-gold' : 'text-cosmic-text-primary'}`}>
+                            {language === 'hi' ? hora.hora_hindi || hora.hora : hora.hora}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-2 py-1 text-cosmic-text-secondary whitespace-normal break-words">{language === 'hi' ? hora.lord_hindi || hora.lord : hora.lord}</td>
+                      <td className="px-2 py-1 text-cosmic-text-secondary whitespace-normal break-words">{hora.start} - {hora.end}</td>
+                      <td className="px-2 py-1 text-center">
+                        <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium ${getQualityColor(hora.type)}`}>
+                          {language === 'hi' ? hora.type_hindi || hora.type : hora.type}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
