@@ -367,39 +367,24 @@ export default function LiveTransitWheel() {
         const p3 = { x: P + H2 + q, y: P + H2 + q };// BR-CC ∩ MR-MB
         const p4 = { x: P + q, y: P + H2 + q };     // BL-CC ∩ MB-ML
 
-        // Centroid helper
-        const avg = (...pts: {x:number;y:number}[]) => ({
-          x: pts.reduce((s,p)=>s+p.x,0)/pts.length,
-          y: pts.reduce((s,p)=>s+p.y,0)/pts.length,
-        });
-
-        // 12 houses — anti-clockwise from top center
-        const h1c = avg(p1, mt, p2, cc);
-        const h2c = avg(tl, mt, p1);
-        const h3c = avg(tl, p1, cc, ml);
-        const h4c = avg(ml, cc, p4);
-        const h5c = avg(bl, ml, p4);
-        const h6c = avg(bl, p4, cc, mb);
-        const h7c = avg(mb, cc, p3);
-        const h8c = avg(br, mb, p3);
-        const h9c = avg(br, p3, cc, mr);
-        const h10c = avg(mr, cc, p2);
-        const h11c = avg(tr, mr, p2);
-        const h12c = avg(tr, p2, mt);
-
-        const housePoly: { house: number; cx: number; cy: number }[] = [
-          { house: 1,  cx: h1c.x,  cy: h1c.y },
-          { house: 2,  cx: h2c.x,  cy: h2c.y },
-          { house: 3,  cx: h3c.x,  cy: h3c.y },
-          { house: 4,  cx: h4c.x,  cy: h4c.y },
-          { house: 5,  cx: h5c.x,  cy: h5c.y },
-          { house: 6,  cx: h6c.x,  cy: h6c.y },
-          { house: 7,  cx: h7c.x,  cy: h7c.y },
-          { house: 8,  cx: h8c.x,  cy: h8c.y },
-          { house: 9,  cx: h9c.x,  cy: h9c.y },
-          { house: 10, cx: h10c.x, cy: h10c.y },
-          { house: 11, cx: h11c.x, cy: h11c.y },
-          { house: 12, cx: h12c.x, cy: h12c.y },
+        // Hand-tuned house label positions for North Indian kundli
+        // Trapezoids (1,3,4,6,7,9,10,12-style) get centered text
+        // Corner triangles (2,5,8,11) get text pushed into the corner
+        const cx = cc.x; // center x = 250
+        const cy = cc.y; // center y = 250
+        const housePoly: { house: number; tx: number; ty: number }[] = [
+          { house: 1,  tx: cx,       ty: P + 50 },          // top center trapezoid
+          { house: 2,  tx: P + 42,   ty: P + 38 },          // top-left corner triangle
+          { house: 3,  tx: P + 58,   ty: cy - 28 },         // left-top trapezoid
+          { house: 4,  tx: P + 42,   ty: cy },              // left center triangle
+          { house: 5,  tx: P + 42,   ty: P + W - 38 },      // bottom-left corner triangle
+          { house: 6,  tx: P + 58,   ty: cy + 68 },         // bottom-left trapezoid
+          { house: 7,  tx: cx,       ty: P + W - 50 },      // bottom center trapezoid
+          { house: 8,  tx: P + W - 42, ty: P + W - 38 },    // bottom-right corner triangle
+          { house: 9,  tx: P + W - 58, ty: cy + 68 },       // right-bottom trapezoid
+          { house: 10, tx: P + W - 42, ty: cy },            // right center triangle
+          { house: 11, tx: P + W - 42, ty: P + 38 },        // top-right corner triangle
+          { house: 12, tx: P + W - 58, ty: cy - 28 },       // right-top trapezoid
         ];
 
         const pAbbr = (name: string) => hi ? (PLANET_HI[name] || name.slice(0,2)) : (PLANET_ABBR[name] || name.slice(0,2));
@@ -429,25 +414,22 @@ export default function LiveTransitWheel() {
               {housePoly.map(hp => {
                 const hData = kundliHouses[hp.house - 1];
                 if (!hData) return null;
-                const nPlanets = hData.planets.length;
-                // Adaptive font size: shrink when many planets
-                const fs = nPlanets > 3 ? 8 : nPlanets > 2 ? 9 : 10;
-                const lineH = nPlanets > 3 ? 10 : 12;
-                // Center block vertically: sign number + planets
-                const totalH = lineH * nPlanets;
-                const startY = hp.cy - totalH / 2 + 2;
+                const nPl = hData.planets.length;
+                const fs = nPl > 3 ? 7.5 : nPl > 2 ? 8.5 : 9.5;
+                const lh = nPl > 3 ? 9 : 11;
                 return (
                   <g key={hp.house}>
-                    {/* Sign number — top-left corner of house area */}
-                    <text x={hp.cx} y={hp.cy - (nPlanets > 0 ? totalH / 2 + 10 : 0)} textAnchor="middle" dominantBaseline="central"
-                      fill={GOLD} fontSize="9" fontWeight="600" fontFamily="'Inter',sans-serif"
-                      opacity={0.4}>{hData.signNum}</text>
-                    {/* Planet labels with status symbols */}
+                    {/* Sign number — small, above planets */}
+                    <text x={hp.tx} y={hp.ty - (nPl > 0 ? nPl * lh / 2 + 6 : 0)} textAnchor="middle" dominantBaseline="central"
+                      fill={GOLD} fontSize="8" fontWeight="600" fontFamily="'Inter',sans-serif"
+                      opacity={0.35}>{hData.signNum}</text>
+                    {/* Planets stacked */}
                     {hData.planets.map((pl, idx) => {
                       const sym = pStatus(pl);
                       const label = `${pAbbr(pl.planet)}${sym} ${pl.sign_degree.toFixed(0)}°`;
+                      const yOff = hp.ty + (idx - (nPl - 1) / 2) * lh;
                       return (
-                        <text key={pl.planet} x={hp.cx} y={startY + idx * lineH} textAnchor="middle" dominantBaseline="central"
+                        <text key={pl.planet} x={hp.tx} y={yOff} textAnchor="middle" dominantBaseline="central"
                           fill={MALEFIC.has(pl.planet) ? DARK : GOLD_MED} fontSize={fs} fontWeight="700" fontFamily="'Inter',sans-serif">
                           {label}
                         </text>
