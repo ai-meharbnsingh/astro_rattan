@@ -33,18 +33,26 @@ const RASHI_HINDI: Record<string, string> = {
 
 export default function LagnaTab({ panchang, language, t, timezoneOffset }: Props) {
   const lagnaTable = panchang.lagna_table || [];
+  const toMinutes = (time: string) => {
+    const [h, m] = String(time || '').split(':').map(Number);
+    if (Number.isNaN(h) || Number.isNaN(m)) return -1;
+    return h * 60 + m;
+  };
+  const isInTimeRange = (current: number, start: string, end: string) => {
+    const startM = toMinutes(start);
+    const endM = toMinutes(end);
+    if (startM < 0 || endM < 0 || startM === endM) return false;
+    if (startM < endM) return current >= startM && current < endM;
+    return current >= startM || current < endM;
+  };
 
   // Memoize current lagna calculation to avoid running on every render
   const currentLagna = useMemo(() => {
     // Find current lagna (based on panchang location time, not browser local time)
     const currentTimeAtLocation = new Date(Date.now() + ((timezoneOffset + new Date().getTimezoneOffset()) * 60 * 1000));
-    const currentTime = `${currentTimeAtLocation.getHours().toString().padStart(2, '0')}:${currentTimeAtLocation.getMinutes().toString().padStart(2, '0')}`;
+    const currentMinutes = currentTimeAtLocation.getHours() * 60 + currentTimeAtLocation.getMinutes();
 
-    return lagnaTable.find(l => {
-      const start = l.start;
-      const end = l.end;
-      return currentTime >= start && currentTime < end;
-    });
+    return lagnaTable.find((l) => isInTimeRange(currentMinutes, l.start, l.end));
   }, [lagnaTable, timezoneOffset]);
 
   return (
@@ -101,7 +109,7 @@ export default function LagnaTab({ panchang, language, t, timezoneOffset }: Prop
             </thead>
             <tbody>
               {lagnaTable.map((lagna, index) => {
-                const isCurrent = currentLagna?.lagna === lagna.lagna;
+                const isCurrent = currentLagna?.start === lagna.start && currentLagna?.end === lagna.end;
 
                 return (
                   <tr

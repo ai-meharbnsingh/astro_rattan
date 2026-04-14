@@ -11,6 +11,18 @@ interface Props {
 
 export default function GowriTab({ panchang, language, t, timezoneOffset }: Props) {
   const gowriPanchang = panchang.gowri_panchang || [];
+  const toMinutes = (time: string) => {
+    const [h, m] = String(time || '').split(':').map(Number);
+    if (Number.isNaN(h) || Number.isNaN(m)) return -1;
+    return h * 60 + m;
+  };
+  const isInTimeRange = (current: number, start: string, end: string) => {
+    const startM = toMinutes(start);
+    const endM = toMinutes(end);
+    if (startM < 0 || endM < 0 || startM === endM) return false;
+    if (startM < endM) return current >= startM && current < endM;
+    return current >= startM || current < endM;
+  };
 
   // Memoize day/night separation and current gowri calculation
   const { dayGowri, nightGowri, currentGowri } = useMemo(() => {
@@ -20,11 +32,9 @@ export default function GowriTab({ panchang, language, t, timezoneOffset }: Prop
 
     // Find current gowri period (based on panchang location time, not browser local time)
     const currentTimeAtLocation = new Date(Date.now() + ((timezoneOffset + new Date().getTimezoneOffset()) * 60 * 1000));
-    const currentTime = `${currentTimeAtLocation.getHours().toString().padStart(2, '0')}:${currentTimeAtLocation.getMinutes().toString().padStart(2, '0')}`;
+    const currentMinutes = currentTimeAtLocation.getHours() * 60 + currentTimeAtLocation.getMinutes();
 
-    const current = gowriPanchang.find(g => {
-      return currentTime >= g.start && currentTime < g.end;
-    });
+    const current = gowriPanchang.find((g) => isInTimeRange(currentMinutes, g.start, g.end));
 
     return { dayGowri: day, nightGowri: night, currentGowri: current };
   }, [gowriPanchang, timezoneOffset]);
@@ -38,7 +48,7 @@ export default function GowriTab({ panchang, language, t, timezoneOffset }: Prop
 
   const renderRow = (period: typeof gowriPanchang[0], index: number) => {
     const style = getQualityStyle(period.quality);
-    const isCurrent = currentGowri?.name === period.name && currentGowri?.type === period.type;
+    const isCurrent = currentGowri?.start === period.start && currentGowri?.end === period.end && currentGowri?.type === period.type;
 
     return (
       <tr

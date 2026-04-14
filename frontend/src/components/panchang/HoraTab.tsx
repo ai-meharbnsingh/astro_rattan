@@ -17,18 +17,21 @@ export default function HoraTab({ panchang, language, t, timezoneOffset }: Props
     if (Number.isNaN(h) || Number.isNaN(m)) return -1;
     return h * 60 + m;
   };
+  const isInTimeRange = (current: number, start: string, end: string) => {
+    const startM = toMinutes(start);
+    const endM = toMinutes(end);
+    if (startM < 0 || endM < 0 || startM === endM) return false;
+    if (startM < endM) return current >= startM && current < endM;
+    return current >= startM || current < endM;
+  };
 
   // Memoize current Hora calculation to avoid running on every render
   const currentHora = useMemo(() => {
     // Calculate current time at the panchang location (not browser local time)
     const currentTimeAtLocation = new Date(Date.now() + ((timezoneOffset + new Date().getTimezoneOffset()) * 60 * 1000));
-    const currentHour = currentTimeAtLocation.getHours();
+    const currentMinutes = currentTimeAtLocation.getHours() * 60 + currentTimeAtLocation.getMinutes();
 
-    return horaTable.find(h => {
-      const startHour = parseInt(h.start.split(':')[0]);
-      const endHour = parseInt(h.end.split(':')[0]);
-      return currentHour >= startHour && currentHour < endHour;
-    });
+    return horaTable.find((h) => isInTimeRange(currentMinutes, h.start, h.end));
   }, [horaTable, timezoneOffset]);
 
   const sunriseMin = toMinutes(panchang.sunrise || '');
@@ -105,7 +108,7 @@ export default function HoraTab({ panchang, language, t, timezoneOffset }: Props
               </thead>
               <tbody>
                 {dayHora.map((hora, index) => {
-                  const isCurrent = currentHora?.hora === hora.hora;
+                  const isCurrent = currentHora?.start === hora.start && currentHora?.end === hora.end;
                   const LordIcon = getLordIcon(hora.lord);
                   return (
                     <tr key={`day-${index}`} className={`border-b border-cosmic-border/50 last:border-0 ${isCurrent ? 'bg-sacred-gold/10' : ''}`}>
@@ -147,7 +150,7 @@ export default function HoraTab({ panchang, language, t, timezoneOffset }: Props
               </thead>
               <tbody>
                 {nightHora.map((hora, index) => {
-                  const isCurrent = currentHora?.hora === hora.hora;
+                  const isCurrent = currentHora?.start === hora.start && currentHora?.end === hora.end;
                   const LordIcon = getLordIcon(hora.lord);
                   return (
                     <tr key={`night-${index}`} className={`border-b border-cosmic-border/50 last:border-0 ${isCurrent ? 'bg-sacred-gold/10' : ''}`}>

@@ -29,14 +29,26 @@ type ChoghadiyaPeriod = { name: string; quality: string; start: string; end: str
 export default function ChoghadiyaTab({ panchang, language, t, timezoneOffset }: Props) {
   const dayChoghadiya = panchang.choghadiya || [];
   const nightChoghadiya = panchang.night_choghadiya || [];
+  const toMinutes = (time: string) => {
+    const [h, m] = String(time || '').split(':').map(Number);
+    if (Number.isNaN(h) || Number.isNaN(m)) return -1;
+    return h * 60 + m;
+  };
+  const isInTimeRange = (current: number, start: string, end: string) => {
+    const startM = toMinutes(start);
+    const endM = toMinutes(end);
+    if (startM < 0 || endM < 0 || startM === endM) return false;
+    if (startM < endM) return current >= startM && current < endM;
+    return current >= startM || current < endM;
+  };
 
   // Find current active period across both day and night
   const currentPeriodKey = useMemo(() => {
     const now = new Date(Date.now() + ((timezoneOffset + new Date().getTimezoneOffset()) * 60 * 1000));
-    const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
     const allPeriods = [...dayChoghadiya, ...nightChoghadiya];
-    const found = allPeriods.find(c => currentTime >= c.start && currentTime < c.end);
+    const found = allPeriods.find(c => isInTimeRange(currentMinutes, c.start, c.end));
     return found ? `${found.start}-${found.end}` : null;
   }, [dayChoghadiya, nightChoghadiya, timezoneOffset]);
 
