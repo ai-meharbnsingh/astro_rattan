@@ -180,7 +180,7 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
     });
   };
 
-  const inputClass = "w-full px-3 py-2.5 pl-9 rounded-lg bg-[#f0ecf8]/40 border border-sacred-gold/50 text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none placeholder:text-sacred-gold-dark/40";
+  const inputClass = "w-full px-3 py-2 pl-9 rounded-lg bg-[#f0ecf8]/40 border border-sacred-gold/50 text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none placeholder:text-sacred-gold-dark/40";
 
   return (
     <div className="flex flex-col h-full justify-between">
@@ -189,8 +189,8 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
         {l('Generate Your Kundli', 'अपनी कुंडली बनाएं')}
       </h3>
 
-      {/* Fields — stretch to fill height */}
-      <div className="flex-1 flex flex-col justify-between py-2 gap-1">
+      {/* Fields — compact like screenshot */}
+      <div className="flex-1 flex flex-col justify-between py-2 gap-2">
         {/* Full Name */}
         <div>
           <label className="text-sm font-semibold text-cosmic-text mb-0.5 block">{l('Full Name', 'पूरा नाम')}</label>
@@ -201,28 +201,38 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
           </div>
         </div>
 
-        {/* Gender + Phone */}
+        {/* Gender + Birth Place */}
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-sm font-semibold text-cosmic-text mb-0.5 block">{l('Gender', 'लिंग')}</label>
             <div className="flex gap-2">
               <button onClick={() => setGender('male')}
-                className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all ${gender === 'male' ? 'bg-sacred-gold-dark text-white' : 'border border-sacred-gold/50 text-cosmic-text'}`}>
+                className={`flex-1 py-1.5 rounded-lg text-sm font-semibold transition-all ${gender === 'male' ? 'bg-sacred-gold-dark text-white' : 'border border-sacred-gold/50 text-cosmic-text'}`}>
                 {l('Male', 'पुरुष')}
               </button>
               <button onClick={() => setGender('female')}
-                className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all ${gender === 'female' ? 'bg-sacred-gold-dark text-white' : 'border border-sacred-gold/50 text-cosmic-text'}`}>
+                className={`flex-1 py-1.5 rounded-lg text-sm font-semibold transition-all ${gender === 'female' ? 'bg-sacred-gold-dark text-white' : 'border border-sacred-gold/50 text-cosmic-text'}`}>
                 {l('Female', 'महिला')}
               </button>
             </div>
           </div>
-          <div>
-            <label className="text-sm font-semibold text-cosmic-text mb-0.5 block">{l('Phone', 'फ़ोन')}</label>
+          <div className="relative">
+            <label className="text-sm font-semibold text-cosmic-text mb-0.5 block">{l('Birth Place', 'जन्म स्थान')}</label>
             <div className="relative">
-              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/50" />
-              <input type="tel" value={phone} onChange={e => setPhone(e.target.value)}
-                placeholder={l('Number', 'नंबर')} className={inputClass} />
+              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/50" />
+              <input type="text" value={birthPlace} onChange={e => searchPlace(e.target.value)}
+                placeholder={l('Search birth place', 'जन्म स्थान खोजें')} className={inputClass} />
             </div>
+            {suggestions.length > 0 && (
+              <div className="absolute left-0 right-0 top-full z-30 bg-white border border-sacred-gold/30 rounded-lg shadow-lg max-h-40 overflow-y-auto mt-1">
+                {suggestions.map((s, idx) => (
+                  <button key={idx} onClick={() => selectPlace(s)}
+                    className="w-full text-left px-3 py-2 text-xs text-cosmic-text hover:bg-sacred-gold/10 transition-colors">
+                    {s.name}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -244,31 +254,23 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
           </div>
         </div>
 
-        {/* Birth Place */}
-        <div className="relative">
-          <label className="text-sm font-semibold text-cosmic-text mb-0.5 block">{l('Birth Place', 'जन्म स्थान')}</label>
+        {/* Phone (Optional) */}
+        <div>
+          <label className="text-sm font-semibold text-cosmic-text mb-0.5 block">
+            {l('Phone', 'फ़ोन')} <span className="text-sacred-gold-dark/60 font-normal">{l('(Optional)', '(वैकल्पिक)')}</span>
+          </label>
           <div className="relative">
-            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/50" />
-            <input type="text" value={birthPlace} onChange={e => searchPlace(e.target.value)}
-              placeholder={l('Search birth place', 'जन्म स्थान खोजें')} className={inputClass} />
+            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/50" />
+            <input type="tel" value={phone} onChange={e => setPhone(e.target.value)}
+              placeholder={l('Phone number', 'फ़ोन नंबर')} className={inputClass} />
           </div>
-          {suggestions.length > 0 && (
-            <div className="absolute left-0 right-0 top-full z-30 bg-white border border-sacred-gold/30 rounded-lg shadow-lg max-h-40 overflow-y-auto mt-1">
-              {suggestions.map((s, idx) => (
-                <button key={idx} onClick={() => selectPlace(s)}
-                  className="w-full text-left px-3 py-2 text-xs text-cosmic-text hover:bg-sacred-gold/10 transition-colors">
-                  {s.name}
-                </button>
-              ))}
-            </div>
-          )}
         </div>
       </div>
 
       {/* Submit */}
       <button onClick={handleGenerate}
         disabled={!name || !birthDate || !birthTime || !birthPlace}
-        className="w-full py-3 bg-sacred-gold/70 text-sacred-gold-dark rounded-lg font-semibold text-base hover:bg-sacred-gold hover:text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 shrink-0">
+        className="w-full py-2.5 bg-sacred-gold/70 text-sacred-gold-dark rounded-lg font-semibold text-base hover:bg-sacred-gold hover:text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 shrink-0">
         <Sparkles className="w-4 h-4" />
         {l('Generate Kundli', 'कुंडली बनाएं')}
       </button>
