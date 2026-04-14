@@ -461,7 +461,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                 <div className="grid grid-cols-7 grid-rows-6 gap-1.5 flex-1 min-h-0">
                   {/* Empty cells for padding */}
                   {Array.from({ length: firstDayOfMonth }).map((_, i) => (
-                    <div key={`empty-start-${i}`} className="h-full min-h-[60px] sm:min-h-[72px]" />
+                    <div key={`empty-start-${i}`} className="h-full min-h-[56px] sm:min-h-[64px]" />
                   ))}
 
                   {/* Day cells - Minimal Clean Design */}
@@ -479,34 +479,38 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                         key={day}
                         onClick={() => dayData && setSelectedDay(dayData)}
                         className={`
-                          h-full min-h-[60px] sm:min-h-[72px] p-1.5 rounded-lg relative overflow-hidden
+                          h-full min-h-[56px] sm:min-h-[64px] p-1 rounded-lg relative overflow-hidden
                           transition-all hover:scale-[1.02]
                           ${isToday ? 'ring-2 ring-sacred-gold bg-sacred-gold/10' : ''}
                           ${isSelected ? 'bg-sacred-gold/20 border border-sacred-gold' : 'bg-cosmic-card/20 hover:bg-cosmic-card/40'}
-                          ${hasMajorFestival ? 'border-l-3 border-l-amber-500' : hasFestivals ? 'border-l-2 border-l-purple-400/50' : ''}
+                          ${hasMajorFestival ? 'border-l-2 border-l-amber-500' : hasFestivals ? 'border-l-2 border-l-purple-400/50' : ''}
                         `}
                       >
                         {/* Day Number */}
-                        <div className={`text-center text-sm sm:text-base font-bold ${isToday ? 'text-sacred-gold' : 'text-cosmic-text-primary'}`}>
+                        <div className={`text-center text-sm sm:text-base font-bold mb-0.5 ${isToday ? 'text-sacred-gold' : 'text-cosmic-text-primary'}`}>
                           {day}
                         </div>
                         
-                        {/* Compact Marker Dots */}
+                        {/* Marker Badges - Compact */}
                         {dayMarkers.length > 0 && (
-                          <div className="absolute bottom-1.5 left-1.5 right-1.5 flex justify-center gap-1">
-                            {dayMarkers.slice(0, 4).map((marker) => (
+                          <div className="flex flex-wrap justify-center gap-0.5 px-0.5">
+                            {dayMarkers.slice(0, 3).map((marker) => (
                               <span
                                 key={marker.key}
                                 title={language === 'hi' ? marker.titleHi : marker.titleEn}
-                                className={`w-2 h-2 rounded-full ${markerDotClass(marker.key)}`}
-                              />
+                                className={`text-[9px] leading-3 px-1 rounded font-semibold ${marker.className}`}
+                              >
+                                {marker.short}
+                              </span>
                             ))}
                           </div>
                         )}
                         
-                        {/* Festival indicator dot */}
+                        {/* Festival indicator for non-marker festivals */}
                         {hasFestivals && dayMarkers.length === 0 && (
-                          <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-purple-400" />
+                          <div className="flex justify-center">
+                            <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+                          </div>
                         )}
                       </button>
                     );
@@ -514,31 +518,35 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
 
                   {/* Trailing empty cells */}
                   {Array.from({ length: trailingEmptyCells }).map((_, i) => (
-                    <div key={`empty-end-${i}`} className="h-full min-h-[60px] sm:min-h-[72px]" />
+                    <div key={`empty-end-${i}`} className="h-full min-h-[56px] sm:min-h-[64px]" />
                   ))}
                 </div>
 
-                {/* Clean Legend - Just colored dots */}
-                <div className="flex flex-wrap items-center justify-center gap-3 mt-3 text-[10px] sm:text-xs">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                {/* Legend with Badges */}
+                <div className="flex flex-wrap items-center justify-center gap-2 mt-3 text-[10px] sm:text-xs">
+                  <div className="flex items-center gap-1">
+                    <span className="px-1 rounded text-[9px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40">M</span>
                     <span className="text-cosmic-text-secondary">{language === 'hi' ? 'प्रमुख पर्व' : 'Major'}</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-purple-500" />
+                  <div className="flex items-center gap-1">
+                    <span className="px-1 rounded text-[9px] font-semibold bg-purple-500/15 text-purple-300 border border-purple-500/40">V</span>
                     <span className="text-cosmic-text-secondary">{language === 'hi' ? 'व्रत' : 'Vrat'}</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-cyan-500" />
+                  <div className="flex items-center gap-1">
+                    <span className="px-1 rounded text-[9px] font-semibold bg-cyan-500/15 text-cyan-300 border border-cyan-500/40">E</span>
                     <span className="text-cosmic-text-secondary">{language === 'hi' ? 'एकादशी' : 'Ekadashi'}</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-indigo-500" />
+                  <div className="flex items-center gap-1">
+                    <span className="px-1 rounded text-[9px] font-semibold bg-indigo-500/15 text-indigo-300 border border-indigo-500/40">P</span>
                     <span className="text-cosmic-text-secondary">{language === 'hi' ? 'पूर्णिमा' : 'Purnima'}</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-slate-500" />
+                  <div className="flex items-center gap-1">
+                    <span className="px-1 rounded text-[9px] font-semibold bg-slate-500/25 text-slate-200 border border-slate-500/40">A</span>
                     <span className="text-cosmic-text-secondary">{language === 'hi' ? 'अमावस्या' : 'Amavasya'}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="px-1 rounded text-[9px] font-semibold bg-yellow-500/20 text-yellow-300 border border-yellow-500/40">S</span>
+                    <span className="text-cosmic-text-secondary">{language === 'hi' ? 'संक्रांति' : 'Sankranti'}</span>
                   </div>
                 </div>
               </>
