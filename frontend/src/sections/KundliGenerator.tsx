@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from '@/lib/i18n';
 import { formatDate, api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -129,8 +130,12 @@ export default function KundliGenerator() {
     // Computed
     HOUSE_SIGNIFICANCE,
     // i18n
-    t, language,
+    t: tFromHook, language: langFromHook,
   } = data;
+
+  const { t: tDirect, language: langDirect } = useTranslation();
+  const t = tFromHook || tDirect;
+  const language = langFromHook || langDirect;
 
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('report');
