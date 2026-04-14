@@ -57,7 +57,7 @@ export default function Hero() {
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Centered header above main section */}
-        <div className="text-center mb-10 lg:mb-12">
+        <div className="text-center mb-3">
           {/* Shloka */}
           <div className="hero-shloka opacity-0">
             <p className="font-sans text-lg sm:text-2xl lg:text-[2.2rem] opacity-70 tracking-[3px] text-gray-600"
