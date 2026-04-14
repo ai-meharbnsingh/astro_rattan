@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Sparkles, LogOut, Shield, MessageSquare } from 'lucide-react';
+import { Menu, X, Sparkles, LogOut, Shield, MessageSquare, User, ChevronDown } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/lib/i18n';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
@@ -17,20 +17,28 @@ const serviceLinks: { key: string; href: string; highlight?: boolean }[] = [
   ...(!isProduction ? [{ key: 'nav.vastu', href: '/vastu', highlight: true }] : []),
 ];
 
-const authOnlyLinks = [
-  { key: 'nav.home', href: '/dashboard' },
-];
-
 export default function Navigation() {
   const { user, isAuthenticated, logout } = useAuth();
   const { t } = useTranslation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+        setIsProfileMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, []);
 
   return (
@@ -47,17 +55,8 @@ export default function Navigation() {
               <img src="/logo.png" alt="Astro Rattan" className="h-14 sm:h-16 w-auto" />
             </Link>
 
-            {/* Desktop Navigation - Service links always visible, Dashboard only when authenticated */}
+            {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-6">
-              {isAuthenticated && authOnlyLinks.map((link) => (
-                <Link
-                  key={link.key}
-                  to={link.href}
-                  className="text-base text-cosmic-text hover:text-sacred-gold-dark transition-colors font-sans tracking-wide"
-                >
-                  {t(link.key)}
-                </Link>
-              ))}
               {serviceLinks.map((link) => (
                 <Link
                   key={link.key}
@@ -89,24 +88,59 @@ export default function Navigation() {
               </div>
 
               {isAuthenticated ? (
-                <>
-                  {user?.role === 'admin' && (
-                    <Link to="/admin" className="p-2.5 text-cosmic-text hover:text-sacred-gold-dark transition-colors hidden sm:block" title={t('nav.admin')}>
-                      <Shield className="w-5 h-5" />
-                    </Link>
-                  )}
+                <div ref={profileMenuRef} className="relative hidden sm:block">
                   <button
-                    onClick={logout}
-                    className="p-2.5 text-cosmic-text hover:text-sacred-gold-dark transition-colors hidden sm:flex items-center gap-1"
-                    title={t('auth.signOut')}
+                    onClick={() => setIsProfileMenuOpen((prev) => !prev)}
+                    className="ml-2 inline-flex items-center gap-1.5 px-3 py-2 border border-sacred-gold rounded-lg text-cosmic-text hover:text-sacred-gold-dark hover:bg-gray-50 transition-colors"
+                    title={t('nav.profile')}
                   >
-                    <LogOut className="w-4 h-4" />
+                    <User className="w-4 h-4" />
+                    <span className="text-sm font-medium">{t('nav.profile')}</span>
+                    <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isProfileMenuOpen ? 'rotate-180' : ''}`} />
                   </button>
-                </>
+                  {isProfileMenuOpen && (
+                    <div className="absolute right-0 mt-2 w-44 bg-cosmic-bg border border-sacred-gold rounded-lg shadow-lg py-1 z-50">
+                      <Link
+                        to="/dashboard"
+                        onClick={() => setIsProfileMenuOpen(false)}
+                        className="flex items-center gap-2 px-3 py-2 text-sm text-cosmic-text hover:bg-gray-50 hover:text-sacred-gold-dark transition-colors"
+                      >
+                        <User className="w-4 h-4" />
+                        {t('nav.profile')}
+                      </Link>
+                      {user?.role === 'admin' && (
+                        <Link
+                          to="/admin"
+                          onClick={() => setIsProfileMenuOpen(false)}
+                          className="flex items-center gap-2 px-3 py-2 text-sm text-cosmic-text hover:bg-gray-50 hover:text-sacred-gold-dark transition-colors"
+                        >
+                          <Shield className="w-4 h-4" />
+                          {t('nav.admin')}
+                        </Link>
+                      )}
+                      <button
+                        onClick={() => {
+                          logout();
+                          setIsProfileMenuOpen(false);
+                        }}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-cosmic-text hover:bg-gray-50 hover:text-sacred-gold-dark transition-colors"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        {t('auth.signOut')}
+                      </button>
+                    </div>
+                  )}
+                </div>
               ) : (
                 <Link to="/login" className="ml-2 px-4 py-2 bg-transparent border border-sacred-gold text-sacred-gold-dark text-base font-medium hover:bg-gray-50 hover:text-cosmic-bg transition-all hidden sm:flex items-center gap-1.5">
                   <Sparkles className="w-4 h-4" />
                   {t('auth.signIn')}
+                </Link>
+              )}
+
+              {isAuthenticated && user?.role === 'admin' && (
+                <Link to="/admin" className="p-2.5 text-cosmic-text hover:text-sacred-gold-dark transition-colors sm:hidden" title={t('nav.admin')}>
+                  <Shield className="w-5 h-5" />
                 </Link>
               )}
 
@@ -130,16 +164,6 @@ export default function Navigation() {
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
         <div className={`absolute top-20 left-4 right-4 bg-cosmic-bg backdrop-blur-lg border border-sacred-gold rounded-lg p-6 transition-all duration-500 ${isMobileMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}`}>
           <div className="space-y-1">
-            {isAuthenticated && authOnlyLinks.map((link) => (
-              <Link
-                key={link.key}
-                to={link.href}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="block py-3 px-3 text-cosmic-text hover:text-sacred-gold-dark hover:bg-gray-50 transition-colors font-sans"
-              >
-                {t(link.key)}
-              </Link>
-            ))}
             {serviceLinks.map((link) => (
               <Link
                 key={link.key}
@@ -167,13 +191,23 @@ export default function Navigation() {
             <div className="pt-4 mt-4 border-t border-sacred-gold space-y-3">
               <LanguageSwitcher />
               {isAuthenticated ? (
-                <button
-                  onClick={() => { logout(); setIsMobileMenuOpen(false); }}
-                  className="flex items-center gap-2 w-full px-4 py-3 border border-sacred-gold text-sacred-gold-dark font-medium text-center justify-center hover:bg-gray-50 transition-colors"
-                >
-                  <LogOut className="w-4 h-4" />
-                  {t('auth.signOut')}
-                </button>
+                <div className="space-y-2">
+                  <Link
+                    to="/dashboard"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-2 w-full px-4 py-3 border border-sacred-gold text-sacred-gold-dark font-medium justify-center hover:bg-gray-50 transition-colors"
+                  >
+                    <User className="w-4 h-4" />
+                    {t('nav.profile')}
+                  </Link>
+                  <button
+                    onClick={() => { logout(); setIsMobileMenuOpen(false); }}
+                    className="flex items-center gap-2 w-full px-4 py-3 border border-sacred-gold text-sacred-gold-dark font-medium text-center justify-center hover:bg-gray-50 transition-colors"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    {t('auth.signOut')}
+                  </button>
+                </div>
               ) : (
                 <Link
                   to="/login"
