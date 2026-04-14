@@ -6,89 +6,59 @@ const toRad = (deg: number) => (deg * Math.PI) / 180;
 const CX = 300;
 const CY = 300;
 
-const SIGNS_EN = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
-const SIGNS_HI = ['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तुला','वृश्चिक','धनु','मकर','कुंभ','मीन'];
-const SIGNS_SHORT = ['Ari','Tau','Gem','Can','Leo','Vir','Lib','Sco','Sag','Cap','Aqu','Pis'];
-const GLYPHS = ['\u2648','\u2649','\u264A','\u264B','\u264C','\u264D','\u264E','\u264F','\u2650','\u2651','\u2652','\u2653'];
-const SIGN_DEGS = ['0-30','30-60','60-90','90-120','120-150','150-180','180-210','210-240','240-270','270-300','300-330','330-360'];
+/* ── Sign data ── */
+const SIGNS = [
+  { en: 'Aries',       hi: 'मेष',     glyph: '\u2648\uFE0E', month: 'Apr',  monthHi: 'अप्रै', gender: '\u2642', element: 'Fire',  elementHi: 'अग्नि', elemColor: '#e25822', img: '/images/zodiac/aries.jpg' },
+  { en: 'Taurus',      hi: 'वृषभ',    glyph: '\u2649\uFE0E', month: 'May',  monthHi: 'मई',    gender: '\u2640', element: 'Earth', elementHi: 'पृथ्वी', elemColor: '#6b8e23', img: '/images/zodiac/taurus.jpg' },
+  { en: 'Gemini',      hi: 'मिथुन',   glyph: '\u264A\uFE0E', month: 'Jun',  monthHi: 'जून',   gender: '\u2642', element: 'Air',   elementHi: 'वायु',  elemColor: '#4682b4', img: '/images/zodiac/gemini.jpg' },
+  { en: 'Cancer',      hi: 'कर्क',    glyph: '\u264B\uFE0E', month: 'Jul',  monthHi: 'जुला',  gender: '\u2640', element: 'Water', elementHi: 'जल',    elemColor: '#1e90ff', img: '/images/zodiac/cancer.jpg' },
+  { en: 'Leo',         hi: 'सिंह',    glyph: '\u264C\uFE0E', month: 'Aug',  monthHi: 'अग',    gender: '\u2642', element: 'Fire',  elementHi: 'अग्नि', elemColor: '#e25822', img: '/images/zodiac/leo.jpg' },
+  { en: 'Virgo',       hi: 'कन्या',   glyph: '\u264D\uFE0E', month: 'Sep',  monthHi: 'सित',   gender: '\u2640', element: 'Earth', elementHi: 'पृथ्वी', elemColor: '#6b8e23', img: '/images/zodiac/virgo.jpg' },
+  { en: 'Libra',       hi: 'तुला',    glyph: '\u264E\uFE0E', month: 'Oct',  monthHi: 'अक्टू', gender: '\u2642', element: 'Air',   elementHi: 'वायु',  elemColor: '#4682b4', img: '/images/zodiac/libra.jpg' },
+  { en: 'Scorpio',     hi: 'वृश्चिक', glyph: '\u264F\uFE0E', month: 'Nov',  monthHi: 'नव',    gender: '\u2640', element: 'Water', elementHi: 'जल',    elemColor: '#1e90ff', img: '/images/zodiac/scorpio.jpg' },
+  { en: 'Sagittarius', hi: 'धनु',     glyph: '\u2650\uFE0E', month: 'Dec',  monthHi: 'दिस',   gender: '\u2642', element: 'Fire',  elementHi: 'अग्नि', elemColor: '#e25822', img: '/images/zodiac/sagittarius.jpg' },
+  { en: 'Capricorn',   hi: 'मकर',     glyph: '\u2651\uFE0E', month: 'Jan',  monthHi: 'जन',    gender: '\u2640', element: 'Earth', elementHi: 'पृथ्वी', elemColor: '#6b8e23', img: '/images/zodiac/capricorn.jpg' },
+  { en: 'Aquarius',    hi: 'कुंभ',    glyph: '\u2652\uFE0E', month: 'Feb',  monthHi: 'फर',    gender: '\u2642', element: 'Air',   elementHi: 'वायु',  elemColor: '#4682b4', img: '/images/zodiac/aquarius.jpg' },
+  { en: 'Pisces',      hi: 'मीन',     glyph: '\u2653\uFE0E', month: 'Mar',  monthHi: 'मार्च', gender: '\u2640', element: 'Water', elementHi: 'जल',    elemColor: '#1e90ff', img: '/images/zodiac/pisces.jpg' },
+];
 
 const PLANET_ABBR: Record<string,string> = { Sun:'Su',Moon:'Mo',Mars:'Ma',Mercury:'Me',Jupiter:'Ju',Venus:'Ve',Saturn:'Sa',Rahu:'Ra',Ketu:'Ke' };
 const PLANET_HI: Record<string,string> = { Sun:'सू',Moon:'चं',Mars:'मं',Mercury:'बु',Jupiter:'गु',Venus:'शु',Saturn:'श',Rahu:'रा',Ketu:'के' };
 const PLANET_FULL_HI: Record<string,string> = { Sun:'सूर्य',Moon:'चंद्र',Mars:'मंगल',Mercury:'बुध',Jupiter:'बृहस्पति',Venus:'शुक्र',Saturn:'शनि',Rahu:'राहु',Ketu:'केतु' };
 const MALEFIC = new Set(['Mars','Saturn','Rahu','Ketu']);
 
-// Ring assignments — separate fast/slow/nodes
-const RING_A = new Set(['Sun','Moon','Venus','Mercury']);  // r=230 fast
-const RING_B = new Set(['Mars','Jupiter','Saturn']);        // r=195 slow
-// RING_C = Rahu, Ketu                                     // r=160 nodes
-// Spread planets across 5 sub-rings to avoid clustering
+// Planet ring radii — spread across sub-rings inside Ring 3
 const RING_R: Record<string, number> = {
-  Sun: 238, Moon: 215, Venus: 238, Mercury: 215,
-  Mars: 190, Jupiter: 170, Saturn: 190,
-  Rahu: 148, Ketu: 148,
+  Sun: 205, Moon: 185, Venus: 205, Mercury: 185,
+  Mars: 165, Jupiter: 145, Saturn: 165,
+  Rahu: 128, Ketu: 128,
 };
 
-interface TransitPlanet {
-  planet: string; sign: string; longitude: number;
-  sign_degree: number; is_retrograde: boolean;
-}
-interface TooltipData {
-  planet: string; sign: string; degree: number;
-  retrograde: boolean; x: number; y: number;
-}
-interface SkyData {
-  planets: TransitPlanet[];
-  lagna_sign: string;
-  lagna_longitude: number;
-}
+interface TransitPlanet { planet: string; sign: string; longitude: number; sign_degree: number; is_retrograde: boolean; }
+interface TooltipData { planet: string; sign: string; degree: number; retrograde: boolean; x: number; y: number; }
+interface SkyData { planets: TransitPlanet[]; lagna_sign: string; lagna_longitude: number; }
 
-const R_LABEL = 288;
-const R_OUTER = 270;
-const R_OUTER_IN = 255;
-const R_RING_A = 230;
-const R_RING_B = 195;
-const R_RING_C = 160;
-const R_INNER = 130;
-const R_CENTER = 50;
+/* ── Ring radii ── */
+const R_SIGN_NAME = 285;  // Ring 1: sign names
+const R_OUTER = 268;      // outer circle
+const R_MONTH = 256;      // Ring 2: months
+const R_MONTH_RING = 244; // ring line
+const R_IMG = 215;        // Ring 3: watermark images center
+const R_GLYPH_RING = 112; // ring line
+const R_GLYPH = 96;       // Ring 4: zodiac glyphs
+const R_ELEM_RING = 78;   // ring line
+const R_ELEM = 65;        // Ring 5: elements
+const R_CENTER = 45;      // center
 
 const GOLD = '#8B4513';
 const GOLD_MED = '#C4611F';
 const DARK = '#1a1a2e';
 
-function signIdx(sign: string): number {
-  return Math.max(0, SIGNS_EN.findIndex(s => s.toLowerCase() === sign.toLowerCase()));
-}
-function absAngle(p: TransitPlanet): number {
-  return signIdx(p.sign) * 30 + p.sign_degree - 90;
-}
+function signIdx(sign: string): number { return Math.max(0, SIGNS.findIndex(s => s.en.toLowerCase() === sign.toLowerCase())); }
+function absAngle(p: TransitPlanet): number { return signIdx(p.sign) * 30 + p.sign_degree - 90; }
 function arcRot(midDeg: number): number {
   const t = ((midDeg + 90) % 360 + 360) % 360;
   return (t > 90 && t < 270) ? t + 180 : t;
-}
-
-/** De-overlap planets on same ring: ensure min 18deg separation */
-function deOverlap(items: { planet: string; angle: number; ring: number }[]): { planet: string; angle: number; ring: number }[] {
-  // Group by ring
-  const byRing = new Map<number, typeof items>();
-  for (const it of items) {
-    const arr = byRing.get(it.ring) || [];
-    arr.push(it);
-    byRing.set(it.ring, arr);
-  }
-  const result: typeof items = [];
-  for (const [ring, group] of byRing) {
-    group.sort((a, b) => a.angle - b.angle);
-    for (let i = 1; i < group.length; i++) {
-      let diff = group[i].angle - group[i - 1].angle;
-      if (diff < 18) {
-        const shift = (18 - diff) / 2;
-        group[i - 1].angle -= shift;
-        group[i].angle += shift;
-      }
-    }
-    result.push(...group);
-  }
-  return result;
 }
 
 export default function LiveTransitWheel() {
@@ -102,11 +72,7 @@ export default function LiveTransitWheel() {
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
 
   const fetchSky = useCallback(async () => {
-    try {
-      const data = await api.get('/api/kundli/current-sky');
-      setSkyData(data);
-      setError(false);
-    } catch { setError(true); }
+    try { const d = await api.get('/api/kundli/current-sky'); setSkyData(d); setError(false); } catch { setError(true); }
     setLoading(false);
   }, []);
 
@@ -118,179 +84,193 @@ export default function LiveTransitWheel() {
   const lagnaLong = skyData?.lagna_longitude || 0;
   const lagnaAngle = lagnaLong - 90;
 
-  // Prepare planet positions with ring assignment + de-overlap
-  const positioned = deOverlap(
-    planets.map(p => ({ planet: p.planet, angle: absAngle(p), ring: RING_R[p.planet] || R_RING_C }))
-  );
-  const posMap = new Map(positioned.map(p => [p.planet, p]));
-
   /* ── Ticks ── */
   const ticks: JSX.Element[] = [];
   for (let i = 0; i < 360; i += 5) {
     const a = toRad(i);
     const isMajor = i % 30 === 0;
-    const isMid = i % 10 === 0;
-    const r2 = isMajor ? R_OUTER - 12 : isMid ? R_OUTER - 6 : R_OUTER - 3;
-    ticks.push(
-      <line key={`t${i}`}
-        x1={CX + R_OUTER * Math.cos(a)} y1={CY + R_OUTER * Math.sin(a)}
-        x2={CX + r2 * Math.cos(a)} y2={CY + r2 * Math.sin(a)}
-        stroke="rgba(139,69,19,0.2)" strokeWidth={isMajor ? 1.2 : 0.4}
-      />
-    );
+    const r2 = isMajor ? R_OUTER - 10 : R_OUTER - 3;
+    ticks.push(<line key={`t${i}`} x1={CX+R_OUTER*Math.cos(a)} y1={CY+R_OUTER*Math.sin(a)} x2={CX+r2*Math.cos(a)} y2={CY+r2*Math.sin(a)} stroke="rgba(139,69,19,0.2)" strokeWidth={isMajor?1.2:0.4} />);
   }
 
-  /* ── Sign labels + dividers ── */
-  const signEls = SIGNS_EN.map((sign, i) => {
+  /* ── 12 sign segments ── */
+  const segmentEls = SIGNS.map((sign, i) => {
     const startDeg = i * 30 - 90;
     const midDeg = startDeg + 15;
     const startRad = toRad(startDeg);
     const midRad = toRad(midDeg);
+    const rot = arcRot(midDeg);
 
-    const lx1 = CX + R_INNER * Math.cos(startRad);
-    const ly1 = CY + R_INNER * Math.sin(startRad);
+    // Divider line
+    const lx1 = CX + R_ELEM_RING * Math.cos(startRad);
+    const ly1 = CY + R_ELEM_RING * Math.sin(startRad);
     const lx2 = CX + R_OUTER * Math.cos(startRad);
     const ly2 = CY + R_OUTER * Math.sin(startRad);
 
-    const tx = CX + R_LABEL * Math.cos(midRad);
-    const ty = CY + R_LABEL * Math.sin(midRad);
-    const rot = arcRot(midDeg);
-    const label = hi ? SIGNS_HI[i] : SIGNS_SHORT[i];
+    // Ring 1: sign name
+    const nx = CX + R_SIGN_NAME * Math.cos(midRad);
+    const ny = CY + R_SIGN_NAME * Math.sin(midRad);
 
-    // Watermark glyph inside segment (between inner and outer ring)
-    const wmR = (R_INNER + R_OUTER) / 2;
-    const wmx = CX + wmR * Math.cos(midRad);
-    const wmy = CY + wmR * Math.sin(midRad);
+    // Ring 2: month
+    const mx = CX + R_MONTH * Math.cos(midRad);
+    const my = CY + R_MONTH * Math.sin(midRad);
 
-    // Degree number at outer rim for start of each sign
-    const degLabelR = R_OUTER + 14;
-    const dlx = CX + degLabelR * Math.cos(startRad);
-    const dly = CY + degLabelR * Math.sin(startRad);
-    const dlRot = arcRot(startDeg);
-    const degNum = i * 30;
+    // Ring 3: watermark image
+    const ix = CX + R_IMG * Math.cos(midRad);
+    const iy = CY + R_IMG * Math.sin(midRad);
+
+    // Watermark gender symbol
+    const gsx = CX + 170 * Math.cos(midRad);
+    const gsy = CY + 170 * Math.sin(midRad);
+
+    // Ring 4: glyph
+    const gx = CX + R_GLYPH * Math.cos(midRad);
+    const gy = CY + R_GLYPH * Math.sin(midRad);
+
+    // Ring 5: element
+    const ex = CX + R_ELEM * Math.cos(midRad);
+    const ey = CY + R_ELEM * Math.sin(midRad);
+
+    const signName = hi ? sign.hi : sign.en.slice(0, 3);
+    const monthName = hi ? sign.monthHi : sign.month;
+    const elemName = hi ? sign.elementHi : sign.element;
 
     return (
-      <g key={sign}>
+      <g key={sign.en}>
         <line x1={lx1} y1={ly1} x2={lx2} y2={ly2} stroke="rgba(139,69,19,0.15)" strokeWidth={0.7} />
-        {/* Sign name outside */}
-        <text x={tx} y={ty - 6} textAnchor="middle" dominantBaseline="central"
-          fill={GOLD} fontSize="14" fontWeight="700" fontFamily="'Inter',sans-serif"
-          transform={`rotate(${rot},${tx},${ty - 6})`}>{label}</text>
-        {/* Watermark zodiac glyph inside segment */}
-        <text x={wmx} y={wmy} textAnchor="middle" dominantBaseline="central"
-          fill="rgba(139,69,19,0.08)" fontSize="36"
-          fontFamily="'Segoe UI Symbol','Noto Sans Symbols 2',serif"
-        >{GLYPHS[i]}</text>
+
+        {/* Ring 1: Sign name */}
+        <text x={nx} y={ny} textAnchor="middle" dominantBaseline="central"
+          fill={GOLD} fontSize="13" fontWeight="700" fontFamily="'Inter',sans-serif"
+          transform={`rotate(${rot},${nx},${ny})`}>{signName}</text>
+
+        {/* Ring 2: Month */}
+        <text x={mx} y={my} textAnchor="middle" dominantBaseline="central"
+          fill={GOLD_MED} fontSize="9" fontWeight="600" fontFamily="'Inter',sans-serif"
+          transform={`rotate(${rot},${mx},${my})`}>{monthName}</text>
+
+        {/* Ring 3: Watermark animal image */}
+        <image href={sign.img} x={ix - 22} y={iy - 22} width={44} height={44}
+          preserveAspectRatio="xMidYMid slice" opacity={0.12}
+          clipPath={`url(#wc${i})`} />
+
+        {/* Watermark gender symbol */}
+        <text x={gsx} y={gsy} textAnchor="middle" dominantBaseline="central"
+          fill="rgba(139,69,19,0.08)" fontSize="20">{sign.gender}</text>
+
+        {/* Watermark element icon */}
+        <text x={ix} y={iy} textAnchor="middle" dominantBaseline="central"
+          fill={sign.elemColor} opacity={0.1} fontSize="28">
+          {sign.element === 'Fire' ? '🔥' : sign.element === 'Earth' ? '🌍' : sign.element === 'Air' ? '💨' : '💧'}
+        </text>
+
+        {/* Ring 4: Zodiac glyph (golden, not purple) */}
+        <text x={gx} y={gy} textAnchor="middle" dominantBaseline="central"
+          fill={GOLD_MED} fontSize="18" fontWeight="bold"
+          fontFamily="'Segoe UI Symbol','Noto Sans Symbols 2',serif">{sign.glyph}</text>
+
+        {/* Ring 5: Element name */}
+        <text x={ex} y={ey} textAnchor="middle" dominantBaseline="central"
+          fill={sign.elemColor} fontSize="7" fontWeight="600" opacity={0.7}
+          fontFamily="'Inter',sans-serif"
+          transform={`rotate(${rot},${ex},${ey})`}>{elemName}</text>
       </g>
     );
   });
 
-  /* ── Planet positions with pixel-level collision resolution ── */
-  const DOT_R = 26;
-  const MIN_DIST = DOT_R * 2 + 6; // 58px min between dot centers
+  /* ── Clip paths for watermark images ── */
+  const clipDefs = SIGNS.map((_, i) => {
+    const midRad = toRad(i * 30 + 15 - 90);
+    const cx = CX + R_IMG * Math.cos(midRad);
+    const cy = CY + R_IMG * Math.sin(midRad);
+    return <clipPath key={`wc${i}`} id={`wc${i}`}><circle cx={cx} cy={cy} r={20} /></clipPath>;
+  });
 
-  // Calculate initial pixel positions
-  let dotPositions = planets.map((p) => {
-    const pos = posMap.get(p.planet);
-    const ring = pos?.ring || R_RING_C;
-    const angle = pos?.angle || absAngle(p);
-    const rad = toRad(angle);
+  /* ── Planet dots (foreground on Ring 3) ── */
+  const DOT_R = 22;
+  const MIN_DIST = DOT_R * 2 + 10;
+
+  let dotPos = planets.map(p => {
+    const ring = RING_R[p.planet] || 150;
+    const rad = toRad(absAngle(p));
     return { planet: p, x: CX + ring * Math.cos(rad), y: CY + ring * Math.sin(rad) };
   });
 
-  // Resolve overlaps — 10 iterations with strong push
-  for (let iter = 0; iter < 10; iter++) {
-    for (let i = 0; i < dotPositions.length; i++) {
-      for (let j = i + 1; j < dotPositions.length; j++) {
-        const dx = dotPositions[i].x - dotPositions[j].x;
-        const dy = dotPositions[i].y - dotPositions[j].y;
+  // Collision resolve — 12 iterations
+  for (let iter = 0; iter < 12; iter++) {
+    for (let i = 0; i < dotPos.length; i++) {
+      for (let j = i + 1; j < dotPos.length; j++) {
+        const dx = dotPos[i].x - dotPos[j].x;
+        const dy = dotPos[i].y - dotPos[j].y;
         const dist = Math.sqrt(dx * dx + dy * dy);
         if (dist < MIN_DIST && dist > 0) {
-          const angle = Math.atan2(dy, dx);
-          const push = (MIN_DIST - dist) / 2 + 8;
-          dotPositions[i].x += Math.cos(angle) * push;
-          dotPositions[i].y += Math.sin(angle) * push;
-          dotPositions[j].x -= Math.cos(angle) * push;
-          dotPositions[j].y -= Math.sin(angle) * push;
+          const a = Math.atan2(dy, dx);
+          const push = (MIN_DIST - dist) / 2 + 6;
+          dotPos[i].x += Math.cos(a) * push;
+          dotPos[i].y += Math.sin(a) * push;
+          dotPos[j].x -= Math.cos(a) * push;
+          dotPos[j].y -= Math.sin(a) * push;
         }
       }
     }
   }
 
-  const planetDots = dotPositions.map(({ planet: p, x: px, y: py }, i) => {
+  const planetDots = dotPos.map(({ planet: p, x: px, y: py }, i) => {
     const isMalefic = MALEFIC.has(p.planet);
     const abbr = hi ? PLANET_HI[p.planet] : PLANET_ABBR[p.planet];
     const degText = `${Math.floor(p.sign_degree)}\u00B0`;
+    const textColor = isMalefic ? DARK : GOLD_MED;
 
     return (
       <g key={p.planet} className="transit-dot" style={{ animationDelay: `${i * 0.08}s` }}
         onMouseEnter={() => setTooltip({ planet: p.planet, sign: p.sign, degree: p.sign_degree, retrograde: p.is_retrograde, x: px, y: py })}
-        onMouseLeave={() => setTooltip(null)}
-        cursor="pointer"
-      >
-        {/* Main dot — red ring if retrograde */}
+        onMouseLeave={() => setTooltip(null)} cursor="pointer">
         <circle cx={px} cy={py} r={DOT_R}
-          fill={isMalefic ? DARK : GOLD_MED}
-          stroke={p.is_retrograde ? '#FF3333' : (isMalefic ? '#a83232' : GOLD)}
-          strokeWidth={p.is_retrograde ? 3 : 1.5}
-          style={{ transition: 'all 1s ease' }}
-        />
-        {/* Planet abbreviation */}
-        <text x={px} y={py - 5} textAnchor="middle" dominantBaseline="central"
-          fill="white" fontSize="11" fontWeight="700" fontFamily="'Inter',sans-serif"
-        >{abbr}</text>
-        {/* Degree */}
+          fill="white" fillOpacity={0.92}
+          stroke={p.is_retrograde ? '#FF3333' : (isMalefic ? DARK : GOLD_MED)}
+          strokeWidth={p.is_retrograde ? 2.5 : 1.5}
+          style={{ transition: 'all 1s ease' }} />
+        <text x={px} y={py - 4} textAnchor="middle" dominantBaseline="central"
+          fill={textColor} fontSize="10" fontWeight="700" fontFamily="'Inter',sans-serif">{abbr}</text>
         <text x={px} y={py + 8} textAnchor="middle" dominantBaseline="central"
-          fill="rgba(255,255,255,0.85)" fontSize="10" fontFamily="'Inter',sans-serif"
-        >{degText}</text>
-        {/* Retrograde ℞ symbol above dot */}
+          fill={textColor} opacity={0.8} fontSize="8" fontFamily="'Inter',sans-serif">{degText}</text>
         {p.is_retrograde && (
-          <text x={px} y={py - DOT_R - 8} textAnchor="middle" dominantBaseline="central"
-            fill="#FF3333" fontSize="12" fontWeight="700">{'\u211E'}</text>
+          <text x={px} y={py - DOT_R - 6} textAnchor="middle"
+            fill="#FF3333" fontSize="11" fontWeight="700">{'\u211E'}</text>
         )}
       </g>
     );
   });
 
-  /* ── Ascendant marker ── */
+  /* ── ASC marker ── */
   const ascRad = toRad(lagnaAngle);
   const ascX = CX + R_OUTER * Math.cos(ascRad);
   const ascY = CY + R_OUTER * Math.sin(ascRad);
-  const ascLabelX = CX + (R_LABEL + 8) * Math.cos(ascRad);
-  const ascLabelY = CY + (R_LABEL + 8) * Math.sin(ascRad);
+  const ascLX = CX + (R_SIGN_NAME + 10) * Math.cos(ascRad);
+  const ascLY = CY + (R_SIGN_NAME + 10) * Math.sin(ascRad);
   const ascDeg = Math.floor(lagnaLong % 30);
 
   const ascMarker = (
     <g>
-      {/* Dashed line from center to ASC */}
-      <line x1={CX} y1={CY} x2={ascX} y2={ascY}
-        stroke={GOLD_MED} strokeWidth={2} strokeDasharray="5,4" opacity={0.7} />
-      {/* Dot at rim */}
+      <line x1={CX} y1={CY} x2={ascX} y2={ascY} stroke={GOLD_MED} strokeWidth={2} strokeDasharray="5,4" opacity={0.6} />
       <circle cx={ascX} cy={ascY} r={6} fill={GOLD_MED} />
-      {/* Triangle pointing inward — larger */}
-      <polygon
-        points={`${ascX},${ascY} ${ascX + 12 * Math.cos(ascRad + 0.35)},${ascY + 12 * Math.sin(ascRad + 0.35)} ${ascX + 12 * Math.cos(ascRad - 0.35)},${ascY + 12 * Math.sin(ascRad - 0.35)}`}
-        fill={GOLD_MED}
-      />
-      {/* Label */}
-      <text x={ascLabelX} y={ascLabelY} textAnchor="middle" dominantBaseline="central"
-        fill={GOLD_MED} fontSize="13" fontWeight="700" fontFamily="'Inter',sans-serif"
-        transform={`rotate(${arcRot(lagnaAngle + 90)},${ascLabelX},${ascLabelY})`}
-      >ASC {ascDeg}&deg;</text>
+      <polygon points={`${ascX},${ascY} ${ascX+12*Math.cos(ascRad+0.35)},${ascY+12*Math.sin(ascRad+0.35)} ${ascX+12*Math.cos(ascRad-0.35)},${ascY+12*Math.sin(ascRad-0.35)}`} fill={GOLD_MED} />
+      <text x={ascLX} y={ascLY} textAnchor="middle" dominantBaseline="central"
+        fill={GOLD_MED} fontSize="12" fontWeight="700" fontFamily="'Inter',sans-serif"
+        transform={`rotate(${arcRot(lagnaAngle+90)},${ascLX},${ascLY})`}>ASC {ascDeg}&deg;</text>
     </g>
   );
 
   return (
-    <div className="relative w-full max-w-[460px] mx-auto" style={{ padding: '12px' }}>
-      {/* Tooltip */}
+    <div className="relative w-full max-w-[480px] mx-auto" style={{ padding: '16px' }}>
       {tooltip && (
         <div className="absolute z-20 pointer-events-none"
-          style={{ left: `${((tooltip.x + 16) / 600) * 100}%`, top: `${(tooltip.y / 600) * 100}%`, transform: 'translate(-50%,-130%)' }}>
-          <div className="bg-white border border-[#C4611F] rounded-lg px-3 py-2 shadow-lg text-xs" style={{ fontFamily:'Inter,sans-serif', minWidth: '120px' }}>
-            <p className="font-bold" style={{ color: DARK }}>{tooltip.planet} ({hi ? PLANET_FULL_HI[tooltip.planet] : tooltip.planet})</p>
-            <p style={{ color: GOLD }}>{tooltip.sign} ({hi ? SIGNS_HI[signIdx(tooltip.sign)] : tooltip.sign})</p>
+          style={{ left: `${((tooltip.x+16)/600)*100}%`, top: `${(tooltip.y/600)*100}%`, transform: 'translate(-50%,-130%)' }}>
+          <div className="bg-white border border-[#C4611F] rounded-lg px-3 py-2 shadow-lg text-xs" style={{ fontFamily:'Inter,sans-serif', minWidth:'130px' }}>
+            <p className="font-bold" style={{ color: MALEFIC.has(tooltip.planet) ? DARK : GOLD_MED }}>{tooltip.planet} ({hi ? PLANET_FULL_HI[tooltip.planet] : tooltip.planet})</p>
+            <p style={{ color: GOLD }}>{tooltip.sign} ({hi ? SIGNS[signIdx(tooltip.sign)].hi : tooltip.sign})</p>
             <p style={{ color: GOLD_MED }}>{tooltip.degree.toFixed(1)}&deg;</p>
-            <p className="text-gray-500">{MALEFIC.has(tooltip.planet) ? (hi ? 'पापी' : 'Malefic') : (hi ? 'शुभ' : 'Benefic')} &middot; {tooltip.retrograde ? (hi ? 'वक्री' : 'Retrograde') : (hi ? 'मार्गी' : 'Direct')}</p>
+            <p className="text-gray-500">{MALEFIC.has(tooltip.planet) ? (hi?'पापी':'Malefic') : (hi?'शुभ':'Benefic')} · {tooltip.retrograde ? (hi?'वक्री':'Retro ℞') : (hi?'मार्गी':'Direct')}</p>
           </div>
         </div>
       )}
@@ -300,65 +280,54 @@ export default function LiveTransitWheel() {
           overflow: 'visible',
           filter: 'drop-shadow(4px 8px 16px rgba(139,69,19,0.25)) drop-shadow(0 2px 6px rgba(196,97,31,0.12))',
         }}>
+          <defs>{clipDefs}</defs>
+
           {/* Rings */}
           <circle cx={CX} cy={CY} r={R_OUTER} fill="none" stroke={GOLD} strokeWidth={2} />
-          <circle cx={CX} cy={CY} r={R_OUTER_IN} fill="none" stroke="rgba(139,69,19,0.12)" strokeWidth={0.5} />
           {ticks}
+          <circle cx={CX} cy={CY} r={R_MONTH_RING} fill="none" stroke="rgba(139,69,19,0.15)" strokeWidth={0.6} />
+          <circle cx={CX} cy={CY} r={R_GLYPH_RING} fill="none" stroke="rgba(139,69,19,0.18)" strokeWidth={0.8} />
+          <circle cx={CX} cy={CY} r={R_ELEM_RING} fill="none" stroke="rgba(139,69,19,0.12)" strokeWidth={0.6} />
 
-          {/* Three orbital rings — dashed for clarity */}
-          <circle cx={CX} cy={CY} r={R_RING_A} fill="none" stroke="rgba(139,69,19,0.1)" strokeWidth={0.6} strokeDasharray="3,4" />
-          <circle cx={CX} cy={CY} r={R_RING_B} fill="none" stroke="rgba(139,69,19,0.12)" strokeWidth={0.6} strokeDasharray="3,4" />
-          <circle cx={CX} cy={CY} r={R_RING_C} fill="none" stroke="rgba(139,69,19,0.1)" strokeWidth={0.6} strokeDasharray="3,4" />
-
-          <circle cx={CX} cy={CY} r={R_INNER} fill="none" stroke="rgba(139,69,19,0.18)" strokeWidth={0.8} />
-
-          {/* Inner fill */}
+          {/* Inner gradient fill */}
           <defs>
-            <radialGradient id="iBg" cx="50%" cy="50%" r="50%">
+            <radialGradient id="iBg2" cx="50%" cy="50%" r="50%">
               <stop offset="0%" stopColor="#FAF7F2" />
               <stop offset="100%" stopColor="#F0E8D8" stopOpacity={0.3} />
             </radialGradient>
           </defs>
-          <circle cx={CX} cy={CY} r={R_INNER} fill="url(#iBg)" />
+          <circle cx={CX} cy={CY} r={R_ELEM_RING} fill="url(#iBg2)" />
 
           {/* Center */}
-          <circle cx={CX} cy={CY} r={R_CENTER} fill="#FAF7F2" stroke="rgba(139,69,19,0.2)" strokeWidth={0.8} />
+          <circle cx={CX} cy={CY} r={R_CENTER} fill="#FAF7F2" stroke="rgba(139,69,19,0.2)" strokeWidth={1} />
 
-          {/* Signs */}
-          {signEls}
+          {/* Segments */}
+          {segmentEls}
 
-          {/* Ascendant */}
+          {/* ASC */}
           {!loading && skyData && ascMarker}
 
-          {/* Planets */}
+          {/* Planet dots ON TOP */}
           {!loading && planetDots}
 
           {/* Center content */}
           {loading ? (
-            <text x={CX} y={CY} textAnchor="middle" dominantBaseline="central"
-              fill={GOLD_MED} fontSize="8" fontFamily="'Inter',sans-serif">
-              {hi ? 'लोड हो रहा...' : 'Loading...'}
-            </text>
+            <text x={CX} y={CY} textAnchor="middle" dominantBaseline="central" fill={GOLD_MED} fontSize="9">{hi?'लोड हो रहा...':'Loading...'}</text>
           ) : (
             <>
-              <text x={CX} y={CY - 5} textAnchor="middle" fill={GOLD_MED} fontSize="28" fontWeight="bold">ॐ</text>
-              <text x={CX} y={CY + 18} textAnchor="middle" fill={GOLD} fontSize="13" fontWeight="600" fontFamily="'Inter',sans-serif">{timeStr}</text>
+              <text x={CX} y={CY - 6} textAnchor="middle" fill={GOLD_MED} fontSize="22" fontWeight="bold">ॐ</text>
+              <text x={CX} y={CY + 14} textAnchor="middle" fill={GOLD} fontSize="10" fontWeight="600" fontFamily="'Inter',sans-serif">{timeStr}</text>
             </>
-          )}
-          {error && !loading && (
-            <text x={CX} y={CY + 22} textAnchor="middle" fill="#a83232" fontSize="6">
-              {hi ? 'अनुपलब्ध' : 'Unavailable'}
-            </text>
           )}
         </svg>
       </div>
 
       {/* Legend */}
       <div className="flex flex-wrap justify-center gap-3 mt-3 text-[10px]" style={{ fontFamily:'Inter,sans-serif', color: GOLD }}>
-        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full" style={{ background: GOLD_MED }} />{hi ? 'शुभ' : 'Benefic'}</span>
-        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full" style={{ background: DARK }} />{hi ? 'पापी' : 'Malefic'}</span>
-        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-red-600" /><span className="text-red-600 font-bold">R</span> {hi ? 'वक्री' : 'Retro'}</span>
-        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5" style={{ background: GOLD_MED, clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)' }} />ASC</span>
+        <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full border-2" style={{ borderColor: GOLD_MED, background: 'white' }} />{hi?'शुभ':'Benefic'}</span>
+        <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full border-2" style={{ borderColor: DARK, background: 'white' }} />{hi?'पापी':'Malefic'}</span>
+        <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full border-2 border-red-500 bg-white" /><span className="text-red-600 font-bold">{'\u211E'}</span> {hi?'वक्री':'Retro'}</span>
+        <span className="flex items-center gap-1"><span className="w-3 h-3" style={{ background: GOLD_MED, clipPath:'polygon(50% 0%,0% 100%,100% 100%)' }} />ASC</span>
       </div>
     </div>
   );
