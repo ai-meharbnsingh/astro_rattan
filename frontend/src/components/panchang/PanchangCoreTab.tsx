@@ -1,4 +1,3 @@
-import { Sun, Moon, Star, Sunrise, Sunset } from 'lucide-react';
 import type { FullPanchangData } from '@/sections/Panchang';
 
 interface Props {
@@ -8,134 +7,144 @@ interface Props {
 }
 
 export default function PanchangCoreTab({ panchang, language, t }: Props) {
-  const coreElements = [
+  const coreRows = [
     {
-      key: 'tithi',
-      icon: Moon,
-      label: language === 'hi' ? 'तिथि' : t('panchang.tithi'),
+      metric: language === 'hi' ? 'तिथि' : t('panchang.tithi'),
       value: language === 'hi' ? panchang.tithi.name_hindi || panchang.tithi.name : panchang.tithi.name,
-      sub: `${panchang.tithi.number} • ${language === 'hi' ? panchang.tithi.paksha_hindi || panchang.tithi.paksha : panchang.tithi.paksha}`,
-      endTime: panchang.tithi.end_time,
-      color: 'text-indigo-500',
-      bgColor: 'bg-indigo-500/10'
+      details: `${language === 'hi' ? 'संख्या' : 'No.'} ${panchang.tithi.number} • ${language === 'hi' ? panchang.tithi.paksha_hindi || panchang.tithi.paksha : panchang.tithi.paksha}`,
+      endTime: panchang.tithi.end_time || '--',
     },
     {
-      key: 'nakshatra',
-      icon: Star,
-      label: language === 'hi' ? 'नक्षत्र' : t('panchang.nakshatra'),
+      metric: language === 'hi' ? 'नक्षत्र' : t('panchang.nakshatra'),
       value: language === 'hi' ? panchang.nakshatra.name_hindi || panchang.nakshatra.name : panchang.nakshatra.name,
-      sub: `${language === 'hi' ? 'चरण' : 'Pada'} ${panchang.nakshatra.pada} • ${language === 'hi' ? panchang.nakshatra.lord_hindi || panchang.nakshatra.lord : panchang.nakshatra.lord} ${language === 'hi' ? 'स्वामी' : 'Lord'}`,
-      endTime: panchang.nakshatra.end_time,
-      color: 'text-yellow-500',
-      bgColor: 'bg-yellow-500/10'
+      details: `${language === 'hi' ? 'पाद' : 'Pada'} ${panchang.nakshatra.pada} • ${language === 'hi' ? 'स्वामी' : 'Lord'} ${language === 'hi' ? panchang.nakshatra.lord_hindi || panchang.nakshatra.lord : panchang.nakshatra.lord}`,
+      endTime: panchang.nakshatra.end_time || '--',
     },
     {
-      key: 'yoga',
-      icon: Sun,
-      label: language === 'hi' ? 'योग' : t('panchang.yoga'),
+      metric: language === 'hi' ? 'योग' : t('panchang.yoga'),
       value: language === 'hi' ? panchang.yoga.name_hindi || panchang.yoga.name : panchang.yoga.name,
-      sub: `${language === 'hi' ? 'संख्या' : 'No.'} ${panchang.yoga.number}`,
-      endTime: panchang.yoga.end_time,
-      color: 'text-orange-500',
-      bgColor: 'bg-orange-500/10'
+      details: `${language === 'hi' ? 'संख्या' : 'No.'} ${panchang.yoga.number}`,
+      endTime: panchang.yoga.end_time || '--',
     },
     {
-      key: 'karana',
-      icon: Sunrise,
-      label: language === 'hi' ? 'करण' : t('panchang.karana'),
+      metric: language === 'hi' ? 'करण' : t('panchang.karana'),
       value: language === 'hi' ? panchang.karana.name_hindi || panchang.karana.name : panchang.karana.name,
-      sub: `${language === 'hi' ? 'संख्या' : 'No.'} ${panchang.karana.number}`,
-      endTime: panchang.karana.end_time,
-      color: 'text-teal-500',
-      bgColor: 'bg-teal-500/10'
+      details: `${language === 'hi' ? 'संख्या' : 'No.'} ${panchang.karana.number}`,
+      endTime: panchang.karana.end_time || '--',
+    },
+  ];
+
+  const sunMoonRows = [
+    {
+      metric: language === 'hi' ? 'सूर्योदय' : t('panchang.sunrise'),
+      value: panchang.sunrise || '--',
+      details: language === 'hi' ? 'दिन आरंभ' : 'Day start',
+    },
+    {
+      metric: language === 'hi' ? 'सूर्यास्त' : t('panchang.sunset'),
+      value: panchang.sunset || '--',
+      details: language === 'hi' ? 'दिन समाप्ति' : 'Day end',
+    },
+    {
+      metric: language === 'hi' ? 'चंद्रोदय' : t('panchang.moonrise'),
+      value: panchang.moonrise || '--',
+      details: language === 'hi' ? 'चंद्र उदय' : 'Moon rise',
+    },
+    {
+      metric: language === 'hi' ? 'चंद्रास्त' : t('panchang.moonset'),
+      value: panchang.moonset || '--',
+      details: language === 'hi' ? 'चंद्र अस्त' : 'Moon set',
+    },
+  ];
+
+  const dayRows = [
+    {
+      metric: language === 'hi' ? 'दिनमान' : 'Day Length',
+      value: panchang.dinamana || '--',
+      details: language === 'hi' ? 'कुल दिन अवधि' : 'Total daylight',
+    },
+    {
+      metric: language === 'hi' ? 'रात्रिमान' : 'Night Length',
+      value: panchang.ratrimana || '--',
+      details: language === 'hi' ? 'कुल रात्रि अवधि' : 'Total nighttime',
+    },
+    {
+      metric: language === 'hi' ? 'मध्याह्न' : 'Mid-day',
+      value: panchang.madhyahna || '--',
+      details: language === 'hi' ? 'मध्य समय' : 'Middle of day',
+    },
+    {
+      metric: language === 'hi' ? 'वार' : 'Weekday',
+      value: language === 'hi' ? panchang.vaar?.name_hindi || panchang.vaar?.name || '--' : panchang.vaar?.name || '--',
+      details: language === 'hi' ? 'दिन का नाम' : 'Day name',
     },
   ];
 
   return (
     <div className="space-y-3">
-      {/* Five Elements - Main Display */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-        {coreElements.map((element) => (
-          <div key={element.key} className="rounded-lg border border-cosmic-border p-2">
-            <div className="flex items-start gap-2">
-              <div className={`p-2 rounded-lg ${element.bgColor}`}>
-                <element.icon className={`h-5 w-5 ${element.color}`} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm text-cosmic-text-secondary">{element.label}</p>
-                <h3 className="text-lg font-bold text-cosmic-text-primary truncate">{element.value}</h3>
-                <p className="text-xs text-cosmic-text-secondary">{element.sub}</p>
-                {element.endTime && (
-                  <p className="text-xs text-sacred-gold mt-0.5">
-                    {language === 'hi' ? 'समाप्ति' : 'Ends'}: {element.endTime}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
+      <div className="rounded-lg border border-cosmic-border overflow-x-auto">
+        <table className="w-full min-w-[640px]">
+          <thead className="bg-cosmic-card">
+            <tr>
+              <th className="text-left px-3 py-2 text-xs font-semibold text-cosmic-text-secondary">{language === 'hi' ? 'अंग' : 'Metric'}</th>
+              <th className="text-left px-3 py-2 text-xs font-semibold text-cosmic-text-secondary">{language === 'hi' ? 'मान' : 'Value'}</th>
+              <th className="text-left px-3 py-2 text-xs font-semibold text-cosmic-text-secondary">{language === 'hi' ? 'विवरण' : 'Details'}</th>
+              <th className="text-left px-3 py-2 text-xs font-semibold text-cosmic-text-secondary">{language === 'hi' ? 'समाप्ति' : 'Ends'}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {coreRows.map((row) => (
+              <tr key={row.metric} className="border-t border-cosmic-border/80">
+                <td className="px-3 py-2 text-sm font-medium text-cosmic-text-primary">{row.metric}</td>
+                <td className="px-3 py-2 text-sm text-cosmic-text-primary">{row.value}</td>
+                <td className="px-3 py-2 text-sm text-cosmic-text-secondary">{row.details}</td>
+                <td className="px-3 py-2 text-sm text-sacred-gold">{row.endTime}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
-      {/* Sun & Moon Times */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-        <div className="rounded-lg border border-cosmic-border p-2 text-center">
-          <Sun className="h-6 w-6 text-orange-500 mx-auto mb-1" />
-          <p className="text-sm text-cosmic-text-secondary">{language === 'hi' ? 'सूर्योदय' : t('panchang.sunrise')}</p>
-          <p className="text-xl font-bold text-cosmic-text-primary">{panchang.sunrise}</p>
-        </div>
-
-        <div className="rounded-lg border border-cosmic-border p-2 text-center">
-          <Sunset className="h-6 w-6 text-orange-600 mx-auto mb-1" />
-          <p className="text-sm text-cosmic-text-secondary">{language === 'hi' ? 'सूर्यास्त' : t('panchang.sunset')}</p>
-          <p className="text-xl font-bold text-cosmic-text-primary">{panchang.sunset}</p>
-        </div>
-
-        <div className="rounded-lg border border-cosmic-border p-2 text-center">
-          <Moon className="h-6 w-6 text-indigo-400 mx-auto mb-1" />
-          <p className="text-sm text-cosmic-text-secondary">{language === 'hi' ? 'चंद्रोदय' : t('panchang.moonrise')}</p>
-          <p className="text-xl font-bold text-cosmic-text-primary">{panchang.moonrise}</p>
-        </div>
-
-        <div className="rounded-lg border border-cosmic-border p-2 text-center">
-          <Moon className="h-6 w-6 text-indigo-600 mx-auto mb-1" />
-          <p className="text-sm text-cosmic-text-secondary">{language === 'hi' ? 'चंद्रास्त' : t('panchang.moonset')}</p>
-          <p className="text-xl font-bold text-cosmic-text-primary">{panchang.moonset}</p>
-        </div>
+      <div className="rounded-lg border border-cosmic-border overflow-x-auto">
+        <table className="w-full min-w-[640px]">
+          <thead className="bg-cosmic-card">
+            <tr>
+              <th className="text-left px-3 py-2 text-xs font-semibold text-cosmic-text-secondary">{language === 'hi' ? 'समय' : 'Metric'}</th>
+              <th className="text-left px-3 py-2 text-xs font-semibold text-cosmic-text-secondary">{language === 'hi' ? 'मान' : 'Value'}</th>
+              <th className="text-left px-3 py-2 text-xs font-semibold text-cosmic-text-secondary">{language === 'hi' ? 'विवरण' : 'Details'}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sunMoonRows.map((row) => (
+              <tr key={row.metric} className="border-t border-cosmic-border/80">
+                <td className="px-3 py-2 text-sm font-medium text-cosmic-text-primary">{row.metric}</td>
+                <td className="px-3 py-2 text-sm text-cosmic-text-primary">{row.value}</td>
+                <td className="px-3 py-2 text-sm text-cosmic-text-secondary">{row.details}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
-      {/* Day Duration Info */}
-      <div className="rounded-lg border border-sacred-gold/30 p-2">
-        <h4 className="font-semibold text-cosmic-text-primary mb-1">
-          {language === 'hi' ? 'दिन की अवधि' : 'Day Duration'}
-        </h4>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          {panchang.dinamana && (
-            <div>
-              <p className="text-xs text-cosmic-text-secondary">{language === 'hi' ? 'दिनमान' : 'Day Length'}</p>
-              <p className="font-medium text-cosmic-text-primary">{panchang.dinamana}</p>
-            </div>
-          )}
-          {panchang.ratrimana && (
-            <div>
-              <p className="text-xs text-cosmic-text-secondary">{language === 'hi' ? 'रात्रिमान' : 'Night Length'}</p>
-              <p className="font-medium text-cosmic-text-primary">{panchang.ratrimana}</p>
-            </div>
-          )}
-          {panchang.madhyahna && (
-            <div>
-              <p className="text-xs text-cosmic-text-secondary">{language === 'hi' ? 'मध्याह्न' : 'Mid-day'}</p>
-              <p className="font-medium text-cosmic-text-primary">{panchang.madhyahna}</p>
-            </div>
-          )}
-          {panchang.vaar && (
-            <div>
-              <p className="text-xs text-cosmic-text-secondary">{language === 'hi' ? 'वार' : 'Weekday'}</p>
-              <p className="font-medium text-cosmic-text-primary">
-                {language === 'hi' ? panchang.vaar.name_hindi || panchang.vaar.name : panchang.vaar.name}
-              </p>
-            </div>
-          )}
-        </div>
+      <div className="rounded-lg border border-sacred-gold/30 overflow-x-auto">
+        <table className="w-full min-w-[640px]">
+          <thead className="bg-sacred-gold/5">
+            <tr>
+              <th className="text-left px-3 py-2 text-xs font-semibold text-cosmic-text-secondary">{language === 'hi' ? 'दिन की अवधि' : 'Day Duration Metric'}</th>
+              <th className="text-left px-3 py-2 text-xs font-semibold text-cosmic-text-secondary">{language === 'hi' ? 'मान' : 'Value'}</th>
+              <th className="text-left px-3 py-2 text-xs font-semibold text-cosmic-text-secondary">{language === 'hi' ? 'विवरण' : 'Details'}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {dayRows.map((row) => (
+              <tr key={row.metric} className="border-t border-sacred-gold/20">
+                <td className="px-3 py-2 text-sm font-medium text-cosmic-text-primary">{row.metric}</td>
+                <td className="px-3 py-2 text-sm text-cosmic-text-primary">{row.value}</td>
+                <td className="px-3 py-2 text-sm text-cosmic-text-secondary">{row.details}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
