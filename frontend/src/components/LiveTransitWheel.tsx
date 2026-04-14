@@ -354,7 +354,7 @@ export default function LiveTransitWheel() {
       </div>
 
       {/* Legend — bottom */}
-      <div className="rounded-lg bg-sacred-gold/5 px-3 py-2 mt-4 text-sm" style={{ fontFamily:'Inter,sans-serif', color: GOLD }}>
+      <div className="rounded-lg bg-sacred-gold/5 px-3 py-1 mt-2 text-sm" style={{ fontFamily:'Inter,sans-serif', color: GOLD }}>
         <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
             <span className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>*</span>{hi?'वक्री':'Retro'}</span>
             <span className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>^</span>{hi?'अस्त':'Combust'}</span>
@@ -362,7 +362,7 @@ export default function LiveTransitWheel() {
             <span className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>+</span>{hi?'उच्च':'Exalted'}</span>
             <span className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>-</span>{hi?'नीच':'Debilitated'}</span>
         </div>
-        <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-1">
+        <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-0.5">
             <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full" style={{ background:GOLD_MED }} />{hi?'शुभ':'Benefic'}</span>
             <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full" style={{ background:DARK }} />{hi?'पापी':'Malefic'}</span>
             <span className="flex items-center gap-1"><span className="w-2 h-2" style={{ background:GOLD_MED, clipPath:'polygon(50% 0%,0% 100%,100% 100%)' }} />ASC</span>
