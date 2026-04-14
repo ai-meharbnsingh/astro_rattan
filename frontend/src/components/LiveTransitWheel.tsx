@@ -46,7 +46,7 @@ const R_RING_A = 230;
 const R_RING_B = 195;
 const R_RING_C = 160;
 const R_INNER = 130;
-const R_CENTER = 35;
+const R_CENTER = 50;
 
 const GOLD = '#8B4513';
 const GOLD_MED = '#C4611F';
@@ -157,24 +157,49 @@ export default function LiveTransitWheel() {
     return (
       <g key={sign}>
         <line x1={lx1} y1={ly1} x2={lx2} y2={ly2} stroke="rgba(139,69,19,0.15)" strokeWidth={0.7} />
-        <text x={tx} y={ty - 5} textAnchor="middle" dominantBaseline="central"
-          fill={GOLD} fontSize="10" fontWeight="700" fontFamily="'Inter',sans-serif"
-          transform={`rotate(${rot},${tx},${ty - 5})`}>{label}</text>
-        <text x={tx} y={ty + 6} textAnchor="middle" dominantBaseline="central"
-          fill="rgba(139,69,19,0.4)" fontSize="7" fontFamily="'Inter',sans-serif"
-          transform={`rotate(${rot},${tx},${ty + 6})`}>{SIGN_DEGS[i]}&deg;</text>
+        <text x={tx} y={ty - 6} textAnchor="middle" dominantBaseline="central"
+          fill={GOLD} fontSize="14" fontWeight="700" fontFamily="'Inter',sans-serif"
+          transform={`rotate(${rot},${tx},${ty - 6})`}>{label}</text>
+        <text x={tx} y={ty + 8} textAnchor="middle" dominantBaseline="central"
+          fill={GOLD_MED} opacity={0.7} fontSize="10" fontFamily="'Inter',sans-serif"
+          transform={`rotate(${rot},${tx},${ty + 8})`}>{SIGN_DEGS[i]}&deg;</text>
       </g>
     );
   });
 
-  /* ── Planet dots ── */
-  const planetDots = planets.map((p, i) => {
+  /* ── Planet positions with pixel-level collision resolution ── */
+  const DOT_R = 26;
+  const MIN_DIST = DOT_R * 2 + 6; // 58px min between dot centers
+
+  // Calculate initial pixel positions
+  let dotPositions = planets.map((p) => {
     const pos = posMap.get(p.planet);
-    if (!pos) return null;
-    const rad = toRad(pos.angle);
-    const ring = pos.ring;
-    const px = CX + ring * Math.cos(rad);
-    const py = CY + ring * Math.sin(rad);
+    const ring = pos?.ring || R_RING_C;
+    const angle = pos?.angle || absAngle(p);
+    const rad = toRad(angle);
+    return { planet: p, x: CX + ring * Math.cos(rad), y: CY + ring * Math.sin(rad) };
+  });
+
+  // Resolve overlaps — 5 iterations
+  for (let iter = 0; iter < 5; iter++) {
+    for (let i = 0; i < dotPositions.length; i++) {
+      for (let j = i + 1; j < dotPositions.length; j++) {
+        const dx = dotPositions[i].x - dotPositions[j].x;
+        const dy = dotPositions[i].y - dotPositions[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < MIN_DIST && dist > 0) {
+          const angle = Math.atan2(dy, dx);
+          const push = (MIN_DIST - dist) / 2 + 5;
+          dotPositions[i].x += Math.cos(angle) * push;
+          dotPositions[i].y += Math.sin(angle) * push;
+          dotPositions[j].x -= Math.cos(angle) * push;
+          dotPositions[j].y -= Math.sin(angle) * push;
+        }
+      }
+    }
+  }
+
+  const planetDots = dotPositions.map(({ planet: p, x: px, y: py }, i) => {
     const isMalefic = MALEFIC.has(p.planet);
     const abbr = hi ? PLANET_HI[p.planet] : PLANET_ABBR[p.planet];
     const degText = `${Math.floor(p.sign_degree)}\u00B0`;
@@ -185,25 +210,25 @@ export default function LiveTransitWheel() {
         onMouseLeave={() => setTooltip(null)}
         cursor="pointer"
       >
-        <circle cx={px} cy={py} r={20}
+        {/* Main dot — red ring if retrograde */}
+        <circle cx={px} cy={py} r={DOT_R}
           fill={isMalefic ? DARK : GOLD_MED}
-          stroke={isMalefic ? '#a83232' : GOLD}
-          strokeWidth={1.5}
+          stroke={p.is_retrograde ? '#FF3333' : (isMalefic ? '#a83232' : GOLD)}
+          strokeWidth={p.is_retrograde ? 3 : 1.5}
           style={{ transition: 'all 1s ease' }}
         />
-        <text x={px} y={py - 4} textAnchor="middle" dominantBaseline="central"
-          fill="white" fontSize="9" fontWeight="700" fontFamily="'Inter',sans-serif"
+        {/* Planet abbreviation */}
+        <text x={px} y={py - 5} textAnchor="middle" dominantBaseline="central"
+          fill="white" fontSize="11" fontWeight="700" fontFamily="'Inter',sans-serif"
         >{abbr}</text>
-        <text x={px} y={py + 7} textAnchor="middle" dominantBaseline="central"
-          fill="rgba(255,255,255,0.85)" fontSize="7.5" fontFamily="'Inter',sans-serif"
+        {/* Degree */}
+        <text x={px} y={py + 8} textAnchor="middle" dominantBaseline="central"
+          fill="rgba(255,255,255,0.85)" fontSize="10" fontFamily="'Inter',sans-serif"
         >{degText}</text>
-        {/* Retrograde red badge */}
+        {/* Retrograde ℞ symbol above dot */}
         {p.is_retrograde && (
-          <>
-            <circle cx={px + 14} cy={py - 14} r={6} fill="#dc2626" />
-            <text x={px + 14} y={py - 13} textAnchor="middle" dominantBaseline="central"
-              fill="white" fontSize="7" fontWeight="bold">R</text>
-          </>
+          <text x={px} y={py - DOT_R - 8} textAnchor="middle" dominantBaseline="central"
+            fill="#FF3333" fontSize="12" fontWeight="700">{'\u211E'}</text>
         )}
       </g>
     );
@@ -221,17 +246,17 @@ export default function LiveTransitWheel() {
     <g>
       {/* Dashed line from center to ASC */}
       <line x1={CX} y1={CY} x2={ascX} y2={ascY}
-        stroke={GOLD_MED} strokeWidth={1.5} strokeDasharray="4,3" opacity={0.6} />
+        stroke={GOLD_MED} strokeWidth={2} strokeDasharray="5,4" opacity={0.7} />
       {/* Dot at rim */}
-      <circle cx={ascX} cy={ascY} r={5} fill={GOLD_MED} />
-      {/* Triangle pointing inward */}
+      <circle cx={ascX} cy={ascY} r={6} fill={GOLD_MED} />
+      {/* Triangle pointing inward — larger */}
       <polygon
-        points={`${ascX},${ascY} ${ascX + 8 * Math.cos(ascRad + 0.4)},${ascY + 8 * Math.sin(ascRad + 0.4)} ${ascX + 8 * Math.cos(ascRad - 0.4)},${ascY + 8 * Math.sin(ascRad - 0.4)}`}
+        points={`${ascX},${ascY} ${ascX + 12 * Math.cos(ascRad + 0.35)},${ascY + 12 * Math.sin(ascRad + 0.35)} ${ascX + 12 * Math.cos(ascRad - 0.35)},${ascY + 12 * Math.sin(ascRad - 0.35)}`}
         fill={GOLD_MED}
       />
       {/* Label */}
       <text x={ascLabelX} y={ascLabelY} textAnchor="middle" dominantBaseline="central"
-        fill={GOLD_MED} fontSize="8" fontWeight="700" fontFamily="'Inter',sans-serif"
+        fill={GOLD_MED} fontSize="13" fontWeight="700" fontFamily="'Inter',sans-serif"
         transform={`rotate(${arcRot(lagnaAngle + 90)},${ascLabelX},${ascLabelY})`}
       >ASC {ascDeg}&deg;</text>
     </g>
@@ -298,8 +323,8 @@ export default function LiveTransitWheel() {
             </text>
           ) : (
             <>
-              <text x={CX} y={CY - 3} textAnchor="middle" fill={GOLD_MED} fontSize="12" fontWeight="bold">ॐ</text>
-              <text x={CX} y={CY + 11} textAnchor="middle" fill={GOLD} fontSize="6.5" fontWeight="600" fontFamily="'Inter',sans-serif">{timeStr}</text>
+              <text x={CX} y={CY - 5} textAnchor="middle" fill={GOLD_MED} fontSize="28" fontWeight="bold">ॐ</text>
+              <text x={CX} y={CY + 18} textAnchor="middle" fill={GOLD} fontSize="13" fontWeight="600" fontFamily="'Inter',sans-serif">{timeStr}</text>
             </>
           )}
           {error && !loading && (
