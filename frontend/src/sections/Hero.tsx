@@ -59,7 +59,7 @@ export default function Hero() {
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
         {/* Centered header above main section */}
-        <div className="text-center mb-0">
+        <div className="text-center mb-2">
           {/* Shloka */}
           <div className="hero-shloka opacity-0">
             <p className="font-sans text-lg sm:text-2xl lg:text-[2.2rem] opacity-70 tracking-[3px] text-gray-600"
@@ -84,7 +84,7 @@ export default function Hero() {
         </div>
 
         {/* Two-column layout — no gap from heading */}
-        <div className="flex flex-col lg:flex-row items-stretch gap-2 lg:gap-4 -mt-1">
+        <div className="flex flex-col lg:flex-row items-stretch gap-2 lg:gap-4">
 
           {/* LEFT — Kundli Form — matches circle height */}
           <div className="hero-cta opacity-0 w-full lg:basis-[42%] flex flex-col justify-between">
@@ -276,10 +276,7 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
         </div>
       </div>
 
-      {/* Spacer to push submit to bottom */}
-      <div className="flex-1" />
-
-      {/* Submit Button — at bottom, full width, light saffron */}
+      {/* Submit Button — full width, light saffron */}
       <button onClick={handleGenerate}
         disabled={!name || !birthDate || !birthTime || !birthPlace}
         className="w-full flex items-center justify-center py-3 bg-sacred-gold/80 text-white rounded-lg font-semibold text-base hover:bg-sacred-gold-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-3">
