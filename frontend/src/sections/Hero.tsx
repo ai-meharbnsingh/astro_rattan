@@ -184,14 +184,17 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
   const inputClass = "w-full px-3 py-2.5 pl-10 rounded-lg bg-[#f0ecf8]/40 border border-sacred-gold/50 text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none placeholder:text-sacred-gold-dark/40";
 
   return (
-    <div className="space-y-3 flex flex-col justify-between h-full">
-      {/* Golden Banner Heading */}
-      <div className="bg-gradient-to-r from-sacred-gold-dark to-sacred-gold rounded-lg px-4 py-2.5 text-white font-semibold text-base sm:text-lg tracking-wide shadow-md">
-        {l('Generate Your Free Kundli', 'अपनी मुफ्त कुंडली बनाएं')}
+    <div className="flex flex-col justify-between h-full">
+      {/* Heading — plain text with underline */}
+      <div>
+        <h3 className="text-base sm:text-lg text-cosmic-text font-medium mb-1">
+          {l('Generate You Kundli', 'अपनी कुंडली बनाएं')}
+        </h3>
+        <hr className="border-sacred-gold/30 mb-3" />
       </div>
 
       {/* Full Name */}
-      <div>
+      <div className="mb-3">
         <label className="text-sm font-semibold text-cosmic-text mb-1 block">{l('Full Name', 'पूरा नाम')}</label>
         <div className="relative">
           <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/50" />
@@ -201,7 +204,7 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
       </div>
 
       {/* Gender + Birth Place */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3 mb-3">
         <div>
           <label className="text-sm font-semibold text-cosmic-text mb-1 block">{l('Gender', 'लिंग')}</label>
           <div className="flex gap-2">
@@ -236,7 +239,7 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
       </div>
 
       {/* Birth Date + Time */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3 mb-3">
         <div>
           <label className="text-sm font-semibold text-cosmic-text mb-1 block">{l('Birth Date', 'जन्म तिथि')}</label>
           <div className="relative">
@@ -273,10 +276,13 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
         </div>
       </div>
 
-      {/* Submit Button */}
+      {/* Spacer to push submit to bottom */}
+      <div className="flex-1" />
+
+      {/* Submit Button — at bottom, full width, light saffron */}
       <button onClick={handleGenerate}
         disabled={!name || !birthDate || !birthTime || !birthPlace}
-        className="w-full flex items-center justify-center gap-2 py-3 mt-2 bg-sacred-gold/90 text-white rounded-lg font-semibold text-base hover:bg-sacred-gold-dark transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+        className="w-full flex items-center justify-center py-3 bg-sacred-gold/80 text-white rounded-lg font-semibold text-base hover:bg-sacred-gold-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-3">
         {l('Submit', 'सबमिट करें')}
       </button>
     </div>
