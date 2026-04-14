@@ -43,10 +43,10 @@ export default function Navigation() {
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+      <nav className={`fixed top-0 left-0 right-0 z-50 border-b border-sacred-gold/45 shadow-[0_8px_18px_-14px_rgba(196,97,31,0.55)] transition-all duration-500 ${
         isScrolled
-          ? 'bg-cosmic-bg backdrop-blur-lg border-b border-sacred-gold py-2'
-          : 'bg-transparent py-4'
+          ? 'bg-cosmic-bg/96 backdrop-blur-lg py-2'
+          : 'bg-cosmic-bg/92 py-3'
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">

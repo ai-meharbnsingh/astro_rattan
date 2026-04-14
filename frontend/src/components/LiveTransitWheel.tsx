@@ -128,10 +128,7 @@ export default function LiveTransitWheel() {
   }
 
   // Segments
-  const clipDefs = SIGNS.map((_, i) => {
-    const midRad = toRad(i * 30 + 15 - 90);
-    return <clipPath key={`wc${i}`} id={`wc${i}`}><circle cx={CX + R_IMG * Math.cos(midRad)} cy={CY + R_IMG * Math.sin(midRad)} r={18} /></clipPath>;
-  });
+  const clipDefs: JSX.Element[] = []; // no longer needed — using glyph watermarks
 
   const segEls = SIGNS.map((sign, i) => {
     const startDeg = i * 30 - 90;
@@ -180,11 +177,11 @@ export default function LiveTransitWheel() {
           fill={GOLD_MED} fontSize="12" fontWeight="700" fontFamily="'Inter',sans-serif"
           transform={`rotate(${rot},${dx},${dy})`}>{hi ? sign.datesHi : sign.dates}</text>
 
-        {/* Ring 3: Watermark animal — grayscale */}
-        <image href={sign.img} x={ix-18} y={iy-18} width={36} height={36}
-          preserveAspectRatio="xMidYMid slice" opacity={0.08}
-          clipPath={`url(#wc${i})`}
-          style={{ filter: 'grayscale(1) brightness(0.8)' }} />
+        {/* Ring 3: Watermark zodiac sketch — saffron line art */}
+        <text x={ix} y={iy} textAnchor="middle" dominantBaseline="central"
+          fill={GOLD_MED} opacity={0.12} fontSize="42"
+          fontFamily="'Segoe UI Symbol','Noto Sans Symbols 2',serif"
+        >{sign.glyph}</text>
 
         {/* Gender symbol — inside, visible */}
         <text x={gndx} y={gndy} textAnchor="middle" dominantBaseline="central"
