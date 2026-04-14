@@ -66,9 +66,9 @@ interface TransitPlanet { planet: string; sign: string; longitude: number; sign_
 interface TooltipData { planet: string; sign: string; degree: number; retrograde: boolean; x: number; y: number; }
 interface SkyData { planets: TransitPlanet[]; lagna_sign: string; lagna_longitude: number; }
 
-const R_OUTERMOST = 302; // new outermost circle — outside sign names
+const R_OUTERMOST = 308; // outermost circle — slightly more outward
 const R_SIGN_NAME = 280;
-const R_OUTER = 265;
+const R_OUTER = 270; // second circle — slightly bigger
 const R_DATE = 256;
 const R_DATE_RING = 244;
 const R_IMG = 218;
