@@ -190,7 +190,7 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
       </h3>
 
       {/* Fields — stretch to fill height */}
-      <div className="flex-1 flex flex-col justify-between py-2 gap-2">
+      <div className="flex-1 flex flex-col justify-between py-2 gap-1">
         {/* Full Name */}
         <div>
           <label className="text-sm font-semibold text-cosmic-text mb-0.5 block">{l('Full Name', 'पूरा नाम')}</label>
