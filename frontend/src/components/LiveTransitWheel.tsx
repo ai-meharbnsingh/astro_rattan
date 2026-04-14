@@ -182,9 +182,8 @@ export default function LiveTransitWheel() {
 
         {/* Ring 3: Watermark zodiac animal sketch — saffron monochrome */}
         <image href={sign.img} x={ix-20} y={iy-20} width={40} height={40}
-          preserveAspectRatio="xMidYMid slice" opacity={0.06}
-          clipPath={`url(#wc${i})`}
-          style={{ filter: 'invert(1) sepia(1) saturate(5) hue-rotate(-15deg) brightness(0.9)' }} />
+          preserveAspectRatio="xMidYMid slice" opacity={0.30}
+          clipPath={`url(#wc${i})`} />
 
         {/* Gender symbol — inside, visible */}
         <text x={gndx} y={gndy} textAnchor="middle" dominantBaseline="central"
