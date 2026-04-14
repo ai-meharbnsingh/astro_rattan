@@ -6,7 +6,7 @@ import { Users, Grid3X3, Star, User, Phone, Calendar, Clock, MapPin, Sparkles, C
 import { api } from '@/lib/api';
 import LiveTransitWheel from '@/components/LiveTransitWheel';
 
-const TAGLINE = { en: 'A complete astrology platform', hi: 'एक पूर्ण ज्योतिष प्लेटफॉर्म' };
+const TAGLINE = { en: 'A complete astrology platform', hi: 'एक पूर्ण ज्योतिष प्लेटफ़ॉर्म' };
 
 export default function Hero() {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -73,7 +73,7 @@ export default function Hero() {
           {/* Main Title */}
           <div className="hero-title-main opacity-0 mt-0 h-10 sm:h-12">
             <h1
-              className="text-xl sm:text-2xl lg:text-3xl text-cosmic-text leading-[1.1] font-sans transition-opacity duration-500"
+              className="text-xl sm:text-2xl lg:text-3xl text-cosmic-text leading-[1.1] transition-opacity duration-500"
               style={{
                 fontWeight: 700,
                 letterSpacing: '0',
@@ -97,9 +97,9 @@ export default function Hero() {
                   border: '1px solid rgba(196,97,31,0.35)',
                   boxShadow: '0 4px 20px rgba(196,97,31,0.15), inset 0 1px 0 rgba(255,255,255,0.4)',
                 }}>
-                <h2 className="text-2xl sm:text-[1.75rem] font-bold text-sacred-gold-dark tracking-tight font-sans"
+                <h2 className="text-2xl sm:text-[1.75rem] font-bold text-sacred-gold-dark tracking-tight"
                   style={{ textShadow: '0 2px 10px rgba(196,97,31,0.3)' }}>
-                  {l('Get Your Free Kundli', 'अपनी मुफ्त कुंडली पाएं')}
+                  {l('Get your free kundli', 'अपनी मुफ्त कुंडली पाएं')}
                 </h2>
               </div>
               <div className="h-1 w-24 rounded-full bg-gradient-to-r from-transparent via-sacred-gold-dark to-transparent mt-2 mx-auto" />

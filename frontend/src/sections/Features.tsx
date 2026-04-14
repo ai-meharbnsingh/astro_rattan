@@ -101,8 +101,8 @@ export default function Features() {
 
         {/* Section Header */}
         <div className="features-title text-center mb-16">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl text-cosmic-text mb-6 leading-[1.1] font-sans" style={{ fontWeight: 800, letterSpacing: '-0.02em' }}>
-            {l('Complete Astrological Operating System', 'पूर्ण ज्योतिषीय ऑपरेटिंग सिस्टम')}
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl text-cosmic-text mb-6 leading-[1.1]" style={{ fontWeight: 800, letterSpacing: '-0.02em' }}>
+            {l('Complete astrological operating system', 'पूर्ण ज्योतिषीय ऑपरेटिंग सिस्टम')}
           </h2>
           <div className="max-w-full mx-auto text-lg text-gray-600 leading-relaxed">
             <p>{l('Most astrology apps use lookup tables and generic predictions.', 'अधिकांश ज्योतिष ऐप लुकअप टेबल और सामान्य भविष्यवाणी का उपयोग करते हैं।')}</p>
