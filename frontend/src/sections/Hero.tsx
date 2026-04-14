@@ -184,13 +184,13 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
   const inputClass = "w-full px-3 py-1.5 pl-9 rounded-lg bg-[#f0ecf8]/40 border border-sacred-gold/50 text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none placeholder:text-sacred-gold-dark/40";
 
   return (
-    <div className="flex flex-col h-full justify-between">
+    <div className="flex flex-col justify-start gap-3">
       {/* Fields — exact like screenshot: no heading */}
-      <div className="flex-1 flex flex-col justify-between gap-1">
+      <div className="flex flex-col gap-2">
         {/* Full Name */}
         <div>
-          <label className="text-sm font-semibold text-cosmic-text mb-0.5 block">{l('Full Name', 'पूरा नाम')}</label>
-          <div className="relative">
+          <label className="text-sm font-semibold text-cosmic-text mb-0 block">{l('Full Name', 'पूरा नाम')}</label>
+          <div className="relative mt-1">
             <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/50" />
             <input type="text" value={name} onChange={e => setName(e.target.value)}
               placeholder={l('Enter full name', 'पूरा नाम दर्ज करें')} className={inputClass} />
@@ -198,10 +198,10 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
         </div>
 
         {/* Gender + Birth Place */}
-        <div className="grid grid-cols-2 gap-1">
+        <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="text-sm font-semibold text-cosmic-text mb-0.5 block">{l('Gender', 'लिंग')}</label>
-            <div className="flex gap-2">
+            <label className="text-sm font-semibold text-cosmic-text mb-0 block">{l('Gender', 'लिंग')}</label>
+            <div className="flex gap-1 mt-1">
               <button onClick={() => setGender('male')}
                 className={`flex-1 py-1.5 rounded-lg text-sm font-semibold transition-all ${gender === 'male' ? 'bg-sacred-gold-dark text-white' : 'border border-sacred-gold/50 text-cosmic-text'}`}>
                 {l('Male', 'पुरुष')}
@@ -213,8 +213,8 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
             </div>
           </div>
           <div className="relative">
-            <label className="text-sm font-semibold text-cosmic-text mb-0.5 block">{l('Birth Place', 'जन्म स्थान')}</label>
-            <div className="relative">
+            <label className="text-sm font-semibold text-cosmic-text mb-0 block">{l('Birth Place', 'जन्म स्थान')}</label>
+            <div className="relative mt-1">
               <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/50" />
               <input type="text" value={birthPlace} onChange={e => searchPlace(e.target.value)}
                 placeholder={l('Search birth place', 'जन्म स्थान खोजें')} className={inputClass} />
@@ -233,17 +233,17 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
         </div>
 
         {/* Birth Date + Time */}
-        <div className="grid grid-cols-2 gap-1">
+        <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="text-sm font-semibold text-cosmic-text mb-0.5 block">{l('Birth Date', 'जन्म तिथि')}</label>
-            <div className="relative">
+            <label className="text-sm font-semibold text-cosmic-text mb-0 block">{l('Birth Date', 'जन्म तिथि')}</label>
+            <div className="relative mt-1">
               <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/50" />
               <input type="date" value={birthDate} onChange={e => setBirthDate(e.target.value)} className={inputClass} />
             </div>
           </div>
           <div>
-            <label className="text-sm font-semibold text-cosmic-text mb-0.5 block">{l('Birth Time', 'जन्म समय')}</label>
-            <div className="relative">
+            <label className="text-sm font-semibold text-cosmic-text mb-0 block">{l('Birth Time', 'जन्म समय')}</label>
+            <div className="relative mt-1">
               <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/50" />
               <input type="time" step="1" value={birthTime} onChange={e => setBirthTime(e.target.value)} className={inputClass} />
             </div>
@@ -251,22 +251,22 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
         </div>
 
         {/* Phone + Email (Optional) */}
-        <div className="grid grid-cols-2 gap-1">
+        <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="text-sm font-semibold text-cosmic-text mb-0.5 block">
+            <label className="text-sm font-semibold text-cosmic-text mb-0 block">
               {l('Phone', 'फ़ोन')} <span className="text-sacred-gold-dark/60 font-normal">{l('(Optional)', '(वैकल्पिक)')}</span>
             </label>
-            <div className="relative">
+            <div className="relative mt-1">
               <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/50" />
               <input type="tel" value={phone} onChange={e => setPhone(e.target.value)}
                 placeholder={l('Phone number', 'फ़ोन नंबर')} className={inputClass} />
             </div>
           </div>
           <div>
-            <label className="text-sm font-semibold text-cosmic-text mb-0.5 block">
+            <label className="text-sm font-semibold text-cosmic-text mb-0 block">
               {l('Email', 'ईमेल')} <span className="text-sacred-gold-dark/60 font-normal">{l('(Optional)', '(वैकल्पिक)')}</span>
             </label>
-            <div className="relative">
+            <div className="relative mt-1">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/50" />
               <input type="email" value={email} onChange={e => setEmail(e.target.value)}
                 placeholder={l('Email address', 'ईमेल पता')} className={inputClass} />
