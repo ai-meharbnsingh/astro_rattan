@@ -48,7 +48,7 @@ export default function AspectsTab({ aspectsData, loadingAspects, language, t }:
                       const maleficList = aspBy.filter((a: any) => !BENEFICS.includes(a.planet || a));
                       const aspectsTo = data.aspects_to || [];
                       return (
-                        <tr key={planet} className={i % 2 ? 'bg-sacred-gold' : ''}>
+                        <tr key={planet} className="border-t border-sacred-gold hover:bg-sacred-gold/5">
                           <td className="p-2 font-semibold text-sacred-brown">{translatePlanet(planet, language)}</td>
                           <td className="p-2 text-center">{data.house}</td>
                           <td className="p-2">
@@ -120,7 +120,7 @@ export default function AspectsTab({ aspectsData, loadingAspects, language, t }:
                       });
                     }
                     return (
-                      <tr key={houseNum} className={houseNum % 2 ? 'bg-sacred-gold' : ''}>
+                      <tr key={houseNum} className="border-t border-sacred-gold hover:bg-sacred-gold/5">
                         <td className="p-2 text-center font-semibold text-sacred-brown">{houseNum}</td>
                         <td className="p-2">{beneficPlanets.length > 0 ? <span className="text-green-600">{beneficPlanets.join(', ')}</span> : <span className="text-cosmic-text">-</span>}</td>
                         <td className="p-2">{maleficPlanets.length > 0 ? <span className="text-red-500">{maleficPlanets.join(', ')}</span> : <span className="text-cosmic-text">-</span>}</td>
