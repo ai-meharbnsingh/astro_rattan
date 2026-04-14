@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
+import InteractiveKundli, { type ChartData } from '@/components/InteractiveKundli';
 
 const toRad = (deg: number) => (deg * Math.PI) / 180;
 const CX = 300;
@@ -124,21 +125,30 @@ export default function LiveTransitWheel() {
   const lagnaLong = (skyData?.lagna_longitude || 0) + (elapsedSec * (360 / 86400));
   const lagnaAngle = lagnaLong - 90;
 
-  // Build kundli house data from sky data
-  const SIGN_NAMES = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+  // Build ChartData for InteractiveKundli from sky data
+  const SIGN_NAMES_K = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
   const ascSignIdx = Math.floor(lagnaLong / 30) % 12;
-  const kundliHouses = useMemo(() => {
-    if (!skyData) return [];
-    return Array.from({ length: 12 }, (_, i) => {
-      const signIdx = (ascSignIdx + i) % 12;
-      const sign = SIGN_NAMES[signIdx];
-      const housePlanets = planets.filter(p => {
-        const pIdx = SIGN_NAMES.findIndex(s => s.toLowerCase() === p.sign.toLowerCase());
-        return ((pIdx - ascSignIdx + 12) % 12) === i;
-      });
-      return { house: i + 1, sign, signNum: signIdx + 1, planets: housePlanets };
+  const kundliChartData = useMemo<ChartData | null>(() => {
+    if (!skyData) return null;
+    const houses = Array.from({ length: 12 }, (_, i) => ({
+      number: i + 1,
+      sign: SIGN_NAMES_K[(ascSignIdx + i) % 12],
+    }));
+    const kundliPlanets = planets.map(p => {
+      const pIdx = SIGN_NAMES_K.findIndex(s => s.toLowerCase() === p.sign.toLowerCase());
+      const house = ((pIdx - ascSignIdx + 12) % 12) + 1;
+      return {
+        planet: p.planet, sign: p.sign, house, nakshatra: '',
+        sign_degree: p.sign_degree,
+        status: p.is_retrograde ? 'Retrograde' : 'Transiting',
+        is_retrograde: p.is_retrograde,
+      };
     });
-  }, [skyData, planets, ascSignIdx]);
+    return {
+      planets: kundliPlanets, houses,
+      ascendant: { longitude: lagnaLong, sign: SIGN_NAMES_K[ascSignIdx], sign_degree: lagnaLong % 30 },
+    };
+  }, [skyData, planets, ascSignIdx, lagnaLong]);
 
   // Ticks
   const ticks: JSX.Element[] = [];
@@ -343,139 +353,18 @@ export default function LiveTransitWheel() {
         </div>
       </div>
 
-      {/* Kundli Chart View — North Indian style, same aesthetic as transit wheel */}
-      {viewMode === 'kundli' && skyData && (() => {
-        // Use exact same coordinate system as InteractiveKundli
-        const S = 416; // same viewBox as InteractiveKundli
-        const P = 8;   // same padding
-        const W = S - 2 * P; // 400 inner width
-        const H2 = W / 2;   // 200
-        // Corners
-        const tl = { x: P, y: P };
-        const tr = { x: P + W, y: P };
-        const bl = { x: P, y: P + W };
-        const br = { x: P + W, y: P + W };
-        // Midpoints (diamond vertices)
-        const mt = { x: P + H2, y: P };
-        const mr = { x: P + W, y: P + H2 };
-        const mb = { x: P + H2, y: P + W };
-        const ml = { x: P, y: P + H2 };
-        const cc = { x: P + H2, y: P + H2 };
-        // Intersection points (where diamond edges cross diagonals)
-        const q = H2 / 2;
-        const p1 = { x: P + q, y: P + q };          // TL-CC ∩ MT-ML
-        const p2 = { x: P + H2 + q, y: P + q };     // TR-CC ∩ MT-MR
-        const p3 = { x: P + H2 + q, y: P + H2 + q };// BR-CC ∩ MR-MB
-        const p4 = { x: P + q, y: P + H2 + q };     // BL-CC ∩ MB-ML
-
-        // Centroid from vertices (same as InteractiveKundli)
-        const cen = (...v: {x:number;y:number}[]) => ({
-          cx: v.reduce((s,p)=>s+p.x,0)/v.length,
-          cy: v.reduce((s,p)=>s+p.y,0)/v.length,
-        });
-
-        // 12 houses with computed centroids — exact same geometry as InteractiveKundli
-        const houses: { h: number; cx: number; cy: number; trap: boolean }[] = [
-          // Top: 2(tri), 1(quad), 12(tri)
-          { h: 1,  ...cen(p1, mt, p2, cc),  trap: true },
-          { h: 2,  ...cen(tl, mt, p1),       trap: false },
-          { h: 12, ...cen(mt, tr, p2),        trap: false },
-          // Right: 11(tri), 10(quad), 9(tri)
-          { h: 11, ...cen(tr, mr, p2),        trap: false },
-          { h: 10, ...cen(p2, mr, p3, cc),   trap: true },
-          { h: 9,  ...cen(mr, br, p3),        trap: false },
-          // Bottom: 8(tri), 7(quad), 6(tri)
-          { h: 8,  ...cen(br, mb, p3),        trap: false },
-          { h: 7,  ...cen(p3, mb, p4, cc),   trap: true },
-          { h: 6,  ...cen(mb, bl, p4),        trap: false },
-          // Left: 5(tri), 4(quad), 3(tri)
-          { h: 5,  ...cen(bl, ml, p4),        trap: false },
-          { h: 4,  ...cen(p4, ml, p1, cc),   trap: true },
-          { h: 3,  ...cen(ml, tl, p1),        trap: false },
-        ];
-
-        const pAbbr = (name: string) => hi ? (PLANET_HI[name] || name.slice(0,2)) : (PLANET_ABBR[name] || name.slice(0,2));
-        const sunLong = planets.find(p => p.planet === 'Sun')?.longitude || 0;
-        const pStatus = (pl: TransitPlanet) => getPlanetStatus(pl, sunLong).join('');
-
-        return (
-          <div className="chakra-float" style={{ transformStyle: 'preserve-3d' }}>
-            <svg viewBox={`0 0 ${S} ${S}`} className="w-full h-full" style={{
-              overflow: 'visible',
-              transform: 'scale(0.85)',
-              transformOrigin: 'center center',
-              filter: 'drop-shadow(4px 8px 16px rgba(139,69,19,0.25)) drop-shadow(0 2px 6px rgba(196,97,31,0.12))',
-            }}>
-              {/* Outer square */}
-              <rect x={P} y={P} width={W} height={W} fill="none" stroke={WHEEL_LINE} strokeWidth={WHEEL_STROKE_W} />
-              {/* Inner diamond */}
-              <polygon points={`${mt.x},${mt.y} ${mr.x},${mr.y} ${mb.x},${mb.y} ${ml.x},${ml.y}`} fill="none" stroke={WHEEL_LINE} strokeWidth={WHEEL_STROKE_W} />
-              {/* Diagonals */}
-              <line x1={tl.x} y1={tl.y} x2={br.x} y2={br.y} stroke={WHEEL_LINE} strokeWidth={WHEEL_STROKE_W} />
-              <line x1={tr.x} y1={tr.y} x2={bl.x} y2={bl.y} stroke={WHEEL_LINE} strokeWidth={WHEEL_STROKE_W} />
-
-              {/* House contents — EXACT same layout as InteractiveKundli (same 416px viewBox) */}
-              {houses.map(nh => {
-                const hData = kundliHouses[nh.h - 1];
-                if (!hData) return null;
-                const hPlanets = hData.planets;
-                const count = hPlanets.length;
-
-                // Compact layout — small font, tight grid
-                const maxCols = nh.trap
-                  ? (count > 4 ? 3 : count > 2 ? 2 : count)
-                  : (count > 3 ? 2 : count > 1 ? 2 : 1);
-                const cols = Math.min(count, Math.max(maxCols, 1));
-                const spacing = nh.trap
-                  ? (count > 4 ? 18 : 22)
-                  : (count > 3 ? 16 : count > 2 ? 18 : 20);
-                const rowHeight = count > 4 ? 10 : count > 3 ? 11 : 12;
-                const fontSize = nh.trap
-                  ? (count > 4 ? 8 : 9)
-                  : (count > 3 ? 7 : count > 2 ? 8 : 9);
-
-                return (
-                  <g key={nh.h}>
-                    {/* Rashi number */}
-                    <text x={nh.cx} y={nh.cy - (count > 0 ? 8 : 0)}
-                      textAnchor="middle" dominantBaseline="central"
-                      fill={GOLD} fontSize={nh.trap ? 12 : 10} fontWeight="bold" fontFamily="'Inter',sans-serif"
-                      opacity={0.3}>{hData.signNum}</text>
-
-                    {/* Planets — compact grid */}
-                    {hPlanets.map((pl, idx) => {
-                      const sym = pStatus(pl);
-                      const label = `${pAbbr(pl.planet)}${sym}${pl.sign_degree.toFixed(0)}°`;
-                      const pCol = idx % cols;
-                      const pRow = Math.floor(idx / cols);
-                      const startX = nh.cx - ((cols - 1) * spacing) / 2;
-                      const px = startX + pCol * spacing;
-                      const baseY = nh.cy + (nh.trap ? 6 : 4);
-                      const py = baseY + pRow * rowHeight;
-                      return (
-                        <text key={pl.planet} x={px} y={py}
-                          textAnchor="middle" dominantBaseline="central"
-                          fill={MALEFIC.has(pl.planet) ? DARK : GOLD_MED}
-                          fontSize={fontSize} fontWeight="700" fontFamily="'Inter',sans-serif">
-                          {label}
-                        </text>
-                      );
-                    })}
-                  </g>
-                );
-              })}
-
-              {/* Center — Om + time */}
-              <text x={cc.x} y={cc.y - 4} textAnchor="middle" fill={GOLD_MED} fontSize="14" fontWeight="bold">ॐ</text>
-              <text x={cc.x} y={cc.y + 8} textAnchor="middle" fill={GOLD} fontSize="7" fontWeight="600" fontFamily="'Inter',sans-serif">{timeStr}</text>
-              {/* ASC label */}
-              <text x={cc.x} y={P - 4} textAnchor="middle" fill={GOLD_MED} fontSize="7" fontWeight="700" fontFamily="'Inter',sans-serif">
-                ASC {(lagnaLong % 30).toFixed(1)}° {hi ? SIGNS[ascSignIdx]?.hi : SIGNS[ascSignIdx]?.en}
-              </text>
-            </svg>
+      {/* Kundli Chart View — reuse InteractiveKundli component (proven layout) */}
+      {viewMode === 'kundli' && kundliChartData && (
+        <div className="chakra-float" style={{ transformStyle: 'preserve-3d' }}>
+          <div style={{
+            transform: 'scale(0.85)',
+            transformOrigin: 'center center',
+            filter: 'drop-shadow(4px 8px 16px rgba(139,69,19,0.25)) drop-shadow(0 2px 6px rgba(196,97,31,0.12))',
+          }}>
+            <InteractiveKundli chartData={kundliChartData} compact />
           </div>
-        );
-      })()}
+        </div>
+      )}
 
       {/* Transit Wheel View */}
       {viewMode === 'transit' && <div className="relative w-full pb-2">
