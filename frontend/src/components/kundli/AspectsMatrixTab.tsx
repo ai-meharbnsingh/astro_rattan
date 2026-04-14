@@ -224,7 +224,7 @@ function CuspAspectGrid({ title, cuspData, planetOrder, language, t }: CuspAspec
               </th>
               {cusps.map((c) => (
                 <th key={c} className="p-1.5 text-center font-semibold border border-slate-200 bg-slate-100" style={{ minWidth: '50px' }}>
-                  {t('auto.cC')}
+                  C{c}
                 </th>
               ))}
             </tr>
