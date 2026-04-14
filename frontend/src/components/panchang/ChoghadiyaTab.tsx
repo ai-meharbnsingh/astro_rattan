@@ -10,13 +10,13 @@ interface Props {
 }
 
 const CHOGHADIYA_QUALITY: Record<string, { label: string; labelHi: string; color: string; bg: string; border: string }> = {
-  'Amrit':  { label: 'Best',          labelHi: 'सर्वश्रेष्ठ',  color: 'text-green-600',  bg: 'bg-green-500/15',  border: 'border-green-500/30' },
-  'Shubh':  { label: 'Good',          labelHi: 'शुभ',          color: 'text-green-500',  bg: 'bg-green-500/10',  border: 'border-green-500/20' },
-  'Labh':   { label: 'Gain',          labelHi: 'लाभ',          color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
-  'Char':   { label: 'Neutral',       labelHi: 'चर',           color: 'text-blue-500',   bg: 'bg-blue-500/10',   border: 'border-blue-500/20' },
-  'Udveg':  { label: 'Inauspicious',  labelHi: 'उद्वेग',       color: 'text-orange-500', bg: 'bg-orange-500/10', border: 'border-orange-500/20' },
-  'Kaal':   { label: 'Inauspicious',  labelHi: 'काल',          color: 'text-red-600',    bg: 'bg-red-500/10',    border: 'border-red-500/20' },
-  'Rog':    { label: 'Inauspicious',  labelHi: 'रोग',          color: 'text-red-500',    bg: 'bg-red-500/10',    border: 'border-red-500/20' },
+  'Amrit':  { label: 'Best',          labelHi: 'सर्वश्रेष्ठ',     color: 'text-green-600',  bg: 'bg-green-500/15',  border: 'border-green-500/30' },
+  'Shubh':  { label: 'Good',          labelHi: 'अच्छा',           color: 'text-green-500',  bg: 'bg-green-500/10',  border: 'border-green-500/20' },
+  'Labh':   { label: 'Gain',          labelHi: 'लाभदायक',         color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+  'Char':   { label: 'Neutral',       labelHi: 'सामान्य',          color: 'text-blue-500',   bg: 'bg-blue-500/10',   border: 'border-blue-500/20' },
+  'Udveg':  { label: 'Inauspicious',  labelHi: 'अशुभ',            color: 'text-orange-500', bg: 'bg-orange-500/10', border: 'border-orange-500/20' },
+  'Kaal':   { label: 'Inauspicious',  labelHi: 'अशुभ',            color: 'text-red-600',    bg: 'bg-red-500/10',    border: 'border-red-500/20' },
+  'Rog':    { label: 'Inauspicious',  labelHi: 'अशुभ',            color: 'text-red-500',    bg: 'bg-red-500/10',    border: 'border-red-500/20' },
 };
 
 const CHOGHADIYA_HINDI: Record<string, string> = {
@@ -132,12 +132,12 @@ export default function ChoghadiyaTab({ panchang, language, t, timezoneOffset }:
       <div className="rounded-lg border border-cosmic-border overflow-hidden">
         <div className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-cosmic-border">
           {dayChoghadiya.length > 0 && (
-            <div className="p-2">
+            <div className="flex-1 p-2">
               {renderTable(dayChoghadiya, Sun, language === 'hi' ? 'दिन के चौघड़िया' : 'Day Choghadiya')}
             </div>
           )}
           {nightChoghadiya.length > 0 && (
-            <div className="p-2">
+            <div className="flex-1 p-2">
               {renderTable(nightChoghadiya, Moon, language === 'hi' ? 'रात्रि के चौघड़िया' : 'Night Choghadiya')}
             </div>
           )}
