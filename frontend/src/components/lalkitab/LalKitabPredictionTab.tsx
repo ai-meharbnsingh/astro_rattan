@@ -210,7 +210,7 @@ export default function LalKitabPredictionTab({ chartData }: Props) {
                         key={key}
                         className="text-[10px] px-2 py-0.5 rounded bg-sacred-gold/10 text-sacred-gold-dark font-bold"
                       >
-                        {getPlanetLabel(key, language)} {isHi ? `भाव ${house}` : `H${house}`}
+                        {getPlanetLabel(key, language)} {t('auto.hHouse')}
                       </span>
                     ))}
                     <span className="text-[10px] px-2 py-0.5 rounded bg-gray-100 text-gray-500 font-medium">

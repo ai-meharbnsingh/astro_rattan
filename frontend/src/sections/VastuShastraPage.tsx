@@ -61,16 +61,14 @@ export default function VastuShastraPage() {
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sacred-gold/10 border border-sacred-gold/20 mb-4">
             <Compass className="w-4 h-4 text-sacred-gold" />
             <span className="text-sm font-bold text-sacred-gold-dark tracking-wider uppercase">
-              {isHi ? 'वास्तु शास्त्र' : 'Vastu Shastra'}
+              {t('auto.vastuShastra')}
             </span>
           </div>
           <h1 className="text-4xl font-bold text-cosmic-text mb-2">
-            {isHi ? 'वास्तु शास्त्र विश्लेषण' : 'Vastu Shastra Analysis'}
+            {t('auto.vastuShastraAnalysis')}
           </h1>
           <p className="text-gray-600 max-w-xl mx-auto">
-            {isHi
-              ? '45 देवताओं का वास्तु पुरुष मंडल, 32 प्रवेश पद, और प्राचीन उपाय प्रणाली'
-              : '45 Devtas Vastu Purusha Mandala, 32 Entrance Padas, and Ancient Remedial System'}
+            {t('auto.45DevtasVastuPurusha')}
           </p>
         </div>
 
@@ -86,12 +84,10 @@ export default function VastuShastraPage() {
                 <Compass className="w-6 h-6 text-sacred-gold" />
               </div>
               <h3 className="text-lg font-bold text-cosmic-text mb-1">
-                {isHi ? 'वास्तु विश्लेषण' : 'Vastu Analysis'}
+                {t('auto.vastuAnalysis')}
               </h3>
               <p className="text-sm text-gray-600">
-                {isHi
-                  ? 'भवन प्रकार, प्रवेश दिशा और समस्याएं दर्ज करें — मंडल, पद, उपाय पाएं'
-                  : 'Enter building type, entrance direction & problems — get mandala, pada, remedies'}
+                {t('auto.enterBuildingTypeEnt')}
               </p>
               <div className="mt-4 flex flex-wrap gap-1.5">
                 {['45 Devtas', '32 Padas', 'Remedies', 'Rooms'].map(t => (
@@ -109,12 +105,10 @@ export default function VastuShastraPage() {
                 <LayoutGrid className="w-6 h-6 text-emerald-400" />
               </div>
               <h3 className="text-lg font-bold text-cosmic-text mb-1">
-                {isHi ? 'मेरा घर — 3×3 ग्रिड' : 'My Home Grid'}
+                {t('auto.myHomeGrid')}
               </h3>
               <p className="text-sm text-gray-600">
-                {isHi
-                  ? '3×3 ग्रिड पर कमरे रखें — तुरंत अनुपालन रिपोर्ट पाएं'
-                  : 'Click a 3×3 direction grid to assign rooms — get instant room-by-room compliance'}
+                {t('auto.clickA33DirectionGri')}
               </p>
               <div className="mt-4 flex flex-wrap gap-1.5">
                 {['No upload needed', 'Instant report', 'Devta remedies'].map(t => (
@@ -132,12 +126,10 @@ export default function VastuShastraPage() {
                 <Upload className="w-6 h-6 text-blue-400" />
               </div>
               <h3 className="text-lg font-bold text-cosmic-text mb-1">
-                {isHi ? 'फ्लोर प्लान अपलोड' : 'Floor Plan Upload'}
+                {t('auto.floorPlanUpload')}
               </h3>
               <p className="text-sm text-gray-600">
-                {isHi
-                  ? 'अपने घर का फोटो अपलोड करें — उत्तर दिशा सेट करें — कमरे क्लिक करके रखें'
-                  : 'Upload your home photo, set north rotation, click to place rooms on the image'}
+                {t('auto.uploadYourHomePhotoS')}
               </p>
               <div className="mt-4 flex flex-wrap gap-1.5">
                 {['Image upload', 'North rotation', 'Click to place', 'Zoom & pan'].map(t => (
@@ -155,7 +147,7 @@ export default function VastuShastraPage() {
             className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-cosmic-text mb-6 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            {isHi ? 'वापस जाएं' : 'Back to modes'}
+            {t('auto.backToModes')}
           </button>
         )}
 
@@ -182,10 +174,10 @@ export default function VastuShastraPage() {
               <div className="text-center py-20">
                 <Loader2 className="w-10 h-10 animate-spin text-sacred-gold mx-auto mb-4" />
                 <p className="text-lg text-cosmic-text font-semibold mb-1">
-                  {isHi ? 'वास्तु विश्लेषण हो रहा है...' : 'Analyzing Vastu...'}
+                  {t('auto.analyzingVastu')}
                 </p>
                 <p className="text-sm text-gray-600">
-                  {isHi ? '45 देवताओं और 32 पदों का गहन विश्लेषण' : 'Deep analysis of 45 Devtas and 32 Padas'}
+                  {t('auto.deepAnalysisOf45Devt')}
                 </p>
               </div>
             )}
@@ -201,9 +193,9 @@ export default function VastuShastraPage() {
                       className="text-cosmic-text hover:text-white mb-2 -ml-2"
                     >
                       <ArrowLeft className="w-4 h-4 mr-1" />
-                      {isHi ? 'नया विश्लेषण' : 'New Analysis'}
+                      {t('auto.newAnalysis')}
                     </Button>
-                    <p className="text-sm text-gray-600">{isHi ? 'वास्तु स्कोर' : 'Vastu Score'}</p>
+                    <p className="text-sm text-gray-600">{t('auto.vastuScore')}</p>
                     <p className="text-sm text-gray-600 mt-1">
                       {isHi ? analysisData.score_label_hi : analysisData.score_label_en}
                     </p>
@@ -224,23 +216,23 @@ export default function VastuShastraPage() {
                   <TabsList className="grid grid-cols-3 sm:grid-cols-5 mb-6 bg-white/5 border border-white/10 rounded-xl p-1">
                     <TabsTrigger value="home" className="data-[state=active]:bg-sacred-gold/20 data-[state=active]:text-sacred-gold rounded-lg text-sm">
                       <LayoutGrid className="w-3.5 h-3.5 sm:mr-1" />
-                      <span className="hidden sm:inline">{isHi ? 'मेरा घर' : 'My Home'}</span>
+                      <span className="hidden sm:inline">{t('auto.myHome')}</span>
                     </TabsTrigger>
                     <TabsTrigger value="mandala" className="data-[state=active]:bg-sacred-gold/20 data-[state=active]:text-sacred-gold rounded-lg text-sm">
                       <Grid3X3 className="w-3.5 h-3.5 sm:mr-1" />
-                      <span className="hidden sm:inline">{isHi ? '45 देवता' : '45 Devtas'}</span>
+                      <span className="hidden sm:inline">{t('auto.45Devtas')}</span>
                     </TabsTrigger>
                     <TabsTrigger value="entrance" className="data-[state=active]:bg-sacred-gold/20 data-[state=active]:text-sacred-gold rounded-lg text-sm">
                       <DoorOpen className="w-3.5 h-3.5 sm:mr-1" />
-                      <span className="hidden sm:inline">{isHi ? 'प्रवेश पद' : 'Entrance'}</span>
+                      <span className="hidden sm:inline">{t('auto.entrance')}</span>
                     </TabsTrigger>
                     <TabsTrigger value="remedies" className="data-[state=active]:bg-sacred-gold/20 data-[state=active]:text-sacred-gold rounded-lg text-sm">
                       <Wrench className="w-3.5 h-3.5 sm:mr-1" />
-                      <span className="hidden sm:inline">{isHi ? 'उपाय' : 'Remedies'}</span>
+                      <span className="hidden sm:inline">{t('auto.remedies')}</span>
                     </TabsTrigger>
                     <TabsTrigger value="rooms" className="data-[state=active]:bg-sacred-gold/20 data-[state=active]:text-sacred-gold rounded-lg text-sm">
                       <Home className="w-3.5 h-3.5 sm:mr-1" />
-                      <span className="hidden sm:inline">{isHi ? 'कमरा' : 'Rooms'}</span>
+                      <span className="hidden sm:inline">{t('auto.rooms')}</span>
                     </TabsTrigger>
                   </TabsList>
 

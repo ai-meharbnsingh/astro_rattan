@@ -20,12 +20,10 @@ export default function VastuRoomPlacementTab({ data }: Props) {
       <div className="bg-white/5 border border-white/10 rounded-xl p-5">
         <h3 className="text-lg font-bold text-sacred-gold flex items-center gap-2 mb-2">
           <HomeIcon className="w-5 h-5" />
-          {isHi ? 'वास्तु अनुसार कमरा व्यवस्था' : 'Vastu Room Placement Guide'}
+          {t('auto.vastuRoomPlacementGu')}
         </h3>
         <p className="text-sm text-cosmic-text/60">
-          {isHi
-            ? 'प्राचीन वास्तु शास्त्र के अनुसार प्रत्येक कमरे की आदर्श दिशा'
-            : 'Ideal direction for each room according to ancient Vastu Shastra principles'}
+          {t('auto.idealDirectionForEac')}
         </p>
       </div>
 
@@ -44,7 +42,7 @@ export default function VastuRoomPlacementTab({ data }: Props) {
             <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-lg p-3">
               <div className="flex items-center gap-1 mb-2">
                 <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
-                <p className="text-sm font-semibold text-emerald-400">{isHi ? 'आदर्श' : 'Ideal'}</p>
+                <p className="text-sm font-semibold text-emerald-400">{t('auto.ideal')}</p>
               </div>
               <div className="flex flex-wrap gap-1">
                 {(isHi ? room.ideal_directions_hi : room.ideal_directions).map((d: string, i: number) => (
@@ -59,7 +57,7 @@ export default function VastuRoomPlacementTab({ data }: Props) {
             <div className="bg-blue-500/5 border border-blue-500/20 rounded-lg p-3">
               <div className="flex items-center gap-1 mb-2">
                 <AlertCircle className="w-3.5 h-3.5 text-blue-400" />
-                <p className="text-sm font-semibold text-blue-400">{isHi ? 'स्वीकार्य' : 'OK'}</p>
+                <p className="text-sm font-semibold text-blue-400">{t('auto.oK')}</p>
               </div>
               <div className="flex flex-wrap gap-1">
                 {(isHi ? room.acceptable_directions_hi : room.acceptable_directions).length > 0 ? (
@@ -78,7 +76,7 @@ export default function VastuRoomPlacementTab({ data }: Props) {
             <div className="bg-red-500/5 border border-red-500/20 rounded-lg p-3">
               <div className="flex items-center gap-1 mb-2">
                 <XCircle className="w-3.5 h-3.5 text-red-400" />
-                <p className="text-sm font-semibold text-red-400">{isHi ? 'बचें' : 'Avoid'}</p>
+                <p className="text-sm font-semibold text-red-400">{t('auto.avoid')}</p>
               </div>
               <div className="flex flex-wrap gap-1">
                 {(isHi ? room.avoid_directions_hi : room.avoid_directions).map((d: string, i: number) => (
@@ -92,13 +90,13 @@ export default function VastuRoomPlacementTab({ data }: Props) {
 
           {/* Reason */}
           <div className="bg-white/5 rounded-lg p-3 mb-3">
-            <p className="text-sm text-cosmic-text/60 mb-1">{isHi ? 'कारण' : 'Reason'}</p>
+            <p className="text-sm text-cosmic-text/60 mb-1">{t('auto.reason')}</p>
             <p className="text-sm text-cosmic-text">{isHi ? room.reason_hi : room.reason_en}</p>
           </div>
 
           {/* Tips */}
           <div className="space-y-1.5">
-            <p className="text-sm font-semibold text-sacred-gold">{isHi ? 'सुझाव' : 'Tips'}</p>
+            <p className="text-sm font-semibold text-sacred-gold">{t('auto.tips')}</p>
             {(isHi ? room.tips_hi : room.tips_en).map((tip: string, ti: number) => (
               <div key={ti} className="flex items-start gap-1.5">
                 <ChevronRight className="w-3 h-3 text-sacred-gold mt-0.5 flex-shrink-0" />

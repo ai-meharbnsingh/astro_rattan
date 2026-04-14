@@ -91,9 +91,7 @@ export default function IogitaTab({ iogitaData, loadingIogita, language, t }: Io
               };
               const negLabels = language === 'hi' ? negLabelsHi : negLabelsEn;
               const name = iogitaData.basin.top_negative[0];
-              const suppressedMsg = language === 'hi'
-                ? `${negLabels[name] || name} — यह क्षेत्र आपकी कुंडली में दबा हुआ है। संतुलित जीवन के लिए इसे विकसित करें।`
-                : `${negLabels[name] || name} — this area is suppressed in your chart. Focus on developing it for a more balanced life.`;
+              const suppressedMsg = t('auto.NegLabelsNameNameThi');
               return <p className="text-sm text-red-600">{suppressedMsg}</p>;
             })()}
           </div>

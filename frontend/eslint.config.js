@@ -3,6 +3,7 @@ import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
+import i18next from 'eslint-plugin-i18next'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
@@ -19,7 +20,14 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    plugins: {
+      i18next,
+    },
     rules: {
+      'i18next/no-literal-string': ['warn', {
+        markupOnly: true,
+        ignoreAttribute: ['className', 'style', 'type', 'id', 'name', 'htmlFor', 'value', 'href', 'target', 'rel', 'fill', 'stroke', 'viewBox', 'd', 'cx', 'cy', 'r', 'width', 'height', 'x', 'y']
+      }],
       // Keep correctness rules strict, keep migration rules non-blocking.
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],

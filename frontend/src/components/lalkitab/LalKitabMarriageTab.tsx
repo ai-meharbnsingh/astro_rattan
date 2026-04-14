@@ -55,7 +55,7 @@ export default function LalKitabMarriageTab({ kundliId }: Props) {
     setError('');
     api.get(`/api/lalkitab/predictions/marriage/${kundliId}`)
       .then((res: any) => setData(res))
-      .catch(() => setError(isHi ? 'विवाह भविष्यवाणी लोड नहीं हो सकी' : 'Failed to load marriage prediction'))
+      .catch(() => setError(t('auto.failedToLoadMarriage')))
       .finally(() => setLoading(false));
   }, [kundliId, isHi]);
 
@@ -76,7 +76,7 @@ export default function LalKitabMarriageTab({ kundliId }: Props) {
         <div className="flex items-start justify-between">
           <h2 className="text-xl font-sans font-semibold text-sacred-gold flex items-center gap-2 mb-1">
             <Heart className="w-5 h-5" />
-            {isHi ? 'विवाह भविष्यवाणी' : 'Marriage Predictions'}
+            {t('auto.marriagePredictions')}
           </h2>
           {data && (
             <button
@@ -84,20 +84,18 @@ export default function LalKitabMarriageTab({ kundliId }: Props) {
               disabled={saving || saved}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border disabled:opacity-60
                 border-sacred-gold/40 text-sacred-gold hover:bg-sacred-gold/10"
-              title={isHi ? 'सेव करें' : 'Save prediction'}
+              title={t('auto.savePrediction')}
             >
               {saved
-                ? <><BookmarkCheck className="w-4 h-4" />{isHi ? 'सेव हो गया' : 'Saved'}</>
+                ? <><BookmarkCheck className="w-4 h-4" />{t('auto.saved')}</>
                 : saving
-                ? <><Loader2 className="w-4 h-4 animate-spin" />{isHi ? 'सेव हो रहा है' : 'Saving'}</>
-                : <><Bookmark className="w-4 h-4" />{isHi ? 'सेव करें' : 'Save'}</>}
+                ? <><Loader2 className="w-4 h-4 animate-spin" />{t('auto.saving')}</>
+                : <><Bookmark className="w-4 h-4" />{t('auto.save')}</>}
             </button>
           )}
         </div>
         <p className="text-sm text-gray-500">
-          {isHi
-            ? 'मंगल दोष, शुक्र स्थान और सप्तम भाव का विश्लेषण'
-            : 'Manglik dosha, Venus placement and 7th house analysis'}
+          {t('auto.manglikDoshaVenusPla')}
         </p>
       </div>
 
@@ -118,12 +116,12 @@ export default function LalKitabMarriageTab({ kundliId }: Props) {
               <div>
                 <h3 className={`text-lg font-sans font-bold ${data.is_manglik ? 'text-red-700' : 'text-green-700'}`}>
                   {data.is_manglik
-                    ? (isHi ? 'मांगलिक दोष है' : 'Manglik Dosha Present')
-                    : (isHi ? 'मांगलिक दोष नहीं' : 'No Manglik Dosha')}
+                    ? (t('auto.manglikDoshaPresent'))
+                    : (t('auto.noManglikDosha'))}
                 </h3>
                 <div className="flex items-center gap-2 mt-1">
                   <span className="text-sm text-gray-600">
-                    {isHi ? 'मंगल भाव:' : 'Mars in House:'} <strong>{data.mars_house}</strong>
+                    {t('auto.marsInHouse')} <strong>{data.mars_house}</strong>
                   </span>
                   {data.is_manglik && (
                     <span className={`px-2 py-0.5 rounded-full text-xs font-semibold border ${
@@ -132,8 +130,8 @@ export default function LalKitabMarriageTab({ kundliId }: Props) {
                         : 'bg-orange-400/15 text-orange-700 border-orange-300/40'
                     }`}>
                       {data.manglik_severity === 'strong'
-                        ? (isHi ? 'प्रबल दोष' : 'Strong Dosha')
-                        : (isHi ? 'मध्यम दोष' : 'Moderate Dosha')}
+                        ? (t('auto.strongDosha'))
+                        : (t('auto.moderateDosha'))}
                     </span>
                   )}
                 </div>
@@ -159,7 +157,7 @@ export default function LalKitabMarriageTab({ kundliId }: Props) {
           {data.seventh_house_planets.length > 0 && (
             <div className="card-sacred rounded-xl border border-sacred-gold/20 p-5">
               <h3 className="font-sans font-semibold text-sacred-gold mb-3">
-                {isHi ? 'सप्तम भाव में ग्रह' : 'Planets in 7th House'}
+                {t('auto.planetsIn7thHouse')}
               </h3>
               <div className="flex flex-wrap gap-2">
                 {data.seventh_house_planets.map((p) => (
@@ -176,7 +174,7 @@ export default function LalKitabMarriageTab({ kundliId }: Props) {
             <div className="card-sacred rounded-xl border border-orange-300/30 p-5 bg-orange-500/5">
               <h3 className="font-sans font-semibold text-orange-700 mb-3 flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4" />
-                {isHi ? 'मंगल दोष निवारण उपाय' : 'Manglik Dosha Remedies'}
+                {t('auto.manglikDoshaRemedies')}
               </h3>
               <ul className="space-y-2">
                 {data.manglik_remedies.map((remedy, i) => (

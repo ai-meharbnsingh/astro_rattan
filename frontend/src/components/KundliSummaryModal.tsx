@@ -150,7 +150,7 @@ export default function KundliSummaryModal({
             <div className="bg-[#111] rounded-xl border border-[var(--sacred-gold-hex)] p-3">
               <h3 className="text-sm font-semibold text-[#d4af37] mb-2">{t('section.detailedPlanetPositions')}</h3>
               {planets.length === 0 ? (
-                <p className="text-sm text-white/70">{language === 'hi' ? 'ग्रह स्थिति उपलब्ध नहीं' : 'Planet positions unavailable'}</p>
+                <p className="text-sm text-white/70">{t('auto.planetPositionsUnava')}</p>
               ) : (
                 <div className="space-y-1 max-h-64 overflow-y-auto">
                   {planets.map((planet, idx) => (
@@ -168,7 +168,7 @@ export default function KundliSummaryModal({
             <div className="bg-[#111] rounded-xl border border-[var(--sacred-gold-hex)] p-3">
               <h3 className="text-sm font-semibold text-[#d4af37] mb-2">{t('section.vimshottariDasha')}</h3>
               {dashaPeriods.length === 0 ? (
-                <p className="text-sm text-white/70">{language === 'hi' ? 'दशा डेटा उपलब्ध नहीं' : 'Dasha data unavailable'}</p>
+                <p className="text-sm text-white/70">{t('auto.dashaDataUnavailable')}</p>
               ) : (
                 <div className="space-y-2">
                   {dashaPeriods.map((period, idx) => {

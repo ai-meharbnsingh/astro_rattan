@@ -146,9 +146,7 @@ export default function VastuHomeMapperTab({ data, initialMode = 'grid' }: Props
   }, []);
 
   const handleReset = () => {
-    const msg = language === 'hi'
-      ? 'क्या आप सभी कमरे और नक्शा हटाना चाहते हैं?'
-      : 'Remove all rooms and the uploaded map?';
+    const msg = t('auto.removeAllRoomsAndThe');
     if (!window.confirm(msg)) return;
     setAssignments({});
     setLayoutResult(null);
@@ -239,12 +237,12 @@ export default function VastuHomeMapperTab({ data, initialMode = 'grid' }: Props
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-bold text-sacred-gold flex items-center gap-2">
             <LayoutGrid className="w-5 h-5" />
-            {isHi ? 'मेरे घर का नक्शा' : 'My Home Layout'}
+            {t('auto.myHomeLayout')}
           </h3>
           {totalRooms > 0 && (
             <button onClick={handleReset} className="flex items-center gap-1 text-sm text-cosmic-text/50 hover:text-red-400 transition-colors">
               <RotateCcw className="w-3 h-3" />
-              {isHi ? 'रीसेट' : 'Reset'}
+              {t('auto.reset')}
             </button>
           )}
         </div>
@@ -260,7 +258,7 @@ export default function VastuHomeMapperTab({ data, initialMode = 'grid' }: Props
             }`}
           >
             <LayoutGrid className="w-3.5 h-3.5" />
-            {isHi ? 'ग्रिड मोड' : 'Grid Mode'}
+            {t('auto.gridMode')}
           </button>
           <button
             onClick={() => { setMode('floorplan'); setLayoutResult(null); }}
@@ -271,18 +269,14 @@ export default function VastuHomeMapperTab({ data, initialMode = 'grid' }: Props
             }`}
           >
             <ImageIcon className="w-3.5 h-3.5" />
-            {isHi ? 'फ्लोर प्लान' : 'Floor Plan'}
+            {t('auto.floorPlan')}
           </button>
         </div>
 
         <p className="text-sm text-cosmic-text/60">
           {mode === 'grid'
-            ? (isHi
-                ? 'प्रत्येक क्षेत्र पर क्लिक करें और अपने कमरे जोड़ें — हरा=आदर्श, लाल=गलत'
-                : 'Click each zone and add your rooms — green=ideal, red=misplaced')
-            : (isHi
-                ? 'अपने फ्लोर प्लान की फोटो अपलोड करें, फिर कमरे रखने के लिए क्लिक करें'
-                : 'Upload your floor plan photo, then click to place rooms on it')
+            ? (t('auto.clickEachZoneAndAddY'))
+            : (t('auto.uploadYourFloorPlanP'))
           }
         </p>
       </div>
@@ -328,17 +322,17 @@ export default function VastuHomeMapperTab({ data, initialMode = 'grid' }: Props
           {analyzing ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              {isHi ? 'विश्लेषण हो रहा है...' : 'Analyzing...'}
+              {t('auto.analyzing')}
             </>
           ) : layoutResult ? (
-            isHi ? `पुनः विश्लेषण (${totalRooms} कमरे)` : `Re-analyze (${totalRooms} rooms)`
+            t('auto.reAnalyzeTotalRoomsR')
           ) : (
-            isHi ? `लेआउट विश्लेषण करें (${totalRooms} कमरे)` : `Analyze Layout (${totalRooms} rooms)`
+            t('auto.analyzeLayoutTotalRo')
           )}
         </Button>
         {totalRooms < 2 && (
           <p className="text-sm text-cosmic-text/40 mt-1">
-            {isHi ? 'कम से कम 2 कमरे जोड़ें' : 'Assign at least 2 rooms'}
+            {t('auto.assignAtLeast2Rooms')}
           </p>
         )}
       </div>

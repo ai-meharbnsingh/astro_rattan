@@ -94,12 +94,12 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
         setTransits(live);
         setAsOf(data.as_of || null);
         if (!live.length) {
-          setLoadError(isHi ? 'गोचर डेटा उपलब्ध नहीं है।' : 'Transit data is unavailable.');
+          setLoadError(t('auto.transitDataIsUnavail'));
         }
       })
       .catch(() => {
         if (!isMounted) return;
-        setLoadError(isHi ? 'लाइव गोचर लोड नहीं हो पाया। कृपया बाद में पुनः प्रयास करें।' : 'Unable to load live transits. Please try again later.');
+        setLoadError(t('auto.unableToLoadLiveTran'));
         setTransits([]);
       })
       .finally(() => {
@@ -178,7 +178,7 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
     return map;
   }, [lagnaSignNum, transits, globalToNatal]);
 
-  const houseLabel = (n: number) => (isHi ? `${n}वाँ भाव` : `House ${n}`);
+  const houseLabel = (n: number) => (t('auto.houseN'));
 
   return (
     <div className="space-y-6">
@@ -194,7 +194,7 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
         {asOf && (
           <div className="flex items-center gap-1.5 text-xs text-green-600 bg-green-500/10 border border-green-300/30 rounded-full px-2.5 py-1 shrink-0">
             <RefreshCw className="w-3 h-3" />
-            {isHi ? `लाइव · ${asOf}` : `Live · ${asOf}`}
+            {t('auto.liveAsOf')}
           </div>
         )}
       </div>
@@ -203,7 +203,7 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
       <div className="flex items-start gap-3 p-4 rounded-xl border border-blue-300/30 bg-blue-500/5">
         <Info className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
         <p className="text-xs text-blue-700">
-          {isHi ? 'ग्रहों की स्थिति आज की तिथि के अनुसार स्वचालित रूप से गणना की गई है (सायन/लाहिरी)।' : 'Planet positions are live-calculated for today\'s date using sidereal/Lahiri ayanamsa.'}
+          {t('auto.planetPositionsAreLi')} using sidereal/Lahiri ayanamsa.
         </p>
       </div>
 
@@ -234,11 +234,11 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
           {t('lk.gochar.currentTransits')}
         </h3>
         {isLoading ? (
-          <p className="text-sm text-cosmic-text/70">{isHi ? 'गोचर लोड हो रहा है...' : 'Loading transits...'}</p>
+          <p className="text-sm text-cosmic-text/70">{t('auto.loadingTransits')}</p>
         ) : loadError ? (
           <p className="text-sm text-red-500">{loadError}</p>
         ) : transits.length === 0 ? (
-          <p className="text-sm text-cosmic-text/70">{isHi ? 'आज के लिए कोई गोचर डेटा उपलब्ध नहीं है।' : 'No transit data available for today.'}</p>
+          <p className="text-sm text-cosmic-text/70">{t('auto.noTransitDataAvailab')}</p>
         ) : (
           <div className="space-y-3">
           {transits.map((transit) => {
@@ -290,7 +290,7 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
                       </div>
                     ) : (
                       <span className="text-xs text-gray-400 italic">
-                        {isHi ? 'परिवर्तनशील' : 'Variable'}
+                        {t('auto.variable')}
                       </span>
                     )}
 
@@ -305,7 +305,7 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
                             key={p}
                             className="text-xs px-1.5 py-0.5 rounded bg-sacred-gold/15 text-sacred-gold-dark font-medium"
                           >
-                            {PLANET_ABBR[p] || p.slice(0, 2)} {isHi ? '(जन्म)' : '(natal)'}
+                            {PLANET_ABBR[p] || p.slice(0, 2)} {t('auto.Natal')}
                           </span>
                         ))}
                       </div>
@@ -353,7 +353,7 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
                         </span>
                       ))}
                       <span className="text-xs text-gray-400 w-full mt-1">
-                        {isHi ? 'गोचर' : 'Transit'}
+                        {t('auto.transit')}
                       </span>
                     </div>
                   ) : (

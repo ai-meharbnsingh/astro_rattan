@@ -65,7 +65,7 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
       {/* Matrix Grid */}
       <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
         <h4 className="font-display font-semibold text-sacred-brown mb-3">
-          {language === 'hi' ? 'ग्रहों के पारस्परिक दृष्टि' : 'Aspects on Planets'}
+          {t('auto.aspectsOnPlanets')}
         </h4>
         <div className="overflow-x-auto">
           <table className="w-full text-data border-collapse" style={{ minWidth: '600px' }}>
@@ -122,14 +122,14 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
         {/* Legend */}
         <div className="flex flex-wrap gap-4 mt-4 text-sm text-cosmic-text">
           {[
-            { abbr: 'conj', label: language === 'hi' ? 'युति (0°)' : 'Conjunction (0°)' },
-            { abbr: 'sext', label: language === 'hi' ? 'षडाष्टक (60°)' : 'Sextile (60°)' },
-            { abbr: 'squr', label: language === 'hi' ? 'चतुर्थ (90°)' : 'Square (90°)' },
-            { abbr: 'trin', label: language === 'hi' ? 'त्रिकोण (120°)' : 'Trine (120°)' },
-            { abbr: 'oppo', label: language === 'hi' ? 'सप्तम (180°)' : 'Opposition (180°)' },
-            { abbr: 'ssqr', label: language === 'hi' ? 'अर्ध-चतुर्थ (45°)' : 'Semi-Square (45°)' },
-            { abbr: 'sesq', label: language === 'hi' ? 'पौने-चतुर्थ (135°)' : 'Sesquiquadrate (135°)' },
-            { abbr: 'ququ', label: language === 'hi' ? 'पंचम (72°)' : 'Quintile (72°)' },
+            { abbr: 'conj', label: t('auto.conjunction0') },
+            { abbr: 'sext', label: t('auto.sextile60') },
+            { abbr: 'squr', label: t('auto.square90') },
+            { abbr: 'trin', label: t('auto.trine120') },
+            { abbr: 'oppo', label: t('auto.opposition180') },
+            { abbr: 'ssqr', label: t('auto.semiSquare45') },
+            { abbr: 'sesq', label: t('auto.sesquiquadrate135') },
+            { abbr: 'ququ', label: t('auto.quintile72') },
           ].map(({ abbr, label }) => (
             <span key={abbr} className="flex items-center gap-1.5">
               <span
@@ -147,7 +147,7 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
       {/* Aspects on Cusps (Nirayana) */}
       {data.cusp_aspects?.nirayana && (
         <CuspAspectGrid
-          title={language === 'hi' ? 'भाव शीर्ष पर दृष्टि (निरयण)' : 'Aspects on Cusps (Nirayana)'}
+          title={t('auto.aspectsOnCuspsNiraya')}
           cuspData={data.cusp_aspects.nirayana}
           planetOrder={data.cusp_aspects.planet_order || data.planet_order}
           language={language}
@@ -157,7 +157,7 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
       {/* Aspects on Cusps (Sayana) */}
       {data.cusp_aspects?.sayana && (
         <CuspAspectGrid
-          title={language === 'hi' ? 'भाव शीर्ष पर दृष्टि (सायन)' : 'Aspects on Cusps (Sayana)'}
+          title={t('auto.aspectsOnCuspsSayana')}
           cuspData={data.cusp_aspects.sayana}
           planetOrder={data.cusp_aspects.planet_order || data.planet_order}
           language={language}
@@ -168,7 +168,7 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
       {data.aspects_list && data.aspects_list.length > 0 && (
         <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
           <h4 className="font-display font-semibold text-sacred-brown mb-3">
-            {language === 'hi' ? 'सक्रिय दृष्टियां' : 'Active Aspects'}
+            {t('auto.activeAspects')}
           </h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {data.aspects_list.map((asp: any, i: number) => {
@@ -183,7 +183,7 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
                     {translatePlanet(asp.planet1, language)} — {translatePlanet(asp.planet2, language)}
                   </span>
                   <span className="text-sm font-mono">
-                    {translateBackend(asp.aspect_name, language)} ({asp.degree}° {language === 'hi' ? 'ऑर्ब' : 'orb'}:{asp.orb}°)
+                    {translateBackend(asp.aspect_name, language)} ({asp.degree}° {t('auto.orb')}:{asp.orb}°)
                   </span>
                 </div>
               );
@@ -221,7 +221,7 @@ function CuspAspectGrid({ title, cuspData, planetOrder, language }: CuspAspectGr
               </th>
               {cusps.map((c) => (
                 <th key={c} className="p-1.5 text-center font-semibold border border-slate-200 bg-slate-100" style={{ minWidth: '50px' }}>
-                  {language === 'hi' ? `भा${c}` : `C${c}`}
+                  {t('auto.cC')}
                 </th>
               ))}
             </tr>

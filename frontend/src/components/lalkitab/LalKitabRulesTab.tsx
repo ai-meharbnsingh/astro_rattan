@@ -179,7 +179,7 @@ export default function LalKitabRulesTab({ chartData }: Props) {
                   {/* Left house */}
                   <div className="flex-1 p-4 text-center">
                     <p className="text-sm text-gray-600 mb-1">
-                      {isHi ? 'भाव' : 'House'}
+                      {t('auto.house')}
                     </p>
                     <p className="text-2xl font-sans font-bold text-sacred-gold">
                       {h1}
@@ -196,7 +196,7 @@ export default function LalKitabRulesTab({ chartData }: Props) {
                         ))
                       ) : (
                         <span className="text-sm text-gray-500 italic">
-                          {isHi ? 'खाली' : 'Empty'}
+                          {t('auto.empty')}
                         </span>
                       )}
                     </div>
@@ -210,7 +210,7 @@ export default function LalKitabRulesTab({ chartData }: Props) {
                   {/* Right house */}
                   <div className="flex-1 p-4 text-center">
                     <p className="text-sm text-gray-600 mb-1">
-                      {isHi ? 'भाव' : 'House'}
+                      {t('auto.house')}
                     </p>
                     <p className="text-2xl font-sans font-bold text-sacred-gold">
                       {h2}
@@ -227,7 +227,7 @@ export default function LalKitabRulesTab({ chartData }: Props) {
                         ))
                       ) : (
                         <span className="text-sm text-gray-500 italic">
-                          {isHi ? 'खाली' : 'Empty'}
+                          {t('auto.empty')}
                         </span>
                       )}
                     </div>
@@ -238,15 +238,11 @@ export default function LalKitabRulesTab({ chartData }: Props) {
                 <div className="border-t border-sacred-gold/10 p-3">
                   {hasMutual ? (
                     <p className="text-sm text-sacred-gold/80 text-center">
-                      {isHi
-                        ? `भाव ${h1} और भाव ${h2} के ग्रह परस्पर प्रभाव डालते हैं`
-                        : `Planets in House ${h1} and House ${h2} have mutual influence`}
+                      {t('auto.planetsInHouseH1AndH')}
                     </p>
                   ) : (
                     <p className="text-sm text-gray-500 text-center">
-                      {isHi
-                        ? `भाव ${h1} का ग्रह भाव ${h2} को प्रभावित करता है`
-                        : `Planet in House ${h1} affects House ${h2}`}
+                      {t('auto.planetInHouseH1Affec')}
                     </p>
                   )}
                 </div>
@@ -305,11 +301,11 @@ export default function LalKitabRulesTab({ chartData }: Props) {
                 {/* House labels */}
                 <div className="flex items-center gap-3 mb-2 flex-wrap">
                   <span className="px-2.5 py-1 rounded-lg bg-sacred-gold/10 text-sacred-gold text-sm font-sans font-medium">
-                    {isHi ? 'भाव' : 'House'} {rule.fromHouse}
+                    {t('auto.house')} {rule.fromHouse}
                   </span>
                   <span className="text-sacred-gold/40">&#10230;</span>
                   <span className="px-2.5 py-1 rounded-lg bg-sacred-gold/10 text-sacred-gold text-sm font-sans font-medium">
-                    {isHi ? 'भाव' : 'House'} {rule.toHouse}
+                    {t('auto.house')} {rule.toHouse}
                   </span>
                   <span className="text-sm text-gray-500">
                     ({isHi ? rule.domainHi : rule.domainEn})
@@ -325,9 +321,7 @@ export default function LalKitabRulesTab({ chartData }: Props) {
                 {hasPlanets && (
                   <div className="mt-3 pt-3 border-t border-sacred-gold/10">
                     <p className="text-sm text-gray-600 mb-1.5">
-                      {isHi
-                        ? `भाव ${rule.fromHouse} में वर्तमान ग्रह:`
-                        : `Current planets in House ${rule.fromHouse}:`}
+                      {t('auto.currentPlanetsInHous')}
                     </p>
                     <div className="flex gap-2 flex-wrap">
                       {planetsFrom.map((p) => {

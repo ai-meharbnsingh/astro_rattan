@@ -40,7 +40,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
     setLoading(true);
     api.get(`/api/lalkitab/advanced/${kundliId}`)
       .then(setData)
-      .catch(() => setError(isHi ? 'उन्नत विश्लेषण लोड करने में विफल' : 'Failed to load advanced analysis'))
+      .catch(() => setError(t('auto.failedToLoadAdvanced')))
       .finally(() => setLoading(false));
   }, [kundliId, isHi]);
 
@@ -199,7 +199,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
         {data.masnui_planets?.psychological_profile && (
           <div className="mb-6 p-4 rounded-xl bg-purple-50 border border-purple-200">
             <h4 className="font-bold text-purple-800 mb-2 text-sm uppercase tracking-wider">
-              {isHi ? 'मनोवैज्ञानिक प्रोफाइल' : 'Psychological Profile'}
+              {t('auto.psychologicalProfile')}
             </h4>
             <p className="text-sm text-cosmic-text mb-2">
               {isHi 
@@ -207,13 +207,13 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                 : data.masnui_planets.psychological_profile.dominant_quality?.en}
             </p>
             <p className="text-xs text-cosmic-text/70">
-              <span className="font-semibold">{isHi ? 'व्यवहारिक प्रवृत्तियां: ' : 'Behavioral Tendencies: '}</span>
+              <span className="font-semibold">{t('auto.behavioralTendencies')}</span>
               {isHi 
                 ? data.masnui_planets.psychological_profile.behavioral_tendencies?.hi 
                 : data.masnui_planets.psychological_profile.behavioral_tendencies?.en}
             </p>
             <p className="text-xs text-cosmic-text/70 mt-1">
-              <span className="font-semibold">{isHi ? 'संबंध दृष्टिकोण: ' : 'Relationship Approach: '}</span>
+              <span className="font-semibold">{t('auto.relationshipApproach')}</span>
               {isHi 
                 ? data.masnui_planets.psychological_profile.relationship_approach?.hi 
                 : data.masnui_planets.psychological_profile.relationship_approach?.en}
@@ -225,24 +225,24 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
         {data.masnui_planets?.house_overrides && Object.keys(data.masnui_planets.house_overrides).length > 0 && (
           <div className="mb-6 space-y-3">
             <h4 className="font-bold text-sacred-brown text-sm uppercase tracking-wider">
-              {isHi ? 'भाव-ओवरराइड प्रभाव (Lal Kitab 1941, p380)' : 'House-Override Effects (Lal Kitab 1941, p380)'}
+              {t('auto.houseOverrideEffects')}
             </h4>
             {Object.entries(data.masnui_planets.house_overrides).map(([houseNum, override]: [string, any]) => (
               <div key={houseNum} className="p-4 rounded-xl bg-amber-50 border border-amber-200">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="px-2 py-0.5 bg-amber-200 text-amber-800 text-xs font-bold rounded">
-                    {isHi ? `भाव ${houseNum}` : `House ${houseNum}`}
+                    {t('auto.houseHouseNum')}
                   </span>
                   <span className="text-sm font-bold text-amber-800">
                     {isHi ? override.house_name?.hi : override.house_name?.en}
                   </span>
                 </div>
                 <p className="text-xs text-cosmic-text mb-2">
-                  <span className="font-semibold">{isHi ? 'प्रभाव: ' : 'Effects: '}</span>
+                  <span className="font-semibold">{t('auto.effects')}</span>
                   {isHi ? override.effects?.hi : override.effects?.en}
                 </p>
                 <p className="text-xs text-amber-700 italic">
-                  <span className="font-semibold">{isHi ? 'भविष्यवाणी नोट: ' : 'Predictive Note: '}</span>
+                  <span className="font-semibold">{t('auto.predictiveNote')}</span>
                   {isHi ? override.predictive_note?.hi : override.predictive_note?.en}
                 </p>
               </div>
@@ -254,7 +254,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
         {data.masnui_planets?.predictive_notes && data.masnui_planets.predictive_notes.length > 0 && (
           <div className="mb-6 p-4 rounded-xl bg-blue-50 border border-blue-200">
             <h4 className="font-bold text-blue-800 mb-3 text-sm uppercase tracking-wider">
-              {isHi ? 'भविष्यवाणी नोट्स' : 'Predictive Notes'}
+              {t('auto.predictiveNotes')}
             </h4>
             <ul className="space-y-2">
               {data.masnui_planets.predictive_notes.map((note: any, i: number) => (
@@ -307,15 +307,15 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                 </p>
                 {m.house_override && (
                   <p className="text-xs text-amber-700 mt-2">
-                    <span className="font-semibold">{isHi ? 'भाव ओवरराइड: ' : 'House Override: '}</span>
-                    {isHi ? `भाव ${m.house_override}` : `House ${m.house_override}`}
+                    <span className="font-semibold">{t('auto.houseOverride')}</span>
+                    {t('auto.houseMHouseoverride')}
                   </p>
                 )}
               </div>
             ))}
             {masnuiList.length === 0 && (
               <div className="col-span-full py-10 text-center border border-dashed border-gray-200 rounded-xl">
-                <p className="text-gray-400 italic">{isHi ? 'कोई मसनुई ग्रह नहीं मिला' : 'No artificial planets detected'}</p>
+                <p className="text-gray-400 italic">{t('auto.noArtificialPlanetsD')}</p>
               </div>
             )}
           </div>
@@ -330,7 +330,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <h3 className="text-xl font-sans font-bold text-purple-900">
-              {isHi ? 'होरा (ग्रहीय घंटा) ऋण विश्लेषण' : 'Hora (Planetary Hour) Debt Analysis'}
+              {t('auto.horaPlanetaryHourDeb')}
             </h3>
           </div>
           
@@ -338,15 +338,15 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-white p-3 rounded-lg border border-purple-100">
-                  <span className="text-xs text-purple-600 uppercase font-bold">{isHi ? 'वार स्वामी' : 'Day Lord'}</span>
+                  <span className="text-xs text-purple-600 uppercase font-bold">{t('auto.dayLord')}</span>
                   <p className="text-lg font-bold text-purple-900">{data.karmic_debts_hora_analysis.hora_analysis.day_lord}</p>
                   <p className="text-xs text-purple-600">{data.karmic_debts_hora_analysis.hora_analysis.weekday_name}</p>
                 </div>
                 <div className="bg-white p-3 rounded-lg border border-purple-100">
-                  <span className="text-xs text-purple-600 uppercase font-bold">{isHi ? 'होरा स्वामी' : 'Hora Lord'}</span>
+                  <span className="text-xs text-purple-600 uppercase font-bold">{t('auto.horaLord')}</span>
                   <p className="text-lg font-bold text-purple-900">{data.karmic_debts_hora_analysis.hora_analysis.hora_lord}</p>
                   <p className="text-xs text-purple-600">
-                    {isHi ? `सूर्योदय से ${data.karmic_debts_hora_analysis.hora_analysis.hours_elapsed_since_sunrise} घंटे` : `${data.karmic_debts_hora_analysis.hora_analysis.hours_elapsed_since_sunrise} hrs after sunrise`}
+                    {t('auto.DataKarmicdebtshoraa')}
                   </p>
                 </div>
               </div>
@@ -355,7 +355,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
               {data.karmic_debts_hora_analysis.hora_analysis.base_debt && (
                 <div className="bg-white p-4 rounded-lg border border-purple-100">
                   <h4 className="font-bold text-purple-800 mb-2">
-                    {isHi ? 'होरा-आधारित ऋण: ' : 'Hora-Based Debt: '}
+                    {t('auto.horaBasedDebt')}
                     {isHi ? data.karmic_debts_hora_analysis.hora_analysis.base_debt.debt_hi : data.karmic_debts_hora_analysis.hora_analysis.base_debt.debt}
                   </h4>
                   <p className="text-sm text-cosmic-text">
@@ -368,14 +368,14 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
               {data.karmic_debts_hora_analysis.conflicts_resolved && data.karmic_debts_hora_analysis.conflicts_resolved.length > 0 && (
                 <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
                   <h4 className="font-bold text-amber-800 mb-2">
-                    {isHi ? 'विरोधाभास परिवर्तन (Conflict Modifications)' : 'Conflict Modifications'}
+                    {t('auto.conflictModification')}
                   </h4>
                   {data.karmic_debts_hora_analysis.conflicts_resolved.map((conflict: any, idx: number) => (
                     <div key={idx} className="mb-2">
                       <p className="text-sm font-semibold text-amber-900">
                         {conflict.type === 'modification' 
-                          ? (isHi ? `परिवर्तित: ${conflict.from} → ${conflict.to}` : `Modified: ${conflict.from} → ${conflict.to}`)
-                          : (isHi ? 'तीव्रता वृद्धि' : 'Intensity Enhancement')
+                          ? (t('auto.modifiedConflictFrom'))
+                          : (t('auto.intensityEnhancement'))
                         }
                       </p>
                       <p className="text-xs text-amber-700">
@@ -390,7 +390,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
               {data.karmic_debts_hora_analysis.time_sensitivity_warning && (
                 <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
                   <p className="text-sm text-yellow-800">
-                    <span className="font-bold">{isHi ? 'समय संवेदनशीलता: ' : 'Time Sensitivity: '}</span>
+                    <span className="font-bold">{t('auto.timeSensitivity')}</span>
                     {isHi ? data.karmic_debts_hora_analysis.time_sensitivity_warning.message.hi : data.karmic_debts_hora_analysis.time_sensitivity_warning.message.en}
                   </p>
                 </div>
@@ -400,10 +400,10 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
               {data.karmic_debts_hora_analysis.hora_influence && (
                 <div className="text-sm text-cosmic-text bg-white/50 p-3 rounded">
                   <p>
-                    <span className="font-semibold">{isHi ? 'होरा प्रभाव: ' : 'Hora Influence: '}</span>
+                    <span className="font-semibold">{t('auto.horaInfluence')}</span>
                     {data.karmic_debts_hora_analysis.hora_influence.added_new_debt 
-                      ? (isHi ? 'होरा विश्लेषण के आधार पर नया ऋण जोड़ा गया' : 'New debt added based on Hora analysis')
-                      : (isHi ? `होरा ऋण पहले से ही ग्रहीय स्थितियों द्वारा पहचाना गया` : 'Hora debt already identified through planetary positions')
+                      ? (t('auto.newDebtAddedBasedOnH'))
+                      : (t('auto.horaDebtAlreadyIdent'))
                     }
                   </p>
                 </div>
@@ -411,7 +411,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
             </div>
           ) : (
             <p className="text-sm text-cosmic-text italic">
-              {isHi ? 'जन्म समय उपलब्ध नहीं होने के कारण होरा विश्लेषण नहीं किया जा सका' : 'Hora analysis could not be performed - birth time not available'}
+              {t('auto.horaAnalysisCouldNot')}
             </p>
           )}
         </section>
@@ -439,12 +439,12 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                     <h4 className="text-lg font-bold text-red-800">{isHi ? debt.name.hi : debt.name.en}</h4>
                     {debt.is_hora_based && (
                       <span className="px-2 py-0.5 rounded bg-purple-200 text-purple-800 text-[10px] font-bold">
-                        {isHi ? 'होरा-आधारित' : 'HORA-BASED'}
+                        {t('auto.hORABASED')}
                       </span>
                     )}
                     {debt.is_modified && (
                       <span className="px-2 py-0.5 rounded bg-amber-200 text-amber-800 text-[10px] font-bold">
-                        {isHi ? 'परिवर्तित' : 'MODIFIED'}
+                        {t('auto.mODIFIED')}
                       </span>
                     )}
                   </div>
@@ -456,7 +456,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                   )}
                   <p className="text-xs font-semibold text-red-600/70">{t('lk.advanced.reason')}: {isHi ? debt.reason.hi : debt.reason.en}</p>
                 </div>
-                <span className="px-3 py-1 rounded-full bg-red-600 text-white text-xs font-bold self-start">{isHi ? 'सक्रिय' : 'ACTIVE DEBT'}</span>
+                <span className="px-3 py-1 rounded-full bg-red-600 text-white text-xs font-bold self-start">{t('auto.aCTIVEDEBT')}</span>
               </div>
               <div className="bg-white/60 p-3 rounded-lg border border-red-100 mb-3">
                 <p className="text-xs font-bold text-red-800 mb-1 uppercase tracking-tighter">{t('lk.advanced.manifestation')}</p>
@@ -472,7 +472,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
           ))}
           {data.karmic_debts.length === 0 && (
             <div className="py-10 text-center border border-dashed border-gray-200 rounded-xl bg-green-500/5">
-              <p className="text-green-700 font-medium italic">{isHi ? 'बधाई! कोई गंभीर कर्मिक ऋण नहीं मिला' : 'Congratulations! No severe karmic debts detected'}</p>
+              <p className="text-green-700 font-medium italic">{t('auto.congratulationsNoSev')}</p>
             </div>
           )}
         </div>
@@ -515,7 +515,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
           ))}
           {data.prohibitions.length === 0 && (
             <div className="py-10 text-center border border-dashed border-gray-200 rounded-xl">
-              <p className="text-gray-400 italic">{isHi ? 'कोई विशिष्ट वर्जना नहीं मिली' : 'No specific prohibitions found'}</p>
+              <p className="text-gray-400 italic">{t('auto.noSpecificProhibitio')}</p>
             </div>
           )}
         </div>

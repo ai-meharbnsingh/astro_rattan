@@ -180,7 +180,7 @@ export default function LalKitabForm({ onGenerate, loading }: LalKitabFormProps)
               type="text"
               value={formData.name}
               onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-              placeholder={language === 'hi' ? 'अपना नाम दर्ज करें' : 'Enter your name'}
+              placeholder={t('auto.enterYourName')}
               className={`${inputClass} pl-10`}
             />
           </div>
@@ -223,7 +223,7 @@ export default function LalKitabForm({ onGenerate, loading }: LalKitabFormProps)
             {isNewClient && (
               <div>
                 <label className="block text-xs font-medium text-sacred-gold mb-1">
-                  {language === 'hi' ? 'क्लाइंट फ़ोन नंबर' : 'Client Phone'} <span className="text-red-400">*</span>
+                  {t('auto.clientPhone')} <span className="text-red-400">*</span>
                 </label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark" />
@@ -231,7 +231,7 @@ export default function LalKitabForm({ onGenerate, loading }: LalKitabFormProps)
                     type="tel"
                     value={formData.phone || ''}
                     onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
-                    placeholder={language === 'hi' ? 'फ़ोन नंबर' : 'Phone number'}
+                    placeholder={t('auto.phoneNumber')}
                     className={`${inputClass} pl-10`}
                   />
                 </div>
@@ -287,7 +287,7 @@ export default function LalKitabForm({ onGenerate, loading }: LalKitabFormProps)
               type="text"
               value={formData.place}
               onChange={(e) => handlePlaceChange(e.target.value)}
-              placeholder={language === 'hi' ? 'जन्म स्थान खोजें' : 'Search birth place'}
+              placeholder={t('auto.searchBirthPlace')}
               className={`${inputClass} pl-10`}
               autoComplete="off"
               required

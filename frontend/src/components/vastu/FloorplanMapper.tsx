@@ -277,7 +277,7 @@ export default function FloorplanMapper({
             }`}
           >
             <MousePointer className="w-3.5 h-3.5" />
-            {isHi ? 'रखें' : 'Place'}
+            {t('auto.place')}
           </button>
           <button
             onClick={() => setMobileMode('pan')}
@@ -286,14 +286,14 @@ export default function FloorplanMapper({
             }`}
           >
             <Move className="w-3.5 h-3.5" />
-            {isHi ? 'खिसकाएँ' : 'Pan'}
+            {t('auto.pan')}
           </button>
         </div>
 
         {/* North rotation */}
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <Compass className="w-4 h-4 text-sacred-gold flex-shrink-0" />
-          <label className="text-sm text-cosmic-text/60">{isHi ? 'उत्तर दिशा' : 'North'}</label>
+          <label className="text-sm text-cosmic-text/60">{t('auto.north')}</label>
           <input
             type="range"
             min={0}
@@ -316,19 +316,19 @@ export default function FloorplanMapper({
           }`}
         >
           <Grid3X3 className="w-3.5 h-3.5" />
-          {isHi ? 'ग्रिड' : 'Grid'}
+          {t('auto.grid')}
         </button>
 
         {/* Grid position — move Brahmasthana */}
         {showGrid && (
           <div className="flex items-center gap-1">
-            <span className="text-xs text-cosmic-text/50 mr-1">{isHi ? 'केंद्र' : 'Center'}</span>
+            <span className="text-xs text-cosmic-text/50 mr-1">{t('auto.center')}</span>
             <button onClick={() => setGridOffset(o => ({ ...o, y: o.y - 3 }))} className="min-w-[28px] min-h-[28px] flex items-center justify-center rounded bg-white/5 text-cosmic-text/50 hover:text-sacred-gold text-xs" title="Move up">↑</button>
             <button onClick={() => setGridOffset(o => ({ ...o, y: o.y + 3 }))} className="min-w-[28px] min-h-[28px] flex items-center justify-center rounded bg-white/5 text-cosmic-text/50 hover:text-sacred-gold text-xs" title="Move down">↓</button>
             <button onClick={() => setGridOffset(o => ({ ...o, x: o.x - 3 }))} className="min-w-[28px] min-h-[28px] flex items-center justify-center rounded bg-white/5 text-cosmic-text/50 hover:text-sacred-gold text-xs" title="Move left">←</button>
             <button onClick={() => setGridOffset(o => ({ ...o, x: o.x + 3 }))} className="min-w-[28px] min-h-[28px] flex items-center justify-center rounded bg-white/5 text-cosmic-text/50 hover:text-sacred-gold text-xs" title="Move right">→</button>
             {(gridOffset.x !== 0 || gridOffset.y !== 0) && (
-              <button onClick={() => setGridOffset({ x: 0, y: 0 })} className="text-xs text-cosmic-text/40 hover:text-white ml-1">{isHi ? 'रीसेट' : 'Reset'}</button>
+              <button onClick={() => setGridOffset({ x: 0, y: 0 })} className="text-xs text-cosmic-text/40 hover:text-white ml-1">{t('auto.reset')}</button>
             )}
           </div>
         )}
@@ -344,7 +344,7 @@ export default function FloorplanMapper({
           </button>
           {zoom !== 1 && (
             <button onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }} className="text-sm text-cosmic-text/40 hover:text-white ml-1 min-h-[40px] flex items-center">
-              {isHi ? 'रीसेट' : 'Reset'}
+              {t('auto.reset')}
             </button>
           )}
         </div>
@@ -353,7 +353,7 @@ export default function FloorplanMapper({
         {markers.length > 0 && (
           <button onClick={handleUndo} className="flex items-center gap-1 min-w-[40px] min-h-[40px] px-2 py-1.5 rounded bg-white/5 text-cosmic-text/50 hover:text-white text-sm">
             <Undo2 className="w-3.5 h-3.5" />
-            {isHi ? 'पूर्ववत' : 'Undo'}
+            {t('auto.undo')}
           </button>
         )}
 
@@ -384,11 +384,11 @@ export default function FloorplanMapper({
           className="flex items-center gap-1 min-w-[40px] min-h-[40px] px-2.5 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm font-medium hover:bg-amber-500/20 transition-colors disabled:opacity-40"
         >
           {autoDetecting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-          {isHi ? 'AI पहचान' : 'AI Detect'}
+          {t('auto.aIDetect')}
         </button>
 
         <span className="text-[10px] text-cosmic-text/40 ml-auto hidden sm:inline">
-          {isHi ? 'क्लिक=कमरा जोड़ें, मार्कर क्लिक=बदलें' : 'Click=add room, Click marker=edit'}
+          {t('auto.clickAddRoomClickMar')}
         </span>
       </div>
 
@@ -397,9 +397,7 @@ export default function FloorplanMapper({
         <div className="flex items-center gap-2 px-3 py-2 bg-amber-500/10 border border-amber-500/20 rounded-lg">
           <Sparkles className="w-4 h-4 text-amber-400 flex-shrink-0" />
           <p className="text-xs text-amber-300">
-            {isHi
-              ? `AI ने ${markers.length} कमरे पहचाने। गलत मार्कर पर क्लिक करके बदलें, X से हटाएँ, या खाली जगह क्लिक करके नया जोड़ें।`
-              : `AI detected ${markers.length} rooms. Click any marker to change its type, X to remove, or click empty area to add more.`}
+            {t('auto.aIDetectedMarkersLen')}
           </p>
         </div>
       )}
@@ -407,9 +405,7 @@ export default function FloorplanMapper({
         <div className="flex items-center gap-2 px-3 py-2 bg-blue-500/10 border border-blue-500/20 rounded-lg">
           <Compass className="w-4 h-4 text-blue-400 flex-shrink-0" />
           <p className="text-xs text-blue-300">
-            {isHi
-              ? 'AI कोई कमरा नहीं पहचान पाया। चिंता न करें — इमेज पर क्लिक करके मैन्युअली कमरे रखें।'
-              : 'AI could not detect rooms. No worries — click anywhere on the image to manually place rooms.'}
+            {t('auto.aICouldNotDetectRoom')}
           </p>
         </div>
       )}
@@ -547,7 +543,7 @@ export default function FloorplanMapper({
                 <div className="absolute z-30 left-1/2 -translate-x-1/2 mt-1 bg-[#1a1a2e] border border-sacred-gold/30 rounded-xl shadow-2xl p-1 max-h-[200px] overflow-y-auto w-44">
                   <div className="px-2 py-1 border-b border-white/10 mb-1">
                     <span className="text-[9px] text-sacred-gold font-semibold">
-                      {isHi ? 'कमरा बदलें' : 'Change Room Type'}
+                      {t('auto.changeRoomType')}
                     </span>
                   </div>
                   {ROOM_OPTIONS.map(ro => (
@@ -593,7 +589,7 @@ export default function FloorplanMapper({
           >
             <div className="px-2 py-1 flex items-center justify-between border-b border-white/10 mb-1">
               <span className="text-sm text-sacred-gold font-semibold">
-                {isHi ? 'कमरा चुनें' : 'Select Room'}
+                {t('auto.selectRoom')}
               </span>
               <button onClick={() => setClickPos(null)} className="text-cosmic-text/40 hover:text-white">
                 <X className="w-3 h-3" />

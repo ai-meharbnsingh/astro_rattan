@@ -69,7 +69,7 @@ export default function LalKitabWealthTab({ kundliId }: Props) {
     setError('');
     api.get(`/api/lalkitab/predictions/wealth/${kundliId}`)
       .then((res: any) => setData(res))
-      .catch(() => setError(isHi ? 'धन भविष्यवाणी लोड नहीं हो सकी' : 'Failed to load wealth prediction'))
+      .catch(() => setError(t('auto.failedToLoadWealthPr')))
       .finally(() => setLoading(false));
   }, [kundliId, isHi]);
 
@@ -90,7 +90,7 @@ export default function LalKitabWealthTab({ kundliId }: Props) {
         <div className="flex items-start justify-between">
           <h2 className="text-xl font-sans font-semibold text-sacred-gold flex items-center gap-2 mb-1">
             <Coins className="w-5 h-5" />
-            {isHi ? 'धन भविष्यवाणी' : 'Wealth Predictions'}
+            {t('auto.wealthPredictions')}
           </h2>
           {data && (
             <button
@@ -100,17 +100,15 @@ export default function LalKitabWealthTab({ kundliId }: Props) {
                 border-sacred-gold/40 text-sacred-gold hover:bg-sacred-gold/10"
             >
               {saved
-                ? <><BookmarkCheck className="w-4 h-4" />{isHi ? 'सेव हो गया' : 'Saved'}</>
+                ? <><BookmarkCheck className="w-4 h-4" />{t('auto.saved')}</>
                 : saving
-                ? <><Loader2 className="w-4 h-4 animate-spin" />{isHi ? 'सेव हो रहा है' : 'Saving'}</>
-                : <><Bookmark className="w-4 h-4" />{isHi ? 'सेव करें' : 'Save'}</>}
+                ? <><Loader2 className="w-4 h-4 animate-spin" />{t('auto.saving')}</>
+                : <><Bookmark className="w-4 h-4" />{t('auto.save')}</>}
             </button>
           )}
         </div>
         <p className="text-sm text-gray-500">
-          {isHi
-            ? 'गुरु, शुक्र, द्वितीय और एकादश भाव के आधार पर धन विश्लेषण'
-            : 'Wealth analysis based on Jupiter, Venus, 2nd and 11th house'}
+          {t('auto.wealthAnalysisBasedO')}
         </p>
       </div>
 
@@ -124,7 +122,7 @@ export default function LalKitabWealthTab({ kundliId }: Props) {
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h3 className="font-sans font-semibold text-sacred-gold">
-                      {isHi ? 'धन क्षमता स्कोर' : 'Wealth Potential Score'}
+                      {t('auto.wealthPotentialScore')}
                     </h3>
                     <span className={`inline-block mt-1 px-3 py-1 rounded-full text-sm font-semibold ${clr.badge}`}>
                       {isHi ? data.wealth_potential_hi : data.wealth_potential_en}
@@ -178,7 +176,7 @@ export default function LalKitabWealthTab({ kundliId }: Props) {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs text-gray-400">{isHi ? 'कोई ग्रह नहीं' : 'No planets'}</p>
+                  <p className="text-xs text-gray-400">{t('auto.noPlanets')}</p>
                 )}
               </div>
             ))}
@@ -189,7 +187,7 @@ export default function LalKitabWealthTab({ kundliId }: Props) {
             <div className="card-sacred rounded-xl border border-sacred-gold/20 p-5">
               <h3 className="font-sans font-semibold text-sacred-gold mb-4 flex items-center gap-2">
                 <TrendingUp className="w-4 h-4" />
-                {isHi ? 'आय के स्रोत' : 'Income Sources'}
+                {t('auto.incomeSources')}
               </h3>
               <div className="space-y-2">
                 {data.income_sources.map((src, i) => (
@@ -208,7 +206,7 @@ export default function LalKitabWealthTab({ kundliId }: Props) {
           <div className="card-sacred rounded-xl border border-blue-300/30 p-5 bg-blue-500/5">
             <h3 className="font-sans font-semibold text-blue-700 mb-2 flex items-center gap-2">
               <Coins className="w-4 h-4" />
-              {isHi ? 'निवेश सलाह' : 'Investment Advice'}
+              {t('auto.investmentAdvice')}
             </h3>
             <p className="text-sm text-cosmic-text/80 leading-relaxed">
               {isHi ? data.investment_advice.hi : data.investment_advice.en}
@@ -219,7 +217,7 @@ export default function LalKitabWealthTab({ kundliId }: Props) {
           <div className="card-sacred rounded-xl border border-green-300/30 p-5 bg-green-500/5">
             <h3 className="font-sans font-semibold text-green-700 mb-2 flex items-center gap-2">
               <PiggyBank className="w-4 h-4" />
-              {isHi ? 'बचत सुझाव' : 'Savings Tip'}
+              {t('auto.savingsTip')}
             </h3>
             <p className="text-sm text-cosmic-text/80 leading-relaxed">
               {isHi ? data.savings_tip.hi : data.savings_tip.en}

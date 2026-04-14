@@ -90,7 +90,7 @@ export default function FestivalsTab({ panchang, language, t, selectedDate }: Pr
                         {festival.rituals && (
                           <div className="mt-2 p-2 rounded-lg bg-cosmic-bg/50">
                             <p className="text-xs text-cosmic-text-secondary">
-                              <strong>{language === 'hi' ? 'विधि:' : 'Rituals:'}</strong> {festival.rituals}
+                              <strong>{t('auto.rituals')}</strong> {festival.rituals}
                             </p>
                           </div>
                         )}
@@ -104,7 +104,7 @@ export default function FestivalsTab({ panchang, language, t, selectedDate }: Pr
             <div className="text-center py-8">
               <Leaf className="h-12 w-12 text-cosmic-text-secondary mx-auto mb-3" />
               <p className="text-cosmic-text-secondary">
-                {language === 'hi' ? 'आज कोई विशेष त्योहार नहीं' : 'No special festivals today'}
+                {t('auto.noSpecialFestivalsTo')}
               </p>
             </div>
           )}
@@ -116,7 +116,7 @@ export default function FestivalsTab({ panchang, language, t, selectedDate }: Pr
         <CardContent className="p-4">
           <h3 className="text-lg font-bold text-cosmic-text-primary mb-4 flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-purple-500" />
-            {language === 'hi' ? 'इस महीने के त्योहार' : 'This Month\'s Festivals'}
+            {t('auto.thisMonth')s Festivals'}
           </h3>
           
           {loading ? (
@@ -149,7 +149,7 @@ export default function FestivalsTab({ panchang, language, t, selectedDate }: Pr
             </div>
           ) : (
             <p className="text-center text-cosmic-text-secondary py-4">
-              {language === 'hi' ? 'कोई डेटा उपलब्ध नहीं' : 'No data available'}
+              {t('auto.noDataAvailable')}
             </p>
           )}
         </CardContent>
@@ -163,12 +163,12 @@ export default function FestivalsTab({ panchang, language, t, selectedDate }: Pr
               <Info className="h-5 w-5 text-sacred-gold mt-0.5" />
               <div>
                 <h4 className="font-semibold text-cosmic-text-primary mb-1">
-                  {language === 'hi' ? 'पंचक' : 'Panchak'}
+                  {t('auto.panchak')}
                 </h4>
                 <p className="text-sm text-cosmic-text-secondary">
                   {panchang.panchaka?.active 
-                    ? (language === 'hi' ? 'पंचक चल रहा है - नए कार्य टालें' : 'Panchak is active - postpone new work')
-                    : (language === 'hi' ? 'पंचक नहीं है' : 'No Panchak today')
+                    ? (t('auto.panchakIsActivePostp'))
+                    : (t('auto.noPanchakToday'))
                   }
                 </p>
               </div>
@@ -182,12 +182,12 @@ export default function FestivalsTab({ panchang, language, t, selectedDate }: Pr
               <Moon className="h-5 w-5 text-sacred-gold mt-0.5" />
               <div>
                 <h4 className="font-semibold text-cosmic-text-primary mb-1">
-                  {language === 'hi' ? 'गंड मूल' : 'Ganda Moola'}
+                  {t('auto.gandaMoola')}
                 </h4>
                 <p className="text-sm text-cosmic-text-secondary">
                   {panchang.ganda_moola?.active 
-                    ? `${language === 'hi' ? 'सक्रिय' : 'Active'}: ${panchang.ganda_moola.nakshatra}`
-                    : (language === 'hi' ? 'आज गंड मूल नहीं है' : 'No Ganda Moola today')
+                    ? `${t('auto.active')}: ${panchang.ganda_moola.nakshatra}`
+                    : (t('auto.noGandaMoolaToday'))
                   }
                 </p>
               </div>

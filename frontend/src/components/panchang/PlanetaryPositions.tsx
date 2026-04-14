@@ -40,7 +40,7 @@ function PlanetaryPositions({ planets }: PlanetaryPositionsProps) {
         <div className="flex items-center gap-2 mb-4">
           <Globe className="w-5 h-5 text-sacred-gold" />
           <h3 className="text-cosmic-text font-semibold text-lg">
-            {language === 'hi' ? 'ग्रह स्थिति (नवग्रह)' : 'Planetary Positions (Navgraha)'}
+            {t('auto.planetaryPositionsNa')}
           </h3>
         </div>
 
@@ -59,10 +59,10 @@ function PlanetaryPositions({ planets }: PlanetaryPositionsProps) {
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-sacred-gold/10">
-                  <th className="p-2 text-left text-sacred-gold-dark">{language === 'hi' ? 'ग्रह' : 'Planet'}</th>
-                  <th className="p-2 text-left text-sacred-gold-dark">{language === 'hi' ? 'राशि' : 'Rashi'}</th>
-                  <th className="p-2 text-right text-sacred-gold-dark">{language === 'hi' ? 'अंश' : 'Degree'}</th>
-                  <th className="p-2 text-right text-sacred-gold-dark">{language === 'hi' ? 'देशांतर' : 'Longitude'}</th>
+                  <th className="p-2 text-left text-sacred-gold-dark">{t('auto.planet')}</th>
+                  <th className="p-2 text-left text-sacred-gold-dark">{t('auto.rashi')}</th>
+                  <th className="p-2 text-right text-sacred-gold-dark">{t('auto.degree')}</th>
+                  <th className="p-2 text-right text-sacred-gold-dark">{t('auto.longitude')}</th>
                 </tr>
               </thead>
               <tbody>

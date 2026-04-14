@@ -60,7 +60,7 @@ export default function SunMoonTimes({
         <div className="flex items-center gap-2 mb-4">
           <Sunrise className="h-5 w-5 text-sacred-gold" />
           <h3 className="text-lg font-semibold text-cosmic-text">
-            {language === 'hi' ? 'सूर्य और चंद्र' : 'Sun & Moon'}
+            {t('auto.sunMoon')}
           </h3>
         </div>
 

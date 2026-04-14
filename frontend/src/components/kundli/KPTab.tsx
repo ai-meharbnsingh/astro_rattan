@@ -26,7 +26,7 @@ export default function KPTab(props: KPTabProps) {
         <div className="space-y-6">
           {/* 1. KP Planet Table — full reference chart style */}
           <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
-            <h4 className="font-display font-semibold text-sacred-brown mb-3">{language === 'hi' ? 'कृष्णमूर्ति पद्धति — ग्रह चार्ट' : 'Krishnamurti Paddhati — Planet Chart'}</h4>
+            <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('auto.krishnamurtiPaddhati')}</h4>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead><tr className="bg-sacred-gold">
@@ -36,11 +36,11 @@ export default function KPTab(props: KPTabProps) {
                   <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.degree')}</th>
                   <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.nakshatra')}</th>
                   <th className="text-center p-1.5 text-sacred-gold-dark font-medium">{t('kundli.pada')}</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={language === 'hi' ? 'राशि स्वामी' : 'Rashi Lord'}>RL</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={language === 'hi' ? 'नक्षत्र स्वामी' : 'Nakshatra Lord'}>NL</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={language === 'hi' ? 'उप स्वामी' : 'Sub Lord'}>SL</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={language === 'hi' ? 'उप-उप स्वामी' : 'Sub-Sub Lord'}>SS</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={language === 'hi' ? 'उप-स्वामी का नक्षत्र स्वामी' : 'Star Lord of Sub Lord'}>SSSL</th>
+                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={t('auto.rashiLord')}>RL</th>
+                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={t('auto.nakshatraLord')}>NL</th>
+                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={t('auto.subLord')}>SL</th>
+                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={t('auto.subSubLord')}>SS</th>
+                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={t('auto.starLordOfSubLord')}>SSSL</th>
                 </tr></thead>
                 <tbody>
                   {(kpData.planets || []).map((p: any) => (
@@ -100,7 +100,7 @@ export default function KPTab(props: KPTabProps) {
                   <InteractiveKundli chartData={{ planets: birthPlanets, houses: birthHouses, ascendant: result?.chart_data?.ascendant } as ChartData} compact />
                 </div>
                 <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
-                  <h4 className="font-display font-semibold text-sacred-brown mb-2 text-center">{language === 'hi' ? 'कस्पल चार्ट' : 'Cuspal Chart'}</h4>
+                  <h4 className="font-display font-semibold text-sacred-brown mb-2 text-center">{t('auto.cuspalChart')}</h4>
                   <InteractiveKundli chartData={{ planets: cuspalPlanets, houses: cuspalHouses, ascendant: result?.chart_data?.ascendant } as ChartData} compact />
                 </div>
               </div>
@@ -109,7 +109,7 @@ export default function KPTab(props: KPTabProps) {
 
           {/* 2. Bhava Details (Placidus) — House Cusps */}
           <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
-            <h4 className="font-display font-semibold text-sacred-brown mb-3">{language === 'hi' ? 'भाव विवरण (प्लेसिडस पद्धति)' : 'Bhava Details (Placidus System)'}</h4>
+            <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('auto.bhavaDetailsPlacidus')}</h4>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead><tr className="bg-sacred-gold">
@@ -118,11 +118,11 @@ export default function KPTab(props: KPTabProps) {
                   <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.degree')}</th>
                   <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.nakshatra')}</th>
                   <th className="text-center p-1.5 text-sacred-gold-dark font-medium">{t('kundli.pada')}</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={language === 'hi' ? 'राशि स्वामी' : 'Rashi Lord'}>RL</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={language === 'hi' ? 'नक्षत्र स्वामी' : 'Nakshatra Lord'}>NL</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={language === 'hi' ? 'उप स्वामी' : 'Sub Lord'}>SL</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={language === 'hi' ? 'उप-उप स्वामी' : 'Sub-Sub Lord'}>SS</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={language === 'hi' ? 'उप-स्वामी का नक्षत्र स्वामी' : 'Star Lord of Sub Lord'}>SSSL</th>
+                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={t('auto.rashiLord')}>RL</th>
+                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={t('auto.nakshatraLord')}>NL</th>
+                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={t('auto.subLord')}>SL</th>
+                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={t('auto.subSubLord')}>SS</th>
+                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={t('auto.starLordOfSubLord')}>SSSL</th>
                 </tr></thead>
                 <tbody>
                   {(() => {
@@ -154,15 +154,15 @@ export default function KPTab(props: KPTabProps) {
           {/* 3. Significations of Houses */}
           {kpData.house_significations && Object.keys(kpData.house_significations).length > 0 && (
             <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
-              <h4 className="font-display font-semibold text-sacred-brown mb-3">{language === 'hi' ? 'भावों के कारकत्व' : 'Significations of Houses'}</h4>
+              <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('auto.significationsOfHous')}</h4>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead><tr className="bg-sacred-gold">
                     <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.house')}</th>
-                    <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{language === 'hi' ? 'अधिपतियों की नक्ष. के ग्रह' : 'Planets in Nak. of Occupants'}</th>
-                    <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{language === 'hi' ? 'अधिपति' : 'Occupants'}</th>
-                    <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{language === 'hi' ? 'कस्प स्वामी की नक्ष. के ग्रह' : 'Planets in Nak. of Cusp Lord'}</th>
-                    <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{language === 'hi' ? 'कस्प राशि स्वामी' : 'Cusp Sign Lord'}</th>
+                    <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('auto.planetsInNakOfOccupa')}</th>
+                    <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('auto.occupants')}</th>
+                    <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('auto.planetsInNakOfCuspLo')}</th>
+                    <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('auto.cuspSignLord')}</th>
                   </tr></thead>
                   <tbody>
                     {[1,2,3,4,5,6,7,8,9,10,11,12].map(h => {
@@ -186,15 +186,15 @@ export default function KPTab(props: KPTabProps) {
           {/* 4. Houses Signified by Planets */}
           {kpData.planet_significator_strengths && Object.keys(kpData.planet_significator_strengths).length > 0 && (
             <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
-              <h4 className="font-display font-semibold text-sacred-brown mb-3">{language === 'hi' ? 'ग्रहों द्वारा भावों का कारकत्व' : 'Houses Signified by Planets'}</h4>
+              <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('auto.housesSignifiedByPla')}</h4>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead><tr className="bg-sacred-gold">
                     <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
-                    <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{language === 'hi' ? 'अति बलवान' : 'Very Strong'}</th>
-                    <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{language === 'hi' ? 'बलवान' : 'Strong'}</th>
-                    <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{language === 'hi' ? 'सामान्य' : 'Normal'}</th>
-                    <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{language === 'hi' ? 'दुर्बल' : 'Weak'}</th>
+                    <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('auto.veryStrong')}</th>
+                    <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('auto.strong')}</th>
+                    <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('auto.normal')}</th>
+                    <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('auto.weak')}</th>
                   </tr></thead>
                   <tbody>
                     {Object.entries(kpData.planet_significator_strengths).map(([planet, levels]: [string, any]) => (
@@ -215,16 +215,16 @@ export default function KPTab(props: KPTabProps) {
           {/* 5. Ruling Planets */}
           {kpData.ruling_planets && Object.keys(kpData.ruling_planets).length > 0 && (
             <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
-              <h4 className="font-display font-semibold text-sacred-brown mb-3">{language === 'hi' ? 'शासक ग्रह' : 'Ruling Planets'}</h4>
+              <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('auto.rulingPlanets')}</h4>
               <div className="grid grid-cols-2 gap-3 text-sm">
                 {[
-                  ['day_lord', language === 'hi' ? 'दिन स्वामी' : 'Day Lord'],
-                  ['lagna_lord', language === 'hi' ? 'लग्न स्वामी' : 'Lagna Lord'],
-                  ['lagna_nak_lord', language === 'hi' ? 'लग्न नक्ष. स्वामी' : 'Lagna Nak Lord'],
-                  ['lagna_sub_lord', language === 'hi' ? 'लग्न उप स्वामी' : 'Lagna Sub Lord'],
-                  ['moon_rashi_lord', language === 'hi' ? 'चंद्र राशि स्वामी' : 'Moon Rashi Lord'],
-                  ['moon_nak_lord', language === 'hi' ? 'चंद्र नक्ष. स्वामी' : 'Moon Nak Lord'],
-                  ['moon_sub_lord', language === 'hi' ? 'चंद्र उप स्वामी' : 'Moon Sub Lord'],
+                  ['day_lord', t('auto.dayLord')],
+                  ['lagna_lord', t('auto.lagnaLord')],
+                  ['lagna_nak_lord', t('auto.lagnaNakLord')],
+                  ['lagna_sub_lord', t('auto.lagnaSubLord')],
+                  ['moon_rashi_lord', t('auto.moonRashiLord')],
+                  ['moon_nak_lord', t('auto.moonNakLord')],
+                  ['moon_sub_lord', t('auto.moonSubLord')],
                 ].map(([key, label]) => (
                   <div key={key} className="flex items-center justify-between bg-white rounded-lg p-2">
                     <span className="text-cosmic-text">{translateBackend(label, language)}</span>

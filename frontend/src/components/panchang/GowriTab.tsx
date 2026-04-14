@@ -100,7 +100,7 @@ export default function GowriTab({ panchang, language, t, timezoneOffset, minute
           </span>
           {isCurrent && (
             <span className="ml-1 px-1.5 py-0.5 text-xs bg-sacred-gold text-cosmic-bg rounded-full">
-              {language === 'hi' ? 'अभी' : 'Now'}
+              {t('auto.now')}
             </span>
           )}
         </td>
@@ -129,13 +129,13 @@ export default function GowriTab({ panchang, language, t, timezoneOffset, minute
           <thead>
             <tr className="bg-sacred-gold/15">
               <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                {language === 'hi' ? 'नाम' : 'Name'}
+                {t('auto.name')}
               </th>
               <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                {language === 'hi' ? 'प्रकार' : 'Type'}
+                {t('auto.type')}
               </th>
               <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                {language === 'hi' ? 'समय' : 'Time'}
+                {t('auto.time')}
               </th>
             </tr>
           </thead>
@@ -155,7 +155,7 @@ export default function GowriTab({ panchang, language, t, timezoneOffset, minute
           <Clock className="h-8 w-8 text-sacred-gold flex-shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-xs text-cosmic-text-secondary">
-              {language === 'hi' ? 'वर्तमान गौरी पंचांग' : 'Current Gowri Panchang'}
+              {t('auto.currentGowriPanchang')}
             </p>
             <span className="font-bold text-cosmic-text-primary">
               {language === 'hi' ? currentGowri.name_hindi || currentGowri.name : currentGowri.name}
@@ -173,12 +173,12 @@ export default function GowriTab({ panchang, language, t, timezoneOffset, minute
         <div className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-cosmic-border">
           {dayGowri.length > 0 && (
             <div className="p-2">
-              {renderTable(dayGowri, Sun, language === 'hi' ? 'दिन का गौरी पंचांग' : 'Day Gowri Panchang')}
+              {renderTable(dayGowri, Sun, t('auto.dayGowriPanchang'))}
             </div>
           )}
           {nightGowri.length > 0 && (
             <div className="p-2">
-              {renderTable(nightGowri, Moon, language === 'hi' ? 'रात्रि का गौरी पंचांग' : 'Night Gowri Panchang')}
+              {renderTable(nightGowri, Moon, t('auto.nightGowriPanchang'))}
             </div>
           )}
         </div>
@@ -187,23 +187,23 @@ export default function GowriTab({ panchang, language, t, timezoneOffset, minute
       {/* Compact Legend */}
       <div className="rounded-lg border border-cosmic-border p-2">
         <h4 className="font-semibold text-cosmic-text-primary mb-1 text-sm">
-          {language === 'hi' ? 'गौरी पंचांग प्रकार' : 'Gowri Meanings'}
+          {t('auto.gowriMeanings')}
         </h4>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 text-xs">
           <div className={`flex items-center gap-1 px-1.5 py-1 rounded ${GOWRI_TYPE_INFO.good.bg}`}>
             <span className={`w-2 h-2 rounded-full ${GOWRI_TYPE_INFO.good.dot} flex-shrink-0`} />
             <span className="text-cosmic-text-primary font-medium">{language === 'hi' ? GOWRI_TYPE_INFO.good.labelHi : GOWRI_TYPE_INFO.good.label}</span>
-            <span className="text-cosmic-text-secondary ml-auto">{language === 'hi' ? 'अनुकूल' : 'Favorable'}</span>
+            <span className="text-cosmic-text-secondary ml-auto">{t('auto.favorable')}</span>
           </div>
           <div className={`flex items-center gap-1 px-1.5 py-1 rounded ${GOWRI_TYPE_INFO.neutral.bg}`}>
             <span className={`w-2 h-2 rounded-full ${GOWRI_TYPE_INFO.neutral.dot} flex-shrink-0`} />
             <span className="text-cosmic-text-primary font-medium">{language === 'hi' ? GOWRI_TYPE_INFO.neutral.labelHi : GOWRI_TYPE_INFO.neutral.label}</span>
-            <span className="text-cosmic-text-secondary ml-auto">{language === 'hi' ? 'सामान्य' : 'Average'}</span>
+            <span className="text-cosmic-text-secondary ml-auto">{t('auto.average')}</span>
           </div>
           <div className={`flex items-center gap-1 px-1.5 py-1 rounded ${GOWRI_TYPE_INFO.bad.bg}`}>
             <span className={`w-2 h-2 rounded-full ${GOWRI_TYPE_INFO.bad.dot} flex-shrink-0`} />
             <span className="text-cosmic-text-primary font-medium">{language === 'hi' ? GOWRI_TYPE_INFO.bad.labelHi : GOWRI_TYPE_INFO.bad.label}</span>
-            <span className="text-cosmic-text-secondary ml-auto">{language === 'hi' ? 'टालें' : 'Avoid'}</span>
+            <span className="text-cosmic-text-secondary ml-auto">{t('auto.avoid')}</span>
           </div>
         </div>
       </div>

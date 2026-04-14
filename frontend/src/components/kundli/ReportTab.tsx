@@ -452,13 +452,13 @@ export default function ReportTab({
                   {(() => {
                     const karakas = calculateJaiminiKarakas(planets);
                     const karakaOrder = [
-                      { key: 'AK', name: language === 'hi' ? 'आत्मकारक' : 'Atmakaraka' },
-                      { key: 'AmK', name: language === 'hi' ? 'अमात्यकारक' : 'Amatyakaraka' },
-                      { key: 'BK', name: language === 'hi' ? 'भ्रातृकारक' : 'Bhratrikaraka' },
-                      { key: 'MK', name: language === 'hi' ? 'मातृकारक' : 'Matrikaraka' },
-                      { key: 'PiK', name: language === 'hi' ? 'पितृकारक' : 'Pitrikaraka' },
-                      { key: 'GnK', name: language === 'hi' ? 'ज्ञातिकारक' : 'Gnatikaraka' },
-                      { key: 'DK', name: language === 'hi' ? 'दाराकारक' : 'Darakaraka' },
+                      { key: 'AK', name: t('auto.atmakaraka') },
+                      { key: 'AmK', name: t('auto.amatyakaraka') },
+                      { key: 'BK', name: t('auto.bhratrikaraka') },
+                      { key: 'MK', name: t('auto.matrikaraka') },
+                      { key: 'PiK', name: t('auto.pitrikaraka') },
+                      { key: 'GnK', name: t('auto.gnatikaraka') },
+                      { key: 'DK', name: t('auto.darakaraka') },
                     ];
                     return (
                       <table className="w-full text-sm">

@@ -11,7 +11,7 @@ export default function VastuRemediesTab({ data }: Props) {
   if (!remedies) {
     return (
       <div className="text-center py-12 text-cosmic-text/60">
-        {isHi ? 'उपाय देखने के लिए समस्याएँ चुनें' : 'Select problems to see remedies'}
+        {t('auto.selectProblemsToSeeR')}
       </div>
     );
   }
@@ -21,7 +21,7 @@ export default function VastuRemediesTab({ data }: Props) {
       {/* Problems Analyzed */}
       {remedies.problems_analyzed?.length > 0 && (
         <div className="bg-white/5 border border-white/10 rounded-xl p-5">
-          <h3 className="text-sm font-bold text-cosmic-text mb-2">{isHi ? 'विश्लेषित समस्याएँ' : 'Problems Analyzed'}</h3>
+          <h3 className="text-sm font-bold text-cosmic-text mb-2">{t('auto.problemsAnalyzed')}</h3>
           <div className="flex flex-wrap gap-2">
             {remedies.problems_analyzed.map((p: string) => (
               <span key={p} className="px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 text-sm font-medium capitalize">
@@ -37,7 +37,7 @@ export default function VastuRemediesTab({ data }: Props) {
         <div className="bg-white/5 border border-white/10 rounded-xl p-5">
           <h3 className="text-base font-bold text-sacred-gold flex items-center gap-2 mb-4">
             <Wrench className="w-5 h-5" />
-            {isHi ? 'धातु पट्टी उपाय' : 'Metal Strip Remedies'}
+            {t('auto.metalStripRemedies')}
           </h3>
           <div className="space-y-3">
             {remedies.metal_strip_remedies.map((m: any, i: number) => (
@@ -61,7 +61,7 @@ export default function VastuRemediesTab({ data }: Props) {
         <div className="bg-white/5 border border-white/10 rounded-xl p-5">
           <h3 className="text-base font-bold text-sacred-gold flex items-center gap-2 mb-4">
             <Palette className="w-5 h-5" />
-            {isHi ? 'रंग चिकित्सा' : 'Color Therapy'}
+            {t('auto.colorTherapy')}
           </h3>
           <div className="space-y-3">
             {remedies.color_therapy.map((c: any, i: number) => (
@@ -89,7 +89,7 @@ export default function VastuRemediesTab({ data }: Props) {
         <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-5">
           <h3 className="text-base font-bold text-sacred-gold flex items-center gap-2 mb-4">
             <BookOpen className="w-5 h-5" />
-            {isHi ? 'मंत्र जाप' : 'Mantras'}
+            {t('auto.mantras')}
           </h3>
           <div className="space-y-3">
             {remedies.mantras.map((m: any, i: number) => (
@@ -110,7 +110,7 @@ export default function VastuRemediesTab({ data }: Props) {
       {/* Room Adjustments */}
       {remedies.room_adjustments?.length > 0 && (
         <div className="bg-white/5 border border-white/10 rounded-xl p-5">
-          <h3 className="text-base font-bold text-cosmic-text mb-4">{isHi ? 'कमरा समायोजन' : 'Room Adjustments'}</h3>
+          <h3 className="text-base font-bold text-cosmic-text mb-4">{t('auto.roomAdjustments')}</h3>
           <div className="space-y-4">
             {remedies.room_adjustments.map((r: any, i: number) => (
               <div key={i} className="bg-white/5 rounded-lg p-4 border border-white/5">
@@ -136,7 +136,7 @@ export default function VastuRemediesTab({ data }: Props) {
         <div className="bg-white/5 border border-white/10 rounded-xl p-5">
           <h3 className="text-base font-bold text-sacred-gold flex items-center gap-2 mb-4">
             <Sparkles className="w-5 h-5" />
-            {isHi ? 'सामान्य वास्तु उपाय' : 'General Vastu Remedies'}
+            {t('auto.generalVastuRemedies')}
           </h3>
           <div className="space-y-2">
             {remedies.general_remedies.map((r: any, i: number) => (

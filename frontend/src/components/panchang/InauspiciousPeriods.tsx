@@ -44,7 +44,7 @@ export default function InauspiciousPeriods({
         <div className="flex items-center gap-2 mb-4">
           <ShieldAlert className="h-5 w-5 text-red-400" />
           <h3 className="text-lg font-semibold text-cosmic-text">
-            {language === 'hi' ? 'अशुभ काल' : 'Inauspicious Periods'}
+            {t('auto.inauspiciousPeriods')}
           </h3>
         </div>
 

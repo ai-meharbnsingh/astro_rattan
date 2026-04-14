@@ -10,8 +10,8 @@ interface AspectsTabProps {
 
 export default function AspectsTab({ aspectsData, loadingAspects, language, t }: AspectsTabProps) {
   const BENEFICS = ['Jupiter', 'Venus', 'Moon', 'Mercury'];
-  const spl = language === 'hi' ? ' विशेष' : ' Spl';
-  const housePrefix = language === 'hi' ? 'भा' : 'H';
+  const spl = t('auto.Spl');
+  const housePrefix = t('auto.h');
 
   if (loadingAspects) {
     return (
@@ -34,9 +34,9 @@ export default function AspectsTab({ aspectsData, loadingAspects, language, t }:
               <thead><tr className="bg-sacred-gold">
                 <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
                 <th className="text-center p-1.5 text-sacred-gold-dark font-medium">{t('table.house')}</th>
-                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{language === 'hi' ? 'शुभ दृष्टि' : 'Aspected By (Benefic)'}</th>
-                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{language === 'hi' ? 'अशुभ दृष्टि' : 'Aspected By (Malefic)'}</th>
-                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{language === 'hi' ? 'दृष्टि करता है' : 'Aspects To'}</th>
+                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('auto.aspectedByBenefic')}</th>
+                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('auto.aspectedByMalefic')}</th>
+                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('auto.aspectsTo')}</th>
               </tr></thead>
               <tbody>
                 {(() => {
@@ -93,8 +93,8 @@ export default function AspectsTab({ aspectsData, loadingAspects, language, t }:
             <table className="w-full text-xs">
               <thead><tr className="bg-sacred-gold">
                 <th className="text-center p-1.5 text-sacred-gold-dark font-medium w-12">{t('table.house')}</th>
-                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{language === 'hi' ? 'शुभ दृष्टि' : 'Benefic Aspects (Shubh)'}</th>
-                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{language === 'hi' ? 'अशुभ दृष्टि' : 'Malefic Aspects (Ashubh)'}</th>
+                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('auto.beneficAspectsShubh')}</th>
+                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('auto.maleficAspectsAshubh')}</th>
               </tr></thead>
               <tbody>
                 {(() => {

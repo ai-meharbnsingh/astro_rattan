@@ -264,10 +264,10 @@ export default function KundliGenerator() {
                   const fresh = await api.post(`/api/kundli/${result.id}/regenerate`, {});
                   setResult(fresh);
                   resetTabData();
-                  alert(language === 'hi' ? 'चार्ट नवीनतम Swiss Ephemeris डेटा से पुनः बनाया गया' : 'Chart regenerated with latest Swiss Ephemeris data');
-                } catch (e) { console.error(e); alert(language === 'hi' ? 'पुनः निर्माण विफल' : 'Regeneration failed'); }
+                  alert(t('auto.chartRegeneratedWith'));
+                } catch (e) { console.error(e); alert(t('auto.regenerationFailed')); }
               }}>
-              <RefreshCw className="w-4 h-4 mr-1" />{language === 'hi' ? 'पुनः गणना' : 'Regenerate'}
+              <RefreshCw className="w-4 h-4 mr-1" />{t('auto.regenerate')}
             </Button>
             <Button variant="outline" size="sm" className="border-sacred-gold text-sacred-brown"
               onClick={() => {
@@ -292,14 +292,14 @@ export default function KundliGenerator() {
                 if (!result?.id) return;
                 const token = localStorage.getItem('astrorattan_token') || '';
                 const a = document.createElement('a');
-                a.href = `/api/kundli/${result.id}/full-report?token=${encodeURIComponent(token)}`;
+                a.href = `/api/kundli/${result.id}/full-report?token=${encodeURIComponent(token)}&lang=${language}`;
                 a.download = `Kundli_Report_${result.person_name || 'chart'}.pdf`;
                 a.style.display = 'none';
                 document.body.appendChild(a);
                 a.click();
                 setTimeout(() => document.body.removeChild(a), 1000);
               }}>
-              <BookOpen className="w-4 h-4 mr-1" />{language === 'hi' ? 'पूर्ण रिपोर्ट (PDF)' : 'Download Full Report (PDF)'}
+              <BookOpen className="w-4 h-4 mr-1" />{t('auto.downloadFullReportPD')}
             </Button>
           </div>
         </div>
@@ -417,7 +417,7 @@ export default function KundliGenerator() {
           {tabError && (
             <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 flex items-center justify-between">
               <p className="text-sm text-red-700">{tabError}</p>
-              <button onClick={() => setTabError(null)} className="text-red-500 hover:text-red-700 text-sm font-medium ml-3">{language === 'hi' ? 'हटाएँ' : 'Dismiss'}</button>
+              <button onClick={() => setTabError(null)} className="text-red-500 hover:text-red-700 text-sm font-medium ml-3">{t('auto.dismiss')}</button>
             </div>
           )}
 

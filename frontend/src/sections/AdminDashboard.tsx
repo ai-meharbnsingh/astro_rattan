@@ -935,7 +935,7 @@ export default function AdminDashboard() {
                           style={{ height: `${Math.round((h.views / maxH) * 80)}px`, minHeight: h.views > 0 ? '2px' : '0' }}
                         />
                         {h.hour % 6 === 0 && (
-                          <span className="text-[9px] text-gray-400 absolute -bottom-4">{h.hour}{language === 'hi' ? 'घं' : 'h'}</span>
+                          <span className="text-[9px] text-gray-400 absolute -bottom-4">{h.hour}{t('auto.h')}</span>
                         )}
                       </div>
                     ))}

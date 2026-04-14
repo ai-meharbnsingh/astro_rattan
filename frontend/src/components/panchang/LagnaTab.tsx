@@ -64,7 +64,7 @@ export default function LagnaTab({ panchang, language, t, timezoneOffset, minute
           <Sunrise className="h-8 w-8 text-sacred-gold flex-shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-xs text-cosmic-text-secondary">
-              {language === 'hi' ? 'वर्तमान लग्न' : 'Current Lagna (Ascendant)'}
+              {t('auto.currentLagnaAscendan')}
             </p>
             <span className="font-bold text-cosmic-text-primary">
               {language === 'hi'
@@ -81,7 +81,7 @@ export default function LagnaTab({ panchang, language, t, timezoneOffset, minute
             )}
           </div>
           <span className="px-2 py-1 rounded-full bg-sacred-gold/20 text-sacred-gold font-semibold text-xs">
-            {language === 'hi' ? 'अभी' : 'Now'}
+            {t('auto.now')}
           </span>
         </div>
       )}
@@ -98,13 +98,13 @@ export default function LagnaTab({ panchang, language, t, timezoneOffset, minute
             <thead>
               <tr className="bg-sacred-gold/15">
                 <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                  {language === 'hi' ? 'लग्न' : 'Lagna'}
+                  {t('auto.lagna')}
                 </th>
                 <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                  {language === 'hi' ? 'प्रारंभ' : 'Start'}
+                  {t('auto.start')}
                 </th>
                 <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                  {language === 'hi' ? 'समाप्ति' : 'End'}
+                  {t('auto.end')}
                 </th>
               </tr>
             </thead>
@@ -129,7 +129,7 @@ export default function LagnaTab({ panchang, language, t, timezoneOffset, minute
                         </span>
                         {isCurrent && (
                           <span className="px-1.5 py-0.5 text-xs bg-sacred-gold text-cosmic-bg rounded-full">
-                            {language === 'hi' ? 'अभी' : 'Now'}
+                            {t('auto.now')}
                           </span>
                         )}
                       </div>
@@ -154,32 +154,26 @@ export default function LagnaTab({ panchang, language, t, timezoneOffset, minute
           <Info className="h-4 w-4 text-sacred-gold mt-0.5 flex-shrink-0" />
           <div>
             <h4 className="font-semibold text-cosmic-text-primary mb-1">
-              {language === 'hi' ? 'लग्न के बारे में' : 'About Lagna (Ascendant)'}
+              {t('auto.aboutLagnaAscendant')}
             </h4>
             <p className="text-sm text-cosmic-text-secondary leading-relaxed mb-2">
-              {language === 'hi'
-                ? 'लग्न (लग्न) वह राशि है जो पूर्व दिशा से उदित होती है। यह व्यक्ति के व्यक्तित्व, स्वास्थ्य और जीवन की दिशा का संकेत देता है। प्रत्येक लग्न लगभग 2 घंटे तक रहता है।'
-                : 'Lagna (Ascendant) is the sign rising on the eastern horizon. It indicates personality, health, and life direction. Each lagna lasts approximately 2 hours.'}
+              {t('auto.lagnaAscendantIsTheS')}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
               <div className="p-2 rounded-lg bg-cosmic-card/50">
                 <strong className="text-cosmic-text-primary">
-                  {language === 'hi' ? 'चर राशि:' : 'Movable Signs:'}
+                  {t('auto.movableSigns')}
                 </strong>
                 <p className="text-cosmic-text-secondary mt-0.5">
-                  {language === 'hi'
-                    ? 'मेष, कर्क, तुला, मकर - परिवर्तनशील'
-                    : 'Aries, Cancer, Libra, Capricorn - Changeable'}
+                  {t('auto.ariesCancerLibraCapr')}
                 </p>
               </div>
               <div className="p-2 rounded-lg bg-cosmic-card/50">
                 <strong className="text-cosmic-text-primary">
-                  {language === 'hi' ? 'स्थिर राशि:' : 'Fixed Signs:'}
+                  {t('auto.fixedSigns')}
                 </strong>
                 <p className="text-cosmic-text-secondary mt-0.5">
-                  {language === 'hi'
-                    ? 'वृषभ, सिंह, वृश्चिक, कुंभ - स्थिर'
-                    : 'Taurus, Leo, Scorpio, Aquarius - Stable'}
+                  {t('auto.taurusLeoScorpioAqua')}
                 </p>
               </div>
             </div>

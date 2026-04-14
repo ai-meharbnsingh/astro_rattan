@@ -100,12 +100,12 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
       {/* Conjunctions (Yuti) */}
       <section>
         <h3 className="font-sans text-lg text-sacred-gold mb-4">
-          {t('lk.relations.conjunction')} ({isHi ? 'युति' : 'Yuti'})
+          {t('lk.relations.conjunction')} ({t('auto.yuti')})
         </h3>
 
         {conjunctions.length === 0 ? (
           <p className="text-sm text-gray-600 italic">
-            {isHi ? 'कोई युति नहीं पाई गई।' : 'No conjunctions found.'}
+            {t('auto.noConjunctionsFound')}
           </p>
         ) : (
           <div className="space-y-4">
@@ -140,7 +140,7 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
                   <div className="flex items-center justify-between mb-3">
                     <div>
                       <span className="text-sm text-gray-600">
-                        {isHi ? 'भाव' : 'House'} {conj.house}
+                        {t('auto.house')} {conj.house}
                       </span>
                       <div className="flex items-center gap-2 mt-1 flex-wrap">
                         {conj.planets.map((planet) => (
@@ -195,7 +195,7 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
       <section>
         <h3 className="font-sans text-lg text-sacred-gold mb-4 flex items-center gap-2">
           <Eye className="w-5 h-5" />
-          {isHi ? 'दृष्टि (Aspects)' : 'Aspects (Drishti)'}
+          {t('auto.aspectsDrishti')}
         </h3>
 
         <div className="overflow-x-auto">
@@ -203,13 +203,13 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
             <thead>
               <tr className="border-b border-sacred-gold/10">
                 <th className="text-left py-2 px-3 text-sacred-gold/70 font-sans font-medium">
-                  {isHi ? 'ग्रह' : 'Planet'}
+                  {t('auto.planet')}
                 </th>
                 <th className="text-left py-2 px-3 text-sacred-gold/70 font-sans font-medium">
-                  {isHi ? 'स्थित भाव' : 'In House'}
+                  {t('auto.inHouse')}
                 </th>
                 <th className="text-left py-2 px-3 text-sacred-gold/70 font-sans font-medium">
-                  {isHi ? 'दृष्टि भाव' : 'Aspects Houses'}
+                  {t('auto.aspectsHouses')}
                 </th>
               </tr>
             </thead>
@@ -250,16 +250,14 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
       {/* Clash Detection Summary */}
       <section>
         <h3 className="font-sans text-lg text-sacred-gold mb-4">
-          {isHi ? 'टकराव विश्लेषण' : 'Clash Analysis'}
+          {t('auto.clashAnalysis')}
         </h3>
 
         {conjunctions.length === 0 ? (
           <div className="flex items-center gap-2 text-sm text-green-500">
             <CheckCircle className="w-5 h-5" />
             <span>
-              {isHi
-                ? 'कोई ग्रह युति नहीं, टकराव नहीं।'
-                : 'No planetary conjunctions, no clashes.'}
+              {t('auto.noPlanetaryConjuncti')}
             </span>
           </div>
         ) : (
@@ -288,7 +286,7 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
                     )}
                     <div>
                       <p className="text-sm font-medium text-cosmic-text">
-                        {isHi ? 'भाव' : 'House'} {conj.house}:{' '}
+                        {t('auto.house')} {conj.house}:{' '}
                         {conj.planets.map(getPlanetLabel).join(', ')}
                       </p>
                       <p

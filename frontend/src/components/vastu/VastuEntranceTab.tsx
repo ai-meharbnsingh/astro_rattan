@@ -37,7 +37,7 @@ export default function VastuEntranceTab({ data }: Props) {
   if (!entrance || entrance.error) {
     return (
       <div className="text-center py-12 text-cosmic-text/60">
-        {isHi ? 'प्रवेश द्वार विश्लेषण उपलब्ध नहीं' : 'No entrance analysis available'}
+        {t('auto.noEntranceAnalysisAv')}
       </div>
     );
   }
@@ -52,21 +52,21 @@ export default function VastuEntranceTab({ data }: Props) {
           <DoorOpen className="w-6 h-6 text-sacred-gold" />
           <div>
             <h3 className="text-lg font-bold text-cosmic-text">
-              {isHi ? 'प्रवेश पद विश्लेषण' : 'Entrance Pada Analysis'}
+              {t('auto.entrancePadaAnalysis')}
             </h3>
             <p className="text-sm text-cosmic-text/60">
-              {isHi ? '32 पद प्रणाली के अनुसार' : 'Based on the 32 Pada system'}
+              {t('auto.basedOnThe32PadaSyst')}
             </p>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
-            <p className="text-sm text-cosmic-text/60">{isHi ? 'पद कोड' : 'Pada Code'}</p>
+            <p className="text-sm text-cosmic-text/60">{t('auto.padaCode')}</p>
             <p className="text-2xl font-bold text-sacred-gold">{entrance.pada}</p>
           </div>
           <div>
-            <p className="text-sm text-cosmic-text/60">{isHi ? 'पद नाम' : 'Pada Name'}</p>
+            <p className="text-sm text-cosmic-text/60">{t('auto.padaName')}</p>
             <p className="text-xl font-bold text-cosmic-text">{entrance.pada_name}</p>
             {isHi && <p className="text-sm text-cosmic-text/70">{entrance.pada_name_hi}</p>}
           </div>
@@ -81,7 +81,7 @@ export default function VastuEntranceTab({ data }: Props) {
         {/* Score */}
         <div className="mb-4">
           <div className="flex items-center gap-3">
-            <p className="text-sm text-cosmic-text/60">{isHi ? 'गुणवत्ता स्कोर' : 'Quality Score'}</p>
+            <p className="text-sm text-cosmic-text/60">{t('auto.qualityScore')}</p>
             <ScoreBar score={entrance.score} />
             <span className="text-sm font-bold text-cosmic-text">{entrance.score}/{entrance.score_max}</span>
           </div>
@@ -89,7 +89,7 @@ export default function VastuEntranceTab({ data }: Props) {
 
         {/* Effects */}
         <div className="bg-white/5 rounded-lg p-4">
-          <p className="text-sm text-cosmic-text/60 mb-1">{isHi ? 'प्रभाव' : 'Effects'}</p>
+          <p className="text-sm text-cosmic-text/60 mb-1">{t('auto.effects')}</p>
           <p className="text-sm text-cosmic-text leading-relaxed">{isHi ? entrance.effects_hi : entrance.effects_en}</p>
         </div>
       </div>
@@ -97,7 +97,7 @@ export default function VastuEntranceTab({ data }: Props) {
       {/* Compass Display — highlighted pada */}
       <div className="bg-white/5 border border-white/10 rounded-xl p-5">
         <h4 className="text-sm font-bold text-cosmic-text mb-2 text-center">
-          {isHi ? 'कम्पास दृश्य — आपका प्रवेश पद' : 'Compass View — Your Entrance Pada'}
+          {t('auto.compassViewYourEntra')}
         </h4>
         <VastuCompass
           value={entrance.direction}
@@ -110,7 +110,7 @@ export default function VastuEntranceTab({ data }: Props) {
       {/* Ruling Devta */}
       {entrance.ruling_devta && (
         <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-5">
-          <h4 className="text-sm font-bold text-sacred-gold mb-2">{isHi ? 'अधिष्ठाता देवता' : 'Ruling Deity'}</h4>
+          <h4 className="text-sm font-bold text-sacred-gold mb-2">{t('auto.rulingDeity')}</h4>
           <p className="text-lg font-bold text-cosmic-text">
             {entrance.ruling_devta.name}
             {isHi && <span className="text-base text-cosmic-text/70 ml-2">{entrance.ruling_devta.name_hi}</span>}
@@ -126,7 +126,7 @@ export default function VastuEntranceTab({ data }: Props) {
       {entrance.all_padas_in_direction && (
         <div className="bg-white/5 border border-white/10 rounded-xl p-5">
           <h4 className="text-sm font-bold text-cosmic-text mb-3">
-            {isHi ? `${entrance.direction} दिशा के सभी 8 पद` : `All 8 Padas in ${entrance.direction} Direction`}
+            {t('auto.all8PadasInEntranceD')}
           </h4>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {entrance.all_padas_in_direction.map((p: any) => {
@@ -154,7 +154,7 @@ export default function VastuEntranceTab({ data }: Props) {
       <div className="grid grid-cols-2 gap-4">
         {entrance.best_pada_in_direction && (
           <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-4">
-            <p className="text-sm text-emerald-400 font-semibold mb-1">{isHi ? 'सर्वश्रेष्ठ पद' : 'Best Pada'}</p>
+            <p className="text-sm text-emerald-400 font-semibold mb-1">{t('auto.bestPada')}</p>
             <p className="text-lg font-bold text-cosmic-text">{entrance.best_pada_in_direction.pada}</p>
             <p className="text-sm text-cosmic-text">{entrance.best_pada_in_direction.name}</p>
             {isHi && <p className="text-sm text-cosmic-text/60">{entrance.best_pada_in_direction.name_hi}</p>}
@@ -162,7 +162,7 @@ export default function VastuEntranceTab({ data }: Props) {
         )}
         {entrance.worst_pada_in_direction && (
           <div className="bg-red-500/5 border border-red-500/20 rounded-xl p-4">
-            <p className="text-sm text-red-400 font-semibold mb-1">{isHi ? 'सबसे कमजोर पद' : 'Worst Pada'}</p>
+            <p className="text-sm text-red-400 font-semibold mb-1">{t('auto.worstPada')}</p>
             <p className="text-lg font-bold text-cosmic-text">{entrance.worst_pada_in_direction.pada}</p>
             <p className="text-sm text-cosmic-text">{entrance.worst_pada_in_direction.name}</p>
             {isHi && <p className="text-sm text-cosmic-text/60">{entrance.worst_pada_in_direction.name_hi}</p>}
@@ -174,7 +174,7 @@ export default function VastuEntranceTab({ data }: Props) {
       {entrance.remedies && entrance.remedies.length > 0 && (
         <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-5">
           <h4 className="text-sm font-bold text-amber-400 mb-3">
-            {isHi ? 'प्रवेश द्वार उपाय' : 'Entrance Remedies'}
+            {t('auto.entranceRemedies')}
           </h4>
           <div className="space-y-3">
             {entrance.remedies.map((r: any, i: number) => (

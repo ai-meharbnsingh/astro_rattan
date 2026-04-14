@@ -215,7 +215,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate, kundliId, o
                 {advancedData?.sleeping?.sleeping_planets?.length ?? '—'}
               </p>
               <p className="text-sm text-gray-500">
-                {isHi ? 'सोए हुए' : 'Sleeping'}
+                {t('auto.sleeping')}
               </p>
             </div>
             <div className="text-center p-3 rounded-xl bg-sacred-gold/5 border border-sacred-gold/10">
@@ -223,7 +223,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate, kundliId, o
                 {advancedData?.kayam?.length ?? '—'}
               </p>
               <p className="text-sm text-gray-500">
-                {isHi ? 'कायम' : 'Stable'}
+                {t('auto.stable')}
               </p>
             </div>
           </div>
@@ -270,7 +270,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate, kundliId, o
             <div className="flex flex-col items-center justify-center py-8 text-center space-y-3">
               <CheckCircle className="w-10 h-10 text-green-500" />
               <p className="text-green-400 font-medium">
-                {isHi ? 'सब ठीक है! कोई दोष नहीं पाया गया।' : 'All Clear! No doshas detected.'}
+                {t('auto.allClearNoDoshasDete')}
               </p>
             </div>
           ) : (
@@ -319,7 +319,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate, kundliId, o
 
           {quickRemedies.length === 0 ? (
             <p className="text-sm text-gray-600 italic py-4 text-center">
-              {isHi ? 'कोई उपाय उपलब्ध नहीं' : 'No remedies available'}
+              {t('auto.noRemediesAvailable')}
             </p>
           ) : (
             <div className="space-y-3">
@@ -347,7 +347,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate, kundliId, o
                 onClick={() => onNavigateTab?.('upay')}
                 className="w-full text-sm text-sacred-gold hover:text-sacred-gold-dark transition-colors text-center pt-2"
               >
-                {isHi ? 'सभी उपाय देखें →' : 'View all remedies →'}
+                {t('auto.viewAllRemedies')}
               </button>
             </div>
           )}
@@ -361,13 +361,13 @@ export default function LalKitabDashboardTab({ chartData, birthDate, kundliId, o
           </h3>
 
           <p className="text-sm text-gray-500 mb-4">
-            {isHi ? 'वर्तमान आयु' : 'Current Age'}:{' '}
+            {t('auto.currentAge')}:{' '}
             <span className="font-semibold text-cosmic-text">{age}</span>
           </p>
 
           {timelinePeriods.length === 0 ? (
             <p className="text-sm text-gray-600 italic py-4 text-center">
-              {isHi ? 'समयरेखा उपलब्ध नहीं' : 'Timeline data not available'}
+              {t('auto.timelineDataNotAvail')}
             </p>
           ) : (
             <div className="space-y-2">
@@ -406,14 +406,14 @@ export default function LalKitabDashboardTab({ chartData, birthDate, kundliId, o
                         </p>
                         <p className="text-sm text-gray-600">
                           {period.ageStart}–{period.ageEnd}{' '}
-                          {isHi ? 'वर्ष' : 'years'}
+                          {t('auto.years')}
                         </p>
                       </div>
                     </div>
 
                     {isCurrent && (
                       <span className="px-2.5 py-0.5 rounded-full text-sm font-semibold bg-sacred-gold/20 text-sacred-gold">
-                        {isHi ? 'वर्तमान' : 'Active'}
+                        {t('auto.active')}
                         
                       </span>
                     )}

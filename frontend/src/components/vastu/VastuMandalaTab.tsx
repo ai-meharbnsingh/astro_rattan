@@ -26,19 +26,19 @@ export default function VastuMandalaTab({ data }: Props) {
       <div className="bg-white/5 border border-white/10 rounded-xl p-5">
         <h3 className="text-lg font-bold text-sacred-gold flex items-center gap-2 mb-3">
           <Grid3X3 className="w-5 h-5" />
-          {isHi ? 'वास्तु पुरुष मंडल' : 'Vastu Purusha Mandala'}
+          {t('auto.vastuPurushaMandala')}
         </h3>
         <div className="grid grid-cols-3 gap-4 text-sm">
           <div>
-            <p className="text-cosmic-text/60">{isHi ? 'ग्रिड प्रकार' : 'Grid Type'}</p>
+            <p className="text-cosmic-text/60">{t('auto.gridType')}</p>
             <p className="font-semibold text-cosmic-text">{isHi ? mandala?.grid_type_hi : mandala?.grid_type}</p>
           </div>
           <div>
-            <p className="text-cosmic-text/60">{isHi ? 'कुल वर्ग' : 'Total Squares'}</p>
+            <p className="text-cosmic-text/60">{t('auto.totalSquares')}</p>
             <p className="font-semibold text-cosmic-text">{mandala?.total_squares}</p>
           </div>
           <div>
-            <p className="text-cosmic-text/60">{isHi ? 'कुल देवता' : 'Total Devtas'}</p>
+            <p className="text-cosmic-text/60">{t('auto.totalDevtas')}</p>
             <p className="font-semibold text-cosmic-text">45</p>
           </div>
         </div>
@@ -48,7 +48,7 @@ export default function VastuMandalaTab({ data }: Props) {
       {zones && Object.keys(zones).length > 0 && (
         <div className="bg-white/5 border border-white/10 rounded-xl p-5">
           <h3 className="text-base font-bold text-sacred-gold mb-3">
-            {isHi ? 'मंडल ग्रिड (क्लिक करके देखें)' : 'Mandala Grid (click to explore)'}
+            {t('auto.mandalaGridClickToEx')}
           </h3>
           <VastuMandalaGrid zones={zones} />
         </div>
@@ -57,19 +57,19 @@ export default function VastuMandalaTab({ data }: Props) {
       {/* Energy Balance */}
       {energy && (
         <div className="bg-white/5 border border-white/10 rounded-xl p-5">
-          <h3 className="text-base font-bold text-cosmic-text mb-3">{isHi ? 'ऊर्जा संतुलन' : 'Energy Balance'}</h3>
+          <h3 className="text-base font-bold text-cosmic-text mb-3">{t('auto.energyBalance')}</h3>
           <div className="flex gap-4 mb-3">
             <div className="flex-1 bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 text-center">
               <p className="text-2xl font-bold text-emerald-400">{energy.positive}</p>
-              <p className="text-sm text-emerald-300">{isHi ? 'सकारात्मक' : 'Positive'}</p>
+              <p className="text-sm text-emerald-300">{t('auto.positive')}</p>
             </div>
             <div className="flex-1 bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-center">
               <p className="text-2xl font-bold text-red-400">{energy.negative}</p>
-              <p className="text-sm text-red-300">{isHi ? 'नकारात्मक' : 'Negative'}</p>
+              <p className="text-sm text-red-300">{t('auto.negative')}</p>
             </div>
             <div className="flex-1 bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 text-center">
               <p className="text-2xl font-bold text-blue-400">{energy.neutral}</p>
-              <p className="text-sm text-blue-300">{isHi ? 'तटस्थ' : 'Neutral'}</p>
+              <p className="text-sm text-blue-300">{t('auto.neutral')}</p>
             </div>
           </div>
           <p className="text-sm text-cosmic-text">{isHi ? energy.assessment_hi : energy.assessment_en}</p>
@@ -79,7 +79,7 @@ export default function VastuMandalaTab({ data }: Props) {
       {/* Body Mapping */}
       {body && (
         <div className="bg-white/5 border border-white/10 rounded-xl p-5">
-          <h3 className="text-base font-bold text-sacred-gold mb-3">{isHi ? 'वास्तु पुरुष शरीर मानचित्र' : 'Vastu Purusha Body Map'}</h3>
+          <h3 className="text-base font-bold text-sacred-gold mb-3">{t('auto.vastuPurushaBodyMap')}</h3>
           <div className="grid grid-cols-3 gap-3">
             {Object.entries(body).map(([part, info]: [string, any]) => (
               <div key={part} className="bg-white/5 rounded-lg p-3">

@@ -100,26 +100,26 @@ export default function AuspiciousTimings({
         <div className="flex items-center gap-2 mb-4">
           <Sparkles className="h-5 w-5 text-green-700" />
           <h3 className="text-lg font-semibold text-gray-800">
-            {language === 'hi' ? 'शुभ समय' : 'Auspicious Timings'}
+            {t('auto.auspiciousTimings')}
           </h3>
         </div>
 
         {/* Muhurat highlight cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
-          <MuhuratCard title={language === 'hi' ? 'अभिजीत मुहूर्त' : 'Abhijit Muhurat'} period={abhijit_muhurat} />
-          <MuhuratCard title={language === 'hi' ? 'ब्रह्म मुहूर्त' : 'Brahma Muhurat'} period={brahma_muhurat} />
-          {ravi_yoga && <MuhuratCard title={language === 'hi' ? 'रवि योग' : 'Ravi Yoga'} period={ravi_yoga} />}
-          {vijaya_muhurta && <MuhuratCard title={language === 'hi' ? 'विजय मुहूर्त' : 'Vijaya Muhurta'} period={vijaya_muhurta} />}
-          {godhuli_muhurta && <MuhuratCard title={language === 'hi' ? 'गोधूलि मुहूर्त' : 'Godhuli Muhurta'} period={godhuli_muhurta} />}
-          {sayahna_sandhya && <MuhuratCard title={language === 'hi' ? 'सायाह्न संध्या' : 'Sayahna Sandhya'} period={sayahna_sandhya} />}
-          {nishita_muhurta && <MuhuratCard title={language === 'hi' ? 'निशीथ मुहूर्त' : 'Nishita Muhurta'} period={nishita_muhurta} />}
-          {pratah_sandhya && <MuhuratCard title={language === 'hi' ? 'प्रातः संध्या' : 'Pratah Sandhya'} period={pratah_sandhya} />}
+          <MuhuratCard title={t('auto.abhijitMuhurat')} period={abhijit_muhurat} />
+          <MuhuratCard title={t('auto.brahmaMuhurat')} period={brahma_muhurat} />
+          {ravi_yoga && <MuhuratCard title={t('auto.raviYoga')} period={ravi_yoga} />}
+          {vijaya_muhurta && <MuhuratCard title={t('auto.vijayaMuhurta')} period={vijaya_muhurta} />}
+          {godhuli_muhurta && <MuhuratCard title={t('auto.godhuliMuhurta')} period={godhuli_muhurta} />}
+          {sayahna_sandhya && <MuhuratCard title={t('auto.sayahnaSandhya')} period={sayahna_sandhya} />}
+          {nishita_muhurta && <MuhuratCard title={t('auto.nishitaMuhurta')} period={nishita_muhurta} />}
+          {pratah_sandhya && <MuhuratCard title={t('auto.pratahSandhya')} period={pratah_sandhya} />}
         </div>
 
         {/* Choghadiya periods */}
         <div className="flex flex-col gap-2">
           <span className="text-sm text-cosmic-text-secondary mb-1">
-            {language === 'hi' ? 'चौघड़िया' : 'Choghadiya'}
+            {t('auto.choghadiya')}
           </span>
           {choghadiya.map((period, index) => {
             const classes = qualityClasses(period.quality);

@@ -127,7 +127,7 @@ export default function HoroscopePage() {
   };
 
   const dateDisplay = new Date(selectedDate + 'T12:00:00').toLocaleDateString(
-    language === 'hi' ? 'hi-IN' : 'en-IN',
+    t('auto.enIN'),
     { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' },
   );
 
@@ -139,7 +139,7 @@ export default function HoroscopePage() {
         <div className="rounded-xl border border-cosmic-border bg-cosmic-card p-3 mb-4">
           <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
             <span className="font-semibold text-cosmic-text">{dateDisplay}</span>
-            <span className="text-sm text-cosmic-text-secondary">{currentTime.toLocaleTimeString(language === 'hi' ? 'hi-IN' : 'en-IN')}</span>
+            <span className="text-sm text-cosmic-text-secondary">{currentTime.toLocaleTimeString(t('auto.enIN'))}</span>
           </div>
           <input
             type="date"
@@ -173,10 +173,10 @@ export default function HoroscopePage() {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-4 h-auto p-1 bg-cosmic-card rounded-xl">
             {[
-              { id: 'daily', label: language === 'hi' ? 'दैनिक' : 'Daily', icon: Sun },
-              { id: 'weekly', label: language === 'hi' ? 'साप्ताहिक' : 'Weekly', icon: Calendar },
-              { id: 'all', label: language === 'hi' ? 'सभी राशि' : 'All Signs', icon: Users },
-              { id: 'transits', label: language === 'hi' ? 'गोचर' : 'Transits', icon: Orbit },
+              { id: 'daily', label: t('auto.daily'), icon: Sun },
+              { id: 'weekly', label: t('auto.weekly'), icon: Calendar },
+              { id: 'all', label: t('auto.allSigns'), icon: Users },
+              { id: 'transits', label: t('auto.transits'), icon: Orbit },
             ].map(tab => (
               <TabsTrigger key={tab.id} value={tab.id} className="flex-1 flex flex-col items-center gap-0.5 py-2 text-xs data-[state=active]:bg-sacred-gold data-[state=active]:text-white rounded-lg">
                 <tab.icon className="w-4 h-4" />

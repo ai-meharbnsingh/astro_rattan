@@ -64,7 +64,7 @@ export default function LalKitabNishaniyaTab({ kundliId }: Props) {
     setError('');
     api.get(`/api/lalkitab/nishaniyan/${kundliId}`)
       .then((res: any) => setNishaniyan(Array.isArray(res?.nishaniyan) ? res.nishaniyan : []))
-      .catch(() => setError(isHi ? 'निशानियां लोड नहीं हो सकीं' : 'Failed to load nishaniyan'))
+      .catch(() => setError(t('auto.failedToLoadNishaniy')))
       .finally(() => setLoading(false));
   }, [kundliId, isHi]);
 
@@ -94,12 +94,10 @@ export default function LalKitabNishaniyaTab({ kundliId }: Props) {
       <div>
         <h2 className="text-xl font-sans font-semibold text-sacred-gold flex items-center gap-2 mb-1">
           <BookOpen className="w-5 h-5" />
-          {isHi ? 'लाल किताब निशानियां' : 'Lal Kitab Nishaniyan'}
+          {t('auto.lalKitabNishaniyan')}
         </h2>
         <p className="text-sm text-gray-500">
-          {isHi
-            ? 'आपकी कुंडली के ग्रहों के अनुसार जीवन के संकेत व निशानियां'
-            : 'Life signs & omens based on your birth chart planet positions'}
+          {t('auto.lifeSignsOmensBasedO')}
         </p>
       </div>
 
@@ -137,7 +135,7 @@ export default function LalKitabNishaniyaTab({ kundliId }: Props) {
         <div className="flex flex-wrap gap-3">
           <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-sacred-gold/10 border border-sacred-gold/20 text-sacred-gold text-sm font-semibold">
             <BookOpen className="w-4 h-4" />
-            {nishaniyan.length} {isHi ? 'निशानियां' : 'Nishaniyan'}
+            {nishaniyan.length} {t('auto.nishaniyan')}
           </div>
           <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-green-500/10 border border-green-300/20 text-green-700 text-sm font-semibold">
             <CheckCircle2 className="w-4 h-4" />
@@ -236,7 +234,7 @@ export default function LalKitabNishaniyaTab({ kundliId }: Props) {
       {/* Empty */}
       {!loading && !error && nishaniyan.length === 0 && (
         <div className="text-center py-12 text-gray-400 text-sm">
-          {isHi ? 'कोई निशानियां नहीं मिलीं' : 'No nishaniyan found for this chart'}
+          {t('auto.noNishaniyanFoundFor')}
         </div>
       )}
     </div>

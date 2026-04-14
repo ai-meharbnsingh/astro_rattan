@@ -74,14 +74,14 @@ export default function HoraTab({ panchang, language, t, timezoneOffset, minuteT
           <Clock className="h-8 w-8 text-sacred-gold flex-shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-xs text-cosmic-text-secondary">
-              {language === 'hi' ? 'वर्तमान होरा' : 'Current Hora'}
+              {t('auto.currentHora')}
             </p>
             <span className="font-bold text-cosmic-text-primary">
               {language === 'hi' ? currentHora.hora_hindi || currentHora.hora : currentHora.hora}
             </span>
             <span className="mx-2 text-sacred-gold">{currentHora.start} - {currentHora.end}</span>
             <span className="text-sm text-cosmic-text-secondary">
-              {language === 'hi' ? 'स्वामी' : 'Lord'}: {language === 'hi' ? currentHora.lord_hindi || currentHora.lord : currentHora.lord}
+              {t('auto.lord')}: {language === 'hi' ? currentHora.lord_hindi || currentHora.lord : currentHora.lord}
             </span>
           </div>
           <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getQualityColor(currentHora.type)}`}>
@@ -96,15 +96,15 @@ export default function HoraTab({ panchang, language, t, timezoneOffset, minuteT
           <div className="flex-1 p-2">
             <h3 className="font-bold text-cosmic-text-primary mb-1 flex items-center gap-1">
               <Sun className="h-4 w-4 text-orange-500" />
-              {language === 'hi' ? 'दिन होरा' : 'Day Hora'}
+              {t('auto.dayHora')}
             </h3>
             <table className="w-full table-fixed text-xs sm:text-sm">
               <thead>
                 <tr className="bg-sacred-gold/15">
-                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[25%]">{language === 'hi' ? 'होरा' : 'Hora'}</th>
-                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[23%]">{language === 'hi' ? 'स्वामी' : 'Lord'}</th>
-                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[30%]">{language === 'hi' ? 'समय' : 'Time'}</th>
-                  <th className="text-center px-2 py-1 text-sacred-gold-dark font-semibold w-[22%]">{language === 'hi' ? 'फल' : 'Result'}</th>
+                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[25%]">{t('auto.hora')}</th>
+                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[23%]">{t('auto.lord')}</th>
+                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[30%]">{t('auto.time')}</th>
+                  <th className="text-center px-2 py-1 text-sacred-gold-dark font-semibold w-[22%]">{t('auto.result')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -138,15 +138,15 @@ export default function HoraTab({ panchang, language, t, timezoneOffset, minuteT
           <div className="flex-1 p-2">
             <h3 className="font-bold text-cosmic-text-primary mb-1 flex items-center gap-1">
               <Moon className="h-4 w-4 text-indigo-400" />
-              {language === 'hi' ? 'रात्रि होरा' : 'Night Hora'}
+              {t('auto.nightHora')}
             </h3>
             <table className="w-full table-fixed text-xs sm:text-sm">
               <thead>
                 <tr className="bg-sacred-gold/15">
-                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[25%]">{language === 'hi' ? 'होरा' : 'Hora'}</th>
-                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[23%]">{language === 'hi' ? 'स्वामी' : 'Lord'}</th>
-                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[30%]">{language === 'hi' ? 'समय' : 'Time'}</th>
-                  <th className="text-center px-2 py-1 text-sacred-gold-dark font-semibold w-[22%]">{language === 'hi' ? 'फल' : 'Result'}</th>
+                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[25%]">{t('auto.hora')}</th>
+                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[23%]">{t('auto.lord')}</th>
+                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[30%]">{t('auto.time')}</th>
+                  <th className="text-center px-2 py-1 text-sacred-gold-dark font-semibold w-[22%]">{t('auto.result')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -185,12 +185,10 @@ export default function HoraTab({ panchang, language, t, timezoneOffset, minuteT
           <AlertCircle className="h-4 w-4 text-sacred-gold mt-0.5 flex-shrink-0" />
           <div>
             <h4 className="font-semibold text-cosmic-text-primary mb-1">
-              {language === 'hi' ? 'होरा के बारे में' : 'About Hora'}
+              {t('auto.aboutHora')}
             </h4>
             <p className="text-sm text-cosmic-text-secondary leading-relaxed">
-              {language === 'hi'
-                ? 'होरा दिन का 1/24वां भाग होता है (लगभग 1 घंटा)। प्रत्येक होरा एक ग्रह द्वारा शासित होती है। शुभ होरा में शुभ कार्य करने से सफलता मिलती है।'
-                : 'Hora is 1/24th part of a day (approximately 1 hour). Each Hora is ruled by a planet. Auspicious works done during good Hora yield success.'}
+              {t('auto.horaIs124thPartOfADa')}
             </p>
           </div>
         </div>

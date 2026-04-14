@@ -93,7 +93,7 @@ export default function LalKitabKundliTab({ chartData, apiResult }: Props) {
         </div>
       ) : (
         <div className="text-center text-gray-600 py-12 text-sm">
-          {language === 'hi' ? 'कुंडली चार्ट डेटा उपलब्ध नहीं है' : 'Chart data not available'}
+          {t('auto.chartDataNotAvailabl')}
         </div>
       )}
 

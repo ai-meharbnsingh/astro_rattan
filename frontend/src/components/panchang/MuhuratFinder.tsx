@@ -251,10 +251,10 @@ export default function MuhuratFinder({
       <div className="flex items-center gap-3">
         <span className="inline-flex items-center gap-1.5 text-sm font-medium px-2.5 py-0.5 rounded-full border bg-sacred-gold/10 text-sacred-gold border-sacred-gold/20">
           <Search className="h-3 w-3" />
-          {language === 'hi' ? 'मुहूर्त खोजक' : 'Muhurat Finder'}
+          {t('auto.muhuratFinder')}
         </span>
         <h3 className="text-lg font-semibold text-cosmic-text">
-          {language === 'hi' ? 'शुभ समय खोजें' : 'Find Auspicious Times'}
+          {t('auto.findAuspiciousTimes')}
         </h3>
       </div>
 
@@ -264,14 +264,14 @@ export default function MuhuratFinder({
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             {/* Event type dropdown */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm text-cosmic-text-secondary">{language === 'hi' ? 'कार्य प्रकार' : 'Event Type'}</label>
+              <label className="text-sm text-cosmic-text-secondary">{t('auto.eventType')}</label>
               <select
                 value={selectedEventType}
                 onChange={(e) => setSelectedEventType(e.target.value)}
                 className="h-9 w-full rounded-md border border-sacred-gold/20 bg-cosmic-card px-3 text-sm text-cosmic-text focus:outline-none focus:ring-2 focus:ring-sacred-gold/30"
               >
                 {muhuratTypes.length === 0 && (
-                  <option value="">{language === 'hi' ? 'लोड हो रहा है...' : 'Loading...'}</option>
+                  <option value="">{t('auto.loading')}</option>
                 )}
                 {muhuratTypes.map((t) => (
                   <option key={t.id} value={t.id}>
@@ -283,7 +283,7 @@ export default function MuhuratFinder({
 
             {/* Date picker */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm text-cosmic-text-secondary">{language === 'hi' ? 'तिथि' : 'Date'}</label>
+              <label className="text-sm text-cosmic-text-secondary">{t('auto.date')}</label>
               <input
                 type="date"
                 value={muhuratDate}
@@ -296,7 +296,7 @@ export default function MuhuratFinder({
             <div className="flex flex-col gap-1.5">
               <label className="text-sm text-cosmic-text-secondary flex items-center gap-1">
                 <MapPin className="h-3 w-3" />
-                {language === 'hi' ? 'अक्षांश' : 'Latitude'}
+                {t('auto.latitude')}
               </label>
               <input
                 type="text"
@@ -311,7 +311,7 @@ export default function MuhuratFinder({
             <div className="flex flex-col gap-1.5">
               <label className="text-sm text-cosmic-text-secondary flex items-center gap-1">
                 <MapPin className="h-3 w-3" />
-                {language === 'hi' ? 'देशांतर' : 'Longitude'}
+                {t('auto.longitude')}
               </label>
               <input
                 type="text"
@@ -335,7 +335,7 @@ export default function MuhuratFinder({
               ) : (
                 <Search className="h-4 w-4" />
               )}
-              {language === 'hi' ? 'मुहूर्त खोजें' : 'Find Muhurat'}
+              {t('auto.findMuhurat')}
             </Button>
             <Button
               onClick={fetchMonthlyView}
@@ -348,7 +348,7 @@ export default function MuhuratFinder({
               ) : (
                 <CalendarDays className="h-4 w-4" />
               )}
-              {language === 'hi' ? 'मासिक दृश्य' : 'Monthly View'}
+              {t('auto.monthlyView')}
             </Button>
           </div>
         </CardContent>
@@ -358,7 +358,7 @@ export default function MuhuratFinder({
       {muhuratWindows.length > 0 && (
         <div className="flex flex-col gap-3">
           <h4 className="text-sm font-medium text-cosmic-text-secondary">
-            {language === 'hi' ? 'शुभ समय खिड़कियाँ' : 'Auspicious Windows'}
+            {t('auto.auspiciousWindows')}
           </h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {muhuratWindows.map((w, idx) => (
@@ -408,7 +408,7 @@ export default function MuhuratFinder({
             <div className="flex items-center gap-2 mb-4">
               <CalendarDays className="h-5 w-5 text-sacred-gold" />
               <h3 className="text-lg font-semibold text-cosmic-text">
-                {language === 'hi' ? 'मासिक मुहूर्त कैलेंडर' : 'Monthly Muhurat Calendar'}
+                {t('auto.monthlyMuhuratCalend')}
               </h3>
             </div>
 
@@ -418,7 +418,7 @@ export default function MuhuratFinder({
               </div>
             ) : monthlyView.length === 0 ? (
               <p className="text-sm text-cosmic-text-secondary italic">
-                {language === 'hi' ? 'इस माह के लिए डेटा उपलब्ध नहीं है' : 'No data available for this month'}
+                {t('auto.noDataAvailableForTh')}
               </p>
             ) : (
               <div className="grid grid-cols-7 gap-1">

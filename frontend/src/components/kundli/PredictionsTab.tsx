@@ -131,12 +131,12 @@ export default function PredictionsTab({
             </div>
             {currentData._puterFallback && (
               <span className="ml-auto text-sm px-2 py-1 rounded-full" style={{ backgroundColor: 'rgba(184,134,11,0.12)', color: 'var(--aged-gold-dim)', border: '1px solid rgba(184,134,11,0.3)' }}>
-                {language === 'hi' ? 'निःशुल्क AI द्वारा संचालित' : 'Powered by Free AI'}
+                {t('auto.poweredByFreeAI')}
               </span>
             )}
           </div>
           <div className="max-w-none" style={{ color: 'var(--ink)' }}>
-            {renderMarkdown(currentData.interpretation || currentData.response || currentData.text || (language === 'hi' ? 'भविष्यवाणी तैयार हो रही है...' : 'Generating predictions...'))}
+            {renderMarkdown(currentData.interpretation || currentData.response || currentData.text || (t('auto.generatingPrediction')))}
             {currentData._streaming && <span className="inline-block w-1.5 h-4 ml-0.5 bg-sacred-gold animate-pulse align-middle" />}
           </div>
         </div>
@@ -170,7 +170,7 @@ export default function PredictionsTab({
                  'Get Predictions')}
           </Button>
           {isPuterAvailable() && (
-            <p className="text-sm mt-3" style={{ color: 'var(--ink-light)' }}>{language === 'hi' ? 'सर्वर व्यस्त होने पर निःशुल्क AI बैकअप उपलब्ध' : 'Free AI available as backup if server is busy'}</p>
+            <p className="text-sm mt-3" style={{ color: 'var(--ink-light)' }}>{t('auto.freeAIAvailableAsBac')}</p>
           )}
         </div>
       )}

@@ -134,19 +134,19 @@ export default function KundliForm({
   const handleSubmit = () => {
     const errors: Record<string, string> = {};
     if (!formData.name.trim()) {
-      errors.name = language === 'hi' ? 'नाम आवश्यक है' : 'Name is required';
+      errors.name = t('auto.nameIsRequired');
     }
     if (!formData.date) {
-      errors.date = language === 'hi' ? 'जन्म तिथि आवश्यक है' : 'Birth date is required';
+      errors.date = t('auto.birthDateIsRequired');
     }
     if (!formData.time) {
-      errors.time = language === 'hi' ? 'जन्म समय आवश्यक है' : 'Birth time is required';
+      errors.time = t('auto.birthTimeIsRequired');
     }
     if (!formData.place.trim()) {
-      errors.place = language === 'hi' ? 'जन्म स्थान आवश्यक है' : 'Birth place is required';
+      errors.place = t('auto.birthPlaceIsRequired');
     }
     if (isAstrologer && isNewClient && !formData.phone?.trim()) {
-      errors.phone = language === 'hi' ? 'फ़ोन नंबर आवश्यक है' : 'Phone number is required';
+      errors.phone = t('auto.phoneNumberIsRequire');
     }
 
     setValidationErrors(errors);

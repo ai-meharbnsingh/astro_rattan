@@ -34,9 +34,9 @@ function PredictionSummary({ type, data, isHi }: { type: string; data: Record<st
     return (
       <div className="space-y-1 text-sm text-cosmic-text/80">
         <div>
-          {isHi ? 'मांगलिक:' : 'Manglik:'}{' '}
+          {t('auto.manglik')}{' '}
           <span className={data.is_manglik ? 'text-red-600 font-medium' : 'text-green-600 font-medium'}>
-            {data.is_manglik ? (isHi ? 'हां' : 'Yes') : (isHi ? 'नहीं' : 'No')}
+            {data.is_manglik ? (t('auto.yes')) : (t('auto.no'))}
           </span>
         </div>
         {data.spouse_description && (
@@ -96,7 +96,7 @@ export default function LalKitabSavedPredictionsTab({ kundliId }: Props) {
     setError('');
     api.get(`/api/lalkitab/predictions/saved/${kundliId}`)
       .then((res: any) => setPredictions(Array.isArray(res?.predictions) ? res.predictions : []))
-      .catch(() => setError(isHi ? 'सेव भविष्यवाणियां लोड नहीं हो सकीं' : 'Failed to load saved predictions'))
+      .catch(() => setError(t('auto.failedToLoadSavedPre')))
       .finally(() => setLoading(false));
   }, [kundliId, isHi]);
 

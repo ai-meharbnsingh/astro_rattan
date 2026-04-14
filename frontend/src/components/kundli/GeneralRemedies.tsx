@@ -112,7 +112,7 @@ export default function GeneralRemedies({ language, t, title, kundliId }: Genera
   }, [kundliId]);
 
   const staticRemedies = isHi ? STATIC_REMEDIES.hi : STATIC_REMEDIES.en;
-  const defaultTitle = isHi ? 'ज्योतिष उपाय' : 'Astrological Remedies';
+  const defaultTitle = t('auto.astrologicalRemedies');
 
   return (
     <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold mt-6">
@@ -128,7 +128,7 @@ export default function GeneralRemedies({ language, t, title, kundliId }: Genera
       {dynamicRemedies && dynamicRemedies.length > 0 && (
         <div className="mb-6 space-y-3">
           <h5 className="text-sm font-bold text-sacred-gold-dark border-b border-sacred-gold/30 pb-1">
-            {isHi ? 'आपके चार्ट के आधार पर' : 'Based on Your Chart'}
+            {t('auto.basedOnYourChart')}
           </h5>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {dynamicRemedies.map((rem, idx) => (
@@ -147,7 +147,7 @@ export default function GeneralRemedies({ language, t, title, kundliId }: Genera
 
       {/* Baseline / General */}
       <h5 className="text-xs font-bold text-gray-400 mb-3 uppercase tracking-wider">
-        {isHi ? 'सामान्य मार्गदर्शन' : 'General Guidance'}
+        {t('auto.generalGuidance')}
       </h5>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {staticRemedies.map((category, idx) => (
@@ -166,9 +166,7 @@ export default function GeneralRemedies({ language, t, title, kundliId }: Genera
       </div>
       
       <p className="text-xs text-cosmic-text mt-4 italic">
-        {isHi 
-          ? 'नोट: ये उपाय मार्गदर्शन के लिए हैं। व्यक्तिगत परामर्श की सलाह दी जाती है।'
-          : 'Note: These remedies are for guidance. Personalized consultation is advised.'}
+        {t('auto.noteTheseRemediesAre')}
       </p>
     </div>
   );

@@ -79,31 +79,21 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
     const remedies: string[] = [];
 
     if (hasNadiDosha) {
-      remedies.push(isHi 
-        ? 'नाड़ी दोष निवारण के लिए महामृत्युंजय मंत्र का जप करें और अन्न दान करें।' 
-        : 'Perform Mahamrityunjaya Japa and donate grains to mitigate Nadi Dosha.');
+      remedies.push(t('auto.performMahamrityunja'));
     }
     if (hasBhakootDosha) {
-      remedies.push(isHi 
-        ? 'भकूट दोष के लिए शिव-पार्वती की संयुक्त पूजा और सफेद वस्तुओं का दान करें।' 
-        : 'Worship Shiva-Parvati together and donate white items for Bhakoot Dosha.');
+      remedies.push(t('auto.worshipShivaParvatiT'));
     }
     if (hasGanaDosha) {
-      remedies.push(isHi 
-        ? 'गण दोष के लिए प्रतिदिन नारायण कवच का पाठ करें।' 
-        : 'Recite Narayana Kavach daily to balance Gana mismatch.');
+      remedies.push(t('auto.reciteNarayanaKavach'));
     }
 
     // Add general fallback if no specific doshas but low score
     if (remedies.length === 0) {
       if (isPerson1) {
-        remedies.push(isHi
-          ? 'शुक्रवार को मां लक्ष्मी की पूजा करके सफेद मिठाई दान करें।'
-          : 'Offer white sweets on Friday after Lakshmi puja.');
+        remedies.push(t('auto.offerWhiteSweetsOnFr'));
       } else {
-        remedies.push(isHi
-          ? 'मंगलवार को हनुमान चालीसा का पाठ करें और लाल मसूर दान करें।'
-          : 'Recite Hanuman Chalisa on Tuesday and donate red lentils.');
+        remedies.push(t('auto.reciteHanumanChalisa'));
       }
     }
 
@@ -263,12 +253,12 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
 
               <div className="border border-sacred-gold p-4">
                 <h4 className="text-sm font-sans text-sacred-gold-dark mb-3 uppercase">
-                  {language === 'hi' ? 'लड़का-लड़की उपाय' : 'Remedies For Boy & Girl'}
+                  {t('auto.remediesForBoyGirl')}
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="bg-sacred-cream border border-sacred-gold/40 rounded-lg p-3">
                     <p className="text-sm font-semibold text-sacred-brown mb-2">
-                      {language === 'hi' ? 'लड़की के लिए' : `For ${result.person1_name}`}
+                      {t('auto.forResultPerson1name')}
                     </p>
                     <ul className="space-y-2 text-sm text-cosmic-text">
                       {getMilanRemedies(true).slice(0, 2).map((item, idx) => (
@@ -279,7 +269,7 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
 
                   <div className="bg-sacred-cream border border-sacred-gold/40 rounded-lg p-3">
                     <p className="text-sm font-semibold text-sacred-brown mb-2">
-                      {language === 'hi' ? 'लड़के के लिए' : `For ${result.person2_name}`}
+                      {t('auto.forResultPerson2name')}
                     </p>
                     <ul className="space-y-2 text-sm text-cosmic-text">
                       {getMilanRemedies(false).slice(0, 2).map((item, idx) => (

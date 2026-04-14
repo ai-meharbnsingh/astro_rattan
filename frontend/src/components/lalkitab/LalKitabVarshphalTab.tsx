@@ -196,7 +196,7 @@ export default function LalKitabVarshphalTab({ chartData, birthDate, apiResult }
           {birthChartData ? (
             <InteractiveKundli chartData={birthChartData} compact />
           ) : (
-            <p className="text-center text-sm text-gray-500 py-8">{isHi ? 'चार्ट उपलब्ध नहीं' : 'Chart not available'}</p>
+            <p className="text-center text-sm text-gray-500 py-8">{t('auto.chartNotAvailable')}</p>
           )}
         </div>
         <div className="card-sacred rounded-xl p-5 border border-sacred-gold/20">
@@ -206,7 +206,7 @@ export default function LalKitabVarshphalTab({ chartData, birthDate, apiResult }
           {annualChartData ? (
             <InteractiveKundli chartData={annualChartData} compact />
           ) : (
-            <p className="text-center text-sm text-gray-500 py-8">{isHi ? 'चार्ट उपलब्ध नहीं' : 'Chart not available'}</p>
+            <p className="text-center text-sm text-gray-500 py-8">{t('auto.chartNotAvailable')}</p>
           )}
         </div>
       </div>
@@ -214,7 +214,7 @@ export default function LalKitabVarshphalTab({ chartData, birthDate, apiResult }
       {/* ─── Yearly Predictions ─── */}
       <div className="card-sacred rounded-xl p-6 border border-sacred-gold/20">
         <h3 className="font-sans text-lg font-semibold text-sacred-gold mb-4">
-          {isHi ? 'वार्षिक फलादेश' : 'Yearly Predictions'} — {selectedYear}
+          {t('auto.yearlyPredictions')} — {selectedYear}
         </h3>
 
         <div className="space-y-3">
@@ -234,17 +234,17 @@ export default function LalKitabVarshphalTab({ chartData, birthDate, apiResult }
                 </span>
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <span>
-                    {isHi ? 'भाव' : 'H'}{birthHouse}
+                    {t('auto.h')}{birthHouse}
                   </span>
                   <ArrowRight className="w-4 h-4 text-sacred-gold/60" />
                   <span
                     className={changed ? 'font-semibold text-sacred-gold' : ''}
                   >
-                    {isHi ? 'भाव' : 'H'}{annualHouse}
+                    {t('auto.h')}{annualHouse}
                   </span>
                   {changed && (
                     <span className="px-2 py-0.5 rounded-full text-sm font-semibold bg-sacred-gold/20 text-sacred-gold">
-                      {isHi ? 'बदलाव' : 'Changed'}
+                      {t('auto.changed')}
                     </span>
                   )}
                 </div>
@@ -254,7 +254,7 @@ export default function LalKitabVarshphalTab({ chartData, birthDate, apiResult }
               {effects && (
                 <div className="mt-2 bg-sacred-gold/5 border border-sacred-gold/15 rounded-lg p-3">
                   <p className="text-sm font-semibold text-sacred-gold uppercase tracking-wide mb-1">
-                    {isHi ? 'फल' : 'Effect'}
+                    {t('auto.effect')}
                   </p>
                   <p className="text-sm text-gray-600 leading-relaxed">
                     {isHi ? effects.hi : effects.en}
@@ -275,7 +275,7 @@ export default function LalKitabVarshphalTab({ chartData, birthDate, apiResult }
 
         {yearlyRemedies.length === 0 ? (
           <p className="text-sm text-gray-600 italic text-center py-4">
-            {isHi ? 'इस वर्ष के लिए कोई विशेष उपाय नहीं' : 'No specific remedies for this year'}
+            {t('auto.noSpecificRemediesFo')}
           </p>
         ) : (
           <div className="space-y-3">
@@ -293,7 +293,7 @@ export default function LalKitabVarshphalTab({ chartData, birthDate, apiResult }
                   <TypeIcon className="w-4 h-4 text-sacred-gold mt-0.5 shrink-0" />
                   <div className="min-w-0">
                     <p className="text-sm text-sacred-gold font-medium mb-0.5">
-                      {planetLabel} — {isHi ? 'भाव' : 'House'} {item.house}
+                      {planetLabel} — {t('auto.house')} {item.house}
                     </p>
                     <p className="text-sm text-cosmic-text/80 leading-snug">
                       {remedyText}

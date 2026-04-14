@@ -11,25 +11,25 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
     {
       metric: language === 'hi' ? 'तिथि' : t('panchang.tithi'),
       value: language === 'hi' ? panchang.tithi.name_hindi || panchang.tithi.name : panchang.tithi.name,
-      details: `${language === 'hi' ? 'संख्या' : 'No.'} ${panchang.tithi.number} • ${language === 'hi' ? panchang.tithi.paksha_hindi || panchang.tithi.paksha : panchang.tithi.paksha}`,
+      details: `${t('auto.no')} ${panchang.tithi.number} • ${language === 'hi' ? panchang.tithi.paksha_hindi || panchang.tithi.paksha : panchang.tithi.paksha}`,
       endTime: panchang.tithi.end_time || '--',
     },
     {
       metric: language === 'hi' ? 'नक्षत्र' : t('panchang.nakshatra'),
       value: language === 'hi' ? panchang.nakshatra.name_hindi || panchang.nakshatra.name : panchang.nakshatra.name,
-      details: `${language === 'hi' ? 'पाद' : 'Pada'} ${panchang.nakshatra.pada} • ${language === 'hi' ? 'स्वामी' : 'Lord'} ${language === 'hi' ? panchang.nakshatra.lord_hindi || panchang.nakshatra.lord : panchang.nakshatra.lord}`,
+      details: `${t('auto.pada')} ${panchang.nakshatra.pada} • ${t('auto.lord')} ${language === 'hi' ? panchang.nakshatra.lord_hindi || panchang.nakshatra.lord : panchang.nakshatra.lord}`,
       endTime: panchang.nakshatra.end_time || '--',
     },
     {
       metric: language === 'hi' ? 'योग' : t('panchang.yoga'),
       value: language === 'hi' ? panchang.yoga.name_hindi || panchang.yoga.name : panchang.yoga.name,
-      details: `${language === 'hi' ? 'संख्या' : 'No.'} ${panchang.yoga.number}`,
+      details: `${t('auto.no')} ${panchang.yoga.number}`,
       endTime: panchang.yoga.end_time || '--',
     },
     {
       metric: language === 'hi' ? 'करण' : t('panchang.karana'),
       value: language === 'hi' ? panchang.karana.name_hindi || panchang.karana.name : panchang.karana.name,
-      details: `${language === 'hi' ? 'संख्या' : 'No.'} ${panchang.karana.number}`,
+      details: `${t('auto.no')} ${panchang.karana.number}`,
       endTime: panchang.karana.end_time || '--',
     },
   ];
@@ -38,45 +38,45 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
     {
       metric: language === 'hi' ? 'सूर्योदय' : t('panchang.sunrise'),
       value: panchang.sunrise || '--',
-      details: language === 'hi' ? 'दिन आरंभ' : 'Day start',
+      details: t('auto.dayStart'),
     },
     {
       metric: language === 'hi' ? 'सूर्यास्त' : t('panchang.sunset'),
       value: panchang.sunset || '--',
-      details: language === 'hi' ? 'दिन समाप्ति' : 'Day end',
+      details: t('auto.dayEnd'),
     },
     {
       metric: 'Moonrise',
       value: panchang.moonrise || '--',
-      details: language === 'hi' ? 'चंद्र उदय' : 'Moon rise',
+      details: t('auto.moonRise'),
     },
     {
       metric: 'Moonset',
       value: panchang.moonset || '--',
-      details: language === 'hi' ? 'चंद्र अस्त' : 'Moon set',
+      details: t('auto.moonSet'),
     },
   ];
 
   const dayRows = [
     {
-      metric: language === 'hi' ? 'दिनमान' : 'Day Length',
+      metric: t('auto.dayLength'),
       value: panchang.dinamana || '--',
-      details: language === 'hi' ? 'कुल दिन अवधि' : 'Total daylight',
+      details: t('auto.totalDaylight'),
     },
     {
-      metric: language === 'hi' ? 'रात्रिमान' : 'Night Length',
+      metric: t('auto.nightLength'),
       value: panchang.ratrimana || '--',
-      details: language === 'hi' ? 'कुल रात्रि अवधि' : 'Total nighttime',
+      details: t('auto.totalNighttime'),
     },
     {
-      metric: language === 'hi' ? 'मध्याह्न' : 'Mid-day',
+      metric: t('auto.midDay'),
       value: panchang.madhyahna || '--',
-      details: language === 'hi' ? 'मध्य समय' : 'Middle of day',
+      details: t('auto.middleOfDay'),
     },
     {
-      metric: language === 'hi' ? 'वार' : 'Weekday',
+      metric: t('auto.weekday'),
       value: language === 'hi' ? panchang.vaar?.name_hindi || panchang.vaar?.name || '--' : panchang.vaar?.name || '--',
-      details: language === 'hi' ? 'दिन का नाम' : 'Day name',
+      details: t('auto.dayName'),
     },
   ];
 
@@ -86,10 +86,10 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
         <table className="w-full table-fixed text-xs sm:text-sm">
           <thead>
             <tr className="bg-sacred-gold/15">
-              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[22%]">{language === 'hi' ? 'अंग' : 'Metric'}</th>
-              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[24%]">{language === 'hi' ? 'मान' : 'Value'}</th>
-              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[34%]">{language === 'hi' ? 'विवरण' : 'Details'}</th>
-              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[20%]">{language === 'hi' ? 'समाप्ति' : 'Ends'}</th>
+              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[22%]">{t('auto.metric')}</th>
+              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[24%]">{t('auto.value')}</th>
+              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[34%]">{t('auto.details')}</th>
+              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[20%]">{t('auto.ends')}</th>
             </tr>
           </thead>
           <tbody>
@@ -109,9 +109,9 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
         <table className="w-full table-fixed text-xs sm:text-sm">
           <thead>
             <tr className="bg-sacred-gold/15">
-              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[34%]">{language === 'hi' ? 'समय' : 'Metric'}</th>
-              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[28%]">{language === 'hi' ? 'मान' : 'Value'}</th>
-              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[38%]">{language === 'hi' ? 'विवरण' : 'Details'}</th>
+              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[34%]">{t('auto.metric')}</th>
+              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[28%]">{t('auto.value')}</th>
+              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[38%]">{t('auto.details')}</th>
             </tr>
           </thead>
           <tbody>
@@ -130,9 +130,9 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
         <table className="w-full table-fixed text-xs sm:text-sm">
           <thead>
             <tr className="bg-sacred-gold/15">
-              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[34%]">{language === 'hi' ? 'काल' : 'Metric'}</th>
-              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[28%]">{language === 'hi' ? 'मान' : 'Value'}</th>
-              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[38%]">{language === 'hi' ? 'विवरण' : 'Details'}</th>
+              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[34%]">{t('auto.metric')}</th>
+              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[28%]">{t('auto.value')}</th>
+              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[38%]">{t('auto.details')}</th>
             </tr>
           </thead>
           <tbody>

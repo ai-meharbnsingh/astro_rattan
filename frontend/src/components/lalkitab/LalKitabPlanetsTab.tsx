@@ -114,18 +114,18 @@ export default function LalKitabPlanetsTab({ chartData, kundliId }: Props) {
                     {isSleeping ? (
                       <span className="flex items-center gap-1 text-[10px] font-bold text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded border border-orange-100">
                         <Moon className="w-2.5 h-2.5" />
-                        {isHi ? 'सोया' : 'SLEEPING'}
+                        {t('auto.sLEEPING')}
                       </span>
                     ) : (
                       <span className="flex items-center gap-1 text-[10px] font-bold text-green-600 bg-green-50 px-1.5 py-0.5 rounded border border-green-100">
                         <Zap className="w-2.5 h-2.5" />
-                        {isHi ? 'जागा' : 'ACTIVE'}
+                        {t('auto.aCTIVE')}
                       </span>
                     )}
                     {isKayam && (
                       <span className="mt-1 flex items-center gap-1 text-[10px] font-bold text-sacred-gold-dark bg-sacred-gold/10 px-1.5 py-0.5 rounded border border-sacred-gold/20">
                         <ShieldCheck className="w-2.5 h-2.5" />
-                        {isHi ? 'कायम' : 'KAYAM'}
+                        {t('auto.kAYAM')}
                       </span>
                     )}
                   </div>
@@ -149,7 +149,7 @@ export default function LalKitabPlanetsTab({ chartData, kundliId }: Props) {
                       <p className="text-[10px] text-cosmic-text/60 mt-1">
                         {isSleeping 
                           ? (isHi ? isSleeping.reason.hi : isSleeping.reason.en)
-                          : (isHi ? 'स्वयं सक्रिय और फलदायी' : 'Self-activated and fruitful')}
+                          : (t('auto.selfActivatedAndFrui'))}
                       </p>
                     </div>
                     <div className={`p-2 rounded-lg border ${isKayam ? 'bg-sacred-gold/10 border-sacred-gold/30' : 'bg-gray-50 border-gray-200'}`}>
@@ -157,7 +157,7 @@ export default function LalKitabPlanetsTab({ chartData, kundliId }: Props) {
                         {isKayam ? t('lk.planets.stable') : t('lk.planets.unstable')}
                       </p>
                       <p className="text-[10px] text-cosmic-text/60 mt-1">
-                        {isKayam ? t('lk.planets.kayamDesc') : (isHi ? 'शत्रु ग्रहों के प्रभाव में' : 'Under influence of enemy planets')}
+                        {isKayam ? t('lk.planets.kayamDesc') : (t('auto.underInfluenceOfEnem'))}
                       </p>
                     </div>
                   </div>
@@ -168,7 +168,7 @@ export default function LalKitabPlanetsTab({ chartData, kundliId }: Props) {
                       {t('lk.planets.pakkaGhar')}
                     </span>
                     <p className="text-sacred-gold font-sans text-sm mt-0.5">
-                      {language === 'hi' ? `भाव ${pakkaGhar}` : `House ${pakkaGhar}`}
+                      {t('auto.housePakkaGhar')}
                     </p>
                   </div>
 
@@ -216,16 +216,16 @@ export default function LalKitabPlanetsTab({ chartData, kundliId }: Props) {
                   {advancedData?.aspects?.[planet.key] && advancedData.aspects[planet.key].length > 0 && (
                     <div>
                       <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                        {isHi ? 'लाल किताब दृष्टि' : 'Lal Kitab Aspects'}
+                        {t('auto.lalKitabAspects')}
                       </span>
                       <div className="space-y-1.5 mt-1.5">
                         {advancedData.aspects[planet.key].map((asp: any, idx: number) => (
                           <div key={idx} className="flex items-center justify-between text-xs p-2 rounded bg-sacred-gold/5 border border-sacred-gold/10">
                             <span className="font-medium text-cosmic-text">
-                              {isHi ? 'दृष्टि → ' : 'Aspects ➔ '} {getFriendName(asp.aspects_to)}
+                              {t('auto.aspects')} {getFriendName(asp.aspects_to)}
                             </span>
                             <span className="text-sacred-gold-dark font-bold">
-                              {asp.strength * 100}% {isHi ? 'शक्ति' : 'Power'}
+                              {asp.strength * 100}% {t('auto.power')}
                             </span>
                           </div>
                         ))}

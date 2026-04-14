@@ -79,7 +79,7 @@ export default function VastuForm({ onGenerate, loading }: Props) {
       <div>
         <label className="block text-sm font-semibold text-sacred-gold mb-3">
           <Home className="w-4 h-4 inline mr-1" />
-          {isHi ? 'भवन का प्रकार' : 'Building Type'}
+          {t('auto.buildingType')}
         </label>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {BUILDING_TYPES.map(bt => (
@@ -103,10 +103,10 @@ export default function VastuForm({ onGenerate, loading }: Props) {
       <div>
         <label className="block text-sm font-semibold text-sacred-gold mb-3">
           <Compass className="w-4 h-4 inline mr-1" />
-          {isHi ? 'मुख्य प्रवेश द्वार की दिशा' : 'Main Entrance Direction'}
+          {t('auto.mainEntranceDirectio')}
         </label>
         <p className="text-sm text-cosmic-text/50 mb-2">
-          {isHi ? 'कम्पास पर दिशा क्लिक करें — बाहरी रिंग 32 पद दिखाती है' : 'Click a direction on the compass — outer ring shows 32 padas'}
+          {t('auto.clickADirectionOnThe')}
         </p>
         <VastuCompass
           value={formData.entranceDirection}
@@ -119,7 +119,7 @@ export default function VastuForm({ onGenerate, loading }: Props) {
       {/* Optional: Precise Degrees */}
       <div>
         <label className="block text-sm font-semibold text-cosmic-text/70 mb-2">
-          {isHi ? 'कम्पास डिग्री (वैकल्पिक, 0-360)' : 'Compass Degrees (optional, 0-360)'}
+          {t('auto.compassDegreesOption')}
         </label>
         <input
           type="number"
@@ -131,7 +131,7 @@ export default function VastuForm({ onGenerate, loading }: Props) {
             ...prev,
             entranceDegrees: e.target.value ? parseFloat(e.target.value) : null,
           }))}
-          placeholder={isHi ? 'उदा. 45.5' : 'e.g. 45.5'}
+          placeholder={t('auto.eG455')}
           className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-cosmic-text placeholder-white/30 focus:border-sacred-gold focus:outline-none"
         />
       </div>
@@ -139,12 +139,10 @@ export default function VastuForm({ onGenerate, loading }: Props) {
       {/* Problems Selection */}
       <div>
         <label className="block text-sm font-semibold text-sacred-gold mb-3">
-          {isHi ? 'समस्याएँ चुनें (वैकल्पिक)' : 'Select Problems (optional)'}
+          {t('auto.selectProblemsOption')}
         </label>
         <p className="text-sm text-cosmic-text/60 mb-3">
-          {isHi
-            ? 'अपनी समस्याएँ चुनें — हम विशिष्ट वास्तु उपाय सुझाएँगे'
-            : 'Select your concerns — we\'ll suggest specific Vastu remedies'}
+          {t('auto.selectYourConcernsWe')ll suggest specific Vastu remedies'}
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {PROBLEMS.map(p => (
@@ -173,10 +171,10 @@ export default function VastuForm({ onGenerate, loading }: Props) {
         {loading ? (
           <>
             <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-            {isHi ? 'विश्लेषण हो रहा है...' : 'Analyzing...'}
+            {t('auto.analyzing')}
           </>
         ) : (
-          isHi ? 'वास्तु विश्लेषण करें' : 'Analyze Vastu'
+          t('auto.analyzeVastu')
         )}
       </Button>
     </form>

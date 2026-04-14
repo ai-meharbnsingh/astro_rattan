@@ -18,11 +18,11 @@ export default function FloorplanUploader({ onUploaded }: Props) {
   const handleFile = useCallback(async (file: File) => {
     setError('');
     if (!file.type.match(/^image\/(png|jpe?g|webp)$/)) {
-      setError(isHi ? 'केवल PNG, JPG, या WebP फ़ाइल अपलोड करें' : 'Only PNG, JPG, or WebP files allowed');
+      setError(t('auto.onlyPNGJPGOrWebPFile'));
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      setError(isHi ? 'फ़ाइल 5MB से बड़ी है' : 'File exceeds 5MB limit');
+      setError(t('auto.fileExceeds5MBLimit'));
       return;
     }
 
@@ -83,7 +83,7 @@ export default function FloorplanUploader({ onUploaded }: Props) {
         {uploading ? (
           <div className="flex flex-col items-center gap-2">
             <Loader2 className="w-8 h-8 text-sacred-gold animate-spin" />
-            <p className="text-sm text-cosmic-text">{isHi ? 'अपलोड हो रहा है...' : 'Uploading...'}</p>
+            <p className="text-sm text-cosmic-text">{t('auto.uploading')}</p>
           </div>
         ) : (
           <div className="flex flex-col items-center gap-3">
@@ -92,17 +92,15 @@ export default function FloorplanUploader({ onUploaded }: Props) {
             </div>
             <div>
               <p className="text-sm sm:text-base font-semibold text-cosmic-text">
-                {isHi ? 'फ्लोर प्लान अपलोड करें' : 'Upload Floor Plan'}
+                {t('auto.uploadFloorPlan')}
               </p>
               <p className="text-xs sm:text-sm text-cosmic-text/50 mt-1">
-                {isHi
-                  ? 'PNG, JPG, या WebP — खींचकर छोड़ें या क्लिक करें — अधिकतम 5MB'
-                  : 'PNG, JPG, or WebP — drag & drop or click — max 5MB'}
+                {t('auto.pNGJPGOrWebPDragDrop')}
               </p>
             </div>
             <div className="flex items-center gap-2 text-xs sm:text-sm text-cosmic-text/40">
               <ImageIcon className="w-3 h-3" />
-              {isHi ? 'फ़ोन से ली गई फोटो भी चलेगी' : 'Phone photos work too'}
+              {t('auto.phonePhotosWorkToo')}
             </div>
           </div>
         )}

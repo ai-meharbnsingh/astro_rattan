@@ -74,7 +74,7 @@ export default function LalKitabHealthTab({ kundliId }: Props) {
     setError('');
     api.get(`/api/lalkitab/predictions/health/${kundliId}`)
       .then((res: any) => setData(res))
-      .catch(() => setError(isHi ? 'स्वास्थ्य भविष्यवाणी लोड नहीं हो सकी' : 'Failed to load health prediction'))
+      .catch(() => setError(t('auto.failedToLoadHealthPr')))
       .finally(() => setLoading(false));
   }, [kundliId, isHi]);
 
@@ -95,7 +95,7 @@ export default function LalKitabHealthTab({ kundliId }: Props) {
         <div className="flex items-start justify-between">
           <h2 className="text-xl font-sans font-semibold text-sacred-gold flex items-center gap-2 mb-1">
             <Activity className="w-5 h-5" />
-            {isHi ? 'स्वास्थ्य भविष्यवाणी' : 'Health Predictions'}
+            {t('auto.healthPredictions')}
           </h2>
           {data && (
             <button
@@ -105,17 +105,15 @@ export default function LalKitabHealthTab({ kundliId }: Props) {
                 border-sacred-gold/40 text-sacred-gold hover:bg-sacred-gold/10"
             >
               {saved
-                ? <><BookmarkCheck className="w-4 h-4" />{isHi ? 'सेव हो गया' : 'Saved'}</>
+                ? <><BookmarkCheck className="w-4 h-4" />{t('auto.saved')}</>
                 : saving
-                ? <><Loader2 className="w-4 h-4 animate-spin" />{isHi ? 'सेव हो रहा है' : 'Saving'}</>
-                : <><Bookmark className="w-4 h-4" />{isHi ? 'सेव करें' : 'Save'}</>}
+                ? <><Loader2 className="w-4 h-4 animate-spin" />{t('auto.saving')}</>
+                : <><Bookmark className="w-4 h-4" />{t('auto.save')}</>}
             </button>
           )}
         </div>
         <p className="text-sm text-gray-500">
-          {isHi
-            ? 'षष्ठ, अष्टम, द्वादश भाव और मुख्य ग्रहों का स्वास्थ्य विश्लेषण'
-            : 'Health analysis based on 6th, 8th, 12th house planets and key planet positions'}
+          {t('auto.healthAnalysisBasedO')}
         </p>
       </div>
 
@@ -136,9 +134,7 @@ export default function LalKitabHealthTab({ kundliId }: Props) {
                       {isHi ? cfg.hi : cfg.en}
                     </span>
                     <p className="text-xs text-gray-500 mt-1">
-                      {isHi
-                        ? `${data.vulnerable_areas.length} संवेदनशील क्षेत्र मिले`
-                        : `${data.vulnerable_areas.length} vulnerable areas found`}
+                      {t('auto.DataVulnerableareasL')}
                     </p>
                   </div>
                 </div>
@@ -151,7 +147,7 @@ export default function LalKitabHealthTab({ kundliId }: Props) {
             <div className="card-sacred rounded-xl border border-red-300/30 p-5">
               <h3 className="font-sans font-semibold text-red-700 mb-4 flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4" />
-                {isHi ? 'संवेदनशील स्वास्थ्य क्षेत्र' : 'Vulnerable Health Areas'}
+                {t('auto.vulnerableHealthArea')}
               </h3>
               <div className="grid gap-3 sm:grid-cols-2">
                 {data.vulnerable_areas.map((area, i) => (
@@ -161,7 +157,7 @@ export default function LalKitabHealthTab({ kundliId }: Props) {
                         {isHi ? (PLANET_HI[area.planet] ?? area.planet) : area.planet.charAt(0).toUpperCase() + area.planet.slice(1)}
                       </span>
                       <span className="text-xs text-gray-500">
-                        {isHi ? `भाव ${area.house}` : `House ${area.house}`}
+                        {t('auto.houseAreaHouse')}
                       </span>
                     </div>
                     <p className="text-sm text-cosmic-text font-medium">
@@ -179,7 +175,7 @@ export default function LalKitabHealthTab({ kundliId }: Props) {
               <AlertTriangle className="w-4 h-4 text-orange-500 mt-0.5 shrink-0" />
               <div>
                 <p className="text-sm font-semibold text-orange-700 mb-2">
-                  {isHi ? 'दीर्घकालिक रोग का संकेत (अष्टम भाव)' : 'Chronic illness risk (8th house planets)'}
+                  {t('auto.chronicIllnessRisk8t')}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {data.chronic_risk_planets.map((p) => (
@@ -197,7 +193,7 @@ export default function LalKitabHealthTab({ kundliId }: Props) {
             <div className="card-sacred rounded-xl border border-sacred-gold/20 p-5">
               <h3 className="font-sans font-semibold text-sacred-gold mb-4 flex items-center gap-2">
                 <Shield className="w-4 h-4" />
-                {isHi ? 'स्वास्थ्य सावधानियां' : 'Health Precautions'}
+                {t('auto.healthPrecautions')}
               </h3>
               <ul className="space-y-3">
                 {data.precautions.map((p, i) => (
@@ -217,7 +213,7 @@ export default function LalKitabHealthTab({ kundliId }: Props) {
           {/* Key planet positions */}
           <div className="card-sacred rounded-xl border border-sacred-gold/20 p-5">
             <h3 className="font-sans font-semibold text-sacred-gold mb-3">
-              {isHi ? 'स्वास्थ्य-कारक ग्रह स्थान' : 'Health-Related Planet Positions'}
+              {t('auto.healthRelatedPlanetP')}
             </h3>
             <div className="grid grid-cols-4 gap-3">
               {[
@@ -233,7 +229,7 @@ export default function LalKitabHealthTab({ kundliId }: Props) {
                   }`}>
                     <p className="text-xs text-gray-500 mb-1">{isHi ? hi : key.charAt(0).toUpperCase() + key.slice(1)}</p>
                     <p className={`text-xl font-bold ${isInBadHouse ? 'text-red-600' : 'text-sacred-gold'}`}>{house}</p>
-                    <p className="text-xs text-gray-400">{isHi ? 'भाव' : 'House'}</p>
+                    <p className="text-xs text-gray-400">{t('auto.house')}</p>
                   </div>
                 );
               })}
@@ -245,9 +241,7 @@ export default function LalKitabHealthTab({ kundliId }: Props) {
             <div className="flex items-center gap-3 p-4 rounded-xl border border-green-300/30 bg-green-500/5">
               <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
               <p className="text-sm text-green-700">
-                {isHi
-                  ? 'आपकी कुंडली में कोई बड़ा स्वास्थ्य दोष नहीं है। नियमित दिनचर्या बनाए रखें।'
-                  : 'No major health afflictions found in your chart. Maintain a regular daily routine.'}
+                {t('auto.noMajorHealthAfflict')}
               </p>
             </div>
           )}
