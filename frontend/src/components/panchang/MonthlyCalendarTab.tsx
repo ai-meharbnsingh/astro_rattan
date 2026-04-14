@@ -158,7 +158,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
   return (
     <div className="space-y-3">
       {/* Month Navigation */}
-      <Card className="card-sacred">
+      <Card className="card-sacred !py-0 !gap-0">
         <CardContent className="p-1.5 sm:p-2">
           <div className="flex items-center justify-between">
             <Button variant="outline" size="icon" onClick={prevMonth} className="border-sacred-gold/30 h-7 w-7 sm:h-8 sm:w-8">
