@@ -71,7 +71,7 @@ const R_SIGN_NAME = 280;
 const R_OUTER = 270; // second circle — slightly bigger
 const R_DATE = 256;
 const R_DATE_RING = 244;
-const R_IMG = 218;
+const R_IMG = 193;
 const R_GENDER = 130; // Moved closer to center
 const R_GENDER_RING = 143; // Outer circle for gender symbols
 const R_GLYPH_RING = 112;
@@ -130,7 +130,7 @@ export default function LiveTransitWheel() {
   // Segments
   const clipDefs = SIGNS.map((_, i) => {
     const midRad = toRad(i * 30 + 15 - 90);
-    return <clipPath key={`wc${i}`} id={`wc${i}`}><circle cx={CX + R_IMG * Math.cos(midRad)} cy={CY + R_IMG * Math.sin(midRad)} r={18} /></clipPath>;
+    return <clipPath key={`wc${i}`} id={`wc${i}`}><circle cx={CX + R_IMG * Math.cos(midRad)} cy={CY + R_IMG * Math.sin(midRad)} r={28} /></clipPath>;
   });
 
   const segEls = SIGNS.map((sign, i) => {
@@ -181,7 +181,7 @@ export default function LiveTransitWheel() {
           transform={`rotate(${rot},${dx},${dy})`}>{hi ? sign.datesHi : sign.dates}</text>
 
         {/* Ring 3: Watermark zodiac animal sketch — saffron monochrome */}
-        <image href={sign.img} x={ix-20} y={iy-20} width={40} height={40}
+        <image href={sign.img} x={ix-28} y={iy-28} width={56} height={56}
           preserveAspectRatio="xMidYMid slice" opacity={0.30}
           clipPath={`url(#wc${i})`} />
 
