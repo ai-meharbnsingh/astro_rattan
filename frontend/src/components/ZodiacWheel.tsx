@@ -169,7 +169,7 @@ export default function ZodiacWheel() {
       <div className="chakra-float" style={{ transformStyle: 'preserve-3d', overflow: 'visible' }}>
         <svg
           viewBox="0 0 600 600"
-          className="w-full h-full"
+          className="w-full h-full wheel-spin"
           style={{
             overflow: 'visible',
             filter: 'drop-shadow(8px 16px 24px rgba(139,69,19,0.45)) drop-shadow(0px 4px 8px rgba(196,97,31,0.25)) drop-shadow(-3px -3px 8px rgba(255,210,120,0.15))',

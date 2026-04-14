@@ -12,6 +12,15 @@
   transform-style: preserve-3d;
 }
 
+/* Slow clockwise spin for the wheel SVG */
+@keyframes wheelSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.wheel-spin {
+  animation: wheelSpin 90s linear infinite;
+}
+
 /* Hide scrollbar for horizontally scrollable tab bars */
 @layer utilities {
   .scrollbar-hide {
