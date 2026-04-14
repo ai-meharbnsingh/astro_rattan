@@ -44,6 +44,17 @@ const GOWRI_TYPE_INFO = {
   },
 } as const;
 
+const GOWRI_PERIOD_DETAILS: Record<string, { en: string; hi: string }> = {
+  amrit: { en: 'Best for all auspicious work', hi: 'सर्वश्रेष्ठ, सभी शुभ कार्यों के लिए' },
+  shubha: { en: 'Good for important tasks', hi: 'महत्वपूर्ण कार्यों के लिए शुभ' },
+  labha: { en: 'Good for gains and finance', hi: 'लाभ और धन संबंधी कार्यों के लिए अच्छा' },
+  udvega: { en: 'Avoid new beginnings', hi: 'नए कार्य शुरू करने से बचें' },
+  kaala: { en: 'Inauspicious period', hi: 'अशुभ समय' },
+  roga: { en: 'Not good for health-related decisions', hi: 'स्वास्थ्य संबंधित निर्णयों के लिए उचित नहीं' },
+  chara: { en: 'Suitable for travel and movement', hi: 'यात्रा और गतिशील कार्यों के लिए उपयुक्त' },
+  dhana: { en: 'Favorable for money matters', hi: 'धन संबंधी कार्यों के लिए अनुकूल' },
+};
+
 export default function GowriTab({ panchang, language, t, timezoneOffset, minuteTick }: Props) {
   const gowriPanchang: GowriPeriod[] = panchang.gowri_panchang || [];
   const toMinutes = (time: string) => {
@@ -63,6 +74,12 @@ export default function GowriTab({ panchang, language, t, timezoneOffset, minute
     if (q.includes('good') || q.includes('auspicious') || q.includes('benefic') || q === 'शुभ') return 'good';
     if (q.includes('neutral') || q === 'सामान्य') return 'neutral';
     return 'bad';
+  };
+  const getPeriodDetail = (name: string) => {
+    const key = String(name || '').toLowerCase();
+    const found = Object.keys(GOWRI_PERIOD_DETAILS).find((k) => key.includes(k));
+    if (!found) return language === 'hi' ? 'सामान्य गौरी अवधि' : 'General Gowri period';
+    return language === 'hi' ? GOWRI_PERIOD_DETAILS[found].hi : GOWRI_PERIOD_DETAILS[found].en;
   };
 
   const { dayGowri, nightGowri, currentPeriodKey } = useMemo(() => {
@@ -112,6 +129,9 @@ export default function GowriTab({ panchang, language, t, timezoneOffset, minute
         <td className="px-2 py-1 text-cosmic-text-secondary">
           {period.start} - {period.end}
         </td>
+        <td className="px-2 py-1 text-cosmic-text-secondary whitespace-normal break-words">
+          {getPeriodDetail(period.name)}
+        </td>
       </tr>
     );
   };
@@ -136,6 +156,9 @@ export default function GowriTab({ panchang, language, t, timezoneOffset, minute
               </th>
               <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
                 {t('auto.time')}
+              </th>
+              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
+                {t('auto.details')}
               </th>
             </tr>
           </thead>
@@ -163,6 +186,9 @@ export default function GowriTab({ panchang, language, t, timezoneOffset, minute
             <span className="mx-2 text-sacred-gold">{currentGowri.start} - {currentGowri.end}</span>
             <span className={`text-xs font-medium ${GOWRI_TYPE_INFO[getTypeBucket(currentGowri.quality)].color}`}>
               ({language === 'hi' ? GOWRI_TYPE_INFO[getTypeBucket(currentGowri.quality)].labelHi : GOWRI_TYPE_INFO[getTypeBucket(currentGowri.quality)].label})
+            </span>
+            <span className="ml-2 text-xs text-cosmic-text-secondary">
+              {getPeriodDetail(currentGowri.name)}
             </span>
           </div>
         </div>
