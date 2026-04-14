@@ -273,7 +273,7 @@ function flattenBilingual<T = unknown>(obj: unknown, lang: string): T {
 /* ────────────────────────────── Main Component ────────────────────────────── */
 
 export default function MundaneTab({ language: languageProp }: MundaneTabProps) {
-  const { language: contextLang } = useTranslation();
+  const { t, language: contextLang } = useTranslation();
   const lang = (languageProp || contextLang) as Language;
 
   const currentYear = new Date().getFullYear();
