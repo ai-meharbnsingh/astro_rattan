@@ -85,7 +85,7 @@ const R_CENTER = 42;
 const GOLD = '#8B4513';
 const GOLD_MED = '#C4611F';
 const DARK = '#1a1a2e';
-const WHEEL_LINE = 'rgba(139,69,19,0.22)';
+const WHEEL_LINE = 'rgba(139,69,19,0.34)';
 const WHEEL_STROKE_W = 0.7;
 
 function signIdx(sign: string) { return Math.max(0, SIGNS.findIndex(s => s.en.toLowerCase() === sign.toLowerCase())); }
