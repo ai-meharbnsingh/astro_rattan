@@ -27,9 +27,9 @@ const PLANET_FULL_HI: Record<string,string> = { Sun:'सूर्य',Moon:'च�
 const MALEFIC = new Set(['Mars','Saturn','Rahu','Ketu']);
 
 const RING_R: Record<string, number> = {
-  Sun: 210, Moon: 188, Venus: 210, Mercury: 188,
-  Mars: 166, Jupiter: 145, Saturn: 166,
-  Rahu: 128, Ketu: 128,
+  Sun: 206, Moon: 194, Venus: 206, Mercury: 194,
+  Mars: 182, Jupiter: 170, Saturn: 182,
+  Rahu: 170, Ketu: 170,
 };
 
 interface TransitPlanet { planet: string; sign: string; longitude: number; sign_degree: number; is_retrograde: boolean; }
@@ -42,7 +42,7 @@ const R_DATE = 256;
 const R_DATE_RING = 244;
 const R_IMG = 218;
 const R_GENDER = 130; // Moved closer to center
-const R_GENDER_RING = 138; // Outer circle for gender symbols
+const R_GENDER_RING = 148; // Outer circle for gender symbols — more space
 const R_GLYPH_RING = 112;
 const R_GLYPH = 96;
 const R_ELEM = 75;
@@ -56,7 +56,11 @@ const GOLD_MED = '#C4611F';
 const DARK = '#1a1a2e';
 
 function signIdx(sign: string) { return Math.max(0, SIGNS.findIndex(s => s.en.toLowerCase() === sign.toLowerCase())); }
-function absAngle(p: TransitPlanet) { return signIdx(p.sign) * 30 + p.sign_degree - 90; }
+function absAngle(p: TransitPlanet) {
+  // Keep planets away from exact sign divider boundaries so symbols/labels don't sit on lines.
+  const safeDeg = Math.max(1.2, Math.min(28.8, p.sign_degree));
+  return signIdx(p.sign) * 30 + safeDeg - 90;
+}
 function arcRot(midDeg: number) { const t = ((midDeg + 90) % 360 + 360) % 360; return (t > 90 && t < 270) ? t + 180 : t; }
 
 export default function LiveTransitWheel() {
@@ -191,12 +195,21 @@ export default function LiveTransitWheel() {
         }
       }
     }
+    // Keep all planet labels in the middle lane: between date ring and gender ring.
+    for (let k = 0; k < dotPos.length; k++) {
+      const vx = dotPos[k].x - CX;
+      const vy = dotPos[k].y - CY;
+      const d = Math.sqrt(vx * vx + vy * vy) || 1;
+      const clamped = Math.max(162, Math.min(214, d));
+      dotPos[k].x = CX + (vx / d) * clamped;
+      dotPos[k].y = CY + (vy / d) * clamped;
+    }
   }
 
   const planetDots = dotPos.map(({ planet: p, x: px, y: py }, i) => {
     const isMalefic = MALEFIC.has(p.planet);
     const abbr = hi ? PLANET_HI[p.planet] : PLANET_ABBR[p.planet];
-    const degText = `${Math.floor(p.sign_degree)}\u00B0`;
+    const degText = `${p.sign_degree.toFixed(1)}\u00B0`;
     const textColor = isMalefic ? DARK : GOLD_MED;
 
     return (
