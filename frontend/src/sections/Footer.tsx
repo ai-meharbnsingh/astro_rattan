@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Mail, Phone, Heart, ArrowRight, MessageSquare } from 'lucide-react';
+import { Mail, Phone, Heart, MessageSquare } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 
 // Vastu is WIP — only visible on staging
@@ -12,26 +12,8 @@ export default function Footer() {
   return (
     <footer className="bg-sacred-gold-dark border-t border-white/20 mt-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Newsletter band */}
-        <div className="rounded-2xl border border-white/20 bg-white/5 p-6 sm:p-8 text-center mb-8">
-          <h3 className="text-2xl sm:text-3xl font-sans text-white mb-2">{l('Subscribe to Newsletter', 'न्यूज़लेटर सब्सक्राइब करें')}</h3>
-          <p className="text-sm text-amber-100/90 mb-5">
-            {l('Receive personalized astrology insights directly in your inbox.', 'व्यक्तिगत ज्योतिषीय इनसाइट्स सीधे अपने इनबॉक्स में प्राप्त करें।')}
-          </p>
-          <div className="max-w-xl mx-auto flex items-stretch">
-            <input
-              type="email"
-              placeholder={l('Enter your email', 'अपना ईमेल दर्ज करें')}
-              className="flex-1 bg-white/10 border border-white/25 rounded-l-full px-4 py-3 text-sm text-white placeholder:text-amber-100/70 focus:outline-none"
-            />
-            <button className="px-5 py-3 rounded-r-full bg-[#f5d28a] text-[#5c2414] hover:bg-[#ffe2a8] transition-colors">
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
         {/* Footer link blocks */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 border-t border-white/20 pt-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
             <h4 className="text-lg font-sans text-[#f5d28a] mb-3">{t('footer.services')}</h4>
             <div className="space-y-2 text-sm">
