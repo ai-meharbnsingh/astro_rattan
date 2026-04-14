@@ -1,7 +1,6 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
-import InteractiveKundli, { type ChartData } from '@/components/InteractiveKundli';
 
 const toRad = (deg: number) => (deg * Math.PI) / 180;
 const CX = 300;
@@ -108,7 +107,6 @@ export default function LiveTransitWheel() {
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
 
   const [fetchedAt, setFetchedAt] = useState<number>(Date.now());
-  const [viewMode, setViewMode] = useState<'transit' | 'kundli'>('transit');
 
   const fetchSky = useCallback(async () => {
     try { const d = await api.get('/api/kundli/current-sky'); setSkyData(d); setFetchedAt(Date.now()); setError(false); } catch { setError(true); }
@@ -124,31 +122,6 @@ export default function LiveTransitWheel() {
   const elapsedSec = (currentTime.getTime() - fetchedAt) / 1000;
   const lagnaLong = (skyData?.lagna_longitude || 0) + (elapsedSec * (360 / 86400));
   const lagnaAngle = lagnaLong - 90;
-
-  // Build ChartData for InteractiveKundli from sky data
-  const SIGN_NAMES_K = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
-  const ascSignIdx = Math.floor(lagnaLong / 30) % 12;
-  const kundliChartData = useMemo<ChartData | null>(() => {
-    if (!skyData) return null;
-    const houses = Array.from({ length: 12 }, (_, i) => ({
-      number: i + 1,
-      sign: SIGN_NAMES_K[(ascSignIdx + i) % 12],
-    }));
-    const kundliPlanets = planets.map(p => {
-      const pIdx = SIGN_NAMES_K.findIndex(s => s.toLowerCase() === p.sign.toLowerCase());
-      const house = ((pIdx - ascSignIdx + 12) % 12) + 1;
-      return {
-        planet: p.planet, sign: p.sign, house, nakshatra: '',
-        sign_degree: p.sign_degree,
-        status: p.is_retrograde ? 'Retrograde' : 'Transiting',
-        is_retrograde: p.is_retrograde,
-      };
-    });
-    return {
-      planets: kundliPlanets, houses,
-      ascendant: { longitude: lagnaLong, sign: SIGN_NAMES_K[ascSignIdx], sign_degree: lagnaLong % 30 },
-    };
-  }, [skyData, planets, ascSignIdx, lagnaLong]);
 
   // Ticks
   const ticks: JSX.Element[] = [];
@@ -327,47 +300,8 @@ export default function LiveTransitWheel() {
 
   return (
     <div className="relative w-full mx-auto" style={{ maxWidth: '760px', padding: '0px' }}>
-      {/* Toggle Button */}
-      <div className="flex justify-center mb-2">
-        <div className="inline-flex rounded-lg border border-sacred-gold/30 overflow-hidden text-xs">
-          <button
-            onClick={() => setViewMode('transit')}
-            className={`px-4 py-1.5 font-semibold transition-all ${
-              viewMode === 'transit'
-                ? 'bg-sacred-gold/20 text-sacred-gold-dark'
-                : 'text-gray-500 hover:bg-sacred-gold/5'
-            }`}
-          >
-            {hi ? 'गोचर' : 'Transit'}
-          </button>
-          <button
-            onClick={() => setViewMode('kundli')}
-            className={`px-4 py-1.5 font-semibold transition-all ${
-              viewMode === 'kundli'
-                ? 'bg-sacred-gold/20 text-sacred-gold-dark'
-                : 'text-gray-500 hover:bg-sacred-gold/5'
-            }`}
-          >
-            {hi ? 'कुंडली' : 'Kundli'}
-          </button>
-        </div>
-      </div>
-
-      {/* Kundli Chart View — reuse InteractiveKundli component (proven layout) */}
-      {viewMode === 'kundli' && kundliChartData && (
-        <div className="chakra-float" style={{ transformStyle: 'preserve-3d' }}>
-          <div style={{
-            transform: 'scale(0.85)',
-            transformOrigin: 'center center',
-            filter: 'drop-shadow(4px 8px 16px rgba(139,69,19,0.25)) drop-shadow(0 2px 6px rgba(196,97,31,0.12))',
-          }}>
-            <InteractiveKundli chartData={kundliChartData} compact />
-          </div>
-        </div>
-      )}
-
-      {/* Transit Wheel View */}
-      {viewMode === 'transit' && <div className="relative w-full pb-2">
+      {/* Transit Wheel */}
+      <div className="relative w-full pb-2">
           {tooltip && (
             <div className="absolute z-20 pointer-events-none"
               style={{ left: `${((tooltip.x+16)/600)*100}%`, top: `${(tooltip.y/600)*100}%`, transform: 'translate(-50%,-130%)' }}>
@@ -421,7 +355,7 @@ export default function LiveTransitWheel() {
             )}
           </svg>
       </div>
-      </div>}
+      </div>
 
       {/* Legend — bottom */}
       <div className="rounded-lg bg-sacred-gold/5 px-3 py-1 mt-2 text-sm" style={{ fontFamily:'Inter,sans-serif', color: GOLD }}>
