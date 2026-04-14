@@ -86,80 +86,74 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
         <h3 className="font-bold text-cosmic-text-primary mb-1">
           {language === 'hi' ? 'तिथि / नक्षत्र / योग / करण' : 'Tithi / Nakshatra / Yoga / Karana'}
         </h3>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[420px] text-sm">
-            <thead>
-              <tr className="bg-sacred-gold/15">
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'अंग' : 'Metric'}</th>
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'मान' : 'Value'}</th>
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'विवरण' : 'Details'}</th>
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'समाप्ति' : 'Ends'}</th>
+        <table className="w-full table-fixed text-xs sm:text-sm">
+          <thead>
+            <tr className="bg-sacred-gold/15">
+              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[22%]">{language === 'hi' ? 'अंग' : 'Metric'}</th>
+              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[24%]">{language === 'hi' ? 'मान' : 'Value'}</th>
+              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[34%]">{language === 'hi' ? 'विवरण' : 'Details'}</th>
+              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[20%]">{language === 'hi' ? 'समाप्ति' : 'Ends'}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {coreRows.map((row) => (
+              <tr key={row.metric} className="border-b border-cosmic-border/50 last:border-0 align-top">
+                <td className="px-2 py-1 font-medium text-cosmic-text-primary whitespace-normal break-words">{row.metric}</td>
+                <td className="px-2 py-1 text-cosmic-text-primary whitespace-normal break-words">{row.value}</td>
+                <td className="px-2 py-1 text-cosmic-text-secondary whitespace-normal break-words">{row.details}</td>
+                <td className="px-2 py-1 text-sacred-gold whitespace-normal break-words">{row.endTime}</td>
               </tr>
-            </thead>
-            <tbody>
-              {coreRows.map((row) => (
-                <tr key={row.metric} className="border-b border-cosmic-border/50 last:border-0">
-                  <td className="px-2 py-1 font-medium text-cosmic-text-primary">{row.metric}</td>
-                  <td className="px-2 py-1 text-cosmic-text-primary">{row.value}</td>
-                  <td className="px-2 py-1 text-cosmic-text-secondary">{row.details}</td>
-                  <td className="px-2 py-1 text-sacred-gold">{row.endTime}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       <div className="rounded-lg border border-cosmic-border p-2">
         <h3 className="font-bold text-cosmic-text-primary mb-1">
           {language === 'hi' ? 'सूर्य और चंद्र समय' : 'Sun and Moon Times'}
         </h3>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[420px] text-sm">
-            <thead>
-              <tr className="bg-sacred-gold/15">
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'समय' : 'Metric'}</th>
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'मान' : 'Value'}</th>
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'विवरण' : 'Details'}</th>
+        <table className="w-full table-fixed text-xs sm:text-sm">
+          <thead>
+            <tr className="bg-sacred-gold/15">
+              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[34%]">{language === 'hi' ? 'समय' : 'Metric'}</th>
+              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[28%]">{language === 'hi' ? 'मान' : 'Value'}</th>
+              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[38%]">{language === 'hi' ? 'विवरण' : 'Details'}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sunMoonRows.map((row) => (
+              <tr key={row.metric} className="border-b border-cosmic-border/50 last:border-0 align-top">
+                <td className="px-2 py-1 font-medium text-cosmic-text-primary whitespace-normal break-words">{row.metric}</td>
+                <td className="px-2 py-1 text-cosmic-text-primary whitespace-normal break-words">{row.value}</td>
+                <td className="px-2 py-1 text-cosmic-text-secondary whitespace-normal break-words">{row.details}</td>
               </tr>
-            </thead>
-            <tbody>
-              {sunMoonRows.map((row) => (
-                <tr key={row.metric} className="border-b border-cosmic-border/50 last:border-0">
-                  <td className="px-2 py-1 font-medium text-cosmic-text-primary">{row.metric}</td>
-                  <td className="px-2 py-1 text-cosmic-text-primary">{row.value}</td>
-                  <td className="px-2 py-1 text-cosmic-text-secondary">{row.details}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       <div className="rounded-lg border border-cosmic-border p-2">
         <h3 className="font-bold text-cosmic-text-primary mb-1">
           {language === 'hi' ? 'दिन की अवधि' : 'Day Duration'}
         </h3>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[420px] text-sm">
-            <thead>
-              <tr className="bg-sacred-gold/15">
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'काल' : 'Metric'}</th>
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'मान' : 'Value'}</th>
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'विवरण' : 'Details'}</th>
+        <table className="w-full table-fixed text-xs sm:text-sm">
+          <thead>
+            <tr className="bg-sacred-gold/15">
+              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[34%]">{language === 'hi' ? 'काल' : 'Metric'}</th>
+              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[28%]">{language === 'hi' ? 'मान' : 'Value'}</th>
+              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[38%]">{language === 'hi' ? 'विवरण' : 'Details'}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {dayRows.map((row) => (
+              <tr key={row.metric} className="border-b border-cosmic-border/50 last:border-0 align-top">
+                <td className="px-2 py-1 font-medium text-cosmic-text-primary whitespace-normal break-words">{row.metric}</td>
+                <td className="px-2 py-1 text-cosmic-text-primary whitespace-normal break-words">{row.value}</td>
+                <td className="px-2 py-1 text-cosmic-text-secondary whitespace-normal break-words">{row.details}</td>
               </tr>
-            </thead>
-            <tbody>
-              {dayRows.map((row) => (
-                <tr key={row.metric} className="border-b border-cosmic-border/50 last:border-0">
-                  <td className="px-2 py-1 font-medium text-cosmic-text-primary">{row.metric}</td>
-                  <td className="px-2 py-1 text-cosmic-text-primary">{row.value}</td>
-                  <td className="px-2 py-1 text-cosmic-text-secondary">{row.details}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

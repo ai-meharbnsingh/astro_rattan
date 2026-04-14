@@ -85,36 +85,6 @@ export default function ReportTab({
 }: ReportTabProps) {
   return (
             <div className="space-y-6">
-              {/* View Buttons */}
-              <div className="flex justify-center gap-3">
-                <Button
-                  size="lg"
-                  className="bg-sacred-gold text-black hover:bg-gray-50 light px-8"
-                  onClick={() => {
-                    fetchTransit();
-                    fetchD10();
-                    fetchDasha();
-                    fetchExtendedDasha();
-                    setJhoraOpen(true);
-                  }}
-                >
-                  <ScrollText className="w-5 h-5 mr-2" />
-                  {t('kundli.jhoraView')}
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-sacred-gold text-sacred-gold hover:bg-gold-10 px-8"
-                  onClick={() => {
-                    fetchTransit();
-                    setReportOpen(true);
-                  }}
-                >
-                  <ScrollText className="w-5 h-5 mr-2" />
-                  {t('kundli.fullReport')}
-                </Button>
-              </div>
-
               {/* JHora-style Fullscreen Overlay */}
               {jhoraOpen && (
                 <div className="fixed inset-0 z-[9999] bg-parchment" style={{ width: '100vw', height: '100vh' }}>
@@ -168,39 +138,7 @@ export default function ReportTab({
                 loadingDivisional={loadingDivisional}
               />
 
-              {/* Action bar */}
-              <div className="flex flex-wrap gap-3 justify-end">
-                <Button size="sm" className="bg-sacred-gold text-white hover:bg-sacred-gold/90 font-semibold" onClick={async () => {
-                  try {
-                    const token = localStorage.getItem('astrorattan_token');
-                    const API_BASE = import.meta.env.VITE_API_URL || '';
-                    const resp = await fetch(`${API_BASE}/api/kundli/${result.id}/pdf`, {
-                      headers: token ? { Authorization: `Bearer ${token}` } : {},
-                    });
-                    if (!resp.ok) {
-                      const err = await resp.json().catch(() => ({ detail: resp.statusText }));
-                      throw new Error(err.detail || t('report.pdfDownloadFailed'));
-                    }
-                    const blob = await resp.blob();
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `kundli-${result.person_name || 'report'}.pdf`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                  } catch (e: any) {
-                    console.error('PDF download error:', e);
-                    alert(e.message || t('report.failedToDownloadPDF'));
-                  }
-                }}>
-                  <Download className="w-4 h-4 mr-1" />{t('common.downloadPDF')}
-                </Button>
-                <Button size="sm" variant="outline" className="border-sacred-gold text-sacred-brown" onClick={() => window.print()}>
-                  <Printer className="w-4 h-4 mr-1" />{t('common.printReport')}
-                </Button>
-              </div>
+
 
               {/* Report title */}
               <div className="bg-gradient-to-r from-sacred-cream to-sacred-gold rounded-xl p-5 border border-sacred-gold text-center">

@@ -268,51 +268,22 @@ export default function KundliGenerator() {
               }}>
               <RefreshCw className="w-4 h-4 mr-1" />{language === 'hi' ? 'पुनः गणना' : 'Regenerate'}
             </Button>
-            <Button variant="outline" size="sm" className="border-sacred-gold text-sacred-brown" onClick={async () => {
-              const shareData = {
-                title: `Kundli - ${result.person_name}`,
-                text: `Vedic Kundli for ${result.person_name}, generated on Astro Rattan`,
-                url: window.location.href,
-              };
-              try {
-                if (navigator.share) {
-                  await navigator.share(shareData);
-                } else {
-                  await navigator.clipboard.writeText(`${shareData.title}\n${shareData.text}\n${shareData.url}`);
-                  alert(language === 'hi' ? 'लिंक क्लिपबोर्ड पर कॉपी हो गया!' : 'Link copied to clipboard!');
-                }
-              } catch (e) {
-                if ((e as Error).name !== 'AbortError') console.error(e);
-              }
-            }}>
-              <Share2 className="w-4 h-4 mr-1" />{t('common.share')}
+            <Button variant="outline" size="sm" className="border-sacred-gold text-sacred-brown"
+              onClick={() => {
+                fetchTransit();
+                fetchD10();
+                fetchDasha();
+                fetchExtendedDasha();
+                setJhoraOpen(true);
+              }}>
+              <ScrollText className="w-4 h-4 mr-1" />{language === 'hi' ? 'जेहोरा व्यू' : 'JHora View'}
             </Button>
-            <Button size="sm" className="bg-sacred-gold text-white hover:bg-sacred-gold/90 font-semibold" onClick={async () => {
-              try {
-                const token = localStorage.getItem('astrorattan_token');
-                const API_BASE = import.meta.env.VITE_API_URL || '';
-                const resp = await fetch(`${API_BASE}/api/kundli/${result.id}/pdf`, {
-                  headers: token ? { Authorization: `Bearer ${token}` } : {},
-                });
-                if (!resp.ok) {
-                  const err = await resp.json().catch(() => ({ detail: resp.statusText }));
-                  throw new Error(err.detail || 'PDF download failed');
-                }
-                const blob = await resp.blob();
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `kundli-${result.person_name || 'report'}.pdf`;
-                document.body.appendChild(a);
-                a.click();
-                setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 60000);
-              } catch (e: unknown) {
-                console.error('PDF download error:', e);
-                const message = e instanceof Error ? e.message : 'Failed to download PDF';
-                alert(message);
-              }
-            }}>
-              <Download className="w-4 h-4 mr-1" />{t('common.download')}
+            <Button variant="outline" size="sm" className="border-sacred-gold text-sacred-brown"
+              onClick={() => {
+                fetchTransit();
+                setReportOpen(true);
+              }}>
+              <ScrollText className="w-4 h-4 mr-1" />{language === 'hi' ? 'पूर्ण रिपोर्ट' : 'Full Report'}
             </Button>
             <Button size="sm"
               className="bg-gradient-to-r from-sacred-gold to-sacred-gold-dark text-white hover:from-sacred-gold/90 hover:to-sacred-gold-dark/90 font-semibold border border-sacred-gold-dark/30 shadow-md"
