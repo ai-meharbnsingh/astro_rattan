@@ -2,6 +2,7 @@ import { useTranslation } from '@/lib/i18n';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, Plus, Search, BookOpen, ChevronRight, User, Star, BarChart3 } from 'lucide-react';
+import ProfileEditPanel from '@/components/ProfileEditPanel';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { api } from '@/lib/api';
@@ -240,13 +241,22 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="relative mb-6">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cosmic-text" />
-        <Input type="text" value={search} onChange={e => handleSearch(e.target.value)}
-          placeholder={t('dashboard.searchPlaceholder')} className="pl-10 bg-cosmic-bg border-sacred-gold text-cosmic-text rounded-lg" />
-      </div>
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* LEFT — Client list */}
+        <div className="flex-1 min-w-0">
+          <div className="relative mb-6">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cosmic-text" />
+            <Input type="text" value={search} onChange={e => handleSearch(e.target.value)}
+              placeholder={t('dashboard.searchPlaceholder')} className="pl-10 bg-cosmic-bg border-sacred-gold text-cosmic-text rounded-lg" />
+          </div>
+          {renderClientList()}
+        </div>
 
-      {renderClientList()}
+        {/* RIGHT — Profile edit panel */}
+        <div className="w-full lg:w-80 shrink-0">
+          <ProfileEditPanel />
+        </div>
+      </div>
     </div>
   );
 }

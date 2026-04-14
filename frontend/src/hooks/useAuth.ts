@@ -6,6 +6,11 @@ interface User {
   email: string;
   name: string;
   role?: string;
+  phone?: string;
+  date_of_birth?: string;
+  gender?: string;
+  city?: string;
+  avatar_url?: string;
 }
 
 interface AuthContextValue {
@@ -14,6 +19,7 @@ interface AuthContextValue {
   login: (email: string, password: string) => Promise<any>;
   register: (email: string, password: string, name: string, emailToken: string) => Promise<any>;
   logout: () => void;
+  refreshUser: () => Promise<void>;
   isAuthenticated: boolean;
 }
 
@@ -23,6 +29,7 @@ const AuthContext = createContext<AuthContextValue>({
   login: async () => {},
   register: async () => {},
   logout: () => {},
+  refreshUser: async () => {},
   isAuthenticated: false,
 });
 
@@ -58,6 +65,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return data;
   }, []);
 
+  const refreshUser = useCallback(async () => {
+    try {
+      const data = await api.get('/api/auth/me');
+      setUser(data);
+    } catch { /* ignore */ }
+  }, []);
+
   const logout = useCallback(() => {
     localStorage.removeItem('astrorattan_token');
     localStorage.removeItem('astrorattan_refresh_token');
@@ -67,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return createElement(
     AuthContext.Provider,
-    { value: { user, loading, login, register, logout, isAuthenticated: !!user } },
+    { value: { user, loading, login, register, logout, refreshUser, isAuthenticated: !!user } },
     children
   );
 }
