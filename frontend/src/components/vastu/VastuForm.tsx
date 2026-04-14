@@ -142,7 +142,7 @@ export default function VastuForm({ onGenerate, loading }: Props) {
           {t('auto.selectProblemsOption')}
         </label>
         <p className="text-sm text-cosmic-text/60 mb-3">
-          {t('auto.selectYourConcernsWe')ll suggest specific Vastu remedies'}
+          {t('auto.selectYourConcernsWe')} suggest specific Vastu remedies
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {PROBLEMS.map(p => (
