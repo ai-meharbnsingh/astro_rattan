@@ -111,11 +111,11 @@ module.exports = {
         'label': ['0.625rem', { lineHeight: '1.3' }],    // 10px — small labels
       },
       fontFamily: {
-        // Primary: clean geometric sans for UI and data (with Devanagari fallback)
-        display: ['Inter', 'Noto Sans Devanagari', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
-        body: ['Inter', 'Noto Sans Devanagari', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-        // Vedic/scripture: regal serif for headings and sacred text
-        sacred: ['Cormorant Garamond', 'Noto Sans Devanagari', 'IM Fell English', 'Georgia', 'serif'],
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        display: ['Cormorant Garamond', 'Georgia', 'serif'],
+        devanagari: ['Hind', 'Noto Sans Devanagari', 'sans-serif'],
+        body: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        sacred: ['Cormorant Garamond', 'Georgia', 'serif'],
         decorative: ['IM Fell English', 'Cormorant Garamond', 'serif'],
         cinzel: ['Cormorant Garamond', 'serif'],
         mantra: ['Laila', 'Noto Serif Devanagari', 'Georgia', 'serif'],

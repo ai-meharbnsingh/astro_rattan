@@ -1,11 +1,11 @@
 # Graph Report - .  (2026-04-14)
 
 ## Corpus Check
-- 239 files · ~2,614,124 words
+- 240 files · ~2,770,036 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2156 nodes · 3283 edges · 78 communities detected
+- 2159 nodes · 3286 edges · 78 communities detected
 - Extraction: 91% EXTRACTED · 9% INFERRED · 0% AMBIGUOUS · INFERRED: 307 edges (avg confidence: 0.5)
 - Token cost: 0 input · 0 output
 
@@ -37,7 +37,7 @@
 
 ### Community 0 - "Community 0"
 Cohesion: 0.01
-Nodes (31): apiFetch(), fetchWithRetry(), friendlyError(), tryRefreshToken(), handleOtpKeyDown(), handleResendOtp(), handleSendOtp(), handleVerifyOtp() (+23 more)
+Nodes (26): apiFetch(), fetchWithRetry(), friendlyError(), tryRefreshToken(), describeArc(), polarToCartesian(), detectDoshas(), generateLalKitabChart() (+18 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.01
@@ -64,156 +64,156 @@ Cohesion: 0.03
 Nodes (45): auth_headers(), auth_token(), client(), Route-level tests for /api/kundli/* endpoints.  Uses FastAPI TestClient with a f, POST /api/kundli/generate → 201, returns chart_data with 9 planets., POST /api/kundli/generate with invalid date → 422 or 500., POST /api/kundli/generate without auth → 401., POST /api/kundli/generate with missing required fields → 422. (+37 more)
 
 ### Community 7 - "Community 7"
+Cohesion: 0.03
+Nodes (5): handleOtpKeyDown(), handleResendOtp(), handleSendOtp(), handleVerifyOtp(), startCountdown()
+
+### Community 8 - "Community 8"
 Cohesion: 0.06
 Nodes (61): _approx_sunrise_sunset(), calculate_abhijit_muhurat(), calculate_brahma_muhurat(), calculate_choghadiya(), calculate_gulika_kaal(), calculate_night_choghadiya(), calculate_panchang(), calculate_planetary_positions() (+53 more)
 
-### Community 8 - "Community 8"
+### Community 9 - "Community 9"
 Cohesion: 0.05
 Nodes (39): isInTimeRange(), toMinutes(), getTypeBucket(), isInTimeRange(), renderRow(), toMinutes(), isDayStart(), isInTimeRange() (+31 more)
 
-### Community 9 - "Community 9"
+### Community 10 - "Community 10"
 Cohesion: 0.05
 Nodes (53): _abda_bala(), _angular_distance(), _aspect_strength(), _ayana_bala(), calculate_bhav_bala(), calculate_shadbala(), _cheshta_bala(), _dig_bala() (+45 more)
 
-### Community 10 - "Community 10"
+### Community 11 - "Community 11"
 Cohesion: 0.07
 Nodes (51): analyze_name_numerology(), _build_number_affinities(), _build_pair_combination_table(), _calculate_house_compatibility(), calculate_house_numerology(), calculate_mobile_numerology(), calculate_numerology(), calculate_vehicle_numerology() (+43 more)
 
-### Community 11 - "Community 11"
+### Community 12 - "Community 12"
 Cohesion: 0.06
 Nodes (39): build_full_report(), _build_planets_in_houses(), _compound_relation(), _display(), _draw_north_indian_chart(), _find_hindi_font(), _fmt_date(), _fmt_num() (+31 more)
 
-### Community 12 - "Community 12"
+### Community 13 - "Community 13"
 Cohesion: 0.07
 Nodes (37): get_db(), _get_pool(), _get_valid_conn(), init_db(), migrate_forum_tables(), migrate_gamification_tables(), migrate_notification_tables(), migrate_referral_tables() (+29 more)
 
-### Community 13 - "Community 13"
+### Community 14 - "Community 14"
 Cohesion: 0.05
 Nodes (45): add_chandra_journal(), add_tracker_journal(), delete_saved_prediction(), get_chandra_state(), get_gochar_transits(), get_lalkitab_advanced(), get_nishaniyan(), _get_planet_positions() (+37 more)
 
-### Community 14 - "Community 14"
+### Community 15 - "Community 15"
 Cohesion: 0.06
 Nodes (43): _assess_remedy_accessibility(), _calculate_d10(), calculate_d10_dasamsa(), _calculate_d12(), _calculate_d2(), _calculate_d3(), _calculate_d30(), _calculate_d4() (+35 more)
 
-### Community 15 - "Community 15"
+### Community 16 - "Community 16"
 Cohesion: 0.05
 Nodes (15): Tests for app.panchang_engine -- Vedic Panchang Calculator., Test Rahu Kaal calculation., Monday Rahu Kaal: slot 2 of 8 (equal day)., Sunday Rahu Kaal: slot 8 of 8., Validate TITHIS constant data., Rahu Kaal must be between sunrise and sunset., Test Choghadiya calculation., First period starts at sunrise, last ends at sunset. (+7 more)
 
-### Community 16 - "Community 16"
+### Community 17 - "Community 17"
 Cohesion: 0.05
 Nodes (11): Smoke tests for critical engine modules: varshphal, transit, astro_iogita, dasha, Smoke tests for transit_engine.py., Smoke tests for astro_iogita_engine.py., Smoke tests for dasha_engine.py., Design change: dasha now covers 2 full 120-year cycles = 240 years total., When moon_longitude is given, first dasha balance is partial.          Design ch, Smoke tests for varshphal_engine.py., TestAstroIogitaEngine (+3 more)
 
-### Community 17 - "Community 17"
+### Community 18 - "Community 18"
 Cohesion: 0.08
 Nodes (37): _analyze_houses(), _angular_distance(), _build_summary(), calculate_eclipses(), calculate_ingress(), calculate_mundane_analysis(), _conflict_indicators(), _current_transits_in_country_chart() (+29 more)
 
-### Community 18 - "Community 18"
+### Community 19 - "Community 19"
 Cohesion: 0.05
 Nodes (16): Tests for app.kp_engine -- Krishnamurti Paddhati Engine., Validate Vimshottari Dasha constants., Validate the pre-built KP sub-lord table., Must have 27 nakshatras * 9 subs = 243 entries., First entry starts at 0, last entry ends at ~360., Each entry's end should equal the next entry's start., First nakshatra (Ashwini) lord is Ketu., Ashwini's first sub = its own lord (Ketu). (+8 more)
 
-### Community 19 - "Community 19"
+### Community 20 - "Community 20"
 Cohesion: 0.1
 Nodes (35): _approx_ascendant(), _approx_ayanamsa(), _approx_moon_longitude(), _approx_planet_longitude(), _approx_rahu_longitude(), _approx_sun_longitude(), _build_status(), _calculate_fallback() (+27 more)
 
-### Community 20 - "Community 20"
+### Community 21 - "Community 21"
 Cohesion: 0.09
 Nodes (35): analyze_entrance(), analyze_home_layout(), _build_entrance_result(), _build_room_remedies(), calculate_mandala(), _calculate_vastu_score(), _degrees_to_direction(), _direction_to_pada_index() (+27 more)
 
-### Community 21 - "Community 21"
+### Community 22 - "Community 22"
 Cohesion: 0.09
 Nodes (31): ai_ask_question(), ai_gita_answer(), ai_interpret_kundli(), ai_oracle(), ai_remedies(), _call_ai(), _call_gemini(), _call_openai() (+23 more)
 
-### Community 22 - "Community 22"
+### Community 23 - "Community 23"
 Cohesion: 0.07
 Nodes (31): analyze_masnui_transits(), calculate_hora_lord(), calculate_karmic_debts(), calculate_karmic_debts_with_hora(), calculate_kayam_grah(), calculate_lk_aspects(), calculate_masnui_planets(), _calculate_masnui_psychological_profile() (+23 more)
 
-### Community 23 - "Community 23"
+### Community 24 - "Community 24"
 Cohesion: 0.13
 Nodes (30): calculate_argala(), calculate_chara_dasha(), calculate_chara_karakas(), calculate_indu_lagna(), calculate_jaimini(), calculate_jaimini_drishti(), calculate_jaimini_yogas(), calculate_longevity() (+22 more)
 
-### Community 24 - "Community 24"
+### Community 25 - "Community 25"
 Cohesion: 0.09
 Nodes (22): calculate_gun_milan(), _normalize_nakshatra(), _rashi_lord(), matching_engine.py — Kundli Gun Milan (Ashtakoota) Matching Engine =============, Varna koot: groom's varna should be >= bride's. Max 1 point., Vasya koot: mutual influence/attraction based on Moon rashi. Max 2 points., Tara koot: based on nakshatra distance (bidirectional). Max 3 points.     Standa, Yoni koot: sexual/physical compatibility. Max 4 points.     Same=4, Friendly=3, (+14 more)
 
-### Community 25 - "Community 25"
+### Community 26 - "Community 26"
 Cohesion: 0.14
 Nodes (19): _atom(), build_atom_vector(), _generate_iogita_insight(), _generate_normal_insights(), _get_dignity_label(), get_planet_strength(), identify_basin(), _print_report() (+11 more)
 
-### Community 26 - "Community 26"
+### Community 27 - "Community 27"
 Cohesion: 0.14
 Nodes (19): _build_kp_sub_lords(), calculate_kp_cuspal(), _find_house_for_planet(), _find_vimshottari_index(), _get_houses_owned(), get_star_lord_of_sub_lord(), get_sub_lord(), get_sub_sub_lord() (+11 more)
 
-### Community 27 - "Community 27"
+### Community 28 - "Community 28"
 Cohesion: 0.12
 Nodes (19): _build_ai_horoscope_prompt(), generate_ai_horoscope(), generate_daily_horoscopes(), _generate_template_horoscope(), _get_current_transits(), _parse_ai_sections(), H-09: Horoscope Content Generation Pipeline — seeds daily & weekly horoscopes., Calculate today's planetary positions (signs) for horoscope weighting. (+11 more)
 
-### Community 28 - "Community 28"
+### Community 29 - "Community 29"
 Cohesion: 0.13
 Nodes (15): BaseHTTPMiddleware, _extract_user_id(), get_traffic_snapshot(), H-01: Structured Logging Middleware — logs every request with method, path, stat, Extract user_id from JWT Bearer token if present., Middleware that logs every HTTP request and records to the live traffic buffer., Return a snapshot of recent traffic for the live admin dashboard.     Thread-saf, RequestLoggingMiddleware (+7 more)
 
-### Community 29 - "Community 29"
+### Community 30 - "Community 30"
 Cohesion: 0.16
 Nodes (17): cleanup_old_uploads(), ensure_upload_dir(), map_room_placements(), _optimize_image(), pixel_to_direction(), vastu/floorplan.py — Floor Plan Upload & Pixel-to-Direction Mapper =============, Resize large images and compress to JPEG for storage efficiency.     Returns opt, Validate, optimize, and save uploaded floor plan image.      Returns:         di (+9 more)
 
-### Community 30 - "Community 30"
+### Community 31 - "Community 31"
 Cohesion: 0.2
 Nodes (12): enrichDayFestivals(), fetchMonthly(), generateObservances(), getDayMarkers(), getFestivalTone(), getLocalDateString(), hasKeyword(), mergeMonthlyFestivalDetails() (+4 more)
 
-### Community 31 - "Community 31"
+### Community 32 - "Community 32"
 Cohesion: 0.11
 Nodes (17): Tests for numerology_engine.py — Pythagorean numerology calculations., Verify master number 11 is preserved (not reduced to 2)., Destiny number (formerly expression) uses all letters of the name., Soul urge uses only vowels (A, E, I, O, U)., Personality uses only consonants., Verify all required keys are present in the output dict., Life path for 1990-01-15: 1+9+9+0=19->10->1 + 0+1=1 + 1+5=6 => 1+1+6=8., Master numbers 11, 22, 33 should not be reduced further. (+9 more)
 
-### Community 32 - "Community 32"
+### Community 33 - "Community 33"
 Cohesion: 0.12
 Nodes (16): add_note(), ClientCreate, ClientUpdate, create_client(), get_client(), list_clients(), list_notes(), NoteCreate (+8 more)
 
-### Community 33 - "Community 33"
+### Community 34 - "Community 34"
 Cohesion: 0.17
 Nodes (15): calculate_mudda_dasha(), calculate_muntha(), calculate_varshphal(), calculate_year_lord(), find_solar_return_jd(), _jd_to_datetime(), varshphal_engine.py — Vedic Varshphal (Solar Return / Tajaka) Engine ===========, Muntha advances one sign per year from natal ascendant.     Returns: {sign, sign (+7 more)
 
-### Community 34 - "Community 34"
+### Community 35 - "Community 35"
 Cohesion: 0.2
 Nodes (15): _build_antardasha_periods(), _build_pratyantar_periods(), calculate_dasha(), _calculate_dasha_balance(), calculate_extended_dasha(), _get_dasha_sequence(), _parse_date(), dasha_engine.py — Vimshottari Dasha Calculation Engine ========================= (+7 more)
 
-### Community 35 - "Community 35"
+### Community 36 - "Community 36"
 Cohesion: 0.13
 Nodes (13): _bootstrap_db(), client(), _create_kundli(), db(), _make_admin(), _make_astrologer(), Shared test fixtures — temp DB, TestClient, auth helpers.  Every test module get, Insert a minimal kundli record and return its id. (+5 more)
 
-### Community 36 - "Community 36"
+### Community 37 - "Community 37"
 Cohesion: 0.21
 Nodes (13): _binary_search_station(), calculate_retrograde_stations(), _get_longitude(), _get_speed(), _jd_to_date(), _jd_to_datetime(), retrograde_engine.py — Planetary Retrograde Station Calculator =================, Convert Julian Day to YYYY-MM-DD string. (+5 more)
 
-### Community 37 - "Community 37"
+### Community 38 - "Community 38"
 Cohesion: 0.2
 Nodes (13): calculate_avakhada(), _get_gana(), _get_nadi(), _get_nakshatra_index(), _get_pada(), _get_western_sign(), avakhada_engine.py — Avakhada Chakra Calculation Engine ========================, Get nakshatra index (0-26) from sidereal longitude. (+5 more)
 
-### Community 38 - "Community 38"
+### Community 39 - "Community 39"
 Cohesion: 0.2
 Nodes (13): auto_detect_rooms(), _detect_ocr_labels(), _detect_opencv(), _detect_yolo(), _match_room(), _preprocess_for_ocr(), vastu/auto_detect.py — AI Room Detection for Floor Plans =======================, Preprocess floor plan for OCR: grayscale → upscale 2x → sharpen → binarize. (+5 more)
 
-### Community 39 - "Community 39"
+### Community 40 - "Community 40"
 Cohesion: 0.22
 Nodes (13): get_all_signs_horoscope(), get_daily_horoscope(), get_transit_insights(), get_weekly_horoscope(), _parse_content_to_sections(), Horoscope routes — daily, weekly, all-signs, and transit-aware horoscopes., Get weekly horoscope for a specific sign., Get horoscopes for all 12 signs at once. (+5 more)
 
-### Community 40 - "Community 40"
+### Community 41 - "Community 41"
 Cohesion: 0.14
 Nodes (13): Tests for lalkitab_engine.py — Lal Kitab remedies engine., Each planet should have 5-8 remedies., A debilitated planet (strength < 0.5) should receive remedies., An exalted planet (strength >= 0.5) should NOT receive remedies., A planet in enemy sign (strength 0.35 < 0.5) should receive remedies., Verify the output dict structure for each planet., REMEDIES dict must cover all 9 Vedic planets., test_enemy_planet_gets_remedies() (+5 more)
 
-### Community 41 - "Community 41"
+### Community 42 - "Community 42"
 Cohesion: 0.18
 Nodes (12): calculate_aspects(), calculate_cusp_aspects(), calculate_western_aspects(), _get_aspected_houses(), _match_western_aspect(), aspects_engine.py -- Vedic Planetary Aspects Calculator ========================, Calculate degree-based Western aspects between all planet pairs.      Returns a, Find the Western aspect matching a given degree difference, if any. (+4 more)
 
-### Community 42 - "Community 42"
+### Community 43 - "Community 43"
 Cohesion: 0.23
 Nodes (11): _apply_ekadhipatya_shodhana(), _apply_trikona_shodhana(), calculate_ashtakvarga(), _calculate_shodhya_pinda(), ashtakvarga_engine.py -- Ashtakvarga Calculation Engine ========================, Convert sign name to 0-based index., Calculate the Ashtakvarga system for a given chart.     Includes Trikona Shodhan, Reduces bindus in trine signs.     Trines: (0,4,8), (1,5,9), (2,6,10), (3,7,11) (+3 more)
 
-### Community 43 - "Community 43"
+### Community 44 - "Community 44"
 Cohesion: 0.23
 Nodes (11): calculate_baladi(), calculate_deeptadi(), calculate_jagradadi(), calculate_shyanadi(), get_all_avasthas(), interpretations.py -- Static Text Databases for Kundli Report ==================, Jagradadi Avastha (3 states):     - Jagrad (Awake): planet in own sign or exalte, Baladi Avastha (5 states based on degree within sign):     Odd signs: Bala(0-6), (+3 more)
-
-### Community 44 - "Community 44"
-Cohesion: 0.17
-Nodes (0): 
 
 ### Community 45 - "Community 45"
 Cohesion: 0.25

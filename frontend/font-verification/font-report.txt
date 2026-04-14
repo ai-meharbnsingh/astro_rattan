@@ -1,0 +1,15 @@
+Page | Viewport | Body Font | H1/H2 Font | Hindi Font | Status
+/ | desktop | Inter, -apple-system, "system-ui", "Segoe UI", Roboto, sans-serif | "Cormorant Garamond", Georgia, serif | Hind, "Noto Sans Devanagari", sans-serif | PASS
+/kundli | desktop | Inter, -apple-system, "system-ui", "Segoe UI", Roboto, sans-serif | "Cormorant Garamond", Georgia, serif | Hind, "Noto Sans Devanagari", sans-serif | PASS
+/panchang | desktop | Inter, -apple-system, "system-ui", "Segoe UI", Roboto, sans-serif | N/A | Hind, "Noto Sans Devanagari", sans-serif | PASS
+/lal-kitab | desktop | Inter, -apple-system, "system-ui", "Segoe UI", Roboto, sans-serif | "Cormorant Garamond", Georgia, serif | Hind, "Noto Sans Devanagari", sans-serif | PASS
+/numerology | desktop | Inter, -apple-system, "system-ui", "Segoe UI", Roboto, sans-serif | "Cormorant Garamond", Georgia, serif | Hind, "Noto Sans Devanagari", sans-serif | PASS
+/dashboard | desktop | Inter, -apple-system, "system-ui", "Segoe UI", Roboto, sans-serif | "Cormorant Garamond", Georgia, serif | Hind, "Noto Sans Devanagari", sans-serif | PASS
+/admin | desktop | Inter, -apple-system, "system-ui", "Segoe UI", Roboto, sans-serif | "Cormorant Garamond", Georgia, serif | Hind, "Noto Sans Devanagari", sans-serif | PASS
+/ | mobile | Inter, -apple-system, "system-ui", "Segoe UI", Roboto, sans-serif | "Cormorant Garamond", Georgia, serif | Hind, "Noto Sans Devanagari", sans-serif | PASS
+/kundli | mobile | Inter, -apple-system, "system-ui", "Segoe UI", Roboto, sans-serif | "Cormorant Garamond", Georgia, serif | Hind, "Noto Sans Devanagari", sans-serif | PASS
+/panchang | mobile | Inter, -apple-system, "system-ui", "Segoe UI", Roboto, sans-serif | N/A | Hind, "Noto Sans Devanagari", sans-serif | PASS
+/lal-kitab | mobile | Inter, -apple-system, "system-ui", "Segoe UI", Roboto, sans-serif | "Cormorant Garamond", Georgia, serif | Hind, "Noto Sans Devanagari", sans-serif | PASS
+/numerology | mobile | Inter, -apple-system, "system-ui", "Segoe UI", Roboto, sans-serif | "Cormorant Garamond", Georgia, serif | Hind, "Noto Sans Devanagari", sans-serif | PASS
+/dashboard | mobile | Inter, -apple-system, "system-ui", "Segoe UI", Roboto, sans-serif | "Cormorant Garamond", Georgia, serif | Hind, "Noto Sans Devanagari", sans-serif | PASS
+/admin | mobile | Inter, -apple-system, "system-ui", "Segoe UI", Roboto, sans-serif | "Cormorant Garamond", Georgia, serif | Hind, "Noto Sans Devanagari", sans-serif | PASS

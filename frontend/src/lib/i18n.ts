@@ -1,4 +1,4 @@
-import { useState, createContext, useContext, useCallback, type ReactNode, createElement } from 'react';
+import { useState, createContext, useContext, useCallback, useEffect, type ReactNode, createElement } from 'react';
 
 export type Language = 'en' | 'hi';
 
@@ -4193,6 +4193,16 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     },
     [language]
   );
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    document.documentElement.lang = language;
+    if (language === 'hi') {
+      document.documentElement.classList.add('lang-hi');
+    } else {
+      document.documentElement.classList.remove('lang-hi');
+    }
+  }, [language]);
 
   return createElement(
     I18nContext.Provider,
