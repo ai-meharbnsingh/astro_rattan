@@ -26,6 +26,36 @@ const PLANET_HI: Record<string,string> = { Sun:'सू',Moon:'चं',Mars:'म�
 const PLANET_FULL_HI: Record<string,string> = { Sun:'सूर्य',Moon:'चंद्र',Mars:'मंगल',Mercury:'बुध',Jupiter:'बृहस्पति',Venus:'शुक्र',Saturn:'शनि',Rahu:'राहु',Ketu:'केतु' };
 const MALEFIC = new Set(['Mars','Saturn','Rahu','Ketu']);
 
+// Vedic dignity data
+const EXALTED: Record<string,string> = { Sun:'Aries',Moon:'Taurus',Mars:'Capricorn',Mercury:'Virgo',Jupiter:'Cancer',Venus:'Pisces',Saturn:'Libra' };
+const DEBILITATED: Record<string,string> = { Sun:'Libra',Moon:'Scorpio',Mars:'Cancer',Mercury:'Pisces',Jupiter:'Capricorn',Venus:'Virgo',Saturn:'Aries' };
+// Vargottama: same sign in D1 and D9 (Navamsa). Simplified: degrees 0-3.33 in fire signs, etc.
+function isVargottama(sign: string, deg: number): boolean {
+  const fireIdx = [0,4,8]; const earthIdx = [1,5,9]; const airIdx = [2,6,10]; const waterIdx = [3,7,11];
+  const si = SIGNS.findIndex(s => s.en.toLowerCase() === sign.toLowerCase());
+  const navamsaPada = Math.floor(deg / 3.333);
+  // Vargottama if navamsa falls in same sign — simplified: pada 0 for movable, pada 4 for fixed, pada 8 for dual
+  return navamsaPada === 0 && fireIdx.includes(si) || navamsaPada === 4 && earthIdx.includes(si) || navamsaPada === 8 && airIdx.includes(si);
+}
+// Combust: planet within certain degrees of Sun
+function isCombust(planet: string, sunLong: number, planetLong: number): boolean {
+  if (planet === 'Sun' || planet === 'Rahu' || planet === 'Ketu') return false;
+  const combustDeg: Record<string,number> = { Moon:12, Mars:17, Mercury:14, Jupiter:11, Venus:10, Saturn:15 };
+  const diff = Math.abs(sunLong - planetLong);
+  const dist = Math.min(diff, 360 - diff);
+  return dist <= (combustDeg[planet] || 10);
+}
+
+function getPlanetStatus(p: { planet: string; sign: string; sign_degree: number; longitude: number; is_retrograde: boolean }, sunLong: number): string[] {
+  const symbols: string[] = [];
+  if (p.is_retrograde) symbols.push('*');
+  if (isCombust(p.planet, sunLong, p.longitude)) symbols.push('^');
+  if (isVargottama(p.sign, p.sign_degree)) symbols.push('v');
+  if (EXALTED[p.planet]?.toLowerCase() === p.sign.toLowerCase()) symbols.push('+');
+  if (DEBILITATED[p.planet]?.toLowerCase() === p.sign.toLowerCase()) symbols.push('-');
+  return symbols;
+}
+
 const RING_R: Record<string, number> = {
   Sun: 206, Moon: 194, Venus: 206, Mercury: 194,
   Mars: 182, Jupiter: 170, Saturn: 182,
@@ -215,6 +245,8 @@ export default function LiveTransitWheel() {
     }
   }
 
+  const sunLong = planets.find(p => p.planet === 'Sun')?.longitude || 0;
+
   const planetDots = dotPos.map(({ planet: p, angle, radius }, i) => {
     const px = CX + radius * Math.cos(angle);
     const py = CY + radius * Math.sin(angle);
@@ -222,6 +254,8 @@ export default function LiveTransitWheel() {
     const abbr = hi ? PLANET_HI[p.planet] : PLANET_ABBR[p.planet];
     const degText = `${p.sign_degree.toFixed(1)}\u00B0`;
     const textColor = isMalefic ? DARK : GOLD_MED;
+    const status = getPlanetStatus(p, sunLong);
+    const statusStr = status.join('');
 
     return (
       <g key={p.planet} className="transit-dot" style={{ animationDelay: `${i * 0.08}s` }}
@@ -229,14 +263,9 @@ export default function LiveTransitWheel() {
         onMouseLeave={() => setTooltip(null)} cursor="pointer">
         <text x={px} y={py - 4} textAnchor="middle" dominantBaseline="central"
           fill={textColor} fontSize="13" fontWeight="800" fontFamily="'Inter',sans-serif"
-          style={{ transition: 'all 1s ease' }}>{abbr}</text>
+          style={{ transition: 'all 1s ease' }}>{abbr}{statusStr ? ` ${statusStr}` : ''}</text>
         <text x={px} y={py + 10} textAnchor="middle" dominantBaseline="central"
           fill={textColor} opacity={0.75} fontSize="9" fontWeight="600" fontFamily="'Inter',sans-serif">{degText}</text>
-        {/* Retrograde — ALWAYS show ℞ when is_retrograde is true */}
-        {p.is_retrograde && (
-          <text x={px + 12} y={py - 7} textAnchor="middle"
-            fill="#FF3333" fontSize="13" fontWeight="800">{'\u211E'}</text>
-        )}
       </g>
     );
   });
@@ -261,21 +290,23 @@ export default function LiveTransitWheel() {
   );
 
   return (
-    <div className="relative w-full max-w-[520px] mx-auto" style={{ padding: '16px' }}>
-      {tooltip && (
-        <div className="absolute z-20 pointer-events-none"
-          style={{ left: `${((tooltip.x+16)/600)*100}%`, top: `${(tooltip.y/600)*100}%`, transform: 'translate(-50%,-130%)' }}>
-          <div className="bg-white border border-[#C4611F] rounded-lg px-3 py-2 shadow-lg text-xs" style={{ fontFamily:'Inter,sans-serif', minWidth:'130px' }}>
-            <p className="font-bold" style={{ color: MALEFIC.has(tooltip.planet)?DARK:GOLD_MED }}>{tooltip.planet} ({hi?PLANET_FULL_HI[tooltip.planet]:tooltip.planet})</p>
-            <p style={{ color: GOLD }}>{tooltip.sign} ({hi?SIGNS[signIdx(tooltip.sign)].hi:tooltip.sign})</p>
-            <p style={{ color: GOLD_MED }}>{tooltip.degree.toFixed(1)}&deg;</p>
-            <p className="text-gray-500">{MALEFIC.has(tooltip.planet)?(hi?'पापी':'Malefic'):(hi?'शुभ':'Benefic')} · {tooltip.retrograde?(hi?'वक्री ℞':'Retro ℞'):(hi?'मार्गी':'Direct')}</p>
+    <div className="relative w-full mx-auto flex flex-col lg:flex-row items-center lg:items-start gap-4" style={{ maxWidth: '680px', padding: '16px' }}>
+      {/* Wheel */}
+      <div className="relative flex-1 min-w-0 max-w-[520px]">
+        {tooltip && (
+          <div className="absolute z-20 pointer-events-none"
+            style={{ left: `${((tooltip.x+16)/600)*100}%`, top: `${(tooltip.y/600)*100}%`, transform: 'translate(-50%,-130%)' }}>
+            <div className="bg-white border border-[#C4611F] rounded-lg px-3 py-2 shadow-lg text-xs" style={{ fontFamily:'Inter,sans-serif', minWidth:'130px' }}>
+              <p className="font-bold" style={{ color: MALEFIC.has(tooltip.planet)?DARK:GOLD_MED }}>{tooltip.planet} ({hi?PLANET_FULL_HI[tooltip.planet]:tooltip.planet})</p>
+              <p style={{ color: GOLD }}>{tooltip.sign} ({hi?SIGNS[signIdx(tooltip.sign)].hi:tooltip.sign})</p>
+              <p style={{ color: GOLD_MED }}>{tooltip.degree.toFixed(1)}&deg;</p>
+              <p className="text-gray-500">{MALEFIC.has(tooltip.planet)?(hi?'पापी':'Malefic'):(hi?'शुभ':'Benefic')} · {tooltip.retrograde?(hi?'वक्री ℞':'Retro ℞'):(hi?'मार्गी':'Direct')}</p>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <div className="chakra-float" style={{ transformStyle: 'preserve-3d' }}>
-        <svg viewBox="0 0 600 600" className="w-full h-full" style={{
+        <div className="chakra-float" style={{ transformStyle: 'preserve-3d' }}>
+          <svg viewBox="0 0 600 600" className="w-full h-full" style={{
           overflow: 'visible',
           filter: 'drop-shadow(4px 8px 16px rgba(139,69,19,0.25)) drop-shadow(0 2px 6px rgba(196,97,31,0.12))',
         }}>
@@ -313,11 +344,22 @@ export default function LiveTransitWheel() {
         </svg>
       </div>
 
-      <div className="flex flex-wrap justify-center gap-4 mt-3 text-[11px]" style={{ fontFamily:'Inter,sans-serif', color: GOLD }}>
-        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full" style={{ background:GOLD_MED }} />{hi?'शुभ ग्रह':'Benefic'}</span>
-        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full" style={{ background:DARK }} />{hi?'पापी ग्रह':'Malefic'}</span>
-        <span className="flex items-center gap-1.5"><span className="text-red-600 font-bold text-sm">{'\u211E'}</span>{hi?'वक्री':'Retrograde'}</span>
-        <span className="flex items-center gap-1.5"><span className="w-3 h-3" style={{ background:GOLD_MED, clipPath:'polygon(50% 0%,0% 100%,100% 100%)' }} />ASC</span>
+      </div>
+
+      {/* Legend — right side, vertical */}
+      <div className="shrink-0 rounded-xl border border-sacred-gold/20 bg-sacred-gold/5 p-3 text-[11px] lg:mt-8" style={{ fontFamily:'Inter,sans-serif', color: GOLD, minWidth: '140px' }}>
+        <p className="font-bold text-xs mb-2 uppercase tracking-wider" style={{ color: GOLD_MED }}>{hi ? 'संकेत' : 'Legend'}</p>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2"><span className="font-bold" style={{ color: GOLD_MED }}>*</span> {hi?'वक्री':'Retrograde'}</div>
+          <div className="flex items-center gap-2"><span className="font-bold" style={{ color: GOLD_MED }}>^</span> {hi?'अस्त':'Combust'}</div>
+          <div className="flex items-center gap-2"><span className="font-bold" style={{ color: GOLD_MED }}>v</span> {hi?'वर्गोत्तम':'Vargottama'}</div>
+          <div className="flex items-center gap-2"><span className="font-bold" style={{ color: GOLD_MED }}>+</span> {hi?'उच्च':'Exalted'}</div>
+          <div className="flex items-center gap-2"><span className="font-bold" style={{ color: GOLD_MED }}>-</span> {hi?'नीच':'Debilitated'}</div>
+          <div className="border-t border-sacred-gold/20 my-2" />
+          <div className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full" style={{ background:GOLD_MED }} />{hi?'शुभ':'Benefic'}</div>
+          <div className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full" style={{ background:DARK }} />{hi?'पापी':'Malefic'}</div>
+          <div className="flex items-center gap-2"><span className="w-2.5 h-2.5" style={{ background:GOLD_MED, clipPath:'polygon(50% 0%,0% 100%,100% 100%)' }} />ASC</div>
+        </div>
       </div>
     </div>
   );
