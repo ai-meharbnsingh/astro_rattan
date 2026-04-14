@@ -83,8 +83,8 @@ export default function Hero() {
 
         </div>
 
-        {/* Two-column layout */}
-        <div className="flex flex-col lg:flex-row items-stretch gap-2 lg:gap-4">
+        {/* Two-column layout — no gap from heading */}
+        <div className="flex flex-col lg:flex-row items-stretch gap-2 lg:gap-4 -mt-1">
 
           {/* LEFT — Kundli Form — matches circle height */}
           <div className="hero-cta opacity-0 w-full lg:basis-[42%] flex flex-col justify-between">
@@ -184,11 +184,11 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
   const inputClass = "w-full px-3 py-2.5 pl-10 rounded-lg bg-[#f0ecf8]/40 border border-sacred-gold/50 text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none placeholder:text-sacred-gold-dark/40";
 
   return (
-    <div className="space-y-3">
-      {/* Heading */}
-      <h2 className="text-lg sm:text-xl font-semibold text-cosmic-text border-b border-sacred-gold/30 pb-2">
+    <div className="space-y-3 flex flex-col justify-between h-full">
+      {/* Golden Banner Heading */}
+      <div className="bg-gradient-to-r from-sacred-gold-dark to-sacred-gold rounded-lg px-4 py-2.5 text-white font-semibold text-base sm:text-lg tracking-wide shadow-md">
         {l('Generate Your Free Kundli', 'अपनी मुफ्त कुंडली बनाएं')}
-      </h2>
+      </div>
 
       {/* Full Name */}
       <div>
