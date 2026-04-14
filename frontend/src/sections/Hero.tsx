@@ -88,7 +88,7 @@ export default function Hero() {
           <div className="hidden lg:block w-[38%] shrink-0" />
 
           {/* RIGHT — Zodiac Wheel */}
-          <div className="hero-wheel opacity-0 w-full lg:w-[62%] -mt-18">
+          <div className="hero-wheel opacity-0 w-full lg:w-[62%] -mt-14">
             <LiveTransitWheel />
           </div>
 
