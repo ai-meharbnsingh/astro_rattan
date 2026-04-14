@@ -167,7 +167,7 @@ export default function KundliForm({
   const hi = language === 'hi';
 
   return (
-    <div className="max-w-3xl mx-auto py-8 px-4 bg-transparent">
+    <div className="max-w-3xl mx-auto pt-32 pb-10 px-4 bg-transparent">
       <div className="text-center mb-6">
         <h3 className="text-2xl sm:text-3xl font-display font-bold text-sacred-brown">{hi ? 'अपनी कुंडली बनाएं' : 'Generate Your Kundli'}</h3>
       </div>

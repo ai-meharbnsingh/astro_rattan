@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Calendar, Clock, MapPin, User, Loader2, Phone } from 'lucide-react';
+import { Calendar, Clock, MapPin, User, Loader2, Phone, Sparkles, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';

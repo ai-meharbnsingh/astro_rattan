@@ -137,7 +137,7 @@ export default function LalKitabPage() {
   }, [isAstrologer]);
 
   return (
-    <div className="min-h-screen bg-cosmic-bg bg-mandala py-10 px-4">
+    <div className="min-h-screen bg-cosmic-bg bg-mandala pt-32 pb-10 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Result View Header (only show when not in form) */}
         {view !== 'form' && (
