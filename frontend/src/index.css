@@ -4,6 +4,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Zodiac wheel slow clockwise rotation */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.animate-spin-slow {
+  animation: spin-slow 60s linear infinite;
+}
+
 /* Hide scrollbar for horizontally scrollable tab bars */
 @layer utilities {
   .scrollbar-hide {
