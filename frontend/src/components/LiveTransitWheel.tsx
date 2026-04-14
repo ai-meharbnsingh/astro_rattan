@@ -37,14 +37,14 @@ interface TooltipData {
   y: number;
 }
 
-// Ring radii
+// Ring radii — pushed outward, smaller center
 const R_OUTER = 290;
-const R_SIGN_TEXT = 272;
-const R_SIGN_RING = 255;
-const R_TRANSIT = 230;
-const R_INNER_RING = 205;
-const R_CENTER_BG = 160;
-const R_OM = 45;
+const R_SIGN_TEXT = 270;
+const R_SIGN_GLYPH = 248;
+const R_SIGN_RING = 235;
+const R_TRANSIT = 195;
+const R_INNER_RING = 165;
+const R_OM = 30;
 
 const GOLD = '#8B4513';
 const GOLD_MED = '#C4611F';
@@ -136,8 +136,8 @@ export default function LiveTransitWheel() {
     const ty = CY + R_SIGN_TEXT * Math.sin(midRad);
     const rot = arcRot(midDeg);
 
-    const gx = CX + (R_SIGN_RING - 16) * Math.cos(midRad);
-    const gy = CY + (R_SIGN_RING - 16) * Math.sin(midRad);
+    const gx = CX + R_SIGN_GLYPH * Math.cos(midRad);
+    const gy = CY + R_SIGN_GLYPH * Math.sin(midRad);
 
     const label = hi ? SIGNS_HI[i] : sign.slice(0, 3).toUpperCase();
 
@@ -145,10 +145,10 @@ export default function LiveTransitWheel() {
       <g key={sign}>
         <line x1={lx1} y1={ly1} x2={lx2} y2={ly2} stroke={GOLD_MED} strokeWidth={0.8} />
         <text x={tx} y={ty} textAnchor="middle" dominantBaseline="central"
-          fill={GOLD} fontSize="10" fontWeight="700" fontFamily="'Inter',sans-serif"
+          fill={GOLD} fontSize="12" fontWeight="700" fontFamily="'Inter',sans-serif"
           transform={`rotate(${rot},${tx},${ty})`}>{label}</text>
         <text x={gx} y={gy} textAnchor="middle" dominantBaseline="central"
-          fill={GOLD_MED} fontSize="14"
+          fill={GOLD_MED} fontSize="16"
           fontFamily="'Segoe UI Symbol','Noto Sans Symbols 2',serif"
         >{GLYPHS[i]}</text>
       </g>
@@ -171,13 +171,13 @@ export default function LiveTransitWheel() {
         onMouseEnter={() => setTooltip({ planet: p.planet, sign: p.sign, degree: p.sign_degree, retrograde: p.is_retrograde, x: px, y: py })}
         onMouseLeave={() => setTooltip(null)}
       >
-        <circle cx={px} cy={py} r={18}
+        <circle cx={px} cy={py} r={14}
           fill={isMalefic ? '#a83232' : GOLD_MED}
           stroke={GOLD} strokeWidth={1.5}
           style={{ transition: 'cx 1s ease, cy 1s ease' }}
         />
         <text x={px} y={py} textAnchor="middle" dominantBaseline="central"
-          fill="white" fontSize="9" fontWeight="600" fontFamily="'Inter',sans-serif"
+          fill="white" fontSize="8" fontWeight="600" fontFamily="'Inter',sans-serif"
         >{abbr}</text>
         {p.is_retrograde && (
           <text x={px + 12} y={py - 12} fill="#ff4444" fontSize="8" fontWeight="bold">R</text>
@@ -188,16 +188,16 @@ export default function LiveTransitWheel() {
 
   // Sun rays for center
   const sunRays: JSX.Element[] = [];
-  for (let i = 0; i < 32; i++) {
-    const a = toRad(i * 11.25);
+  for (let i = 0; i < 24; i++) {
+    const a = toRad(i * 15);
     const long = i % 2 === 0;
     sunRays.push(
       <line key={`sr${i}`}
-        x1={CX + 14 * Math.cos(a)} y1={CY + 14 * Math.sin(a)}
-        x2={CX + (long ? R_OM - 3 : R_OM - 12) * Math.cos(a)}
-        y2={CY + (long ? R_OM - 3 : R_OM - 12) * Math.sin(a)}
+        x1={CX + 8 * Math.cos(a)} y1={CY + 8 * Math.sin(a)}
+        x2={CX + (long ? R_OM - 2 : R_OM - 8) * Math.cos(a)}
+        y2={CY + (long ? R_OM - 2 : R_OM - 8) * Math.sin(a)}
         stroke={long ? GOLD_MED : 'rgba(196,97,31,0.4)'}
-        strokeWidth={long ? 1.5 : 0.7}
+        strokeWidth={long ? 1.2 : 0.5}
       />
     );
   }
@@ -254,18 +254,16 @@ export default function LiveTransitWheel() {
           {/* Center content */}
           {loading ? (
             <text x={CX} y={CY} textAnchor="middle" dominantBaseline="central"
-              fill={GOLD_MED} fontSize="10" fontFamily="'Inter',sans-serif">
+              fill={GOLD_MED} fontSize="8" fontFamily="'Inter',sans-serif">
               {hi ? 'लोड हो रहा...' : 'Loading...'}
             </text>
           ) : (
             <>
-              <text x={CX} y={CY - 14} textAnchor="middle" fill={GOLD_MED} fontSize="9" fontFamily="'Inter',sans-serif">
+              <text x={CX} y={CY - 8} textAnchor="middle" fill={GOLD_MED} fontSize="7" fontFamily="'Inter',sans-serif">
                 {dateStr}
               </text>
-              <text x={CX} y={CY + 4} textAnchor="middle" fill={GOLD_MED} fontSize="20" fontWeight="bold">
-                {hi ? 'ॐ' : 'ॐ'}
-              </text>
-              <text x={CX} y={CY + 20} textAnchor="middle" fill={GOLD} fontSize="10" fontWeight="600" fontFamily="'Inter',sans-serif">
+              <text x={CX} y={CY + 5} textAnchor="middle" fill={GOLD_MED} fontSize="14" fontWeight="bold">ॐ</text>
+              <text x={CX} y={CY + 16} textAnchor="middle" fill={GOLD} fontSize="7" fontWeight="600" fontFamily="'Inter',sans-serif">
                 {timeStr}
               </text>
             </>
