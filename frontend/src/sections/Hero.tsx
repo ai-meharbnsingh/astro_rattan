@@ -87,7 +87,7 @@ export default function Hero() {
         <div className="flex flex-col lg:flex-row items-stretch gap-4 lg:gap-6 mt-1">
 
           {/* LEFT — Kundli Form */}
-          <div className="hero-cta opacity-0 w-full lg:w-[38%] shrink-0 lg:mt-16">
+          <div className="hero-cta opacity-0 w-full lg:w-[38%] shrink-0 lg:mt-[104px]">
             <HeroKundliForm language={language} l={l} />
           </div>
 
