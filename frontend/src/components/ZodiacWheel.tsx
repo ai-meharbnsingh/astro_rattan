@@ -120,15 +120,14 @@ export default function ZodiacWheel() {
           transform={`rotate(${nRot},${nx},${ny})`}
         >{signName}</text>
 
-        {/* Zodiac illustration — upright (counter-rotated) */}
+        {/* Zodiac illustration — circular clip, no rotation */}
         <image
           href={sign.img}
           x={ax - 30} y={ay - 30}
           width={60} height={60}
-          preserveAspectRatio="xMidYMid meet"
-          transform={`rotate(${-(midDeg + 90)},${ax},${ay})`}
-          style={{ filter: 'sepia(0.4) brightness(0.85) contrast(1.1)', opacity: 0.85 }}
-          clipPath={`circle(28px at 30px 30px)`}
+          preserveAspectRatio="xMidYMid slice"
+          clipPath={`url(#imgClip${i})`}
+          style={{ filter: 'sepia(0.4) brightness(0.85) contrast(1.1)', opacity: 0.9 }}
         />
 
         {/* Month label — along arc */}
@@ -173,10 +172,18 @@ export default function ZodiacWheel() {
             <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
               <polygon points="0 0, 10 3.5, 0 7" fill={GOLD_MED} />
             </marker>
-            {/* Clip for round illustration images */}
-            <clipPath id="imgClip">
-              <circle cx="30" cy="30" r="28" />
-            </clipPath>
+            {/* Per-section circular clip paths positioned at each image center */}
+            {SIGNS.map((_, i) => {
+              const midDeg = i * 30 + 15 - 90;
+              const midRad = toRad(midDeg);
+              const imgCx = CX + R_ART_MID * Math.cos(midRad);
+              const imgCy = CY + R_ART_MID * Math.sin(midRad);
+              return (
+                <clipPath key={`clip${i}`} id={`imgClip${i}`}>
+                  <circle cx={imgCx} cy={imgCy} r={28} />
+                </clipPath>
+              );
+            })}
           </defs>
 
           {/* Rings */}
