@@ -85,6 +85,8 @@ const R_CENTER = 42;
 const GOLD = '#8B4513';
 const GOLD_MED = '#C4611F';
 const DARK = '#1a1a2e';
+const WHEEL_LINE = 'rgba(139,69,19,0.22)';
+const WHEEL_STROKE_W = 0.7;
 
 function signIdx(sign: string) { return Math.max(0, SIGNS.findIndex(s => s.en.toLowerCase() === sign.toLowerCase())); }
 function absAngle(p: TransitPlanet) {
@@ -121,9 +123,8 @@ export default function LiveTransitWheel() {
   const ticks: JSX.Element[] = [];
   for (let i = 0; i < 360; i += 5) {
     const a = toRad(i);
-    const isMajor = i % 30 === 0;
-    const r2 = isMajor ? R_OUTER - 10 : R_OUTER - 3;
-    ticks.push(<line key={`t${i}`} x1={CX+R_OUTER*Math.cos(a)} y1={CY+R_OUTER*Math.sin(a)} x2={CX+r2*Math.cos(a)} y2={CY+r2*Math.sin(a)} stroke="rgba(139,69,19,0.2)" strokeWidth={isMajor?1.2:0.4} />);
+    const r2 = R_OUTER - 4;
+    ticks.push(<line key={`t${i}`} x1={CX+R_OUTER*Math.cos(a)} y1={CY+R_OUTER*Math.sin(a)} x2={CX+r2*Math.cos(a)} y2={CY+r2*Math.sin(a)} stroke={WHEEL_LINE} strokeWidth={WHEEL_STROKE_W} />);
   }
 
   // Segments
@@ -167,7 +168,7 @@ export default function LiveTransitWheel() {
     return (
       <g key={sign.en}>
         {/* Divider — full extent from center to outer */}
-        <line x1={lx1} y1={ly1} x2={lx2} y2={ly2} stroke="rgba(139,69,19,0.15)" strokeWidth={0.7} />
+        <line x1={lx1} y1={ly1} x2={lx2} y2={ly2} stroke={WHEEL_LINE} strokeWidth={WHEEL_STROKE_W} />
 
         {/* Ring 1: Sign name + degree span (uniform for all signs) */}
         <text x={nx} y={ny} textAnchor="middle" dominantBaseline="central"
@@ -187,7 +188,7 @@ export default function LiveTransitWheel() {
 
         {/* Gender symbol — inside, visible */}
         <text x={gndx} y={gndy} textAnchor="middle" dominantBaseline="central"
-          fill={GOLD} opacity={0.5} fontSize="16" fontWeight="bold">{sign.gender}</text>
+          fill={GOLD_MED} opacity={1} fontSize="16" fontWeight="700">{sign.gender}</text>
 
         {/* Ring 4: Zodiac glyph */}
         <text x={gx} y={gy} textAnchor="middle" dominantBaseline="central"
@@ -280,19 +281,17 @@ export default function LiveTransitWheel() {
   const ascRad = toRad(lagnaAngle);
   const ascX = CX + R_OUTERMOST * Math.cos(ascRad);
   const ascY = CY + R_OUTERMOST * Math.sin(ascRad);
-  const ascMidR = (R_OUTERMOST + R_OUTER) / 2;
-  const ascLX = CX + ascMidR * Math.cos(ascRad);
-  const ascLY = CY + ascMidR * Math.sin(ascRad);
-  const ascDeg = Math.floor(lagnaLong % 30);
+  const ascLabelR = R_OUTERMOST + 24;
+  const ascLabelX = CX + ascLabelR * Math.cos(ascRad);
+  const ascLabelY = CY + ascLabelR * Math.sin(ascRad);
+  const ascDegText = `${(lagnaLong % 30).toFixed(1)}°`;
 
   const ascMarker = (
     <g>
       <line x1={CX} y1={CY} x2={ascX} y2={ascY} stroke={GOLD_MED} strokeWidth={2} strokeDasharray="5,4" opacity={0.6} />
-      <circle cx={ascX} cy={ascY} r={6} fill={GOLD_MED} />
       <polygon points={`${ascX},${ascY} ${ascX+12*Math.cos(ascRad+0.35)},${ascY+12*Math.sin(ascRad+0.35)} ${ascX+12*Math.cos(ascRad-0.35)},${ascY+12*Math.sin(ascRad-0.35)}`} fill={GOLD_MED} />
-      <text x={ascLX} y={ascLY} textAnchor="middle" dominantBaseline="central"
-        fill={GOLD_MED} fontSize="12" fontWeight="700" fontFamily="'Inter',sans-serif"
-        transform={`rotate(${arcRot(lagnaAngle+90)},${ascLX},${ascLY})`}>ASC {ascDeg}&deg;</text>
+      <text x={ascLabelX} y={ascLabelY} textAnchor="middle" dominantBaseline="central"
+        fill={GOLD_MED} fontSize="11" fontWeight="700" fontFamily="'Inter',sans-serif">{ascDegText}</text>
     </g>
   );
 
@@ -319,14 +318,14 @@ export default function LiveTransitWheel() {
         }}>
           <defs>{clipDefs}</defs>
 
-          <circle cx={CX} cy={CY} r={R_OUTERMOST} fill="none" stroke={GOLD} strokeWidth={1.5} />
-          <circle cx={CX} cy={CY} r={R_OUTER} fill="none" stroke={GOLD} strokeWidth={2} />
+          <circle cx={CX} cy={CY} r={R_OUTERMOST} fill="none" stroke={WHEEL_LINE} strokeWidth={WHEEL_STROKE_W} />
+          <circle cx={CX} cy={CY} r={R_OUTER} fill="none" stroke={WHEEL_LINE} strokeWidth={WHEEL_STROKE_W} />
           {ticks}
-          <circle cx={CX} cy={CY} r={R_DATE_RING} fill="none" stroke="rgba(139,69,19,0.12)" strokeWidth={0.5} />
-          <circle cx={CX} cy={CY} r={R_GENDER_RING} fill="none" stroke="rgba(139,69,19,0.15)" strokeWidth={0.6} />
-          <circle cx={CX} cy={CY} r={R_GLYPH_RING} fill="none" stroke="rgba(139,69,19,0.15)" strokeWidth={0.8} />
-          <circle cx={CX} cy={CY} r={R_ELEM_RING} fill="none" stroke="rgba(139,69,19,0.18)" strokeWidth={0.7} />
-          <circle cx={CX} cy={CY} r={R_INNER} fill="none" stroke="rgba(139,69,19,0.12)" strokeWidth={0.6} />
+          <circle cx={CX} cy={CY} r={R_DATE_RING} fill="none" stroke={WHEEL_LINE} strokeWidth={WHEEL_STROKE_W} />
+          <circle cx={CX} cy={CY} r={R_GENDER_RING} fill="none" stroke={WHEEL_LINE} strokeWidth={WHEEL_STROKE_W} />
+          <circle cx={CX} cy={CY} r={R_GLYPH_RING} fill="none" stroke={WHEEL_LINE} strokeWidth={WHEEL_STROKE_W} />
+          <circle cx={CX} cy={CY} r={R_ELEM_RING} fill="none" stroke={WHEEL_LINE} strokeWidth={WHEEL_STROKE_W} />
+          <circle cx={CX} cy={CY} r={R_INNER} fill="none" stroke={WHEEL_LINE} strokeWidth={WHEEL_STROKE_W} />
 
           <defs>
             <radialGradient id="iBg2" cx="50%" cy="50%" r="50%">
@@ -362,6 +361,8 @@ export default function LiveTransitWheel() {
           <span className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>v</span>{hi?'वर्गोत्तम':'Vargottama'}</span>
           <span className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>+</span>{hi?'उच्च':'Exalted'}</span>
           <span className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>-</span>{hi?'नीच':'Debilitated'}</span>
+        </div>
+        <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-1">
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full" style={{ background:GOLD_MED }} />{hi?'शुभ':'Benefic'}</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full" style={{ background:DARK }} />{hi?'पापी':'Malefic'}</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2" style={{ background:GOLD_MED, clipPath:'polygon(50% 0%,0% 100%,100% 100%)' }} />ASC</span>
