@@ -158,7 +158,7 @@ export default function HoroscopePage() {
                 onClick={() => setSelectedSign(s.id)}
                 className={`flex flex-col items-center gap-0.5 py-2 rounded-lg text-xs transition-all ${
                   selectedSign === s.id
-                    ? 'bg-sacred-gold text-white shadow-sm'
+                    ? 'bg-sacred-gold/20 text-sacred-gold-dark shadow-sm border border-sacred-gold/40'
                     : 'text-cosmic-text-secondary hover:bg-sacred-gold/10'
                 }`}
               >
