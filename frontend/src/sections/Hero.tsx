@@ -82,21 +82,19 @@ export default function Hero() {
             {/* Main Title — 3D extruded text */}
             <div className="hero-title-main opacity-0">
               <h1
-                className="text-4xl sm:text-5xl lg:text-6xl text-[#1a1a2e] leading-[1.0]"
+                className="text-4xl sm:text-5xl lg:text-6xl text-cosmic-text leading-[1.0]"
                 style={{
                   fontWeight: 800,
                   letterSpacing: '-0.02em',
-                  textShadow: '1px 1px 0px #8B4513, 2px 2px 0px #7A3B10, 3px 3px 0px #6B330E, 4px 4px 0px #5C2C0C, 5px 5px 0px #4D240A, 6px 6px 12px rgba(0,0,0,0.3)',
                 }}
               >
                 {l('Your Complete Vedic Astrology Platform', 'आपका पूर्ण वैदिक ज्योतिष प्लेटफॉर्म')}
               </h1>
               <p
-                className="text-base text-[#C4611F] mt-4 uppercase"
+                className="text-base text-sacred-gold-dark mt-4 uppercase"
                 style={{
                   fontWeight: 700,
                   letterSpacing: '0.15em',
-                  textShadow: '1px 1px 3px rgba(196, 97, 31, 0.4)',
                 }}
               >
                 {l('Kundli · Lal Kitab · Vastu · Panchang · Numerology', 'कुंडली · लाल किताब · वास्तु · पंचांग · अंकशास्त्र')}
