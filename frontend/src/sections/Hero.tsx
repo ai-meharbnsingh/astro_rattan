@@ -148,13 +148,7 @@ export default function Hero() {
           </div>
 
           {/* RIGHT — Zodiac Wheel with 3D depth */}
-          <div
-            className="hero-wheel opacity-0 flex-shrink-0 w-full max-w-[360px] lg:max-w-[440px] hero-wheel-float"
-            style={{
-              perspective: '1000px',
-              filter: 'drop-shadow(4px 8px 16px rgba(139,69,19,0.35)) drop-shadow(0px 0px 40px rgba(196,97,31,0.15))',
-            }}
-          >
+          <div className="hero-wheel opacity-0 flex-shrink-0 w-full max-w-[380px] lg:max-w-[460px]">
             <ZodiacWheel />
           </div>
 

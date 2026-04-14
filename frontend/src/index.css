@@ -2,22 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Zodiac wheel slow clockwise rotation */
-@keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+/* Zodiac wheel 3D floating animation */
+@keyframes chakraFloat {
+  0%, 100% { transform: perspective(800px) rotateX(22deg) rotateY(-12deg); }
+  50%      { transform: perspective(800px) rotateX(16deg) rotateY(-6deg); }
 }
-.animate-spin-slow {
-  animation: spin-slow 60s linear infinite;
-}
-
-/* Zodiac wheel 3D float */
-@keyframes hero-float {
-  0%, 100% { transform: rotateX(5deg) rotateY(-8deg) scale(1.05); }
-  50%      { transform: rotateX(3deg) rotateY(-6deg) scale(1.05); }
-}
-.hero-wheel-float > div {
-  animation: hero-float 8s ease-in-out infinite;
+.chakra-float {
+  animation: chakraFloat 10s ease-in-out infinite;
   transform-style: preserve-3d;
 }
 
