@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
-import InteractiveKundli, { type ChartData, type PlanetData } from '@/components/InteractiveKundli';
 
 const toRad = (deg: number) => (deg * Math.PI) / 180;
 const CX = 300;
@@ -125,38 +124,21 @@ export default function LiveTransitWheel() {
   const lagnaLong = (skyData?.lagna_longitude || 0) + (elapsedSec * (360 / 86400));
   const lagnaAngle = lagnaLong - 90;
 
-  // Convert sky data → ChartData for kundli view
-  const kundliChartData = useMemo<ChartData | null>(() => {
-    if (!skyData) return null;
-    const ascSignIdx = Math.floor(lagnaLong / 30);
-    const SIGN_NAMES = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
-    const ascSign = SIGN_NAMES[ascSignIdx % 12];
-
-    const houses = Array.from({ length: 12 }, (_, i) => ({
-      number: i + 1,
-      sign: SIGN_NAMES[(ascSignIdx + i) % 12],
-    }));
-
-    const kundliPlanets: PlanetData[] = planets.map(p => {
-      const pSignIdx = SIGN_NAMES.findIndex(s => s.toLowerCase() === p.sign.toLowerCase());
-      const house = ((pSignIdx - ascSignIdx + 12) % 12) + 1;
-      return {
-        planet: p.planet,
-        sign: p.sign,
-        house,
-        nakshatra: '',
-        sign_degree: p.sign_degree,
-        status: p.is_retrograde ? 'Retrograde' : 'Transiting',
-        is_retrograde: p.is_retrograde,
-      };
+  // Build kundli house data from sky data
+  const SIGN_NAMES = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+  const ascSignIdx = Math.floor(lagnaLong / 30) % 12;
+  const kundliHouses = useMemo(() => {
+    if (!skyData) return [];
+    return Array.from({ length: 12 }, (_, i) => {
+      const signIdx = (ascSignIdx + i) % 12;
+      const sign = SIGN_NAMES[signIdx];
+      const housePlanets = planets.filter(p => {
+        const pIdx = SIGN_NAMES.findIndex(s => s.toLowerCase() === p.sign.toLowerCase());
+        return ((pIdx - ascSignIdx + 12) % 12) === i;
+      });
+      return { house: i + 1, sign, signNum: signIdx + 1, planets: housePlanets };
     });
-
-    return {
-      planets: kundliPlanets,
-      houses,
-      ascendant: { longitude: lagnaLong, sign: ascSign, sign_degree: lagnaLong % 30 },
-    };
-  }, [skyData, planets, lagnaLong]);
+  }, [skyData, planets, ascSignIdx]);
 
   // Ticks
   const ticks: JSX.Element[] = [];
@@ -361,16 +343,96 @@ export default function LiveTransitWheel() {
         </div>
       </div>
 
-      {/* Kundli Chart View */}
-      {viewMode === 'kundli' && kundliChartData && (
-        <div className="chakra-float" style={{ transformStyle: 'preserve-3d' }}>
-          <div style={{
-            filter: 'drop-shadow(4px 8px 16px rgba(139,69,19,0.25)) drop-shadow(0 2px 6px rgba(196,97,31,0.12))',
-          }}>
-            <InteractiveKundli chartData={kundliChartData} compact />
+      {/* Kundli Chart View — North Indian style, same aesthetic as transit wheel */}
+      {viewMode === 'kundli' && skyData && (() => {
+        const S = 500; // viewBox size
+        const P = 30;  // padding
+        const W = S - 2 * P; // inner width
+        const H2 = W / 2;
+        // Corners
+        const tl = { x: P, y: P };
+        const tr = { x: P + W, y: P };
+        const bl = { x: P, y: P + W };
+        const br = { x: P + W, y: P + W };
+        // Midpoints (diamond vertices)
+        const mt = { x: P + H2, y: P };
+        const mr = { x: P + W, y: P + H2 };
+        const mb = { x: P + H2, y: P + W };
+        const ml = { x: P, y: P + H2 };
+        const cc = { x: P + H2, y: P + H2 };
+        // Intersection points (where diamond edges cross diagonals)
+        const q = H2 / 2;
+        const p1 = { x: P + q, y: P + q };          // TL-CC ∩ MT-ML
+        const p2 = { x: P + H2 + q, y: P + q };     // TR-CC ∩ MT-MR
+        const p3 = { x: P + H2 + q, y: P + H2 + q };// BR-CC ∩ MR-MB
+        const p4 = { x: P + q, y: P + H2 + q };     // BL-CC ∩ MB-ML
+
+        // 12 houses — anti-clockwise from top center
+        const housePoly: { house: number; pts: string; cx: number; cy: number }[] = [
+          { house: 1,  pts: `${mt.x},${mt.y} ${p2.x},${p2.y} ${cc.x},${cc.y} ${p1.x},${p1.y}`, cx: cc.x, cy: P + q * 0.9 },
+          { house: 2,  pts: `${tl.x},${tl.y} ${mt.x},${mt.y} ${p1.x},${p1.y}`, cx: P + q * 0.65, cy: P + q * 0.65 },
+          { house: 3,  pts: `${tl.x},${tl.y} ${p1.x},${p1.y} ${cc.x},${cc.y} ${ml.x},${ml.y}`, cx: P + q * 0.55, cy: P + H2 * 0.55 },
+          { house: 4,  pts: `${ml.x},${ml.y} ${cc.x},${cc.y} ${p4.x},${p4.y}`, cx: P + q * 0.55, cy: cc.y },
+          { house: 5,  pts: `${bl.x},${bl.y} ${ml.x},${ml.y} ${p4.x},${p4.y}`, cx: P + q * 0.55, cy: P + H2 + q * 1.35 },
+          { house: 6,  pts: `${bl.x},${bl.y} ${p4.x},${p4.y} ${cc.x},${cc.y} ${mb.x},${mb.y}`, cx: P + q * 0.65, cy: P + W - q * 0.65 },
+          { house: 7,  pts: `${mb.x},${mb.y} ${cc.x},${cc.y} ${p3.x},${p3.y}`, cx: cc.x, cy: P + W - q * 0.9 },
+          { house: 8,  pts: `${br.x},${br.y} ${mb.x},${mb.y} ${p3.x},${p3.y}`, cx: P + W - q * 0.65, cy: P + W - q * 0.65 },
+          { house: 9,  pts: `${br.x},${br.y} ${p3.x},${p3.y} ${cc.x},${cc.y} ${mr.x},${mr.y}`, cx: P + W - q * 0.55, cy: P + H2 + q * 1.35 },
+          { house: 10, pts: `${mr.x},${mr.y} ${cc.x},${cc.y} ${p2.x},${p2.y}`, cx: P + W - q * 0.55, cy: cc.y },
+          { house: 11, pts: `${tr.x},${tr.y} ${mr.x},${mr.y} ${p2.x},${p2.y}`, cx: P + W - q * 0.55, cy: P + H2 * 0.55 },
+          { house: 12, pts: `${tr.x},${tr.y} ${p2.x},${p2.y} ${mt.x},${mt.y}`, cx: P + W - q * 0.65, cy: P + q * 0.65 },
+        ];
+
+        const pAbbr = (name: string) => hi ? (PLANET_HI[name] || name.slice(0,2)) : (PLANET_ABBR[name] || name.slice(0,2));
+
+        return (
+          <div className="chakra-float" style={{ transformStyle: 'preserve-3d' }}>
+            <svg viewBox={`0 0 ${S} ${S}`} className="w-full h-full" style={{
+              overflow: 'visible',
+              transform: 'scale(0.85)',
+              transformOrigin: 'center center',
+              filter: 'drop-shadow(4px 8px 16px rgba(139,69,19,0.25)) drop-shadow(0 2px 6px rgba(196,97,31,0.12))',
+            }}>
+              {/* Outer square */}
+              <rect x={P} y={P} width={W} height={W} fill="none" stroke={WHEEL_LINE} strokeWidth={WHEEL_STROKE_W} />
+              {/* Inner diamond */}
+              <polygon points={`${mt.x},${mt.y} ${mr.x},${mr.y} ${mb.x},${mb.y} ${ml.x},${ml.y}`} fill="none" stroke={WHEEL_LINE} strokeWidth={WHEEL_STROKE_W} />
+              {/* Diagonals */}
+              <line x1={tl.x} y1={tl.y} x2={br.x} y2={br.y} stroke={WHEEL_LINE} strokeWidth={WHEEL_STROKE_W} />
+              <line x1={tr.x} y1={tr.y} x2={bl.x} y2={bl.y} stroke={WHEEL_LINE} strokeWidth={WHEEL_STROKE_W} />
+
+              {/* House contents */}
+              {housePoly.map(hp => {
+                const hData = kundliHouses[hp.house - 1];
+                if (!hData) return null;
+                return (
+                  <g key={hp.house}>
+                    {/* Sign number */}
+                    <text x={hp.cx} y={hp.cy - 6} textAnchor="middle" dominantBaseline="central"
+                      fill={GOLD} fontSize="11" fontWeight="700" fontFamily="'Inter',sans-serif"
+                      opacity={0.5}>{hData.signNum}</text>
+                    {/* Planet abbreviations */}
+                    {hData.planets.map((pl, idx) => (
+                      <text key={pl.planet} x={hp.cx} y={hp.cy + 8 + idx * 13} textAnchor="middle" dominantBaseline="central"
+                        fill={MALEFIC.has(pl.planet) ? DARK : GOLD_MED} fontSize="11" fontWeight="700" fontFamily="'Inter',sans-serif">
+                        {pAbbr(pl.planet)}{pl.is_retrograde ? '*' : ''} {pl.sign_degree.toFixed(0)}°
+                      </text>
+                    ))}
+                  </g>
+                );
+              })}
+
+              {/* Center — Om + time */}
+              <text x={cc.x} y={cc.y - 8} textAnchor="middle" fill={GOLD_MED} fontSize="22" fontWeight="bold">ॐ</text>
+              <text x={cc.x} y={cc.y + 12} textAnchor="middle" fill={GOLD} fontSize="10" fontWeight="600" fontFamily="'Inter',sans-serif">{timeStr}</text>
+              {/* ASC label */}
+              <text x={cc.x} y={P - 10} textAnchor="middle" fill={GOLD_MED} fontSize="10" fontWeight="700" fontFamily="'Inter',sans-serif">
+                ASC {(lagnaLong % 30).toFixed(1)}° {hi ? SIGNS[ascSignIdx]?.hi : SIGNS[ascSignIdx]?.en}
+              </text>
+            </svg>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Transit Wheel View */}
       {viewMode === 'transit' && <div className="relative w-full pb-2">
