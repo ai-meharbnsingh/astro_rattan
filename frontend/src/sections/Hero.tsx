@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { useTranslation } from '@/lib/i18n';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Sparkles, ShieldCheck, Layers } from 'lucide-react';
 import ZodiacWheel from '@/components/ZodiacWheel';
 
 export default function Hero() {
@@ -51,8 +51,46 @@ export default function Hero() {
       <div className="absolute top-1/4 left-10 w-64 h-64 bg-sacred-gold/5 rounded-full blur-3xl opacity-20" />
       <div className="absolute bottom-1/4 right-10 w-80 h-80 bg-[#8B4513]/10 rounded-full blur-3xl opacity-20" />
 
-      {/* Two-column layout */}
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Top system strip */}
+        <div className="hero-cta opacity-0 mb-8 lg:mb-10">
+          <div className="rounded-2xl border border-sacred-gold/30 bg-sacred-gold/5 p-4 sm:p-5">
+            <p className="text-center text-xs sm:text-sm uppercase tracking-[0.16em] text-sacred-gold-dark font-semibold mb-4">
+              {l('Complete Astrological Operating System', 'पूर्ण ज्योतिषीय ऑपरेटिंग सिस्टम')}
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="rounded-xl border border-sacred-gold/25 bg-cosmic-bg/70 p-3 sm:p-4 flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-sacred-gold/10 text-sacred-gold-dark flex items-center justify-center shrink-0">
+                  <Sparkles className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-base font-semibold text-cosmic-text">{l('10,000+ Kundlis Generated', '10,000+ कुंडलियां बनाई गईं')}</p>
+                  <p className="text-xs text-gray-600 mt-0.5">{l('Real usage data', 'वास्तविक उपयोग डेटा')}</p>
+                </div>
+              </div>
+              <div className="rounded-xl border border-sacred-gold/25 bg-cosmic-bg/70 p-3 sm:p-4 flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-sacred-gold/10 text-sacred-gold-dark flex items-center justify-center shrink-0">
+                  <ShieldCheck className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-base font-semibold text-cosmic-text">{l('Trusted by Astrologers', 'ज्योतिषियों द्वारा विश्वसनीय')}</p>
+                  <p className="text-xs text-gray-600 mt-0.5">{l('Professional daily workflows', 'पेशेवर दैनिक वर्कफ़्लो')}</p>
+                </div>
+              </div>
+              <div className="rounded-xl border border-sacred-gold/25 bg-cosmic-bg/70 p-3 sm:p-4 flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-sacred-gold/10 text-sacred-gold-dark flex items-center justify-center shrink-0">
+                  <Layers className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-base font-semibold text-cosmic-text">{l('5 Modules in One', 'एक में 5 मॉड्यूल')}</p>
+                  <p className="text-xs text-gray-600 mt-0.5">{l('Single connected platform', 'एकीकृत सिंगल प्लेटफॉर्म')}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Two-column layout */}
         <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
 
           {/* LEFT — Text content */}
@@ -114,21 +152,6 @@ export default function Hero() {
               </a>
             </div>
 
-            {/* Trust indicators */}
-            <div className="hero-cta opacity-0 mt-8 flex flex-wrap justify-center lg:justify-start gap-6 text-sm text-gray-600">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-green-600"></span>
-                {l('10,000+ Kundlis Generated', '10,000+ कुंडलियां बनाई गईं')}
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-green-600"></span>
-                {l('Trusted by Astrologers', 'ज्योतिषियों द्वारा विश्वसनीय')}
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-green-600"></span>
-                {l('5 Modules in One', 'एक में 5 मॉड्यूल')}
-              </div>
-            </div>
           </div>
 
           {/* RIGHT — Zodiac Wheel with 3D depth */}
