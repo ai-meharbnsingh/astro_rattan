@@ -47,7 +47,7 @@ const R_GLYPH_RING = 112;
 const R_GLYPH = 96;
 const R_ELEM = 75;
 const R_ELEM_RING = 85; // Circle outside elements, between elements and glyphs
-const R_SIGN_NUM = 68; // Sign numbers (1-12), between elements and inner
+const R_SIGN_NUM = 52; // Sign numbers (1-12), inside inner ring near center
 const R_INNER = 60;
 const R_CENTER = 42;
 
