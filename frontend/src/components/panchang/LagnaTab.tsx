@@ -37,7 +37,7 @@ export default function LagnaTab({ panchang, language, t, timezoneOffset }: Prop
   // Memoize current lagna calculation to avoid running on every render
   const currentLagna = useMemo(() => {
     // Find current lagna (based on panchang location time, not browser local time)
-    const currentTimeAtLocation = new Date(Date.now() + (timezoneOffset * 60 * 1000));
+    const currentTimeAtLocation = new Date(Date.now() + ((timezoneOffset + new Date().getTimezoneOffset()) * 60 * 1000));
     const currentTime = `${currentTimeAtLocation.getHours().toString().padStart(2, '0')}:${currentTimeAtLocation.getMinutes().toString().padStart(2, '0')}`;
 
     return lagnaTable.find(l => {

@@ -19,7 +19,7 @@ export default function GowriTab({ panchang, language, t, timezoneOffset }: Prop
     const night = gowriPanchang.filter(g => g.type === 'Night' || g.type === 'रात्रि');
 
     // Find current gowri period (based on panchang location time, not browser local time)
-    const currentTimeAtLocation = new Date(Date.now() + (timezoneOffset * 60 * 1000));
+    const currentTimeAtLocation = new Date(Date.now() + ((timezoneOffset + new Date().getTimezoneOffset()) * 60 * 1000));
     const currentTime = `${currentTimeAtLocation.getHours().toString().padStart(2, '0')}:${currentTimeAtLocation.getMinutes().toString().padStart(2, '0')}`;
 
     const current = gowriPanchang.find(g => {

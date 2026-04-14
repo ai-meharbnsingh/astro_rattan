@@ -21,7 +21,7 @@ export default function HoraTab({ panchang, language, t, timezoneOffset }: Props
   // Memoize current Hora calculation to avoid running on every render
   const currentHora = useMemo(() => {
     // Calculate current time at the panchang location (not browser local time)
-    const currentTimeAtLocation = new Date(Date.now() + (timezoneOffset * 60 * 1000));
+    const currentTimeAtLocation = new Date(Date.now() + ((timezoneOffset + new Date().getTimezoneOffset()) * 60 * 1000));
     const currentHour = currentTimeAtLocation.getHours();
 
     return horaTable.find(h => {

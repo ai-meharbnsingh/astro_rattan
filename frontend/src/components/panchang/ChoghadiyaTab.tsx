@@ -32,7 +32,7 @@ export default function ChoghadiyaTab({ panchang, language, t, timezoneOffset }:
 
   // Find current active period across both day and night
   const currentPeriodKey = useMemo(() => {
-    const now = new Date(Date.now() + (timezoneOffset * 60 * 1000));
+    const now = new Date(Date.now() + ((timezoneOffset + new Date().getTimezoneOffset()) * 60 * 1000));
     const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 
     const allPeriods = [...dayChoghadiya, ...nightChoghadiya];
