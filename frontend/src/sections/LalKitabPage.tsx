@@ -137,24 +137,31 @@ export default function LalKitabPage() {
   }, [isAstrologer]);
 
   return (
-    <div className="min-h-screen bg-cosmic-bg bg-mandala py-24 px-4">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-10">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-red-600 to-sacred-gold flex items-center justify-center mx-auto mb-4">
-            <BookOpen className="w-8 h-8 text-white" />
+    <div className="min-h-screen bg-cosmic-bg bg-mandala py-10 px-4">
+      <div className="max-w-7xl mx-auto">
+        {/* Result View Header (only show when not in form) */}
+        {view !== 'form' && (
+          <div className="text-center mb-10">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-red-600 to-sacred-gold flex items-center justify-center mx-auto mb-4">
+              <BookOpen className="w-8 h-8 text-white" />
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-sans font-bold text-sacred-gold mb-2">
+              {t('lk.title')}
+            </h1>
+            <p className="text-cosmic-text max-w-lg mx-auto">
+              {t('lk.subtitle')}
+            </p>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-sans font-bold text-sacred-gold mb-2">
-            {t('lk.title')}
-          </h1>
-          <p className="text-cosmic-text max-w-lg mx-auto">
-            {t('lk.subtitle')}
-          </p>
-        </div>
+        )}
 
         {/* Form View */}
         {view === 'form' && (
-          <div className="max-w-xl mx-auto">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-6">
+              <h1 className="text-3xl sm:text-4xl font-sans font-bold text-sacred-gold mb-2">
+                {t('lk.title')}
+              </h1>
+            </div>
             <LalKitabForm onGenerate={handleGenerate} loading={false} />
             {error && (
               <div className="mt-4 p-3 rounded-xl bg-red-50 border border-red-300 text-red-700 text-sm text-center">

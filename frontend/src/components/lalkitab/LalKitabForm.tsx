@@ -154,33 +154,28 @@ export default function LalKitabForm({ onGenerate, loading }: LalKitabFormProps)
   };
 
   const inputClass =
-    'w-full rounded-xl bg-cosmic-card border border-sacred-gold/20 text-cosmic-text px-4 py-3 focus:outline-none focus:border-sacred-gold/50 transition-colors';
+    'w-full rounded-lg bg-sacred-cream border border-sacred-gold text-sacred-brown px-3 py-2 focus:outline-none focus:border-sacred-gold-dark transition-colors text-sm h-10';
 
   return (
-    <form onSubmit={handleSubmit} className="card-sacred rounded-xl p-6 border border-sacred-gold/20">
-      <h2 className="text-xl font-sans font-semibold text-sacred-gold mb-1">
-        {t('lk.enterDetails')}
-      </h2>
-      <p className="text-sm text-gray-500 mb-6">
-        {t('lk.subtitle')}
-      </p>
-
+    <form onSubmit={handleSubmit} className="bg-transparent rounded-xl p-4 md:p-6">
       {isAstrologer && (
-        <ClientSelector
-          onSelectClient={handleClientSelect}
-          isNewClient={isNewClient}
-          onToggle={handleClientToggle}
-        />
+        <div className="mb-4">
+          <ClientSelector
+            onSelectClient={handleClientSelect}
+            isNewClient={isNewClient}
+            onToggle={handleClientToggle}
+          />
+        </div>
       )}
 
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
         {/* Name */}
-        <div>
-          <label className="block text-sm font-medium text-sacred-gold mb-2">
+        <div className="md:col-span-2">
+          <label className="block text-xs font-medium text-sacred-gold mb-1">
             {t('lk.name')}
           </label>
           <div className="relative">
-            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold/60" />
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark" />
             <input
               type="text"
               value={formData.name}
@@ -191,13 +186,69 @@ export default function LalKitabForm({ onGenerate, loading }: LalKitabFormProps)
           </div>
         </div>
 
+        {/* Gender */}
+        <div>
+          <label className="block text-xs font-medium text-sacred-gold mb-1">
+            {t('lk.gender')}
+          </label>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => setFormData((prev) => ({ ...prev, gender: 'male' }))}
+              className={`h-10 rounded-lg border text-sm font-medium transition-colors ${
+                formData.gender === 'male'
+                  ? 'border-sacred-gold bg-sacred-gold-dark text-white'
+                  : 'border-sacred-gold/40 text-cosmic-text bg-white/50 hover:bg-sacred-gold/5'
+              }`}
+            >
+              {t('lk.male')}
+            </button>
+            <button
+              type="button"
+              onClick={() => setFormData((prev) => ({ ...prev, gender: 'female' }))}
+              className={`h-10 rounded-lg border text-sm font-medium transition-colors ${
+                formData.gender === 'female'
+                  ? 'border-sacred-gold bg-sacred-gold-dark text-white'
+                  : 'border-sacred-gold/40 text-cosmic-text bg-white/50 hover:bg-sacred-gold/5'
+              }`}
+            >
+              {t('lk.female')}
+            </button>
+          </div>
+        </div>
+
+        {/* Phone (required for astrologers creating new client kundli) */}
+        {isAstrologer ? (
+          <div>
+            {isNewClient && (
+              <div>
+                <label className="block text-xs font-medium text-sacred-gold mb-1">
+                  {language === 'hi' ? 'क्लाइंट फ़ोन नंबर' : 'Client Phone'} <span className="text-red-400">*</span>
+                </label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark" />
+                  <input
+                    type="tel"
+                    value={formData.phone || ''}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
+                    placeholder={language === 'hi' ? 'फ़ोन नंबर' : 'Phone number'}
+                    className={`${inputClass} pl-10`}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="hidden md:block" />
+        )}
+
         {/* Date of Birth */}
         <div>
-          <label className="block text-sm font-medium text-sacred-gold mb-2">
+          <label className="block text-xs font-medium text-sacred-gold mb-1">
             {t('lk.dob')}
           </label>
           <div className="relative">
-            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold/60" />
+            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark" />
             <input
               type="date"
               value={formData.date}
@@ -210,11 +261,11 @@ export default function LalKitabForm({ onGenerate, loading }: LalKitabFormProps)
 
         {/* Time of Birth */}
         <div>
-          <label className="block text-sm font-medium text-sacred-gold mb-2">
+          <label className="block text-xs font-medium text-sacred-gold mb-1">
             {t('lk.tob')}
           </label>
           <div className="relative">
-            <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold/60" />
+            <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark" />
             <input
               type="time"
               value={formData.time}
@@ -226,12 +277,12 @@ export default function LalKitabForm({ onGenerate, loading }: LalKitabFormProps)
         </div>
 
         {/* Place of Birth */}
-        <div ref={placeWrapperRef}>
-          <label className="block text-sm font-medium text-sacred-gold mb-2">
+        <div ref={placeWrapperRef} className="md:col-span-2">
+          <label className="block text-xs font-medium text-sacred-gold mb-1">
             {t('lk.pob')}
           </label>
           <div className="relative">
-            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold/60 z-10" />
+            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark z-10" />
             <input
               type="text"
               value={formData.place}
@@ -242,22 +293,22 @@ export default function LalKitabForm({ onGenerate, loading }: LalKitabFormProps)
               required
             />
             {geocodeLoading && (
-              <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-sacred-gold" />
+              <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 animate-spin text-sacred-gold" />
             )}
           </div>
 
           {showDropdown && suggestions.length > 0 && (
             <div className="relative">
-              <div className="absolute z-50 left-0 right-0 mt-1 bg-cosmic-bg border border-sacred-gold/30 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+              <div className="absolute z-50 left-0 right-0 mt-1 bg-white border border-sacred-gold/30 rounded-lg shadow-lg max-h-40 overflow-y-auto">
                 {suggestions.map((s, i) => (
                   <button
                     key={i}
                     type="button"
                     onClick={() => handleSelectPlace(s)}
-                    className="w-full text-left px-4 py-3 hover:bg-sacred-gold/10 transition-colors border-b border-sacred-gold/10 last:border-b-0"
+                    className="w-full text-left px-3 py-2 hover:bg-sacred-gold/10 transition-colors border-b border-sacred-gold/10 last:border-b-0"
                   >
-                    <p className="text-sm font-medium text-cosmic-text truncate">{s.name}</p>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-xs font-medium text-cosmic-text truncate">{s.name}</p>
+                    <p className="text-[10px] text-gray-600">
                       {s.lat.toFixed(4)}, {s.lon.toFixed(4)}
                     </p>
                   </button>
@@ -267,7 +318,7 @@ export default function LalKitabForm({ onGenerate, loading }: LalKitabFormProps)
           )}
 
           {formData.latitude !== 0 && formData.longitude !== 0 && (
-            <div className="flex items-center gap-2 text-sm text-gray-600 mt-1 px-1">
+            <div className="flex items-center gap-2 text-[10px] text-gray-600 mt-1.5 px-1">
               <MapPin className="w-3 h-3 text-sacred-gold" />
               <span>
                 {formData.latitude.toFixed(4)}, {formData.longitude.toFixed(4)}
@@ -276,71 +327,27 @@ export default function LalKitabForm({ onGenerate, loading }: LalKitabFormProps)
           )}
         </div>
 
-        {/* Gender */}
-        <div>
-          <label className="block text-sm font-medium text-sacred-gold mb-2">
-            {t('lk.gender')}
-          </label>
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              type="button"
-              onClick={() => setFormData((prev) => ({ ...prev, gender: 'male' }))}
-              className={`p-3 rounded-xl border text-sm font-medium transition-colors ${
-                formData.gender === 'male'
-                  ? 'border-sacred-gold bg-sacred-gold/10 text-sacred-gold'
-                  : 'border-sacred-gold/20 text-gray-500 hover:border-sacred-gold/40'
-              }`}
-            >
-              {t('lk.male')}
-            </button>
-            <button
-              type="button"
-              onClick={() => setFormData((prev) => ({ ...prev, gender: 'female' }))}
-              className={`p-3 rounded-xl border text-sm font-medium transition-colors ${
-                formData.gender === 'female'
-                  ? 'border-sacred-gold bg-sacred-gold/10 text-sacred-gold'
-                  : 'border-sacred-gold/20 text-gray-500 hover:border-sacred-gold/40'
-              }`}
-            >
-              {t('lk.female')}
-            </button>
-          </div>
-        </div>
-
-        {/* Phone (required for astrologers creating new client kundli) */}
-        {isAstrologer && isNewClient && (
-          <div>
-            <label className="block text-sm font-medium text-sacred-gold mb-2">
-              Client Phone <span className="text-red-400">*</span>
-            </label>
-            <div className="relative">
-              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold/60" />
-              <input
-                type="tel"
-                value={formData.phone || ''}
-                onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
-                placeholder="Client phone number"
-                className={`${inputClass} pl-10`}
-              />
-            </div>
-          </div>
-        )}
-
         {/* Submit */}
-        <Button
-          type="submit"
-          disabled={!isValid || loading}
-          className="bg-sacred-gold text-white hover:bg-sacred-gold/90 w-full font-semibold disabled:opacity-50"
-        >
-          {loading ? (
-            <>
-              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-              {t('lk.generating')}
-            </>
-          ) : (
-            t('lk.generate')
-          )}
-        </Button>
+        <div className="md:col-span-2 pt-2">
+          <Button
+            type="submit"
+            disabled={!isValid || loading}
+            className="bg-sacred-gold text-white hover:bg-sacred-gold/90 w-full h-11 font-bold text-base rounded-lg shadow-md transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                {t('lk.generating')}
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-5 h-5 mr-1.5" />
+                {t('lk.generate')}
+                <ChevronRight className="w-5 h-5 ml-1.5" />
+              </>
+            )}
+          </Button>
+        </div>
       </div>
     </form>
   );
