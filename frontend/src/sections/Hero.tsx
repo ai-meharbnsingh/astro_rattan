@@ -57,12 +57,12 @@ export default function Hero() {
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Two-column layout */}
-        <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-10">
+        <div className="flex flex-col lg:flex-row items-stretch gap-8 lg:gap-10">
 
           {/* LEFT — Text content */}
-          <div className="w-full lg:basis-[42%] text-center lg:text-left">
+          <div className="w-full lg:basis-[42%] text-center lg:text-left flex flex-col lg:justify-center gap-7 lg:gap-10 lg:min-h-[620px]">
             {/* Shloka */}
-            <div className="hero-shloka opacity-0 mb-4">
+            <div className="hero-shloka opacity-0">
               <p className="font-sans text-lg sm:text-2xl lg:text-[2.2rem] opacity-70 tracking-[3px] text-gray-600"
                 style={{ textShadow: '0 0 15px rgba(255, 170, 51, 0.4)' }}>
                 {'\u091C\u094D\u092F\u094B\u0924\u093F\u0937\u092E\u094D \u0905\u092F\u092E\u094D \u092C\u094D\u0930\u0939\u094D\u092E'} {t('hero.shlokaSupreme')}
@@ -78,7 +78,7 @@ export default function Hero() {
                   letterSpacing: '-0.02em',
                 }}
               >
-                {l('Your Complete Astrology Platform', 'आपका पूर्ण ज्योतिष प्लेटफॉर्म')}
+                {l('Complete Astrology Platform', 'पूर्ण ज्योतिष प्लेटफॉर्म')}
               </h1>
               <p
                 className="text-sm sm:text-base text-sacred-gold-dark mt-4 uppercase"
@@ -92,7 +92,7 @@ export default function Hero() {
             </div>
 
             {/* Subtitle */}
-            <div className="hero-subtitle opacity-0 mt-6 max-w-xl lg:max-w-none">
+            <div className="hero-subtitle opacity-0 max-w-xl lg:max-w-none">
               <p className="text-base sm:text-lg text-gray-600 leading-relaxed">
                 {l(
                   'Deep Kundli analysis, Lal Kitab remedies & predictions, Vastu floor plan scoring, live Panchang, and Numerology — all in one platform.',
@@ -102,7 +102,7 @@ export default function Hero() {
             </div>
 
             {/* CTA Buttons */}
-            <div className="hero-cta opacity-0 mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <div className="hero-cta opacity-0 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <a
                 href="/kundli"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-sacred-gold-dark text-white rounded-lg font-semibold hover:bg-sacred-gold transition-all shadow-lg shadow-sacred-gold/20 group"
