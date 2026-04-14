@@ -7,9 +7,10 @@ interface Props {
   language: string;
   t: (key: string) => string;
   timezoneOffset: number;
+  minuteTick: number;
 }
 
-export default function GowriTab({ panchang, language, t, timezoneOffset }: Props) {
+export default function GowriTab({ panchang, language, t, timezoneOffset, minuteTick }: Props) {
   const gowriPanchang = panchang.gowri_panchang || [];
   const toMinutes = (time: string) => {
     const [h, m] = String(time || '').split(':').map(Number);
@@ -37,7 +38,7 @@ export default function GowriTab({ panchang, language, t, timezoneOffset }: Prop
     const current = gowriPanchang.find((g) => isInTimeRange(currentMinutes, g.start, g.end));
 
     return { dayGowri: day, nightGowri: night, currentGowri: current };
-  }, [gowriPanchang, timezoneOffset]);
+  }, [gowriPanchang, timezoneOffset, minuteTick]);
 
   const getQualityStyle = (quality: string) => {
     if (quality.toLowerCase().includes('good') || quality === 'शुभ') {

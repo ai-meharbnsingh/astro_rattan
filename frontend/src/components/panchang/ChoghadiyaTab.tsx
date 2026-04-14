@@ -7,6 +7,7 @@ interface Props {
   language: string;
   t: (key: string) => string;
   timezoneOffset: number;
+  minuteTick: number;
 }
 
 const CHOGHADIYA_QUALITY: Record<string, { label: string; labelHi: string; color: string; bg: string; border: string }> = {
@@ -26,7 +27,7 @@ const CHOGHADIYA_HINDI: Record<string, string> = {
 
 type ChoghadiyaPeriod = { name: string; quality: string; start: string; end: string; name_hindi?: string };
 
-export default function ChoghadiyaTab({ panchang, language, t, timezoneOffset }: Props) {
+export default function ChoghadiyaTab({ panchang, language, t, timezoneOffset, minuteTick }: Props) {
   const dayChoghadiya = panchang.choghadiya || [];
   const nightChoghadiya = panchang.night_choghadiya || [];
   const toMinutes = (time: string) => {
@@ -50,7 +51,7 @@ export default function ChoghadiyaTab({ panchang, language, t, timezoneOffset }:
     const allPeriods = [...dayChoghadiya, ...nightChoghadiya];
     const found = allPeriods.find(c => isInTimeRange(currentMinutes, c.start, c.end));
     return found ? `${found.start}-${found.end}` : null;
-  }, [dayChoghadiya, nightChoghadiya, timezoneOffset]);
+  }, [dayChoghadiya, nightChoghadiya, timezoneOffset, minuteTick]);
 
   const renderRow = (period: ChoghadiyaPeriod) => {
     const q = CHOGHADIYA_QUALITY[period.name] || { label: '?', labelHi: '?', color: 'text-gray-500', bg: 'bg-gray-500/10', border: 'border-gray-500/20' };

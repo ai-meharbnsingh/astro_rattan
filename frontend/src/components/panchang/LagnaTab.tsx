@@ -7,6 +7,7 @@ interface Props {
   language: string;
   t: (key: string) => string;
   timezoneOffset: number;
+  minuteTick: number;
 }
 
 // Lagna (Ascendant) descriptions
@@ -31,7 +32,7 @@ const RASHI_HINDI: Record<string, string> = {
   'Sagittarius': 'धनु', 'Capricorn': 'मकर', 'Aquarius': 'कुंभ', 'Pisces': 'मीन',
 };
 
-export default function LagnaTab({ panchang, language, t, timezoneOffset }: Props) {
+export default function LagnaTab({ panchang, language, t, timezoneOffset, minuteTick }: Props) {
   const lagnaTable = panchang.lagna_table || [];
   const toMinutes = (time: string) => {
     const [h, m] = String(time || '').split(':').map(Number);
@@ -53,7 +54,7 @@ export default function LagnaTab({ panchang, language, t, timezoneOffset }: Prop
     const currentMinutes = currentTimeAtLocation.getHours() * 60 + currentTimeAtLocation.getMinutes();
 
     return lagnaTable.find((l) => isInTimeRange(currentMinutes, l.start, l.end));
-  }, [lagnaTable, timezoneOffset]);
+  }, [lagnaTable, timezoneOffset, minuteTick]);
 
   return (
     <div className="space-y-3">

@@ -7,9 +7,10 @@ interface Props {
   language: string;
   t: (key: string) => string;
   timezoneOffset: number;
+  minuteTick: number;
 }
 
-export default function HoraTab({ panchang, language, t, timezoneOffset }: Props) {
+export default function HoraTab({ panchang, language, t, timezoneOffset, minuteTick }: Props) {
   const horaTable = panchang.hora_table || [];
 
   const toMinutes = (time: string): number => {
@@ -32,7 +33,7 @@ export default function HoraTab({ panchang, language, t, timezoneOffset }: Props
     const currentMinutes = currentTimeAtLocation.getHours() * 60 + currentTimeAtLocation.getMinutes();
 
     return horaTable.find((h) => isInTimeRange(currentMinutes, h.start, h.end));
-  }, [horaTable, timezoneOffset]);
+  }, [horaTable, timezoneOffset, minuteTick]);
 
   const sunriseMin = toMinutes(panchang.sunrise || '');
   const sunsetMin = toMinutes(panchang.sunset || '');
