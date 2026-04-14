@@ -137,7 +137,7 @@ export default function TransitInsightsTab({ data, loading, language, t }: Props
                   <tr key={effect.sign} className="border-b border-cosmic-border/50 last:border-0 align-middle">
                     <td className="px-2 py-1.5 font-medium text-cosmic-text">
                       <img
-                        style={{ filter: "invert(1) sepia(1) saturate(5) hue-rotate(-15deg) brightness(0.9)" }} src={`/images/zodiac-purple/zodiac-${effect.sign}.png`}
+                        src={`/images/zodiac-orange/zodiac-${effect.sign}-orange.png`}
                         alt={effect.sign}
                         className="w-5 h-5 object-contain rounded-sm inline-block mr-1 align-text-bottom"
                       />
