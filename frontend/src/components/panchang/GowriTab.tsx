@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Moon, Sun, CheckCircle2, XCircle } from 'lucide-react';
+import { Moon, Sun, Clock } from 'lucide-react';
 import type { FullPanchangData } from '@/sections/Panchang';
 
 interface Props {
@@ -10,8 +10,42 @@ interface Props {
   minuteTick: number;
 }
 
+type GowriPeriod = {
+  type: string;
+  name: string;
+  name_hindi?: string;
+  quality: string;
+  quality_hindi?: string;
+  start: string;
+  end: string;
+};
+
+const GOWRI_TYPE_INFO = {
+  good: {
+    label: 'Auspicious',
+    labelHi: 'शुभ',
+    color: 'text-green-600',
+    bg: 'bg-green-500/15',
+    dot: 'bg-green-500',
+  },
+  neutral: {
+    label: 'Neutral',
+    labelHi: 'सामान्य',
+    color: 'text-blue-500',
+    bg: 'bg-blue-500/10',
+    dot: 'bg-blue-500',
+  },
+  bad: {
+    label: 'Inauspicious',
+    labelHi: 'अशुभ',
+    color: 'text-red-600',
+    bg: 'bg-red-500/10',
+    dot: 'bg-red-600',
+  },
+} as const;
+
 export default function GowriTab({ panchang, language, t, timezoneOffset, minuteTick }: Props) {
-  const gowriPanchang = panchang.gowri_panchang || [];
+  const gowriPanchang: GowriPeriod[] = panchang.gowri_panchang || [];
   const toMinutes = (time: string) => {
     const [h, m] = String(time || '').split(':').map(Number);
     if (Number.isNaN(h) || Number.isNaN(m)) return -1;
@@ -24,32 +58,36 @@ export default function GowriTab({ panchang, language, t, timezoneOffset, minute
     if (startM < endM) return current >= startM && current < endM;
     return current >= startM || current < endM;
   };
+  const getTypeBucket = (quality: string) => {
+    const q = String(quality || '').toLowerCase();
+    if (q.includes('good') || q.includes('auspicious') || q.includes('benefic') || q === 'शुभ') return 'good';
+    if (q.includes('neutral') || q === 'सामान्य') return 'neutral';
+    return 'bad';
+  };
 
-  // Memoize day/night separation and current gowri calculation
-  const { dayGowri, nightGowri, currentGowri } = useMemo(() => {
-    // Separate day and night gowri
+  const { dayGowri, nightGowri, currentPeriodKey } = useMemo(() => {
     const day = gowriPanchang.filter(g => g.type === 'Day' || g.type === 'दिन');
     const night = gowriPanchang.filter(g => g.type === 'Night' || g.type === 'रात्रि');
 
-    // Find current gowri period (based on panchang location time, not browser local time)
     const currentTimeAtLocation = new Date(Date.now() + ((timezoneOffset + new Date().getTimezoneOffset()) * 60 * 1000));
     const currentMinutes = currentTimeAtLocation.getHours() * 60 + currentTimeAtLocation.getMinutes();
-
     const current = gowriPanchang.find((g) => isInTimeRange(currentMinutes, g.start, g.end));
 
-    return { dayGowri: day, nightGowri: night, currentGowri: current };
+    return {
+      dayGowri: day,
+      nightGowri: night,
+      currentPeriodKey: current ? `${current.start}-${current.end}-${current.type}` : null,
+    };
   }, [gowriPanchang, timezoneOffset, minuteTick]);
+  const currentGowri = useMemo(
+    () => gowriPanchang.find((g) => `${g.start}-${g.end}-${g.type}` === currentPeriodKey),
+    [gowriPanchang, currentPeriodKey]
+  );
 
-  const getQualityStyle = (quality: string) => {
-    if (quality.toLowerCase().includes('good') || quality === 'शुभ') {
-      return { color: 'text-green-500', bg: 'bg-green-500/10', icon: CheckCircle2 };
-    }
-    return { color: 'text-red-500', bg: 'bg-red-500/10', icon: XCircle };
-  };
-
-  const renderRow = (period: typeof gowriPanchang[0], index: number) => {
-    const style = getQualityStyle(period.quality);
-    const isCurrent = currentGowri?.start === period.start && currentGowri?.end === period.end && currentGowri?.type === period.type;
+  const renderRow = (period: GowriPeriod, index: number) => {
+    const bucket = getTypeBucket(period.quality);
+    const style = GOWRI_TYPE_INFO[bucket];
+    const isCurrent = `${period.start}-${period.end}-${period.type}` === currentPeriodKey;
 
     return (
       <tr
@@ -68,7 +106,7 @@ export default function GowriTab({ panchang, language, t, timezoneOffset, minute
         </td>
         <td className="px-2 py-1">
           <span className={`inline-block px-1.5 py-0.5 rounded text-xs font-medium ${style.bg} ${style.color}`}>
-            {language === 'hi' ? period.quality_hindi || period.quality : period.quality}
+            {language === 'hi' ? style.labelHi : style.label}
           </span>
         </td>
         <td className="px-2 py-1 text-cosmic-text-secondary">
@@ -78,7 +116,7 @@ export default function GowriTab({ panchang, language, t, timezoneOffset, minute
     );
   };
 
-  const renderTable = (periods: typeof gowriPanchang, icon: typeof Sun, title: string) => (
+  const renderTable = (periods: GowriPeriod[], icon: typeof Sun, title: string) => (
     <div className="flex-1 min-w-0">
       <h3 className="font-bold text-cosmic-text-primary mb-1 flex items-center gap-1">
         {icon === Sun
@@ -94,7 +132,7 @@ export default function GowriTab({ panchang, language, t, timezoneOffset, minute
                 {language === 'hi' ? 'नाम' : 'Name'}
               </th>
               <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                {language === 'hi' ? 'फल' : 'Quality'}
+                {language === 'hi' ? 'प्रकार' : 'Type'}
               </th>
               <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
                 {language === 'hi' ? 'समय' : 'Time'}
@@ -114,7 +152,7 @@ export default function GowriTab({ panchang, language, t, timezoneOffset, minute
       {/* Current Gowri compact banner */}
       {currentGowri && (
         <div className="flex items-center gap-3 p-2 rounded-lg border border-sacred-gold/30 bg-sacred-gold/10">
-          <Moon className="h-8 w-8 text-sacred-gold flex-shrink-0" />
+          <Clock className="h-8 w-8 text-sacred-gold flex-shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-xs text-cosmic-text-secondary">
               {language === 'hi' ? 'वर्तमान गौरी पंचांग' : 'Current Gowri Panchang'}
@@ -123,8 +161,8 @@ export default function GowriTab({ panchang, language, t, timezoneOffset, minute
               {language === 'hi' ? currentGowri.name_hindi || currentGowri.name : currentGowri.name}
             </span>
             <span className="mx-2 text-sacred-gold">{currentGowri.start} - {currentGowri.end}</span>
-            <span className={`text-xs font-medium ${getQualityStyle(currentGowri.quality).color}`}>
-              ({language === 'hi' ? currentGowri.quality_hindi || currentGowri.quality : currentGowri.quality})
+            <span className={`text-xs font-medium ${GOWRI_TYPE_INFO[getTypeBucket(currentGowri.quality)].color}`}>
+              ({language === 'hi' ? GOWRI_TYPE_INFO[getTypeBucket(currentGowri.quality)].labelHi : GOWRI_TYPE_INFO[getTypeBucket(currentGowri.quality)].label})
             </span>
           </div>
         </div>
@@ -146,16 +184,28 @@ export default function GowriTab({ panchang, language, t, timezoneOffset, minute
         </div>
       </div>
 
-      {/* Info */}
+      {/* Compact Legend */}
       <div className="rounded-lg border border-cosmic-border p-2">
-        <h4 className="font-semibold text-cosmic-text-primary mb-1">
-          {language === 'hi' ? 'गौरी पंचांग के बारे में' : 'About Gowri Panchang'}
+        <h4 className="font-semibold text-cosmic-text-primary mb-1 text-sm">
+          {language === 'hi' ? 'गौरी पंचांग प्रकार' : 'Gowri Meanings'}
         </h4>
-        <p className="text-sm text-cosmic-text-secondary leading-relaxed">
-          {language === 'hi'
-            ? 'गौरी पंचांग दिन और रात को 8-8 भागों में बांटता है। प्रत्येक अवधि एक देवता द्वारा शासित होती है। शुभ अवधि में कार्य करने से सफलता मिलती है।'
-            : 'Gowri Panchang divides day and night into 8 periods each. Each period is ruled by a deity. Work done during auspicious periods yields success.'}
-        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 text-xs">
+          <div className={`flex items-center gap-1 px-1.5 py-1 rounded ${GOWRI_TYPE_INFO.good.bg}`}>
+            <span className={`w-2 h-2 rounded-full ${GOWRI_TYPE_INFO.good.dot} flex-shrink-0`} />
+            <span className="text-cosmic-text-primary font-medium">{language === 'hi' ? GOWRI_TYPE_INFO.good.labelHi : GOWRI_TYPE_INFO.good.label}</span>
+            <span className="text-cosmic-text-secondary ml-auto">{language === 'hi' ? 'अनुकूल' : 'Favorable'}</span>
+          </div>
+          <div className={`flex items-center gap-1 px-1.5 py-1 rounded ${GOWRI_TYPE_INFO.neutral.bg}`}>
+            <span className={`w-2 h-2 rounded-full ${GOWRI_TYPE_INFO.neutral.dot} flex-shrink-0`} />
+            <span className="text-cosmic-text-primary font-medium">{language === 'hi' ? GOWRI_TYPE_INFO.neutral.labelHi : GOWRI_TYPE_INFO.neutral.label}</span>
+            <span className="text-cosmic-text-secondary ml-auto">{language === 'hi' ? 'सामान्य' : 'Average'}</span>
+          </div>
+          <div className={`flex items-center gap-1 px-1.5 py-1 rounded ${GOWRI_TYPE_INFO.bad.bg}`}>
+            <span className={`w-2 h-2 rounded-full ${GOWRI_TYPE_INFO.bad.dot} flex-shrink-0`} />
+            <span className="text-cosmic-text-primary font-medium">{language === 'hi' ? GOWRI_TYPE_INFO.bad.labelHi : GOWRI_TYPE_INFO.bad.label}</span>
+            <span className="text-cosmic-text-secondary ml-auto">{language === 'hi' ? 'टालें' : 'Avoid'}</span>
+          </div>
+        </div>
       </div>
     </div>
   );

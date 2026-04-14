@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { formatDate, api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Download, Share2, Loader2, ScrollText, Home, RefreshCw, ChevronDown, X, BookOpen } from 'lucide-react';
+import { Download, Share2, Loader2, ScrollText, Home, RefreshCw, ChevronDown, X, BookOpen, Star, Clock3, Sparkles, Grid3X3, Eye } from 'lucide-react';
 import { useKundliData } from '@/hooks/useKundliData';
 import KundliForm from '@/components/kundli/KundliForm';
 import KundliSummaryModal from '@/components/KundliSummaryModal';
@@ -49,11 +49,11 @@ interface TabDef {
 const TAB_DEFS: Omit<TabDef, 'onActivate'>[] = [
   // Primary tabs
   { value: 'report',        labelEn: 'Report',         labelHi: 'रिपोर्ट',          primary: true, icon: ScrollText },
-  { value: 'planets',       labelEn: 'Planets',        labelHi: 'ग्रह',             primary: true },
-  { value: 'dasha',         labelEn: 'Dasha',          labelHi: 'दशा',             primary: true },
-  { value: 'yoga-dosha',    labelEn: 'Yogas/Dosha',    labelHi: 'योग/दोष',          primary: true },
-  { value: 'divisional',    labelEn: 'Divisional',     labelHi: 'विभाजन चार्ट',     primary: true },
-  { value: 'aspects',       labelEn: 'Aspects',        labelHi: 'दृष्टि',           primary: true },
+  { value: 'planets',       labelEn: 'Planets',        labelHi: 'ग्रह',             primary: true, icon: Star },
+  { value: 'dasha',         labelEn: 'Dasha',          labelHi: 'दशा',             primary: true, icon: Clock3 },
+  { value: 'yoga-dosha',    labelEn: 'Yogas/Dosha',    labelHi: 'योग/दोष',          primary: true, icon: Sparkles },
+  { value: 'divisional',    labelEn: 'Divisional',     labelHi: 'विभाजन चार्ट',     primary: true, icon: Grid3X3 },
+  { value: 'aspects',       labelEn: 'Aspects',        labelHi: 'दृष्टि',           primary: true, icon: Eye },
   // Charts
   { value: 'ashtakvarga',   labelEn: 'Ashtakvarga',    labelHi: 'अष्टकवर्ग',        primary: false, category: 'charts' },
   { value: 'sodashvarga',   labelEn: 'Sodashvarga',    labelHi: 'षोडशवर्ग',         primary: false, category: 'charts' },
@@ -192,7 +192,6 @@ export default function KundliGenerator() {
 
   // Check if current active tab is a "more" tab
   const isMoreTabActive = moreTabs.some(t => t.value === activeTab);
-  const activeMoreTab = moreTabs.find(t => t.value === activeTab);
 
   // --- LOADING ---
   if (step === 'loading') {
@@ -307,23 +306,17 @@ export default function KundliGenerator() {
 
         {/* Tabs — controlled mode */}
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full kundli-tabs">
-          {/* ── Desktop tab bar ─────────────────────────── */}
-          <div className="hidden md:block mb-4">
-            <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 flex flex-wrap
-              [&>button]:whitespace-nowrap [&>button]:min-h-[36px] [&>button]:px-3 [&>button]:py-1.5 [&>button]:text-xs
+          <div className="mb-4">
+            <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 grid grid-cols-6
+              [&>button]:min-w-0 [&>button]:min-h-[58px] [&>button]:px-1 [&>button]:py-2 [&>button]:text-[11px] md:[&>button]:text-xs
+              [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:justify-center [&>button]:gap-1 [&>button]:leading-tight
               [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
               {primaryTabs.map(tab => (
                 <TabsTrigger key={tab.value} value={tab.value}>
-                  {tab.icon && <tab.icon className="w-3 h-3 mr-1" />}
-                  {hi ? tab.labelHi : tab.labelEn}
+                  {tab.icon && <tab.icon className="w-3.5 h-3.5" />}
+                  <span className="truncate max-w-full">{hi ? tab.labelHi : tab.labelEn}</span>
                 </TabsTrigger>
               ))}
-              {/* Show active "more" tab as a visible trigger if selected */}
-              {isMoreTabActive && activeMoreTab && (
-                <TabsTrigger key={activeMoreTab.value} value={activeMoreTab.value}>
-                  {hi ? activeMoreTab.labelHi : activeMoreTab.labelEn}
-                </TabsTrigger>
-              )}
             </TabsList>
             {/* "More Analysis" dropdown button */}
             <div className="relative mt-1" ref={moreDropdownRef}>
@@ -367,45 +360,19 @@ export default function KundliGenerator() {
             </div>
           </div>
 
-          {/* ── Mobile tab bar ──────────────────────────── */}
-          <div className="relative mb-8 md:hidden">
-            {/* Left arrow hint */}
-            <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-sacred-cream to-transparent z-10 pointer-events-none flex items-center justify-start pl-1">
-              <span className="text-sacred-gold-dark text-lg">&lsaquo;</span>
-            </div>
-            {/* Right arrow hint */}
-            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-sacred-cream to-transparent z-10 pointer-events-none flex items-center justify-end pr-1">
-              <span className="text-sacred-gold-dark text-lg">&rsaquo;</span>
-            </div>
-            <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1
-              flex flex-nowrap overflow-x-auto pb-3 scrollbar-hide
-              [&>button]:flex-shrink-0 [&>button]:flex-grow-0 [&>button]:basis-auto [&>button]:whitespace-nowrap [&>button]:min-h-[36px] [&>button]:px-2 [&>button]:py-1.5 [&>button]:text-xs
-              [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
-              {primaryTabs.map(tab => (
-                <TabsTrigger key={tab.value} value={tab.value}>
-                  {tab.icon && <tab.icon className="w-3 h-3 mr-1" />}
-                  {hi ? tab.labelHi : tab.labelEn}
-                </TabsTrigger>
-              ))}
-              {/* Show active "more" tab inline if selected */}
-              {isMoreTabActive && activeMoreTab && (
-                <TabsTrigger key={activeMoreTab.value} value={activeMoreTab.value}>
-                  {hi ? activeMoreTab.labelHi : activeMoreTab.labelEn}
-                </TabsTrigger>
-              )}
-              {/* "More" button at the end */}
-              <button
-                onClick={() => setShowMobileMoreSheet(true)}
-                className={`flex-shrink-0 flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md border transition-colors ${
-                  isMoreTabActive
-                    ? 'bg-sacred-gold/20 border-sacred-gold text-sacred-gold-dark'
-                    : 'border-sacred-gold/40 text-cosmic-text'
-                }`}
-              >
-                {hi ? 'और' : 'More'}
-                <ChevronDown className="w-3 h-3" />
-              </button>
-            </TabsList>
+          {/* "More" button for mobile */}
+          <div className="mb-8 md:hidden">
+            <button
+              onClick={() => setShowMobileMoreSheet(true)}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border transition-colors ${
+                isMoreTabActive
+                  ? 'bg-sacred-gold/20 border-sacred-gold text-sacred-gold-dark'
+                  : 'bg-sacred-cream border-sacred-gold/40 text-cosmic-text'
+              }`}
+            >
+              {hi ? 'और विश्लेषण' : 'More Analysis'}
+              <ChevronDown className="w-3 h-3" />
+            </button>
           </div>
 
           {/* Mobile "More" bottom sheet overlay */}

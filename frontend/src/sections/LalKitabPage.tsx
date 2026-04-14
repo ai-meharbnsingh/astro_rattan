@@ -1,7 +1,7 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BookOpen, ArrowLeft, Loader2, ChevronDown } from 'lucide-react';
+import { BookOpen, ArrowLeft, Loader2, ChevronDown, LayoutDashboard, ChartPie, Search, Clock3, Sparkles, ScrollText, Tags, Settings2 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
@@ -53,16 +53,16 @@ export default function LalKitabPage() {
   const [clientId, setClientId] = useState(locState.clientId || '');
   const [kundliId, setKundliId] = useState(locState.loadKundliId || '');
   const [activeTopTab, setActiveTopTab] = useState('dashboard');
-  const mobileTabsRef = useRef<HTMLDivElement>(null);
-  const [scrollHints, setScrollHints] = useState({ showLeft: false, showRight: true });
-
-  const handleMobileTabScroll = useCallback(() => {
-    const el = mobileTabsRef.current;
-    if (!el) return;
-    const atStart = el.scrollLeft <= 4;
-    const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4;
-    setScrollHints({ showLeft: !atStart, showRight: !atEnd });
-  }, []);
+  const topTabs = [
+    { value: 'dashboard', label: t('lk.tab.dashboard'), icon: LayoutDashboard },
+    { value: 'chart', label: isHi ? 'चार्ट' : 'Chart', icon: ChartPie },
+    { value: 'analysis', label: isHi ? 'विश्लेषण' : 'Analysis', icon: Search },
+    { value: 'timing', label: isHi ? 'समय व गोचर' : 'Timing & Gochar', icon: Clock3 },
+    { value: 'upay', label: isHi ? 'उपाय' : 'Upay', icon: Sparkles },
+    { value: 'predictions', label: isHi ? 'भविष्यवाणी' : 'Predictions', icon: ScrollText },
+    { value: 'nishaniyan', label: t('lk.tab.nishaniyan'), icon: Tags },
+    { value: 'advanced', label: t('lk.tab.advanced'), icon: Settings2 },
+  ];
 
   // Auto-load existing kundli if navigated with loadKundliId
   useEffect(() => {
@@ -192,52 +192,17 @@ export default function LalKitabPage() {
             </Button>
 
             <Tabs value={activeTopTab} onValueChange={setActiveTopTab} className="w-full">
-              <div className="relative mb-6 md:mb-4 md:static">
-                {/* Scroll hint arrows — mobile only, hidden when scrolled to edge */}
-                {scrollHints.showLeft && (
-                  <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-sacred-cream to-transparent z-10 pointer-events-none flex items-center justify-start pl-1 md:hidden">
-                    <span className="text-sacred-gold-dark text-lg">‹</span>
-                  </div>
-                )}
-                {scrollHints.showRight && (
-                  <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-sacred-cream to-transparent z-10 pointer-events-none flex items-center justify-end pr-1 md:hidden">
-                    <span className="text-sacred-gold-dark text-lg">›</span>
-                  </div>
-                )}
-
-                {/* Desktop: grouped tabs */}
-                <div className="hidden md:flex md:flex-col md:gap-1">
-                  <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 grid grid-cols-4
-                    [&>button]:whitespace-nowrap [&>button]:min-h-[36px] [&>button]:px-2 [&>button]:py-1.5 [&>button]:text-xs
-                    [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
-                    <TabsTrigger value="dashboard">{t('lk.tab.dashboard')}</TabsTrigger>
-                    <TabsTrigger value="chart">{isHi ? 'चार्ट' : 'Chart'}</TabsTrigger>
-                    <TabsTrigger value="analysis">{isHi ? 'विश्लेषण' : 'Analysis'}</TabsTrigger>
-                    <TabsTrigger value="timing">{isHi ? 'समय व गोचर' : 'Timing & Gochar'}</TabsTrigger>
-                  </TabsList>
-                  <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 grid grid-cols-4
-                    [&>button]:whitespace-nowrap [&>button]:min-h-[36px] [&>button]:px-2 [&>button]:py-1.5 [&>button]:text-xs
-                    [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
-                    <TabsTrigger value="upay">{isHi ? 'उपाय' : 'Upay'}</TabsTrigger>
-                    <TabsTrigger value="predictions">{isHi ? 'भविष्यवाणी' : 'Predictions'}</TabsTrigger>
-                    <TabsTrigger value="nishaniyan">{t('lk.tab.nishaniyan')}</TabsTrigger>
-                    <TabsTrigger value="advanced">{t('lk.tab.advanced')}</TabsTrigger>
-                  </TabsList>
-                </div>
-
-                {/* Mobile: single horizontally scrollable row */}
-                <TabsList ref={mobileTabsRef} onScroll={handleMobileTabScroll} className="md:hidden bg-sacred-cream w-full h-auto p-2 gap-1
-                  flex flex-nowrap overflow-x-auto pb-3 scrollbar-thin scrollbar-thumb-sacred-gold/30 scrollbar-track-transparent
-                  [&>button]:flex-shrink-0 [&>button]:flex-grow-0 [&>button]:basis-auto [&>button]:whitespace-nowrap [&>button]:min-h-[36px] [&>button]:px-3 [&>button]:py-1.5 [&>button]:text-xs
+              <div className="mb-4">
+                <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 grid grid-cols-8
+                  [&>button]:min-w-0 [&>button]:min-h-[58px] [&>button]:px-1 [&>button]:py-2 [&>button]:text-[11px] md:[&>button]:text-xs
+                  [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:justify-center [&>button]:gap-1 [&>button]:leading-tight
                   [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
-                  <TabsTrigger value="dashboard">{t('lk.tab.dashboard')}</TabsTrigger>
-                  <TabsTrigger value="chart">{isHi ? 'चार्ट' : 'Chart'}</TabsTrigger>
-                  <TabsTrigger value="analysis">{isHi ? 'विश्लेषण' : 'Analysis'}</TabsTrigger>
-                  <TabsTrigger value="timing">{isHi ? 'समय व गोचर' : 'Timing & Gochar'}</TabsTrigger>
-                  <TabsTrigger value="upay">{isHi ? 'उपाय' : 'Upay'}</TabsTrigger>
-                  <TabsTrigger value="predictions">{isHi ? 'भविष्यवाणी' : 'Predictions'}</TabsTrigger>
-                  <TabsTrigger value="nishaniyan">{t('lk.tab.nishaniyan')}</TabsTrigger>
-                  <TabsTrigger value="advanced">{t('lk.tab.advanced')}</TabsTrigger>
+                  {topTabs.map((tab) => (
+                    <TabsTrigger key={tab.value} value={tab.value}>
+                      <tab.icon className="w-3.5 h-3.5" />
+                      <span className="truncate max-w-full">{tab.label}</span>
+                    </TabsTrigger>
+                  ))}
                 </TabsList>
               </div>
 

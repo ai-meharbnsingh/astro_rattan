@@ -25,6 +25,116 @@ interface DayPanchang {
   festival_hindi?: string;
 }
 
+const FIXED_FESTIVALS_BY_MMDD: Record<string, string[]> = {
+  '01-01': ['New Year Day', 'Paush Putrada Ekadashi (Approx)'],
+  '01-12': ['National Youth Day'],
+  '01-13': ['Lohri'],
+  '01-14': ['Makar Sankranti', 'Pongal', 'Uttarayana Punya Kala'],
+  '01-15': ['Army Day'],
+  '01-23': ['Netaji Jayanti'],
+  '01-26': ['Republic Day', 'Vasant Panchami (Approx)'],
+  '02-04': ['World Cancer Day'],
+  '02-14': ['Valentine Day', 'Vijaya Ekadashi (Approx)'],
+  '02-19': ['Shivaji Jayanti'],
+  '02-26': ['Maha Shivaratri (Approx)'],
+  '02-28': ['National Science Day'],
+  '03-08': ['International Women Day'],
+  '03-14': ['Holika Dahan (Approx)'],
+  '03-15': ['Holi (Approx)'],
+  '03-22': ['Chaitra Navratri Begins (Approx)'],
+  '03-30': ['Ram Navami (Approx)'],
+  '04-06': ['Hanuman Jayanti (Approx)'],
+  '04-10': ['Mahavir Jayanti (Approx)'],
+  '04-13': ['Baisakhi'],
+  '04-14': ['Ambedkar Jayanti', 'Mesha Sankranti'],
+  '04-18': ['Good Friday (Observed)'],
+  '04-22': ['Earth Day'],
+  '04-30': ['Akshaya Tritiya (Approx)'],
+  '05-01': ['Labour Day', 'Maharashtra Day', 'Gujarat Day'],
+  '05-11': ['National Technology Day'],
+  '05-12': ['Buddha Purnima (Approx)'],
+  '06-05': ['World Environment Day'],
+  '06-21': ['International Yoga Day'],
+  '06-27': ['Jagannath Rath Yatra (Approx)'],
+  '07-10': ['Guru Purnima (Approx)'],
+  '07-28': ['Hariyali Teej (Approx)'],
+  '08-09': ['Raksha Bandhan (Approx)'],
+  '08-15': ['Independence Day'],
+  '08-16': ['Krishna Janmashtami (Approx)'],
+  '08-27': ['Ganesh Chaturthi (Approx)'],
+  '09-05': ['Teachers Day'],
+  '09-22': ['Sharad Navratri Begins (Approx)'],
+  '10-01': ['Maha Ashtami (Approx)'],
+  '10-02': ['Gandhi Jayanti', 'Dussehra (Approx)'],
+  '10-10': ['Karva Chauth (Approx)'],
+  '10-20': ['Dhanteras (Approx)'],
+  '10-21': ['Naraka Chaturdashi (Approx)'],
+  '10-22': ['Diwali', 'Lakshmi Puja'],
+  '10-23': ['Govardhan Puja'],
+  '10-24': ['Bhai Dooj'],
+  '10-31': ['National Unity Day'],
+  '11-01': ['Kannada Rajyotsava'],
+  '11-05': ['Dev Uthani Ekadashi (Approx)'],
+  '11-15': ['Kartik Purnima (Approx)', 'Guru Nanak Jayanti (Approx)'],
+  '12-04': ['Gita Jayanti (Approx)'],
+  '12-25': ['Christmas'],
+};
+
+const uniqFestivals = (festivals: string[]) => {
+  const seen = new Set<string>();
+  return festivals.filter((name) => {
+    const key = String(name || '').trim().toLowerCase();
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+};
+
+const generateObservances = (day: DayPanchang) => {
+  const tithi = String(day.tithi || '').toLowerCase();
+  const nakshatra = String(day.nakshatra || '').toLowerCase();
+  const paksha = String(day.paksha || '').toLowerCase();
+  const dateObj = new Date(`${day.date}T00:00:00`);
+  const weekday = dateObj.getDay();
+  const list: string[] = [];
+
+  if (tithi.includes('ekadashi')) list.push('Ekadashi Vrat');
+  if (tithi.includes('pradosh') || tithi.includes('trayodashi')) list.push('Pradosh Vrat');
+  if (tithi.includes('amavasya')) list.push('Amavasya');
+  if (tithi.includes('purnima')) list.push('Purnima');
+  if (tithi.includes('chaturthi')) {
+    list.push(paksha.includes('krishna') ? 'Sankashti Chaturthi' : 'Vinayaka Chaturthi (Monthly)');
+  }
+  if (tithi.includes('ashtami') && paksha.includes('krishna')) list.push('Kalashtami');
+  if (tithi.includes('navami')) list.push('Navami Vrat');
+  if (tithi.includes('saptami')) list.push('Saptami Vrat');
+  if (tithi.includes('panchami')) list.push('Panchami Vrat');
+  if (tithi.includes('dwadashi') || tithi.includes('dwadsi')) list.push('Dwadashi Parana');
+
+  if (nakshatra.includes('shravana')) list.push('Shravana Nakshatra Vrat');
+  if (nakshatra.includes('rohini')) list.push('Rohini Nakshatra Puja');
+  if (nakshatra.includes('pushya')) list.push('Pushya Yoga Observance');
+  if (nakshatra.includes('moola') || nakshatra.includes('mula')) list.push('Moola Nakshatra Shanti');
+
+  if (weekday === 1) list.push('Somvar Vrat');
+  if (weekday === 2) list.push('Mangalvar Vrat');
+  if (weekday === 4) list.push('Guruvar Vrat');
+  if (weekday === 5) list.push('Shukravar Vrat');
+  if (weekday === 6) list.push('Shani Vrat');
+
+  const mmdd = day.date.slice(5, 10);
+  const fixed = FIXED_FESTIVALS_BY_MMDD[mmdd] || [];
+  return uniqFestivals([...list, ...fixed]);
+};
+
+const enrichDayFestivals = (day: DayPanchang): DayPanchang => {
+  const generated = generateObservances(day);
+  return {
+    ...day,
+    festivals: uniqFestivals([...(day.festivals || []), ...generated]),
+  };
+};
+
 // Helper: Get local date as YYYY-MM-DD (fixes UTC timezone issue)
 const getLocalDateString = () => {
   const now = new Date();
@@ -75,7 +185,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
         const res = await api.get(`/api/panchang/month?month=${month + 1}&year=${year}&latitude=${latitude}&longitude=${longitude}`);
         const rawDays = (res as any)?.days || res || [];
 
-        const data: DayPanchang[] = rawDays.map((p: any) => ({
+        const data: DayPanchang[] = rawDays.map((p: any) => enrichDayFestivals({
           date: p.date || '',
           tithi: p.tithi || '',
           tithi_hindi: p.tithi_hindi,
@@ -108,7 +218,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
               const dayRes = await api.get(`/api/panchang?date=${dateStr}&latitude=${latitude}&longitude=${longitude}`);
               const p = dayRes as any;
               const fests = p.festivals || [];
-              data.push({
+              data.push(enrichDayFestivals({
                 date: dateStr,
                 tithi: p.tithi?.name || '',
                 tithi_hindi: p.tithi?.name_hindi,
@@ -119,7 +229,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                 sunrise: p.sunrise || '',
                 sunset: p.sunset || '',
                 festivals: fests.map((f: any) => typeof f === 'string' ? f : f.name || ''),
-              });
+              }));
             } catch (_) {
               // Skip failed days
             }
