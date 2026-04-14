@@ -102,123 +102,123 @@ export default function MuhuratTab({ panchang, language, t }: Props) {
 
   return (
     <div className="space-y-3">
-      {/* Auspicious Periods */}
-      <div className="rounded-lg border border-green-500/30 p-2 overflow-x-auto">
-        <h3 className="font-bold text-cosmic-text-primary mb-1 flex items-center gap-1">
-          <CheckCircle2 className="h-4 w-4" />
-          {language === 'hi' ? 'शुभ मुहूर्त (उपयुक्त समय)' : 'Auspicious Muhurats (Good Times)'}
-        </h3>
-        <table className="w-full min-w-[680px] text-sm">
-          <thead>
-            <tr className="bg-sacred-gold/15">
-              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'मुहूर्त' : 'Muhurta'}</th>
-              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'आरंभ' : 'Start'}</th>
-              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'समाप्ति' : 'End'}</th>
-              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'टिप्पणी' : 'Notes'}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {auspiciousPeriods.map((period) => (
-              <tr key={period.key} className="border-b border-cosmic-border/50 last:border-0">
-                <td className="px-2 py-1 font-medium text-cosmic-text-primary">{period.name}</td>
-                <td className="px-2 py-1 text-cosmic-text-primary">{period.period?.start || '--'}</td>
-                <td className="px-2 py-1 text-cosmic-text-primary">{period.period?.end || '--'}</td>
-                <td className="px-2 py-1 text-cosmic-text-secondary">{period.desc}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Inauspicious Periods */}
-      <div className="rounded-lg border border-red-500/30 p-2 overflow-x-auto">
-        <h3 className="font-bold text-cosmic-text-primary mb-1 flex items-center gap-1">
-          <AlertTriangle className="h-4 w-4" />
-          {language === 'hi' ? 'अशुभ समय (वर्जित)' : 'Inauspicious Times (Avoid)'}
-        </h3>
-        <table className="w-full min-w-[680px] text-sm">
-          <thead>
-            <tr className="bg-sacred-gold/15">
-              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'काल' : 'Period'}</th>
-              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'आरंभ' : 'Start'}</th>
-              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'समाप्ति' : 'End'}</th>
-              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'टिप्पणी' : 'Notes'}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {inauspiciousPeriods.map((period) => (
-              <tr key={period.key} className="border-b border-cosmic-border/50 last:border-0">
-                <td className="px-2 py-1 font-medium text-cosmic-text-primary">{period.name}</td>
-                <td className="px-2 py-1 text-cosmic-text-primary">{period.period?.start || '--'}</td>
-                <td className="px-2 py-1 text-cosmic-text-primary">{period.period?.end || '--'}</td>
-                <td className="px-2 py-1 text-cosmic-text-secondary">{period.desc}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Special Yogas */}
-      {specialYogas.length > 0 && (
-        <div className="rounded-lg border border-sacred-gold/30 p-2 overflow-x-auto">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
+        <div className="rounded-lg border border-green-500/30 p-2">
           <h3 className="font-bold text-cosmic-text-primary mb-1 flex items-center gap-1">
-            <Sparkles className="h-4 w-4" />
-            {language === 'hi' ? 'विशेष योग' : 'Special Yogas'}
+            <CheckCircle2 className="h-4 w-4" />
+            {language === 'hi' ? 'शुभ मुहूर्त (उपयुक्त समय)' : 'Auspicious Muhurats (Good Times)'}
           </h3>
-          <table className="w-full min-w-[680px] text-sm">
-          <thead>
-              <tr className="bg-sacred-gold/15">
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'योग' : 'Yoga'}</th>
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'आरंभ' : 'Start'}</th>
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'समाप्ति' : 'End'}</th>
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'स्थिति' : 'Status'}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {specialYogas.map((yoga) => (
-                <tr key={yoga.key} className="border-b border-cosmic-border/50 last:border-0">
-                  <td className="px-2 py-1 font-medium text-cosmic-text-primary">{yoga.name}</td>
-                  <td className="px-2 py-1 text-cosmic-text-primary">{yoga.data?.start || '--'}</td>
-                  <td className="px-2 py-1 text-cosmic-text-primary">{yoga.data?.end || '--'}</td>
-                  <td className="px-2 py-1 text-green-600">
-                    {language === 'hi' ? 'आज सक्रिय' : 'Active today'}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {/* Sandhya Times */}
-      {sandhyaRows.length > 0 && (
-        <div className="rounded-lg border border-cosmic-border p-2 overflow-x-auto">
-          <h3 className="font-bold text-cosmic-text-primary mb-1 flex items-center gap-1">
-            <Sunrise className="h-4 w-4 text-orange-500" />
-            {language === 'hi' ? 'संध्या समय' : 'Sandhya Times'}
-          </h3>
-          <table className="w-full min-w-[680px] text-sm">
+          <table className="w-full table-fixed text-xs sm:text-sm">
             <thead>
               <tr className="bg-sacred-gold/15">
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'काल' : 'Period'}</th>
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'आरंभ' : 'Start'}</th>
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'समाप्ति' : 'End'}</th>
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'टिप्पणी' : 'Notes'}</th>
+                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[28%]">{language === 'hi' ? 'मुहूर्त' : 'Muhurta'}</th>
+                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[18%]">{language === 'hi' ? 'आरंभ' : 'Start'}</th>
+                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[18%]">{language === 'hi' ? 'समाप्ति' : 'End'}</th>
+                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[36%]">{language === 'hi' ? 'टिप्पणी' : 'Notes'}</th>
               </tr>
             </thead>
             <tbody>
-              {sandhyaRows.map((row) => (
-                <tr key={row.key} className="border-b border-cosmic-border/50 last:border-0">
-                  <td className="px-2 py-1 font-medium text-cosmic-text-primary">{row.name}</td>
-                  <td className="px-2 py-1 text-cosmic-text-primary">{row.period?.start || '--'}</td>
-                  <td className="px-2 py-1 text-cosmic-text-primary">{row.period?.end || '--'}</td>
-                  <td className="px-2 py-1 text-cosmic-text-secondary">{row.desc}</td>
+              {auspiciousPeriods.map((period) => (
+                <tr key={period.key} className="border-b border-cosmic-border/50 last:border-0 align-top">
+                  <td className="px-2 py-1 font-medium text-cosmic-text-primary whitespace-normal break-words">{period.name}</td>
+                  <td className="px-2 py-1 text-cosmic-text-primary">{period.period?.start || '--'}</td>
+                  <td className="px-2 py-1 text-cosmic-text-primary">{period.period?.end || '--'}</td>
+                  <td className="px-2 py-1 text-cosmic-text-secondary whitespace-normal break-words">{period.desc}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      )}
+
+        <div className="rounded-lg border border-red-500/30 p-2">
+          <h3 className="font-bold text-cosmic-text-primary mb-1 flex items-center gap-1">
+            <AlertTriangle className="h-4 w-4" />
+            {language === 'hi' ? 'अशुभ समय (वर्जित)' : 'Inauspicious Times (Avoid)'}
+          </h3>
+          <table className="w-full table-fixed text-xs sm:text-sm">
+            <thead>
+              <tr className="bg-sacred-gold/15">
+                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[28%]">{language === 'hi' ? 'काल' : 'Period'}</th>
+                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[18%]">{language === 'hi' ? 'आरंभ' : 'Start'}</th>
+                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[18%]">{language === 'hi' ? 'समाप्ति' : 'End'}</th>
+                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[36%]">{language === 'hi' ? 'टिप्पणी' : 'Notes'}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {inauspiciousPeriods.map((period) => (
+                <tr key={period.key} className="border-b border-cosmic-border/50 last:border-0 align-top">
+                  <td className="px-2 py-1 font-medium text-cosmic-text-primary whitespace-normal break-words">{period.name}</td>
+                  <td className="px-2 py-1 text-cosmic-text-primary">{period.period?.start || '--'}</td>
+                  <td className="px-2 py-1 text-cosmic-text-primary">{period.period?.end || '--'}</td>
+                  <td className="px-2 py-1 text-cosmic-text-secondary whitespace-normal break-words">{period.desc}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
+        {specialYogas.length > 0 && (
+          <div className="rounded-lg border border-sacred-gold/30 p-2">
+            <h3 className="font-bold text-cosmic-text-primary mb-1 flex items-center gap-1">
+              <Sparkles className="h-4 w-4" />
+              {language === 'hi' ? 'विशेष योग' : 'Special Yogas'}
+            </h3>
+            <table className="w-full table-fixed text-xs sm:text-sm">
+              <thead>
+                <tr className="bg-sacred-gold/15">
+                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[30%]">{language === 'hi' ? 'योग' : 'Yoga'}</th>
+                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[20%]">{language === 'hi' ? 'आरंभ' : 'Start'}</th>
+                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[20%]">{language === 'hi' ? 'समाप्ति' : 'End'}</th>
+                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[30%]">{language === 'hi' ? 'स्थिति' : 'Status'}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {specialYogas.map((yoga) => (
+                  <tr key={yoga.key} className="border-b border-cosmic-border/50 last:border-0 align-top">
+                    <td className="px-2 py-1 font-medium text-cosmic-text-primary whitespace-normal break-words">{yoga.name}</td>
+                    <td className="px-2 py-1 text-cosmic-text-primary">{yoga.data?.start || '--'}</td>
+                    <td className="px-2 py-1 text-cosmic-text-primary">{yoga.data?.end || '--'}</td>
+                    <td className="px-2 py-1 text-green-600 whitespace-normal break-words">
+                      {language === 'hi' ? 'आज सक्रिय' : 'Active today'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {sandhyaRows.length > 0 && (
+          <div className="rounded-lg border border-cosmic-border p-2">
+            <h3 className="font-bold text-cosmic-text-primary mb-1 flex items-center gap-1">
+              <Sunrise className="h-4 w-4 text-orange-500" />
+              {language === 'hi' ? 'संध्या समय' : 'Sandhya Times'}
+            </h3>
+            <table className="w-full table-fixed text-xs sm:text-sm">
+              <thead>
+                <tr className="bg-sacred-gold/15">
+                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[28%]">{language === 'hi' ? 'काल' : 'Period'}</th>
+                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[18%]">{language === 'hi' ? 'आरंभ' : 'Start'}</th>
+                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[18%]">{language === 'hi' ? 'समाप्ति' : 'End'}</th>
+                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[36%]">{language === 'hi' ? 'टिप्पणी' : 'Notes'}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sandhyaRows.map((row) => (
+                  <tr key={row.key} className="border-b border-cosmic-border/50 last:border-0 align-top">
+                    <td className="px-2 py-1 font-medium text-cosmic-text-primary whitespace-normal break-words">{row.name}</td>
+                    <td className="px-2 py-1 text-cosmic-text-primary">{row.period?.start || '--'}</td>
+                    <td className="px-2 py-1 text-cosmic-text-primary">{row.period?.end || '--'}</td>
+                    <td className="px-2 py-1 text-cosmic-text-secondary whitespace-normal break-words">{row.desc}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
