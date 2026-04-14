@@ -41,7 +41,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section ref={heroRef} className="relative min-h-[60vh] flex items-center overflow-hidden pt-24 pb-24">
+    <section ref={heroRef} className="relative min-h-[60vh] flex items-center overflow-hidden pt-24 pb-16">
       {/* Background — noise texture */}
       <div className="absolute inset-0 z-[1] opacity-[0.03] pointer-events-none"
         style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")` }}
@@ -127,7 +127,7 @@ export default function Hero() {
         </div>
 
         {/* Stats strip — separate section below hero */}
-        <div className="hero-stats opacity-0 mt-24">
+        <div className="hero-stats opacity-0 mt-12">
           <div className="rounded-2xl bg-sacred-gold/5 p-4 sm:p-5">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="rounded-xl border border-sacred-gold/25 bg-cosmic-bg/70 p-3 sm:p-4 flex items-start gap-3">
