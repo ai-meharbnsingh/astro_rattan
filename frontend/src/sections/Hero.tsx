@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { useTranslation } from '@/lib/i18n';
 import { ArrowRight, Sparkles, ShieldCheck, Layers } from 'lucide-react';
-import ZodiacWheel from '@/components/ZodiacWheel';
+import LiveTransitWheel from '@/components/LiveTransitWheel';
 
 export default function Hero() {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -120,8 +120,8 @@ export default function Hero() {
           </div>
 
           {/* RIGHT — Zodiac Wheel */}
-          <div className="hero-wheel opacity-0 flex-shrink-0 w-full max-w-[320px] lg:max-w-[400px]">
-            <ZodiacWheel />
+          <div className="hero-wheel opacity-0 flex-shrink-0 w-full max-w-[360px] lg:max-w-[460px]">
+            <LiveTransitWheel />
           </div>
 
         </div>
