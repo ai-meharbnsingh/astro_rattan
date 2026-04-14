@@ -39,7 +39,7 @@ const HOUSE_SIGNIFICANCE_EN: Record<number, string> = {
 };
 
 export default function LordshipsTab({ planets, houses }: LordshipsTabProps) {
-  const { language } = useTranslation();
+  const { language, t } = useTranslation();
   const HOUSE_SIGNIFICANCE = language === 'hi' ? HOUSE_SIGNIFICANCE_HI : HOUSE_SIGNIFICANCE_EN;
 
   return (
