@@ -72,8 +72,8 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
     const fetchMonthly = async () => {
       setLoading(true);
       try {
-        const res = await api.get(`/api/panchang/month?month=${month + 1}&year=${year}&lat=${latitude}&lon=${longitude}`);
-        const rawDays = res.data?.days || [];
+        const res = await api.get(`/api/panchang/month?month=${month + 1}&year=${year}&latitude=${latitude}&longitude=${longitude}`);
+        const rawDays = (res as any)?.days || res || [];
 
         const data: DayPanchang[] = rawDays.map((p: any) => ({
           date: p.date || '',
@@ -85,7 +85,9 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
           paksha_hindi: p.paksha_hindi,
           sunrise: p.sunrise || '',
           sunset: p.sunset || '',
-          festivals: Array.isArray(p.festivals) ? p.festivals : (p.festivals ? [p.festivals] : []),
+          festivals: Array.isArray(p.festivals)
+            ? p.festivals.map((f: any) => typeof f === 'string' ? f : f.name || '')
+            : (p.festivals ? [typeof p.festivals === 'string' ? p.festivals : (p.festivals as any).name || ''] : []),
         }));
 
         setMonthlyData(data);
@@ -103,8 +105,8 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
           for (let day = 1; day <= daysInMonth; day++) {
             const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             try {
-              const dayRes = await api.get(`/api/panchang?date=${dateStr}&lat=${latitude}&lon=${longitude}`);
-              const p = dayRes.data;
+              const dayRes = await api.get(`/api/panchang?date=${dateStr}&latitude=${latitude}&longitude=${longitude}`);
+              const p = dayRes as any;
               const fests = p.festivals || [];
               data.push({
                 date: dateStr,
