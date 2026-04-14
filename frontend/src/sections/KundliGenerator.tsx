@@ -697,9 +697,6 @@ export default function KundliGenerator() {
       {/* -- What's inside: tab preview --------------------------------- */}
       <section className="max-w-3xl mx-auto px-4 pb-20 pt-2">
         <div className="text-center mb-6">
-          <p className="text-[11px] font-semibold text-sacred-gold-dark uppercase tracking-[4px] mb-2">
-            {hi ? 'चार्ट जनरेट होने के बाद' : 'after generating your chart'}
-          </p>
           <h2 className="text-xl sm:text-2xl font-sans text-cosmic-text">
             {hi ? '23 विश्लेषण मॉड्यूल — एक ही जगह' : '23 Analysis Modules — All in One Place'}
           </h2>
