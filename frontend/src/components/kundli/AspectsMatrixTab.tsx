@@ -151,6 +151,7 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
           cuspData={data.cusp_aspects.nirayana}
           planetOrder={data.cusp_aspects.planet_order || data.planet_order}
           language={language}
+          t={t}
         />
       )}
 
@@ -161,6 +162,7 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
           cuspData={data.cusp_aspects.sayana}
           planetOrder={data.cusp_aspects.planet_order || data.planet_order}
           language={language}
+          t={t}
         />
       )}
 
@@ -203,9 +205,10 @@ interface CuspAspectGridProps {
   cuspData: Record<string, Array<{ cusp: number; degree: number; aspect: string | null; aspect_name: string | null; orb: number }>>;
   planetOrder: string[];
   language: string;
+  t: (key: string) => string;
 }
 
-function CuspAspectGrid({ title, cuspData, planetOrder, language }: CuspAspectGridProps) {
+function CuspAspectGrid({ title, cuspData, planetOrder, language, t }: CuspAspectGridProps) {
   const cusps = Array.from({ length: 12 }, (_, i) => i + 1);
   const abbr = language === 'hi' ? PLANET_ABBR_HI : PLANET_ABBR_EN;
 
