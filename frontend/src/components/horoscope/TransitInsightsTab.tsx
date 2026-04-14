@@ -49,8 +49,8 @@ const DIGNITY_LABELS: Record<string, { en: string; hi: string }> = {
 export default function TransitInsightsTab({ data, loading, language, t }: Props) {
   if (loading) {
     return (
-      <div className="space-y-3">
-        <div className="h-48 animate-pulse bg-gray-200 rounded-xl" />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="h-64 animate-pulse bg-gray-200 rounded-xl" />
         <div className="h-64 animate-pulse bg-gray-200 rounded-xl" />
       </div>
     );
@@ -65,7 +65,7 @@ export default function TransitInsightsTab({ data, loading, language, t }: Props
   }
 
   return (
-    <div className="space-y-4">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
       {/* Current Planetary Positions */}
       <div className="rounded-xl border border-cosmic-border bg-cosmic-card p-3">
         <h3 className="text-sm font-semibold text-sacred-gold-dark mb-2">
