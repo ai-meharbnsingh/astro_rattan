@@ -95,7 +95,7 @@ export default function ZodiacWheel() {
 
     const signName = language === 'hi' ? sign.hi : sign.en;
     const monthName = language === 'hi' ? sign.monthHi : sign.monthEn;
-    const nameFontSize = language === 'hi' ? 10 : (signName.length > 9 ? 7.5 : 9);
+    const nameFontSize = language === 'hi' ? 13 : (signName.length > 9 ? 9 : 11);
 
     return (
       <g key={sign.en}>
@@ -109,7 +109,7 @@ export default function ZodiacWheel() {
         {/* Glyph symbol */}
         <text x={gx} y={gy}
           textAnchor="middle" dominantBaseline="central"
-          fill={GOLD_MED} fontSize="20" fontWeight="bold"
+          fill={GOLD_MED} fontSize="26" fontWeight="bold"
           fontFamily="'Segoe UI Symbol','Noto Sans Symbols 2',serif"
         >{sign.glyph}</text>
 
@@ -135,7 +135,7 @@ export default function ZodiacWheel() {
         {/* Month label — along arc */}
         <text x={mx} y={my}
           textAnchor="middle" dominantBaseline="central"
-          fill={GOLD} fontSize="13" fontWeight="800"
+          fill={GOLD} fontSize="16" fontWeight="800"
           letterSpacing="1"
           fontFamily="'Inter',sans-serif"
           transform={`rotate(${mRot},${mx},${my})`}
