@@ -129,15 +129,19 @@ export default function LiveTransitWheel() {
     const snx = CX + R_SIGN_NUM * Math.cos(midRad);
     const sny = CY + R_SIGN_NUM * Math.sin(midRad);
 
+    const degStart = i * 30;
+    const degEnd = (i + 1) * 30;
+    const signLabel = hi ? sign.hi : sign.en.slice(0, 3);
+
     return (
       <g key={sign.en}>
         {/* Divider — full extent from center to outer */}
         <line x1={lx1} y1={ly1} x2={lx2} y2={ly2} stroke="rgba(139,69,19,0.15)" strokeWidth={0.7} />
 
-        {/* Ring 1: Sign name */}
+        {/* Ring 1: Sign name + degree span (uniform for all signs) */}
         <text x={nx} y={ny} textAnchor="middle" dominantBaseline="central"
           fill={GOLD} fontSize="13" fontWeight="700" fontFamily="'Inter',sans-serif"
-          transform={`rotate(${rot},${nx},${ny})`}>{hi ? sign.hi : sign.en.slice(0,3)}</text>
+          transform={`rotate(${rot},${nx},${ny})`}>{`${signLabel} ${degStart}°-${degEnd}°`}</text>
 
         {/* Ring 2: Date range */}
         <text x={dx} y={dy} textAnchor="middle" dominantBaseline="central"
