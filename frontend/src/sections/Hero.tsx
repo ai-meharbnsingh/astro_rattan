@@ -57,7 +57,7 @@ export default function Hero() {
       <div className="absolute top-1/4 left-10 w-64 h-64 bg-sacred-gold/5 rounded-full blur-3xl opacity-20" />
       <div className="absolute bottom-1/4 right-10 w-80 h-80 bg-[#8B4513]/10 rounded-full blur-3xl opacity-20" />
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
         {/* Centered header above main section */}
         <div className="text-center mb-0">
           {/* Shloka */}
@@ -84,7 +84,7 @@ export default function Hero() {
         </div>
 
         {/* Two-column layout */}
-        <div className="flex flex-col lg:flex-row items-stretch gap-4 lg:gap-6">
+        <div className="flex flex-col lg:flex-row items-stretch gap-2 lg:gap-4">
 
           {/* LEFT — Kundli Form */}
           <div className="hero-cta opacity-0 w-full lg:basis-[42%] flex flex-col justify-center">
