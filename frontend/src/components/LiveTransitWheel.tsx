@@ -106,17 +106,21 @@ export default function LiveTransitWheel() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
 
+  const [fetchedAt, setFetchedAt] = useState<number>(Date.now());
+
   const fetchSky = useCallback(async () => {
-    try { const d = await api.get('/api/kundli/current-sky'); setSkyData(d); setError(false); } catch { setError(true); }
+    try { const d = await api.get('/api/kundli/current-sky'); setSkyData(d); setFetchedAt(Date.now()); setError(false); } catch { setError(true); }
     setLoading(false);
   }, []);
 
   useEffect(() => { fetchSky(); const iv = setInterval(fetchSky, 60000); return () => clearInterval(iv); }, [fetchSky]);
-  useEffect(() => { const iv = setInterval(() => setCurrentTime(new Date()), 1000); return () => clearInterval(iv); }, []);
+  useEffect(() => { const iv = setInterval(() => setCurrentTime(new Date()), 5000); return () => clearInterval(iv); }, []);
 
   const timeStr = currentTime.toLocaleTimeString(hi ? 'hi-IN' : 'en-IN', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
   const planets = skyData?.planets || [];
-  const lagnaLong = skyData?.lagna_longitude || 0;
+  // ASC moves ~0.25°/min (360°/24h). Interpolate between API fetches for smooth 5s updates.
+  const elapsedSec = (currentTime.getTime() - fetchedAt) / 1000;
+  const lagnaLong = (skyData?.lagna_longitude || 0) + (elapsedSec * (360 / 86400));
   const lagnaAngle = lagnaLong - 90;
 
   // Ticks
