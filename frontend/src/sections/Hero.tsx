@@ -73,7 +73,7 @@ export default function Hero() {
           {/* Main Title */}
           <div className="hero-title-main opacity-0 mt-0 h-10 sm:h-12">
             <h1
-              className="text-xl sm:text-2xl lg:text-3xl text-cosmic-text leading-[1.1] transition-opacity duration-500"
+              className="text-xl sm:text-2xl lg:text-3xl text-cosmic-text leading-[1.1] transition-opacity duration-500" style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}
               style={{
                 fontWeight: 700,
                 letterSpacing: '0',
@@ -98,7 +98,7 @@ export default function Hero() {
                   boxShadow: '0 4px 20px rgba(196,97,31,0.15), inset 0 1px 0 rgba(255,255,255,0.4)',
                 }}>
                 <h2 className="text-2xl sm:text-[1.75rem] font-bold text-sacred-gold-dark tracking-tight"
-                  style={{ textShadow: '0 2px 10px rgba(196,97,31,0.3)' }}>
+                  style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", textShadow: '0 2px 10px rgba(196,97,31,0.3)' }}>
                   {l('Get your free kundli', 'अपनी मुफ्त कुंडली पाएं')}
                 </h2>
               </div>
