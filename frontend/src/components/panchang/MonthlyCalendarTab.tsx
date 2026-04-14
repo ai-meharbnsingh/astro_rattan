@@ -156,35 +156,35 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
   const festivalCount = monthlyData.reduce((sum, d) => sum + d.festivals.length, 0);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       {/* Month Navigation */}
       <Card className="card-sacred">
-        <CardContent className="p-4">
+        <CardContent className="p-2 sm:p-3">
           <div className="flex items-center justify-between">
             <Button variant="outline" size="icon" onClick={prevMonth} className="border-sacred-gold/30">
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-4 w-4" />
             </Button>
             <div className="text-center">
-              <h3 className="text-xl font-bold text-cosmic-text-primary">
+              <h3 className="text-lg sm:text-xl font-bold text-cosmic-text-primary leading-tight">
                 {language === 'hi' ? monthNames.hi[month] : monthNames.en[month]} {year}
               </h3>
               {festivalCount > 0 && (
-                <p className="text-xs text-purple-400 mt-1">
+                <p className="text-[11px] text-purple-400 mt-0.5">
                   {festivalCount} {language === 'hi' ? 'त्योहार / व्रत' : 'festivals / observances'}
                 </p>
               )}
             </div>
             <Button variant="outline" size="icon" onClick={nextMonth} className="border-sacred-gold/30">
-              <ChevronRight className="h-5 w-5" />
+              <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
         {/* Calendar Grid */}
         <Card className="card-sacred lg:col-span-2">
-          <CardContent className="p-4">
+          <CardContent className="p-2 sm:p-3">
             {loading ? (
               <div className="flex items-center justify-center h-64">
                 <div className="animate-spin h-8 w-8 border-2 border-sacred-gold border-t-transparent rounded-full" />
@@ -192,9 +192,9 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
             ) : (
               <>
                 {/* Weekday Headers */}
-                <div className="grid grid-cols-7 gap-1 mb-2">
+                <div className="grid grid-cols-7 gap-1 mb-1">
                   {weekdays[language === 'hi' ? 'hi' : 'en'].map((day) => (
-                    <div key={day} className="text-center text-sm font-semibold text-sacred-gold py-2">
+                    <div key={day} className="text-center text-xs font-semibold text-sacred-gold py-1">
                       {day}
                     </div>
                   ))}
@@ -225,31 +225,29 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                         key={day}
                         onClick={() => dayData && setSelectedDay(dayData)}
                         className={`
-                          aspect-square p-1 rounded-lg text-left text-xs sm:text-sm relative
+                          h-14 sm:h-16 lg:h-14 xl:h-16 p-1 rounded-lg text-left text-[11px] sm:text-xs relative
                           transition-all hover:scale-105
                           ${isToday ? 'ring-2 ring-sacred-gold' : ''}
                           ${isSelected ? 'bg-sacred-gold/20 border border-sacred-gold' : 'bg-cosmic-card/30 hover:bg-cosmic-card/50'}
                           ${hasMajorFestival ? 'border-l-2 border-l-amber-500' : hasFestivals ? 'border-l-2 border-l-purple-500/60' : ''}
                         `}
                       >
-                        <span className={`font-semibold ${isToday ? 'text-sacred-gold' : 'text-cosmic-text-primary'}`}>
+                        <span className={`font-semibold text-xs sm:text-sm ${isToday ? 'text-sacred-gold' : 'text-cosmic-text-primary'}`}>
                           {day}
                         </span>
                         {dayData && (
                           <>
-                            <div className="text-[10px] text-cosmic-text-secondary truncate mt-0.5 leading-tight">
+                            <div className="text-[9px] sm:text-[10px] text-cosmic-text-secondary truncate mt-0.5 leading-tight">
                               {language === 'hi' ? dayData.tithi_hindi || dayData.tithi : dayData.tithi}
                             </div>
-                            {/* Show first festival name if any */}
                             {hasFestivals && (
-                              <div className="text-[9px] text-purple-400 truncate leading-tight mt-0.5 flex items-center gap-0.5">
+                              <div className="text-[9px] text-purple-400 leading-tight mt-0.5 flex items-center gap-0.5">
                                 {festivalIcon(dayData.festivals[0])}
-                                <span className="truncate">{dayData.festivals[0]}</span>
                               </div>
                             )}
                             {/* Badge for multiple festivals */}
                             {dayData.festivals.length > 1 && (
-                              <span className="absolute top-0.5 right-0.5 bg-purple-500 text-white text-[8px] rounded-full w-3.5 h-3.5 flex items-center justify-center font-bold">
+                              <span className="absolute top-0.5 right-0.5 bg-purple-500 text-white text-[8px] rounded-full w-3 h-3 flex items-center justify-center font-bold">
                                 {dayData.festivals.length}
                               </span>
                             )}
@@ -268,7 +266,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                 </div>
 
                 {/* Legend */}
-                <div className="flex flex-wrap items-center gap-4 mt-4 text-xs">
+                <div className="flex flex-wrap items-center gap-2 mt-2 text-[10px] sm:text-xs">
                   <div className="flex items-center gap-1">
                     <Sun className="h-3 w-3 text-orange-400" />
                     <span className="text-cosmic-text-secondary">{language === 'hi' ? 'शुक्ल' : 'Shukla'}</span>
@@ -293,67 +291,67 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
 
         {/* Selected Day Details */}
         <Card className="card-sacred">
-          <CardContent className="p-4">
-            <h4 className="font-semibold text-cosmic-text-primary mb-4 flex items-center gap-2">
+          <CardContent className="p-2 sm:p-3">
+            <h4 className="font-semibold text-cosmic-text-primary mb-2 flex items-center gap-2">
               <Calendar className="h-4 w-4 text-sacred-gold" />
               {language === 'hi' ? 'विवरण' : 'Details'}
             </h4>
 
             {selectedDay ? (
-              <div className="space-y-4">
-                <div className="text-center pb-4 border-b border-cosmic-border">
-                  <p className="text-sm text-cosmic-text-secondary">
+              <div className="space-y-2">
+                <div className="text-center pb-2 border-b border-cosmic-border">
+                  <p className="text-xs sm:text-sm text-cosmic-text-secondary">
                     {new Date(selectedDay.date + 'T00:00:00').toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-US', {
                       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
                     })}
                   </p>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-sm text-cosmic-text-secondary">{language === 'hi' ? 'तिथि' : 'Tithi'}</span>
-                    <span className="text-sm font-medium text-cosmic-text-primary">
+                    <span className="text-xs sm:text-sm text-cosmic-text-secondary">{language === 'hi' ? 'तिथि' : 'Tithi'}</span>
+                    <span className="text-xs sm:text-sm font-medium text-cosmic-text-primary">
                       {language === 'hi' ? selectedDay.tithi_hindi || selectedDay.tithi : selectedDay.tithi}
                     </span>
                   </div>
 
                   <div className="flex justify-between">
-                    <span className="text-sm text-cosmic-text-secondary">{language === 'hi' ? 'नक्षत्र' : 'Nakshatra'}</span>
-                    <span className="text-sm font-medium text-cosmic-text-primary">
+                    <span className="text-xs sm:text-sm text-cosmic-text-secondary">{language === 'hi' ? 'नक्षत्र' : 'Nakshatra'}</span>
+                    <span className="text-xs sm:text-sm font-medium text-cosmic-text-primary">
                       {language === 'hi' ? selectedDay.nakshatra_hindi || selectedDay.nakshatra : selectedDay.nakshatra}
                     </span>
                   </div>
 
                   <div className="flex justify-between">
-                    <span className="text-sm text-cosmic-text-secondary">{language === 'hi' ? 'पक्ष' : 'Paksha'}</span>
-                    <span className="text-sm font-medium text-cosmic-text-primary">
+                    <span className="text-xs sm:text-sm text-cosmic-text-secondary">{language === 'hi' ? 'पक्ष' : 'Paksha'}</span>
+                    <span className="text-xs sm:text-sm font-medium text-cosmic-text-primary">
                       {language === 'hi' ? selectedDay.paksha_hindi || selectedDay.paksha : selectedDay.paksha}
                     </span>
                   </div>
 
                   <div className="flex justify-between">
-                    <span className="text-sm text-cosmic-text-secondary">{language === 'hi' ? 'सूर्योदय' : 'Sunrise'}</span>
-                    <span className="text-sm font-medium text-cosmic-text-primary">{selectedDay.sunrise}</span>
+                    <span className="text-xs sm:text-sm text-cosmic-text-secondary">{language === 'hi' ? 'सूर्योदय' : 'Sunrise'}</span>
+                    <span className="text-xs sm:text-sm font-medium text-cosmic-text-primary">{selectedDay.sunrise}</span>
                   </div>
 
                   <div className="flex justify-between">
-                    <span className="text-sm text-cosmic-text-secondary">{language === 'hi' ? 'सूर्यास्त' : 'Sunset'}</span>
-                    <span className="text-sm font-medium text-cosmic-text-primary">{selectedDay.sunset}</span>
+                    <span className="text-xs sm:text-sm text-cosmic-text-secondary">{language === 'hi' ? 'सूर्यास्त' : 'Sunset'}</span>
+                    <span className="text-xs sm:text-sm font-medium text-cosmic-text-primary">{selectedDay.sunset}</span>
                   </div>
 
                   {/* Festival list -- show ALL festivals for the day */}
                   {selectedDay.festivals.length > 0 && (
-                    <div className="mt-4 space-y-2">
+                    <div className="mt-2 space-y-1.5">
                       <span className="text-xs font-semibold text-purple-400 uppercase tracking-wide">
                         {language === 'hi' ? 'त्योहार / व्रत' : 'Festivals & Observances'}
                       </span>
                       {selectedDay.festivals.map((fest, idx) => (
                         <div
                           key={idx}
-                          className="p-2.5 rounded-lg bg-purple-500/10 border border-purple-500/30 flex items-start gap-2"
+                          className="p-2 rounded-lg bg-purple-500/10 border border-purple-500/30 flex items-start gap-2"
                         >
                           {festivalIcon(fest)}
-                          <p className="text-sm font-medium text-cosmic-text-primary leading-tight">
+                          <p className="text-xs sm:text-sm font-medium text-cosmic-text-primary leading-tight">
                             {fest}
                           </p>
                         </div>
