@@ -110,11 +110,11 @@ export default function MuhuratTab({ panchang, language, t }: Props) {
           </h3>
           <table className="w-full table-fixed text-xs sm:text-sm">
             <thead>
-              <tr className="bg-sacred-gold/15">
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[28%]">{language === 'hi' ? 'मुहूर्त' : 'Muhurta'}</th>
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[18%]">{language === 'hi' ? 'आरंभ' : 'Start'}</th>
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[18%]">{language === 'hi' ? 'समाप्ति' : 'End'}</th>
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[36%]">{language === 'hi' ? 'टिप्पणी' : 'Notes'}</th>
+              <tr className="bg-green-500/15">
+                <th className="text-left px-2 py-1 text-green-700 font-semibold w-[28%]">{language === 'hi' ? 'मुहूर्त' : 'Muhurta'}</th>
+                <th className="text-left px-2 py-1 text-green-700 font-semibold w-[18%]">{language === 'hi' ? 'आरंभ' : 'Start'}</th>
+                <th className="text-left px-2 py-1 text-green-700 font-semibold w-[18%]">{language === 'hi' ? 'समाप्ति' : 'End'}</th>
+                <th className="text-left px-2 py-1 text-green-700 font-semibold w-[36%]">{language === 'hi' ? 'टिप्पणी' : 'Notes'}</th>
               </tr>
             </thead>
             <tbody>
@@ -137,11 +137,11 @@ export default function MuhuratTab({ panchang, language, t }: Props) {
           </h3>
           <table className="w-full table-fixed text-xs sm:text-sm">
             <thead>
-              <tr className="bg-sacred-gold/15">
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[28%]">{language === 'hi' ? 'काल' : 'Period'}</th>
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[18%]">{language === 'hi' ? 'आरंभ' : 'Start'}</th>
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[18%]">{language === 'hi' ? 'समाप्ति' : 'End'}</th>
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[36%]">{language === 'hi' ? 'टिप्पणी' : 'Notes'}</th>
+              <tr className="bg-red-500/15">
+                <th className="text-left px-2 py-1 text-red-700 font-semibold w-[28%]">{language === 'hi' ? 'काल' : 'Period'}</th>
+                <th className="text-left px-2 py-1 text-red-700 font-semibold w-[18%]">{language === 'hi' ? 'आरंभ' : 'Start'}</th>
+                <th className="text-left px-2 py-1 text-red-700 font-semibold w-[18%]">{language === 'hi' ? 'समाप्ति' : 'End'}</th>
+                <th className="text-left px-2 py-1 text-red-700 font-semibold w-[36%]">{language === 'hi' ? 'टिप्पणी' : 'Notes'}</th>
               </tr>
             </thead>
             <tbody>
