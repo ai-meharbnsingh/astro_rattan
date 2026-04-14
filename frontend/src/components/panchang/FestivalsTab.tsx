@@ -116,7 +116,7 @@ export default function FestivalsTab({ panchang, language, t, selectedDate }: Pr
         <CardContent className="p-4">
           <h3 className="text-lg font-bold text-cosmic-text-primary mb-4 flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-purple-500" />
-            {t('auto.thisMonth')s Festivals'}
+            {t('auto.thisMonthsFestivals')}
           </h3>
           
           {loading ? (

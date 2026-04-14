@@ -175,7 +175,7 @@ export default function CalendarTab({ panchang, language, t }: Props) {
               </div>
               <div>
                 <p className="text-sm text-cosmic-text-secondary">
-                  {t('auto.ayanaSun')s Journey)'}
+                  {t('auto.ayanaSunsJourney')}
                 </p>
                 <h4 className="text-xl font-bold text-cosmic-text-primary">
                   {language === 'hi' ? ayanaInfo.hi : ayanaInfo.en}
@@ -212,7 +212,7 @@ export default function CalendarTab({ panchang, language, t }: Props) {
                     {t('auto.shakaSamvat')}
                   </strong>
                   <p className="mt-1">
-                    {t('auto.india')s national calendar. Adopted in 1957.'}
+                    {t('auto.indiasNationalCalendar')}
                   </p>
                 </div>
                 <div>

@@ -51,7 +51,7 @@ export default function ChoghadiyaTab({ panchang, language, t, timezoneOffset, m
     const allPeriods = [...dayChoghadiya, ...nightChoghadiya];
     const found = allPeriods.find(c => isInTimeRange(currentMinutes, c.start, c.end));
     return found ? `${found.start}-${found.end}` : null;
-  }, [dayChoghadiya, nightChoghadiya, timezoneOffset, minuteTick]);
+  }, [dayChoghadiya, nightChoghadiya, timezoneOffset, minuteTick, isInTimeRange]);
 
   const renderRow = (period: ChoghadiyaPeriod) => {
     const q = CHOGHADIYA_QUALITY[period.name] || { label: '?', labelHi: '?', color: 'text-gray-500', bg: 'bg-gray-500/10', border: 'border-gray-500/20' };
