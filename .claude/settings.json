@@ -1,5 +1,5 @@
 {
-  "enabledMcpjsonServers": ["stitch"],
+  "enabledMcpjsonServers": ["stitch", "mcp-image"],
   "hooks": {
     "PreToolUse": [
       {

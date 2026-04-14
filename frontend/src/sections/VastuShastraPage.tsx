@@ -64,7 +64,7 @@ export default function VastuShastraPage() {
               {t('auto.vastuShastra')}
             </span>
           </div>
-          <h1 className="text-4xl font-bold text-cosmic-text mb-2">
+          <h1 className="text-4xl font-bold text-cosmic-text mb-2 font-sans">
             {t('auto.vastuShastraAnalysis')}
           </h1>
           <p className="text-gray-600 max-w-xl mx-auto">

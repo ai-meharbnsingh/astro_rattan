@@ -258,7 +258,7 @@ export default function KundliGenerator() {
               <Home className="w-4 h-4" />
             </Button>
             <div className="min-w-0">
-              <h3 className="font-display font-bold text-xl sm:text-2xl text-sacred-brown truncate">{result.person_name || formData.name} — {t('tab.kundli')}</h3>
+              <h3 className="font-sans font-bold text-xl sm:text-2xl text-sacred-brown truncate">{result.person_name || formData.name} — {t('tab.kundli')}</h3>
               <p className="text-sm text-gray-500 truncate">{formatDate(result.birth_date) || formData.date} | {result.birth_time || formData.time} | {result.birth_place || formData.place}</p>
             </div>
           </div>

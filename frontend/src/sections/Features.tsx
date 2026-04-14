@@ -146,7 +146,7 @@ export default function Features() {
 
         {/* Section Header */}
         <div className="features-title text-center mb-16">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl text-cosmic-text mb-6 leading-[1.1]" style={{ fontWeight: 800, letterSpacing: '-0.02em' }}>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl text-cosmic-text mb-6 leading-[1.1] font-sans" style={{ fontWeight: 800, letterSpacing: '-0.02em' }}>
             {l('Complete Astrological Operating System', 'पूर्ण ज्योतिषीय ऑपरेटिंग सिस्टम')}
           </h2>
           <div className="max-w-full mx-auto text-lg text-gray-600 leading-relaxed">

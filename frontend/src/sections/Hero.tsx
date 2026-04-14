@@ -6,10 +6,17 @@ import { Users, Grid3X3, Star, User, Phone, Calendar, Clock, MapPin, Sparkles, C
 import { api } from '@/lib/api';
 import LiveTransitWheel from '@/components/LiveTransitWheel';
 
+const TAGLINES = [
+  { en: 'Complete astrological operating system', hi: 'एक पूर्ण ज्योतिष ऑपरेटिंग सिस्टम' },
+  { en: 'A complete astrology platform', hi: 'एक पूर्ण ज्योतिष प्लेटफॉर्म' },
+  { en: 'Get your kundli', hi: 'अपनी कुंडली प्राप्त करें' },
+];
+
 export default function Hero() {
   const heroRef = useRef<HTMLDivElement>(null);
   const { t, language } = useTranslation();
   const l = (en: string, hi: string) => (language === 'hi' ? hi : en);
+  const [taglineIdx, setTaglineIdx] = useState(0);
 
   useEffect(() => {
     if (gsap.globalTimeline.timeScale() === 0) return;
@@ -42,6 +49,13 @@ export default function Hero() {
     return () => ctx.revert();
   }, []);
 
+  useEffect(() => {
+    const iv = setInterval(() => {
+      setTaglineIdx(i => (i + 1) % TAGLINES.length);
+    }, 3000);
+    return () => clearInterval(iv);
+  }, []);
+
   return (
     <section ref={heroRef} className="relative min-h-[60vh] flex items-center overflow-hidden pt-24 pb-6">
       {/* Background — noise texture */}
@@ -69,15 +83,15 @@ export default function Hero() {
           </div>
 
           {/* Main Title */}
-          <div className="hero-title-main opacity-0 mt-0">
+          <div className="hero-title-main opacity-0 mt-0 h-10 sm:h-12">
             <h1
-              className="text-xl sm:text-2xl lg:text-3xl text-cosmic-text leading-[1.1] font-sans"
+              className="text-xl sm:text-2xl lg:text-3xl text-cosmic-text leading-[1.1] font-sans transition-opacity duration-500"
               style={{
                 fontWeight: 700,
                 letterSpacing: '0',
               }}
             >
-              {l('A Complete Astrology Platform', 'एक पूर्ण ज्योतिष प्लेटफॉर्म')}
+              {language === 'hi' ? TAGLINES[taglineIdx].hi : TAGLINES[taglineIdx].en}
             </h1>
           </div>
 
@@ -95,7 +109,7 @@ export default function Hero() {
                   border: '1px solid rgba(196,97,31,0.35)',
                   boxShadow: '0 4px 20px rgba(196,97,31,0.15), inset 0 1px 0 rgba(255,255,255,0.4)',
                 }}>
-                <h2 className="text-2xl sm:text-[1.75rem] font-bold text-sacred-gold-dark tracking-tight"
+                <h2 className="text-2xl sm:text-[1.75rem] font-bold text-sacred-gold-dark tracking-tight font-sans"
                   style={{ textShadow: '0 2px 10px rgba(196,97,31,0.3)' }}>
                   {l('Get Your Free Kundli', 'अपनी मुफ्त कुंडली पाएं')}
                 </h2>

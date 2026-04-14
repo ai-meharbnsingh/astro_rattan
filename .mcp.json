@@ -6,6 +6,14 @@
         "@_davideast/stitch-mcp",
         "proxy"
       ]
+    },
+    "mcp-image": {
+      "command": "npx",
+      "args": ["-y", "mcp-image"],
+      "env": {
+        "GEMINI_API_KEY": "AIzaSyCMgcMNE8J288tqnOTnW6W5WQQUysaqsq0",
+        "IMAGE_OUTPUT_DIR": "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_28_astro_app/frontend/public/images"
+      }
     }
   }
 }
