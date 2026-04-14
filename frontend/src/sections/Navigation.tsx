@@ -5,13 +5,16 @@ import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/lib/i18n';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 
+// Vastu is WIP — only visible on staging (non-production hosts)
+const isProduction = typeof window !== 'undefined' && window.location.hostname === 'astrorattan.com';
+
 const serviceLinks: { key: string; href: string; highlight?: boolean }[] = [
   { key: 'nav.kundli', href: '/kundli' },
   { key: 'nav.horoscope', href: '/horoscope' },
   { key: 'nav.panchang', href: '/panchang' },
   { key: 'nav.lalKitab', href: '/lal-kitab' },
   { key: 'nav.numerology', href: '/numerology' },
-  { key: 'nav.vastu', href: '/vastu', highlight: true },
+  ...(!isProduction ? [{ key: 'nav.vastu', href: '/vastu', highlight: true }] : []),
 ];
 
 const authOnlyLinks = [

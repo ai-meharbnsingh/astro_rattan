@@ -2,6 +2,9 @@ import { Link } from 'react-router-dom';
 import { Mail, Phone, Heart } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 
+// Vastu is WIP — only visible on staging
+const isProduction = typeof window !== 'undefined' && window.location.hostname === 'astrorattan.com';
+
 export default function Footer() {
   const { t, language } = useTranslation();
   const l = (en: string, hi: string) => (language === 'hi' ? hi : en);
@@ -18,7 +21,7 @@ export default function Footer() {
               <td className="py-1.5 w-1/5"><Link to="/panchang" className="text-cosmic-text hover:text-sacred-gold-dark">{l('Panchang', 'पंचांग')}</Link></td>
               <td className="py-1.5 w-1/5"><Link to="/lal-kitab" className="text-cosmic-text hover:text-sacred-gold-dark">{l('Lal Kitab', 'लाल किताब')}</Link></td>
               <td className="py-1.5 w-1/5"><Link to="/numerology" className="text-cosmic-text hover:text-sacred-gold-dark">{l('Numerology', 'अंकशास्त्र')}</Link></td>
-              <td className="py-1.5 w-1/5"><Link to="/vastu" className="text-cosmic-text hover:text-sacred-gold-dark">{l('Vastu', 'वास्तु')}</Link></td>
+              {!isProduction && <td className="py-1.5 w-1/5"><Link to="/vastu" className="text-cosmic-text hover:text-sacred-gold-dark">{l('Vastu', 'वास्तु')}</Link></td>}
             </tr>
             <tr className="">
               <td className="py-1.5 pr-4 font-semibold text-sacred-gold-dark whitespace-nowrap">{t('footer.company')}:</td>
