@@ -41,10 +41,12 @@ const R_OUTER = 270;
 const R_DATE = 256;
 const R_DATE_RING = 244;
 const R_IMG = 218;
-const R_GENDER = 140;
+const R_GENDER = 130; // Moved closer to center
+const R_GENDER_RING = 138; // Outer circle for gender symbols
 const R_GLYPH_RING = 112;
 const R_GLYPH = 96;
 const R_ELEM = 75;
+const R_ELEM_RING = 85; // Circle outside elements, between elements and glyphs
 const R_INNER = 60;
 const R_CENTER = 42;
 
@@ -251,7 +253,9 @@ export default function LiveTransitWheel() {
           <circle cx={CX} cy={CY} r={R_OUTER} fill="none" stroke={GOLD} strokeWidth={2} />
           {ticks}
           <circle cx={CX} cy={CY} r={R_DATE_RING} fill="none" stroke="rgba(139,69,19,0.12)" strokeWidth={0.5} />
+          <circle cx={CX} cy={CY} r={R_GENDER_RING} fill="none" stroke="rgba(139,69,19,0.15)" strokeWidth={0.6} />
           <circle cx={CX} cy={CY} r={R_GLYPH_RING} fill="none" stroke="rgba(139,69,19,0.15)" strokeWidth={0.8} />
+          <circle cx={CX} cy={CY} r={R_ELEM_RING} fill="none" stroke="rgba(139,69,19,0.18)" strokeWidth={0.7} />
           <circle cx={CX} cy={CY} r={R_INNER} fill="none" stroke="rgba(139,69,19,0.12)" strokeWidth={0.6} />
 
           <defs>
