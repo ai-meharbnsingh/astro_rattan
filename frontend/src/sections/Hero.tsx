@@ -73,7 +73,7 @@ export default function Hero() {
           {/* Main Title */}
           <div className="hero-title-main opacity-0 mt-0 h-10 sm:h-12">
             <h1
-              className="text-xl sm:text-2xl lg:text-3xl text-cosmic-text leading-[1.1] transition-opacity duration-500"
+              className="text-xl sm:text-2xl lg:text-3xl text-sacred-gold-dark leading-[1.1] transition-opacity duration-500"
               style={{
                 fontWeight: 700,
                 letterSpacing: '0',
