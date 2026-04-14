@@ -176,19 +176,11 @@ export default function LiveTransitWheel() {
         <text x={tx} y={ty - 6} textAnchor="middle" dominantBaseline="central"
           fill={GOLD} fontSize="14" fontWeight="700" fontFamily="'Inter',sans-serif"
           transform={`rotate(${rot},${tx},${ty - 6})`}>{label}</text>
-        {/* Degree range below name */}
-        <text x={tx} y={ty + 8} textAnchor="middle" dominantBaseline="central"
-          fill={GOLD_MED} opacity={0.7} fontSize="10" fontFamily="'Inter',sans-serif"
-          transform={`rotate(${rot},${tx},${ty + 8})`}>{SIGN_DEGS[i]}&deg;</text>
         {/* Watermark zodiac glyph inside segment */}
         <text x={wmx} y={wmy} textAnchor="middle" dominantBaseline="central"
           fill="rgba(139,69,19,0.08)" fontSize="36"
           fontFamily="'Segoe UI Symbol','Noto Sans Symbols 2',serif"
         >{GLYPHS[i]}</text>
-        {/* Degree angle at outer rim */}
-        <text x={dlx} y={dly} textAnchor="middle" dominantBaseline="central"
-          fill="rgba(139,69,19,0.35)" fontSize="8" fontFamily="'Inter',sans-serif"
-          transform={`rotate(${dlRot},${dlx},${dly})`}>{degNum}&deg;</text>
       </g>
     );
   });
