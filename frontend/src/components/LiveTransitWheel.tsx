@@ -9,6 +9,7 @@ const CY = 300;
 const SIGNS_EN = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
 const SIGNS_HI = ['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तुला','वृश्चिक','धनु','मकर','कुंभ','मीन'];
 const SIGNS_SHORT = ['Ari','Tau','Gem','Can','Leo','Vir','Lib','Sco','Sag','Cap','Aqu','Pis'];
+const GLYPHS = ['\u2648','\u2649','\u264A','\u264B','\u264C','\u264D','\u264E','\u264F','\u2650','\u2651','\u2652','\u2653'];
 const SIGN_DEGS = ['0-30','30-60','60-90','90-120','120-150','150-180','180-210','210-240','240-270','270-300','300-330','330-360'];
 
 const PLANET_ABBR: Record<string,string> = { Sun:'Su',Moon:'Mo',Mars:'Ma',Mercury:'Me',Jupiter:'Ju',Venus:'Ve',Saturn:'Sa',Rahu:'Ra',Ketu:'Ke' };
@@ -20,10 +21,12 @@ const MALEFIC = new Set(['Mars','Saturn','Rahu','Ketu']);
 const RING_A = new Set(['Sun','Moon','Venus','Mercury']);  // r=230 fast
 const RING_B = new Set(['Mars','Jupiter','Saturn']);        // r=195 slow
 // RING_C = Rahu, Ketu                                     // r=160 nodes
-const RING_R: Record<string, number> = {};
-['Sun','Moon','Venus','Mercury'].forEach(p => RING_R[p] = 230);
-['Mars','Jupiter','Saturn'].forEach(p => RING_R[p] = 195);
-['Rahu','Ketu'].forEach(p => RING_R[p] = 160);
+// Spread planets across 5 sub-rings to avoid clustering
+const RING_R: Record<string, number> = {
+  Sun: 238, Moon: 215, Venus: 238, Mercury: 215,
+  Mars: 190, Jupiter: 170, Saturn: 190,
+  Rahu: 148, Ketu: 148,
+};
 
 interface TransitPlanet {
   planet: string; sign: string; longitude: number;
@@ -154,15 +157,38 @@ export default function LiveTransitWheel() {
     const rot = arcRot(midDeg);
     const label = hi ? SIGNS_HI[i] : SIGNS_SHORT[i];
 
+    // Watermark glyph inside segment (between inner and outer ring)
+    const wmR = (R_INNER + R_OUTER) / 2;
+    const wmx = CX + wmR * Math.cos(midRad);
+    const wmy = CY + wmR * Math.sin(midRad);
+
+    // Degree number at outer rim for start of each sign
+    const degLabelR = R_OUTER + 14;
+    const dlx = CX + degLabelR * Math.cos(startRad);
+    const dly = CY + degLabelR * Math.sin(startRad);
+    const dlRot = arcRot(startDeg);
+    const degNum = i * 30;
+
     return (
       <g key={sign}>
         <line x1={lx1} y1={ly1} x2={lx2} y2={ly2} stroke="rgba(139,69,19,0.15)" strokeWidth={0.7} />
+        {/* Sign name outside */}
         <text x={tx} y={ty - 6} textAnchor="middle" dominantBaseline="central"
           fill={GOLD} fontSize="14" fontWeight="700" fontFamily="'Inter',sans-serif"
           transform={`rotate(${rot},${tx},${ty - 6})`}>{label}</text>
+        {/* Degree range below name */}
         <text x={tx} y={ty + 8} textAnchor="middle" dominantBaseline="central"
           fill={GOLD_MED} opacity={0.7} fontSize="10" fontFamily="'Inter',sans-serif"
           transform={`rotate(${rot},${tx},${ty + 8})`}>{SIGN_DEGS[i]}&deg;</text>
+        {/* Watermark zodiac glyph inside segment */}
+        <text x={wmx} y={wmy} textAnchor="middle" dominantBaseline="central"
+          fill="rgba(139,69,19,0.08)" fontSize="36"
+          fontFamily="'Segoe UI Symbol','Noto Sans Symbols 2',serif"
+        >{GLYPHS[i]}</text>
+        {/* Degree angle at outer rim */}
+        <text x={dlx} y={dly} textAnchor="middle" dominantBaseline="central"
+          fill="rgba(139,69,19,0.35)" fontSize="8" fontFamily="'Inter',sans-serif"
+          transform={`rotate(${dlRot},${dlx},${dly})`}>{degNum}&deg;</text>
       </g>
     );
   });
@@ -180,8 +206,8 @@ export default function LiveTransitWheel() {
     return { planet: p, x: CX + ring * Math.cos(rad), y: CY + ring * Math.sin(rad) };
   });
 
-  // Resolve overlaps — 5 iterations
-  for (let iter = 0; iter < 5; iter++) {
+  // Resolve overlaps — 10 iterations with strong push
+  for (let iter = 0; iter < 10; iter++) {
     for (let i = 0; i < dotPositions.length; i++) {
       for (let j = i + 1; j < dotPositions.length; j++) {
         const dx = dotPositions[i].x - dotPositions[j].x;
@@ -189,7 +215,7 @@ export default function LiveTransitWheel() {
         const dist = Math.sqrt(dx * dx + dy * dy);
         if (dist < MIN_DIST && dist > 0) {
           const angle = Math.atan2(dy, dx);
-          const push = (MIN_DIST - dist) / 2 + 5;
+          const push = (MIN_DIST - dist) / 2 + 8;
           dotPositions[i].x += Math.cos(angle) * push;
           dotPositions[i].y += Math.sin(angle) * push;
           dotPositions[j].x -= Math.cos(angle) * push;
