@@ -6,18 +6,12 @@ import { Users, Grid3X3, Star, User, Phone, Calendar, Clock, MapPin, Sparkles, C
 import { api } from '@/lib/api';
 import LiveTransitWheel from '@/components/LiveTransitWheel';
 
-const TAGLINES = [
-  { en: 'Complete astrological operating system', hi: 'एक पूर्ण ज्योतिष ऑपरेटिंग सिस्टम' },
-  { en: 'A complete astrology platform', hi: 'एक पूर्ण ज्योतिष प्लेटफॉर्म' },
-  { en: 'Get your kundli', hi: 'अपनी कुंडली प्राप्त करें' },
-];
+const TAGLINE = { en: 'A complete astrology platform', hi: 'एक पूर्ण ज्योतिष प्लेटफॉर्म' };
 
 export default function Hero() {
   const heroRef = useRef<HTMLDivElement>(null);
   const { t, language } = useTranslation();
   const l = (en: string, hi: string) => (language === 'hi' ? hi : en);
-  const [taglineIdx, setTaglineIdx] = useState(0);
-
   useEffect(() => {
     if (gsap.globalTimeline.timeScale() === 0) return;
     const ctx = gsap.context(() => {
@@ -49,12 +43,6 @@ export default function Hero() {
     return () => ctx.revert();
   }, []);
 
-  useEffect(() => {
-    const iv = setInterval(() => {
-      setTaglineIdx(i => (i + 1) % TAGLINES.length);
-    }, 3000);
-    return () => clearInterval(iv);
-  }, []);
 
   return (
     <section ref={heroRef} className="relative min-h-[60vh] flex items-center overflow-hidden pt-24 pb-6">
@@ -91,7 +79,7 @@ export default function Hero() {
                 letterSpacing: '0',
               }}
             >
-              {language === 'hi' ? TAGLINES[taglineIdx].hi : TAGLINES[taglineIdx].en}
+              {language === 'hi' ? TAGLINE.hi : TAGLINE.en}
             </h1>
           </div>
 
