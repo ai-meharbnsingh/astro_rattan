@@ -413,31 +413,35 @@ export default function LiveTransitWheel() {
               <line x1={tl.x} y1={tl.y} x2={br.x} y2={br.y} stroke={WHEEL_LINE} strokeWidth={WHEEL_STROKE_W} />
               <line x1={tr.x} y1={tr.y} x2={bl.x} y2={bl.y} stroke={WHEEL_LINE} strokeWidth={WHEEL_STROKE_W} />
 
-              {/* House contents — same grid layout as InteractiveKundli */}
+              {/* House contents — same grid layout as InteractiveKundli (scaled 1.2x for 500px viewBox) */}
               {houses.map(nh => {
                 const hData = kundliHouses[nh.h - 1];
                 if (!hData) return null;
                 const hPlanets = hData.planets;
                 const count = hPlanets.length;
 
-                // Grid layout (same logic as InteractiveKundli, scaled to 500px viewbox ~1.2x)
+                // Exact InteractiveKundli logic × 1.2 scale
                 const maxCols = nh.trap
                   ? (count > 4 ? 3 : count > 2 ? 2 : count)
                   : (count > 3 ? 3 : count > 1 ? 2 : 1);
                 const cols = Math.min(count, Math.max(maxCols, 1));
-                const spacing = nh.trap ? (count > 4 ? 22 : 26) : (count > 3 ? 18 : count > 2 ? 20 : 24);
-                const rowH = count > 4 ? 12 : count > 3 ? 13 : 14;
-                const fs = nh.trap ? (count > 4 ? 9 : 10) : (count > 3 ? 8 : count > 2 ? 9 : 10);
+                const spacing = nh.trap
+                  ? (count > 4 ? 31 : 38)
+                  : (count > 3 ? 26 : count > 2 ? 29 : 34);
+                const rowH = count > 4 ? 19 : count > 3 ? 22 : 24;
+                const fs = nh.trap
+                  ? (count > 4 ? 11 : 12)
+                  : (count > 3 ? 10 : count > 2 ? 11 : 12);
 
                 return (
                   <g key={nh.h}>
-                    {/* Rashi number */}
-                    <text x={nh.cx} y={nh.cy - (count > 0 ? 10 : 0) + 3}
+                    {/* Rashi number — offset up from centroid */}
+                    <text x={nh.cx} y={nh.cy - (count > 0 ? 15 : 0) + 4}
                       textAnchor="middle" dominantBaseline="central"
-                      fill={GOLD} fontSize={nh.trap ? 14 : 11} fontWeight="bold" fontFamily="'Inter',sans-serif"
-                      opacity={0.4}>{hData.signNum}</text>
+                      fill={GOLD} fontSize={nh.trap ? 16 : 13} fontWeight="bold" fontFamily="'Inter',sans-serif"
+                      opacity={0.35}>{hData.signNum}</text>
 
-                    {/* Planets — multi-column grid */}
+                    {/* Planets — multi-column grid (same as InteractiveKundli) */}
                     {hPlanets.map((pl, idx) => {
                       const sym = pStatus(pl);
                       const label = `${pAbbr(pl.planet)}${sym} ${pl.sign_degree.toFixed(0)}°`;
@@ -445,7 +449,7 @@ export default function LiveTransitWheel() {
                       const pRow = Math.floor(idx / cols);
                       const startX = nh.cx - ((cols - 1) * spacing) / 2;
                       const px = startX + pCol * spacing;
-                      const baseY = nh.cy + (nh.trap ? 10 : 6);
+                      const baseY = nh.cy + (nh.trap ? 17 : 10) - (count > 0 ? 2 : 0);
                       const py = baseY + pRow * rowH;
                       return (
                         <text key={pl.planet} x={px} y={py}
