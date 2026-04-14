@@ -87,7 +87,7 @@ export default function Hero() {
         <div className="flex flex-col lg:flex-row items-stretch gap-4 lg:gap-6 mt-1">
 
           {/* LEFT — Kundli Form */}
-          <div className="hero-cta opacity-0 w-full lg:w-[38%] shrink-0 lg:mt-[136px]">
+          <div className="hero-cta opacity-0 w-full lg:w-[38%] shrink-0 lg:mt-[90px]">
             <div className="mb-3">
               <h2 className="text-2xl sm:text-3xl font-bold text-sacred-gold-dark tracking-tight"
                 style={{ textShadow: '0 2px 12px rgba(196,97,31,0.25)' }}>
