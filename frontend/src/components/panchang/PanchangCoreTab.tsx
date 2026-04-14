@@ -46,12 +46,12 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
       details: language === 'hi' ? 'दिन समाप्ति' : 'Day end',
     },
     {
-      metric: language === 'hi' ? 'चंद्रोदय' : t('panchang.moonrise'),
+      metric: 'Moonrise',
       value: panchang.moonrise || '--',
       details: language === 'hi' ? 'चंद्र उदय' : 'Moon rise',
     },
     {
-      metric: language === 'hi' ? 'चंद्रास्त' : t('panchang.moonset'),
+      metric: 'Moonset',
       value: panchang.moonset || '--',
       details: language === 'hi' ? 'चंद्र अस्त' : 'Moon set',
     },
@@ -83,9 +83,6 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3">
       <div className="rounded-lg border border-cosmic-border p-2">
-        <h3 className="font-bold text-cosmic-text-primary mb-1">
-          {language === 'hi' ? 'तिथि / नक्षत्र / योग / करण' : 'Tithi / Nakshatra / Yoga / Karana'}
-        </h3>
         <table className="w-full table-fixed text-xs sm:text-sm">
           <thead>
             <tr className="bg-sacred-gold/15">
@@ -109,9 +106,6 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
       </div>
 
       <div className="rounded-lg border border-cosmic-border p-2">
-        <h3 className="font-bold text-cosmic-text-primary mb-1">
-          {language === 'hi' ? 'सूर्य और चंद्र समय' : 'Sun and Moon Times'}
-        </h3>
         <table className="w-full table-fixed text-xs sm:text-sm">
           <thead>
             <tr className="bg-sacred-gold/15">
@@ -133,9 +127,6 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
       </div>
 
       <div className="rounded-lg border border-cosmic-border p-2">
-        <h3 className="font-bold text-cosmic-text-primary mb-1">
-          {language === 'hi' ? 'दिन की अवधि' : 'Day Duration'}
-        </h3>
         <table className="w-full table-fixed text-xs sm:text-sm">
           <thead>
             <tr className="bg-sacred-gold/15">

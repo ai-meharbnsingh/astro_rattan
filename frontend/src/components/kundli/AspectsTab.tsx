@@ -30,13 +30,13 @@ export default function AspectsTab({ aspectsData, loadingAspects, language, t }:
         <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
           <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.aspectsOnPlanets')}</h4>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-xs">
               <thead><tr className="bg-sacred-gold">
-                <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
-                <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('table.house')}</th>
-                <th className="text-left p-2 text-sacred-gold-dark font-medium">{language === 'hi' ? 'शुभ दृष्टि' : 'Aspected By (Benefic)'}</th>
-                <th className="text-left p-2 text-sacred-gold-dark font-medium">{language === 'hi' ? 'अशुभ दृष्टि' : 'Aspected By (Malefic)'}</th>
-                <th className="text-left p-2 text-sacred-gold-dark font-medium">{language === 'hi' ? 'दृष्टि करता है' : 'Aspects To'}</th>
+                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
+                <th className="text-center p-1.5 text-sacred-gold-dark font-medium">{t('table.house')}</th>
+                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{language === 'hi' ? 'शुभ दृष्टि' : 'Aspected By (Benefic)'}</th>
+                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{language === 'hi' ? 'अशुभ दृष्टि' : 'Aspected By (Malefic)'}</th>
+                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{language === 'hi' ? 'दृष्टि करता है' : 'Aspects To'}</th>
               </tr></thead>
               <tbody>
                 {(() => {
@@ -49,29 +49,29 @@ export default function AspectsTab({ aspectsData, loadingAspects, language, t }:
                       const aspectsTo = data.aspects_to || [];
                       return (
                         <tr key={planet} className="border-t border-sacred-gold hover:bg-sacred-gold/5">
-                          <td className="p-2 font-semibold text-sacred-brown">{translatePlanet(planet, language)}</td>
-                          <td className="p-2 text-center">{data.house}</td>
-                          <td className="p-2">
+                          <td className="p-1.5 font-semibold text-sacred-brown">{translatePlanet(planet, language)}</td>
+                          <td className="p-1.5 text-center">{data.house}</td>
+                          <td className="p-1.5">
                             {beneficList.length > 0 ? beneficList.map((a: any, j: number) => (
                               <span key={j} className="inline-flex items-center gap-1 mr-2">
                                 <span className="text-green-600 font-medium">{translatePlanet(a.planet || a, language)}</span>
-                                <span className="text-sm text-cosmic-text">({a.strength || '1.0'}x {a.offset ? `${a.offset}${housePrefix}` : ''}{a.type === 'special' ? spl : ''})</span>
+                                <span className="text-[10px] text-cosmic-text">({a.strength || '1.0'}x {a.offset ? `${a.offset}${housePrefix}` : ''}{a.type === 'special' ? spl : ''})</span>
                               </span>
                             )) : <span className="text-cosmic-text">-</span>}
                           </td>
-                          <td className="p-2">
+                          <td className="p-1.5">
                             {maleficList.length > 0 ? maleficList.map((a: any, j: number) => (
                               <span key={j} className="inline-flex items-center gap-1 mr-2">
                                 <span className="text-red-500 font-medium">{translatePlanet(a.planet || a, language)}</span>
-                                <span className="text-sm text-cosmic-text">({a.strength || '1.0'}x {a.offset ? `${a.offset}${housePrefix}` : ''}{a.type === 'special' ? spl : ''})</span>
+                                <span className="text-[10px] text-cosmic-text">({a.strength || '1.0'}x {a.offset ? `${a.offset}${housePrefix}` : ''}{a.type === 'special' ? spl : ''})</span>
                               </span>
                             )) : <span className="text-cosmic-text">-</span>}
                           </td>
-                          <td className="p-2">
+                          <td className="p-1.5">
                             {aspectsTo.length > 0 ? aspectsTo.map((a: any, j: number) => (
                               <span key={j} className="inline-flex items-center gap-1 mr-2">
                                 <span className="font-medium">{housePrefix}{a.house}</span>
-                                <span className="text-sm text-cosmic-text">({a.strength}x)</span>
+                                <span className="text-[10px] text-cosmic-text">({a.strength}x)</span>
                               </span>
                             )) : <span className="text-cosmic-text">-</span>}
                           </td>
@@ -90,11 +90,11 @@ export default function AspectsTab({ aspectsData, loadingAspects, language, t }:
         <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
           <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.aspectsOnBhavas')}</h4>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-xs">
               <thead><tr className="bg-sacred-gold">
-                <th className="text-center p-2 text-sacred-gold-dark font-medium w-12">{t('table.house')}</th>
-                <th className="text-left p-2 text-sacred-gold-dark font-medium">{language === 'hi' ? 'शुभ दृष्टि' : 'Benefic Aspects (Shubh)'}</th>
-                <th className="text-left p-2 text-sacred-gold-dark font-medium">{language === 'hi' ? 'अशुभ दृष्टि' : 'Malefic Aspects (Ashubh)'}</th>
+                <th className="text-center p-1.5 text-sacred-gold-dark font-medium w-12">{t('table.house')}</th>
+                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{language === 'hi' ? 'शुभ दृष्टि' : 'Benefic Aspects (Shubh)'}</th>
+                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{language === 'hi' ? 'अशुभ दृष्टि' : 'Malefic Aspects (Ashubh)'}</th>
               </tr></thead>
               <tbody>
                 {(() => {
@@ -121,9 +121,9 @@ export default function AspectsTab({ aspectsData, loadingAspects, language, t }:
                     }
                     return (
                       <tr key={houseNum} className="border-t border-sacred-gold hover:bg-sacred-gold/5">
-                        <td className="p-2 text-center font-semibold text-sacred-brown">{houseNum}</td>
-                        <td className="p-2">{beneficPlanets.length > 0 ? <span className="text-green-600">{beneficPlanets.join(', ')}</span> : <span className="text-cosmic-text">-</span>}</td>
-                        <td className="p-2">{maleficPlanets.length > 0 ? <span className="text-red-500">{maleficPlanets.join(', ')}</span> : <span className="text-cosmic-text">-</span>}</td>
+                        <td className="p-1.5 text-center font-semibold text-sacred-brown">{houseNum}</td>
+                        <td className="p-1.5">{beneficPlanets.length > 0 ? <span className="text-green-600">{beneficPlanets.join(', ')}</span> : <span className="text-cosmic-text">-</span>}</td>
+                        <td className="p-1.5">{maleficPlanets.length > 0 ? <span className="text-red-500">{maleficPlanets.join(', ')}</span> : <span className="text-cosmic-text">-</span>}</td>
                       </tr>
                     );
                   };

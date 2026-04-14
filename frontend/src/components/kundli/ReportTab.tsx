@@ -224,27 +224,27 @@ export default function ReportTab({
                 <div className="lg:col-span-2 bg-sacred-cream rounded-xl border border-sacred-gold p-4 flex flex-col">
                   <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.detailedPlanetPositions')}</h4>
                   <div className="overflow-x-auto flex-1">
-                    <table className="w-full text-sm">
+                    <table className="w-full text-xs">
                       <thead className="bg-sacred-gold">
                         <tr>
-                          <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
-                          <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.sign')}</th>
-                          <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('table.house')}</th>
-                          <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.nakshatra')}</th>
-                          <th className="text-center p-2 text-sacred-gold-dark font-medium whitespace-nowrap">{t('table.degree')}</th>
-                          <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('table.status')}</th>
+                          <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
+                          <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.sign')}</th>
+                          <th className="text-center p-1.5 text-sacred-gold-dark font-medium">{t('table.house')}</th>
+                          <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.nakshatra')}</th>
+                          <th className="text-center p-1.5 text-sacred-gold-dark font-medium whitespace-nowrap">{t('table.degree')}</th>
+                          <th className="text-center p-1.5 text-sacred-gold-dark font-medium">{t('table.status')}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {planets.map((planet: any, index: number) => (
                           <tr key={index} className="border-t border-sacred-gold hover:bg-sacred-gold/5">
-                            <td className="p-2 text-sacred-brown font-medium">{translatePlanet(planet.planet, language)}</td>
-                            <td className="p-2 text-cosmic-text">{translateSign(planet.sign, language)}</td>
-                            <td className="p-2 text-center text-cosmic-text">{planet.house}</td>
-                            <td className="p-2 text-cosmic-text">{translateNakshatra(planet.nakshatra, language) || '\u2014'}</td>
-                            <td className="p-2 text-center text-cosmic-text whitespace-nowrap">{(Number(planet.sign_degree) || 0).toFixed(1)}°</td>
-                            <td className="p-2 text-center">
-                              <span className={`text-sm px-2.5 py-0.5 rounded-full font-medium ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-100 text-green-800' : 'text-cosmic-text'}`}>
+                            <td className="p-1.5 text-sacred-brown font-medium">{translatePlanet(planet.planet, language)}</td>
+                            <td className="p-1.5 text-cosmic-text">{translateSign(planet.sign, language)}</td>
+                            <td className="p-1.5 text-center text-cosmic-text">{planet.house}</td>
+                            <td className="p-1.5 text-cosmic-text">{translateNakshatra(planet.nakshatra, language) || '\u2014'}</td>
+                            <td className="p-1.5 text-center text-cosmic-text whitespace-nowrap">{(Number(planet.sign_degree) || 0).toFixed(1)}°</td>
+                            <td className="p-1.5 text-center">
+                              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-100 text-green-800' : 'text-cosmic-text'}`}>
                                 {translateLabel(planet.status, language) || '\u2014'}
                               </span>
                             </td>
