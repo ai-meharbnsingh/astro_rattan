@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { useTranslation } from '@/lib/i18n';
-import { Users, Grid3X3, Star, User, Phone, Calendar, Clock, MapPin, Sparkles } from 'lucide-react';
+import { Users, Grid3X3, Star, User, Phone, Calendar, Clock, MapPin, Sparkles, ChevronRight, Mail } from 'lucide-react';
 import { api } from '@/lib/api';
 import LiveTransitWheel from '@/components/LiveTransitWheel';
 
@@ -143,6 +143,7 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
   const [name, setName] = useState('');
   const [gender, setGender] = useState('male');
   const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [birthDate, setBirthDate] = useState('');
   const [birthTime, setBirthTime] = useState('');
   const [birthPlace, setBirthPlace] = useState('');
@@ -172,7 +173,7 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
   const handleGenerate = () => {
     navigate('/kundli', {
       state: {
-        prefillName: name, prefillGender: gender, prefillPhone: phone,
+        prefillName: name, prefillGender: gender, prefillPhone: phone, prefillEmail: email,
         prefillDate: birthDate, prefillTime: birthTime,
         prefillPlace: birthPlace,
         prefillLat: selectedPlace?.lat, prefillLon: selectedPlace?.lon,
@@ -184,13 +185,8 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
 
   return (
     <div className="flex flex-col h-full justify-between">
-      {/* Heading */}
-      <h3 className="text-base text-cosmic-text font-medium pb-1 border-b border-cosmic-border shrink-0">
-        {l('Generate Your Kundli', 'अपनी कुंडली बनाएं')}
-      </h3>
-
-      {/* Fields — compact like screenshot */}
-      <div className="flex-1 flex flex-col justify-between py-1 gap-1">
+      {/* Fields — exact like screenshot: no heading */}
+      <div className="flex-1 flex flex-col justify-between gap-1">
         {/* Full Name */}
         <div>
           <label className="text-sm font-semibold text-cosmic-text mb-0.5 block">{l('Full Name', 'पूरा नाम')}</label>
@@ -254,15 +250,27 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
           </div>
         </div>
 
-        {/* Phone (Optional) */}
-        <div>
-          <label className="text-sm font-semibold text-cosmic-text mb-0.5 block">
-            {l('Phone', 'फ़ोन')} <span className="text-sacred-gold-dark/60 font-normal">{l('(Optional)', '(वैकल्पिक)')}</span>
-          </label>
-          <div className="relative">
-            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/50" />
-            <input type="tel" value={phone} onChange={e => setPhone(e.target.value)}
-              placeholder={l('Phone number', 'फ़ोन नंबर')} className={inputClass} />
+        {/* Phone + Email (Optional) */}
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className="text-sm font-semibold text-cosmic-text mb-0.5 block">
+              {l('Phone', 'फ़ोन')} <span className="text-sacred-gold-dark/60 font-normal">{l('(Optional)', '(वैकल्पिक)')}</span>
+            </label>
+            <div className="relative">
+              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/50" />
+              <input type="tel" value={phone} onChange={e => setPhone(e.target.value)}
+                placeholder={l('Phone number', 'फ़ोन नंबर')} className={inputClass} />
+            </div>
+          </div>
+          <div>
+            <label className="text-sm font-semibold text-cosmic-text mb-0.5 block">
+              {l('Email', 'ईमेल')} <span className="text-sacred-gold-dark/60 font-normal">{l('(Optional)', '(वैकल्पिक)')}</span>
+            </label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/50" />
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+                placeholder={l('Email address', 'ईमेल पता')} className={inputClass} />
+            </div>
           </div>
         </div>
       </div>
@@ -273,6 +281,7 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
         className="w-full py-2.5 bg-sacred-gold/70 text-sacred-gold-dark rounded-lg font-semibold text-base hover:bg-sacred-gold hover:text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 shrink-0">
         <Sparkles className="w-4 h-4" />
         {l('Generate Kundli', 'कुंडली बनाएं')}
+        <ChevronRight className="w-4 h-4" />
       </button>
     </div>
   );
