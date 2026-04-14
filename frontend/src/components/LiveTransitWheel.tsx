@@ -66,8 +66,9 @@ interface TransitPlanet { planet: string; sign: string; longitude: number; sign_
 interface TooltipData { planet: string; sign: string; degree: number; retrograde: boolean; x: number; y: number; }
 interface SkyData { planets: TransitPlanet[]; lagna_sign: string; lagna_longitude: number; }
 
-const R_SIGN_NAME = 288;
-const R_OUTER = 270;
+const R_OUTERMOST = 295; // new outermost circle — outside sign names
+const R_SIGN_NAME = 280;
+const R_OUTER = 265;
 const R_DATE = 256;
 const R_DATE_RING = 244;
 const R_IMG = 218;
@@ -275,12 +276,13 @@ export default function LiveTransitWheel() {
     );
   });
 
-  // ASC
+  // ASC — placed on outermost circle
   const ascRad = toRad(lagnaAngle);
-  const ascX = CX + R_OUTER * Math.cos(ascRad);
-  const ascY = CY + R_OUTER * Math.sin(ascRad);
-  const ascLX = CX + (R_SIGN_NAME + 10) * Math.cos(ascRad);
-  const ascLY = CY + (R_SIGN_NAME + 10) * Math.sin(ascRad);
+  const ascX = CX + R_OUTERMOST * Math.cos(ascRad);
+  const ascY = CY + R_OUTERMOST * Math.sin(ascRad);
+  const ascMidR = (R_OUTERMOST + R_OUTER) / 2;
+  const ascLX = CX + ascMidR * Math.cos(ascRad);
+  const ascLY = CY + ascMidR * Math.sin(ascRad);
   const ascDeg = Math.floor(lagnaLong % 30);
 
   const ascMarker = (
@@ -317,6 +319,7 @@ export default function LiveTransitWheel() {
         }}>
           <defs>{clipDefs}</defs>
 
+          <circle cx={CX} cy={CY} r={R_OUTERMOST} fill="none" stroke={GOLD} strokeWidth={1.5} />
           <circle cx={CX} cy={CY} r={R_OUTER} fill="none" stroke={GOLD} strokeWidth={2} />
           {ticks}
           <circle cx={CX} cy={CY} r={R_DATE_RING} fill="none" stroke="rgba(139,69,19,0.12)" strokeWidth={0.5} />
