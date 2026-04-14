@@ -59,7 +59,7 @@ export default function Hero() {
           <div className="flex-1 text-center lg:text-left">
             {/* Shloka */}
             <div className="hero-shloka opacity-0 mb-4">
-              <p className="font-sans text-base sm:text-lg opacity-70 tracking-[4px] text-gray-600 uppercase"
+              <p className="font-sans text-xl sm:text-2xl lg:text-3xl opacity-70 tracking-[4px] text-gray-600"
                 style={{ textShadow: '0 0 15px rgba(255, 170, 51, 0.4)' }}>
                 {'\u091C\u094D\u092F\u094B\u0924\u093F\u0937\u092E\u094D \u0905\u092F\u092E\u094D \u092C\u094D\u0930\u0939\u094D\u092E'} {t('hero.shlokaSupreme')}
               </p>
@@ -68,13 +68,13 @@ export default function Hero() {
             {/* Main Title — 3D extruded text */}
             <div className="hero-title-main opacity-0">
               <h1
-                className="text-4xl sm:text-5xl lg:text-6xl text-cosmic-text leading-[1.0]"
+                className="text-2xl sm:text-3xl lg:text-4xl text-cosmic-text leading-[1.1]"
                 style={{
                   fontWeight: 800,
                   letterSpacing: '-0.02em',
                 }}
               >
-                {l('Your Complete Vedic Astrology Platform', 'आपका पूर्ण वैदिक ज्योतिष प्लेटफॉर्म')}
+                {l('Your Complete Astrology Platform', 'आपका पूर्ण ज्योतिष प्लेटफॉर्म')}
               </h1>
               <p
                 className="text-base text-sacred-gold-dark mt-4 uppercase"
@@ -91,7 +91,7 @@ export default function Hero() {
             <div className="hero-subtitle opacity-0 mt-6 max-w-xl lg:max-w-none">
               <p className="text-lg text-gray-600 leading-relaxed">
                 {l(
-                  'Deep Kundli analysis, Lal Kitab remedies & predictions, Vastu floor plan scoring, live Panchang, and Numerology & Tarot — all in one platform powered by AI and authentic Vedic traditions.',
+                  'Deep Kundli analysis, Lal Kitab remedies & predictions, Vastu floor plan scoring, live Panchang, and Numerology — all in one platform powered by AI and authentic Vedic traditions.',
                   'गहरी कुंडली विश्लेषण, लाल किताब उपाय और भविष्यवाणियां, वास्तु फ्लोर प्लान स्कोरिंग, लाइव पंचांग और अंकशास्त्र — AI और प्रामाणिक वैदिक परंपराओं द्वारा संचालित एक ही प्लेटफॉर्म।'
                 )}
               </p>
