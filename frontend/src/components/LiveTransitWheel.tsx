@@ -421,36 +421,36 @@ export default function LiveTransitWheel() {
                 const hPlanets = hData.planets;
                 const count = hPlanets.length;
 
-                // EXACT InteractiveKundli values (lines 1091-1108)
+                // Compact layout — small font, tight grid
                 const maxCols = nh.trap
                   ? (count > 4 ? 3 : count > 2 ? 2 : count)
-                  : (count > 3 ? 3 : count > 1 ? 2 : 1);
-                const cols = Math.min(count, maxCols);
+                  : (count > 3 ? 2 : count > 1 ? 2 : 1);
+                const cols = Math.min(count, Math.max(maxCols, 1));
                 const spacing = nh.trap
-                  ? (count > 4 ? 26 : 32)
-                  : (count > 3 ? 22 : count > 2 ? 24 : 28);
-                const rowHeight = count > 4 ? 16 : count > 3 ? 18 : 20;
+                  ? (count > 4 ? 18 : 22)
+                  : (count > 3 ? 16 : count > 2 ? 18 : 20);
+                const rowHeight = count > 4 ? 10 : count > 3 ? 11 : 12;
                 const fontSize = nh.trap
-                  ? (count > 4 ? 13 : 15)
-                  : (count > 3 ? 12 : count > 2 ? 13 : 14);
+                  ? (count > 4 ? 8 : 9)
+                  : (count > 3 ? 7 : count > 2 ? 8 : 9);
 
                 return (
                   <g key={nh.h}>
-                    {/* Rashi number (same as InteractiveKundli line 1074-1085) */}
-                    <text x={nh.cx} y={nh.cy - (count > 0 ? 12 : 0) + 5}
+                    {/* Rashi number */}
+                    <text x={nh.cx} y={nh.cy - (count > 0 ? 8 : 0)}
                       textAnchor="middle" dominantBaseline="central"
-                      fill={GOLD} fontSize={nh.trap ? 20 : 16} fontWeight="bold" fontFamily="'Inter',sans-serif"
-                      opacity={0.35}>{hData.signNum}</text>
+                      fill={GOLD} fontSize={nh.trap ? 12 : 10} fontWeight="bold" fontFamily="'Inter',sans-serif"
+                      opacity={0.3}>{hData.signNum}</text>
 
-                    {/* Planets — EXACT InteractiveKundli grid (lines 1088-1129) */}
+                    {/* Planets — compact grid */}
                     {hPlanets.map((pl, idx) => {
                       const sym = pStatus(pl);
-                      const label = `${pAbbr(pl.planet)}${sym} ${pl.sign_degree.toFixed(0)}°`;
+                      const label = `${pAbbr(pl.planet)}${sym}${pl.sign_degree.toFixed(0)}°`;
                       const pCol = idx % cols;
                       const pRow = Math.floor(idx / cols);
                       const startX = nh.cx - ((cols - 1) * spacing) / 2;
                       const px = startX + pCol * spacing;
-                      const baseY = nh.cy + (nh.trap ? 14 : 8) - (count > 0 ? 2 : 0);
+                      const baseY = nh.cy + (nh.trap ? 6 : 4);
                       const py = baseY + pRow * rowHeight;
                       return (
                         <text key={pl.planet} x={px} y={py}
@@ -466,10 +466,10 @@ export default function LiveTransitWheel() {
               })}
 
               {/* Center — Om + time */}
-              <text x={cc.x} y={cc.y - 6} textAnchor="middle" fill={GOLD_MED} fontSize="18" fontWeight="bold">ॐ</text>
-              <text x={cc.x} y={cc.y + 10} textAnchor="middle" fill={GOLD} fontSize="9" fontWeight="600" fontFamily="'Inter',sans-serif">{timeStr}</text>
+              <text x={cc.x} y={cc.y - 4} textAnchor="middle" fill={GOLD_MED} fontSize="14" fontWeight="bold">ॐ</text>
+              <text x={cc.x} y={cc.y + 8} textAnchor="middle" fill={GOLD} fontSize="7" fontWeight="600" fontFamily="'Inter',sans-serif">{timeStr}</text>
               {/* ASC label */}
-              <text x={cc.x} y={P - 6} textAnchor="middle" fill={GOLD_MED} fontSize="9" fontWeight="700" fontFamily="'Inter',sans-serif">
+              <text x={cc.x} y={P - 4} textAnchor="middle" fill={GOLD_MED} fontSize="7" fontWeight="700" fontFamily="'Inter',sans-serif">
                 ASC {(lagnaLong % 30).toFixed(1)}° {hi ? SIGNS[ascSignIdx]?.hi : SIGNS[ascSignIdx]?.en}
               </text>
             </svg>
