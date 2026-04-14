@@ -345,10 +345,11 @@ export default function LiveTransitWheel() {
 
       {/* Kundli Chart View — North Indian style, same aesthetic as transit wheel */}
       {viewMode === 'kundli' && skyData && (() => {
-        const S = 500; // viewBox size
-        const P = 30;  // padding
-        const W = S - 2 * P; // inner width
-        const H2 = W / 2;
+        // Use exact same coordinate system as InteractiveKundli
+        const S = 416; // same viewBox as InteractiveKundli
+        const P = 8;   // same padding
+        const W = S - 2 * P; // 400 inner width
+        const H2 = W / 2;   // 200
         // Corners
         const tl = { x: P, y: P };
         const tr = { x: P + W, y: P };
@@ -413,35 +414,35 @@ export default function LiveTransitWheel() {
               <line x1={tl.x} y1={tl.y} x2={br.x} y2={br.y} stroke={WHEEL_LINE} strokeWidth={WHEEL_STROKE_W} />
               <line x1={tr.x} y1={tr.y} x2={bl.x} y2={bl.y} stroke={WHEEL_LINE} strokeWidth={WHEEL_STROKE_W} />
 
-              {/* House contents — same grid layout as InteractiveKundli (scaled 1.2x for 500px viewBox) */}
+              {/* House contents — EXACT same layout as InteractiveKundli (same 416px viewBox) */}
               {houses.map(nh => {
                 const hData = kundliHouses[nh.h - 1];
                 if (!hData) return null;
                 const hPlanets = hData.planets;
                 const count = hPlanets.length;
 
-                // Exact InteractiveKundli logic × 1.2 scale
+                // EXACT InteractiveKundli values (lines 1091-1108)
                 const maxCols = nh.trap
                   ? (count > 4 ? 3 : count > 2 ? 2 : count)
                   : (count > 3 ? 3 : count > 1 ? 2 : 1);
-                const cols = Math.min(count, Math.max(maxCols, 1));
+                const cols = Math.min(count, maxCols);
                 const spacing = nh.trap
-                  ? (count > 4 ? 31 : 38)
-                  : (count > 3 ? 26 : count > 2 ? 29 : 34);
-                const rowH = count > 4 ? 19 : count > 3 ? 22 : 24;
-                const fs = nh.trap
-                  ? (count > 4 ? 11 : 12)
-                  : (count > 3 ? 10 : count > 2 ? 11 : 12);
+                  ? (count > 4 ? 26 : 32)
+                  : (count > 3 ? 22 : count > 2 ? 24 : 28);
+                const rowHeight = count > 4 ? 16 : count > 3 ? 18 : 20;
+                const fontSize = nh.trap
+                  ? (count > 4 ? 13 : 15)
+                  : (count > 3 ? 12 : count > 2 ? 13 : 14);
 
                 return (
                   <g key={nh.h}>
-                    {/* Rashi number — offset up from centroid */}
-                    <text x={nh.cx} y={nh.cy - (count > 0 ? 15 : 0) + 4}
+                    {/* Rashi number (same as InteractiveKundli line 1074-1085) */}
+                    <text x={nh.cx} y={nh.cy - (count > 0 ? 12 : 0) + 5}
                       textAnchor="middle" dominantBaseline="central"
-                      fill={GOLD} fontSize={nh.trap ? 16 : 13} fontWeight="bold" fontFamily="'Inter',sans-serif"
+                      fill={GOLD} fontSize={nh.trap ? 20 : 16} fontWeight="bold" fontFamily="'Inter',sans-serif"
                       opacity={0.35}>{hData.signNum}</text>
 
-                    {/* Planets — multi-column grid (same as InteractiveKundli) */}
+                    {/* Planets — EXACT InteractiveKundli grid (lines 1088-1129) */}
                     {hPlanets.map((pl, idx) => {
                       const sym = pStatus(pl);
                       const label = `${pAbbr(pl.planet)}${sym} ${pl.sign_degree.toFixed(0)}°`;
@@ -449,13 +450,13 @@ export default function LiveTransitWheel() {
                       const pRow = Math.floor(idx / cols);
                       const startX = nh.cx - ((cols - 1) * spacing) / 2;
                       const px = startX + pCol * spacing;
-                      const baseY = nh.cy + (nh.trap ? 17 : 10) - (count > 0 ? 2 : 0);
-                      const py = baseY + pRow * rowH;
+                      const baseY = nh.cy + (nh.trap ? 14 : 8) - (count > 0 ? 2 : 0);
+                      const py = baseY + pRow * rowHeight;
                       return (
                         <text key={pl.planet} x={px} y={py}
                           textAnchor="middle" dominantBaseline="central"
                           fill={MALEFIC.has(pl.planet) ? DARK : GOLD_MED}
-                          fontSize={fs} fontWeight="700" fontFamily="'Inter',sans-serif">
+                          fontSize={fontSize} fontWeight="700" fontFamily="'Inter',sans-serif">
                           {label}
                         </text>
                       );
@@ -465,10 +466,10 @@ export default function LiveTransitWheel() {
               })}
 
               {/* Center — Om + time */}
-              <text x={cc.x} y={cc.y - 8} textAnchor="middle" fill={GOLD_MED} fontSize="22" fontWeight="bold">ॐ</text>
-              <text x={cc.x} y={cc.y + 12} textAnchor="middle" fill={GOLD} fontSize="10" fontWeight="600" fontFamily="'Inter',sans-serif">{timeStr}</text>
+              <text x={cc.x} y={cc.y - 6} textAnchor="middle" fill={GOLD_MED} fontSize="18" fontWeight="bold">ॐ</text>
+              <text x={cc.x} y={cc.y + 10} textAnchor="middle" fill={GOLD} fontSize="9" fontWeight="600" fontFamily="'Inter',sans-serif">{timeStr}</text>
               {/* ASC label */}
-              <text x={cc.x} y={P - 10} textAnchor="middle" fill={GOLD_MED} fontSize="10" fontWeight="700" fontFamily="'Inter',sans-serif">
+              <text x={cc.x} y={P - 6} textAnchor="middle" fill={GOLD_MED} fontSize="9" fontWeight="700" fontFamily="'Inter',sans-serif">
                 ASC {(lagnaLong % 30).toFixed(1)}° {hi ? SIGNS[ascSignIdx]?.hi : SIGNS[ascSignIdx]?.en}
               </text>
             </svg>
