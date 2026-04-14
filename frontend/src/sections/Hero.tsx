@@ -86,8 +86,8 @@ export default function Hero() {
         {/* Two-column layout */}
         <div className="flex flex-col lg:flex-row items-stretch gap-2 lg:gap-4">
 
-          {/* LEFT — Kundli Form */}
-          <div className="hero-cta opacity-0 w-full lg:basis-[42%] flex flex-col justify-center">
+          {/* LEFT — Kundli Form — matches circle height */}
+          <div className="hero-cta opacity-0 w-full lg:basis-[42%] flex flex-col justify-between">
             <HeroKundliForm language={language} l={l} />
           </div>
 
@@ -184,7 +184,12 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
   const inputClass = "w-full px-3 py-2.5 pl-10 rounded-lg bg-[#f0ecf8]/40 border border-sacred-gold/50 text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none placeholder:text-sacred-gold-dark/40";
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
+      {/* Heading */}
+      <h2 className="text-lg sm:text-xl font-semibold text-cosmic-text border-b border-sacred-gold/30 pb-2">
+        {l('Generate Your Free Kundli', 'अपनी मुफ्त कुंडली बनाएं')}
+      </h2>
+
       {/* Full Name */}
       <div>
         <label className="text-sm font-semibold text-cosmic-text mb-1 block">{l('Full Name', 'पूरा नाम')}</label>
@@ -268,13 +273,11 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
         </div>
       </div>
 
-      {/* Generate Button */}
+      {/* Submit Button */}
       <button onClick={handleGenerate}
         disabled={!name || !birthDate || !birthTime || !birthPlace}
-        className="w-full flex items-center justify-center gap-2 py-3.5 bg-sacred-gold text-white rounded-lg font-semibold text-base hover:bg-sacred-gold-dark transition-all shadow-lg shadow-sacred-gold/20 disabled:opacity-50 disabled:cursor-not-allowed">
-        <Sparkles className="w-5 h-5" />
-        {l('Generate Kundli', 'कुंडली बनाएं')}
-        <ChevronRight className="w-4 h-4" />
+        className="w-full flex items-center justify-center gap-2 py-3 mt-2 bg-sacred-gold/90 text-white rounded-lg font-semibold text-base hover:bg-sacred-gold-dark transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+        {l('Submit', 'सबमिट करें')}
       </button>
     </div>
   );
