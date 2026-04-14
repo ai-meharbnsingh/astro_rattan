@@ -79,15 +79,6 @@ export default function Hero() {
             </h1>
           </div>
 
-          {/* Subtitle */}
-          <div className="hero-subtitle opacity-0 mt-5 max-w-3xl mx-auto">
-            <p className="text-base sm:text-lg text-gray-600 leading-relaxed">
-              {l(
-                'Deep Kundli analysis, Lal Kitab remedies & predictions, Vastu floor plan scoring, live Panchang, and Numerology — all in one platform.',
-                'गहरी कुंडली विश्लेषण, लाल किताब उपाय और भविष्यवाणियां, वास्तु फ्लोर प्लान स्कोरिंग, लाइव पंचांग और अंकशास्त्र — एक ही प्लेटफॉर्म।'
-              )}
-            </p>
-          </div>
         </div>
 
         {/* Two-column layout */}
