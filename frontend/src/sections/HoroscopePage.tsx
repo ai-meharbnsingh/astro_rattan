@@ -162,7 +162,11 @@ export default function HoroscopePage() {
                     : 'text-cosmic-text-secondary hover:bg-sacred-gold/10'
                 }`}
               >
-                <span className="text-lg leading-none">{s.emoji}</span>
+                <img
+                  src={`/images/zodiac-purple/zodiac-${s.id}.png`}
+                  alt={s.en}
+                  className="w-10 h-10 object-contain"
+                />
                 <span className="text-[10px]">{language === 'hi' ? s.hi : s.en}</span>
               </button>
             ))}

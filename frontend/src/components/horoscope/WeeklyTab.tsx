@@ -69,7 +69,11 @@ export default function WeeklyTab({ data, loading, language, t }: Props) {
       {/* Week Header */}
       <div className="rounded-xl border border-cosmic-border bg-cosmic-card p-4">
         <div className="flex items-center gap-3 mb-2">
-          <span className="text-3xl">{data.emoji}</span>
+          <img
+            src={`/images/zodiac-purple/zodiac-${data.sign}.png`}
+            alt={data.sign}
+            className="w-14 h-14 object-contain rounded-lg"
+          />
           <div>
             <h3 className="text-lg font-semibold text-cosmic-text">
               {language === 'hi' ? data.sign_hindi : data.sign.charAt(0).toUpperCase() + data.sign.slice(1)}

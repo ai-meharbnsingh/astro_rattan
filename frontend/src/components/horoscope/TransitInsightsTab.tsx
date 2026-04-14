@@ -136,7 +136,11 @@ export default function TransitInsightsTab({ data, loading, language, t }: Props
                 return (
                   <tr key={effect.sign} className="border-b border-cosmic-border/50 last:border-0 align-middle">
                     <td className="px-2 py-1.5 font-medium text-cosmic-text">
-                      <span className="mr-1">{effect.emoji}</span>
+                      <img
+                        src={`/images/zodiac-purple/zodiac-${effect.sign}.png`}
+                        alt={effect.sign}
+                        className="w-5 h-5 object-contain rounded-sm inline-block mr-1 align-text-bottom"
+                      />
                       {language === 'hi' ? effect.sign_hindi : effect.sign.charAt(0).toUpperCase() + effect.sign.slice(1)}
                     </td>
                     <td className="px-2 py-1.5 text-cosmic-text-secondary">
