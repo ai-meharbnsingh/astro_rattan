@@ -142,8 +142,8 @@ export default function LiveTransitWheel() {
     // Divider line — from CENTER to OUTER
     const lx1 = CX + R_CENTER * Math.cos(startRad);
     const ly1 = CY + R_CENTER * Math.sin(startRad);
-    const lx2 = CX + R_OUTER * Math.cos(startRad);
-    const ly2 = CY + R_OUTER * Math.sin(startRad);
+    const lx2 = CX + R_OUTERMOST * Math.cos(startRad);
+    const ly2 = CY + R_OUTERMOST * Math.sin(startRad);
 
     const nx = CX + R_SIGN_NAME * Math.cos(midRad);
     const ny = CY + R_SIGN_NAME * Math.sin(midRad);
