@@ -10,7 +10,7 @@ export default function Hero() {
   const l = (en: string, hi: string) => (language === 'hi' ? hi : en);
 
   useEffect(() => {
-    if (gsap.globalTimeline.timeScale() === 0) return; // reduced motion
+    if (gsap.globalTimeline.timeScale() === 0) return;
     const ctx = gsap.context(() => {
       gsap.fromTo('.hero-shloka',
         { opacity: 0, y: 30 },
@@ -42,12 +42,13 @@ export default function Hero() {
 
   return (
     <section ref={heroRef} className="relative min-h-[60vh] flex items-center overflow-hidden pt-24 pb-8">
-      {/* Background decorative elements — same as before */}
+      {/* Background — noise texture */}
       <div className="absolute inset-0 z-[1] opacity-[0.03] pointer-events-none"
         style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")` }}
       />
+      {/* Depth radial gradient behind text side */}
       <div className="absolute inset-0 z-[2] pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse at center, transparent 30%, rgba(139,69,19,0.06) 100%)' }}
+        style={{ background: 'radial-gradient(ellipse at 30% 50%, rgba(196,97,31,0.06) 0%, rgba(245,240,232,0) 60%)' }}
       />
 
       {/* Floating orbs */}
@@ -78,13 +79,26 @@ export default function Hero() {
               </p>
             </div>
 
-            {/* Main Title */}
+            {/* Main Title — 3D extruded text */}
             <div className="hero-title-main opacity-0">
-              <h1 className="font-sans text-4xl sm:text-5xl lg:text-6xl text-cosmic-text leading-[0.95] tracking-wide"
-                style={{ textShadow: '0 0 60px rgba(255, 153, 51, 0.15)' }}>
+              <h1
+                className="text-4xl sm:text-5xl lg:text-6xl text-[#1a1a2e] leading-[1.0]"
+                style={{
+                  fontWeight: 800,
+                  letterSpacing: '-0.02em',
+                  textShadow: '1px 1px 0px #8B4513, 2px 2px 0px #7A3B10, 3px 3px 0px #6B330E, 4px 4px 0px #5C2C0C, 5px 5px 0px #4D240A, 6px 6px 12px rgba(0,0,0,0.3)',
+                }}
+              >
                 {l('Your Complete Vedic Astrology Platform', 'आपका पूर्ण वैदिक ज्योतिष प्लेटफॉर्म')}
               </h1>
-              <p className="font-sans text-base tracking-[4px] text-sacred-gold-dark mt-4 uppercase">
+              <p
+                className="text-base text-[#C4611F] mt-4 uppercase"
+                style={{
+                  fontWeight: 700,
+                  letterSpacing: '0.15em',
+                  textShadow: '1px 1px 3px rgba(196, 97, 31, 0.4)',
+                }}
+              >
                 {l('Kundli · Lal Kitab · Vastu · Panchang · Numerology', 'कुंडली · लाल किताब · वास्तु · पंचांग · अंकशास्त्र')}
               </p>
             </div>
@@ -133,8 +147,14 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* RIGHT — Zodiac Wheel */}
-          <div className="hero-wheel opacity-0 flex-shrink-0 w-full max-w-[360px] lg:max-w-[420px]">
+          {/* RIGHT — Zodiac Wheel with 3D depth */}
+          <div
+            className="hero-wheel opacity-0 flex-shrink-0 w-full max-w-[360px] lg:max-w-[440px] hero-wheel-float"
+            style={{
+              perspective: '1000px',
+              filter: 'drop-shadow(4px 8px 16px rgba(139,69,19,0.35)) drop-shadow(0px 0px 40px rgba(196,97,31,0.15))',
+            }}
+          >
             <ZodiacWheel />
           </div>
 
