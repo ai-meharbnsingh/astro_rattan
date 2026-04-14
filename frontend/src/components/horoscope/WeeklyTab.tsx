@@ -95,23 +95,25 @@ export default function WeeklyTab({ data, loading, language, t }: Props) {
         </div>
       </div>
 
-      {/* Section Cards */}
-      {SECTION_CONFIG.map(({ key, icon: Icon, color, bg, border }) => {
-        const text = data.sections?.[key];
-        if (!text) return null;
-        const label = SECTION_LABELS[key] || { en: key, hi: key };
-        return (
-          <div key={key} className={`rounded-xl border ${border} ${bg} p-4`}>
-            <div className="flex items-center gap-2 mb-2">
-              <Icon className={`w-4 h-4 ${color}`} />
-              <h4 className={`text-sm font-semibold ${color}`}>
-                {language === 'hi' ? label.hi : label.en}
-              </h4>
+      {/* Section Cards — column grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {SECTION_CONFIG.map(({ key, icon: Icon, color, bg, border }) => {
+          const text = data.sections?.[key];
+          if (!text) return null;
+          const label = SECTION_LABELS[key] || { en: key, hi: key };
+          return (
+            <div key={key} className={`rounded-xl border ${border} ${bg} p-4`}>
+              <div className="flex items-center gap-2 mb-2">
+                <Icon className={`w-4 h-4 ${color}`} />
+                <h4 className={`text-sm font-semibold ${color}`}>
+                  {language === 'hi' ? label.hi : label.en}
+                </h4>
+              </div>
+              <p className="text-sm text-gray-700 leading-relaxed">{text}</p>
             </div>
-            <p className="text-sm text-gray-700 leading-relaxed">{text}</p>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }
