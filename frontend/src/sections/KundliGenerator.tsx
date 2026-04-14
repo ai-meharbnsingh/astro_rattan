@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { formatDate, api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Download, Share2, Loader2, ScrollText, Home, RefreshCw, ChevronDown, X, BookOpen } from 'lucide-react';
+import { Download, Share2, Loader2, ScrollText, Home, RefreshCw, ChevronDown, X, BookOpen, Star, Clock3, Sparkles, Grid3X3, Eye } from 'lucide-react';
 import { useKundliData } from '@/hooks/useKundliData';
 import KundliForm from '@/components/kundli/KundliForm';
 import KundliSummaryModal from '@/components/KundliSummaryModal';
+import ConsolidatedReport from '@/components/kundli/ConsolidatedReport';
+import JHoraKundliView from '@/components/kundli/JHoraKundliView';
 import BirthDetailsTab from '@/components/kundli/BirthDetailsTab';
 import LordshipsTab from '@/components/kundli/LordshipsTab';
 import AspectsMatrixTab from '@/components/kundli/AspectsMatrixTab';
@@ -47,11 +49,11 @@ interface TabDef {
 const TAB_DEFS: Omit<TabDef, 'onActivate'>[] = [
   // Primary tabs
   { value: 'report',        labelEn: 'Report',         labelHi: 'रिपोर्ट',          primary: true, icon: ScrollText },
-  { value: 'planets',       labelEn: 'Planets',        labelHi: 'ग्रह',             primary: true },
-  { value: 'dasha',         labelEn: 'Dasha',          labelHi: 'दशा',             primary: true },
-  { value: 'yoga-dosha',    labelEn: 'Yogas/Dosha',    labelHi: 'योग/दोष',          primary: true },
-  { value: 'divisional',    labelEn: 'Divisional',     labelHi: 'विभाजन चार्ट',     primary: true },
-  { value: 'aspects',       labelEn: 'Aspects',        labelHi: 'दृष्टि',           primary: true },
+  { value: 'planets',       labelEn: 'Planets',        labelHi: 'ग्रह',             primary: true, icon: Star },
+  { value: 'dasha',         labelEn: 'Dasha',          labelHi: 'दशा',             primary: true, icon: Clock3 },
+  { value: 'yoga-dosha',    labelEn: 'Yogas/Dosha',    labelHi: 'योग/दोष',          primary: true, icon: Sparkles },
+  { value: 'divisional',    labelEn: 'Divisional',     labelHi: 'विभाजन चार्ट',     primary: true, icon: Grid3X3 },
+  { value: 'aspects',       labelEn: 'Aspects',        labelHi: 'दृष्टि',           primary: true, icon: Eye },
   // Charts
   { value: 'ashtakvarga',   labelEn: 'Ashtakvarga',    labelHi: 'अष्टकवर्ग',        primary: false, category: 'charts' },
   { value: 'sodashvarga',   labelEn: 'Sodashvarga',    labelHi: 'षोडशवर्ग',         primary: false, category: 'charts' },
@@ -190,7 +192,6 @@ export default function KundliGenerator() {
 
   // Check if current active tab is a "more" tab
   const isMoreTabActive = moreTabs.some(t => t.value === activeTab);
-  const activeMoreTab = moreTabs.find(t => t.value === activeTab);
 
   // --- LOADING ---
   if (step === 'loading') {
@@ -268,51 +269,22 @@ export default function KundliGenerator() {
               }}>
               <RefreshCw className="w-4 h-4 mr-1" />{language === 'hi' ? 'पुनः गणना' : 'Regenerate'}
             </Button>
-            <Button variant="outline" size="sm" className="border-sacred-gold text-sacred-brown" onClick={async () => {
-              const shareData = {
-                title: `Kundli - ${result.person_name}`,
-                text: `Vedic Kundli for ${result.person_name}, generated on Astro Rattan`,
-                url: window.location.href,
-              };
-              try {
-                if (navigator.share) {
-                  await navigator.share(shareData);
-                } else {
-                  await navigator.clipboard.writeText(`${shareData.title}\n${shareData.text}\n${shareData.url}`);
-                  alert(language === 'hi' ? 'लिंक क्लिपबोर्ड पर कॉपी हो गया!' : 'Link copied to clipboard!');
-                }
-              } catch (e) {
-                if ((e as Error).name !== 'AbortError') console.error(e);
-              }
-            }}>
-              <Share2 className="w-4 h-4 mr-1" />{t('common.share')}
+            <Button variant="outline" size="sm" className="border-sacred-gold text-sacred-brown"
+              onClick={() => {
+                fetchTransit();
+                fetchD10();
+                fetchDasha();
+                fetchExtendedDasha();
+                setJhoraOpen(true);
+              }}>
+              <ScrollText className="w-4 h-4 mr-1" />{t('kundli.jhoraView')}
             </Button>
-            <Button size="sm" className="bg-sacred-gold text-white hover:bg-sacred-gold/90 font-semibold" onClick={async () => {
-              try {
-                const token = localStorage.getItem('astrorattan_token');
-                const API_BASE = import.meta.env.VITE_API_URL || '';
-                const resp = await fetch(`${API_BASE}/api/kundli/${result.id}/pdf`, {
-                  headers: token ? { Authorization: `Bearer ${token}` } : {},
-                });
-                if (!resp.ok) {
-                  const err = await resp.json().catch(() => ({ detail: resp.statusText }));
-                  throw new Error(err.detail || 'PDF download failed');
-                }
-                const blob = await resp.blob();
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `kundli-${result.person_name || 'report'}.pdf`;
-                document.body.appendChild(a);
-                a.click();
-                setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 60000);
-              } catch (e: unknown) {
-                console.error('PDF download error:', e);
-                const message = e instanceof Error ? e.message : 'Failed to download PDF';
-                alert(message);
-              }
-            }}>
-              <Download className="w-4 h-4 mr-1" />{t('common.download')}
+            <Button variant="outline" size="sm" className="border-sacred-gold text-sacred-brown"
+              onClick={() => {
+                fetchTransit();
+                setReportOpen(true);
+              }}>
+              <ScrollText className="w-4 h-4 mr-1" />{t('kundli.fullReport')}
             </Button>
             <Button size="sm"
               className="bg-gradient-to-r from-sacred-gold to-sacred-gold-dark text-white hover:from-sacred-gold/90 hover:to-sacred-gold-dark/90 font-semibold border border-sacred-gold-dark/30 shadow-md"
@@ -334,23 +306,17 @@ export default function KundliGenerator() {
 
         {/* Tabs — controlled mode */}
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full kundli-tabs">
-          {/* ── Desktop tab bar ─────────────────────────── */}
-          <div className="hidden md:block mb-4">
-            <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 flex flex-wrap
-              [&>button]:whitespace-nowrap [&>button]:min-h-[36px] [&>button]:px-3 [&>button]:py-1.5 [&>button]:text-xs
+          <div className="mb-4">
+            <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 grid grid-cols-6
+              [&>button]:min-w-0 [&>button]:min-h-[58px] [&>button]:px-1 [&>button]:py-2 [&>button]:text-[11px] md:[&>button]:text-xs
+              [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:justify-center [&>button]:gap-1 [&>button]:leading-tight
               [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
               {primaryTabs.map(tab => (
                 <TabsTrigger key={tab.value} value={tab.value}>
-                  {tab.icon && <tab.icon className="w-3 h-3 mr-1" />}
-                  {hi ? tab.labelHi : tab.labelEn}
+                  {tab.icon && <tab.icon className="w-3.5 h-3.5" />}
+                  <span className="truncate max-w-full">{hi ? tab.labelHi : tab.labelEn}</span>
                 </TabsTrigger>
               ))}
-              {/* Show active "more" tab as a visible trigger if selected */}
-              {isMoreTabActive && activeMoreTab && (
-                <TabsTrigger key={activeMoreTab.value} value={activeMoreTab.value}>
-                  {hi ? activeMoreTab.labelHi : activeMoreTab.labelEn}
-                </TabsTrigger>
-              )}
             </TabsList>
             {/* "More Analysis" dropdown button */}
             <div className="relative mt-1" ref={moreDropdownRef}>
@@ -394,45 +360,19 @@ export default function KundliGenerator() {
             </div>
           </div>
 
-          {/* ── Mobile tab bar ──────────────────────────── */}
-          <div className="relative mb-8 md:hidden">
-            {/* Left arrow hint */}
-            <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-sacred-cream to-transparent z-10 pointer-events-none flex items-center justify-start pl-1">
-              <span className="text-sacred-gold-dark text-lg">&lsaquo;</span>
-            </div>
-            {/* Right arrow hint */}
-            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-sacred-cream to-transparent z-10 pointer-events-none flex items-center justify-end pr-1">
-              <span className="text-sacred-gold-dark text-lg">&rsaquo;</span>
-            </div>
-            <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1
-              flex flex-nowrap overflow-x-auto pb-3 scrollbar-hide
-              [&>button]:flex-shrink-0 [&>button]:flex-grow-0 [&>button]:basis-auto [&>button]:whitespace-nowrap [&>button]:min-h-[36px] [&>button]:px-2 [&>button]:py-1.5 [&>button]:text-xs
-              [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
-              {primaryTabs.map(tab => (
-                <TabsTrigger key={tab.value} value={tab.value}>
-                  {tab.icon && <tab.icon className="w-3 h-3 mr-1" />}
-                  {hi ? tab.labelHi : tab.labelEn}
-                </TabsTrigger>
-              ))}
-              {/* Show active "more" tab inline if selected */}
-              {isMoreTabActive && activeMoreTab && (
-                <TabsTrigger key={activeMoreTab.value} value={activeMoreTab.value}>
-                  {hi ? activeMoreTab.labelHi : activeMoreTab.labelEn}
-                </TabsTrigger>
-              )}
-              {/* "More" button at the end */}
-              <button
-                onClick={() => setShowMobileMoreSheet(true)}
-                className={`flex-shrink-0 flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md border transition-colors ${
-                  isMoreTabActive
-                    ? 'bg-sacred-gold/20 border-sacred-gold text-sacred-gold-dark'
-                    : 'border-sacred-gold/40 text-cosmic-text'
-                }`}
-              >
-                {hi ? 'और' : 'More'}
-                <ChevronDown className="w-3 h-3" />
-              </button>
-            </TabsList>
+          {/* "More" button for mobile */}
+          <div className="mb-8 md:hidden">
+            <button
+              onClick={() => setShowMobileMoreSheet(true)}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border transition-colors ${
+                isMoreTabActive
+                  ? 'bg-sacred-gold/20 border-sacred-gold text-sacred-gold-dark'
+                  : 'bg-sacred-cream border-sacred-gold/40 text-cosmic-text'
+              }`}
+            >
+              {hi ? 'और विश्लेषण' : 'More Analysis'}
+              <ChevronDown className="w-3 h-3" />
+            </button>
           </div>
 
           {/* Mobile "More" bottom sheet overlay */}
@@ -500,8 +440,6 @@ export default function KundliGenerator() {
               reportGocharShift={reportGocharShift} setReportGocharShift={setReportGocharShift}
               expandedMahadasha={expandedMahadasha} setExpandedMahadasha={setExpandedMahadasha}
               expandedAntardasha={expandedAntardasha} setExpandedAntardasha={setExpandedAntardasha}
-              jhoraOpen={jhoraOpen} setJhoraOpen={setJhoraOpen}
-              reportOpen={reportOpen} setReportOpen={setReportOpen}
               fetchTransit={fetchTransit} fetchD10={fetchD10}
               fetchDasha={fetchDasha} fetchExtendedDasha={fetchExtendedDasha}
               changeDivision={changeDivision}
@@ -651,6 +589,60 @@ export default function KundliGenerator() {
             setSummaryOpen(false);
           }}
         />
+
+        {/* JHora-style Fullscreen Overlay */}
+        {jhoraOpen && (
+          <div className="fixed inset-0 z-[9999] bg-parchment" style={{ width: '100vw', height: '100vh' }}>
+            <button onClick={() => setJhoraOpen(false)} className="absolute top-2 right-3 z-10 p-1.5 hover:bg-black rounded text-sacred-gold text-sm font-bold" title={t('common.close')}>
+              <X className="w-5 h-5" />
+            </button>
+            <JHoraKundliView
+              result={result}
+              planets={planets}
+              dashaData={dashaData}
+              extendedDashaData={extendedDashaData}
+              avakhadaData={avakhadaData}
+              yogaDoshaData={yogaDoshaData}
+              ashtakvargaData={ashtakvargaData}
+              shadbalaData={shadbalaData}
+              divisionalData={divisionalData}
+              d10Data={d10Data}
+              transitData={transitData}
+              loadingDasha={loadingDasha}
+              loadingExtendedDasha={loadingExtendedDasha}
+              loadingAvakhada={loadingAvakhada}
+              loadingYogaDosha={loadingYogaDosha}
+              loadingAshtakvarga={loadingAshtakvarga}
+              loadingShadbala={loadingShadbala}
+              loadingDivisional={loadingDivisional}
+              loadingD10={loadingD10}
+              loadingTransit={loadingTransit}
+              onBack={() => setJhoraOpen(false)}
+              onDownloadPDF={async () => {}}
+            />
+          </div>
+        )}
+
+        {/* Consolidated Report Popup */}
+        <ConsolidatedReport
+          open={reportOpen}
+          onOpenChange={setReportOpen}
+          result={result}
+          planets={planets}
+          dashaData={dashaData}
+          avakhadaData={avakhadaData}
+          yogaDoshaData={yogaDoshaData}
+          ashtakvargaData={ashtakvargaData}
+          shadbalaData={shadbalaData}
+          divisionalData={divisionalData}
+          loadingDasha={loadingDasha}
+          loadingAvakhada={loadingAvakhada}
+          loadingYogaDosha={loadingYogaDosha}
+          loadingAshtakvarga={loadingAshtakvarga}
+          loadingShadbala={loadingShadbala}
+          loadingDivisional={loadingDivisional}
+        />
+
         {result?.client_id && <NotesWidget clientId={result.client_id} chartType="vedic" kundliId={result.id} />}
       </div>
     );
@@ -672,9 +664,6 @@ export default function KundliGenerator() {
       {/* -- What's inside: tab preview --------------------------------- */}
       <section className="max-w-3xl mx-auto px-4 pb-20 pt-2">
         <div className="text-center mb-6">
-          <p className="text-[11px] font-semibold text-sacred-gold-dark uppercase tracking-[4px] mb-2">
-            {hi ? 'चार्ट जनरेट होने के बाद' : 'after generating your chart'}
-          </p>
           <h2 className="text-xl sm:text-2xl font-sans text-cosmic-text">
             {hi ? '23 विश्लेषण मॉड्यूल — एक ही जगह' : '23 Analysis Modules — All in One Place'}
           </h2>

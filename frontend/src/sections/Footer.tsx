@@ -1,131 +1,54 @@
 import { Link } from 'react-router-dom';
-import { Mail, Phone, Instagram, Youtube, ChevronRight, Heart } from 'lucide-react';
+import { Mail, Phone, Heart } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 
 export default function Footer() {
   const { t, language } = useTranslation();
   const l = (en: string, hi: string) => (language === 'hi' ? hi : en);
 
-  const serviceLinks = [
-    { label: l('Kundli Generation', 'कुंडली निर्माण'), href: '/kundli' },
-    { label: l('Dosha Analysis', 'दोष विश्लेषण'), href: '/kundli' },
-    { label: l('Panchang', 'पंचांग'), href: '/panchang' },
-    { label: l('Lal Kitab', 'लाल किताब'), href: '/lal-kitab' },
-    { label: l('Numerology', 'अंकशास्त्र'), href: '/numerology' },
-  ];
-
-  const footerLinks = {
-    company: [
-      { label: t('footer.aboutUs'), href: '/about' },
-      { label: t('footer.contactShort'), href: '/' },
-      { label: l('Privacy Policy', 'गोपनीयता नीति'), href: '/privacy' },
-      { label: l('Terms of Service', 'सेवा की शर्तें'), href: '/terms' },
-    ],
-  };
-
-  const sectionTitleKeys: Record<string, string> = {
-    company: 'footer.company',
-  };
-
   return (
-    <footer className="relative bg-cosmic-bg overflow-hidden border-t border-sacred-gold">
-      {/* Top gold line */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-sacred-gold-dark to-transparent" />
-      
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="py-16 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
-          <div className="col-span-2 md:col-span-3 lg:col-span-2">
-            <Link to="/" className="flex items-center gap-2 mb-6">
-              <img src="/logo.png" alt="Astro Rattan" className="h-16 w-auto" />
-            </Link>
-            <p className="text-cosmic-text mb-6 max-w-sm">
-              {t('footer.tagline')}
-            </p>
-            <div className="space-y-3 mb-6">
-              <a href="mailto:info@astrorattan.com" className="flex items-center gap-3 text-cosmic-text hover:text-sacred-gold-dark transition-colors">
-                <Mail className="w-5 h-5" />
-                <span className="text-base">info@astrorattan.com</span>
-              </a>
-              <a href="tel:+918076025521" className="flex items-center gap-3 text-cosmic-text hover:text-sacred-gold-dark transition-colors">
-                <Phone className="w-5 h-5" />
-                <span className="text-base">+91 80760 25521</span>
-              </a>
-            </div>
-            <div className="flex gap-3">
-              {[
-                { Icon: Instagram, url: 'https://instagram.com/astrorattan' },
-                { Icon: Youtube, url: 'https://youtube.com/@astrorattan' },
-              ].map(({ Icon, url }) => (
-                <a
-                  key={url}
-                  href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 bg-sacred-gold-dark border border-sacred-gold flex items-center justify-center text-cosmic-text hover:text-sacred-gold-dark hover:border-sacred-gold transition-all"
-                >
-                  <Icon className="w-5 h-5" />
+    <footer className="bg-cosmic-bg border-t border-sacred-gold/30">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 text-sm">
+        {/* Table layout — aligned columns */}
+        <table className="w-full">
+          <tbody>
+            <tr className="">
+              <td className="py-1.5 pr-4 font-semibold text-sacred-gold-dark whitespace-nowrap w-24">{t('footer.services')}:</td>
+              <td className="py-1.5 w-1/5"><Link to="/kundli" className="text-cosmic-text hover:text-sacred-gold-dark">{l('Kundli', 'कुंडली')}</Link></td>
+              <td className="py-1.5 w-1/5"><Link to="/panchang" className="text-cosmic-text hover:text-sacred-gold-dark">{l('Panchang', 'पंचांग')}</Link></td>
+              <td className="py-1.5 w-1/5"><Link to="/lal-kitab" className="text-cosmic-text hover:text-sacred-gold-dark">{l('Lal Kitab', 'लाल किताब')}</Link></td>
+              <td className="py-1.5 w-1/5"><Link to="/numerology" className="text-cosmic-text hover:text-sacred-gold-dark">{l('Numerology', 'अंकशास्त्र')}</Link></td>
+              <td className="py-1.5 w-1/5"><Link to="/vastu" className="text-cosmic-text hover:text-sacred-gold-dark">{l('Vastu', 'वास्तु')}</Link></td>
+            </tr>
+            <tr className="">
+              <td className="py-1.5 pr-4 font-semibold text-sacred-gold-dark whitespace-nowrap">{t('footer.company')}:</td>
+              <td className="py-1.5"><Link to="/about" className="text-cosmic-text hover:text-sacred-gold-dark">{t('footer.aboutUs')}</Link></td>
+              <td className="py-1.5"><Link to="/" className="text-cosmic-text hover:text-sacred-gold-dark">{t('footer.contactShort')}</Link></td>
+              <td className="py-1.5"><Link to="/privacy" className="text-cosmic-text hover:text-sacred-gold-dark">{l('Privacy Policy', 'गोपनीयता नीति')}</Link></td>
+              <td className="py-1.5"><Link to="/terms" className="text-cosmic-text hover:text-sacred-gold-dark">{l('Terms of Service', 'सेवा की शर्तें')}</Link></td>
+              <td className="py-1.5"></td>
+            </tr>
+            <tr>
+              <td className="py-1.5 pr-4 font-semibold text-sacred-gold-dark whitespace-nowrap">{l('Contact', 'संपर्क')}:</td>
+              <td className="py-1.5" colSpan={2}>
+                <a href="mailto:info@astrorattan.com" className="flex items-center gap-1 text-cosmic-text hover:text-sacred-gold-dark">
+                  <Mail className="w-3.5 h-3.5" />info@astrorattan.com
                 </a>
-              ))}
-            </div>
-          </div>
-          
-          <div>
-            <h4 className="font-sans font-semibold text-sacred-gold-dark mb-4">{t('footer.services')}</h4>
-            <ul className="space-y-2">
-              {serviceLinks.map((link, i) => (
-                <li key={i}>
-                  <Link to={link.href} className="text-base text-cosmic-text hover:text-sacred-gold-dark transition-colors flex items-center gap-1">
-                    <ChevronRight className="w-4 h-4" />{link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-          {Object.entries(footerLinks).map(([title, links]) => (
-            <div key={title}>
-              <h4 className="font-sans font-semibold text-sacred-gold-dark mb-4 capitalize">{t(sectionTitleKeys[title] || title)}</h4>
-              <ul className="space-y-2">
-                {links.map((link, i) => (
-                  <li key={i}>
-                    <Link 
-                      to={link.href} 
-                      className="text-base text-cosmic-text hover:text-sacred-gold-dark transition-colors flex items-center gap-1"
-                    >
-                      <ChevronRight className="w-4 h-4" />
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-        
-        <div className="py-6 border-t border-sacred-gold flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-base text-cosmic-text">
-            &copy; {new Date().getFullYear()} Astro Rattan. {t('footer.madeWith')} <Heart className="w-4 h-4 inline text-sacred-gold" /> {t('footer.inIndia')}
-          </p>
-          <div className="flex gap-6">
-            <span className="text-base text-cosmic-text">{t('footer.allRightsReserved')}</span>
-          </div>
-        </div>
-        <div className="pb-2 text-center">
-          <p className="text-xs text-gray-500">
-            {l('Your birth data is encrypted and never shared with third parties.', 'आपका जन्म डेटा एन्क्रिप्टेड है और कभी भी तीसरे पक्ष के साथ साझा नहीं किया जाता।')}
-          </p>
-        </div>
-        <div className="pb-4 text-center">
-          <p className="text-base text-cosmic-text-secondary" style={{ fontFamily: "'IM Fell English', serif" }}>
-            {t('footer.poweredBy')}{' '}
-            <a
-              href="https://adaptive-mind.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sacred-gold-dark hover:text-sacred-maroon transition-colors underline underline-offset-2"
-            >
-              Semantic Gravity
-            </a>
-          </p>
+              </td>
+              <td className="py-1.5" colSpan={2}>
+                <a href="tel:+918076025521" className="flex items-center gap-1 text-cosmic-text hover:text-sacred-gold-dark">
+                  <Phone className="w-3.5 h-3.5" />+91 80760 25521
+                </a>
+              </td>
+              <td className="py-1.5"></td>
+            </tr>
+          </tbody>
+        </table>
+
+        {/* Copyright */}
+        <div className="pt-2 mt-2 border-t border-sacred-gold/20 flex items-center justify-between text-xs text-cosmic-text/60">
+          <span>&copy; {new Date().getFullYear()} Astro Rattan {t('footer.madeWith')} <Heart className="w-3 h-3 inline text-sacred-gold" /> {t('footer.inIndia')}</span>
+          <span>{t('footer.poweredBy')} <a href="https://adaptive-mind.com" target="_blank" rel="noopener noreferrer" className="text-sacred-gold-dark hover:underline">Semantic Gravity</a></span>
         </div>
       </div>
     </footer>

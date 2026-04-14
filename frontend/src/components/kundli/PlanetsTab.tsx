@@ -152,14 +152,14 @@ export default function PlanetsTab({
 
         {/* Planet table */}
         <div className="mt-6 overflow-x-auto rounded-xl border border-sacred-gold">
-          <table className="w-full">
+          <table className="w-full text-xs">
             <thead className="bg-sacred-cream">
               <tr>
-                <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">{t('table.planet')}</th>
-                <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">{t('table.sign')}</th>
-                <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">{t('table.house')}</th>
-                <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">{t('table.nakshatra')}</th>
-                <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">{t('table.status')}</th>
+                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
+                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.sign')}</th>
+                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.house')}</th>
+                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.nakshatra')}</th>
+                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.status')}</th>
               </tr>
             </thead>
             <tbody>
@@ -173,18 +173,18 @@ export default function PlanetsTab({
                   }`}
                   onClick={() => handlePlanetClick(planet)}
                 >
-                  <td className="p-3 text-sacred-brown font-medium text-sm">
+                  <td className="p-1.5 text-sacred-brown font-medium">
                     {translatePlanet(planet.planet, language)}
                     {(planet.status || '').toLowerCase().includes('retrograde') && <span className="text-red-500 ml-0.5" title={t('kundli.retrograde')}>*</span>}
                   </td>
-                  <td className="p-3 text-cosmic-text text-sm">{translateSign(planet.sign, language)}</td>
-                  <td className="p-3 text-cosmic-text text-sm">{planet.house}</td>
-                  <td className="p-3 text-cosmic-text text-sm">
+                  <td className="p-1.5 text-cosmic-text">{translateSign(planet.sign, language)}</td>
+                  <td className="p-1.5 text-cosmic-text">{planet.house}</td>
+                  <td className="p-1.5 text-cosmic-text">
                     {translateNakshatra(planet.nakshatra, language) || '\u2014'}
                     {planet.nakshatra_pada ? ` (${language === 'hi' ? 'पाद' : 'P'}${planet.nakshatra_pada})` : ''}
                   </td>
-                  <td className="p-3">
-                    <span className={`text-sm px-2.5 py-0.5 rounded-full font-medium ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-100 text-green-800' : 'bg-cosmic-surface text-cosmic-text'}`}>
+                  <td className="p-1.5">
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-100 text-green-800' : 'bg-cosmic-surface text-cosmic-text'}`}>
                       {translateLabel(planet.status, language)}
                     </span>
                   </td>

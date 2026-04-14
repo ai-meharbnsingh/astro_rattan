@@ -1,3 +1,4 @@
+import React from 'react';
 import { Loader2, ChevronDown } from 'lucide-react';
 import { translatePlanet } from '@/lib/backend-translations';
 import GeneralRemedies from './GeneralRemedies';
@@ -21,129 +22,143 @@ export default function DashaTab({
   language, t,
 }: DashaTabProps) {
   const l = (en: string, hi: string) => (language === 'hi' ? hi : en);
+  const hi = language === 'hi';
+
   if (loadingDasha || loadingExtendedDasha) {
     return (
-      <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-cosmic-text">{t('kundli.calculatingDasha')}</span></div>
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
+        <span className="ml-2 text-cosmic-text">{t('kundli.calculatingDasha')}</span>
+      </div>
     );
   }
 
   if (extendedDashaData) {
-    // Find current mahadasha for date range
     const currentMD = extendedDashaData.mahadasha?.find((md: any) => md.is_current);
     const currentAD = currentMD?.antardasha?.find((ad: any) => ad.is_current);
     const currentPT = currentAD?.pratyantar?.find((pt: any) => pt.is_current);
     
     return (
-      <div className="space-y-4">
-        {/* Current Dasha Status Card */}
-        <div className="bg-gradient-to-r from-sacred-gold to-sacred-gold-light rounded-xl p-4 border-2 border-sacred-gold-dark">
+      <div className="space-y-6">
+        {/* Current Dasha Summary Table */}
+        <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-sm font-medium text-sacred-brown uppercase tracking-wide">{t('section.currentDashaStatus')}</p>
-            <span className="px-3 py-1 bg-sacred-brown text-white text-xs font-bold rounded-full animate-pulse">● {l('LIVE', 'लाइव')}</span>
+            <h4 className="font-display font-semibold text-sacred-brown uppercase tracking-wide text-sm">{t('section.currentDashaStatus')}</h4>
+            <span className="px-2 py-0.5 bg-sacred-brown text-white text-[10px] font-bold rounded animate-pulse">● {l('LIVE', 'लाइव')}</span>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Mahadasha */}
-            <div className="bg-sacred-cream rounded-lg p-3 border border-sacred-gold-dark">
-              <p className="text-xs text-cosmic-text uppercase">{t('kundli.mahadasha')}</p>
-              <p className="text-lg font-display font-bold text-sacred-brown">
-                {translatePlanet(extendedDashaData.current_dasha, language)}
-              </p>
-              {currentMD && (
-                <p className="text-xs text-cosmic-text mt-1">{currentMD.start} — {currentMD.end}</p>
-              )}
-            </div>
-            
-            {/* Antardasha */}
-            {extendedDashaData.current_antardasha && extendedDashaData.current_antardasha !== 'Unknown' && (
-              <div className="bg-sacred-cream rounded-lg p-3 border border-sacred-gold-dark">
-                <p className="text-xs text-cosmic-text uppercase">{t('kundli.antardasha')}</p>
-                <p className="text-lg font-display font-bold text-sacred-brown">
-                  {translatePlanet(extendedDashaData.current_antardasha, language)}
-                </p>
-                {currentAD && (
-                  <p className="text-xs text-cosmic-text mt-1">{currentAD.start} — {currentAD.end}</p>
-                )}
-              </div>
-            )}
-            
-            {/* Pratyantar */}
-            {extendedDashaData.current_pratyantar && extendedDashaData.current_pratyantar !== 'Unknown' && (
-              <div className="bg-sacred-cream rounded-lg p-3 border border-sacred-gold-dark">
-                <p className="text-xs text-cosmic-text uppercase">{t('kundli.pratyantar')}</p>
-                <p className="text-lg font-display font-bold text-sacred-brown">
-                  {translatePlanet(extendedDashaData.current_pratyantar, language)}
-                </p>
-                {currentPT && (
-                  <p className="text-xs text-cosmic-text mt-1">{currentPT.start} — {currentPT.end}</p>
-                )}
-              </div>
-            )}
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead className="bg-sacred-gold">
+                <tr>
+                  <th className="text-left p-1.5 text-sacred-gold-dark font-medium uppercase">{t('kundli.mahadasha')}</th>
+                  <th className="text-left p-1.5 text-sacred-gold-dark font-medium uppercase">{t('kundli.antardasha')}</th>
+                  <th className="text-left p-1.5 text-sacred-gold-dark font-medium uppercase">{t('kundli.pratyantar')}</th>
+                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium uppercase">{hi ? 'अवधि' : 'Period'}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-sacred-gold bg-sacred-gold/5 font-semibold">
+                  <td className="p-2 text-sacred-brown text-sm">{translatePlanet(extendedDashaData.current_dasha, language)}</td>
+                  <td className="p-2 text-sacred-brown text-sm">{translatePlanet(extendedDashaData.current_antardasha, language)}</td>
+                  <td className="p-2 text-sacred-brown text-sm">{translatePlanet(extendedDashaData.current_pratyantar, language)}</td>
+                  <td className="p-2 text-center text-cosmic-text whitespace-nowrap">
+                    {currentPT ? `${currentPT.start} — ${currentPT.end}` : currentAD ? `${currentAD.start} — ${currentAD.end}` : ''}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
-        <div className="space-y-2">
-          {(extendedDashaData.mahadasha || []).map((md: any) => (
-            <div key={md.planet} className={`rounded-xl border overflow-hidden ${md.is_current ? 'border-sacred-gold-dark' : 'border-sacred-gold'}`}>
-              <button
-                onClick={() => setExpandedMahadasha(expandedMahadasha === md.planet ? null : md.planet)}
-                className={`w-full flex items-center justify-between p-4 transition-colors ${md.is_current ? 'bg-sacred-gold-dark/15 border-l-4 border-l-sacred-gold-dark' : 'bg-sacred-cream hover:bg-sacred-gold/5'}`}
-              >
-                <div className="flex items-center gap-3">
-                  <ChevronDown className={`w-4 h-4 text-sacred-gold-dark transition-transform ${expandedMahadasha === md.planet ? 'rotate-180' : ''}`} />
-                  <span className={`font-display font-semibold ${md.is_current ? 'text-sacred-gold-dark' : 'text-sacred-brown'}`}>
-                    {translatePlanet(md.planet, language)} {t('kundli.mahadasha')}
-                  </span>
-                  {md.is_current && <span className="text-sm px-2 py-0.5 rounded-full bg-sacred-gold-dark text-white font-medium">{t('common.current')}</span>}
-                </div>
-                <div className="text-right text-sm text-cosmic-text">
-                  <span>{md.start} {'\u2014'} {md.end}</span>
-                  <span className="ml-2 text-sacred-gold-dark">({md.years} {t('table.years')})</span>
-                </div>
-              </button>
-
-              {expandedMahadasha === md.planet && (
-                <div className="border-t border-sacred-gold">
-                  {(md.antardasha || []).map((ad: any) => (
-                    <div key={`${md.planet}-${ad.planet}`}>
-                      <button
-                        onClick={() => setExpandedAntardasha(expandedAntardasha === `${md.planet}-${ad.planet}` ? null : `${md.planet}-${ad.planet}`)}
-                        className={`w-full flex items-center justify-between px-6 py-3 text-sm transition-colors ${ad.is_current ? 'bg-sacred-gold-dark/10 border-l-2 border-l-sacred-gold-dark' : 'hover:bg-sacred-gold/5'}`}
+        {/* Full Dasha Timeline Table */}
+        <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
+          <h4 className="font-display font-semibold text-sacred-brown mb-3">{hi ? 'विस्तृत दशा तालिका' : 'Detailed Dasha Timeline'}</h4>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead className="bg-sacred-gold">
+                <tr>
+                  <th className="w-8"></th>
+                  <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{hi ? 'दशा स्वामी' : 'Dasha Lord'}</th>
+                  <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.start')}</th>
+                  <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.end')}</th>
+                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium">{t('table.years')}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-sacred-gold/30">
+                {(extendedDashaData.mahadasha || []).map((md: any) => {
+                  const isMdExpanded = expandedMahadasha === md.planet;
+                  return (
+                    <React.Fragment key={md.planet}>
+                      {/* Mahadasha Row */}
+                      <tr 
+                        className={`cursor-pointer transition-colors ${md.is_current ? 'bg-sacred-gold-dark/10' : 'hover:bg-sacred-gold/5'}`}
+                        onClick={() => setExpandedMahadasha(isMdExpanded ? null : md.planet)}
                       >
-                        <div className="flex items-center gap-2">
-                          {ad.pratyantar && ad.pratyantar.length > 0 && (
-                            <ChevronDown className={`w-3 h-3 text-sacred-gold-dark transition-transform ${expandedAntardasha === `${md.planet}-${ad.planet}` ? 'rotate-180' : ''}`} />
-                          )}
-                          <span className={`font-medium ${ad.is_current ? 'text-sacred-gold-dark font-semibold' : 'text-sacred-brown'}`}>
-                            {translatePlanet(ad.planet, language)} {t('kundli.antardasha')}
+                        <td className="p-1.5 text-center">
+                          <ChevronDown className={`w-3.5 h-3.5 text-sacred-gold-dark transition-transform ${isMdExpanded ? 'rotate-180' : ''}`} />
+                        </td>
+                        <td className="p-1.5">
+                          <span className={`font-bold ${md.is_current ? 'text-sacred-gold-dark' : 'text-sacred-brown'}`}>
+                            {translatePlanet(md.planet, language)} {t('kundli.mahadasha')}
                           </span>
-                          {ad.is_current && <span className="text-sm px-1.5 py-0.5 rounded-full bg-sacred-gold-dark text-white">{t('common.current')}</span>}
-                        </div>
-                        <span className="text-cosmic-text">{ad.start} {'\u2014'} {ad.end}</span>
-                      </button>
+                          {md.is_current && <span className="ml-2 text-[9px] px-1 rounded bg-sacred-gold-dark text-white font-bold uppercase">{t('common.current')}</span>}
+                        </td>
+                        <td className="p-1.5 text-cosmic-text font-medium">{md.start}</td>
+                        <td className="p-1.5 text-cosmic-text font-medium">{md.end}</td>
+                        <td className="p-1.5 text-center text-sacred-gold-dark font-bold">{md.years}</td>
+                      </tr>
 
-                      {expandedAntardasha === `${md.planet}-${ad.planet}` && ad.pratyantar && ad.pratyantar.length > 0 && (
-                        <div className="bg-sacred-cream border-t border-sacred-gold">
-                          {ad.pratyantar.map((pt: any, idx: number) => (
-                            <div
-                              key={idx}
-                              className={`flex items-center justify-between px-10 py-2 text-sm ${pt.is_current ? 'bg-sacred-gold-dark/10' : ''}`}
+                      {/* Antardasha Rows */}
+                      {isMdExpanded && (md.antardasha || []).map((ad: any) => {
+                        const adKey = `${md.planet}-${ad.planet}`;
+                        const isAdExpanded = expandedAntardasha === adKey;
+                        return (
+                          <React.Fragment key={adKey}>
+                            <tr 
+                              className={`cursor-pointer transition-colors bg-white/30 ${ad.is_current ? 'bg-sacred-gold-dark/5 border-l-2 border-l-sacred-gold-dark' : 'hover:bg-sacred-gold/10'}`}
+                              onClick={(e) => { e.stopPropagation(); setExpandedAntardasha(isAdExpanded ? null : adKey); }}
                             >
-                              <span className={`${pt.is_current ? 'text-sacred-gold-dark font-semibold' : 'text-cosmic-text'}`}>
-                                {translatePlanet(pt.planet, language)} {t('kundli.pratyantar')}
-                                {pt.is_current && <span className="ml-1 text-sacred-gold-dark font-bold">&#9679;</span>}
-                              </span>
-                              <span className="text-cosmic-text">{pt.start} {'\u2014'} {pt.end}</span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
+                              <td className="p-1.5 text-center pl-4">
+                                <ChevronDown className={`w-3 h-3 text-sacred-gold-dark transition-transform ${isAdExpanded ? 'rotate-180' : ''}`} />
+                              </td>
+                              <td className="p-1.5 pl-4">
+                                <span className={`font-semibold ${ad.is_current ? 'text-sacred-gold-dark' : 'text-sacred-brown/80'}`}>
+                                  {translatePlanet(ad.planet, language)} {t('kundli.antardasha')}
+                                </span>
+                                {ad.is_current && <span className="ml-2 text-[8px] px-1 rounded border border-sacred-gold-dark text-sacred-gold-dark font-bold uppercase">{t('common.current')}</span>}
+                              </td>
+                              <td className="p-1.5 text-cosmic-text italic opacity-80">{ad.start}</td>
+                              <td className="p-1.5 text-cosmic-text italic opacity-80">{ad.end}</td>
+                              <td className="p-1.5 text-center text-cosmic-text opacity-60">{(ad.years || (parseFloat(ad.duration_years) || 0).toFixed(2))}</td>
+                            </tr>
+
+                            {/* Pratyantar Rows */}
+                            {isAdExpanded && (ad.pratyantar || []).map((pt: any, idx: number) => (
+                              <tr 
+                                key={idx}
+                                className={`bg-white/60 transition-colors ${pt.is_current ? 'bg-sacred-gold-dark/5' : 'hover:bg-sacred-gold/5'}`}
+                              >
+                                <td className="p-1"></td>
+                                <td className="p-1.5 pl-12 text-[11px]">
+                                  <span className={`${pt.is_current ? 'text-sacred-gold-dark font-bold' : 'text-cosmic-text opacity-70'}`}>
+                                    {translatePlanet(pt.planet, language)} {t('kundli.pratyantar')}
+                                  </span>
+                                  {pt.is_current && <span className="ml-1 text-sacred-gold-dark font-bold">●</span>}
+                                </td>
+                                <td className="p-1.5 text-[11px] text-cosmic-text opacity-60">{pt.start}</td>
+                                <td className="p-1.5 text-[11px] text-cosmic-text opacity-60">{pt.end}</td>
+                                <td className="p-1"></td>
+                              </tr>
+                            ))}
+                          </React.Fragment>
+                        );
+                      })}
+                    </React.Fragment>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
         
         {/* General Remedies */}
@@ -155,32 +170,46 @@ export default function DashaTab({
   if (dashaData) {
     return (
       <div className="space-y-4">
-        <div className="bg-gradient-to-r from-sacred-cream to-sacred-gold rounded-xl p-4 border border-sacred-gold">
-          <p className="text-sm text-gray-600">{t('section.currentMahadasha')}</p>
-          <p className="text-xl font-display font-bold text-gray-900">{translatePlanet(dashaData.current_dasha, language)} {t('kundli.mahadasha')}</p>
-          {dashaData.current_antardasha && <p className="text-sm text-sacred-gold-dark">{t('kundli.antardasha')}: {translatePlanet(dashaData.current_antardasha, language)}</p>}
+        <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs text-cosmic-text uppercase font-bold tracking-wider">{t('section.currentMahadasha')}</p>
+          </div>
+          <p className="text-lg font-display font-bold text-sacred-brown">
+            {translatePlanet(dashaData.current_dasha, language)} {t('kundli.mahadasha')}
+          </p>
+          {dashaData.current_antardasha && (
+            <p className="text-sm text-sacred-gold-dark font-medium mt-1">
+              {t('kundli.antardasha')}: {translatePlanet(dashaData.current_antardasha, language)}
+            </p>
+          )}
         </div>
-        <div className="rounded-xl border border-sacred-gold overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-sacred-cream">
-              <tr>
-                <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">{t('table.planet')}</th>
-                <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">{t('table.start')}</th>
-                <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">{t('table.end')}</th>
-                <th className="text-left p-3 text-sacred-gold-dark font-medium text-sm">{t('table.years')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(dashaData.mahadasha_periods || []).map((p: any) => (
-                <tr key={p.planet} className={`border-t border-sacred-gold ${p.planet === dashaData.current_dasha ? 'bg-sacred-gold font-semibold' : ''}`}>
-                  <td className="p-3 text-sacred-brown">{translatePlanet(p.planet, language)} {p.planet === dashaData.current_dasha ? '\u2190' : ''}</td>
-                  <td className="p-3 text-cosmic-text text-sm">{p.start_date}</td>
-                  <td className="p-3 text-cosmic-text text-sm">{p.end_date}</td>
-                  <td className="p-3 text-cosmic-text text-sm">{p.years} {t('table.years')}</td>
+
+        <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead className="bg-sacred-gold">
+                <tr>
+                  <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
+                  <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.start')}</th>
+                  <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.end')}</th>
+                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium">{t('table.years')}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {(dashaData.mahadasha_periods || []).map((p: any) => (
+                  <tr key={p.planet} className={`border-t border-sacred-gold transition-colors ${p.planet === dashaData.current_dasha ? 'bg-sacred-gold-dark/10 font-bold' : 'hover:bg-sacred-gold/5'}`}>
+                    <td className="p-1.5 text-sacred-brown font-medium">
+                      {translatePlanet(p.planet, language)}
+                      {p.planet === dashaData.current_dasha && <span className="ml-2 text-[9px] px-1 rounded bg-sacred-gold-dark text-white uppercase">{t('common.current')}</span>}
+                    </td>
+                    <td className="p-1.5 text-cosmic-text">{p.start_date}</td>
+                    <td className="p-1.5 text-cosmic-text">{p.end_date}</td>
+                    <td className="p-1.5 text-center text-cosmic-text font-bold">{p.years}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
         
         {/* General Remedies */}

@@ -210,19 +210,19 @@ export default function NumerologyTabs() {
   return (
     <div className="space-y-6">
       {/* Tabs */}
-      <div className="flex flex-wrap justify-center gap-2">
+      <div className="bg-sacred-cream rounded-lg p-2 grid grid-cols-5 gap-1">
         {tabConfig.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+            className={`min-w-0 min-h-[58px] px-1 py-2 rounded-md text-[11px] md:text-xs font-medium transition-all flex flex-col items-center justify-center gap-1 leading-tight ${
               activeTab === tab.id
-                ? 'bg-sacred-gold text-cosmic-bg shadow-md'
+                ? 'bg-sacred-gold-dark text-white shadow-md'
                 : 'bg-cosmic-card text-cosmic-text-secondary hover:bg-sacred-gold/10 border border-sacred-gold/20'
             }`}
           >
-            <tab.icon className="w-4 h-4" />
-            {t(tab.labelKey)}
+            <tab.icon className="w-3.5 h-3.5" />
+            <span className="truncate max-w-full">{t(tab.labelKey)}</span>
           </button>
         ))}
       </div>

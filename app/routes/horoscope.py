@@ -1,0 +1,281 @@
+"""Horoscope routes — daily, weekly, all-signs, and transit-aware horoscopes."""
+from __future__ import annotations
+
+from datetime import date, timedelta
+from typing import Any
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+
+from app.database import get_db
+from app.horoscope_generator import (
+    SIGNS,
+    generate_ai_horoscope,
+    generate_daily_horoscopes,
+    seed_weekly_horoscopes,
+    _get_current_transits,
+    _RULERS,
+    _ELEMENTS,
+    _EXALTED_SIGNS,
+    _DEBILITATED_SIGNS,
+    _OWN_SIGNS,
+)
+
+router = APIRouter(tags=["horoscope"])
+
+# Hindi sign names for bilingual support
+SIGN_HINDI = {
+    "aries": "मेष", "taurus": "वृषभ", "gemini": "मिथुन", "cancer": "कर्क",
+    "leo": "सिंह", "virgo": "कन्या", "libra": "तुला", "scorpio": "वृश्चिक",
+    "sagittarius": "धनु", "capricorn": "मकर", "aquarius": "कुंभ", "pisces": "मीन",
+}
+
+SIGN_EMOJI = {
+    "aries": "\u2648", "taurus": "\u2649", "gemini": "\u264A", "cancer": "\u264B",
+    "leo": "\u264C", "virgo": "\u264D", "libra": "\u264E", "scorpio": "\u264F",
+    "sagittarius": "\u2650", "capricorn": "\u2651", "aquarius": "\u2652", "pisces": "\u2653",
+}
+
+SIGN_DATES = {
+    "aries": "Mar 21 - Apr 19", "taurus": "Apr 20 - May 20",
+    "gemini": "May 21 - Jun 20", "cancer": "Jun 21 - Jul 22",
+    "leo": "Jul 23 - Aug 22", "virgo": "Aug 23 - Sep 22",
+    "libra": "Sep 23 - Oct 22", "scorpio": "Oct 23 - Nov 21",
+    "sagittarius": "Nov 22 - Dec 21", "capricorn": "Dec 22 - Jan 19",
+    "aquarius": "Jan 20 - Feb 18", "pisces": "Feb 19 - Mar 20",
+}
+
+RULER_HINDI = {
+    "Sun": "सूर्य", "Moon": "चंद्र", "Mars": "मंगल", "Mercury": "बुध",
+    "Jupiter": "बृहस्पति", "Venus": "शुक्र", "Saturn": "शनि",
+}
+
+ELEMENT_HINDI = {
+    "fire": "अग्नि", "earth": "पृथ्वी", "air": "वायु", "water": "जल",
+}
+
+
+def _sign_meta(sign: str) -> dict:
+    """Return metadata for a zodiac sign."""
+    return {
+        "sign": sign,
+        "sign_hindi": SIGN_HINDI.get(sign, sign),
+        "emoji": SIGN_EMOJI.get(sign, ""),
+        "dates": SIGN_DATES.get(sign, ""),
+        "ruling_planet": _RULERS.get(sign, ""),
+        "ruling_planet_hindi": RULER_HINDI.get(_RULERS.get(sign, ""), ""),
+        "element": _ELEMENTS.get(sign, ""),
+        "element_hindi": ELEMENT_HINDI.get(_ELEMENTS.get(sign, ""), ""),
+    }
+
+
+@router.get("/api/horoscope/daily", status_code=status.HTTP_200_OK)
+def get_daily_horoscope(
+    sign: str = Query(..., description="Zodiac sign (e.g. aries)"),
+    target_date: str = Query(None, alias="date", description="Date YYYY-MM-DD (default today)"),
+    db: Any = Depends(get_db),
+):
+    """Get daily horoscope for a specific sign and date."""
+    sign = sign.strip().lower()
+    if sign not in SIGNS:
+        raise HTTPException(status_code=400, detail=f"Invalid sign: {sign}")
+
+    if not target_date:
+        target_date = date.today().isoformat()
+
+    # Try DB first
+    row = db.execute(
+        "SELECT content, created_at FROM horoscopes WHERE sign = %s AND period_type = 'daily' AND period_date = %s",
+        (sign, target_date),
+    ).fetchone()
+
+    if row:
+        sections = _parse_content_to_sections(row["content"])
+        return {
+            **_sign_meta(sign),
+            "period": "daily",
+            "date": target_date,
+            "sections": sections,
+            "source": "database",
+        }
+
+    # Generate on-the-fly via template engine
+    generated = generate_ai_horoscope(sign=sign, period="daily")
+    return {
+        **_sign_meta(sign),
+        "period": "daily",
+        "date": target_date,
+        "sections": generated.get("sections", {}),
+        "source": generated.get("source", "template"),
+    }
+
+
+@router.get("/api/horoscope/weekly", status_code=status.HTTP_200_OK)
+def get_weekly_horoscope(
+    sign: str = Query(..., description="Zodiac sign (e.g. aries)"),
+    db: Any = Depends(get_db),
+):
+    """Get weekly horoscope for a specific sign."""
+    sign = sign.strip().lower()
+    if sign not in SIGNS:
+        raise HTTPException(status_code=400, detail=f"Invalid sign: {sign}")
+
+    today = date.today()
+    monday = today - timedelta(days=today.weekday())
+    week_date = monday.isoformat()
+    week_end = (monday + timedelta(days=6)).isoformat()
+
+    row = db.execute(
+        "SELECT content, created_at FROM horoscopes WHERE sign = %s AND period_type = 'weekly' AND period_date = %s",
+        (sign, week_date),
+    ).fetchone()
+
+    if row:
+        sections = _parse_content_to_sections(row["content"])
+        return {
+            **_sign_meta(sign),
+            "period": "weekly",
+            "week_start": week_date,
+            "week_end": week_end,
+            "sections": sections,
+            "source": "database",
+        }
+
+    generated = generate_ai_horoscope(sign=sign, period="weekly")
+    return {
+        **_sign_meta(sign),
+        "period": "weekly",
+        "week_start": week_date,
+        "week_end": week_end,
+        "sections": generated.get("sections", {}),
+        "source": generated.get("source", "template"),
+    }
+
+
+@router.get("/api/horoscope/all", status_code=status.HTTP_200_OK)
+def get_all_signs_horoscope(
+    period: str = Query("daily", description="daily or weekly"),
+    target_date: str = Query(None, alias="date", description="Date YYYY-MM-DD (default today)"),
+    db: Any = Depends(get_db),
+):
+    """Get horoscopes for all 12 signs at once."""
+    if period not in ("daily", "weekly"):
+        raise HTTPException(status_code=400, detail="period must be daily or weekly")
+
+    if not target_date:
+        target_date = date.today().isoformat()
+
+    if period == "weekly":
+        d = date.fromisoformat(target_date)
+        target_date = (d - timedelta(days=d.weekday())).isoformat()
+
+    # Batch fetch from DB
+    rows = db.execute(
+        "SELECT sign, content FROM horoscopes WHERE period_type = %s AND period_date = %s",
+        (period, target_date),
+    ).fetchall()
+    db_map = {r["sign"]: r["content"] for r in rows}
+
+    results = []
+    for sign in SIGNS:
+        content = db_map.get(sign)
+        if content:
+            sections = _parse_content_to_sections(content)
+            source = "database"
+        else:
+            generated = generate_ai_horoscope(sign=sign, period=period)
+            sections = generated.get("sections", {})
+            source = generated.get("source", "template")
+
+        # Build a compact summary from the general section
+        general = sections.get("general", "")
+        summary = general[:160] + "..." if len(general) > 160 else general
+
+        results.append({
+            **_sign_meta(sign),
+            "summary": summary,
+            "sections": sections,
+            "source": source,
+        })
+
+    return {
+        "period": period,
+        "date": target_date,
+        "signs": results,
+    }
+
+
+@router.get("/api/horoscope/transits", status_code=status.HTTP_200_OK)
+def get_transit_insights():
+    """Get current planetary transits and their effects on each sign."""
+    try:
+        transits = _get_current_transits()
+    except Exception:
+        transits = {}
+
+    sign_effects = []
+    for sign in SIGNS:
+        ruler = _RULERS.get(sign, "")
+        ruler_sign = transits.get(ruler, "").lower()
+        element = _ELEMENTS.get(sign, "")
+
+        is_exalted = _EXALTED_SIGNS.get(ruler) == ruler_sign
+        is_debilitated = _DEBILITATED_SIGNS.get(ruler) == ruler_sign
+        is_own = ruler_sign in _OWN_SIGNS.get(ruler, [])
+
+        if is_exalted:
+            dignity = "exalted"
+            strength = "very_strong"
+        elif is_own:
+            dignity = "own_sign"
+            strength = "strong"
+        elif is_debilitated:
+            dignity = "debilitated"
+            strength = "weak"
+        else:
+            dignity = "neutral"
+            strength = "moderate"
+
+        sign_effects.append({
+            **_sign_meta(sign),
+            "ruler_current_sign": ruler_sign.title() if ruler_sign else "Unknown",
+            "ruler_current_sign_hindi": SIGN_HINDI.get(ruler_sign, ruler_sign.title() if ruler_sign else ""),
+            "dignity": dignity,
+            "strength": strength,
+        })
+
+    # Format transit positions
+    transit_list = []
+    for planet, sign_name in transits.items():
+        transit_list.append({
+            "planet": planet,
+            "planet_hindi": RULER_HINDI.get(planet, planet),
+            "current_sign": sign_name.title(),
+            "current_sign_hindi": SIGN_HINDI.get(sign_name, sign_name.title()),
+        })
+
+    return {
+        "date": date.today().isoformat(),
+        "transits": transit_list,
+        "sign_effects": sign_effects,
+    }
+
+
+def _parse_content_to_sections(content: str) -> dict:
+    """Parse stored horoscope content (plain text) into sectioned format."""
+    # If content is already short/simple, treat as general
+    if not content or len(content) < 50:
+        return {"general": content or "", "love": "", "career": "", "finance": "", "health": ""}
+
+    # Try to split intelligently: look for sentence boundaries
+    sentences = [s.strip() for s in content.replace(". ", ".|").split("|") if s.strip()]
+
+    if len(sentences) >= 5:
+        return {
+            "general": ". ".join(sentences[:2]).rstrip(".") + ".",
+            "career": sentences[2] if len(sentences) > 2 else "",
+            "love": sentences[3] if len(sentences) > 3 else "",
+            "health": sentences[4] if len(sentences) > 4 else "",
+            "finance": sentences[5] if len(sentences) > 5 else "",
+        }
+
+    return {"general": content, "love": "", "career": "", "finance": "", "health": ""}

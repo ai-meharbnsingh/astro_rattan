@@ -59,7 +59,8 @@ const AdminDashboard  = lazyWithReload(() => import('./sections/AdminDashboard')
 const FeedbackPage    = lazyWithReload(() => import('./sections/FeedbackPage'));
 const Dashboard       = lazyWithReload(() => import('./sections/Dashboard'));
 const ClientProfile   = lazyWithReload(() => import('./sections/ClientProfile'));
-// const VastuShastraPage = lazyWithReload(() => import('./sections/VastuShastraPage')); // disabled for production
+const VastuShastraPage = lazyWithReload(() => import('./sections/VastuShastraPage'));
+const HoroscopePage    = lazyWithReload(() => import('./sections/HoroscopePage'));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -196,10 +197,11 @@ function AppInner() {
           <Route path="/client/:clientId" element={<RequireAuth><ClientProfile /></RequireAuth>} />
           <Route path="/kundli" element={<ErrorBoundary><KundliGenerator /></ErrorBoundary>} />
           <Route path="/panchang" element={<ErrorBoundary><Panchang /></ErrorBoundary>} />
+          <Route path="/horoscope" element={<ErrorBoundary><HoroscopePage /></ErrorBoundary>} />
           <Route path="/login" element={<AuthPage />} />
           <Route path="/numerology" element={<RequireAuth><ErrorBoundary><NumerologyTarot /></ErrorBoundary></RequireAuth>} />
           <Route path="/lal-kitab" element={<RequireAuth><ErrorBoundary><LalKitabPage /></ErrorBoundary></RequireAuth>} />
-          {/* <Route path="/vastu" element={<RequireAuth><ErrorBoundary><VastuShastraPage /></ErrorBoundary></RequireAuth>} /> */}{/* disabled for production */}
+          <Route path="/vastu" element={<RequireAuth><ErrorBoundary><VastuShastraPage /></ErrorBoundary></RequireAuth>} />
           <Route path="/admin" element={<RequireAuth><ErrorBoundary><AdminDashboard /></ErrorBoundary></RequireAuth>} />
           <Route path="/feedback" element={<RequireAuth><ErrorBoundary><FeedbackPage /></ErrorBoundary></RequireAuth>} />
           <Route path="*" element={<NotFound />} />

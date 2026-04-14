@@ -252,6 +252,53 @@ const AVAKHADA_VALUES: Record<string, string> = {
   'Mrig': 'मृग',
 };
 
+const PANCHANG_TERMS: Record<string, string> = {
+  // Maas
+  'Chaitra': 'चैत्र',
+  'Vaishakha': 'वैशाख',
+  'Jyeshtha': 'ज्येष्ठ',
+  'Ashadha': 'आषाढ़',
+  'Shravana': 'श्रावण',
+  'Bhadrapada': 'भाद्रपद',
+  'Ashwin': 'आश्विन',
+  'Kartika': 'कार्तिक',
+  'Margashirsha': 'मार्गशीर्ष',
+  'Pausha': 'पौष',
+  'Magha': 'माघ',
+  'Phalguna': 'फाल्गुन',
+  // Paksha + tithi words
+  'Shukla': 'शुक्ल',
+  'Krishna': 'कृष्ण',
+  'Pratipada': 'प्रतिपदा',
+  'Dwitiya': 'द्वितीया',
+  'Tritiya': 'तृतीया',
+  'Chaturthi': 'चतुर्थी',
+  'Panchami': 'पंचमी',
+  'Shashthi': 'षष्ठी',
+  'Saptami': 'सप्तमी',
+  'Ashtami': 'अष्टमी',
+  'Navami': 'नवमी',
+  'Dashami': 'दशमी',
+  'Ekadashi': 'एकादशी',
+  'Dwadashi': 'द्वादशी',
+  'Trayodashi': 'त्रयोदशी',
+  'Chaturdashi': 'चतुर्दशी',
+  'Purnima': 'पूर्णिमा',
+  'Amavasya': 'अमावस्या',
+  // Weekdays
+  'Sunday': 'रविवार',
+  'Monday': 'सोमवार',
+  'Tuesday': 'मंगलवार',
+  'Wednesday': 'बुधवार',
+  'Thursday': 'गुरुवार',
+  'Friday': 'शुक्रवार',
+  'Saturday': 'शनिवार',
+  // Calendar labels
+  'Vikrama Samvata': 'विक्रम संवत',
+  'Vikram Samvat': 'विक्रम संवत',
+  'Shaka Samvat': 'शक संवत',
+};
+
 // All lookup tables merged for generic matching
 const ALL_LOOKUPS: Record<string, string> = {
   ...PLANET_NAMES, ...SIGN_NAMES, ...DOSHA_NAMES, ...YOGA_NAMES,
@@ -259,7 +306,7 @@ const ALL_LOOKUPS: Record<string, string> = {
   ...PHASE_TYPES, ...REMEDY_MAP, ...YOGINI_NAMES, ...STRENGTH,
   ...NAKSHATRA_NAMES, ...SADE_SATI_CYCLES, ...SADE_SATI_DESCRIPTIONS,
   ...TRANSIT_DETAILS, ...REMEDY_CATEGORIES, ...SADE_SATI_EXPLANATIONS,
-  ...YOGA_DESCRIPTIONS, ...AVAKHADA_VALUES,
+  ...YOGA_DESCRIPTIONS, ...AVAKHADA_VALUES, ...PANCHANG_TERMS,
 };
 
 type TranslationId = string;
@@ -418,6 +465,9 @@ export function translateBackend(text: string | null | undefined, lang: Language
     result = result.replace(new RegExp(`\\b${escapeRegExp(en)}\\b`, 'gi'), hi);
   }
   for (const [en, hi] of Object.entries(YOGA_NAMES)) {
+    result = result.replace(new RegExp(`\\b${escapeRegExp(en)}\\b`, 'gi'), hi);
+  }
+  for (const [en, hi] of Object.entries(PANCHANG_TERMS)) {
     result = result.replace(new RegExp(`\\b${escapeRegExp(en)}\\b`, 'gi'), hi);
   }
 

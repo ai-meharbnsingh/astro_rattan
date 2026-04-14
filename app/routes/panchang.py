@@ -130,9 +130,11 @@ def get_panchang(
     target_date = date_str or _today()
     _parse_date(target_date)
 
-    # Check cache first
+    # Check cache first (with TTL - 7 days)
     cached = db.execute(
-        "SELECT * FROM panchang_cache WHERE date = %s AND latitude = %s AND longitude = %s",
+        """SELECT * FROM panchang_cache 
+           WHERE date = %s AND latitude = %s AND longitude = %s 
+           AND created_at > NOW() - INTERVAL '7 days'""",
         (target_date, latitude, longitude),
     ).fetchone()
 
@@ -194,6 +196,7 @@ def get_panchang(
         paksha=panchang["tithi"]["paksha"],
         nakshatra_name=panchang["nakshatra"]["name"],
         maas=panchang.get("hindu_calendar", {}).get("maas", ""),
+        gregorian_date=target_date,
     )
     panchang["festivals"] = festivals
 
@@ -265,9 +268,12 @@ def get_monthly_panchang(
     start_date = date(target_year, target_month, 1).isoformat()
     end_date = date(target_year, target_month, days_in_month).isoformat()
 
-    # Batch-query all cached days for this month in ONE query
+    # Batch-query all cached days for this month in ONE query (with TTL - 7 days)
     cached_rows = db.execute(
-        "SELECT date, tithi, nakshatra, yoga, sunrise, sunset FROM panchang_cache WHERE date >= %s AND date <= %s AND latitude = %s AND longitude = %s",
+        """SELECT date, tithi, nakshatra, yoga, sunrise, sunset 
+           FROM panchang_cache 
+           WHERE date >= %s AND date <= %s AND latitude = %s AND longitude = %s 
+           AND created_at > NOW() - INTERVAL '7 days'""",
         (start_date, end_date, latitude, longitude),
     ).fetchall()
     cached_dates = {row["date"]: row for row in cached_rows}
@@ -284,16 +290,27 @@ def get_monthly_panchang(
             tithi = json.loads(cached["tithi"]) if isinstance(cached["tithi"], str) else cached["tithi"]
             nak = json.loads(cached["nakshatra"]) if isinstance(cached["nakshatra"], str) else cached["nakshatra"]
             yoga = json.loads(cached["yoga"]) if isinstance(cached["yoga"], str) else cached["yoga"]
+            t_name = tithi.get("name", "") if isinstance(tithi, dict) else str(tithi)
+            t_paksha = tithi.get("paksha", "") if isinstance(tithi, dict) else ""
+            n_name = nak.get("name", "") if isinstance(nak, dict) else str(nak)
+            # Run festival detection even for cached data
+            cached_festivals = detect_festivals(
+                tithi_name=t_name,
+                paksha=t_paksha,
+                nakshatra_name=n_name,
+                maas="",  # maas not stored in cache; tithi+solar still match
+                gregorian_date=d_str,
+            )
             days.append({
                 "date": d_str,
                 "weekday": d.strftime("%A"),
-                "tithi": tithi.get("name", "") if isinstance(tithi, dict) else str(tithi),
-                "paksha": tithi.get("paksha", "") if isinstance(tithi, dict) else "",
-                "nakshatra": nak.get("name", "") if isinstance(nak, dict) else str(nak),
+                "tithi": t_name,
+                "paksha": t_paksha,
+                "nakshatra": n_name,
                 "yoga": yoga.get("name", "") if isinstance(yoga, dict) else str(yoga),
                 "sunrise": cached["sunrise"],
                 "sunset": cached["sunset"],
-                "festivals": [],
+                "festivals": [f["name"] for f in cached_festivals],
             })
             continue
 
@@ -303,6 +320,7 @@ def get_monthly_panchang(
             paksha=panchang["tithi"]["paksha"],
             nakshatra_name=panchang["nakshatra"]["name"],
             maas=panchang.get("hindu_calendar", {}).get("maas", ""),
+            gregorian_date=d_str,
         )
         days.append({
             "date": d_str,
@@ -736,6 +754,7 @@ async def download_panchang_pdf(
         paksha=panchang["tithi"]["paksha"],
         nakshatra_name=panchang["nakshatra"]["name"],
         maas=panchang.get("hindu_calendar", {}).get("maas", ""),
+        gregorian_date=target_date,
     )
     panchang["festivals"] = festivals
 
@@ -748,3 +767,24 @@ async def download_panchang_pdf(
         media_type="application/pdf",
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )
+
+
+@router.post("/api/admin/panchang/cleanup-cache", status_code=status.HTTP_200_OK)
+def cleanup_panchang_cache(
+    max_age_days: int = Query(default=7, ge=1),
+    db: Any = Depends(get_db),
+):
+    """
+    Remove panchang cache entries older than max_age_days.
+    Requires admin privileges.
+    """
+    result = db.execute(
+        "DELETE FROM panchang_cache WHERE created_at < NOW() - INTERVAL '%s days'",
+        (max_age_days,)
+    )
+    db.commit()
+    return {
+        "message": f"Cleaned up {result.rowcount} old cache entries",
+        "deleted_count": result.rowcount,
+        "max_age_days": max_age_days,
+    }

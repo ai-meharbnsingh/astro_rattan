@@ -245,6 +245,7 @@ def _datetime_to_jd(dt_utc: datetime) -> float:
 def _calculate_swe(dt_utc: datetime, lat: float, lon: float, ayanamsa: str = "lahiri", node_type: str = "mean") -> Dict[str, Any]:
     """Full calculation using Swiss Ephemeris."""
     # Set ayanamsa mode: KP (Krishnamurti) or Lahiri (default for Vedic)
+    # Note: swisseph doesn't have get_sid_mode(), so we always set the mode explicitly
     ayanamsa_system = ayanamsa  # preserve system name before numeric override
     if ayanamsa_system == "kp":
         swe.set_sid_mode(swe.SIDM_KRISHNAMURTI)
@@ -266,12 +267,12 @@ def _calculate_swe(dt_utc: datetime, lat: float, lon: float, ayanamsa: str = "la
         sign_index = (asc_sign_index + i) % 12
         sign_degree = float(sign_index * 30)
         houses.append(
-            {
-                "number": i + 1,
-                "sign": _SIGN_NAMES[sign_index],
-                "degree": round(sign_degree, 4),
-            }
-        )
+                {
+                    "number": i + 1,
+                    "sign": _SIGN_NAMES[sign_index],
+                    "degree": round(sign_degree, 4),
+                }
+            )
 
     # Store Placidus cusps for KP system (needs unequal cusps)
     placidus_cusps = []

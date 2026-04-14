@@ -1,23 +1,21 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Calendar, Clock, Download, Loader2, MapPin, Navigation, Share2 } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Calendar, Clock, Download, Loader2, MapPin, Navigation, Share2, Sun, Moon, Star, Sparkles, Timer, AlignLeft, CalendarDays, ChevronRight } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
 import { translateBackend } from '@/lib/backend-translations';
-
-import {
-  PanchangCore,
-  SunMoonTimes,
-  InauspiciousPeriods,
-  AuspiciousTimings,
-  PlanetaryPositions,
-  FestivalVrat,
-  HinduCalendar,
-  MuhuratFinder,
-} from '@/components/panchang';
+import PanchangCoreTab from '@/components/panchang/PanchangCoreTab';
+import MuhuratTab from '@/components/panchang/MuhuratTab';
+import PlanetaryPositionsTab from '@/components/panchang/PlanetaryPositionsTab';
+import HoraTab from '@/components/panchang/HoraTab';
+import LagnaTab from '@/components/panchang/LagnaTab';
+import ChoghadiyaTab from '@/components/panchang/ChoghadiyaTab';
+import GowriTab from '@/components/panchang/GowriTab';
+import MonthlyCalendarTab from '@/components/panchang/MonthlyCalendarTab';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -34,12 +32,12 @@ interface HinduCalendarData {
 }
 interface VaarData { name: string; english: string; number: number; }
 
-interface FullPanchangData {
+export interface FullPanchangData {
   date: string;
-  tithi: { name: string; number: number; paksha: string; end_time?: string };
-  nakshatra: { name: string; pada: number; lord: string; end_time?: string };
-  yoga: { name: string; number: number; end_time?: string };
-  karana: { name: string; number: number; end_time?: string };
+  tithi: { name: string; number: number; paksha: string; end_time?: string; [key: string]: any };
+  nakshatra: { name: string; pada: number; lord: string; end_time?: string; [key: string]: any };
+  yoga: { name: string; number: number; end_time?: string; [key: string]: any };
+  karana: { name: string; number: number; end_time?: string; [key: string]: any };
   sunrise: string;
   sunset: string;
   moonrise: string;
@@ -51,6 +49,7 @@ interface FullPanchangData {
   abhijit_muhurat: TimePeriod;
   brahma_muhurat: TimePeriod;
   choghadiya: ChoghadiyaPeriod[];
+  night_choghadiya?: ChoghadiyaPeriod[];
   planetary_positions: Planet[];
   hindu_calendar: HinduCalendarData;
   festivals: Festival[];
@@ -83,20 +82,42 @@ interface GowriRow { name: string; start: string; end: string; type: string; qua
 interface ChandrabalamRow { rashi: string; balam: string; good: boolean; house_from_moon: number }
 interface TarabalamRow { nakshatra: string; tara: string; good: boolean }
 interface DoGhatiRow { muhurta: string; name: string; start: string; end: string; quality: string }
+interface GeocodeResult { name: string; lat: number; lon: number }
 
 const DEFAULT_LAT = '28.6139';
 const DEFAULT_LON = '77.2090';
+
+// Helper: Get local date as YYYY-MM-DD (fixes UTC timezone issue)
+const getLocalDateString = () => {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+};
 
 export default function Panchang() {
   const { t, language } = useTranslation();
   const sectionRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
   const [panchang, setPanchang] = useState<FullPanchangData | null>(null);
-  const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState(() => getLocalDateString());
   const [latitude, setLatitude] = useState(DEFAULT_LAT);
   const [longitude, setLongitude] = useState(DEFAULT_LON);
   const [detectingLocation, setDetectingLocation] = useState(false);
+  const [cityQuery, setCityQuery] = useState('');
+  const [citySuggestions, setCitySuggestions] = useState<GeocodeResult[]>([]);
+  const [showCityDropdown, setShowCityDropdown] = useState(false);
+  const [searchingCity, setSearchingCity] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [minuteTick, setMinuteTick] = useState(() => Math.floor(Date.now() / 60000));
+  const [activeTab, setActiveTab] = useState('core');
+  const citySearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const citySearchRef = useRef<HTMLDivElement>(null);
+
+  // Calculate timezone offset from longitude (IST for India, otherwise approximate)
+  const tzOffset = useMemo(() => {
+    const lon = parseFloat(longitude) || 77.2090;
+    if (lon >= 68 && lon <= 97.5) return 5.5 * 60; // IST in minutes
+    return Math.round(lon / 15) * 60; // approximate
+  }, [longitude]);
 
   // Format date in Hindi for WhatsApp sharing
   const formatDateHindi = (dateStr: string) => {
@@ -127,10 +148,10 @@ export default function Panchang() {
     if (!panchang) return;
     const p = panchang;
     const hc = p.hindu_calendar || {} as HinduCalendarData;
-    const tithiLine = `${p.tithi?.name || ''} ${p.tithi?.end_time || ''} तक${p.tithi?.next ? ' तत्पश्चात् ' + p.tithi.next : ''}`;
-    const nakLine = `${p.nakshatra?.name || ''} ${p.nakshatra?.end_time || ''} तक${p.nakshatra?.next ? ' तत्पश्चात् ' + p.nakshatra.next : ''}`;
-    const yogaLine = `${p.yoga?.name || ''} ${p.yoga?.end_time || ''} तक${p.yoga?.next ? ' तत्पश्चात् ' + p.yoga.next : ''}`;
-    const karanaLine = `${p.karana?.name || ''}${p.karana?.second_karana ? ' तत्पश्चात् ' + p.karana.second_karana : ''}`;
+    const tithiLine = `${p.tithi?.name || ''} ${p.tithi?.end_time || ''} तक${(p.tithi as any)?.next ? ' तत्पश्चात् ' + (p.tithi as any).next : ''}`;
+    const nakLine = `${p.nakshatra?.name || ''} ${p.nakshatra?.end_time || ''} तक${(p.nakshatra as any)?.next ? ' तत्पश्चात् ' + (p.nakshatra as any).next : ''}`;
+    const yogaLine = `${p.yoga?.name || ''} ${p.yoga?.end_time || ''} तक${(p.yoga as any)?.next ? ' तत्पश्चात् ' + (p.yoga as any).next : ''}`;
+    const karanaLine = `${p.karana?.name || ''}${(p.karana as any)?.second_karana ? ' तत्पश्चात् ' + (p.karana as any).second_karana : ''}`;
 
     const text = `*卐~ हिन्दू पंचांग ~卐*
 
@@ -150,7 +171,7 @@ export default function Panchang() {
 *⛅सूर्यास्त - ${p.sunset || ''}*
 *⛅ब्रह्ममुहूर्त - ${p.brahma_muhurat?.start || ''} से ${p.brahma_muhurat?.end || ''} तक*
 *⛅अभिजीत मुहूर्त - ${p.abhijit_muhurat?.start || ''} से ${p.abhijit_muhurat?.end || ''} तक*
-*⛅निशिता मुहूर्त - ${p.nishita_muhurta?.start || p.nishita_muhurat?.start || ''} से ${p.nishita_muhurta?.end || p.nishita_muhurat?.end || ''} तक*
+*⛅निशिता मुहूर्त - ${(p as any).nishita_muhurta?.start || (p as any).nishita_muhurat?.start || ''} से ${(p as any).nishita_muhurta?.end || (p as any).nishita_muhurat?.end || ''} तक*
 *⛅सूर्य राशि - ${p.sun_sign || ''}*
 *⛅चन्द्र राशि - ${p.moon_sign || ''}*
 ${p.festivals?.length ? '*🌥️व्रत पर्व - ' + p.festivals.map((f: any) => f.name_hindi || f.name).join(', ') + '*' : ''}
@@ -161,26 +182,44 @@ _Generated by AstroRattan.com_`;
     window.open(`https://wa.me/?text=${encoded}`, '_blank');
   };
 
-  // Live clock
+  // Live clock - update every minute instead of every second to reduce re-renders
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  // GSAP animation with proper ScrollTrigger cleanup
+  // Shared minute tick for auto-updating current-period highlights in tabs
   useEffect(() => {
-    if (gsap.globalTimeline.timeScale() === 0) return; // reduced motion
-    const ctx = gsap.context(() => {
-      gsap.fromTo('.panchang-title', { y: 50, opacity: 0 }, {
-        y: 0, opacity: 1, duration: 0.8, ease: 'power3.out',
-        scrollTrigger: { trigger: sectionRef.current, start: 'top 80%' },
-      });
-    }, sectionRef);
+    const updateTick = () => setMinuteTick(Math.floor(Date.now() / 60000));
+    updateTick();
+    const timer = setInterval(updateTick, 30000);
+    const onVisibility = () => {
+      if (!document.hidden) updateTick();
+    };
+    document.addEventListener('visibilitychange', onVisibility);
     return () => {
-      ctx.revert();
-      ScrollTrigger.getAll().forEach(t => t.kill());
+      clearInterval(timer);
+      document.removeEventListener('visibilitychange', onVisibility);
     };
   }, []);
+
+  useEffect(() => {
+    const onClickOutside = (event: MouseEvent) => {
+      if (citySearchRef.current && !citySearchRef.current.contains(event.target as Node)) {
+        setShowCityDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', onClickOutside);
+    return () => document.removeEventListener('mousedown', onClickOutside);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (citySearchTimerRef.current) clearTimeout(citySearchTimerRef.current);
+    };
+  }, []);
+
+
 
   // Fetch panchang data
   useEffect(() => {
@@ -219,96 +258,107 @@ _Generated by AstroRattan.com_`;
     );
   };
 
-  const dateDisplay = new Date(selectedDate + 'T12:00:00').toLocaleDateString('en-IN', {
+  const searchCity = (query: string) => {
+    setCityQuery(query);
+    if (citySearchTimerRef.current) clearTimeout(citySearchTimerRef.current);
+
+    if (query.trim().length < 3) {
+      setCitySuggestions([]);
+      setShowCityDropdown(false);
+      return;
+    }
+
+    citySearchTimerRef.current = setTimeout(async () => {
+      setSearchingCity(true);
+      try {
+        const results = await api.get(`/api/kundli/geocode?query=${encodeURIComponent(query.trim())}`);
+        const list = Array.isArray(results) ? results as GeocodeResult[] : [];
+        setCitySuggestions(list);
+        setShowCityDropdown(list.length > 0);
+      } catch {
+        setCitySuggestions([]);
+        setShowCityDropdown(false);
+      } finally {
+        setSearchingCity(false);
+      }
+    }, 300);
+  };
+
+  const selectCity = (city: GeocodeResult) => {
+    setCityQuery(city.name.split(',')[0] || city.name);
+    setLatitude(city.lat.toFixed(4));
+    setLongitude(city.lon.toFixed(4));
+    setShowCityDropdown(false);
+  };
+
+  const dateDisplay = new Date(selectedDate + 'T12:00:00').toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-IN', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   });
 
   return (
-    <section ref={sectionRef} id="panchang" className="relative py-24 bg-transparent">
+    <section ref={sectionRef} id="panchang" className="relative pt-32 pb-8 bg-transparent">
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        {/* Title */}
-        <div className="panchang-title text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-saffron text-sacred-saffron text-sm font-medium mb-6 border border-sacred-saffron">
-            <Calendar className="w-4 h-4" />{t('panchang.dailyPanchang')}
+        {/* Compact Date/Time + Location — all in one row */}
+        <div className="rounded-xl border border-cosmic-border bg-cosmic-card p-3 mb-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+            <span className="font-semibold text-cosmic-text">{dateDisplay}</span>
+            <span className="text-sm text-cosmic-text-secondary">{currentTime.toLocaleTimeString(language === 'hi' ? 'hi-IN' : 'en-IN')}</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-sans font-bold text-cosmic-text mb-4">
-            {t('panchang.cosmicTimekeepingWith')}<span className="text-gradient-saffron"> {t('nav.panchang')}</span>
-          </h2>
-        </div>
-
-        {/* Date/Time Bar + Location Controls */}
-        <div className="card-gold-border rounded-xl p-4 mb-8">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-sacred-gold flex items-center justify-center border border-sacred-gold">
-                <Calendar className="w-6 h-6 text-sacred-gold" />
-              </div>
-              <div>
-                <p className="text-sm text-cosmic-text-secondary">{t('common.date')}</p>
-                <p className="text-lg font-sans font-semibold text-cosmic-text">{dateDisplay}</p>
-              </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 items-end gap-2">
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="w-full px-2 py-1.5 rounded-lg bg-white border border-cosmic-border text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none"
+            />
+            <div className="relative" ref={citySearchRef}>
+              <input
+                type="text"
+                value={cityQuery}
+                onChange={(e) => searchCity(e.target.value)}
+                placeholder={language === 'hi' ? 'शहर खोजें' : 'Search city'}
+                className="w-full px-2 py-1.5 rounded-lg bg-white border border-cosmic-border text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none"
+              />
+              {searchingCity && <Loader2 className="w-3.5 h-3.5 animate-spin absolute right-2 top-1/2 -translate-y-1/2 text-cosmic-text-secondary" />}
+              {showCityDropdown && citySuggestions.length > 0 && (
+                <div className="absolute left-0 right-0 top-[calc(100%+4px)] z-30 bg-white border border-cosmic-border rounded-lg shadow-lg max-h-44 overflow-y-auto">
+                  {citySuggestions.map((result, idx) => (
+                    <button
+                      key={`${result.name}-${idx}`}
+                      type="button"
+                      onClick={() => selectCity(result)}
+                      className="w-full text-left px-2.5 py-2 text-xs text-cosmic-text hover:bg-gray-50 transition-colors"
+                    >
+                      {result.name}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-sacred-saffron flex items-center justify-center border border-sacred-saffron">
-                <Clock className="w-6 h-6 text-sacred-saffron" />
-              </div>
-              <div>
-                <p className="text-sm text-cosmic-text-secondary">{t('panchang.currentTime')}</p>
-                <p className="text-lg font-sans font-semibold text-cosmic-text">{currentTime.toLocaleTimeString('en-IN')}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Location & Date grouped inputs */}
-          <div className="mt-4 rounded-xl border border-cosmic-border bg-cosmic-card p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="text-sm font-semibold text-cosmic-text flex items-center gap-1.5">
-                <MapPin className="w-4 h-4 text-sacred-gold" />{t('panchang.locationAndDate')}
-              </h4>
-              <Button
-                onClick={detectLocation}
-                disabled={detectingLocation}
-                className="btn-sacred bg-sacred-gold-dark text-white hover:bg-gray-50 hover:text-cosmic-bg border border-sacred-gold transition-all text-sm px-4 py-2"
-              >
-                {detectingLocation ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Navigation className="w-4 h-4 mr-1" />}
-                {t('panchang.detectLocation')}
+            <input
+              type="number"
+              step="0.0001"
+              value={latitude}
+              onChange={(e) => setLatitude(e.target.value)}
+              placeholder="Lat"
+              className="w-full px-2 py-1.5 rounded-lg bg-white border border-cosmic-border text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none"
+            />
+            <input
+              type="number"
+              step="0.0001"
+              value={longitude}
+              onChange={(e) => setLongitude(e.target.value)}
+              placeholder="Lon"
+              className="w-full px-2 py-1.5 rounded-lg bg-white border border-cosmic-border text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none"
+            />
+            <div className="flex items-center">
+              <h4 className="sr-only">{t('panchang.locationAndDate')}</h4>
+              <Button onClick={detectLocation} disabled={detectingLocation} size="sm"
+                className="btn-sacred text-sm px-3 py-1.5 w-full">
+                {detectingLocation ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <MapPin className="w-3 h-3 mr-1" />}
+                {language === 'hi' ? 'स्थान' : 'Detect'}
               </Button>
-            </div>
-            <div className="space-y-3">
-              {/* Date — full width */}
-              <div>
-                <label className="block text-sm font-medium text-cosmic-text-secondary mb-1">{t('common.date')}</label>
-                <input
-                  type="date"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-white border border-cosmic-border text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none transition-colors"
-                />
-              </div>
-              {/* Lat / Lon — side by side */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-sm font-medium text-cosmic-text-secondary mb-1 flex items-center gap-1">
-                    <MapPin className="w-3 h-3" />{t('panchang.latitude')}
-                  </label>
-                  <input
-                    type="number" step="0.0001" value={latitude}
-                    onChange={(e) => setLatitude(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-white border border-cosmic-border text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-cosmic-text-secondary mb-1 flex items-center gap-1">
-                    <MapPin className="w-3 h-3" />{t('panchang.longitude')}
-                  </label>
-                  <input
-                    type="number" step="0.0001" value={longitude}
-                    onChange={(e) => setLongitude(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-white border border-cosmic-border text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none transition-colors"
-                  />
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -330,10 +380,10 @@ _Generated by AstroRattan.com_`;
 
         {/* Main Panchang Dashboard */}
         {panchang && (
-          <div className="space-y-8 min-h-[400px]">
+          <div className="space-y-4 min-h-[400px]">
 
             {/* Download & Share Buttons */}
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={handleDownloadPDF}
                 disabled={!panchang}
@@ -352,147 +402,53 @@ _Generated by AstroRattan.com_`;
               </button>
             </div>
 
-            {/* ROW 1: Hindu Calendar + Core Panchang */}
-            <div className="grid lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-1 space-y-6">
-                <HinduCalendar
-                  hindu_calendar={panchang.hindu_calendar}
-                  vaar={panchang.vaar}
-                />
-                <FestivalVrat festivals={panchang.festivals} />
-              </div>
-              <div className="lg:col-span-2">
-                <Card className="card-sacred border-sacred-gold h-full">
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-sans font-semibold text-cosmic-text mb-6 flex items-center gap-2">
-                      <Calendar className="w-5 h-5 text-sacred-gold" />{t('panchang.todayPanchang')}
-                    </h3>
-                    <PanchangCore
-                      tithi={panchang.tithi}
-                      nakshatra={panchang.nakshatra}
-                      yoga={panchang.yoga}
-                      karana={panchang.karana}
-                    />
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-
-            {/* ROW 2: Sun/Moon + Inauspicious + Auspicious */}
-            <div className="grid lg:grid-cols-3 gap-6">
-              <div className="space-y-4">
-                <SunMoonTimes
-                  sunrise={panchang.sunrise}
-                  sunset={panchang.sunset}
-                  moonrise={panchang.moonrise}
-                  moonset={panchang.moonset}
-                />
-                {/* Sun/Moon Sign + Day/Night Duration */}
-                <Card className="card-sacred border-sacred-gold">
-                  <CardContent className="p-4 space-y-2 text-sm">
-                    {panchang.sun_sign && <div className="flex justify-between"><span className="text-cosmic-text">{t('panchang.sunSign')}</span><span className="font-medium text-cosmic-text">{translateBackend(panchang.sun_sign, language)}</span></div>}
-                    {panchang.moon_sign && <div className="flex justify-between"><span className="text-cosmic-text">{t('panchang.moonSign')}</span><span className="font-medium text-cosmic-text">{translateBackend(panchang.moon_sign, language)}</span></div>}
-                    {panchang.dinamana && <div className="flex justify-between"><span className="text-cosmic-text">{t('panchang.dinamana')}</span><span className="font-medium text-cosmic-text">{panchang.dinamana}</span></div>}
-                    {panchang.ratrimana && <div className="flex justify-between"><span className="text-cosmic-text">{t('panchang.ratrimana')}</span><span className="font-medium text-cosmic-text">{panchang.ratrimana}</span></div>}
-                    {panchang.madhyahna && <div className="flex justify-between"><span className="text-cosmic-text">{t('panchang.madhyahna')}</span><span className="font-medium text-cosmic-text">{panchang.madhyahna}</span></div>}
-                  </CardContent>
-                </Card>
-              </div>
-              <InauspiciousPeriods
-                rahu_kaal={panchang.rahu_kaal}
-                gulika_kaal={panchang.gulika_kaal}
-                yamaganda={panchang.yamaganda}
-                dur_muhurtam={panchang.dur_muhurtam}
-                varjyam={panchang.varjyam}
-              />
-              <AuspiciousTimings
-                abhijit_muhurat={panchang.abhijit_muhurat}
-                brahma_muhurat={panchang.brahma_muhurat}
-                choghadiya={panchang.choghadiya}
-                ravi_yoga={panchang.ravi_yoga}
-                vijaya_muhurta={panchang.vijaya_muhurta}
-                godhuli_muhurta={panchang.godhuli_muhurta}
-                sayahna_sandhya={panchang.sayahna_sandhya}
-                nishita_muhurta={panchang.nishita_muhurta}
-                pratah_sandhya={panchang.pratah_sandhya}
-              />
-            </div>
-
-            {/* ROW 3: Planetary Positions */}
-            <PlanetaryPositions planets={panchang.planetary_positions} />
-
-            {/* ROW 4: Advanced Panchang — Expandable Sections */}
-            <div className="space-y-4">
-              {/* Hora Table */}
-              {panchang.hora_table && <ExpandableSection title={language === 'hi' ? 'होरा मुहूर्त' : 'Hora Muhurta'} desc={language === 'hi' ? '24 ग्रह घंटे' : '24 planetary hours'}>
-                <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr className="bg-sacred-gold/20"><th className="p-2 text-left text-sacred-gold-dark">{language === 'hi' ? 'होरा' : 'Hora'}</th><th className="p-2 text-left">{t('kundli.lord')}</th><th className="p-2">{t('table.start')}</th><th className="p-2">{t('table.end')}</th><th className="p-2">{t('table.type')}</th></tr></thead><tbody>
-                {(panchang.hora_table as HoraRow[]).map((h, i) => (
-                  <tr key={i} className="border-t border-sacred-gold"><td className="p-2 text-cosmic-text">{h.hora}</td><td className="p-2 text-cosmic-text font-medium">{translateBackend(h.lord, language)}</td><td className="p-2 text-cosmic-text">{h.start}</td><td className="p-2 text-cosmic-text">{h.end}</td><td className="p-2"><span className={`text-sm px-2 py-0.5 rounded ${h.type === 'day' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}>{translateBackend(h.type, language)}</span></td></tr>
-                ))}</tbody></table></div>
-              </ExpandableSection>}
-
-              {/* Lagna Table */}
-              {panchang.lagna_table && <ExpandableSection title={language === 'hi' ? 'लग्न मुहूर्त' : 'Lagna Muhurta'} desc={language === 'hi' ? 'दिन भर की उदय राशि' : 'Rising sign through the day'}>
-                <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr className="bg-sacred-gold/20"><th className="p-2 text-left text-sacred-gold-dark">{t('section.lagna')}</th><th className="p-2">{t('table.start')}</th><th className="p-2">{t('table.end')}</th></tr></thead><tbody>
-                {(panchang.lagna_table as LagnaRow[]).map((l, i) => (
-                  <tr key={i} className="border-t border-sacred-gold"><td className="p-2 text-cosmic-text font-medium">{translateBackend(l.lagna, language)}</td><td className="p-2 text-cosmic-text">{l.start}</td><td className="p-2 text-cosmic-text">{l.end}</td></tr>
-                ))}</tbody></table></div>
-              </ExpandableSection>}
-
-              {/* Gowri Panchangam */}
-              {panchang.gowri_panchang && <ExpandableSection title={language === 'hi' ? 'गौरी पंचांगम' : 'Gowri Panchangam'} desc={language === 'hi' ? 'दिन और रात के गुणवत्ता काल' : 'Day and night quality periods'}>
-                <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr className="bg-sacred-gold/20"><th className="p-2 text-left text-sacred-gold-dark">{t('table.period')}</th><th className="p-2">{t('table.start')}</th><th className="p-2">{t('table.end')}</th><th className="p-2">{t('table.type')}</th><th className="p-2">{language === 'hi' ? 'गुणवत्ता' : 'Quality'}</th></tr></thead><tbody>
-                {(panchang.gowri_panchang as GowriRow[]).map((g, i) => (
-                  <tr key={i} className={`border-t border-sacred-gold ${g.quality === 'good' ? 'bg-green-50' : ''}`}><td className="p-2 text-cosmic-text font-medium">{translateBackend(g.name, language)}</td><td className="p-2 text-cosmic-text">{g.start}</td><td className="p-2 text-cosmic-text">{g.end}</td><td className="p-2"><span className={`text-sm px-2 py-0.5 rounded ${g.type === 'day' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}>{translateBackend(g.type, language)}</span></td><td className="p-2"><span className={`text-sm px-2 py-0.5 rounded ${g.quality === 'good' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{g.quality === 'good' ? (language === 'hi' ? 'शुभ' : 'Shubh') : (language === 'hi' ? 'अशुभ' : 'Ashubh')}</span></td></tr>
-                ))}</tbody></table></div>
-              </ExpandableSection>}
-
-              {/* Chandrabalam */}
-              {panchang.chandrabalam && <ExpandableSection title={language === 'hi' ? 'चंद्रबल' : 'Chandrabalam'} desc={language === 'hi' ? 'सभी 12 राशियों के लिए चंद्र बल' : 'Moon strength for all 12 Rashi'}>
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                {(panchang.chandrabalam as ChandrabalamRow[]).map((c, i) => (
-                  <div key={i} className={`p-3 text-center border rounded ${c.good ? 'border-green-300 bg-green-50' : 'border-red-200 bg-red-50'}`}>
-                    <p className="text-sm font-medium text-cosmic-text">{translateBackend(c.rashi, language)}</p>
-                    <p className={`text-sm font-semibold ${c.good ? 'text-green-600' : 'text-red-500'}`}>{translateBackend(c.balam, language)}</p>
-                    <p className="text-sm text-cosmic-text">{t('common.house')} {c.house_from_moon}</p>
-                  </div>
+            {/* Tab Navigation */}
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-8 gap-1 h-auto p-1 bg-cosmic-card rounded-xl">
+                {[
+                  { id: 'core', label: language === 'hi' ? 'पंचांग' : 'Core', icon: AlignLeft },
+                  { id: 'muhurat', label: language === 'hi' ? 'मुहूर्त' : 'Muhurat', icon: Timer },
+                  { id: 'planets', label: language === 'hi' ? 'ग्रह' : 'Planets', icon: Star },
+                  { id: 'hora', label: language === 'hi' ? 'होरा' : 'Hora', icon: Clock },
+                  { id: 'lagna', label: language === 'hi' ? 'लग्न' : 'Lagna', icon: Sun },
+                  { id: 'choghadiya', label: language === 'hi' ? 'चौघड़िया' : 'Choghadiya', icon: Sparkles },
+                  { id: 'gowri', label: language === 'hi' ? 'गौरी' : 'Gowri', icon: Moon },
+                  { id: 'monthly', label: language === 'hi' ? 'त्योहार' : 'Festivals', icon: CalendarDays },
+                ].map(tab => (
+                  <TabsTrigger key={tab.id} value={tab.id} className="min-w-0 flex flex-col items-center gap-0.5 py-2 px-1 text-xs data-[state=active]:bg-sacred-gold data-[state=active]:text-white rounded-lg">
+                    <tab.icon className="w-4 h-4" />
+                    <span className="hidden sm:block">{tab.label}</span>
+                  </TabsTrigger>
                 ))}
-                </div>
-              </ExpandableSection>}
+              </TabsList>
 
-              {/* Tarabalam */}
-              {panchang.tarabalam && <ExpandableSection title={language === 'hi' ? 'ताराबल' : 'Tarabalam'} desc={language === 'hi' ? 'सभी 27 नक्षत्रों का बल' : 'Star strength for all 27 Nakshatra'}>
-                <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2">
-                {(panchang.tarabalam as TarabalamRow[]).map((t, i) => (
-                  <div key={i} className={`p-2 text-center border rounded ${t.good ? 'border-green-300 bg-green-50' : 'border-red-200 bg-red-50'}`}>
-                    <p className="text-sm font-medium text-cosmic-text">{translateBackend(t.nakshatra, language)}</p>
-                    <p className={`text-sm font-semibold ${t.good ? 'text-green-600' : 'text-red-500'}`}>{translateBackend(t.tara, language)}</p>
-                  </div>
-                ))}
-                </div>
-              </ExpandableSection>}
-
-              {/* Do Ghati Muhurta */}
-              {panchang.do_ghati_muhurta && <ExpandableSection title={language === 'hi' ? 'दो घटी मुहूर्त' : 'Do Ghati Muhurta'} desc={language === 'hi' ? 'दिन का 30 मुहूर्त विभाजन' : '30 Muhurta division of the day'}>
-                <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr className="bg-sacred-gold/20"><th className="p-2 text-left text-sacred-gold-dark">#</th><th className="p-2 text-left">{t('table.name')}</th><th className="p-2">{t('table.start')}</th><th className="p-2">{t('table.end')}</th><th className="p-2">{language === 'hi' ? 'गुणवत्ता' : 'Quality'}</th></tr></thead><tbody>
-                {(panchang.do_ghati_muhurta as DoGhatiRow[]).map((m, i) => (
-                  <tr key={i} className={`border-t border-sacred-gold ${m.quality === 'good' ? 'bg-green-50' : ''}`}><td className="p-2 text-cosmic-text">{m.muhurta}</td><td className="p-2 text-cosmic-text font-medium">{translateBackend(m.name, language)}</td><td className="p-2 text-cosmic-text">{m.start}</td><td className="p-2 text-cosmic-text">{m.end}</td><td className="p-2"><span className={`text-sm px-2 py-0.5 rounded ${m.quality === 'good' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>{translateBackend(m.quality, language)}</span></td></tr>
-                ))}</tbody></table></div>
-              </ExpandableSection>}
-
-              {/* Panchaka */}
-              {panchang.panchaka && <div className={`p-4 rounded-xl border ${panchang.panchaka.active ? 'border-red-300 bg-red-50' : 'border-green-300 bg-green-50'}`}>
-                <p className="text-sm font-medium text-cosmic-text">{language === 'hi' ? 'पंचक रहित' : 'Panchaka Rahita'}: <span className={`font-semibold ${panchang.panchaka.rahita ? 'text-green-600' : 'text-red-500'}`}>{panchang.panchaka.rahita ? (language === 'hi' ? 'सुरक्षित — आज पंचक नहीं' : 'Safe — No Panchaka today') : (language === 'hi' ? 'पंचक सक्रिय — सावधानी रखें' : 'Panchaka Active — Caution advised')}</span></p>
-              </div>}
-            </div>
-
-            {/* ROW 5: Muhurat Finder */}
-            <MuhuratFinder
-              latitude={latitude}
-              longitude={longitude}
-              onLatChange={setLatitude}
-              onLonChange={setLongitude}
-            />
+              <div className="mt-4">
+                <TabsContent value="core">
+                  <PanchangCoreTab panchang={panchang} language={language} t={t} />
+                </TabsContent>
+                <TabsContent value="muhurat">
+                  <MuhuratTab panchang={panchang} language={language} t={t} />
+                </TabsContent>
+                <TabsContent value="planets">
+                  <PlanetaryPositionsTab panchang={panchang} language={language} t={t} />
+                </TabsContent>
+                <TabsContent value="hora">
+                  <HoraTab panchang={panchang} language={language} t={t} timezoneOffset={tzOffset} minuteTick={minuteTick} />
+                </TabsContent>
+                <TabsContent value="lagna">
+                  <LagnaTab panchang={panchang} language={language} t={t} timezoneOffset={tzOffset} minuteTick={minuteTick} />
+                </TabsContent>
+                <TabsContent value="choghadiya">
+                  <ChoghadiyaTab panchang={panchang} language={language} t={t} timezoneOffset={tzOffset} minuteTick={minuteTick} />
+                </TabsContent>
+                <TabsContent value="gowri">
+                  <GowriTab panchang={panchang} language={language} t={t} timezoneOffset={tzOffset} minuteTick={minuteTick} />
+                </TabsContent>
+                <TabsContent value="monthly">
+                  <MonthlyCalendarTab language={language} t={t} latitude={latitude} longitude={longitude} />
+                </TabsContent>
+              </div>
+            </Tabs>
           </div>
         )}
       </div>
@@ -503,22 +459,6 @@ _Generated by AstroRattan.com_`;
 // ============================================================
 // Normalize API response to match FullPanchangData
 // ============================================================
-function ExpandableSection({ title, desc, children }: { title: string; desc: string; children: React.ReactNode }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="border border-sacred-gold rounded-xl overflow-hidden bg-sacred-cream">
-      <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
-        <div className="text-left">
-          <h4 className="font-display font-semibold text-sacred-brown text-sm">{title}</h4>
-          <p className="text-sm text-cosmic-text">{desc}</p>
-        </div>
-        <span className={`text-sacred-gold-dark transition-transform ${open ? 'rotate-180' : ''}`}>▼</span>
-      </button>
-      {open && <div className="p-4 pt-0 border-t border-sacred-gold">{children}</div>}
-    </div>
-  );
-}
-
 function normalizePanchang(data: Record<string, unknown>): FullPanchangData {
   const d = data as Partial<FullPanchangData>;
   return {
@@ -538,6 +478,7 @@ function normalizePanchang(data: Record<string, unknown>): FullPanchangData {
     abhijit_muhurat: d.abhijit_muhurat || { start: '--:--', end: '--:--' },
     brahma_muhurat: d.brahma_muhurat || { start: '--:--', end: '--:--' },
     choghadiya: Array.isArray(d.choghadiya) ? d.choghadiya : [],
+    night_choghadiya: Array.isArray(d.night_choghadiya) ? d.night_choghadiya : [],
     planetary_positions: Array.isArray(d.planetary_positions) ? d.planetary_positions : [],
     hindu_calendar: d.hindu_calendar || {
       vikram_samvat: 0, shaka_samvat: 0, maas: '', paksha: '',

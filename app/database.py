@@ -148,6 +148,7 @@ CREATE TABLE IF NOT EXISTS panchang_cache (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE(date, latitude, longitude)
 );
+CREATE INDEX IF NOT EXISTS idx_panchang_cache_date ON panchang_cache(date);
 
 -- Spiritual Content Library
 CREATE TABLE IF NOT EXISTS content_library (
@@ -268,11 +269,14 @@ CREATE TABLE IF NOT EXISTS messages (
 -- Muhurat Cache
 CREATE TABLE IF NOT EXISTS muhurat_cache (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-    date TEXT NOT NULL,
-    latitude FLOAT,
-    longitude FLOAT,
-    data TEXT,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    muhurat_type TEXT NOT NULL,
+    year INTEGER NOT NULL,
+    month INTEGER NOT NULL,
+    latitude FLOAT NOT NULL,
+    longitude FLOAT NOT NULL,
+    results TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE (muhurat_type, year, month, latitude, longitude)
 );
 
 -- Prashnavali Logs

@@ -104,7 +104,6 @@ export default function KundliForm({
         phone: client.phone || '',
         clientId: client.id,
       });
-      // Clear validation errors when a client is selected
       setValidationErrors({});
     }
   };
@@ -122,7 +121,6 @@ export default function KundliForm({
     }
   };
 
-  // Close geocode dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (placeWrapperRef.current && !placeWrapperRef.current.contains(e.target as Node)) {
@@ -133,7 +131,6 @@ export default function KundliForm({
     return () => document.removeEventListener('mousedown', handler);
   }, [geocode]);
 
-  // Inline validation on submit
   const handleSubmit = () => {
     const errors: Record<string, string> = {};
     if (!formData.name.trim()) {
@@ -157,7 +154,6 @@ export default function KundliForm({
     onGenerate();
   };
 
-  // Clear specific validation error when user types
   const clearError = (field: string) => {
     if (validationErrors[field]) {
       setValidationErrors(prev => {
@@ -171,100 +167,140 @@ export default function KundliForm({
   const hi = language === 'hi';
 
   return (
-    <div className="max-w-md mx-auto py-24 px-4 bg-transparent">
-      <div className="text-center mb-8">
-        <div className="w-16 h-16 rounded-full overflow-hidden mx-auto mb-4 shadow-md">
-          <img src="/logo.png" alt="AstroRattan" className="w-full h-full object-cover" />
-        </div>
-        <h3 className="text-2xl sm:text-3xl font-display font-bold text-sacred-brown mb-2">{hi ? 'अपनी कुंडली बनाएं' : 'Generate Your Kundli'}</h3>
-        <p className="text-cosmic-text">{hi ? 'व्यक्तिगत जन्म कुंडली के लिए अपना जन्म विवरण दर्ज करें' : 'Enter your birth details for a personalized Vedic birth chart'}</p>
+    <div className="max-w-3xl mx-auto pt-32 pb-10 px-4 bg-transparent">
+      <div className="text-center mb-6">
+        <h3 className="text-2xl sm:text-3xl font-display font-bold text-sacred-brown">{hi ? 'अपनी कुंडली बनाएं' : 'Generate Your Kundli'}</h3>
       </div>
-      {savedKundlisCount > 0 && (
-        <Button variant="outline" onClick={onBackToList} className="w-full mb-4 border-sacred-gold text-sacred-brown">
-          <ArrowLeft className="w-4 h-4 mr-2" />{hi ? `मेरी कुंडलियों पर वापस (${savedKundlisCount})` : `Back to My Kundlis (${savedKundlisCount})`}
+      
+      <div className="flex flex-col sm:flex-row gap-2 mb-4">
+        {savedKundlisCount > 0 && (
+          <Button variant="outline" size="sm" onClick={onBackToList} className="flex-1 border-sacred-gold text-sacred-brown h-9">
+            <ArrowLeft className="w-3.5 h-3.5 mr-1.5" />{hi ? `मेरी कुंडलियाँ (${savedKundlisCount})` : `My Kundlis (${savedKundlisCount})`}
+          </Button>
+        )}
+        <Button onClick={onPrashnaKundli} variant="outline" size="sm" className="flex-[2] border-sacred-gold text-sacred-brown hover:bg-sacred-gold/10 h-9">
+          <Clock className="w-4 h-4 mr-1.5 text-sacred-gold" />{t('kundli.prashnaKundli')}
+          <span className="ml-1.5 text-[10px] text-cosmic-text opacity-70 hidden sm:inline">{t('kundli.prashnaSubtitle')}</span>
         </Button>
-      )}
-      <Button onClick={onPrashnaKundli} variant="outline" className="w-full mb-4 border-sacred-gold text-sacred-brown hover:bg-sacred-gold/10">
-        <Clock className="w-5 h-5 mr-2 text-sacred-gold" />{t('kundli.prashnaKundli')}
-        <span className="ml-2 text-sm text-cosmic-text">{t('kundli.prashnaSubtitle')}</span>
-      </Button>
+      </div>
+
       {isAstrologer && (
-        <ClientSelector
-          onSelectClient={handleClientSelect}
-          isNewClient={isNewClient}
-          onToggle={handleClientToggle}
-        />
+        <div className="mb-4">
+          <ClientSelector
+            onSelectClient={handleClientSelect}
+            isNewClient={isNewClient}
+            onToggle={handleClientToggle}
+          />
+        </div>
       )}
-      {error && <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-300 text-red-700 text-sm">{error}</div>}
-      <div className="space-y-4">
+
+      {error && <div className="mb-4 p-2.5 rounded-lg bg-red-50 border border-red-300 text-red-700 text-xs">{error}</div>}
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
         {/* Name field */}
-        <div>
-          <label htmlFor="kundli-name" className="block text-sm font-medium text-cosmic-text mb-1">
+        <div className="md:col-span-2">
+          <label htmlFor="kundli-name" className="block text-xs font-medium text-cosmic-text mb-1">
             {hi ? 'पूरा नाम' : 'Full Name'}
           </label>
           <div className="relative">
-            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold-dark" />
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark" />
             <Input
               id="kundli-name"
               type="text"
               value={formData.name}
               onChange={(e) => { setFormData({ ...formData, name: e.target.value }); clearError('name'); }}
-              placeholder={hi ? 'पूरा नाम' : 'Full Name'}
-              className={`pl-10 bg-sacred-cream border-sacred-gold text-sacred-brown ${validationErrors.name ? 'border-red-500 ring-1 ring-red-500' : ''}`}
+              placeholder={hi ? 'पूरा नाम दर्ज करें' : 'Enter full name'}
+              className={`pl-9 h-10 bg-sacred-cream border-sacred-gold text-sacred-brown text-sm ${validationErrors.name ? 'border-red-500 ring-1 ring-red-500' : ''}`}
             />
           </div>
-          {validationErrors.name && <p className="text-red-600 text-xs mt-1">{validationErrors.name}</p>}
+          {validationErrors.name && <p className="text-red-600 text-[10px] mt-0.5">{validationErrors.name}</p>}
         </div>
 
         {/* Gender */}
-        <div className="grid grid-cols-2 gap-4" role="radiogroup" aria-label={hi ? 'लिंग' : 'Gender'}>
-          <button role="radio" aria-checked={formData.gender === 'male'} onClick={() => setFormData({ ...formData, gender: 'male' })} className={`p-3 rounded-xl border transition-colors ${formData.gender === 'male' ? 'border-sacred-gold bg-sacred-gold-dark text-white-dark' : 'border-sacred-gold text-cosmic-text'}`}>{hi ? 'पुरुष' : 'Male'}</button>
-          <button role="radio" aria-checked={formData.gender === 'female'} onClick={() => setFormData({ ...formData, gender: 'female' })} className={`p-3 rounded-xl border transition-colors ${formData.gender === 'female' ? 'border-sacred-gold bg-sacred-gold-dark text-white-dark' : 'border-sacred-gold text-cosmic-text'}`}>{hi ? 'महिला' : 'Female'}</button>
+        <div>
+          <label className="block text-xs font-medium text-cosmic-text mb-1">{hi ? 'लिंग' : 'Gender'}</label>
+          <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label={hi ? 'लिंग' : 'Gender'}>
+            <button role="radio" aria-checked={formData.gender === 'male'} onClick={() => setFormData({ ...formData, gender: 'male' })} 
+              className={`h-10 rounded-lg border transition-all text-sm font-medium ${formData.gender === 'male' ? 'border-sacred-gold bg-sacred-gold-dark text-white shadow-sm' : 'border-sacred-gold/40 text-cosmic-text bg-white/50 hover:bg-sacred-gold/5'}`}>
+              {hi ? 'पुरुष' : 'Male'}
+            </button>
+            <button role="radio" aria-checked={formData.gender === 'female'} onClick={() => setFormData({ ...formData, gender: 'female' })} 
+              className={`h-10 rounded-lg border transition-all text-sm font-medium ${formData.gender === 'female' ? 'border-sacred-gold bg-sacred-gold-dark text-white shadow-sm' : 'border-sacred-gold/40 text-cosmic-text bg-white/50 hover:bg-sacred-gold/5'}`}>
+              {hi ? 'महिला' : 'Female'}
+            </button>
+          </div>
         </div>
+
+        {/* Phone field (astrologer only) */}
+        {isAstrologer ? (
+          <div>
+            {isNewClient && (
+              <div>
+                <label htmlFor="kundli-phone" className="block text-xs font-medium text-cosmic-text mb-1">
+                  {hi ? 'क्लाइंट फ़ोन नंबर' : 'Client Phone Number'}
+                </label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark" />
+                  <Input
+                    id="kundli-phone"
+                    type="tel"
+                    value={formData.phone || ''}
+                    onChange={(e) => { setFormData({ ...formData, phone: e.target.value }); clearError('phone'); }}
+                    placeholder={hi ? 'फ़ोन नंबर' : 'Phone number'}
+                    className={`pl-9 h-10 bg-sacred-cream border-sacred-gold text-sacred-brown text-sm ${validationErrors.phone ? 'border-red-500 ring-1 ring-red-500' : ''}`}
+                  />
+                </div>
+                {validationErrors.phone && <p className="text-red-600 text-[10px] mt-0.5">{validationErrors.phone}</p>}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="hidden md:block" />
+        )}
 
         {/* Date field */}
         <div>
-          <label htmlFor="kundli-date" className="block text-sm font-medium text-cosmic-text mb-1">
+          <label htmlFor="kundli-date" className="block text-xs font-medium text-cosmic-text mb-1">
             {hi ? 'जन्म तिथि' : 'Birth Date'}
           </label>
           <div className="relative">
-            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-cosmic-text" />
+            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark" />
             <Input
               id="kundli-date"
               type="date"
               value={formData.date}
               onChange={(e) => { setFormData({ ...formData, date: e.target.value }); clearError('date'); }}
-              className={`pl-10 bg-sacred-cream border-sacred-gold text-sacred-brown ${validationErrors.date ? 'border-red-500 ring-1 ring-red-500' : ''}`}
+              className={`pl-9 h-10 bg-sacred-cream border-sacred-gold text-sacred-brown text-sm ${validationErrors.date ? 'border-red-500 ring-1 ring-red-500' : ''}`}
             />
           </div>
-          {validationErrors.date && <p className="text-red-600 text-xs mt-1">{validationErrors.date}</p>}
+          {validationErrors.date && <p className="text-red-600 text-[10px] mt-0.5">{validationErrors.date}</p>}
         </div>
 
         {/* Time field */}
         <div>
-          <label htmlFor="kundli-time" className="block text-sm font-medium text-cosmic-text mb-1">
+          <label htmlFor="kundli-time" className="block text-xs font-medium text-cosmic-text mb-1">
             {hi ? 'जन्म समय' : 'Birth Time'}
           </label>
           <div className="relative">
-            <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-cosmic-text" />
+            <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark" />
             <Input
               id="kundli-time"
               type="time"
               value={formData.time}
               onChange={(e) => { setFormData({ ...formData, time: e.target.value }); clearError('time'); }}
-              className={`pl-10 bg-sacred-cream border-sacred-gold text-sacred-brown ${validationErrors.time ? 'border-red-500 ring-1 ring-red-500' : ''}`}
+              className={`pl-9 h-10 bg-sacred-cream border-sacred-gold text-sacred-brown text-sm ${validationErrors.time ? 'border-red-500 ring-1 ring-red-500' : ''}`}
             />
           </div>
-          {validationErrors.time && <p className="text-red-600 text-xs mt-1">{validationErrors.time}</p>}
+          {validationErrors.time && <p className="text-red-600 text-[10px] mt-0.5">{validationErrors.time}</p>}
         </div>
 
         {/* Place field */}
-        <div>
-          <label htmlFor="kundli-place" className="block text-sm font-medium text-cosmic-text mb-1">
+        <div className="md:col-span-2">
+          <label htmlFor="kundli-place" className="block text-xs font-medium text-cosmic-text mb-1">
             {hi ? 'जन्म स्थान' : 'Birth Place'}
           </label>
           <div className="relative" ref={placeWrapperRef}>
-            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-cosmic-text z-10" />
+            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark z-10" />
             <Input
               id="kundli-place"
               type="text"
@@ -274,15 +310,15 @@ export default function KundliForm({
                 clearError('place');
                 geocode.search(e.target.value);
               }}
-              placeholder={hi ? 'जन्म स्थान (खोजने के लिए टाइप करें)' : 'Birth Place (type to search)'}
-              className={`pl-10 bg-sacred-cream border-sacred-gold text-sacred-brown ${validationErrors.place ? 'border-red-500 ring-1 ring-red-500' : ''}`}
+              placeholder={hi ? 'जन्म स्थान खोजें' : 'Search birth place'}
+              className={`pl-9 h-10 bg-sacred-cream border-sacred-gold text-sacred-brown text-sm ${validationErrors.place ? 'border-red-500 ring-1 ring-red-500' : ''}`}
               autoComplete="off"
             />
             {geocode.loading && (
-              <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-sacred-gold" />
+              <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 animate-spin text-sacred-gold" />
             )}
             {geocode.showDropdown && geocode.suggestions.length > 0 && (
-              <div className="absolute z-50 left-0 right-0 bottom-full mb-1 sm:bottom-auto sm:top-full sm:mt-1 sm:mb-0 bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-y-auto">
+              <div className="absolute z-50 left-0 right-0 bottom-full mb-1 sm:bottom-auto sm:top-full sm:mt-1 sm:mb-0 bg-white border border-gray-200 rounded-lg shadow-lg max-h-40 overflow-y-auto">
                 {geocode.suggestions.map((s, i) => (
                   <button
                     key={i}
@@ -292,69 +328,44 @@ export default function KundliForm({
                       clearError('place');
                       geocode.close();
                     }}
-                    className="w-full text-left px-4 py-3 hover:bg-sacred-purple transition-colors border-b border-sacred-gold-dark last:border-b-0"
+                    className="w-full text-left px-3 py-2 hover:bg-sacred-purple transition-colors border-b border-sacred-gold-dark last:border-b-0"
                   >
-                    <p className="text-sm font-medium text-cosmic-text truncate">{s.name}</p>
-                    <p className="text-sm text-cosmic-text">{s.lat.toFixed(4)}, {s.lon.toFixed(4)}</p>
+                    <p className="text-xs font-medium text-cosmic-text truncate">{s.name}</p>
+                    <p className="text-[10px] text-cosmic-text opacity-70">{s.lat.toFixed(4)}, {s.lon.toFixed(4)}</p>
                   </button>
                 ))}
               </div>
             )}
           </div>
-          {validationErrors.place && <p className="text-red-600 text-xs mt-1">{validationErrors.place}</p>}
-        </div>
-
-        {/* Location confirmation + collapsible coordinates */}
-        {formData.place && (
-          <div className="px-1">
-            <div className="flex items-center gap-2 text-sm text-cosmic-text">
+          {validationErrors.place && <p className="text-red-600 text-[10px] mt-0.5">{validationErrors.place}</p>}
+          
+          {/* Location confirmation + collapsible coordinates */}
+          {formData.place && (
+            <div className="mt-1.5 flex items-center gap-2 text-xs text-cosmic-text">
               <MapPin className="w-3 h-3 text-sacred-gold" />
               <span>{hi ? 'स्थान' : 'Location'}: {formData.place.split(',')[0]} &#10003;</span>
               <button
                 type="button"
                 onClick={() => setShowCoordinates(prev => !prev)}
-                className="ml-auto text-xs text-sacred-gold-dark hover:underline flex items-center gap-0.5"
+                className="ml-auto text-[10px] text-sacred-gold-dark hover:underline flex items-center gap-0.5"
               >
                 {hi ? 'निर्देशांक' : 'Coordinates'}
                 <ChevronDown className={`w-3 h-3 transition-transform ${showCoordinates ? 'rotate-180' : ''}`} />
               </button>
             </div>
-            {showCoordinates && (
-              <p className="text-xs text-cosmic-text mt-1 pl-5">
-                Lat: {formData.latitude.toFixed(4)}, Lon: {formData.longitude.toFixed(4)}
-              </p>
-            )}
-          </div>
-        )}
+          )}
+          {showCoordinates && (
+            <p className="text-[10px] text-cosmic-text mt-0.5 pl-4">
+              Lat: {formData.latitude.toFixed(4)}, Lon: {formData.longitude.toFixed(4)}
+            </p>
+          )}
+        </div>
 
-        {/* Phone field (astrologer only) */}
-        {isAstrologer && (
-          <div className="min-h-[56px]">
-            {isNewClient && (
-              <div>
-                <label htmlFor="kundli-phone" className="block text-sm font-medium text-cosmic-text mb-1">
-                  {hi ? 'क्लाइंट फ़ोन नंबर' : 'Client Phone Number'}
-                </label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold-dark" />
-                  <Input
-                    id="kundli-phone"
-                    type="tel"
-                    value={formData.phone || ''}
-                    onChange={(e) => { setFormData({ ...formData, phone: e.target.value }); clearError('phone'); }}
-                    placeholder={hi ? 'क्लाइंट फ़ोन नंबर (आवश्यक)' : 'Client phone number (required)'}
-                    className={`pl-10 bg-sacred-cream border-sacred-gold text-sacred-brown ${validationErrors.phone ? 'border-red-500 ring-1 ring-red-500' : ''}`}
-                  />
-                </div>
-                {validationErrors.phone && <p className="text-red-600 text-xs mt-1">{validationErrors.phone}</p>}
-              </div>
-            )}
-          </div>
-        )}
-
-        <Button onClick={handleSubmit} disabled={false} className="w-full bg-sacred-gold text-white font-semibold hover:bg-sacred-gold/90 disabled:opacity-50">
-          <Sparkles className="w-5 h-5 mr-2" />{hi ? 'कुंडली बनाएं' : 'Generate Kundli'}<ChevronRight className="w-5 h-5 ml-2" />
-        </Button>
+        <div className="md:col-span-2 pt-2">
+          <Button onClick={handleSubmit} disabled={false} className="w-full h-11 bg-sacred-gold text-white font-bold text-base rounded-lg shadow-md hover:bg-sacred-gold/90 transition-all hover:scale-[1.01] active:scale-[0.99]">
+            <Sparkles className="w-5 h-5 mr-1.5" />{hi ? 'कुंडली बनाएं' : 'Generate Kundli'}<ChevronRight className="w-5 h-5 ml-1.5" />
+          </Button>
+        </div>
       </div>
     </div>
   );

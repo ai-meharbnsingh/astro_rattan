@@ -1,8 +1,11 @@
-export { default as PanchangCore } from './PanchangCore';
-export { default as SunMoonTimes } from './SunMoonTimes';
-export { default as InauspiciousPeriods } from './InauspiciousPeriods';
-export { default as AuspiciousTimings } from './AuspiciousTimings';
-export { default as PlanetaryPositions } from './PlanetaryPositions';
-export { default as FestivalVrat } from './FestivalVrat';
-export { default as HinduCalendar } from './HinduCalendar';
-export { default as MuhuratFinder } from './MuhuratFinder';
+// Panchang Tab Components
+export { default as PanchangCoreTab } from './PanchangCoreTab';
+export { default as MuhuratTab } from './MuhuratTab';
+export { default as PlanetaryPositionsTab } from './PlanetaryPositionsTab';
+export { default as HoraTab } from './HoraTab';
+export { default as LagnaTab } from './LagnaTab';
+export { default as ChoghadiyaTab } from './ChoghadiyaTab';
+export { default as GowriTab } from './GowriTab';
+export { default as FestivalsTab } from './FestivalsTab';
+export { default as CalendarTab } from './CalendarTab';
+export { default as MonthlyCalendarTab } from './MonthlyCalendarTab';

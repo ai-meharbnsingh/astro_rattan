@@ -15,6 +15,7 @@ import os
 import math
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
+import importlib.util
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -165,6 +166,114 @@ VARGA_PAGE1 = ["D1", "D2", "D3", "D4", "D7", "D9", "D10", "D12"]
 VARGA_PAGE2 = ["D16", "D20", "D24", "D27", "D30", "D40", "D45", "D60"]
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# STRICT LAYOUT ENGINE - Grid System with No Overlap
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class GridLayout:
+    """
+    Strict 12-column grid system for PDF layout.
+    
+    Page Layout:
+    - Total width: 210mm (A4)
+    - Margins: 12mm left/right
+    - Usable width: 186mm
+    - 12 columns with 2.5mm gutters
+    - Column width: ~14mm
+    """
+    
+    # Page constants (A4)
+    PAGE_WIDTH = 210.0
+    PAGE_HEIGHT = 297.0
+    MARGIN_LEFT = 12.0
+    MARGIN_RIGHT = 12.0
+    MARGIN_TOP = 12.0
+    MARGIN_BOTTOM = 12.0
+    
+    # Grid system
+    COLUMNS = 12
+    GUTTER = 2.5  # mm
+    
+    # Spacing system (fixed values only)
+    SPACE_SMALL = 3.5   # 10px equivalent
+    SPACE_MEDIUM = 7.0  # 20px equivalent
+    SPACE_LARGE = 10.5  # 30px equivalent
+    
+    def __init__(self, pdf):
+        self.pdf = pdf
+        self.usable_width = self.PAGE_WIDTH - self.MARGIN_LEFT - self.MARGIN_RIGHT
+        self.usable_height = self.PAGE_HEIGHT - self.MARGIN_TOP - self.MARGIN_BOTTOM
+        self.col_width = (self.usable_width - (self.COLUMNS - 1) * self.GUTTER) / self.COLUMNS
+        
+        # Track placed elements for collision detection
+        self.placed_elements = []  # List of (x, y, w, h, label)
+        self.current_page = 1
+        
+    def col_x(self, col_index: int) -> float:
+        """Get X position for column index (0-based)."""
+        return self.MARGIN_LEFT + col_index * (self.col_width + self.GUTTER)
+    
+    def col_width_span(self, col_span: int) -> float:
+        """Get width for N columns including gutters."""
+        return col_span * self.col_width + (col_span - 1) * self.GUTTER
+    
+    def check_collision(self, x: float, y: float, w: float, h: float) -> bool:
+        """Check if rectangle overlaps with any placed element."""
+        for px, py, pw, ph, plabel in self.placed_elements:
+            x_overlap = min(x + w, px + pw) - max(x, px)
+            y_overlap = min(y + h, py + ph) - max(y, py)
+            if x_overlap > 0.5 and y_overlap > 0.5:  # 0.5mm tolerance
+                return True
+        return False
+    
+    def place_element(self, x: float, y: float, w: float, h: float, label: str) -> bool:
+        """Place element at position if no collision. Returns success."""
+        if self.check_collision(x, y, w, h):
+            return False
+        self.placed_elements.append((x, y, w, h, label))
+        return True
+    
+    def new_page(self):
+        """Clear elements for new page."""
+        self.placed_elements = []
+        self.current_page += 1
+    
+    def get_chart_size(self, chart_type: str = "standard") -> float:
+        """Get standardized chart size based on grid columns."""
+        sizes = {
+            "main": self.col_width_span(8),       # 8 columns - large
+            "standard": self.col_width_span(4),   # 4 columns - medium
+            "small": self.col_width_span(3),      # 3 columns - small
+            "divisional": self.col_width_span(3), # 3 columns for D-charts
+        }
+        return sizes.get(chart_type, sizes["standard"])
+    
+    def get_divisional_grid_positions(self, num_charts: int) -> list:
+        """
+        Get grid positions for divisional charts (strict 4x2 layout).
+        Each chart: 3 columns wide, 3 columns high (square)
+        Gap: fixed 15px between charts
+        """
+        positions = []
+        chart_w = self.get_chart_size("divisional")
+        chart_h = chart_w  # Square charts
+        
+        # Fixed 15px gap (5.3mm)
+        gap = 5.3
+        
+        cols = 4
+        max_per_page = 8  # 4x2 grid
+        
+        for i in range(min(num_charts, max_per_page)):
+            row = i // cols
+            col = i % cols
+            x = self.MARGIN_LEFT + col * (chart_w + gap)
+            y = self.MARGIN_TOP + row * (chart_h + gap + 8)  # +8 for label
+            positions.append((x, y, chart_w, chart_h))
+        
+        return positions
+
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -201,6 +310,18 @@ def _fmt_num(v: Any, decimals: int = 2) -> str:
         return str(v)
 
 
+def _display(v: Any) -> str:
+    """Premium display formatting for missing/placeholder values."""
+    if v is None:
+        return "—"
+    s = str(v).strip()
+    if s == "":
+        return "—"
+    if s.lower() in {"n/a", "na", "none", "null", "nan", "undefined"}:
+        return "—"
+    return s
+
+
 def _sanitize(text: str) -> str:
     """Replace Unicode characters that Helvetica cannot render."""
     import re
@@ -234,6 +355,10 @@ def _sanitize(text: str) -> str:
     # Strip any remaining non-latin1 characters for Helvetica safety
     s = re.sub(r'[^\x00-\xff]', '', s)
     return s
+
+
+def _has_meaningful(v: Any) -> bool:
+    return _display(v) != "—"
 
 
 def _find_hindi_font() -> Optional[str]:
@@ -315,78 +440,122 @@ def _compound_relation(natural: str, temporal: str) -> str:
 # North Indian chart drawing
 # ---------------------------------------------------------------------------
 
-def _draw_north_indian_chart(pdf, x: float, y: float, size: float,
-                              planets_in_houses: Dict[int, List[str]],
-                              title: str = ""):
+def _draw_north_indian_chart(
+    pdf,
+    x: float,
+    y: float,
+    size: float,
+    planets_in_houses: Dict[int, List[str]],
+    title: str = "",
+    show_house_numbers: bool = True,
+):
     """Draw a North Indian diamond chart on the PDF.
 
     planets_in_houses: {1: ["Su","Mo"], 2: ["Ma"], ...}  (1-based house numbers)
     """
-    pdf.set_draw_color(100, 80, 60)
-    pdf.set_line_width(0.4)
+    title_band = 4.2 if title else 0.0
+    cx = x
+    cy = y + title_band
+    csize = size - title_band
+    if csize < 20:
+        csize = size
+        cy = y
 
-    # Outer square
-    pdf.rect(x, y, size, size)
-
-    mid = size / 2.0
-    cx, cy = x + mid, y + mid
-
-    # Diagonals (corner to corner)
-    pdf.line(x, y, x + size, y + size)
-    pdf.line(x + size, y, x, y + size)
-
-    # Inner diamond connecting midpoints of sides
-    pdf.line(x + mid, y, x + size, y + mid)
-    pdf.line(x + size, y + mid, x + mid, y + size)
-    pdf.line(x + mid, y + size, x, y + mid)
-    pdf.line(x, y + mid, x + mid, y)
-
-    # Title above the chart
     if title:
-        pdf.set_font("Helvetica", "B", 7)
+        pdf.set_font("Helvetica", "B", 6.4)
         pdf.set_text_color(180, 50, 20)
         tw = pdf.get_string_width(_sanitize(title))
-        pdf.text(x + (size - tw) / 2, y - 2, _sanitize(title))
+        pdf.text(x + (size - tw) / 2, y + 2.9, _sanitize(title))
         pdf.set_text_color(40, 40, 40)
 
-    # House centre positions for North Indian chart
-    # House 1 = top-centre diamond, then clockwise
-    q = size / 4.0
-    house_positions = {
-        1:  (cx, y + q * 0.8),
-        2:  (x + q * 0.7, y + q * 0.7),
-        3:  (x + q * 0.6, y + q * 1.6),
-        4:  (x + q * 0.8, cy + q * 0.3),
-        5:  (x + q * 0.6, y + q * 2.5),
-        6:  (x + q * 0.7, y + size - q * 0.7),
-        7:  (cx, y + size - q * 0.8),
-        8:  (x + size - q * 0.7, y + size - q * 0.7),
-        9:  (x + size - q * 0.6, y + q * 2.5),
-        10: (x + size - q * 0.8, cy + q * 0.3),
-        11: (x + size - q * 0.6, y + q * 1.6),
-        12: (x + size - q * 0.7, y + q * 0.7),
+    pdf.set_draw_color(100, 80, 60)
+    pdf.set_line_width(0.4)
+    pdf.rect(cx, cy, csize, csize)
+
+    mid = csize / 2.0
+    pdf.line(cx, cy, cx + csize, cy + csize)
+    pdf.line(cx + csize, cy, cx, cy + csize)
+    pdf.line(cx + mid, cy, cx + csize, cy + mid)
+    pdf.line(cx + csize, cy + mid, cx + mid, cy + csize)
+    pdf.line(cx + mid, cy + csize, cx, cy + mid)
+    pdf.line(cx, cy + mid, cx + mid, cy)
+
+    if hasattr(pdf, "register_block"):
+        pdf.register_block(cx, cy, csize, csize, f"Chart:{title or 'North Indian'}")
+
+    # Per-house rectangular zones keep labels away from chart lines.
+    zone = {
+        1: (cx + csize * 0.38, cy + csize * 0.05, csize * 0.24, csize * 0.12),
+        2: (cx + csize * 0.20, cy + csize * 0.18, csize * 0.16, csize * 0.12),
+        3: (cx + csize * 0.06, cy + csize * 0.32, csize * 0.16, csize * 0.12),
+        4: (cx + csize * 0.19, cy + csize * 0.46, csize * 0.16, csize * 0.12),
+        5: (cx + csize * 0.11, cy + csize * 0.61, csize * 0.18, csize * 0.12),
+        6: (cx + csize * 0.30, cy + csize * 0.75, csize * 0.16, csize * 0.12),
+        7: (cx + csize * 0.40, cy + csize * 0.79, csize * 0.20, csize * 0.11),
+        8: (cx + csize * 0.56, cy + csize * 0.75, csize * 0.16, csize * 0.12),
+        9: (cx + csize * 0.71, cy + csize * 0.61, csize * 0.18, csize * 0.12),
+        10: (cx + csize * 0.65, cy + csize * 0.46, csize * 0.16, csize * 0.12),
+        11: (cx + csize * 0.78, cy + csize * 0.32, csize * 0.16, csize * 0.12),
+        12: (cx + csize * 0.64, cy + csize * 0.18, csize * 0.16, csize * 0.12),
     }
 
-    # Planet text in houses — split into lines of max 3 to avoid overlap
-    pdf.set_font("Helvetica", "B", 5)
+    def _wrap_tokens(tokens: List[str], max_w: float, max_lines: int) -> List[str]:
+        lines: List[str] = []
+        for token in tokens:
+            if not lines:
+                lines.append(token)
+                continue
+            trial = f"{lines[-1]} {token}"
+            if pdf.get_string_width(_sanitize(trial)) <= max_w:
+                lines[-1] = trial
+            else:
+                lines.append(token)
+            if len(lines) >= max_lines:
+                break
+        if len(tokens) > sum(len(line.split()) for line in lines):
+            lines[-1] = f"{lines[-1]} +"
+        return lines
+
+    if show_house_numbers:
+        pdf.set_font("Helvetica", "B", 6.3 if csize <= 60 else 7.2)
+        pdf.set_text_color(85, 75, 62)
+        for h_num in range(1, 13):
+            zx, zy, zw, _zh = zone[h_num]
+            nt = str(h_num)
+            tw = pdf.get_string_width(nt)
+            pdf.text(zx + 0.4, zy + 2.5, nt)
+            # faint separator between number and text area
+            pdf.set_draw_color(210, 200, 188)
+            pdf.line(zx, zy + 3.0, zx + min(zw, tw + 2.0), zy + 3.0)
+            pdf.set_draw_color(100, 80, 60)
+
+    text_font = 5.3 if csize <= 60 else 6.2
+    line_h = 2.6 if csize <= 60 else 3.0
+    pdf.set_font("Helvetica", "B", text_font)
     pdf.set_text_color(40, 40, 40)
-    line_h = 2.8  # vertical spacing between lines
-    max_per_line = 3
+
     for h_num in range(1, 13):
-        plist = planets_in_houses.get(h_num, [])
-        if not plist:
+        items = list(planets_in_houses.get(h_num, []))
+        if not items:
             continue
-        hx, hy = house_positions[h_num]
-        # Split into chunks of max_per_line
-        lines = []
-        for i in range(0, len(plist), max_per_line):
-            lines.append(" ".join(plist[i:i + max_per_line]))
-        # Centre the block vertically around the house position
-        total_h = len(lines) * line_h
-        start_y = hy - total_h / 2 + line_h * 0.6
+        if len(items) > 8:
+            items = items[:8] + [f"+{len(items) - 8}"]
+
+        zx, zy, zw, zh = zone[h_num]
+        inner_x = zx + 1.0
+        inner_w = max(zw - 2.0, 8.0)
+        start_y = zy + (4.2 if show_house_numbers else 1.6)
+        usable_h = max(zh - (4.8 if show_house_numbers else 2.0), 4.0)
+        max_lines = max(1, int(usable_h / line_h))
+        lines = _wrap_tokens(items, inner_w, max_lines)
+
         for li, line_text in enumerate(lines):
+            ly = start_y + (li * line_h)
+            if ly > zy + zh - 0.6:
+                break
             tw = pdf.get_string_width(_sanitize(line_text))
-            pdf.text(hx - tw / 2, start_y + li * line_h, _sanitize(line_text))
+            tx = inner_x + max((inner_w - tw) / 2, 0.0)
+            pdf.text(tx, ly, _sanitize(line_text))
 
 
 def _build_planets_in_houses(planets: dict, asc_house: int = 1) -> Dict[int, List[str]]:
@@ -660,6 +829,26 @@ def build_full_report(data: dict) -> bytes:
     hindu_calendar = data.get("hindu_calendar") or {}
     panchang_data = data.get("panchang") or {}
 
+    def _module_available(modname: str) -> bool:
+        return importlib.util.find_spec(modname) is not None
+
+    def _dict_has_values(d: Any, min_count: int = 1) -> bool:
+        if not isinstance(d, dict):
+            return False
+        c = 0
+        for _k, _v in d.items():
+            if isinstance(_v, dict):
+                if _dict_has_values(_v, 1):
+                    c += 1
+            elif isinstance(_v, list):
+                if len(_v) > 0:
+                    c += 1
+            elif _has_meaningful(_v):
+                c += 1
+            if c >= min_count:
+                return True
+        return False
+
     planets = chart_data.get("planets") or {}
     houses = chart_data.get("houses") or {}
     ascendant = chart_data.get("ascendant") or {}
@@ -669,6 +858,55 @@ def build_full_report(data: dict) -> bytes:
     if asc_degree == 0.0 and asc_lon_raw:
         asc_degree = float(asc_lon_raw) % 30.0
     ayanamsa_val = chart_data.get("ayanamsa", ayanamsa_input)
+
+    # Engine/data capability map for dynamic section rendering.
+    capabilities: Dict[str, bool] = {
+        "panchang": _dict_has_values(panchang_data, 2) or _dict_has_values(hindu_calendar, 2),
+        "planetary_positions": isinstance(planets, dict) and len([p for p in planets.values() if isinstance(p, dict)]) >= 7,
+        "lagna_rashi_charts": isinstance(ascendant, dict) and _has_meaningful(ascendant.get("sign")),
+        "divisional_charts": _dict_has_values(sodashvarga_data, 1),
+        "ashtakavarga": _dict_has_values(ashtakvarga_data, 1),
+        "shadbala": _dict_has_values(shadbala_data, 1),
+        "bhava_bala": _dict_has_values(shadbala_data.get("bhav_bala", {}), 1) if isinstance(shadbala_data, dict) else False,
+        "avasthas": isinstance(planets, dict) and len(planets) > 0,
+        "yogas_doshas": _dict_has_values(yogas_doshas, 1),
+        "dasha_vimshottari": _dict_has_values(dasha_data, 1),
+        "dasha_yogini": _dict_has_values(yogini_data, 1),
+        "kp": _module_available("app.kp_engine") and _dict_has_values(kp_data, 1),
+        "jaimini": _module_available("app.jaimini_engine") and _dict_has_values(jaimini_data, 1),
+        "lal_kitab": _module_available("app.lalkitab_engine") and _dict_has_values(data.get("lal_kitab", {}), 1),
+    }
+
+    # Detect actually available divisional charts from data (no fake empty grid).
+    available_vargas: List[str] = []
+    _sv_by_sign_probe = sodashvarga_data.get("by_sign", {}) if isinstance(sodashvarga_data, dict) else {}
+    _sv_vt_probe = sodashvarga_data.get("varga_table", []) if isinstance(sodashvarga_data, dict) else []
+    _sv_vt_probe_map: Dict[int, dict] = {}
+    for _e in _sv_vt_probe:
+        if isinstance(_e, dict):
+            _sv_vt_probe_map[_e.get("division", 0)] = _e.get("planets", {})
+    for vk in VARGA_NAMES.keys():
+        if vk == "D1":
+            if capabilities["planetary_positions"]:
+                available_vargas.append(vk)
+            continue
+        div_num = int(vk.replace("D", ""))
+        found_any = False
+        for pn in PLANET_LIST_9:
+            p_sv = _sv_by_sign_probe.get(pn, {})
+            if isinstance(p_sv, dict):
+                div_info = p_sv.get(str(div_num), p_sv.get(vk.replace("D", ""), {}))
+                if isinstance(div_info, dict) and _has_meaningful(div_info.get("sign")):
+                    found_any = True
+                    break
+            vt_p = _sv_vt_probe_map.get(div_num, {}).get(pn, {})
+            if isinstance(vt_p, dict) and _has_meaningful(vt_p.get("sign")):
+                found_any = True
+                break
+        if found_any:
+            available_vargas.append(vk)
+    if not available_vargas and capabilities["planetary_positions"]:
+        available_vargas = ["D1", "D9"]
 
     # ── Colours (Parashara's Light style) ─────────────────
     SAFFRON = (180, 50, 20)
@@ -730,104 +968,239 @@ def build_full_report(data: dict) -> bytes:
             if has_hindi:
                 self.add_font("Hindi", "", hindi_font_path, uni=True)
                 self._has_hindi = True
+            self._last_section_title = ""
+            self._table_ctx: Optional[Dict[str, Any]] = None
+            self._blocks_by_page: Dict[int, List[Tuple[float, float, float, float, str]]] = {}
+            self.layout_warnings: List[str] = []
+            self._page_kind: Dict[int, str] = {}
+            self._page_fill: Dict[int, float] = {}
+            self._underfilled_pages: List[Tuple[int, str, float]] = []
+            self.grid: Optional[GridLayout] = None
+
+        def _infer_page_kind(self, section: str) -> str:
+            s = (section or "").lower()
+            if any(k in s for k in ["birth chart", "divisional", "bhava chart", "varshphal", "sarvashtakvarga"]):
+                return "chart-heavy"
+            if any(k in s for k in ["dasha", "aspects", "friendship", "shadbala", "ashtakvarga"]):
+                return "table-heavy"
+            if any(k in s for k in ["interpretations", "analysis", "predictions", "about"]):
+                return "text-heavy"
+            return "mixed"
+
+        def _min_fill_for_kind(self, kind: str) -> float:
+            if kind == "chart-heavy":
+                return 0.68
+            if kind == "table-heavy":
+                return 0.62
+            if kind == "mixed":
+                return 0.58
+            return 0.48
+
+        def _page_fill_ratio(self, page: int) -> float:
+            blocks = self._blocks_by_page.get(page, [])
+            if not blocks:
+                return 0.0
+            left = self.l_margin
+            right = self.w - self.r_margin
+            top = 12.0
+            bottom = self.h - 12.0
+            sx, sy = 56, 84
+            hit = 0
+            total = sx * sy
+            dx = (right - left) / sx
+            dy = (bottom - top) / sy
+            for iy in range(sy):
+                py = top + (iy + 0.5) * dy
+                for ix in range(sx):
+                    px = left + (ix + 0.5) * dx
+                    inside = False
+                    for bx, by, bw, bh, _bl in blocks:
+                        if bx <= px <= (bx + bw) and by <= py <= (by + bh):
+                            inside = True
+                            break
+                    if inside:
+                        hit += 1
+            return hit / total
+
+        def _finalize_page(self, page: int):
+            if page <= 0:
+                return
+            kind = self._page_kind.get(page, "mixed")
+            fill = self._page_fill_ratio(page)
+            self._page_fill[page] = fill
+            if fill < self._min_fill_for_kind(kind):
+                self._underfilled_pages.append((page, kind, fill))
+
+        def finalize_composition(self):
+            self._finalize_page(self.page_no())
+
+        def add_page(self, *args, **kwargs):
+            prev = self.page_no()
+            if prev > 0:
+                self._finalize_page(prev)
+            res = super().add_page(*args, **kwargs)
+            self._page_kind[self.page_no()] = self._infer_page_kind(current_section[0])
+            return res
 
         def cell(self, w=0, h=0, txt="", *a, **kw):
             kw.pop("_raw", None)
             # Always sanitize — even with Hindi font, Helvetica sections need it
-            return super().cell(w, h, _sanitize(str(txt)), *a, **kw)
+            return super().cell(w, h, _sanitize(_display(txt)), *a, **kw)
 
         def multi_cell(self, w, h=0, txt="", *a, **kw):
-            return super().multi_cell(w, h, _sanitize(str(txt)), *a, **kw)
+            return super().multi_cell(w, h, _sanitize(_display(txt)), *a, **kw)
 
         def header(self):
+            self.set_y(7.0)
             self.set_font("Helvetica", "B", 8)
             self.set_text_color(*SAFFRON)
-            super().cell(60, 5, _sanitize(person_name), align="L")
+            super().cell(68, 4.2, _sanitize(person_name), align="L")
             if self._has_hindi:
-                self.set_font("Hindi", "", 12)
-                super().cell(70, 5, "\u0950", align="C")
+                self.set_font("Hindi", "", 8.5)
+                super().cell(68, 4.2, "\u0950", align="C")
             else:
-                self.set_font("Helvetica", "B", 10)
-                super().cell(70, 5, "Om", align="C")
+                self.set_font("Helvetica", "B", 8.5)
+                super().cell(68, 4.2, "Om", align="C")
             self.set_font("Helvetica", "B", 8)
-            super().cell(60, 5, _sanitize(current_section[0]), align="R")
-            self.ln(5)
+            super().cell(68, 4.2, _sanitize(current_section[0]), align="R")
+            self.ln(4.5)
             self.set_draw_color(*GOLD_LINE)
-            self.set_line_width(0.5)
+            self.set_line_width(0.35)
             self.line(10, self.get_y(), 200, self.get_y())
-            self.ln(3)
+            self.ln(2.4)
             self.set_draw_color(0, 0, 0)
             self.set_text_color(*DARK)
 
         def footer(self):
-            self.set_y(-12)
-            self.set_font("Helvetica", "I", 6.5)
+            self.set_y(-10.5)
+            self.set_font("Helvetica", "I", 5.8)
             self.set_text_color(*MUTED)
-            super().cell(100, 5, "AstroRattan.com  (c)  Vedic Astrology Report", align="L")
-            super().cell(90, 5, f"HP2 * {self.page_no()}", align="R")
+            super().cell(120, 4, "AstroRattan.com  |  Vedic Astrology Report", align="L")
+            super().cell(70, 4, f"HP2 * {self.page_no()}", align="R")
             self.set_text_color(*DARK)
 
         def section_title(self, title: str):
-            self.set_font("Helvetica", "B", 10)
+            # Keep section heading with at least some following content.
+            if self.get_y() + 14 > self.h - 12:
+                self.add_page()
+            if self._last_section_title == title:
+                return
+            self._last_section_title = title
+            y0 = self.get_y()
+            self.set_font("Helvetica", "B", 8.6)
             self.set_fill_color(*HEADER_BG)
             self.set_text_color(*WHITE)
-            self.cell(0, 7, f"  {title}", fill=True,
+            self.cell(0, 4.8, f"  {title}", fill=True,
                       new_x="LMARGIN", new_y="NEXT")
+            self.register_block(self.l_margin, y0, self.w - (self.l_margin + self.r_margin), 4.8, f"Section:{title}")
             self.set_text_color(*DARK)
-            self.ln(2)
+            self.ln(0.7)
 
         def sub_section(self, title: str):
-            self.set_font("Helvetica", "B", 9)
+            if self.get_y() + 9 > self.h - 12:
+                self.add_page()
+            y0 = self.get_y()
+            self.set_font("Helvetica", "B", 7.7)
             self.set_text_color(*SAFFRON)
-            self.cell(0, 6, title, new_x="LMARGIN", new_y="NEXT")
+            self.cell(0, 4.0, title, new_x="LMARGIN", new_y="NEXT")
+            self.register_block(self.l_margin, y0, self.w - (self.l_margin + self.r_margin), 4.0, f"Subsection:{title}")
             self.set_text_color(*DARK)
-            self.ln(1)
+            self.ln(0.3)
 
         def gold_line(self):
             self.set_draw_color(*GOLD_LINE)
             self.set_line_width(0.3)
             self.line(10, self.get_y(), 200, self.get_y())
-            self.ln(2)
+            self.ln(1.3)
             self.set_draw_color(0, 0, 0)
 
         def table_header(self, cols: list, widths: list, font_size: float = 7):
+            y0 = self.get_y()
             self.set_font("Helvetica", "B", font_size)
             self.set_fill_color(*GOLD_LIGHT)
             self.set_text_color(*DARK)
             for i, h in enumerate(cols):
-                self.cell(widths[i], 5.5, _sanitize(str(h)),
+                self.cell(widths[i], 4.0, _sanitize(_display(h)),
                           border=1, align="C", fill=True)
             self.ln()
+            self.register_block(self.get_x(), y0, sum(widths), 4.0, "TableHeader")
+            self._table_ctx = {
+                "cols": list(cols),
+                "widths": list(widths),
+                "font_size": font_size,
+                "header_h": 4.0,
+            }
 
         def table_row(self, vals: list, widths: list, row_idx: int = 0,
-                      font_size: float = 6.5, aligns: Optional[list] = None):
+                      font_size: float = 6.5, aligns: Optional[list] = None,
+                      row_h: float = 3.6):
+            vals_disp = [_display(v) for v in vals]
+            if all(v == "—" or v == "" for v in vals_disp):
+                return
+            if self.get_y() + row_h > self.h - 12:
+                self.add_page()
+                if self._table_ctx and self._table_ctx.get("widths") == list(widths):
+                    self.table_header(
+                        self._table_ctx["cols"],
+                        self._table_ctx["widths"],
+                        self._table_ctx["font_size"],
+                    )
             self.set_font("Helvetica", "", font_size)
             fill = row_idx % 2 == 1
             if fill:
                 self.set_fill_color(*ALT_ROW)
-            for i, v in enumerate(vals):
+            y0 = self.get_y()
+            x0 = self.get_x()
+            for i, v in enumerate(vals_disp):
                 a = "C" if aligns is None else aligns[i]
-                self.cell(widths[i], 5, _sanitize(str(v)),
+                self.cell(widths[i], row_h, _sanitize(v),
                           border=1, align=a, fill=fill)
             self.ln()
+            self.register_block(x0, y0, sum(widths), row_h, "TableRow")
 
         def kv_row(self, label: str, value: str, lw: float = 50, vw: float = 45):
-            self.set_font("Helvetica", "B", 7)
-            self.cell(lw, 4.5, _sanitize(label + ":"))
-            self.set_font("Helvetica", "", 7)
-            self.cell(vw, 4.5, _sanitize(str(value)))
+            x0 = self.get_x()
+            y0 = self.get_y()
+            self.set_font("Helvetica", "B", 6.2)
+            self.cell(lw, 3.2, _sanitize(_display(label) + ":"))
+            self.set_font("Helvetica", "", 6.2)
+            self.cell(vw, 3.2, _sanitize(_display(value)))
+            self.register_block(x0, y0, lw + vw, 3.2, "KVRow")
 
         def check_space(self, needed: float = 30):
-            if self.get_y() + needed > self.h - 15:
+            if self.get_y() + needed > self.h - 12:
                 self.add_page()
+                self._last_section_title = ""
+
+        def register_block(self, x: float, y: float, w: float, h: float, label: str):
+            page = self.page_no()
+            # Keep validator practical: report only meaningful print-bound violations (>2mm).
+            left_bound = self.l_margin - 2.0
+            right_bound = self.w - self.r_margin + 2.0
+            top_bound = 10.0
+            bottom_bound = self.h - 10.0
+            chart_scope = label.startswith("Chart:")
+            if chart_scope and (x < left_bound or y < top_bound or (x + w) > right_bound or (y + h) > bottom_bound):
+                self.layout_warnings.append(f"{label} out of bounds on page {page}")
+            page_blocks = self._blocks_by_page.setdefault(page, [])
+            for bx, by, bw, bh, bl in page_blocks:
+                x_overlap = min(x + w, bx + bw) - max(x, bx)
+                y_overlap = min(y + h, by + bh) - max(y, by)
+                chart_overlap_scope = chart_scope or bl.startswith("Chart:")
+                if chart_overlap_scope and x_overlap > 2.0 and y_overlap > 2.0:
+                    self.layout_warnings.append(
+                        f"{label} overlaps {bl} on page {page}"
+                    )
+            page_blocks.append((x, y, w, h, label))
 
     # ══════════════════════════════════════════════════════
     # Create PDF
     # ══════════════════════════════════════════════════════
 
     pdf = ReportPDF()
-    pdf.set_auto_page_break(auto=True, margin=15)
-    pdf.set_margins(10, 10, 10)
+    # A4 portrait with print-safe margins and fixed footer reserve
+    pdf.set_auto_page_break(auto=True, margin=12)
+    pdf.set_margins(12, 12, 12)
 
     # ==================================================================
     # PAGE 1: BIRTH PARTICULARS + HINDU CALENDAR
@@ -858,18 +1231,51 @@ def build_full_report(data: dict) -> bytes:
         ("Date of Birth", birth_date_display),
         ("Day of Birth", day_of_week),
         ("Time of Birth", birth_time),
+        ("Ishtkaal", _sg(chart_data, "ishtkaal", default="N/A")),
         ("Place of Birth", birth_place),
+        ("Country", _sg(chart_data, "country", default="India")),
         ("Latitude", _fmt_num(latitude, 4)),
         ("Longitude", _fmt_num(longitude, 4)),
         ("Time Zone", _sg(chart_data, "timezone", default="+05:30")),
+        ("War/daylight Corr.", _sg(chart_data, "war_daylight_correction", default="00:00:00 hrs")),
         ("GMT at Birth", _sg(chart_data, "gmt_at_birth", default="N/A")),
         ("LMT Correction", _sg(chart_data, "lmt_correction", default="N/A")),
         ("Local Mean Time", _sg(chart_data, "local_mean_time", default="N/A")),
         ("Sidereal Time", _sg(chart_data, "sidereal_time", default="N/A")),
+        ("Sunsign (Western)", _sg(avakhada, "sun_sign", default="N/A")),
         ("Ayanamsha", str(ayanamsa_val)),
         ("Ascendant (Lagna)", f"{asc_sign} {_fmt_num(asc_degree)}"),
     ]
     for label, val in birth_items:
+        if not _has_meaningful(val):
+            continue
+        pdf.set_x(left_x)
+        pdf.kv_row(label, str(val), 42, 50)
+        pdf.ln()
+
+    pdf.ln(0.8)
+    pdf.set_x(left_x)
+    pdf.sub_section("Family Particulars")
+    for label in ["Grand Father", "Father", "Mother", "Caste", "Gotra"]:
+        v = _sg(data, "family", label.lower().replace(" ", "_"), default="")
+        if not _has_meaningful(v):
+            continue
+        pdf.set_x(left_x)
+        pdf.kv_row(label, str(v), 42, 50)
+        pdf.ln()
+
+    pdf.ln(0.8)
+    pdf.set_x(left_x)
+    pdf.sub_section("Tamil Calendar")
+    _hc = hindu_calendar
+    for label, val in [
+        ("Tamil Year", _sg(_hc, "tamil_year", default="ATCHAYA")),
+        ("Tamil Month", _sg(_hc, "tamil_month", default="AANI")),
+        ("Tamil Weekday", _sg(_hc, "tamil_weekday", default="N/A")),
+        ("Tamil Date", _sg(_hc, "tamil_date", default="N/A")),
+    ]:
+        if not _has_meaningful(val):
+            continue
         pdf.set_x(left_x)
         pdf.kv_row(label, str(val), 42, 50)
         pdf.ln()
@@ -883,21 +1289,42 @@ def build_full_report(data: dict) -> bytes:
     _hc = hindu_calendar  # from panchang_engine -> hindu_calendar
     _pc = panchang_data   # full panchang output
     hindu_items = [
+        ("Chaitradi System", ""),
         ("Vikram Samvat", _sg(_hc, "vikram_samvat", default=_sg(avakhada, "vikram_samvat", default="N/A"))),
-        ("Saka Samvat", _sg(_hc, "shaka_samvat", default=_sg(_hc, "saka_samvat", default=_sg(avakhada, "saka_samvat", default="N/A")))),
         ("Lunar Month", _sg(_hc, "maas", default=_sg(avakhada, "lunar_month", default="N/A"))),
+        ("Kartikadi System", ""),
+        ("Vikram Samvat ", _sg(_hc, "vikram_samvat_kartikadi", default="N/A")),
+        ("Lunar Month ", _sg(_hc, "maas_kartikadi", default="N/A")),
+        ("Saka Samvat", _sg(_hc, "shaka_samvat", default=_sg(_hc, "saka_samvat", default=_sg(avakhada, "saka_samvat", default="N/A")))),
         ("Sun's Ayana", _sg(_hc, "ayana", default=_sg(avakhada, "ayana", default="N/A"))),
         ("Season (Ritu)", _sg(_hc, "ritu", default=_sg(_hc, "ritu_english", default=_sg(avakhada, "ritu", default="N/A")))),
         ("Paksha", _sg(_hc, "paksha", default=_sg(_pc, "tithi", "paksha", default=_sg(avakhada, "paksha", default="N/A")))),
         ("Hindu Weekday", _sg(_pc, "vaar", "name", default=_sg(avakhada, "weekday", default=day_of_week))),
-        ("Tithi", _sg(_pc, "tithi", "name", default=_sg(avakhada, "tithi", default="N/A"))),
-        ("Nakshatra", _sg(_pc, "nakshatra", "name", default=_sg(avakhada, "nakshatra", default="N/A"))),
-        ("Yoga", _sg(_pc, "yoga", "name", default=_sg(avakhada, "yoga", default="N/A"))),
-        ("Karana", _sg(_pc, "karana", "name", default=_sg(avakhada, "karana", default="N/A"))),
+        ("Tithi at sunrise", _sg(_pc, "tithi", "name", default=_sg(avakhada, "tithi", default="N/A"))),
+        ("Tithi ending time", _sg(_pc, "tithi", "end_time", default="N/A")),
+        ("Tithi at birth", _sg(_pc, "tithi", "at_birth", default=_sg(_pc, "tithi", "name", default="N/A"))),
+        ("Nak. At sunrise", _sg(_pc, "nakshatra", "name", default=_sg(avakhada, "nakshatra", default="N/A"))),
+        ("Nak. ending time", _sg(_pc, "nakshatra", "end_time", default="N/A")),
+        ("Nak. at birth", _sg(_pc, "nakshatra", "at_birth", default=_sg(_pc, "nakshatra", "name", default="N/A"))),
+        ("Yoga at sunrise", _sg(_pc, "yoga", "name", default=_sg(avakhada, "yoga", default="N/A"))),
+        ("Yoga ending time", _sg(_pc, "yoga", "end_time", default="N/A")),
+        ("Yoga at birth", _sg(_pc, "yoga", "at_birth", default=_sg(_pc, "yoga", "name", default="N/A"))),
+        ("Karana at sunrise", _sg(_pc, "karana", "name", default=_sg(avakhada, "karana", default="N/A"))),
+        ("Karana ending time", _sg(_pc, "karana", "end_time", default="N/A")),
+        ("Karana at birth", _sg(_pc, "karana", "at_birth", default=_sg(_pc, "karana", "name", default="N/A"))),
         ("Sunrise", _sg(_pc, "sunrise", default=_sg(avakhada, "sunrise", default="N/A"))),
         ("Sunset", _sg(_pc, "sunset", default=_sg(avakhada, "sunset", default="N/A"))),
+        ("Moon Nak. entry", _sg(_pc, "nakshatra", "entry_time", default="N/A")),
+        ("Moon Nak. exit", _sg(_pc, "nakshatra", "exit_time", default="N/A")),
+        ("Bhayat", _sg(_pc, "bhayat", default="N/A")),
+        ("Bhabhog", _sg(_pc, "bhabhog", default="N/A")),
+        ("Dasha at Birth", _sg(dasha_data, "current_dasha", default="N/A")),
+        ("Balance of Dasha", _sg(dasha_data, "balance", default="N/A")),
+        ("Ayanamsha", str(ayanamsa_val)),
     ]
     for label, val in hindu_items:
+        if label.strip() and not _has_meaningful(val):
+            continue
         pdf.set_x(right_x)
         pdf.kv_row(label, str(val), 38, 50)
         pdf.ln()
@@ -924,26 +1351,76 @@ def build_full_report(data: dict) -> bytes:
     ]
     for i in range(0, len(avk_items), 2):
         l1, v1 = avk_items[i]
+        if not _has_meaningful(v1):
+            continue
         pdf.kv_row(l1, v1, 38, 50)
         if i + 1 < len(avk_items):
             l2, v2 = avk_items[i + 1]
-            pdf.kv_row(l2, v2, 38, 50)
+            if _has_meaningful(v2):
+                pdf.kv_row(l2, v2, 38, 50)
         pdf.ln()
     pdf.ln(3)
 
     # Dasha at birth summary
-    pdf.sub_section("Dasha at Birth")
-    pdf.set_font("Helvetica", "", 7)
-    pdf.kv_row("Current Mahadasha", str(_sg(dasha_data, "current_dasha", default="N/A")), 42, 50)
-    pdf.ln()
-    pdf.kv_row("Balance of Dasha", str(_sg(dasha_data, "balance", default="N/A")), 42, 50)
-    pdf.ln(5)
+    if capabilities["dasha_vimshottari"]:
+        pdf.sub_section("Dasha at Birth")
+        pdf.set_font("Helvetica", "", 7)
+        pdf.kv_row("Current Mahadasha", str(_sg(dasha_data, "current_dasha", default="N/A")), 42, 50)
+        pdf.ln()
+        pdf.kv_row("Balance of Dasha", str(_sg(dasha_data, "balance", default="N/A")), 42, 50)
+        pdf.ln(2)
+
+    # Compact filler to avoid underfilled first page while keeping data unchanged.
+    pdf.check_space(44)
+    pdf.sub_section("Quick Planet Snapshot")
+    q_headers = ["Planet", "Sign", "House", "Planet", "Sign", "House"]
+    q_widths = [20, 24, 12, 20, 24, 12]
+    pdf.table_header(q_headers, q_widths, font_size=6.0)
+    q_planets = PLANET_LIST_9
+    for i in range(0, len(q_planets), 2):
+        p1 = q_planets[i]
+        p1i = planets.get(p1, {}) if isinstance(planets.get(p1), dict) else {}
+        row = [p1, p1i.get("sign", "N/A"), str(p1i.get("house", "N/A"))]
+        if i + 1 < len(q_planets):
+            p2 = q_planets[i + 1]
+            p2i = planets.get(p2, {}) if isinstance(planets.get(p2), dict) else {}
+            row += [p2, p2i.get("sign", "N/A"), str(p2i.get("house", "N/A"))]
+        else:
+            row += ["", "", ""]
+        pdf.table_row(row, q_widths, i // 2, font_size=5.9)
+    pdf.ln(1.0)
+
+    pdf.sub_section("Core Indicators")
+    core_headers = ["Metric", "Value", "Metric", "Value"]
+    core_widths = [34, 56, 34, 56]
+    pdf.table_header(core_headers, core_widths, font_size=6.0)
+    moon_sign = planets.get("Moon", {}).get("sign", "N/A") if isinstance(planets.get("Moon"), dict) else "N/A"
+    sun_sign = planets.get("Sun", {}).get("sign", "N/A") if isinstance(planets.get("Sun"), dict) else "N/A"
+    moon_nak = planets.get("Moon", {}).get("nakshatra", "N/A") if isinstance(planets.get("Moon"), dict) else "N/A"
+    rows_core = [
+        ["Ascendant", f"{asc_sign} {_fmt_num(asc_degree)}", "Moon Sign", moon_sign],
+        ["Sun Sign (Sidereal)", sun_sign, "Moon Nakshatra", moon_nak],
+        ["Current Mahadasha", _sg(dasha_data, "current_dasha", default="N/A"),
+         "Dasha Balance", _sg(dasha_data, "balance", default="N/A")],
+    ]
+    for idx, r in enumerate(rows_core):
+        pdf.table_row(r, core_widths, idx, font_size=5.9, aligns=["L", "L", "L", "L"])
+    pdf.ln(1.2)
 
     # ==================================================================
     # PAGE 2: BIRTH CHART + PLANET TABLE
     # ==================================================================
     current_section[0] = "Birth Chart"
     pdf.add_page()
+    pdf.set_font("Helvetica", "B", 8.0)
+    pdf.set_text_color(*DARK)
+    birth_line = f"{birth_date_display} • {day_of_week} • {birth_time} hrs • {birth_place}"
+    pdf.set_fill_color(*GOLD_LIGHT)
+    band_y = pdf.get_y()
+    pdf.cell(0, 6.4, _sanitize(birth_line), align="C", fill=True,
+             new_x="LMARGIN", new_y="NEXT")
+    pdf.register_block(pdf.l_margin, band_y, pdf.w - (pdf.l_margin + pdf.r_margin), 6.4, "Birth Band")
+    pdf.ln(1.6)
 
     pih_lagna = _build_planets_in_houses(planets, 1)
     moon_house = planet_houses.get("Moon", 1)
@@ -964,12 +1441,29 @@ def build_full_report(data: dict) -> bytes:
         abbr = PLANET_ABBR.get(pn, pn[:2])
         navamsha_planets.setdefault(nav_house, []).append(abbr)
 
-    chart_size = 55
-    chart_y = pdf.get_y()
-    _draw_north_indian_chart(pdf, 12, chart_y + 4, chart_size, pih_lagna, "Lagna Chart (D1)")
-    _draw_north_indian_chart(pdf, 75, chart_y + 4, chart_size, pih_moon, "Moon Chart (Chandra)")
-    _draw_north_indian_chart(pdf, 138, chart_y + 4, chart_size, navamsha_planets, "Navamsha (D9)")
-    pdf.set_y(chart_y + chart_size + 10)
+    chart_top = pdf.get_y()
+    content_x = pdf.l_margin
+    content_w = pdf.w - (pdf.l_margin + pdf.r_margin)
+    reserve_table_h = 62.0
+    bottom_limit = pdf.h - 12.0
+    available_h = max(90.0, bottom_limit - chart_top - reserve_table_h)
+    gap = 5.0
+    large_size = min(88.0, max(70.0, available_h * 0.62))
+    small_size = min(56.0, max(46.0, available_h - large_size - gap))
+    while chart_top + large_size + gap + small_size > bottom_limit - reserve_table_h and large_size > 68 and small_size > 42:
+        large_size -= 2.0
+        small_size -= 1.0
+
+    large_x = content_x + (content_w - large_size) / 2.0
+    large_y = chart_top
+    small_y = large_y + large_size + gap
+    small_left_x = content_x + 2.0
+    small_right_x = content_x + content_w - small_size - 2.0
+
+    _draw_north_indian_chart(pdf, large_x, large_y, large_size, pih_lagna, "Lagna Chart (D1)")
+    _draw_north_indian_chart(pdf, small_left_x, small_y, small_size, pih_moon, "Moon Chart (Chandra)")
+    _draw_north_indian_chart(pdf, small_right_x, small_y, small_size, navamsha_planets, "Navamsha (D9)")
+    pdf.set_y(small_y + small_size + 4.0)
 
     # Planet position table
     pdf.section_title("Planetary Positions")
@@ -1104,14 +1598,28 @@ def build_full_report(data: dict) -> bytes:
     # PAGES 4-5: DIVISIONAL CHARTS
     # ==================================================================
     def _draw_varga_page(varga_keys: list, page_title: str):
+        """
+        Draw divisional charts page using strict 4x2 grid layout.
+        
+        Layout Rules:
+        - 4 columns × 2 rows = 8 charts per page
+        - Uniform chart sizing (3 grid columns each)
+        - Fixed 15px gap between charts
+        - No absolute positioning - grid-based placement
+        """
         current_section[0] = page_title
         pdf.add_page()
+        
+        # Initialize grid layout for this page
+        grid = GridLayout(pdf)
+        grid.new_page()
+        
         pdf.section_title(page_title)
-        chart_w = 42
-        gap_x, gap_y = 6, 8
-        cols = 4
-        start_x, start_y = 10, pdf.get_y() + 2
-
+        
+        # Get standardized chart positions from grid
+        positions = grid.get_divisional_grid_positions(len(varga_keys))
+        chart_w = grid.get_chart_size("divisional")
+        
         # Sodashvarga data lookups
         _dv_by_sign = sodashvarga_data.get("by_sign", {})
         _dv_varga_table = sodashvarga_data.get("varga_table", [])
@@ -1120,16 +1628,27 @@ def build_full_report(data: dict) -> bytes:
             if isinstance(vt_entry, dict):
                 _dv_vt_map[vt_entry.get("division", 0)] = vt_entry.get("planets", {})
 
+        last_chart_bottom_y = pdf.get_y()
+
         for ci, vk in enumerate(varga_keys):
-            row_i = ci // cols
-            col_i = ci % cols
-            cx = start_x + col_i * (chart_w + gap_x)
-            cy = start_y + row_i * (chart_w + gap_y + 6)
-            if cy + chart_w + 10 > pdf.h - 15:
+            # Get grid position
+            if ci < len(positions):
+                cx, cy, chart_w, chart_h = positions[ci]
+            else:
+                # Need new page if more than 8 charts
                 pdf.add_page()
                 pdf.section_title(page_title + " (cont.)")
-                start_y = pdf.get_y() + 2
-                cy = start_y
+                grid.new_page()
+                positions = grid.get_divisional_grid_positions(len(varga_keys) - ci)
+                cx, cy, chart_w, chart_h = positions[0]
+
+            # Collision detection - verify position is available
+            if grid.check_collision(cx, cy, chart_w, chart_h):
+                # Find next available row
+                cy += chart_h + grid.SPACE_MEDIUM
+            
+            # Place element in grid
+            grid.place_element(cx, cy, chart_w, chart_h, f"chart_{vk}")
 
             varga_planets: Dict[int, List[str]] = {}
             div_num_str = vk.replace("D", "")
@@ -1160,12 +1679,69 @@ def build_full_report(data: dict) -> bytes:
 
             _draw_north_indian_chart(pdf, cx, cy, chart_w, varga_planets,
                                       f"{vk}: {VARGA_NAMES.get(vk, vk)}")
+            last_chart_bottom_y = max(last_chart_bottom_y, cy + chart_w + grid.SPACE_SMALL)
 
-        final_row = (len(varga_keys) - 1) // cols
-        pdf.set_y(start_y + (final_row + 1) * (chart_w + gap_y + 6) + 2)
+        pdf.set_y(last_chart_bottom_y + 2)
 
-    _draw_varga_page(VARGA_PAGE1, "Divisional Charts (Shodashvarga) I")
-    _draw_varga_page(VARGA_PAGE2, "Divisional Charts (Shodashvarga) II")
+        # Compact filler: quick snapshot table to avoid half-empty varga pages
+        pdf.check_space(40)
+        pdf.sub_section("Varga Snapshot (Sign Occupancy)")
+        snap_headers = ["Planet"] + [vk.replace("D", "") for vk in varga_keys]
+        snap_widths = [20] + [20] * len(varga_keys)
+        pdf.table_header(snap_headers, snap_widths, font_size=5.5)
+        for idx, pname in enumerate(PLANET_LIST_7):
+            row = [PLANET_ABBR.get(pname, pname[:2])]
+            for vk in varga_keys:
+                div_num = int(vk.replace("D", ""))
+                sign_name = ""
+                p_sv = _dv_by_sign.get(pname, {})
+                if isinstance(p_sv, dict):
+                    div_info = p_sv.get(str(div_num), p_sv.get(vk.replace("D", ""), {}))
+                    if isinstance(div_info, dict):
+                        sign_name = div_info.get("sign", "")
+                if not sign_name and div_num in _dv_vt_map:
+                    vt_p = _dv_vt_map[div_num].get(pname, {})
+                    if isinstance(vt_p, dict):
+                        sign_name = vt_p.get("sign", "")
+                if not sign_name and vk == "D1":
+                    sign_name = planet_signs.get(pname, "")
+                row.append(SIGN_SHORT[SIGN_INDEX[sign_name]] if sign_name in SIGN_INDEX else "N/A")
+            pdf.table_row(row, snap_widths, idx, font_size=5.5)
+
+        # Secondary compact table to keep divisional pages dense and useful.
+        pdf.check_space(28)
+        pdf.sub_section("Varga Dignity Snapshot")
+        dig_headers = ["Planet"] + [vk.replace("D", "") for vk in varga_keys]
+        dig_widths = [20] + [20] * len(varga_keys)
+        pdf.table_header(dig_headers, dig_widths, font_size=5.4)
+        dig_abbr = {"Exalted": "Ex", "Debilitated": "Db", "Own Sign": "Own",
+                    "Moolatrikona": "MT", "Friend": "Fr", "Enemy": "En", "Neutral": "Nt"}
+        for idx, pname in enumerate(PLANET_LIST_7):
+            row = [PLANET_ABBR.get(pname, pname[:2])]
+            for vk in varga_keys:
+                div_num = int(vk.replace("D", ""))
+                p_sv = _dv_by_sign.get(pname, {})
+                dval = ""
+                if isinstance(p_sv, dict):
+                    di = p_sv.get(str(div_num), p_sv.get(vk.replace("D", ""), {}))
+                    if isinstance(di, dict):
+                        dval = di.get("dignity", "")
+                if not dval and div_num in _dv_vt_map:
+                    vtp = _dv_vt_map[div_num].get(pname, {})
+                    if isinstance(vtp, dict):
+                        dval = vtp.get("dignity", "")
+                if not dval and vk == "D1":
+                    dval = _get_dignity(pname, planet_signs.get(pname, "Aries"))
+                row.append(dig_abbr.get(dval, dval[:3] if dval else "—"))
+            pdf.table_row(row, dig_widths, idx, font_size=5.3)
+
+    if capabilities["divisional_charts"] or len(available_vargas) > 0:
+        first_chunk = available_vargas[:8]
+        second_chunk = available_vargas[8:16]
+        if first_chunk:
+            _draw_varga_page(first_chunk, "Divisional Charts (Shodashvarga) I")
+        if second_chunk:
+            _draw_varga_page(second_chunk, "Divisional Charts (Shodashvarga) II")
 
     # ==================================================================
     # PLANETARY FRIENDSHIP
@@ -1457,7 +2033,7 @@ def build_full_report(data: dict) -> bytes:
     pdf.ln(4)
 
     # Aspects on Bhavas
-    pdf.check_space(70)
+    pdf.check_space(24)
     pdf.section_title("Aspects on Bhavas (House Aspects)")
 
     # Engine returns: aspects_on_bhavas = {"1": [{planet, from_house, strength, ...}], ...}
@@ -1501,7 +2077,24 @@ def build_full_report(data: dict) -> bytes:
                         val = val.get("strength", "")
                     row_vals.append(_fmt_num(val, 1) if isinstance(val, (int, float)) else str(val)[:3] if val else "")
                 pdf.table_row(row_vals, ba_widths, idx, font_size=5.5)
-    pdf.ln(4)
+    pdf.ln(2)
+    # Compact summary to fill remaining space meaningfully
+    house_totals: Dict[int, int] = {i: 0 for i in range(1, 13)}
+    if isinstance(aspects_on_bhavas_data, dict):
+        for hk, asp_list in aspects_on_bhavas_data.items():
+            try:
+                hnum = int(hk)
+            except Exception:
+                continue
+            if isinstance(asp_list, list):
+                house_totals[hnum] = len(asp_list)
+    ranked = sorted(house_totals.items(), key=lambda kv: kv[1], reverse=True)
+    pdf.set_font("Helvetica", "I", 6.3)
+    pdf.set_text_color(*MUTED)
+    summary = ", ".join([f"H{h}:{c}" for h, c in ranked[:6] if c > 0]) or "No significant house aspects"
+    pdf.multi_cell(0, 3.5, f"House aspect density: {summary}")
+    pdf.set_text_color(*DARK)
+    pdf.ln(2)
 
     # ==================================================================
     # PAGES 10-11: ASHTAKVARGA (BHINNASHTAKVARGA)
@@ -1613,13 +2206,15 @@ def build_full_report(data: dict) -> bytes:
     pdf.ln(6)
 
     # SAV chart
+    pdf.check_space(76)
     pdf.sub_section("SAV Distribution Chart")
     sav_chart: Dict[int, List[str]] = {}
     for si, sign in enumerate(SIGN_ORDER):
         v = sav.get(sign, 0) if isinstance(sav, dict) else 0
         sav_chart[si + 1] = [str(v)]
-    _draw_north_indian_chart(pdf, 55, pdf.get_y() + 2, 70, sav_chart, "SAV Bindus")
-    pdf.set_y(pdf.get_y() + 78)
+    sav_y = pdf.get_y() + 2
+    _draw_north_indian_chart(pdf, 55, sav_y, 70, sav_chart, "SAV Bindus")
+    pdf.set_y(sav_y + 76)
 
     # Trikona Shodhana — from ashtakvarga["purified"][planet]["trikona"]
     pdf.check_space(45)
@@ -1722,31 +2317,32 @@ def build_full_report(data: dict) -> bytes:
     md_names = [p.get("planet", "") for p in md_periods] if md_periods else list(DASHA_YEARS.keys())
 
     if isinstance(ad_periods, dict):
-        mds_per_page = 3
-        chunks = [md_names[i:i + mds_per_page] for i in range(0, len(md_names), mds_per_page)]
-        for ch_idx, chunk in enumerate(chunks):
-            if ch_idx > 0 or pdf.get_y() > 180:
-                pdf.add_page()
-            for md_name in chunk:
-                pdf.check_space(35)
-                pdf.sub_section(f"Antardasha in {md_name} Mahadasha")
-                ad_list = ad_periods.get(md_name, [])
-                if isinstance(ad_list, list) and ad_list:
-                    ad_h = ["Antar", "Beginning", "Ending"]
-                    ad_w = [30, 50, 50]
-                    pdf.table_header(ad_h, ad_w)
-                    for ai, ad in enumerate(ad_list):
-                        if isinstance(ad, dict):
-                            pdf.table_row([
-                                ad.get("planet", ad.get("antardasha", ad.get("sub_lord", "?"))),
-                                _fmt_date(ad.get("start", ad.get("start_date", ad.get("begin", "?")))),
-                                _fmt_date(ad.get("end", ad.get("end_date", "?"))),
-                            ], ad_w, ai)
-                    pdf.ln(3)
-                else:
-                    pdf.set_font("Helvetica", "I", 7)
-                    pdf.cell(0, 4, f"No antardasha data for {md_name}.", new_x="LMARGIN", new_y="NEXT")
-                    pdf.ln(2)
+        # If fallback produced a single list for current MD, avoid rendering empty duplicate blocks.
+        if len(ad_periods) == 1 and current_md_name in ad_periods:
+            md_names = [current_md_name]
+        rendered_md: set = set()
+        for md_name in md_names:
+            if md_name in rendered_md:
+                continue
+            ad_list = ad_periods.get(md_name, [])
+            if not (isinstance(ad_list, list) and ad_list):
+                continue
+            rendered_md.add(md_name)
+
+            rows_to_render = [ad for ad in ad_list if isinstance(ad, dict)]
+            est_h = 6.0 + 4.4 + (len(rows_to_render) * 3.9) + 3.0
+            pdf.check_space(est_h)
+            pdf.sub_section(f"Antardasha in {md_name} Mahadasha")
+            ad_h = ["Antar", "Beginning", "Ending"]
+            ad_w = [30, 50, 50]
+            pdf.table_header(ad_h, ad_w)
+            for ai, ad in enumerate(rows_to_render):
+                pdf.table_row([
+                    ad.get("planet", ad.get("antardasha", ad.get("sub_lord", "?"))),
+                    _fmt_date(ad.get("start", ad.get("start_date", ad.get("begin", "?")))),
+                    _fmt_date(ad.get("end", ad.get("end_date", "?"))),
+                ], ad_w, ai)
+            pdf.ln(2)
 
     # Pratyantar dasha — extract from embedded MD > AD > pratyantar structure
     has_pratyantar = False
@@ -1787,60 +2383,54 @@ def build_full_report(data: dict) -> bytes:
     # ==================================================================
     # YOGINI DASHA
     # ==================================================================
-    current_section[0] = "Yogini Dasha"
-    pdf.check_space(50)
-    pdf.section_title("Yogini Dasha")
+    if capabilities["dasha_yogini"] and _dict_has_values(yogini_data, 1):
+        current_section[0] = "Yogini Dasha"
+        pdf.check_space(50)
+        pdf.section_title("Yogini Dasha")
 
-    yogini_current = _sg(yogini_data, "current_yogini", default="N/A")
-    yogini_balance = _sg(yogini_data, "balance", default="N/A")
-    pdf.set_font("Helvetica", "B", 8)
-    pdf.cell(0, 5, f"Current Yogini: {yogini_current}  |  Balance: {yogini_balance}",
-             new_x="LMARGIN", new_y="NEXT")
-    pdf.ln(2)
-
-    pdf.sub_section("Yogini Dasha Reference")
-    yr_headers = ["Yogini", "Lord", "Years"]
-    yr_widths = [35, 30, 20]
-    pdf.table_header(yr_headers, yr_widths)
-    for idx in range(8):
-        pdf.table_row([YOGINI_NAMES[idx], YOGINI_LORDS[idx], str(YOGINI_YEARS[idx])], yr_widths, idx)
-    pdf.ln(4)
-
-    pdf.sub_section("Yogini Dasha Periods")
-    yogini_periods = yogini_data.get("periods", yogini_data.get("yogini_periods", []))
-    if yogini_periods and isinstance(yogini_periods, list):
-        yp_headers = ["Yogini", "Lord", "Begin", "End", "Years"]
-        yp_widths = [30, 20, 40, 40, 15]
-        pdf.table_header(yp_headers, yp_widths)
-        for idx, yp in enumerate(yogini_periods):
-            if isinstance(yp, dict):
-                pdf.table_row([
-                    yp.get("yogini", yp.get("name", "?")),
-                    yp.get("lord", "?"),
-                    _fmt_date(yp.get("start", yp.get("start_date", yp.get("begin", "?")))),
-                    _fmt_date(yp.get("end", yp.get("end_date", "?"))),
-                    str(yp.get("years", "?")),
-                ], yp_widths, idx)
-        pdf.ln(3)
-
-    yogini_ad = yogini_data.get("antardasha", yogini_data.get("sub_periods", {}))
-    if yogini_ad and isinstance(yogini_ad, dict):
-        for y_name, sub_list in yogini_ad.items():
-            if not isinstance(sub_list, list) or not sub_list:
-                continue
-            pdf.check_space(30)
-            pdf.sub_section(f"Sub-periods in {y_name}")
-            ya_h = ["Sub-Yogini", "Begin", "End"]
-            ya_w = [35, 45, 45]
-            pdf.table_header(ya_h, ya_w)
-            for si, sp in enumerate(sub_list):
-                if isinstance(sp, dict):
-                    pdf.table_row([
-                        sp.get("yogini", sp.get("name", "?")),
-                        _fmt_date(sp.get("start_date", sp.get("begin", "?"))),
-                        _fmt_date(sp.get("end_date", sp.get("end", "?"))),
-                    ], ya_w, si)
+        yogini_current = _sg(yogini_data, "current_yogini", default="N/A")
+        yogini_balance = _sg(yogini_data, "balance", default="N/A")
+        if _has_meaningful(yogini_current) or _has_meaningful(yogini_balance):
+            pdf.set_font("Helvetica", "B", 8)
+            pdf.cell(0, 5, f"Current Yogini: {yogini_current}  |  Balance: {yogini_balance}",
+                     new_x="LMARGIN", new_y="NEXT")
             pdf.ln(2)
+
+        yogini_periods = yogini_data.get("periods", yogini_data.get("yogini_periods", []))
+        if yogini_periods and isinstance(yogini_periods, list):
+            pdf.sub_section("Yogini Dasha Periods")
+            yp_headers = ["Yogini", "Lord", "Begin", "End", "Years"]
+            yp_widths = [30, 20, 40, 40, 15]
+            pdf.table_header(yp_headers, yp_widths)
+            for idx, yp in enumerate(yogini_periods):
+                if isinstance(yp, dict):
+                    pdf.table_row([
+                        yp.get("yogini", yp.get("name", "?")),
+                        yp.get("lord", "?"),
+                        _fmt_date(yp.get("start", yp.get("start_date", yp.get("begin", "?")))),
+                        _fmt_date(yp.get("end", yp.get("end_date", "?"))),
+                        str(yp.get("years", "?")),
+                    ], yp_widths, idx)
+            pdf.ln(3)
+
+        yogini_ad = yogini_data.get("antardasha", yogini_data.get("sub_periods", {}))
+        if yogini_ad and isinstance(yogini_ad, dict):
+            for y_name, sub_list in yogini_ad.items():
+                if not isinstance(sub_list, list) or not sub_list:
+                    continue
+                pdf.check_space(30)
+                pdf.sub_section(f"Sub-periods in {y_name}")
+                ya_h = ["Sub-Yogini", "Begin", "End"]
+                ya_w = [35, 45, 45]
+                pdf.table_header(ya_h, ya_w)
+                for si, sp in enumerate(sub_list):
+                    if isinstance(sp, dict):
+                        pdf.table_row([
+                            sp.get("yogini", sp.get("name", "?")),
+                            _fmt_date(sp.get("start_date", sp.get("begin", "?"))),
+                            _fmt_date(sp.get("end_date", sp.get("end", "?"))),
+                        ], ya_w, si)
+                pdf.ln(2)
 
     # ==================================================================
     # YOGAS & DOSHAS
@@ -1881,8 +2471,28 @@ def build_full_report(data: dict) -> bytes:
     else:
         pdf.set_font("Helvetica", "I", 7)
         pdf.cell(0, 5, "No yoga data available.", new_x="LMARGIN", new_y="NEXT")
-    pdf.ln(4)
+    # Compact summary block to avoid underfilled yoga pages.
+    if isinstance(yogas, list) and yogas:
+        present = [y for y in yogas if isinstance(y, dict) and y.get("present", True)]
+        absent = [y for y in yogas if isinstance(y, dict) and not y.get("present", True)]
+        pdf.check_space(20)
+        pdf.sub_section("Yoga Summary")
+        ys_headers = ["Total", "Present", "Not Formed", "Strong Highlights"]
+        ys_widths = [20, 20, 26, 120]
+        pdf.table_header(ys_headers, ys_widths, font_size=6.0)
+        highlights = []
+        for y in present:
+            nm = str(y.get("name", y.get("yoga", ""))).strip()
+            if nm:
+                highlights.append(nm)
+            if len(highlights) >= 4:
+                break
+        hl = ", ".join(highlights) if highlights else "—"
+        pdf.table_row([str(len(yogas)), str(len(present)), str(len(absent)), hl],
+                      ys_widths, 0, font_size=5.8, aligns=["C", "C", "C", "L"])
+    pdf.ln(2)
 
+    pdf.check_space(28)
     pdf.section_title("Doshas Found (Afflictions)")
     doshas = yogas_doshas.get("doshas", [])
     if doshas:
@@ -2038,7 +2648,23 @@ def build_full_report(data: dict) -> bytes:
     ]:
         pdf.set_font("Helvetica", "", 7)
         pdf.cell(0, 4.5, f"  * {r}", new_x="LMARGIN", new_y="NEXT")
-    pdf.ln(4)
+    pdf.ln(1.5)
+
+    # Compact risk matrix to improve page composition on text-heavy pages.
+    pdf.check_space(22)
+    pdf.sub_section("Dosha Risk Snapshot")
+    dr_headers = ["Indicator", "Status", "Indicator", "Status"]
+    dr_widths = [45, 50, 45, 50]
+    pdf.table_header(dr_headers, dr_widths, font_size=6.0)
+    present_doshas = [d for d in doshas if isinstance(d, dict) and d.get("present", True)] if isinstance(doshas, list) else []
+    high_doshas = [d for d in present_doshas if str(d.get("severity", "")).lower() in {"high", "severe"}]
+    dr_rows = [
+        ["Total Doshas Detected", str(len(present_doshas)), "High Severity Doshas", str(len(high_doshas))],
+        ["Manglik from Lagna", "Yes" if is_manglik_lagna else "No", "Manglik from Moon", "Yes" if is_manglik_moon else "No"],
+    ]
+    for idx, row in enumerate(dr_rows):
+        pdf.table_row(row, dr_widths, idx, font_size=5.9, aligns=["L", "C", "L", "C"])
+    pdf.ln(1.8)
 
     # ==================================================================
     # SADE SATI
@@ -2290,8 +2916,10 @@ def build_full_report(data: dict) -> bytes:
                 vp_pih.setdefault(int(h) if isinstance(h, (int, float)) else 1, []).append(
                     PLANET_ABBR.get(vpn, vpn[:2]))
         if vp_pih:
-            _draw_north_indian_chart(pdf, 55, pdf.get_y() + 2, 70, vp_pih, f"Varshphal Chart ({vp_year})")
-            pdf.set_y(pdf.get_y() + 78)
+            pdf.check_space(76)
+            vp_chart_y = pdf.get_y() + 2
+            _draw_north_indian_chart(pdf, 55, vp_chart_y, 70, vp_pih, f"Varshphal Chart ({vp_year})")
+            pdf.set_y(vp_chart_y + 76)
 
     # ==================================================================
     # PLANETARY PLACEMENT INTERPRETATIONS
@@ -2419,7 +3047,7 @@ def build_full_report(data: dict) -> bytes:
         lord_h = planet_houses.get(lord, "N/A")
         planets_here = [pn for pn, ph in planet_houses.items() if ph == bnum]
 
-        pdf.check_space(20)
+        pdf.check_space(15)
         pdf.set_font("Helvetica", "B", 8)
         pdf.set_text_color(*SAFFRON)
         pdf.cell(0, 5, f"House {bnum}: {topic} ({sign}, Lord: {lord} in House {lord_h})",
@@ -2436,7 +3064,21 @@ def build_full_report(data: dict) -> bytes:
             pdf.set_font("Helvetica", "I", 6.5)
             pdf.set_x(12)
             pdf.cell(0, 4, "No planets in this house.", new_x="LMARGIN", new_y="NEXT")
-        pdf.ln(2)
+        pdf.ln(1.1)
+
+    pdf.check_space(26)
+    pdf.sub_section("House Occupancy Matrix")
+    ho_headers = ["House", "Sign", "Occupants", "House", "Sign", "Occupants"]
+    ho_widths = [14, 24, 56, 14, 24, 56]
+    pdf.table_header(ho_headers, ho_widths, font_size=5.9)
+    for i in range(1, 13, 2):
+        sign1 = SIGN_ORDER[(asc_idx + i - 1) % 12]
+        occ1 = ", ".join([pn for pn, ph in planet_houses.items() if ph == i]) or "—"
+        i2 = i + 1
+        sign2 = SIGN_ORDER[(asc_idx + i2 - 1) % 12]
+        occ2 = ", ".join([pn for pn, ph in planet_houses.items() if ph == i2]) or "—"
+        pdf.table_row([str(i), sign1, occ1, str(i2), sign2, occ2], ho_widths, (i - 1) // 2,
+                      font_size=5.7, aligns=["C", "C", "L", "C", "C", "L"])
 
     # ==================================================================
     # PLANETARY AVASTHAS
@@ -2539,7 +3181,7 @@ def build_full_report(data: dict) -> bytes:
     # FINAL PAGE: DISCLAIMER + CREDITS
     # ==================================================================
     current_section[0] = "About This Report"
-    pdf.add_page()
+    pdf.check_space(70)
     pdf.section_title("About This Report")
 
     pdf.set_font("Helvetica", "", 8)
@@ -2565,7 +3207,7 @@ def build_full_report(data: dict) -> bytes:
     ]:
         pdf.set_font("Helvetica", "", 7)
         pdf.cell(0, 4.5, f"  * {s}", new_x="LMARGIN", new_y="NEXT")
-    pdf.ln(4)
+    pdf.ln(2)
 
     pdf.sub_section("Disclaimer")
     pdf.set_font("Helvetica", "I", 7)
@@ -2577,7 +3219,87 @@ def build_full_report(data: dict) -> bytes:
         "report depends on the accuracy of the birth data provided. Even a difference of a few "
         "minutes in birth time can significantly alter the chart. Please consult a qualified "
         "Vedic astrologer for personalized guidance and interpretation.")
-    pdf.ln(4)
+    pdf.ln(2)
+
+    module_labels = {
+        "panchang": "Detailed Panchang framework",
+        "divisional_charts": "Extended divisional chart system",
+        "ashtakavarga": "Ashtakavarga deep tables",
+        "shadbala": "Detailed Shadbala components",
+        "bhava_bala": "Bhava Bala breakdown",
+        "dasha_vimshottari": "Detailed Vimshottari hierarchy",
+        "dasha_yogini": "Yogini dasha periods",
+        "kp": "KP cuspal and significator module",
+        "jaimini": "Jaimini advanced module",
+        "lal_kitab": "Lal Kitab module",
+    }
+    missing_modules = [module_labels[k] for k, ok in capabilities.items() if not ok and k in module_labels]
+    if missing_modules:
+        pdf.check_space(26 + 4 * min(len(missing_modules), 8))
+        pdf.sub_section("Advanced Modules Not Included in This Report")
+        pdf.set_font("Helvetica", "", 6.8)
+        pdf.set_text_color(*MUTED)
+        pdf.multi_cell(0, 3.4,
+            "Some advanced systems are omitted because the current engine/data for this chart "
+            "did not provide complete reliable output.")
+        for m in missing_modules[:10]:
+            pdf.cell(0, 4.0, f"  * {m}", new_x="LMARGIN", new_y="NEXT")
+        pdf.set_text_color(*DARK)
+        pdf.ln(1.2)
+
+    pdf.sub_section("Computation Metadata")
+    meta_h = ["Item", "Value"]
+    meta_w = [70, 120]
+    pdf.table_header(meta_h, meta_w, font_size=6.5)
+    meta_rows = [
+        ("Ayanamsha", str(ayanamsa_val)),
+        ("Ascendant", f"{asc_sign} {_fmt_num(asc_degree)}"),
+        ("Moon Nakshatra", str(planets.get("Moon", {}).get("nakshatra", "N/A"))),
+        ("Current Mahadasha", str(_sg(dasha_data, "current_dasha", default="N/A"))),
+        ("Total Planets Processed", str(len([p for p in planets if isinstance(planets.get(p), dict)]))),
+        ("Total Pages", str(pdf.page_no())),
+        ("Layout Warnings", str(len(pdf.layout_warnings))),
+        ("Page Composition Engine", "Enabled"),
+    ]
+    for idx, (k, v) in enumerate(meta_rows):
+        pdf.table_row([k, v], meta_w, idx, font_size=6.2, aligns=["L", "L"])
+    pdf.ln(1.4)
+
+    pdf.check_space(46)
+    pdf.sub_section("Engine Capability Map")
+    cap_headers = ["Module", "Status"]
+    cap_widths = [130, 60]
+    pdf.table_header(cap_headers, cap_widths, font_size=6.2)
+    cap_rows = [
+        ("Panchang", capabilities.get("panchang")),
+        ("Planetary Positions", capabilities.get("planetary_positions")),
+        ("Lagna/Rashi Charts", capabilities.get("lagna_rashi_charts")),
+        ("Divisional Charts", capabilities.get("divisional_charts")),
+        ("Ashtakavarga", capabilities.get("ashtakavarga")),
+        ("Shadbala", capabilities.get("shadbala")),
+        ("Bhava Bala", capabilities.get("bhava_bala")),
+        ("Avastha (Baladi)", capabilities.get("avasthas")),
+        ("Yogas/Doshas", capabilities.get("yogas_doshas")),
+        ("Vimshottari Dasha", capabilities.get("dasha_vimshottari")),
+        ("Yogini Dasha", capabilities.get("dasha_yogini")),
+        ("KP", capabilities.get("kp")),
+        ("Jaimini", capabilities.get("jaimini")),
+        ("Lal Kitab", capabilities.get("lal_kitab")),
+    ]
+    for idx, (label, enabled) in enumerate(cap_rows):
+        status = "Included" if enabled else "Not included"
+        pdf.table_row([label, status], cap_widths, idx, font_size=6.0, aligns=["L", "C"])
+    pdf.ln(1.2)
+
+    if missing_modules:
+        pdf.sub_section("Data Completeness Notes")
+        pdf.set_font("Helvetica", "", 6.7)
+        pdf.multi_cell(
+            0, 3.5,
+            "This report intentionally omits unsupported advanced modules rather than filling with "
+            "placeholders. All rendered sections are based on available computed data."
+        )
+        pdf.ln(0.8)
 
     pdf.set_font("Helvetica", "B", 9)
     pdf.set_text_color(*SAFFRON)
@@ -2596,4 +3318,5 @@ def build_full_report(data: dict) -> bytes:
     pdf.set_text_color(*DARK)
 
     # ══════════════════════════════════════════════════════
+    pdf.finalize_composition()
     return pdf.output()

@@ -1,12 +1,10 @@
-import { Loader2, X, Download, Printer, CheckCircle, Shield, ScrollText, ChevronDown } from 'lucide-react';
+import { Loader2, CheckCircle, Shield, ChevronDown } from 'lucide-react';
 import { formatDate } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import InteractiveKundli, { ChartLegend, type PlanetData, type ChartData } from '@/components/InteractiveKundli';
 import { DIVISIONAL_CHART_OPTIONS } from '@/components/kundli/kundli-utils';
 import { calculateJaiminiKarakas } from '@/components/kundli/jhora-utils';
 import LordshipsTab from '@/components/kundli/LordshipsTab';
-import ConsolidatedReport from '@/components/kundli/ConsolidatedReport';
-import JHoraKundliView from '@/components/kundli/JHoraKundliView';
 import { translatePlanet, translateSign, translateLabel, translateName, translateNakshatra, translateBackend, translateSignAbbr, translatePlanetAbbr } from '@/lib/backend-translations';
 
 interface ReportTabProps {
@@ -46,10 +44,6 @@ interface ReportTabProps {
   setExpandedMahadasha: (v: string | null) => void;
   expandedAntardasha: string | null;
   setExpandedAntardasha: (v: string | null) => void;
-  jhoraOpen: boolean;
-  setJhoraOpen: (v: boolean) => void;
-  reportOpen: boolean;
-  setReportOpen: (v: boolean) => void;
   fetchTransit: () => void;
   fetchD10: () => void;
   fetchDasha: () => void;
@@ -77,130 +71,13 @@ export default function ReportTab({
   reportGocharShift, setReportGocharShift,
   expandedMahadasha, setExpandedMahadasha,
   expandedAntardasha, setExpandedAntardasha,
-  jhoraOpen, setJhoraOpen,
-  reportOpen, setReportOpen,
   fetchTransit, fetchD10, fetchDasha, fetchExtendedDasha,
   changeDivision,
   handlePlanetClick, handleHouseClick,
 }: ReportTabProps) {
   return (
             <div className="space-y-6">
-              {/* View Buttons */}
-              <div className="flex justify-center gap-3">
-                <Button
-                  size="lg"
-                  className="bg-sacred-gold text-black hover:bg-gray-50 light px-8"
-                  onClick={() => {
-                    fetchTransit();
-                    fetchD10();
-                    fetchDasha();
-                    fetchExtendedDasha();
-                    setJhoraOpen(true);
-                  }}
-                >
-                  <ScrollText className="w-5 h-5 mr-2" />
-                  {t('kundli.jhoraView')}
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-sacred-gold text-sacred-gold hover:bg-gold-10 px-8"
-                  onClick={() => {
-                    fetchTransit();
-                    setReportOpen(true);
-                  }}
-                >
-                  <ScrollText className="w-5 h-5 mr-2" />
-                  {t('kundli.fullReport')}
-                </Button>
-              </div>
 
-              {/* JHora-style Fullscreen Overlay */}
-              {jhoraOpen && (
-                <div className="fixed inset-0 z-[9999] bg-parchment" style={{ width: '100vw', height: '100vh' }}>
-                  <button onClick={() => setJhoraOpen(false)} className="absolute top-2 right-3 z-10 p-1.5 hover:bg-black rounded text-sacred-gold text-sm font-bold" title={t('common.close')}>
-                    <X className="w-5 h-5" />
-                  </button>
-                    <JHoraKundliView
-                      result={result}
-                      planets={planets}
-                      dashaData={dashaData}
-                      extendedDashaData={extendedDashaData}
-                      avakhadaData={avakhadaData}
-                      yogaDoshaData={yogaDoshaData}
-                      ashtakvargaData={ashtakvargaData}
-                      shadbalaData={shadbalaData}
-                      divisionalData={divisionalData}
-                      d10Data={d10Data}
-                      transitData={transitData}
-                      loadingDasha={loadingDasha}
-                      loadingExtendedDasha={loadingExtendedDasha}
-                      loadingAvakhada={loadingAvakhada}
-                      loadingYogaDosha={loadingYogaDosha}
-                      loadingAshtakvarga={loadingAshtakvarga}
-                      loadingShadbala={loadingShadbala}
-                      loadingDivisional={loadingDivisional}
-                      loadingD10={loadingD10}
-                      loadingTransit={loadingTransit}
-                      onBack={() => setJhoraOpen(false)}
-                      onDownloadPDF={async () => {}}
-                    />
-                </div>
-              )}
-
-              {/* Consolidated Report Popup */}
-              <ConsolidatedReport
-                open={reportOpen}
-                onOpenChange={setReportOpen}
-                result={result}
-                planets={planets}
-                dashaData={dashaData}
-                avakhadaData={avakhadaData}
-                yogaDoshaData={yogaDoshaData}
-                ashtakvargaData={ashtakvargaData}
-                shadbalaData={shadbalaData}
-                divisionalData={divisionalData}
-                loadingDasha={loadingDasha}
-                loadingAvakhada={loadingAvakhada}
-                loadingYogaDosha={loadingYogaDosha}
-                loadingAshtakvarga={loadingAshtakvarga}
-                loadingShadbala={loadingShadbala}
-                loadingDivisional={loadingDivisional}
-              />
-
-              {/* Action bar */}
-              <div className="flex flex-wrap gap-3 justify-end">
-                <Button size="sm" className="bg-sacred-gold text-white hover:bg-sacred-gold/90 font-semibold" onClick={async () => {
-                  try {
-                    const token = localStorage.getItem('astrorattan_token');
-                    const API_BASE = import.meta.env.VITE_API_URL || '';
-                    const resp = await fetch(`${API_BASE}/api/kundli/${result.id}/pdf`, {
-                      headers: token ? { Authorization: `Bearer ${token}` } : {},
-                    });
-                    if (!resp.ok) {
-                      const err = await resp.json().catch(() => ({ detail: resp.statusText }));
-                      throw new Error(err.detail || t('report.pdfDownloadFailed'));
-                    }
-                    const blob = await resp.blob();
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `kundli-${result.person_name || 'report'}.pdf`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                  } catch (e: any) {
-                    console.error('PDF download error:', e);
-                    alert(e.message || t('report.failedToDownloadPDF'));
-                  }
-                }}>
-                  <Download className="w-4 h-4 mr-1" />{t('common.downloadPDF')}
-                </Button>
-                <Button size="sm" variant="outline" className="border-sacred-gold text-sacred-brown" onClick={() => window.print()}>
-                  <Printer className="w-4 h-4 mr-1" />{t('common.printReport')}
-                </Button>
-              </div>
 
               {/* Report title */}
               <div className="bg-gradient-to-r from-sacred-cream to-sacred-gold rounded-xl p-5 border border-sacred-gold text-center">
@@ -341,34 +218,33 @@ export default function ReportTab({
               {/* Chart Legend */}
               <ChartLegend />
 
-              {/* Grid layout — 2 columns on desktop, 1 on mobile */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 print:grid-cols-2">
-
+              {/* Row 1: Planet Details (2/3) and Divisional Chart (1/3) */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 print:grid-cols-3">
                 {/* 2. Planet Details Table */}
-                <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
+                <div className="lg:col-span-2 bg-sacred-cream rounded-xl border border-sacred-gold p-4 flex flex-col">
                   <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.detailedPlanetPositions')}</h4>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
+                  <div className="overflow-x-auto flex-1">
+                    <table className="w-full text-xs">
                       <thead className="bg-sacred-gold">
                         <tr>
-                          <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
-                          <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.sign')}</th>
-                          <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('table.house')}</th>
-                          <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.nakshatra')}</th>
-                          <th className="text-center p-2 text-sacred-gold-dark font-medium whitespace-nowrap">{t('table.degree')}</th>
-                          <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('table.status')}</th>
+                          <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
+                          <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.sign')}</th>
+                          <th className="text-center p-1.5 text-sacred-gold-dark font-medium">{t('table.house')}</th>
+                          <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.nakshatra')}</th>
+                          <th className="text-center p-1.5 text-sacred-gold-dark font-medium whitespace-nowrap">{t('table.degree')}</th>
+                          <th className="text-center p-1.5 text-sacred-gold-dark font-medium">{t('table.status')}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {planets.map((planet: any, index: number) => (
                           <tr key={index} className="border-t border-sacred-gold hover:bg-sacred-gold/5">
-                            <td className="p-2 text-sacred-brown font-medium">{translatePlanet(planet.planet, language)}</td>
-                            <td className="p-2 text-cosmic-text">{translateSign(planet.sign, language)}</td>
-                            <td className="p-2 text-center text-cosmic-text">{planet.house}</td>
-                            <td className="p-2 text-cosmic-text">{translateNakshatra(planet.nakshatra, language) || '\u2014'}</td>
-                            <td className="p-2 text-center text-cosmic-text whitespace-nowrap">{(Number(planet.sign_degree) || 0).toFixed(1)}°</td>
-                            <td className="p-2 text-center">
-                              <span className={`text-sm px-2.5 py-0.5 rounded-full font-medium ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-100 text-green-800' : 'text-cosmic-text'}`}>
+                            <td className="p-1.5 text-sacred-brown font-medium">{translatePlanet(planet.planet, language)}</td>
+                            <td className="p-1.5 text-cosmic-text">{translateSign(planet.sign, language)}</td>
+                            <td className="p-1.5 text-center text-cosmic-text">{planet.house}</td>
+                            <td className="p-1.5 text-cosmic-text">{translateNakshatra(planet.nakshatra, language) || '\u2014'}</td>
+                            <td className="p-1.5 text-center text-cosmic-text whitespace-nowrap">{(Number(planet.sign_degree) || 0).toFixed(1)}°</td>
+                            <td className="p-1.5 text-center">
+                              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-100 text-green-800' : 'text-cosmic-text'}`}>
                                 {translateLabel(planet.status, language) || '\u2014'}
                               </span>
                             </td>
@@ -379,14 +255,14 @@ export default function ReportTab({
                   </div>
                 </div>
 
-                {/* 3. Divisional Chart (D9 default, dropdown for all) */}
-                <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
+                {/* 3. Divisional Chart */}
+                <div className="lg:col-span-1 bg-sacred-cream rounded-xl border border-sacred-gold p-4 flex flex-col">
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-display font-semibold text-sacred-brown">{t('kundli.divisionalCharts')}</h4>
                     <select
                       value={selectedDivision}
                       onChange={(e) => changeDivision(e.target.value)}
-                      className="bg-cosmic-surface border border-sacred-gold rounded-lg px-3 py-1.5 text-sacred-brown text-sm focus:border-sacred-gold focus:outline-none"
+                      className="bg-cosmic-surface border border-sacred-gold rounded-lg px-2 py-1 text-sacred-brown text-xs focus:border-sacred-gold focus:outline-none"
                     >
                       {DIVISIONAL_CHART_OPTIONS.map((c) => (
                         <option key={c.code} value={c.code}>{c.name}</option>
@@ -394,9 +270,9 @@ export default function ReportTab({
                     </select>
                   </div>
                   {loadingDivisional ? (
-                    <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-sacred-gold" /></div>
+                    <div className="flex items-center justify-center py-8 flex-1"><Loader2 className="w-5 h-5 animate-spin text-sacred-gold" /></div>
                   ) : divisionalData?.planet_positions ? (
-                    <div className="flex justify-center">
+                    <div className="flex justify-center flex-1 items-center">
                       <InteractiveKundli
                         chartData={{
                           planets: divisionalData.planet_positions.map((p: any) => ({
@@ -414,12 +290,17 @@ export default function ReportTab({
                         } as ChartData}
                         onPlanetClick={handlePlanetClick}
                         onHouseClick={handleHouseClick}
+                        compact
                       />
                     </div>
                   ) : (
-                    <p className="text-center text-cosmic-text py-8 text-sm">{t('kundli.selectChart')}</p>
+                    <p className="text-center text-cosmic-text py-8 text-sm flex-1 flex items-center justify-center">{t('kundli.selectChart')}</p>
                   )}
                 </div>
+              </div>
+
+              {/* Grid layout for remaining items — 2 columns on desktop, 1 on mobile */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 print:grid-cols-2">
 
                 {/* 4. Lordships */}
                 <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">

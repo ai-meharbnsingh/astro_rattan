@@ -2,7 +2,7 @@ name: Astro Rattan CI + Deploy
 
 on:
   push:
-    branches: [main, production]
+    branches: [main, production, staging]
   pull_request:
     branches: [main]
 
@@ -55,3 +55,28 @@ jobs:
             cd frontend && npm ci && VITE_API_URL= npm run build
             systemctl reload nginx
             echo "DEPLOYED TO PRODUCTION: $(date)"
+
+  # Staging deploy — ONLY on staging branch push
+  deploy-staging:
+    needs: [backend-tests, frontend-build]
+    if: github.ref == 'refs/heads/staging' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Hostinger VPS (Staging)
+        uses: appleboy/ssh-action@v1
+        with:
+          host: 145.223.21.39
+          username: root
+          password: ${{ secrets.VPS_PASSWORD }}
+          script: |
+            cd /app/astro_rattan
+            git fetch origin
+            git checkout staging
+            git reset --hard origin/staging
+            docker build -t astrorattan-staging .
+            docker stop astrorattan-staging || true
+            docker rm astrorattan-staging || true
+            docker run -d --name astrorattan-staging --restart unless-stopped --network host --env-file .env -e PORT=8029 astrorattan-staging
+            cd frontend && npm ci && VITE_API_URL= npm run build -- --outDir dist-staging
+            systemctl reload nginx
+            echo "DEPLOYED TO STAGING: $(date)"
