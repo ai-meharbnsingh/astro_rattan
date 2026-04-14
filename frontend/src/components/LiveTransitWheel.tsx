@@ -47,6 +47,7 @@ const R_GLYPH_RING = 112;
 const R_GLYPH = 96;
 const R_ELEM = 75;
 const R_ELEM_RING = 85; // Circle outside elements, between elements and glyphs
+const R_SIGN_NUM = 68; // Sign numbers (1-12), between elements and inner
 const R_INNER = 60;
 const R_CENTER = 42;
 
@@ -121,6 +122,8 @@ export default function LiveTransitWheel() {
     const gy = CY + R_GLYPH * Math.sin(midRad);
     const ex = CX + R_ELEM * Math.cos(midRad);
     const ey = CY + R_ELEM * Math.sin(midRad);
+    const snx = CX + R_SIGN_NUM * Math.cos(midRad);
+    const sny = CY + R_SIGN_NUM * Math.sin(midRad);
 
     return (
       <g key={sign.en}>
@@ -155,6 +158,10 @@ export default function LiveTransitWheel() {
         {/* Ring 5: Element symbol (not text) */}
         <text x={ex} y={ey} textAnchor="middle" dominantBaseline="central"
           fontSize="14" opacity={0.5}>{sign.elemIcon}</text>
+
+        {/* Ring 6: Sign number (1-12) */}
+        <text x={snx} y={sny} textAnchor="middle" dominantBaseline="central"
+          fill={GOLD} fontSize="10" fontWeight="600" opacity={0.7}>{i + 1}</text>
       </g>
     );
   });
