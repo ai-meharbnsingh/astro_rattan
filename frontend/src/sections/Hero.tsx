@@ -126,12 +126,9 @@ export default function Hero() {
 
         </div>
 
-        {/* Stats strip — below main content */}
-        <div className="hero-stats opacity-0 mt-10">
-          <div className="rounded-2xl border border-sacred-gold/30 bg-sacred-gold/5 p-4 sm:p-5">
-            <p className="text-center text-xs sm:text-sm uppercase tracking-[0.16em] text-sacred-gold-dark font-semibold mb-4">
-              {l('Complete Astrological Operating System', 'पूर्ण ज्योतिषीय ऑपरेटिंग सिस्टम')}
-            </p>
+        {/* Stats strip — separate section below hero */}
+        <div className="hero-stats opacity-0 mt-16">
+          <div className="rounded-2xl bg-sacred-gold/5 p-4 sm:p-5">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="rounded-xl border border-sacred-gold/25 bg-cosmic-bg/70 p-3 sm:p-4 flex items-start gap-3">
                 <div className="w-8 h-8 rounded-lg bg-sacred-gold/10 text-sacred-gold-dark flex items-center justify-center shrink-0">
