@@ -23,7 +23,7 @@ export default function Features() {
 
   const features = [
     {
-      image: '/images/features/feature-lalkitab.jpg',
+      image: '/images/features/feature-lalkitab.png',
       title: l('Lal Kitab — Complete System', 'लाल किताब — पूर्ण सिस्टम'),
       subtitle: l('ONLY HERE', 'केवल यहाँ'),
       desc: l('Nishaniyan Matcher, Chandra Chalana 43-day protocol, Remedy Tracker with streaks, Teva classification, Dosha analysis, Annual Gochar, Planet analysis — the most complete Lal Kitab toolkit available.', 'निशानियां मैचर, चंद्र चालना 43-दिवसीय प्रोटोकॉल, स्ट्रीक्स के साथ उपाय ट्रैकर, तेवा वर्गीकरण, दोष विश्लेषण, वार्षिक गोचर — उपलब्ध सबसे पूर्ण लाल किताब टूलकिट।'),
