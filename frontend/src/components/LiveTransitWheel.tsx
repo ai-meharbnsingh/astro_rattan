@@ -313,11 +313,11 @@ export default function LiveTransitWheel() {
         </svg>
       </div>
 
-      <div className="flex flex-wrap justify-center gap-3 mt-3 text-[10px]" style={{ fontFamily:'Inter,sans-serif', color: GOLD }}>
-        <span className="flex items-center gap-1"><span className="font-bold" style={{ color:GOLD_MED }}>Su 14&deg;</span> {hi?'शुभ':'Benefic'}</span>
-        <span className="flex items-center gap-1"><span className="font-bold" style={{ color:DARK }}>Ma 8&deg;</span> {hi?'पापी':'Malefic'}</span>
-        <span className="flex items-center gap-1"><span className="text-red-600 font-bold">{'\u211E'}</span> {hi?'वक्री':'Retro'}</span>
-        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5" style={{ background:GOLD_MED, clipPath:'polygon(50% 0%,0% 100%,100% 100%)' }} />ASC</span>
+      <div className="flex flex-wrap justify-center gap-4 mt-3 text-[11px]" style={{ fontFamily:'Inter,sans-serif', color: GOLD }}>
+        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full" style={{ background:GOLD_MED }} />{hi?'शुभ ग्रह':'Benefic'}</span>
+        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full" style={{ background:DARK }} />{hi?'पापी ग्रह':'Malefic'}</span>
+        <span className="flex items-center gap-1.5"><span className="text-red-600 font-bold text-sm">{'\u211E'}</span>{hi?'वक्री':'Retrograde'}</span>
+        <span className="flex items-center gap-1.5"><span className="w-3 h-3" style={{ background:GOLD_MED, clipPath:'polygon(50% 0%,0% 100%,100% 100%)' }} />ASC</span>
       </div>
     </div>
   );
