@@ -140,7 +140,7 @@ export default function Features() {
 
   return (
     <>
-    <section ref={sectionRef} id="features" className="relative pt-16 pb-24 bg-cosmic-bg">
+    <section ref={sectionRef} id="features" className="relative pt-10 pb-24 bg-cosmic-bg">
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -195,7 +195,7 @@ export default function Features() {
         </div>
 
         {/* Comparison Table */}
-        <div className="compare-table max-w-4xl mx-auto mt-24">
+        <div className="compare-table w-full mt-24">
           <h3 className="text-2xl sm:text-3xl font-sans text-center text-cosmic-text mb-4">
             {l('Astro Rattan vs Others', 'एस्ट्रो रतन बनाम अन्य')}
           </h3>
