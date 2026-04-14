@@ -198,7 +198,7 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
         </div>
 
         {/* Gender + Birth Place */}
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-1">
           <div>
             <label className="text-sm font-semibold text-cosmic-text mb-0.5 block">{l('Gender', 'लिंग')}</label>
             <div className="flex gap-2">
@@ -233,7 +233,7 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
         </div>
 
         {/* Birth Date + Time */}
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-1">
           <div>
             <label className="text-sm font-semibold text-cosmic-text mb-0.5 block">{l('Birth Date', 'जन्म तिथि')}</label>
             <div className="relative">
@@ -251,7 +251,7 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
         </div>
 
         {/* Phone + Email (Optional) */}
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-1">
           <div>
             <label className="text-sm font-semibold text-cosmic-text mb-0.5 block">
               {l('Phone', 'फ़ोन')} <span className="text-sacred-gold-dark/60 font-normal">{l('(Optional)', '(वैकल्पिक)')}</span>
