@@ -7,18 +7,18 @@ const CX = 300;
 const CY = 300;
 
 const SIGNS = [
-  { en: 'CAPRICORN',   hi: 'मकर',     glyph: '\u2651\uFE0E', monthEn: 'JAN',   monthHi: 'जन',    img: '/images/zodiac/capricorn.jpg' },
-  { en: 'AQUARIUS',    hi: 'कुंभ',    glyph: '\u2652\uFE0E', monthEn: 'FEB',   monthHi: 'फर',    img: '/images/zodiac/aquarius.jpg' },
-  { en: 'PISCES',      hi: 'मीन',     glyph: '\u2653\uFE0E', monthEn: 'MAR',   monthHi: 'मार्च', img: '/images/zodiac/pisces.jpg' },
-  { en: 'ARIES',       hi: 'मेष',     glyph: '\u2648\uFE0E', monthEn: 'APR',   monthHi: 'अप्रै', img: '/images/zodiac/aries.jpg' },
-  { en: 'TAURUS',      hi: 'वृषभ',    glyph: '\u2649\uFE0E', monthEn: 'MAY',   monthHi: 'मई',    img: '/images/zodiac/taurus.jpg' },
-  { en: 'GEMINI',      hi: 'मिथुन',   glyph: '\u264A\uFE0E', monthEn: 'JUN',   monthHi: 'जून',   img: '/images/zodiac/gemini.jpg' },
-  { en: 'CANCER',      hi: 'कर्क',    glyph: '\u264B\uFE0E', monthEn: 'JUL',   monthHi: 'जुला',  img: '/images/zodiac/cancer.jpg' },
-  { en: 'LEO',         hi: 'सिंह',    glyph: '\u264C\uFE0E', monthEn: 'AUG',   monthHi: 'अग',    img: '/images/zodiac/leo.jpg' },
-  { en: 'VIRGO',       hi: 'कन्या',   glyph: '\u264D\uFE0E', monthEn: 'SEP',   monthHi: 'सित',   img: '/images/zodiac/virgo.jpg' },
-  { en: 'LIBRA',       hi: 'तुला',    glyph: '\u264E\uFE0E', monthEn: 'OCT',   monthHi: 'अक्टू', img: '/images/zodiac/libra.jpg' },
-  { en: 'SCORPIO',     hi: 'वृश्चिक', glyph: '\u264F\uFE0E', monthEn: 'NOV',   monthHi: 'नव',    img: '/images/zodiac/scorpio.jpg' },
-  { en: 'SAGITTARIUS', hi: 'धनु',     glyph: '\u2650\uFE0E', monthEn: 'DEC',   monthHi: 'दिस',   img: '/images/zodiac/sagittarius.jpg' },
+  { en: 'CAPRICORN',   hi: 'मकर',     glyph: '\u2651\uFE0E', monthEn: 'JAN',   monthHi: 'जन',    img: '/images/zodiac-orange/zodiac-capricorn-orange.png' },
+  { en: 'AQUARIUS',    hi: 'कुंभ',    glyph: '\u2652\uFE0E', monthEn: 'FEB',   monthHi: 'फर',    img: '/images/zodiac-orange/zodiac-aquarius-orange.png' },
+  { en: 'PISCES',      hi: 'मीन',     glyph: '\u2653\uFE0E', monthEn: 'MAR',   monthHi: 'मार्च', img: '/images/zodiac-orange/zodiac-pisces-orange.png' },
+  { en: 'ARIES',       hi: 'मेष',     glyph: '\u2648\uFE0E', monthEn: 'APR',   monthHi: 'अप्रै', img: '/images/zodiac-orange/zodiac-aries-orange.png' },
+  { en: 'TAURUS',      hi: 'वृषभ',    glyph: '\u2649\uFE0E', monthEn: 'MAY',   monthHi: 'मई',    img: '/images/zodiac-orange/zodiac-taurus-orange.png' },
+  { en: 'GEMINI',      hi: 'मिथुन',   glyph: '\u264A\uFE0E', monthEn: 'JUN',   monthHi: 'जून',   img: '/images/zodiac-orange/zodiac-gemini-orange.png' },
+  { en: 'CANCER',      hi: 'कर्क',    glyph: '\u264B\uFE0E', monthEn: 'JUL',   monthHi: 'जुला',  img: '/images/zodiac-orange/zodiac-cancer-orange.png' },
+  { en: 'LEO',         hi: 'सिंह',    glyph: '\u264C\uFE0E', monthEn: 'AUG',   monthHi: 'अग',    img: '/images/zodiac-orange/zodiac-leo-orange.png' },
+  { en: 'VIRGO',       hi: 'कन्या',   glyph: '\u264D\uFE0E', monthEn: 'SEP',   monthHi: 'सित',   img: '/images/zodiac-orange/zodiac-virgo-orange.png' },
+  { en: 'LIBRA',       hi: 'तुला',    glyph: '\u264E\uFE0E', monthEn: 'OCT',   monthHi: 'अक्टू', img: '/images/zodiac-orange/zodiac-libra-orange.png' },
+  { en: 'SCORPIO',     hi: 'वृश्चिक', glyph: '\u264F\uFE0E', monthEn: 'NOV',   monthHi: 'नव',    img: '/images/zodiac-orange/zodiac-scorpio-orange.png' },
+  { en: 'SAGITTARIUS', hi: 'धनु',     glyph: '\u2650\uFE0E', monthEn: 'DEC',   monthHi: 'दिस',   img: '/images/zodiac-orange/zodiac-sagittarius-orange.png' },
 ];
 
 /* ── Ring radii (scaled 1.2x from 500-base) ── */

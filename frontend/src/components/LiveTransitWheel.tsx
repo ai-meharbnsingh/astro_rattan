@@ -7,18 +7,18 @@ const CX = 300;
 const CY = 300;
 
 const SIGNS = [
-  { en: 'Aries',       hi: 'मेष',     glyph: '\u2648\uFE0E', dates: 'Mar 21-Apr 19', datesHi: '21 मार्च-19 अप्रै', gender: '\u2642', elemIcon: '\u{1F525}', img: '/images/zodiac/aries.jpg' },
-  { en: 'Taurus',      hi: 'वृषभ',    glyph: '\u2649\uFE0E', dates: 'Apr 20-May 20', datesHi: '20 अप्रै-20 मई',    gender: '\u2640', elemIcon: '\u{1F30D}', img: '/images/zodiac/taurus.jpg' },
-  { en: 'Gemini',      hi: 'मिथुन',   glyph: '\u264A\uFE0E', dates: 'May 21-Jun 20', datesHi: '21 मई-20 जून',      gender: '\u2642', elemIcon: '\u{1F4A8}', img: '/images/zodiac/gemini.jpg' },
-  { en: 'Cancer',      hi: 'कर्क',    glyph: '\u264B\uFE0E', dates: 'Jun 21-Jul 22', datesHi: '21 जून-22 जुला',    gender: '\u2640', elemIcon: '\u{1F4A7}', img: '/images/zodiac/cancer.jpg' },
-  { en: 'Leo',         hi: 'सिंह',    glyph: '\u264C\uFE0E', dates: 'Jul 23-Aug 22', datesHi: '23 जुला-22 अग',     gender: '\u2642', elemIcon: '\u{1F525}', img: '/images/zodiac/leo.jpg' },
-  { en: 'Virgo',       hi: 'कन्या',   glyph: '\u264D\uFE0E', dates: 'Aug 23-Sep 22', datesHi: '23 अग-22 सित',     gender: '\u2640', elemIcon: '\u{1F30D}', img: '/images/zodiac/virgo.jpg' },
-  { en: 'Libra',       hi: 'तुला',    glyph: '\u264E\uFE0E', dates: 'Sep 23-Oct 22', datesHi: '23 सित-22 अक्टू',  gender: '\u2642', elemIcon: '\u{1F4A8}', img: '/images/zodiac/libra.jpg' },
-  { en: 'Scorpio',     hi: 'वृश्चिक', glyph: '\u264F\uFE0E', dates: 'Oct 23-Nov 21', datesHi: '23 अक्टू-21 नव',   gender: '\u2640', elemIcon: '\u{1F4A7}', img: '/images/zodiac/scorpio.jpg' },
-  { en: 'Sagittarius', hi: 'धनु',     glyph: '\u2650\uFE0E', dates: 'Nov 22-Dec 21', datesHi: '22 नव-21 दिस',     gender: '\u2642', elemIcon: '\u{1F525}', img: '/images/zodiac/sagittarius.jpg' },
-  { en: 'Capricorn',   hi: 'मकर',     glyph: '\u2651\uFE0E', dates: 'Dec 22-Jan 19', datesHi: '22 दिस-19 जन',     gender: '\u2640', elemIcon: '\u{1F30D}', img: '/images/zodiac/capricorn.jpg' },
-  { en: 'Aquarius',    hi: 'कुंभ',    glyph: '\u2652\uFE0E', dates: 'Jan 20-Feb 18', datesHi: '20 जन-18 फर',      gender: '\u2642', elemIcon: '\u{1F4A8}', img: '/images/zodiac/aquarius.jpg' },
-  { en: 'Pisces',      hi: 'मीन',     glyph: '\u2653\uFE0E', dates: 'Feb 19-Mar 20', datesHi: '19 फर-20 मार्च',   gender: '\u2640', elemIcon: '\u{1F4A7}', img: '/images/zodiac/pisces.jpg' },
+  { en: 'Aries',       hi: 'मेष',     glyph: '\u2648\uFE0E', dates: 'Mar 21-Apr 19', datesHi: '21 मार्च-19 अप्रै', gender: '\u2642', elemIcon: '\u{1F525}', img: '/images/zodiac-orange/zodiac-aries-orange.png' },
+  { en: 'Taurus',      hi: 'वृषभ',    glyph: '\u2649\uFE0E', dates: 'Apr 20-May 20', datesHi: '20 अप्रै-20 मई',    gender: '\u2640', elemIcon: '\u{1F30D}', img: '/images/zodiac-orange/zodiac-taurus-orange.png' },
+  { en: 'Gemini',      hi: 'मिथुन',   glyph: '\u264A\uFE0E', dates: 'May 21-Jun 20', datesHi: '21 मई-20 जून',      gender: '\u2642', elemIcon: '\u{1F4A8}', img: '/images/zodiac-orange/zodiac-gemini-orange.png' },
+  { en: 'Cancer',      hi: 'कर्क',    glyph: '\u264B\uFE0E', dates: 'Jun 21-Jul 22', datesHi: '21 जून-22 जुला',    gender: '\u2640', elemIcon: '\u{1F4A7}', img: '/images/zodiac-orange/zodiac-cancer-orange.png' },
+  { en: 'Leo',         hi: 'सिंह',    glyph: '\u264C\uFE0E', dates: 'Jul 23-Aug 22', datesHi: '23 जुला-22 अग',     gender: '\u2642', elemIcon: '\u{1F525}', img: '/images/zodiac-orange/zodiac-leo-orange.png' },
+  { en: 'Virgo',       hi: 'कन्या',   glyph: '\u264D\uFE0E', dates: 'Aug 23-Sep 22', datesHi: '23 अग-22 सित',     gender: '\u2640', elemIcon: '\u{1F30D}', img: '/images/zodiac-orange/zodiac-virgo-orange.png' },
+  { en: 'Libra',       hi: 'तुला',    glyph: '\u264E\uFE0E', dates: 'Sep 23-Oct 22', datesHi: '23 सित-22 अक्टू',  gender: '\u2642', elemIcon: '\u{1F4A8}', img: '/images/zodiac-orange/zodiac-libra-orange.png' },
+  { en: 'Scorpio',     hi: 'वृश्चिक', glyph: '\u264F\uFE0E', dates: 'Oct 23-Nov 21', datesHi: '23 अक्टू-21 नव',   gender: '\u2640', elemIcon: '\u{1F4A7}', img: '/images/zodiac-orange/zodiac-scorpio-orange.png' },
+  { en: 'Sagittarius', hi: 'धनु',     glyph: '\u2650\uFE0E', dates: 'Nov 22-Dec 21', datesHi: '22 नव-21 दिस',     gender: '\u2642', elemIcon: '\u{1F525}', img: '/images/zodiac-orange/zodiac-sagittarius-orange.png' },
+  { en: 'Capricorn',   hi: 'मकर',     glyph: '\u2651\uFE0E', dates: 'Dec 22-Jan 19', datesHi: '22 दिस-19 जन',     gender: '\u2640', elemIcon: '\u{1F30D}', img: '/images/zodiac-orange/zodiac-capricorn-orange.png' },
+  { en: 'Aquarius',    hi: 'कुंभ',    glyph: '\u2652\uFE0E', dates: 'Jan 20-Feb 18', datesHi: '20 जन-18 फर',      gender: '\u2642', elemIcon: '\u{1F4A8}', img: '/images/zodiac-orange/zodiac-aquarius-orange.png' },
+  { en: 'Pisces',      hi: 'मीन',     glyph: '\u2653\uFE0E', dates: 'Feb 19-Mar 20', datesHi: '19 फर-20 मार्च',   gender: '\u2640', elemIcon: '\u{1F4A7}', img: '/images/zodiac-orange/zodiac-pisces-orange.png' },
 ];
 
 const PLANET_ABBR: Record<string,string> = { Sun:'Su',Moon:'Mo',Mars:'Ma',Mercury:'Me',Jupiter:'Ju',Venus:'Ve',Saturn:'Sa',Rahu:'Ra',Ketu:'Ke' };
