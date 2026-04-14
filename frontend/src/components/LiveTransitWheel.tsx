@@ -283,12 +283,11 @@ export default function LiveTransitWheel() {
 
           <circle cx={CX} cy={CY} r={R_OUTER} fill="none" stroke={GOLD} strokeWidth={2} />
           {ticks}
-          <circle cx={CX} cy={CY} r={R_DATE_RING} fill="none" stroke={GOLD_MED} strokeWidth={0.8} opacity={0.3} />
-          <circle cx={CX} cy={CY} r={R_GENDER_RING} fill="none" stroke={GOLD_MED} strokeWidth={0.8} opacity={0.3} />
-          <circle cx={CX} cy={CY} r={R_GLYPH_RING + 14} fill="none" stroke={GOLD_MED} strokeWidth={0.8} opacity={0.3} />
-          <circle cx={CX} cy={CY} r={R_GLYPH_RING} fill="none" stroke={GOLD_MED} strokeWidth={1} opacity={0.35} />
-          <circle cx={CX} cy={CY} r={R_ELEM_RING} fill="none" stroke={GOLD_MED} strokeWidth={0.8} opacity={0.3} />
-          <circle cx={CX} cy={CY} r={R_INNER} fill="none" stroke={GOLD_MED} strokeWidth={0.8} opacity={0.3} />
+          <circle cx={CX} cy={CY} r={R_DATE_RING} fill="none" stroke="rgba(139,69,19,0.12)" strokeWidth={0.5} />
+          <circle cx={CX} cy={CY} r={R_GENDER_RING} fill="none" stroke="rgba(139,69,19,0.15)" strokeWidth={0.6} />
+          <circle cx={CX} cy={CY} r={R_GLYPH_RING} fill="none" stroke="rgba(139,69,19,0.15)" strokeWidth={0.8} />
+          <circle cx={CX} cy={CY} r={R_ELEM_RING} fill="none" stroke="rgba(139,69,19,0.18)" strokeWidth={0.7} />
+          <circle cx={CX} cy={CY} r={R_INNER} fill="none" stroke="rgba(139,69,19,0.12)" strokeWidth={0.6} />
 
           <defs>
             <radialGradient id="iBg2" cx="50%" cy="50%" r="50%">
