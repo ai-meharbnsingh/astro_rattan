@@ -367,20 +367,39 @@ export default function LiveTransitWheel() {
         const p3 = { x: P + H2 + q, y: P + H2 + q };// BR-CC ∩ MR-MB
         const p4 = { x: P + q, y: P + H2 + q };     // BL-CC ∩ MB-ML
 
+        // Centroid helper
+        const avg = (...pts: {x:number;y:number}[]) => ({
+          x: pts.reduce((s,p)=>s+p.x,0)/pts.length,
+          y: pts.reduce((s,p)=>s+p.y,0)/pts.length,
+        });
+
         // 12 houses — anti-clockwise from top center
-        const housePoly: { house: number; pts: string; cx: number; cy: number }[] = [
-          { house: 1,  pts: `${mt.x},${mt.y} ${p2.x},${p2.y} ${cc.x},${cc.y} ${p1.x},${p1.y}`, cx: cc.x, cy: P + q * 0.9 },
-          { house: 2,  pts: `${tl.x},${tl.y} ${mt.x},${mt.y} ${p1.x},${p1.y}`, cx: P + q * 0.65, cy: P + q * 0.65 },
-          { house: 3,  pts: `${tl.x},${tl.y} ${p1.x},${p1.y} ${cc.x},${cc.y} ${ml.x},${ml.y}`, cx: P + q * 0.55, cy: P + H2 * 0.55 },
-          { house: 4,  pts: `${ml.x},${ml.y} ${cc.x},${cc.y} ${p4.x},${p4.y}`, cx: P + q * 0.55, cy: cc.y },
-          { house: 5,  pts: `${bl.x},${bl.y} ${ml.x},${ml.y} ${p4.x},${p4.y}`, cx: P + q * 0.55, cy: P + H2 + q * 1.35 },
-          { house: 6,  pts: `${bl.x},${bl.y} ${p4.x},${p4.y} ${cc.x},${cc.y} ${mb.x},${mb.y}`, cx: P + q * 0.65, cy: P + W - q * 0.65 },
-          { house: 7,  pts: `${mb.x},${mb.y} ${cc.x},${cc.y} ${p3.x},${p3.y}`, cx: cc.x, cy: P + W - q * 0.9 },
-          { house: 8,  pts: `${br.x},${br.y} ${mb.x},${mb.y} ${p3.x},${p3.y}`, cx: P + W - q * 0.65, cy: P + W - q * 0.65 },
-          { house: 9,  pts: `${br.x},${br.y} ${p3.x},${p3.y} ${cc.x},${cc.y} ${mr.x},${mr.y}`, cx: P + W - q * 0.55, cy: P + H2 + q * 1.35 },
-          { house: 10, pts: `${mr.x},${mr.y} ${cc.x},${cc.y} ${p2.x},${p2.y}`, cx: P + W - q * 0.55, cy: cc.y },
-          { house: 11, pts: `${tr.x},${tr.y} ${mr.x},${mr.y} ${p2.x},${p2.y}`, cx: P + W - q * 0.55, cy: P + H2 * 0.55 },
-          { house: 12, pts: `${tr.x},${tr.y} ${p2.x},${p2.y} ${mt.x},${mt.y}`, cx: P + W - q * 0.65, cy: P + q * 0.65 },
+        const h1c = avg(p1, mt, p2, cc);
+        const h2c = avg(tl, mt, p1);
+        const h3c = avg(tl, p1, cc, ml);
+        const h4c = avg(ml, cc, p4);
+        const h5c = avg(bl, ml, p4);
+        const h6c = avg(bl, p4, cc, mb);
+        const h7c = avg(mb, cc, p3);
+        const h8c = avg(br, mb, p3);
+        const h9c = avg(br, p3, cc, mr);
+        const h10c = avg(mr, cc, p2);
+        const h11c = avg(tr, mr, p2);
+        const h12c = avg(tr, p2, mt);
+
+        const housePoly: { house: number; cx: number; cy: number }[] = [
+          { house: 1,  cx: h1c.x,  cy: h1c.y },
+          { house: 2,  cx: h2c.x,  cy: h2c.y },
+          { house: 3,  cx: h3c.x,  cy: h3c.y },
+          { house: 4,  cx: h4c.x,  cy: h4c.y },
+          { house: 5,  cx: h5c.x,  cy: h5c.y },
+          { house: 6,  cx: h6c.x,  cy: h6c.y },
+          { house: 7,  cx: h7c.x,  cy: h7c.y },
+          { house: 8,  cx: h8c.x,  cy: h8c.y },
+          { house: 9,  cx: h9c.x,  cy: h9c.y },
+          { house: 10, cx: h10c.x, cy: h10c.y },
+          { house: 11, cx: h11c.x, cy: h11c.y },
+          { house: 12, cx: h12c.x, cy: h12c.y },
         ];
 
         const pAbbr = (name: string) => hi ? (PLANET_HI[name] || name.slice(0,2)) : (PLANET_ABBR[name] || name.slice(0,2));
