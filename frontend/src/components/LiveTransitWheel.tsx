@@ -137,7 +137,7 @@ export default function LiveTransitWheel() {
 
         {/* Ring 2: Date range */}
         <text x={dx} y={dy} textAnchor="middle" dominantBaseline="central"
-          fill={GOLD_MED} fontSize="10" fontWeight="600" fontFamily="'Inter',sans-serif"
+          fill={GOLD_MED} fontSize="12" fontWeight="700" fontFamily="'Inter',sans-serif"
           transform={`rotate(${rot},${dx},${dy})`}>{hi ? sign.datesHi : sign.dates}</text>
 
         {/* Ring 3: Watermark animal — grayscale */}
