@@ -88,12 +88,19 @@ export default function Hero() {
 
           {/* LEFT — Kundli Form */}
           <div className="hero-cta opacity-0 w-full lg:w-[38%] shrink-0 lg:mt-[90px]">
-            <div className="mb-3">
-              <h2 className="text-2xl sm:text-3xl font-bold text-sacred-gold-dark tracking-tight"
-                style={{ textShadow: '0 2px 12px rgba(196,97,31,0.25)' }}>
-                {l('Get Your Free Kundli', 'अपनी मुफ्त कुंडली पाएं')}
-              </h2>
-              <div className="h-1 w-20 rounded-full bg-gradient-to-r from-sacred-gold-dark to-sacred-gold mt-2" />
+            <div className="mb-3 text-center">
+              <div className="inline-block rounded-xl px-5 py-2"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(196,97,31,0.15) 0%, rgba(139,69,19,0.22) 100%)',
+                  border: '1px solid rgba(196,97,31,0.35)',
+                  boxShadow: '0 4px 20px rgba(196,97,31,0.15), inset 0 1px 0 rgba(255,255,255,0.4)',
+                }}>
+                <h2 className="text-xl sm:text-2xl font-bold text-sacred-gold-dark tracking-tight"
+                  style={{ textShadow: '0 2px 10px rgba(196,97,31,0.3)' }}>
+                  {l('Get Your Free Kundli', 'अपनी मुफ्त कुंडली पाएं')}
+                </h2>
+              </div>
+              <div className="h-1 w-24 rounded-full bg-gradient-to-r from-transparent via-sacred-gold-dark to-transparent mt-2 mx-auto" />
             </div>
             <HeroKundliForm language={language} l={l} />
           </div>
