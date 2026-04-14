@@ -166,6 +166,114 @@ VARGA_PAGE1 = ["D1", "D2", "D3", "D4", "D7", "D9", "D10", "D12"]
 VARGA_PAGE2 = ["D16", "D20", "D24", "D27", "D30", "D40", "D45", "D60"]
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# STRICT LAYOUT ENGINE - Grid System with No Overlap
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class GridLayout:
+    """
+    Strict 12-column grid system for PDF layout.
+    
+    Page Layout:
+    - Total width: 210mm (A4)
+    - Margins: 12mm left/right
+    - Usable width: 186mm
+    - 12 columns with 2.5mm gutters
+    - Column width: ~14mm
+    """
+    
+    # Page constants (A4)
+    PAGE_WIDTH = 210.0
+    PAGE_HEIGHT = 297.0
+    MARGIN_LEFT = 12.0
+    MARGIN_RIGHT = 12.0
+    MARGIN_TOP = 12.0
+    MARGIN_BOTTOM = 12.0
+    
+    # Grid system
+    COLUMNS = 12
+    GUTTER = 2.5  # mm
+    
+    # Spacing system (fixed values only)
+    SPACE_SMALL = 3.5   # 10px equivalent
+    SPACE_MEDIUM = 7.0  # 20px equivalent
+    SPACE_LARGE = 10.5  # 30px equivalent
+    
+    def __init__(self, pdf):
+        self.pdf = pdf
+        self.usable_width = self.PAGE_WIDTH - self.MARGIN_LEFT - self.MARGIN_RIGHT
+        self.usable_height = self.PAGE_HEIGHT - self.MARGIN_TOP - self.MARGIN_BOTTOM
+        self.col_width = (self.usable_width - (self.COLUMNS - 1) * self.GUTTER) / self.COLUMNS
+        
+        # Track placed elements for collision detection
+        self.placed_elements = []  # List of (x, y, w, h, label)
+        self.current_page = 1
+        
+    def col_x(self, col_index: int) -> float:
+        """Get X position for column index (0-based)."""
+        return self.MARGIN_LEFT + col_index * (self.col_width + self.GUTTER)
+    
+    def col_width_span(self, col_span: int) -> float:
+        """Get width for N columns including gutters."""
+        return col_span * self.col_width + (col_span - 1) * self.GUTTER
+    
+    def check_collision(self, x: float, y: float, w: float, h: float) -> bool:
+        """Check if rectangle overlaps with any placed element."""
+        for px, py, pw, ph, plabel in self.placed_elements:
+            x_overlap = min(x + w, px + pw) - max(x, px)
+            y_overlap = min(y + h, py + ph) - max(y, py)
+            if x_overlap > 0.5 and y_overlap > 0.5:  # 0.5mm tolerance
+                return True
+        return False
+    
+    def place_element(self, x: float, y: float, w: float, h: float, label: str) -> bool:
+        """Place element at position if no collision. Returns success."""
+        if self.check_collision(x, y, w, h):
+            return False
+        self.placed_elements.append((x, y, w, h, label))
+        return True
+    
+    def new_page(self):
+        """Clear elements for new page."""
+        self.placed_elements = []
+        self.current_page += 1
+    
+    def get_chart_size(self, chart_type: str = "standard") -> float:
+        """Get standardized chart size based on grid columns."""
+        sizes = {
+            "main": self.col_width_span(8),       # 8 columns - large
+            "standard": self.col_width_span(4),   # 4 columns - medium
+            "small": self.col_width_span(3),      # 3 columns - small
+            "divisional": self.col_width_span(3), # 3 columns for D-charts
+        }
+        return sizes.get(chart_type, sizes["standard"])
+    
+    def get_divisional_grid_positions(self, num_charts: int) -> list:
+        """
+        Get grid positions for divisional charts (strict 4x2 layout).
+        Each chart: 3 columns wide, 3 columns high (square)
+        Gap: fixed 15px between charts
+        """
+        positions = []
+        chart_w = self.get_chart_size("divisional")
+        chart_h = chart_w  # Square charts
+        
+        # Fixed 15px gap (5.3mm)
+        gap = 5.3
+        
+        cols = 4
+        max_per_page = 8  # 4x2 grid
+        
+        for i in range(min(num_charts, max_per_page)):
+            row = i // cols
+            col = i % cols
+            x = self.MARGIN_LEFT + col * (chart_w + gap)
+            y = self.MARGIN_TOP + row * (chart_h + gap + 8)  # +8 for label
+            positions.append((x, y, chart_w, chart_h))
+        
+        return positions
+
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -867,6 +975,7 @@ def build_full_report(data: dict) -> bytes:
             self._page_kind: Dict[int, str] = {}
             self._page_fill: Dict[int, float] = {}
             self._underfilled_pages: List[Tuple[int, str, float]] = []
+            self.grid: Optional[GridLayout] = None
 
         def _infer_page_kind(self, section: str) -> str:
             s = (section or "").lower()
@@ -1489,15 +1598,28 @@ def build_full_report(data: dict) -> bytes:
     # PAGES 4-5: DIVISIONAL CHARTS
     # ==================================================================
     def _draw_varga_page(varga_keys: list, page_title: str):
+        """
+        Draw divisional charts page using strict 4x2 grid layout.
+        
+        Layout Rules:
+        - 4 columns × 2 rows = 8 charts per page
+        - Uniform chart sizing (3 grid columns each)
+        - Fixed 15px gap between charts
+        - No absolute positioning - grid-based placement
+        """
         current_section[0] = page_title
         pdf.add_page()
+        
+        # Initialize grid layout for this page
+        grid = GridLayout(pdf)
+        grid.new_page()
+        
         pdf.section_title(page_title)
-        chart_w = 45
-        gap_x, gap_y = 2, 5
-        cols = 4
-        start_x, start_y = pdf.l_margin, pdf.get_y() + 1.6
-        last_chart_bottom_y = start_y
-
+        
+        # Get standardized chart positions from grid
+        positions = grid.get_divisional_grid_positions(len(varga_keys))
+        chart_w = grid.get_chart_size("divisional")
+        
         # Sodashvarga data lookups
         _dv_by_sign = sodashvarga_data.get("by_sign", {})
         _dv_varga_table = sodashvarga_data.get("varga_table", [])
@@ -1506,16 +1628,27 @@ def build_full_report(data: dict) -> bytes:
             if isinstance(vt_entry, dict):
                 _dv_vt_map[vt_entry.get("division", 0)] = vt_entry.get("planets", {})
 
+        last_chart_bottom_y = pdf.get_y()
+
         for ci, vk in enumerate(varga_keys):
-            row_i = ci // cols
-            col_i = ci % cols
-            cx = start_x + col_i * (chart_w + gap_x)
-            cy = start_y + row_i * (chart_w + gap_y + 4)
-            if cy + chart_w + 10 > pdf.h - 15:
+            # Get grid position
+            if ci < len(positions):
+                cx, cy, chart_w, chart_h = positions[ci]
+            else:
+                # Need new page if more than 8 charts
                 pdf.add_page()
                 pdf.section_title(page_title + " (cont.)")
-                start_y = pdf.get_y() + 1.6
-                cy = start_y
+                grid.new_page()
+                positions = grid.get_divisional_grid_positions(len(varga_keys) - ci)
+                cx, cy, chart_w, chart_h = positions[0]
+
+            # Collision detection - verify position is available
+            if grid.check_collision(cx, cy, chart_w, chart_h):
+                # Find next available row
+                cy += chart_h + grid.SPACE_MEDIUM
+            
+            # Place element in grid
+            grid.place_element(cx, cy, chart_w, chart_h, f"chart_{vk}")
 
             varga_planets: Dict[int, List[str]] = {}
             div_num_str = vk.replace("D", "")
@@ -1546,7 +1679,7 @@ def build_full_report(data: dict) -> bytes:
 
             _draw_north_indian_chart(pdf, cx, cy, chart_w, varga_planets,
                                       f"{vk}: {VARGA_NAMES.get(vk, vk)}")
-            last_chart_bottom_y = max(last_chart_bottom_y, cy + chart_w + 3)
+            last_chart_bottom_y = max(last_chart_bottom_y, cy + chart_w + grid.SPACE_SMALL)
 
         pdf.set_y(last_chart_bottom_y + 2)
 
