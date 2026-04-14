@@ -164,6 +164,7 @@ const HOUSE_GRID: { house: number; row: number; col: number }[] = [
 
 const CELL_SIZE = 100;
 const GRID_PADDING = 8;
+const IS_TOUCH_DEVICE = typeof window !== 'undefined' && 'ontouchstart' in window;
 
 /*
  * North Indian kundli layout -- diamond (rotated square) inside a square.
@@ -722,12 +723,10 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
     });
   }, [t]);
 
-  const isTouchDevice = typeof window !== 'undefined' && 'ontouchstart' in window;
-
   const showPlanetTooltip = useCallback((p: PlanetData, x: number, y: number) => {
     const strength = getStrength(p.status, t);
     const aspects = aspectsFor(p);
-    const adjustedY = isTouchDevice ? Math.max(0, y - 80) : y;
+    const adjustedY = IS_TOUCH_DEVICE ? Math.max(0, y - 80) : y;
     setTooltip({
       x, y: adjustedY,
       content: (
@@ -747,7 +746,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
 
   const showHouseTooltip = useCallback((house: number, x: number, y: number) => {
     const housePlanets = planetsByHouse[house] || [];
-    const adjustedY = isTouchDevice ? Math.max(0, y - 80) : y;
+    const adjustedY = IS_TOUCH_DEVICE ? Math.max(0, y - 80) : y;
     setTooltip({
       x, y: adjustedY,
       content: (

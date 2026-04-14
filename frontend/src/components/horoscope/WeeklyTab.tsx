@@ -39,10 +39,10 @@ const SECTION_LABELS: Record<string, { en: string; hi: string }> = {
   finance: { en: 'Finance & Wealth', hi: 'धन एवं वित्त' },
 };
 
-function formatDate(dateStr: string, lang: string): string {
+function formatDate(dateStr: string, _lang: string): string {
   if (!dateStr) return '';
   const d = new Date(dateStr + 'T12:00:00');
-  return d.toLocaleDateString(t('auto.enIN'), { day: 'numeric', month: 'short' });
+  return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
 }
 
 export default function WeeklyTab({ data, loading, language, t }: Props) {

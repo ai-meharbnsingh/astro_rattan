@@ -42,7 +42,7 @@ export default function AspectsTab({ aspectsData, loadingAspects, language, t }:
                 {(() => {
                   const summary = aspectsData.planet_aspects_summary;
                   if (summary && typeof summary === 'object' && !Array.isArray(summary)) {
-                    return Object.entries(summary).map(([planet, data]: [string, any], i: number) => {
+                    return Object.entries(summary).map(([planet, data]: [string, any], _i: number) => {
                       const aspBy = data.aspected_by || [];
                       const beneficList = aspBy.filter((a: any) => BENEFICS.includes(a.planet || a));
                       const maleficList = aspBy.filter((a: any) => !BENEFICS.includes(a.planet || a));
