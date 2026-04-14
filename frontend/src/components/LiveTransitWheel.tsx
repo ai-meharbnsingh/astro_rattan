@@ -354,7 +354,7 @@ export default function LiveTransitWheel() {
       </div>
 
       {/* Legend — bottom */}
-      <div className="rounded-lg bg-sacred-gold/5 px-3 py-2 mt-[60px] text-[9px]" style={{ fontFamily:'Inter,sans-serif', color: GOLD }}>
+      <div className="rounded-lg bg-sacred-gold/5 px-3 py-2 mt-4 text-[9px]" style={{ fontFamily:'Inter,sans-serif', color: GOLD }}>
         <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
             <span className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>*</span>{hi?'वक्री':'Retro'}</span>
             <span className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>^</span>{hi?'अस्त':'Combust'}</span>
