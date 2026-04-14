@@ -60,6 +60,7 @@ const FeedbackPage    = lazyWithReload(() => import('./sections/FeedbackPage'));
 const Dashboard       = lazyWithReload(() => import('./sections/Dashboard'));
 const ClientProfile   = lazyWithReload(() => import('./sections/ClientProfile'));
 const VastuShastraPage = lazyWithReload(() => import('./sections/VastuShastraPage'));
+const HoroscopePage    = lazyWithReload(() => import('./sections/HoroscopePage'));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -196,6 +197,7 @@ function AppInner() {
           <Route path="/client/:clientId" element={<RequireAuth><ClientProfile /></RequireAuth>} />
           <Route path="/kundli" element={<ErrorBoundary><KundliGenerator /></ErrorBoundary>} />
           <Route path="/panchang" element={<ErrorBoundary><Panchang /></ErrorBoundary>} />
+          <Route path="/horoscope" element={<ErrorBoundary><HoroscopePage /></ErrorBoundary>} />
           <Route path="/login" element={<AuthPage />} />
           <Route path="/numerology" element={<RequireAuth><ErrorBoundary><NumerologyTarot /></ErrorBoundary></RequireAuth>} />
           <Route path="/lal-kitab" element={<RequireAuth><ErrorBoundary><LalKitabPage /></ErrorBoundary></RequireAuth>} />

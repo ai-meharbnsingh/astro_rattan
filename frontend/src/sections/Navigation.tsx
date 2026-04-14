@@ -7,6 +7,7 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 const serviceLinks = [
   { key: 'nav.kundli', href: '/kundli' },
+  { key: 'nav.horoscope', href: '/horoscope' },
   { key: 'nav.panchang', href: '/panchang' },
   { key: 'nav.lalKitab', href: '/lal-kitab' },
   { key: 'nav.numerology', href: '/numerology' },
