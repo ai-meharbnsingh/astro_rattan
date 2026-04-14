@@ -146,6 +146,7 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
   const [birthDate, setBirthDate] = useState('');
   const [birthTime, setBirthTime] = useState('');
   const [birthPlace, setBirthPlace] = useState('');
+  const [email, setEmail] = useState('');
   const [suggestions, setSuggestions] = useState<Array<{ name: string; lat: number; lon: number }>>([]);
   const [selectedPlace, setSelectedPlace] = useState<{ lat: number; lon: number } | null>(null);
   const searchTimer = useRef<ReturnType<typeof setTimeout>>();
@@ -194,7 +195,7 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
         </div>
       </div>
 
-      {/* Gender + Phone */}
+      {/* Gender + Birth Place */}
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="text-sm font-semibold text-cosmic-text mb-1 block">{l('Gender', 'लिंग')}</label>
@@ -209,13 +210,23 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
             </button>
           </div>
         </div>
-        <div>
-          <label className="text-sm font-semibold text-cosmic-text mb-1 block">{l('Phone', 'फ़ोन')} <span className="font-normal text-xs text-gray-400">({l('Optional', 'वैकल्पिक')})</span></label>
+        <div className="relative">
+          <label className="text-sm font-semibold text-cosmic-text mb-1 block">{l('Birth Place', 'जन्म स्थान')}</label>
           <div className="relative">
-            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/50" />
-            <input type="tel" value={phone} onChange={e => setPhone(e.target.value)}
-              placeholder={l('Phone number', 'फ़ोन नंबर')} className={inputClass} />
+            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/50" />
+            <input type="text" value={birthPlace} onChange={e => searchPlace(e.target.value)}
+              placeholder={l('Search birth place', 'जन्म स्थान खोजें')} className={inputClass} />
           </div>
+          {suggestions.length > 0 && (
+            <div className="absolute left-0 right-0 top-full z-30 bg-white border border-sacred-gold/30 rounded-lg shadow-lg max-h-40 overflow-y-auto mt-1">
+              {suggestions.map((s, idx) => (
+                <button key={idx} onClick={() => selectPlace(s)}
+                  className="w-full text-left px-3 py-2 text-xs text-cosmic-text hover:bg-sacred-gold/10 transition-colors">
+                  {s.name}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -237,24 +248,24 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
         </div>
       </div>
 
-      {/* Birth Place */}
-      <div className="relative">
-        <label className="text-sm font-semibold text-cosmic-text mb-1 block">{l('Birth Place', 'जन्म स्थान')}</label>
-        <div className="relative">
-          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/50" />
-          <input type="text" value={birthPlace} onChange={e => searchPlace(e.target.value)}
-            placeholder={l('Search birth place', 'जन्म स्थान खोजें')} className={inputClass} />
-        </div>
-        {suggestions.length > 0 && (
-          <div className="absolute left-0 right-0 top-full z-30 bg-white border border-sacred-gold/30 rounded-lg shadow-lg max-h-40 overflow-y-auto mt-1">
-            {suggestions.map((s, idx) => (
-              <button key={idx} onClick={() => selectPlace(s)}
-                className="w-full text-left px-3 py-2 text-xs text-cosmic-text hover:bg-sacred-gold/10 transition-colors">
-                {s.name}
-              </button>
-            ))}
+      {/* Phone + Email (both optional) */}
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="text-sm font-semibold text-cosmic-text mb-1 block">{l('Phone', 'फ़ोन')} <span className="font-normal text-xs text-gray-400">({l('Optional', 'वैकल्पिक')})</span></label>
+          <div className="relative">
+            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/50" />
+            <input type="tel" value={phone} onChange={e => setPhone(e.target.value)}
+              placeholder={l('Phone number', 'फ़ोन नंबर')} className={inputClass} />
           </div>
-        )}
+        </div>
+        <div>
+          <label className="text-sm font-semibold text-cosmic-text mb-1 block">{l('Email', 'ईमेल')} <span className="font-normal text-xs text-gray-400">({l('Optional', 'वैकल्पिक')})</span></label>
+          <div className="relative">
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/50" />
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+              placeholder={l('Email address', 'ईमेल पता')} className={inputClass} />
+          </div>
+        </div>
       </div>
 
       {/* Generate Button */}
