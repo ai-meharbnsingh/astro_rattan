@@ -281,7 +281,7 @@ export default function LiveTransitWheel() {
   const ascRad = toRad(lagnaAngle);
   const ascX = CX + R_OUTERMOST * Math.cos(ascRad);
   const ascY = CY + R_OUTERMOST * Math.sin(ascRad);
-  const ascLabelR = R_OUTERMOST + 42;
+  const ascLabelR = R_OUTERMOST + 16;
   const ascLabelX = CX + ascLabelR * Math.cos(ascRad);
   const ascLabelY = CY + ascLabelR * Math.sin(ascRad);
   const ascDegText = `${(lagnaLong % 30).toFixed(1)}°`;
@@ -298,7 +298,7 @@ export default function LiveTransitWheel() {
   return (
     <div className="relative w-full mx-auto" style={{ maxWidth: '760px', padding: '16px' }}>
       {/* Wheel */}
-      <div className="relative w-full pb-16">
+      <div className="relative w-full pb-2">
           {tooltip && (
             <div className="absolute z-20 pointer-events-none"
               style={{ left: `${((tooltip.x+16)/600)*100}%`, top: `${(tooltip.y/600)*100}%`, transform: 'translate(-50%,-130%)' }}>
@@ -353,7 +353,7 @@ export default function LiveTransitWheel() {
       </div>
 
       {/* Legend — bottom */}
-      <div className="rounded-lg bg-sacred-gold/5 px-3 py-2 mt-16 text-[9px]" style={{ fontFamily:'Inter,sans-serif', color: GOLD }}>
+      <div className="rounded-lg bg-sacred-gold/5 px-3 py-2 mt-2 text-[9px]" style={{ fontFamily:'Inter,sans-serif', color: GOLD }}>
         <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
             <span className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>*</span>{hi?'वक्री':'Retro'}</span>
             <span className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>^</span>{hi?'अस्त':'Combust'}</span>
