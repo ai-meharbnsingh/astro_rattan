@@ -42,7 +42,7 @@ const R_DATE = 245;
 const R_DATE_RING = 244;
 const R_IMG = 218;
 const R_GENDER = 130; // Moved closer to center
-const R_GENDER_RING = 148; // Outer circle for gender symbols — more space
+const R_GENDER_RING = 140; // Outer circle for gender symbols — reduced to avoid planet overlap
 const R_GLYPH_RING = 112;
 const R_GLYPH = 96;
 const R_ELEM = 75;
@@ -286,6 +286,7 @@ export default function LiveTransitWheel() {
           <circle cx={CX} cy={CY} r={R_DATE_RING} fill="none" stroke="rgba(139,69,19,0.12)" strokeWidth={0.5} />
           <circle cx={CX} cy={CY} r={R_GENDER_RING} fill="none" stroke="rgba(139,69,19,0.15)" strokeWidth={0.6} />
           <circle cx={CX} cy={CY} r={R_GLYPH_RING} fill="none" stroke="rgba(139,69,19,0.15)" strokeWidth={0.8} />
+          <circle cx={CX} cy={CY} r={R_GLYPH_RING + 14} fill="none" stroke="rgba(139,69,19,0.1)" strokeWidth={0.5} />
           <circle cx={CX} cy={CY} r={R_ELEM_RING} fill="none" stroke="rgba(139,69,19,0.18)" strokeWidth={0.7} />
           <circle cx={CX} cy={CY} r={R_INNER} fill="none" stroke="rgba(139,69,19,0.12)" strokeWidth={0.6} />
 
