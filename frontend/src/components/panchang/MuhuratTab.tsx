@@ -1,4 +1,3 @@
-import { Card, CardContent } from '@/components/ui/card';
 import { Clock, AlertTriangle, CheckCircle2, Sparkles, Sunrise, Moon } from 'lucide-react';
 import type { FullPanchangData } from '@/sections/Panchang';
 
@@ -117,126 +116,116 @@ export default function MuhuratTab({ panchang, language, t }: Props) {
   ].filter(y => y.data && (y.data.active || (y.data.start && y.data.end)));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       {/* Auspicious Periods */}
-      <Card className="card-sacred border-green-500/30">
-        <CardContent className="p-4">
-          <h3 className="text-lg font-bold text-green-600 mb-4 flex items-center gap-2">
-            <CheckCircle2 className="h-5 w-5" />
-            {language === 'hi' ? 'शुभ मुहूर्त (उपयुक्त समय)' : 'Auspicious Muhurats (Good Times)'}
-          </h3>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {auspiciousPeriods.map((period) => (
-              <div key={period.key} className={`p-4 rounded-xl ${period.bgColor} border border-transparent`}>
-                <div className="flex items-center gap-2 mb-2">
-                  <period.icon className={`h-5 w-5 ${period.color}`} />
-                  <span className="font-semibold text-cosmic-text-primary">{period.name}</span>
-                </div>
-                <div className="text-2xl font-bold text-cosmic-text-primary mb-1">
-                  {period.period?.start} - {period.period?.end}
-                </div>
-                <p className="text-xs text-cosmic-text-secondary">{period.desc}</p>
+      <div className="rounded-lg border border-green-500/30 p-2">
+        <h3 className="font-bold text-green-600 mb-2 flex items-center gap-1">
+          <CheckCircle2 className="h-4 w-4" />
+          {language === 'hi' ? 'शुभ मुहूर्त (उपयुक्त समय)' : 'Auspicious Muhurats (Good Times)'}
+        </h3>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+          {auspiciousPeriods.map((period) => (
+            <div key={period.key} className={`p-2 rounded-lg ${period.bgColor}`}>
+              <div className="flex items-center gap-1 mb-1">
+                <period.icon className={`h-4 w-4 ${period.color}`} />
+                <span className="font-semibold text-cosmic-text-primary">{period.name}</span>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+              <div className="text-xl font-bold text-cosmic-text-primary">
+                {period.period?.start} - {period.period?.end}
+              </div>
+              <p className="text-xs text-cosmic-text-secondary">{period.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* Inauspicious Periods */}
-      <Card className="card-sacred border-red-500/30">
-        <CardContent className="p-4">
-          <h3 className="text-lg font-bold text-red-600 mb-4 flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5" />
-            {language === 'hi' ? 'अशुभ समय (वर्जित)' : 'Inauspicious Times (Avoid)'}
-          </h3>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {inauspiciousPeriods.map((period) => (
-              <div key={period.key} className={`p-4 rounded-xl ${period.bgColor} border border-transparent`}>
-                <div className="flex items-center gap-2 mb-2">
-                  <period.icon className={`h-5 w-5 ${period.color}`} />
-                  <span className="font-semibold text-cosmic-text-primary">{period.name}</span>
-                </div>
-                <div className="text-2xl font-bold text-cosmic-text-primary mb-1">
-                  {period.period?.start} - {period.period?.end}
-                </div>
-                <p className="text-xs text-cosmic-text-secondary">{period.desc}</p>
+      <div className="rounded-lg border border-red-500/30 p-2">
+        <h3 className="font-bold text-red-600 mb-2 flex items-center gap-1">
+          <AlertTriangle className="h-4 w-4" />
+          {language === 'hi' ? 'अशुभ समय (वर्जित)' : 'Inauspicious Times (Avoid)'}
+        </h3>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+          {inauspiciousPeriods.map((period) => (
+            <div key={period.key} className={`p-2 rounded-lg ${period.bgColor}`}>
+              <div className="flex items-center gap-1 mb-1">
+                <period.icon className={`h-4 w-4 ${period.color}`} />
+                <span className="font-semibold text-cosmic-text-primary">{period.name}</span>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+              <div className="text-xl font-bold text-cosmic-text-primary">
+                {period.period?.start} - {period.period?.end}
+              </div>
+              <p className="text-xs text-cosmic-text-secondary">{period.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* Special Yogas */}
       {specialYogas.length > 0 && (
-        <Card className="card-sacred border-sacred-gold/30">
-          <CardContent className="p-4">
-            <h3 className="text-lg font-bold text-sacred-gold mb-4 flex items-center gap-2">
-              <Sparkles className="h-5 w-5" />
-              {language === 'hi' ? 'विशेष योग' : 'Special Yogas'}
-            </h3>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {specialYogas.map((yoga) => (
-                <div key={yoga.key} className="p-4 rounded-xl bg-sacred-gold/10 border border-sacred-gold/30">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Sparkles className="h-5 w-5 text-sacred-gold" />
-                    <span className="font-semibold text-cosmic-text-primary">{yoga.name}</span>
-                  </div>
-                  {yoga.data?.start && yoga.data?.end && (
-                    <div className="text-lg font-bold text-cosmic-text-primary">
-                      {yoga.data.start} - {yoga.data.end}
-                    </div>
-                  )}
-                  <p className="text-xs text-green-600 mt-1">
-                    {language === 'hi' ? 'आज यह योग सक्रिय है' : 'This yoga is active today'}
-                  </p>
+        <div className="rounded-lg border border-sacred-gold/30 p-2">
+          <h3 className="font-bold text-sacred-gold mb-2 flex items-center gap-1">
+            <Sparkles className="h-4 w-4" />
+            {language === 'hi' ? 'विशेष योग' : 'Special Yogas'}
+          </h3>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            {specialYogas.map((yoga) => (
+              <div key={yoga.key} className="p-2 rounded-lg bg-sacred-gold/10 border border-sacred-gold/30">
+                <div className="flex items-center gap-1 mb-1">
+                  <Sparkles className="h-4 w-4 text-sacred-gold" />
+                  <span className="font-semibold text-cosmic-text-primary">{yoga.name}</span>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                {yoga.data?.start && yoga.data?.end && (
+                  <div className="text-lg font-bold text-cosmic-text-primary">
+                    {yoga.data.start} - {yoga.data.end}
+                  </div>
+                )}
+                <p className="text-xs text-green-600">
+                  {language === 'hi' ? 'आज यह योग सक्रिय है' : 'This yoga is active today'}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
 
       {/* Sandhya Times */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         {panchang.pratah_sandhya && (
-          <Card className="card-sacred">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Sunrise className="h-5 w-5 text-orange-500" />
-                <span className="font-semibold text-cosmic-text-primary">
-                  {language === 'hi' ? 'प्रातः संध्या' : 'Pratah Sandhya'}
-                </span>
-              </div>
-              <p className="text-lg font-bold text-cosmic-text-primary">
-                {panchang.pratah_sandhya.start} - {panchang.pratah_sandhya.end}
-              </p>
-              <p className="text-xs text-cosmic-text-secondary">
-                {language === 'hi' ? 'गायत्री जप का समय' : 'Time for Gayatri Japa'}
-              </p>
-            </CardContent>
-          </Card>
+          <div className="rounded-lg border border-cosmic-border p-2">
+            <div className="flex items-center gap-1 mb-1">
+              <Sunrise className="h-4 w-4 text-orange-500" />
+              <span className="font-semibold text-cosmic-text-primary">
+                {language === 'hi' ? 'प्रातः संध्या' : 'Pratah Sandhya'}
+              </span>
+            </div>
+            <p className="text-lg font-bold text-cosmic-text-primary">
+              {panchang.pratah_sandhya.start} - {panchang.pratah_sandhya.end}
+            </p>
+            <p className="text-xs text-cosmic-text-secondary">
+              {language === 'hi' ? 'गायत्री जप का समय' : 'Time for Gayatri Japa'}
+            </p>
+          </div>
         )}
-        
+
         {panchang.sayahna_sandhya && (
-          <Card className="card-sacred">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Clock className="h-5 w-5 text-indigo-500" />
-                <span className="font-semibold text-cosmic-text-primary">
-                  {language === 'hi' ? 'सायंह्न संध्या' : 'Sayahna Sandhya'}
-                </span>
-              </div>
-              <p className="text-lg font-bold text-cosmic-text-primary">
-                {panchang.sayahna_sandhya.start} - {panchang.sayahna_sandhya.end}
-              </p>
-              <p className="text-xs text-cosmic-text-secondary">
-                {language === 'hi' ? 'सन्ध्या जप का समय' : 'Time for Sandhya Japa'}
-              </p>
-            </CardContent>
-          </Card>
+          <div className="rounded-lg border border-cosmic-border p-2">
+            <div className="flex items-center gap-1 mb-1">
+              <Clock className="h-4 w-4 text-indigo-500" />
+              <span className="font-semibold text-cosmic-text-primary">
+                {language === 'hi' ? 'सायंह्न संध्या' : 'Sayahna Sandhya'}
+              </span>
+            </div>
+            <p className="text-lg font-bold text-cosmic-text-primary">
+              {panchang.sayahna_sandhya.start} - {panchang.sayahna_sandhya.end}
+            </p>
+            <p className="text-xs text-cosmic-text-secondary">
+              {language === 'hi' ? 'सन्ध्या जप का समय' : 'Time for Sandhya Japa'}
+            </p>
+          </div>
         )}
       </div>
     </div>

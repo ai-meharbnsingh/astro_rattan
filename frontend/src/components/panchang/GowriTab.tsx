@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Moon, Sun, CheckCircle2, XCircle } from 'lucide-react';
 import type { FullPanchangData } from '@/sections/Panchang';
 
@@ -12,7 +11,7 @@ interface Props {
 
 export default function GowriTab({ panchang, language, t, timezoneOffset }: Props) {
   const gowriPanchang = panchang.gowri_panchang || [];
-  
+
   // Memoize day/night separation and current gowri calculation
   const { dayGowri, nightGowri, currentGowri } = useMemo(() => {
     // Separate day and night gowri
@@ -22,11 +21,11 @@ export default function GowriTab({ panchang, language, t, timezoneOffset }: Prop
     // Find current gowri period (based on panchang location time, not browser local time)
     const currentTimeAtLocation = new Date(Date.now() + (timezoneOffset * 60 * 1000));
     const currentTime = `${currentTimeAtLocation.getHours().toString().padStart(2, '0')}:${currentTimeAtLocation.getMinutes().toString().padStart(2, '0')}`;
-    
+
     const current = gowriPanchang.find(g => {
       return currentTime >= g.start && currentTime < g.end;
     });
-    
+
     return { dayGowri: day, nightGowri: night, currentGowri: current };
   }, [gowriPanchang, timezoneOffset]);
 
@@ -37,117 +36,116 @@ export default function GowriTab({ panchang, language, t, timezoneOffset }: Prop
     return { color: 'text-red-500', bg: 'bg-red-500/10', icon: XCircle };
   };
 
-  const renderGowriGrid = (periods: typeof gowriPanchang) => (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      {periods.map((period, index) => {
-        const style = getQualityStyle(period.quality);
-        const Icon = style.icon;
-        const isCurrent = currentGowri?.name === period.name && currentGowri?.type === period.type;
-        
-        return (
-          <div 
-            key={index}
-            className={`
-              p-3 rounded-xl border transition-all
-              ${isCurrent ? 'border-sacred-gold bg-sacred-gold/10' : 'border-transparent bg-cosmic-card/50'}
-            `}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <span className={`font-semibold ${isCurrent ? 'text-sacred-gold' : 'text-cosmic-text-primary'}`}>
-                {language === 'hi' ? period.name_hindi || period.name : period.name}
-              </span>
-              <Icon className={`h-4 w-4 ${style.color}`} />
-            </div>
-            <p className="text-sm text-cosmic-text-secondary">
-              {period.start} - {period.end}
-            </p>
-            <span className={`inline-block mt-2 text-xs px-2 py-0.5 rounded-full ${style.bg} ${style.color}`}>
-              {language === 'hi' ? period.quality_hindi || period.quality : period.quality}
+  const renderRow = (period: typeof gowriPanchang[0], index: number) => {
+    const style = getQualityStyle(period.quality);
+    const isCurrent = currentGowri?.name === period.name && currentGowri?.type === period.type;
+
+    return (
+      <tr
+        key={`${period.type}-${index}`}
+        className={`border-b border-cosmic-border/50 last:border-0 ${isCurrent ? 'bg-amber-500/15 border-l-2 border-l-amber-500' : ''}`}
+      >
+        <td className="px-2 py-1">
+          <span className={`font-medium ${isCurrent ? 'text-sacred-gold' : 'text-cosmic-text-primary'}`}>
+            {language === 'hi' ? period.name_hindi || period.name : period.name}
+          </span>
+          {isCurrent && (
+            <span className="ml-1 px-1.5 py-0.5 text-xs bg-sacred-gold text-cosmic-bg rounded-full">
+              {language === 'hi' ? 'अभी' : 'Now'}
             </span>
-            {isCurrent && (
-              <span className="block mt-2 text-xs text-sacred-gold font-medium">
-                {language === 'hi' ? 'अभी' : 'Now'}
-              </span>
-            )}
-          </div>
-        );
-      })}
+          )}
+        </td>
+        <td className="px-2 py-1">
+          <span className={`inline-block px-1.5 py-0.5 rounded text-xs font-medium ${style.bg} ${style.color}`}>
+            {language === 'hi' ? period.quality_hindi || period.quality : period.quality}
+          </span>
+        </td>
+        <td className="px-2 py-1 text-cosmic-text-secondary">
+          {period.start} - {period.end}
+        </td>
+      </tr>
+    );
+  };
+
+  const renderTable = (periods: typeof gowriPanchang, icon: typeof Sun, title: string) => (
+    <div className="flex-1 min-w-0">
+      <h3 className="font-bold text-cosmic-text-primary mb-1 flex items-center gap-1">
+        {icon === Sun
+          ? <Sun className="h-4 w-4 text-orange-500" />
+          : <Moon className="h-4 w-4 text-indigo-400" />}
+        {title}
+      </h3>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="bg-sacred-gold/15">
+              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
+                {language === 'hi' ? 'नाम' : 'Name'}
+              </th>
+              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
+                {language === 'hi' ? 'फल' : 'Quality'}
+              </th>
+              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
+                {language === 'hi' ? 'समय' : 'Time'}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {periods.map((period, index) => renderRow(period, index))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 
   return (
-    <div className="space-y-6">
-      {/* Current Gowri */}
+    <div className="space-y-3">
+      {/* Current Gowri compact banner */}
       {currentGowri && (
-        <Card className="card-sacred border-sacred-gold/30">
-          <CardContent className="p-6">
-            <div className="flex flex-col sm:flex-row items-center gap-4">
-              <div className="p-4 rounded-2xl bg-sacred-gold/20">
-                <Moon className="h-12 w-12 text-sacred-gold" />
-              </div>
-              <div className="text-center sm:text-left">
-                <p className="text-sm text-cosmic-text-secondary">
-                  {language === 'hi' ? 'वर्तमान गौरी पंचांग' : 'Current Gowri Panchang'}
-                </p>
-                <h3 className="text-3xl font-bold text-cosmic-text-primary">
-                  {language === 'hi' ? currentGowri.name_hindi || currentGowri.name : currentGowri.name}
-                </h3>
-                <p className="text-lg text-sacred-gold">
-                  {currentGowri.start} - {currentGowri.end}
-                </p>
-                <p className="text-sm text-cosmic-text-secondary mt-1">
-                  {language === 'hi' ? currentGowri.type_hindi || currentGowri.type : currentGowri.type}
-                </p>
-              </div>
-              <div className={`ml-auto px-4 py-2 rounded-full ${getQualityStyle(currentGowri.quality).bg}`}>
-                <span className={`font-semibold ${getQualityStyle(currentGowri.quality).color}`}>
-                  {language === 'hi' ? currentGowri.quality_hindi || currentGowri.quality : currentGowri.quality}
-                </span>
-              </div>
+        <div className="flex items-center gap-3 p-2 rounded-lg border border-sacred-gold/30 bg-sacred-gold/10">
+          <Moon className="h-8 w-8 text-sacred-gold flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-xs text-cosmic-text-secondary">
+              {language === 'hi' ? 'वर्तमान गौरी पंचांग' : 'Current Gowri Panchang'}
+            </p>
+            <span className="font-bold text-cosmic-text-primary">
+              {language === 'hi' ? currentGowri.name_hindi || currentGowri.name : currentGowri.name}
+            </span>
+            <span className="mx-2 text-sacred-gold">{currentGowri.start} - {currentGowri.end}</span>
+            <span className={`text-xs font-medium ${getQualityStyle(currentGowri.quality).color}`}>
+              ({language === 'hi' ? currentGowri.quality_hindi || currentGowri.quality : currentGowri.quality})
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Day + Night side by side (stack on mobile) */}
+      <div className="rounded-lg border border-cosmic-border overflow-hidden">
+        <div className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-cosmic-border">
+          {dayGowri.length > 0 && (
+            <div className="p-2">
+              {renderTable(dayGowri, Sun, language === 'hi' ? 'दिन का गौरी पंचांग' : 'Day Gowri Panchang')}
             </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Day Gowri */}
-      {dayGowri.length > 0 && (
-        <Card className="card-sacred">
-          <CardContent className="p-4">
-            <h3 className="text-lg font-bold text-cosmic-text-primary mb-4 flex items-center gap-2">
-              <Sun className="h-5 w-5 text-orange-500" />
-              {language === 'hi' ? 'दिन का गौरी पंचांग' : 'Day Gowri Panchang'}
-            </h3>
-            {renderGowriGrid(dayGowri)}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Night Gowri */}
-      {nightGowri.length > 0 && (
-        <Card className="card-sacred">
-          <CardContent className="p-4">
-            <h3 className="text-lg font-bold text-cosmic-text-primary mb-4 flex items-center gap-2">
-              <Moon className="h-5 w-5 text-indigo-400" />
-              {language === 'hi' ? 'रात्रि का गौरी पंचांग' : 'Night Gowri Panchang'}
-            </h3>
-            {renderGowriGrid(nightGowri)}
-          </CardContent>
-        </Card>
-      )}
+          )}
+          {nightGowri.length > 0 && (
+            <div className="p-2">
+              {renderTable(nightGowri, Moon, language === 'hi' ? 'रात्रि का गौरी पंचांग' : 'Night Gowri Panchang')}
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Info */}
-      <Card className="card-sacred">
-        <CardContent className="p-4">
-          <h4 className="font-semibold text-cosmic-text-primary mb-2">
-            {language === 'hi' ? 'गौरी पंचांग के बारे में' : 'About Gowri Panchang'}
-          </h4>
-          <p className="text-sm text-cosmic-text-secondary leading-relaxed">
-            {language === 'hi' 
-              ? 'गौरी पंचांग दिन और रात को 8-8 भागों में बांटता है। प्रत्येक अवधि एक देवता द्वारा शासित होती है। शुभ अवधि में कार्य करने से सफलता मिलती है।'
-              : 'Gowri Panchang divides day and night into 8 periods each. Each period is ruled by a deity. Work done during auspicious periods yields success.'}
-          </p>
-        </CardContent>
-      </Card>
+      <div className="rounded-lg border border-cosmic-border p-2">
+        <h4 className="font-semibold text-cosmic-text-primary mb-1">
+          {language === 'hi' ? 'गौरी पंचांग के बारे में' : 'About Gowri Panchang'}
+        </h4>
+        <p className="text-sm text-cosmic-text-secondary leading-relaxed">
+          {language === 'hi'
+            ? 'गौरी पंचांग दिन और रात को 8-8 भागों में बांटता है। प्रत्येक अवधि एक देवता द्वारा शासित होती है। शुभ अवधि में कार्य करने से सफलता मिलती है।'
+            : 'Gowri Panchang divides day and night into 8 periods each. Each period is ruled by a deity. Work done during auspicious periods yields success.'}
+        </p>
+      </div>
     </div>
   );
 }

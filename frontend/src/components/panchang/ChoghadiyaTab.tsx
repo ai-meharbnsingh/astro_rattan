@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Clock, Sun, Moon, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
+import { Sun, Moon, Clock } from 'lucide-react';
 import type { FullPanchangData } from '@/sections/Panchang';
 
 interface Props {
@@ -10,14 +9,14 @@ interface Props {
   timezoneOffset: number;
 }
 
-const CHOGHADIYA_QUALITY: Record<string, { color: string; bg: string; icon: typeof CheckCircle2 }> = {
-  'Amrit': { color: 'text-green-500', bg: 'bg-green-500/10', icon: CheckCircle2 },
-  'Shubh': { color: 'text-green-600', bg: 'bg-green-600/10', icon: CheckCircle2 },
-  'Labh': { color: 'text-emerald-500', bg: 'bg-emerald-500/10', icon: CheckCircle2 },
-  'Char': { color: 'text-blue-500', bg: 'bg-blue-500/10', icon: AlertCircle },
-  'Udveg': { color: 'text-red-500', bg: 'bg-red-500/10', icon: XCircle },
-  'Kaal': { color: 'text-red-600', bg: 'bg-red-600/10', icon: XCircle },
-  'Rog': { color: 'text-orange-500', bg: 'bg-orange-500/10', icon: XCircle },
+const CHOGHADIYA_QUALITY: Record<string, { label: string; labelHi: string; color: string; bg: string; border: string }> = {
+  'Amrit':  { label: 'Best',          labelHi: 'सर्वश्रेष्ठ',  color: 'text-green-600',  bg: 'bg-green-500/15',  border: 'border-green-500/30' },
+  'Shubh':  { label: 'Good',          labelHi: 'शुभ',          color: 'text-green-500',  bg: 'bg-green-500/10',  border: 'border-green-500/20' },
+  'Labh':   { label: 'Gain',          labelHi: 'लाभ',          color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+  'Char':   { label: 'Neutral',       labelHi: 'चर',           color: 'text-blue-500',   bg: 'bg-blue-500/10',   border: 'border-blue-500/20' },
+  'Udveg':  { label: 'Inauspicious',  labelHi: 'उद्वेग',       color: 'text-orange-500', bg: 'bg-orange-500/10', border: 'border-orange-500/20' },
+  'Kaal':   { label: 'Inauspicious',  labelHi: 'काल',          color: 'text-red-600',    bg: 'bg-red-500/10',    border: 'border-red-500/20' },
+  'Rog':    { label: 'Inauspicious',  labelHi: 'रोग',          color: 'text-red-500',    bg: 'bg-red-500/10',    border: 'border-red-500/20' },
 };
 
 const CHOGHADIYA_HINDI: Record<string, string> = {
@@ -25,190 +24,162 @@ const CHOGHADIYA_HINDI: Record<string, string> = {
   'Udveg': 'उद्वेग', 'Kaal': 'काल', 'Rog': 'रोग',
 };
 
+type ChoghadiyaPeriod = { name: string; quality: string; start: string; end: string; name_hindi?: string };
+
 export default function ChoghadiyaTab({ panchang, language, t, timezoneOffset }: Props) {
-  const choghadiya = panchang.choghadiya || [];
-  
-  // Memoize day/night separation and current choghadiya calculation
-  const { dayChoghadiya, nightChoghadiya, currentChoghadiya } = useMemo(() => {
-    // Separate day and night choghadiya
-    const day = choghadiya.filter(c => {
-      const startHour = parseInt(c.start.split(':')[0]);
-      return startHour >= 6 && startHour < 18;
-    });
-    
-    const night = choghadiya.filter(c => {
-      const startHour = parseInt(c.start.split(':')[0]);
-      return startHour < 6 || startHour >= 18;
-    });
+  const dayChoghadiya = panchang.choghadiya || [];
+  const nightChoghadiya = panchang.night_choghadiya || [];
 
-    // Find current choghadiya (based on panchang location time, not browser local time)
-    const currentTimeAtLocation = new Date(Date.now() + (timezoneOffset * 60 * 1000));
-    const currentHour = currentTimeAtLocation.getHours();
-    const currentMinute = currentTimeAtLocation.getMinutes();
-    const currentTime = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
-    
-    const current = choghadiya.find(c => {
-      return currentTime >= c.start && currentTime < c.end;
-    });
-    
-    return { dayChoghadiya: day, nightChoghadiya: night, currentChoghadiya: current };
-  }, [choghadiya, timezoneOffset]);
+  // Find current active period across both day and night
+  const currentPeriodKey = useMemo(() => {
+    const now = new Date(Date.now() + (timezoneOffset * 60 * 1000));
+    const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 
-  const renderChoghadiyaCard = (period: typeof choghadiya[0], isCurrent: boolean) => {
-    const quality = CHOGHADIYA_QUALITY[period.name] || { color: 'text-gray-500', bg: 'bg-gray-500/10', icon: AlertCircle };
-    const Icon = quality.icon;
-    
+    const allPeriods = [...dayChoghadiya, ...nightChoghadiya];
+    const found = allPeriods.find(c => currentTime >= c.start && currentTime < c.end);
+    return found ? `${found.start}-${found.end}` : null;
+  }, [dayChoghadiya, nightChoghadiya, timezoneOffset]);
+
+  const renderRow = (period: ChoghadiyaPeriod) => {
+    const q = CHOGHADIYA_QUALITY[period.name] || { label: '?', labelHi: '?', color: 'text-gray-500', bg: 'bg-gray-500/10', border: 'border-gray-500/20' };
+    const key = `${period.start}-${period.end}`;
+    const isCurrent = key === currentPeriodKey;
+
     return (
-      <div 
-        key={`${period.start}-${period.end}`}
-        className={`
-          p-3 rounded-xl border transition-all
-          ${isCurrent ? 'border-sacred-gold bg-sacred-gold/10' : 'border-transparent hover:border-cosmic-border'}
-          ${!isCurrent ? quality.bg : ''}
-        `}
+      <tr
+        key={key}
+        className={`border-b border-cosmic-border/50 last:border-0 ${isCurrent ? 'bg-amber-500/15 border-l-2 border-l-amber-500' : ''}`}
       >
-        <div className="flex items-center justify-between mb-2">
-          <span className={`font-semibold ${isCurrent ? 'text-sacred-gold' : 'text-cosmic-text-primary'}`}>
+        <td className="px-2 py-1">
+          <span className={`font-medium ${isCurrent ? 'text-sacred-gold' : 'text-cosmic-text-primary'}`}>
             {language === 'hi' ? period.name_hindi || CHOGHADIYA_HINDI[period.name] || period.name : period.name}
           </span>
-          <Icon className={`h-4 w-4 ${quality.color}`} />
-        </div>
-        <p className="text-sm text-cosmic-text-secondary">
-          {period.start} - {period.end}
-        </p>
-        <p className={`text-xs mt-1 ${quality.color}`}>
-          {language === 'hi' ? period.quality : period.quality}
-        </p>
-        {isCurrent && (
-          <span className="inline-block mt-2 px-2 py-0.5 text-xs bg-sacred-gold text-cosmic-bg rounded-full">
-            {language === 'hi' ? 'अभी' : 'Now'}
+          {isCurrent && (
+            <span className="ml-1 px-1.5 py-0.5 text-xs bg-sacred-gold text-cosmic-bg rounded-full">
+              {language === 'hi' ? 'अभी' : 'Now'}
+            </span>
+          )}
+        </td>
+        <td className="px-2 py-1">
+          <span className={`inline-block px-1.5 py-0.5 rounded text-xs font-medium ${q.bg} ${q.color}`}>
+            {language === 'hi' ? q.labelHi : q.label}
           </span>
-        )}
-      </div>
+        </td>
+        <td className="px-2 py-1 text-cosmic-text-secondary">
+          {period.start} - {period.end}
+        </td>
+      </tr>
     );
   };
 
+  const renderTable = (periods: ChoghadiyaPeriod[], icon: typeof Sun, title: string) => (
+    <div className="flex-1 min-w-0">
+      <h3 className="font-bold text-cosmic-text-primary mb-1 flex items-center gap-1">
+        {icon === Sun
+          ? <Sun className="h-4 w-4 text-orange-500" />
+          : <Moon className="h-4 w-4 text-indigo-400" />}
+        {title}
+      </h3>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="bg-sacred-gold/15">
+              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
+                {language === 'hi' ? 'नाम' : 'Name'}
+              </th>
+              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
+                {language === 'hi' ? 'फल' : 'Type'}
+              </th>
+              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
+                {language === 'hi' ? 'समय' : 'Time'}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {periods.map(renderRow)}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="space-y-6">
-      {/* Current Choghadiya */}
-      {currentChoghadiya && (
-        <Card className="card-sacred border-sacred-gold/30">
-          <CardContent className="p-6">
-            <div className="flex flex-col sm:flex-row items-center gap-4">
-              <div className="p-4 rounded-2xl bg-sacred-gold/20">
-                <Clock className="h-12 w-12 text-sacred-gold" />
-              </div>
-              <div className="text-center sm:text-left">
-                <p className="text-sm text-cosmic-text-secondary">
-                  {language === 'hi' ? 'वर्तमान चौघड़िया' : 'Current Choghadiya'}
-                </p>
-                <h3 className="text-3xl font-bold text-cosmic-text-primary">
-                  {language === 'hi' 
-                    ? currentChoghadiya.name_hindi || CHOGHADIYA_HINDI[currentChoghadiya.name] || currentChoghadiya.name
-                    : currentChoghadiya.name}
-                </h3>
-                <p className="text-lg text-sacred-gold">
-                  {currentChoghadiya.start} - {currentChoghadiya.end}
-                </p>
-                <p className={`text-sm mt-1 ${CHOGHADIYA_QUALITY[currentChoghadiya.name]?.color || 'text-gray-500'}`}>
-                  {language === 'hi' ? currentChoghadiya.quality : currentChoghadiya.quality}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Day Choghadiya */}
-      {dayChoghadiya.length > 0 && (
-        <Card className="card-sacred">
-          <CardContent className="p-4">
-            <h3 className="text-lg font-bold text-cosmic-text-primary mb-4 flex items-center gap-2">
-              <Sun className="h-5 w-5 text-orange-500" />
-              {language === 'hi' ? 'दिन के चौघड़िया' : 'Day Choghadiya (Sunrise to Sunset)'}
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-              {dayChoghadiya.map((period) => renderChoghadiyaCard(
-                period, 
-                currentChoghadiya?.start === period.start
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Night Choghadiya */}
-      {nightChoghadiya.length > 0 && (
-        <Card className="card-sacred">
-          <CardContent className="p-4">
-            <h3 className="text-lg font-bold text-cosmic-text-primary mb-4 flex items-center gap-2">
-              <Moon className="h-5 w-5 text-indigo-400" />
-              {language === 'hi' ? 'रात्रि के चौघड़िया' : 'Night Choghadiya (Sunset to Sunrise)'}
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-              {nightChoghadiya.map((period) => renderChoghadiyaCard(
-                period, 
-                currentChoghadiya?.start === period.start
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Legend */}
-      <Card className="card-sacred">
-        <CardContent className="p-4">
-          <h4 className="font-semibold text-cosmic-text-primary mb-3">
-            {language === 'hi' ? 'चौघड़िया का अर्थ' : 'Choghadiya Meanings'}
-          </h4>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
-            <div className="flex items-center gap-2 p-2 rounded-lg bg-green-500/10">
-              <CheckCircle2 className="h-4 w-4 text-green-500" />
-              <div>
-                <p className="font-medium text-cosmic-text-primary">
-                  {language === 'hi' ? 'अमृत, शुभ, लाभ' : 'Amrit, Shubh, Labh'}
-                </p>
-                <p className="text-xs text-cosmic-text-secondary">
-                  {language === 'hi' ? 'सर्वश्रेष्ठ - कोई भी कार्य' : 'Best for any work'}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 p-2 rounded-lg bg-blue-500/10">
-              <AlertCircle className="h-4 w-4 text-blue-500" />
-              <div>
-                <p className="font-medium text-cosmic-text-primary">
-                  {language === 'hi' ? 'चर' : 'Char'}
-                </p>
-                <p className="text-xs text-cosmic-text-secondary">
-                  {language === 'hi' ? 'यात्रा के लिए अच्छा' : 'Good for travel'}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 p-2 rounded-lg bg-orange-500/10">
-              <XCircle className="h-4 w-4 text-orange-500" />
-              <div>
-                <p className="font-medium text-cosmic-text-primary">
-                  {language === 'hi' ? 'रोग, उद्वेग' : 'Rog, Udveg'}
-                </p>
-                <p className="text-xs text-cosmic-text-secondary">
-                  {language === 'hi' ? 'सामान्य - सावधानी बरतें' : 'Average - be cautious'}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 p-2 rounded-lg bg-red-500/10">
-              <XCircle className="h-4 w-4 text-red-500" />
-              <div>
-                <p className="font-medium text-cosmic-text-primary">
-                  {language === 'hi' ? 'काल' : 'Kaal'}
-                </p>
-                <p className="text-xs text-cosmic-text-secondary">
-                  {language === 'hi' ? 'अशुभ - टालें' : 'Inauspicious - avoid'}
-                </p>
-              </div>
+    <div className="space-y-3">
+      {/* Current Choghadiya compact banner */}
+      {currentPeriodKey && (() => {
+        const allPeriods = [...dayChoghadiya, ...nightChoghadiya];
+        const current = allPeriods.find(c => `${c.start}-${c.end}` === currentPeriodKey);
+        if (!current) return null;
+        const q = CHOGHADIYA_QUALITY[current.name];
+        return (
+          <div className="flex items-center gap-3 p-2 rounded-lg border border-sacred-gold/30 bg-sacred-gold/10">
+            <Clock className="h-8 w-8 text-sacred-gold flex-shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-cosmic-text-secondary">
+                {language === 'hi' ? 'वर्तमान चौघड़िया' : 'Current Choghadiya'}
+              </p>
+              <span className="font-bold text-cosmic-text-primary">
+                {language === 'hi' ? current.name_hindi || CHOGHADIYA_HINDI[current.name] || current.name : current.name}
+              </span>
+              <span className="mx-2 text-sacred-gold">{current.start} - {current.end}</span>
+              {q && <span className={`text-xs font-medium ${q.color}`}>({language === 'hi' ? q.labelHi : q.label})</span>}
             </div>
           </div>
-        </CardContent>
-      </Card>
+        );
+      })()}
+
+      {/* Day + Night side by side (stack on mobile) */}
+      <div className="rounded-lg border border-cosmic-border overflow-hidden">
+        <div className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-cosmic-border">
+          {dayChoghadiya.length > 0 && (
+            <div className="p-2">
+              {renderTable(dayChoghadiya, Sun, language === 'hi' ? 'दिन के चौघड़िया' : 'Day Choghadiya')}
+            </div>
+          )}
+          {nightChoghadiya.length > 0 && (
+            <div className="p-2">
+              {renderTable(nightChoghadiya, Moon, language === 'hi' ? 'रात्रि के चौघड़िया' : 'Night Choghadiya')}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Compact Legend */}
+      <div className="rounded-lg border border-cosmic-border p-2">
+        <h4 className="font-semibold text-cosmic-text-primary mb-1 text-sm">
+          {language === 'hi' ? 'चौघड़िया का अर्थ' : 'Choghadiya Meanings'}
+        </h4>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 text-xs">
+          <div className="flex items-center gap-1 px-1.5 py-1 rounded bg-green-500/10">
+            <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
+            <span className="text-cosmic-text-primary font-medium">
+              {language === 'hi' ? 'अमृत, शुभ, लाभ' : 'Amrit, Shubh, Labh'}
+            </span>
+            <span className="text-cosmic-text-secondary ml-auto">{language === 'hi' ? 'शुभ' : 'Good'}</span>
+          </div>
+          <div className="flex items-center gap-1 px-1.5 py-1 rounded bg-blue-500/10">
+            <span className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0" />
+            <span className="text-cosmic-text-primary font-medium">
+              {language === 'hi' ? 'चर' : 'Char'}
+            </span>
+            <span className="text-cosmic-text-secondary ml-auto">{language === 'hi' ? 'यात्रा' : 'Travel'}</span>
+          </div>
+          <div className="flex items-center gap-1 px-1.5 py-1 rounded bg-orange-500/10">
+            <span className="w-2 h-2 rounded-full bg-orange-500 flex-shrink-0" />
+            <span className="text-cosmic-text-primary font-medium">
+              {language === 'hi' ? 'रोग, उद्वेग' : 'Rog, Udveg'}
+            </span>
+            <span className="text-cosmic-text-secondary ml-auto">{language === 'hi' ? 'सावधान' : 'Caution'}</span>
+          </div>
+          <div className="flex items-center gap-1 px-1.5 py-1 rounded bg-red-500/10">
+            <span className="w-2 h-2 rounded-full bg-red-600 flex-shrink-0" />
+            <span className="text-cosmic-text-primary font-medium">
+              {language === 'hi' ? 'काल' : 'Kaal'}
+            </span>
+            <span className="text-cosmic-text-secondary ml-auto">{language === 'hi' ? 'टालें' : 'Avoid'}</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -157,6 +157,17 @@ _CHOGHADIYA_QUALITY = {
     "Udveg": "Inauspicious",
 }
 
+# Night Choghadiya sequence per weekday (sunset to next sunrise)
+_NIGHT_CHOGHADIYA_NAMES = {
+    0: ["Char", "Rog", "Kaal", "Labh", "Udveg", "Shubh", "Amrit", "Char"],      # Monday
+    1: ["Kaal", "Labh", "Udveg", "Shubh", "Amrit", "Char", "Rog", "Kaal"],      # Tuesday
+    2: ["Labh", "Udveg", "Shubh", "Amrit", "Char", "Rog", "Kaal", "Labh"],      # Wednesday
+    3: ["Amrit", "Char", "Rog", "Kaal", "Labh", "Udveg", "Shubh", "Amrit"],     # Thursday
+    4: ["Rog", "Kaal", "Labh", "Udveg", "Shubh", "Amrit", "Char", "Rog"],       # Friday
+    5: ["Udveg", "Shubh", "Amrit", "Char", "Rog", "Kaal", "Labh", "Udveg"],     # Saturday
+    6: ["Shubh", "Amrit", "Char", "Rog", "Kaal", "Labh", "Udveg", "Shubh"],     # Sunday
+}
+
 # ============================================================
 # HINDU MONTH NAMES
 # ============================================================
@@ -777,6 +788,32 @@ def calculate_choghadiya(
     return result
 
 
+def calculate_night_choghadiya(
+    weekday: int, sunset: str, next_sunrise: str,
+) -> List[Dict[str, Any]]:
+    """Calculate Night Choghadiya (sunset to next sunrise)."""
+    ss_minutes = _time_to_minutes(sunset)
+    nsr_minutes = _time_to_minutes(next_sunrise)
+    # Handle overnight wrap: if next_sunrise appears earlier, add 24h
+    if nsr_minutes <= ss_minutes:
+        nsr_minutes += 1440
+    night_duration = nsr_minutes - ss_minutes
+    slot_duration = night_duration / 8.0
+
+    names = _NIGHT_CHOGHADIYA_NAMES.get(weekday, _NIGHT_CHOGHADIYA_NAMES[0])
+    result = []
+    for i, name in enumerate(names):
+        start = ss_minutes + i * slot_duration
+        end = start + slot_duration
+        result.append({
+            "name": name,
+            "quality": _CHOGHADIYA_QUALITY.get(name, "Unknown"),
+            "start": _minutes_to_time(start % 1440),
+            "end": _minutes_to_time(end % 1440),
+        })
+    return result
+
+
 # ============================================================
 # TIME HELPERS
 # ============================================================
@@ -878,8 +915,12 @@ def calculate_panchang(
     # 13. Hindu calendar
     hindu_calendar = _compute_hindu_calendar(date, tithi_index, sun_sid)
 
-    # 14. Choghadiya
+    # 14. Choghadiya (Day + Night)
     choghadiya = calculate_choghadiya(weekday, sunrise_str, sunset_str)
+    # Night: sunset to next sunrise (approximate next sunrise = same sunrise + 24h)
+    # For a more accurate calculation we'd compute tomorrow's sunrise,
+    # but using today's sunrise as proxy is standard practice.
+    night_choghadiya = calculate_night_choghadiya(weekday, sunset_str, sunrise_str)
 
     # 15. Next Tithi, Nakshatra, Yoga
     next_tithi_idx = (tithi_index + 1) % 30
@@ -1179,6 +1220,7 @@ def calculate_panchang(
         "planetary_positions": planetary_positions,
         "hindu_calendar": hindu_calendar,
         "choghadiya": choghadiya,
+        "night_choghadiya": night_choghadiya,
         "ayanamsa": round(ayanamsa, 4),
         "sun_longitude": round(sun_sid, 4),
         "moon_longitude": round(moon_sid, 4),

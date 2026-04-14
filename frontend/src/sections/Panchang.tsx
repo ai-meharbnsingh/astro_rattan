@@ -49,6 +49,7 @@ export interface FullPanchangData {
   abhijit_muhurat: TimePeriod;
   brahma_muhurat: TimePeriod;
   choghadiya: ChoghadiyaPeriod[];
+  night_choghadiya?: ChoghadiyaPeriod[];
   planetary_positions: Planet[];
   hindu_calendar: HinduCalendarData;
   festivals: Festival[];
@@ -440,6 +441,7 @@ function normalizePanchang(data: Record<string, unknown>): FullPanchangData {
     abhijit_muhurat: d.abhijit_muhurat || { start: '--:--', end: '--:--' },
     brahma_muhurat: d.brahma_muhurat || { start: '--:--', end: '--:--' },
     choghadiya: Array.isArray(d.choghadiya) ? d.choghadiya : [],
+    night_choghadiya: Array.isArray(d.night_choghadiya) ? d.night_choghadiya : [],
     planetary_positions: Array.isArray(d.planetary_positions) ? d.planetary_positions : [],
     hindu_calendar: d.hindu_calendar || {
       vikram_samvat: 0, shaka_samvat: 0, maas: '', paksha: '',
