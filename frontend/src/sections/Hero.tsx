@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { useTranslation } from '@/lib/i18n';
-import { ArrowRight, Users, Grid3X3 } from 'lucide-react';
+import { ArrowRight, Users, Grid3X3, Star } from 'lucide-react';
 import LiveTransitWheel from '@/components/LiveTransitWheel';
 
 export default function Hero() {
@@ -41,7 +41,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section ref={heroRef} className="relative min-h-[60vh] flex items-center overflow-hidden pt-24 pb-16">
+    <section ref={heroRef} className="relative min-h-[60vh] flex items-center overflow-hidden pt-24 pb-6">
       {/* Background — noise texture */}
       <div className="absolute inset-0 z-[1] opacity-[0.03] pointer-events-none"
         style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")` }}
@@ -127,15 +127,13 @@ export default function Hero() {
         </div>
 
         {/* Stats strip — separate section below hero */}
-        <div className="hero-stats opacity-0 mt-12">
+        <div className="hero-stats opacity-0 mt-16">
           <div className="rounded-2xl bg-sacred-gold/5 p-4 sm:p-5">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="rounded-xl border border-sacred-gold/25 bg-cosmic-bg/70 p-3 sm:p-4 flex items-start gap-3">
-                <img
-                  src="/images/features/feature-kundli.jpg"
-                  alt="Kundli"
-                  className="w-8 h-8 rounded-lg object-cover shrink-0 border border-sacred-gold/40"
-                />
+                <div className="w-8 h-8 rounded-lg bg-sacred-gold/10 text-sacred-gold-dark flex items-center justify-center shrink-0">
+                  <Star className="w-4 h-4" />
+                </div>
                 <div>
                   <p className="text-base font-semibold text-cosmic-text">{l('10,000+ Kundlis Generated', '10,000+ कुंडलियां बनाई गईं')}</p>
                   <p className="text-xs text-gray-600 mt-0.5">{l('Real usage data', 'वास्तविक उपयोग डेटा')}</p>
