@@ -8,18 +8,18 @@ const CY = 300;
 
 /* ── Sign data ── */
 const SIGNS = [
-  { en: 'Aries',       hi: 'मेष',     glyph: '\u2648\uFE0E', month: 'Apr',  monthHi: 'अप्रै', gender: '\u2642', element: 'Fire',  elementHi: 'अग्नि', elemColor: '#e25822', img: '/images/zodiac/aries.jpg' },
-  { en: 'Taurus',      hi: 'वृषभ',    glyph: '\u2649\uFE0E', month: 'May',  monthHi: 'मई',    gender: '\u2640', element: 'Earth', elementHi: 'पृथ्वी', elemColor: '#6b8e23', img: '/images/zodiac/taurus.jpg' },
-  { en: 'Gemini',      hi: 'मिथुन',   glyph: '\u264A\uFE0E', month: 'Jun',  monthHi: 'जून',   gender: '\u2642', element: 'Air',   elementHi: 'वायु',  elemColor: '#4682b4', img: '/images/zodiac/gemini.jpg' },
-  { en: 'Cancer',      hi: 'कर्क',    glyph: '\u264B\uFE0E', month: 'Jul',  monthHi: 'जुला',  gender: '\u2640', element: 'Water', elementHi: 'जल',    elemColor: '#1e90ff', img: '/images/zodiac/cancer.jpg' },
-  { en: 'Leo',         hi: 'सिंह',    glyph: '\u264C\uFE0E', month: 'Aug',  monthHi: 'अग',    gender: '\u2642', element: 'Fire',  elementHi: 'अग्नि', elemColor: '#e25822', img: '/images/zodiac/leo.jpg' },
-  { en: 'Virgo',       hi: 'कन्या',   glyph: '\u264D\uFE0E', month: 'Sep',  monthHi: 'सित',   gender: '\u2640', element: 'Earth', elementHi: 'पृथ्वी', elemColor: '#6b8e23', img: '/images/zodiac/virgo.jpg' },
-  { en: 'Libra',       hi: 'तुला',    glyph: '\u264E\uFE0E', month: 'Oct',  monthHi: 'अक्टू', gender: '\u2642', element: 'Air',   elementHi: 'वायु',  elemColor: '#4682b4', img: '/images/zodiac/libra.jpg' },
-  { en: 'Scorpio',     hi: 'वृश्चिक', glyph: '\u264F\uFE0E', month: 'Nov',  monthHi: 'नव',    gender: '\u2640', element: 'Water', elementHi: 'जल',    elemColor: '#1e90ff', img: '/images/zodiac/scorpio.jpg' },
-  { en: 'Sagittarius', hi: 'धनु',     glyph: '\u2650\uFE0E', month: 'Dec',  monthHi: 'दिस',   gender: '\u2642', element: 'Fire',  elementHi: 'अग्नि', elemColor: '#e25822', img: '/images/zodiac/sagittarius.jpg' },
-  { en: 'Capricorn',   hi: 'मकर',     glyph: '\u2651\uFE0E', month: 'Jan',  monthHi: 'जन',    gender: '\u2640', element: 'Earth', elementHi: 'पृथ्वी', elemColor: '#6b8e23', img: '/images/zodiac/capricorn.jpg' },
-  { en: 'Aquarius',    hi: 'कुंभ',    glyph: '\u2652\uFE0E', month: 'Feb',  monthHi: 'फर',    gender: '\u2642', element: 'Air',   elementHi: 'वायु',  elemColor: '#4682b4', img: '/images/zodiac/aquarius.jpg' },
-  { en: 'Pisces',      hi: 'मीन',     glyph: '\u2653\uFE0E', month: 'Mar',  monthHi: 'मार्च', gender: '\u2640', element: 'Water', elementHi: 'जल',    elemColor: '#1e90ff', img: '/images/zodiac/pisces.jpg' },
+  { en: 'Aries',       hi: 'मेष',     glyph: '\u2648\uFE0E', dates: 'Mar 21-Apr 19', datesHi: '21 मार्च-19 अप्रै', gender: '\u2642', element: 'Fire',  elementHi: 'अग्नि', elemColor: '#e25822', img: '/images/zodiac/aries.jpg' },
+  { en: 'Taurus',      hi: 'वृषभ',    glyph: '\u2649\uFE0E', dates: 'Apr 20-May 20', datesHi: '20 अप्रै-20 मई', gender: '\u2640', element: 'Earth', elementHi: 'पृथ्वी', elemColor: '#6b8e23', img: '/images/zodiac/taurus.jpg' },
+  { en: 'Gemini',      hi: 'मिथुन',   glyph: '\u264A\uFE0E', dates: 'May 21-Jun 20', datesHi: '21 मई-20 जून', gender: '\u2642', element: 'Air',   elementHi: 'वायु',  elemColor: '#4682b4', img: '/images/zodiac/gemini.jpg' },
+  { en: 'Cancer',      hi: 'कर्क',    glyph: '\u264B\uFE0E', dates: 'Jun 21-Jul 22', datesHi: '21 जून-22 जुला', gender: '\u2640', element: 'Water', elementHi: 'जल',    elemColor: '#1e90ff', img: '/images/zodiac/cancer.jpg' },
+  { en: 'Leo',         hi: 'सिंह',    glyph: '\u264C\uFE0E', dates: 'Jul 23-Aug 22', datesHi: '23 जुला-22 अग', gender: '\u2642', element: 'Fire',  elementHi: 'अग्नि', elemColor: '#e25822', img: '/images/zodiac/leo.jpg' },
+  { en: 'Virgo',       hi: 'कन्या',   glyph: '\u264D\uFE0E', dates: 'Aug 23-Sep 22', datesHi: '23 अग-22 सित', gender: '\u2640', element: 'Earth', elementHi: 'पृथ्वी', elemColor: '#6b8e23', img: '/images/zodiac/virgo.jpg' },
+  { en: 'Libra',       hi: 'तुला',    glyph: '\u264E\uFE0E', dates: 'Sep 23-Oct 22', datesHi: '23 सित-22 अक्टू', gender: '\u2642', element: 'Air',   elementHi: 'वायु',  elemColor: '#4682b4', img: '/images/zodiac/libra.jpg' },
+  { en: 'Scorpio',     hi: 'वृश्चिक', glyph: '\u264F\uFE0E', dates: 'Oct 23-Nov 21', datesHi: '23 अक्टू-21 नव', gender: '\u2640', element: 'Water', elementHi: 'जल',    elemColor: '#1e90ff', img: '/images/zodiac/scorpio.jpg' },
+  { en: 'Sagittarius', hi: 'धनु',     glyph: '\u2650\uFE0E', dates: 'Nov 22-Dec 21', datesHi: '22 नव-21 दिस', gender: '\u2642', element: 'Fire',  elementHi: 'अग्नि', elemColor: '#e25822', img: '/images/zodiac/sagittarius.jpg' },
+  { en: 'Capricorn',   hi: 'मकर',     glyph: '\u2651\uFE0E', dates: 'Dec 22-Jan 19', datesHi: '22 दिस-19 जन', gender: '\u2640', element: 'Earth', elementHi: 'पृथ्वी', elemColor: '#6b8e23', img: '/images/zodiac/capricorn.jpg' },
+  { en: 'Aquarius',    hi: 'कुंभ',    glyph: '\u2652\uFE0E', dates: 'Jan 20-Feb 18', datesHi: '20 जन-18 फर', gender: '\u2642', element: 'Air',   elementHi: 'वायु',  elemColor: '#4682b4', img: '/images/zodiac/aquarius.jpg' },
+  { en: 'Pisces',      hi: 'मीन',     glyph: '\u2653\uFE0E', dates: 'Feb 19-Mar 20', datesHi: '19 फर-20 मार्च', gender: '\u2640', element: 'Water', elementHi: 'जल',    elemColor: '#1e90ff', img: '/images/zodiac/pisces.jpg' },
 ];
 
 const PLANET_ABBR: Record<string,string> = { Sun:'Su',Moon:'Mo',Mars:'Ma',Mercury:'Me',Jupiter:'Ju',Venus:'Ve',Saturn:'Sa',Rahu:'Ra',Ketu:'Ke' };
@@ -132,7 +132,7 @@ export default function LiveTransitWheel() {
     const ey = CY + R_ELEM * Math.sin(midRad);
 
     const signName = hi ? sign.hi : sign.en.slice(0, 3);
-    const monthName = hi ? sign.monthHi : sign.month;
+    const dateRange = hi ? sign.datesHi : sign.dates;
     const elemName = hi ? sign.elementHi : sign.element;
 
     return (
@@ -144,10 +144,10 @@ export default function LiveTransitWheel() {
           fill={GOLD} fontSize="13" fontWeight="700" fontFamily="'Inter',sans-serif"
           transform={`rotate(${rot},${nx},${ny})`}>{signName}</text>
 
-        {/* Ring 2: Month */}
+        {/* Ring 2: Date range */}
         <text x={mx} y={my} textAnchor="middle" dominantBaseline="central"
-          fill={GOLD_MED} fontSize="9" fontWeight="600" fontFamily="'Inter',sans-serif"
-          transform={`rotate(${rot},${mx},${my})`}>{monthName}</text>
+          fill={GOLD_MED} fontSize="7.5" fontWeight="600" fontFamily="'Inter',sans-serif"
+          transform={`rotate(${rot},${mx},${my})`}>{dateRange}</text>
 
         {/* Ring 3: Watermark animal image */}
         <image href={sign.img} x={ix - 22} y={iy - 22} width={44} height={44}
@@ -225,18 +225,15 @@ export default function LiveTransitWheel() {
       <g key={p.planet} className="transit-dot" style={{ animationDelay: `${i * 0.08}s` }}
         onMouseEnter={() => setTooltip({ planet: p.planet, sign: p.sign, degree: p.sign_degree, retrograde: p.is_retrograde, x: px, y: py })}
         onMouseLeave={() => setTooltip(null)} cursor="pointer">
-        <circle cx={px} cy={py} r={DOT_R}
-          fill="white" fillOpacity={0.92}
-          stroke={p.is_retrograde ? '#FF3333' : (isMalefic ? DARK : GOLD_MED)}
-          strokeWidth={p.is_retrograde ? 2.5 : 1.5}
-          style={{ transition: 'all 1s ease' }} />
+        {/* No circle — text only */}
         <text x={px} y={py - 4} textAnchor="middle" dominantBaseline="central"
-          fill={textColor} fontSize="10" fontWeight="700" fontFamily="'Inter',sans-serif">{abbr}</text>
-        <text x={px} y={py + 8} textAnchor="middle" dominantBaseline="central"
-          fill={textColor} opacity={0.8} fontSize="8" fontFamily="'Inter',sans-serif">{degText}</text>
+          fill={textColor} fontSize="12" fontWeight="800" fontFamily="'Inter',sans-serif"
+          style={{ transition: 'all 1s ease' }}>{abbr}</text>
+        <text x={px} y={py + 9} textAnchor="middle" dominantBaseline="central"
+          fill={textColor} opacity={0.75} fontSize="9" fontWeight="600" fontFamily="'Inter',sans-serif">{degText}</text>
         {p.is_retrograde && (
-          <text x={px} y={py - DOT_R - 6} textAnchor="middle"
-            fill="#FF3333" fontSize="11" fontWeight="700">{'\u211E'}</text>
+          <text x={px + 14} y={py - 8} textAnchor="middle"
+            fill="#FF3333" fontSize="10" fontWeight="700">{'\u211E'}</text>
         )}
       </g>
     );
@@ -324,9 +321,9 @@ export default function LiveTransitWheel() {
 
       {/* Legend */}
       <div className="flex flex-wrap justify-center gap-3 mt-3 text-[10px]" style={{ fontFamily:'Inter,sans-serif', color: GOLD }}>
-        <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full border-2" style={{ borderColor: GOLD_MED, background: 'white' }} />{hi?'शुभ':'Benefic'}</span>
-        <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full border-2" style={{ borderColor: DARK, background: 'white' }} />{hi?'पापी':'Malefic'}</span>
-        <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full border-2 border-red-500 bg-white" /><span className="text-red-600 font-bold">{'\u211E'}</span> {hi?'वक्री':'Retro'}</span>
+        <span className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>Su 14&deg;</span> {hi?'शुभ':'Benefic'}</span>
+        <span className="flex items-center gap-1"><span className="font-bold" style={{ color: DARK }}>Ma 8&deg;</span> {hi?'पापी':'Malefic'}</span>
+        <span className="flex items-center gap-1"><span className="text-red-600 font-bold">{'\u211E'}</span> {hi?'वक्री':'Retro'}</span>
         <span className="flex items-center gap-1"><span className="w-3 h-3" style={{ background: GOLD_MED, clipPath:'polygon(50% 0%,0% 100%,100% 100%)' }} />ASC</span>
       </div>
     </div>

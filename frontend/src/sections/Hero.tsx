@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { useTranslation } from '@/lib/i18n';
-import { ArrowRight, Sparkles, ShieldCheck, Layers } from 'lucide-react';
+import { ArrowRight, Users, Grid3X3 } from 'lucide-react';
 import LiveTransitWheel from '@/components/LiveTransitWheel';
 
 export default function Hero() {
@@ -131,9 +131,11 @@ export default function Hero() {
           <div className="rounded-2xl bg-sacred-gold/5 p-4 sm:p-5">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="rounded-xl border border-sacred-gold/25 bg-cosmic-bg/70 p-3 sm:p-4 flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-sacred-gold/10 text-sacred-gold-dark flex items-center justify-center shrink-0">
-                  <Sparkles className="w-4 h-4" />
-                </div>
+                <img
+                  src="/images/features/feature-kundli.jpg"
+                  alt="Kundli"
+                  className="w-8 h-8 rounded-lg object-cover shrink-0 border border-sacred-gold/40"
+                />
                 <div>
                   <p className="text-base font-semibold text-cosmic-text">{l('10,000+ Kundlis Generated', '10,000+ कुंडलियां बनाई गईं')}</p>
                   <p className="text-xs text-gray-600 mt-0.5">{l('Real usage data', 'वास्तविक उपयोग डेटा')}</p>
@@ -141,7 +143,7 @@ export default function Hero() {
               </div>
               <div className="rounded-xl border border-sacred-gold/25 bg-cosmic-bg/70 p-3 sm:p-4 flex items-start gap-3">
                 <div className="w-8 h-8 rounded-lg bg-sacred-gold/10 text-sacred-gold-dark flex items-center justify-center shrink-0">
-                  <ShieldCheck className="w-4 h-4" />
+                  <Users className="w-4 h-4" />
                 </div>
                 <div>
                   <p className="text-base font-semibold text-cosmic-text">{l('Trusted by Astrologers', 'ज्योतिषियों द्वारा विश्वसनीय')}</p>
@@ -150,7 +152,7 @@ export default function Hero() {
               </div>
               <div className="rounded-xl border border-sacred-gold/25 bg-cosmic-bg/70 p-3 sm:p-4 flex items-start gap-3">
                 <div className="w-8 h-8 rounded-lg bg-sacred-gold/10 text-sacred-gold-dark flex items-center justify-center shrink-0">
-                  <Layers className="w-4 h-4" />
+                  <Grid3X3 className="w-4 h-4" />
                 </div>
                 <div>
                   <p className="text-base font-semibold text-cosmic-text">{l('5 Modules in One', 'एक में 5 मॉड्यूल')}</p>
