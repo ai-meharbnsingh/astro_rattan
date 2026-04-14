@@ -69,10 +69,10 @@ export default function Hero() {
           {/* Main Title */}
           <div className="hero-title-main opacity-0 mt-2">
             <h1
-              className="text-xl sm:text-2xl lg:text-3xl text-cosmic-text leading-[1.1]"
+              className="text-xl sm:text-2xl lg:text-3xl text-cosmic-text leading-[1.1] font-sans"
               style={{
-                fontWeight: 800,
-                letterSpacing: '-0.02em',
+                fontWeight: 700,
+                letterSpacing: '0',
               }}
             >
               {l('A Complete Astrology Platform', 'एक पूर्ण ज्योतिष प्लेटफॉर्म')}
