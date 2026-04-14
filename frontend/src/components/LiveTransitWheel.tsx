@@ -384,6 +384,11 @@ export default function LiveTransitWheel() {
         ];
 
         const pAbbr = (name: string) => hi ? (PLANET_HI[name] || name.slice(0,2)) : (PLANET_ABBR[name] || name.slice(0,2));
+        const sunLong = planets.find(p => p.planet === 'Sun')?.longitude || 0;
+        const pStatus = (pl: TransitPlanet) => {
+          const s = getPlanetStatus(pl, sunLong);
+          return s.length ? s.join('') : '';
+        };
 
         return (
           <div className="chakra-float" style={{ transformStyle: 'preserve-3d' }}>
@@ -405,19 +410,30 @@ export default function LiveTransitWheel() {
               {housePoly.map(hp => {
                 const hData = kundliHouses[hp.house - 1];
                 if (!hData) return null;
+                const nPlanets = hData.planets.length;
+                // Adaptive font size: shrink when many planets
+                const fs = nPlanets > 3 ? 8 : nPlanets > 2 ? 9 : 10;
+                const lineH = nPlanets > 3 ? 10 : 12;
+                // Center block vertically: sign number + planets
+                const totalH = lineH * nPlanets;
+                const startY = hp.cy - totalH / 2 + 2;
                 return (
                   <g key={hp.house}>
-                    {/* Sign number */}
-                    <text x={hp.cx} y={hp.cy - 6} textAnchor="middle" dominantBaseline="central"
-                      fill={GOLD} fontSize="11" fontWeight="700" fontFamily="'Inter',sans-serif"
-                      opacity={0.5}>{hData.signNum}</text>
-                    {/* Planet abbreviations */}
-                    {hData.planets.map((pl, idx) => (
-                      <text key={pl.planet} x={hp.cx} y={hp.cy + 8 + idx * 13} textAnchor="middle" dominantBaseline="central"
-                        fill={MALEFIC.has(pl.planet) ? DARK : GOLD_MED} fontSize="11" fontWeight="700" fontFamily="'Inter',sans-serif">
-                        {pAbbr(pl.planet)}{pl.is_retrograde ? '*' : ''} {pl.sign_degree.toFixed(0)}°
-                      </text>
-                    ))}
+                    {/* Sign number — top-left corner of house area */}
+                    <text x={hp.cx} y={hp.cy - (nPlanets > 0 ? totalH / 2 + 10 : 0)} textAnchor="middle" dominantBaseline="central"
+                      fill={GOLD} fontSize="9" fontWeight="600" fontFamily="'Inter',sans-serif"
+                      opacity={0.4}>{hData.signNum}</text>
+                    {/* Planet labels with status symbols */}
+                    {hData.planets.map((pl, idx) => {
+                      const sym = pStatus(pl);
+                      const label = `${pAbbr(pl.planet)}${sym} ${pl.sign_degree.toFixed(0)}°`;
+                      return (
+                        <text key={pl.planet} x={hp.cx} y={startY + idx * lineH} textAnchor="middle" dominantBaseline="central"
+                          fill={MALEFIC.has(pl.planet) ? DARK : GOLD_MED} fontSize={fs} fontWeight="700" fontFamily="'Inter',sans-serif">
+                          {label}
+                        </text>
+                      );
+                    })}
                   </g>
                 );
               })}
