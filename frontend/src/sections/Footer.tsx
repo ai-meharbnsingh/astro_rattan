@@ -12,7 +12,7 @@ export default function Footer() {
         {/* Table layout — aligned columns */}
         <table className="w-full">
           <tbody>
-            <tr className="border-b border-cosmic-border/30">
+            <tr className="">
               <td className="py-1.5 pr-4 font-semibold text-sacred-gold-dark whitespace-nowrap w-24">{t('footer.services')}:</td>
               <td className="py-1.5 w-1/5"><Link to="/kundli" className="text-cosmic-text hover:text-sacred-gold-dark">{l('Kundli', 'कुंडली')}</Link></td>
               <td className="py-1.5 w-1/5"><Link to="/panchang" className="text-cosmic-text hover:text-sacred-gold-dark">{l('Panchang', 'पंचांग')}</Link></td>
@@ -20,7 +20,7 @@ export default function Footer() {
               <td className="py-1.5 w-1/5"><Link to="/numerology" className="text-cosmic-text hover:text-sacred-gold-dark">{l('Numerology', 'अंकशास्त्र')}</Link></td>
               <td className="py-1.5 w-1/5"><Link to="/vastu" className="text-cosmic-text hover:text-sacred-gold-dark">{l('Vastu', 'वास्तु')}</Link></td>
             </tr>
-            <tr className="border-b border-cosmic-border/30">
+            <tr className="">
               <td className="py-1.5 pr-4 font-semibold text-sacred-gold-dark whitespace-nowrap">{t('footer.company')}:</td>
               <td className="py-1.5"><Link to="/about" className="text-cosmic-text hover:text-sacred-gold-dark">{t('footer.aboutUs')}</Link></td>
               <td className="py-1.5"><Link to="/" className="text-cosmic-text hover:text-sacred-gold-dark">{t('footer.contactShort')}</Link></td>
