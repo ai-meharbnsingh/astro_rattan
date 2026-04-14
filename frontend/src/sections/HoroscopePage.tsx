@@ -141,35 +141,22 @@ export default function HoroscopePage() {
             <span className="font-semibold text-cosmic-text">{dateDisplay}</span>
             <span className="text-sm text-cosmic-text-secondary">{currentTime.toLocaleTimeString(language === 'hi' ? 'hi-IN' : 'en-IN')}</span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="w-full px-2 py-1.5 rounded-lg bg-white border border-cosmic-border text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none"
-            />
-            <select
-              value={selectedSign}
-              onChange={(e) => setSelectedSign(e.target.value)}
-              className="w-full px-2 py-1.5 rounded-lg bg-white border border-cosmic-border text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none"
-            >
-              {SIGNS.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.emoji} {language === 'hi' ? s.hi : s.en}
-                </option>
-              ))}
-            </select>
-          </div>
+          <input
+            type="date"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            className="w-full px-2 py-1.5 rounded-lg bg-white border border-cosmic-border text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none"
+          />
         </div>
 
-        {/* Sign Quick-Select Bar */}
-        <div className="rounded-xl border border-cosmic-border bg-cosmic-card p-2 mb-4 overflow-x-auto">
-          <div className="flex gap-1 min-w-max">
+        {/* Sign Tabs — equally spaced grid of 12 */}
+        <div className="rounded-xl border border-cosmic-border bg-cosmic-card p-2 mb-4">
+          <div className="grid grid-cols-6 sm:grid-cols-12 gap-1">
             {SIGNS.map((s) => (
               <button
                 key={s.id}
                 onClick={() => setSelectedSign(s.id)}
-                className={`flex flex-col items-center gap-0.5 px-2.5 py-1.5 rounded-lg text-xs transition-all whitespace-nowrap ${
+                className={`flex flex-col items-center gap-0.5 py-2 rounded-lg text-xs transition-all ${
                   selectedSign === s.id
                     ? 'bg-sacred-gold text-white shadow-sm'
                     : 'text-cosmic-text-secondary hover:bg-sacred-gold/10'
@@ -184,16 +171,16 @@ export default function HoroscopePage() {
 
         {/* Tab Navigation */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 gap-1 h-auto p-1 bg-cosmic-card rounded-xl">
+          <TabsList className="grid w-full grid-cols-4 h-auto p-1 bg-cosmic-card rounded-xl">
             {[
               { id: 'daily', label: language === 'hi' ? 'दैनिक' : 'Daily', icon: Sun },
               { id: 'weekly', label: language === 'hi' ? 'साप्ताहिक' : 'Weekly', icon: Calendar },
               { id: 'all', label: language === 'hi' ? 'सभी राशि' : 'All Signs', icon: Users },
               { id: 'transits', label: language === 'hi' ? 'गोचर' : 'Transits', icon: Orbit },
             ].map(tab => (
-              <TabsTrigger key={tab.id} value={tab.id} className="min-w-0 flex flex-col items-center gap-0.5 py-2 px-1 text-xs data-[state=active]:bg-sacred-gold data-[state=active]:text-white rounded-lg">
+              <TabsTrigger key={tab.id} value={tab.id} className="flex-1 flex flex-col items-center gap-0.5 py-2 text-xs data-[state=active]:bg-sacred-gold data-[state=active]:text-white rounded-lg">
                 <tab.icon className="w-4 h-4" />
-                <span className="hidden sm:block">{tab.label}</span>
+                <span>{tab.label}</span>
               </TabsTrigger>
             ))}
           </TabsList>
