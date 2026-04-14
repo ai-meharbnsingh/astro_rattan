@@ -200,7 +200,7 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
   return (
     <div className="flex flex-col justify-start gap-3">
       {/* Fields — exact like screenshot: no heading */}
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-3">
         {/* Full Name */}
         <div>
           <label className="text-sm font-semibold text-cosmic-text mb-0 block">{l('Full Name', 'पूरा नाम')}</label>
@@ -215,7 +215,7 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
         <div className="grid grid-cols-2 gap-2">
           <div>
             <label className="text-sm font-semibold text-cosmic-text mb-0 block">{l('Gender', 'लिंग')}</label>
-            <div className="flex gap-1 mt-1">
+            <div className="flex gap-2 mt-1">
               <button onClick={() => setGender('male')}
                 className={`flex-1 py-1.5 rounded-lg text-sm font-semibold transition-all ${gender === 'male' ? 'bg-sacred-gold-dark text-white' : 'border border-sacred-gold/50 text-cosmic-text'}`}>
                 {l('Male', 'पुरुष')}
