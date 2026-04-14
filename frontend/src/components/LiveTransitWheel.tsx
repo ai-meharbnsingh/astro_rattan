@@ -367,32 +367,35 @@ export default function LiveTransitWheel() {
         const p3 = { x: P + H2 + q, y: P + H2 + q };// BR-CC ∩ MR-MB
         const p4 = { x: P + q, y: P + H2 + q };     // BL-CC ∩ MB-ML
 
-        // Hand-tuned house label positions for North Indian kundli
-        // Trapezoids (1,3,4,6,7,9,10,12-style) get centered text
-        // Corner triangles (2,5,8,11) get text pushed into the corner
-        const cx = cc.x; // center x = 250
-        const cy = cc.y; // center y = 250
-        const housePoly: { house: number; tx: number; ty: number }[] = [
-          { house: 1,  tx: cx,       ty: P + 50 },          // top center trapezoid
-          { house: 2,  tx: P + 42,   ty: P + 38 },          // top-left corner triangle
-          { house: 3,  tx: P + 58,   ty: cy - 28 },         // left-top trapezoid
-          { house: 4,  tx: P + 42,   ty: cy },              // left center triangle
-          { house: 5,  tx: P + 42,   ty: P + W - 38 },      // bottom-left corner triangle
-          { house: 6,  tx: P + 58,   ty: cy + 68 },         // bottom-left trapezoid
-          { house: 7,  tx: cx,       ty: P + W - 50 },      // bottom center trapezoid
-          { house: 8,  tx: P + W - 42, ty: P + W - 38 },    // bottom-right corner triangle
-          { house: 9,  tx: P + W - 58, ty: cy + 68 },       // right-bottom trapezoid
-          { house: 10, tx: P + W - 42, ty: cy },            // right center triangle
-          { house: 11, tx: P + W - 42, ty: P + 38 },        // top-right corner triangle
-          { house: 12, tx: P + W - 58, ty: cy - 28 },       // right-top trapezoid
+        // Centroid from vertices (same as InteractiveKundli)
+        const cen = (...v: {x:number;y:number}[]) => ({
+          x: v.reduce((s,p)=>s+p.x,0)/v.length,
+          y: v.reduce((s,p)=>s+p.y,0)/v.length,
+        });
+
+        // 12 houses with computed centroids — exact same geometry as InteractiveKundli
+        const houses: { h: number; cx: number; cy: number; trap: boolean }[] = [
+          // Top: 2(tri), 1(quad), 12(tri)
+          { h: 1,  ...cen(p1, mt, p2, cc),  trap: true },
+          { h: 2,  ...cen(tl, mt, p1),       trap: false },
+          { h: 12, ...cen(mt, tr, p2),        trap: false },
+          // Right: 11(tri), 10(quad), 9(tri)
+          { h: 11, ...cen(tr, mr, p2),        trap: false },
+          { h: 10, ...cen(p2, mr, p3, cc),   trap: true },
+          { h: 9,  ...cen(mr, br, p3),        trap: false },
+          // Bottom: 8(tri), 7(quad), 6(tri)
+          { h: 8,  ...cen(br, mb, p3),        trap: false },
+          { h: 7,  ...cen(p3, mb, p4, cc),   trap: true },
+          { h: 6,  ...cen(mb, bl, p4),        trap: false },
+          // Left: 5(tri), 4(quad), 3(tri)
+          { h: 5,  ...cen(bl, ml, p4),        trap: false },
+          { h: 4,  ...cen(p4, ml, p1, cc),   trap: true },
+          { h: 3,  ...cen(ml, tl, p1),        trap: false },
         ];
 
         const pAbbr = (name: string) => hi ? (PLANET_HI[name] || name.slice(0,2)) : (PLANET_ABBR[name] || name.slice(0,2));
         const sunLong = planets.find(p => p.planet === 'Sun')?.longitude || 0;
-        const pStatus = (pl: TransitPlanet) => {
-          const s = getPlanetStatus(pl, sunLong);
-          return s.length ? s.join('') : '';
-        };
+        const pStatus = (pl: TransitPlanet) => getPlanetStatus(pl, sunLong).join('');
 
         return (
           <div className="chakra-float" style={{ transformStyle: 'preserve-3d' }}>
@@ -410,27 +413,45 @@ export default function LiveTransitWheel() {
               <line x1={tl.x} y1={tl.y} x2={br.x} y2={br.y} stroke={WHEEL_LINE} strokeWidth={WHEEL_STROKE_W} />
               <line x1={tr.x} y1={tr.y} x2={bl.x} y2={bl.y} stroke={WHEEL_LINE} strokeWidth={WHEEL_STROKE_W} />
 
-              {/* House contents */}
-              {housePoly.map(hp => {
-                const hData = kundliHouses[hp.house - 1];
+              {/* House contents — same grid layout as InteractiveKundli */}
+              {houses.map(nh => {
+                const hData = kundliHouses[nh.h - 1];
                 if (!hData) return null;
-                const nPl = hData.planets.length;
-                const fs = nPl > 3 ? 7.5 : nPl > 2 ? 8.5 : 9.5;
-                const lh = nPl > 3 ? 9 : 11;
+                const hPlanets = hData.planets;
+                const count = hPlanets.length;
+
+                // Grid layout (same logic as InteractiveKundli, scaled to 500px viewbox ~1.2x)
+                const maxCols = nh.trap
+                  ? (count > 4 ? 3 : count > 2 ? 2 : count)
+                  : (count > 3 ? 3 : count > 1 ? 2 : 1);
+                const cols = Math.min(count, Math.max(maxCols, 1));
+                const spacing = nh.trap ? (count > 4 ? 22 : 26) : (count > 3 ? 18 : count > 2 ? 20 : 24);
+                const rowH = count > 4 ? 12 : count > 3 ? 13 : 14;
+                const fs = nh.trap ? (count > 4 ? 9 : 10) : (count > 3 ? 8 : count > 2 ? 9 : 10);
+
                 return (
-                  <g key={hp.house}>
-                    {/* Sign number — small, above planets */}
-                    <text x={hp.tx} y={hp.ty - (nPl > 0 ? nPl * lh / 2 + 6 : 0)} textAnchor="middle" dominantBaseline="central"
-                      fill={GOLD} fontSize="8" fontWeight="600" fontFamily="'Inter',sans-serif"
-                      opacity={0.35}>{hData.signNum}</text>
-                    {/* Planets stacked */}
-                    {hData.planets.map((pl, idx) => {
+                  <g key={nh.h}>
+                    {/* Rashi number */}
+                    <text x={nh.cx} y={nh.cy - (count > 0 ? 10 : 0) + 3}
+                      textAnchor="middle" dominantBaseline="central"
+                      fill={GOLD} fontSize={nh.trap ? 14 : 11} fontWeight="bold" fontFamily="'Inter',sans-serif"
+                      opacity={0.4}>{hData.signNum}</text>
+
+                    {/* Planets — multi-column grid */}
+                    {hPlanets.map((pl, idx) => {
                       const sym = pStatus(pl);
                       const label = `${pAbbr(pl.planet)}${sym} ${pl.sign_degree.toFixed(0)}°`;
-                      const yOff = hp.ty + (idx - (nPl - 1) / 2) * lh;
+                      const pCol = idx % cols;
+                      const pRow = Math.floor(idx / cols);
+                      const startX = nh.cx - ((cols - 1) * spacing) / 2;
+                      const px = startX + pCol * spacing;
+                      const baseY = nh.cy + (nh.trap ? 10 : 6);
+                      const py = baseY + pRow * rowH;
                       return (
-                        <text key={pl.planet} x={hp.tx} y={yOff} textAnchor="middle" dominantBaseline="central"
-                          fill={MALEFIC.has(pl.planet) ? DARK : GOLD_MED} fontSize={fs} fontWeight="700" fontFamily="'Inter',sans-serif">
+                        <text key={pl.planet} x={px} y={py}
+                          textAnchor="middle" dominantBaseline="central"
+                          fill={MALEFIC.has(pl.planet) ? DARK : GOLD_MED}
+                          fontSize={fs} fontWeight="700" fontFamily="'Inter',sans-serif">
                           {label}
                         </text>
                       );
