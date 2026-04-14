@@ -209,8 +209,8 @@
   }
 
   /* Typography scale — no !important so Tailwind utilities can override */
-  h1 { font-size: 3rem; line-height: 1.2; font-family: var(--font-display) !important; }
-  h2 { font-size: 2.25rem; line-height: 1.3; font-family: var(--font-display) !important; }
+  h1 { font-size: 3rem; line-height: 1.2; font-family: var(--font-ui); }
+  h2 { font-size: 2.25rem; line-height: 1.3; font-family: var(--font-ui); }
   h3 { font-size: 1.75rem; line-height: 1.4; }
 
   @media (max-width: 768px) {
