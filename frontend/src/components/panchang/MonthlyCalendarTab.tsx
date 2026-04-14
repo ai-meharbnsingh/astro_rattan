@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Calendar, Moon, Sun, Star, Flame, Flag } from 'lucide-react';
 import { api } from '@/lib/api';
+import { translateBackend } from '@/lib/backend-translations';
 
 interface Props {
   language: string;
@@ -217,6 +218,18 @@ interface DayMarker {
 }
 
 const hasKeyword = (text: string, words: string[]) => words.some((w) => text.includes(w));
+const markerDotClass = (key: string) => {
+  switch (key) {
+    case 'major': return 'bg-amber-500';
+    case 'vrat': return 'bg-purple-500';
+    case 'ekadashi': return 'bg-cyan-500';
+    case 'purnima': return 'bg-indigo-500';
+    case 'amavasya': return 'bg-slate-500';
+    case 'sankranti': return 'bg-yellow-500';
+    case 'moon-sign': return 'bg-blue-500';
+    default: return 'bg-gray-400';
+  }
+};
 
 const getDayMarkers = (day: DayPanchang): DayMarker[] => {
   const allFest = day.festivals.join(' ').toLowerCase();
@@ -407,10 +420,10 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:items-stretch">
         {/* Calendar Grid */}
-        <Card className="card-sacred lg:col-span-2">
-          <CardContent className="p-2 sm:p-3">
+        <Card className="card-sacred lg:col-span-2 lg:h-[640px]">
+          <CardContent className="p-2 sm:p-3 h-full flex flex-col">
             {loading ? (
               <div className="flex items-center justify-center h-64">
                 <div className="animate-spin h-8 w-8 border-2 border-sacred-gold border-t-transparent rounded-full" />
@@ -449,7 +462,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                         key={day}
                         onClick={() => dayData && setSelectedDay(dayData)}
                         className={`
-                          h-14 sm:h-16 lg:h-14 xl:h-16 p-1 rounded-lg text-left text-[11px] sm:text-xs relative
+                          h-12 sm:h-14 lg:h-12 xl:h-14 p-1 rounded-lg text-left text-[11px] sm:text-xs relative overflow-hidden
                           transition-all hover:scale-105
                           ${isToday ? 'ring-2 ring-sacred-gold' : ''}
                           ${isSelected ? 'bg-sacred-gold/20 border border-sacred-gold' : 'bg-cosmic-card/30 hover:bg-cosmic-card/50'}
@@ -462,24 +475,22 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                         {dayData && (
                           <>
                             <div className="text-[9px] sm:text-[10px] text-cosmic-text-secondary truncate mt-0.5 leading-tight">
-                              {language === 'hi' ? dayData.tithi_hindi || dayData.tithi : dayData.tithi}
+                              {language === 'hi'
+                                ? dayData.tithi_hindi || translateBackend(dayData.tithi, language)
+                                : dayData.tithi}
                             </div>
                             {hasFestivals && <div className="text-[9px] text-purple-400 leading-tight mt-0.5">{festivalIcon(dayData.festivals[0])}</div>}
                             {dayMarkers.length > 0 && (
-                              <div className="mt-0.5 flex flex-wrap gap-0.5 max-w-full">
-                                {dayMarkers.slice(0, 4).map((marker) => (
+                              <div className="mt-0.5 flex items-center gap-0.5">
+                                {dayMarkers.slice(0, 3).map((marker) => (
                                   <span
                                     key={marker.key}
                                     title={language === 'hi' ? marker.titleHi : marker.titleEn}
-                                    className={`px-1 rounded text-[8px] leading-3 font-semibold ${marker.className}`}
-                                  >
-                                    {marker.short}
-                                  </span>
+                                    className={`w-1.5 h-1.5 rounded-full ${markerDotClass(marker.key)}`}
+                                  />
                                 ))}
-                                {dayMarkers.length > 4 && (
-                                  <span className="px-1 rounded text-[8px] leading-3 font-semibold bg-cosmic-border/40 text-cosmic-text-secondary">
-                                    +{dayMarkers.length - 4}
-                                  </span>
+                                {dayMarkers.length > 3 && (
+                                  <span className="text-[8px] leading-3 text-cosmic-text-secondary">+{dayMarkers.length - 3}</span>
                                 )}
                               </div>
                             )}
@@ -548,8 +559,8 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
         </Card>
 
         {/* Selected Day Details */}
-        <Card className="card-sacred">
-          <CardContent className="p-2 sm:p-3">
+        <Card className="card-sacred lg:h-[640px]">
+          <CardContent className="p-2 sm:p-3 h-full overflow-y-auto">
             <h4 className="font-semibold text-cosmic-text-primary mb-2 flex items-center gap-2">
               <Calendar className="h-4 w-4 text-sacred-gold" />
               {language === 'hi' ? 'विवरण' : 'Details'}
@@ -569,28 +580,36 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                   <div className="flex justify-between">
                     <span className="text-xs sm:text-sm text-cosmic-text-secondary">{language === 'hi' ? 'तिथि' : 'Tithi'}</span>
                     <span className="text-xs sm:text-sm font-medium text-cosmic-text-primary">
-                      {language === 'hi' ? selectedDay.tithi_hindi || selectedDay.tithi : selectedDay.tithi}
+                      {language === 'hi'
+                        ? selectedDay.tithi_hindi || translateBackend(selectedDay.tithi, language)
+                        : selectedDay.tithi}
                     </span>
                   </div>
 
                   <div className="flex justify-between">
                     <span className="text-xs sm:text-sm text-cosmic-text-secondary">{language === 'hi' ? 'नक्षत्र' : 'Nakshatra'}</span>
                     <span className="text-xs sm:text-sm font-medium text-cosmic-text-primary">
-                      {language === 'hi' ? selectedDay.nakshatra_hindi || selectedDay.nakshatra : selectedDay.nakshatra}
+                      {language === 'hi'
+                        ? selectedDay.nakshatra_hindi || translateBackend(selectedDay.nakshatra, language)
+                        : selectedDay.nakshatra}
                     </span>
                   </div>
 
                   <div className="flex justify-between">
                     <span className="text-xs sm:text-sm text-cosmic-text-secondary">{language === 'hi' ? 'पक्ष' : 'Paksha'}</span>
                     <span className="text-xs sm:text-sm font-medium text-cosmic-text-primary">
-                      {language === 'hi' ? selectedDay.paksha_hindi || selectedDay.paksha : selectedDay.paksha}
+                      {language === 'hi'
+                        ? selectedDay.paksha_hindi || translateBackend(selectedDay.paksha, language)
+                        : selectedDay.paksha}
                     </span>
                   </div>
                   {selectedDay.moon_sign && (
                     <div className="flex justify-between">
                       <span className="text-xs sm:text-sm text-cosmic-text-secondary">{language === 'hi' ? 'चंद्र राशि' : 'Moon Sign'}</span>
                       <span className="text-xs sm:text-sm font-medium text-cosmic-text-primary">
-                        {language === 'hi' ? selectedDay.moon_sign_hindi || selectedDay.moon_sign : selectedDay.moon_sign}
+                        {language === 'hi'
+                          ? selectedDay.moon_sign_hindi || translateBackend(selectedDay.moon_sign, language)
+                          : selectedDay.moon_sign}
                       </span>
                     </div>
                   )}
@@ -629,7 +648,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                               {festivalIcon(fest)}
                               <div className="min-w-0">
                                 <p className="text-xs sm:text-sm font-medium text-cosmic-text-primary leading-tight">
-                                  {fest}
+                                  {language === 'hi' ? translateBackend(fest, language) : fest}
                                 </p>
                                 {detail?.type && (
                                   <p className="text-[10px] text-cosmic-text-secondary mt-0.5">
