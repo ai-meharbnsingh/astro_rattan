@@ -69,20 +69,20 @@ export default function Hero() {
           {/* Main Title */}
           <div className="hero-title-main opacity-0 mt-6">
             <h1
-              className="text-2xl sm:text-3xl lg:text-[3.2rem] text-cosmic-text leading-[1.08]"
+              className="text-xl sm:text-2xl lg:text-3xl text-cosmic-text leading-[1.1]"
               style={{
                 fontWeight: 800,
                 letterSpacing: '-0.02em',
               }}
             >
-              {l('Complete Astrology Platform', 'पूर्ण ज्योतिष प्लेटफॉर्म')}
+              {l('A Complete Astrology Platform', 'एक पूर्ण ज्योतिष प्लेटफॉर्म')}
             </h1>
           </div>
 
         </div>
 
         {/* Two-column layout */}
-        <div className="flex flex-col lg:flex-row items-stretch gap-8 lg:gap-10">
+        <div className="flex flex-col lg:flex-row items-stretch gap-4 lg:gap-6">
 
           {/* LEFT — CTA Buttons */}
           <div className="w-full lg:basis-[42%] text-center lg:text-left flex flex-col lg:justify-center gap-7 lg:gap-10 lg:min-h-[620px]">
