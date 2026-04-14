@@ -58,7 +58,7 @@ const DARK = '#1a1a2e';
 function signIdx(sign: string) { return Math.max(0, SIGNS.findIndex(s => s.en.toLowerCase() === sign.toLowerCase())); }
 function absAngle(p: TransitPlanet) {
   // Keep planets away from exact sign divider boundaries so symbols/labels don't sit on lines.
-  const safeDeg = Math.max(1.2, Math.min(28.8, p.sign_degree));
+  const safeDeg = Math.max(3, Math.min(27, p.sign_degree));
   return signIdx(p.sign) * 30 + safeDeg - 90;
 }
 function arcRot(midDeg: number) { const t = ((midDeg + 90) % 360 + 360) % 360; return (t > 90 && t < 270) ? t + 180 : t; }
@@ -172,41 +172,48 @@ export default function LiveTransitWheel() {
 
   // Planet positions — place at MIDPOINT of sign (not on divider lines)
   const DOT_MIN_DIST = 48;
+  const LANE_MIN = 162;
+  const LANE_MAX = 214;
   let dotPos = planets.map(p => {
-    const ring = RING_R[p.planet] || 150;
-    const rad = toRad(absAngle(p));
-    return { planet: p, x: CX + ring * Math.cos(rad), y: CY + ring * Math.sin(rad) };
+    const baseRadius = Math.max(LANE_MIN, Math.min(LANE_MAX, RING_R[p.planet] || 180));
+    const angle = toRad(absAngle(p));
+    return { planet: p, angle, radius: baseRadius, baseRadius };
   });
 
   // Collision resolve
-  for (let iter = 0; iter < 15; iter++) {
+  for (let iter = 0; iter < 16; iter++) {
     for (let i = 0; i < dotPos.length; i++) {
       for (let j = i + 1; j < dotPos.length; j++) {
-        const ddx = dotPos[i].x - dotPos[j].x;
-        const ddy = dotPos[i].y - dotPos[j].y;
+        const ix = CX + dotPos[i].radius * Math.cos(dotPos[i].angle);
+        const iy = CY + dotPos[i].radius * Math.sin(dotPos[i].angle);
+        const jx = CX + dotPos[j].radius * Math.cos(dotPos[j].angle);
+        const jy = CY + dotPos[j].radius * Math.sin(dotPos[j].angle);
+        const ddx = ix - jx;
+        const ddy = iy - jy;
         const dist = Math.sqrt(ddx * ddx + ddy * ddy);
         if (dist < DOT_MIN_DIST && dist > 0) {
-          const a = Math.atan2(ddy, ddx);
-          const push = (DOT_MIN_DIST - dist) / 2 + 8;
-          dotPos[i].x += Math.cos(a) * push;
-          dotPos[i].y += Math.sin(a) * push;
-          dotPos[j].x -= Math.cos(a) * push;
-          dotPos[j].y -= Math.sin(a) * push;
+          const push = (DOT_MIN_DIST - dist) / 2 + 4;
+          if (dotPos[i].radius <= dotPos[j].radius) {
+            dotPos[i].radius -= push * 0.45;
+            dotPos[j].radius += push * 0.55;
+          } else {
+            dotPos[i].radius += push * 0.55;
+            dotPos[j].radius -= push * 0.45;
+          }
         }
       }
     }
-    // Keep all planet labels in the middle lane: between date ring and gender ring.
+    // Keep all planet labels in the middle lane and near their home ring.
     for (let k = 0; k < dotPos.length; k++) {
-      const vx = dotPos[k].x - CX;
-      const vy = dotPos[k].y - CY;
-      const d = Math.sqrt(vx * vx + vy * vy) || 1;
-      const clamped = Math.max(162, Math.min(214, d));
-      dotPos[k].x = CX + (vx / d) * clamped;
-      dotPos[k].y = CY + (vy / d) * clamped;
+      const minR = Math.max(LANE_MIN, dotPos[k].baseRadius - 20);
+      const maxR = Math.min(LANE_MAX, dotPos[k].baseRadius + 20);
+      dotPos[k].radius = Math.max(minR, Math.min(maxR, dotPos[k].radius));
     }
   }
 
-  const planetDots = dotPos.map(({ planet: p, x: px, y: py }, i) => {
+  const planetDots = dotPos.map(({ planet: p, angle, radius }, i) => {
+    const px = CX + radius * Math.cos(angle);
+    const py = CY + radius * Math.sin(angle);
     const isMalefic = MALEFIC.has(p.planet);
     const abbr = hi ? PLANET_HI[p.planet] : PLANET_ABBR[p.planet];
     const degText = `${p.sign_degree.toFixed(1)}\u00B0`;
@@ -223,7 +230,7 @@ export default function LiveTransitWheel() {
           fill={textColor} opacity={0.75} fontSize="9" fontWeight="600" fontFamily="'Inter',sans-serif">{degText}</text>
         {/* Retrograde — ALWAYS show ℞ when is_retrograde is true */}
         {p.is_retrograde && (
-          <text x={px + 16} y={py - 8} textAnchor="middle"
+          <text x={px + 12} y={py - 7} textAnchor="middle"
             fill="#FF3333" fontSize="13" fontWeight="800">{'\u211E'}</text>
         )}
       </g>
