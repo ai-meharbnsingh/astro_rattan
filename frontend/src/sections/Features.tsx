@@ -31,6 +31,8 @@ export default function Features() {
     },
     {
       image: '/images/features/feature-kundli.jpg',
+      imagePosition: 'center top',
+      imageFilter: 'sepia(0.15) brightness(0.95) contrast(1.05)',
       title: l('Kundli — 3 Vedic Systems', 'कुंडली — 3 वैदिक सिस्टम'),
       subtitle: l('Unmatched Depth', 'बेजोड़ गहराई'),
       desc: l('Parashari, Jaimini & KP System in one place. Ashtakvarga, Dasha timeline, Varshphal annual chart, Kundli Milan compatibility, General Remedies — 8 deep-analysis tools, not just a birth chart.', 'पाराशरी, जैमिनी और केपी सिस्टम एक जगह। अष्टकवर्ग, दशा टाइमलाइन, वर्षफल, कुंडली मिलान, सामान्य उपाय — केवल जन्म कुंडली नहीं, 8 गहन विश्लेषण टूल।'),
@@ -38,6 +40,8 @@ export default function Features() {
     },
     {
       image: '/images/features/feature-horoscope.jpg',
+      imagePosition: 'center center',
+      imageFilter: 'sepia(0.15) brightness(0.95) contrast(1.05)',
       title: l('Horoscope — Daily + Predictive', 'राशिफल — दैनिक + प्रेडिक्टिव'),
       subtitle: l('AI Powered', 'एआई समर्थित'),
       desc: l(
@@ -55,6 +59,8 @@ export default function Features() {
     },
     {
       image: '/images/features/feature-numerology.jpg',
+      imagePosition: 'center center',
+      imageFilter: 'sepia(0.15) brightness(0.95) contrast(1.05)',
       title: l('Numerology — Name + Mobile', 'अंकशास्त्र — नाम + मोबाइल'),
       subtitle: l('Dual Engine', 'डुअल इंजन'),
       desc: l(
@@ -65,6 +71,8 @@ export default function Features() {
     },
     {
       image: '/images/features/feature-vastu.jpg',
+      imagePosition: 'center center',
+      imageFilter: 'sepia(0.15) brightness(0.95) contrast(1.05)',
       title: l('Vastu Shastra Analyzer', 'वास्तु शास्त्र विश्लेषक'),
       subtitle: l('Pro', 'प्रो'),
       desc: l(
@@ -166,7 +174,10 @@ export default function Features() {
                   src={feature.image}
                   alt={feature.title}
                   className="w-full h-[180px] object-cover object-center rounded-t-[12px]"
-                  style={{ filter: 'sepia(0.2) brightness(0.95) contrast(1.05)' }}
+                  style={{
+                    objectPosition: feature.imagePosition || 'center center',
+                    filter: feature.imageFilter || 'sepia(0.2) brightness(0.95) contrast(1.05)',
+                  }}
                   loading="lazy"
                 />
                 {feature.badge && (
