@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { useTranslation } from '@/lib/i18n';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import ZodiacWheel from '@/components/ZodiacWheel';
 
 export default function Hero() {
@@ -15,10 +15,6 @@ export default function Hero() {
       gsap.fromTo('.hero-shloka',
         { opacity: 0, y: 30 },
         { opacity: 1, y: 0, duration: 1, delay: 0.3, ease: 'power3.out' }
-      );
-      gsap.fromTo('.hero-badge',
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.8, delay: 0.4, ease: 'power3.out' }
       );
       gsap.fromTo('.hero-title-main',
         { opacity: 0, y: 50 },
@@ -61,19 +57,9 @@ export default function Hero() {
 
           {/* LEFT — Text content */}
           <div className="flex-1 text-center lg:text-left">
-            {/* Badge */}
-            <div className="hero-badge opacity-0 mb-6">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold/10 border border-sacred-gold/30">
-                <Sparkles className="w-4 h-4 text-sacred-gold-dark" />
-                <span className="text-sm font-medium text-sacred-gold-dark">
-                  {l('Vedic Astrology + Lal Kitab + Vastu', 'वैदिक ज्योतिष + लाल किताब + वास्तु')}
-                </span>
-              </div>
-            </div>
-
             {/* Shloka */}
             <div className="hero-shloka opacity-0 mb-4">
-              <p className="font-sans text-xs opacity-70 tracking-[4px] text-gray-600 uppercase"
+              <p className="font-sans text-base sm:text-lg opacity-70 tracking-[4px] text-gray-600 uppercase"
                 style={{ textShadow: '0 0 15px rgba(255, 170, 51, 0.4)' }}>
                 {'\u091C\u094D\u092F\u094B\u0924\u093F\u0937\u092E\u094D \u0905\u092F\u092E\u094D \u092C\u094D\u0930\u0939\u094D\u092E'} {t('hero.shlokaSupreme')}
               </p>
