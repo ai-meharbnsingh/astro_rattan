@@ -19,10 +19,20 @@ interface DayPanchang {
   nakshatra_hindi?: string;
   paksha: string;
   paksha_hindi?: string;
+  moon_sign?: string;
+  moon_sign_hindi?: string;
   sunrise: string;
   sunset: string;
   festivals: string[];
+  festival_details: FestivalDetail[];
   festival_hindi?: string;
+}
+
+interface FestivalDetail {
+  name: string;
+  type?: string;
+  description?: string;
+  rituals?: string;
 }
 
 const FIXED_FESTIVALS_BY_MMDD: Record<string, string[]> = {
@@ -90,6 +100,32 @@ const uniqFestivals = (festivals: string[]) => {
   });
 };
 
+const uniqFestivalDetails = (items: FestivalDetail[]) => {
+  const seen = new Set<string>();
+  return items.filter((item) => {
+    const key = String(item?.name || '').trim().toLowerCase();
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+};
+
+const normalizeFestivalName = (raw: any) => {
+  if (typeof raw === 'string') return raw.trim();
+  return String(raw?.name || raw?.title || raw?.festival || '').trim();
+};
+
+const normalizeFestivalDetail = (raw: any): FestivalDetail | null => {
+  const name = normalizeFestivalName(raw);
+  if (!name) return null;
+  return {
+    name,
+    type: typeof raw?.type === 'string' ? raw.type : undefined,
+    description: typeof raw?.description === 'string' ? raw.description : undefined,
+    rituals: typeof raw?.rituals === 'string' ? raw.rituals : undefined,
+  };
+};
+
 const generateObservances = (day: DayPanchang) => {
   const tithi = String(day.tithi || '').toLowerCase();
   const nakshatra = String(day.nakshatra || '').toLowerCase();
@@ -129,9 +165,21 @@ const generateObservances = (day: DayPanchang) => {
 
 const enrichDayFestivals = (day: DayPanchang): DayPanchang => {
   const generated = generateObservances(day);
+  const generatedDetails: FestivalDetail[] = generated.map((name) => ({ name, type: 'observance' }));
+  const mergedDetails = uniqFestivalDetails([...(day.festival_details || []), ...generatedDetails]);
   return {
     ...day,
-    festivals: uniqFestivals([...(day.festivals || []), ...generated]),
+    festivals: uniqFestivals([...(day.festivals || []), ...generated, ...mergedDetails.map((f) => f.name)]),
+    festival_details: mergedDetails,
+  };
+};
+
+const mergeMonthlyFestivalDetails = (day: DayPanchang, extra: FestivalDetail[]) => {
+  const mergedDetails = uniqFestivalDetails([...(day.festival_details || []), ...(extra || [])]);
+  return {
+    ...day,
+    festivals: uniqFestivals([...(day.festivals || []), ...mergedDetails.map((f) => f.name)]),
+    festival_details: mergedDetails,
   };
 };
 
@@ -147,11 +195,54 @@ const getLocalDateString = () => {
 // Festival type icon helper
 const festivalIcon = (name: string) => {
   const lower = name.toLowerCase();
+  if (lower.includes('purnima') || lower.includes('amavasya'))
+    return <Moon className="h-3 w-3 text-indigo-400 inline-block flex-shrink-0" />;
+  if (lower.includes('sankranti'))
+    return <Sun className="h-3 w-3 text-yellow-400 inline-block flex-shrink-0" />;
+  if (lower.includes('ekadashi') || lower.includes('vrat') || lower.includes('pradosh') || lower.includes('chaturthi'))
+    return <Star className="h-3 w-3 text-cyan-400 inline-block flex-shrink-0" />;
   if (lower.includes('republic') || lower.includes('independence') || lower.includes('gandhi') || lower.includes('ambedkar'))
     return <Flag className="h-3 w-3 text-green-400 inline-block flex-shrink-0" />;
   if (lower.includes('diwali') || lower.includes('deepawali') || lower.includes('holika') || lower.includes('dahan'))
     return <Flame className="h-3 w-3 text-orange-400 inline-block flex-shrink-0" />;
   return <Star className="h-3 w-3 text-purple-400 inline-block flex-shrink-0" />;
+};
+
+interface DayMarker {
+  key: string;
+  short: string;
+  titleEn: string;
+  titleHi: string;
+  className: string;
+}
+
+const hasKeyword = (text: string, words: string[]) => words.some((w) => text.includes(w));
+
+const getDayMarkers = (day: DayPanchang): DayMarker[] => {
+  const allFest = day.festivals.join(' ').toLowerCase();
+  const tithi = String(day.tithi || '').toLowerCase();
+  const markers: DayMarker[] = [];
+
+  const major = hasKeyword(allFest, [
+    'diwali', 'deepawali', 'holi', 'dussehra', 'navratri', 'janmashtami', 'shivaratri',
+    'ganesh', 'ram navami', 'hanuman jayanti', 'raksha bandhan', 'republic', 'independence',
+    'christmas', 'guru nanak', 'mahavir', 'buddha purnima', 'pongal', 'lohri'
+  ]);
+  const vrat = hasKeyword(allFest, ['vrat', 'pradosh', 'somvar', 'mangalvar', 'guruvar', 'shukravar', 'shani']);
+  const ekadashi = hasKeyword(allFest, ['ekadashi']) || tithi.includes('ekadashi');
+  const purnima = hasKeyword(allFest, ['purnima']) || tithi.includes('purnima');
+  const amavasya = hasKeyword(allFest, ['amavasya']) || tithi.includes('amavasya');
+  const sankranti = hasKeyword(allFest, ['sankranti']);
+
+  if (major) markers.push({ key: 'major', short: 'M', titleEn: 'Major Festival', titleHi: 'प्रमुख पर्व', className: 'bg-amber-500/20 text-amber-300 border border-amber-500/40' });
+  if (vrat) markers.push({ key: 'vrat', short: 'V', titleEn: 'Vrat / Fast', titleHi: 'व्रत', className: 'bg-purple-500/15 text-purple-300 border border-purple-500/40' });
+  if (ekadashi) markers.push({ key: 'ekadashi', short: 'E', titleEn: 'Ekadashi', titleHi: 'एकादशी', className: 'bg-cyan-500/15 text-cyan-300 border border-cyan-500/40' });
+  if (purnima) markers.push({ key: 'purnima', short: 'P', titleEn: 'Purnima', titleHi: 'पूर्णिमा', className: 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/40' });
+  if (amavasya) markers.push({ key: 'amavasya', short: 'A', titleEn: 'Amavasya', titleHi: 'अमावस्या', className: 'bg-slate-500/25 text-slate-200 border border-slate-500/40' });
+  if (sankranti) markers.push({ key: 'sankranti', short: 'S', titleEn: 'Sankranti', titleHi: 'संक्रांति', className: 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/40' });
+  if (day.moon_sign) markers.push({ key: 'moon-sign', short: 'R', titleEn: `Moon Sign: ${day.moon_sign}`, titleHi: `चंद्र राशि: ${day.moon_sign_hindi || day.moon_sign}`, className: 'bg-blue-500/15 text-blue-300 border border-blue-500/40' });
+
+  return markers;
 };
 
 export default function MonthlyCalendarTab({ language, t, latitude, longitude }: Props) {
@@ -181,11 +272,28 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
   useEffect(() => {
     const fetchMonthly = async () => {
       setLoading(true);
+      let monthlyFestivalMap: Record<string, FestivalDetail[]> = {};
+      try {
+        const monthlyRes: any = await api.get(`/api/festivals?year=${year}&month=${month + 1}`);
+        const monthlyRows: any[] = monthlyRes?.festivals || monthlyRes?.data?.festivals || [];
+        monthlyFestivalMap = monthlyRows.reduce((acc: Record<string, FestivalDetail[]>, row: any) => {
+          const dateStr = String(row?.date || '').slice(0, 10);
+          const detail = normalizeFestivalDetail(row);
+          if (!dateStr || !detail) return acc;
+          acc[dateStr] = [...(acc[dateStr] || []), detail];
+          return acc;
+        }, {});
+      } catch (_) {
+        monthlyFestivalMap = {};
+      }
       try {
         const res = await api.get(`/api/panchang/month?month=${month + 1}&year=${year}&latitude=${latitude}&longitude=${longitude}`);
         const rawDays = (res as any)?.days || res || [];
 
-        const data: DayPanchang[] = rawDays.map((p: any) => enrichDayFestivals({
+        const data: DayPanchang[] = rawDays.map((p: any) => {
+          const baseDetailsRaw = Array.isArray(p.festivals) ? p.festivals : (p.festivals ? [p.festivals] : []);
+          const baseDetails = uniqFestivalDetails(baseDetailsRaw.map((f: any) => normalizeFestivalDetail(f)).filter(Boolean) as FestivalDetail[]);
+          const day = enrichDayFestivals({
           date: p.date || '',
           tithi: p.tithi || '',
           tithi_hindi: p.tithi_hindi,
@@ -193,12 +301,15 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
           nakshatra_hindi: p.nakshatra_hindi,
           paksha: p.paksha || '',
           paksha_hindi: p.paksha_hindi,
+          moon_sign: p.moon_sign || p.chandra_rashi || '',
+          moon_sign_hindi: p.moon_sign_hindi || p.chandra_rashi_hindi || '',
           sunrise: p.sunrise || '',
           sunset: p.sunset || '',
-          festivals: Array.isArray(p.festivals)
-            ? p.festivals.map((f: any) => typeof f === 'string' ? f : f.name || '')
-            : (p.festivals ? [typeof p.festivals === 'string' ? p.festivals : (p.festivals as any).name || ''] : []),
-        }));
+          festivals: baseDetails.map((f) => f.name),
+          festival_details: baseDetails,
+        });
+          return mergeMonthlyFestivalDetails(day, monthlyFestivalMap[String(p.date || '').slice(0, 10)] || []);
+        });
 
         setMonthlyData(data);
 
@@ -217,8 +328,9 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
             try {
               const dayRes = await api.get(`/api/panchang?date=${dateStr}&latitude=${latitude}&longitude=${longitude}`);
               const p = dayRes as any;
-              const fests = p.festivals || [];
-              data.push(enrichDayFestivals({
+              const festsRaw = Array.isArray(p.festivals) ? p.festivals : (p.festivals ? [p.festivals] : []);
+              const festDetails = uniqFestivalDetails(festsRaw.map((f: any) => normalizeFestivalDetail(f)).filter(Boolean) as FestivalDetail[]);
+              const dayData = enrichDayFestivals({
                 date: dateStr,
                 tithi: p.tithi?.name || '',
                 tithi_hindi: p.tithi?.name_hindi,
@@ -226,10 +338,14 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                 nakshatra_hindi: p.nakshatra?.name_hindi,
                 paksha: p.tithi?.paksha || '',
                 paksha_hindi: p.tithi?.paksha_hindi,
+                moon_sign: p.moon_sign || p.chandra_rashi || '',
+                moon_sign_hindi: p.moon_sign_hindi || p.chandra_rashi_hindi || '',
                 sunrise: p.sunrise || '',
                 sunset: p.sunset || '',
-                festivals: fests.map((f: any) => typeof f === 'string' ? f : f.name || ''),
-              }));
+                festivals: festDetails.map((f) => f.name),
+                festival_details: festDetails,
+              });
+              data.push(mergeMonthlyFestivalDetails(dayData, monthlyFestivalMap[dateStr] || []));
             } catch (_) {
               // Skip failed days
             }
@@ -325,10 +441,8 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                     const isSelected = selectedDay?.date === dateStr;
                     const isShukla = dayData?.paksha === 'Shukla';
                     const hasFestivals = dayData && dayData.festivals.length > 0;
-                    const hasMajorFestival = hasFestivals && dayData.festivals.some(
-                      f => !['Ekadashi Vrat', 'Purnima', 'Amavasya', 'Pradosh Vrat', 'Sankashti Chaturthi',
-                             'Masik Shivaratri', 'Kalashtami', 'Vivah Panchami / Surya Saptami'].includes(f)
-                    );
+                    const dayMarkers = dayData ? getDayMarkers(dayData) : [];
+                    const hasMajorFestival = dayMarkers.some((m) => m.key === 'major');
 
                     return (
                       <button
@@ -350,9 +464,23 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                             <div className="text-[9px] sm:text-[10px] text-cosmic-text-secondary truncate mt-0.5 leading-tight">
                               {language === 'hi' ? dayData.tithi_hindi || dayData.tithi : dayData.tithi}
                             </div>
-                            {hasFestivals && (
-                              <div className="text-[9px] text-purple-400 leading-tight mt-0.5 flex items-center gap-0.5">
-                                {festivalIcon(dayData.festivals[0])}
+                            {hasFestivals && <div className="text-[9px] text-purple-400 leading-tight mt-0.5">{festivalIcon(dayData.festivals[0])}</div>}
+                            {dayMarkers.length > 0 && (
+                              <div className="mt-0.5 flex flex-wrap gap-0.5 max-w-full">
+                                {dayMarkers.slice(0, 4).map((marker) => (
+                                  <span
+                                    key={marker.key}
+                                    title={language === 'hi' ? marker.titleHi : marker.titleEn}
+                                    className={`px-1 rounded text-[8px] leading-3 font-semibold ${marker.className}`}
+                                  >
+                                    {marker.short}
+                                  </span>
+                                ))}
+                                {dayMarkers.length > 4 && (
+                                  <span className="px-1 rounded text-[8px] leading-3 font-semibold bg-cosmic-border/40 text-cosmic-text-secondary">
+                                    +{dayMarkers.length - 4}
+                                  </span>
+                                )}
                               </div>
                             )}
                             {/* Badge for multiple festivals */}
@@ -392,6 +520,26 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                   <div className="flex items-center gap-1">
                     <div className="w-1 h-3 rounded-sm bg-purple-500/60" />
                     <span className="text-cosmic-text-secondary">{language === 'hi' ? 'व्रत / पर्व' : 'Vrat / Observance'}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="px-1 rounded text-[9px] leading-3 font-semibold bg-cyan-500/15 text-cyan-300 border border-cyan-500/40">E</span>
+                    <span className="text-cosmic-text-secondary">{language === 'hi' ? 'एकादशी' : 'Ekadashi'}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="px-1 rounded text-[9px] leading-3 font-semibold bg-indigo-500/15 text-indigo-300 border border-indigo-500/40">P</span>
+                    <span className="text-cosmic-text-secondary">{language === 'hi' ? 'पूर्णिमा' : 'Purnima'}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="px-1 rounded text-[9px] leading-3 font-semibold bg-slate-500/25 text-slate-200 border border-slate-500/40">A</span>
+                    <span className="text-cosmic-text-secondary">{language === 'hi' ? 'अमावस्या' : 'Amavasya'}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="px-1 rounded text-[9px] leading-3 font-semibold bg-yellow-500/20 text-yellow-300 border border-yellow-500/40">S</span>
+                    <span className="text-cosmic-text-secondary">{language === 'hi' ? 'संक्रांति' : 'Sankranti'}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="px-1 rounded text-[9px] leading-3 font-semibold bg-blue-500/15 text-blue-300 border border-blue-500/40">R</span>
+                    <span className="text-cosmic-text-secondary">{language === 'hi' ? 'चंद्र राशि' : 'Moon Sign'}</span>
                   </div>
                 </div>
               </>
@@ -438,6 +586,14 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                       {language === 'hi' ? selectedDay.paksha_hindi || selectedDay.paksha : selectedDay.paksha}
                     </span>
                   </div>
+                  {selectedDay.moon_sign && (
+                    <div className="flex justify-between">
+                      <span className="text-xs sm:text-sm text-cosmic-text-secondary">{language === 'hi' ? 'चंद्र राशि' : 'Moon Sign'}</span>
+                      <span className="text-xs sm:text-sm font-medium text-cosmic-text-primary">
+                        {language === 'hi' ? selectedDay.moon_sign_hindi || selectedDay.moon_sign : selectedDay.moon_sign}
+                      </span>
+                    </div>
+                  )}
 
                   <div className="flex justify-between">
                     <span className="text-xs sm:text-sm text-cosmic-text-secondary">{language === 'hi' ? 'सूर्योदय' : 'Sunrise'}</span>
@@ -452,19 +608,48 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                   {/* Festival list -- show ALL festivals for the day */}
                   {selectedDay.festivals.length > 0 && (
                     <div className="mt-2 space-y-1.5">
+                      <div className="flex flex-wrap gap-1">
+                        {getDayMarkers(selectedDay).map((marker) => (
+                          <span key={marker.key} className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${marker.className}`}>
+                            {language === 'hi' ? marker.titleHi : marker.titleEn}
+                          </span>
+                        ))}
+                      </div>
                       <span className="text-xs font-semibold text-purple-400 uppercase tracking-wide">
                         {language === 'hi' ? 'त्योहार / व्रत' : 'Festivals & Observances'}
                       </span>
                       {selectedDay.festivals.map((fest, idx) => (
-                        <div
-                          key={idx}
-                          className="p-2 rounded-lg bg-purple-500/10 border border-purple-500/30 flex items-start gap-2"
-                        >
-                          {festivalIcon(fest)}
-                          <p className="text-xs sm:text-sm font-medium text-cosmic-text-primary leading-tight">
-                            {fest}
-                          </p>
-                        </div>
+                        (() => {
+                          const detail = selectedDay.festival_details.find((d) => d.name === fest);
+                          return (
+                            <div
+                              key={idx}
+                              className="p-2 rounded-lg bg-purple-500/10 border border-purple-500/30 flex items-start gap-2"
+                            >
+                              {festivalIcon(fest)}
+                              <div className="min-w-0">
+                                <p className="text-xs sm:text-sm font-medium text-cosmic-text-primary leading-tight">
+                                  {fest}
+                                </p>
+                                {detail?.type && (
+                                  <p className="text-[10px] text-cosmic-text-secondary mt-0.5">
+                                    {language === 'hi' ? 'प्रकार' : 'Type'}: {detail.type}
+                                  </p>
+                                )}
+                                {detail?.description && (
+                                  <p className="text-[10px] text-cosmic-text-secondary mt-0.5 leading-snug">
+                                    {detail.description}
+                                  </p>
+                                )}
+                                {detail?.rituals && (
+                                  <p className="text-[10px] text-cosmic-text-secondary mt-0.5 leading-snug">
+                                    {language === 'hi' ? 'विधि' : 'Rituals'}: {detail.rituals}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })()
                       ))}
                     </div>
                   )}
