@@ -184,7 +184,7 @@ export default function LiveTransitWheel() {
         <image href={sign.img} x={ix-20} y={iy-20} width={40} height={40}
           preserveAspectRatio="xMidYMid slice" opacity={0.06}
           clipPath={`url(#wc${i})`}
-          style={{ filter: 'sepia(1) saturate(3) hue-rotate(-10deg) brightness(0.5) contrast(1.5)' }} />
+          style={{ filter: 'invert(1) sepia(1) saturate(5) hue-rotate(-15deg) brightness(0.9)' }} />
 
         {/* Gender symbol — inside, visible */}
         <text x={gndx} y={gndy} textAnchor="middle" dominantBaseline="central"

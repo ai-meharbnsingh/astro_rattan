@@ -68,7 +68,7 @@ export default function DailyTab({ data, loading, language, t }: Props) {
       <div className="rounded-xl border border-cosmic-border bg-cosmic-card p-4">
         <div className="flex items-center gap-3 mb-2">
           <img
-            src={`/images/zodiac-purple/zodiac-${data.sign}.png`}
+            style={{ filter: "invert(1) sepia(1) saturate(5) hue-rotate(-15deg) brightness(0.9)" }} src={`/images/zodiac-purple/zodiac-${data.sign}.png`}
             alt={data.sign}
             className="w-14 h-14 object-contain rounded-lg"
           />

@@ -163,7 +163,7 @@ export default function HoroscopePage() {
                 }`}
               >
                 <img
-                  src={`/images/zodiac-purple/zodiac-${s.id}.png`}
+                  style={{ filter: "invert(1) sepia(1) saturate(5) hue-rotate(-15deg) brightness(0.9)" }} src={`/images/zodiac-purple/zodiac-${s.id}.png`}
                   alt={s.en}
                   className="w-10 h-10 object-contain"
                 />

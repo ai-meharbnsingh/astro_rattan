@@ -64,7 +64,7 @@ export default function AllSignsTab({ data, loading, language, t, onSelectSign }
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <img
-                  src={`/images/zodiac-purple/zodiac-${entry.sign}.png`}
+                  style={{ filter: "invert(1) sepia(1) saturate(5) hue-rotate(-15deg) brightness(0.9)" }} src={`/images/zodiac-purple/zodiac-${entry.sign}.png`}
                   alt={entry.sign}
                   className="w-10 h-10 object-contain rounded-md"
                 />
