@@ -29,7 +29,7 @@ export default function Footer() {
               <td className="py-1.5"><Link to="/" className="text-cosmic-text hover:text-sacred-gold-dark">{t('footer.contactShort')}</Link></td>
               <td className="py-1.5"><Link to="/privacy" className="text-cosmic-text hover:text-sacred-gold-dark">{l('Privacy Policy', 'गोपनीयता नीति')}</Link></td>
               <td className="py-1.5"><Link to="/terms" className="text-cosmic-text hover:text-sacred-gold-dark">{l('Terms of Service', 'सेवा की शर्तें')}</Link></td>
-              <td className="py-1.5"></td>
+              <td className="py-1.5"><Link to="/feedback" className="text-cosmic-text hover:text-sacred-gold-dark">{t('nav.feedback')}</Link></td>
             </tr>
             <tr>
               <td className="py-1.5 pr-4 font-semibold text-sacred-gold-dark whitespace-nowrap">{l('Contact', 'संपर्क')}:</td>

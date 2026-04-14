@@ -81,7 +81,7 @@ export default function Dashboard() {
   // ─── ADMIN DASHBOARD ─────────────────────────────────────
   if (isAdmin && adminStats) {
     return (
-      <div className="min-h-screen pt-24 pb-16 px-4 max-w-6xl mx-auto">
+      <div className="min-h-screen pt-28 pb-16 px-4 max-w-6xl mx-auto">
         <div className="flex items-center justify-end mb-8">
           <div className="flex gap-2">
             <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-cosmic-bg hover:bg-gray-50 text-sm font-sans uppercase tracking-wider px-4 py-2 rounded-lg">
@@ -222,7 +222,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-16 px-4 max-w-6xl mx-auto">
+    <div className="min-h-screen pt-28 pb-16 px-4 max-w-6xl mx-auto">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
         <div>
           <h1 className="text-2xl font-sans text-cosmic-text">

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Sparkles, LogOut, Shield, MessageSquare, User, ChevronDown } from 'lucide-react';
+import { Menu, X, Sparkles, LogOut, Shield, User, ChevronDown } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/lib/i18n';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
@@ -70,15 +70,6 @@ export default function Navigation() {
                   {t(link.key)}
                 </Link>
               ))}
-              {isAuthenticated && (
-                <Link
-                  to="/feedback"
-                  className="flex items-center gap-1.5 text-base text-cosmic-text hover:text-sacred-gold-dark transition-colors font-sans tracking-wide"
-                >
-                  <MessageSquare className="w-4 h-4" />
-                  {t('nav.feedback')}
-                </Link>
-              )}
             </div>
 
             {/* Action buttons */}
@@ -178,16 +169,6 @@ export default function Navigation() {
                 {t(link.key)}
               </Link>
             ))}
-            {isAuthenticated && (
-              <Link
-                to="/feedback"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-2 py-3 px-3 text-cosmic-text hover:text-sacred-gold-dark hover:bg-gray-50 transition-colors font-sans"
-              >
-                <MessageSquare className="w-4 h-4" />
-                {t('nav.feedback')}
-              </Link>
-            )}
             <div className="pt-4 mt-4 border-t border-sacred-gold space-y-3">
               <LanguageSwitcher />
               {isAuthenticated ? (
