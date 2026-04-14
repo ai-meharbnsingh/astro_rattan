@@ -6,20 +6,19 @@ const toRad = (deg: number) => (deg * Math.PI) / 180;
 const CX = 300;
 const CY = 300;
 
-/* ── Sign data ── */
 const SIGNS = [
-  { en: 'Aries',       hi: 'मेष',     glyph: '\u2648\uFE0E', dates: 'Mar 21-Apr 19', datesHi: '21 मार्च-19 अप्रै', gender: '\u2642', element: 'Fire',  elementHi: 'अग्नि', elemColor: '#e25822', img: '/images/zodiac/aries.jpg' },
-  { en: 'Taurus',      hi: 'वृषभ',    glyph: '\u2649\uFE0E', dates: 'Apr 20-May 20', datesHi: '20 अप्रै-20 मई', gender: '\u2640', element: 'Earth', elementHi: 'पृथ्वी', elemColor: '#6b8e23', img: '/images/zodiac/taurus.jpg' },
-  { en: 'Gemini',      hi: 'मिथुन',   glyph: '\u264A\uFE0E', dates: 'May 21-Jun 20', datesHi: '21 मई-20 जून', gender: '\u2642', element: 'Air',   elementHi: 'वायु',  elemColor: '#4682b4', img: '/images/zodiac/gemini.jpg' },
-  { en: 'Cancer',      hi: 'कर्क',    glyph: '\u264B\uFE0E', dates: 'Jun 21-Jul 22', datesHi: '21 जून-22 जुला', gender: '\u2640', element: 'Water', elementHi: 'जल',    elemColor: '#1e90ff', img: '/images/zodiac/cancer.jpg' },
-  { en: 'Leo',         hi: 'सिंह',    glyph: '\u264C\uFE0E', dates: 'Jul 23-Aug 22', datesHi: '23 जुला-22 अग', gender: '\u2642', element: 'Fire',  elementHi: 'अग्नि', elemColor: '#e25822', img: '/images/zodiac/leo.jpg' },
-  { en: 'Virgo',       hi: 'कन्या',   glyph: '\u264D\uFE0E', dates: 'Aug 23-Sep 22', datesHi: '23 अग-22 सित', gender: '\u2640', element: 'Earth', elementHi: 'पृथ्वी', elemColor: '#6b8e23', img: '/images/zodiac/virgo.jpg' },
-  { en: 'Libra',       hi: 'तुला',    glyph: '\u264E\uFE0E', dates: 'Sep 23-Oct 22', datesHi: '23 सित-22 अक्टू', gender: '\u2642', element: 'Air',   elementHi: 'वायु',  elemColor: '#4682b4', img: '/images/zodiac/libra.jpg' },
-  { en: 'Scorpio',     hi: 'वृश्चिक', glyph: '\u264F\uFE0E', dates: 'Oct 23-Nov 21', datesHi: '23 अक्टू-21 नव', gender: '\u2640', element: 'Water', elementHi: 'जल',    elemColor: '#1e90ff', img: '/images/zodiac/scorpio.jpg' },
-  { en: 'Sagittarius', hi: 'धनु',     glyph: '\u2650\uFE0E', dates: 'Nov 22-Dec 21', datesHi: '22 नव-21 दिस', gender: '\u2642', element: 'Fire',  elementHi: 'अग्नि', elemColor: '#e25822', img: '/images/zodiac/sagittarius.jpg' },
-  { en: 'Capricorn',   hi: 'मकर',     glyph: '\u2651\uFE0E', dates: 'Dec 22-Jan 19', datesHi: '22 दिस-19 जन', gender: '\u2640', element: 'Earth', elementHi: 'पृथ्वी', elemColor: '#6b8e23', img: '/images/zodiac/capricorn.jpg' },
-  { en: 'Aquarius',    hi: 'कुंभ',    glyph: '\u2652\uFE0E', dates: 'Jan 20-Feb 18', datesHi: '20 जन-18 फर', gender: '\u2642', element: 'Air',   elementHi: 'वायु',  elemColor: '#4682b4', img: '/images/zodiac/aquarius.jpg' },
-  { en: 'Pisces',      hi: 'मीन',     glyph: '\u2653\uFE0E', dates: 'Feb 19-Mar 20', datesHi: '19 फर-20 मार्च', gender: '\u2640', element: 'Water', elementHi: 'जल',    elemColor: '#1e90ff', img: '/images/zodiac/pisces.jpg' },
+  { en: 'Aries',       hi: 'मेष',     glyph: '\u2648\uFE0E', dates: 'Mar 21-Apr 19', datesHi: '21 मार्च-19 अप्रै', gender: '\u2642', elemIcon: '\u{1F525}', img: '/images/zodiac/aries.jpg' },
+  { en: 'Taurus',      hi: 'वृषभ',    glyph: '\u2649\uFE0E', dates: 'Apr 20-May 20', datesHi: '20 अप्रै-20 मई',    gender: '\u2640', elemIcon: '\u{1F30D}', img: '/images/zodiac/taurus.jpg' },
+  { en: 'Gemini',      hi: 'मिथुन',   glyph: '\u264A\uFE0E', dates: 'May 21-Jun 20', datesHi: '21 मई-20 जून',      gender: '\u2642', elemIcon: '\u{1F4A8}', img: '/images/zodiac/gemini.jpg' },
+  { en: 'Cancer',      hi: 'कर्क',    glyph: '\u264B\uFE0E', dates: 'Jun 21-Jul 22', datesHi: '21 जून-22 जुला',    gender: '\u2640', elemIcon: '\u{1F4A7}', img: '/images/zodiac/cancer.jpg' },
+  { en: 'Leo',         hi: 'सिंह',    glyph: '\u264C\uFE0E', dates: 'Jul 23-Aug 22', datesHi: '23 जुला-22 अग',     gender: '\u2642', elemIcon: '\u{1F525}', img: '/images/zodiac/leo.jpg' },
+  { en: 'Virgo',       hi: 'कन्या',   glyph: '\u264D\uFE0E', dates: 'Aug 23-Sep 22', datesHi: '23 अग-22 सित',     gender: '\u2640', elemIcon: '\u{1F30D}', img: '/images/zodiac/virgo.jpg' },
+  { en: 'Libra',       hi: 'तुला',    glyph: '\u264E\uFE0E', dates: 'Sep 23-Oct 22', datesHi: '23 सित-22 अक्टू',  gender: '\u2642', elemIcon: '\u{1F4A8}', img: '/images/zodiac/libra.jpg' },
+  { en: 'Scorpio',     hi: 'वृश्चिक', glyph: '\u264F\uFE0E', dates: 'Oct 23-Nov 21', datesHi: '23 अक्टू-21 नव',   gender: '\u2640', elemIcon: '\u{1F4A7}', img: '/images/zodiac/scorpio.jpg' },
+  { en: 'Sagittarius', hi: 'धनु',     glyph: '\u2650\uFE0E', dates: 'Nov 22-Dec 21', datesHi: '22 नव-21 दिस',     gender: '\u2642', elemIcon: '\u{1F525}', img: '/images/zodiac/sagittarius.jpg' },
+  { en: 'Capricorn',   hi: 'मकर',     glyph: '\u2651\uFE0E', dates: 'Dec 22-Jan 19', datesHi: '22 दिस-19 जन',     gender: '\u2640', elemIcon: '\u{1F30D}', img: '/images/zodiac/capricorn.jpg' },
+  { en: 'Aquarius',    hi: 'कुंभ',    glyph: '\u2652\uFE0E', dates: 'Jan 20-Feb 18', datesHi: '20 जन-18 फर',      gender: '\u2642', elemIcon: '\u{1F4A8}', img: '/images/zodiac/aquarius.jpg' },
+  { en: 'Pisces',      hi: 'मीन',     glyph: '\u2653\uFE0E', dates: 'Feb 19-Mar 20', datesHi: '19 फर-20 मार्च',   gender: '\u2640', elemIcon: '\u{1F4A7}', img: '/images/zodiac/pisces.jpg' },
 ];
 
 const PLANET_ABBR: Record<string,string> = { Sun:'Su',Moon:'Mo',Mars:'Ma',Mercury:'Me',Jupiter:'Ju',Venus:'Ve',Saturn:'Sa',Rahu:'Ra',Ketu:'Ke' };
@@ -27,10 +26,9 @@ const PLANET_HI: Record<string,string> = { Sun:'सू',Moon:'चं',Mars:'म�
 const PLANET_FULL_HI: Record<string,string> = { Sun:'सूर्य',Moon:'चंद्र',Mars:'मंगल',Mercury:'बुध',Jupiter:'बृहस्पति',Venus:'शुक्र',Saturn:'शनि',Rahu:'राहु',Ketu:'केतु' };
 const MALEFIC = new Set(['Mars','Saturn','Rahu','Ketu']);
 
-// Planet ring radii — spread across sub-rings inside Ring 3
 const RING_R: Record<string, number> = {
-  Sun: 205, Moon: 185, Venus: 205, Mercury: 185,
-  Mars: 165, Jupiter: 145, Saturn: 165,
+  Sun: 210, Moon: 188, Venus: 210, Mercury: 188,
+  Mars: 166, Jupiter: 145, Saturn: 166,
   Rahu: 128, Ketu: 128,
 };
 
@@ -38,28 +36,25 @@ interface TransitPlanet { planet: string; sign: string; longitude: number; sign_
 interface TooltipData { planet: string; sign: string; degree: number; retrograde: boolean; x: number; y: number; }
 interface SkyData { planets: TransitPlanet[]; lagna_sign: string; lagna_longitude: number; }
 
-/* ── Ring radii ── */
-const R_SIGN_NAME = 285;  // Ring 1: sign names
-const R_OUTER = 268;      // outer circle
-const R_MONTH = 256;      // Ring 2: months
-const R_MONTH_RING = 244; // ring line
-const R_IMG = 215;        // Ring 3: watermark images center
-const R_GLYPH_RING = 112; // ring line
-const R_GLYPH = 96;       // Ring 4: zodiac glyphs
-const R_ELEM_RING = 78;   // ring line
-const R_ELEM = 65;        // Ring 5: elements
-const R_CENTER = 45;      // center
+const R_SIGN_NAME = 288;
+const R_OUTER = 270;
+const R_DATE = 256;
+const R_DATE_RING = 244;
+const R_IMG = 218;
+const R_GENDER = 140;
+const R_GLYPH_RING = 112;
+const R_GLYPH = 96;
+const R_ELEM = 75;
+const R_INNER = 60;
+const R_CENTER = 42;
 
 const GOLD = '#8B4513';
 const GOLD_MED = '#C4611F';
 const DARK = '#1a1a2e';
 
-function signIdx(sign: string): number { return Math.max(0, SIGNS.findIndex(s => s.en.toLowerCase() === sign.toLowerCase())); }
-function absAngle(p: TransitPlanet): number { return signIdx(p.sign) * 30 + p.sign_degree - 90; }
-function arcRot(midDeg: number): number {
-  const t = ((midDeg + 90) % 360 + 360) % 360;
-  return (t > 90 && t < 270) ? t + 180 : t;
-}
+function signIdx(sign: string) { return Math.max(0, SIGNS.findIndex(s => s.en.toLowerCase() === sign.toLowerCase())); }
+function absAngle(p: TransitPlanet) { return signIdx(p.sign) * 30 + p.sign_degree - 90; }
+function arcRot(midDeg: number) { const t = ((midDeg + 90) % 360 + 360) % 360; return (t > 90 && t < 270) ? t + 180 : t; }
 
 export default function LiveTransitWheel() {
   const { language } = useTranslation();
@@ -84,7 +79,7 @@ export default function LiveTransitWheel() {
   const lagnaLong = skyData?.lagna_longitude || 0;
   const lagnaAngle = lagnaLong - 90;
 
-  /* ── Ticks ── */
+  // Ticks
   const ticks: JSX.Element[] = [];
   for (let i = 0; i < 360; i += 5) {
     const a = toRad(i);
@@ -93,119 +88,93 @@ export default function LiveTransitWheel() {
     ticks.push(<line key={`t${i}`} x1={CX+R_OUTER*Math.cos(a)} y1={CY+R_OUTER*Math.sin(a)} x2={CX+r2*Math.cos(a)} y2={CY+r2*Math.sin(a)} stroke="rgba(139,69,19,0.2)" strokeWidth={isMajor?1.2:0.4} />);
   }
 
-  /* ── 12 sign segments ── */
-  const segmentEls = SIGNS.map((sign, i) => {
+  // Segments
+  const clipDefs = SIGNS.map((_, i) => {
+    const midRad = toRad(i * 30 + 15 - 90);
+    return <clipPath key={`wc${i}`} id={`wc${i}`}><circle cx={CX + R_IMG * Math.cos(midRad)} cy={CY + R_IMG * Math.sin(midRad)} r={18} /></clipPath>;
+  });
+
+  const segEls = SIGNS.map((sign, i) => {
     const startDeg = i * 30 - 90;
     const midDeg = startDeg + 15;
     const startRad = toRad(startDeg);
     const midRad = toRad(midDeg);
     const rot = arcRot(midDeg);
 
-    // Divider line
-    const lx1 = CX + R_ELEM_RING * Math.cos(startRad);
-    const ly1 = CY + R_ELEM_RING * Math.sin(startRad);
+    // Divider line — from CENTER to OUTER
+    const lx1 = CX + R_CENTER * Math.cos(startRad);
+    const ly1 = CY + R_CENTER * Math.sin(startRad);
     const lx2 = CX + R_OUTER * Math.cos(startRad);
     const ly2 = CY + R_OUTER * Math.sin(startRad);
 
-    // Ring 1: sign name
     const nx = CX + R_SIGN_NAME * Math.cos(midRad);
     const ny = CY + R_SIGN_NAME * Math.sin(midRad);
-
-    // Ring 2: month
-    const mx = CX + R_MONTH * Math.cos(midRad);
-    const my = CY + R_MONTH * Math.sin(midRad);
-
-    // Ring 3: watermark image
+    const dx = CX + R_DATE * Math.cos(midRad);
+    const dy = CY + R_DATE * Math.sin(midRad);
     const ix = CX + R_IMG * Math.cos(midRad);
     const iy = CY + R_IMG * Math.sin(midRad);
-
-    // Watermark gender symbol
-    const gsx = CX + 170 * Math.cos(midRad);
-    const gsy = CY + 170 * Math.sin(midRad);
-
-    // Ring 4: glyph
+    const gndx = CX + R_GENDER * Math.cos(midRad);
+    const gndy = CY + R_GENDER * Math.sin(midRad);
     const gx = CX + R_GLYPH * Math.cos(midRad);
     const gy = CY + R_GLYPH * Math.sin(midRad);
-
-    // Ring 5: element
     const ex = CX + R_ELEM * Math.cos(midRad);
     const ey = CY + R_ELEM * Math.sin(midRad);
 
-    const signName = hi ? sign.hi : sign.en.slice(0, 3);
-    const dateRange = hi ? sign.datesHi : sign.dates;
-    const elemName = hi ? sign.elementHi : sign.element;
-
     return (
       <g key={sign.en}>
+        {/* Divider — full extent from center to outer */}
         <line x1={lx1} y1={ly1} x2={lx2} y2={ly2} stroke="rgba(139,69,19,0.15)" strokeWidth={0.7} />
 
         {/* Ring 1: Sign name */}
         <text x={nx} y={ny} textAnchor="middle" dominantBaseline="central"
           fill={GOLD} fontSize="13" fontWeight="700" fontFamily="'Inter',sans-serif"
-          transform={`rotate(${rot},${nx},${ny})`}>{signName}</text>
+          transform={`rotate(${rot},${nx},${ny})`}>{hi ? sign.hi : sign.en.slice(0,3)}</text>
 
         {/* Ring 2: Date range */}
-        <text x={mx} y={my} textAnchor="middle" dominantBaseline="central"
-          fill={GOLD_MED} fontSize="7.5" fontWeight="600" fontFamily="'Inter',sans-serif"
-          transform={`rotate(${rot},${mx},${my})`}>{dateRange}</text>
+        <text x={dx} y={dy} textAnchor="middle" dominantBaseline="central"
+          fill={GOLD_MED} fontSize="7" fontWeight="600" fontFamily="'Inter',sans-serif"
+          transform={`rotate(${rot},${dx},${dy})`}>{hi ? sign.datesHi : sign.dates}</text>
 
-        {/* Ring 3: Watermark animal image */}
-        <image href={sign.img} x={ix - 22} y={iy - 22} width={44} height={44}
-          preserveAspectRatio="xMidYMid slice" opacity={0.12}
-          clipPath={`url(#wc${i})`} />
+        {/* Ring 3: Watermark animal — grayscale */}
+        <image href={sign.img} x={ix-18} y={iy-18} width={36} height={36}
+          preserveAspectRatio="xMidYMid slice" opacity={0.08}
+          clipPath={`url(#wc${i})`}
+          style={{ filter: 'grayscale(1) brightness(0.8)' }} />
 
-        {/* Watermark gender symbol */}
-        <text x={gsx} y={gsy} textAnchor="middle" dominantBaseline="central"
-          fill="rgba(139,69,19,0.08)" fontSize="20">{sign.gender}</text>
+        {/* Gender symbol — inside, visible */}
+        <text x={gndx} y={gndy} textAnchor="middle" dominantBaseline="central"
+          fill={GOLD_MED} opacity={0.25} fontSize="16" fontWeight="bold">{sign.gender}</text>
 
-        {/* Watermark element icon */}
-        <text x={ix} y={iy} textAnchor="middle" dominantBaseline="central"
-          fill={sign.elemColor} opacity={0.1} fontSize="28">
-          {sign.element === 'Fire' ? '🔥' : sign.element === 'Earth' ? '🌍' : sign.element === 'Air' ? '💨' : '💧'}
-        </text>
-
-        {/* Ring 4: Zodiac glyph (golden, not purple) */}
+        {/* Ring 4: Zodiac glyph */}
         <text x={gx} y={gy} textAnchor="middle" dominantBaseline="central"
           fill={GOLD_MED} fontSize="18" fontWeight="bold"
           fontFamily="'Segoe UI Symbol','Noto Sans Symbols 2',serif">{sign.glyph}</text>
 
-        {/* Ring 5: Element name */}
+        {/* Ring 5: Element symbol (not text) */}
         <text x={ex} y={ey} textAnchor="middle" dominantBaseline="central"
-          fill={sign.elemColor} fontSize="7" fontWeight="600" opacity={0.7}
-          fontFamily="'Inter',sans-serif"
-          transform={`rotate(${rot},${ex},${ey})`}>{elemName}</text>
+          fontSize="14" opacity={0.5}>{sign.elemIcon}</text>
       </g>
     );
   });
 
-  /* ── Clip paths for watermark images ── */
-  const clipDefs = SIGNS.map((_, i) => {
-    const midRad = toRad(i * 30 + 15 - 90);
-    const cx = CX + R_IMG * Math.cos(midRad);
-    const cy = CY + R_IMG * Math.sin(midRad);
-    return <clipPath key={`wc${i}`} id={`wc${i}`}><circle cx={cx} cy={cy} r={20} /></clipPath>;
-  });
-
-  /* ── Planet dots (foreground on Ring 3) ── */
-  const DOT_R = 22;
-  const MIN_DIST = DOT_R * 2 + 10;
-
+  // Planet positions — place at MIDPOINT of sign (not on divider lines)
+  const DOT_MIN_DIST = 48;
   let dotPos = planets.map(p => {
     const ring = RING_R[p.planet] || 150;
     const rad = toRad(absAngle(p));
     return { planet: p, x: CX + ring * Math.cos(rad), y: CY + ring * Math.sin(rad) };
   });
 
-  // Collision resolve — 12 iterations
-  for (let iter = 0; iter < 12; iter++) {
+  // Collision resolve
+  for (let iter = 0; iter < 15; iter++) {
     for (let i = 0; i < dotPos.length; i++) {
       for (let j = i + 1; j < dotPos.length; j++) {
-        const dx = dotPos[i].x - dotPos[j].x;
-        const dy = dotPos[i].y - dotPos[j].y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < MIN_DIST && dist > 0) {
-          const a = Math.atan2(dy, dx);
-          const push = (MIN_DIST - dist) / 2 + 6;
+        const ddx = dotPos[i].x - dotPos[j].x;
+        const ddy = dotPos[i].y - dotPos[j].y;
+        const dist = Math.sqrt(ddx * ddx + ddy * ddy);
+        if (dist < DOT_MIN_DIST && dist > 0) {
+          const a = Math.atan2(ddy, ddx);
+          const push = (DOT_MIN_DIST - dist) / 2 + 8;
           dotPos[i].x += Math.cos(a) * push;
           dotPos[i].y += Math.sin(a) * push;
           dotPos[j].x -= Math.cos(a) * push;
@@ -225,21 +194,21 @@ export default function LiveTransitWheel() {
       <g key={p.planet} className="transit-dot" style={{ animationDelay: `${i * 0.08}s` }}
         onMouseEnter={() => setTooltip({ planet: p.planet, sign: p.sign, degree: p.sign_degree, retrograde: p.is_retrograde, x: px, y: py })}
         onMouseLeave={() => setTooltip(null)} cursor="pointer">
-        {/* No circle — text only */}
         <text x={px} y={py - 4} textAnchor="middle" dominantBaseline="central"
-          fill={textColor} fontSize="12" fontWeight="800" fontFamily="'Inter',sans-serif"
+          fill={textColor} fontSize="13" fontWeight="800" fontFamily="'Inter',sans-serif"
           style={{ transition: 'all 1s ease' }}>{abbr}</text>
-        <text x={px} y={py + 9} textAnchor="middle" dominantBaseline="central"
+        <text x={px} y={py + 10} textAnchor="middle" dominantBaseline="central"
           fill={textColor} opacity={0.75} fontSize="9" fontWeight="600" fontFamily="'Inter',sans-serif">{degText}</text>
+        {/* Retrograde — ALWAYS show ℞ when is_retrograde is true */}
         {p.is_retrograde && (
-          <text x={px + 14} y={py - 8} textAnchor="middle"
-            fill="#FF3333" fontSize="10" fontWeight="700">{'\u211E'}</text>
+          <text x={px + 16} y={py - 8} textAnchor="middle"
+            fill="#FF3333" fontSize="13" fontWeight="800">{'\u211E'}</text>
         )}
       </g>
     );
   });
 
-  /* ── ASC marker ── */
+  // ASC
   const ascRad = toRad(lagnaAngle);
   const ascX = CX + R_OUTER * Math.cos(ascRad);
   const ascY = CY + R_OUTER * Math.sin(ascRad);
@@ -259,15 +228,15 @@ export default function LiveTransitWheel() {
   );
 
   return (
-    <div className="relative w-full max-w-[480px] mx-auto" style={{ padding: '16px' }}>
+    <div className="relative w-full max-w-[520px] mx-auto" style={{ padding: '16px' }}>
       {tooltip && (
         <div className="absolute z-20 pointer-events-none"
           style={{ left: `${((tooltip.x+16)/600)*100}%`, top: `${(tooltip.y/600)*100}%`, transform: 'translate(-50%,-130%)' }}>
           <div className="bg-white border border-[#C4611F] rounded-lg px-3 py-2 shadow-lg text-xs" style={{ fontFamily:'Inter,sans-serif', minWidth:'130px' }}>
-            <p className="font-bold" style={{ color: MALEFIC.has(tooltip.planet) ? DARK : GOLD_MED }}>{tooltip.planet} ({hi ? PLANET_FULL_HI[tooltip.planet] : tooltip.planet})</p>
-            <p style={{ color: GOLD }}>{tooltip.sign} ({hi ? SIGNS[signIdx(tooltip.sign)].hi : tooltip.sign})</p>
+            <p className="font-bold" style={{ color: MALEFIC.has(tooltip.planet)?DARK:GOLD_MED }}>{tooltip.planet} ({hi?PLANET_FULL_HI[tooltip.planet]:tooltip.planet})</p>
+            <p style={{ color: GOLD }}>{tooltip.sign} ({hi?SIGNS[signIdx(tooltip.sign)].hi:tooltip.sign})</p>
             <p style={{ color: GOLD_MED }}>{tooltip.degree.toFixed(1)}&deg;</p>
-            <p className="text-gray-500">{MALEFIC.has(tooltip.planet) ? (hi?'पापी':'Malefic') : (hi?'शुभ':'Benefic')} · {tooltip.retrograde ? (hi?'वक्री':'Retro ℞') : (hi?'मार्गी':'Direct')}</p>
+            <p className="text-gray-500">{MALEFIC.has(tooltip.planet)?(hi?'पापी':'Malefic'):(hi?'शुभ':'Benefic')} · {tooltip.retrograde?(hi?'वक्री ℞':'Retro ℞'):(hi?'मार्गी':'Direct')}</p>
           </div>
         </div>
       )}
@@ -279,52 +248,41 @@ export default function LiveTransitWheel() {
         }}>
           <defs>{clipDefs}</defs>
 
-          {/* Rings */}
           <circle cx={CX} cy={CY} r={R_OUTER} fill="none" stroke={GOLD} strokeWidth={2} />
           {ticks}
-          <circle cx={CX} cy={CY} r={R_MONTH_RING} fill="none" stroke="rgba(139,69,19,0.15)" strokeWidth={0.6} />
-          <circle cx={CX} cy={CY} r={R_GLYPH_RING} fill="none" stroke="rgba(139,69,19,0.18)" strokeWidth={0.8} />
-          <circle cx={CX} cy={CY} r={R_ELEM_RING} fill="none" stroke="rgba(139,69,19,0.12)" strokeWidth={0.6} />
+          <circle cx={CX} cy={CY} r={R_DATE_RING} fill="none" stroke="rgba(139,69,19,0.12)" strokeWidth={0.5} />
+          <circle cx={CX} cy={CY} r={R_GLYPH_RING} fill="none" stroke="rgba(139,69,19,0.15)" strokeWidth={0.8} />
+          <circle cx={CX} cy={CY} r={R_INNER} fill="none" stroke="rgba(139,69,19,0.12)" strokeWidth={0.6} />
 
-          {/* Inner gradient fill */}
           <defs>
             <radialGradient id="iBg2" cx="50%" cy="50%" r="50%">
               <stop offset="0%" stopColor="#FAF7F2" />
               <stop offset="100%" stopColor="#F0E8D8" stopOpacity={0.3} />
             </radialGradient>
           </defs>
-          <circle cx={CX} cy={CY} r={R_ELEM_RING} fill="url(#iBg2)" />
-
-          {/* Center */}
+          <circle cx={CX} cy={CY} r={R_INNER} fill="url(#iBg2)" />
           <circle cx={CX} cy={CY} r={R_CENTER} fill="#FAF7F2" stroke="rgba(139,69,19,0.2)" strokeWidth={1} />
 
-          {/* Segments */}
-          {segmentEls}
-
-          {/* ASC */}
+          {segEls}
           {!loading && skyData && ascMarker}
-
-          {/* Planet dots ON TOP */}
           {!loading && planetDots}
 
-          {/* Center content */}
           {loading ? (
             <text x={CX} y={CY} textAnchor="middle" dominantBaseline="central" fill={GOLD_MED} fontSize="9">{hi?'लोड हो रहा...':'Loading...'}</text>
           ) : (
             <>
-              <text x={CX} y={CY - 6} textAnchor="middle" fill={GOLD_MED} fontSize="22" fontWeight="bold">ॐ</text>
-              <text x={CX} y={CY + 14} textAnchor="middle" fill={GOLD} fontSize="10" fontWeight="600" fontFamily="'Inter',sans-serif">{timeStr}</text>
+              <text x={CX} y={CY-6} textAnchor="middle" fill={GOLD_MED} fontSize="22" fontWeight="bold">ॐ</text>
+              <text x={CX} y={CY+14} textAnchor="middle" fill={GOLD} fontSize="10" fontWeight="600" fontFamily="'Inter',sans-serif">{timeStr}</text>
             </>
           )}
         </svg>
       </div>
 
-      {/* Legend */}
       <div className="flex flex-wrap justify-center gap-3 mt-3 text-[10px]" style={{ fontFamily:'Inter,sans-serif', color: GOLD }}>
-        <span className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>Su 14&deg;</span> {hi?'शुभ':'Benefic'}</span>
-        <span className="flex items-center gap-1"><span className="font-bold" style={{ color: DARK }}>Ma 8&deg;</span> {hi?'पापी':'Malefic'}</span>
+        <span className="flex items-center gap-1"><span className="font-bold" style={{ color:GOLD_MED }}>Su 14&deg;</span> {hi?'शुभ':'Benefic'}</span>
+        <span className="flex items-center gap-1"><span className="font-bold" style={{ color:DARK }}>Ma 8&deg;</span> {hi?'पापी':'Malefic'}</span>
         <span className="flex items-center gap-1"><span className="text-red-600 font-bold">{'\u211E'}</span> {hi?'वक्री':'Retro'}</span>
-        <span className="flex items-center gap-1"><span className="w-3 h-3" style={{ background: GOLD_MED, clipPath:'polygon(50% 0%,0% 100%,100% 100%)' }} />ASC</span>
+        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5" style={{ background:GOLD_MED, clipPath:'polygon(50% 0%,0% 100%,100% 100%)' }} />ASC</span>
       </div>
     </div>
   );
