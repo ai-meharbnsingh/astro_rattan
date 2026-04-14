@@ -194,26 +194,6 @@ export default function Features() {
           ))}
         </div>
 
-        {/* Stats Bar */}
-        <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 p-6 rounded-2xl bg-sacred-gold/5 border border-sacred-gold/20">
-          <div className="text-center">
-            <div className="text-3xl font-bold text-sacred-gold-dark">5</div>
-            <div className="text-sm text-gray-600">{l('Platform Modules', 'प्लेटफॉर्म मॉड्यूल')}</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-sacred-gold-dark">8</div>
-            <div className="text-sm text-gray-600">{l('Kundli Analysis Tools', 'कुंडली विश्लेषण टूल')}</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-sacred-gold-dark">43</div>
-            <div className="text-sm text-gray-600">{l('-Day Moon Discipline', '-दिवसीय चंद्र अनुशासन')}</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-sacred-gold-dark">3</div>
-            <div className="text-sm text-gray-600">{l('Vedic Traditions', 'वैदिक परंपराएं')}</div>
-          </div>
-        </div>
-
         {/* Comparison Table */}
         <div className="compare-table max-w-4xl mx-auto mt-24">
           <h3 className="text-2xl sm:text-3xl font-sans text-center text-cosmic-text mb-4">
@@ -265,57 +245,6 @@ export default function Features() {
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-
-        {/* ── See What's Inside — Screenshot Showcase ─────────────── */}
-        <div className="mt-12">
-          <h3 className="text-2xl sm:text-3xl font-sans text-center text-cosmic-text mb-3">
-            {l("See What's Inside", 'अंदर क्या है देखें')}
-          </h3>
-          <p className="text-center text-gray-600 mb-10 text-sm">
-            {l('Real screens from the platform', 'प्लेटफॉर्म की वास्तविक स्क्रीन')}
-          </p>
-
-          <div className="rounded-2xl p-6 sm:p-8 bg-[#1a1625] border border-sacred-gold/10">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {[
-                { label: l('Kundli Engine', 'कुंडली इंजन'),           file: 'showcase-kundli.png'     },
-                { label: l('Lal Kitab Workspace', 'लाल किताब वर्कस्पेस'), file: 'showcase-lalkitab.png'  },
-                { label: l('Live Panchang', 'लाइव पंचांग'),            file: 'showcase-panchang.png'   },
-                { label: l('Numerology Grid', 'न्यूमेरोलॉजी ग्रिड'),   file: 'showcase-numerology.png' },
-                { label: l('Client Manager', 'क्लाइंट मैनेजर'),        file: 'showcase-clients.png'    },
-                { label: l('Chandra Chalana', 'चंद्र चालना'),          file: 'showcase-chandra.png'    },
-              ].map(({ label, file }) => (
-                <button
-                  key={file}
-                  type="button"
-                  onClick={() => setLightbox({ file, label })}
-                  className="group overflow-hidden rounded-xl text-left w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-sacred-gold"
-                  style={{ border: '1px solid rgba(196, 164, 105, 0.2)' }}
-                >
-                  <div className="overflow-hidden relative" style={{ height: '220px' }}>
-                    <img
-                      src={`/images/showcase/${file}`}
-                      alt={label}
-                      className="w-full h-full object-cover object-top group-hover:scale-[1.02] transition-transform duration-300"
-                      loading="lazy"
-                    />
-                    {/* Zoom hint on hover */}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
-                      <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 text-gray-800 text-xs font-semibold px-3 py-1.5 rounded-full shadow">
-                        {l('Click to enlarge', 'बड़ा देखें')}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="px-4 py-3" style={{ background: '#1a1625', borderTop: '1px solid rgba(196, 164, 105, 0.15)' }}>
-                    <p className="text-sm font-semibold text-center uppercase tracking-wider" style={{ color: '#C4611F' }}>
-                      {label}
-                    </p>
-                  </div>
-                </button>
-              ))}
-            </div>
           </div>
         </div>
 
