@@ -285,6 +285,7 @@ export default function LiveTransitWheel() {
           {ticks}
           <circle cx={CX} cy={CY} r={R_DATE_RING} fill="none" stroke="rgba(139,69,19,0.12)" strokeWidth={0.5} />
           <circle cx={CX} cy={CY} r={R_GENDER_RING} fill="none" stroke="rgba(139,69,19,0.15)" strokeWidth={0.6} />
+          <circle cx={CX} cy={CY} r={R_GLYPH_RING + 14} fill="none" stroke="rgba(139,69,19,0.12)" strokeWidth={0.5} />
           <circle cx={CX} cy={CY} r={R_GLYPH_RING} fill="none" stroke="rgba(139,69,19,0.15)" strokeWidth={0.8} />
           <circle cx={CX} cy={CY} r={R_ELEM_RING} fill="none" stroke="rgba(139,69,19,0.18)" strokeWidth={0.7} />
           <circle cx={CX} cy={CY} r={R_INNER} fill="none" stroke="rgba(139,69,19,0.12)" strokeWidth={0.6} />
