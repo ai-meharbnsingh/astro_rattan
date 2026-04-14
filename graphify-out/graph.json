@@ -9,7 +9,7 @@
       "source_file": "stress_test.js",
       "source_location": "L1",
       "id": "stress_test",
-      "community": 71
+      "community": 70
     },
     {
       "label": "ai_engine.py",
@@ -289,7 +289,7 @@
       "source_file": "frontend/src/components/panchang/index.ts",
       "source_location": "L1",
       "id": "index",
-      "community": 63
+      "community": 62
     },
     {
       "label": "Vercel serverless entry point \u2014 exposes the FastAPI app.",
@@ -297,7 +297,7 @@
       "source_file": "_trash/api/index.py",
       "source_location": "L1",
       "id": "index_rationale_1",
-      "community": 63
+      "community": 62
     },
     {
       "label": "auth.js",
@@ -401,7 +401,7 @@
       "source_file": "app/nadi_engine.py",
       "source_location": "L1",
       "id": "nadi_engine",
-      "community": 57
+      "community": 56
     },
     {
       "label": "calculate_nadi_insights()",
@@ -409,7 +409,7 @@
       "source_file": "app/nadi_engine.py",
       "source_location": "L66",
       "id": "nadi_engine_calculate_nadi_insights",
-      "community": 57
+      "community": 56
     },
     {
       "label": "nadi_engine.py -- Nadi Astrology Interpretive Engine ===========================",
@@ -417,7 +417,7 @@
       "source_file": "app/nadi_engine.py",
       "source_location": "L1",
       "id": "nadi_engine_rationale_1",
-      "community": 57
+      "community": 56
     },
     {
       "label": "Identify Nadi shlokas / yogas based on planet placements in the same house.",
@@ -425,7 +425,7 @@
       "source_file": "app/nadi_engine.py",
       "source_location": "L67",
       "id": "nadi_engine_rationale_67",
-      "community": 57
+      "community": 56
     },
     {
       "label": "aspects_engine.py",
@@ -537,7 +537,7 @@
       "source_file": "app/config.py",
       "source_location": "L1",
       "id": "config",
-      "community": 56
+      "community": 55
     },
     {
       "label": "_env_first()",
@@ -545,7 +545,7 @@
       "source_file": "app/config.py",
       "source_location": "L12",
       "id": "config_env_first",
-      "community": 56
+      "community": 55
     },
     {
       "label": "Application configuration \u2014 loaded from environment variables with defaults.",
@@ -553,7 +553,7 @@
       "source_file": "app/config.py",
       "source_location": "L1",
       "id": "config_rationale_1",
-      "community": 56
+      "community": 55
     },
     {
       "label": "Return the first non-empty environment variable from the given names.",
@@ -561,7 +561,7 @@
       "source_file": "app/config.py",
       "source_location": "L13",
       "id": "config_rationale_13",
-      "community": 56
+      "community": 55
     },
     {
       "label": "divisional_charts.py",
@@ -2289,7 +2289,7 @@
       "source_file": "app/lifelong_sade_sati.py",
       "source_location": "L1",
       "id": "lifelong_sade_sati",
-      "community": 61
+      "community": 60
     },
     {
       "label": "calculate_lifelong_sade_sati()",
@@ -2297,7 +2297,7 @@
       "source_file": "app/lifelong_sade_sati.py",
       "source_location": "L240",
       "id": "lifelong_sade_sati_calculate_lifelong_sade_sati",
-      "community": 61
+      "community": 60
     },
     {
       "label": "Calculate lifelong Sade Sati, Dhaiya (Ashtamesh/Kantak), and Panauti phases.",
@@ -2305,7 +2305,7 @@
       "source_file": "app/lifelong_sade_sati.py",
       "source_location": "L241",
       "id": "lifelong_sade_sati_rationale_241",
-      "community": 61
+      "community": 60
     },
     {
       "label": "database.py",
@@ -3369,7 +3369,7 @@
       "source_file": "app/reports/__init__.py",
       "source_location": "L1",
       "id": "init",
-      "community": 64
+      "community": 63
     },
     {
       "label": "upagraha_engine.py",
@@ -3377,7 +3377,7 @@
       "source_file": "app/upagraha_engine.py",
       "source_location": "L1",
       "id": "upagraha_engine",
-      "community": 62
+      "community": 61
     },
     {
       "label": "calculate_upagrahas()",
@@ -3385,7 +3385,7 @@
       "source_file": "app/upagraha_engine.py",
       "source_location": "L20",
       "id": "upagraha_engine_calculate_upagrahas",
-      "community": 62
+      "community": 61
     },
     {
       "label": "Calculate Upagrahas (sub-planets) including Aprakasha Grahas and Kala Velas.",
@@ -3393,7 +3393,7 @@
       "source_file": "app/upagraha_engine.py",
       "source_location": "L27",
       "id": "upagraha_engine_rationale_27",
-      "community": 62
+      "community": 61
     },
     {
       "label": "festival_engine.py",
@@ -3401,7 +3401,7 @@
       "source_file": "app/festival_engine.py",
       "source_location": "L1",
       "id": "festival_engine",
-      "community": 58
+      "community": 57
     },
     {
       "label": "detect_festivals()",
@@ -3409,7 +3409,7 @@
       "source_file": "app/festival_engine.py",
       "source_location": "L126",
       "id": "festival_engine_detect_festivals",
-      "community": 58
+      "community": 57
     },
     {
       "label": "festival_engine.py -- Rule-Based Hindu Festival & Vrat Detection Engine ========",
@@ -3417,7 +3417,7 @@
       "source_file": "app/festival_engine.py",
       "source_location": "L1",
       "id": "festival_engine_rationale_1",
-      "community": 58
+      "community": 57
     },
     {
       "label": "Detect festivals and vrats for given panchang elements.      Checks all three so",
@@ -3425,7 +3425,7 @@
       "source_file": "app/festival_engine.py",
       "source_location": "L133",
       "id": "festival_engine_rationale_133",
-      "community": 58
+      "community": 57
     },
     {
       "label": "lalkitab_engine.py",
@@ -3433,7 +3433,7 @@
       "source_file": "app/lalkitab_engine.py",
       "source_location": "L1",
       "id": "lalkitab_engine",
-      "community": 53
+      "community": 52
     },
     {
       "label": "_get_dignity_label()",
@@ -3441,7 +3441,7 @@
       "source_file": "app/lalkitab_engine.py",
       "source_location": "L117",
       "id": "lalkitab_engine_get_dignity_label",
-      "community": 53
+      "community": 52
     },
     {
       "label": "get_remedies()",
@@ -3449,7 +3449,7 @@
       "source_file": "app/lalkitab_engine.py",
       "source_location": "L134",
       "id": "lalkitab_engine_get_remedies",
-      "community": 53
+      "community": 52
     },
     {
       "label": "lalkitab_engine.py \u2014 Lal Kitab Remedies Engine =================================",
@@ -3457,7 +3457,7 @@
       "source_file": "app/lalkitab_engine.py",
       "source_location": "L1",
       "id": "lalkitab_engine_rationale_1",
-      "community": 53
+      "community": 52
     },
     {
       "label": "Determine dignity label for a planet in a sign.",
@@ -3465,7 +3465,7 @@
       "source_file": "app/lalkitab_engine.py",
       "source_location": "L118",
       "id": "lalkitab_engine_rationale_118",
-      "community": 53
+      "community": 52
     },
     {
       "label": "Get Lal Kitab remedies for weak or afflicted planets.      Args:         planet_",
@@ -3473,7 +3473,7 @@
       "source_file": "app/lalkitab_engine.py",
       "source_location": "L135",
       "id": "lalkitab_engine_rationale_135",
-      "community": 53
+      "community": 52
     },
     {
       "label": "yogini_dasha_engine.py",
@@ -3481,7 +3481,7 @@
       "source_file": "app/yogini_dasha_engine.py",
       "source_location": "L1",
       "id": "yogini_dasha_engine",
-      "community": 59
+      "community": 58
     },
     {
       "label": "get_starting_yogini()",
@@ -3489,7 +3489,7 @@
       "source_file": "app/yogini_dasha_engine.py",
       "source_location": "L36",
       "id": "yogini_dasha_engine_get_starting_yogini",
-      "community": 59
+      "community": 58
     },
     {
       "label": "calculate_yogini_dasha()",
@@ -3497,7 +3497,7 @@
       "source_file": "app/yogini_dasha_engine.py",
       "source_location": "L54",
       "id": "yogini_dasha_engine_calculate_yogini_dasha",
-      "community": 59
+      "community": 58
     },
     {
       "label": "Calculate Yogini Dasha periods. Returns periods for up to 108 years (3 cycles).",
@@ -3505,7 +3505,7 @@
       "source_file": "app/yogini_dasha_engine.py",
       "source_location": "L55",
       "id": "yogini_dasha_engine_rationale_55",
-      "community": 59
+      "community": 58
     },
     {
       "label": "mundane_engine.py",
@@ -4937,7 +4937,7 @@
       "source_file": "app/sodashvarga_engine.py",
       "source_location": "L1",
       "id": "sodashvarga_engine",
-      "community": 54
+      "community": 53
     },
     {
       "label": "_get_dignity()",
@@ -4945,7 +4945,7 @@
       "source_file": "app/sodashvarga_engine.py",
       "source_location": "L115",
       "id": "sodashvarga_engine_get_dignity",
-      "community": 54
+      "community": 53
     },
     {
       "label": "calculate_sodashvarga()",
@@ -4953,7 +4953,7 @@
       "source_file": "app/sodashvarga_engine.py",
       "source_location": "L136",
       "id": "sodashvarga_engine_calculate_sodashvarga",
-      "community": 54
+      "community": 53
     },
     {
       "label": "sodashvarga_engine.py -- Sodashvarga (16 Divisional Charts) Summary & Vimshopak",
@@ -4961,7 +4961,7 @@
       "source_file": "app/sodashvarga_engine.py",
       "source_location": "L1",
       "id": "sodashvarga_engine_rationale_1",
-      "community": 54
+      "community": 53
     },
     {
       "label": "Determine the dignity of a planet in a given sign.",
@@ -4969,7 +4969,7 @@
       "source_file": "app/sodashvarga_engine.py",
       "source_location": "L116",
       "id": "sodashvarga_engine_rationale_116",
-      "community": 54
+      "community": 53
     },
     {
       "label": "Calculate Sodashvarga for all planets.      Args:         planet_longitudes: {pl",
@@ -4977,7 +4977,7 @@
       "source_file": "app/sodashvarga_engine.py",
       "source_location": "L139",
       "id": "sodashvarga_engine_rationale_139",
-      "community": 54
+      "community": 53
     },
     {
       "label": "lalkitab_advanced.py",
@@ -5241,7 +5241,7 @@
       "source_file": "app/rate_limit.py",
       "source_location": "L1",
       "id": "rate_limit",
-      "community": 60
+      "community": 59
     },
     {
       "label": "request_rate_limit_key()",
@@ -5249,7 +5249,7 @@
       "source_file": "app/rate_limit.py",
       "source_location": "L8",
       "id": "rate_limit_request_rate_limit_key",
-      "community": 60
+      "community": 59
     },
     {
       "label": "Shared rate-limit helpers.",
@@ -5257,7 +5257,7 @@
       "source_file": "app/rate_limit.py",
       "source_location": "L1",
       "id": "rate_limit_rationale_1",
-      "community": 60
+      "community": 59
     },
     {
       "label": "Scope rate limits to the active test DB and client address.",
@@ -5265,7 +5265,7 @@
       "source_file": "app/rate_limit.py",
       "source_location": "L9",
       "id": "rate_limit_rationale_9",
-      "community": 60
+      "community": 59
     },
     {
       "label": "migrations.py",
@@ -6297,7 +6297,7 @@
       "source_file": "app/routes/__init__.py",
       "source_location": "L1",
       "id": "init_rationale_1",
-      "community": 64
+      "community": 63
     },
     {
       "label": "engine.py",
@@ -6737,7 +6737,7 @@
       "source_file": "app/vastu/data.py",
       "source_location": "L1",
       "id": "data",
-      "community": 65
+      "community": 64
     },
     {
       "label": "vastu/data.py \u2014 Complete Vastu Shastra Reference Data ==========================",
@@ -6745,7 +6745,7 @@
       "source_file": "app/vastu/data.py",
       "source_location": "L1",
       "id": "data_rationale_1",
-      "community": 65
+      "community": 64
     },
     {
       "label": "auto_detect.py",
@@ -7705,7 +7705,7 @@
       "source_file": "app/routes/ai.py",
       "source_location": "L1",
       "id": "ai",
-      "community": 55
+      "community": 54
     },
     {
       "label": "_normalize_period()",
@@ -7713,7 +7713,7 @@
       "source_file": "app/routes/ai.py",
       "source_location": "L16",
       "id": "ai_normalize_period",
-      "community": 55
+      "community": 54
     },
     {
       "label": "_compose_interpretation()",
@@ -7721,7 +7721,7 @@
       "source_file": "app/routes/ai.py",
       "source_location": "L26",
       "id": "ai_compose_interpretation",
-      "community": 55
+      "community": 54
     },
     {
       "label": "ai_interpret()",
@@ -7729,7 +7729,7 @@
       "source_file": "app/routes/ai.py",
       "source_location": "L43",
       "id": "ai_ai_interpret",
-      "community": 55
+      "community": 54
     },
     {
       "label": "AI interpretation routes for kundli predictions.",
@@ -7737,7 +7737,7 @@
       "source_file": "app/routes/ai.py",
       "source_location": "L1",
       "id": "ai_rationale_1",
-      "community": 55
+      "community": 54
     },
     {
       "label": "Return AI-style period prediction for a saved kundli.",
@@ -7745,7 +7745,7 @@
       "source_file": "app/routes/ai.py",
       "source_location": "L48",
       "id": "ai_rationale_48",
-      "community": 55
+      "community": 54
     },
     {
       "label": "kp_lalkitab.py",
@@ -9281,7 +9281,7 @@
       "source_file": "app/routes/analytics.py",
       "source_location": "L1",
       "id": "analytics",
-      "community": 52
+      "community": 51
     },
     {
       "label": "HitPayload",
@@ -9289,7 +9289,7 @@
       "source_file": "app/routes/analytics.py",
       "source_location": "L11",
       "id": "analytics_hitpayload",
-      "community": 52
+      "community": 51
     },
     {
       "label": "record_hit()",
@@ -9297,7 +9297,7 @@
       "source_file": "app/routes/analytics.py",
       "source_location": "L19",
       "id": "analytics_record_hit",
-      "community": 52
+      "community": 51
     },
     {
       "label": "get_analytics()",
@@ -9305,7 +9305,7 @@
       "source_file": "app/routes/analytics.py",
       "source_location": "L41",
       "id": "analytics_get_analytics",
-      "community": 52
+      "community": 51
     },
     {
       "label": "Analytics routes \u2014 lightweight page-view tracking and admin reporting.",
@@ -9313,7 +9313,7 @@
       "source_file": "app/routes/analytics.py",
       "source_location": "L1",
       "id": "analytics_rationale_1",
-      "community": 52
+      "community": 51
     },
     {
       "label": "Record a single page view from the frontend SPA.     No auth required \u2014 called c",
@@ -9321,7 +9321,7 @@
       "source_file": "app/routes/analytics.py",
       "source_location": "L24",
       "id": "analytics_rationale_24",
-      "community": 52
+      "community": 51
     },
     {
       "label": "Aggregated traffic analytics for the admin panel.",
@@ -9329,7 +9329,7 @@
       "source_file": "app/routes/analytics.py",
       "source_location": "L45",
       "id": "analytics_rationale_45",
-      "community": 52
+      "community": 51
     },
     {
       "label": "interpretations.py",
@@ -9817,7 +9817,7 @@
       "source_file": "frontend/ui-test.spec.ts",
       "source_location": "L1",
       "id": "ui_test_spec",
-      "community": 72
+      "community": 71
     },
     {
       "label": "tailwind.config.js",
@@ -9825,7 +9825,7 @@
       "source_file": "frontend/tailwind.config.js",
       "source_location": "L1",
       "id": "tailwind_config",
-      "community": 73
+      "community": 72
     },
     {
       "label": "playwright.config.ts",
@@ -9833,7 +9833,7 @@
       "source_file": "frontend/playwright.config.ts",
       "source_location": "L1",
       "id": "playwright_config",
-      "community": 74
+      "community": 73
     },
     {
       "label": "eslint.config.js",
@@ -9841,7 +9841,7 @@
       "source_file": "docs/laalkitaab/zimi_template/app/eslint.config.js",
       "source_location": "L1",
       "id": "eslint_config",
-      "community": 56
+      "community": 55
     },
     {
       "label": "vite.config.ts",
@@ -9849,7 +9849,7 @@
       "source_file": "frontend/vite.config.ts",
       "source_location": "L1",
       "id": "vite_config",
-      "community": 75
+      "community": 74
     },
     {
       "label": "postcss.config.js",
@@ -9857,7 +9857,7 @@
       "source_file": "docs/laalkitaab/zimi_template/app/postcss.config.js",
       "source_location": "L1",
       "id": "postcss_config",
-      "community": 76
+      "community": 75
     },
     {
       "label": "analyze-i18n.js",
@@ -9865,7 +9865,7 @@
       "source_file": "frontend/analyze-i18n.js",
       "source_location": "L1",
       "id": "analyze_i18n",
-      "community": 66
+      "community": 65
     },
     {
       "label": "walk()",
@@ -9873,7 +9873,7 @@
       "source_file": "frontend/analyze-i18n.js",
       "source_location": "L4",
       "id": "analyze_i18n_walk",
-      "community": 66
+      "community": 65
     },
     {
       "label": "App.jsx",
@@ -10409,7 +10409,7 @@
       "source_file": "frontend/src/components/NotesWidget.tsx",
       "source_location": "L1",
       "id": "noteswidget",
-      "community": 50
+      "community": 0
     },
     {
       "label": "fetchNotes()",
@@ -10417,7 +10417,7 @@
       "source_file": "frontend/src/components/NotesWidget.tsx",
       "source_location": "L36",
       "id": "noteswidget_fetchnotes",
-      "community": 50
+      "community": 0
     },
     {
       "label": "handleOpen()",
@@ -10425,7 +10425,7 @@
       "source_file": "frontend/src/components/NotesWidget.tsx",
       "source_location": "L46",
       "id": "noteswidget_handleopen",
-      "community": 50
+      "community": 0
     },
     {
       "label": "handleSave()",
@@ -10433,7 +10433,7 @@
       "source_file": "frontend/src/components/NotesWidget.tsx",
       "source_location": "L51",
       "id": "noteswidget_handlesave",
-      "community": 50
+      "community": 0
     },
     {
       "label": "onMouseDown()",
@@ -10441,7 +10441,7 @@
       "source_file": "frontend/src/components/NotesWidget.tsx",
       "source_location": "L67",
       "id": "noteswidget_onmousedown",
-      "community": 50
+      "community": 0
     },
     {
       "label": "onMouseMove()",
@@ -10449,7 +10449,7 @@
       "source_file": "frontend/src/components/NotesWidget.tsx",
       "source_location": "L73",
       "id": "noteswidget_onmousemove",
-      "community": 50
+      "community": 0
     },
     {
       "label": "onMouseUp()",
@@ -10457,7 +10457,7 @@
       "source_file": "frontend/src/components/NotesWidget.tsx",
       "source_location": "L77",
       "id": "noteswidget_onmouseup",
-      "community": 50
+      "community": 0
     },
     {
       "label": "formatNoteDate()",
@@ -10465,7 +10465,7 @@
       "source_file": "frontend/src/components/NotesWidget.tsx",
       "source_location": "L85",
       "id": "noteswidget_formatnotedate",
-      "community": 50
+      "community": 0
     },
     {
       "label": "WhatsAppWidget.tsx",
@@ -11745,7 +11745,7 @@
       "source_file": "frontend/src/components/kundli/GeneralRemedies.tsx",
       "source_location": "L1",
       "id": "generalremedies",
-      "community": 3
+      "community": 0
     },
     {
       "label": "kundli-utils.ts",
@@ -12279,7 +12279,7 @@
       "label": "renderRow()",
       "file_type": "code",
       "source_file": "frontend/src/components/panchang/GowriTab.tsx",
-      "source_location": "L104",
+      "source_location": "L114",
       "id": "gowritab_renderrow",
       "community": 8
     },
@@ -16993,7 +16993,7 @@
       "source_file": "docs/laalkitaab/zimi_template/app/backend/server.js",
       "source_location": "L1",
       "id": "server",
-      "community": 77
+      "community": 76
     },
     {
       "label": "connection.js",
@@ -17001,7 +17001,7 @@
       "source_file": "docs/laalkitaab/zimi_template/app/backend/database/connection.js",
       "source_location": "L1",
       "id": "connection",
-      "community": 67
+      "community": 66
     },
     {
       "label": "testConnection()",
@@ -17009,7 +17009,7 @@
       "source_file": "docs/laalkitaab/zimi_template/app/backend/database/connection.js",
       "source_location": "L17",
       "id": "connection_testconnection",
-      "community": 67
+      "community": 66
     },
     {
       "label": "predictions.js",
@@ -17017,7 +17017,7 @@
       "source_file": "docs/laalkitaab/zimi_template/app/backend/routes/predictions.js",
       "source_location": "L1",
       "id": "predictions",
-      "community": 68
+      "community": 67
     },
     {
       "label": "auth()",
@@ -17025,7 +17025,7 @@
       "source_file": "docs/laalkitaab/zimi_template/app/backend/routes/predictions.js",
       "source_location": "L9",
       "id": "predictions_auth",
-      "community": 68
+      "community": 67
     },
     {
       "label": "remedies.js",
@@ -17033,7 +17033,7 @@
       "source_file": "docs/laalkitaab/zimi_template/app/backend/routes/remedies.js",
       "source_location": "L1",
       "id": "remedies",
-      "community": 69
+      "community": 68
     },
     {
       "label": "auth()",
@@ -17041,7 +17041,7 @@
       "source_file": "docs/laalkitaab/zimi_template/app/backend/routes/remedies.js",
       "source_location": "L9",
       "id": "remedies_auth",
-      "community": 69
+      "community": 68
     },
     {
       "label": "adminAuth()",
@@ -17113,7 +17113,7 @@
       "source_file": "docs/laalkitaab/zimi_template/app/src/components/KundliChart.jsx",
       "source_location": "L1",
       "id": "kundlichart",
-      "community": 70
+      "community": 69
     },
     {
       "label": "KundliChart()",
@@ -17121,7 +17121,7 @@
       "source_file": "docs/laalkitaab/zimi_template/app/src/components/KundliChart.jsx",
       "source_location": "L4",
       "id": "kundlichart_kundlichart",
-      "community": 70
+      "community": 69
     },
     {
       "label": "aspect-ratio.tsx",
@@ -17129,7 +17129,7 @@
       "source_file": "docs/laalkitaab/zimi_template/app/src/components/ui/aspect-ratio.tsx",
       "source_location": "L1",
       "id": "aspect_ratio",
-      "community": 78
+      "community": 77
     },
     {
       "label": "alert-dialog.tsx",
@@ -17225,7 +17225,7 @@
       "source_file": "scripts/capture_screenshots.js",
       "source_location": "L1",
       "id": "capture_screenshots",
-      "community": 51
+      "community": 50
     },
     {
       "label": "sleep()",
@@ -17233,7 +17233,7 @@
       "source_file": "scripts/capture_screenshots.js",
       "source_location": "L37",
       "id": "capture_screenshots_sleep",
-      "community": 51
+      "community": 50
     },
     {
       "label": "injectAuth()",
@@ -17241,7 +17241,7 @@
       "source_file": "scripts/capture_screenshots.js",
       "source_location": "L39",
       "id": "capture_screenshots_injectauth",
-      "community": 51
+      "community": 50
     },
     {
       "label": "screenshot()",
@@ -17249,7 +17249,7 @@
       "source_file": "scripts/capture_screenshots.js",
       "source_location": "L45",
       "id": "capture_screenshots_screenshot",
-      "community": 51
+      "community": 50
     },
     {
       "label": "createClientsViaAPI()",
@@ -17257,7 +17257,7 @@
       "source_file": "scripts/capture_screenshots.js",
       "source_location": "L52",
       "id": "capture_screenshots_createclientsviaapi",
-      "community": 51
+      "community": 50
     },
     {
       "label": "fillBirthForm()",
@@ -17265,7 +17265,7 @@
       "source_file": "scripts/capture_screenshots.js",
       "source_location": "L79",
       "id": "capture_screenshots_fillbirthform",
-      "community": 51
+      "community": 50
     },
     {
       "label": "waitForChart()",
@@ -17273,7 +17273,7 @@
       "source_file": "scripts/capture_screenshots.js",
       "source_location": "L128",
       "id": "capture_screenshots_waitforchart",
-      "community": 51
+      "community": 50
     },
     {
       "label": "main()",
@@ -17281,7 +17281,7 @@
       "source_file": "scripts/capture_screenshots.js",
       "source_location": "L141",
       "id": "capture_screenshots_main",
-      "community": 51
+      "community": 50
     }
   ],
   "links": [
@@ -47336,6 +47336,18 @@
     {
       "relation": "imports_from",
       "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/kundli/GeneralRemedies.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_src": "generalremedies",
+      "_tgt": "i18n",
+      "source": "generalremedies",
+      "target": "i18n",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
       "source_file": "frontend/src/components/kundli/KPTab.tsx",
       "source_location": "L4",
       "weight": 1.0,
@@ -48369,7 +48381,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/components/panchang/GowriTab.tsx",
-      "source_location": "L104",
+      "source_location": "L114",
       "weight": 1.0,
       "_src": "gowritab",
       "_tgt": "gowritab_renderrow",
@@ -48393,7 +48405,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/components/panchang/GowriTab.tsx",
-      "source_location": "L105",
+      "source_location": "L115",
       "weight": 1.0,
       "_src": "gowritab_renderrow",
       "_tgt": "gowritab_gettypebucket",

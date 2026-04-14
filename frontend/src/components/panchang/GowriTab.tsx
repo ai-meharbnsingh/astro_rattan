@@ -83,16 +83,26 @@ export default function GowriTab({ panchang, language, t, timezoneOffset, minute
   };
 
   const { dayGowri, nightGowri, currentPeriodKey } = useMemo(() => {
-    const day = gowriPanchang.filter(g => g.type === 'Day' || g.type === 'दिन');
-    const night = gowriPanchang.filter(g => g.type === 'Night' || g.type === 'रात्रि');
+    const day = gowriPanchang.filter((g) => {
+      const type = String(g.type || '').toLowerCase();
+      return type.includes('day') || type.includes('दिन');
+    });
+    const night = gowriPanchang.filter((g) => {
+      const type = String(g.type || '').toLowerCase();
+      return type.includes('night') || type.includes('रात्र');
+    });
+
+    // Fallback: some payloads do not include explicit day/night type labels.
+    const fallbackDay = day.length > 0 ? day : gowriPanchang.slice(0, Math.ceil(gowriPanchang.length / 2));
+    const fallbackNight = night.length > 0 ? night : gowriPanchang.slice(Math.ceil(gowriPanchang.length / 2));
 
     const currentTimeAtLocation = new Date(Date.now() + ((timezoneOffset + new Date().getTimezoneOffset()) * 60 * 1000));
     const currentMinutes = currentTimeAtLocation.getHours() * 60 + currentTimeAtLocation.getMinutes();
     const current = gowriPanchang.find((g) => isInTimeRange(currentMinutes, g.start, g.end));
 
     return {
-      dayGowri: day,
-      nightGowri: night,
+      dayGowri: fallbackDay,
+      nightGowri: fallbackNight,
       currentPeriodKey: current ? `${current.start}-${current.end}-${current.type}` : null,
     };
   }, [gowriPanchang, timezoneOffset, minuteTick]);

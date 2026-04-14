@@ -2,6 +2,7 @@ import { Sparkles, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { apiFetch } from '@/lib/api';
 import { translatePlanet, translateRemedy } from '@/lib/backend-translations';
+import { useTranslation } from '@/lib/i18n';
 
 interface GeneralRemediesProps {
   language: string;
@@ -84,8 +85,9 @@ const STATIC_REMEDIES = {
   ],
 };
 
-export default function GeneralRemedies({ language, t, title, kundliId }: GeneralRemediesProps) {
-  void t;
+export default function GeneralRemedies({ language, t: tProp, title, kundliId }: GeneralRemediesProps) {
+  const { t: tContext } = useTranslation();
+  const t = tProp ?? tContext;
   const lang = language as any;
   const isHi = language === 'hi';
   const [dynamicRemedies, setDynamicRemedies] = useState<any[] | null>(null);

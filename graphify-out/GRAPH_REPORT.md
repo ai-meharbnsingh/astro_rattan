@@ -1,11 +1,11 @@
 # Graph Report - .  (2026-04-14)
 
 ## Corpus Check
-- 240 files · ~2,769,493 words
+- 240 files · ~2,778,785 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2160 nodes · 3287 edges · 79 communities detected
+- 2160 nodes · 3288 edges · 78 communities detected
 - Extraction: 91% EXTRACTED · 9% INFERRED · 0% AMBIGUOUS · INFERRED: 307 edges (avg confidence: 0.5)
 - Token cost: 0 input · 0 output
 
@@ -37,7 +37,7 @@
 
 ### Community 0 - "Community 0"
 Cohesion: 0.01
-Nodes (28): apiFetch(), fetchWithRetry(), friendlyError(), tryRefreshToken(), handleOtpKeyDown(), handleResendOtp(), handleSendOtp(), handleVerifyOtp() (+20 more)
+Nodes (31): apiFetch(), fetchWithRetry(), friendlyError(), tryRefreshToken(), handleOtpKeyDown(), handleResendOtp(), handleSendOtp(), handleVerifyOtp() (+23 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.03
@@ -236,68 +236,68 @@ Cohesion: 0.36
 Nodes (7): _is_auspicious_day(), _monthly_days(), muhurat_find(), muhurat_monthly(), Compatibility muhurat routes used by frontend widgets., Monthly calendar-style muhurat compatibility endpoint., Daily window compatibility endpoint for a selected date.
 
 ### Community 50 - "Community 50"
-Cohesion: 0.32
-Nodes (3): fetchNotes(), handleOpen(), handleSave()
-
-### Community 51 - "Community 51"
 Cohesion: 0.57
 Nodes (7): createClientsViaAPI(), fillBirthForm(), injectAuth(), main(), screenshot(), sleep(), waitForChart()
 
-### Community 52 - "Community 52"
+### Community 51 - "Community 51"
 Cohesion: 0.29
 Nodes (6): get_analytics(), HitPayload, Analytics routes — lightweight page-view tracking and admin reporting., Record a single page view from the frontend SPA.     No auth required — called c, Aggregated traffic analytics for the admin panel., record_hit()
 
-### Community 53 - "Community 53"
+### Community 52 - "Community 52"
 Cohesion: 0.4
 Nodes (5): _get_dignity_label(), get_remedies(), lalkitab_engine.py — Lal Kitab Remedies Engine =================================, Determine dignity label for a planet in a sign., Get Lal Kitab remedies for weak or afflicted planets.      Args:         planet_
 
-### Community 54 - "Community 54"
+### Community 53 - "Community 53"
 Cohesion: 0.4
 Nodes (5): calculate_sodashvarga(), _get_dignity(), sodashvarga_engine.py -- Sodashvarga (16 Divisional Charts) Summary & Vimshopak, Determine the dignity of a planet in a given sign., Calculate Sodashvarga for all planets.      Args:         planet_longitudes: {pl
 
-### Community 55 - "Community 55"
+### Community 54 - "Community 54"
 Cohesion: 0.47
 Nodes (5): ai_interpret(), _compose_interpretation(), _normalize_period(), AI interpretation routes for kundli predictions., Return AI-style period prediction for a saved kundli.
 
-### Community 56 - "Community 56"
+### Community 55 - "Community 55"
 Cohesion: 0.4
 Nodes (3): _env_first(), Application configuration — loaded from environment variables with defaults., Return the first non-empty environment variable from the given names.
 
-### Community 57 - "Community 57"
+### Community 56 - "Community 56"
 Cohesion: 0.5
 Nodes (3): calculate_nadi_insights(), nadi_engine.py -- Nadi Astrology Interpretive Engine ===========================, Identify Nadi shlokas / yogas based on planet placements in the same house.
 
-### Community 58 - "Community 58"
+### Community 57 - "Community 57"
 Cohesion: 0.5
 Nodes (3): detect_festivals(), festival_engine.py -- Rule-Based Hindu Festival & Vrat Detection Engine ========, Detect festivals and vrats for given panchang elements.      Checks all three so
 
-### Community 59 - "Community 59"
+### Community 58 - "Community 58"
 Cohesion: 0.67
 Nodes (3): calculate_yogini_dasha(), get_starting_yogini(), Calculate Yogini Dasha periods. Returns periods for up to 108 years (3 cycles).
 
-### Community 60 - "Community 60"
+### Community 59 - "Community 59"
 Cohesion: 0.5
 Nodes (3): Shared rate-limit helpers., Scope rate limits to the active test DB and client address., request_rate_limit_key()
 
-### Community 61 - "Community 61"
+### Community 60 - "Community 60"
 Cohesion: 0.67
 Nodes (2): calculate_lifelong_sade_sati(), Calculate lifelong Sade Sati, Dhaiya (Ashtamesh/Kantak), and Panauti phases.
 
-### Community 62 - "Community 62"
+### Community 61 - "Community 61"
 Cohesion: 0.67
 Nodes (2): calculate_upagrahas(), Calculate Upagrahas (sub-planets) including Aprakasha Grahas and Kala Velas.
 
-### Community 63 - "Community 63"
+### Community 62 - "Community 62"
 Cohesion: 1.0
 Nodes (1): Vercel serverless entry point — exposes the FastAPI app.
 
-### Community 64 - "Community 64"
+### Community 63 - "Community 63"
 Cohesion: 1.0
 Nodes (1): Route registry — import all routers for inclusion in the FastAPI app.
 
-### Community 65 - "Community 65"
+### Community 64 - "Community 64"
 Cohesion: 1.0
 Nodes (1): vastu/data.py — Complete Vastu Shastra Reference Data ==========================
+
+### Community 65 - "Community 65"
+Cohesion: 1.0
+Nodes (0): 
 
 ### Community 66 - "Community 66"
 Cohesion: 1.0
@@ -347,44 +347,40 @@ Nodes (0):
 Cohesion: 1.0
 Nodes (0): 
 
-### Community 78 - "Community 78"
-Cohesion: 1.0
-Nodes (0): 
-
 ## Knowledge Gaps
 - **645 isolated node(s):** `ai_engine.py — AI-Powered Vedic Astrology Interpretation Engine ================`, `Detect which AI provider to use. Priority: explicit > gemini > openai.`, `Lazy provider detection — re-reads config each time until a provider is found.`, `Call Google Gemini API via raw HTTP (no SDK dependency).`, `Call OpenAI chat completion API via raw HTTP (no SDK dependency).` (+640 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **Thin community `Community 63`** (2 nodes): `index.ts`, `Vercel serverless entry point — exposes the FastAPI app.`
+- **Thin community `Community 62`** (2 nodes): `index.ts`, `Vercel serverless entry point — exposes the FastAPI app.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 64`** (2 nodes): `__init__.py`, `Route registry — import all routers for inclusion in the FastAPI app.`
+- **Thin community `Community 63`** (2 nodes): `__init__.py`, `Route registry — import all routers for inclusion in the FastAPI app.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 65`** (2 nodes): `data.py`, `vastu/data.py — Complete Vastu Shastra Reference Data ==========================`
+- **Thin community `Community 64`** (2 nodes): `data.py`, `vastu/data.py — Complete Vastu Shastra Reference Data ==========================`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 66`** (2 nodes): `analyze-i18n.js`, `walk()`
+- **Thin community `Community 65`** (2 nodes): `analyze-i18n.js`, `walk()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 67`** (2 nodes): `connection.js`, `testConnection()`
+- **Thin community `Community 66`** (2 nodes): `connection.js`, `testConnection()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 68`** (2 nodes): `predictions.js`, `auth()`
+- **Thin community `Community 67`** (2 nodes): `predictions.js`, `auth()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 69`** (2 nodes): `remedies.js`, `auth()`
+- **Thin community `Community 68`** (2 nodes): `remedies.js`, `auth()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 70`** (2 nodes): `KundliChart.jsx`, `KundliChart()`
+- **Thin community `Community 69`** (2 nodes): `KundliChart.jsx`, `KundliChart()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 71`** (1 nodes): `stress_test.js`
+- **Thin community `Community 70`** (1 nodes): `stress_test.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 72`** (1 nodes): `ui-test.spec.ts`
+- **Thin community `Community 71`** (1 nodes): `ui-test.spec.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 73`** (1 nodes): `tailwind.config.js`
+- **Thin community `Community 72`** (1 nodes): `tailwind.config.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 74`** (1 nodes): `playwright.config.ts`
+- **Thin community `Community 73`** (1 nodes): `playwright.config.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 75`** (1 nodes): `vite.config.ts`
+- **Thin community `Community 74`** (1 nodes): `vite.config.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 76`** (1 nodes): `postcss.config.js`
+- **Thin community `Community 75`** (1 nodes): `postcss.config.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 77`** (1 nodes): `server.js`
+- **Thin community `Community 76`** (1 nodes): `server.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 78`** (1 nodes): `aspect-ratio.tsx`
+- **Thin community `Community 77`** (1 nodes): `aspect-ratio.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
