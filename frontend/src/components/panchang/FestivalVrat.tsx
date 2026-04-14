@@ -45,13 +45,13 @@ function FestivalVrat({ festivals }: FestivalVratProps) {
         <div className="flex items-center gap-2 mb-4">
           <Flame className="h-5 w-5 text-sacred-gold" />
           <h3 className="text-lg font-semibold text-cosmic-text">
-            {language === 'hi' ? 'पर्व एवं व्रत' : 'Festivals & Vrat'}
+            {t('auto.festivalsVrat')}
           </h3>
         </div>
 
         {festivals.length === 0 ? (
           <p className="text-sm text-cosmic-text-secondary italic">
-            {language === 'hi' ? 'आज कोई विशेष पर्व/व्रत नहीं' : 'No special observance today'}
+            {t('auto.noSpecialObservanceT')}
           </p>
         ) : (
           <div className="flex flex-col gap-3">
@@ -80,7 +80,7 @@ function FestivalVrat({ festivals }: FestivalVratProps) {
 
                 {festival.rituals && (
                   <div className="text-sm text-cosmic-text-secondary bg-sacred-gold/5 rounded-lg px-3 py-2 border border-sacred-gold/10">
-                    <span className="font-medium text-sacred-gold">{language === 'hi' ? 'विधि: ' : 'Rituals: '}</span>
+                    <span className="font-medium text-sacred-gold">{t('auto.rituals')}</span>
                     {translateBackend(festival.rituals, language)}
                   </div>
                 )}

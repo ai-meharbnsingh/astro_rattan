@@ -427,7 +427,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
               </h3>
               {festivalCount > 0 && (
                 <p className="text-[10px] text-purple-400 mt-0">
-                  {festivalCount} {language === 'hi' ? 'त्योहार / व्रत' : 'festivals / observances'}
+                  {festivalCount} {t('auto.festivalsObservances')}
                 </p>
               )}
             </div>
@@ -450,7 +450,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
               <>
                 {/* Weekday Headers */}
                 <div className="grid grid-cols-7 gap-1 mb-1">
-                  {weekdays[language === 'hi' ? 'hi' : 'en'].map((day) => (
+                  {weekdays[t('auto.en')].map((day) => (
                     <div key={day} className="text-center text-xs font-semibold text-sacred-gold py-1">
                       {day}
                     </div>
@@ -487,29 +487,31 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                         `}
                       >
                         {/* Day Number */}
-                        <div className={`text-center text-sm sm:text-base font-bold mb-0.5 ${isToday ? 'text-sacred-gold' : 'text-cosmic-text-primary'}`}>
+                        <div className={`text-center text-sm sm:text-base font-bold ${isToday ? 'text-sacred-gold' : 'text-cosmic-text-primary'}`}>
                           {day}
                         </div>
                         
+                        {/* Tithi Name */}
+                        {dayData && (
+                          <div className="text-[9px] sm:text-[10px] text-cosmic-text-secondary text-center truncate px-0.5 leading-tight">
+                            {language === 'hi'
+                              ? dayData.tithi_hindi || translateBackend(dayData.tithi, language)
+                              : dayData.tithi}
+                          </div>
+                        )}
+                        
                         {/* Marker Badges - Compact */}
                         {dayMarkers.length > 0 && (
-                          <div className="flex flex-wrap justify-center gap-0.5 px-0.5">
-                            {dayMarkers.slice(0, 3).map((marker) => (
+                          <div className="flex flex-wrap justify-center gap-0.5 px-0.5 mt-0.5">
+                            {dayMarkers.slice(0, 2).map((marker) => (
                               <span
                                 key={marker.key}
                                 title={language === 'hi' ? marker.titleHi : marker.titleEn}
-                                className={`text-[9px] leading-3 px-1 rounded font-semibold ${marker.className}`}
+                                className={`text-[8px] leading-3 px-1 rounded font-semibold ${marker.className}`}
                               >
                                 {marker.short}
                               </span>
                             ))}
-                          </div>
-                        )}
-                        
-                        {/* Festival indicator for non-marker festivals */}
-                        {hasFestivals && dayMarkers.length === 0 && (
-                          <div className="flex justify-center">
-                            <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
                           </div>
                         )}
                       </button>
@@ -526,27 +528,27 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                 <div className="flex flex-wrap items-center justify-center gap-2 mt-3 text-[10px] sm:text-xs">
                   <div className="flex items-center gap-1">
                     <span className="px-1 rounded text-[9px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40">M</span>
-                    <span className="text-cosmic-text-secondary">{language === 'hi' ? 'प्रमुख पर्व' : 'Major'}</span>
+                    <span className="text-cosmic-text-secondary">{t('auto.major')}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <span className="px-1 rounded text-[9px] font-semibold bg-purple-500/15 text-purple-300 border border-purple-500/40">V</span>
-                    <span className="text-cosmic-text-secondary">{language === 'hi' ? 'व्रत' : 'Vrat'}</span>
+                    <span className="text-cosmic-text-secondary">{t('auto.vrat')}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <span className="px-1 rounded text-[9px] font-semibold bg-cyan-500/15 text-cyan-300 border border-cyan-500/40">E</span>
-                    <span className="text-cosmic-text-secondary">{language === 'hi' ? 'एकादशी' : 'Ekadashi'}</span>
+                    <span className="text-cosmic-text-secondary">{t('auto.ekadashi')}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <span className="px-1 rounded text-[9px] font-semibold bg-indigo-500/15 text-indigo-300 border border-indigo-500/40">P</span>
-                    <span className="text-cosmic-text-secondary">{language === 'hi' ? 'पूर्णिमा' : 'Purnima'}</span>
+                    <span className="text-cosmic-text-secondary">{t('auto.purnima')}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <span className="px-1 rounded text-[9px] font-semibold bg-slate-500/25 text-slate-200 border border-slate-500/40">A</span>
-                    <span className="text-cosmic-text-secondary">{language === 'hi' ? 'अमावस्या' : 'Amavasya'}</span>
+                    <span className="text-cosmic-text-secondary">{t('auto.amavasya')}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <span className="px-1 rounded text-[9px] font-semibold bg-yellow-500/20 text-yellow-300 border border-yellow-500/40">S</span>
-                    <span className="text-cosmic-text-secondary">{language === 'hi' ? 'संक्रांति' : 'Sankranti'}</span>
+                    <span className="text-cosmic-text-secondary">{t('auto.sankranti')}</span>
                   </div>
                 </div>
               </>
@@ -559,14 +561,14 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
           <CardContent className="p-2 sm:p-3 h-full">
             <h4 className="font-semibold text-cosmic-text-primary mb-2 flex items-center gap-2">
               <Calendar className="h-4 w-4 text-sacred-gold" />
-              {language === 'hi' ? 'विवरण' : 'Details'}
+              {t('auto.details')}
             </h4>
 
             {selectedDay ? (
               <div className="space-y-2">
                 <div className="text-center pb-2 border-b border-cosmic-border">
                   <p className="text-xs sm:text-sm text-cosmic-text-secondary">
-                    {new Date(selectedDay.date + 'T00:00:00').toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-US', {
+                    {new Date(selectedDay.date + 'T00:00:00').toLocaleDateString(t('auto.enUS'), {
                       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
                     })}
                   </p>
@@ -574,7 +576,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
 
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-xs sm:text-sm text-cosmic-text-secondary">{language === 'hi' ? 'तिथि' : 'Tithi'}</span>
+                    <span className="text-xs sm:text-sm text-cosmic-text-secondary">{t('auto.tithi')}</span>
                     <span className="text-xs sm:text-sm font-medium text-cosmic-text-primary">
                       {language === 'hi'
                         ? selectedDay.tithi_hindi || translateBackend(selectedDay.tithi, language)
@@ -583,7 +585,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                   </div>
 
                   <div className="flex justify-between">
-                    <span className="text-xs sm:text-sm text-cosmic-text-secondary">{language === 'hi' ? 'नक्षत्र' : 'Nakshatra'}</span>
+                    <span className="text-xs sm:text-sm text-cosmic-text-secondary">{t('auto.nakshatra')}</span>
                     <span className="text-xs sm:text-sm font-medium text-cosmic-text-primary">
                       {language === 'hi'
                         ? selectedDay.nakshatra_hindi || translateBackend(selectedDay.nakshatra, language)
@@ -592,7 +594,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                   </div>
 
                   <div className="flex justify-between">
-                    <span className="text-xs sm:text-sm text-cosmic-text-secondary">{language === 'hi' ? 'पक्ष' : 'Paksha'}</span>
+                    <span className="text-xs sm:text-sm text-cosmic-text-secondary">{t('auto.paksha')}</span>
                     <span className="text-xs sm:text-sm font-medium text-cosmic-text-primary">
                       {language === 'hi'
                         ? selectedDay.paksha_hindi || translateBackend(selectedDay.paksha, language)
@@ -601,7 +603,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                   </div>
                   {selectedDay.moon_sign && (
                     <div className="flex justify-between">
-                      <span className="text-xs sm:text-sm text-cosmic-text-secondary">{language === 'hi' ? 'चंद्र राशि' : 'Moon Sign'}</span>
+                      <span className="text-xs sm:text-sm text-cosmic-text-secondary">{t('auto.moonSign')}</span>
                       <span className="text-xs sm:text-sm font-medium text-cosmic-text-primary">
                         {language === 'hi'
                           ? selectedDay.moon_sign_hindi || translateBackend(selectedDay.moon_sign, language)
@@ -611,12 +613,12 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                   )}
 
                   <div className="flex justify-between">
-                    <span className="text-xs sm:text-sm text-cosmic-text-secondary">{language === 'hi' ? 'सूर्योदय' : 'Sunrise'}</span>
+                    <span className="text-xs sm:text-sm text-cosmic-text-secondary">{t('auto.sunrise')}</span>
                     <span className="text-xs sm:text-sm font-medium text-cosmic-text-primary">{selectedDay.sunrise}</span>
                   </div>
 
                   <div className="flex justify-between">
-                    <span className="text-xs sm:text-sm text-cosmic-text-secondary">{language === 'hi' ? 'सूर्यास्त' : 'Sunset'}</span>
+                    <span className="text-xs sm:text-sm text-cosmic-text-secondary">{t('auto.sunset')}</span>
                     <span className="text-xs sm:text-sm font-medium text-cosmic-text-primary">{selectedDay.sunset}</span>
                   </div>
 
@@ -631,7 +633,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                         ))}
                       </div>
                       <span className="text-xs font-semibold text-purple-400 uppercase tracking-wide">
-                        {language === 'hi' ? 'त्योहार / व्रत' : 'Festivals & Observances'}
+                        {t('auto.festivalsObservances')}
                       </span>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {selectedDay.festivals.map((fest, idx) => (
@@ -649,7 +651,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                                 </p>
                                 {detail?.type && (
                                   <p className="text-[10px] text-cosmic-text-secondary mt-0.5">
-                                    {language === 'hi' ? 'प्रकार' : 'Type'}: {detail.type}
+                                    {t('auto.type')}: {detail.type}
                                   </p>
                                 )}
                                 {detail?.description && (
@@ -659,7 +661,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                                 )}
                                 {detail?.rituals && (
                                   <p className="text-[10px] text-cosmic-text-secondary mt-0.5 leading-snug">
-                                    {language === 'hi' ? 'विधि' : 'Rituals'}: {detail.rituals}
+                                    {t('auto.rituals')}: {detail.rituals}
                                   </p>
                                 )}
                               </div>
@@ -674,7 +676,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
               </div>
             ) : (
               <p className="text-center text-cosmic-text-secondary py-8">
-                {language === 'hi' ? 'दिन चुनें' : 'Select a day'}
+                {t('auto.selectADay')}
               </p>
             )}
           </CardContent>

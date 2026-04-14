@@ -170,24 +170,16 @@ export default function LalKitabTevaTab({ chartData, apiResult }: Props) {
 
         <p className="text-sm text-cosmic-text/80 leading-relaxed">
           {tevaType === 'ratandh' && (
-            isHi
-              ? 'शनि या राहु लग्न में हैं या ३+ ग्रह ६/८/१२ भाव में हैं। यह कुंडली रतांध (अंध) तेवा की है।'
-              : 'Saturn or Rahu is in H1, or 3+ planets are in H6/8/12. This chart has a Ratandh (blind) teva.'
+            t('auto.saturnOrRahuIsInH1Or')
           )}
           {tevaType === 'dharmi' && (
-            isHi
-              ? 'गुरु अपने उच्च/स्वगृह/शुभ भाव में है। यह कुंडली धर्मी तेवा की है — शुभ फल देने वाली।'
-              : 'Jupiter is in its own sign, exalted, or a favourable house. This chart has a Dharmi (righteous) teva — giving good results.'
+            t('auto.jupiterIsInItsOwnSig')
           )}
           {tevaType === 'nabalik' && (
-            isHi
-              ? 'चंद्र ८/१२ भाव में है या बुध १२वें भाव में है। यह कुंडली नाबालिग तेवा की है।'
-              : 'Moon is in H8/12 or Mercury is in H12. This chart has a Nabalik (underage) teva.'
+            t('auto.moonIsInH812OrMercur')
           )}
           {tevaType === 'normal' && (
-            isHi
-              ? 'ग्रहों की सामान्य स्थिति — कोई विशेष रतांध, धर्मी या नाबालिग तेवा नहीं।'
-              : 'Planets are in normal positions — no special Ratandh, Dharmi, or Nabalik teva.'
+            t('auto.planetsAreInNormalPo')
           )}
         </p>
       </div>
@@ -214,7 +206,7 @@ export default function LalKitabTevaTab({ chartData, apiResult }: Props) {
               />
             ))}
             {blindPlanets.length === 0 && (
-              <span className="text-xs text-gray-400">{isHi ? 'कोई नहीं' : 'None'}</span>
+              <span className="text-xs text-gray-400">{t('auto.none')}</span>
             )}
           </div>
         </div>
@@ -261,7 +253,7 @@ export default function LalKitabTevaTab({ chartData, apiResult }: Props) {
               />
             ))}
             {underagePlanets.length === 0 && (
-              <span className="text-xs text-gray-400">{isHi ? 'कोई नहीं' : 'None'}</span>
+              <span className="text-xs text-gray-400">{t('auto.none')}</span>
             )}
           </div>
         </div>
@@ -271,7 +263,7 @@ export default function LalKitabTevaTab({ chartData, apiResult }: Props) {
       {interactiveChartData ? (
         <div className="card-sacred rounded-xl border border-sacred-gold/20 p-5">
           <h3 className="font-sans font-semibold text-sacred-gold mb-3 text-sm">
-            {isHi ? 'लाल किताब कुंडली (तेवा चार्ट)' : 'Lal Kitab Kundli (Teva Chart)'}
+            {t('auto.lalKitabKundliTevaCh')}
           </h3>
           <div className="flex justify-center">
             <div className="w-72 h-72">
@@ -282,7 +274,7 @@ export default function LalKitabTevaTab({ chartData, apiResult }: Props) {
       ) : (
         <div className="card-sacred rounded-xl border border-sacred-gold/20 p-5">
           <h3 className="font-sans font-semibold text-sacred-gold mb-4 text-sm">
-            {isHi ? 'ग्रह स्थान (लाल किताब भाव)' : 'Planet Positions (Lal Kitab Houses)'}
+            {t('auto.planetPositionsLalKi')}
           </h3>
           <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
             {Object.entries(positions).map(([planet, house]) => (
@@ -291,7 +283,7 @@ export default function LalKitabTevaTab({ chartData, apiResult }: Props) {
                   {isHi ? (PLANET_HI[planet] ?? planet) : planet}
                 </span>
                 <span className="text-lg font-bold text-cosmic-text">{house}</span>
-                <span className="text-xs text-gray-400">{isHi ? 'भाव' : 'H'}</span>
+                <span className="text-xs text-gray-400">{t('auto.h')}</span>
               </div>
             ))}
           </div>

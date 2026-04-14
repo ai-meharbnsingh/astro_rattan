@@ -533,10 +533,10 @@ export default function JHoraKundliView({
                   {[
                     { key: 'Planet', label: t('table.planet') },
                     { key: 'Degree', label: t('table.degree') },
-                    { key: 'R/C', label: language === 'hi' ? 'व/अ' : 'R/C' },
+                    { key: 'R/C', label: t('auto.rC') },
                     { key: 'Sign', label: t('table.sign') },
-                    { key: 'Mod', label: language === 'hi' ? 'गुण' : 'Mod' },
-                    { key: 'Elem', label: language === 'hi' ? 'तत्व' : 'Elem' },
+                    { key: 'Mod', label: t('auto.mod') },
+                    { key: 'Elem', label: t('auto.elem') },
                     { key: 'Nakshatra', label: t('table.nakshatra') },
                     { key: 'Dignity', label: t('table.dignity') },
                     { key: 'Karaka', label: t('table.karaka') },
@@ -662,7 +662,7 @@ export default function JHoraKundliView({
                               <span style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                 {ad.pratyantar?.length > 0 && <span style={{ fontSize: FONT_SIZE, color: MUTED }}>{expandedAD === `${md.planet}-${ad.planet}` ? '\u25BC' : '\u25B6'}</span>}
                                 <span style={{ color: planetColor(ad.planet), fontWeight: 600 }}>{translatePlanet(ad.planet, language)}</span>
-                                <span style={{ color: MUTED }}> {language === 'hi' ? 'अं' : 'AD'}</span>
+                                <span style={{ color: MUTED }}> {t('auto.aD')}</span>
                                 {ad.is_current && <span style={{ color: 'var(--aged-gold-dim)', fontSize: FONT_SIZE }}>*</span>}
                               </span>
                               <span style={{ color: MUTED, fontSize: FONT_SIZE }}>{formatDate(ad.start)} — {formatDate(ad.end)}</span>
@@ -682,7 +682,7 @@ export default function JHoraKundliView({
                               >
                                 <span>
                                   <span style={{ color: planetColor(pt.planet), fontWeight: 600 }}>{translatePlanet(pt.planet, language)}</span>
-                                  <span style={{ color: MUTED }}> {language === 'hi' ? 'प्र' : 'PD'}</span>
+                                  <span style={{ color: MUTED }}> {t('auto.pD')}</span>
                                   {pt.is_current && <span style={{ color: 'var(--aged-gold-dim)' }}>*</span>}
                                 </span>
                                 <span style={{ color: MUTED }}>{formatDate(pt.start)} — {formatDate(pt.end)}</span>
@@ -738,7 +738,7 @@ export default function JHoraKundliView({
                 <thead>
                   <tr>
                     {[
-                      { key: 'H', label: language === 'hi' ? 'भा' : 'H' },
+                      { key: 'H', label: t('auto.h') },
                       { key: 'Sign', label: t('table.sign') },
                       { key: 'Lord', label: t('table.lord') },
                       { key: 'In H', label: t('table.inHouse') },

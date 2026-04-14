@@ -55,11 +55,11 @@ export default function LalKitabPage() {
   const [activeTopTab, setActiveTopTab] = useState('dashboard');
   const topTabs = [
     { value: 'dashboard', label: t('lk.tab.dashboard'), icon: LayoutDashboard },
-    { value: 'chart', label: isHi ? 'चार्ट' : 'Chart', icon: ChartPie },
-    { value: 'analysis', label: isHi ? 'विश्लेषण' : 'Analysis', icon: Search },
-    { value: 'timing', label: isHi ? 'समय व गोचर' : 'Timing & Gochar', icon: Clock3 },
-    { value: 'upay', label: isHi ? 'उपाय' : 'Upay', icon: Sparkles },
-    { value: 'predictions', label: isHi ? 'भविष्यवाणी' : 'Predictions', icon: ScrollText },
+    { value: 'chart', label: t('auto.chart'), icon: ChartPie },
+    { value: 'analysis', label: t('auto.analysis'), icon: Search },
+    { value: 'timing', label: t('auto.timingGochar'), icon: Clock3 },
+    { value: 'upay', label: t('auto.upay'), icon: Sparkles },
+    { value: 'predictions', label: t('auto.predictions'), icon: ScrollText },
     { value: 'nishaniyan', label: t('lk.tab.nishaniyan'), icon: Tags },
     { value: 'advanced', label: t('lk.tab.advanced'), icon: Settings2 },
   ];
@@ -237,7 +237,7 @@ export default function LalKitabPage() {
               <TabsContent value="predictions" className="space-y-4">
                 <details open className="border border-sacred-gold/20 rounded-xl overflow-hidden">
                   <summary className="p-4 bg-cosmic-card cursor-pointer font-semibold text-sacred-gold flex items-center justify-between">
-                    {isHi ? 'सामान्य भविष्यवाणी' : 'General Predictions'}
+                    {t('auto.generalPredictions')}
                     <ChevronDown className="w-4 h-4" />
                   </summary>
                   <div className="p-4">
@@ -246,7 +246,7 @@ export default function LalKitabPage() {
                 </details>
                 <details className="border border-sacred-gold/20 rounded-xl overflow-hidden">
                   <summary className="p-4 bg-cosmic-card cursor-pointer font-semibold text-sacred-gold flex items-center justify-between">
-                    {isHi ? 'विवाह भविष्यवाणी' : 'Marriage Predictions'}
+                    {t('auto.marriagePredictions')}
                     <ChevronDown className="w-4 h-4" />
                   </summary>
                   <div className="p-4">
@@ -255,7 +255,7 @@ export default function LalKitabPage() {
                 </details>
                 <details className="border border-sacred-gold/20 rounded-xl overflow-hidden">
                   <summary className="p-4 bg-cosmic-card cursor-pointer font-semibold text-sacred-gold flex items-center justify-between">
-                    {isHi ? 'करियर भविष्यवाणी' : 'Career Predictions'}
+                    {t('auto.careerPredictions')}
                     <ChevronDown className="w-4 h-4" />
                   </summary>
                   <div className="p-4">
@@ -264,7 +264,7 @@ export default function LalKitabPage() {
                 </details>
                 <details className="border border-sacred-gold/20 rounded-xl overflow-hidden">
                   <summary className="p-4 bg-cosmic-card cursor-pointer font-semibold text-sacred-gold flex items-center justify-between">
-                    {isHi ? 'स्वास्थ्य भविष्यवाणी' : 'Health Predictions'}
+                    {t('auto.healthPredictions')}
                     <ChevronDown className="w-4 h-4" />
                   </summary>
                   <div className="p-4">
@@ -273,7 +273,7 @@ export default function LalKitabPage() {
                 </details>
                 <details className="border border-sacred-gold/20 rounded-xl overflow-hidden">
                   <summary className="p-4 bg-cosmic-card cursor-pointer font-semibold text-sacred-gold flex items-center justify-between">
-                    {isHi ? 'धन भविष्यवाणी' : 'Wealth Predictions'}
+                    {t('auto.wealthPredictions')}
                     <ChevronDown className="w-4 h-4" />
                   </summary>
                   <div className="p-4">
@@ -282,7 +282,7 @@ export default function LalKitabPage() {
                 </details>
                 <details className="border border-sacred-gold/20 rounded-xl overflow-hidden">
                   <summary className="p-4 bg-cosmic-card cursor-pointer font-semibold text-sacred-gold flex items-center justify-between">
-                    {isHi ? 'सहेजी गई भविष्यवाणियाँ' : 'Saved Predictions'}
+                    {t('auto.savedPredictions')}
                     <ChevronDown className="w-4 h-4" />
                   </summary>
                   <div className="p-4">

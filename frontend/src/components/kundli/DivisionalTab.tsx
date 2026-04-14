@@ -103,7 +103,7 @@ export default function DivisionalTab({
           {divisionalData.d60_analysis && (
             <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold shadow-sm animate-in fade-in slide-in-from-bottom-4 space-y-6">
               <div className="flex items-center gap-2 mb-4 border-b border-sacred-gold/30 pb-3">
-                <h4 className="text-lg font-bold text-sacred-gold-dark">{language === 'hi' ? 'षष्टयंश (D60) कर्मिक विश्लेषण' : 'D60 Shashtiamsa Karmic Analysis'}</h4>
+                <h4 className="text-lg font-bold text-sacred-gold-dark">{t('auto.d60ShashtiamsaKarmic')}</h4>
                 <span className="text-xs px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold-dark border border-sacred-gold/20 font-bold uppercase tracking-tighter">EXPERT</span>
               </div>
 
@@ -132,7 +132,7 @@ export default function DivisionalTab({
                     </div>
                     <div className="flex-1">
                       <h5 className="font-bold text-sm mb-1">
-                        {language === 'hi' ? 'जन्म समय सटीकता' : 'Birth Time Accuracy'}
+                        {t('auto.birthTimeAccuracy')}
                         <span className="ml-2 text-xs uppercase tracking-wider opacity-70">
                           ({divisionalData.d60_analysis.birth_time_assessment.confidence_level})
                         </span>
@@ -166,12 +166,12 @@ export default function DivisionalTab({
               {divisionalData.d60_analysis.karmic_summary && (
                 <div className="bg-white rounded-lg p-4 border border-sacred-gold/20">
                   <h5 className="font-bold text-sacred-brown mb-3">
-                    {language === 'hi' ? 'कर्मिक सारांश' : 'Karmic Summary'}
+                    {t('auto.karmicSummary')}
                   </h5>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div className="bg-green-50 p-3 rounded-lg">
                       <div className="text-xs text-green-700 uppercase font-bold">
-                        {language === 'hi' ? 'पुण्य स्कोर (शुभ)' : 'Punya Score (Benefic)'}
+                        {t('auto.punyaScoreBenefic')}
                       </div>
                       <div className="text-2xl font-bold text-green-800">
                         {divisionalData.d60_analysis.karmic_summary.punya_score}%
@@ -179,7 +179,7 @@ export default function DivisionalTab({
                     </div>
                     <div className="bg-red-50 p-3 rounded-lg">
                       <div className="text-xs text-red-700 uppercase font-bold">
-                        {language === 'hi' ? 'पाप स्कोर (पाप)' : 'Papa Score (Malefic)'}
+                        {t('auto.papaScoreMalefic')}
                       </div>
                       <div className="text-2xl font-bold text-red-800">
                         {divisionalData.d60_analysis.karmic_summary.papa_score}%
@@ -196,7 +196,7 @@ export default function DivisionalTab({
                   {divisionalData.d60_analysis.karmic_summary.life_purpose && (
                     <div className="mt-4 p-3 bg-sacred-gold/10 rounded-lg">
                       <h6 className="font-bold text-sacred-gold-dark text-sm mb-1">
-                        {language === 'hi' ? 'जीवन उद्देश्य' : 'Life Purpose'}: {' '}
+                        {t('auto.lifePurpose')}: {' '}
                         {language === 'hi'
                           ? divisionalData.d60_analysis.karmic_summary.life_purpose.primary_hi
                           : divisionalData.d60_analysis.karmic_summary.life_purpose.primary}
@@ -214,16 +214,16 @@ export default function DivisionalTab({
               {/* Planetary Analysis Table */}
               <div className="overflow-x-auto">
                 <h5 className="font-bold text-sacred-brown mb-3 text-sm">
-                  {language === 'hi' ? 'ग्रह-वार कर्मिक विश्लेषण' : 'Planet-wise Karmic Analysis'}
+                  {t('auto.planetWiseKarmicAnal')}
                 </h5>
                 <table className="w-full text-sm border-collapse">
                   <thead>
                     <tr className="bg-sacred-gold/10">
                       <th className="text-left p-2.5 text-sacred-gold-dark font-bold border-b border-sacred-gold">{t('table.planet')}</th>
-                      <th className="text-center p-2.5 text-sacred-gold-dark font-bold border-b border-sacred-gold">{language === 'hi' ? 'इकाई' : 'Unit'}</th>
-                      <th className="text-left p-2.5 text-sacred-gold-dark font-bold border-b border-sacred-gold">{language === 'hi' ? 'संस्कृत नाम' : 'Sanskrit Name'}</th>
-                      <th className="text-center p-2.5 text-sacred-gold-dark font-bold border-b border-sacred-gold">{language === 'hi' ? 'प्रकृति' : 'Nature'}</th>
-                      <th className="text-left p-2.5 text-sacred-gold-dark font-bold border-b border-sacred-gold">{language === 'hi' ? 'पिछले जन्म का विषय' : 'Past Life Theme'}</th>
+                      <th className="text-center p-2.5 text-sacred-gold-dark font-bold border-b border-sacred-gold">{t('auto.unit')}</th>
+                      <th className="text-left p-2.5 text-sacred-gold-dark font-bold border-b border-sacred-gold">{t('auto.sanskritName')}</th>
+                      <th className="text-center p-2.5 text-sacred-gold-dark font-bold border-b border-sacred-gold">{t('auto.nature')}</th>
+                      <th className="text-left p-2.5 text-sacred-gold-dark font-bold border-b border-sacred-gold">{t('auto.pastLifeTheme')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -263,7 +263,7 @@ export default function DivisionalTab({
               {divisionalData.d60_analysis.karmic_summary?.karmic_debts?.length > 0 && (
                 <div className="bg-red-50 rounded-lg p-4 border border-red-100">
                   <h5 className="font-bold text-red-800 mb-3">
-                    {language === 'hi' ? 'पहचाने गए कर्मिक ऋण' : 'Identified Karmic Debts'}
+                    {t('auto.identifiedKarmicDebt')}
                   </h5>
                   <div className="space-y-3">
                     {divisionalData.d60_analysis.karmic_summary.karmic_debts.map((debt: any, idx: number) => (
@@ -272,14 +272,14 @@ export default function DivisionalTab({
                           {language === 'hi' ? debt.debt_type_hi : debt.debt_type}
                         </h6>
                         <p className="text-xs text-cosmic-text mt-1">
-                          <span className="font-semibold">{language === 'hi' ? 'ग्रह: ' : 'Planets: '}</span>
+                          <span className="font-semibold">{t('auto.planets')}</span>
                           {debt.planets_involved?.join(', ')}
                         </p>
                         <p className="text-xs text-cosmic-text mt-1">
                           {language === 'hi' ? debt.manifestation_hi : debt.manifestation}
                         </p>
                         <p className="text-xs text-green-700 mt-2 font-medium">
-                          <span className="font-semibold">{language === 'hi' ? 'समाधान: ' : 'Resolution: '}</span>
+                          <span className="font-semibold">{t('auto.resolution')}</span>
                           {language === 'hi' ? debt.resolution_hi : debt.resolution}
                         </p>
                       </div>
@@ -292,7 +292,7 @@ export default function DivisionalTab({
               {divisionalData.d60_analysis.karmic_summary?.remedy_accessibility && (
                 <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
                   <h5 className="font-bold text-blue-800 mb-2">
-                    {language === 'hi' ? 'उपाय पहुंचनीयता' : 'Remedy Accessibility'}: {' '}
+                    {t('auto.remedyAccessibility')}: {' '}
                     {language === 'hi' 
                       ? divisionalData.d60_analysis.karmic_summary.remedy_accessibility.level_hi
                       : divisionalData.d60_analysis.karmic_summary.remedy_accessibility.level}
@@ -317,9 +317,7 @@ export default function DivisionalTab({
 
               {/* Footer Note */}
               <div className="mt-4 p-3 bg-white/50 rounded-lg border border-sacred-gold/10 text-xs text-cosmic-text italic leading-relaxed">
-                {language === 'hi' 
-                  ? "* पराशर ऋषि के अनुसार, षष्टयंश (D60) विश्लेषण के बिना किसी भी जन्म कुंडली पर अंतिम निर्णय नहीं सुनाया जाना चाहिए। यह चार्ट पूर्व जन्म के संचित कर्मों (संचित कर्म) को प्रकट करता है और उपाय की प्रभावशीलता का निर्धारण करता है।"
-                  : "* According to Sage Parashara, no final judgment should be pronounced on any horoscope without Shashtiamsa (D60) analysis. This chart reveals the accumulated Sanchita Karma from past incarnations and determines remedy effectiveness."
+                {t('auto.AccordingToSageParas')
                 }
               </div>
             </div>

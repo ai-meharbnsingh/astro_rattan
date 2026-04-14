@@ -537,18 +537,16 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
             <AlertTriangle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
             <div>
               <p className="text-sm font-medium text-red-800">
-                {lang === 'hi' ? 'सर्वर त्रुटि' : 'Server Error'}
+                {t('auto.serverError')}
               </p>
               <p className="text-sm text-red-600 mt-1">
-                {lang === 'hi' 
-                  ? 'डेटा लोड करने में समस्या हुई। कृपया बाद में पुनः प्रयास करें।' 
-                  : 'Failed to load data. Please try again later.'}
+                {t('auto.failedToLoadDataPlea')}
               </p>
               <button
                 onClick={() => fetchAnalysis(selectedCountry, selectedYear)}
                 className="mt-2 px-3 py-1 bg-red-100 hover:bg-red-200 text-red-700 text-sm rounded-md transition-colors"
               >
-                {lang === 'hi' ? 'पुनः प्रयास करें' : 'Retry'}
+                {t('auto.retry')}
               </button>
             </div>
           </div>
@@ -787,7 +785,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                       </span>
                       <div>
                         <span className="text-sm font-medium text-sacred-brown">
-                          {lang === 'hi' ? `भाव ${h.house}` : `House ${h.house}`}
+                          {t('auto.houseHHouse')}
                         </span>
                         <span className="text-sm text-cosmic-text ml-2">
                           {(() => {
@@ -797,7 +795,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                               return lang === 'hi' ? meaning.hi || meaning.en : meaning.en;
                             }
                             return loc(
-                              h.meaning || (lang === 'hi' ? 'उपलब्ध नहीं' : 'Unavailable'),
+                              h.meaning || (t('auto.unavailable')),
                               h.meaning_hi || 'उपलब्ध नहीं',
                             );
                           })()}
@@ -989,7 +987,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
             type="button"
             onClick={prevYear}
             className="p-1.5 rounded-lg border border-sacred-gold hover:bg-sacred-gold/10 text-sacred-brown transition-colors"
-            aria-label={lang === 'hi' ? 'पिछला वर्ष' : 'Previous year'}
+            aria-label={t('auto.previousYear')}
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
@@ -1000,7 +998,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
             type="button"
             onClick={nextYear}
             className="p-1.5 rounded-lg border border-sacred-gold hover:bg-sacred-gold/10 text-sacred-brown transition-colors"
-            aria-label={lang === 'hi' ? 'अगला वर्ष' : 'Next year'}
+            aria-label={t('auto.nextYear')}
           >
             <ChevronRight className="w-4 h-4" />
           </button>

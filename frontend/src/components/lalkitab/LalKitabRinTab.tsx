@@ -69,7 +69,7 @@ export default function LalKitabRinTab({ kundliId }: Props) {
         setDebts(Array.isArray(res?.debts) ? res.debts : []);
         setAfflicted(Array.isArray(res?.afflicted_planets) ? res.afflicted_planets : []);
       })
-      .catch(() => setError(isHi ? 'ऋण जानकारी लोड नहीं हो सकी' : 'Failed to load debt data'))
+      .catch(() => setError(t('auto.failedToLoadDebtData')))
       .finally(() => setLoading(false));
   }, [kundliId, isHi]);
 
@@ -82,12 +82,10 @@ export default function LalKitabRinTab({ kundliId }: Props) {
       <div>
         <h2 className="text-xl font-sans font-semibold text-sacred-gold flex items-center gap-2 mb-1">
           <Scale className="w-5 h-5" />
-          {isHi ? 'लाल किताब ऋण (कर्मिक ऋण)' : 'Lal Kitab Rin (Karmic Debts)'}
+          {t('auto.lalKitabRinKarmicDeb')}
         </h2>
         <p className="text-sm text-gray-500">
-          {isHi
-            ? 'पूर्व जन्म के कर्मिक ऋण जो इस जन्म में चुकाने हैं। पीड़ित ग्रह सक्रिय ऋण दर्शाते हैं।'
-            : 'Past-life karmic debts to be resolved in this birth. Afflicted planets show active debts.'}
+          {t('auto.pastLifeKarmicDebtsT')}
         </p>
       </div>
 
@@ -97,7 +95,7 @@ export default function LalKitabRinTab({ kundliId }: Props) {
           <AlertCircle className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
           <div>
             <p className="text-sm font-semibold text-red-700 mb-1">
-              {isHi ? 'पीड़ित ग्रह (षष्ठ / अष्टम / द्वादश भाव में)' : 'Afflicted planets (in 6th / 8th / 12th house)'}
+              {t('auto.afflictedPlanetsIn6t')}
             </p>
             <div className="flex flex-wrap gap-2">
               {afflicted.map((p) => (
@@ -115,15 +113,15 @@ export default function LalKitabRinTab({ kundliId }: Props) {
         <div className="flex gap-3">
           <div className="flex-1 p-3 rounded-xl bg-red-500/8 border border-red-300/20 text-center">
             <p className="text-2xl font-bold text-red-600">{activeDebts.length}</p>
-            <p className="text-xs text-gray-500 mt-0.5">{isHi ? 'सक्रिय ऋण' : 'Active Debts'}</p>
+            <p className="text-xs text-gray-500 mt-0.5">{t('auto.activeDebts')}</p>
           </div>
           <div className="flex-1 p-3 rounded-xl bg-green-500/8 border border-green-300/20 text-center">
             <p className="text-2xl font-bold text-green-600">{inactiveDebts.length}</p>
-            <p className="text-xs text-gray-500 mt-0.5">{isHi ? 'निष्क्रिय ऋण' : 'Inactive Debts'}</p>
+            <p className="text-xs text-gray-500 mt-0.5">{t('auto.inactiveDebts')}</p>
           </div>
           <div className="flex-1 p-3 rounded-xl bg-sacred-gold/8 border border-sacred-gold/20 text-center">
             <p className="text-2xl font-bold text-sacred-gold">{debts.length}</p>
-            <p className="text-xs text-gray-500 mt-0.5">{isHi ? 'कुल ऋण' : 'Total Debts'}</p>
+            <p className="text-xs text-gray-500 mt-0.5">{t('auto.totalDebts')}</p>
           </div>
         </div>
       )}
@@ -147,7 +145,7 @@ export default function LalKitabRinTab({ kundliId }: Props) {
         <div>
           <h3 className="font-sans font-semibold text-red-700 mb-3 flex items-center gap-2">
             <AlertCircle className="w-4 h-4" />
-            {isHi ? 'सक्रिय ऋण — तत्काल उपाय आवश्यक' : 'Active Debts — Remedies Required'}
+            {t('auto.activeDebtsRemediesR')}
           </h3>
           <div className="space-y-4">
             {activeDebts.map((debt) => (
@@ -162,7 +160,7 @@ export default function LalKitabRinTab({ kundliId }: Props) {
         <div>
           <h3 className="font-sans font-semibold text-green-700 mb-3 flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4" />
-            {isHi ? 'निष्क्रिय ऋण — अभी प्रभावी नहीं' : 'Inactive Debts — Not currently active'}
+            {t('auto.inactiveDebtsNotCurr')}
           </h3>
           <div className="space-y-3">
             {inactiveDebts.map((debt) => (
@@ -174,7 +172,7 @@ export default function LalKitabRinTab({ kundliId }: Props) {
 
       {!loading && !error && debts.length === 0 && (
         <div className="text-center py-12 text-gray-400 text-sm">
-          {isHi ? 'ऋण डेटा उपलब्ध नहीं' : 'No debt data available'}
+          {t('auto.noDebtDataAvailable')}
         </div>
       )}
     </div>
@@ -213,12 +211,12 @@ function DebtCard({ debt, isHi }: { debt: Debt; isHi: boolean }) {
         {debt.active ? (
           <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-500/10 text-red-700 text-xs font-semibold border border-red-300/30">
             <AlertCircle className="w-3 h-3" />
-            {isHi ? 'सक्रिय' : 'Active'}
+            {t('auto.active')}
           </span>
         ) : (
           <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-500/10 text-green-700 text-xs font-medium border border-green-300/30">
             <CheckCircle2 className="w-3 h-3" />
-            {isHi ? 'निष्क्रिय' : 'Inactive'}
+            {t('auto.inactive')}
           </span>
         )}
       </div>
@@ -232,7 +230,7 @@ function DebtCard({ debt, isHi }: { debt: Debt; isHi: boolean }) {
       {debt.indication && (
         <div className="mb-3 p-3 rounded-lg bg-sacred-gold/5 border border-sacred-gold/15">
           <p className="text-xs font-semibold text-sacred-gold mb-1">
-            {isHi ? 'संकेत' : 'Indication'}
+            {t('auto.indication')}
           </p>
           <p className="text-xs text-cosmic-text/70 leading-snug">
             {isHi ? debt.indication : (DEBT_EN[debt.debt_type]?.indication ?? debt.indication)}
@@ -243,7 +241,7 @@ function DebtCard({ debt, isHi }: { debt: Debt; isHi: boolean }) {
       {/* Remedy */}
       <div className="p-3 rounded-lg bg-green-500/5 border border-green-300/20">
         <p className="text-xs font-semibold text-green-700 mb-1">
-          {isHi ? 'उपाय' : 'Remedy'}
+          {t('auto.remedy')}
         </p>
         <p className="text-xs text-cosmic-text/70 leading-snug">
           {isHi ? debt.remedy : (DEBT_EN[debt.debt_type]?.remedy ?? debt.remedy)}

@@ -23,9 +23,9 @@ export default function LalKitabHousesTab({ chartData }: Props) {
   };
 
   const getStrengthLabel = (strength: 'strong' | 'weak' | 'empty') => {
-    if (strength === 'strong') return language === 'hi' ? 'मजबूत' : 'Strong';
-    if (strength === 'weak') return language === 'hi' ? 'कमजोर' : 'Weak';
-    return language === 'hi' ? 'खाली' : 'Empty';
+    if (strength === 'strong') return t('auto.strong');
+    if (strength === 'weak') return t('auto.weak');
+    return t('auto.empty');
   };
 
   return (
@@ -172,9 +172,7 @@ export default function LalKitabHousesTab({ chartData }: Props) {
                                 </div>
                               ) : (
                                 <p className="text-sm text-gray-600 italic">
-                                  {language === 'hi'
-                                    ? 'इस ग्रह के लिए प्रभाव उपलब्ध नहीं हैं'
-                                    : 'Effects not available for this planet'}
+                                  {t('auto.effectsNotAvailableF')}
                                 </p>
                               )}
                             </div>
@@ -183,7 +181,7 @@ export default function LalKitabHousesTab({ chartData }: Props) {
                       </div>
                     ) : (
                       <p className="text-sm text-gray-600 italic">
-                        {language === 'hi' ? 'खाली भाव — कोई ग्रह नहीं' : 'Empty house — no planets placed'}
+                        {t('auto.emptyHouseNoPlanetsP')}
                       </p>
                     )}
                   </div>

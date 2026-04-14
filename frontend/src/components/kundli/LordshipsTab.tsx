@@ -47,11 +47,11 @@ export default function LordshipsTab({ planets, houses }: LordshipsTabProps) {
         <table className="w-full text-xs">
           <thead className="bg-sacred-gold">
             <tr>
-              <th className="text-left p-1.5 font-medium text-sacred-gold-dark">{language === 'hi' ? 'भाव' : 'House'}</th>
-              <th className="text-left p-1.5 font-medium text-sacred-gold-dark">{language === 'hi' ? 'राशि' : 'Sign'}</th>
-              <th className="text-left p-1.5 font-medium text-sacred-gold-dark">{language === 'hi' ? 'स्वामी' : 'Lord'}</th>
-              <th className="text-left p-1.5 font-medium text-sacred-gold-dark">{language === 'hi' ? 'स्थित' : 'Placed In'}</th>
-              <th className="text-left p-1.5 font-medium text-sacred-gold-dark">{language === 'hi' ? 'महत्व' : 'Significance'}</th>
+              <th className="text-left p-1.5 font-medium text-sacred-gold-dark">{t('auto.house')}</th>
+              <th className="text-left p-1.5 font-medium text-sacred-gold-dark">{t('auto.sign')}</th>
+              <th className="text-left p-1.5 font-medium text-sacred-gold-dark">{t('auto.lord')}</th>
+              <th className="text-left p-1.5 font-medium text-sacred-gold-dark">{t('auto.placedIn')}</th>
+              <th className="text-left p-1.5 font-medium text-sacred-gold-dark">{t('auto.significance')}</th>
             </tr>
           </thead>
           <tbody>
@@ -65,7 +65,7 @@ export default function LordshipsTab({ planets, houses }: LordshipsTabProps) {
 
               // Find which house the lord sits in
               const lordPlanet = planets.find((p: any) => p.planet === lord);
-              const lordPlacedIn = lordPlanet ? `${language === 'hi' ? 'भाव' : 'House'} ${lordPlanet.house}` : '\u2014';
+              const lordPlacedIn = lordPlanet ? `${t('auto.house')} ${lordPlanet.house}` : '\u2014';
 
               return (
                 <tr key={houseNum} className={`border-t border-sacred-gold ${houseNum % 2 === 0 ? 'bg-sacred-gold/[0.02]' : ''}`}>

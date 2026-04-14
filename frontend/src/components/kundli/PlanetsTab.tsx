@@ -79,7 +79,7 @@ export default function PlanetsTab({
                       <p className="text-sm text-cosmic-text">{t('kundli.nakshatra')}</p>
                       <p className="font-semibold text-sacred-brown">
                         {translateNakshatra(p.nakshatra, language) || t('common.noData')}
-                        {p.nakshatra_pada ? ` (${language === 'hi' ? 'पाद' : 'Pada'} ${p.nakshatra_pada})` : ''}
+                        {p.nakshatra_pada ? ` (${t('auto.pada')} ${p.nakshatra_pada})` : ''}
                       </p>
                     </div>
                   </div>
@@ -181,7 +181,7 @@ export default function PlanetsTab({
                   <td className="p-1.5 text-cosmic-text">{planet.house}</td>
                   <td className="p-1.5 text-cosmic-text">
                     {translateNakshatra(planet.nakshatra, language) || '\u2014'}
-                    {planet.nakshatra_pada ? ` (${language === 'hi' ? 'पाद' : 'P'}${planet.nakshatra_pada})` : ''}
+                    {planet.nakshatra_pada ? ` (${t('auto.p')}${planet.nakshatra_pada})` : ''}
                   </td>
                   <td className="p-1.5">
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-100 text-green-800' : 'bg-cosmic-surface text-cosmic-text'}`}>

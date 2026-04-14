@@ -183,7 +183,7 @@ export default function AuthPage() {
           </div>
           <h2 className="text-xl sm:text-2xl md:text-3xl font-sans font-bold text-cosmic-text mb-2">{t('auth.welcome')}</h2>
           <p className="text-cosmic-text-secondary">{t('auth.subtitle')}</p>
-          <p className="text-xs text-gray-500 mt-2">Your data is encrypted and never shared</p>
+          <p className="text-xs text-gray-500 mt-2">{t('auth.dataEncrypted') || 'Your data is encrypted and never shared'}</p>
         </div>
         {error && <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-300 text-red-700 text-sm text-center">{error}</div>}
         {success && <div className="mb-4 p-3 rounded-xl bg-green-50 border border-green-300 text-green-700 text-sm text-center">{success}</div>}

@@ -29,7 +29,7 @@ export default function HomeComplianceReport({ result }: Props) {
       {/* Overall Score */}
       <div className="bg-white/5 border border-white/10 rounded-xl p-5 flex items-center justify-between">
         <div>
-          <p className="text-sm text-cosmic-text/60">{isHi ? 'गृह वास्तु स्कोर' : 'Home Vastu Score'}</p>
+          <p className="text-sm text-cosmic-text/60">{t('auto.homeVastuScore')}</p>
           <p className="text-sm text-cosmic-text/70 mt-1">
             {isHi ? result.overall_label_hi : result.overall_label_en}
           </p>
@@ -46,22 +46,22 @@ export default function HomeComplianceReport({ result }: Props) {
       <div className="flex gap-3 flex-wrap">
         {result.ideal_count > 0 && (
           <span className="px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 text-sm font-bold">
-            {result.ideal_count} {isHi ? 'आदर्श' : 'Ideal'}
+            {result.ideal_count} {t('auto.ideal')}
           </span>
         )}
         {result.acceptable_count > 0 && (
           <span className="px-3 py-1.5 rounded-lg bg-blue-500/10 text-blue-400 text-sm font-bold">
-            {result.acceptable_count} {isHi ? 'ठीक' : 'OK'}
+            {result.acceptable_count} {t('auto.oK')}
           </span>
         )}
         {result.neutral_count > 0 && (
           <span className="px-3 py-1.5 rounded-lg bg-slate-500/10 text-slate-400 text-sm font-bold">
-            {result.neutral_count} {isHi ? 'तटस्थ' : 'Neutral'}
+            {result.neutral_count} {t('auto.neutral')}
           </span>
         )}
         {result.avoid_count > 0 && (
           <span className="px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 text-sm font-bold">
-            {result.avoid_count} {isHi ? 'गलत' : 'Misplaced'}
+            {result.avoid_count} {t('auto.misplaced')}
           </span>
         )}
       </div>
@@ -78,7 +78,7 @@ export default function HomeComplianceReport({ result }: Props) {
             : <AlertTriangle className="w-4 h-4 text-red-400" />
           }
           <span className="text-sm font-semibold text-cosmic-text">
-            {isHi ? 'ब्रह्म स्थान' : 'Brahma Sthana'}
+            {t('auto.brahmaSthana')}
           </span>
         </div>
         <p className="text-sm text-cosmic-text mt-1">
@@ -88,7 +88,7 @@ export default function HomeComplianceReport({ result }: Props) {
 
       {/* Per-Room Cards */}
       <div className="space-y-3">
-        <h3 className="text-sm font-bold text-cosmic-text">{isHi ? 'कमरा-वार विश्लेषण' : 'Room-by-Room Analysis'}</h3>
+        <h3 className="text-sm font-bold text-cosmic-text">{t('auto.roomByRoomAnalysis')}</h3>
         {result.room_results.map((r: any, i: number) => {
           const ui = COMPLIANCE_UI[r.compliance] || COMPLIANCE_UI.neutral;
           const Icon = ui.icon;
@@ -116,7 +116,7 @@ export default function HomeComplianceReport({ result }: Props) {
               {/* Ideal directions hint */}
               {r.compliance !== 'ideal' && (
                 <div className="flex items-center gap-1 mb-2">
-                  <span className="text-sm text-cosmic-text/50">{isHi ? 'आदर्श:' : 'Ideal:'}</span>
+                  <span className="text-sm text-cosmic-text/50">{t('auto.ideal')}</span>
                   {(isHi ? r.ideal_directions_hi : r.ideal_directions).map((d: string, di: number) => (
                     <span key={di} className="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-sm font-bold">{d}</span>
                   ))}
@@ -137,7 +137,7 @@ export default function HomeComplianceReport({ result }: Props) {
               {r.remedies && r.compliance !== 'warning' && (
                 <div className="bg-black/20 rounded-lg p-3 mt-2 space-y-2">
                   <p className="text-sm font-bold text-red-400 uppercase">
-                    {isHi ? 'उपाय' : 'Remedies'}
+                    {t('auto.remedies')}
                   </p>
                   <p className="text-sm text-cosmic-text">{isHi ? r.remedies.relocation_hi : r.remedies.relocation_en}</p>
                   {r.remedies.explanation_en && (
@@ -147,13 +147,13 @@ export default function HomeComplianceReport({ result }: Props) {
                   )}
                   {r.remedies.metal_strip && (
                     <div className="flex items-center gap-2 text-sm">
-                      <span className="text-sacred-gold font-semibold">{isHi ? 'धातु:' : 'Metal:'}</span>
+                      <span className="text-sacred-gold font-semibold">{t('auto.metal')}</span>
                       <span className="text-cosmic-text">{isHi ? r.remedies.metal_strip.metal_hi : r.remedies.metal_strip.metal}</span>
                     </div>
                   )}
                   {r.remedies.color_therapy && (
                     <div className="flex items-center gap-2 text-sm flex-wrap">
-                      <span className="text-sacred-gold font-semibold">{isHi ? 'रंग:' : 'Colors:'}</span>
+                      <span className="text-sacred-gold font-semibold">{t('auto.colors')}</span>
                       {(isHi ? r.remedies.color_therapy.colors_hi : r.remedies.color_therapy.colors).map((c: string, ci: number) => (
                         <span key={ci} className="px-1.5 py-0.5 rounded bg-white/10 text-cosmic-text text-sm">{c}</span>
                       ))}
@@ -194,7 +194,7 @@ export default function HomeComplianceReport({ result }: Props) {
       {result.missing_critical_rooms?.length > 0 && (
         <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4">
           <h4 className="text-sm font-bold text-amber-400 mb-2">
-            {isHi ? 'गायब महत्वपूर्ण कमरे' : 'Missing Critical Rooms'}
+            {t('auto.missingCriticalRooms')}
           </h4>
           {result.missing_critical_rooms.map((m: any, i: number) => (
             <div key={i} className="flex items-center gap-2 mb-1">

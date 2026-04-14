@@ -46,7 +46,7 @@ export default function AllSignsTab({ data, loading, language, t, onSelectSign }
   if (!data?.signs?.length) {
     return (
       <div className="text-center py-12 text-cosmic-text-secondary">
-        {language === 'hi' ? 'राशिफल उपलब्ध नहीं' : 'No horoscope data available'}
+        {t('auto.noHoroscopeDataAvail')}
       </div>
     );
   }
@@ -79,7 +79,7 @@ export default function AllSignsTab({ data, loading, language, t, onSelectSign }
               {entry.summary || (entry.sections?.general || '').slice(0, 160)}
             </p>
             <div className="mt-2 text-[10px] text-sacred-gold-dark font-medium group-hover:underline">
-              {language === 'hi' ? 'विस्तार से पढ़ें →' : 'Read full horoscope →'}
+              {t('auto.readFullHoroscope')}
             </div>
           </button>
         );

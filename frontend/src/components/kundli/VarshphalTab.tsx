@@ -71,7 +71,7 @@ export default function VarshphalTab({
               </div>
               <div className="bg-white rounded-lg p-3">
                 <p className="text-sm text-cosmic-text">{t('varshphal.munthaHouse')}</p>
-                <p className="font-semibold text-sacred-brown">{language === 'hi' ? 'भाव' : 'House'} {varshphalData.muntha?.house}</p>
+                <p className="font-semibold text-sacred-brown">{t('auto.house')} {varshphalData.muntha?.house}</p>
               </div>
               <div className="bg-white rounded-lg p-3">
                 <p className="text-sm text-cosmic-text">{t('section.munthaLord')}</p>

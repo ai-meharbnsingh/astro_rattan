@@ -205,7 +205,7 @@ export default function ConsolidatedReport({
     try {
       const token = localStorage.getItem('astrorattan_token');
       const API_BASE = import.meta.env.VITE_API_URL || '';
-      const resp = await fetch(`${API_BASE}/api/kundli/${result.id}/pdf`, {
+      const resp = await fetch(`${API_BASE}/api/kundli/${result.id}/pdf?lang=${language}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       if (!resp.ok) {
@@ -1174,8 +1174,8 @@ export default function ConsolidatedReport({
                         <th className="text-left p-1.5 text-cosmic-text-secondary">{t('table.bhava')}</th>
                         <th className="text-left p-1.5 text-cosmic-text-secondary">{t('table.planets')}</th>
                         <th className="text-left p-1.5 text-cosmic-text-secondary">{t('table.aspectedBy')}</th>
-                        <th className="text-center p-1.5 text-cosmic-text-secondary">{language === 'hi' ? 'शु' : 'B'}</th>
-                        <th className="text-center p-1.5 text-cosmic-text-secondary">{language === 'hi' ? 'अशु' : 'M'}</th>
+                        <th className="text-center p-1.5 text-cosmic-text-secondary">{t('auto.b')}</th>
+                        <th className="text-center p-1.5 text-cosmic-text-secondary">{t('auto.m')}</th>
                       </tr>
                     </thead>
                     <tbody>

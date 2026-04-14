@@ -204,13 +204,13 @@ export default function LalKitabChandraChaalanaTab() {
         {/* Preview first 7 days */}
         <div className="card-sacred rounded-xl p-5 border border-sacred-gold/20">
           <h3 className="font-sans font-semibold text-sacred-gold mb-4">
-            {isHi ? 'पहले 7 दिन की झलक' : 'Preview — First 7 Days'}
+            {t('auto.previewFirst7Days')}
           </h3>
           <div className="space-y-2">
             {CHANDRA_CHAALANA_TASKS.slice(0, 7).map((task) => (
               <div key={task.day} className="flex items-start gap-3 p-3 rounded-xl bg-sacred-gold/5">
                 <span className="text-xs font-bold text-sacred-gold min-w-[40px]">
-                  {isHi ? `दिन ${task.day}` : `Day ${task.day}`}
+                  {t('auto.dayTaskDay')}
                 </span>
                 <p className="text-xs text-cosmic-text/80 leading-snug">
                   {isHi ? task.hi : task.en}

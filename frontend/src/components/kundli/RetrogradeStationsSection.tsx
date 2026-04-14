@@ -41,7 +41,7 @@ export default function RetrogradeStationsSection({ kundliId }: RetrogradeStatio
     <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4 mt-4">
       <div className="flex items-center justify-between mb-3">
         <h4 className="font-display font-semibold text-sacred-brown">
-          {language === 'hi' ? 'ग्रह वक्री तिथियाँ' : 'Planet Retrogression Dates'}
+          {t('auto.planetRetrogressionD')}
         </h4>
         <div className="flex items-center gap-2">
           <Button
@@ -74,12 +74,12 @@ export default function RetrogradeStationsSection({ kundliId }: RetrogradeStatio
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr className="bg-slate-100">
-                <th className="text-left p-2 font-medium text-slate-600">{language === 'hi' ? 'ग्रह' : 'Planet'}</th>
-                <th className="text-left p-2 font-medium text-slate-600">{language === 'hi' ? 'प्रकार' : 'Station'}</th>
-                <th className="text-left p-2 font-medium text-slate-600">{language === 'hi' ? 'तिथि' : 'Date'}</th>
-                <th className="text-left p-2 font-medium text-slate-600">{language === 'hi' ? 'समय' : 'Time'}</th>
-                <th className="text-left p-2 font-medium text-slate-600">{language === 'hi' ? 'राशि' : 'Sign'}</th>
-                <th className="text-center p-2 font-medium text-slate-600">{language === 'hi' ? 'अंश' : 'Degree'}</th>
+                <th className="text-left p-2 font-medium text-slate-600">{t('auto.planet')}</th>
+                <th className="text-left p-2 font-medium text-slate-600">{t('auto.station')}</th>
+                <th className="text-left p-2 font-medium text-slate-600">{t('auto.date')}</th>
+                <th className="text-left p-2 font-medium text-slate-600">{t('auto.time')}</th>
+                <th className="text-left p-2 font-medium text-slate-600">{t('auto.sign')}</th>
+                <th className="text-center p-2 font-medium text-slate-600">{t('auto.degree')}</th>
               </tr>
             </thead>
             <tbody>
@@ -90,7 +90,7 @@ export default function RetrogradeStationsSection({ kundliId }: RetrogradeStatio
                     <tr key={planet} className="border-b border-slate-100">
                       <td className="p-2 font-semibold">{translatePlanet(planet, language)}</td>
                       <td colSpan={5} className="p-2 text-slate-400 text-center">
-                        {language === 'hi' ? 'इस वर्ष वक्री नहीं' : 'No retrogression this year'}
+                        {t('auto.noRetrogressionThisY')}
                       </td>
                     </tr>
                   );
@@ -111,8 +111,8 @@ export default function RetrogradeStationsSection({ kundliId }: RetrogradeStatio
                         }}
                       >
                         {s.station === 'retrograde'
-                          ? (language === 'hi' ? 'वक्री' : 'Retrograde')
-                          : (language === 'hi' ? 'मार्गी' : 'Direct')}
+                          ? (t('auto.retrograde'))
+                          : (t('auto.direct'))}
                       </span>
                     </td>
                     <td className="p-2 font-mono text-sm">{s.date}</td>

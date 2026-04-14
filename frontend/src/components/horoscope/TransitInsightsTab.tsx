@@ -59,7 +59,7 @@ export default function TransitInsightsTab({ data, loading, language, t }: Props
   if (!data) {
     return (
       <div className="text-center py-12 text-cosmic-text-secondary">
-        {language === 'hi' ? 'गोचर डेटा उपलब्ध नहीं' : 'Transit data unavailable'}
+        {t('auto.transitDataUnavailab')}
       </div>
     );
   }
@@ -69,18 +69,18 @@ export default function TransitInsightsTab({ data, loading, language, t }: Props
       {/* Current Planetary Positions */}
       <div className="rounded-xl border border-cosmic-border bg-cosmic-card p-3">
         <h3 className="text-sm font-semibold text-sacred-gold-dark mb-2">
-          {language === 'hi' ? 'वर्तमान ग्रह स्थिति' : 'Current Planetary Positions'}
+          {t('auto.currentPlanetaryPosi')}
         </h3>
         <div className="rounded-lg border border-cosmic-border overflow-hidden">
           <table className="w-full table-fixed text-xs sm:text-sm">
             <thead>
               <tr className="bg-sacred-gold/15">
                 <th className="text-left px-2 py-1.5 text-sacred-gold-dark font-semibold w-[40%]">
-                  {language === 'hi' ? 'ग्रह' : 'Planet'}
+                  {t('auto.planet')}
                 </th>
                 <th className="text-left px-2 py-1.5 text-sacred-gold-dark font-semibold w-[15%]" />
                 <th className="text-left px-2 py-1.5 text-sacred-gold-dark font-semibold w-[45%]">
-                  {language === 'hi' ? 'वर्तमान राशि' : 'Current Sign'}
+                  {t('auto.currentSign')}
                 </th>
               </tr>
             </thead>
@@ -106,26 +106,26 @@ export default function TransitInsightsTab({ data, loading, language, t }: Props
       {/* Sign-wise Effects */}
       <div className="rounded-xl border border-cosmic-border bg-cosmic-card p-3">
         <h3 className="text-sm font-semibold text-sacred-gold-dark mb-2">
-          {language === 'hi' ? 'राशि अनुसार प्रभाव' : 'Sign-wise Transit Effects'}
+          {t('auto.signWiseTransitEffec')}
         </h3>
         <div className="rounded-lg border border-cosmic-border overflow-hidden">
           <table className="w-full table-fixed text-xs sm:text-sm">
             <thead>
               <tr className="bg-sacred-gold/15">
                 <th className="text-left px-2 py-1.5 text-sacred-gold-dark font-semibold w-[20%]">
-                  {language === 'hi' ? 'राशि' : 'Sign'}
+                  {t('auto.sign')}
                 </th>
                 <th className="text-left px-2 py-1.5 text-sacred-gold-dark font-semibold w-[20%]">
-                  {language === 'hi' ? 'स्वामी' : 'Ruler'}
+                  {t('auto.ruler')}
                 </th>
                 <th className="text-left px-2 py-1.5 text-sacred-gold-dark font-semibold w-[22%]">
-                  {language === 'hi' ? 'स्वामी राशि' : 'Ruler In'}
+                  {t('auto.rulerIn')}
                 </th>
                 <th className="text-left px-2 py-1.5 text-sacred-gold-dark font-semibold w-[18%]">
-                  {language === 'hi' ? 'स्थिति' : 'Dignity'}
+                  {t('auto.dignity')}
                 </th>
                 <th className="text-left px-2 py-1.5 text-sacred-gold-dark font-semibold w-[20%]">
-                  {language === 'hi' ? 'बल' : 'Strength'}
+                  {t('auto.strength')}
                 </th>
               </tr>
             </thead>

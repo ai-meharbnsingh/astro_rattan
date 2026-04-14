@@ -112,7 +112,7 @@ export default function LalKitabRemediesTab({ chartData, kundliId }: Props) {
             <div key={planet.key} className="space-y-4">
               {/* Section header */}
               <h3 className="text-lg font-sans font-semibold text-sacred-gold">
-                {planetName} — {language === 'hi' ? 'भाव' : 'House'} {houseNumber}
+                {planetName} — {t('auto.house')} {houseNumber}
               </h3>
 
               {/* Remedy cards */}
@@ -181,7 +181,7 @@ export default function LalKitabRemediesTab({ chartData, kundliId }: Props) {
 
         {!masterLoading && masterRemedies.length === 0 && kundliId && (
           <p className="text-sm text-gray-400 text-center py-6">
-            {isHi ? 'इस कुंडली के लिए कोई स्थान-आधारित उपाय नहीं मिले' : 'No position-based remedies found for this chart'}
+            {t('auto.noPositionBasedRemed')}
           </p>
         )}
 
@@ -195,7 +195,7 @@ export default function LalKitabRemediesTab({ chartData, kundliId }: Props) {
                     {isHi ? (PLANET_HI[r.planet] ?? r.planet) : r.planet.charAt(0).toUpperCase() + r.planet.slice(1)}
                   </span>
                   <span className="px-2.5 py-1 rounded-full bg-cosmic-text/8 text-cosmic-text text-xs font-medium">
-                    {isHi ? `भाव ${r.house}` : `House ${r.house}`}
+                    {t('auto.houseRHouse')}
                   </span>
                   <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 text-xs border border-blue-300/30">
                     {t(`lk.remedies.${r.remedy_type}`) !== `lk.remedies.${r.remedy_type}`

@@ -40,23 +40,23 @@ export default function PlanetaryPositionsTab({ panchang, language, t }: Props) 
       <div className="rounded-lg border border-cosmic-border p-2">
         <h3 className="font-bold text-cosmic-text-primary mb-1 flex items-center gap-1">
           <Orbit className="h-4 w-4 text-sacred-gold" />
-          {language === 'hi' ? 'नवग्रह स्थिति' : 'Navgraha Positions (Planetary Positions)'}
+          {t('auto.navgrahaPositionsPla')}
         </h3>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[680px] text-sm">
             <thead>
               <tr className="bg-sacred-gold/15">
                 <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                  {language === 'hi' ? 'ग्रह' : 'Planet'}
+                  {t('auto.planet')}
                 </th>
                 <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                  {language === 'hi' ? 'राशि' : 'Sign'}
+                  {t('auto.sign')}
                 </th>
                 <th className="text-right px-2 py-1 text-sacred-gold-dark font-semibold">
-                  {language === 'hi' ? 'अंश' : 'Degree'}
+                  {t('auto.degree')}
                 </th>
                 <th className="text-right px-2 py-1 text-sacred-gold-dark font-semibold">
-                  {language === 'hi' ? 'दीर्घांश' : 'Longitude'}
+                  {t('auto.longitude')}
                 </th>
               </tr>
             </thead>

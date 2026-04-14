@@ -23,17 +23,17 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
         <table className="w-full text-sm">
           <thead className="bg-sacred-gold">
             <tr>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">{language === 'hi' ? 'ग्रह' : 'Planet'}</th>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">{language === 'hi' ? 'राशि' : 'Sign'}</th>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">{language === 'hi' ? 'अंश' : 'Degree'}</th>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">{language === 'hi' ? 'नक्षत्र' : 'Nakshatra'}</th>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">{language === 'hi' ? 'भाव' : 'House'}</th>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">{language === 'hi' ? 'गौरव' : 'Dignity'}</th>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">{language === 'hi' ? 'राशि प्रकार' : 'Sign Type'}</th>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">{language === 'hi' ? 'तत्व' : 'Element'}</th>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">{language === 'hi' ? 'स्वभाव' : 'Nature'}</th>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">{language === 'hi' ? 'वक्री' : 'Retrograde'}</th>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">{language === 'hi' ? 'जैमिनी' : 'Jaimini'}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('auto.planet')}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('auto.sign')}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('auto.degree')}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('auto.nakshatra')}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('auto.house')}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('auto.dignity')}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('auto.signType')}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('auto.element')}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('auto.nature')}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('auto.retrograde')}</th>
+              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('auto.jaimini')}</th>
             </tr>
           </thead>
           <tbody>
@@ -59,9 +59,9 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
                   <td className="p-2 text-sacred-brown">{translateSign(p.sign, language)}</td>
                   <td className="p-2 text-sacred-brown">
                     {signDeg !== null ? toDMS(signDeg) : '\u2014'}
-                    {isSandhi && <span className="ml-1 text-sm px-1 py-0.5 rounded bg-amber-500 text-amber-600 font-medium">{language === 'hi' ? 'संधि' : 'Sandhi'}</span>}
+                    {isSandhi && <span className="ml-1 text-sm px-1 py-0.5 rounded bg-amber-500 text-amber-600 font-medium">{t('auto.sandhi')}</span>}
                   </td>
-                  <td className="p-2 text-sacred-brown">{nakshatraName} ({language === 'hi' ? 'पाद' : 'Pada'} {pada})</td>
+                  <td className="p-2 text-sacred-brown">{nakshatraName} ({t('auto.pada')} {pada})</td>
                   <td className="p-2 text-sacred-brown">{p.house}</td>
                   <td className="p-2 font-medium" style={{ color: dignityColor }}>{translateLabel(dignity, language)}</td>
                   <td className="p-2 text-cosmic-text">{translateLabel(signType, language)}</td>

@@ -69,7 +69,7 @@ export default function ChoghadiyaTab({ panchang, language, t, timezoneOffset, m
           </span>
           {isCurrent && (
             <span className="ml-1 px-1.5 py-0.5 text-xs bg-sacred-gold text-cosmic-bg rounded-full">
-              {language === 'hi' ? 'अभी' : 'Now'}
+              {t('auto.now')}
             </span>
           )}
         </td>
@@ -98,13 +98,13 @@ export default function ChoghadiyaTab({ panchang, language, t, timezoneOffset, m
           <thead>
             <tr className="bg-sacred-gold/15">
               <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                {language === 'hi' ? 'नाम' : 'Name'}
+                {t('auto.name')}
               </th>
               <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                {language === 'hi' ? 'फल' : 'Type'}
+                {t('auto.type')}
               </th>
               <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                {language === 'hi' ? 'समय' : 'Time'}
+                {t('auto.time')}
               </th>
             </tr>
           </thead>
@@ -129,7 +129,7 @@ export default function ChoghadiyaTab({ panchang, language, t, timezoneOffset, m
             <Clock className="h-8 w-8 text-sacred-gold flex-shrink-0" />
             <div className="flex-1 min-w-0">
               <p className="text-xs text-cosmic-text-secondary">
-                {language === 'hi' ? 'वर्तमान चौघड़िया' : 'Current Choghadiya'}
+                {t('auto.currentChoghadiya')}
               </p>
               <span className="font-bold text-cosmic-text-primary">
                 {language === 'hi' ? current.name_hindi || CHOGHADIYA_HINDI[current.name] || current.name : current.name}
@@ -146,12 +146,12 @@ export default function ChoghadiyaTab({ panchang, language, t, timezoneOffset, m
         <div className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-cosmic-border">
           {dayChoghadiya.length > 0 && (
             <div className="flex-1 p-2">
-              {renderTable(dayChoghadiya, Sun, language === 'hi' ? 'दिन के चौघड़िया' : 'Day Choghadiya')}
+              {renderTable(dayChoghadiya, Sun, t('auto.dayChoghadiya'))}
             </div>
           )}
           {nightChoghadiya.length > 0 && (
             <div className="flex-1 p-2">
-              {renderTable(nightChoghadiya, Moon, language === 'hi' ? 'रात्रि के चौघड़िया' : 'Night Choghadiya')}
+              {renderTable(nightChoghadiya, Moon, t('auto.nightChoghadiya'))}
             </div>
           )}
         </div>
@@ -160,36 +160,36 @@ export default function ChoghadiyaTab({ panchang, language, t, timezoneOffset, m
       {/* Compact Legend */}
       <div className="rounded-lg border border-cosmic-border p-2">
         <h4 className="font-semibold text-cosmic-text-primary mb-1 text-sm">
-          {language === 'hi' ? 'चौघड़िया का अर्थ' : 'Choghadiya Meanings'}
+          {t('auto.choghadiyaMeanings')}
         </h4>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 text-xs">
           <div className="flex items-center gap-1 px-1.5 py-1 rounded bg-green-500/10">
             <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
             <span className="text-cosmic-text-primary font-medium">
-              {language === 'hi' ? 'अमृत, शुभ, लाभ' : 'Amrit, Shubh, Labh'}
+              {t('auto.amritShubhLabh')}
             </span>
-            <span className="text-cosmic-text-secondary ml-auto">{language === 'hi' ? 'शुभ' : 'Good'}</span>
+            <span className="text-cosmic-text-secondary ml-auto">{t('auto.good')}</span>
           </div>
           <div className="flex items-center gap-1 px-1.5 py-1 rounded bg-blue-500/10">
             <span className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0" />
             <span className="text-cosmic-text-primary font-medium">
-              {language === 'hi' ? 'चर' : 'Char'}
+              {t('auto.char')}
             </span>
-            <span className="text-cosmic-text-secondary ml-auto">{language === 'hi' ? 'यात्रा' : 'Travel'}</span>
+            <span className="text-cosmic-text-secondary ml-auto">{t('auto.travel')}</span>
           </div>
           <div className="flex items-center gap-1 px-1.5 py-1 rounded bg-orange-500/10">
             <span className="w-2 h-2 rounded-full bg-orange-500 flex-shrink-0" />
             <span className="text-cosmic-text-primary font-medium">
-              {language === 'hi' ? 'रोग, उद्वेग' : 'Rog, Udveg'}
+              {t('auto.rogUdveg')}
             </span>
-            <span className="text-cosmic-text-secondary ml-auto">{language === 'hi' ? 'सावधान' : 'Caution'}</span>
+            <span className="text-cosmic-text-secondary ml-auto">{t('auto.caution')}</span>
           </div>
           <div className="flex items-center gap-1 px-1.5 py-1 rounded bg-red-500/10">
             <span className="w-2 h-2 rounded-full bg-red-600 flex-shrink-0" />
             <span className="text-cosmic-text-primary font-medium">
-              {language === 'hi' ? 'काल' : 'Kaal'}
+              {t('auto.kaal')}
             </span>
-            <span className="text-cosmic-text-secondary ml-auto">{language === 'hi' ? 'टालें' : 'Avoid'}</span>
+            <span className="text-cosmic-text-secondary ml-auto">{t('auto.avoid')}</span>
           </div>
         </div>
       </div>

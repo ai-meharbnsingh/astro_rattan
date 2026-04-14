@@ -12,33 +12,33 @@ export default function MuhuratTab({ panchang, language, t }: Props) {
   const inauspiciousPeriods = [
     {
       key: 'rahu_kaal',
-      name: language === 'hi' ? 'राहु काल' : 'Rahu Kaal',
+      name: t('auto.rahuKaal'),
       period: panchang.rahu_kaal,
-      desc: language === 'hi' ? 'अशुभ समय - कोई भी शुभ कार्य न करें' : 'Inauspicious - avoid new beginnings'
+      desc: t('auto.inauspiciousAvoidNew')
     },
     {
       key: 'gulika_kaal',
-      name: language === 'hi' ? 'गुलिक काल' : 'Gulika Kaal',
+      name: t('auto.gulikaKaal'),
       period: panchang.gulika_kaal,
-      desc: language === 'hi' ? 'मिश्रित फल' : 'Mixed results'
+      desc: t('auto.mixedResults')
     },
     {
       key: 'yamaganda',
-      name: language === 'hi' ? 'यमगंड' : 'Yamaganda',
+      name: t('auto.yamaganda'),
       period: panchang.yamaganda,
-      desc: language === 'hi' ? 'यम का समय - यात्रा से बचें' : 'Yama time - avoid travel'
+      desc: t('auto.yamaTimeAvoidTravel')
     },
     {
       key: 'dur_muhurtam',
-      name: language === 'hi' ? 'दुर्मुहूर्त' : 'Dur Muhurtam',
+      name: t('auto.durMuhurtam'),
       period: panchang.dur_muhurtam,
-      desc: language === 'hi' ? 'अत्यंत अशुभ' : 'Highly inauspicious'
+      desc: t('auto.highlyInauspicious')
     },
     {
       key: 'varjyam',
-      name: language === 'hi' ? 'वर्ज्य' : 'Varjyam',
+      name: t('auto.varjyam'),
       period: panchang.varjyam,
-      desc: language === 'hi' ? 'वर्जित समय' : 'Prohibited time'
+      desc: t('auto.prohibitedTime')
     },
   ].filter(p => p.period && (p.period.start !== '--:--' || p.period.end !== '--:--'));
 
@@ -46,57 +46,57 @@ export default function MuhuratTab({ panchang, language, t }: Props) {
   const auspiciousPeriods = [
     {
       key: 'brahma_muhurat',
-      name: language === 'hi' ? 'ब्रह्म मुहूर्त' : 'Brahma Muhurat',
+      name: t('auto.brahmaMuhurat'),
       period: panchang.brahma_muhurat,
-      desc: language === 'hi' ? 'सबसे शुभ - ध्यान और पूजा के लिए' : 'Most auspicious - meditation & puja'
+      desc: t('auto.mostAuspiciousMedita')
     },
     {
       key: 'abhijit_muhurat',
-      name: language === 'hi' ? 'अभिजित मुहूर्त' : 'Abhijit Muhurat',
+      name: t('auto.abhijitMuhurat'),
       period: panchang.abhijit_muhurat,
-      desc: language === 'hi' ? 'विजय का समय - कोई भी कार्य सफल' : 'Victory time - any work succeeds'
+      desc: t('auto.victoryTimeAnyWorkSu')
     },
     {
       key: 'vijaya_muhurta',
-      name: language === 'hi' ? 'विजया मुहूर्त' : 'Vijaya Muhurta',
+      name: t('auto.vijayaMuhurta'),
       period: panchang.vijaya_muhurta,
-      desc: language === 'hi' ? 'विजय प्राप्ति का समय' : 'Time for victory'
+      desc: t('auto.timeForVictory')
     },
     {
       key: 'godhuli_muhurta',
-      name: language === 'hi' ? 'गोधूलि मुहूर्त' : 'Godhuli Muhurta',
+      name: t('auto.godhuliMuhurta'),
       period: panchang.godhuli_muhurta,
-      desc: language === 'hi' ? 'गायों के घर लौटने का समय - शुभ' : 'When cows return - auspicious'
+      desc: t('auto.whenCowsReturnAuspic')
     },
     {
       key: 'nishita_muhurta',
-      name: language === 'hi' ? 'निशीथ मुहूर्त' : 'Nishita Muhurta',
+      name: t('auto.nishitaMuhurta'),
       period: panchang.nishita_muhurta,
-      desc: language === 'hi' ? 'रात्रि का शुभ समय' : 'Auspicious night time'
+      desc: t('auto.auspiciousNightTime')
     },
   ].filter(p => p.period && (p.period.start !== '--:--' || p.period.end !== '--:--'));
 
   // Special Yogas
   const specialYogas = [
-    { key: 'ravi_yoga', name: language === 'hi' ? 'रवि योग' : 'Ravi Yoga', data: panchang.ravi_yoga },
-    { key: 'amrit_siddhi', name: language === 'hi' ? 'अमृत सिद्धि' : 'Amrit Siddhi', data: panchang.amrit_siddhi },
-    { key: 'sarvartha_siddhi', name: language === 'hi' ? 'सर्वार्थ सिद्धि' : 'Sarvartha Siddhi', data: panchang.sarvartha_siddhi },
-    { key: 'tripushkar', name: language === 'hi' ? 'त्रिपुष्कर' : 'Tripushkar', data: panchang.tripushkar },
-    { key: 'dwipushkar', name: language === 'hi' ? 'द्विपुष्कर' : 'Dwipushkar', data: panchang.dwipushkar },
+    { key: 'ravi_yoga', name: t('auto.raviYoga'), data: panchang.ravi_yoga },
+    { key: 'amrit_siddhi', name: t('auto.amritSiddhi'), data: panchang.amrit_siddhi },
+    { key: 'sarvartha_siddhi', name: t('auto.sarvarthaSiddhi'), data: panchang.sarvartha_siddhi },
+    { key: 'tripushkar', name: t('auto.tripushkar'), data: panchang.tripushkar },
+    { key: 'dwipushkar', name: t('auto.dwipushkar'), data: panchang.dwipushkar },
   ].filter(y => y.data && (y.data.active || (y.data.start && y.data.end)));
 
   const sandhyaRows = [
     {
       key: 'pratah_sandhya',
-      name: language === 'hi' ? 'प्रातः संध्या' : 'Pratah Sandhya',
+      name: t('auto.pratahSandhya'),
       period: panchang.pratah_sandhya,
-      desc: language === 'hi' ? 'गायत्री जप का समय' : 'Time for Gayatri Japa',
+      desc: t('auto.timeForGayatriJapa'),
     },
     {
       key: 'sayahna_sandhya',
-      name: language === 'hi' ? 'सायंह्न संध्या' : 'Sayahna Sandhya',
+      name: t('auto.sayahnaSandhya'),
       period: panchang.sayahna_sandhya,
-      desc: language === 'hi' ? 'सन्ध्या जप का समय' : 'Time for Sandhya Japa',
+      desc: t('auto.timeForSandhyaJapa'),
     },
   ].filter(s => s.period && (s.period.start !== '--:--' || s.period.end !== '--:--'));
 
@@ -106,15 +106,15 @@ export default function MuhuratTab({ panchang, language, t }: Props) {
         <div className="rounded-lg border border-green-500/30 p-2">
           <h3 className="font-bold text-cosmic-text-primary mb-1 flex items-center gap-1">
             <CheckCircle2 className="h-4 w-4" />
-            {language === 'hi' ? 'शुभ मुहूर्त (उपयुक्त समय)' : 'Auspicious Muhurats (Good Times)'}
+            {t('auto.auspiciousMuhuratsGo')}
           </h3>
           <table className="w-full table-fixed text-xs sm:text-sm">
             <thead>
               <tr className="bg-green-500/15">
-                <th className="text-left px-2 py-1 text-green-700 font-semibold w-[28%]">{language === 'hi' ? 'मुहूर्त' : 'Muhurta'}</th>
-                <th className="text-left px-2 py-1 text-green-700 font-semibold w-[18%]">{language === 'hi' ? 'आरंभ' : 'Start'}</th>
-                <th className="text-left px-2 py-1 text-green-700 font-semibold w-[18%]">{language === 'hi' ? 'समाप्ति' : 'End'}</th>
-                <th className="text-left px-2 py-1 text-green-700 font-semibold w-[36%]">{language === 'hi' ? 'टिप्पणी' : 'Notes'}</th>
+                <th className="text-left px-2 py-1 text-green-700 font-semibold w-[28%]">{t('auto.muhurta')}</th>
+                <th className="text-left px-2 py-1 text-green-700 font-semibold w-[18%]">{t('auto.start')}</th>
+                <th className="text-left px-2 py-1 text-green-700 font-semibold w-[18%]">{t('auto.end')}</th>
+                <th className="text-left px-2 py-1 text-green-700 font-semibold w-[36%]">{t('auto.notes')}</th>
               </tr>
             </thead>
             <tbody>
@@ -133,15 +133,15 @@ export default function MuhuratTab({ panchang, language, t }: Props) {
         <div className="rounded-lg border border-red-500/30 p-2">
           <h3 className="font-bold text-cosmic-text-primary mb-1 flex items-center gap-1">
             <AlertTriangle className="h-4 w-4" />
-            {language === 'hi' ? 'अशुभ समय (वर्जित)' : 'Inauspicious Times (Avoid)'}
+            {t('auto.inauspiciousTimesAvo')}
           </h3>
           <table className="w-full table-fixed text-xs sm:text-sm">
             <thead>
               <tr className="bg-red-500/15">
-                <th className="text-left px-2 py-1 text-red-700 font-semibold w-[28%]">{language === 'hi' ? 'काल' : 'Period'}</th>
-                <th className="text-left px-2 py-1 text-red-700 font-semibold w-[18%]">{language === 'hi' ? 'आरंभ' : 'Start'}</th>
-                <th className="text-left px-2 py-1 text-red-700 font-semibold w-[18%]">{language === 'hi' ? 'समाप्ति' : 'End'}</th>
-                <th className="text-left px-2 py-1 text-red-700 font-semibold w-[36%]">{language === 'hi' ? 'टिप्पणी' : 'Notes'}</th>
+                <th className="text-left px-2 py-1 text-red-700 font-semibold w-[28%]">{t('auto.period')}</th>
+                <th className="text-left px-2 py-1 text-red-700 font-semibold w-[18%]">{t('auto.start')}</th>
+                <th className="text-left px-2 py-1 text-red-700 font-semibold w-[18%]">{t('auto.end')}</th>
+                <th className="text-left px-2 py-1 text-red-700 font-semibold w-[36%]">{t('auto.notes')}</th>
               </tr>
             </thead>
             <tbody>
@@ -163,15 +163,15 @@ export default function MuhuratTab({ panchang, language, t }: Props) {
           <div className="rounded-lg border border-sacred-gold/30 p-2">
             <h3 className="font-bold text-cosmic-text-primary mb-1 flex items-center gap-1">
               <Sparkles className="h-4 w-4" />
-              {language === 'hi' ? 'विशेष योग' : 'Special Yogas'}
+              {t('auto.specialYogas')}
             </h3>
             <table className="w-full table-fixed text-xs sm:text-sm">
               <thead>
                 <tr className="bg-sacred-gold/15">
-                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[30%]">{language === 'hi' ? 'योग' : 'Yoga'}</th>
-                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[20%]">{language === 'hi' ? 'आरंभ' : 'Start'}</th>
-                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[20%]">{language === 'hi' ? 'समाप्ति' : 'End'}</th>
-                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[30%]">{language === 'hi' ? 'स्थिति' : 'Status'}</th>
+                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[30%]">{t('auto.yoga')}</th>
+                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[20%]">{t('auto.start')}</th>
+                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[20%]">{t('auto.end')}</th>
+                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[30%]">{t('auto.status')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -181,7 +181,7 @@ export default function MuhuratTab({ panchang, language, t }: Props) {
                     <td className="px-2 py-1 text-cosmic-text-primary">{yoga.data?.start || '--'}</td>
                     <td className="px-2 py-1 text-cosmic-text-primary">{yoga.data?.end || '--'}</td>
                     <td className="px-2 py-1 text-green-600 whitespace-normal break-words">
-                      {language === 'hi' ? 'आज सक्रिय' : 'Active today'}
+                      {t('auto.activeToday')}
                     </td>
                   </tr>
                 ))}
@@ -194,15 +194,15 @@ export default function MuhuratTab({ panchang, language, t }: Props) {
           <div className="rounded-lg border border-cosmic-border p-2">
             <h3 className="font-bold text-cosmic-text-primary mb-1 flex items-center gap-1">
               <Sunrise className="h-4 w-4 text-orange-500" />
-              {language === 'hi' ? 'संध्या समय' : 'Sandhya Times'}
+              {t('auto.sandhyaTimes')}
             </h3>
             <table className="w-full table-fixed text-xs sm:text-sm">
               <thead>
                 <tr className="bg-sacred-gold/15">
-                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[28%]">{language === 'hi' ? 'काल' : 'Period'}</th>
-                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[18%]">{language === 'hi' ? 'आरंभ' : 'Start'}</th>
-                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[18%]">{language === 'hi' ? 'समाप्ति' : 'End'}</th>
-                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[36%]">{language === 'hi' ? 'टिप्पणी' : 'Notes'}</th>
+                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[28%]">{t('auto.period')}</th>
+                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[18%]">{t('auto.start')}</th>
+                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[18%]">{t('auto.end')}</th>
+                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[36%]">{t('auto.notes')}</th>
                 </tr>
               </thead>
               <tbody>

@@ -217,10 +217,10 @@ export default function VastuCompass({ value, onChange, mode = 'select', highlig
         {/* Center — Brahma circle */}
         <circle cx={cx} cy={cy} r={rCenter} fill="#1c1917" stroke="#d97706" strokeWidth={1.5} />
         <text x={cx} y={cy - 6} textAnchor="middle" fill="#d97706" fontSize="10" fontWeight="700" className="select-none">
-          {isHi ? 'ब्रह्म' : 'Brahma'}
+          {t('auto.brahma')}
         </text>
         <text x={cx} y={cy + 8} textAnchor="middle" fill="#a16207" fontSize="8" className="select-none">
-          {isHi ? 'स्थान' : 'Sthana'}
+          {t('auto.sthana')}
         </text>
 
         {/* North pointer */}
@@ -253,9 +253,9 @@ export default function VastuCompass({ value, onChange, mode = 'select', highlig
             ))}
           </div>
           <p className="text-sm text-cosmic-text/60 mt-0.5">
-            {(PADA_SCORES[hoveredPada] || 0) >= 4 ? (isHi ? 'शुभ' : 'Auspicious')
-              : (PADA_SCORES[hoveredPada] || 0) >= 3 ? (isHi ? 'सामान्य' : 'Neutral')
-              : (isHi ? 'अशुभ' : 'Challenging')}
+            {(PADA_SCORES[hoveredPada] || 0) >= 4 ? (t('auto.auspicious'))
+              : (PADA_SCORES[hoveredPada] || 0) >= 3 ? (t('auto.neutral'))
+              : (t('auto.challenging'))}
           </p>
         </div>
       )}

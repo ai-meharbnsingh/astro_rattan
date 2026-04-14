@@ -239,7 +239,7 @@ export default function LalKitabRemediesTrackerTab({ chartData, kundliId }: Prop
         <div className="card-sacred rounded-xl p-4 border border-sacred-gold/20 text-center">
           <p className="text-2xl font-bold text-green-500">{todayDone.length}</p>
           <p className="text-xs text-gray-500 mt-0.5">{t('lk.tracker.totalDone')}</p>
-          <p className="text-xs text-gray-400">{isHi ? 'आज' : 'today'}</p>
+          <p className="text-xs text-gray-400">{t('auto.today')}</p>
         </div>
       </div>
 
@@ -281,7 +281,7 @@ export default function LalKitabRemediesTrackerTab({ chartData, kundliId }: Prop
                   </p>
                   <div className="flex flex-wrap gap-1.5 mt-1">
                     <span className="text-xs text-sacred-gold-dark">
-                      {getPlanetLabel(remedy.planet)} {isHi ? `· भाव ${remedy.house}` : `· H${remedy.house}`}
+                      {getPlanetLabel(remedy.planet)} {t('auto.HRemedyHouse')}
                     </span>
                     <span className={`text-xs px-1.5 py-0.5 rounded-full ${categoryBadge[remedy.category] || ''}`}>
                       {t(`lk.remedies.${remedy.category}`)}

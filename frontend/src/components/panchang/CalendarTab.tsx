@@ -81,55 +81,53 @@ export default function CalendarTab({ panchang, language, t }: Props) {
         <CardContent className="p-6">
           <h3 className="text-xl font-bold text-cosmic-text-primary mb-6 flex items-center gap-2">
             <Calendar className="h-6 w-6 text-sacred-gold" />
-            {language === 'hi' ? 'हिंदू कैलेंडर' : 'Hindu Calendar'}
+            {t('auto.hinduCalendar')}
           </h3>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Vikram Samvat */}
             <div className="p-4 rounded-xl bg-cosmic-card/50">
               <p className="text-sm text-cosmic-text-secondary mb-1">
-                {language === 'hi' ? 'विक्रम संवत्' : 'Vikram Samvat'}
+                {t('auto.vikramSamvat')}
               </p>
               <p className="text-2xl font-bold text-sacred-gold">
                 {calendar.vikram_samvat}
               </p>
               <p className="text-xs text-cosmic-text-secondary mt-1">
-                {language === 'hi' ? 'हिंदू नव वर्ष' : 'Hindu New Year Era'}
+                {t('auto.hinduNewYearEra')}
               </p>
             </div>
 
             {/* Shaka Samvat */}
             <div className="p-4 rounded-xl bg-cosmic-card/50">
               <p className="text-sm text-cosmic-text-secondary mb-1">
-                {language === 'hi' ? 'शक संवत्' : 'Shaka Samvat'}
+                {t('auto.shakaSamvat')}
               </p>
               <p className="text-2xl font-bold text-cosmic-text-primary">
                 {calendar.shaka_samvat}
               </p>
               <p className="text-xs text-cosmic-text-secondary mt-1">
-                {language === 'hi' ? 'राष्ट्रीय कैलेंडर' : 'National Calendar Era'}
+                {t('auto.nationalCalendarEra')}
               </p>
             </div>
 
             {/* Month */}
             <div className="p-4 rounded-xl bg-cosmic-card/50">
               <p className="text-sm text-cosmic-text-secondary mb-1">
-                {language === 'hi' ? 'मास' : 'Month (Maas)'}
+                {t('auto.monthMaas')}
               </p>
               <p className="text-2xl font-bold text-cosmic-text-primary">
                 {language === 'hi' ? calendar.maas_hindi || maasInfo.hi : maasInfo.en}
               </p>
               <p className="text-xs text-cosmic-text-secondary mt-1">
-                {language === 'hi' 
-                  ? `देवता: ${maasInfo.deity.hi}` 
-                  : `Deity: ${maasInfo.deity.en}`}
+                {t('auto.deityMaasInfoDeityEn')}
               </p>
             </div>
 
             {/* Paksha */}
             <div className="p-4 rounded-xl bg-cosmic-card/50">
               <p className="text-sm text-cosmic-text-secondary mb-1">
-                {language === 'hi' ? 'पक्ष' : 'Paksha (Lunar Fortnight)'}
+                {t('auto.pakshaLunarFortnight')}
               </p>
               <p className="text-2xl font-bold text-cosmic-text-primary">
                 {language === 'hi' 
@@ -156,7 +154,7 @@ export default function CalendarTab({ panchang, language, t }: Props) {
               </div>
               <div>
                 <p className="text-sm text-cosmic-text-secondary">
-                  {language === 'hi' ? 'ऋतु' : 'Season (Ritu)'}
+                  {t('auto.seasonRitu')}
                 </p>
                 <h4 className="text-xl font-bold text-cosmic-text-primary">
                   {language === 'hi' ? rituInfo.hi : rituInfo.en}
@@ -177,7 +175,7 @@ export default function CalendarTab({ panchang, language, t }: Props) {
               </div>
               <div>
                 <p className="text-sm text-cosmic-text-secondary">
-                  {language === 'hi' ? 'अयन' : 'Ayana (Sun\'s Journey)'}
+                  {t('auto.ayanaSun')s Journey)'}
                 </p>
                 <h4 className="text-xl font-bold text-cosmic-text-primary">
                   {language === 'hi' ? ayanaInfo.hi : ayanaInfo.en}
@@ -198,47 +196,39 @@ export default function CalendarTab({ panchang, language, t }: Props) {
             <Info className="h-5 w-5 text-sacred-gold mt-0.5" />
             <div>
               <h4 className="font-semibold text-cosmic-text-primary mb-2">
-                {language === 'hi' ? 'हिंदू कैलेंडर के बारे में' : 'About Hindu Calendar'}
+                {t('auto.aboutHinduCalendar')}
               </h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-cosmic-text-secondary">
                 <div>
                   <strong className="text-cosmic-text-primary">
-                    {language === 'hi' ? 'विक्रम संवत्:' : 'Vikram Samvat:'}
+                    {t('auto.vikramSamvat')}
                   </strong>
                   <p className="mt-1">
-                    {language === 'hi' 
-                      ? 'राजा विक्रमादित्य द्वारा प्रारंभ किया गया। यह भारत का प्रमुख हिंदू कैलेंडर है।'
-                      : 'Started by King Vikramaditya. This is the main Hindu calendar of India.'}
+                    {t('auto.startedByKingVikrama')}
                   </p>
                 </div>
                 <div>
                   <strong className="text-cosmic-text-primary">
-                    {language === 'hi' ? 'शक संवत्:' : 'Shaka Samvat:'}
+                    {t('auto.shakaSamvat')}
                   </strong>
                   <p className="mt-1">
-                    {language === 'hi' 
-                      ? 'भारत का राष्ट्रीय कैलेंडर। 1957 में अपनाया गया।'
-                      : 'India\'s national calendar. Adopted in 1957.'}
+                    {t('auto.india')s national calendar. Adopted in 1957.'}
                   </p>
                 </div>
                 <div>
                   <strong className="text-cosmic-text-primary">
-                    {language === 'hi' ? 'अयन:' : 'Ayana:'}
+                    {t('auto.ayana')}
                   </strong>
                   <p className="mt-1">
-                    {language === 'hi' 
-                      ? 'सूर्य का उत्तरायण 6 महीने और दक्षिणायन 6 महीने रहता है।'
-                      : 'Sun remains in Uttarayana for 6 months and Dakshinayana for 6 months.'}
+                    {t('auto.sunRemainsInUttaraya')}
                   </p>
                 </div>
                 <div>
                   <strong className="text-cosmic-text-primary">
-                    {language === 'hi' ? 'ऋतु:' : 'Ritu:'}
+                    {t('auto.ritu')}
                   </strong>
                   <p className="mt-1">
-                    {language === 'hi' 
-                      ? 'भारतीय कैलेंडर में 6 ऋतुएं होती हैं - वसंत, ग्रीष्म, वर्षा, शरद, हेमंत, शिशिर।'
-                      : 'Indian calendar has 6 seasons - Spring, Summer, Monsoon, Autumn, Pre-winter, Winter.'}
+                    {t('auto.indianCalendarHas6Se')}
                   </p>
                 </div>
               </div>

@@ -58,7 +58,7 @@ export default function LalKitabCareerTab({ kundliId }: Props) {
     setError('');
     api.get(`/api/lalkitab/predictions/career/${kundliId}`)
       .then((res: any) => setData(res))
-      .catch(() => setError(isHi ? 'करियर भविष्यवाणी लोड नहीं हो सकी' : 'Failed to load career prediction'))
+      .catch(() => setError(t('auto.failedToLoadCareerPr')))
       .finally(() => setLoading(false));
   }, [kundliId, isHi]);
 
@@ -79,7 +79,7 @@ export default function LalKitabCareerTab({ kundliId }: Props) {
         <div className="flex items-start justify-between">
           <h2 className="text-xl font-sans font-semibold text-sacred-gold flex items-center gap-2 mb-1">
             <Briefcase className="w-5 h-5" />
-            {isHi ? 'करियर भविष्यवाणी' : 'Career Predictions'}
+            {t('auto.careerPredictions')}
           </h2>
           {data && (
             <button
@@ -89,17 +89,15 @@ export default function LalKitabCareerTab({ kundliId }: Props) {
                 border-sacred-gold/40 text-sacred-gold hover:bg-sacred-gold/10"
             >
               {saved
-                ? <><BookmarkCheck className="w-4 h-4" />{isHi ? 'सेव हो गया' : 'Saved'}</>
+                ? <><BookmarkCheck className="w-4 h-4" />{t('auto.saved')}</>
                 : saving
-                ? <><Loader2 className="w-4 h-4 animate-spin" />{isHi ? 'सेव हो रहा है' : 'Saving'}</>
-                : <><Bookmark className="w-4 h-4" />{isHi ? 'सेव करें' : 'Save'}</>}
+                ? <><Loader2 className="w-4 h-4 animate-spin" />{t('auto.saving')}</>
+                : <><Bookmark className="w-4 h-4" />{t('auto.save')}</>}
             </button>
           )}
         </div>
         <p className="text-sm text-gray-500">
-          {isHi
-            ? 'दसवें भाव, सूर्य, शनि और बुध के आधार पर करियर विश्लेषण'
-            : 'Career analysis based on 10th house, Sun, Saturn and Mercury'}
+          {t('auto.careerAnalysisBasedO')}
         </p>
       </div>
 
@@ -120,8 +118,8 @@ export default function LalKitabCareerTab({ kundliId }: Props) {
               <div>
                 <h3 className={`text-lg font-sans font-bold ${data.suitability === 'business' ? 'text-blue-700' : 'text-green-700'}`}>
                   {data.suitability === 'business'
-                    ? (isHi ? 'व्यापार अनुकूल' : 'Business Suited')
-                    : (isHi ? 'नौकरी अनुकूल' : 'Job Suited')}
+                    ? (t('auto.businessSuited'))
+                    : (t('auto.jobSuited'))}
                 </h3>
                 <p className="text-sm text-cosmic-text/70 mt-0.5">
                   {isHi ? data.advice.hi : data.advice.en}
@@ -133,7 +131,7 @@ export default function LalKitabCareerTab({ kundliId }: Props) {
           {/* 10th house */}
           <div className="card-sacred rounded-xl border border-sacred-gold/20 p-5">
             <h3 className="font-sans font-semibold text-sacred-gold mb-3">
-              {isHi ? 'दसवें भाव के ग्रह' : '10th House Planets'}
+              {t('auto.10thHousePlanets')}
             </h3>
             {data.tenth_house_planets.length > 0 ? (
               <div className="flex flex-wrap gap-2">
@@ -145,7 +143,7 @@ export default function LalKitabCareerTab({ kundliId }: Props) {
               </div>
             ) : (
               <p className="text-sm text-gray-500">
-                {isHi ? 'दसवें भाव में कोई ग्रह नहीं' : 'No planet in 10th house'}
+                {t('auto.noPlanetIn10thHouse')}
               </p>
             )}
           </div>
@@ -154,7 +152,7 @@ export default function LalKitabCareerTab({ kundliId }: Props) {
           <div className="card-sacred rounded-xl border border-sacred-gold/20 p-5">
             <h3 className="font-sans font-semibold text-sacred-gold mb-4 flex items-center gap-2">
               <Briefcase className="w-4 h-4" />
-              {isHi ? 'अनुकूल करियर विकल्प' : 'Suitable Career Options'}
+              {t('auto.suitableCareerOption')}
             </h3>
             <div className="grid gap-2 sm:grid-cols-2">
               {(isHi ? data.career_options : data.career_options_en).map((c, i) => (
@@ -172,13 +170,13 @@ export default function LalKitabCareerTab({ kundliId }: Props) {
           <div className="card-sacred rounded-xl border border-sacred-gold/20 p-5">
             <h3 className="font-sans font-semibold text-sacred-gold mb-3 flex items-center gap-2">
               <Clock className="w-4 h-4" />
-              {isHi ? 'अनुकूल आयु काल' : 'Favourable Age Periods'}
+              {t('auto.favourableAgePeriods')}
             </h3>
             <div className="flex flex-wrap gap-3">
               {data.favourable_ages.map((age) => (
                 <div key={age} className="flex flex-col items-center px-5 py-3 rounded-xl bg-sacred-gold/10 border border-sacred-gold/20">
                   <span className="text-2xl font-bold text-sacred-gold">{age}</span>
-                  <span className="text-xs text-gray-500 mt-0.5">{isHi ? 'वर्ष' : 'years'}</span>
+                  <span className="text-xs text-gray-500 mt-0.5">{t('auto.years')}</span>
                 </div>
               ))}
             </div>
@@ -187,7 +185,7 @@ export default function LalKitabCareerTab({ kundliId }: Props) {
           {/* Key planet positions */}
           <div className="card-sacred rounded-xl border border-sacred-gold/20 p-5">
             <h3 className="font-sans font-semibold text-sacred-gold mb-3">
-              {isHi ? 'मुख्य ग्रह स्थान' : 'Key Planet Positions'}
+              {t('auto.keyPlanetPositions')}
             </h3>
             <div className="grid grid-cols-3 gap-3">
               {[
@@ -198,7 +196,7 @@ export default function LalKitabCareerTab({ kundliId }: Props) {
                 <div key={planet} className="text-center p-3 rounded-xl bg-sacred-gold/5 border border-sacred-gold/15">
                   <p className="text-xs text-gray-500 mb-1">{isHi ? hi : planet.charAt(0).toUpperCase() + planet.slice(1)}</p>
                   <p className="text-xl font-bold text-sacred-gold">{house}</p>
-                  <p className="text-xs text-gray-400">{isHi ? 'भाव' : 'House'}</p>
+                  <p className="text-xs text-gray-400">{t('auto.house')}</p>
                 </div>
               ))}
             </div>

@@ -118,7 +118,7 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
           </div>
           <div className="flex items-center gap-1">
             <div className="w-6 border-t-2 border-dashed border-sacred-brown" />
-            <span>{language === 'hi' ? 'आवश्यक' : 'Required'}</span>
+            <span>{t('auto.required')}</span>
           </div>
         </div>
       </div>
@@ -126,7 +126,7 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
       {/* Bhav Bala */}
       {shadbalaData.bhav_bala && (
         <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
-          <h4 className="text-lg font-semibold text-gray-800 mb-4">{language === 'hi' ? 'भाव बल (भाव शक्ति)' : 'Bhav Bala (House Strength)'}</h4>
+          <h4 className="text-lg font-semibold text-gray-800 mb-4">{t('auto.bhavBalaHouseStrengt')}</h4>
           <div className="overflow-x-auto -mx-1 px-1">
             <div className="flex items-end gap-1" style={{ height: '220px', minWidth: '420px' }}>
               {Array.from({ length: 12 }, (_, i) => i + 1).map((house) => {
@@ -154,9 +154,9 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
             </div>
           </div>
           <div className="flex items-center justify-center gap-6 mt-3 text-sm text-cosmic-text">
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#16a34a' }} />{language === 'hi' ? 'बलशाली' : 'Strong'}</span>
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#dc2626' }} />{language === 'hi' ? 'कमज़ोर' : 'Weak'}</span>
-            <span className="text-xs text-cosmic-text">{language === 'hi' ? 'रूपा में' : 'Values in Rupas'}</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#16a34a' }} />{t('auto.strong')}</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#dc2626' }} />{t('auto.weak')}</span>
+            <span className="text-xs text-cosmic-text">{t('auto.valuesInRupas')}</span>
           </div>
         </div>
       )}
@@ -168,14 +168,14 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
             <thead>
               <tr className="bg-sacred-gold">
                 <th className="text-left p-2 text-sacred-gold-dark font-medium text-xs">{t('table.planet')}</th>
-                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{language === 'hi' ? 'स्थान' : 'Sthana'}</th>
-                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{language === 'hi' ? 'दिग्' : 'Dig'}</th>
-                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{language === 'hi' ? 'काल' : 'Kala'}</th>
-                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{language === 'hi' ? 'चेष्टा' : 'Cheshta'}</th>
-                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{language === 'hi' ? 'नैसर्गिक' : 'Naisargika'}</th>
-                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{language === 'hi' ? 'दृक्' : 'Drik'}</th>
+                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{t('auto.sthana')}</th>
+                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{t('auto.dig')}</th>
+                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{t('auto.kala')}</th>
+                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{t('auto.cheshta')}</th>
+                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{t('auto.naisargika')}</th>
+                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{t('auto.drik')}</th>
                 <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{t('table.total')}</th>
-                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{language === 'hi' ? 'अनुपात' : 'Ratio'}</th>
+                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{t('auto.ratio')}</th>
               </tr>
             </thead>
             <tbody>
@@ -208,7 +208,7 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
                     {isExpanded && d.sthana_detail && (
                       <tr className="bg-sacred-cream">
                         <td className="p-2 pl-6 text-sm text-cosmic-text italic" colSpan={2}>
-                          {language === 'hi' ? 'स्थान विवरण' : 'Sthana Detail'}
+                          {t('auto.sthanaDetail')}
                         </td>
                         <td colSpan={7} className="p-2 text-sm text-cosmic-text">
                           {(['uchcha', 'saptavargaja', 'ojhayugma', 'kendra', 'drekkana'] as const)
@@ -224,7 +224,7 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
                     {isExpanded && d.kala_detail && (
                       <tr className="bg-sacred-cream">
                         <td className="p-2 pl-6 text-sm text-cosmic-text italic" colSpan={2}>
-                          {language === 'hi' ? 'काल विवरण' : 'Kala Detail'}
+                          {t('auto.kalaDetail')}
                         </td>
                         <td colSpan={7} className="p-2 text-sm text-cosmic-text">
                           {(['nathonnatha', 'paksha', 'tribhaga', 'abda', 'masa', 'vara', 'hora', 'ayana'] as const)

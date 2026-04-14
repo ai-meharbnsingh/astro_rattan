@@ -117,7 +117,7 @@ export default function HomeGrid({ assignments, onAssign, onRemove, layoutResult
             {/* Brahma Sthana label */}
             {isCenter && rooms.length === 0 && (
               <p className="text-sm text-sacred-gold/50 text-center italic">
-                {isHi ? 'ब्रह्म स्थान — खुला रखें' : 'Brahma Sthana — keep open'}
+                {t('auto.brahmaSthanaKeepOpen')}
               </p>
             )}
 
@@ -153,7 +153,7 @@ export default function HomeGrid({ assignments, onAssign, onRemove, layoutResult
                   className="w-full flex items-center justify-center gap-1 py-1.5 rounded-lg border border-dashed border-white/15 text-sm text-cosmic-text/50 hover:border-sacred-gold/40 hover:text-sacred-gold transition-all"
                 >
                   <Plus className="w-3 h-3" />
-                  {isHi ? 'कमरा जोड़ें' : 'Add Room'}
+                  {t('auto.addRoom')}
                 </button>
 
                 {/* Dropdown */}
@@ -197,7 +197,7 @@ export default function HomeGrid({ assignments, onAssign, onRemove, layoutResult
                       <div className="px-3 py-2 flex items-center gap-1.5 border-t border-white/10">
                         <AlertTriangle className="w-3 h-3 text-amber-400" />
                         <span className="text-sm text-amber-400">
-                          {isHi ? 'ब्रह्म स्थान खुला रहना चाहिए' : 'Brahma Sthana should remain open'}
+                          {t('auto.brahmaSthanaShouldRe')}
                         </span>
                       </div>
                     )}

@@ -65,8 +65,8 @@ function SAVKundliChart({ savData, language, lagnaSign }: { savData: Record<stri
         })}
       </svg>
       <div className="flex justify-center gap-4 mt-2 text-xs">
-        <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-green-700"/>&ge;28 {language==='hi'?'प्रबल':'Strong'}</span>
-        <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-red-700"/>&lt;28 {language==='hi'?'दुर्बल':'Weak'}</span>
+        <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-green-700"/>&ge;28 {t('auto.strong')}</span>
+        <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-red-700"/>&lt;28 {t('auto.weak')}</span>
       </div>
     </div>
   );
@@ -150,8 +150,8 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
 
           {/* Bhinna Ashtakvarga Charts — Parashara's Light format: table + diamond chart per planet */}
           <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
-            <h4 className="text-lg font-semibold text-gray-800 mb-2">{language === 'hi' ? 'भिन्न अष्टकवर्ग चार्ट' : 'Bhinna Ashtakvarga Charts'}</h4>
-            <p className="text-sm text-gray-600 mb-4">{language === 'hi' ? '12 राशियों में प्रत्येक ग्रह के बिंदु (पराशर प्रकाश प्रारूप)।' : 'Individual planet bindus across 12 signs (Parashara\'s Light format).'}</p>
+            <h4 className="text-lg font-semibold text-gray-800 mb-2">{t('auto.bhinnaAshtakvargaCha')}</h4>
+            <p className="text-sm text-gray-600 mb-4">{t('auto.individualPlanetBind')} (Parashara Light format)</p>
             <div className="grid grid-cols-1 gap-5">
               {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Lagna'].map((planet) => {
                 const bindus = ashtakvargaData.planet_bindus?.[planet] || {};
@@ -188,7 +188,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                       <h5 className="font-display font-semibold text-sacred-brown text-sm">
                         {translatePlanet(planet, language)}
                       </h5>
-                      <span className="text-sm font-semibold text-sacred-gold-dark">{language === 'hi' ? 'कुल' : 'Total'}: {total}</span>
+                      <span className="text-sm font-semibold text-sacred-gold-dark">{t('auto.total')}: {total}</span>
                     </div>
                     <div className="flex flex-col lg:flex-row">
                       {/* LEFT: Full contributor matrix table */}
@@ -200,7 +200,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                             <table className="w-full text-sm border-collapse">
                               <thead>
                                 <tr>
-                                  <th className="text-left p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold whitespace-nowrap">{language === 'hi' ? 'योगदानकर्ता' : 'Contributor'}</th>
+                                  <th className="text-left p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold whitespace-nowrap">{t('auto.contributor')}</th>
                                   {signs.map((s, i) => (
                                     <th key={i} className="text-center p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold min-w-[26px] text-xs">
                                       {language === 'hi' ? hindiSignAbbr[i] : signAbbr[i]}
@@ -230,7 +230,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                                 })}
                                 {/* Bindu total row */}
                                 <tr className="border-t-2 border-sacred-gold bg-sacred-gold">
-                                  <td className="p-1 text-sacred-gold-dark font-bold whitespace-nowrap">{language === 'hi' ? 'बिंदु' : 'Bindu'}</td>
+                                  <td className="p-1 text-sacred-gold-dark font-bold whitespace-nowrap">{t('auto.bindu')}</td>
                                   {vals.map((v, i) => (
                                     <td key={i} className="text-center p-1">
                                       <span
@@ -281,15 +281,15 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
             <div className="flex items-center gap-4 mt-4 text-sm text-cosmic-text">
               <div className="flex items-center gap-1">
                 <div className="w-3 h-3 rounded border" style={{ backgroundColor: '#dcfce7', borderColor: '#86efac' }} />
-                <span>{language === 'hi' ? '5-8 प्रबल' : '5-8 Strong'}</span>
+                <span>{t('auto.58Strong')}</span>
               </div>
               <div className="flex items-center gap-1">
                 <div className="w-3 h-3 rounded border" style={{ backgroundColor: '#fef3c7', borderColor: '#fcd34d' }} />
-                <span>{language === 'hi' ? '3-4 मध्यम' : '3-4 Medium'}</span>
+                <span>{t('auto.34Medium')}</span>
               </div>
               <div className="flex items-center gap-1">
                 <div className="w-3 h-3 rounded border" style={{ backgroundColor: '#fee2e2', borderColor: '#fca5a5' }} />
-                <span>{language === 'hi' ? '0-2 दुर्बल' : '0-2 Weak'}</span>
+                <span>{t('auto.02Weak')}</span>
               </div>
             </div>
           </div>
@@ -357,7 +357,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                       <table className="w-full text-sm border-collapse">
                         <thead>
                           <tr>
-                            <th className="text-left p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold">{language === 'hi' ? 'प्रक्रिया' : 'Process'}</th>
+                            <th className="text-left p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold">{t('auto.process')}</th>
                             {signs.map((s, i) => (
                               <th key={i} className="text-center p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold min-w-[26px] text-xs">
                                 {translateSignAbbr(s, language)}

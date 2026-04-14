@@ -42,7 +42,7 @@ const SECTION_LABELS: Record<string, { en: string; hi: string }> = {
 function formatDate(dateStr: string, lang: string): string {
   if (!dateStr) return '';
   const d = new Date(dateStr + 'T12:00:00');
-  return d.toLocaleDateString(lang === 'hi' ? 'hi-IN' : 'en-IN', { day: 'numeric', month: 'short' });
+  return d.toLocaleDateString(t('auto.enIN'), { day: 'numeric', month: 'short' });
 }
 
 export default function WeeklyTab({ data, loading, language, t }: Props) {
@@ -59,7 +59,7 @@ export default function WeeklyTab({ data, loading, language, t }: Props) {
   if (!data) {
     return (
       <div className="text-center py-12 text-cosmic-text-secondary">
-        {language === 'hi' ? 'राशि चुनें और साप्ताहिक राशिफल देखें' : 'Select a sign to view weekly horoscope'}
+        {t('auto.selectASignToViewWee')}
       </div>
     );
   }
@@ -74,7 +74,7 @@ export default function WeeklyTab({ data, loading, language, t }: Props) {
             <h3 className="text-lg font-semibold text-cosmic-text">
               {language === 'hi' ? data.sign_hindi : data.sign.charAt(0).toUpperCase() + data.sign.slice(1)}
               <span className="text-sm font-normal text-cosmic-text-secondary ml-2">
-                {language === 'hi' ? 'साप्ताहिक राशिफल' : 'Weekly Horoscope'}
+                {t('auto.weeklyHoroscope')}
               </span>
             </h3>
             <div className="flex items-center gap-1.5 text-xs text-cosmic-text-secondary mt-0.5">
@@ -85,11 +85,11 @@ export default function WeeklyTab({ data, loading, language, t }: Props) {
         </div>
         <div className="grid grid-cols-2 gap-2 mt-2">
           <div className="rounded-lg bg-sacred-gold/10 px-3 py-1.5">
-            <span className="text-xs text-cosmic-text-secondary">{language === 'hi' ? 'स्वामी ग्रह' : 'Ruling Planet'}</span>
+            <span className="text-xs text-cosmic-text-secondary">{t('auto.rulingPlanet')}</span>
             <p className="text-sm font-medium text-cosmic-text">{language === 'hi' ? data.ruling_planet_hindi : data.ruling_planet}</p>
           </div>
           <div className="rounded-lg bg-sacred-gold/10 px-3 py-1.5">
-            <span className="text-xs text-cosmic-text-secondary">{language === 'hi' ? 'तत्व' : 'Element'}</span>
+            <span className="text-xs text-cosmic-text-secondary">{t('auto.element')}</span>
             <p className="text-sm font-medium text-cosmic-text">{language === 'hi' ? data.element_hindi : data.element.charAt(0).toUpperCase() + data.element.slice(1)}</p>
           </div>
         </div>
