@@ -127,7 +127,7 @@ export default function Hero() {
         </div>
 
         {/* Stats strip — separate section below hero */}
-        <div className="hero-stats opacity-0 mt-16">
+        <div className="hero-stats opacity-0 mt-24">
           <div className="rounded-2xl bg-sacred-gold/5 p-4 sm:p-5">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="rounded-xl border border-sacred-gold/25 bg-cosmic-bg/70 p-3 sm:p-4 flex items-start gap-3">
