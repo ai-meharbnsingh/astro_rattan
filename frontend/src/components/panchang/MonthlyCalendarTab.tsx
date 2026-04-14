@@ -231,6 +231,23 @@ const markerDotClass = (key: string) => {
   }
 };
 
+const getFestivalTone = (name: string, type?: string) => {
+  const text = `${name} ${type || ''}`.toLowerCase();
+  if (hasKeyword(text, ['diwali', 'holi', 'dussehra', 'navratri', 'janmashtami', 'shivaratri', 'baisakhi', 'jayanti'])) {
+    return 'bg-amber-500/10 border-amber-500/30';
+  }
+  if (hasKeyword(text, ['ekadashi', 'vrat', 'pradosh', 'chaturthi', 'somvar', 'mangalvar', 'guruvar', 'shani'])) {
+    return 'bg-purple-500/10 border-purple-500/30';
+  }
+  if (hasKeyword(text, ['purnima', 'amavasya'])) {
+    return 'bg-indigo-500/10 border-indigo-500/30';
+  }
+  if (hasKeyword(text, ['sankranti'])) {
+    return 'bg-yellow-500/10 border-yellow-500/30';
+  }
+  return 'bg-cosmic-card/40 border-cosmic-border';
+};
+
 const getDayMarkers = (day: DayPanchang): DayMarker[] => {
   const allFest = day.festivals.join(' ').toLowerCase();
   const tithi = String(day.tithi || '').toLowerCase();
@@ -381,6 +398,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
   // Calendar grid
   const firstDayOfMonth = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const trailingEmptyCells = Math.max(0, 42 - (firstDayOfMonth + daysInMonth));
   const today = getLocalDateString();
 
   const prevMonth = () => setCurrentDate(new Date(year, month - 1, 1));
@@ -420,9 +438,9 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
         {/* Calendar Grid */}
-        <Card className="card-sacred lg:col-span-2 lg:h-[640px]">
+        <Card className="card-sacred lg:col-span-2">
           <CardContent className="p-2 sm:p-3 h-full flex flex-col">
             {loading ? (
               <div className="flex items-center justify-center h-64">
@@ -440,10 +458,10 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                 </div>
 
                 {/* Calendar Days */}
-                <div className="grid grid-cols-7 gap-1">
+                <div className="grid grid-cols-7 grid-rows-6 gap-1 flex-1 min-h-0">
                   {/* Empty cells for padding */}
                   {Array.from({ length: firstDayOfMonth }).map((_, i) => (
-                    <div key={`empty-${i}`} className="aspect-square" />
+                    <div key={`empty-start-${i}`} className="h-full min-h-[48px] sm:min-h-[54px]" />
                   ))}
 
                   {/* Day cells */}
@@ -462,7 +480,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                         key={day}
                         onClick={() => dayData && setSelectedDay(dayData)}
                         className={`
-                          h-12 sm:h-14 lg:h-12 xl:h-14 p-1 rounded-lg text-left text-[11px] sm:text-xs relative overflow-hidden
+                          h-full min-h-[48px] sm:min-h-[54px] p-1 rounded-lg text-left text-[11px] sm:text-xs relative overflow-hidden
                           transition-all hover:scale-105
                           ${isToday ? 'ring-2 ring-sacred-gold' : ''}
                           ${isSelected ? 'bg-sacred-gold/20 border border-sacred-gold' : 'bg-cosmic-card/30 hover:bg-cosmic-card/50'}
@@ -512,6 +530,11 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                       </button>
                     );
                   })}
+
+                  {/* Trailing empty cells to keep a perfect 6-row calendar */}
+                  {Array.from({ length: trailingEmptyCells }).map((_, i) => (
+                    <div key={`empty-end-${i}`} className="h-full min-h-[48px] sm:min-h-[54px]" />
+                  ))}
                 </div>
 
                 {/* Legend */}
@@ -559,8 +582,8 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
         </Card>
 
         {/* Selected Day Details */}
-        <Card className="card-sacred lg:h-[640px]">
-          <CardContent className="p-2 sm:p-3 h-full overflow-y-auto">
+        <Card className="card-sacred">
+          <CardContent className="p-2 sm:p-3 h-full">
             <h4 className="font-semibold text-cosmic-text-primary mb-2 flex items-center gap-2">
               <Calendar className="h-4 w-4 text-sacred-gold" />
               {language === 'hi' ? 'विवरण' : 'Details'}
@@ -637,13 +660,14 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                       <span className="text-xs font-semibold text-purple-400 uppercase tracking-wide">
                         {language === 'hi' ? 'त्योहार / व्रत' : 'Festivals & Observances'}
                       </span>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {selectedDay.festivals.map((fest, idx) => (
                         (() => {
                           const detail = selectedDay.festival_details.find((d) => d.name === fest);
                           return (
                             <div
                               key={idx}
-                              className="p-2 rounded-lg bg-purple-500/10 border border-purple-500/30 flex items-start gap-2"
+                              className={`p-2 rounded-lg border flex items-start gap-2 ${getFestivalTone(fest, detail?.type)}`}
                             >
                               {festivalIcon(fest)}
                               <div className="min-w-0">
@@ -670,6 +694,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
                           );
                         })()
                       ))}
+                      </div>
                     </div>
                   )}
                 </div>
