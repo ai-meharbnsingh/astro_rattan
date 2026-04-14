@@ -218,13 +218,12 @@ export default function ReportTab({
               {/* Chart Legend */}
               <ChartLegend />
 
-              {/* Grid layout — 2 columns on desktop, 1 on mobile */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 print:grid-cols-2">
-
+              {/* Row 1: Planet Details (2/3) and Divisional Chart (1/3) */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 print:grid-cols-3">
                 {/* 2. Planet Details Table */}
-                <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
+                <div className="lg:col-span-2 bg-sacred-cream rounded-xl border border-sacred-gold p-4 flex flex-col">
                   <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.detailedPlanetPositions')}</h4>
-                  <div className="overflow-x-auto">
+                  <div className="overflow-x-auto flex-1">
                     <table className="w-full text-sm">
                       <thead className="bg-sacred-gold">
                         <tr>
@@ -256,14 +255,14 @@ export default function ReportTab({
                   </div>
                 </div>
 
-                {/* 3. Divisional Chart (D9 default, dropdown for all) */}
-                <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
+                {/* 3. Divisional Chart */}
+                <div className="lg:col-span-1 bg-sacred-cream rounded-xl border border-sacred-gold p-4 flex flex-col">
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-display font-semibold text-sacred-brown">{t('kundli.divisionalCharts')}</h4>
                     <select
                       value={selectedDivision}
                       onChange={(e) => changeDivision(e.target.value)}
-                      className="bg-cosmic-surface border border-sacred-gold rounded-lg px-3 py-1.5 text-sacred-brown text-sm focus:border-sacred-gold focus:outline-none"
+                      className="bg-cosmic-surface border border-sacred-gold rounded-lg px-2 py-1 text-sacred-brown text-xs focus:border-sacred-gold focus:outline-none"
                     >
                       {DIVISIONAL_CHART_OPTIONS.map((c) => (
                         <option key={c.code} value={c.code}>{c.name}</option>
@@ -271,9 +270,9 @@ export default function ReportTab({
                     </select>
                   </div>
                   {loadingDivisional ? (
-                    <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-sacred-gold" /></div>
+                    <div className="flex items-center justify-center py-8 flex-1"><Loader2 className="w-5 h-5 animate-spin text-sacred-gold" /></div>
                   ) : divisionalData?.planet_positions ? (
-                    <div className="flex justify-center">
+                    <div className="flex justify-center flex-1 items-center">
                       <InteractiveKundli
                         chartData={{
                           planets: divisionalData.planet_positions.map((p: any) => ({
@@ -291,12 +290,17 @@ export default function ReportTab({
                         } as ChartData}
                         onPlanetClick={handlePlanetClick}
                         onHouseClick={handleHouseClick}
+                        compact
                       />
                     </div>
                   ) : (
-                    <p className="text-center text-cosmic-text py-8 text-sm">{t('kundli.selectChart')}</p>
+                    <p className="text-center text-cosmic-text py-8 text-sm flex-1 flex items-center justify-center">{t('kundli.selectChart')}</p>
                   )}
                 </div>
+              </div>
+
+              {/* Grid layout for remaining items — 2 columns on desktop, 1 on mobile */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 print:grid-cols-2">
 
                 {/* 4. Lordships */}
                 <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">

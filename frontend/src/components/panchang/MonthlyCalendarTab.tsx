@@ -159,23 +159,23 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
     <div className="space-y-3">
       {/* Month Navigation */}
       <Card className="card-sacred">
-        <CardContent className="p-2 sm:p-3">
+        <CardContent className="p-1.5 sm:p-2">
           <div className="flex items-center justify-between">
-            <Button variant="outline" size="icon" onClick={prevMonth} className="border-sacred-gold/30">
-              <ChevronLeft className="h-4 w-4" />
+            <Button variant="outline" size="icon" onClick={prevMonth} className="border-sacred-gold/30 h-7 w-7 sm:h-8 sm:w-8">
+              <ChevronLeft className="h-3.5 w-3.5" />
             </Button>
             <div className="text-center">
-              <h3 className="text-lg sm:text-xl font-bold text-cosmic-text-primary leading-tight">
+              <h3 className="text-base sm:text-lg font-bold text-cosmic-text-primary leading-tight">
                 {language === 'hi' ? monthNames.hi[month] : monthNames.en[month]} {year}
               </h3>
               {festivalCount > 0 && (
-                <p className="text-[11px] text-purple-400 mt-0.5">
+                <p className="text-[10px] text-purple-400 mt-0">
                   {festivalCount} {language === 'hi' ? 'त्योहार / व्रत' : 'festivals / observances'}
                 </p>
               )}
             </div>
-            <Button variant="outline" size="icon" onClick={nextMonth} className="border-sacred-gold/30">
-              <ChevronRight className="h-4 w-4" />
+            <Button variant="outline" size="icon" onClick={nextMonth} className="border-sacred-gold/30 h-7 w-7 sm:h-8 sm:w-8">
+              <ChevronRight className="h-3.5 w-3.5" />
             </Button>
           </div>
         </CardContent>
