@@ -84,18 +84,18 @@ export default function Hero() {
         </div>
 
         {/* Two-column layout */}
-        <div className="flex flex-col lg:flex-row items-stretch gap-4 lg:gap-6 mt-1">
+        <div className="flex flex-col lg:flex-row items-stretch gap-6 lg:gap-10 mt-1">
 
           {/* LEFT — Kundli Form */}
           <div className="hero-cta opacity-0 w-full lg:w-[38%] shrink-0 lg:mt-[90px]">
-            <div className="mb-3 text-center">
+            <div className="mb-5 text-center">
               <div className="inline-block rounded-xl px-5 py-2"
                 style={{
                   background: 'linear-gradient(135deg, rgba(196,97,31,0.15) 0%, rgba(139,69,19,0.22) 100%)',
                   border: '1px solid rgba(196,97,31,0.35)',
                   boxShadow: '0 4px 20px rgba(196,97,31,0.15), inset 0 1px 0 rgba(255,255,255,0.4)',
                 }}>
-                <h2 className="text-xl sm:text-2xl font-bold text-sacred-gold-dark tracking-tight"
+                <h2 className="text-2xl sm:text-[1.75rem] font-bold text-sacred-gold-dark tracking-tight"
                   style={{ textShadow: '0 2px 10px rgba(196,97,31,0.3)' }}>
                   {l('Get Your Free Kundli', 'अपनी मुफ्त कुंडली पाएं')}
                 </h2>
@@ -294,7 +294,7 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
         disabled={!name || !birthDate || !birthTime || !birthPlace}
         className="w-full py-2.5 bg-sacred-gold/70 text-sacred-gold-dark rounded-lg font-semibold text-base hover:bg-sacred-gold hover:text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 shrink-0">
         <Sparkles className="w-4 h-4" />
-        {l('Generate Kundli', 'कुंडली बनाएं')}
+        {l('Submit', 'जमा करें')}
         <ChevronRight className="w-4 h-4" />
       </button>
     </div>
