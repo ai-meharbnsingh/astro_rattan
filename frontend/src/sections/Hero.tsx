@@ -57,9 +57,9 @@ export default function Hero() {
       <div className="absolute top-1/4 left-10 w-64 h-64 bg-sacred-gold/5 rounded-full blur-3xl opacity-20" />
       <div className="absolute bottom-1/4 right-10 w-80 h-80 bg-[#8B4513]/10 rounded-full blur-3xl opacity-20" />
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Centered header above main section */}
-        <div className="text-center mb-3">
+        <div className="text-center mb-0">
           {/* Shloka */}
           <div className="hero-shloka opacity-0">
             <p className="font-sans text-lg sm:text-2xl lg:text-[2.2rem] opacity-70 tracking-[3px] text-gray-600"
@@ -69,7 +69,7 @@ export default function Hero() {
           </div>
 
           {/* Main Title */}
-          <div className="hero-title-main opacity-0 mt-2">
+          <div className="hero-title-main opacity-0 mt-0">
             <h1
               className="text-xl sm:text-2xl lg:text-3xl text-cosmic-text leading-[1.1] font-sans"
               style={{
@@ -210,7 +210,7 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
           </div>
         </div>
         <div>
-          <label className="text-sm font-semibold text-cosmic-text mb-1 block">{l('Client Phone Number', 'फ़ोन नंबर')}</label>
+          <label className="text-sm font-semibold text-cosmic-text mb-1 block">{l('Phone', 'फ़ोन')} <span className="font-normal text-xs text-gray-400">({l('Optional', 'वैकल्पिक')})</span></label>
           <div className="relative">
             <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/50" />
             <input type="tel" value={phone} onChange={e => setPhone(e.target.value)}
