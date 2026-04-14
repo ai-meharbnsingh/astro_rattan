@@ -55,9 +55,9 @@ export default function Hero() {
       <div className="absolute top-1/4 left-10 w-64 h-64 bg-sacred-gold/5 rounded-full blur-3xl opacity-20" />
       <div className="absolute bottom-1/4 right-10 w-80 h-80 bg-[#8B4513]/10 rounded-full blur-3xl opacity-20" />
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-0">
         {/* Centered header above main section */}
-        <div className="text-center mb-1">
+        <div className="text-center">
           {/* Shloka */}
           <div className="hero-shloka opacity-0">
             <p className="font-sans text-lg sm:text-2xl lg:text-[2.2rem] opacity-70 tracking-[3px] text-gray-600"
@@ -82,7 +82,7 @@ export default function Hero() {
         </div>
 
         {/* Two-column layout */}
-        <div className="flex flex-col lg:flex-row items-start gap-4 lg:gap-6">
+        <div className="flex flex-col lg:flex-row items-start gap-1 lg:gap-2">
 
           {/* Spacer — keeps wheel aligned where it was */}
           <div className="hidden lg:block w-[38%] shrink-0" />

@@ -295,7 +295,7 @@ export default function LiveTransitWheel() {
   );
 
   return (
-    <div className="relative w-full mx-auto" style={{ maxWidth: '760px', padding: '8px' }}>
+    <div className="relative w-full mx-auto" style={{ maxWidth: '760px', padding: '0px' }}>
       {/* Wheel */}
       <div className="relative w-full pb-2">
           {tooltip && (
