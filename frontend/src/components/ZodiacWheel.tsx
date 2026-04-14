@@ -95,7 +95,7 @@ export default function ZodiacWheel() {
 
     const signName = language === 'hi' ? sign.hi : sign.en;
     const monthName = language === 'hi' ? sign.monthHi : sign.monthEn;
-    const nameFontSize = language === 'hi' ? 13 : (signName.length > 9 ? 9 : 11);
+    const nameFontSize = language === 'hi' ? 15 : (signName.length > 9 ? 11 : 13);
 
     return (
       <g key={sign.en}>
@@ -109,7 +109,7 @@ export default function ZodiacWheel() {
         {/* Glyph symbol */}
         <text x={gx} y={gy}
           textAnchor="middle" dominantBaseline="central"
-          fill={GOLD_MED} fontSize="26" fontWeight="bold"
+          fill={GOLD_MED} fontSize="30" fontWeight="bold"
           fontFamily="'Segoe UI Symbol','Noto Sans Symbols 2',serif"
         >{sign.glyph}</text>
 
@@ -125,8 +125,8 @@ export default function ZodiacWheel() {
         {/* Zodiac illustration — INSIDE wheel, circular clip */}
         <image
           href={sign.img}
-          x={ax - 27} y={ay - 27}
-          width={54} height={54}
+          x={ax - 33} y={ay - 33}
+          width={66} height={66}
           preserveAspectRatio="xMidYMid slice"
           clipPath={`url(#imgClip${i})`}
           style={{ filter: 'sepia(0.4) brightness(0.85) contrast(1.1)', opacity: 0.9 }}
@@ -135,7 +135,7 @@ export default function ZodiacWheel() {
         {/* Month label — along arc */}
         <text x={mx} y={my}
           textAnchor="middle" dominantBaseline="central"
-          fill={GOLD} fontSize="16" fontWeight="800"
+          fill={GOLD} fontSize="18" fontWeight="800"
           letterSpacing="1"
           fontFamily="'Inter',sans-serif"
           transform={`rotate(${mRot},${mx},${my})`}
@@ -189,7 +189,7 @@ export default function ZodiacWheel() {
               const imgCy = CY + R_IMG_MID * Math.sin(midRad);
               return (
                 <clipPath key={`clip${i}`} id={`imgClip${i}`}>
-                  <circle cx={imgCx} cy={imgCy} r={25} />
+                  <circle cx={imgCx} cy={imgCy} r={31} />
                 </clipPath>
               );
             })}
