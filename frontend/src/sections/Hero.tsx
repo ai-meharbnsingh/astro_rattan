@@ -67,7 +67,7 @@ export default function Hero() {
           </div>
 
           {/* Main Title */}
-          <div className="hero-title-main opacity-0 mt-6">
+          <div className="hero-title-main opacity-0 mt-2">
             <h1
               className="text-xl sm:text-2xl lg:text-3xl text-cosmic-text leading-[1.1]"
               style={{
