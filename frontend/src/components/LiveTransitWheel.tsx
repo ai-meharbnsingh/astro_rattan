@@ -369,8 +369,8 @@ export default function LiveTransitWheel() {
 
         // Centroid from vertices (same as InteractiveKundli)
         const cen = (...v: {x:number;y:number}[]) => ({
-          x: v.reduce((s,p)=>s+p.x,0)/v.length,
-          y: v.reduce((s,p)=>s+p.y,0)/v.length,
+          cx: v.reduce((s,p)=>s+p.x,0)/v.length,
+          cy: v.reduce((s,p)=>s+p.y,0)/v.length,
         });
 
         // 12 houses with computed centroids — exact same geometry as InteractiveKundli
