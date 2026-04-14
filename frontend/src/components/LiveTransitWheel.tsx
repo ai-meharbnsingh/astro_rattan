@@ -281,7 +281,7 @@ export default function LiveTransitWheel() {
   const ascRad = toRad(lagnaAngle);
   const ascX = CX + R_OUTERMOST * Math.cos(ascRad);
   const ascY = CY + R_OUTERMOST * Math.sin(ascRad);
-  const ascLabelR = R_OUTERMOST + 24;
+  const ascLabelR = Math.sin(ascRad) > 0.72 ? R_OUTERMOST - 18 : R_OUTERMOST + 24;
   const ascLabelX = CX + ascLabelR * Math.cos(ascRad);
   const ascLabelY = CY + ascLabelR * Math.sin(ascRad);
   const ascDegText = `${(lagnaLong % 30).toFixed(1)}°`;
@@ -297,9 +297,8 @@ export default function LiveTransitWheel() {
 
   return (
     <div className="relative w-full mx-auto" style={{ maxWidth: '760px', padding: '16px' }}>
-      <div className="flex flex-col lg:flex-row lg:items-center lg:gap-5">
-        {/* Wheel */}
-        <div className="relative w-full lg:flex-1">
+      {/* Wheel */}
+      <div className="relative w-full">
           {tooltip && (
             <div className="absolute z-20 pointer-events-none"
               style={{ left: `${((tooltip.x+16)/600)*100}%`, top: `${(tooltip.y/600)*100}%`, transform: 'translate(-50%,-130%)' }}>
@@ -350,23 +349,22 @@ export default function LiveTransitWheel() {
               </>
             )}
           </svg>
-        </div>
+      </div>
       </div>
 
-        {/* Legend — right on desktop, bottom on mobile */}
-        <div className="rounded-lg bg-sacred-gold/5 px-3 py-2 mt-6 lg:mt-0 text-[9px] lg:w-[190px]" style={{ fontFamily:'Inter,sans-serif', color: GOLD }}>
-          <div className="flex flex-wrap lg:flex-col justify-center lg:justify-start gap-x-4 gap-y-1">
+      {/* Legend — bottom */}
+      <div className="rounded-lg bg-sacred-gold/5 px-3 py-2 mt-8 text-[9px]" style={{ fontFamily:'Inter,sans-serif', color: GOLD }}>
+        <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
             <span className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>*</span>{hi?'वक्री':'Retro'}</span>
             <span className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>^</span>{hi?'अस्त':'Combust'}</span>
             <span className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>v</span>{hi?'वर्गोत्तम':'Vargottama'}</span>
             <span className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>+</span>{hi?'उच्च':'Exalted'}</span>
             <span className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>-</span>{hi?'नीच':'Debilitated'}</span>
-          </div>
-          <div className="flex flex-wrap lg:flex-col justify-center lg:justify-start gap-x-4 gap-y-1 mt-1 lg:mt-2">
+        </div>
+        <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-1">
             <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full" style={{ background:GOLD_MED }} />{hi?'शुभ':'Benefic'}</span>
             <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full" style={{ background:DARK }} />{hi?'पापी':'Malefic'}</span>
             <span className="flex items-center gap-1"><span className="w-2 h-2" style={{ background:GOLD_MED, clipPath:'polygon(50% 0%,0% 100%,100% 100%)' }} />ASC</span>
-          </div>
         </div>
       </div>
     </div>
