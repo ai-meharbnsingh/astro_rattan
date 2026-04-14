@@ -167,13 +167,13 @@ export default function Features() {
           {features.map((feature, index) => (
             <Card
               key={index}
-              className="feature-card group relative bg-white border border-[#e0d5c5] rounded-[12px] overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-sacred-gold/10"
+              className="feature-card group relative bg-white border border-[#e0d5c5] overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-sacred-gold/10"
             >
-              <div className="relative">
+              <div className="relative px-3 pt-3">
                 <img
                   src={feature.image}
                   alt={feature.title}
-                  className="w-full h-[180px] object-cover object-center rounded-t-[12px]"
+                  className="w-full h-[180px] object-cover object-center"
                   style={{
                     objectPosition: feature.imagePosition || 'center center',
                     filter: feature.imageFilter || 'sepia(0.2) brightness(0.95) contrast(1.05)',
