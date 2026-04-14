@@ -204,13 +204,18 @@ export default function LiveTransitWheel() {
     );
   });
 
-  // Planet positions — place at MIDPOINT of sign (not on divider lines)
+  // Planet positions — clamp angle to stay 5° inside sign boundaries (never cross divider lines)
   const DOT_MIN_DIST = 48;
   const LANE_MIN = 162;
   const LANE_MAX = 214;
+  const SIGN_PAD = 5; // degrees padding from sign boundary
   let dotPos = planets.map(p => {
     const baseRadius = Math.max(LANE_MIN, Math.min(LANE_MAX, RING_R[p.planet] || 180));
-    const angle = toRad(absAngle(p));
+    const si = signIdx(p.sign);
+    const signStart = si * 30 - 90;
+    // Clamp degree within sign: min SIGN_PAD, max 30-SIGN_PAD
+    const clampedDeg = Math.max(SIGN_PAD, Math.min(30 - SIGN_PAD, p.sign_degree));
+    const angle = toRad(signStart + clampedDeg);
     return { planet: p, angle, radius: baseRadius, baseRadius };
   });
 
@@ -290,9 +295,9 @@ export default function LiveTransitWheel() {
   );
 
   return (
-    <div className="relative w-full mx-auto flex flex-col lg:flex-row items-center lg:items-start gap-2" style={{ maxWidth: '700px', padding: '16px' }}>
+    <div className="relative w-full mx-auto" style={{ maxWidth: '540px', padding: '16px' }}>
       {/* Wheel */}
-      <div className="relative flex-1 min-w-0 max-w-[580px]">
+      <div className="relative w-full">
         {tooltip && (
           <div className="absolute z-20 pointer-events-none"
             style={{ left: `${((tooltip.x+16)/600)*100}%`, top: `${(tooltip.y/600)*100}%`, transform: 'translate(-50%,-130%)' }}>
@@ -346,18 +351,17 @@ export default function LiveTransitWheel() {
 
       </div>
 
-      {/* Legend — right side, vertical */}
-      <div className="shrink-0 rounded-lg border border-sacred-gold/20 bg-sacred-gold/5 px-2 py-2 text-[9px] lg:mt-12" style={{ fontFamily:'Inter,sans-serif', color: GOLD, minWidth: '90px' }}>
-        <div className="space-y-1">
-          <div className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>*</span>{hi?'वक्री':'Retro'}</div>
-          <div className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>^</span>{hi?'अस्त':'Combust'}</div>
-          <div className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>v</span>{hi?'वर्गोत्तम':'Vargottama'}</div>
-          <div className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>+</span>{hi?'उच्च':'Exalted'}</div>
-          <div className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>-</span>{hi?'नीच':'Debilitated'}</div>
-          <div className="border-t border-sacred-gold/20 my-1" />
-          <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full" style={{ background:GOLD_MED }} />{hi?'शुभ':'Benefic'}</div>
-          <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full" style={{ background:DARK }} />{hi?'पापी':'Malefic'}</div>
-          <div className="flex items-center gap-1"><span className="w-2 h-2" style={{ background:GOLD_MED, clipPath:'polygon(50% 0%,0% 100%,100% 100%)' }} />ASC</div>
+      {/* Legend — bottom */}
+      <div className="rounded-lg bg-sacred-gold/5 px-3 py-2 mt-3 text-[9px]" style={{ fontFamily:'Inter,sans-serif', color: GOLD }}>
+        <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
+          <span className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>*</span>{hi?'वक्री':'Retro'}</span>
+          <span className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>^</span>{hi?'अस्त':'Combust'}</span>
+          <span className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>v</span>{hi?'वर्गोत्तम':'Vargottama'}</span>
+          <span className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>+</span>{hi?'उच्च':'Exalted'}</span>
+          <span className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>-</span>{hi?'नीच':'Debilitated'}</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full" style={{ background:GOLD_MED }} />{hi?'शुभ':'Benefic'}</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full" style={{ background:DARK }} />{hi?'पापी':'Malefic'}</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2" style={{ background:GOLD_MED, clipPath:'polygon(50% 0%,0% 100%,100% 100%)' }} />ASC</span>
         </div>
       </div>
     </div>
