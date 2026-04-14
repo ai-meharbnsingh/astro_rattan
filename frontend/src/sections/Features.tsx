@@ -146,20 +146,13 @@ export default function Features() {
 
         {/* Section Header */}
         <div className="features-title text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold/10 border border-sacred-gold/30 mb-6">
-            <span className="text-sm font-medium text-sacred-gold-dark uppercase tracking-wider">
-              {l('Complete Astrological Operating System', 'पूर्ण ज्योतिषीय ऑपरेटिंग सिस्टम')}
-            </span>
-          </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-sans text-cosmic-text mb-6">
-            {l('Everything You Need', 'आपको जो कुछ भी चाहिए')}<br />
-            <span className="text-sacred-gold-dark">{l('In One Platform', 'एक ही प्लेटफॉर्म में')}</span>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-sans text-cosmic-text mb-6 uppercase tracking-wide">
+            {l('Complete Astrological Operating System', 'पूर्ण ज्योतिषीय ऑपरेटिंग सिस्टम')}
           </h2>
-          <p className="max-w-3xl mx-auto text-lg text-gray-600">
-            {l('Most astrology apps use lookup tables and generic predictions. ', 'अधिकांश ज्योतिष ऐप लुकअप टेबल और सामान्य भविष्यवाणी का उपयोग करते हैं। ')}
-            <strong className="text-sacred-gold-dark">{l('Astro Rattan computes every position from Swiss Ephemeris', 'Astro Rattan Swiss Ephemeris से हर स्थिति की गणना करता है')}</strong>
-            {l(' — the same library used by research astronomers — accurate to arc-seconds.', ' — यही लाइब्रेरी शोध खगोलविद भी उपयोग करते हैं — आर्क-सेकंड तक सटीक।')}
-          </p>
+          <div className="max-w-full mx-auto text-lg text-gray-600 leading-relaxed">
+            <p>{l('Most astrology apps use lookup tables and generic predictions.', 'अधिकांश ज्योतिष ऐप लुकअप टेबल और सामान्य भविष्यवाणी का उपयोग करते हैं।')}</p>
+            <p><strong className="text-sacred-gold-dark">{l('Astro Rattan computes every position from Swiss Ephemeris', 'Astro Rattan Swiss Ephemeris से हर स्थिति की गणना करता है')}</strong>{l(' — the same library used by research astronomers — accurate to arc-seconds.', ' — यही लाइब्रेरी शोध खगोलविद भी उपयोग करते हैं — आर्क-सेकंड तक सटीक।')}</p>
+          </div>
         </div>
 
         {/* Feature Cards Grid */}
