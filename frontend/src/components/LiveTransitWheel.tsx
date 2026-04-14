@@ -66,7 +66,7 @@ interface TransitPlanet { planet: string; sign: string; longitude: number; sign_
 interface TooltipData { planet: string; sign: string; degree: number; retrograde: boolean; x: number; y: number; }
 interface SkyData { planets: TransitPlanet[]; lagna_sign: string; lagna_longitude: number; }
 
-const R_OUTERMOST = 295; // new outermost circle — outside sign names
+const R_OUTERMOST = 302; // new outermost circle — outside sign names
 const R_SIGN_NAME = 280;
 const R_OUTER = 265;
 const R_DATE = 256;
@@ -85,7 +85,7 @@ const R_CENTER = 42;
 const GOLD = '#8B4513';
 const GOLD_MED = '#C4611F';
 const DARK = '#1a1a2e';
-const WHEEL_LINE = 'rgba(139,69,19,0.34)';
+const WHEEL_LINE = 'rgba(139,69,19,0.52)';
 const WHEEL_STROKE_W = 0.7;
 
 function signIdx(sign: string) { return Math.max(0, SIGNS.findIndex(s => s.en.toLowerCase() === sign.toLowerCase())); }
@@ -296,7 +296,7 @@ export default function LiveTransitWheel() {
   );
 
   return (
-    <div className="relative w-full mx-auto" style={{ maxWidth: '540px', padding: '16px' }}>
+    <div className="relative w-full mx-auto" style={{ maxWidth: '620px', padding: '16px' }}>
       {/* Wheel */}
       <div className="relative w-full">
         {tooltip && (
@@ -354,7 +354,7 @@ export default function LiveTransitWheel() {
       </div>
 
       {/* Legend — bottom */}
-      <div className="rounded-lg bg-sacred-gold/5 px-3 py-2 mt-3 text-[9px]" style={{ fontFamily:'Inter,sans-serif', color: GOLD }}>
+      <div className="rounded-lg bg-sacred-gold/5 px-3 py-2 mt-6 text-[9px]" style={{ fontFamily:'Inter,sans-serif', color: GOLD }}>
         <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
           <span className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>*</span>{hi?'वक्री':'Retro'}</span>
           <span className="flex items-center gap-1"><span className="font-bold" style={{ color: GOLD_MED }}>^</span>{hi?'अस्त':'Combust'}</span>

@@ -57,13 +57,13 @@ export default function Hero() {
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Two-column layout */}
-        <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+        <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-10">
 
           {/* LEFT — Text content */}
-          <div className="flex-1 text-center lg:text-left">
+          <div className="w-full lg:basis-[42%] text-center lg:text-left">
             {/* Shloka */}
             <div className="hero-shloka opacity-0 mb-4">
-              <p className="font-sans text-xl sm:text-2xl lg:text-3xl opacity-70 tracking-[4px] text-gray-600"
+              <p className="font-sans text-lg sm:text-2xl lg:text-[2.2rem] opacity-70 tracking-[3px] text-gray-600"
                 style={{ textShadow: '0 0 15px rgba(255, 170, 51, 0.4)' }}>
                 {'\u091C\u094D\u092F\u094B\u0924\u093F\u0937\u092E\u094D \u0905\u092F\u092E\u094D \u092C\u094D\u0930\u0939\u094D\u092E'} {t('hero.shlokaSupreme')}
               </p>
@@ -72,7 +72,7 @@ export default function Hero() {
             {/* Main Title */}
             <div className="hero-title-main opacity-0">
               <h1
-                className="text-2xl sm:text-3xl lg:text-4xl text-cosmic-text leading-[1.1]"
+                className="text-2xl sm:text-3xl lg:text-[3.2rem] text-cosmic-text leading-[1.08]"
                 style={{
                   fontWeight: 800,
                   letterSpacing: '-0.02em',
@@ -81,7 +81,7 @@ export default function Hero() {
                 {l('Your Complete Astrology Platform', 'आपका पूर्ण ज्योतिष प्लेटफॉर्म')}
               </h1>
               <p
-                className="text-base text-sacred-gold-dark mt-4 uppercase"
+                className="text-sm sm:text-base text-sacred-gold-dark mt-4 uppercase"
                 style={{
                   fontWeight: 700,
                   letterSpacing: '0.15em',
@@ -93,7 +93,7 @@ export default function Hero() {
 
             {/* Subtitle */}
             <div className="hero-subtitle opacity-0 mt-6 max-w-xl lg:max-w-none">
-              <p className="text-lg text-gray-600 leading-relaxed">
+              <p className="text-base sm:text-lg text-gray-600 leading-relaxed">
                 {l(
                   'Deep Kundli analysis, Lal Kitab remedies & predictions, Vastu floor plan scoring, live Panchang, and Numerology — all in one platform.',
                   'गहरी कुंडली विश्लेषण, लाल किताब उपाय और भविष्यवाणियां, वास्तु फ्लोर प्लान स्कोरिंग, लाइव पंचांग और अंकशास्त्र — एक ही प्लेटफॉर्म।'
@@ -120,7 +120,7 @@ export default function Hero() {
           </div>
 
           {/* RIGHT — Zodiac Wheel */}
-          <div className="hero-wheel opacity-0 flex-shrink-0 w-full max-w-[360px] lg:max-w-[460px]">
+          <div className="hero-wheel opacity-0 flex-shrink-0 w-full max-w-[390px] lg:basis-[58%] lg:max-w-[620px]">
             <LiveTransitWheel />
           </div>
 
