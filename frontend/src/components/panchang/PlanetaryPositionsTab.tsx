@@ -1,4 +1,4 @@
-import { Sun, Moon, CircleDot, Orbit } from 'lucide-react';
+import { Orbit } from 'lucide-react';
 import type { FullPanchangData } from '@/sections/Panchang';
 
 interface Props {
@@ -7,29 +7,16 @@ interface Props {
   t: (key: string) => string;
 }
 
-// Planet colors for styling
-const PLANET_COLORS: Record<string, string> = {
-  Sun: 'text-orange-500',
-  Moon: 'text-slate-300',
-  Mars: 'text-red-500',
-  Mercury: 'text-green-500',
-  Jupiter: 'text-yellow-500',
-  Venus: 'text-pink-400',
-  Saturn: 'text-blue-400',
-  Rahu: 'text-purple-500',
-  Ketu: 'text-gray-400',
-};
-
-const PLANET_BG_COLORS: Record<string, string> = {
-  Sun: 'bg-orange-500/10',
-  Moon: 'bg-slate-300/10',
-  Mars: 'bg-red-500/10',
-  Mercury: 'bg-green-500/10',
-  Jupiter: 'bg-yellow-500/10',
-  Venus: 'bg-pink-400/10',
-  Saturn: 'bg-blue-400/10',
-  Rahu: 'bg-purple-500/10',
-  Ketu: 'bg-gray-400/10',
+const PLANET_DOT_BG: Record<string, string> = {
+  Sun: 'bg-orange-500',
+  Moon: 'bg-slate-300',
+  Mars: 'bg-red-500',
+  Mercury: 'bg-green-500',
+  Jupiter: 'bg-yellow-500',
+  Venus: 'bg-pink-400',
+  Saturn: 'bg-blue-400',
+  Rahu: 'bg-purple-500',
+  Ketu: 'bg-gray-400',
 };
 
 // Hindi names for planets
@@ -47,147 +34,94 @@ const PLANET_HINDI: Record<string, string> = {
 
 export default function PlanetaryPositionsTab({ panchang, language, t }: Props) {
   const planets = panchang.planetary_positions || [];
+  const sunPlanet = planets.find((p) => p.name === 'Sun');
+  const moonPlanet = planets.find((p) => p.name === 'Moon');
+
+  const summaryRows = [
+    {
+      item: language === 'hi' ? 'सूर्य राशि' : 'Sun Sign',
+      value: language === 'hi' && panchang.sun_sign ? translateRashiToHindi(panchang.sun_sign) : panchang.sun_sign || '--',
+      details: sunPlanet ? `${language === 'hi' ? 'अंश' : 'Degree'}: ${sunPlanet.degree}°` : '--',
+      extra: sunPlanet ? `${language === 'hi' ? 'दीर्घांश' : 'Longitude'}: ${sunPlanet.longitude}°` : '--',
+    },
+    {
+      item: language === 'hi' ? 'चंद्र राशि' : 'Moon Sign',
+      value: language === 'hi' && panchang.moon_sign ? translateRashiToHindi(panchang.moon_sign) : panchang.moon_sign || '--',
+      details: moonPlanet ? `${language === 'hi' ? 'अंश' : 'Degree'}: ${moonPlanet.degree}°` : '--',
+      extra: `${language === 'hi' ? 'नक्षत्र' : 'Nakshatra'}: ${language === 'hi' ? panchang.nakshatra?.name_hindi || panchang.nakshatra?.name || '--' : panchang.nakshatra?.name || '--'}`,
+    },
+  ];
 
   return (
     <div className="space-y-3">
-      {/* Sun and Moon Signs */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        <div className="rounded-lg border border-orange-500/30 p-2">
-          <div className="flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-orange-500/10">
-              <Sun className="h-5 w-5 text-orange-500" />
-            </div>
-            <div>
-              <p className="text-sm text-cosmic-text-secondary">
-                {language === 'hi' ? 'सूर्य राशि' : 'Sun Sign'}
-              </p>
-              <h3 className="text-xl font-bold text-cosmic-text-primary">
-                {language === 'hi' && panchang.sun_sign
-                  ? translateRashiToHindi(panchang.sun_sign)
-                  : panchang.sun_sign || '--'}
-              </h3>
-            </div>
-            {(() => {
-              const sunPlanet = planets.find(p => p.name === 'Sun');
-              if (sunPlanet) {
-                return (
-                  <div className="ml-auto text-xs text-cosmic-text-secondary text-right">
-                    <p>{sunPlanet.degree}°</p>
-                    <p>{sunPlanet.longitude}°</p>
-                  </div>
-                );
-              }
-              return null;
-            })()}
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-slate-400/30 p-2">
-          <div className="flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-slate-300/10">
-              <Moon className="h-5 w-5 text-slate-300" />
-            </div>
-            <div>
-              <p className="text-sm text-cosmic-text-secondary">
-                {language === 'hi' ? 'चंद्र राशि' : 'Moon Sign'}
-              </p>
-              <h3 className="text-xl font-bold text-cosmic-text-primary">
-                {language === 'hi' && panchang.moon_sign
-                  ? translateRashiToHindi(panchang.moon_sign)
-                  : panchang.moon_sign || '--'}
-              </h3>
-            </div>
-            {(() => {
-              const moonPlanet = planets.find(p => p.name === 'Moon');
-              if (moonPlanet) {
-                return (
-                  <div className="ml-auto text-xs text-cosmic-text-secondary text-right">
-                    <p>{moonPlanet.degree}°</p>
-                    <p>{panchang.nakshatra?.name}</p>
-                  </div>
-                );
-              }
-              return null;
-            })()}
-          </div>
+      <div className="rounded-lg border border-cosmic-border p-2">
+        <h3 className="font-bold text-cosmic-text-primary mb-1">
+          {language === 'hi' ? 'सूर्य / चंद्र सारांश' : 'Sun / Moon Summary'}
+        </h3>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[680px] text-sm">
+            <thead>
+              <tr className="bg-sacred-gold/15">
+                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'विषय' : 'Item'}</th>
+                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'मान' : 'Value'}</th>
+                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'विवरण' : 'Details'}</th>
+                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">{language === 'hi' ? 'अतिरिक्त' : 'Extra'}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {summaryRows.map((row) => (
+                <tr key={row.item} className="border-b border-cosmic-border/50 last:border-0">
+                  <td className="px-2 py-1 font-medium text-cosmic-text-primary">{row.item}</td>
+                  <td className="px-2 py-1 text-cosmic-text-primary">{row.value}</td>
+                  <td className="px-2 py-1 text-cosmic-text-secondary">{row.details}</td>
+                  <td className="px-2 py-1 text-cosmic-text-secondary">{row.extra}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
-      {/* Navgraha Grid */}
       <div className="rounded-lg border border-cosmic-border p-2">
-        <h3 className="font-bold text-cosmic-text-primary mb-2 flex items-center gap-1">
+        <h3 className="font-bold text-cosmic-text-primary mb-1 flex items-center gap-1">
           <Orbit className="h-4 w-4 text-sacred-gold" />
           {language === 'hi' ? 'नवग्रह स्थिति' : 'Navgraha Positions (Planetary Positions)'}
         </h3>
-
-        <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-2">
-          {planets.map((planet) => {
-            const colorClass = PLANET_COLORS[planet.name] || 'text-gray-400';
-            const bgClass = PLANET_BG_COLORS[planet.name] || 'bg-gray-400/10';
-            const hindiName = PLANET_HINDI[planet.name] || planet.name;
-
-            return (
-              <div
-                key={planet.name}
-                className={`p-2 rounded-lg ${bgClass} text-center`}
-              >
-                <div className="flex items-center justify-center gap-1 mb-1">
-                  <CircleDot className={`h-3 w-3 ${colorClass}`} />
-                  <span className="font-semibold text-cosmic-text-primary text-sm">
-                    {language === 'hi' ? hindiName : planet.name}
-                  </span>
-                </div>
-                <p className="font-bold text-cosmic-text-primary">
-                  {language === 'hi' && planet.rashi_hindi
-                    ? planet.rashi_hindi
-                    : planet.rashi}
-                </p>
-                <p className="text-xs text-cosmic-text-secondary">
-                  {planet.degree}°
-                </p>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Position Table */}
-      <div className="rounded-lg border border-cosmic-border overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[680px] text-sm">
             <thead>
-              <tr className="border-b border-cosmic-border bg-cosmic-card/30">
-                <th className="text-left py-1 px-2 text-cosmic-text-secondary font-medium">
+              <tr className="bg-sacred-gold/15">
+                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
                   {language === 'hi' ? 'ग्रह' : 'Planet'}
                 </th>
-                <th className="text-left py-1 px-2 text-cosmic-text-secondary font-medium">
+                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
                   {language === 'hi' ? 'राशि' : 'Sign'}
                 </th>
-                <th className="text-right py-1 px-2 text-cosmic-text-secondary font-medium">
+                <th className="text-right px-2 py-1 text-sacred-gold-dark font-semibold">
                   {language === 'hi' ? 'अंश' : 'Degree'}
                 </th>
-                <th className="text-right py-1 px-2 text-cosmic-text-secondary font-medium">
+                <th className="text-right px-2 py-1 text-sacred-gold-dark font-semibold">
                   {language === 'hi' ? 'दीर्घांश' : 'Longitude'}
                 </th>
               </tr>
             </thead>
             <tbody>
-              {planets.map((planet, index) => (
+              {planets.map((planet) => (
                 <tr
                   key={planet.name}
-                  className={`border-b border-cosmic-border/50 last:border-0 ${index % 2 === 0 ? 'bg-cosmic-card/30' : ''}`}
+                  className="border-b border-cosmic-border/50 last:border-0"
                 >
-                  <td className="py-1 px-2 font-medium text-cosmic-text-primary">
-                    <span className={`inline-block w-2 h-2 rounded-full mr-1 ${PLANET_BG_COLORS[planet.name]?.replace('/10', '')}`} />
+                  <td className="px-2 py-1 font-medium text-cosmic-text-primary">
+                    <span className={`inline-block w-2 h-2 rounded-full mr-1 ${PLANET_DOT_BG[planet.name] || 'bg-gray-400'}`} />
                     {language === 'hi' ? PLANET_HINDI[planet.name] || planet.name : planet.name}
                   </td>
-                  <td className="py-1 px-2 text-cosmic-text-secondary">
+                  <td className="px-2 py-1 text-cosmic-text-secondary">
                     {language === 'hi' && planet.rashi_hindi ? planet.rashi_hindi : planet.rashi}
                   </td>
-                  <td className="py-1 px-2 text-right text-cosmic-text-secondary">
+                  <td className="px-2 py-1 text-right text-cosmic-text-secondary">
                     {planet.degree}°
                   </td>
-                  <td className="py-1 px-2 text-right text-cosmic-text-secondary">
+                  <td className="px-2 py-1 text-right text-cosmic-text-secondary">
                     {planet.longitude}°
                   </td>
                 </tr>
