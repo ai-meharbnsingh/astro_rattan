@@ -91,7 +91,7 @@ export default function Hero() {
             <div className="hero-subtitle opacity-0 mt-6 max-w-xl lg:max-w-none">
               <p className="text-lg text-gray-600 leading-relaxed">
                 {l(
-                  'Deep Kundli analysis, Lal Kitab remedies & predictions, Vastu floor plan scoring, live Panchang, and Numerology — all in one platform powered by AI and authentic Vedic traditions.',
+                  'Deep Kundli analysis, Lal Kitab remedies & predictions, Vastu floor plan scoring, live Panchang, and Numerology — all in one platform.',
                   'गहरी कुंडली विश्लेषण, लाल किताब उपाय और भविष्यवाणियां, वास्तु फ्लोर प्लान स्कोरिंग, लाइव पंचांग और अंकशास्त्र — AI और प्रामाणिक वैदिक परंपराओं द्वारा संचालित एक ही प्लेटफॉर्म।'
                 )}
               </p>
