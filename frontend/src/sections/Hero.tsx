@@ -148,7 +148,7 @@ export default function Hero() {
           </div>
 
           {/* RIGHT — Zodiac Wheel with 3D depth */}
-          <div className="hero-wheel opacity-0 flex-shrink-0 w-full max-w-[380px] lg:max-w-[460px]">
+          <div className="hero-wheel opacity-0 flex-shrink-0 w-full max-w-[320px] lg:max-w-[400px]">
             <ZodiacWheel />
           </div>
 

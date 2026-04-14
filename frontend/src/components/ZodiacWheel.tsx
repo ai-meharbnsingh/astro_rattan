@@ -25,7 +25,7 @@ const R_GLYPH_MID = 100;   // glyph center
 const R_NAME_RING = 140;
 const R_NAME_MID = 170;     // sign name center
 const R_ART_RING = 200;
-const R_ART_MID = 240;      // illustration center
+const R_ART_MID = 238;      // illustration center
 const R_MONTH_RING = 280;
 const R_MONTH_MID = 300;    // month label center
 const R_OUTER = 320;
@@ -123,8 +123,8 @@ export default function ZodiacWheel() {
         {/* Zodiac illustration — circular clip, no rotation */}
         <image
           href={sign.img}
-          x={ax - 30} y={ay - 30}
-          width={60} height={60}
+          x={ax - 22} y={ay - 22}
+          width={44} height={44}
           preserveAspectRatio="xMidYMid slice"
           clipPath={`url(#imgClip${i})`}
           style={{ filter: 'sepia(0.4) brightness(0.85) contrast(1.1)', opacity: 0.9 }}
@@ -159,7 +159,7 @@ export default function ZodiacWheel() {
   }
 
   return (
-    <div className="relative w-full max-w-[460px] mx-auto">
+    <div className="relative w-full max-w-[400px] mx-auto">
       {/* Soft glow behind wheel */}
       <div className="absolute inset-[-8%] rounded-full bg-sacred-gold/5 blur-3xl" />
 
@@ -180,7 +180,7 @@ export default function ZodiacWheel() {
               const imgCy = CY + R_ART_MID * Math.sin(midRad);
               return (
                 <clipPath key={`clip${i}`} id={`imgClip${i}`}>
-                  <circle cx={imgCx} cy={imgCy} r={28} />
+                  <circle cx={imgCx} cy={imgCy} r={22} />
                 </clipPath>
               );
             })}
