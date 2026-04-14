@@ -36,9 +36,9 @@ interface TransitPlanet { planet: string; sign: string; longitude: number; sign_
 interface TooltipData { planet: string; sign: string; degree: number; retrograde: boolean; x: number; y: number; }
 interface SkyData { planets: TransitPlanet[]; lagna_sign: string; lagna_longitude: number; }
 
-const R_SIGN_NAME = 288;
 const R_OUTER = 270;
-const R_DATE = 256;
+const R_SIGN_NAME = 258;
+const R_DATE = 245;
 const R_DATE_RING = 244;
 const R_IMG = 218;
 const R_GENDER = 130; // Moved closer to center
@@ -276,7 +276,7 @@ export default function LiveTransitWheel() {
 
       <div className="chakra-float" style={{ transformStyle: 'preserve-3d' }}>
         <svg viewBox="0 0 600 600" className="w-full h-full" style={{
-          overflow: 'visible',
+          overflow: 'hidden',
           filter: 'drop-shadow(4px 8px 16px rgba(139,69,19,0.25)) drop-shadow(0 2px 6px rgba(196,97,31,0.12))',
         }}>
           <defs>{clipDefs}</defs>
