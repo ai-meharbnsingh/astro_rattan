@@ -180,7 +180,7 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
     });
   };
 
-  const inputClass = "w-full px-3 py-2 pl-9 rounded-lg bg-[#f0ecf8]/40 border border-sacred-gold/50 text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none placeholder:text-sacred-gold-dark/40";
+  const inputClass = "w-full px-3 py-1.5 pl-9 rounded-lg bg-[#f0ecf8]/40 border border-sacred-gold/50 text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none placeholder:text-sacred-gold-dark/40";
 
   return (
     <div className="flex flex-col h-full justify-between">
@@ -190,7 +190,7 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
       </h3>
 
       {/* Fields — compact like screenshot */}
-      <div className="flex-1 flex flex-col justify-between py-2 gap-2">
+      <div className="flex-1 flex flex-col justify-between py-1 gap-1">
         {/* Full Name */}
         <div>
           <label className="text-sm font-semibold text-cosmic-text mb-0.5 block">{l('Full Name', 'पूरा नाम')}</label>
@@ -202,7 +202,7 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
         </div>
 
         {/* Gender + Birth Place */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-2">
           <div>
             <label className="text-sm font-semibold text-cosmic-text mb-0.5 block">{l('Gender', 'लिंग')}</label>
             <div className="flex gap-2">
@@ -237,7 +237,7 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
         </div>
 
         {/* Birth Date + Time */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-2">
           <div>
             <label className="text-sm font-semibold text-cosmic-text mb-0.5 block">{l('Birth Date', 'जन्म तिथि')}</label>
             <div className="relative">
