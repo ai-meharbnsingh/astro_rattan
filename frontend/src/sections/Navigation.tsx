@@ -5,13 +5,13 @@ import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/lib/i18n';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 
-const serviceLinks = [
+const serviceLinks: { key: string; href: string; highlight?: boolean }[] = [
   { key: 'nav.kundli', href: '/kundli' },
   { key: 'nav.horoscope', href: '/horoscope' },
   { key: 'nav.panchang', href: '/panchang' },
   { key: 'nav.lalKitab', href: '/lal-kitab' },
   { key: 'nav.numerology', href: '/numerology' },
-  { key: 'nav.vastu', href: '/vastu' },
+  { key: 'nav.vastu', href: '/vastu', highlight: true },
 ];
 
 const authOnlyLinks = [
@@ -59,7 +59,11 @@ export default function Navigation() {
                 <Link
                   key={link.key}
                   to={link.href}
-                  className="text-base text-cosmic-text hover:text-sacred-gold-dark transition-colors font-sans tracking-wide"
+                  className={
+                    link.highlight
+                      ? 'text-base font-semibold text-sacred-gold-dark border border-sacred-gold px-3 py-1 rounded-lg hover:bg-sacred-gold hover:text-white transition-all font-sans tracking-wide'
+                      : 'text-base text-cosmic-text hover:text-sacred-gold-dark transition-colors font-sans tracking-wide'
+                  }
                 >
                   {t(link.key)}
                 </Link>
@@ -138,7 +142,11 @@ export default function Navigation() {
                 key={link.key}
                 to={link.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block py-3 px-3 text-cosmic-text hover:text-sacred-gold-dark hover:bg-gray-50 transition-colors font-sans"
+                className={
+                  link.highlight
+                    ? 'block py-3 px-3 font-semibold text-sacred-gold-dark border border-sacred-gold rounded-lg hover:bg-sacred-gold hover:text-white transition-all font-sans'
+                    : 'block py-3 px-3 text-cosmic-text hover:text-sacred-gold-dark hover:bg-gray-50 transition-colors font-sans'
+                }
               >
                 {t(link.key)}
               </Link>
