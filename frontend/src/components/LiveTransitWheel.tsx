@@ -280,7 +280,7 @@ export default function LiveTransitWheel() {
   const ascRad = toRad(lagnaAngle);
   const ascX = CX + R_OUTERMOST * Math.cos(ascRad);
   const ascY = CY + R_OUTERMOST * Math.sin(ascRad);
-  const ascLabelR = R_OUTERMOST + 16;
+  const ascLabelR = R_OUTERMOST + 30;
   const ascLabelX = CX + ascLabelR * Math.cos(ascRad);
   const ascLabelY = CY + ascLabelR * Math.sin(ascRad);
   const ascDegText = `${(lagnaLong % 30).toFixed(1)}°`;
