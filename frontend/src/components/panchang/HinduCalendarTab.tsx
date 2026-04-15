@@ -461,7 +461,7 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
                     📍 {locationName}
                   </p>
                 )}
-                <h3 className="text-xl font-bold text-stone-800">{monthNames[month]} {year}</h3>
+                <h3 className="text-xl font-bold text-[#C45A00]">{monthNames[month]} {year}</h3>
                 {p?.hindu_calendar?.maas && (
                   <p className="text-xs text-sacred-gold">
                     {p.hindu_calendar.maas} · {language === 'hi' ? 'विक्रम संवत्' : 'Vikram Samvat'} {p.hindu_calendar.vikram_samvat}
