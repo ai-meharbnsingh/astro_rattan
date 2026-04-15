@@ -7,7 +7,7 @@ import { api } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
 import { Calendar, ChevronDown, ChevronUp, Loader2, MapPin, Sparkles, Sun, X } from 'lucide-react';
 import { Heading } from '@/components/ui/heading';
-import InteractiveKundli from '@/components/InteractiveKundli';
+import KundliChartSVG from '@/components/KundliChartSVG';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -300,13 +300,17 @@ export default function Features() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // Fetch current sky for Present Kundli section
+  // Fetch current sky for Present Kundli section (auto-refresh every 60s)
   useEffect(() => {
     let cancelled = false;
-    api.get('/api/kundli/current-sky').then(data => {
-      if (!cancelled && data) setCurrentSky(data);
-    }).catch(() => {});
-    return () => { cancelled = true; };
+    const load = () => {
+      api.get('/api/kundli/current-sky').then(data => {
+        if (!cancelled && data) setCurrentSky(data);
+      }).catch(() => {});
+    };
+    load();
+    const interval = setInterval(load, 60000);
+    return () => { cancelled = true; clearInterval(interval); };
   }, []);
 
   useEffect(() => {
@@ -678,25 +682,16 @@ export default function Features() {
               {/* LEFT: Chart (40%) */}
               <div className="lg:col-span-2 flex justify-center">
                 <div className="w-full max-w-[380px] aspect-square">
-                  {currentSky.chart_data && (
-                    <InteractiveKundli
-                      chartData={{
-                        planets: Object.entries(currentSky.chart_data.planets || {}).map(([name, data]: [string, any]) => ({
-                          planet: name,
-                          sign: data.sign || '',
-                          house: data.house || 0,
-                          longitude: data.longitude || 0,
-                          sign_degree: data.sign_degree || 0,
-                          nakshatra: data.nakshatra || '',
-                          status: data.status || '',
-                          is_retrograde: data.is_retrograde || false,
-                        })),
-                        houses: currentSky.chart_data.houses || [],
-                        ascendant: currentSky.chart_data.ascendant || { sign: 'Aries', longitude: 0 },
-                      }}
-                      compact
-                    />
-                  )}
+                  <KundliChartSVG
+                    planets={(currentSky.planets || []).map((p: any) => ({
+                      planet: p.planet || '',
+                      sign: p.sign || '',
+                      house: p.house || 0,
+                      sign_degree: p.sign_degree || 0,
+                      is_retrograde: !!p.is_retrograde,
+                    }))}
+                    ascendantSign={currentSky.lagna_sign || ''}
+                  />
                 </div>
               </div>
 
@@ -718,13 +713,25 @@ export default function Features() {
                       </tr>
                     </thead>
                     <tbody>
+                      {/* Ascendant row */}
+                      <tr className="border-b border-sacred-gold/20 bg-sacred-gold/[0.06]">
+                        <td className="px-3 py-2 font-bold text-sacred-gold-dark">{l('Ascendant', 'लग्न')}</td>
+                        <td className="px-3 py-2 font-semibold text-sacred-gold-dark">{currentSky.lagna_sign || '--'}</td>
+                        <td className="px-3 py-2 text-right text-muted-foreground">
+                          {currentSky.chart_data?.ascendant?.sign_degree != null ? `${currentSky.chart_data.ascendant.sign_degree}°` : '--'}
+                        </td>
+                        <td className="px-3 py-2 text-right text-muted-foreground">
+                          {currentSky.chart_data?.ascendant?.longitude != null ? `${Number(currentSky.chart_data.ascendant.longitude).toFixed(2)}°` : '--'}
+                        </td>
+                        <td className="px-3 py-2 text-center">--</td>
+                      </tr>
                       {(currentSky.planets || []).map((p: any, i: number) => (
-                        <tr key={p.planet} className={`border-b border-sacred-gold/10 ${i % 2 === 0 ? '' : 'bg-sacred-gold/[0.03]'}`}>
+                        <tr key={p.planet} className={`border-b border-sacred-gold/10 ${i % 2 === 0 ? 'bg-sacred-gold/[0.03]' : ''}`}>
                           <td className="px-3 py-2 font-semibold text-foreground">{p.planet}</td>
                           <td className="px-3 py-2 text-foreground">{p.sign}</td>
-                          <td className="px-3 py-2 text-right text-muted-foreground">{p.sign_degree}°</td>
-                          <td className="px-3 py-2 text-right text-muted-foreground">{p.longitude}°</td>
-                          <td className="px-3 py-2 text-center">{p.is_retrograde ? <span className="text-red-500 font-bold">R</span> : '—'}</td>
+                          <td className="px-3 py-2 text-right text-muted-foreground">{p.sign_degree != null ? `${p.sign_degree}°` : '--'}</td>
+                          <td className="px-3 py-2 text-right text-muted-foreground">{p.longitude != null ? `${Number(p.longitude).toFixed(2)}°` : '--'}</td>
+                          <td className="px-3 py-2 text-center">{p.is_retrograde ? <span className="text-red-600 font-bold text-xs">R</span> : <span className="text-muted-foreground">--</span>}</td>
                         </tr>
                       ))}
                     </tbody>
