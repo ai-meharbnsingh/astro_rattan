@@ -118,10 +118,19 @@ class KundliRequest(BaseModel):
     @classmethod
     def validate_time(cls, v):
         from datetime import datetime
+        v = v.strip()
+        # Try 24-hour formats first
         for fmt in ('%H:%M:%S', '%H:%M'):
             try:
                 datetime.strptime(v, fmt)
                 return v
+            except ValueError:
+                continue
+        # Try 12-hour formats with AM/PM — convert to 24-hour
+        for fmt in ('%I:%M:%S %p', '%I:%M %p'):
+            try:
+                parsed = datetime.strptime(v, fmt)
+                return parsed.strftime('%H:%M:%S')
             except ValueError:
                 continue
         raise ValueError('birth_time must be HH:MM:SS or HH:MM format')
