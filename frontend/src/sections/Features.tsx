@@ -506,8 +506,6 @@ export default function Features() {
 
   // Extra lines for 24+ mode
   const panchangExtraLines: Array<{ label: string; value: string }> = [
-    { label: l('Moonrise', 'चंद्रोदय'), value: tf(panchangData?.moonrise) || '--' },
-    { label: l('Moonset', 'चंद्रास्त'), value: tf(panchangData?.moonset) || '--' },
     { label: l('Rahu Kalam', 'राहु काल'), value: tfPeriod(panchangData?.rahu_kaal) },
     { label: l('Gulikai Kalam', 'गुलिक काल'), value: tfPeriod(panchangData?.gulika_kaal) },
     { label: l('Yamaganda', 'यमगण्ड'), value: tfPeriod(panchangData?.yamaganda) },
@@ -520,6 +518,8 @@ export default function Features() {
   const panchangBaseLines: Array<{ label: string; value: string }> = [
     { label: l('Sunrise', 'सूर्योदय'), value: tf(panchangData?.sunrise) },
     { label: l('Sunset', 'सूर्यास्त'), value: tf(panchangData?.sunset) },
+    { label: l('Moonrise', 'चंद्रोदय'), value: tf(panchangData?.moonrise) || '--' },
+    { label: l('Moonset', 'चंद्रास्त'), value: tf(panchangData?.moonset) || '--' },
     { label: l('Tithi', 'तिथि'), value: `${thi(panchangData?.tithi?.name || '--', TITHI_HI)}${panchangData?.tithi?.end_time ? ` ${l('upto', 'तक')} ${tf(panchangData?.tithi?.end_time)}` : ''}` },
     { label: l('Nakshatra', 'नक्षत्र'), value: `${thi(panchangData?.nakshatra?.name || '--', NAKSHATRA_HI)}${panchangData?.nakshatra?.end_time ? ` ${l('upto', 'तक')} ${tf(panchangData?.nakshatra?.end_time)}` : ''}` },
     { label: l('Yoga', 'योग'), value: `${thi(panchangData?.yoga?.name || '--', YOGA_HI)}${panchangData?.yoga?.end_time ? ` ${l('upto', 'तक')} ${tf(panchangData?.yoga?.end_time)}` : ''}` },
