@@ -352,12 +352,12 @@ export default function ReportTab({
                     <div className="space-y-2">
                       {/* Current dasha info */}
                       <div className="rounded-lg p-3 bg-gold-10">
-                        <p className="text-sm" className="text-muted-foreground">{t('section.currentMahadasha')}</p>
-                        <p className="text-sm font-bold" className="text-primary">
+                        <p className="text-sm text-muted-foreground">{t('section.currentMahadasha')}</p>
+                        <p className="text-sm font-bold text-primary">
                           {translatePlanet((extendedDashaData || dashaData).current_dasha, language)}
                         </p>
                         {(extendedDashaData || dashaData).current_antardasha && (extendedDashaData || dashaData).current_antardasha !== 'Unknown' && (
-                          <p className="text-sm" className="text-primary">
+                          <p className="text-sm text-primary">
                             {t('report.adLabel')} {translatePlanet((extendedDashaData || dashaData).current_antardasha, language)}
                             {extendedDashaData?.current_pratyantar && extendedDashaData.current_pratyantar !== 'Unknown' && ` / ${t('report.pdLabel')} ${translatePlanet(extendedDashaData.current_pratyantar, language)}`}
                           </p>
@@ -375,7 +375,7 @@ export default function ReportTab({
                                 style={{ background: md.is_current ? 'rgba(184,134,11,0.12)' : 'transparent' }}
                               >
                                 <span className="flex items-center gap-1.5">
-                                  <ChevronDown className={`w-3 h-3 transition-transform ${expandedMahadasha === md.planet ? 'rotate-180' : ''}`} className="text-primary" />
+                                  <ChevronDown className={`w-3 h-3 transition-transform text-primary ${expandedMahadasha === md.planet ? 'rotate-180' : ''}`} />
                                   <span className="font-semibold" style={{ color: md.is_current ? 'var(--aged-gold)' : 'var(--ink)' }}>
                                     {translatePlanet(md.planet, language)} {md.is_current ? '←' : ''}
                                   </span>
@@ -393,7 +393,7 @@ export default function ReportTab({
                                         style={{ background: ad.is_current ? 'rgba(184,134,11,0.06)' : 'transparent' }}
                                       >
                                         <span className="flex items-center gap-1">
-                                          {ad.pratyantar?.length > 0 && <ChevronDown className={`w-2.5 h-2.5 transition-transform ${expandedAntardasha === `${md.planet}-${ad.planet}` ? 'rotate-180' : ''}`} className="text-muted-foreground" />}
+                                          {ad.pratyantar?.length > 0 && <ChevronDown className={`w-2.5 h-2.5 transition-transform text-muted-foreground ${expandedAntardasha === `${md.planet}-${ad.planet}` ? 'rotate-180' : ''}`} />}
                                           <span style={{ color: ad.is_current ? 'var(--aged-gold)' : 'var(--ink)' }}>{translatePlanet(ad.planet, language)} {t('report.adLabel')} {ad.is_current ? '*' : ''}</span>
                                         </span>
                                         <span style={{ color: 'var(--ink-light)', fontSize: 'var(--text-label, 0.875rem)' }}>{ad.start?.slice(0,10)} — {ad.end?.slice(0,10)}</span>
@@ -424,18 +424,18 @@ export default function ReportTab({
                         <div className="overflow-x-auto">
                           <Table className="w-full text-sm">
                             <TableHeader><TableRow className="bg-gold-10">
-                              <TableHead className="text-left p-2 font-medium" className="text-primary">{t('table.planet')}</TableHead>
-                              <TableHead className="text-left p-2 font-medium" className="text-primary">{t('table.start')}</TableHead>
-                              <TableHead className="text-left p-2 font-medium" className="text-primary">{t('table.end')}</TableHead>
-                              <TableHead className="text-center p-2 font-medium" className="text-primary">{t('table.years')}</TableHead>
+                              <TableHead className="text-left p-2 font-medium text-primary">{t('table.planet')}</TableHead>
+                              <TableHead className="text-left p-2 font-medium text-primary">{t('table.start')}</TableHead>
+                              <TableHead className="text-left p-2 font-medium text-primary">{t('table.end')}</TableHead>
+                              <TableHead className="text-center p-2 font-medium text-primary">{t('table.years')}</TableHead>
                             </TableRow></TableHeader>
                             <TableBody>
                               {(dashaData.mahadasha_periods || []).map((p: any) => (
                                 <TableRow key={p.planet} className="border-t border-border" style={{ background: p.planet === dashaData.current_dasha ? 'rgba(184,134,11,0.1)' : 'transparent' }}>
-                                  <TableCell className="p-2" className="text-foreground">{translatePlanet(p.planet, language)}{p.planet === dashaData.current_dasha ? ' ←' : ''}</TableCell>
-                                  <TableCell className="p-2" className="text-muted-foreground">{p.start_date}</TableCell>
-                                  <TableCell className="p-2" className="text-muted-foreground">{p.end_date}</TableCell>
-                                  <TableCell className="p-2 text-center" className="text-muted-foreground">{p.years}</TableCell>
+                                  <TableCell className="p-2 text-foreground">{translatePlanet(p.planet, language)}{p.planet === dashaData.current_dasha ? ' ←' : ''}</TableCell>
+                                  <TableCell className="p-2 text-muted-foreground">{p.start_date}</TableCell>
+                                  <TableCell className="p-2 text-muted-foreground">{p.end_date}</TableCell>
+                                  <TableCell className="p-2 text-center text-muted-foreground">{p.years}</TableCell>
                                 </TableRow>
                               ))}
                             </TableBody>
@@ -444,7 +444,7 @@ export default function ReportTab({
                       )}
                     </div>
                   ) : (
-                    <p className="text-center py-4 text-sm" className="text-muted-foreground">{t('common.loading')}</p>
+                    <p className="text-center py-4 text-sm text-muted-foreground">{t('common.loading')}</p>
                   )}
                 </div>
 
@@ -474,7 +474,7 @@ export default function ReportTab({
                             return (
                               <TableRow key={key} className="border-t border-border">
                                 <TableCell className="p-2 text-foreground"><span className="font-semibold">{key}</span> <span className="text-sm text-foreground">({name})</span></TableCell>
-                                <TableCell className="p-2 font-semibold" className="text-primary">{translatePlanet(planet, language)}</TableCell>
+                                <TableCell className="p-2 font-semibold text-primary">{translatePlanet(planet, language)}</TableCell>
                               </TableRow>
                             );
                           })}
@@ -598,7 +598,7 @@ export default function ReportTab({
                           return (
                             <div key={sign} className="flex-1 flex flex-col items-center gap-0.5">
                               <span className="text-sm font-medium text-foreground">{points}</span>
-                              <div className="w-full bg-muted rounded-t-sm relative" className="h-[100px]">
+                              <div className="w-full bg-muted rounded-t-sm relative h-[100px]">
                                 <div
                                   className="absolute bottom-0 w-full rounded-t-sm"
                                   style={{ height: `${heightPct}%`, backgroundColor: isStrong ? 'var(--aged-gold-dim)' : 'var(--ink-light)' }}
@@ -628,7 +628,7 @@ export default function ReportTab({
                       <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>
                     ) : shadbalaData?.planets ? (
                       <div>
-                        <div className="flex items-end justify-around gap-1" className="h-[180px]">
+                        <div className="flex items-end justify-around gap-1 h-[180px]">
                           {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
                             const data = shadbalaData.planets[planet];
                             if (!data) return null;
@@ -642,7 +642,7 @@ export default function ReportTab({
                                 <span className={`text-xs font-bold ${isStrong ? 'text-green-700' : 'text-red-600'}`}>
                                   {data.total.toFixed(1)}
                                 </span>
-                                <div className="relative w-full flex justify-center bg-muted/20 rounded-t-lg" className="h-[130px]">
+                                <div className="relative w-full flex justify-center bg-muted/20 rounded-t-lg h-[130px]">
                                   <div className="absolute w-full border-t-2 border-dashed border-red-400 z-10" style={{ bottom: `${requiredPct}%` }} title={`${t('kundli.required')}: ${data.required}`} />
                                   <div className="w-5 rounded-t-lg transition-all duration-500" style={{ height: `${barHeight}%`, backgroundColor: barColor, alignSelf: 'flex-end' }} />
                                 </div>
@@ -682,7 +682,7 @@ export default function ReportTab({
                                   <span className="text-xs font-bold" style={{ color: barColor, fontSize: '9px' }}>
                                     {data.total.toFixed(1)}
                                   </span>
-                                  <div className="relative w-full flex justify-center bg-muted/20 rounded-t-lg" className="h-[110px]">
+                                  <div className="relative w-full flex justify-center bg-muted/20 rounded-t-lg h-[110px]">
                                     <div className="w-3 rounded-t-lg transition-all duration-500" style={{ height: `${barHeight}%`, backgroundColor: barColor, alignSelf: 'flex-end' }} />
                                   </div>
                                   <span className="text-xs font-medium text-foreground text-center leading-tight mt-1" style={{ fontSize: '9px' }}>{house}</span>

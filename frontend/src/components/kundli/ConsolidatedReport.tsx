@@ -330,7 +330,7 @@ export default function ConsolidatedReport({
         </div>
 
         {/* Report content */}
-        <div className="px-6 py-4 space-y-4" className="text-foreground">
+        <div className="px-6 py-4 space-y-4 text-foreground">
           {/* Title block */}
           <div className="text-center border-b border-border pb-3">
             <Heading as={2} variant={2}>
@@ -348,7 +348,7 @@ export default function ConsolidatedReport({
               <Heading as={4} variant={4} className="text-data text-center mb-1">
                 {t('section.rashiD1')} <span className="text-sm font-normal text-muted-foreground">{t('report.clickHouseLagan')}</span>
               </Heading>
-              <div className="flex justify-center" className="max-w-full mx-auto">
+              <div className="flex justify-center max-w-full mx-auto">
                 {(() => {
                   const shift = d1Shift;
                   const basePlanets = planets;
@@ -384,7 +384,7 @@ export default function ConsolidatedReport({
               <Heading as={4} variant={4} className="text-data text-center mb-1">
                 {t('section.navamshaD9')} <span className="text-sm font-normal text-muted-foreground">{t('report.clickHouseLagan')}</span>
               </Heading>
-              <div className="flex justify-center" className="max-w-full mx-auto">
+              <div className="flex justify-center max-w-full mx-auto">
                 {loadingDivisional ? (
                   <div className="flex items-center justify-center py-12"><Loader2 className="w-4 h-4 animate-spin text-primary" /></div>
                 ) : d9ChartData ? (() => {
@@ -422,7 +422,7 @@ export default function ConsolidatedReport({
               <Heading as={4} variant={4} className="text-data text-center mb-1">
                 {t('kundli.d10')} <span className="text-sm font-normal text-muted-foreground">{t('report.clickHouseLagan')}</span>
               </Heading>
-              <div className="flex justify-center" className="max-w-full mx-auto">
+              <div className="flex justify-center max-w-full mx-auto">
                 {loadingD10 ? (
                   <div className="flex items-center justify-center py-12"><Loader2 className="w-4 h-4 animate-spin text-primary" /></div>
                 ) : d10ChartData ? (() => {
@@ -460,7 +460,7 @@ export default function ConsolidatedReport({
               <Heading as={4} variant={4} className="text-data text-center mb-1">
                 {t('kundli.gochar')} <span className="text-sm font-normal text-muted-foreground">{t('report.clickHouseLagan')}</span>
               </Heading>
-              <div className="flex justify-center" className="max-w-full mx-auto">
+              <div className="flex justify-center max-w-full mx-auto">
                 {loadingTransit ? (
                   <div className="flex items-center justify-center py-12"><Loader2 className="w-4 h-4 animate-spin text-primary" /></div>
                 ) : transitChartDataRaw ? (() => {
@@ -501,7 +501,7 @@ export default function ConsolidatedReport({
               {t('section.detailedPlanetPositions')}
             </Heading>
             <div className="overflow-x-auto">
-              <Table className="w-full text-sm" className="border-collapse">
+              <Table className="w-full text-sm border-collapse">
                 <TableHeader>
                   <TableRow className="bg-primary text-primary-foreground">
                     <TableHead className="text-left p-1.5 font-medium">{t('table.planet')}</TableHead>
@@ -518,8 +518,8 @@ export default function ConsolidatedReport({
                     const isBenefic = ['Jupiter', 'Venus', 'Moon', 'Mercury'].includes(planet.planet);
                     return (
                       <TableRow key={index} className="border-b border-border">
-                        <TableCell className="p-1.5 font-medium" className="text-foreground">{translatePlanet(planet.planet, language)}</TableCell>
-                        <TableCell className="p-1.5" className="text-foreground">{translateSign(planet.sign, language)}</TableCell>
+                        <TableCell className="p-1.5 font-medium text-foreground">{translatePlanet(planet.planet, language)}</TableCell>
+                        <TableCell className="p-1.5 text-foreground">{translateSign(planet.sign, language)}</TableCell>
                         <TableCell className="p-1.5 text-center whitespace-nowrap">{(Number(planet.sign_degree) || 0).toFixed(1)}°</TableCell>
                         <TableCell className="p-1.5">{translateNakshatra(planet.nakshatra, language) || '\u2014'}</TableCell>
                         <TableCell className="p-1.5 text-center">
@@ -594,12 +594,12 @@ export default function ConsolidatedReport({
                 <div>
                   <div className="bg-primary rounded px-2 py-1.5 mb-2">
                     <p className="text-sm text-foreground">{t('section.currentMahadasha')}</p>
-                    <p className="text-data font-bold" className="text-primary">{translatePlanet(dashaData.current_dasha, language)}</p>
+                    <p className="text-data font-bold text-primary">{translatePlanet(dashaData.current_dasha, language)}</p>
                     {dashaData.current_antardasha && (
                       <p className="text-sm text-primary">{t('report.adLabel')} {translatePlanet(dashaData.current_antardasha, language)}</p>
                     )}
                   </div>
-                  <Table className="w-full text-sm" className="border-collapse">
+                  <Table className="w-full text-sm border-collapse">
                     <TableHeader>
                       <TableRow className="bg-muted">
                         <TableHead className="text-left p-1 font-medium text-primary">{t('table.planet')}</TableHead>
@@ -639,12 +639,12 @@ export default function ConsolidatedReport({
                 <div>
                   <div className="bg-primary rounded px-2 py-1.5 mb-2">
                     <p className="text-sm text-foreground">{t('report.currentDasha')}</p>
-                    <p className="text-data font-bold" className="text-primary">{yoginiData.current_dasha?.planet ? translatePlanet(yoginiData.current_dasha.planet, language) : '\u2014'}</p>
+                    <p className="text-data font-bold text-primary">{yoginiData.current_dasha?.planet ? translatePlanet(yoginiData.current_dasha.planet, language) : '\u2014'}</p>
                     {yoginiData.current_dasha?.planet && (
                       <p className="text-sm text-primary">{t('report.untilLabel')} {yoginiData.current_dasha?.end_date}</p>
                     )}
                   </div>
-                  <Table className="w-full text-sm" className="border-collapse">
+                  <Table className="w-full text-sm border-collapse">
                     <TableHeader>
                       <TableRow className="bg-muted">
                         <TableHead className="text-left p-1 font-medium text-primary">{t('table.yogini')}</TableHead>
@@ -793,7 +793,7 @@ export default function ConsolidatedReport({
                       return (
                         <div key={sign} className="flex-1 flex flex-col items-center gap-0.5">
                           <span className="text-sm font-medium text-foreground">{points}</span>
-                          <div className="w-full bg-muted rounded-t-sm relative" className="h-[80px]">
+                          <div className="w-full bg-muted rounded-t-sm relative h-[80px]">
                             <div
                               className="absolute bottom-0 w-full rounded-t-sm"
                               style={{ height: `${heightPct}%`, backgroundColor: isStrong ? 'var(--aged-gold-dim)' : 'var(--ink-light)' }}
@@ -863,7 +863,7 @@ export default function ConsolidatedReport({
                 <div className="space-y-4 max-h-64 overflow-y-auto pr-1">
                   <div>
                     <Heading as={5} variant={5} className="text-primary mb-1">{t('section.planetarySignificators')}</Heading>
-                    <Table className="w-full text-sm" className="border-collapse">
+                    <Table className="w-full text-sm border-collapse">
                       <TableHeader className="bg-muted">
                         <TableRow>
                           <TableHead className="text-left p-1 text-muted-foreground">{t('table.planet')}</TableHead>
@@ -884,7 +884,7 @@ export default function ConsolidatedReport({
                   </div>
                   <div>
                     <Heading as={5} variant={5} className="text-primary mb-1">{t('section.houseCusps')}</Heading>
-                    <Table className="w-full text-sm" className="border-collapse">
+                    <Table className="w-full text-sm border-collapse">
                       <TableHeader className="bg-muted">
                         <TableRow>
                           <TableHead className="text-left p-1 text-muted-foreground">{t('table.cusp')}</TableHead>
@@ -936,7 +936,7 @@ export default function ConsolidatedReport({
                     <div>
                       <Heading as={5} variant={5} className="text-primary mb-1">{t('section.muddaDasha')}</Heading>
                       <div className="bg-muted p-2 rounded max-h-32 overflow-y-auto w-full">
-                        <Table className="w-full text-sm" className="border-collapse">
+                        <Table className="w-full text-sm border-collapse">
                            <TableBody>
                              {varshphalData.mudda_dasha.map((md: any) => (
                                <TableRow key={md.planet} className="border-b border-border">
@@ -966,7 +966,7 @@ export default function ConsolidatedReport({
                 <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-primary" /></div>
               ) : upagrahasData?.upagrahas ? (
                 <div className="overflow-x-auto">
-                  <Table className="w-full text-sm" className="border-collapse">
+                  <Table className="w-full text-sm border-collapse">
                     <TableHeader className="bg-muted">
                       <TableRow>
                         <TableHead className="text-left p-1.5 text-muted-foreground">{t('tab.upagrahas')}</TableHead>
@@ -1010,12 +1010,12 @@ export default function ConsolidatedReport({
                 <div className="space-y-4">
                   {/* By Sign Table */}
                   <div className="overflow-x-auto">
-                    <Table className="w-full text-sm" className="border-collapse">
+                    <Table className="w-full text-sm border-collapse">
                       <TableHeader>
                         <TableRow className="bg-primary text-primary-foreground">
-                          <TableHead className="text-left p-1.5 font-medium sticky left-0" className="bg-primary min-w-[80px]">{t('table.varga')}</TableHead>
+                          <TableHead className="text-left p-1.5 font-medium sticky left-0 bg-primary min-w-[80px]">{t('table.varga')}</TableHead>
                           {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'].map(p => (
-                            <TableHead key={p} className="text-center p-1.5 font-medium" className="min-w-[50px]">{translatePlanetAbbr(p, language)}</TableHead>
+                            <TableHead key={p} className="text-center p-1.5 font-medium min-w-[50px]">{translatePlanetAbbr(p, language)}</TableHead>
                           ))}
                         </TableRow>
                       </TableHeader>
@@ -1170,7 +1170,7 @@ export default function ConsolidatedReport({
                 <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-primary" /></div>
               ) : aspectsData?.bhava_summary ? (
                 <div className="overflow-x-auto">
-                  <Table className="w-full text-sm" className="border-collapse">
+                  <Table className="w-full text-sm border-collapse">
                     <TableHeader>
                       <TableRow className="bg-muted">
                         <TableHead className="text-left p-1.5 text-muted-foreground">{t('table.bhava')}</TableHead>
@@ -1223,7 +1223,7 @@ export default function ConsolidatedReport({
                   {t('section.bhinnashtakvarga')}
                 </Heading>
                 <div className="overflow-x-auto">
-                  <Table className="w-full text-sm" className="border-collapse">
+                  <Table className="w-full text-sm border-collapse">
                     <TableHeader>
                       <TableRow className="bg-primary text-primary-foreground">
                         <TableHead className="text-left p-1.5 font-medium">{t('table.planet')}</TableHead>
