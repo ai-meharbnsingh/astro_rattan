@@ -117,19 +117,44 @@ class KundliRequest(BaseModel):
     @field_validator('birth_time')
     @classmethod
     def validate_time(cls, v):
+        import re
         from datetime import datetime
         v = v.strip()
+
+        # Remove duplicate seconds (e.g., "20:10:00:00" → "20:10:00")
+        parts = v.replace(' ', ':').split(':')
+        # Filter out AM/PM from parts
+        am_pm = ''
+        clean_parts = []
+        for p in parts:
+            upper = p.strip().upper()
+            if upper in ('AM', 'PM'):
+                am_pm = upper
+            else:
+                clean_parts.append(p.strip())
+
+        # Rebuild clean time string
+        if len(clean_parts) >= 3:
+            v_clean = f"{clean_parts[0]}:{clean_parts[1]}:{clean_parts[2]}"
+        elif len(clean_parts) == 2:
+            v_clean = f"{clean_parts[0]}:{clean_parts[1]}:00"
+        else:
+            v_clean = v
+
+        if am_pm:
+            v_clean = f"{v_clean} {am_pm}"
+
         # Try 24-hour formats first
         for fmt in ('%H:%M:%S', '%H:%M'):
             try:
-                datetime.strptime(v, fmt)
-                return v
+                datetime.strptime(v_clean, fmt)
+                return v_clean
             except ValueError:
                 continue
         # Try 12-hour formats with AM/PM — convert to 24-hour
         for fmt in ('%I:%M:%S %p', '%I:%M %p'):
             try:
-                parsed = datetime.strptime(v, fmt)
+                parsed = datetime.strptime(v_clean, fmt)
                 return parsed.strftime('%H:%M:%S')
             except ValueError:
                 continue

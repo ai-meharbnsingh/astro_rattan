@@ -570,7 +570,7 @@ export function useKundliData() {
       const payload: any = {
         person_name: formData.name,
         birth_date: formData.date,
-        birth_time: formData.time + ':00',
+        birth_time: formData.time.includes(':') && formData.time.split(':').length >= 3 ? formData.time : formData.time + ':00',
         birth_place: formData.place,
         latitude: formData.latitude,
         longitude: formData.longitude,
