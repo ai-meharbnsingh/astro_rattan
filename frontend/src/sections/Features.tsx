@@ -732,6 +732,11 @@ export default function Features() {
               </div>
             </div>
           </div>
+          <div className="flex justify-end mt-3">
+            <a href="/horoscope" className="text-sm text-sacred-gold-dark hover:underline font-medium flex items-center gap-1">
+              {l('Click here to view more in detail', 'विस्तार से देखने के लिए यहां क्लिक करें')} →
+            </a>
+          </div>
         </div>
 
         {/* Panchang Section */}
@@ -1023,6 +1028,11 @@ export default function Features() {
                 </div>
               </div>
             )}
+          </div>
+          <div className="flex justify-end mt-3">
+            <a href="/panchang" className="text-sm text-sacred-gold-dark hover:underline font-medium flex items-center gap-1">
+              {l('Click here to view more in detail', 'विस्तार से देखने के लिए यहां क्लिक करें')} →
+            </a>
           </div>
         )}
 
