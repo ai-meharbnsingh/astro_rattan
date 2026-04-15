@@ -653,7 +653,7 @@ export default function Features() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Horoscope (Compact) */}
-        <div className="features-title mb-12">
+        <div id="horoscope-section" className="features-title mb-12">
           <Heading as={2} variant={2} className="text-sacred-gold-dark mb-6 leading-[1.1] text-center">
             {l('Horoscope', 'राशिफल')}
           </Heading>
@@ -740,7 +740,7 @@ export default function Features() {
         </div>
 
         {/* Panchang Section */}
-        <div className="features-title mb-12">
+        <div id="panchang-section" className="features-title mb-12">
           <Heading as={2} variant={2} className="text-sacred-gold-dark mb-6 leading-[1.1] text-center">
             {l('Panchang', 'पंचांग')}
           </Heading>
@@ -929,6 +929,7 @@ export default function Features() {
         </div>
 
         {/* Hora & Choghadiya Tables */}
+        <div id="hora-section" />
         {panchangData && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-12">
             {/* Hora Table */}
@@ -1109,7 +1110,7 @@ export default function Features() {
         </div>
 
         {/* ── FAQ Section ──────────────────────────────────────────── */}
-        <div className="mt-24">
+        <div id="faq-section" className="mt-24">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-sans text-foreground mb-2">
               {l('Frequently Asked Questions', 'अक्सर पूछे जाने वाले प्रश्न')}
