@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Download, Briefcase, Heart, Activity, User, AlertTriangle, Lock, Star, BookOpen, Hash, Loader2 } from 'lucide-react';
 import InteractiveKundli from '@/components/InteractiveKundli';
@@ -17,6 +17,17 @@ export default function FreeKundliModal({ data, onClose, language }: FreeKundliM
   const navigate = useNavigate();
   const [downloading, setDownloading] = useState<string | null>(null);
   const l = (en: string, hi: string) => (language === 'hi' ? hi : en);
+
+  // Lock body scroll + escape key to close
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [onClose]);
 
   const handleDownload = async (lang: 'en' | 'hi') => {
     if (!data?.guest_id) return;
