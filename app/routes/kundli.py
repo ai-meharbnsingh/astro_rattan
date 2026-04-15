@@ -236,6 +236,7 @@ def get_current_sky():
         "lagna_longitude": round(float(ascendant.get("longitude", 0)), 4),
         "lagna_sign": ascendant.get("sign", "Aries"),
         "planets": planets_out,
+        "chart_data": chart,  # full chart for InteractiveKundli
     }
 
 

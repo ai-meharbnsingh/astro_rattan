@@ -7,6 +7,7 @@ import { api } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
 import { Calendar, ChevronDown, ChevronUp, Loader2, MapPin, Sparkles, Sun, X } from 'lucide-react';
 import { Heading } from '@/components/ui/heading';
+import InteractiveKundli from '@/components/InteractiveKundli';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -261,6 +262,7 @@ export default function Features() {
   const [locSearchResults, setLocSearchResults] = useState<Array<{ name: string; lat: number; lon: number }>>([]);
   const [locSearchLoading, setLocSearchLoading] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [currentSky, setCurrentSky] = useState<any>(null);
   const locSearchRef = useRef<HTMLDivElement>(null);
   const locSearchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -296,6 +298,15 @@ export default function Features() {
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  // Fetch current sky for Present Kundli section
+  useEffect(() => {
+    let cancelled = false;
+    api.get('/api/kundli/current-sky').then(data => {
+      if (!cancelled && data) setCurrentSky(data);
+    }).catch(() => {});
+    return () => { cancelled = true; };
   }, []);
 
   useEffect(() => {
@@ -652,6 +663,78 @@ export default function Features() {
     <section ref={sectionRef} id="features" className="relative pt-4 pb-24 bg-background">
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Present Kundli — Current Sky */}
+        {currentSky && (
+          <div id="present-kundli-section" className="features-title mb-12">
+            <Heading as={2} variant={2} className="text-sacred-gold-dark mb-6 leading-[1.1] text-center">
+              {l('Present Kundli — Current Sky', 'वर्तमान कुंडली — आकाश दर्शन')}
+            </Heading>
+            <p className="text-center text-lg text-gray-600 mb-6">
+              <strong className="text-sacred-gold-dark">{l('Live planetary positions right now', 'अभी ग्रहों की लाइव स्थिति')}</strong>
+              {l(` — ${currentSky.date} at ${currentSky.time} IST`, ` — ${currentSky.date} ${currentSky.time} IST पर`)}
+            </p>
+
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+              {/* LEFT: Chart (40%) */}
+              <div className="lg:col-span-2 flex justify-center">
+                <div className="w-full max-w-[380px] aspect-square">
+                  {currentSky.chart_data && (
+                    <InteractiveKundli
+                      chartData={{
+                        planets: Object.entries(currentSky.chart_data.planets || {}).map(([name, data]: [string, any]) => ({
+                          planet: name,
+                          sign: data.sign || '',
+                          house: data.house || 0,
+                          longitude: data.longitude || 0,
+                          sign_degree: data.sign_degree || 0,
+                          nakshatra: data.nakshatra || '',
+                          status: data.status || '',
+                          is_retrograde: data.is_retrograde || false,
+                        })),
+                        houses: currentSky.chart_data.houses || [],
+                        ascendant: currentSky.chart_data.ascendant || { sign: 'Aries', longitude: 0 },
+                      }}
+                      compact
+                    />
+                  )}
+                </div>
+              </div>
+
+              {/* RIGHT: Planet Details (60%) */}
+              <div className="lg:col-span-3">
+                <div className="rounded-xl border border-sacred-gold/20 bg-transparent backdrop-blur-[1px] overflow-hidden">
+                  <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center justify-between">
+                    <span>{l('Planetary Positions', 'ग्रह स्थिति')}</span>
+                    <span className="text-xs font-normal opacity-80">{l('Lagna', 'लग्न')}: {currentSky.lagna_sign}</span>
+                  </div>
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-sacred-gold/10 text-sacred-gold-dark text-xs uppercase tracking-wider">
+                        <th className="text-left px-3 py-2">{l('Planet', 'ग्रह')}</th>
+                        <th className="text-left px-3 py-2">{l('Sign', 'राशि')}</th>
+                        <th className="text-right px-3 py-2">{l('Degree', 'अंश')}</th>
+                        <th className="text-right px-3 py-2">{l('Longitude', 'रेखांश')}</th>
+                        <th className="text-center px-3 py-2">{l('R', 'वक्री')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(currentSky.planets || []).map((p: any, i: number) => (
+                        <tr key={p.planet} className={`border-b border-sacred-gold/10 ${i % 2 === 0 ? '' : 'bg-sacred-gold/[0.03]'}`}>
+                          <td className="px-3 py-2 font-semibold text-foreground">{p.planet}</td>
+                          <td className="px-3 py-2 text-foreground">{p.sign}</td>
+                          <td className="px-3 py-2 text-right text-muted-foreground">{p.sign_degree}°</td>
+                          <td className="px-3 py-2 text-right text-muted-foreground">{p.longitude}°</td>
+                          <td className="px-3 py-2 text-center">{p.is_retrograde ? <span className="text-red-500 font-bold">R</span> : '—'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Horoscope (Compact) */}
         <div id="horoscope-section" className="features-title mb-12">
           <Heading as={2} variant={2} className="text-sacred-gold-dark mb-6 leading-[1.1] text-center">

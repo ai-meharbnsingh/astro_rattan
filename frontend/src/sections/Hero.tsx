@@ -82,6 +82,7 @@ export default function Hero() {
           {/* Quick nav links */}
           <div className="hero-shloka opacity-0 flex justify-center items-center gap-x-0 mt-3 text-[13px] text-sacred-gold-dark">
             {[
+              { label: language === 'hi' ? 'वर्तमान कुंडली' : 'Present Kundli', id: 'present-kundli-section' },
               { label: language === 'hi' ? 'राशिफल' : 'Horoscope', id: 'horoscope-section' },
               { label: language === 'hi' ? 'पंचांग' : 'Panchang', id: 'panchang-section' },
               { label: language === 'hi' ? 'होरा' : 'Hora', id: 'hora-section' },
