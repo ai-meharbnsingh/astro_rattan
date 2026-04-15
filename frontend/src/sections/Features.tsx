@@ -915,6 +915,109 @@ export default function Features() {
           </div>
         </div>
 
+        {/* Hora & Choghadiya Tables */}
+        {panchangData && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-12">
+            {/* Hora Table */}
+            {panchangData.hora_table && panchangData.hora_table.length > 0 && (
+              <div className="rounded-xl border border-sacred-gold/20 bg-transparent backdrop-blur-[1px] shadow-sm overflow-hidden">
+                <div className="bg-sacred-gold-dark text-white px-3 py-2 text-[15px] font-semibold">
+                  {l('Hora Table', 'होरा तालिका')}
+                </div>
+                <div className="p-2.5 max-h-[400px] overflow-y-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-sacred-gold/10 text-sacred-gold-dark text-xs uppercase tracking-wider">
+                        <th className="text-left px-2 py-1.5">{l('Hora', 'होरा')}</th>
+                        <th className="text-left px-2 py-1.5">{l('Lord', 'स्वामी')}</th>
+                        <th className="text-left px-2 py-1.5">{l('Time', 'समय')}</th>
+                        <th className="text-center px-2 py-1.5">{l('Type', 'प्रकार')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {panchangData.hora_table.map((h: any, i: number) => (
+                        <tr key={i} className="border-b border-sacred-gold/10 last:border-0">
+                          <td className="px-2 py-1.5 font-medium text-foreground">{h.hora}</td>
+                          <td className="px-2 py-1.5 text-foreground">{h.lord}</td>
+                          <td className="px-2 py-1.5 text-muted-foreground">{h.start} - {h.end}</td>
+                          <td className="px-2 py-1.5 text-center">
+                            <span className={`text-xs px-1.5 py-0.5 rounded-full ${h.type === 'day' ? 'bg-amber-50 text-amber-700' : 'bg-indigo-50 text-indigo-700'}`}>
+                              {h.type === 'day' ? l('Day', 'दिन') : l('Night', 'रात')}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* Choghadiya Table */}
+            {panchangData.choghadiya && panchangData.choghadiya.length > 0 && (
+              <div className="rounded-xl border border-sacred-gold/20 bg-transparent backdrop-blur-[1px] shadow-sm overflow-hidden">
+                <div className="bg-sacred-gold-dark text-white px-3 py-2 text-[15px] font-semibold">
+                  {l('Choghadiya', 'चौघड़िया')}
+                </div>
+                <div className="p-2.5 max-h-[400px] overflow-y-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-sacred-gold/10 text-sacred-gold-dark text-xs uppercase tracking-wider">
+                        <th className="text-left px-2 py-1.5">{l('Name', 'नाम')}</th>
+                        <th className="text-left px-2 py-1.5">{l('Time', 'समय')}</th>
+                        <th className="text-center px-2 py-1.5">{l('Quality', 'गुणवत्ता')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {panchangData.choghadiya.map((c: any, i: number) => {
+                        const qualityColor = c.quality === 'Best' ? 'bg-green-50 text-green-700' :
+                          c.quality === 'Good' ? 'bg-blue-50 text-blue-700' :
+                          c.quality === 'Neutral' ? 'bg-gray-50 text-gray-600' :
+                          'bg-red-50 text-red-600';
+                        return (
+                          <tr key={i} className="border-b border-sacred-gold/10 last:border-0">
+                            <td className="px-2 py-1.5 font-medium text-foreground">{c.name}</td>
+                            <td className="px-2 py-1.5 text-muted-foreground">{c.start} - {c.end}</td>
+                            <td className="px-2 py-1.5 text-center">
+                              <span className={`text-xs px-1.5 py-0.5 rounded-full ${qualityColor}`}>
+                                {c.quality === 'Best' ? l('Best', 'सर्वोत्तम') :
+                                 c.quality === 'Good' ? l('Good', 'शुभ') :
+                                 c.quality === 'Neutral' ? l('Neutral', 'सामान्य') :
+                                 l('Inauspicious', 'अशुभ')}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                      {/* Night Choghadiya */}
+                      {panchangData.night_choghadiya && panchangData.night_choghadiya.map((c: any, i: number) => {
+                        const qualityColor = c.quality === 'Best' ? 'bg-green-50 text-green-700' :
+                          c.quality === 'Good' ? 'bg-blue-50 text-blue-700' :
+                          c.quality === 'Neutral' ? 'bg-gray-50 text-gray-600' :
+                          'bg-red-50 text-red-600';
+                        return (
+                          <tr key={`night-${i}`} className="border-b border-sacred-gold/10 last:border-0 bg-indigo-50/30">
+                            <td className="px-2 py-1.5 font-medium text-foreground">{c.name} <span className="text-[10px] text-indigo-500">{l('(Night)', '(रात)')}</span></td>
+                            <td className="px-2 py-1.5 text-muted-foreground">{c.start} - {c.end}</td>
+                            <td className="px-2 py-1.5 text-center">
+                              <span className={`text-xs px-1.5 py-0.5 rounded-full ${qualityColor}`}>
+                                {c.quality === 'Best' ? l('Best', 'सर्वोत्तम') :
+                                 c.quality === 'Good' ? l('Good', 'शुभ') :
+                                 c.quality === 'Neutral' ? l('Neutral', 'सामान्य') :
+                                 l('Inauspicious', 'अशुभ')}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="features-title text-center mb-16">
           <Heading as={2} variant={2} className="text-sacred-gold-dark mb-6 leading-[1.1]">
             {l('Complete astrological operating system', 'पूर्ण ज्योतिषीय ऑपरेटिंग सिस्टम')}
