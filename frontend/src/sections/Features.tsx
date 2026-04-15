@@ -67,6 +67,9 @@ type PanchangData = {
   amrit_siddhi?: { active?: boolean; start?: string; end?: string };
   moon_sign_transition?: { time?: string; to_sign?: string };
   hindu_calendar?: { maas?: string; shaka_samvat?: number; vikram_samvat?: number };
+  hora_table?: Array<{ hora: number; lord: string; start: string; end: string; type: string }>;
+  choghadiya?: Array<{ name: string; quality: string; start: string; end: string }>;
+  night_choghadiya?: Array<{ name: string; quality: string; start: string; end: string }>;
 };
 
 type FestivalRow = {

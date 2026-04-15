@@ -270,9 +270,9 @@ def get_monthly_panchang(
 
     # Batch-query all cached days for this month in ONE query (with TTL - 7 days)
     cached_rows = db.execute(
-        """SELECT date, tithi, nakshatra, yoga, sunrise, sunset 
-           FROM panchang_cache 
-           WHERE date >= %s AND date <= %s AND latitude = %s AND longitude = %s 
+        """SELECT date, tithi, nakshatra, yoga, sunrise, sunset, moonrise, moonset
+           FROM panchang_cache
+           WHERE date >= %s AND date <= %s AND latitude = %s AND longitude = %s
            AND created_at > NOW() - INTERVAL '7 days'""",
         (start_date, end_date, latitude, longitude),
     ).fetchall()
@@ -310,6 +310,8 @@ def get_monthly_panchang(
                 "yoga": yoga.get("name", "") if isinstance(yoga, dict) else str(yoga),
                 "sunrise": cached["sunrise"],
                 "sunset": cached["sunset"],
+                "moonrise": cached.get("moonrise", "--:--"),
+                "moonset": cached.get("moonset", "--:--"),
                 "festivals": [f["name"] for f in cached_festivals],
             })
             continue
@@ -348,6 +350,8 @@ def get_monthly_panchang(
             "yoga": panchang["yoga"]["name"],
             "sunrise": panchang["sunrise"],
             "sunset": panchang["sunset"],
+            "moonrise": panchang.get("moonrise", "--:--"),
+            "moonset": panchang.get("moonset", "--:--"),
             "festivals": [f["name"] for f in festivals],
         })
 
