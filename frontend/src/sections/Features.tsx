@@ -842,7 +842,7 @@ export default function Features() {
             <p><strong className="text-sacred-gold-dark">{l('Astro Rattan computes Tithi, Nakshatra, Yoga, Karana end times using Swiss Ephemeris for YOUR exact coordinates', 'Astro Rattan आपके सटीक निर्देशांकों के लिए स्विस एफेमेरिस का उपयोग करके तिथि, नक्षत्र, योग, करण के अंत समय की गणना करता है')}</strong>{l(' — with 12+ Muhurat windows, Hora table, Choghadiya, and Hindu calendar.', ' — 12+ मुहूर्त, होरा तालिका, चौघड़िया और हिंदू कैलेंडर के साथ।')}</p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-2" style={{ height: '620px' }}>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:h-[620px]">
             <div className="w-full max-w-none h-full rounded-xl border border-sacred-gold/20 bg-transparent backdrop-blur-[1px] shadow-sm overflow-hidden flex flex-col">
               <div className="bg-sacred-gold-dark text-white px-3 py-2 text-[15px] font-semibold leading-tight">
                 {l('Panchang for Today', 'आज का पंचांग')}

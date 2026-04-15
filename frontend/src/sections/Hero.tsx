@@ -80,9 +80,8 @@ export default function Hero() {
           </div>
 
           {/* Quick nav links */}
-          <div className="hero-shloka opacity-0 flex justify-center items-center gap-x-0 mt-3 text-[13px] text-sacred-gold-dark">
+          <div className="hero-shloka opacity-0 flex flex-wrap justify-center items-center gap-x-0 gap-y-0.5 mt-3 text-[11px] sm:text-[13px] text-sacred-gold-dark">
             {[
-              { label: language === 'hi' ? 'वर्तमान कुंडली' : 'Present Kundli', id: 'present-kundli-section' },
               { label: language === 'hi' ? 'राशिफल' : 'Horoscope', id: 'horoscope-section' },
               { label: language === 'hi' ? 'पंचांग' : 'Panchang', id: 'panchang-section' },
               { label: language === 'hi' ? 'होरा' : 'Hora', id: 'hora-section' },
@@ -93,7 +92,7 @@ export default function Hero() {
                 <button
                   type="button"
                   onClick={() => document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-                  className="hover:underline hover:text-sacred-gold cursor-pointer px-2"
+                  className="hover:underline hover:text-sacred-gold cursor-pointer px-1.5 sm:px-2"
                 >
                   {item.label}
                 </button>
