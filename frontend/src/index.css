@@ -224,19 +224,21 @@
   color: var(--text-muted);
 }
 
-/* Scrollbar — light track, subtle thumb */
+/* Scrollbar — sacred gold theme, wider thumb */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #fdf6e3;
+  border-radius: 5px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
+  background: #d4a053;
+  border-radius: 5px;
+  border: 2px solid #fdf6e3;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #B45309;
 }
 
 /* Kundli tab active state — scope to button only, not TabsContent divs */
