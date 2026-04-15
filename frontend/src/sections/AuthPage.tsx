@@ -293,11 +293,11 @@ export default function AuthPage() {
                 </div>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold" />
-                  <Input type="text" value={registerForm.name} onChange={(e) => setRegisterForm({ ...registerForm, name: e.target.value })} placeholder={t('auth.fullName')} className="pl-10 input-sacred" />
+                  <Input type="text" value={registerForm.name} onChange={(e) => setRegisterForm({ ...registerForm, name: e.target.value })} placeholder={t('auth.fullName')} autoComplete="new-password" className="pl-10 input-sacred" />
                 </div>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sacred-gold" />
-                  <Input type={showRegisterPassword ? 'text' : 'password'} value={registerForm.password} onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })} placeholder={t('auth.passwordMinLength')} onKeyDown={(e) => e.key === 'Enter' && handleRegister()} className="pl-10 pr-10 input-sacred" />
+                  <Input type={showRegisterPassword ? 'text' : 'password'} value={registerForm.password} onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })} placeholder={t('auth.passwordMinLength')} autoComplete="new-password" onKeyDown={(e) => e.key === 'Enter' && handleRegister()} className="pl-10 pr-10 input-sacred" />
                   <button type="button" onClick={() => setShowRegisterPassword(!showRegisterPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-sacred-gold hover:text-sacred-gold-dark transition-colors" tabIndex={-1}>
                     {showRegisterPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
