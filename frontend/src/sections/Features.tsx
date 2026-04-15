@@ -1029,12 +1029,12 @@ export default function Features() {
               </div>
             )}
           </div>
-          <div className="flex justify-end mt-3">
-            <a href="/panchang" className="text-sm text-sacred-gold-dark hover:underline font-medium flex items-center gap-1">
-              {l('Click here to view more in detail', 'विस्तार से देखने के लिए यहां क्लिक करें')} →
-            </a>
-          </div>
         )}
+        <div className="flex justify-end mt-3 mb-8">
+          <a href="/panchang" className="text-sm text-sacred-gold-dark hover:underline font-medium flex items-center gap-1">
+            {l('Click here to view more in detail', 'विस्तार से देखने के लिए यहां क्लिक करें')} →
+          </a>
+        </div>
 
         <div className="features-title text-center mb-16">
           <Heading as={2} variant={2} className="text-sacred-gold-dark mb-6 leading-[1.1]">
