@@ -658,7 +658,7 @@ export default function Features() {
             {l('Horoscope', 'राशिफल')}
           </Heading>
           <div className="max-w-full mx-auto text-lg text-gray-600 leading-relaxed mb-6 text-center">
-            <p>{l('Most horoscope apps use generic sun-sign text and repeated templates.', 'अधिकांश राशिफल ऐप सामान्य सन-साइन टेक्स्ट और दोहराए गए टेम्पलेट का उपयोग करते हैं।')}</p>
+
             <p><strong className="text-sacred-gold-dark">{l('Astro Rattan aligns sign forecasts with real planetary context and period logic', 'Astro Rattan वास्तविक ग्रह स्थिति और पीरियड लॉजिक के साथ राशिफल को संरेखित करता है')}</strong>{l(' — giving clearer daily, weekly, monthly, and yearly guidance.', ' — जिससे दैनिक, साप्ताहिक, मासिक और वार्षिक मार्गदर्शन अधिक स्पष्ट मिलता है।')}</p>
           </div>
 
@@ -740,7 +740,7 @@ export default function Features() {
             {l('Panchang', 'पंचांग')}
           </Heading>
           <div className="max-w-full mx-auto text-lg text-gray-600 leading-relaxed mb-6 text-center">
-            <p>{l('Most panchang apps show pre-calculated tables that are not specific to your location.', 'अधिकांश पंचांग ऐप पूर्व-गणित तालिकाएं दिखाते हैं जो आपके स्थान के लिए विशिष्ट नहीं हैं।')}</p>
+
             <p><strong className="text-sacred-gold-dark">{l('Astro Rattan computes Tithi, Nakshatra, Yoga, Karana end times using Swiss Ephemeris for YOUR exact coordinates', 'Astro Rattan आपके सटीक निर्देशांकों के लिए स्विस एफेमेरिस का उपयोग करके तिथि, नक्षत्र, योग, करण के अंत समय की गणना करता है')}</strong>{l(' — with 12+ Muhurat windows, Hora table, Choghadiya, and Hindu calendar.', ' — 12+ मुहूर्त, होरा तालिका, चौघड़िया और हिंदू कैलेंडर के साथ।')}</p>
           </div>
 
@@ -1031,7 +1031,7 @@ export default function Features() {
             {l('Complete astrological operating system', 'पूर्ण ज्योतिषीय ऑपरेटिंग सिस्टम')}
           </Heading>
           <div className="max-w-full mx-auto text-lg text-gray-600 leading-relaxed">
-            <p>{l('Most astrology apps use lookup tables and generic predictions.', 'अधिकांश ज्योतिष ऐप लुकअप टेबल और सामान्य भविष्यवाणी का उपयोग करते हैं।')}</p>
+
             <p><strong className="text-sacred-gold-dark">{l('Astro Rattan computes every position from Swiss Ephemeris', 'Astro Rattan Swiss Ephemeris से हर स्थिति की गणना करता है')}</strong>{l(' — the same library used by research astronomers — accurate to arc-seconds.', ' — यही लाइब्रेरी शोध खगोलविद भी उपयोग करते हैं — आर्क-सेकंड तक सटीक।')}</p>
           </div>
         </div>
