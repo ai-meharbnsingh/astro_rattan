@@ -662,9 +662,9 @@ export default function Features() {
             <p><strong className="text-sacred-gold-dark">{l('Astro Rattan aligns sign forecasts with real planetary context and period logic', 'Astro Rattan वास्तविक ग्रह स्थिति और पीरियड लॉजिक के साथ राशिफल को संरेखित करता है')}</strong>{l(' — giving clearer daily, weekly, monthly, and yearly guidance.', ' — जिससे दैनिक, साप्ताहिक, मासिक और वार्षिक मार्गदर्शन अधिक स्पष्ट मिलता है।')}</p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* LEFT: 4x3 Sign Grid */}
-            <div className="rounded-xl border border-sacred-gold/20 bg-transparent backdrop-blur-[1px] p-3">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+            {/* LEFT: 4x3 Sign Grid (40%) */}
+            <div className="lg:col-span-2 rounded-xl border border-sacred-gold/20 bg-transparent backdrop-blur-[1px] p-3">
               <div className="grid grid-cols-4 gap-2">
                 {SIGNS.map((s) => (
                   <button
@@ -688,8 +688,8 @@ export default function Features() {
               </div>
             </div>
 
-            {/* RIGHT: Tabs + Prediction */}
-            <div className="flex flex-col gap-3">
+            {/* RIGHT: Tabs + Prediction (60%) */}
+            <div className="lg:col-span-3 flex flex-col gap-3">
               <Tabs value={horoscopeTab} onValueChange={(v) => setHoroscopeTab(v as 'daily' | 'weekly' | 'monthly' | 'yearly')} className="w-full">
                 <TabsList className="grid w-full grid-cols-4 h-auto p-1 bg-transparent border border-sacred-gold/20 rounded-xl">
                   {[
