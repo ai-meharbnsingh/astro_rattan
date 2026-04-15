@@ -8,4 +8,5 @@ export { default as ChoghadiyaTab } from './ChoghadiyaTab';
 export { default as GowriTab } from './GowriTab';
 export { default as FestivalsTab } from './FestivalsTab';
 export { default as CalendarTab } from './CalendarTab';
+export { default as HinduCalendarTab } from './HinduCalendarTab';
 export { default as MonthlyCalendarTab } from './MonthlyCalendarTab';
