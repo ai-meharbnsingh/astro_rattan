@@ -11,6 +11,7 @@ interface Props {
   t: (key: string) => string;
   latitude: string;
   longitude: string;
+  locationName?: string;
 }
 
 interface DayPanchang {
@@ -169,7 +170,7 @@ const fmtPeriod = (period: any): string => {
   return `${s} to ${e}`;
 };
 
-export default function HinduCalendarTab({ language, t, latitude, longitude }: Props) {
+export default function HinduCalendarTab({ language, t, latitude, longitude, locationName }: Props) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [monthlyData, setMonthlyData] = useState<DayPanchang[]>([]);
   const [loading, setLoading] = useState(false);
@@ -327,6 +328,11 @@ export default function HinduCalendarTab({ language, t, latitude, longitude }: P
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <div className="text-center">
+              {locationName && (
+                <p className="text-[10px] text-muted-foreground flex items-center justify-center gap-1">
+                  📍 {locationName}
+                </p>
+              )}
               <h3 className="text-lg font-bold text-foreground">{monthNames[month]} {year}</h3>
               {p?.hindu_calendar?.maas && (
                 <p className="text-xs text-sacred-gold">
@@ -489,7 +495,7 @@ export default function HinduCalendarTab({ language, t, latitude, longitude }: P
         </div>
 
         {/* ===== RIGHT PANEL: Calendar Grid ===== */}
-        <Card className="border border-sacred-gold/20 bg-[#FFF8F0] shadow-sm">
+        <Card className="border border-sacred-gold/20 bg-[#FFF9F5] shadow-sm">
           <CardContent className="p-2 sm:p-3">
             {loading ? (
               <div className="flex items-center justify-center h-64">
@@ -510,7 +516,7 @@ export default function HinduCalendarTab({ language, t, latitude, longitude }: P
                 <div className="grid grid-cols-7 gap-px bg-[#E8D5B7]">
                   {/* Leading empty cells */}
                   {Array.from({ length: firstDayOfMonth }).map((_, i) => (
-                    <div key={`e-${i}`} className="min-h-[110px] sm:min-h-[130px] bg-[#FFFAF3]" />
+                    <div key={`e-${i}`} className="min-h-[120px] sm:min-h-[140px] bg-[#FFF9F5]" />
                   ))}
 
                   {/* Day cells — dense layout matching Drik Panchang */}
@@ -543,79 +549,80 @@ export default function HinduCalendarTab({ language, t, latitude, longitude }: P
                         key={day}
                         onClick={() => dayData && openLightbox(dayData)}
                         className={`
-                          min-h-[110px] sm:min-h-[130px] p-0 text-left relative overflow-hidden flex flex-col
+                          min-h-[120px] sm:min-h-[140px] p-0 text-left relative overflow-hidden flex flex-col
                           transition-all hover:brightness-95 cursor-pointer
-                          ${isToday ? 'bg-[#F5DEB3] ring-2 ring-inset ring-sacred-gold' : isSelected ? 'bg-[#FFF0D4]' : isSunday ? 'bg-[#FFF5F5]' : 'bg-[#FFFAF3] hover:bg-[#FFF3E0]'}
+                          ${isToday ? 'bg-[#F5DEB3] ring-2 ring-inset ring-sacred-gold' : isSelected ? 'bg-[#FFF0D4]' : isSunday ? 'bg-[#FFF5F5]' : 'bg-[#FFF9F5] hover:bg-[#FFF3E0]'}
                         `}
                       >
-                        {/* ROW 1: Tithi + Paksha header bar */}
-                        <div className={`w-full px-1 py-0.5 text-[8px] sm:text-[10px] font-medium truncate leading-tight border-b border-[#E8D5B7]/50 ${isSunday ? 'text-red-600' : 'text-stone-600'}`}>
-                          {tithiDisplay} {pakshaDisplay}
+                        {/* ROW 1: Tithi + Paksha + moon icon — NO underline */}
+                        <div className={`w-full px-1 py-0.5 flex items-center justify-between ${isSunday ? 'text-red-600' : 'text-stone-600'}`}>
+                          <span className="text-[8px] sm:text-[10px] font-medium truncate leading-tight">
+                            {tithiDisplay} {pakshaDisplay}
+                          </span>
+                          {moonIcon && <span className="text-xs sm:text-sm leading-none shrink-0">{moonIcon}</span>}
                         </div>
 
-                        {/* ROW 2: Day number (large center) + tithi number badge + moon phase */}
-                        <div className="flex-1 flex items-start px-0.5 pt-0.5 gap-0">
-                          {/* Left: sunrise/sunset/moonrise/moonset with symbols */}
-                          {dayData && (
-                            <div className="flex flex-col text-[6px] sm:text-[8px] leading-snug pt-0.5 min-w-0 shrink-0">
-                              <span className="text-orange-500">🌅{dayData.sunrise?.slice(0, 5)}</span>
-                              <span className="text-orange-700">🌇{dayData.sunset?.slice(0, 5)}</span>
-                              {dayData.moonrise && dayData.moonrise !== '--:--' && (
-                                <span className="text-indigo-500">🌙{dayData.moonrise?.slice(0, 5)}</span>
-                              )}
-                              {dayData.moonset && dayData.moonset !== '--:--' && (
-                                <span className="text-slate-500">🌘{dayData.moonset?.slice(0, 5)}</span>
-                              )}
-                            </div>
-                          )}
+                        {/* ROW 2: Sunrise (left) — Sunset (right) */}
+                        {dayData && (
+                          <div className="flex items-center justify-between px-1 mt-0.5">
+                            <span className="text-[7px] sm:text-[9px] text-orange-500">🌅{dayData.sunrise?.slice(0, 5)}</span>
+                            <span className="text-[7px] sm:text-[9px] text-orange-700">🌇{dayData.sunset?.slice(0, 5)}</span>
+                          </div>
+                        )}
 
-                          {/* Center: large day number */}
-                          <div className="flex-1 text-center relative">
-                            <span className={`text-xl sm:text-2xl font-bold leading-none ${isSunday ? 'text-red-600' : isToday ? 'text-amber-700' : 'text-stone-800'}`}>
-                              {day}
+                        {/* ROW 3: DATE (big center) + tithi badge */}
+                        <div className="flex items-center justify-center gap-1 py-0.5">
+                          <span className={`text-2xl sm:text-3xl font-bold leading-none ${isSunday ? 'text-red-600' : isToday ? 'text-amber-700' : 'text-stone-800'}`}>
+                            {day}
+                          </span>
+                          {tithiNum && (
+                            <span className="text-[8px] sm:text-[10px] font-bold bg-[#D4945A] text-white rounded px-1 leading-tight self-start mt-0.5">
+                              {tithiNum}
                             </span>
-                          </div>
-
-                          {/* Right: tithi number badge + moon phase */}
-                          <div className="flex flex-col items-end gap-0.5 pt-0.5 shrink-0">
-                            {tithiNum && (
-                              <span className="text-[8px] sm:text-[10px] font-bold bg-[#D4945A] text-white rounded px-1 leading-tight">
-                                {tithiNum}
-                              </span>
-                            )}
-                            {moonIcon && <span className="text-sm sm:text-base leading-none">{moonIcon}</span>}
-                          </div>
+                          )}
                         </div>
 
-                        {/* ROW 3: Festival (if any) */}
+                        {/* ROW 4: Moonrise (left) — Moonset (right) */}
+                        {dayData && (
+                          <div className="flex items-center justify-between px-1">
+                            {dayData.moonrise && dayData.moonrise !== '--:--' ? (
+                              <span className="text-[7px] sm:text-[9px] text-indigo-500">🌙{dayData.moonrise?.slice(0, 5)}</span>
+                            ) : <span />}
+                            {dayData.moonset && dayData.moonset !== '--:--' ? (
+                              <span className="text-[7px] sm:text-[9px] text-slate-500">🌘{dayData.moonset?.slice(0, 5)}</span>
+                            ) : <span />}
+                          </div>
+                        )}
+
+                        {/* ROW 5: Festival — centered, WRAPPED */}
                         {majorFests.length > 0 && (
-                          <div className="px-1">
-                            {majorFests.slice(0, 1).map((f, i) => (
-                              <p key={i} className="text-[8px] sm:text-[10px] font-bold text-red-600 leading-tight truncate">
+                          <div className="px-0.5 mt-auto">
+                            {majorFests.slice(0, 2).map((f, i) => (
+                              <p key={i} className="text-[8px] sm:text-[10px] font-bold text-red-600 leading-tight text-center break-words">
                                 {language === 'hi' ? translateBackend(f, language) : f}
                               </p>
                             ))}
                           </div>
                         )}
                         {vrats.length > 0 && majorFests.length === 0 && (
-                          <div className="px-1">
+                          <div className="px-0.5 mt-auto">
                             {vrats.slice(0, 1).map((f, i) => (
-                              <p key={i} className="text-[8px] sm:text-[10px] font-semibold text-purple-700 leading-tight truncate">
+                              <p key={i} className="text-[8px] sm:text-[10px] font-semibold text-purple-700 leading-tight text-center break-words">
                                 {language === 'hi' ? translateBackend(f, language) : f}
                               </p>
                             ))}
                           </div>
                         )}
 
-                        {/* ROW 4: Moon sign + Nakshatra (bottom of cell) */}
-                        <div className="px-1 pb-0.5 mt-auto space-y-0">
+                        {/* ROW 6: Moon sign + Nakshatra — centered bottom */}
+                        <div className="px-0.5 pb-0.5 mt-auto text-center space-y-0">
                           {moonSignDisplay && (
-                            <p className="text-[7px] sm:text-[9px] text-teal-700 leading-tight truncate">
+                            <p className="text-[7px] sm:text-[9px] text-teal-700 leading-tight">
                               ♈ {moonSignDisplay}
                             </p>
                           )}
                           {nakDisplay && (
-                            <p className="text-[7px] sm:text-[9px] text-indigo-700/70 leading-tight truncate">
+                            <p className="text-[7px] sm:text-[9px] text-indigo-700/70 leading-tight">
                               ✦ {nakDisplay}
                             </p>
                           )}
@@ -626,13 +633,13 @@ export default function HinduCalendarTab({ language, t, latitude, longitude }: P
 
                   {/* Trailing empty cells */}
                   {Array.from({ length: Math.max(0, 42 - (firstDayOfMonth + daysInMonth)) }).map((_, i) => (
-                    <div key={`te-${i}`} className="min-h-[110px] sm:min-h-[130px] bg-[#FFFAF3]" />
+                    <div key={`te-${i}`} className="min-h-[120px] sm:min-h-[140px] bg-[#FFF9F5]" />
                   ))}
                 </div>
 
                 {/* Legend */}
                 <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 mt-2 text-[10px] text-stone-600">
-                  <span><span className="inline-block w-4 text-center bg-[#D4945A] text-white rounded text-[8px] font-bold mr-0.5">14</span> {language === 'hi' ? 'तिथि क्रम' : 'Tithi #'}</span>
+                  <span><span className="inline-block w-4 text-center bg-[#D4945A] text-white rounded text-[8px] font-bold mr-0.5">x</span> {language === 'hi' ? 'तिथि क्रम' : 'Tithi #'}</span>
                   <span>🌕 {language === 'hi' ? 'पूर्णिमा' : 'Purnima'}</span>
                   <span>🌑 {language === 'hi' ? 'अमावस्या' : 'Amavasya'}</span>
                   <span className="text-red-600 font-semibold">{language === 'hi' ? 'पर्व' : 'Festival'}</span>
