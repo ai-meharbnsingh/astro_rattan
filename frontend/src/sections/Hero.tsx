@@ -80,28 +80,23 @@ export default function Hero() {
           </div>
 
           {/* Quick nav links */}
-          <div className="hero-shloka opacity-0 flex flex-wrap justify-center gap-x-1 gap-y-1 mt-3 text-xs text-sacred-gold-dark">
+          <div className="hero-shloka opacity-0 flex justify-center items-center gap-x-0 mt-3 text-[13px] text-sacred-gold-dark">
             {[
               { label: language === 'hi' ? 'राशिफल' : 'Horoscope', id: 'horoscope-section' },
               { label: language === 'hi' ? 'पंचांग' : 'Panchang', id: 'panchang-section' },
               { label: language === 'hi' ? 'होरा' : 'Hora', id: 'hora-section' },
               { label: language === 'hi' ? 'चौघड़िया' : 'Choghadiya', id: 'hora-section' },
-              { label: language === 'hi' ? 'वैदिक समय' : 'Vedic Time', id: 'panchang-section' },
-              { label: language === 'hi' ? 'त्योहार' : 'Festivals', id: 'panchang-section' },
-              { label: language === 'hi' ? 'कुंडली' : 'Kundli', id: 'features' },
-              { label: language === 'hi' ? 'अंकशास्त्र' : 'Numerology', id: 'features' },
-              { label: language === 'hi' ? 'वास्तु' : 'Vastu', id: 'features' },
               { label: 'FAQ', id: 'faq-section' },
             ].map((item, i, arr) => (
-              <span key={item.label}>
+              <span key={item.label} className="inline-flex items-center">
                 <button
                   type="button"
                   onClick={() => document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-                  className="hover:underline hover:text-sacred-gold cursor-pointer"
+                  className="hover:underline hover:text-sacred-gold cursor-pointer px-2"
                 >
                   {item.label}
                 </button>
-                {i < arr.length - 1 && <span className="mx-1 text-sacred-gold/40">|</span>}
+                {i < arr.length - 1 && <span className="text-sacred-gold/40">|</span>}
               </span>
             ))}
           </div>
