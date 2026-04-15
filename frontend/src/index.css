@@ -84,16 +84,16 @@
     --popover-foreground: 222 47% 11%;
     --primary: 30 100% 60%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222 47% 11%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    --secondary: 35 40% 96%;
+    --secondary-foreground: 25 30% 15%;
+    --muted: 35 35% 95%;
+    --muted-foreground: 25 15% 45%;
     --accent: 30 100% 60%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
+    --border: 30 25% 88%;
+    --input: 30 25% 88%;
     --ring: 30 100% 60%;
     --radius: 0.5rem;
 
