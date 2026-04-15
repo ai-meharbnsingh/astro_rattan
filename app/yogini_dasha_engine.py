@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 YOGINI_YEARS = {
     "Mangala": 1,
@@ -71,7 +71,7 @@ def calculate_yogini_dasha(birth_nakshatra: str, birth_date: str, moon_longitude
     balance = max(0.0, min(1.0, remaining_fraction))
 
     birth_dt = datetime.strptime(birth_date, "%Y-%m-%d")
-    now = datetime.now()
+    now = datetime.utcnow()
     
     periods = []
     

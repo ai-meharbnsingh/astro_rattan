@@ -7,6 +7,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { User, Sparkles, Loader2, Calculator } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
+import { Heading } from "@/components/ui/heading";
+import { Text } from "@/components/ui/text";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 
 interface NameNumerologyResult {
   name: string;
@@ -105,9 +108,9 @@ export default function NameNumerology({ birthDate }: Props) {
   return (
     <div className="space-y-6">
       {/* Input Card */}
-      <Card className="bg-cosmic-card border-0 shadow-soft max-w-2xl mx-auto">
+      <Card className="bg-card border-0 shadow-soft max-w-2xl mx-auto">
         <CardContent className="p-6">
-          <h3 className="font-display font-semibold text-cosmic-text mb-4 text-center flex items-center justify-center gap-2">
+          <h3 className="font-semibold text-foreground mb-4 text-center flex items-center justify-center gap-2">
             <User className="w-5 h-5 text-sacred-gold" />
             {t('numerology.nameAnalyzeHeading')}
           </h3>
@@ -115,9 +118,9 @@ export default function NameNumerology({ birthDate }: Props) {
           <div className="space-y-4">
             {/* Name Type Selector */}
             <div>
-              <label className="block text-sm text-cosmic-text-secondary mb-1">{t('numerology.nameType')}</label>
+              <label className="block text-sm text-muted-foreground mb-1">{t('numerology.nameType')}</label>
               <Select value={nameType} onValueChange={setNameType}>
-                <SelectTrigger className="bg-cosmic-card border-sacred-gold">
+                <SelectTrigger className="bg-card border-sacred-gold">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -131,34 +134,34 @@ export default function NameNumerology({ birthDate }: Props) {
 
             {/* Name Input */}
             <div>
-              <label className="block text-sm text-cosmic-text-secondary mb-1">
+              <label className="block text-sm text-muted-foreground mb-1">
                 {t('numerology.enterName')} <span className="text-red-600">*</span>
               </label>
               <Input
                 placeholder={t('numerology.enterName')}
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                className="bg-cosmic-card border-sacred-gold"
+                className="bg-card border-sacred-gold"
               />
             </div>
 
             {/* Optional DOB */}
             <div>
-              <label className="block text-sm text-cosmic-text-secondary mb-1">
+              <label className="block text-sm text-muted-foreground mb-1">
                 {t('numerology.dobOptionalCompatibility')}
               </label>
               <Input
                 type="date"
                 value={dob}
                 onChange={(e) => setDob(e.target.value)}
-                className="bg-cosmic-card border-sacred-gold"
+                className="bg-card border-sacred-gold"
               />
             </div>
 
             <Button
               onClick={analyzeName}
               disabled={loading || !fullName.trim()}
-              className="w-full bg-sacred-gold text-cosmic-bg hover:bg-gray-50"
+              className="w-full bg-sacred-gold text-background hover:bg-gray-50"
             >
               {loading ? (
                 <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{t('numerology.analyzing')}</>
@@ -180,12 +183,12 @@ export default function NameNumerology({ birthDate }: Props) {
       {result && (
         <div className="space-y-6 max-w-4xl mx-auto">
           {/* Header */}
-          <Card className="bg-cosmic-card border-0 shadow-soft-lg overflow-hidden">
+          <Card className="bg-card border-0 shadow-soft-lg overflow-hidden">
             <div className="bg-gradient-to-r from-sacred-gold to-sacred-gold-dark px-6 py-4 text-center">
-              <h4 className="font-display font-bold text-lg text-sacred-gold tracking-wide uppercase">
+              <Heading as={4} variant={4}>
                 {t('numerology.nameReport')}
-              </h4>
-              <p className="text-sm text-cosmic-text mt-1">{result.name}</p>
+              </Heading>
+              <p className="text-sm text-foreground mt-1">{result.name}</p>
               <Badge className="mt-2 bg-sacred-gold/20 text-sacred-gold border-sacred-gold">
                 {getNameTypeLabel(result.name_type)}
               </Badge>
@@ -220,24 +223,24 @@ export default function NameNumerology({ birthDate }: Props) {
                 color: 'bg-yellow-100 text-yellow-700' 
               },
             ].map((item) => (
-              <Card key={item.label} className="bg-cosmic-card border-0 shadow-soft">
+              <Card key={item.label} className="bg-card border-0 shadow-soft">
                 <CardContent className="p-4 text-center">
-                  <p className="text-xs text-cosmic-text-secondary mb-1">{item.label}</p>
+                  <p className="text-xs text-muted-foreground mb-1">{item.label}</p>
                   <Badge className={`text-xl px-3 py-1 ${item.color}`}>{item.value}</Badge>
-                  <p className="text-[10px] text-cosmic-text-secondary mt-1 leading-tight">{item.sub}</p>
+                  <p className="text-[10px] text-muted-foreground mt-1 leading-tight">{item.sub}</p>
                 </CardContent>
               </Card>
             ))}
           </div>
 
           {/* Primary Prediction */}
-          <Card className="bg-cosmic-card border-0 shadow-soft-lg">
+          <Card className="bg-card border-0 shadow-soft-lg">
             <CardContent className="p-6 space-y-4">
               <div className="flex items-center gap-2 pb-3 border-b border-sacred-gold/20">
                 <Sparkles className="w-5 h-5 text-sacred-gold" />
-                <h4 className="font-display font-semibold text-cosmic-text">
+                <Heading as={4} variant={4}>
                   {result.predictions.primary.title} {t('numerology.energy')}
-                </h4>
+                </Heading>
                 <Badge className="ml-auto bg-sacred-gold/20 text-sacred-gold border-sacred-gold">
                   {t('numerology.rulingPlanet')}: {result.predictions.primary.ruling_planet}
                 </Badge>
@@ -245,22 +248,22 @@ export default function NameNumerology({ birthDate }: Props) {
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm font-medium text-cosmic-text mb-2">{t('numerology.keyTraits')}</p>
+                  <p className="text-sm font-medium text-foreground mb-2">{t('numerology.keyTraits')}</p>
                   <div className="flex flex-wrap gap-2">
                     {result.predictions.primary.traits.map((trait, i) => (
-                      <Badge key={i} variant="outline" className="border-sacred-gold/30 text-cosmic-text-secondary">
+                      <Badge key={i} variant="outline" className="border-sacred-gold/30 text-muted-foreground">
                         {trait}
                       </Badge>
                     ))}
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-cosmic-text mb-2">{t('numerology.luckyElements')}</p>
+                  <p className="text-sm font-medium text-foreground mb-2">{t('numerology.luckyElements')}</p>
                   <div className="space-y-1 text-sm">
-                    <p className="text-cosmic-text-secondary">
+                    <p className="text-muted-foreground">
                       <span className="text-sacred-gold">{t('numerology.luckyColors')}:</span> {result.predictions.primary.lucky_colors.join(', ')}
                     </p>
-                    <p className="text-cosmic-text-secondary">
+                    <p className="text-muted-foreground">
                       <span className="text-sacred-gold">{t('numerology.luckyDays')}:</span> {result.predictions.primary.lucky_days.join(', ')}
                     </p>
                   </div>
@@ -269,22 +272,22 @@ export default function NameNumerology({ birthDate }: Props) {
 
               <div className="space-y-3 pt-3 border-t border-sacred-gold/20">
                 <div>
-                  <p className="text-sm font-medium text-cosmic-text mb-1">{t('numerology.careerGuidance')}</p>
-                  <p className="text-sm text-cosmic-text-secondary">{result.predictions.primary.career}</p>
+                  <p className="text-sm font-medium text-foreground mb-1">{t('numerology.careerGuidance')}</p>
+                  <p className="text-sm text-muted-foreground">{result.predictions.primary.career}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-cosmic-text mb-1">{t('numerology.relationshipInsights')}</p>
-                  <p className="text-sm text-cosmic-text-secondary">{result.predictions.primary.relationships}</p>
+                  <p className="text-sm font-medium text-foreground mb-1">{t('numerology.relationshipInsights')}</p>
+                  <p className="text-sm text-muted-foreground">{result.predictions.primary.relationships}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-cosmic-text mb-1">{t('numerology.healthNotes')}</p>
-                  <p className="text-sm text-cosmic-text-secondary">{result.predictions.primary.health}</p>
+                  <p className="text-sm font-medium text-foreground mb-1">{t('numerology.healthNotes')}</p>
+                  <p className="text-sm text-muted-foreground">{result.predictions.primary.health}</p>
                 </div>
               </div>
 
               <div className="bg-sacred-gold/10 rounded-lg p-4 border border-sacred-gold/20">
                 <p className="text-sm font-medium text-sacred-gold-dark mb-1">{t('numerology.spiritualAdvice')}</p>
-                <p className="text-sm text-cosmic-text-secondary italic">{result.predictions.primary.advice}</p>
+                <p className="text-sm text-muted-foreground italic">{result.predictions.primary.advice}</p>
               </div>
             </CardContent>
           </Card>
@@ -293,9 +296,9 @@ export default function NameNumerology({ birthDate }: Props) {
           {(result.first_name_analysis || result.last_name_analysis) && (
             <div className="grid md:grid-cols-2 gap-4">
               {result.first_name_analysis && (
-                <Card className="bg-cosmic-card border-0 shadow-soft">
+                <Card className="bg-card border-0 shadow-soft">
                   <CardContent className="p-4">
-                    <p className="text-sm font-medium text-cosmic-text mb-2">{t('numerology.firstNameAnalysis')}: {result.first_name_analysis.name}</p>
+                    <p className="text-sm font-medium text-foreground mb-2">{t('numerology.firstNameAnalysis')}: {result.first_name_analysis.name}</p>
                     <Badge className="bg-purple-100 text-purple-700 mb-2">{t('numerology.number')} {result.first_name_analysis.number}</Badge>
                     <div className="flex flex-wrap gap-1 mt-2">
                       {result.first_name_analysis.traits.slice(0, 5).map((trait, i) => (
@@ -308,11 +311,11 @@ export default function NameNumerology({ birthDate }: Props) {
                 </Card>
               )}
               {result.last_name_analysis && (
-                <Card className="bg-cosmic-card border-0 shadow-soft">
+                <Card className="bg-card border-0 shadow-soft">
                   <CardContent className="p-4">
-                    <p className="text-sm font-medium text-cosmic-text mb-2">{t('numerology.lastNameAnalysis')}: {result.last_name_analysis.name}</p>
+                    <p className="text-sm font-medium text-foreground mb-2">{t('numerology.lastNameAnalysis')}: {result.last_name_analysis.name}</p>
                     <Badge className="bg-blue-100 text-blue-700 mb-2">{t('numerology.number')} {result.last_name_analysis.number}</Badge>
-                    <p className="text-xs text-cosmic-text-secondary mt-2">{result.last_name_analysis.meaning}</p>
+                    <p className="text-xs text-muted-foreground mt-2">{result.last_name_analysis.meaning}</p>
                   </CardContent>
                 </Card>
               )}
@@ -321,12 +324,12 @@ export default function NameNumerology({ birthDate }: Props) {
 
           {/* Life Path Compatibility */}
           {result.life_path_compatibility && (
-            <Card className="bg-cosmic-card border-0 shadow-soft">
+            <Card className="bg-card border-0 shadow-soft">
               <CardContent className="p-4">
-                <p className="text-sm font-medium text-cosmic-text mb-3">{t('numerology.lifePathCompatibility')}</p>
+                <p className="text-sm font-medium text-foreground mb-3">{t('numerology.lifePathCompatibility')}</p>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-cosmic-text-secondary">{t('numerology.nameNumber')}: {result.life_path_compatibility.name_number}</span>
-                  <span className="text-sm text-cosmic-text-secondary">{t('numerology.lifePathShort')}: {result.life_path_compatibility.life_path}</span>
+                  <Text variant="muted" as="span">{t('numerology.nameNumber')}: {result.life_path_compatibility.name_number}</Text>
+                  <Text variant="muted" as="span">{t('numerology.lifePathShort')}: {result.life_path_compatibility.life_path}</Text>
                 </div>
                 <Badge className={result.life_path_compatibility.is_compatible 
                   ? 'bg-green-100 text-green-800' 
@@ -334,44 +337,44 @@ export default function NameNumerology({ birthDate }: Props) {
                 }>
                   {result.life_path_compatibility.is_compatible ? t('numerology.compatible') : t('numerology.needsAttention')}
                 </Badge>
-                <p className="text-sm text-cosmic-text-secondary mt-2">{result.life_path_compatibility.compatibility_note}</p>
+                <p className="text-sm text-muted-foreground mt-2">{result.life_path_compatibility.compatibility_note}</p>
               </CardContent>
             </Card>
           )}
 
           {/* Letter Breakdown */}
           {result.letter_breakdown.length > 0 && (
-            <Card className="bg-cosmic-card border-0 shadow-soft">
+            <Card className="bg-card border-0 shadow-soft">
               <CardContent className="p-4">
-                <p className="text-sm font-medium text-cosmic-text mb-3">{t('numerology.letterBreakdown')}</p>
+                <p className="text-sm font-medium text-foreground mb-3">{t('numerology.letterBreakdown')}</p>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-sacred-gold/20">
-                        <th className="text-left py-2 text-cosmic-text-secondary">{t('numerology.letter')}</th>
-                        <th className="text-center py-2 text-cosmic-text-secondary">{t('numerology.pythagorean')}</th>
-                        <th className="text-center py-2 text-cosmic-text-secondary">{t('numerology.chaldean')}</th>
-                        <th className="text-center py-2 text-cosmic-text-secondary">{t('numerology.type')}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
+                  <Table className="w-full text-sm">
+                    <TableHeader>
+                      <TableRow className="border-b border-sacred-gold/20">
+                        <TableHead className="text-left py-2 text-muted-foreground">{t('numerology.letter')}</TableHead>
+                        <TableHead className="text-center py-2 text-muted-foreground">{t('numerology.pythagorean')}</TableHead>
+                        <TableHead className="text-center py-2 text-muted-foreground">{t('numerology.chaldean')}</TableHead>
+                        <TableHead className="text-center py-2 text-muted-foreground">{t('numerology.type')}</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
                       {result.letter_breakdown.map((item, i) => (
-                        <tr key={i} className="border-b border-sacred-gold/10">
-                          <td className="py-2 font-medium">{item.letter}</td>
-                          <td className="py-2 text-center">{item.pythagorean}</td>
-                          <td className="py-2 text-center">{item.chaldean}</td>
-                          <td className="py-2 text-center">
+                        <TableRow key={i} className="border-b border-sacred-gold/10">
+                          <TableCell className="py-2 font-medium">{item.letter}</TableCell>
+                          <TableCell className="py-2 text-center">{item.pythagorean}</TableCell>
+                          <TableCell className="py-2 text-center">{item.chaldean}</TableCell>
+                          <TableCell className="py-2 text-center">
                             <Badge variant="outline" className={item.is_vowel 
                               ? 'border-green-300 text-green-700 text-xs' 
                               : 'border-blue-300 text-blue-700 text-xs'
                             }>
                               {item.is_vowel ? t('numerology.vowel') : t('numerology.consonant')}
                             </Badge>
-                          </td>
-                        </tr>
+                          </TableCell>
+                        </TableRow>
                       ))}
-                    </tbody>
-                  </table>
+                    </TableBody>
+                  </Table>
                 </div>
               </CardContent>
             </Card>

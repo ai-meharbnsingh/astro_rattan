@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { X } from 'lucide-react';
+import { Heading } from "@/components/ui/heading";
 
 /**
  * Interactive 9x9 Vastu Purusha Mandala SVG grid.
@@ -113,12 +114,12 @@ export default function VastuMandalaGrid({ zones }: Props) {
         {Object.entries(NATURE_COLORS).map(([nature, c]) => (
           <div key={nature} className="flex items-center gap-1.5">
             <div className="w-3 h-3 rounded" style={{ background: c.fill, border: `1px solid ${c.stroke}` }} />
-            <span className="text-cosmic-text capitalize">{nature}</span>
+            <span className="text-foreground capitalize">{nature}</span>
           </div>
         ))}
         <div className="flex items-center gap-1.5">
           <div className="w-3 h-3 rounded" style={{ background: EMPTY_CELL.fill, border: `1px solid ${EMPTY_CELL.stroke}` }} />
-          <span className="text-cosmic-text">{t('auto.empty')}</span>
+          <span className="text-foreground">{t('auto.empty')}</span>
         </div>
       </div>
 
@@ -252,7 +253,7 @@ export default function VastuMandalaGrid({ zones }: Props) {
         <div className="bg-white/5 border border-sacred-gold/30 rounded-xl p-5 relative">
           <button
             onClick={() => setSelected(null)}
-            className="absolute top-3 right-3 text-cosmic-text/40 hover:text-white"
+            className="absolute top-3 right-3 text-foreground/40 hover:text-white"
           >
             <X className="w-4 h-4" />
           </button>
@@ -264,29 +265,29 @@ export default function VastuMandalaGrid({ zones }: Props) {
                 border: `2px solid ${(NATURE_COLORS[selected.nature] || NATURE_COLORS.neutral).stroke}`,
               }}
             />
-            <h4 className="text-lg font-bold text-cosmic-text">{selected.name}</h4>
-            <span className="text-sm text-cosmic-text/60">{selected.name_hi}</span>
-            <span className="ml-auto text-sm px-2 py-0.5 rounded bg-white/10 text-cosmic-text capitalize">{selected.nature}</span>
+            <Heading as={4} variant={4}>{selected.name}</Heading>
+            <span className="text-sm text-foreground/60">{selected.name_hi}</span>
+            <span className="ml-auto text-sm px-2 py-0.5 rounded bg-white/10 text-foreground capitalize">{selected.nature}</span>
           </div>
-          <p className="text-sm text-cosmic-text leading-relaxed mb-3">
+          <p className="text-sm text-foreground leading-relaxed mb-3">
             {isHi ? selected.description_hi : selected.description_en}
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
             <div>
-              <p className="text-cosmic-text/50">{t('auto.zone')}</p>
-              <p className="font-semibold text-cosmic-text">{isHi ? selected.zone_hi : selected.zone}</p>
+              <p className="text-foreground/50">{t('auto.zone')}</p>
+              <p className="font-semibold text-foreground">{isHi ? selected.zone_hi : selected.zone}</p>
             </div>
             <div>
-              <p className="text-cosmic-text/50">{t('auto.direction')}</p>
-              <p className="font-semibold text-cosmic-text">{isHi ? selected.direction_hi : selected.direction}</p>
+              <p className="text-foreground/50">{t('auto.direction')}</p>
+              <p className="font-semibold text-foreground">{isHi ? selected.direction_hi : selected.direction}</p>
             </div>
             <div>
-              <p className="text-cosmic-text/50">{t('auto.element')}</p>
-              <p className="font-semibold text-cosmic-text">{isHi ? selected.element_hi : selected.element}</p>
+              <p className="text-foreground/50">{t('auto.element')}</p>
+              <p className="font-semibold text-foreground">{isHi ? selected.element_hi : selected.element}</p>
             </div>
             <div>
-              <p className="text-cosmic-text/50">{t('auto.bodyPart')}</p>
-              <p className="font-semibold text-cosmic-text">{isHi ? selected.body_part_hi : selected.body_part}</p>
+              <p className="text-foreground/50">{t('auto.bodyPart')}</p>
+              <p className="font-semibold text-foreground">{isHi ? selected.body_part_hi : selected.body_part}</p>
             </div>
           </div>
           <p className="text-sm text-sacred-gold/60 italic mt-3">{selected.mantra}</p>

@@ -29,6 +29,8 @@ interface GeocodeResult {
   name: string;
   lat: number;
   lon: number;
+  timezone_offset?: number;
+  timezone_name?: string;
 }
 
 export default function LalKitabForm({ onGenerate, loading }: LalKitabFormProps) {
@@ -135,6 +137,7 @@ export default function LalKitabForm({ onGenerate, loading }: LalKitabFormProps)
       place: result.name.split(',')[0],
       latitude: result.lat,
       longitude: result.lon,
+      timezone_offset: result.timezone_offset ?? -(new Date().getTimezoneOffset() / 60),
     }));
     setShowDropdown(false);
   };
@@ -154,7 +157,7 @@ export default function LalKitabForm({ onGenerate, loading }: LalKitabFormProps)
   };
 
   const inputClass =
-    'w-full rounded-lg bg-sacred-cream border border-sacred-gold text-sacred-brown px-3 py-2 focus:outline-none focus:border-sacred-gold-dark transition-colors text-sm h-10';
+    'w-full rounded-lg bg-muted border border-sacred-gold text-sacred-brown px-3 py-2 focus:outline-none focus:border-sacred-gold-dark transition-colors text-sm h-10';
 
   return (
     <form onSubmit={handleSubmit} className="bg-transparent rounded-xl p-4 md:p-6">
@@ -198,7 +201,7 @@ export default function LalKitabForm({ onGenerate, loading }: LalKitabFormProps)
               className={`h-10 rounded-lg border text-sm font-medium transition-colors ${
                 formData.gender === 'male'
                   ? 'border-sacred-gold bg-sacred-gold-dark text-white'
-                  : 'border-sacred-gold/40 text-cosmic-text bg-white/50 hover:bg-sacred-gold/5'
+                  : 'border-sacred-gold/40 text-foreground bg-white/50 hover:bg-sacred-gold/5'
               }`}
             >
               {t('lk.male')}
@@ -209,7 +212,7 @@ export default function LalKitabForm({ onGenerate, loading }: LalKitabFormProps)
               className={`h-10 rounded-lg border text-sm font-medium transition-colors ${
                 formData.gender === 'female'
                   ? 'border-sacred-gold bg-sacred-gold-dark text-white'
-                  : 'border-sacred-gold/40 text-cosmic-text bg-white/50 hover:bg-sacred-gold/5'
+                  : 'border-sacred-gold/40 text-foreground bg-white/50 hover:bg-sacred-gold/5'
               }`}
             >
               {t('lk.female')}
@@ -307,7 +310,7 @@ export default function LalKitabForm({ onGenerate, loading }: LalKitabFormProps)
                     onClick={() => handleSelectPlace(s)}
                     className="w-full text-left px-3 py-2 hover:bg-sacred-gold/10 transition-colors border-b border-sacred-gold/10 last:border-b-0"
                   >
-                    <p className="text-xs font-medium text-cosmic-text truncate">{s.name}</p>
+                    <p className="text-xs font-medium text-foreground truncate">{s.name}</p>
                     <p className="text-[10px] text-gray-600">
                       {s.lat.toFixed(4)}, {s.lon.toFixed(4)}
                     </p>

@@ -203,7 +203,7 @@ function DebtCard({ debt, isHi }: { debt: Debt; isHi: boolean }) {
       {/* Title row */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <h4 className="font-sans font-semibold text-cosmic-text">{debt.debt_type}</h4>
+          <h4 className="font-sans font-semibold text-foreground">{debt.debt_type}</h4>
           <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${PLANET_COLOR[debt.planet] ?? 'bg-gray-100 text-gray-600'}`}>
             {isHi ? (PLANET_HI[debt.planet] ?? debt.planet) : debt.planet.charAt(0).toUpperCase() + debt.planet.slice(1)}
           </span>
@@ -222,7 +222,7 @@ function DebtCard({ debt, isHi }: { debt: Debt; isHi: boolean }) {
       </div>
 
       {/* Description */}
-      <p className="text-sm text-cosmic-text/80 mb-3 leading-relaxed">
+      <p className="text-sm text-foreground/80 mb-3 leading-relaxed">
         {isHi ? debt.description : (DEBT_EN[debt.debt_type]?.description ?? debt.description)}
       </p>
 
@@ -232,7 +232,7 @@ function DebtCard({ debt, isHi }: { debt: Debt; isHi: boolean }) {
           <p className="text-xs font-semibold text-sacred-gold mb-1">
             {t('auto.indication')}
           </p>
-          <p className="text-xs text-cosmic-text/70 leading-snug">
+          <p className="text-xs text-foreground/70 leading-snug">
             {isHi ? debt.indication : (DEBT_EN[debt.debt_type]?.indication ?? debt.indication)}
           </p>
         </div>
@@ -243,7 +243,7 @@ function DebtCard({ debt, isHi }: { debt: Debt; isHi: boolean }) {
         <p className="text-xs font-semibold text-green-700 mb-1">
           {t('auto.remedy')}
         </p>
-        <p className="text-xs text-cosmic-text/70 leading-snug">
+        <p className="text-xs text-foreground/70 leading-snug">
           {isHi ? debt.remedy : (DEBT_EN[debt.debt_type]?.remedy ?? debt.remedy)}
         </p>
       </div>

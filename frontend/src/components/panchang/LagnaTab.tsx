@@ -1,6 +1,9 @@
 import { useMemo } from 'react';
 import { Sunrise, Info } from 'lucide-react';
 import type { FullPanchangData } from '@/sections/Panchang';
+import { Heading } from "@/components/ui/heading";
+import { Text } from "@/components/ui/text";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 
 interface Props {
   panchang: FullPanchangData;
@@ -63,21 +66,21 @@ export default function LagnaTab({ panchang, language, t, timezoneOffset, minute
         <div className="flex items-center gap-3 p-2 rounded-lg border border-sacred-gold/30 bg-sacred-gold/10">
           <Sunrise className="h-8 w-8 text-sacred-gold flex-shrink-0" />
           <div className="flex-1 min-w-0">
-            <p className="text-xs text-cosmic-text-secondary">
+            <p className="text-xs text-muted-foreground">
               {t('auto.currentLagnaAscendan')}
             </p>
-            <span className="font-bold text-cosmic-text-primary">
+            <span className="font-bold text-foreground">
               {language === 'hi'
                 ? currentLagna.lagna_hindi || RASHI_HINDI[currentLagna.lagna] || currentLagna.lagna
                 : currentLagna.lagna}
             </span>
             <span className="mx-2 text-sacred-gold">{currentLagna.start} - {currentLagna.end}</span>
             {LAGNA_INFO[currentLagna.lagna] && (
-              <span className="text-xs text-cosmic-text-secondary">
+              <Text variant="small" as="span">
                 {language === 'hi'
                   ? LAGNA_INFO[currentLagna.lagna].hi
                   : LAGNA_INFO[currentLagna.lagna].en}
-              </span>
+              </Text>
             )}
           </div>
           <span className="px-2 py-1 rounded-full bg-sacred-gold/20 text-sacred-gold font-semibold text-xs">
@@ -87,92 +90,92 @@ export default function LagnaTab({ panchang, language, t, timezoneOffset, minute
       )}
 
       {/* Lagna Table */}
-      <div className="rounded-lg border border-cosmic-border overflow-hidden">
-        <h3 className="font-bold text-cosmic-text-primary p-2 flex items-center gap-1 bg-cosmic-card/30">
+      <div className="rounded-lg border overflow-hidden">
+        <h3 className="font-bold text-foreground p-2 flex items-center gap-1 bg-card/30">
           <Sunrise className="h-4 w-4 text-sacred-gold" />
           {language === 'hi' ? 'दिन के लग्न' : "Today's Lagna Changes"}
         </h3>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-sacred-gold/15">
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
+          <Table className="w-full text-sm">
+            <TableHeader>
+              <TableRow className="bg-sacred-gold/15">
+                <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
                   {t('auto.lagna')}
-                </th>
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
+                </TableHead>
+                <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
                   {t('auto.start')}
-                </th>
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
+                </TableHead>
+                <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
                   {t('auto.end')}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {lagnaTable.map((lagna, index) => {
                 const isCurrent = currentLagna?.start === lagna.start && currentLagna?.end === lagna.end;
 
                 return (
-                  <tr
+                  <TableRow
                     key={index}
                     className={`
-                      border-b border-cosmic-border/50 last:border-0
-                      ${isCurrent ? 'bg-sacred-gold/10' : index % 2 === 0 ? 'bg-cosmic-card/30' : ''}
+                      border-b border/50 last:border-0
+                      ${isCurrent ? 'bg-sacred-gold/10' : index % 2 === 0 ? 'bg-card/30' : ''}
                     `}
                   >
-                    <td className="px-2 py-1">
+                    <TableCell className="px-2 py-1">
                       <div className="flex items-center gap-1">
-                        <span className={`font-medium ${isCurrent ? 'text-sacred-gold' : 'text-cosmic-text-primary'}`}>
+                        <span className={`font-medium ${isCurrent ? 'text-sacred-gold' : 'text-foreground'}`}>
                           {language === 'hi'
                             ? lagna.lagna_hindi || RASHI_HINDI[lagna.lagna] || lagna.lagna
                             : lagna.lagna}
                         </span>
                         {isCurrent && (
-                          <span className="px-1.5 py-0.5 text-xs bg-sacred-gold text-cosmic-bg rounded-full">
+                          <span className="px-1.5 py-0.5 text-xs bg-sacred-gold text-background rounded-full">
                             {t('auto.now')}
                           </span>
                         )}
                       </div>
-                    </td>
-                    <td className="px-2 py-1 text-cosmic-text-secondary">
+                    </TableCell>
+                    <TableCell className="px-2 py-1 text-muted-foreground">
                       {lagna.start}
-                    </td>
-                    <td className="px-2 py-1 text-cosmic-text-secondary">
+                    </TableCell>
+                    <TableCell className="px-2 py-1 text-muted-foreground">
                       {lagna.end}
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 );
               })}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       </div>
 
       {/* Lagna Info */}
-      <div className="rounded-lg border border-cosmic-border p-2">
+      <div className="rounded-lg border p-2">
         <div className="flex items-start gap-2">
           <Info className="h-4 w-4 text-sacred-gold mt-0.5 flex-shrink-0" />
           <div>
-            <h4 className="font-semibold text-cosmic-text-primary mb-1">
+            <Heading as={4} variant={4}>
               {t('auto.aboutLagnaAscendant')}
-            </h4>
-            <p className="text-sm text-cosmic-text-secondary leading-relaxed mb-2">
+            </Heading>
+            <p className="text-sm text-muted-foreground leading-relaxed mb-2">
               {t('auto.lagnaAscendantIsTheS')}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-              <div className="p-2 rounded-lg bg-cosmic-card/50">
-                <strong className="text-cosmic-text-primary">
+              <div className="p-2 rounded-lg bg-card/50">
+                <strong className="text-foreground">
                   {t('auto.movableSigns')}
                 </strong>
-                <p className="text-cosmic-text-secondary mt-0.5">
+                <p className="text-muted-foreground mt-0.5">
                   {t('auto.ariesCancerLibraCapr')}
                 </p>
               </div>
-              <div className="p-2 rounded-lg bg-cosmic-card/50">
-                <strong className="text-cosmic-text-primary">
+              <div className="p-2 rounded-lg bg-card/50">
+                <strong className="text-foreground">
                   {t('auto.fixedSigns')}
                 </strong>
-                <p className="text-cosmic-text-secondary mt-0.5">
+                <p className="text-muted-foreground mt-0.5">
                   {t('auto.taurusLeoScorpioAqua')}
                 </p>
               </div>

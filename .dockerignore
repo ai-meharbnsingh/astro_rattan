@@ -2,10 +2,7 @@
 .github
 .gitignore
 .claude
-.vercel
 _trash
-_trash_vercel_root
-_trash_vercel_frontend
 frontend
 e2e
 tests

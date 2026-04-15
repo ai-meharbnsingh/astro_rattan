@@ -1,5 +1,6 @@
 import { Loader2 } from 'lucide-react';
 import { translateLabel, translateName, translateBackend } from '@/lib/backend-translations';
+import { Heading } from '@/components/ui/heading';
 
 interface DoshaTabProps {
   doshaData: any;
@@ -13,45 +14,45 @@ export default function DoshaTab({ doshaData, doshaDisplay, loadingDosha, langua
   void doshaData;
   if (loadingDosha) {
     return (
-      <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-cosmic-text">{t('kundli.analyzingDoshas')}</span></div>
+      <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-primary" /><span className="ml-2 text-foreground">{t('kundli.analyzingDoshas')}</span></div>
     );
   }
 
   if (!doshaDisplay) {
-    return <p className="text-center text-cosmic-text py-8">{t('kundli.clickDoshaTab')}</p>;
+    return <p className="text-center text-foreground py-8">{t('kundli.clickDoshaTab')}</p>;
   }
 
   return (
     <div className="grid gap-4">
       {doshaDisplay.mangal.has_dosha && (
-        <div className="bg-sacred-cream rounded-xl p-4 border border-red-300">
+        <div className="bg-muted rounded-xl p-4 border border-red-300">
           <div className="flex items-center justify-between mb-2">
-            <h4 className="text-base font-semibold text-gray-800">{translateName('Mangal Dosha', language)}</h4>
+            <Heading as={4} variant={4}>{translateName('Mangal Dosha', language)}</Heading>
             <span className="text-sm px-2.5 py-0.5 rounded-full font-medium bg-red-100 text-red-800">
               {t('common.present')} ({translateLabel(doshaDisplay.mangal.severity, language)})
             </span>
           </div>
-          <p className="text-sm text-gray-600">{translateBackend(doshaDisplay.mangal.description, language)}</p>
+          <p className="text-sm text-muted-foreground">{translateBackend(doshaDisplay.mangal.description, language)}</p>
         </div>
       )}
       {doshaDisplay.kaalsarp.has_dosha && (
-        <div className="bg-sacred-cream rounded-xl p-4 border border-red-300">
+        <div className="bg-muted rounded-xl p-4 border border-red-300">
           <div className="flex items-center justify-between mb-2">
-            <h4 className="text-base font-semibold text-gray-800">{translateName('Kaal Sarp Dosha', language)}</h4>
+            <Heading as={4} variant={4}>{translateName('Kaal Sarp Dosha', language)}</Heading>
             <span className="text-sm px-2.5 py-0.5 rounded-full font-medium bg-red-100 text-red-800">{t('common.present')}</span>
           </div>
-          <p className="text-sm text-gray-600">{translateBackend(doshaDisplay.kaalsarp.description, language)}</p>
+          <p className="text-sm text-muted-foreground">{translateBackend(doshaDisplay.kaalsarp.description, language)}</p>
         </div>
       )}
       {doshaDisplay.sadesati.has_sade_sati && (
-        <div className="bg-sacred-cream rounded-xl p-4 border border-orange-200">
+        <div className="bg-muted rounded-xl p-4 border border-orange-200">
           <div className="flex items-center justify-between mb-2">
-            <h4 className="text-base font-semibold text-gray-800">{translateName('Sade Sati', language)}</h4>
+            <Heading as={4} variant={4}>{translateName('Sade Sati', language)}</Heading>
             <span className="text-sm px-2.5 py-0.5 rounded-full font-medium bg-orange-100 text-orange-600">
               {t('common.active')} - {translateLabel(doshaDisplay.sadesati.phase, language)}
             </span>
           </div>
-          <p className="text-sm text-gray-600">{translateBackend(doshaDisplay.sadesati.description, language)}</p>
+          <p className="text-sm text-muted-foreground">{translateBackend(doshaDisplay.sadesati.description, language)}</p>
         </div>
       )}
       {!doshaDisplay.mangal.has_dosha && !doshaDisplay.kaalsarp.has_dosha && !doshaDisplay.sadesati.has_sade_sati && (

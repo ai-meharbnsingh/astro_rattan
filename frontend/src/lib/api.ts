@@ -109,12 +109,6 @@ export async function apiFetch(endpoint: string, options: RequestInit = {}) {
   return res.text();
 }
 
-export const resolveApiUrl = (path?: string | null) => {
-  if (!path) return '';
-  if (/^https?:\/\//i.test(path)) return path;
-  return `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
-};
-
 export const api = {
   get: (url: string) => apiFetch(url),
   post: (url: string, data: unknown) => apiFetch(url, { method: 'POST', body: JSON.stringify(data) }),

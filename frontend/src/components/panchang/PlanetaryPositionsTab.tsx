@@ -1,5 +1,6 @@
 import { Orbit } from 'lucide-react';
 import type { FullPanchangData } from '@/sections/Panchang';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 
 interface Props {
   panchang: FullPanchangData;
@@ -37,52 +38,52 @@ export default function PlanetaryPositionsTab({ panchang, language, t }: Props) 
 
   return (
     <div className="space-y-3">
-      <div className="rounded-lg border border-cosmic-border p-2">
-        <h3 className="font-bold text-cosmic-text-primary mb-1 flex items-center gap-1">
+      <div className="rounded-lg border p-2">
+        <h3 className="font-bold text-foreground mb-1 flex items-center gap-1">
           <Orbit className="h-4 w-4 text-sacred-gold" />
           {t('auto.navgrahaPositionsPla')}
         </h3>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[680px] text-sm">
-            <thead>
-              <tr className="bg-sacred-gold/15">
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
+          <Table className="w-full min-w-[680px] text-sm">
+            <TableHeader>
+              <TableRow className="bg-sacred-gold/15">
+                <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
                   {t('auto.planet')}
-                </th>
-                <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
+                </TableHead>
+                <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
                   {t('auto.sign')}
-                </th>
-                <th className="text-right px-2 py-1 text-sacred-gold-dark font-semibold">
+                </TableHead>
+                <TableHead className="text-right px-2 py-1 text-sacred-gold-dark font-semibold">
                   {t('auto.degree')}
-                </th>
-                <th className="text-right px-2 py-1 text-sacred-gold-dark font-semibold">
+                </TableHead>
+                <TableHead className="text-right px-2 py-1 text-sacred-gold-dark font-semibold">
                   {t('auto.longitude')}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {planets.map((planet) => (
-                <tr
+                <TableRow
                   key={planet.name}
-                  className="border-b border-cosmic-border/50 last:border-0"
+                  className="border-b border/50 last:border-0"
                 >
-                  <td className="px-2 py-1 font-medium text-cosmic-text-primary">
+                  <TableCell className="px-2 py-1 font-medium text-foreground">
                     <span className={`inline-block w-2 h-2 rounded-full mr-1 ${PLANET_DOT_BG[planet.name] || 'bg-gray-400'}`} />
                     {language === 'hi' ? PLANET_HINDI[planet.name] || planet.name : planet.name}
-                  </td>
-                  <td className="px-2 py-1 text-cosmic-text-secondary">
+                  </TableCell>
+                  <TableCell className="px-2 py-1 text-muted-foreground">
                     {language === 'hi' && planet.rashi_hindi ? planet.rashi_hindi : planet.rashi}
-                  </td>
-                  <td className="px-2 py-1 text-right text-cosmic-text-secondary">
+                  </TableCell>
+                  <TableCell className="px-2 py-1 text-right text-muted-foreground">
                     {planet.degree}°
-                  </td>
-                  <td className="px-2 py-1 text-right text-cosmic-text-secondary">
+                  </TableCell>
+                  <TableCell className="px-2 py-1 text-right text-muted-foreground">
                     {planet.longitude}°
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       </div>
     </div>

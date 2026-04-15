@@ -74,7 +74,7 @@ export default function LalKitabMarriageTab({ kundliId }: Props) {
       {/* Header */}
       <div>
         <div className="flex items-start justify-between">
-          <h2 className="text-xl font-sans font-semibold text-sacred-gold flex items-center gap-2 mb-1">
+          <h2 className="text-xl font-semibold text-sacred-gold flex items-center gap-2 mb-1">
             <Heart className="w-5 h-5" />
             {t('auto.marriagePredictions')}
           </h2>
@@ -114,7 +114,7 @@ export default function LalKitabMarriageTab({ kundliId }: Props) {
                   : <CheckCircle2 className="w-8 h-8 text-green-500" />}
               </div>
               <div>
-                <h3 className={`text-lg font-sans font-bold ${data.is_manglik ? 'text-red-700' : 'text-green-700'}`}>
+                <h3 className={`text-lg font-bold ${data.is_manglik ? 'text-red-700' : 'text-green-700'}`}>
                   {data.is_manglik
                     ? (t('auto.manglikDoshaPresent'))
                     : (t('auto.noManglikDosha'))}
@@ -137,18 +137,18 @@ export default function LalKitabMarriageTab({ kundliId }: Props) {
                 </div>
               </div>
             </div>
-            <p className="text-sm text-cosmic-text/80 leading-relaxed">
+            <p className="text-sm text-foreground/80 leading-relaxed">
               {isHi ? data.compatibility_note.hi : data.compatibility_note.en}
             </p>
           </div>
 
           {/* Spouse description */}
           <div className="card-sacred rounded-xl border border-sacred-gold/20 p-5">
-            <h3 className="font-sans font-semibold text-sacred-gold mb-3 flex items-center gap-2">
+            <h3 className="font-semibold text-sacred-gold mb-3 flex items-center gap-2">
               <Heart className="w-4 h-4" />
               {isHi ? 'जीवनसाथी का स्वभाव (शुक्र भाव {0})'.replace('{0}', String(data.venus_house)) : `Spouse Nature (Venus in House ${data.venus_house})`}
             </h3>
-            <p className="text-sm text-cosmic-text leading-relaxed">
+            <p className="text-sm text-foreground leading-relaxed">
               {isHi ? data.spouse_description.hi : data.spouse_description.en}
             </p>
           </div>
@@ -156,7 +156,7 @@ export default function LalKitabMarriageTab({ kundliId }: Props) {
           {/* 7th house planets */}
           {data.seventh_house_planets.length > 0 && (
             <div className="card-sacred rounded-xl border border-sacred-gold/20 p-5">
-              <h3 className="font-sans font-semibold text-sacred-gold mb-3">
+              <h3 className="font-semibold text-sacred-gold mb-3">
                 {t('auto.planetsIn7thHouse')}
               </h3>
               <div className="flex flex-wrap gap-2">
@@ -172,13 +172,13 @@ export default function LalKitabMarriageTab({ kundliId }: Props) {
           {/* Manglik remedies */}
           {data.is_manglik && data.manglik_remedies.length > 0 && (
             <div className="card-sacred rounded-xl border border-orange-300/30 p-5 bg-orange-500/5">
-              <h3 className="font-sans font-semibold text-orange-700 mb-3 flex items-center gap-2">
+              <h3 className="font-semibold text-orange-700 mb-3 flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4" />
                 {t('auto.manglikDoshaRemedies')}
               </h3>
               <ul className="space-y-2">
                 {data.manglik_remedies.map((remedy, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-cosmic-text/80">
+                  <li key={i} className="flex items-start gap-2 text-sm text-foreground/80">
                     <span className="w-5 h-5 rounded-full bg-orange-400/15 text-orange-700 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
                       {i + 1}
                     </span>

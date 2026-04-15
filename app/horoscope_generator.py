@@ -1,11 +1,13 @@
 """H-09: Horoscope Content Generation Pipeline — seeds daily & weekly horoscopes."""
 import json
+import logging
 import random
-import traceback
 import psycopg2
 import psycopg2.extras
 from datetime import date, timedelta
 from typing import Dict, List, Optional
+
+logger = logging.getLogger(__name__)
 
 from app.database import DATABASE_URL
 
@@ -222,7 +224,7 @@ def generate_daily_horoscopes(db_path: str = None):
 
     conn.commit()
     conn.close()
-    print(f"[horoscope] Generated daily horoscopes for {today}")
+    logger.info("[horoscope] Generated daily horoscopes for %s", today)
 
 
 def seed_weekly_horoscopes(db_path: str = None):
@@ -275,7 +277,7 @@ def seed_weekly_horoscopes(db_path: str = None):
 
     conn.commit()
     conn.close()
-    print(f"[horoscope] Seeded weekly horoscopes for week of {week_date}")
+    logger.info("[horoscope] Seeded weekly horoscopes for week of %s", week_date)
 
 
 # ---------------------------------------------------------------------------
@@ -361,28 +363,130 @@ def _parse_ai_sections(response: str) -> Optional[Dict[str, str]]:
     return None
 
 
-def _template_fallback_sections(sign: str) -> Dict[str, str]:
-    """Generate template-based horoscope sections as a fallback."""
+def _template_fallback_sections(sign: str, period: str = "daily") -> Dict[str, str]:
+    """Generate period-aware template horoscope sections as a fallback."""
     ruler = _RULERS[sign]
     element = _ELEMENTS[sign]
 
-    intro_templates = [
-        f"{ruler}'s influence brings transformative energy to {sign.title()} today.",
-        f"As a {element} sign ruled by {ruler}, you feel a surge of clarity and purpose.",
-        f"The cosmic alignment favors {sign.title()} — {ruler} empowers your natural strengths.",
-    ]
+    period_context = {
+        "daily": {
+            "general": [
+                f"{ruler}'s influence brings focused momentum to {sign.title()} today.",
+                f"As a {element} sign ruled by {ruler}, your decisions carry extra clarity today.",
+                f"Today's transits support practical action for {sign.title()}.",
+            ],
+            "love": [
+                "In love, stay clear and warm in communication; small gestures bring better harmony.",
+                "Relationship matters improve when you listen first and respond calmly.",
+                "Single natives may notice a meaningful connection through routine interactions.",
+            ],
+            "career": [
+                "At work, prioritize one key task and complete it before taking on new demands.",
+                "Professional visibility is stronger today; disciplined effort gets noticed quickly.",
+                "Keep meetings concise and outcome-focused for better progress.",
+            ],
+            "finance": [
+                "Money flow stays manageable if you avoid impulse spending and review essentials.",
+                "Financial decisions benefit from caution; postpone risky commitments for now.",
+                "A practical budget adjustment today creates steadier balance.",
+            ],
+            "health": [
+                "Energy is stable when you maintain hydration, lighter meals, and proper sleep.",
+                "Nervous tension reduces with a short walk, breathwork, or quiet reflection.",
+                "Avoid overexertion; consistency works better than intensity today.",
+            ],
+        },
+        "weekly": {
+            "general": [
+                f"This week, {ruler}'s movement supports structured progress for {sign.title()}.",
+                f"The week favors steady planning over rushed decisions for {sign.title()} natives.",
+                f"Weekly trends show stronger outcomes when {sign.title()} follows clear priorities.",
+            ],
+            "love": [
+                "Love and family matters improve in the second half of the week through patient dialogue.",
+                "Relationship energy is mixed early week, then smoother by mid-week.",
+                "Shared plans and practical support strengthen bonds this week.",
+            ],
+            "career": [
+                "Career momentum builds after mid-week; keep early-week efforts disciplined and organized.",
+                "Professional progress is best through collaboration and consistent follow-through.",
+                "Handle pending work first; fresh opportunities open toward week end.",
+            ],
+            "finance": [
+                "Financially, this week supports correction and control rather than high-risk expansion.",
+                "Keep spending planned; avoid emotional purchases around mid-week.",
+                "Review dues and recurring expenses for better stability by weekend.",
+            ],
+            "health": [
+                "Health remains balanced if routine is protected, especially sleep and digestion.",
+                "Weekly stress peaks around workload; short recovery breaks prevent burnout.",
+                "Moderate exercise and lighter evening food improve overall stamina.",
+            ],
+        },
+        "monthly": {
+            "general": [
+                f"This month, {ruler} sets a practical growth cycle for {sign.title()} with clearer direction by mid-month.",
+                f"Monthly transits favor patient strategy; early adjustments lead to stronger results later.",
+                f"{sign.title()} enters a month of consolidation first, then expansion in the second half.",
+            ],
+            "love": [
+                "In relationships, the first half needs patience, while the second half supports emotional clarity and reconnection.",
+                "Love improves after mid-month when communication becomes more direct and supportive.",
+                "Singles may find steady prospects through trusted circles rather than sudden encounters.",
+            ],
+            "career": [
+                "Career shows gradual rise: early month is for planning and cleanup, late month brings visible traction.",
+                "Use the first two weeks to organize priorities; recognition is stronger in the final phase.",
+                "Professional decisions taken after mid-month are likely to be more stable.",
+            ],
+            "finance": [
+                "Monthly finance improves through budgeting discipline; avoid speculative moves in the opening phase.",
+                "Cash flow stabilizes when you reduce optional spending early and optimize commitments later.",
+                "Second-half opportunities can support gains if you stay conservative with risk.",
+            ],
+            "health": [
+                "Health favors routine correction this month; digestion, sleep rhythm, and stress management need consistency.",
+                "Energy may fluctuate early month, then improve steadily with disciplined habits.",
+                "A sustainable routine gives better monthly outcomes than short, intense efforts.",
+            ],
+        },
+        "yearly": {
+            "general": [
+                f"This year, {ruler} guides {sign.title()} through a disciplined long-cycle of rebuilding, then expansion.",
+                f"The annual pattern emphasizes foundations first and stronger outward progress in later phases.",
+                f"{sign.title()} sees a year of measured growth where patience converts into durable gains.",
+            ],
+            "love": [
+                "Relationship themes mature this year: communication and shared responsibility become the main growth keys.",
+                "Love life improves in stages, with deeper stability after unresolved patterns are addressed.",
+                "Singles are more likely to attract meaningful long-term compatibility than short-term excitement.",
+            ],
+            "career": [
+                "Career advancement is steady through consistent performance; major leaps come after groundwork is complete.",
+                "This year rewards process, credibility, and long-horizon planning over quick wins.",
+                "Professional authority strengthens when you focus on execution quality and reliability.",
+            ],
+            "finance": [
+                "Annual finance favors accumulation and protection; disciplined allocation outperforms aggressive speculation.",
+                "Build reserves, reduce leakages, and prioritize long-term financial structure this year.",
+                "Larger gains are possible when decisions are timed and risk-managed carefully.",
+            ],
+            "health": [
+                "Yearly health outlook improves with a stable routine; stress, recovery, and metabolic balance need continuous care.",
+                "Energy trends are favorable when sleep and movement stay non-negotiable across the year.",
+                "Preventive care and consistency matter more than reactive fixes this cycle.",
+            ],
+        },
+    }
+
+    context = period_context.get(period, period_context["daily"])
 
     return {
-        "general": random.choice(intro_templates) + " " + random.choice(_SPIRITUAL),
-        "love": random.choice(_LOVE),
-        "career": random.choice(_CAREER),
-        "finance": random.choice([
-            "Financial matters look favorable; consider long-term investments.",
-            "Avoid impulsive spending — plan carefully and save for the future.",
-            "Unexpected income or a financial opportunity may present itself.",
-            "Review your budget and focus on financial stability this period.",
-        ]),
-        "health": random.choice(_HEALTH),
+        "general": random.choice(context["general"]) + " " + random.choice(_SPIRITUAL),
+        "love": random.choice(context["love"]),
+        "career": random.choice(context["career"]),
+        "finance": random.choice(context["finance"]),
+        "health": random.choice(context["health"]),
     }
 
 
@@ -421,7 +525,7 @@ def generate_ai_horoscope(
     source = "template"
 
     if sections is None:
-        sections = _template_fallback_sections(sign)
+        sections = _template_fallback_sections(sign, period)
 
     return {
         "sign": sign,

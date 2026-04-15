@@ -1,30 +1,30 @@
 """Database initialization and connection management for PostgreSQL."""
-import traceback
+import logging
 import psycopg2
 import psycopg2.extras
 import psycopg2.pool
 import os
+import threading
+
+logger = logging.getLogger(__name__)
 
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://localhost/astro_rattan")
 
-# Ensure sslmode=require for cloud databases (Neon, etc.)
-if DATABASE_URL and ("neon.tech" in DATABASE_URL or "amazonaws.com" in DATABASE_URL):
-    if "sslmode" not in DATABASE_URL:
-        sep = "&" if "?" in DATABASE_URL else "?"
-        DATABASE_URL += f"{sep}sslmode=require"
-
 # Thread-safe connection pool
 _pool: psycopg2.pool.ThreadedConnectionPool = None
+_pool_lock = threading.Lock()
 
 
 def _get_pool() -> psycopg2.pool.ThreadedConnectionPool:
     global _pool
     if _pool is None:
-        _pool = psycopg2.pool.ThreadedConnectionPool(
-            minconn=2,
-            maxconn=30,
-            dsn=DATABASE_URL,
-        )
+        with _pool_lock:
+            if _pool is None:
+                _pool = psycopg2.pool.ThreadedConnectionPool(
+                    minconn=2,
+                    maxconn=30,
+                    dsn=DATABASE_URL,
+                )
     return _pool
 
 
@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS users (
     email TEXT UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
     name TEXT NOT NULL,
-    role TEXT NOT NULL DEFAULT 'user' CHECK(role IN ('user','astrologer','admin')),
+    role TEXT NOT NULL DEFAULT 'user' CHECK(role IN ('user','astrologer','pending_astrologer','admin')),
     phone TEXT,
     avatar_url TEXT,
     date_of_birth TEXT,
@@ -236,10 +236,69 @@ CREATE TABLE IF NOT EXISTS consultations (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- Orders
+CREATE TABLE IF NOT EXISTS orders (
+    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    status TEXT DEFAULT 'pending',
+    total FLOAT DEFAULT 0,
+    payment_status TEXT DEFAULT 'pending',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_orders_user ON orders(user_id);
+
+-- Products (gemstones, rudraksha, bracelets, yantras, vastu items)
+CREATE TABLE IF NOT EXISTS products (
+    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+    name TEXT NOT NULL,
+    description TEXT,
+    category TEXT CHECK(category IN ('gemstone','rudraksha','bracelet','yantra','vastu')),
+    price FLOAT DEFAULT 0,
+    planet TEXT,
+    properties TEXT,
+    stock INTEGER DEFAULT 50,
+    is_active INTEGER DEFAULT 1,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Short-lived download tokens (replaces JWT-in-URL)
+CREATE TABLE IF NOT EXISTS download_tokens (
+    token TEXT PRIMARY KEY,
+    kundli_id TEXT NOT NULL REFERENCES kundlis(id) ON DELETE CASCADE,
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    expires_at TIMESTAMPTZ NOT NULL
+);
+
+-- Guest Kundli Previews (no login required)
+CREATE TABLE IF NOT EXISTS guest_kundlis (
+    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    phone TEXT NOT NULL,
+    birth_date TEXT NOT NULL,
+    birth_time TEXT NOT NULL,
+    birth_place TEXT NOT NULL,
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION,
+    timezone_offset DOUBLE PRECISION DEFAULT 5.5,
+    gender TEXT DEFAULT 'male',
+    marketing_consent BOOLEAN DEFAULT false,
+    visit_count INTEGER DEFAULT 1,
+    chart_data TEXT,
+    preview_data TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    last_visited_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_guest_email ON guest_kundlis(email);
+CREATE INDEX IF NOT EXISTS idx_guest_phone ON guest_kundlis(phone);
+
 -- Reports
 CREATE TABLE IF NOT EXISTS reports (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
     user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    kundli_id TEXT REFERENCES kundlis(id) ON DELETE CASCADE,
     report_type TEXT DEFAULT 'kundli',
     status TEXT DEFAULT 'pending',
     price FLOAT DEFAULT 0,
@@ -251,6 +310,7 @@ CREATE TABLE IF NOT EXISTS reports (
 CREATE TABLE IF NOT EXISTS ai_chat_logs (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
     user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    kundli_id TEXT REFERENCES kundlis(id) ON DELETE CASCADE,
     message TEXT,
     response TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -306,24 +366,25 @@ def init_db():
                 cur.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto")
                 conn.commit()
             except Exception as e:
-                print(f"[init_db] Warning (pgcrypto): {e}")
+                logger.warning("[init_db] pgcrypto: %s", e)
                 conn.rollback()
             statements = [s.strip() for s in SCHEMA.split(';') if s.strip()]
             for stmt in statements:
                 try:
                     cur.execute(stmt)
                 except Exception as e:
-                    print(f"[init_db] Warning: {e}")
+                    logger.warning("[init_db] %s", e)
                     conn.rollback()
                     continue
             conn.commit()
-        print("[init_db] PostgreSQL schema initialized successfully.")
+        logger.info("[init_db] PostgreSQL schema initialized successfully.")
     finally:
         conn.close()
 
 
 def _get_valid_conn(pool):
-    """Get a valid connection from pool, replacing dead ones."""
+    """Get a valid connection from pool, replacing dead ones.
+    Returns (connection, pool_used) so callers can return the connection to the correct pool."""
     raw_conn = pool.getconn()
     # Test with a lightweight ping
     try:
@@ -332,27 +393,29 @@ def _get_valid_conn(pool):
         cur.execute("SELECT 1")
         cur.close()
         raw_conn.autocommit = False
-        return raw_conn
+        return raw_conn, pool
     except Exception:
         # Connection is dead — discard it and recreate the pool
         global _pool
-        try:
-            pool.putconn(raw_conn, close=True)
-        except Exception:
-            pass
-        try:
-            _pool.closeall()
-        except Exception:
-            pass
-        _pool = None
-        new_pool = _get_pool()
-        return new_pool.getconn()
+        with _pool_lock:
+            try:
+                pool.putconn(raw_conn, close=True)
+            except Exception:
+                pass
+            try:
+                if _pool is not None:
+                    _pool.closeall()
+            except Exception:
+                pass
+            _pool = None
+            new_pool = _get_pool()
+        return new_pool.getconn(), new_pool
 
 
 def get_db():
     """Yield a PgConnection wrapping a psycopg2 connection from the pool. Use as FastAPI dependency."""
     pool = _get_pool()
-    raw_conn = _get_valid_conn(pool)
+    raw_conn, used_pool = _get_valid_conn(pool)
     pg_conn = PgConnection(raw_conn)
     try:
         yield pg_conn
@@ -364,7 +427,7 @@ def get_db():
         raise
     finally:
         try:
-            pool.putconn(raw_conn)
+            used_pool.putconn(raw_conn)
         except Exception:
             try:
                 raw_conn.close()
@@ -372,27 +435,3 @@ def get_db():
                 pass
 
 
-def migrate_users_table():
-    """Add new columns to users table if they don't exist (safe for re-runs).
-    No-op for PostgreSQL since columns are included in the main schema."""
-    pass
-
-
-def migrate_gamification_tables():
-    """Gamification tables are included in main schema. No-op."""
-    pass
-
-
-def migrate_referral_tables():
-    """Referral tables are included in main schema. No-op."""
-    pass
-
-
-def migrate_notification_tables():
-    """Notification tables are included in main schema. No-op."""
-    pass
-
-
-def migrate_forum_tables():
-    """Forum tables are included in main schema. No-op."""
-    pass

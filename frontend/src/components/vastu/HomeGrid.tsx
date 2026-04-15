@@ -109,7 +109,7 @@ export default function HomeGrid({ assignments, onAssign, onRemove, layoutResult
             {/* Direction Label */}
             <div className="text-center mb-2">
               <span className="text-sm font-bold text-sacred-gold">{dir}</span>
-              <span className="text-sm text-cosmic-text/50 ml-1">
+              <span className="text-sm text-foreground/50 ml-1">
                 {isHi ? ZONE_LABELS[dir].hi : ZONE_LABELS[dir].en}
               </span>
             </div>
@@ -130,13 +130,13 @@ export default function HomeGrid({ assignments, onAssign, onRemove, layoutResult
                 return (
                   <div key={`${roomKey}-${i}`} className={`flex items-center gap-1.5 bg-white/5 rounded-lg px-2 py-1.5 border ${style.border}/30`}>
                     <span className="text-sm">{opt?.icon || '🏠'}</span>
-                    <span className="text-sm font-medium text-cosmic-text flex-1 truncate">
+                    <span className="text-sm font-medium text-foreground flex-1 truncate">
                       {isHi ? (opt?.hi || roomKey) : (opt?.en || roomKey)}
                     </span>
                     <div className={`w-2 h-2 rounded-full ${style.dot}`} title={isHi ? style.labelHi : style.label} />
                     <button
                       onClick={() => onRemove(dir, roomKey)}
-                      className="text-cosmic-text/30 hover:text-red-400 transition-colors"
+                      className="text-foreground/30 hover:text-red-400 transition-colors"
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -150,7 +150,7 @@ export default function HomeGrid({ assignments, onAssign, onRemove, layoutResult
               <div className="mt-2 relative">
                 <button
                   onClick={() => setOpenDropdown(openDropdown === dir ? null : dir)}
-                  className="w-full flex items-center justify-center gap-1 py-1.5 rounded-lg border border-dashed border-white/15 text-sm text-cosmic-text/50 hover:border-sacred-gold/40 hover:text-sacred-gold transition-all"
+                  className="w-full flex items-center justify-center gap-1 py-1.5 rounded-lg border border-dashed border-white/15 text-sm text-foreground/50 hover:border-sacred-gold/40 hover:text-sacred-gold transition-all"
                 >
                   <Plus className="w-3 h-3" />
                   {t('auto.addRoom')}
@@ -178,7 +178,7 @@ export default function HomeGrid({ assignments, onAssign, onRemove, layoutResult
                           }`}
                         >
                           <span>{opt.icon}</span>
-                          <span className="flex-1 text-cosmic-text font-medium">
+                          <span className="flex-1 text-foreground font-medium">
                             {isHi ? opt.hi : opt.en}
                           </span>
                           <div className={`w-2 h-2 rounded-full ${style.dot}`} />
@@ -186,7 +186,7 @@ export default function HomeGrid({ assignments, onAssign, onRemove, layoutResult
                             comp === 'ideal' ? 'text-emerald-400' :
                             comp === 'acceptable' ? 'text-blue-400' :
                             comp === 'avoid' || comp === 'blocked' ? 'text-red-400' :
-                            'text-cosmic-text/40'
+                            'text-foreground/40'
                           }`}>
                             {isHi ? style.labelHi : style.label}
                           </span>

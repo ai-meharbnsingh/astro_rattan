@@ -1,5 +1,7 @@
 import { Loader2 } from 'lucide-react';
 import { translatePlanet, translateSign } from '@/lib/backend-translations';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
+import { Heading } from '@/components/ui/heading';
 
 interface SodashvargaTabProps {
   sodashvargaData: any;
@@ -16,12 +18,12 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
 
   if (loadingSodashvarga) {
     return (
-      <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-cosmic-text">{t('kundli.loadingSodashvarga')}</span></div>
+      <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-primary" /><span className="ml-2 text-foreground">{t('kundli.loadingSodashvarga')}</span></div>
     );
   }
 
   if (!sodashvargaData) {
-    return <p className="text-center text-cosmic-text py-8">{t('common.noData')}</p>;
+    return <p className="text-center text-foreground py-8">{t('common.noData')}</p>;
   }
 
   const strengthColors: Record<string, string> = {
@@ -61,20 +63,20 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
   return (
     <div className="space-y-6">
       {/* Varga Table */}
-      <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4 overflow-x-auto">
-        <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.sodashvargaTitle')}</h4>
+      <div className="bg-muted rounded-xl border border-border p-4 overflow-x-auto">
+        <Heading as={4} variant={4} className="mb-3">{t('section.sodashvargaTitle')}</Heading>
         {(() => {
           const rows = sodashvargaData.varga_table || (Array.isArray(sodashvargaData.by_sign) ? sodashvargaData.by_sign : []);
           if (rows.length > 0) {
             return (
-              <table className="w-full text-sm min-w-[700px]">
-                <thead><tr className="bg-sacred-gold">
-                  <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.varga')}</th>
+              <Table className="w-full text-sm min-w-[700px]">
+                <TableHeader><TableRow className="bg-muted">
+                  <TableHead className="text-left p-2 text-primary font-medium">{t('table.varga')}</TableHead>
                   {['Su', 'Mo', 'Ma', 'Me', 'Ju', 'Ve', 'Sa', 'Ra', 'Ke'].map(p => (
-                    <th key={p} className="text-center p-1.5 text-sacred-gold-dark font-medium">{p}</th>
+                    <TableHead key={p} className="text-center p-1.5 text-primary font-medium">{p}</TableHead>
                   ))}
-                </tr></thead>
-                <tbody>
+                </TableRow></TableHeader>
+                <TableBody>
                   {rows.map((row: any) => {
                     const planets = row.placements || row.planets;
                     const planetEntries = Array.isArray(planets)
@@ -83,8 +85,8 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
                         ? ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'].map(p => planets[p] || '')
                         : [];
                     return (
-                      <tr key={row.varga || row.division || row.name} className="border-t border-sacred-gold">
-                        <td className="p-2 font-semibold text-sacred-brown whitespace-nowrap">{row.varga || row.name || `D${row.division}`}</td>
+                      <TableRow key={row.varga || row.division || row.name} className="border-t border-border">
+                        <TableCell className="p-2 font-semibold text-foreground whitespace-nowrap">{row.varga || row.name || `D${row.division}`}</TableCell>
                         {planetEntries.map((pl: any, i: number) => {
                           const signRaw = typeof pl === 'string' ? pl : (pl?.sign || '');
                           const sign = signRaw ? signShort(signRaw) : (pl?.sign_abbr || '');
@@ -94,13 +96,13 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
                             moolatrikona: 'bg-blue-100 text-blue-800', friend: 'bg-amber-100 text-amber-800',
                             enemy: 'bg-orange-100 text-orange-800', debilitated: 'bg-red-100 text-red-800',
                           };
-                          return <td key={i} className={`p-1.5 text-center text-sm rounded ${dignityColors[dignity] || ''}`}>{sign}</td>;
+                          return <TableCell key={i} className={`p-1.5 text-center text-sm rounded ${dignityColors[dignity] || ''}`}>{sign}</TableCell>;
                         })}
-                      </tr>
+                      </TableRow>
                     );
                   })}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             );
           }
           // Fallback: by_sign is a dict
@@ -109,16 +111,16 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
                 {Object.entries(sodashvargaData.by_sign).map(([planet, data]: [string, any]) => (
                   <div key={planet} className="bg-white rounded-lg p-3">
-                    <p className="font-semibold text-sacred-brown mb-1">{translatePlanet(planet, language)}</p>
+                    <p className="font-semibold text-foreground mb-1">{translatePlanet(planet, language)}</p>
                     {typeof data === 'object' && Object.entries(data as Record<string, any>).map(([varga, sign]) => (
-                      <p key={varga} className="text-cosmic-text">{varga}: {translateSign(String(sign), language)}</p>
+                      <p key={varga} className="text-foreground">{varga}: {translateSign(String(sign), language)}</p>
                     ))}
                   </div>
                 ))}
               </div>
             );
           }
-          return <p className="text-center text-cosmic-text">{t('common.noData')}</p>;
+          return <p className="text-center text-foreground">{t('common.noData')}</p>;
         })()}
         <div className="flex flex-wrap gap-2 mt-3 text-sm">
           <span className="px-2 py-1 rounded bg-green-100 text-green-800">{t('dignity.exalted')}</span>
@@ -131,8 +133,8 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
 
       {/* Vimshopak Bala */}
       {(sodashvargaData.by_planet || sodashvargaData.vimshopak) && (
-        <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4 overflow-x-auto">
-          <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.vimshopakBala')}</h4>
+        <div className="bg-muted rounded-xl border border-border p-4 overflow-x-auto">
+          <Heading as={4} variant={4} className="mb-3">{t('section.vimshopakBala')}</Heading>
           <div className="space-y-3 min-w-[420px]">
             {(() => {
               const items = Array.isArray(sodashvargaData.vimshopak) ? sodashvargaData.vimshopak
@@ -155,16 +157,16 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
                   return (
                     <div key={v.planet} className="space-y-1">
                       <div className="flex items-center gap-3 text-sm">
-                        <span className="w-12 text-sacred-brown font-medium">{(translatePlanet(v.planet || '', language) || v.planet || '').slice(0, language === 'hi' ? 3 : 4)}</span>
-                        <div className="flex-1 bg-sacred-gold/30 rounded-full h-4 overflow-hidden">
-                          <div className="bg-sacred-gold-dark rounded-full h-4 transition-all" style={{ width: `${resolvedPercent}%` }} />
+                        <span className="w-12 text-foreground font-medium">{(translatePlanet(v.planet || '', language) || v.planet || '').slice(0, language === 'hi' ? 3 : 4)}</span>
+                        <div className="flex-1 bg-muted/30 rounded-full h-4 overflow-hidden">
+                          <div className="bg-primary rounded-full h-4 transition-all" style={{ width: `${resolvedPercent}%` }} />
                         </div>
-                        <span className="w-16 text-right text-cosmic-text text-sm">{score != null ? score.toFixed(1) : '?'} / 20</span>
+                        <span className="w-16 text-right text-foreground text-sm">{score != null ? score.toFixed(1) : '?'} / 20</span>
                         {showPercent && (
-                          <span className="w-12 text-right text-sacred-brown font-semibold text-sm">{displayPercent}%</span>
+                          <span className="w-12 text-right text-foreground font-semibold text-sm">{displayPercent}%</span>
                         )}
                         {v.strength && (
-                          <span className={`px-1.5 py-0.5 rounded text-label font-semibold ${strengthColors[v.strength] || 'text-gray-500 bg-gray-500'}`}>{strLabel(v.strength)}</span>
+                          <span className={`px-1.5 py-0.5 rounded text-label font-semibold ${strengthColors[v.strength] || 'text-muted-foreground bg-gray-500'}`}>{strLabel(v.strength)}</span>
                         )}
                       </div>
                       {v.dignities && typeof v.dignities === 'object' && (
@@ -172,7 +174,7 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
                           {Object.entries(v.dignities as Record<string, number>)
                             .filter(([, count]) => (count as number) > 0)
                             .map(([dignity, count]) => {
-                              const info = dignityLabels[dignity] || { label: dignity.slice(0, 3), hiLabel: dignity.slice(0, 3), color: 'text-gray-500 bg-gray-500' };
+                              const info = dignityLabels[dignity] || { label: dignity.slice(0, 3), hiLabel: dignity.slice(0, 3), color: 'text-muted-foreground bg-gray-500' };
                               return (
                                 <span key={dignity} className={`px-1.5 py-0.5 rounded text-label font-medium ${info.color}`}>
                                   {language === 'hi' ? info.hiLabel : info.label}:{count as number}

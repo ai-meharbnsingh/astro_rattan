@@ -87,7 +87,7 @@ export default function LalKitabYearlyTab({ chartData, birthDate }: Props) {
                 {getPlanetLabel(activePeriod.planet)} —{' '}
                 {t('auto.house')} {chartData.planetPositions[activePeriod.planet]}
               </h3>
-              <p className="text-sm text-cosmic-text/80">
+              <p className="text-sm text-foreground/80">
                 {isHi ? prediction.hi : prediction.en}
               </p>
             </div>
@@ -116,7 +116,7 @@ export default function LalKitabYearlyTab({ chartData, birthDate }: Props) {
                   className={`w-4 h-4 rounded-full shrink-0 z-10 ${
                     isActive
                       ? 'bg-sacred-gold shadow-lg shadow-sacred-gold/30'
-                      : 'bg-cosmic-card border border-sacred-gold/20'
+                      : 'bg-card border border-sacred-gold/20'
                   }`}
                 />
                 {/* Connecting line */}
@@ -149,7 +149,7 @@ export default function LalKitabYearlyTab({ chartData, birthDate }: Props) {
                     className={`text-sm px-2 py-0.5 rounded-full ${
                       isActive
                         ? 'bg-sacred-gold/20 text-sacred-gold'
-                        : 'bg-cosmic-card text-gray-600'
+                        : 'bg-card text-gray-600'
                     }`}
                   >
                     {t('lk.yearly.ageRange')}: {period.ageStart}–{period.ageEnd}

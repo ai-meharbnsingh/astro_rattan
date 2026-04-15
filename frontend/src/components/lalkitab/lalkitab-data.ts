@@ -350,7 +350,7 @@ export interface DoshaResult {
   remedyHi: string;
 }
 
-export function detectDoshas(planetPositions: Record<string, number>): DoshaResult[] {
+function detectDoshas(planetPositions: Record<string, number>): DoshaResult[] {
   const results: DoshaResult[] = [];
 
   // Pitra Dosh: Sun in 9th house with Saturn or Rahu
@@ -420,7 +420,7 @@ export function detectDoshas(planetPositions: Record<string, number>): DoshaResu
 }
 
 // House strength
-export function getHouseStrength(house: number, planetsInHouse: string[]): 'strong' | 'weak' | 'empty' {
+function getHouseStrength(house: number, planetsInHouse: string[]): 'strong' | 'weak' | 'empty' {
   if (planetsInHouse.length === 0) return 'empty';
   const benefics = ['Jupiter', 'Venus', 'Moon', 'Mercury'];
   const malefics = ['Saturn', 'Mars', 'Rahu', 'Ketu'];

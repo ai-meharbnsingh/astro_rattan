@@ -86,7 +86,7 @@ export default function LalKitabPredictionTab({ chartData }: Props) {
       try {
         setFeedback(JSON.parse(stored));
       } catch (e) {
-        console.error('Failed to parse prediction feedback', e);
+        /* ignored — corrupt localStorage entry */
       }
     }
   }, []);
@@ -112,7 +112,7 @@ export default function LalKitabPredictionTab({ chartData }: Props) {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-xl font-sans font-semibold text-sacred-gold flex items-center gap-2 mb-1">
+        <h2 className="text-xl font-semibold text-sacred-gold flex items-center gap-2 mb-1">
           <Star className="w-5 h-5" />
           {t('lk.studio.title')}
         </h2>
@@ -152,7 +152,7 @@ export default function LalKitabPredictionTab({ chartData }: Props) {
                       <Icon className="w-4 h-4 text-sacred-gold" />
                     </div>
                     <div>
-                      <p className="font-sans font-semibold text-cosmic-text text-sm">
+                      <p className="font-semibold text-foreground text-sm">
                         {isHi ? area.hi : area.en}
                       </p>
                       <span
@@ -163,7 +163,7 @@ export default function LalKitabPredictionTab({ chartData }: Props) {
                     </div>
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="text-xl font-bold text-cosmic-text">{score}</p>
+                    <p className="text-xl font-bold text-foreground">{score}</p>
                     <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Score</p>
                   </div>
                 </div>
@@ -179,7 +179,7 @@ export default function LalKitabPredictionTab({ chartData }: Props) {
                 {/* Tone badge */}
                 <div className={`flex items-start gap-2 mb-4 p-3 rounded-lg ${isPositive ? 'bg-green-500/8' : 'bg-orange-400/8'}`}>
                   <StatusIcon className={`w-4 h-4 shrink-0 mt-0.5 ${isPositive ? 'text-green-600' : 'text-orange-500'}`} />
-                  <p className="text-xs font-medium text-cosmic-text/80 leading-relaxed">
+                  <p className="text-xs font-medium text-foreground/80 leading-relaxed">
                     <span className={`font-bold ${isPositive ? 'text-green-600' : 'text-orange-600'} uppercase tracking-tight`}>
                       {isPositive ? t('lk.studio.positive') : t('lk.studio.caution')}:{' '}
                     </span>
@@ -194,7 +194,7 @@ export default function LalKitabPredictionTab({ chartData }: Props) {
                   <p className="text-xs font-bold text-sacred-gold uppercase tracking-widest mb-1.5">
                     {t('lk.studio.actionLabel')}
                   </p>
-                  <p className="text-sm text-cosmic-text/70 leading-snug">
+                  <p className="text-sm text-foreground/70 leading-snug">
                     {isHi ? area.remedyHi : area.remedyEn}
                   </p>
                 </div>

@@ -30,6 +30,8 @@ export function useKundliData() {
     place: prefill.birthPlace || '',
     latitude: 28.6139,
     longitude: 77.2090,
+    timezone_offset: 5.5,
+    timezone_name: 'Asia/Kolkata',
     gender: 'male' as 'male' | 'female',
   });
   const [result, setResult] = useState<any>(null);
@@ -195,7 +197,7 @@ export function useKundliData() {
     try {
       const data = await api.post(`/api/kundli/${result.id}/dosha`, {});
       setDoshaData(data);
-    } catch (e: any) { console.error(e); setTabError(e?.message || "Failed to load data"); }
+    } catch (e: any) { setTabError(e?.message || "Failed to load data"); }
     setLoadingDosha(false);
   };
 
@@ -205,7 +207,7 @@ export function useKundliData() {
     try {
       const data = await api.post(`/api/kundli/${result.id}/iogita`, {});
       setIogitaData(data);
-    } catch (e: any) { console.error(e); setTabError(e?.message || "Failed to load data"); }
+    } catch (e: any) { setTabError(e?.message || "Failed to load data"); }
     setLoadingIogita(false);
   };
 
@@ -215,7 +217,7 @@ export function useKundliData() {
     try {
       const data = await api.post(`/api/kundli/${result.id}/dasha`, {});
       setDashaData(data);
-    } catch (e: any) { console.error(e); setTabError(e?.message || "Failed to load data"); }
+    } catch (e: any) { setTabError(e?.message || "Failed to load data"); }
     setLoadingDasha(false);
   };
 
@@ -225,7 +227,7 @@ export function useKundliData() {
     try {
       const data = await api.get(`/api/kundli/${result.id}/avakhada`);
       setAvakhadaData(data);
-    } catch (e: any) { console.error(e); setTabError(e?.message || "Failed to load data"); }
+    } catch (e: any) { setTabError(e?.message || "Failed to load data"); }
     setLoadingAvakhada(false);
   };
 
@@ -242,10 +244,10 @@ export function useKundliData() {
           setExpandedMahadasha(currentMd.planet);
         }
       } else {
-        console.warn('Extended dasha response missing mahadasha:', data);
+        /* extended dasha response missing mahadasha — ignored */
       }
     } catch (err) {
-      console.error('Failed to fetch extended dasha:', err);
+      /* extended dasha fetch failed — silently ignored */
     }
     setLoadingExtendedDasha(false);
   };
@@ -256,7 +258,7 @@ export function useKundliData() {
     try {
       const data = await api.post(`/api/kundli/${result.id}/yogas-doshas`, {});
       setYogaDoshaData(data);
-    } catch (e: any) { console.error(e); setTabError(e?.message || "Failed to load data"); }
+    } catch (e: any) { setTabError(e?.message || "Failed to load data"); }
     setLoadingYogaDosha(false);
   };
 
@@ -288,7 +290,7 @@ export function useKundliData() {
     try {
       const data = await api.post(`/api/kundli/${result.id}/divisional`, { chart_type: ct });
       setDivisionalData(data);
-    } catch (e: any) { console.error(e); setTabError(e?.message || "Failed to load data"); }
+    } catch (e: any) { setTabError(e?.message || "Failed to load data"); }
     setLoadingDivisional(false);
   };
 
@@ -298,7 +300,7 @@ export function useKundliData() {
     try {
       const data = await api.post(`/api/kundli/${result.id}/ashtakvarga`, {});
       setAshtakvargaData(data);
-    } catch (e: any) { console.error(e); setTabError(e?.message || "Failed to load data"); }
+    } catch (e: any) { setTabError(e?.message || "Failed to load data"); }
     setLoadingAshtakvarga(false);
   };
 
@@ -308,7 +310,7 @@ export function useKundliData() {
     try {
       const data = await api.post(`/api/kundli/${result.id}/shadbala`, {});
       setShadbalaData(data);
-    } catch (e: any) { console.error(e); setTabError(e?.message || "Failed to load data"); }
+    } catch (e: any) { setTabError(e?.message || "Failed to load data"); }
     setLoadingShadbala(false);
   };
 
@@ -323,7 +325,7 @@ export function useKundliData() {
       if (customTime) body.transit_time = customTime;
       const data = await api.post(`/api/kundli/${result.id}/transits`, body);
       setTransitData(data);
-    } catch (e: any) { console.error(e); setTabError(e?.message || "Failed to load data"); }
+    } catch (e: any) { setTabError(e?.message || "Failed to load data"); }
     setLoadingTransit(false);
   };
 
@@ -333,7 +335,7 @@ export function useKundliData() {
     try {
       const data = await api.post(`/api/kundli/${result.id}/divisional`, { chart_type: 'D10' });
       setD10Data(data);
-    } catch (e: any) { console.error(e); setTabError(e?.message || "Failed to load data"); }
+    } catch (e: any) { setTabError(e?.message || "Failed to load data"); }
     setLoadingD10(false);
   };
 
@@ -353,7 +355,7 @@ export function useKundliData() {
     try {
       const data = await api.post(`/api/kundli/${result.id}/varshphal`, { year: targetYear });
       setVarshphalData(data);
-    } catch (e: any) { console.error(e); setTabError(e?.message || "Failed to load data"); }
+    } catch (e: any) { setTabError(e?.message || "Failed to load data"); }
     setLoadingVarshphal(false);
   };
 
@@ -363,7 +365,7 @@ export function useKundliData() {
     try {
       const data = await api.get(`/api/kundli/${result.id}/yogini-dasha`);
       setYoginiData(data);
-    } catch (e: any) { console.error(e); setTabError(e?.message || "Failed to load data"); }
+    } catch (e: any) { setTabError(e?.message || "Failed to load data"); }
     setLoadingYogini(false);
   };
 
@@ -373,7 +375,7 @@ export function useKundliData() {
     try {
       const data = await api.post(`/api/kundli/${result.id}/kp-analysis`, {});
       setKpData(data);
-    } catch (e: any) { console.error(e); setTabError(e?.message || "Failed to load data"); }
+    } catch (e: any) { setTabError(e?.message || "Failed to load data"); }
     setLoadingKp(false);
   };
 
@@ -383,7 +385,7 @@ export function useKundliData() {
     try {
       const data = await api.get(`/api/kundli/${result.id}/upagrahas`);
       setUpagrahasData(data);
-    } catch (e: any) { console.error(e); setTabError(e?.message || "Failed to load data"); }
+    } catch (e: any) { setTabError(e?.message || "Failed to load data"); }
     setLoadingUpagrahas(false);
   };
 
@@ -393,7 +395,7 @@ export function useKundliData() {
     try {
       const data = await api.get(`/api/kundli/${result.id}/sodashvarga`);
       setSodashvargaData(data);
-    } catch (e: any) { console.error(e); setTabError(e?.message || "Failed to load data"); }
+    } catch (e: any) { setTabError(e?.message || "Failed to load data"); }
     setLoadingSodashvarga(false);
   };
 
@@ -403,7 +405,7 @@ export function useKundliData() {
     try {
       const data = await api.get(`/api/kundli/${result.id}/aspects`);
       setAspectsData(data);
-    } catch (e: any) { console.error(e); setTabError(e?.message || "Failed to load data"); }
+    } catch (e: any) { setTabError(e?.message || "Failed to load data"); }
     setLoadingAspects(false);
   };
 
@@ -413,7 +415,7 @@ export function useKundliData() {
     try {
       const data = await api.get(`/api/kundli/${result.id}/western-aspects`);
       setWesternAspectsData(data);
-    } catch (e: any) { console.error(e); setTabError(e?.message || "Failed to load data"); }
+    } catch (e: any) { setTabError(e?.message || "Failed to load data"); }
     setLoadingWesternAspects(false);
   };
 
@@ -424,7 +426,7 @@ export function useKundliData() {
       const data = await api.get(`/api/kundli/${result.id}/jaimini`);
       setJaiminiData(data);
     } catch (e: any) {
-      console.error('Jaimini fetch error:', e);
+      /* jaimini fetch failed — silently ignored */
     }
     setLoadingJaimini(false);
   };
@@ -435,7 +437,7 @@ export function useKundliData() {
     try {
       const data = await api.get(`/api/kundli/${result.id}/lifelong-sadesati`);
       setSadesatiData(data);
-    } catch (e: any) { console.error(e); setTabError(e?.message || "Failed to load data"); }
+    } catch (e: any) { setTabError(e?.message || "Failed to load data"); }
     setLoadingSadesati(false);
   };
 
@@ -537,6 +539,7 @@ export function useKundliData() {
       gender: 'male',
     });
     try {
+      // For Prashna, use the selected place's timezone (from geocode)
       const data = await api.post('/api/kundli/generate', {
         person_name: `Prashna ${dateStr}`,
         birth_date: dateStr,
@@ -544,7 +547,7 @@ export function useKundliData() {
         birth_place: placeName,
         latitude: lat,
         longitude: lon,
-        timezone_offset: -(new Date().getTimezoneOffset() / 60),
+        timezone_offset: formData.timezone_offset,
       });
       setResult(data);
       resetTabData();
@@ -571,7 +574,7 @@ export function useKundliData() {
         birth_place: formData.place,
         latitude: formData.latitude,
         longitude: formData.longitude,
-        timezone_offset: -(new Date().getTimezoneOffset() / 60),
+        timezone_offset: formData.timezone_offset,
       };
       if (formData.phone) payload.phone = formData.phone;
       if (formData.clientId) payload.client_id = formData.clientId;

@@ -639,14 +639,17 @@ def calculate_abhijit_muhurat(sunrise: str, sunset: str) -> Dict[str, str]:
     }
 
 
-def calculate_brahma_muhurat(sunrise: str) -> Dict[str, str]:
+def calculate_brahma_muhurat(sunrise: str, ratrimana_mins: float = 672.0) -> Dict[str, str]:
     """
-    Brahma Muhurat: ~1 hour 36 minutes (2 muhurats) before sunrise.
-    One muhurat = 48 minutes. Brahma Muhurat = 96 to 48 min before sunrise.
+    Brahma Muhurat: 2 night-muhurats before sunrise.
+    One night muhurta = ratrimana / 15. Brahma Muhurat spans the
+    penultimate night muhurta (2nd-to-last before sunrise).
+    Default ratrimana 672 min (= 11h 12m) gives ~44.8 min muhurta.
     """
     sr_min = _time_to_minutes(sunrise)
-    start = sr_min - 96
-    end = sr_min - 48
+    muhurta_night = ratrimana_mins / 15.0
+    start = sr_min - 2 * muhurta_night
+    end = sr_min - muhurta_night
     if start < 0:
         start += 1440
     if end < 0:
@@ -693,11 +696,9 @@ def _compute_hindu_calendar(date_str: str, tithi_index: int, sun_sid: float) -> 
 
     paksha = "Shukla" if tithi_index < 15 else "Krishna"
 
-    # Purnimant: Krishna paksha belongs to the NEXT month
-    if paksha == "Krishna":
-        maas_index = (base_maas + 1) % 12
-    else:
-        maas_index = base_maas
+    # Purnimant (North Indian): month runs Krishna-then-Shukla.
+    # Krishna paksha is the FIRST half of the month, so no +1 needed.
+    maas_index = base_maas
     maas_name = _HINDU_MONTHS[maas_index]
 
     # Vikram Samvat (starts ~March/April, Chaitra Shukla Pratipada)
@@ -907,7 +908,10 @@ def calculate_panchang(
 
     # 11. Auspicious timings
     abhijit = calculate_abhijit_muhurat(sunrise_str, sunset_str)
-    brahma = calculate_brahma_muhurat(sunrise_str)
+    _sr_m = _time_to_minutes(sunrise_str)
+    _ss_m = _time_to_minutes(sunset_str)
+    ratrimana_mins = 1440 - (_ss_m - _sr_m)
+    brahma = calculate_brahma_muhurat(sunrise_str, ratrimana_mins=ratrimana_mins)
 
     # 12. Planetary positions
     planetary_positions = calculate_planetary_positions(jd_sunrise)

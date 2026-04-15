@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import math
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Tuple
 
 from app.divisional_charts import _calculate_d9
 
@@ -31,6 +31,9 @@ try:
     swe.set_sid_mode(swe.SIDM_LAHIRI)  # Lahiri ayanamsa (default for Vedic)
 except ImportError:
     _HAS_SWE = False
+
+import threading
+_SWE_LOCK = threading.Lock()  # Protects swe.set_sid_mode() global state from concurrent access
 
 # ============================================================
 # ZODIAC_SIGNS -- 12 signs, each spanning 30 degrees
@@ -243,9 +246,18 @@ def _datetime_to_jd(dt_utc: datetime) -> float:
 
 
 def _calculate_swe(dt_utc: datetime, lat: float, lon: float, ayanamsa: str = "lahiri", node_type: str = "mean") -> Dict[str, Any]:
-    """Full calculation using Swiss Ephemeris."""
+    """Full calculation using Swiss Ephemeris.
+
+    Thread-safe: acquires _SWE_LOCK to protect global swe.set_sid_mode() state
+    from concurrent requests (e.g., Vedic + KP calculations running simultaneously).
+    """
+    with _SWE_LOCK:
+        return _calculate_swe_locked(dt_utc, lat, lon, ayanamsa, node_type)
+
+
+def _calculate_swe_locked(dt_utc: datetime, lat: float, lon: float, ayanamsa: str = "lahiri", node_type: str = "mean") -> Dict[str, Any]:
+    """Internal SWE calculation — must be called under _SWE_LOCK."""
     # Set ayanamsa mode: KP (Krishnamurti) or Lahiri (default for Vedic)
-    # Note: swisseph doesn't have get_sid_mode(), so we always set the mode explicitly
     ayanamsa_system = ayanamsa  # preserve system name before numeric override
     if ayanamsa_system == "kp":
         swe.set_sid_mode(swe.SIDM_KRISHNAMURTI)

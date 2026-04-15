@@ -15,29 +15,13 @@ Provides:
 """
 from __future__ import annotations
 
-import math
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from app.astro_engine import (
     calculate_planet_positions,
-    get_sign_from_longitude,
     _SIGN_NAMES,
-    _datetime_to_jd,
-    _parse_datetime,
-    PLANETS,
-    SE_SUN,
-    SE_MOON,
-    SE_MEAN_NODE,
 )
-
-# ---------- Try to import Swiss Ephemeris ----------
-try:
-    import swisseph as swe
-
-    _HAS_SWE = True
-except ImportError:
-    _HAS_SWE = False
 
 
 # ============================================================

@@ -4,6 +4,7 @@ import { useTranslation } from '@/lib/i18n';
 import { formatDate, api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Heading } from '@/components/ui/heading';
 import { Download, Share2, Loader2, ScrollText, Home, RefreshCw, ChevronDown, X, BookOpen, Star, Clock3, Sparkles, Grid3X3, Eye } from 'lucide-react';
 import { useKundliData } from '@/hooks/useKundliData';
 import KundliForm from '@/components/kundli/KundliForm';
@@ -242,7 +243,7 @@ export default function KundliGenerator() {
             <div className="h-16 animate-pulse bg-sacred-gold/15 rounded-xl" />
           </div>
         </div>
-        <p className="text-center text-cosmic-text mt-8 animate-pulse">{t('kundli.analyzingPositions')}</p>
+        <p className="text-center text-foreground mt-8 animate-pulse">{t('kundli.analyzingPositions')}</p>
       </div>
     );
   }
@@ -258,7 +259,7 @@ export default function KundliGenerator() {
               <Home className="w-4 h-4" />
             </Button>
             <div className="min-w-0">
-              <h3 className="font-sans font-bold text-xl sm:text-2xl text-sacred-brown truncate">{result.person_name || formData.name} — {t('tab.kundli')}</h3>
+              <h3 className=" font-bold text-xl sm:text-2xl text-sacred-brown truncate">{result.person_name || formData.name} — {t('tab.kundli')}</h3>
               <p className="text-sm text-gray-500 truncate">{formatDate(result.birth_date) || formData.date} | {result.birth_time || formData.time} | {result.birth_place || formData.place}</p>
             </div>
           </div>
@@ -270,7 +271,7 @@ export default function KundliGenerator() {
                   setResult(fresh);
                   resetTabData();
                   alert(t('auto.chartRegeneratedWith'));
-                } catch (e) { console.error(e); alert(t('auto.regenerationFailed')); }
+                } catch { alert(t('auto.regenerationFailed')); }
               }}>
               <RefreshCw className="w-4 h-4 mr-1" />{t('auto.regenerate')}
             </Button>
@@ -312,7 +313,7 @@ export default function KundliGenerator() {
         {/* Tabs — controlled mode */}
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full kundli-tabs">
           <div className="mb-4">
-            <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 grid grid-cols-6
+            <TabsList className="bg-muted w-full h-auto p-2 gap-1 grid grid-cols-6
               [&>button]:min-w-0 [&>button]:min-h-[58px] [&>button]:px-1 [&>button]:py-2 [&>button]:text-[11px] md:[&>button]:text-xs
               [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:justify-center [&>button]:gap-1 [&>button]:leading-tight
               [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
@@ -330,7 +331,7 @@ export default function KundliGenerator() {
                 className={`inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium rounded-md border transition-colors ${
                   isMoreTabActive
                     ? 'bg-sacred-gold/20 border-sacred-gold text-sacred-gold-dark'
-                    : 'bg-sacred-cream border-sacred-gold/40 text-cosmic-text hover:bg-sacred-gold/10'
+                    : 'bg-muted border-sacred-gold/40 text-foreground hover:bg-sacred-gold/10'
                 }`}
               >
                 {hi ? 'और विश्लेषण' : 'More Analysis'}
@@ -351,7 +352,7 @@ export default function KundliGenerator() {
                             className={`w-full text-left px-3 py-1.5 rounded-md text-xs transition-colors ${
                               activeTab === tab.value
                                 ? 'bg-sacred-gold-dark text-white font-medium'
-                                : 'text-cosmic-text hover:bg-sacred-gold/10'
+                                : 'text-foreground hover:bg-sacred-gold/10'
                             }`}
                           >
                             {hi ? tab.labelHi : tab.labelEn}
@@ -372,7 +373,7 @@ export default function KundliGenerator() {
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border transition-colors ${
                 isMoreTabActive
                   ? 'bg-sacred-gold/20 border-sacred-gold text-sacred-gold-dark'
-                  : 'bg-sacred-cream border-sacred-gold/40 text-cosmic-text'
+                  : 'bg-muted border-sacred-gold/40 text-foreground'
               }`}
             >
               {hi ? 'और विश्लेषण' : 'More Analysis'}
@@ -386,11 +387,11 @@ export default function KundliGenerator() {
               <div className="absolute inset-0 bg-black/50" onClick={() => setShowMobileMoreSheet(false)} />
               <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[70vh] overflow-y-auto p-5 pb-8 animate-in slide-in-from-bottom">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-base font-semibold text-sacred-brown">
+                  <Heading as={3} variant={5} className="text-sacred-brown">
                     {hi ? 'और विश्लेषण' : 'More Analysis'}
-                  </h3>
+                  </Heading>
                   <button onClick={() => setShowMobileMoreSheet(false)} className="p-1 rounded-full hover:bg-sacred-gold/10">
-                    <X className="w-5 h-5 text-cosmic-text" />
+                    <X className="w-5 h-5 text-foreground" />
                   </button>
                 </div>
                 {groupedMoreTabs.map(group => (
@@ -406,7 +407,7 @@ export default function KundliGenerator() {
                           className={`text-left px-3 py-2.5 rounded-lg text-sm transition-colors ${
                             activeTab === tab.value
                               ? 'bg-sacred-gold-dark text-white font-medium'
-                              : 'text-cosmic-text bg-sacred-cream hover:bg-sacred-gold/10'
+                              : 'text-foreground bg-muted hover:bg-sacred-gold/10'
                           }`}
                         >
                           {hi ? tab.labelHi : tab.labelEn}
@@ -597,7 +598,7 @@ export default function KundliGenerator() {
 
         {/* JHora-style Fullscreen Overlay */}
         {jhoraOpen && (
-          <div className="fixed inset-0 z-[9999] bg-parchment" style={{ width: '100vw', height: '100vh' }}>
+          <div className="fixed inset-0 z-[9999] bg-parchment w-screen h-screen">
             <button onClick={() => setJhoraOpen(false)} className="absolute top-2 right-3 z-10 p-1.5 hover:bg-black rounded text-sacred-gold text-sm font-bold" title={t('common.close')}>
               <X className="w-5 h-5" />
             </button>
@@ -669,7 +670,7 @@ export default function KundliGenerator() {
       {/* -- What's inside: tab preview --------------------------------- */}
       <section className="max-w-3xl mx-auto px-4 pb-20 pt-2">
         <div className="text-center mb-6">
-          <h2 className="text-xl sm:text-2xl font-sans text-cosmic-text">
+          <h2 className="text-xl sm:text-2xl  text-foreground">
             {hi ? '23 विश्लेषण मॉड्यूल — एक ही जगह' : '23 Analysis Modules — All in One Place'}
           </h2>
         </div>

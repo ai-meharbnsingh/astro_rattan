@@ -2,7 +2,7 @@
 import time
 from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from app.auth import get_current_user, require_role
+from app.auth import require_role
 from app.database import get_db
 from app.models import AdminUserUpdate
 

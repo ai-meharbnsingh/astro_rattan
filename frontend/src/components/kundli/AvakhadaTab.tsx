@@ -1,5 +1,6 @@
 import { Loader2 } from 'lucide-react';
 import { translatePlanet, translateSign, translateNakshatra } from '@/lib/backend-translations';
+import { Heading } from '@/components/ui/heading';
 
 interface AvakhadaTabProps {
   avakhadaData: any;
@@ -101,21 +102,21 @@ export default function AvakhadaTab({ avakhadaData, loadingAvakhada, language, t
   if (loadingAvakhada) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
-        <span className="ml-2 text-cosmic-text">{t('kundli.calculatingAvakhada')}</span>
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+        <span className="ml-2 text-foreground">{t('kundli.calculatingAvakhada')}</span>
       </div>
     );
   }
 
   if (!avakhadaData) {
-    return <p className="text-center text-cosmic-text py-8">{t('kundli.clickAvakhadaTab')}</p>;
+    return <p className="text-center text-foreground py-8">{t('kundli.clickAvakhadaTab')}</p>;
   }
 
   return (
     <div className="space-y-4">
-      <div className="bg-gradient-to-r from-sacred-cream to-sacred-gold rounded-xl p-4 border border-sacred-gold mb-4">
-        <h4 className="font-display font-bold text-lg" style={{ color: 'var(--ink)' }}>{t('section.avakhadaChakra')}</h4>
-        <p className="text-sm text-cosmic-text">{t('avakhada.birthSummary')}</p>
+      <div className="bg-gradient-to-r from-muted to-muted rounded-xl p-4 border border-border mb-4">
+        <Heading as={4} variant={4}>{t('section.avakhadaChakra')}</Heading>
+        <p className="text-sm text-foreground">{t('avakhada.birthSummary')}</p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {[
@@ -148,15 +149,15 @@ export default function AvakhadaTab({ avakhadaData, loadingAvakhada, language, t
                 className="rounded-xl p-4 border"
                 style={{ backgroundColor: 'var(--parchment)', borderColor: 'rgba(184,134,11,0.2)' }}
               >
-                <p className="text-sm font-medium mb-2" style={{ color: 'var(--ink-light)' }}>{item.label}</p>
+                <p className="text-sm font-medium mb-2" className="text-muted-foreground">{item.label}</p>
                 <div className="flex flex-wrap gap-2">
                   {syllables.map((s, idx) => (
                     <span
                       key={s}
                       className={`px-3 py-1 rounded-full text-sm font-semibold border transition-colors ${
                         idx + 1 === pada
-                          ? 'bg-sacred-gold text-white border-sacred-gold-dark shadow-sm'
-                          : 'bg-sacred-gold/10 text-sacred-brown border-sacred-gold/30'
+                          ? 'bg-muted text-white border-border-dark shadow-sm'
+                          : 'bg-muted/10 text-foreground border-border/30'
                       }`}
                       title={idx + 1 === pada ? (t('auto.yourPada')) : (t('auto.padaIdx1'))}
                     >
@@ -168,7 +169,7 @@ export default function AvakhadaTab({ avakhadaData, loadingAvakhada, language, t
                   ))}
                 </div>
                 {syllables.length > 1 && (
-                  <p className="text-xs text-cosmic-text/50 mt-2">
+                  <p className="text-xs text-foreground/50 mt-2">
                     {t('auto.PadaPadaRecommendedF')}
                   </p>
                 )}
@@ -181,8 +182,8 @@ export default function AvakhadaTab({ avakhadaData, loadingAvakhada, language, t
               className="rounded-xl p-4 border"
               style={{ backgroundColor: 'var(--parchment)', borderColor: 'rgba(184,134,11,0.2)' }}
             >
-              <p className="text-sm font-medium mb-1" style={{ color: 'var(--ink-light)' }}>{item.label}</p>
-              <p className="font-display font-semibold text-base" style={{ color: 'var(--ink)' }}>{item.value}</p>
+              <p className="text-sm font-medium mb-1" className="text-muted-foreground">{item.label}</p>
+              <p className="font-semibold text-base" className="text-foreground">{item.value}</p>
             </div>
           );
         })}

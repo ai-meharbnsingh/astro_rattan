@@ -48,7 +48,7 @@ class UserResponse(BaseModel):
     gender: Optional[str] = None
     city: Optional[str] = None
     avatar_url: Optional[str] = None
-    created_at: Any = None  # datetime from local PG, string from Neon
+    created_at: Any = None
 
 class TokenResponse(BaseModel):
     user: UserResponse

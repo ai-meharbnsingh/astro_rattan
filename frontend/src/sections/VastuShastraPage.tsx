@@ -4,6 +4,7 @@ import { ArrowLeft, Loader2, Compass, Grid3X3, DoorOpen, Wrench, Home, LayoutGri
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
 import VastuForm from '@/components/vastu/VastuForm';
 import type { VastuFormData } from '@/components/vastu/VastuForm';
 import VastuMandalaTab from '@/components/vastu/VastuMandalaTab';
@@ -53,7 +54,7 @@ export default function VastuShastraPage() {
   };
 
   return (
-    <div className="min-h-screen bg-cosmic-bg bg-mandala py-24 px-4">
+    <div className="min-h-screen bg-background bg-mandala py-24 px-4">
       <div className="max-w-5xl mx-auto">
 
         {/* Header */}
@@ -64,10 +65,10 @@ export default function VastuShastraPage() {
               {t('auto.vastuShastra')}
             </span>
           </div>
-          <h1 className="text-4xl font-bold text-cosmic-text mb-2 font-sans">
+          <Heading as={1} variant={1} className="mb-2">
             {t('auto.vastuShastraAnalysis')}
-          </h1>
-          <p className="text-gray-600 max-w-xl mx-auto">
+          </Heading>
+          <p className="text-muted-foreground max-w-xl mx-auto">
             {t('auto.45DevtasVastuPurusha')}
           </p>
         </div>
@@ -83,10 +84,10 @@ export default function VastuShastraPage() {
               <div className="w-12 h-12 rounded-xl bg-sacred-gold/10 border border-sacred-gold/20 flex items-center justify-center mb-4 group-hover:bg-sacred-gold/20 transition-colors">
                 <Compass className="w-6 h-6 text-sacred-gold" />
               </div>
-              <h3 className="text-lg font-bold text-cosmic-text mb-1">
+              <Heading as={3} variant={3} className="mb-1">
                 {t('auto.vastuAnalysis')}
-              </h3>
-              <p className="text-sm text-gray-600">
+              </Heading>
+              <p className="text-sm text-muted-foreground">
                 {t('auto.enterBuildingTypeEnt')}
               </p>
               <div className="mt-4 flex flex-wrap gap-1.5">
@@ -104,10 +105,10 @@ export default function VastuShastraPage() {
               <div className="w-12 h-12 rounded-xl bg-emerald-400/10 border border-emerald-400/20 flex items-center justify-center mb-4 group-hover:bg-emerald-400/20 transition-colors">
                 <LayoutGrid className="w-6 h-6 text-emerald-400" />
               </div>
-              <h3 className="text-lg font-bold text-cosmic-text mb-1">
+              <Heading as={3} variant={3} className="mb-1">
                 {t('auto.myHomeGrid')}
-              </h3>
-              <p className="text-sm text-gray-600">
+              </Heading>
+              <p className="text-sm text-muted-foreground">
                 {t('auto.clickA33DirectionGri')}
               </p>
               <div className="mt-4 flex flex-wrap gap-1.5">
@@ -125,10 +126,10 @@ export default function VastuShastraPage() {
               <div className="w-12 h-12 rounded-xl bg-blue-400/10 border border-blue-400/20 flex items-center justify-center mb-4 group-hover:bg-blue-400/20 transition-colors">
                 <Upload className="w-6 h-6 text-blue-400" />
               </div>
-              <h3 className="text-lg font-bold text-cosmic-text mb-1">
+              <Heading as={3} variant={3} className="mb-1">
                 {t('auto.floorPlanUpload')}
-              </h3>
-              <p className="text-sm text-gray-600">
+              </Heading>
+              <p className="text-sm text-muted-foreground">
                 {t('auto.uploadYourHomePhotoS')}
               </p>
               <div className="mt-4 flex flex-wrap gap-1.5">
@@ -144,7 +145,7 @@ export default function VastuShastraPage() {
         {mainMode !== 'select' && (
           <button
             onClick={resetToSelect}
-            className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-cosmic-text mb-6 transition-colors"
+            className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-foreground mb-6 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             {t('auto.backToModes')}
@@ -173,10 +174,10 @@ export default function VastuShastraPage() {
             {analysisView === 'generating' && (
               <div className="text-center py-20">
                 <Loader2 className="w-10 h-10 animate-spin text-sacred-gold mx-auto mb-4" />
-                <p className="text-lg text-cosmic-text font-semibold mb-1">
+                <p className="text-lg text-foreground font-semibold mb-1">
                   {t('auto.analyzingVastu')}
                 </p>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-muted-foreground">
                   {t('auto.deepAnalysisOf45Devt')}
                 </p>
               </div>
@@ -190,7 +191,7 @@ export default function VastuShastraPage() {
                     <Button
                       variant="ghost"
                       onClick={() => { setAnalysisView('form'); setAnalysisData(null); }}
-                      className="text-cosmic-text hover:text-white mb-2 -ml-2"
+                      className="text-foreground hover:text-white mb-2 -ml-2"
                     >
                       <ArrowLeft className="w-4 h-4 mr-1" />
                       {t('auto.newAnalysis')}

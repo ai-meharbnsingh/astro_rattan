@@ -77,7 +77,7 @@ export default function ClientSelector({ onSelectClient, isNewClient, onToggle }
   };
 
   return (
-    <div className="mb-6 rounded-xl border border-sacred-gold/30 p-4 bg-cosmic-card/50">
+    <div className="mb-6 rounded-xl border border-sacred-gold/30 p-4 bg-card/50">
       <p className="text-sm font-medium text-sacred-gold mb-3">{t('clientSelector.clientType')}</p>
       <div className="grid grid-cols-2 gap-3 mb-3">
         <button
@@ -86,7 +86,7 @@ export default function ClientSelector({ onSelectClient, isNewClient, onToggle }
           className={`flex items-center justify-center gap-2 p-3 rounded-xl border text-sm font-medium transition-colors ${
             !isNewClient
               ? 'border-sacred-gold bg-sacred-gold/10 text-sacred-gold'
-              : 'border-sacred-gold/20 text-gray-500 hover:border-sacred-gold/40'
+              : 'border-sacred-gold/20 text-muted-foreground hover:border-sacred-gold/40'
           }`}
         >
           <Users className="w-4 h-4" />
@@ -98,7 +98,7 @@ export default function ClientSelector({ onSelectClient, isNewClient, onToggle }
           className={`flex items-center justify-center gap-2 p-3 rounded-xl border text-sm font-medium transition-colors ${
             isNewClient
               ? 'border-sacred-gold bg-sacred-gold/10 text-sacred-gold'
-              : 'border-sacred-gold/20 text-gray-500 hover:border-sacred-gold/40'
+              : 'border-sacred-gold/20 text-muted-foreground hover:border-sacred-gold/40'
           }`}
         >
           <UserPlus className="w-4 h-4" />
@@ -109,22 +109,22 @@ export default function ClientSelector({ onSelectClient, isNewClient, onToggle }
       {!isNewClient && (
         <div ref={wrapperRef} className="relative">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cosmic-text/40" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/40" />
             <input
               type="text"
               value={search || selectedName}
               onChange={(e) => { setSearch(e.target.value); setSelectedName(''); setShowDropdown(true); onSelectClient(null); }}
               onFocus={() => { if (!selectedName) setShowDropdown(true); }}
               placeholder={t('clientSelector.searchByName')}
-              className="w-full rounded-xl bg-cosmic-card border border-sacred-gold/20 text-cosmic-text px-4 py-2.5 pl-10 text-sm focus:outline-none focus:border-sacred-gold/50 transition-colors"
+              className="w-full rounded-xl bg-card border border-sacred-gold/20 text-foreground px-4 py-2.5 pl-10 text-sm focus:outline-none focus:border-sacred-gold/50 transition-colors"
             />
             {loading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-sacred-gold" />}
           </div>
 
           {showDropdown && !selectedName && (
-            <div className="absolute z-50 left-0 right-0 mt-1 bg-cosmic-bg border border-sacred-gold/30 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+            <div className="absolute z-50 left-0 right-0 mt-1 bg-background border border-sacred-gold/30 rounded-xl shadow-lg max-h-60 overflow-y-auto">
               {clients.length === 0 && !loading && (
-                <div className="px-4 py-3 text-sm text-gray-500 text-center">
+                <div className="px-4 py-3 text-sm text-muted-foreground text-center">
                   {search ? t('clientSelector.noClientsFound') : t('dashboard.noClients')}
                 </div>
               )}
@@ -135,8 +135,8 @@ export default function ClientSelector({ onSelectClient, isNewClient, onToggle }
                   onClick={() => handleSelectClient(c)}
                   className="w-full text-left px-4 py-3 hover:bg-sacred-gold/10 transition-colors border-b border-sacred-gold/10 last:border-b-0"
                 >
-                  <p className="text-sm font-medium text-cosmic-text">{c.name}</p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm font-medium text-foreground">{c.name}</p>
+                  <p className="text-sm text-muted-foreground">
                     {[c.phone, c.birth_date, c.birth_place].filter(Boolean).join(' | ') || t('common.noData')}
                   </p>
                 </button>
@@ -190,7 +190,6 @@ export async function autoRegisterClient(params: {
       gender: params.gender || 'male',
     });
   } catch (err) {
-    // Non-critical: log but don't block the user
-    console.warn('Auto-register client failed:', err);
+    /* non-critical — auto-register failed silently */
   }
 }

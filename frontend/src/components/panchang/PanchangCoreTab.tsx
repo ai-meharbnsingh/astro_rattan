@@ -1,4 +1,5 @@
 import type { FullPanchangData } from '@/sections/Panchang';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 
 interface Props {
   panchang: FullPanchangData;
@@ -82,69 +83,69 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3">
-      <div className="rounded-lg border border-cosmic-border p-2">
-        <table className="w-full table-fixed text-xs sm:text-sm">
-          <thead>
-            <tr className="bg-sacred-gold/15">
-              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[22%]">{t('auto.metric')}</th>
-              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[24%]">{t('auto.value')}</th>
-              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[34%]">{t('auto.details')}</th>
-              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[20%]">{t('auto.ends')}</th>
-            </tr>
-          </thead>
-          <tbody>
+      <div className="rounded-lg border p-2">
+        <Table className="w-full table-fixed text-xs sm:text-sm">
+          <TableHeader>
+            <TableRow className="bg-sacred-gold/15">
+              <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[22%]">{t('auto.metric')}</TableHead>
+              <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[24%]">{t('auto.value')}</TableHead>
+              <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[34%]">{t('auto.details')}</TableHead>
+              <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[20%]">{t('auto.ends')}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {coreRows.map((row) => (
-              <tr key={row.metric} className="border-b border-cosmic-border/50 last:border-0 align-top">
-                <td className="px-2 py-1 font-medium text-cosmic-text-primary whitespace-normal break-words">{row.metric}</td>
-                <td className="px-2 py-1 text-cosmic-text-primary whitespace-normal break-words">{row.value}</td>
-                <td className="px-2 py-1 text-cosmic-text-secondary whitespace-normal break-words">{row.details}</td>
-                <td className="px-2 py-1 text-sacred-gold whitespace-normal break-words">{row.endTime}</td>
-              </tr>
+              <TableRow key={row.metric} className="border-b border/50 last:border-0 align-top">
+                <TableCell className="px-2 py-1 font-medium text-foreground whitespace-normal break-words">{row.metric}</TableCell>
+                <TableCell className="px-2 py-1 text-foreground whitespace-normal break-words">{row.value}</TableCell>
+                <TableCell className="px-2 py-1 text-muted-foreground whitespace-normal break-words">{row.details}</TableCell>
+                <TableCell className="px-2 py-1 text-sacred-gold whitespace-normal break-words">{row.endTime}</TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
 
-      <div className="rounded-lg border border-cosmic-border p-2">
-        <table className="w-full table-fixed text-xs sm:text-sm">
-          <thead>
-            <tr className="bg-sacred-gold/15">
-              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[34%]">{t('auto.metric')}</th>
-              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[28%]">{t('auto.value')}</th>
-              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[38%]">{t('auto.details')}</th>
-            </tr>
-          </thead>
-          <tbody>
+      <div className="rounded-lg border p-2">
+        <Table className="w-full table-fixed text-xs sm:text-sm">
+          <TableHeader>
+            <TableRow className="bg-sacred-gold/15">
+              <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[34%]">{t('auto.metric')}</TableHead>
+              <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[28%]">{t('auto.value')}</TableHead>
+              <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[38%]">{t('auto.details')}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {sunMoonRows.map((row) => (
-              <tr key={row.metric} className="border-b border-cosmic-border/50 last:border-0 align-top">
-                <td className="px-2 py-1 font-medium text-cosmic-text-primary whitespace-normal break-words">{row.metric}</td>
-                <td className="px-2 py-1 text-cosmic-text-primary whitespace-normal break-words">{row.value}</td>
-                <td className="px-2 py-1 text-cosmic-text-secondary whitespace-normal break-words">{row.details}</td>
-              </tr>
+              <TableRow key={row.metric} className="border-b border/50 last:border-0 align-top">
+                <TableCell className="px-2 py-1 font-medium text-foreground whitespace-normal break-words">{row.metric}</TableCell>
+                <TableCell className="px-2 py-1 text-foreground whitespace-normal break-words">{row.value}</TableCell>
+                <TableCell className="px-2 py-1 text-muted-foreground whitespace-normal break-words">{row.details}</TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
 
-      <div className="rounded-lg border border-cosmic-border p-2">
-        <table className="w-full table-fixed text-xs sm:text-sm">
-          <thead>
-            <tr className="bg-sacred-gold/15">
-              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[34%]">{t('auto.metric')}</th>
-              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[28%]">{t('auto.value')}</th>
-              <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[38%]">{t('auto.details')}</th>
-            </tr>
-          </thead>
-          <tbody>
+      <div className="rounded-lg border p-2">
+        <Table className="w-full table-fixed text-xs sm:text-sm">
+          <TableHeader>
+            <TableRow className="bg-sacred-gold/15">
+              <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[34%]">{t('auto.metric')}</TableHead>
+              <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[28%]">{t('auto.value')}</TableHead>
+              <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[38%]">{t('auto.details')}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {dayRows.map((row) => (
-              <tr key={row.metric} className="border-b border-cosmic-border/50 last:border-0 align-top">
-                <td className="px-2 py-1 font-medium text-cosmic-text-primary whitespace-normal break-words">{row.metric}</td>
-                <td className="px-2 py-1 text-cosmic-text-primary whitespace-normal break-words">{row.value}</td>
-                <td className="px-2 py-1 text-cosmic-text-secondary whitespace-normal break-words">{row.details}</td>
-              </tr>
+              <TableRow key={row.metric} className="border-b border/50 last:border-0 align-top">
+                <TableCell className="px-2 py-1 font-medium text-foreground whitespace-normal break-words">{row.metric}</TableCell>
+                <TableCell className="px-2 py-1 text-foreground whitespace-normal break-words">{row.value}</TableCell>
+                <TableCell className="px-2 py-1 text-muted-foreground whitespace-normal break-words">{row.details}</TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
     </div>
   );

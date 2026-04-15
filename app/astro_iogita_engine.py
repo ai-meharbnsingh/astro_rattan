@@ -10,10 +10,13 @@ Pipeline:
   → identify_basin (top 3 positive, top negative, escape analysis)
   → run_astro_analysis (formatted report + JSON output)
 """
+import logging
 import random
 import json
 import os
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 # ============================================================
 # CONSTANTS — same as full_sanatan_system.py
@@ -527,22 +530,22 @@ def _generate_iogita_insight(basin: dict, activations: dict, dasha: str) -> str:
 
 def _print_report(name, activations, strengths, basin, normal, iogita, dasha):
     """Print formatted analysis report to stdout."""
-    print("\n" + "=" * 70)
-    print(f"  ASTRO-IOGITA ANALYSIS: {name}")
-    print(f"  Current Dasha: {dasha} Mahadasha")
-    print("=" * 70)
+    logger.debug("\n" + "=" * 70)
+    logger.debug("  ASTRO-IOGITA ANALYSIS: %s", name)
+    logger.debug("  Current Dasha: %s Mahadasha", dasha)
+    logger.debug("=" * 70)
 
     # Planet strengths table
-    print("\n--- PLANET DIGNITIES ---")
-    print(f"  {'Planet':<10} {'Sign':<14} {'Dignity':<14} {'Strength':>8}")
-    print("  " + "-" * 48)
+    logger.debug("\n--- PLANET DIGNITIES ---")
+    logger.debug("  %-10s %-14s %-14s %8s", "Planet", "Sign", "Dignity", "Strength")
+    logger.debug("  " + "-" * 48)
     for planet, info in strengths.items():
-        print(f"  {planet:<10} {info['sign']:<14} {info['dignity']:<14} {info['strength']:>8.2f}")
+        logger.debug("  %-10s %-14s %-14s %8.2f", planet, info['sign'], info['dignity'], info['strength'])
 
     # Atom activation table with bar chart
-    print("\n--- ATOM ACTIVATIONS (io-gita D=10000, seed=42) ---")
-    print(f"  {'Atom':<12} {'Weight':>8}  Bar")
-    print("  " + "-" * 50)
+    logger.debug("\n--- ATOM ACTIVATIONS (io-gita D=10000, seed=42) ---")
+    logger.debug("  %-12s %8s  Bar", "Atom", "Weight")
+    logger.debug("  " + "-" * 50)
     for name in ALL_ATOM_NAMES:
         val = activations[name]
         bar_len = int(abs(val) * 20)
@@ -550,27 +553,27 @@ def _print_report(name, activations, strengths, basin, normal, iogita, dasha):
             bar = "+" * bar_len
         else:
             bar = "-" * bar_len
-        print(f"  {name:<12} {val:>8.4f}  {bar}")
+        logger.debug("  %-12s %8.4f  %s", name, val, bar)
 
     # Basin identification
-    print(f"\n--- BASIN IDENTIFICATION ---")
-    print(f"  Basin: {basin['basin_name']} ({basin['basin_hindi']})")
-    print(f"  {basin['description']}")
-    print(f"  Escape possible: {'YES' if basin['escape_possible'] else 'NO'}")
-    print(f"  Escape trigger: {basin['escape_trigger']}")
-    print(f"  Warning: {basin['warning']}")
-    print(f"  Trajectory steps: {basin['trajectory_steps']}")
+    logger.debug("\n--- BASIN IDENTIFICATION ---")
+    logger.debug("  Basin: %s (%s)", basin['basin_name'], basin['basin_hindi'])
+    logger.debug("  %s", basin['description'])
+    logger.debug("  Escape possible: %s", 'YES' if basin['escape_possible'] else 'NO')
+    logger.debug("  Escape trigger: %s", basin['escape_trigger'])
+    logger.debug("  Warning: %s", basin['warning'])
+    logger.debug("  Trajectory steps: %s", basin['trajectory_steps'])
 
     # Normal astrology
-    print(f"\n--- NORMAL ASTROLOGY SAYS ---")
+    logger.debug("\n--- NORMAL ASTROLOGY SAYS ---")
     for i, insight in enumerate(normal, 1):
-        print(f"  {i}. {insight}")
+        logger.debug("  %d. %s", i, insight)
 
     # io-gita combined
-    print(f"\n--- IO-GITA SAYS (combined picture) ---")
-    print(f"  {iogita}")
+    logger.debug("\n--- IO-GITA SAYS (combined picture) ---")
+    logger.debug("  %s", iogita)
 
-    print("\n" + "=" * 70)
+    logger.debug("\n" + "=" * 70)
 
 
 # ============================================================
@@ -604,5 +607,5 @@ if __name__ == "__main__":
     with open(output_path, "w") as f:
         json.dump(json_result, f, indent=2)
 
-    print(f"\n  Result saved to: {output_path}")
-    print(f"  Version: {result['version']}")
+    logger.info("Result saved to: %s", output_path)
+    logger.info("Version: %s", result['version'])

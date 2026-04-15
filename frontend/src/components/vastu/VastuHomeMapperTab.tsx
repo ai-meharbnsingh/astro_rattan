@@ -240,7 +240,7 @@ export default function VastuHomeMapperTab({ data, initialMode = 'grid' }: Props
             {t('auto.myHomeLayout')}
           </h3>
           {totalRooms > 0 && (
-            <button onClick={handleReset} className="flex items-center gap-1 text-sm text-cosmic-text/50 hover:text-red-400 transition-colors">
+            <button onClick={handleReset} className="flex items-center gap-1 text-sm text-foreground/50 hover:text-red-400 transition-colors">
               <RotateCcw className="w-3 h-3" />
               {t('auto.reset')}
             </button>
@@ -254,7 +254,7 @@ export default function VastuHomeMapperTab({ data, initialMode = 'grid' }: Props
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
               mode === 'grid'
                 ? 'bg-sacred-gold/20 text-sacred-gold border border-sacred-gold/30'
-                : 'bg-white/5 text-cosmic-text/50 border border-white/10 hover:border-white/20'
+                : 'bg-white/5 text-foreground/50 border border-white/10 hover:border-white/20'
             }`}
           >
             <LayoutGrid className="w-3.5 h-3.5" />
@@ -265,7 +265,7 @@ export default function VastuHomeMapperTab({ data, initialMode = 'grid' }: Props
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
               mode === 'floorplan'
                 ? 'bg-sacred-gold/20 text-sacred-gold border border-sacred-gold/30'
-                : 'bg-white/5 text-cosmic-text/50 border border-white/10 hover:border-white/20'
+                : 'bg-white/5 text-foreground/50 border border-white/10 hover:border-white/20'
             }`}
           >
             <ImageIcon className="w-3.5 h-3.5" />
@@ -273,7 +273,7 @@ export default function VastuHomeMapperTab({ data, initialMode = 'grid' }: Props
           </button>
         </div>
 
-        <p className="text-sm text-cosmic-text/60">
+        <p className="text-sm text-foreground/60">
           {mode === 'grid'
             ? (t('auto.clickEachZoneAndAddY'))
             : (t('auto.uploadYourFloorPlanP'))
@@ -331,7 +331,7 @@ export default function VastuHomeMapperTab({ data, initialMode = 'grid' }: Props
           )}
         </Button>
         {totalRooms < 2 && (
-          <p className="text-sm text-cosmic-text/40 mt-1">
+          <p className="text-sm text-foreground/40 mt-1">
             {t('auto.assignAtLeast2Rooms')}
           </p>
         )}

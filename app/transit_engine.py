@@ -133,8 +133,9 @@ def calculate_transits(natal_chart_data: Dict[str, Any], latitude: float = 0.0, 
     """
     Calculate planetary transits and their Gochara effects on a natal chart.
     """
-    # Approximate timezone offset from longitude (15° per hour)
-    tz_offset = round(longitude / 15.0 * 2) / 2  # round to nearest 0.5
+    # Use precise longitude-based offset (not rounded) for "now" calculations;
+    # when user provides explicit transit_date/time, use tz_offset for proper UTC conversion
+    tz_offset = longitude / 15.0  # precise offset from longitude
 
     if transit_date and transit_time:
         today_str = transit_date
@@ -143,10 +144,11 @@ def calculate_transits(natal_chart_data: Dict[str, Any], latitude: float = 0.0, 
         today_str = transit_date
         time_str = "12:00:00"
     else:
+        # Use UTC directly — pass tz_offset=0 to avoid double conversion
         now_utc = datetime.now(timezone.utc)
-        local_now = now_utc + timedelta(hours=tz_offset)
-        today_str = local_now.strftime("%Y-%m-%d")
-        time_str = local_now.strftime("%H:%M:%S")
+        today_str = now_utc.strftime("%Y-%m-%d")
+        time_str = now_utc.strftime("%H:%M:%S")
+        tz_offset = 0.0  # already UTC
 
     current_positions = calculate_planet_positions(
         birth_date=today_str,
@@ -234,8 +236,8 @@ def calculate_transit_forecast(natal_chart_data: Dict[str, Any], latitude: float
     Calculate transit intensity scores for the next N days.
     """
     forecast = []
-    now = datetime.now()
-    
+    now = datetime.now(timezone.utc)
+
     for i in range(days):
         target_date = now + timedelta(days=i)
         date_str = target_date.strftime("%Y-%m-%d")

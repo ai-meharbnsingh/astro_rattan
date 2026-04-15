@@ -6,6 +6,7 @@ import { calculateJaiminiKarakas, getPlanetColor } from '@/components/kundli/jho
 import { api, formatDate } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
 import { translatePlanet, translateSign, translateNakshatra, translateBackend, translateSignAbbr, translatePlanetAbbr } from '@/lib/backend-translations';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
 
 // Available divisional charts
 const DIVISIONAL_OPTIONS_EN = [
@@ -298,7 +299,7 @@ export default function JHoraKundliView({
     try {
       const data = await api.post(`/api/kundli/${result.id}/divisional`, { chart_type: chartType });
       setDivCache(prev => ({ ...prev, [chartType]: data }));
-    } catch (e) { console.error(e); }
+    } catch { /* ignored */ }
     setDivLoading(prev => ({ ...prev, [chartType]: false }));
   }, [divCache, divLoading, result?.id]);
 
@@ -527,9 +528,9 @@ export default function JHoraKundliView({
         <div style={{ overflow: 'hidden', borderBottom: BORDER, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
           <SectionHeader>{t('section.rashiD1')}</SectionHeader>
           <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr>
+            <Table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <TableHeader>
+                <TableRow>
                   {[
                     { key: 'Planet', label: t('table.planet') },
                     { key: 'Degree', label: t('table.degree') },
@@ -541,16 +542,16 @@ export default function JHoraKundliView({
                     { key: 'Dignity', label: t('table.dignity') },
                     { key: 'Karaka', label: t('table.karaka') },
                   ].map((h) => (
-                    <th key={h.key} style={{
+                    <TableHead key={h.key} style={{
                       ...thCompact,
                       textAlign: h.key === 'Degree' ? 'right' : h.key === 'R/C' || h.key === 'Mod' || h.key === 'Elem' ? 'center' : 'left',
                     }}>
                       {h.label}
-                    </th>
+                    </TableHead>
                   ))}
-                </tr>
-              </thead>
-              <tbody>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {planets.filter(p => p.planet !== 'Lagna').map((p, i) => {
                   const hasRetro = !!p.is_retrograde;
                   const hasCombust = !!p.is_combust;
@@ -568,31 +569,31 @@ export default function JHoraKundliView({
                     : elemRaw;
                   const karaka = karakas[p.planet] || '-';
                   return (
-                    <tr key={i} style={{ background: i % 2 === 0 ? 'transparent' : ALT_ROW }}>
-                      <td style={{ ...cellCompact, color: planetColor(p.planet), fontWeight: 600 }}>
+                    <TableRow key={i} style={{ background: i % 2 === 0 ? 'transparent' : ALT_ROW }}>
+                      <TableCell style={{ ...cellCompact, color: planetColor(p.planet), fontWeight: 600 }}>
                         {translatePlanet(p.planet, language)}
-                      </td>
-                      <td style={{ ...cellCompact, textAlign: 'right' }}>
+                      </TableCell>
+                      <TableCell style={{ ...cellCompact, textAlign: 'right' }}>
                         {fmtDegree(p.sign_degree)}
-                      </td>
-                      <td style={{ ...cellCompact, textAlign: 'center', color: hasRetro ? '#DC2626' : hasCombust ? '#D97706' : MUTED, fontWeight: rc !== '-' ? 600 : 400 }}>
+                      </TableCell>
+                      <TableCell style={{ ...cellCompact, textAlign: 'center', color: hasRetro ? '#DC2626' : hasCombust ? '#D97706' : MUTED, fontWeight: rc !== '-' ? 600 : 400 }}>
                         {rc}
-                      </td>
-                      <td style={{ ...cellCompact }}>{translateSignAbbr(p.sign, language)}</td>
-                      <td style={{ ...cellCompact, textAlign: 'center' }}>{modAbbr}</td>
-                      <td style={{ ...cellCompact, textAlign: 'center' }}>{elem}</td>
-                      <td style={{ ...cellCompact }}>{translateNakshatra(p.nakshatra, language) || '-'}</td>
-                      <td style={{ ...cellCompact, color: statusColor(p.status), fontWeight: p.status ? 600 : 400 }}>
+                      </TableCell>
+                      <TableCell style={{ ...cellCompact }}>{translateSignAbbr(p.sign, language)}</TableCell>
+                      <TableCell style={{ ...cellCompact, textAlign: 'center' }}>{modAbbr}</TableCell>
+                      <TableCell style={{ ...cellCompact, textAlign: 'center' }}>{elem}</TableCell>
+                      <TableCell style={{ ...cellCompact }}>{translateNakshatra(p.nakshatra, language) || '-'}</TableCell>
+                      <TableCell style={{ ...cellCompact, color: statusColor(p.status), fontWeight: p.status ? 600 : 400 }}>
                         {abbrDignity(p.status, language)}
-                      </td>
-                      <td style={{ ...cellCompact, fontWeight: 600, color: karaka !== '-' ? 'var(--aged-gold)' : MUTED }}>
+                      </TableCell>
+                      <TableCell style={{ ...cellCompact, fontWeight: 600, color: karaka !== '-' ? 'var(--aged-gold)' : MUTED }}>
                         {karaka}
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   );
                 })}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
         </div>
 
@@ -683,7 +684,7 @@ export default function JHoraKundliView({
                                 <span>
                                   <span style={{ color: planetColor(pt.planet), fontWeight: 600 }}>{translatePlanet(pt.planet, language)}</span>
                                   <span style={{ color: MUTED }}> {t('auto.pD')}</span>
-                                  {pt.is_current && <span style={{ color: 'var(--aged-gold-dim)' }}>*</span>}
+                                  {pt.is_current && <span className="text-primary">*</span>}
                                 </span>
                                 <span style={{ color: MUTED }}>{formatDate(pt.start)} — {formatDate(pt.end)}</span>
                               </div>
@@ -695,34 +696,34 @@ export default function JHoraKundliView({
                   </div>
                 ) : (
                   /* Fallback: simple Mahadasha table when extendedDashaData is not available */
-                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead>
-                      <tr>
+                  <Table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <TableHeader>
+                      <TableRow>
                         {[
                           { key: 'Planet', label: t('table.planet') },
                           { key: 'Start', label: t('table.start') },
                           { key: 'End', label: t('table.end') },
                           { key: 'Yrs', label: t('table.years') },
                         ].map((h) => (
-                          <th key={h.key} style={thCompact}>{h.label}</th>
+                          <TableHead key={h.key} style={thCompact}>{h.label}</TableHead>
                         ))}
-                      </tr>
-                    </thead>
-                    <tbody>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
                       {mahadashaPeriods.map((md: any, i: number) => (
-                        <tr key={i} style={{
+                        <TableRow key={i} style={{
                           background: md.isCurrent ? '#FEF3C7' : (i % 2 === 0 ? 'transparent' : ALT_ROW),
                         }}>
-                          <td style={{ ...cellCompact, color: planetColor(md.planet), fontWeight: 600 }}>
+                          <TableCell style={{ ...cellCompact, color: planetColor(md.planet), fontWeight: 600 }}>
                             {translatePlanet(md.planet, language)}
-                          </td>
-                          <td style={cellCompact}>{md.start ? formatDate(md.start) : '-'}</td>
-                          <td style={cellCompact}>{md.end ? formatDate(md.end) : '-'}</td>
-                          <td style={{ ...cellCompact, textAlign: 'center' }}>{md.years || '-'}</td>
-                        </tr>
+                          </TableCell>
+                          <TableCell style={cellCompact}>{md.start ? formatDate(md.start) : '-'}</TableCell>
+                          <TableCell style={cellCompact}>{md.end ? formatDate(md.end) : '-'}</TableCell>
+                          <TableCell style={{ ...cellCompact, textAlign: 'center' }}>{md.years || '-'}</TableCell>
+                        </TableRow>
                       ))}
-                    </tbody>
-                  </table>
+                    </TableBody>
+                  </Table>
                 )}
               </div>
             ) : (
@@ -734,30 +735,30 @@ export default function JHoraKundliView({
           <div style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
             <SectionHeader>{t('tab.lordships')}</SectionHeader>
             <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr>
+              <Table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <TableHeader>
+                  <TableRow>
                     {[
                       { key: 'H', label: t('auto.h') },
                       { key: 'Sign', label: t('table.sign') },
                       { key: 'Lord', label: t('table.lord') },
                       { key: 'In H', label: t('table.inHouse') },
                     ].map((h) => (
-                      <th key={h.key} style={thCompact}>{h.label}</th>
+                      <TableHead key={h.key} style={thCompact}>{h.label}</TableHead>
                     ))}
-                  </tr>
-                </thead>
-                <tbody>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
                   {lordships.map((l, i) => (
-                    <tr key={l.houseNum} style={{ background: i % 2 === 0 ? 'transparent' : ALT_ROW }}>
-                      <td style={{ ...cellCompact, textAlign: 'center', fontWeight: 600 }}>{l.houseNum}</td>
-                      <td style={cellCompact}>{translateSignAbbr(l.signName, language)}</td>
-                      <td style={{ ...cellCompact, color: planetColor(l.lord), fontWeight: 600 }}>{translatePlanet(l.lord, language)}</td>
-                      <td style={{ ...cellCompact, textAlign: 'center' }}>{l.lordHouse}</td>
-                    </tr>
+                    <TableRow key={l.houseNum} style={{ background: i % 2 === 0 ? 'transparent' : ALT_ROW }}>
+                      <TableCell style={{ ...cellCompact, textAlign: 'center', fontWeight: 600 }}>{l.houseNum}</TableCell>
+                      <TableCell style={cellCompact}>{translateSignAbbr(l.signName, language)}</TableCell>
+                      <TableCell style={{ ...cellCompact, color: planetColor(l.lord), fontWeight: 600 }}>{translatePlanet(l.lord, language)}</TableCell>
+                      <TableCell style={{ ...cellCompact, textAlign: 'center' }}>{l.lordHouse}</TableCell>
+                    </TableRow>
                   ))}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             </div>
           </div>
         </div>
@@ -800,14 +801,14 @@ export default function JHoraKundliView({
           <div style={{ borderRight: BORDER, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
             <SectionHeader>{t('section.jaiminiKarakas')}</SectionHeader>
             <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr>
-                    <th style={thCompact}>{t('table.karaka')}</th>
-                    <th style={thCompact}>{t('table.planet')}</th>
-                  </tr>
-                </thead>
-                <tbody>
+              <Table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead style={thCompact}>{t('table.karaka')}</TableHead>
+                    <TableHead style={thCompact}>{t('table.planet')}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
                   {['AK', 'AmK', 'BK', 'MK', 'PiK', 'GnK', 'DK'].map((k, i) => {
                     const planet = Object.entries(karakas).find(([, v]) => v === k)?.[0] || '-';
                     const karakaNames: Record<string, string> = language === 'hi' ? {
@@ -818,14 +819,14 @@ export default function JHoraKundliView({
                       PiK: 'Pitri', GnK: 'Gnati', DK: 'Dara',
                     };
                     return (
-                      <tr key={k} style={{ background: i % 2 === 0 ? 'transparent' : ALT_ROW }}>
-                        <td style={{ ...cellCompact, fontWeight: 600 }}>{k} ({karakaNames[k]})</td>
-                        <td style={{ ...cellCompact, color: planetColor(planet), fontWeight: 600 }}>{translatePlanet(planet, language)}</td>
-                      </tr>
+                      <TableRow key={k} style={{ background: i % 2 === 0 ? 'transparent' : ALT_ROW }}>
+                        <TableCell style={{ ...cellCompact, fontWeight: 600 }}>{k} ({karakaNames[k]})</TableCell>
+                        <TableCell style={{ ...cellCompact, color: planetColor(planet), fontWeight: 600 }}>{translatePlanet(planet, language)}</TableCell>
+                      </TableRow>
                     );
                   })}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             </div>
           </div>
 

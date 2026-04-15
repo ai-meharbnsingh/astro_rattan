@@ -273,7 +273,7 @@ export default function FloorplanMapper({
           <button
             onClick={() => setMobileMode('place')}
             className={`flex items-center gap-1 min-w-[40px] min-h-[40px] px-2 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              mobileMode === 'place' ? 'bg-sacred-gold/20 text-sacred-gold border border-sacred-gold/40' : 'bg-white/5 text-cosmic-text/40 border border-white/10'
+              mobileMode === 'place' ? 'bg-sacred-gold/20 text-sacred-gold border border-sacred-gold/40' : 'bg-white/5 text-foreground/40 border border-white/10'
             }`}
           >
             <MousePointer className="w-3.5 h-3.5" />
@@ -282,7 +282,7 @@ export default function FloorplanMapper({
           <button
             onClick={() => setMobileMode('pan')}
             className={`flex items-center gap-1 min-w-[40px] min-h-[40px] px-2 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              mobileMode === 'pan' ? 'bg-sacred-gold/20 text-sacred-gold border border-sacred-gold/40' : 'bg-white/5 text-cosmic-text/40 border border-white/10'
+              mobileMode === 'pan' ? 'bg-sacred-gold/20 text-sacred-gold border border-sacred-gold/40' : 'bg-white/5 text-foreground/40 border border-white/10'
             }`}
           >
             <Move className="w-3.5 h-3.5" />
@@ -293,7 +293,7 @@ export default function FloorplanMapper({
         {/* North rotation */}
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <Compass className="w-4 h-4 text-sacred-gold flex-shrink-0" />
-          <label className="text-sm text-cosmic-text/60">{t('auto.north')}</label>
+          <label className="text-sm text-foreground/60">{t('auto.north')}</label>
           <input
             type="range"
             min={0}
@@ -303,7 +303,7 @@ export default function FloorplanMapper({
             className="w-full sm:w-24 accent-amber-500"
           />
           <span className="text-sm text-sacred-gold font-mono w-8">{northRotation}°</span>
-          <span className="text-sm text-cosmic-text/40">
+          <span className="text-sm text-foreground/40">
             {northRotation === 0 ? '↑' : northRotation < 90 ? '↗' : northRotation === 90 ? '→' : northRotation < 180 ? '↘' : northRotation === 180 ? '↓' : northRotation < 270 ? '↙' : northRotation === 270 ? '←' : '↖'}
           </span>
         </div>
@@ -312,7 +312,7 @@ export default function FloorplanMapper({
         <button
           onClick={() => setShowGrid(!showGrid)}
           className={`flex items-center gap-1 min-w-[40px] min-h-[40px] px-2 py-1.5 rounded text-sm transition-colors ${
-            showGrid ? 'bg-sacred-gold/20 text-sacred-gold' : 'bg-white/5 text-cosmic-text/40'
+            showGrid ? 'bg-sacred-gold/20 text-sacred-gold' : 'bg-white/5 text-foreground/40'
           }`}
         >
           <Grid3X3 className="w-3.5 h-3.5" />
@@ -322,28 +322,28 @@ export default function FloorplanMapper({
         {/* Grid position — move Brahmasthana */}
         {showGrid && (
           <div className="flex items-center gap-1">
-            <span className="text-xs text-cosmic-text/50 mr-1">{t('auto.center')}</span>
-            <button onClick={() => setGridOffset(o => ({ ...o, y: o.y - 3 }))} className="min-w-[28px] min-h-[28px] flex items-center justify-center rounded bg-white/5 text-cosmic-text/50 hover:text-sacred-gold text-xs" title="Move up">↑</button>
-            <button onClick={() => setGridOffset(o => ({ ...o, y: o.y + 3 }))} className="min-w-[28px] min-h-[28px] flex items-center justify-center rounded bg-white/5 text-cosmic-text/50 hover:text-sacred-gold text-xs" title="Move down">↓</button>
-            <button onClick={() => setGridOffset(o => ({ ...o, x: o.x - 3 }))} className="min-w-[28px] min-h-[28px] flex items-center justify-center rounded bg-white/5 text-cosmic-text/50 hover:text-sacred-gold text-xs" title="Move left">←</button>
-            <button onClick={() => setGridOffset(o => ({ ...o, x: o.x + 3 }))} className="min-w-[28px] min-h-[28px] flex items-center justify-center rounded bg-white/5 text-cosmic-text/50 hover:text-sacred-gold text-xs" title="Move right">→</button>
+            <span className="text-xs text-foreground/50 mr-1">{t('auto.center')}</span>
+            <button onClick={() => setGridOffset(o => ({ ...o, y: o.y - 3 }))} className="min-w-[28px] min-h-[28px] flex items-center justify-center rounded bg-white/5 text-foreground/50 hover:text-sacred-gold text-xs" title="Move up">↑</button>
+            <button onClick={() => setGridOffset(o => ({ ...o, y: o.y + 3 }))} className="min-w-[28px] min-h-[28px] flex items-center justify-center rounded bg-white/5 text-foreground/50 hover:text-sacred-gold text-xs" title="Move down">↓</button>
+            <button onClick={() => setGridOffset(o => ({ ...o, x: o.x - 3 }))} className="min-w-[28px] min-h-[28px] flex items-center justify-center rounded bg-white/5 text-foreground/50 hover:text-sacred-gold text-xs" title="Move left">←</button>
+            <button onClick={() => setGridOffset(o => ({ ...o, x: o.x + 3 }))} className="min-w-[28px] min-h-[28px] flex items-center justify-center rounded bg-white/5 text-foreground/50 hover:text-sacred-gold text-xs" title="Move right">→</button>
             {(gridOffset.x !== 0 || gridOffset.y !== 0) && (
-              <button onClick={() => setGridOffset({ x: 0, y: 0 })} className="text-xs text-cosmic-text/40 hover:text-white ml-1">{t('auto.reset')}</button>
+              <button onClick={() => setGridOffset({ x: 0, y: 0 })} className="text-xs text-foreground/40 hover:text-white ml-1">{t('auto.reset')}</button>
             )}
           </div>
         )}
 
         {/* Zoom controls */}
         <div className="flex items-center gap-1">
-          <button onClick={() => setZoom(z => Math.max(0.5, z - 0.25))} className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded bg-white/5 text-cosmic-text/50 hover:text-white">
+          <button onClick={() => setZoom(z => Math.max(0.5, z - 0.25))} className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded bg-white/5 text-foreground/50 hover:text-white">
             <ZoomOut className="w-4 h-4" />
           </button>
-          <span className="text-sm text-cosmic-text/40 w-10 text-center">{Math.round(zoom * 100)}%</span>
-          <button onClick={() => setZoom(z => Math.min(3, z + 0.25))} className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded bg-white/5 text-cosmic-text/50 hover:text-white">
+          <span className="text-sm text-foreground/40 w-10 text-center">{Math.round(zoom * 100)}%</span>
+          <button onClick={() => setZoom(z => Math.min(3, z + 0.25))} className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded bg-white/5 text-foreground/50 hover:text-white">
             <ZoomIn className="w-4 h-4" />
           </button>
           {zoom !== 1 && (
-            <button onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }} className="text-sm text-cosmic-text/40 hover:text-white ml-1 min-h-[40px] flex items-center">
+            <button onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }} className="text-sm text-foreground/40 hover:text-white ml-1 min-h-[40px] flex items-center">
               {t('auto.reset')}
             </button>
           )}
@@ -351,7 +351,7 @@ export default function FloorplanMapper({
 
         {/* Undo */}
         {markers.length > 0 && (
-          <button onClick={handleUndo} className="flex items-center gap-1 min-w-[40px] min-h-[40px] px-2 py-1.5 rounded bg-white/5 text-cosmic-text/50 hover:text-white text-sm">
+          <button onClick={handleUndo} className="flex items-center gap-1 min-w-[40px] min-h-[40px] px-2 py-1.5 rounded bg-white/5 text-foreground/50 hover:text-white text-sm">
             <Undo2 className="w-3.5 h-3.5" />
             {t('auto.undo')}
           </button>
@@ -375,7 +375,7 @@ export default function FloorplanMapper({
               }
               setAiDone(true);
             } catch (e) {
-              console.error('Auto-detect failed:', e);
+              /* auto-detect failed — manual fallback shown */
               setAiDone(true); // still show manual hint on failure
             } finally {
               setAutoDetecting(false);
@@ -387,7 +387,7 @@ export default function FloorplanMapper({
           {t('auto.aIDetect')}
         </button>
 
-        <span className="text-[10px] text-cosmic-text/40 ml-auto hidden sm:inline">
+        <span className="text-[10px] text-foreground/40 ml-auto hidden sm:inline">
           {t('auto.clickAddRoomClickMar')}
         </span>
       </div>
@@ -591,7 +591,7 @@ export default function FloorplanMapper({
               <span className="text-sm text-sacred-gold font-semibold">
                 {t('auto.selectRoom')}
               </span>
-              <button onClick={() => setClickPos(null)} className="text-cosmic-text/40 hover:text-white">
+              <button onClick={() => setClickPos(null)} className="text-foreground/40 hover:text-white">
                 <X className="w-3 h-3" />
               </button>
             </div>
@@ -617,9 +617,9 @@ export default function FloorplanMapper({
           {markers.map(m => {
             const opt = ROOM_OPTIONS.find(r => r.key === m.room_type);
             return (
-              <span key={m.id} className="flex items-center gap-1 px-2 py-1 bg-white/5 border border-white/10 rounded-lg text-sm text-cosmic-text">
+              <span key={m.id} className="flex items-center gap-1 px-2 py-1 bg-white/5 border border-white/10 rounded-lg text-sm text-foreground">
                 {opt?.icon} {isHi ? opt?.hi : opt?.en}
-                <button onClick={() => onRemoveMarker(m.id)} className="text-cosmic-text/30 hover:text-red-400 ml-1">
+                <button onClick={() => onRemoveMarker(m.id)} className="text-foreground/30 hover:text-red-400 ml-1">
                   <X className="w-2.5 h-2.5" />
                 </button>
               </span>

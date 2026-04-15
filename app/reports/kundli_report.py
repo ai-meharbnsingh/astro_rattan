@@ -12,7 +12,6 @@ Usage:
 from __future__ import annotations
 
 import os
-import math
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 import importlib.util
@@ -209,10 +208,6 @@ class GridLayout:
         self.placed_elements = []  # List of (x, y, w, h, label)
         self.current_page = 1
         
-    def col_x(self, col_index: int) -> float:
-        """Get X position for column index (0-based)."""
-        return self.MARGIN_LEFT + col_index * (self.col_width + self.GUTTER)
-    
     def col_width_span(self, col_span: int) -> float:
         """Get width for N columns including gutters."""
         return col_span * self.col_width + (col_span - 1) * self.GUTTER

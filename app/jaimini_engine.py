@@ -9,9 +9,8 @@ Implements key Jaimini system components:
   5. Indu Lagna (wealth indicator)
 """
 from __future__ import annotations
-import traceback
 from typing import Any, Dict, List, Optional
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 ZODIAC = [
     "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
@@ -371,7 +370,7 @@ def calculate_chara_dasha(planets: Dict, ascendant: Dict, birth_date: str) -> Di
         cycle += 1
 
     # Mark current period
-    now = datetime.now()
+    now = datetime.utcnow()
     current_idx = -1
     for i, p in enumerate(periods):
         s = datetime.strptime(p["start_date"], "%Y-%m-%d")

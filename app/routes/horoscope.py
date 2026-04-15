@@ -10,8 +10,6 @@ from app.database import get_db
 from app.horoscope_generator import (
     SIGNS,
     generate_ai_horoscope,
-    generate_daily_horoscopes,
-    seed_weekly_horoscopes,
     _get_current_transits,
     _RULERS,
     _ELEMENTS,
@@ -90,13 +88,14 @@ def get_daily_horoscope(
 
     if row:
         sections = _parse_content_to_sections(row["content"])
-        return {
-            **_sign_meta(sign),
-            "period": "daily",
-            "date": target_date,
-            "sections": sections,
-            "source": "database",
-        }
+        if _has_meaningful_sections(sections):
+            return {
+                **_sign_meta(sign),
+                "period": "daily",
+                "date": target_date,
+                "sections": sections,
+                "source": "database",
+            }
 
     # Generate on-the-fly via template engine
     generated = generate_ai_horoscope(sign=sign, period="daily")
@@ -131,14 +130,15 @@ def get_weekly_horoscope(
 
     if row:
         sections = _parse_content_to_sections(row["content"])
-        return {
-            **_sign_meta(sign),
-            "period": "weekly",
-            "week_start": week_date,
-            "week_end": week_end,
-            "sections": sections,
-            "source": "database",
-        }
+        if _has_meaningful_sections(sections):
+            return {
+                **_sign_meta(sign),
+                "period": "weekly",
+                "week_start": week_date,
+                "week_end": week_end,
+                "sections": sections,
+                "source": "database",
+            }
 
     generated = generate_ai_horoscope(sign=sign, period="weekly")
     return {
@@ -146,6 +146,83 @@ def get_weekly_horoscope(
         "period": "weekly",
         "week_start": week_date,
         "week_end": week_end,
+        "sections": generated.get("sections", {}),
+        "source": generated.get("source", "template"),
+    }
+
+
+@router.get("/api/horoscope/monthly", status_code=status.HTTP_200_OK)
+def get_monthly_horoscope(
+    sign: str = Query(..., description="Zodiac sign (e.g. aries)"),
+    db: Any = Depends(get_db),
+):
+    """Get monthly horoscope for a specific sign."""
+    sign = sign.strip().lower()
+    if sign not in SIGNS:
+        raise HTTPException(status_code=400, detail=f"Invalid sign: {sign}")
+
+    today = date.today()
+    month_start = today.replace(day=1).isoformat()
+
+    row = db.execute(
+        "SELECT content, created_at FROM horoscopes WHERE sign = %s AND period_type = 'monthly' AND period_date = %s",
+        (sign, month_start),
+    ).fetchone()
+
+    if row:
+        sections = _parse_content_to_sections(row["content"])
+        if _has_meaningful_sections(sections):
+            return {
+                **_sign_meta(sign),
+                "period": "monthly",
+                "month_start": month_start,
+                "sections": sections,
+                "source": "database",
+            }
+
+    generated = generate_ai_horoscope(sign=sign, period="monthly")
+    return {
+        **_sign_meta(sign),
+        "period": "monthly",
+        "month_start": month_start,
+        "sections": generated.get("sections", {}),
+        "source": generated.get("source", "template"),
+    }
+
+
+@router.get("/api/horoscope/yearly", status_code=status.HTTP_200_OK)
+def get_yearly_horoscope(
+    sign: str = Query(..., description="Zodiac sign (e.g. aries)"),
+    db: Any = Depends(get_db),
+):
+    """Get yearly horoscope for a specific sign."""
+    sign = sign.strip().lower()
+    if sign not in SIGNS:
+        raise HTTPException(status_code=400, detail=f"Invalid sign: {sign}")
+
+    year_start = date.today().replace(month=1, day=1).isoformat()
+
+    row = db.execute(
+        "SELECT content, created_at FROM horoscopes WHERE sign = %s AND period_type = 'yearly' AND period_date = %s",
+        (sign, year_start),
+    ).fetchone()
+
+    if row:
+        sections = _parse_content_to_sections(row["content"])
+        if _has_meaningful_sections(sections):
+            return {
+                **_sign_meta(sign),
+                "period": "yearly",
+                "year_start": year_start,
+                "sections": sections,
+                "source": "database",
+            }
+
+    generated = generate_ai_horoscope(sign=sign, period="yearly")
+    return {
+        **_sign_meta(sign),
+        "period": "yearly",
+        "year_start": year_start,
         "sections": generated.get("sections", {}),
         "source": generated.get("source", "template"),
     }
@@ -279,3 +356,14 @@ def _parse_content_to_sections(content: str) -> dict:
         }
 
     return {"general": content, "love": "", "career": "", "finance": "", "health": ""}
+
+
+def _has_meaningful_sections(sections: dict | None) -> bool:
+    """Return True when at least one section has useful text."""
+    if not isinstance(sections, dict):
+        return False
+    for key in ("general", "love", "career", "finance", "health"):
+        value = str(sections.get(key, "")).strip()
+        if len(value) >= 15:
+            return True
+    return False

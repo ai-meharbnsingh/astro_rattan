@@ -3,6 +3,7 @@ import { X, ChevronRight, MapPin, Calendar, Clock, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/lib/i18n';
 import { translateBackend, translatePlanet, translateSign, translateLabel } from '@/lib/backend-translations';
+import { Heading } from "@/components/ui/heading";
 
 interface KundliData {
   name: string;
@@ -148,7 +149,7 @@ export default function KundliSummaryModal({
 
           <div className="grid lg:grid-cols-2 gap-4">
             <div className="bg-[#111] rounded-xl border border-[var(--sacred-gold-hex)] p-3">
-              <h3 className="text-sm font-semibold text-[#d4af37] mb-2">{t('section.detailedPlanetPositions')}</h3>
+              <Heading as={3} variant={3}>{t('section.detailedPlanetPositions')}</Heading>
               {planets.length === 0 ? (
                 <p className="text-sm text-white/70">{t('auto.planetPositionsUnava')}</p>
               ) : (
@@ -166,7 +167,7 @@ export default function KundliSummaryModal({
             </div>
 
             <div className="bg-[#111] rounded-xl border border-[var(--sacred-gold-hex)] p-3">
-              <h3 className="text-sm font-semibold text-[#d4af37] mb-2">{t('section.vimshottariDasha')}</h3>
+              <Heading as={3} variant={3}>{t('section.vimshottariDasha')}</Heading>
               {dashaPeriods.length === 0 ? (
                 <p className="text-sm text-white/70">{t('auto.dashaDataUnavailable')}</p>
               ) : (
@@ -200,7 +201,7 @@ export default function KundliSummaryModal({
 
           {presentYogas.length > 0 && (
             <div className="bg-[#111] rounded-xl border border-green-300 p-3">
-              <h3 className="text-sm font-semibold text-green-400 mb-2">{t('kundli.summary.presentYogas')} ({presentYogas.length})</h3>
+              <Heading as={3} variant={3}>{t('kundli.summary.presentYogas')} ({presentYogas.length})</Heading>
               <div className="space-y-2">
                 {presentYogas.map((yoga, idx) => (
                   <div key={`${yoga.name || yoga.yoga || 'y'}-${idx}`} className="p-2 rounded bg-green-500/10 border border-green-300/30 text-sm">
@@ -217,7 +218,7 @@ export default function KundliSummaryModal({
 
           {presentDoshas.length > 0 && (
             <div className="bg-[#111] rounded-xl border border-red-300 p-3">
-              <h3 className="text-sm font-semibold text-red-400 mb-2">{t('kundli.summary.presentDoshas')} ({presentDoshas.length})</h3>
+              <Heading as={3} variant={3}>{t('kundli.summary.presentDoshas')} ({presentDoshas.length})</Heading>
               <div className="space-y-2">
                 {presentDoshas.map((dosha, idx) => (
                   <div key={`${dosha.name || dosha.dosha || 'd'}-${idx}`} className="p-2 rounded bg-red-500/10 border border-red-300/30 text-sm">

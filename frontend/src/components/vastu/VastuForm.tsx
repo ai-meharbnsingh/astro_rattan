@@ -90,7 +90,7 @@ export default function VastuForm({ onGenerate, loading }: Props) {
               className={`p-3 rounded-lg border text-sm font-medium transition-all ${
                 formData.buildingType === bt.key
                   ? 'border-sacred-gold bg-sacred-gold/10 text-sacred-gold'
-                  : 'border-white/10 bg-white/5 text-cosmic-text hover:border-white/30'
+                  : 'border-white/10 bg-white/5 text-foreground hover:border-white/30'
               }`}
             >
               {isHi ? bt.hi : bt.en}
@@ -105,7 +105,7 @@ export default function VastuForm({ onGenerate, loading }: Props) {
           <Compass className="w-4 h-4 inline mr-1" />
           {t('auto.mainEntranceDirectio')}
         </label>
-        <p className="text-sm text-cosmic-text/50 mb-2">
+        <p className="text-sm text-foreground/50 mb-2">
           {t('auto.clickADirectionOnThe')}
         </p>
         <VastuCompass
@@ -118,7 +118,7 @@ export default function VastuForm({ onGenerate, loading }: Props) {
 
       {/* Optional: Precise Degrees */}
       <div>
-        <label className="block text-sm font-semibold text-cosmic-text/70 mb-2">
+        <label className="block text-sm font-semibold text-foreground/70 mb-2">
           {t('auto.compassDegreesOption')}
         </label>
         <input
@@ -132,7 +132,7 @@ export default function VastuForm({ onGenerate, loading }: Props) {
             entranceDegrees: e.target.value ? parseFloat(e.target.value) : null,
           }))}
           placeholder={t('auto.eG455')}
-          className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-cosmic-text placeholder-white/30 focus:border-sacred-gold focus:outline-none"
+          className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-foreground placeholder-white/30 focus:border-sacred-gold focus:outline-none"
         />
       </div>
 
@@ -141,7 +141,7 @@ export default function VastuForm({ onGenerate, loading }: Props) {
         <label className="block text-sm font-semibold text-sacred-gold mb-3">
           {t('auto.selectProblemsOption')}
         </label>
-        <p className="text-sm text-cosmic-text/60 mb-3">
+        <p className="text-sm text-foreground/60 mb-3">
           {t('auto.selectYourConcernsWe')} suggest specific Vastu remedies
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -153,7 +153,7 @@ export default function VastuForm({ onGenerate, loading }: Props) {
               className={`p-2.5 rounded-lg border text-sm font-medium transition-all ${
                 formData.problems.includes(p.key)
                   ? 'border-amber-500 bg-amber-500/10 text-amber-400'
-                  : 'border-white/10 bg-white/5 text-cosmic-text hover:border-white/30'
+                  : 'border-white/10 bg-white/5 text-foreground hover:border-white/30'
               }`}
             >
               {isHi ? p.hi : p.en}

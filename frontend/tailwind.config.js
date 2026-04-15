@@ -39,19 +39,19 @@ module.exports = {
           foreground: "hsl(var(--card-foreground))",
         },
         // Semantic design token aliases
-        surface: 'var(--cosmic-card)',
-        'text-primary': 'var(--cosmic-text)',
-        'text-secondary-alias': 'var(--cosmic-text-secondary)',
-        // Digital Patra & Prismatic Light
+        surface: 'hsl(var(--background))',
+        'text-primary': 'hsl(var(--foreground))',
+        'text-secondary-alias': 'hsl(var(--muted-foreground))',
+        // Unified app palette
         cosmic: {
-          bg: 'var(--cosmic-bg)',
-          'bg-light': 'var(--cosmic-bg-light)',
-          surface: 'var(--cosmic-surface)',
-          card: 'var(--cosmic-card)',
-          'card-hover': 'var(--cosmic-card-hover)',
-          text: 'var(--cosmic-text)',
-          'text-secondary': 'var(--cosmic-text-secondary)',
-          'text-muted': 'var(--cosmic-text-muted)',
+          bg: 'hsl(var(--background))',
+          'bg-light': 'hsl(var(--background))',
+          surface: 'hsl(var(--card))',
+          card: 'hsl(var(--card))',
+          'card-hover': 'hsl(var(--accent))',
+          text: 'hsl(var(--foreground))',
+          'text-secondary': 'hsl(var(--muted-foreground))',
+          'text-muted': 'hsl(var(--muted-foreground))',
         },
         sacred: {
           cream: '#F8FAFC',
@@ -71,11 +71,6 @@ module.exports = {
             DEFAULT: '#1e293b',
             secondary: '#64748b',
           },
-          purple: { // legacy: actually light gray, use sacred.grayLight instead
-            DEFAULT: '#e2e8f0',
-            light: '#f1f5f9',
-          },
-          violet: '#FF9933', // legacy: actually gold, use sacred.goldAccent instead
           grayLight: '#e2e8f0',
           goldAccent: '#FF9933',
         },
@@ -85,24 +80,6 @@ module.exports = {
             dark: '#128C7E',
           },
         },
-        minimal: {
-          white: '#FFFFFF',
-          gray: {
-            50: '#f8fafc',
-            100: '#f1f5f9',
-            200: '#e2e8f0',
-            300: '#cbd5e1',
-            400: '#94a3b8',
-            500: '#64748b',
-            600: '#475569',
-            700: '#334155',
-            800: '#1e293b',
-            900: '#0f172a',
-          },
-          indigo: '#FF9933',
-          violet: '#dc2626',
-          blue: '#2563eb',
-        },
       },
       fontSize: {
         // Standardized typography scale — replace ALL arbitrary text-[Npx]
@@ -111,16 +88,11 @@ module.exports = {
         'label': ['0.625rem', { lineHeight: '1.3' }],    // 10px — small labels
       },
       fontFamily: {
-        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-        display: ['Cormorant Garamond', 'Georgia', 'serif'],
-        devanagari: ['Hind', 'Noto Sans Devanagari', 'sans-serif'],
-        body: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-        sacred: ['Cormorant Garamond', 'Georgia', 'serif'],
-        decorative: ['IM Fell English', 'Cormorant Garamond', 'serif'],
-        cinzel: ['Cormorant Garamond', 'serif'],
-        mantra: ['Laila', 'Noto Serif Devanagari', 'Georgia', 'serif'],
-        mono: ['JetBrains Mono', 'monospace'],
-        handwritten: ['IM Fell English', 'serif'],
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+        display: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+        devanagari: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+        body: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
       },
       borderRadius: {
         xl: "calc(var(--radius) + 4px)",

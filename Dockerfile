@@ -22,7 +22,13 @@ ENV EPHE_PATH=/usr/share/swisseph/ephe
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Run as non-root user for security
+RUN useradd -m -s /bin/bash appuser
 COPY app/ app/
 COPY static/ static/
+RUN chown -R appuser:appuser /app
+USER appuser
+
 EXPOSE 8028
 CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8028} --workers ${WEB_CONCURRENCY:-4}

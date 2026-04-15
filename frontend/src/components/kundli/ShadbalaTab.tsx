@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Loader2, ChevronDown, ChevronRight } from 'lucide-react';
 import { translatePlanet } from '@/lib/backend-translations';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
+import { Heading } from '@/components/ui/heading';
 
 // Shadbala detail key translations
 const STHANA_DETAIL_KEYS: Record<string, { en: string; hi: string }> = {
@@ -44,21 +46,21 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
   if (loadingShadbala) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
-        <span className="ml-2 text-cosmic-text">{t('kundli.calculatingShadbala')}</span>
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+        <span className="ml-2 text-foreground">{t('kundli.calculatingShadbala')}</span>
       </div>
     );
   }
 
   if (!shadbalaData?.planets) {
-    return <p className="text-center text-cosmic-text py-8">{t('kundli.clickShadbalaTab')}</p>;
+    return <p className="text-center text-foreground py-8">{t('kundli.clickShadbalaTab')}</p>;
   }
 
   return (
     <div className="space-y-6">
-      <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
-        <h4 className="text-lg font-semibold text-gray-800 mb-4">{t('section.shadbalaStrength')}</h4>
-        <div className="flex items-end justify-around gap-2" style={{ height: '280px' }}>
+      <div className="bg-muted rounded-xl p-5 border border-border">
+        <Heading as={4} variant={4} className="mb-4">{t('section.shadbalaStrength')}</Heading>
+        <div className="flex items-end justify-around gap-2" className="h-[280px]">
           {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
             const data = shadbalaData.planets[planet];
             if (!data) return null;
@@ -71,10 +73,10 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
             const requiredPct = (1 / 1.5) * 100;
             return (
               <div key={planet} className="flex flex-col items-center gap-1 flex-1 min-w-[60px]">
-                <span className={`text-sm font-bold ${isStrong ? 'text-sacred-brown' : 'text-cosmic-text'}`}>
+                <span className={`text-sm font-bold ${isStrong ? 'text-foreground' : 'text-foreground'}`}>
                   {total.toFixed(1)}
                 </span>
-                <div className="relative w-full flex justify-center bg-sacred-gold/20 rounded-t-lg" style={{ height: '200px' }}>
+                <div className="relative w-full flex justify-center bg-muted/20 rounded-t-lg" className="h-[200px]">
                   {/* Required line */}
                   <div
                     className="absolute w-full border-t-2 border-dashed border-red-500 z-10"
@@ -92,12 +94,12 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
                   >
                     {ratio > 1.2 && (
                       <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
-                        <span className="text-xs text-sacred-gold-dark">★</span>
+                        <span className="text-xs text-primary">★</span>
                       </div>
                     )}
                   </div>
                 </div>
-                <span className="text-xs font-medium text-sacred-brown text-center leading-tight mt-1">
+                <span className="text-xs font-medium text-foreground text-center leading-tight mt-1">
                   {translatePlanet(planet, language)}
                 </span>
                 <span className={`text-xs ${isStrong ? 'text-green-600 font-semibold' : 'text-red-500'}`}>
@@ -107,7 +109,7 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
             );
           })}
         </div>
-        <div className="flex items-center justify-center gap-6 mt-4 text-sm text-cosmic-text">
+        <div className="flex items-center justify-center gap-6 mt-4 text-sm text-foreground">
           <div className="flex items-center gap-1">
             <div className="w-3 h-3 rounded" style={{ backgroundColor: '#16a34a' }} />
             <span>{t('kundli.strong')}</span>
@@ -117,7 +119,7 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
             <span>{t('kundli.weak')}</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-6 border-t-2 border-dashed border-sacred-brown" />
+            <div className="w-6 border-t-2 border-dashed border-border" />
             <span>{t('auto.required')}</span>
           </div>
         </div>
@@ -125,8 +127,8 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
 
       {/* Bhav Bala */}
       {shadbalaData.bhav_bala && (
-        <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
-          <h4 className="text-lg font-semibold text-gray-800 mb-4">{t('auto.bhavBalaHouseStrengt')}</h4>
+        <div className="bg-muted rounded-xl p-5 border border-border">
+          <Heading as={4} variant={4} className="mb-4">{t('auto.bhavBalaHouseStrengt')}</Heading>
           <div className="overflow-x-auto -mx-1 px-1">
             <div className="flex items-end gap-1" style={{ height: '220px', minWidth: '420px' }}>
               {Array.from({ length: 12 }, (_, i) => i + 1).map((house) => {
@@ -138,14 +140,14 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
                 return (
                   <div key={house} className="flex flex-col items-center gap-1 flex-1">
                     <span className="text-xs font-bold" style={{ color: barColor }}>{data.total.toFixed(1)}</span>
-                    <div className="relative w-full flex justify-center bg-sacred-gold/20 rounded-t-lg" style={{ height: '160px' }}>
+                    <div className="relative w-full flex justify-center bg-muted/20 rounded-t-lg" className="h-[160px]">
                       <div
                         className="w-6 rounded-t-lg transition-all duration-500"
                         style={{ height: `${barHeight}%`, backgroundColor: barColor, alignSelf: 'flex-end' }}
                       />
                     </div>
-                    <span className="text-xs font-medium text-sacred-brown text-center mt-1">{house}</span>
-                    <span className="text-center leading-tight text-cosmic-text" style={{ fontSize: '9px' }}>
+                    <span className="text-xs font-medium text-foreground text-center mt-1">{house}</span>
+                    <span className="text-center leading-tight text-foreground" style={{ fontSize: '9px' }}>
                       {data.sign?.substring(0, 3)}
                     </span>
                   </div>
@@ -153,32 +155,32 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
               })}
             </div>
           </div>
-          <div className="flex items-center justify-center gap-6 mt-3 text-sm text-cosmic-text">
+          <div className="flex items-center justify-center gap-6 mt-3 text-sm text-foreground">
             <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#16a34a' }} />{t('auto.strong')}</span>
             <span className="flex items-center gap-1"><span className="w-2 h-2 rounded" style={{ backgroundColor: '#dc2626' }} />{t('auto.weak')}</span>
-            <span className="text-xs text-cosmic-text">{t('auto.valuesInRupas')}</span>
+            <span className="text-xs text-foreground">{t('auto.valuesInRupas')}</span>
           </div>
         </div>
       )}
 
-      <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
-        <h4 className="text-lg font-semibold text-gray-800 mb-4">{t('section.detailedBreakdown')}</h4>
+      <div className="bg-muted rounded-xl p-5 border border-border">
+        <Heading as={4} variant={4} className="mb-4">{t('section.detailedBreakdown')}</Heading>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-sacred-gold">
-                <th className="text-left p-2 text-sacred-gold-dark font-medium text-xs">{t('table.planet')}</th>
-                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{t('auto.sthana')}</th>
-                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{t('auto.dig')}</th>
-                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{t('auto.kala')}</th>
-                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{t('auto.cheshta')}</th>
-                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{t('auto.naisargika')}</th>
-                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{t('auto.drik')}</th>
-                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{t('table.total')}</th>
-                <th className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{t('auto.ratio')}</th>
-              </tr>
-            </thead>
-            <tbody>
+          <Table className="w-full text-sm border-collapse">
+            <TableHeader>
+              <TableRow className="bg-muted">
+                <TableHead className="text-left p-2 text-primary font-medium text-xs">{t('table.planet')}</TableHead>
+                <TableHead className="text-center p-2 text-primary font-medium text-xs">{t('auto.sthana')}</TableHead>
+                <TableHead className="text-center p-2 text-primary font-medium text-xs">{t('auto.dig')}</TableHead>
+                <TableHead className="text-center p-2 text-primary font-medium text-xs">{t('auto.kala')}</TableHead>
+                <TableHead className="text-center p-2 text-primary font-medium text-xs">{t('auto.cheshta')}</TableHead>
+                <TableHead className="text-center p-2 text-primary font-medium text-xs">{t('auto.naisargika')}</TableHead>
+                <TableHead className="text-center p-2 text-primary font-medium text-xs">{t('auto.drik')}</TableHead>
+                <TableHead className="text-center p-2 text-primary font-medium text-xs">{t('table.total')}</TableHead>
+                <TableHead className="text-center p-2 text-primary font-medium text-xs">{t('auto.ratio')}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
                 const d = shadbalaData.planets[planet];
                 if (!d) return null;
@@ -186,31 +188,31 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
                 const isExpanded = expandedPlanets.has(planet);
                 return (
                   <React.Fragment key={planet}>
-                    <tr
-                      className={`border-t border-sacred-gold/50 ${d.is_strong ? 'bg-white' : 'bg-red-50/30'} ${hasDetail ? 'cursor-pointer hover:bg-sacred-gold/10' : ''} transition-colors`}
+                    <TableRow
+                      className={`border-t border-border/50 ${d.is_strong ? 'bg-white' : 'bg-red-50/30'} ${hasDetail ? 'cursor-pointer hover:bg-muted/10' : ''} transition-colors`}
                       onClick={hasDetail ? () => toggleExpand(planet) : undefined}
                     >
-                      <td className="p-2 text-sacred-brown font-medium">
+                      <TableCell className="p-2 text-foreground font-medium">
                         <div className="flex items-center gap-1">
-                          {hasDetail && (isExpanded ? <ChevronDown className="w-3 h-3 text-sacred-gold-dark" /> : <ChevronRight className="w-3 h-3 text-sacred-gold-dark" />)}
+                          {hasDetail && (isExpanded ? <ChevronDown className="w-3 h-3 text-primary" /> : <ChevronRight className="w-3 h-3 text-primary" />)}
                           {translatePlanet(planet, language)}
                         </div>
-                      </td>
-                      <td className="text-center p-2 text-cosmic-text text-xs">{d.sthana?.toFixed ? d.sthana.toFixed(2) : d.sthana}</td>
-                      <td className="text-center p-2 text-cosmic-text text-xs">{d.dig?.toFixed ? d.dig.toFixed(2) : d.dig}</td>
-                      <td className="text-center p-2 text-cosmic-text text-xs">{d.kala?.toFixed ? d.kala.toFixed(2) : d.kala}</td>
-                      <td className="text-center p-2 text-cosmic-text text-xs">{d.cheshta?.toFixed ? d.cheshta.toFixed(2) : d.cheshta}</td>
-                      <td className="text-center p-2 text-cosmic-text text-xs">{d.naisargika?.toFixed ? d.naisargika.toFixed(2) : d.naisargika}</td>
-                      <td className="text-center p-2 text-cosmic-text text-xs">{d.drik?.toFixed ? d.drik.toFixed(2) : d.drik}</td>
-                      <td className={`text-center p-2 font-semibold text-xs ${d.is_strong ? 'text-green-600' : 'text-red-600'}`}>{d.total?.toFixed ? d.total.toFixed(2) : d.total}</td>
-                      <td className={`text-center p-2 font-medium text-xs ${d.ratio >= 1 ? 'text-green-600' : 'text-red-600'}`}>{d.ratio?.toFixed ? d.ratio.toFixed(2) : d.ratio}x</td>
-                    </tr>
+                      </TableCell>
+                      <TableCell className="text-center p-2 text-foreground text-xs">{d.sthana?.toFixed ? d.sthana.toFixed(2) : d.sthana}</TableCell>
+                      <TableCell className="text-center p-2 text-foreground text-xs">{d.dig?.toFixed ? d.dig.toFixed(2) : d.dig}</TableCell>
+                      <TableCell className="text-center p-2 text-foreground text-xs">{d.kala?.toFixed ? d.kala.toFixed(2) : d.kala}</TableCell>
+                      <TableCell className="text-center p-2 text-foreground text-xs">{d.cheshta?.toFixed ? d.cheshta.toFixed(2) : d.cheshta}</TableCell>
+                      <TableCell className="text-center p-2 text-foreground text-xs">{d.naisargika?.toFixed ? d.naisargika.toFixed(2) : d.naisargika}</TableCell>
+                      <TableCell className="text-center p-2 text-foreground text-xs">{d.drik?.toFixed ? d.drik.toFixed(2) : d.drik}</TableCell>
+                      <TableCell className={`text-center p-2 font-semibold text-xs ${d.is_strong ? 'text-green-600' : 'text-red-600'}`}>{d.total?.toFixed ? d.total.toFixed(2) : d.total}</TableCell>
+                      <TableCell className={`text-center p-2 font-medium text-xs ${d.ratio >= 1 ? 'text-green-600' : 'text-red-600'}`}>{d.ratio?.toFixed ? d.ratio.toFixed(2) : d.ratio}x</TableCell>
+                    </TableRow>
                     {isExpanded && d.sthana_detail && (
-                      <tr className="bg-sacred-cream">
-                        <td className="p-2 pl-6 text-sm text-cosmic-text italic" colSpan={2}>
+                      <TableRow className="bg-muted">
+                        <TableCell className="p-2 pl-6 text-sm text-foreground italic" colSpan={2}>
                           {t('auto.sthanaDetail')}
-                        </td>
-                        <td colSpan={7} className="p-2 text-sm text-cosmic-text">
+                        </TableCell>
+                        <TableCell colSpan={7} className="p-2 text-sm text-foreground">
                           {(['uchcha', 'saptavargaja', 'ojhayugma', 'kendra', 'drekkana'] as const)
                             .filter((k) => d.sthana_detail[k] != null)
                             .map((k) => {
@@ -218,15 +220,15 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
                               return `${label}: ${d.sthana_detail[k]}`;
                             })
                             .join(' | ')}
-                        </td>
-                      </tr>
+                        </TableCell>
+                      </TableRow>
                     )}
                     {isExpanded && d.kala_detail && (
-                      <tr className="bg-sacred-cream">
-                        <td className="p-2 pl-6 text-sm text-cosmic-text italic" colSpan={2}>
+                      <TableRow className="bg-muted">
+                        <TableCell className="p-2 pl-6 text-sm text-foreground italic" colSpan={2}>
                           {t('auto.kalaDetail')}
-                        </td>
-                        <td colSpan={7} className="p-2 text-sm text-cosmic-text">
+                        </TableCell>
+                        <TableCell colSpan={7} className="p-2 text-sm text-foreground">
                           {(['nathonnatha', 'paksha', 'tribhaga', 'abda', 'masa', 'vara', 'hora', 'ayana'] as const)
                             .filter((k) => d.kala_detail[k] != null)
                             .map((k) => {
@@ -234,14 +236,14 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
                               return `${label}: ${d.kala_detail[k]}`;
                             })
                             .join(' | ')}
-                        </td>
-                      </tr>
+                        </TableCell>
+                      </TableRow>
                     )}
                   </React.Fragment>
                 );
               })}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       </div>
     </div>

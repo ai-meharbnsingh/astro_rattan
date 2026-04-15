@@ -1,6 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Calendar, Sun, Moon, Clock, Info } from 'lucide-react';
 import type { FullPanchangData } from '@/sections/Panchang';
+import { Heading } from "@/components/ui/heading";
 
 interface Props {
   panchang: FullPanchangData;
@@ -79,62 +80,62 @@ export default function CalendarTab({ panchang, language, t }: Props) {
       {/* Hindu Calendar Overview */}
       <Card className="card-sacred border-sacred-gold/30">
         <CardContent className="p-6">
-          <h3 className="text-xl font-bold text-cosmic-text-primary mb-6 flex items-center gap-2">
+          <h3 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
             <Calendar className="h-6 w-6 text-sacred-gold" />
             {t('auto.hinduCalendar')}
           </h3>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Vikram Samvat */}
-            <div className="p-4 rounded-xl bg-cosmic-card/50">
-              <p className="text-sm text-cosmic-text-secondary mb-1">
+            <div className="p-4 rounded-xl bg-card/50">
+              <p className="text-sm text-muted-foreground mb-1">
                 {t('auto.vikramSamvat')}
               </p>
               <p className="text-2xl font-bold text-sacred-gold">
                 {calendar.vikram_samvat}
               </p>
-              <p className="text-xs text-cosmic-text-secondary mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {t('auto.hinduNewYearEra')}
               </p>
             </div>
 
             {/* Shaka Samvat */}
-            <div className="p-4 rounded-xl bg-cosmic-card/50">
-              <p className="text-sm text-cosmic-text-secondary mb-1">
+            <div className="p-4 rounded-xl bg-card/50">
+              <p className="text-sm text-muted-foreground mb-1">
                 {t('auto.shakaSamvat')}
               </p>
-              <p className="text-2xl font-bold text-cosmic-text-primary">
+              <p className="text-2xl font-bold text-foreground">
                 {calendar.shaka_samvat}
               </p>
-              <p className="text-xs text-cosmic-text-secondary mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {t('auto.nationalCalendarEra')}
               </p>
             </div>
 
             {/* Month */}
-            <div className="p-4 rounded-xl bg-cosmic-card/50">
-              <p className="text-sm text-cosmic-text-secondary mb-1">
+            <div className="p-4 rounded-xl bg-card/50">
+              <p className="text-sm text-muted-foreground mb-1">
                 {t('auto.monthMaas')}
               </p>
-              <p className="text-2xl font-bold text-cosmic-text-primary">
+              <p className="text-2xl font-bold text-foreground">
                 {language === 'hi' ? calendar.maas_hindi || maasInfo.hi : maasInfo.en}
               </p>
-              <p className="text-xs text-cosmic-text-secondary mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {t('auto.deityMaasInfoDeityEn')}
               </p>
             </div>
 
             {/* Paksha */}
-            <div className="p-4 rounded-xl bg-cosmic-card/50">
-              <p className="text-sm text-cosmic-text-secondary mb-1">
+            <div className="p-4 rounded-xl bg-card/50">
+              <p className="text-sm text-muted-foreground mb-1">
                 {t('auto.pakshaLunarFortnight')}
               </p>
-              <p className="text-2xl font-bold text-cosmic-text-primary">
+              <p className="text-2xl font-bold text-foreground">
                 {language === 'hi' 
                   ? calendar.paksha_hindi || PAKSHA_INFO[calendar.paksha]?.hi || calendar.paksha
                   : PAKSHA_INFO[calendar.paksha]?.en || calendar.paksha}
               </p>
-              <p className="text-xs text-cosmic-text-secondary mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {language === 'hi' 
                   ? calendar.paksha === 'Shukla' ? 'बढ़ता चांद' : 'घटता चांद'
                   : calendar.paksha === 'Shukla' ? 'Waxing Moon' : 'Waning Moon'}
@@ -153,15 +154,15 @@ export default function CalendarTab({ panchang, language, t }: Props) {
                 <Sun className="h-5 w-5 text-green-500" />
               </div>
               <div>
-                <p className="text-sm text-cosmic-text-secondary">
+                <p className="text-sm text-muted-foreground">
                   {t('auto.seasonRitu')}
                 </p>
-                <h4 className="text-xl font-bold text-cosmic-text-primary">
+                <Heading as={4} variant={4}>
                   {language === 'hi' ? rituInfo.hi : rituInfo.en}
-                </h4>
+                </Heading>
               </div>
             </div>
-            <p className="text-sm text-cosmic-text-secondary">
+            <p className="text-sm text-muted-foreground">
               {language === 'hi' ? rituInfo.description.hi : rituInfo.description.en}
             </p>
           </CardContent>
@@ -174,15 +175,15 @@ export default function CalendarTab({ panchang, language, t }: Props) {
                 <Clock className="h-5 w-5 text-orange-500" />
               </div>
               <div>
-                <p className="text-sm text-cosmic-text-secondary">
+                <p className="text-sm text-muted-foreground">
                   {t('auto.ayanaSunsJourney')}
                 </p>
-                <h4 className="text-xl font-bold text-cosmic-text-primary">
+                <Heading as={4} variant={4}>
                   {language === 'hi' ? ayanaInfo.hi : ayanaInfo.en}
-                </h4>
+                </Heading>
               </div>
             </div>
-            <p className="text-sm text-cosmic-text-secondary">
+            <p className="text-sm text-muted-foreground">
               {language === 'hi' ? ayanaInfo.meaning.hi : ayanaInfo.meaning.en}
             </p>
           </CardContent>
@@ -195,12 +196,12 @@ export default function CalendarTab({ panchang, language, t }: Props) {
           <div className="flex items-start gap-3">
             <Info className="h-5 w-5 text-sacred-gold mt-0.5" />
             <div>
-              <h4 className="font-semibold text-cosmic-text-primary mb-2">
+              <Heading as={4} variant={4}>
                 {t('auto.aboutHinduCalendar')}
-              </h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-cosmic-text-secondary">
+              </Heading>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-muted-foreground">
                 <div>
-                  <strong className="text-cosmic-text-primary">
+                  <strong className="text-foreground">
                     {t('auto.vikramSamvat')}
                   </strong>
                   <p className="mt-1">
@@ -208,7 +209,7 @@ export default function CalendarTab({ panchang, language, t }: Props) {
                   </p>
                 </div>
                 <div>
-                  <strong className="text-cosmic-text-primary">
+                  <strong className="text-foreground">
                     {t('auto.shakaSamvat')}
                   </strong>
                   <p className="mt-1">
@@ -216,7 +217,7 @@ export default function CalendarTab({ panchang, language, t }: Props) {
                   </p>
                 </div>
                 <div>
-                  <strong className="text-cosmic-text-primary">
+                  <strong className="text-foreground">
                     {t('auto.ayana')}
                   </strong>
                   <p className="mt-1">
@@ -224,7 +225,7 @@ export default function CalendarTab({ panchang, language, t }: Props) {
                   </p>
                 </div>
                 <div>
-                  <strong className="text-cosmic-text-primary">
+                  <strong className="text-foreground">
                     {t('auto.ritu')}
                   </strong>
                   <p className="mt-1">

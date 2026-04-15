@@ -10,9 +10,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import StreamingResponse
 
 from app.database import get_db
+from app.auth import get_current_user, require_role
 from app.panchang_engine import (
     calculate_panchang,
-    calculate_rahu_kaal,
     calculate_choghadiya,
 )
 from app.festival_engine import detect_festivals
@@ -322,6 +322,23 @@ def get_monthly_panchang(
             maas=panchang.get("hindu_calendar", {}).get("maas", ""),
             gregorian_date=d_str,
         )
+        # Cache the freshly calculated day for future requests
+        db.execute(
+            """INSERT INTO panchang_cache
+               (date, latitude, longitude, tithi, nakshatra, yoga, karana,
+                rahu_kaal, choghadiya, sunrise, sunset, moonrise, moonset)
+               VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+               ON CONFLICT (date, latitude, longitude) DO NOTHING""",
+            (
+                d_str, latitude, longitude,
+                json.dumps(panchang["tithi"]), json.dumps(panchang["nakshatra"]),
+                json.dumps(panchang["yoga"]), json.dumps(panchang.get("karana", {})),
+                json.dumps(panchang.get("rahu_kaal", {})), "{}",
+                panchang["sunrise"], panchang["sunset"],
+                panchang.get("moonrise", "--:--"), panchang.get("moonset", "--:--"),
+            ),
+        )
+        db.commit()
         days.append({
             "date": d_str,
             "weekday": d.strftime("%A"),
@@ -773,6 +790,7 @@ async def download_panchang_pdf(
 def cleanup_panchang_cache(
     max_age_days: int = Query(default=7, ge=1),
     db: Any = Depends(get_db),
+    current_user: dict = Depends(require_role("admin")),
 ):
     """
     Remove panchang cache entries older than max_age_days.

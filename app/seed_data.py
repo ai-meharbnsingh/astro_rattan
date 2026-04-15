@@ -1,8 +1,10 @@
 """Seed the database with initial spiritual content, festivals, and products."""
 import json
+import logging
 import uuid
 import psycopg2
-import psycopg2.extras
+
+logger = logging.getLogger(__name__)
 
 from app.database import init_db, DATABASE_URL, PgConnection
 
@@ -25,11 +27,11 @@ def seed_all(db_path: str = None):
         row = conn.execute("SELECT COUNT(*) as c FROM content_library").fetchone()
         count = row["c"]
         if count > 0:
-            print(f"[seed] content_library already has {count} rows — skipping seed.")
+            logger.info("[seed] content_library already has %d rows — skipping seed.", count)
             raw.close()
             return
 
-        print("[seed] Seeding database...")
+        logger.info("[seed] Seeding database...")
 
         # ------------------------------------------------------------------
         # 1. Gita Chapters (18 entries, category='gita')
@@ -533,11 +535,11 @@ def seed_all(db_path: str = None):
         festival_count = conn.execute("SELECT COUNT(*) as c FROM festivals").fetchone()["c"]
         product_count = conn.execute("SELECT COUNT(*) as c FROM products").fetchone()["c"]
 
-        print(f"[seed] Done! content_library={content_count}, festivals={festival_count}, products={product_count}")
+        logger.info("[seed] Done! content_library=%d, festivals=%d, products=%d", content_count, festival_count, product_count)
 
     except Exception as e:
         raw.rollback()
-        print(f"[seed] ERROR: {e}")
+        logger.error("[seed] ERROR: %s", e)
         raise
     finally:
         raw.close()

@@ -95,7 +95,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
             <h2 className="text-2xl font-sans font-bold text-sacred-gold mb-1">
               {t('lk.advanced.karmicScore')}
             </h2>
-            <p className="text-sm text-cosmic-text/60 max-w-md">
+            <p className="text-sm text-foreground/60 max-w-md">
               {t('lk.advanced.scoreDesc')}
             </p>
           </div>
@@ -124,7 +124,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
         <h2 className="text-2xl font-sans font-bold text-sacred-gold mb-2">
           {t('lk.advanced.title')}
         </h2>
-        <p className="text-cosmic-text/70">{t('lk.advanced.desc')}</p>
+        <p className="text-foreground/70">{t('lk.advanced.desc')}</p>
       </div>
 
       {/* Teva Typology */}
@@ -135,7 +135,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
               <EyeOff className={`w-6 h-6 ${data.teva_type.is_andha ? 'text-red-600' : 'text-gray-400'}`} />
               <h3 className="font-sans font-bold text-lg">{t('lk.advanced.andhaTeva')}</h3>
             </div>
-            <p className="text-xs text-cosmic-text/80 leading-relaxed mb-4">
+            <p className="text-xs text-foreground/80 leading-relaxed mb-4">
               {isHi ? data.teva_type.description.andha.hi : data.teva_type.description.andha.en}
             </p>
           </div>
@@ -152,7 +152,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
               <Moon className={`w-6 h-6 ${data.teva_type.is_ratondha ? 'text-orange-600' : 'text-gray-400'}`} />
               <h3 className="font-sans font-bold text-lg">{t('lk.advanced.ratondhaTeva')}</h3>
             </div>
-            <p className="text-xs text-cosmic-text/80 leading-relaxed mb-4">
+            <p className="text-xs text-foreground/80 leading-relaxed mb-4">
               {isHi ? data.teva_type.description.ratondha.hi : data.teva_type.description.ratondha.en}
             </p>
           </div>
@@ -169,7 +169,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
               <HandMetal className={`w-6 h-6 ${data.teva_type.is_dharmi ? 'text-green-600' : 'text-gray-400'}`} />
               <h3 className="font-sans font-bold text-lg">{t('lk.advanced.dharmiTeva')}</h3>
             </div>
-            <p className="text-xs text-cosmic-text/80 leading-relaxed mb-4">
+            <p className="text-xs text-foreground/80 leading-relaxed mb-4">
               {isHi ? data.teva_type.description.dharmi.hi : data.teva_type.description.dharmi.en}
             </p>
           </div>
@@ -186,7 +186,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
           <div className="flex items-center gap-2">
             <Zap className="w-5 h-5 text-sacred-gold" />
-            <h3 className="text-xl font-sans font-bold text-cosmic-text">{t('lk.advanced.masnuiGrah')}</h3>
+            <h3 className="text-xl font-sans font-bold text-foreground">{t('lk.advanced.masnuiGrah')}</h3>
           </div>
           {masnuiList.length > 0 && (
             <span className="text-[10px] font-bold text-sacred-gold-dark bg-sacred-gold/10 px-2 py-1 rounded border border-sacred-gold/20 uppercase tracking-widest animate-pulse">
@@ -201,18 +201,18 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
             <h4 className="font-bold text-purple-800 mb-2 text-sm uppercase tracking-wider">
               {t('auto.psychologicalProfile')}
             </h4>
-            <p className="text-sm text-cosmic-text mb-2">
+            <p className="text-sm text-foreground mb-2">
               {isHi 
                 ? data.masnui_planets.psychological_profile.dominant_quality?.hi 
                 : data.masnui_planets.psychological_profile.dominant_quality?.en}
             </p>
-            <p className="text-xs text-cosmic-text/70">
+            <p className="text-xs text-foreground/70">
               <span className="font-semibold">{t('auto.behavioralTendencies')}</span>
               {isHi 
                 ? data.masnui_planets.psychological_profile.behavioral_tendencies?.hi 
                 : data.masnui_planets.psychological_profile.behavioral_tendencies?.en}
             </p>
-            <p className="text-xs text-cosmic-text/70 mt-1">
+            <p className="text-xs text-foreground/70 mt-1">
               <span className="font-semibold">{t('auto.relationshipApproach')}</span>
               {isHi 
                 ? data.masnui_planets.psychological_profile.relationship_approach?.hi 
@@ -237,7 +237,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                     {isHi ? override.house_name?.hi : override.house_name?.en}
                   </span>
                 </div>
-                <p className="text-xs text-cosmic-text mb-2">
+                <p className="text-xs text-foreground mb-2">
                   <span className="font-semibold">{t('auto.effects')}</span>
                   {isHi ? override.effects?.hi : override.effects?.en}
                 </p>
@@ -258,7 +258,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
             </h4>
             <ul className="space-y-2">
               {data.masnui_planets.predictive_notes.map((note: any, i: number) => (
-                <li key={i} className="text-xs text-cosmic-text flex items-start gap-2">
+                <li key={i} className="text-xs text-foreground flex items-start gap-2">
                   <span className="text-blue-500 mt-0.5">•</span>
                   <span>{isHi ? note.note?.hi : note.note?.en}</span>
                 </li>
@@ -272,7 +272,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
             <div className="lg:col-span-2 p-4 rounded-2xl bg-sacred-gold/5 border border-sacred-gold/20 flex flex-col items-center">
               <p className="text-[10px] font-bold text-sacred-gold uppercase tracking-widest mb-4">Visual Alchemy Map</p>
               <LalKitabDiagnosticChart type="masnui" planetPositions={planetPositions} masnuiData={masnuiList} />
-              <p className="text-[10px] text-cosmic-text/50 mt-4 text-center px-4 italic">
+              <p className="text-[10px] text-foreground/50 mt-4 text-center px-4 italic">
                 Glowing circles indicate synthetic planets formed by alchemical conjunctions.
               </p>
             </div>
@@ -285,11 +285,11 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                   <span className="text-xs font-bold text-sacred-gold-dark uppercase tracking-wider">{t('lk.kundli.house')} {m.house}</span>
                   <span className="px-2 py-0.5 rounded bg-sacred-gold/10 text-sacred-gold-dark text-[10px] font-bold">MASNUI</span>
                 </div>
-                <p className="text-sm font-bold text-cosmic-text mb-1">
+                <p className="text-sm font-bold text-foreground mb-1">
                   {m.formed_by.map((p: string) => translatePlanet(p, language)).join(' + ')}
                 </p>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs text-cosmic-text/60">→</span>
+                  <span className="text-xs text-foreground/60">→</span>
                   <span className="text-lg font-bold text-sacred-gold-dark">{translatePlanet(m.masnui_planet, language)}</span>
                 </div>
                 {m.quality && (
@@ -302,7 +302,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                     {m.quality}
                   </span>
                 )}
-                <p className="text-xs text-cosmic-text/70 italic border-t border-sacred-gold/10 pt-2 mt-2">
+                <p className="text-xs text-foreground/70 italic border-t border-sacred-gold/10 pt-2 mt-2">
                   {t('lk.advanced.affectedDomain')}: {isHi ? m.affected_domain.hi : m.affected_domain.en}
                 </p>
                 {m.house_override && (
@@ -358,7 +358,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                     {t('auto.horaBasedDebt')}
                     {isHi ? data.karmic_debts_hora_analysis.hora_analysis.base_debt.debt_hi : data.karmic_debts_hora_analysis.hora_analysis.base_debt.debt}
                   </h4>
-                  <p className="text-sm text-cosmic-text">
+                  <p className="text-sm text-foreground">
                     {isHi ? data.karmic_debts_hora_analysis.hora_analysis.base_debt.description.hi : data.karmic_debts_hora_analysis.hora_analysis.base_debt.description.en}
                   </p>
                 </div>
@@ -398,7 +398,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
 
               {/* Hora Influence Summary */}
               {data.karmic_debts_hora_analysis.hora_influence && (
-                <div className="text-sm text-cosmic-text bg-white/50 p-3 rounded">
+                <div className="text-sm text-foreground bg-white/50 p-3 rounded">
                   <p>
                     <span className="font-semibold">{t('auto.horaInfluence')}</span>
                     {data.karmic_debts_hora_analysis.hora_influence.added_new_debt 
@@ -410,7 +410,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
               )}
             </div>
           ) : (
-            <p className="text-sm text-cosmic-text italic">
+            <p className="text-sm text-foreground italic">
               {t('auto.horaAnalysisCouldNot')}
             </p>
           )}
@@ -421,7 +421,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
       <section>
         <div className="flex items-center gap-2 mb-4">
           <History className="w-5 h-5 text-sacred-gold" />
-          <h3 className="text-xl font-sans font-bold text-cosmic-text">{t('lk.advanced.karmicDebts')}</h3>
+          <h3 className="text-xl font-sans font-bold text-foreground">{t('lk.advanced.karmicDebts')}</h3>
         </div>
         <div className="space-y-4">
           {data.karmic_debts.map((debt: any, i: number) => (
@@ -460,12 +460,12 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
               </div>
               <div className="bg-white/60 p-3 rounded-lg border border-red-100 mb-3">
                 <p className="text-xs font-bold text-red-800 mb-1 uppercase tracking-tighter">{t('lk.advanced.manifestation')}</p>
-                <p className="text-sm text-cosmic-text leading-relaxed">{isHi ? debt.manifestation.hi : debt.manifestation.en}</p>
+                <p className="text-sm text-foreground leading-relaxed">{isHi ? debt.manifestation.hi : debt.manifestation.en}</p>
               </div>
               {debt.remedy && (
                 <div className="bg-green-600/5 p-3 rounded-lg border border-green-600/20">
                   <p className="text-xs font-bold text-green-800 mb-1 uppercase tracking-tighter">{t('lk.advanced.remedy')}</p>
-                  <p className="text-sm text-cosmic-text leading-relaxed font-medium">{isHi ? debt.remedy.hi : debt.remedy.en}</p>
+                  <p className="text-sm text-foreground leading-relaxed font-medium">{isHi ? debt.remedy.hi : debt.remedy.en}</p>
                 </div>
               )}
             </div>
@@ -482,9 +482,9 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
       <section>
         <div className="flex items-center gap-2 mb-4">
           <ShieldAlert className="w-5 h-5 text-red-600" />
-          <h3 className="text-xl font-sans font-bold text-cosmic-text">{t('lk.advanced.prohibitions')}</h3>
+          <h3 className="text-xl font-sans font-bold text-foreground">{t('lk.advanced.prohibitions')}</h3>
         </div>
-        <p className="text-sm text-cosmic-text/70 mb-4">{t('lk.advanced.prohibitionDesc')}</p>
+        <p className="text-sm text-foreground/70 mb-4">{t('lk.advanced.prohibitionDesc')}</p>
         <div className="grid gap-4">
           {data.prohibitions.map((p: any, i: number) => (
             <div key={i} className="flex gap-4 p-4 rounded-xl border border-orange-200 bg-orange-50">
@@ -495,7 +495,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="font-bold text-cosmic-text">
+                  <span className="font-bold text-foreground">
                     {isHi 
                       ? `${p.house}${t('lk.advanced.inHouse')} ${translatePlanet(p.planet, language)}` 
                       : `${translatePlanet(p.planet, language)} ${t('lk.advanced.inHouse')} ${p.house}`
@@ -508,7 +508,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                 </div>
                 <div className="flex items-start gap-2 text-xs">
                   <AlertTriangle className="w-3 h-3 text-red-600 mt-0.5" />
-                  <span className="text-cosmic-text/70"><strong className="text-red-600">{t('lk.advanced.backlashRisk')}:</strong> {isHi ? p.backlash_risk.hi : p.backlash_risk.en}</span>
+                  <span className="text-foreground/70"><strong className="text-red-600">{t('lk.advanced.backlashRisk')}:</strong> {isHi ? p.backlash_risk.hi : p.backlash_risk.en}</span>
                 </div>
               </div>
             </div>

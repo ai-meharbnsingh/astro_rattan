@@ -7,6 +7,11 @@ import {
   ChevronDown, ChevronUp, Filter,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import {
+  Table, TableHeader, TableBody, TableRow, TableHead, TableCell,
+} from '@/components/ui/table';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { api, formatDate } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/lib/i18n';
@@ -89,7 +94,7 @@ function WordCloud({ words }: { words: WordCloudWord[] }) {
   const l = (en: string, hi: string) => (language === 'hi' ? hi : en);
   if (!words.length) {
     return (
-      <div className="flex flex-col items-center justify-center py-8 text-gray-400 text-sm gap-2">
+      <div className="flex flex-col items-center justify-center py-8 text-muted-foreground text-sm gap-2">
         <MessageSquare className="w-6 h-6 text-gray-200" />
         <span>{l('Word cloud appears when users submit open feedback', 'जब उपयोगकर्ता खुला फीडबैक भेजते हैं तब वर्ड क्लाउड दिखेगा')}</span>
       </div>
@@ -133,7 +138,7 @@ function FeedbackRow({
     try {
       await api.patch(`/api/admin/feedback/${item.id}`, { action_taken: action });
       onUpdated(item.id, { action_taken: action as FeedbackItem['action_taken'] });
-    } catch (e) { console.error(e); }
+    } catch { /* ignored */ }
   };
 
   const saveRemarks = async () => {
@@ -142,34 +147,34 @@ function FeedbackRow({
     try {
       await api.patch(`/api/admin/feedback/${item.id}`, { admin_remarks: val });
       onUpdated(item.id, { admin_remarks: val });
-    } catch (e) { console.error(e); }
+    } catch { /* ignored */ }
   };
 
   const ratingCell = (v: number | null) =>
     v ? (
       <span className="inline-flex items-center gap-0.5">
         <Star className="w-3 h-3 text-sacred-gold-dark fill-current" />
-        <span className="text-xs font-medium text-cosmic-text">{v}</span>
+        <span className="text-xs font-medium text-foreground">{v}</span>
       </span>
-    ) : <span className="text-xs text-gray-300">—</span>;
+    ) : <span className="text-xs text-muted-foreground">—</span>;
 
   const actionStyle: Record<string, string> = {
     yes: 'text-green-700 bg-green-50 border-green-200',
     no:  'text-red-600 bg-red-50 border-red-200',
-    NR:  'text-gray-500 bg-gray-50 border-gray-200',
+    NR:  'text-muted-foreground bg-gray-50 border-gray-200',
   };
 
   return (
     <tr className="border-b border-gray-50 hover:bg-sacred-gold/4 transition-colors align-top">
       {/* User */}
       <td className="py-3 px-4">
-        <p className="text-sm font-medium text-cosmic-text">{item.user_name}</p>
-        <p className="text-xs text-gray-400">{item.user_email}</p>
+        <p className="text-sm font-medium text-foreground">{item.user_name}</p>
+        <p className="text-xs text-muted-foreground">{item.user_email}</p>
       </td>
 
       {/* Ratings */}
       <td className="py-3 px-4">
-        <div className="flex flex-col gap-1 text-xs text-gray-400">
+        <div className="flex flex-col gap-1 text-xs text-muted-foreground">
           <span>{l('UI', 'इंटरफ़ेस')} {ratingCell(item.rating_interface)}</span>
           <span>{l('Rpt', 'रिपोर्ट')} {ratingCell(item.rating_reports)}</span>
           <span>{l('Calc', 'गणना')} {ratingCell(item.rating_calculations)}</span>
@@ -180,7 +185,7 @@ function FeedbackRow({
       <td className="py-3 px-4 max-w-[200px]">
         {item.feedback_text ? (
           <div>
-            <p className={`text-xs text-gray-600 leading-relaxed ${expanded ? '' : 'line-clamp-2'}`}>
+            <p className={`text-xs text-muted-foreground leading-relaxed ${expanded ? '' : 'line-clamp-2'}`}>
               {item.feedback_text}
             </p>
             {hasLong && (
@@ -192,7 +197,7 @@ function FeedbackRow({
               </button>
             )}
           </div>
-        ) : <span className="text-xs text-gray-300">—</span>}
+        ) : <span className="text-xs text-muted-foreground">—</span>}
       </td>
 
       {/* Status */}
@@ -229,13 +234,13 @@ function FeedbackRow({
           onBlur={saveRemarks}
           onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
           placeholder={l('Add remark…', 'टिप्पणी जोड़ें…')}
-          className="w-full text-xs border border-sacred-gold/20 rounded-lg px-2 py-1.5 bg-white/80 text-cosmic-text focus:outline-none focus:ring-1 focus:ring-sacred-gold/40 placeholder:text-gray-300"
+          className="w-full text-xs border border-sacred-gold/20 rounded-lg px-2 py-1.5 bg-white/80 text-foreground focus:outline-none focus:ring-1 focus:ring-sacred-gold/40 placeholder:text-muted-foreground"
         />
       </td>
 
       {/* Date */}
       <td className="py-3 px-4 whitespace-nowrap">
-        <span className="text-xs text-gray-400">
+        <span className="text-xs text-muted-foreground">
           {new Date(item.created_at).toLocaleDateString('en-IN', {
             day: 'numeric', month: 'short', year: 'numeric',
           })}
@@ -286,7 +291,7 @@ function methodColor(method: string): string {
   if (method === 'POST') return 'text-green-700 bg-green-50';
   if (method === 'PATCH' || method === 'PUT') return 'text-orange-600 bg-orange-50';
   if (method === 'DELETE') return 'text-red-600 bg-red-50';
-  return 'text-gray-600 bg-gray-50';
+  return 'text-muted-foreground bg-gray-50';
 }
 
 // ── Stat card ────────────────────────────────────────────────────────────────
@@ -379,21 +384,21 @@ export default function AdminDashboard() {
       const data = await api.get(`/api/admin/users?page=${page}&limit=15`);
       setUsers(data.users); setUserPage(data.page);
       setUserPages(data.pages); setUserTotal(data.total);
-    } catch (e) { console.error(e); }
+    } catch { /* ignored */ }
   };
 
   const fetchKundlis = async (page = 1) => {
     try {
       const data = await api.get(`/api/admin/kundlis?page=${page}&limit=15`);
       setKundlis(data.kundlis); setKundliPage(data.page); setKundliPages(data.pages);
-    } catch (e) { console.error(e); }
+    } catch { /* ignored */ }
   };
 
   const fetchAnalytics = async () => {
     try {
       const data = await api.get('/api/admin/analytics');
       setAnalyticsData(data);
-    } catch (e) { console.error(e); }
+    } catch { /* ignored */ }
   };
 
   const fetchFeedback = async (
@@ -410,14 +415,14 @@ export default function AdminDashboard() {
       setFeedbackTotal(data.total);
       setFeedbackPage(data.page);
       setFeedbackPages(data.pages);
-    } catch (e) { console.error(e); }
+    } catch { /* ignored */ }
   };
 
   const fetchWordCloud = async () => {
     try {
       const data = await api.get('/api/admin/feedback/wordcloud');
       setWordCloud(data);
-    } catch (e) { console.error(e); }
+    } catch { /* ignored */ }
   };
 
   const fetchLive = useCallback(async () => {
@@ -425,7 +430,7 @@ export default function AdminDashboard() {
       const data = await api.get('/api/admin/live');
       setLiveData(data);
       setLastUpdated(new Date());
-    } catch (e) { console.error(e); }
+    } catch { /* ignored */ }
   }, []);
 
   useEffect(() => {
@@ -444,12 +449,12 @@ export default function AdminDashboard() {
 
   const changeRole = async (userId: string, role: string) => {
     try { await api.patch(`/api/admin/users/${userId}/role`, { role }); fetchUsers(userPage); }
-    catch (e) { console.error(e); }
+    catch { /* ignored */ }
   };
 
   const toggleActive = async (userId: string) => {
     try { await api.patch(`/api/admin/users/${userId}/toggle-active`, {}); fetchUsers(userPage); }
-    catch (e) { console.error(e); }
+    catch { /* ignored */ }
   };
 
   const secondsSinceLast = lastUpdated ? Math.round((Date.now() - lastUpdated.getTime()) / 1000) : null;
@@ -478,8 +483,8 @@ export default function AdminDashboard() {
       <div className="flex items-center gap-3 mb-8">
         <Shield className="w-8 h-8 text-sacred-gold-dark" />
         <div>
-          <h1 className="text-2xl font-sans font-semibold text-cosmic-text">{l('Admin Dashboard', 'एडमिन डैशबोर्ड')}</h1>
-          <p className="text-xs text-gray-500 mt-0.5">{l('astrorattan.com management panel', 'astrorattan.com प्रबंधन पैनल')}</p>
+          <Heading as={1} variant={1}>{l('Admin Dashboard', 'एडमिन डैशबोर्ड')}</Heading>
+          <p className="text-xs text-muted-foreground mt-0.5">{l('astrorattan.com management panel', 'astrorattan.com प्रबंधन पैनल')}</p>
         </div>
       </div>
 
@@ -492,7 +497,7 @@ export default function AdminDashboard() {
             className={`relative px-5 py-2.5 text-sm font-medium transition-all ${
               tab === t.key
                 ? 'text-sacred-gold-dark border-b-2 border-sacred-gold -mb-px bg-sacred-gold/8 rounded-t-lg'
-                : 'text-gray-500 hover:text-cosmic-text hover:bg-gray-50 rounded-t-lg'
+                : 'text-muted-foreground hover:text-foreground hover:bg-gray-50 rounded-t-lg'
             }`}
           >
             {t.key === 'live' && (
@@ -514,8 +519,8 @@ export default function AdminDashboard() {
         <div>
           {!stats ? (
             <div className="text-center py-16 border border-dashed border-sacred-gold/40 rounded-xl">
-              <Shield className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-cosmic-text font-medium">{l('No data yet', 'अभी डेटा नहीं है')}</p>
+              <Shield className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-foreground font-medium">{l('No data yet', 'अभी डेटा नहीं है')}</p>
             </div>
           ) : (
             <>
@@ -532,15 +537,15 @@ export default function AdminDashboard() {
 
               <div className="grid lg:grid-cols-2 gap-6">
                 <div className="border border-sacred-gold/30 rounded-xl p-5 bg-white/60">
-                  <h3 className="font-semibold text-sacred-gold-dark mb-4 text-sm uppercase tracking-wider flex items-center gap-2">
+                  <Heading as={3} variant={6} className="text-sacred-gold-dark mb-4 uppercase tracking-wider flex items-center gap-2">
                     <Users className="w-4 h-4" /> {l('Recent Users', 'हाल के उपयोगकर्ता')}
-                  </h3>
+                  </Heading>
                   <div className="space-y-2">
                     {stats.recent_users.map(u => (
                       <div key={u.id} className="flex items-center justify-between py-2.5 border-b border-gray-100 last:border-0">
                         <div>
-                          <p className="text-sm font-medium text-cosmic-text">{u.name}</p>
-                          <p className="text-xs text-gray-400">{u.email}</p>
+                          <p className="text-sm font-medium text-foreground">{u.name}</p>
+                          <p className="text-xs text-muted-foreground">{u.email}</p>
                         </div>
                         <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${
                           u.role === 'admin' ? 'border-red-300 text-red-500 bg-red-50'
@@ -553,17 +558,17 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="border border-sacred-gold/30 rounded-xl p-5 bg-white/60">
-                  <h3 className="font-semibold text-sacred-gold-dark mb-4 text-sm uppercase tracking-wider flex items-center gap-2">
+                  <Heading as={3} variant={6} className="text-sacred-gold-dark mb-4 uppercase tracking-wider flex items-center gap-2">
                     <Star className="w-4 h-4" /> {l('Recent Kundlis', 'हाल की कुंडलियां')}
-                  </h3>
+                  </Heading>
                   <div className="space-y-2">
                     {stats.recent_kundlis.map(k => (
                       <div key={k.id} className="flex items-center justify-between py-2.5 border-b border-gray-100 last:border-0">
                         <div>
-                          <p className="text-sm font-medium text-cosmic-text">{k.person_name}</p>
-                          <p className="text-xs text-gray-400">{formatDate(k.birth_date)} · {k.email}</p>
+                          <p className="text-sm font-medium text-foreground">{k.person_name}</p>
+                          <p className="text-xs text-muted-foreground">{formatDate(k.birth_date)} · {k.email}</p>
                         </div>
-                        <span className="text-xs text-gray-400">{formatDate(k.created_at)}</span>
+                        <span className="text-xs text-muted-foreground">{formatDate(k.created_at)}</span>
                       </div>
                     ))}
                   </div>
@@ -577,13 +582,13 @@ export default function AdminDashboard() {
       {/* ── USERS ────────────────────────────────────────────────────────── */}
       {tab === 'users' && (
         <div>
-          <p className="text-sm text-gray-500 mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             {userTotal} {l('total users', 'कुल उपयोगकर्ता')}
           </p>
           <div className="overflow-x-auto rounded-xl border border-sacred-gold/20">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-sacred-gold/20 bg-sacred-gold/5 text-left text-xs text-gray-500 uppercase tracking-wider">
+                <tr className="border-b border-sacred-gold/20 bg-sacred-gold/5 text-left text-xs text-muted-foreground uppercase tracking-wider">
                   <th className="py-3 px-4">{l('Name', 'नाम')}</th>
                   <th className="py-3 px-4">{l('Email', 'ईमेल')}</th>
                   <th className="py-3 px-4">{l('Role', 'भूमिका')}</th>
@@ -595,13 +600,13 @@ export default function AdminDashboard() {
               <tbody>
                 {users.map(u => (
                   <tr key={u.id} className="border-b border-gray-100 hover:bg-sacred-gold/4 transition-colors">
-                    <td className="py-3 px-4 text-cosmic-text font-medium">{u.name}</td>
-                    <td className="py-3 px-4 text-gray-500 text-xs">{u.email}</td>
+                    <td className="py-3 px-4 text-foreground font-medium">{u.name}</td>
+                    <td className="py-3 px-4 text-muted-foreground text-xs">{u.email}</td>
                     <td className="py-3 px-4">
                       <select
                         value={u.role}
                         onChange={e => changeRole(u.id, e.target.value)}
-                        className="bg-white border border-sacred-gold/30 text-cosmic-text text-xs px-2 py-1 rounded-lg"
+                        className="bg-white border border-sacred-gold/30 text-foreground text-xs px-2 py-1 rounded-lg"
                       >
                         <option value="user">{l('user', 'यूज़र')}</option>
                         <option value="astrologer">{l('astrologer', 'ज्योतिषी')}</option>
@@ -612,10 +617,10 @@ export default function AdminDashboard() {
                       <button onClick={() => toggleActive(u.id)}>
                         {u.is_active
                           ? <ToggleRight className="w-5 h-5 text-green-500" />
-                          : <ToggleLeft className="w-5 h-5 text-gray-300" />}
+                          : <ToggleLeft className="w-5 h-5 text-muted-foreground" />}
                       </button>
                     </td>
-                    <td className="py-3 px-4 text-gray-400 text-xs">{formatDate(u.created_at)}</td>
+                    <td className="py-3 px-4 text-muted-foreground text-xs">{formatDate(u.created_at)}</td>
                     <td className="py-3 px-4">
                       <button className="text-xs text-sacred-gold-dark hover:underline">{l('View', 'देखें')}</button>
                     </td>
@@ -629,7 +634,7 @@ export default function AdminDashboard() {
               <Button variant="outline" size="sm" disabled={userPage <= 1} onClick={() => fetchUsers(userPage - 1)} className="border-sacred-gold/40">
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <span className="text-sm text-gray-500">{l('Page', 'पेज')} {userPage} {l('of', 'में से')} {userPages}</span>
+              <span className="text-sm text-muted-foreground">{l('Page', 'पेज')} {userPage} {l('of', 'में से')} {userPages}</span>
               <Button variant="outline" size="sm" disabled={userPage >= userPages} onClick={() => fetchUsers(userPage + 1)} className="border-sacred-gold/40">
                 <ChevronRight className="w-4 h-4" />
               </Button>
@@ -644,7 +649,7 @@ export default function AdminDashboard() {
           <div className="overflow-x-auto rounded-xl border border-sacred-gold/20">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-sacred-gold/20 bg-sacred-gold/5 text-left text-xs text-gray-500 uppercase tracking-wider">
+                <tr className="border-b border-sacred-gold/20 bg-sacred-gold/5 text-left text-xs text-muted-foreground uppercase tracking-wider">
                   <th className="py-3 px-4">{l('Person', 'व्यक्ति')}</th>
                   <th className="py-3 px-4">{l('Birth Date', 'जन्म तिथि')}</th>
                   <th className="py-3 px-4">{l('Place', 'स्थान')}</th>
@@ -655,11 +660,11 @@ export default function AdminDashboard() {
               <tbody>
                 {kundlis.map(k => (
                   <tr key={k.id} className="border-b border-gray-100 hover:bg-sacred-gold/4 transition-colors">
-                    <td className="py-3 px-4 text-cosmic-text font-medium">{k.person_name}</td>
-                    <td className="py-3 px-4 text-gray-500 text-xs">{formatDate(k.birth_date)} {k.birth_time}</td>
-                    <td className="py-3 px-4 text-gray-500 text-xs">{k.birth_place}</td>
-                    <td className="py-3 px-4 text-gray-500 text-xs">{k.email}</td>
-                    <td className="py-3 px-4 text-gray-400 text-xs">{formatDate(k.created_at)}</td>
+                    <td className="py-3 px-4 text-foreground font-medium">{k.person_name}</td>
+                    <td className="py-3 px-4 text-muted-foreground text-xs">{formatDate(k.birth_date)} {k.birth_time}</td>
+                    <td className="py-3 px-4 text-muted-foreground text-xs">{k.birth_place}</td>
+                    <td className="py-3 px-4 text-muted-foreground text-xs">{k.email}</td>
+                    <td className="py-3 px-4 text-muted-foreground text-xs">{formatDate(k.created_at)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -670,7 +675,7 @@ export default function AdminDashboard() {
               <Button variant="outline" size="sm" disabled={kundliPage <= 1} onClick={() => fetchKundlis(kundliPage - 1)} className="border-sacred-gold/40">
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <span className="text-sm text-gray-500">{l('Page', 'पेज')} {kundliPage} {l('of', 'में से')} {kundliPages}</span>
+              <span className="text-sm text-muted-foreground">{l('Page', 'पेज')} {kundliPage} {l('of', 'में से')} {kundliPages}</span>
               <Button variant="outline" size="sm" disabled={kundliPage >= kundliPages} onClick={() => fetchKundlis(kundliPage + 1)} className="border-sacred-gold/40">
                 <ChevronRight className="w-4 h-4" />
               </Button>
@@ -690,9 +695,9 @@ export default function AdminDashboard() {
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500" />
               </span>
               <span className="text-sm font-semibold text-green-700">{l('Live Dashboard', 'लाइव डैशबोर्ड')}</span>
-              <span className="text-xs text-gray-400 ml-1">{l('· auto-refresh every 5s', '· हर 5 सेकंड में ऑटो-रिफ्रेश')}</span>
+              <span className="text-xs text-muted-foreground ml-1">{l('· auto-refresh every 5s', '· हर 5 सेकंड में ऑटो-रिफ्रेश')}</span>
             </div>
-            <div className="flex items-center gap-3 text-xs text-gray-400">
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
               {secondsSinceLast !== null && (
                 <span className="flex items-center gap-1">
                   <RefreshCw className="w-3 h-3" />
@@ -749,7 +754,7 @@ export default function AdminDashboard() {
                 <h3 className="text-sm font-semibold text-sacred-gold-dark uppercase tracking-wider">
                   {l('Active Users', 'सक्रिय उपयोगकर्ता')}
                   {liveData && (
-                    <span className="ml-2 text-xs font-normal text-gray-400 normal-case">
+                    <span className="ml-2 text-xs font-normal text-muted-foreground normal-case">
                       ({liveData.active_users_count} {l('online', 'ऑनलाइन')})
                     </span>
                   )}
@@ -757,18 +762,18 @@ export default function AdminDashboard() {
               </div>
               <div className="divide-y divide-gray-100 max-h-64 overflow-y-auto">
                 {!liveData || liveData.active_users.length === 0 ? (
-                  <div className="py-8 text-center text-sm text-gray-400">
+                  <div className="py-8 text-center text-sm text-muted-foreground">
                     {l('No active users yet', 'अभी कोई सक्रिय उपयोगकर्ता नहीं')}
                   </div>
                 ) : (
                   liveData.active_users.map(u => (
                     <div key={u.user_id} className="flex items-center justify-between px-5 py-3 hover:bg-sacred-gold/4 transition-colors">
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-cosmic-text truncate">{u.name}</p>
-                        <p className="text-xs text-gray-400 truncate">{u.email}</p>
+                        <p className="text-sm font-medium text-foreground truncate">{u.name}</p>
+                        <p className="text-xs text-muted-foreground truncate">{u.email}</p>
                         <p className="text-xs text-blue-500 truncate mt-0.5 font-mono">{u.last_path}</p>
                       </div>
-                      <span className="ml-3 text-xs text-gray-400 whitespace-nowrap shrink-0">
+                      <span className="ml-3 text-xs text-muted-foreground whitespace-nowrap shrink-0">
                         {timeAgo(u.seconds_ago, language)}
                       </span>
                     </div>
@@ -782,24 +787,24 @@ export default function AdminDashboard() {
               <div className="flex items-center gap-2 px-5 py-3.5 border-b border-sacred-gold/20 bg-sacred-gold/5">
                 <TrendingUp className="w-4 h-4 text-sacred-gold-dark" />
                 <h3 className="text-sm font-semibold text-sacred-gold-dark uppercase tracking-wider">
-                  {l('Top Endpoints', 'शीर्ष एंडपॉइंट')} <span className="text-xs font-normal text-gray-400 normal-case">(5 min)</span>
+                  {l('Top Endpoints', 'शीर्ष एंडपॉइंट')} <span className="text-xs font-normal text-muted-foreground normal-case">(5 min)</span>
                 </h3>
               </div>
               <div className="divide-y divide-gray-100 max-h-64 overflow-y-auto">
                 {!liveData || liveData.top_endpoints.length === 0 ? (
-                  <div className="py-8 text-center text-sm text-gray-400">{l('No traffic yet', 'अभी ट्रैफिक नहीं है')}</div>
+                  <div className="py-8 text-center text-sm text-muted-foreground">{l('No traffic yet', 'अभी ट्रैफिक नहीं है')}</div>
                 ) : (
                   liveData.top_endpoints.map((ep, i) => (
                     <div key={ep.path} className="flex items-center gap-3 px-5 py-3 hover:bg-sacred-gold/4 transition-colors">
-                      <span className="text-xs font-bold text-gray-300 w-4 shrink-0">{i + 1}</span>
+                      <span className="text-xs font-bold text-muted-foreground w-4 shrink-0">{i + 1}</span>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-mono text-cosmic-text truncate">{ep.path}</p>
+                        <p className="text-xs font-mono text-foreground truncate">{ep.path}</p>
                         <div className="flex items-center gap-2 mt-0.5">
                           <div
                             className="h-1 rounded-full bg-sacred-gold/60"
                             style={{ width: `${Math.min(100, (ep.count / (liveData.top_endpoints[0]?.count || 1)) * 100)}%`, maxWidth: '80px' }}
                           />
-                          <span className="text-xs text-gray-400">{ep.count} {l('hits', 'हिट')} · {ep.avg_ms}ms {l('avg', 'औसत')}</span>
+                          <span className="text-xs text-muted-foreground">{ep.count} {l('hits', 'हिट')} · {ep.avg_ms}ms {l('avg', 'औसत')}</span>
                         </div>
                       </div>
                     </div>
@@ -817,10 +822,10 @@ export default function AdminDashboard() {
                 <h3 className="text-sm font-semibold text-sacred-gold-dark uppercase tracking-wider">
                   {l('Activity Feed', 'एक्टिविटी फीड')}
                 </h3>
-                <span className="text-xs font-normal text-gray-400 normal-case">{l('latest 50 requests', 'हाल की 50 रिक्वेस्ट')}</span>
+                <span className="text-xs font-normal text-muted-foreground normal-case">{l('latest 50 requests', 'हाल की 50 रिक्वेस्ट')}</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="text-xs text-gray-400 flex items-center gap-1">
+                <span className="text-xs text-muted-foreground flex items-center gap-1">
                   <span className="inline-block w-2 h-2 rounded-sm bg-green-400" /> 2xx
                   <span className="inline-block w-2 h-2 rounded-sm bg-orange-400 ml-2" /> 4xx
                   <span className="inline-block w-2 h-2 rounded-sm bg-red-400 ml-2" /> 5xx
@@ -830,18 +835,18 @@ export default function AdminDashboard() {
 
             <div ref={activityRef} className="font-mono text-xs divide-y divide-gray-50 max-h-[420px] overflow-y-auto">
               {!liveData || liveData.recent_activity.length === 0 ? (
-                <div className="py-10 text-center text-sm text-gray-400">{l('No requests recorded yet', 'अभी तक कोई रिक्वेस्ट दर्ज नहीं हुई')}</div>
+                <div className="py-10 text-center text-sm text-muted-foreground">{l('No requests recorded yet', 'अभी तक कोई रिक्वेस्ट दर्ज नहीं हुई')}</div>
               ) : (
                 liveData.recent_activity.map((r, i) => (
                   <div key={i} className={`flex items-center gap-3 px-4 py-2 hover:brightness-95 transition-all ${statusBg(r.status)}`}>
-                    <span className="text-gray-400 w-16 shrink-0">{r.ts_iso}</span>
+                    <span className="text-muted-foreground w-16 shrink-0">{r.ts_iso}</span>
                     <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase shrink-0 ${methodColor(r.method)}`}>
                       {r.method}
                     </span>
-                    <span className="flex-1 truncate text-cosmic-text">{r.path}</span>
+                    <span className="flex-1 truncate text-foreground">{r.path}</span>
                     <span className={`font-bold shrink-0 w-8 text-right ${statusColor(r.status)}`}>{r.status}</span>
-                    <span className="text-gray-400 shrink-0 w-14 text-right">{r.duration_ms}ms</span>
-                    <span className="text-gray-400 shrink-0 max-w-[130px] truncate text-right">
+                    <span className="text-muted-foreground shrink-0 w-14 text-right">{r.duration_ms}ms</span>
+                    <span className="text-muted-foreground shrink-0 max-w-[130px] truncate text-right">
                       {r.email ? r.email.split('@')[0] : l('anon', 'अनाम')}
                     </span>
                   </div>
@@ -851,7 +856,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Worker note */}
-          <p className="text-xs text-gray-400 text-center">
+          <p className="text-xs text-muted-foreground text-center">
             <Globe className="w-3 h-3 inline mr-1" />
             {l('Live data reflects traffic on this worker process. With 4 workers, each handles ~25% of total traffic.', 'लाइव डेटा इस वर्कर प्रोसेस का ट्रैफिक दिखाता है। 4 वर्कर होने पर हर एक लगभग 25% ट्रैफिक संभालता है।')}
           </p>
@@ -874,16 +879,16 @@ export default function AdminDashboard() {
             <div className="flex items-center gap-2 px-5 py-3.5 border-b border-sacred-gold/20 bg-sacred-gold/5">
               <TrendingUp className="w-4 h-4 text-sacred-gold-dark" />
               <h3 className="text-sm font-semibold text-sacred-gold-dark uppercase tracking-wider">
-                {l('Top Pages', 'शीर्ष पेज')} <span className="text-xs font-normal text-gray-400 normal-case">{l('(last 30 days)', '(पिछले 30 दिन)')}</span>
+                {l('Top Pages', 'शीर्ष पेज')} <span className="text-xs font-normal text-muted-foreground normal-case">{l('(last 30 days)', '(पिछले 30 दिन)')}</span>
               </h3>
             </div>
             {!analyticsData || analyticsData.top_pages.length === 0 ? (
-              <div className="py-8 text-center text-sm text-gray-400">{l('No page views recorded yet', 'अभी तक कोई पेज व्यू दर्ज नहीं हुआ')}</div>
+              <div className="py-8 text-center text-sm text-muted-foreground">{l('No page views recorded yet', 'अभी तक कोई पेज व्यू दर्ज नहीं हुआ')}</div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-sacred-gold/10 text-left text-xs text-gray-400 uppercase tracking-wider">
+                    <tr className="border-b border-sacred-gold/10 text-left text-xs text-muted-foreground uppercase tracking-wider">
                       <th className="py-2.5 px-5">{l('Path', 'पाथ')}</th>
                       <th className="py-2.5 px-4 text-right">{l('Views', 'व्यू')}</th>
                       <th className="py-2.5 px-4 text-right">{l('Visitors', 'विज़िटर')}</th>
@@ -896,9 +901,9 @@ export default function AdminDashboard() {
                       const pct = Math.round((p.views / maxViews) * 100);
                       return (
                         <tr key={p.path} className="border-b border-gray-50 hover:bg-sacred-gold/4 transition-colors">
-                          <td className="py-2.5 px-5 font-mono text-xs text-cosmic-text truncate max-w-[220px]">{p.path}</td>
-                          <td className="py-2.5 px-4 text-right text-sm font-medium text-cosmic-text">{p.views.toLocaleString()}</td>
-                          <td className="py-2.5 px-4 text-right text-sm text-gray-500">{p.visitors.toLocaleString()}</td>
+                          <td className="py-2.5 px-5 font-mono text-xs text-foreground truncate max-w-[220px]">{p.path}</td>
+                          <td className="py-2.5 px-4 text-right text-sm font-medium text-foreground">{p.views.toLocaleString()}</td>
+                          <td className="py-2.5 px-4 text-right text-sm text-muted-foreground">{p.visitors.toLocaleString()}</td>
                           <td className="py-2.5 px-5">
                             <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
                               <div className="h-full rounded-full bg-sacred-gold/70" style={{ width: `${pct}%` }} />
@@ -918,12 +923,12 @@ export default function AdminDashboard() {
             <div className="flex items-center gap-2 px-5 py-3.5 border-b border-sacred-gold/20 bg-sacred-gold/5">
               <Clock className="w-4 h-4 text-sacred-gold-dark" />
               <h3 className="text-sm font-semibold text-sacred-gold-dark uppercase tracking-wider">
-                {l('Hourly Traffic', 'घंटावार ट्रैफिक')} <span className="text-xs font-normal text-gray-400 normal-case">{l('(today, 24h)', '(आज, 24 घंटे)')}</span>
+                {l('Hourly Traffic', 'घंटावार ट्रैफिक')} <span className="text-xs font-normal text-muted-foreground normal-case">{l('(today, 24h)', '(आज, 24 घंटे)')}</span>
               </h3>
             </div>
             <div className="px-5 py-4">
               {!analyticsData ? (
-                <div className="text-center text-sm text-gray-400 py-4">{l('No data', 'कोई डेटा नहीं')}</div>
+                <div className="text-center text-sm text-muted-foreground py-4">{l('No data', 'कोई डेटा नहीं')}</div>
               ) : (() => {
                 const maxH = Math.max(...analyticsData.hourly_today.map(h => h.views), 1);
                 return (
@@ -935,7 +940,7 @@ export default function AdminDashboard() {
                           style={{ height: `${Math.round((h.views / maxH) * 80)}px`, minHeight: h.views > 0 ? '2px' : '0' }}
                         />
                         {h.hour % 6 === 0 && (
-                          <span className="text-[9px] text-gray-400 absolute -bottom-4">{h.hour}{t('auto.h')}</span>
+                          <span className="text-[9px] text-muted-foreground absolute -bottom-4">{h.hour}{t('auto.h')}</span>
                         )}
                       </div>
                     ))}
@@ -950,12 +955,12 @@ export default function AdminDashboard() {
             <div className="flex items-center gap-2 px-5 py-3.5 border-b border-sacred-gold/20 bg-sacred-gold/5">
               <TrendingUp className="w-4 h-4 text-sacred-gold-dark" />
               <h3 className="text-sm font-semibold text-sacred-gold-dark uppercase tracking-wider">
-                {l('Daily Traffic', 'दैनिक ट्रैफिक')} <span className="text-xs font-normal text-gray-400 normal-case">{l('(last 30 days)', '(पिछले 30 दिन)')}</span>
+                {l('Daily Traffic', 'दैनिक ट्रैफिक')} <span className="text-xs font-normal text-muted-foreground normal-case">{l('(last 30 days)', '(पिछले 30 दिन)')}</span>
               </h3>
             </div>
             <div className="px-5 py-4">
               {!analyticsData || analyticsData.daily_last_30.length === 0 ? (
-                <div className="text-center text-sm text-gray-400 py-4">{l('No data yet', 'अभी डेटा नहीं है')}</div>
+                <div className="text-center text-sm text-muted-foreground py-4">{l('No data yet', 'अभी डेटा नहीं है')}</div>
               ) : (() => {
                 const maxD = Math.max(...analyticsData.daily_last_30.map(d => d.views), 1);
                 return (
@@ -971,7 +976,7 @@ export default function AdminDashboard() {
                   </div>
                 );
               })()}
-              <div className="flex justify-between mt-2 text-[10px] text-gray-400">
+              <div className="flex justify-between mt-2 text-[10px] text-muted-foreground">
                 <span>{analyticsData?.daily_last_30?.[0]?.day ?? ''}</span>
                 <span>{analyticsData?.daily_last_30?.[analyticsData.daily_last_30.length - 1]?.day ?? ''}</span>
               </div>
@@ -1008,16 +1013,16 @@ export default function AdminDashboard() {
 
           {/* Filter bar */}
           <div className="flex flex-wrap items-center gap-3">
-            <Filter className="w-4 h-4 text-gray-400 shrink-0" />
+            <Filter className="w-4 h-4 text-muted-foreground shrink-0" />
             <div className="flex items-center gap-2">
-              <label className="text-xs text-gray-500 font-medium">{l('Status', 'स्थिति')}</label>
+              <label className="text-xs text-muted-foreground font-medium">{l('Status', 'स्थिति')}</label>
               <select
                 value={feedbackFilterStatus}
                 onChange={e => {
                   setFeedbackFilterStatus(e.target.value);
                   fetchFeedback(1, e.target.value, feedbackFilterAction);
                 }}
-                className="text-xs border border-sacred-gold/30 rounded-lg px-3 py-1.5 bg-white text-cosmic-text focus:outline-none focus:ring-1 focus:ring-sacred-gold/40"
+                className="text-xs border border-sacred-gold/30 rounded-lg px-3 py-1.5 bg-white text-foreground focus:outline-none focus:ring-1 focus:ring-sacred-gold/40"
               >
                 <option value="">{l('All', 'सभी')}</option>
                 <option value="open">{l('Open', 'खुला')}</option>
@@ -1025,14 +1030,14 @@ export default function AdminDashboard() {
               </select>
             </div>
             <div className="flex items-center gap-2">
-              <label className="text-xs text-gray-500 font-medium">{l('Action', 'कार्यवाही')}</label>
+              <label className="text-xs text-muted-foreground font-medium">{l('Action', 'कार्यवाही')}</label>
               <select
                 value={feedbackFilterAction}
                 onChange={e => {
                   setFeedbackFilterAction(e.target.value);
                   fetchFeedback(1, feedbackFilterStatus, e.target.value);
                 }}
-                className="text-xs border border-sacred-gold/30 rounded-lg px-3 py-1.5 bg-white text-cosmic-text focus:outline-none focus:ring-1 focus:ring-sacred-gold/40"
+                className="text-xs border border-sacred-gold/30 rounded-lg px-3 py-1.5 bg-white text-foreground focus:outline-none focus:ring-1 focus:ring-sacred-gold/40"
               >
                 <option value="">{l('All', 'सभी')}</option>
                 <option value="NR">{l('Not Reviewed', 'समीक्षा नहीं')}</option>
@@ -1040,7 +1045,7 @@ export default function AdminDashboard() {
                 <option value="no">{l('No Action', 'कोई कार्यवाही नहीं')}</option>
               </select>
             </div>
-            <span className="text-xs text-gray-400 ml-auto">
+            <span className="text-xs text-muted-foreground ml-auto">
               {feedbackTotal} {l(feedbackTotal !== 1 ? 'results' : 'result', feedbackTotal !== 1 ? 'परिणाम' : 'परिणाम')}
             </span>
           </div>
@@ -1048,16 +1053,16 @@ export default function AdminDashboard() {
           {/* Table */}
           <div className="border border-sacred-gold/20 rounded-xl overflow-hidden bg-white/60">
             {feedbackItems.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+              <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
                 <MessageSquare className="w-8 h-8 text-gray-200 mb-3" />
                 <p className="text-sm">{l('No feedback yet', 'अभी कोई फीडबैक नहीं')}</p>
-                <p className="text-xs text-gray-300 mt-1">{l('Submissions will appear here', 'सबमिशन यहां दिखेंगे')}</p>
+                <p className="text-xs text-muted-foreground mt-1">{l('Submissions will appear here', 'सबमिशन यहां दिखेंगे')}</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-sacred-gold/20 bg-sacred-gold/5 text-left text-xs text-gray-500 uppercase tracking-wider">
+                    <tr className="border-b border-sacred-gold/20 bg-sacred-gold/5 text-left text-xs text-muted-foreground uppercase tracking-wider">
                       <th className="py-3 px-4">{l('User', 'उपयोगकर्ता')}</th>
                       <th className="py-3 px-4">{l('Ratings', 'रेटिंग्स')}</th>
                       <th className="py-3 px-4">{l('Feedback', 'फीडबैक')}</th>
@@ -1093,7 +1098,7 @@ export default function AdminDashboard() {
                 className="border-sacred-gold/40">
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <span className="text-sm text-gray-500">{l('Page', 'पेज')} {feedbackPage} {l('of', 'में से')} {feedbackPages}</span>
+              <span className="text-sm text-muted-foreground">{l('Page', 'पेज')} {feedbackPage} {l('of', 'में से')} {feedbackPages}</span>
               <Button variant="outline" size="sm" disabled={feedbackPage >= feedbackPages}
                 onClick={() => fetchFeedback(feedbackPage + 1, feedbackFilterStatus, feedbackFilterAction)}
                 className="border-sacred-gold/40">

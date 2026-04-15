@@ -32,17 +32,6 @@
   animation: wheelSpin 90s linear infinite;
 }
 
-/* Hide scrollbar for horizontally scrollable tab bars */
-@layer utilities {
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-}
-
 /* ========================================
    DIGITAL PATRA & PRISMATIC LIGHT
    Alabaster canvas · Vedic typography
@@ -51,17 +40,12 @@
 @layer base {
   :root {
     /* Typography tokens */
-    --font-display: 'Cormorant Garamond', Georgia, serif;
-    --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-devanagari: 'Hind', 'Noto Sans Devanagari', sans-serif;
-    --font-sacred: 'Cormorant Garamond', Georgia, serif;
-    --text-data: 0.75rem;
+    --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --font-devanagari: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     --text-label: 0.75rem;
-    --text-micro: 0.75rem;
 
     /* Prismatic Light Base */
     --parchment: #FDFBF7;
-    --parchment-dark: #F1F5F9;
     --ink: #1a1a2e;
     --ink-light: #4b5563;
 
@@ -70,86 +54,26 @@
     --aged-gold-dim: #92400e;
     --aged-gold-light: #FFD700;
     --aged-gold-hex: #B8860B;  /* Legacy gold for compatibility */
-    
+
     /* Gold Opacity Variants */
-    --aged-gold-5: rgba(184, 134, 11, 0.05);
     --aged-gold-10: rgba(184, 134, 11, 0.1);
-    --aged-gold-12: rgba(184, 134, 11, 0.12);
-    --aged-gold-15: rgba(184, 134, 11, 0.15);
-    --aged-gold-20: rgba(184, 134, 11, 0.2);
-    --aged-gold-30: rgba(184, 134, 11, 0.3);
 
     /* Action Red (buttons, alerts) */
     --wax-red: #dc2626;
-    --wax-red-hover: #b91c1c;
-    --wax-red-deep: #991b1b;
-    --wax-red-light: #f87171;
-    
-    /* Red Opacity Variants */
-    --wax-red-5: rgba(139, 35, 50, 0.05);
-    --wax-red-10: rgba(139, 35, 50, 0.1);
-    --wax-red-20: rgba(139, 35, 50, 0.2);
-    --wax-red-30: rgba(139, 35, 50, 0.3);
 
-    /* Warm Neutrals */
-    --brown: #78716c;
-    --brown-light: rgba(120, 113, 108, 0.1);
-    --coffee: rgba(120, 113, 108, 0.08);
-    
-    /* Dark Theme Backgrounds (kept for optional dark mode toggle) */
+    /* Dark Theme Background (used by KundliSummaryModal) */
     --dark-bg: #1a1a2e;
-    --dark-bg-secondary: #16213e;
-    --dark-card: rgba(34, 34, 58, 0.8);
-    --dark-card-alt: rgba(34, 34, 58, 0.9);
-    
-    /* WhatsApp Brand Color */
-    --whatsapp-green: #25D366;
-    --whatsapp-green-dark: #128C7E;
-    
-    /* Semantic Status Colors */
-    --success: #059669;
-    --success-light: #34d399;
-    --success-pale: #6ee7b7;
-    --error: #dc2626;
-    --error-light: #f87171;
-    --error-pale: #fca5a5;
-    --warning: #f59e0b;
-    --warning-light: #fbbf24;
-    --warning-pale: #fde68a;
-    
-    /* Text Colors Extended — readable on light backgrounds */
-    --text-cream: #78716c;
-    --text-warm: #57534e;
-    --text-gold: #B45309;
 
     /* Text Colors */
-    --text-primary: #1a1a2e;
-    --text-secondary: #6b7280;
     --text-muted: #9ca3af;
 
     /* Semantic surface tokens — Light Theme */
-    --cosmic-bg: #FDFBF7;
-    --cosmic-bg-light: #FFFFFF;
-    --cosmic-surface: #FFFFFF;
-    --cosmic-card: rgba(255, 255, 255, 0.95);
-    --cosmic-card-hover: rgba(255, 255, 255, 1);
     --cosmic-border: rgba(226, 232, 240, 1);
     --cosmic-border-hover: rgba(203, 213, 225, 1);
-    --cosmic-text: #1a1a2e;
-    --cosmic-text-secondary: #6b7280;
-    --cosmic-text-muted: #9ca3af;
 
     --sacred-gold: #FF9933;
     --sacred-gold-dark: #B45309;
-    --sacred-gold-light: #FFD700;
-    --sacred-saffron: #FF9933;
-    --sacred-saffron-dark: #B45309;
-    --sacred-saffron-light: #FFD700;
-    --sacred-purple: #e2e8f0; /* legacy: actually light gray, use --sacred-gray-light instead */
     --sacred-gray-light: #e2e8f0;
-    --sacred-purple-light: #f1f5f9;
-    --sacred-violet: #FF9933; /* legacy: actually gold, use --sacred-gold-accent instead */
-    --sacred-gold-accent: #FF9933;
 
     /* shadcn HSL tokens — Prismatic Light */
     --background: 40 50% 98%;
@@ -208,16 +132,17 @@
     font-family: var(--font-ui);
   }
 
-  /* Typography scale — no !important so Tailwind utilities can override */
-  h1 { font-size: 3rem; line-height: 1.2; font-family: var(--font-ui); }
-  h2 { font-size: 2.25rem; line-height: 1.3; font-family: var(--font-ui); }
-  h3 { font-size: 1.75rem; line-height: 1.4; }
+  /* Unified typography scale */
+  h1 { font-size: 1.875rem; line-height: 1.2; font-weight: 600; font-family: var(--font-ui); color: hsl(var(--foreground)); }
+  h2 { font-size: 1.5rem;  line-height: 1.25; font-weight: 600; font-family: var(--font-ui); color: hsl(var(--foreground)); }
+  h3 { font-size: 1.25rem;  line-height: 1.3; font-weight: 600; font-family: var(--font-ui); color: hsl(var(--foreground)); }
+  h4 { font-size: 1.125rem; line-height: 1.35; font-weight: 600; font-family: var(--font-ui); color: hsl(var(--foreground)); }
 
-  @media (max-width: 768px) {
-    html { font-size: 16px; }
-    h1 { font-size: 2.5rem; }
-    h2 { font-size: 2rem; }
+  @media (min-width: 768px) {
+    h1 { font-size: 2.25rem; }
+    h2 { font-size: 1.875rem; }
     h3 { font-size: 1.5rem; }
+    h4 { font-size: 1.25rem; }
   }
 
   /* Selection color */
@@ -243,20 +168,6 @@
   }
 }
 
-/* Typography — All fonts now use Inter */
-/* Note: .font-sacred, .font-decorative, .font-mantra, .heading-sacred removed - using Inter font-sans instead */
-
-.heading-gold {
-  color: #B45309;
-  text-shadow: none;
-}
-
-/* Ink bleed effect — manuscript feel */
-.ink-bleed {
-  text-shadow: 0.5px 0.5px 0 rgba(26, 26, 46, 0.1),
-               -0.3px -0.3px 0 rgba(26, 26, 46, 0.05);
-}
-
 /* Buttons — Prismatic Light */
 .btn-sacred {
   background: var(--aged-gold);
@@ -271,32 +182,6 @@
   box-shadow: 0 4px 12px rgba(255, 153, 51, 0.2);
 }
 
-.btn-saffron {
-  background: var(--wax-red);
-  color: #ffffff;
-  border: none;
-  border-radius: 9999px;
-  font-family: var(--font-ui);
-  letter-spacing: 0.05em;
-  transition: all 0.3s ease;
-}
-.btn-saffron:hover {
-  background: var(--wax-red-hover);
-  transform: scale(1.02);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.btn-maroon {
-  background: transparent;
-  color: var(--ink);
-  border: 1px solid var(--cosmic-border);
-  transition: all 0.3s ease;
-}
-.btn-maroon:hover {
-  background: rgba(255, 153, 51, 0.06);
-  border-color: var(--aged-gold);
-}
-
 /* Cards — elevated panels */
 .card-sacred {
   background: rgba(255, 255, 255, 0.95);
@@ -309,97 +194,19 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
 }
 
-.card-gold-border {
-  border: 1px solid var(--cosmic-border);
-  background: rgba(255, 255, 255, 0.95);
-}
-
-/* Gradients — Prismatic Light */
-.bg-sacred-gradient { background: linear-gradient(135deg, #FAFAFA 0%, #F8FAFC 50%, #FAFAFA 100%); }
-.bg-gold-gradient { background: linear-gradient(135deg, #FFD700 0%, #FF9933 50%, #B45309 100%); }
-.bg-saffron-gradient { background: linear-gradient(135deg, #FFD700 0%, #FF9933 100%); }
-.bg-maroon-gradient { background: linear-gradient(145deg, #dc2626 0%, #991b1b 100%); }
-.bg-divine-gradient { background: linear-gradient(180deg, #FAFAFA 0%, #F8FAFC 50%, #FAFAFA 100%); }
-
-/* Text */
-.text-gradient-gold {
-  color: var(--aged-gold);
-}
-.text-gradient-saffron {
-  color: var(--aged-gold);
-}
-.text-gradient-indigo {
-  color: var(--ink);
-}
-
 .text-sacred-brown { color: var(--aged-gold-dim); }
 .text-sacred-gold { color: var(--aged-gold); }
 .text-sacred-saffron { color: var(--aged-gold); }
-.text-sacred-maroon { color: var(--wax-red); }
 
 /* Backgrounds */
-.bg-sacred-cream { background-color: #F8FAFC; }
 .bg-sacred-gold { background-color: var(--aged-gold); }
 .bg-sacred-saffron { background-color: var(--aged-gold); }
-.bg-sacred-brown { background-color: #e2e8f0; }
-.bg-sacred-maroon { background-color: var(--wax-red); }
 
 /* Gold Opacity Backgrounds */
-.bg-gold-5 { background-color: var(--aged-gold-5); }
 .bg-gold-10 { background-color: var(--aged-gold-10); }
-.bg-gold-12 { background-color: var(--aged-gold-12); }
-.bg-gold-15 { background-color: var(--aged-gold-15); }
-.bg-gold-20 { background-color: var(--aged-gold-20); }
-.bg-gold-30 { background-color: var(--aged-gold-30); }
-
-/* Red/Maroon Opacity Backgrounds */
-.bg-red-5 { background-color: var(--wax-red-5); }
-.bg-red-10 { background-color: var(--wax-red-10); }
-.bg-red-20 { background-color: var(--wax-red-20); }
-.bg-red-30 { background-color: var(--wax-red-30); }
-
-/* Dark Theme Backgrounds */
-.bg-dark { background-color: var(--dark-bg); }
-.bg-dark-secondary { background-color: var(--dark-bg-secondary); }
-.bg-dark-card { background-color: var(--dark-card); }
-.bg-dark-card-alt { background-color: var(--dark-card-alt); }
-
-/* Semantic Status Backgrounds */
-.bg-success-5 { background-color: rgba(5, 150, 105, 0.05); }
-.bg-success-8 { background-color: rgba(16, 185, 129, 0.08); }
-.bg-error-5 { background-color: var(--wax-red-5); }
-.bg-error-8 { background-color: rgba(196, 62, 78, 0.08); }
-.bg-warning-5 { background-color: rgba(245, 158, 11, 0.05); }
-.bg-warning-8 { background-color: rgba(245, 158, 11, 0.08); }
 
 /* Extended Text Colors */
 .text-gold-hex { color: var(--aged-gold-hex); }
-.text-wax-red-deep { color: var(--wax-red-deep); }
-.text-wax-red-light { color: var(--wax-red-light); }
-.text-success { color: var(--success); }
-.text-success-light { color: var(--success-light); }
-.text-success-pale { color: var(--success-pale); }
-.text-error { color: var(--error); }
-.text-error-light { color: var(--error-light); }
-.text-error-pale { color: var(--error-pale); }
-.text-warning { color: var(--warning); }
-.text-warning-light { color: var(--warning-light); }
-.text-warning-pale { color: var(--warning-pale); }
-.text-cream { color: var(--text-cream); }
-.text-warm { color: var(--text-warm); }
-
-/* Decorative dividers — warm brown gradient */
-.divider-sacred {
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, #B8860B 20%, #D4A052 50%, #B8860B 80%, transparent 100%);
-  margin: 2rem 0;
-}
-.divider-sacred-vertical {
-  width: 1px;
-  background: linear-gradient(180deg, transparent 0%, var(--aged-gold-dim) 20%, var(--aged-gold) 50%, var(--aged-gold-dim) 80%, transparent 100%);
-}
-
-.border-sacred { border: 1px solid var(--cosmic-border); }
 
 /* Inputs — clean bottom-border */
 .input-sacred {
@@ -415,68 +222,6 @@
 }
 .input-sacred::placeholder {
   color: var(--text-muted);
-}
-
-/* Corner decorations — aged gold */
-.corner-gold {
-  position: absolute;
-  width: 15px;
-  height: 15px;
-  border: 2px solid #B8860B;
-}
-.corner-tl { top: -1px; left: -1px; border-right: none; border-bottom: none; }
-.corner-tr { top: -1px; right: -1px; border-left: none; border-bottom: none; }
-.corner-bl { bottom: -1px; left: -1px; border-right: none; border-top: none; }
-.corner-br { bottom: -1px; right: -1px; border-left: none; border-top: none; }
-
-/* Parchment texture overlay */
-.parchment-texture::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-  opacity: 0.03;
-  mix-blend-mode: multiply;
-  pointer-events: none;
-}
-
-/* Notebook lines effect */
-.notebook-lines {
-  background-image: repeating-linear-gradient(
-    transparent, transparent 31px,
-    #e2e8f0 31px, #e2e8f0 32px
-  );
-  background-size: 100% 32px;
-  line-height: 32px;
-}
-
-/* Devanagari watermark - font removed, using Inter */
-.devanagari-watermark {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 20rem;
-  color: rgba(139, 69, 19, 0.03);
-  pointer-events: none;
-}
-
-/* Aged edges shadow for cards */
-.aged-edges {
-  box-shadow: inset 0 0 60px rgba(139, 69, 19, 0.1), 0 4px 20px rgba(0, 0, 0, 0.1);
-}
-
-/* Coffee stain decorative element */
-.coffee-stain::after {
-  content: '';
-  position: absolute;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(139, 69, 19, 0.05) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-/* Mobile safe area padding */
-.pb-safe {
-  padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0.75rem));
 }
 
 /* Scrollbar — light track, subtle thumb */

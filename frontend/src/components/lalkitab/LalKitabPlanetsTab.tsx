@@ -26,7 +26,7 @@ export default function LalKitabPlanetsTab({ chartData, kundliId }: Props) {
     if (kundliId) {
       api.get(`/api/lalkitab/advanced/${kundliId}`)
         .then(setAdvancedData)
-        .catch(console.error);
+        .catch(() => {});
     }
   }, [kundliId]);
 
@@ -48,7 +48,7 @@ export default function LalKitabPlanetsTab({ chartData, kundliId }: Props) {
     <div className="space-y-6">
       {/* Header */}
       <div className="text-center space-y-2">
-        <h2 className="text-2xl font-sans text-sacred-gold">
+        <h2 className="text-2xl text-sacred-gold">
           {t('lk.planets.title')}
         </h2>
         <p className="text-gray-600 text-sm">
@@ -58,15 +58,15 @@ export default function LalKitabPlanetsTab({ chartData, kundliId }: Props) {
 
       {/* Legend */}
       <div className="flex flex-wrap justify-center gap-4 py-2 border-y border-sacred-gold/10">
-        <div className="flex items-center gap-1.5 text-xs text-cosmic-text/70">
+        <div className="flex items-center gap-1.5 text-xs text-foreground/70">
           <Zap className="w-3.5 h-3.5 text-green-500" />
           <span>{t('lk.planets.active')}</span>
         </div>
-        <div className="flex items-center gap-1.5 text-xs text-cosmic-text/70">
+        <div className="flex items-center gap-1.5 text-xs text-foreground/70">
           <Moon className="w-3.5 h-3.5 text-orange-500" />
           <span>{t('lk.planets.sleeping')}</span>
         </div>
-        <div className="flex items-center gap-1.5 text-xs text-cosmic-text/70">
+        <div className="flex items-center gap-1.5 text-xs text-foreground/70">
           <ShieldCheck className="w-3.5 h-3.5 text-sacred-gold" />
           <span>{t('lk.planets.stable')}</span>
         </div>
@@ -101,7 +101,7 @@ export default function LalKitabPlanetsTab({ chartData, kundliId }: Props) {
                 <div className="flex items-center gap-3">
                   <Star className={`w-5 h-5 ${isKayam ? 'text-sacred-gold fill-sacred-gold/20' : 'text-sacred-gold/40'}`} />
                   <div>
-                    <h3 className="font-sans text-sacred-gold text-lg">
+                    <h3 className="text-sacred-gold text-lg">
                       {getPlanetName(planet)}
                     </h3>
                     <p className="text-gray-500 text-xs">
@@ -146,7 +146,7 @@ export default function LalKitabPlanetsTab({ chartData, kundliId }: Props) {
                       <p className={`text-[10px] font-bold uppercase tracking-widest ${isSleeping ? 'text-orange-700' : 'text-green-700'}`}>
                         {isSleeping ? t('lk.planets.sleeping') : t('lk.planets.active')}
                       </p>
-                      <p className="text-[10px] text-cosmic-text/60 mt-1">
+                      <p className="text-[10px] text-foreground/60 mt-1">
                         {isSleeping 
                           ? (isHi ? isSleeping.reason.hi : isSleeping.reason.en)
                           : (t('auto.selfActivatedAndFrui'))}
@@ -156,7 +156,7 @@ export default function LalKitabPlanetsTab({ chartData, kundliId }: Props) {
                       <p className={`text-[10px] font-bold uppercase tracking-widest ${isKayam ? 'text-sacred-gold-dark' : 'text-gray-500'}`}>
                         {isKayam ? t('lk.planets.stable') : t('lk.planets.unstable')}
                       </p>
-                      <p className="text-[10px] text-cosmic-text/60 mt-1">
+                      <p className="text-[10px] text-foreground/60 mt-1">
                         {isKayam ? t('lk.planets.kayamDesc') : (t('auto.underInfluenceOfEnem'))}
                       </p>
                     </div>
@@ -167,7 +167,7 @@ export default function LalKitabPlanetsTab({ chartData, kundliId }: Props) {
                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                       {t('lk.planets.pakkaGhar')}
                     </span>
-                    <p className="text-sacred-gold font-sans text-sm mt-0.5">
+                    <p className="text-sacred-gold text-sm mt-0.5">
                       {t('auto.housePakkaGhar')}
                     </p>
                   </div>
@@ -206,7 +206,7 @@ export default function LalKitabPlanetsTab({ chartData, kundliId }: Props) {
                       <span className="text-[10px] font-bold text-sacred-gold uppercase tracking-widest">
                         {t('lk.planets.effect')}
                       </span>
-                      <p className="text-sm text-cosmic-text mt-1 leading-relaxed italic">
+                      <p className="text-sm text-foreground mt-1 leading-relaxed italic">
                         "{language === 'hi' ? effect.hi : effect.en}"
                       </p>
                     </div>
@@ -221,7 +221,7 @@ export default function LalKitabPlanetsTab({ chartData, kundliId }: Props) {
                       <div className="space-y-1.5 mt-1.5">
                         {advancedData.aspects[planet.key].map((asp: any, idx: number) => (
                           <div key={idx} className="flex items-center justify-between text-xs p-2 rounded bg-sacred-gold/5 border border-sacred-gold/10">
-                            <span className="font-medium text-cosmic-text">
+                            <span className="font-medium text-foreground">
                               {t('auto.aspects')} {getFriendName(asp.aspects_to)}
                             </span>
                             <span className="text-sacred-gold-dark font-bold">

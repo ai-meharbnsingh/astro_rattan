@@ -43,7 +43,7 @@ export default function LalKitabNishaniyaTab({ kundliId }: Props) {
       try {
         setConfirmedIds(new Set(JSON.parse(stored)));
       } catch (e) {
-        console.error('Failed to parse stored nishani verification', e);
+        /* ignored — corrupt localStorage entry */
       }
     }
   }, [kundliId, isHi]);
@@ -92,7 +92,7 @@ export default function LalKitabNishaniyaTab({ kundliId }: Props) {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-xl font-sans font-semibold text-sacred-gold flex items-center gap-2 mb-1">
+        <h2 className="text-xl font-semibold text-sacred-gold flex items-center gap-2 mb-1">
           <BookOpen className="w-5 h-5" />
           {t('auto.lalKitabNishaniyan')}
         </h2>
@@ -110,13 +110,13 @@ export default function LalKitabNishaniyaTab({ kundliId }: Props) {
                 <Target className="w-6 h-6 text-sacred-gold" />
               </div>
               <div>
-                <h3 className="font-sans font-bold text-cosmic-text">{t('lk.nishani.accuracyMeter')}</h3>
-                <p className="text-xs text-cosmic-text/60">{t('lk.nishani.accuracyDesc')}</p>
+                <h3 className="font-bold text-foreground">{t('lk.nishani.accuracyMeter')}</h3>
+                <p className="text-xs text-foreground/60">{t('lk.nishani.accuracyDesc')}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <div className="text-right">
-                <p className="text-2xl font-sans font-black text-sacred-gold leading-none">{accuracyScore}%</p>
+                <p className="text-2xl font-black text-sacred-gold leading-none">{accuracyScore}%</p>
                 <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mt-1">VERIFIED</p>
               </div>
               <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -213,7 +213,7 @@ export default function LalKitabNishaniyaTab({ kundliId }: Props) {
                   </div>
                 </div>
 
-                <p className="text-sm text-cosmic-text leading-relaxed font-medium">
+                <p className="text-sm text-foreground leading-relaxed font-medium">
                   {isHi ? n.nishani_text : (n.nishani_text_en || n.nishani_text)}
                 </p>
 

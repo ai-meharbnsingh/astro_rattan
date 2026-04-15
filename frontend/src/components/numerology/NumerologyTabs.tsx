@@ -8,11 +8,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { api } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
 import { useAuth } from '@/hooks/useAuth';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import ClientSelector, { autoRegisterClient } from '@/components/ClientSelector';
 import type { ClientData } from '@/components/ClientSelector';
 import NameNumerology from './NameNumerology';
 import VehicleNumerology from './VehicleNumerology';
 import HouseNumerology from './HouseNumerology';
+import { Heading } from "@/components/ui/heading";
 
 interface NumerologyPredictions {
   life_path: string;
@@ -209,36 +211,31 @@ export default function NumerologyTabs() {
 
   return (
     <div className="space-y-6">
-      {/* Tabs */}
-      <div className="bg-sacred-cream rounded-lg p-2 grid grid-cols-5 gap-1">
-        {tabConfig.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`min-w-0 min-h-[58px] px-1 py-2 rounded-md text-[11px] md:text-xs font-medium transition-all flex flex-col items-center justify-center gap-1 leading-tight ${
-              activeTab === tab.id
-                ? 'bg-sacred-gold-dark text-white shadow-md'
-                : 'bg-cosmic-card text-cosmic-text-secondary hover:bg-sacred-gold/10 border border-sacred-gold/20'
-            }`}
-          >
-            <tab.icon className="w-3.5 h-3.5" />
-            <span className="truncate max-w-full">{t(tab.labelKey)}</span>
-          </button>
-        ))}
-      </div>
-
       {error && (
         <div className="p-3 rounded-xl bg-red-50 border border-red-300 text-red-700 text-sm text-center max-w-xl mx-auto">
           {error}
         </div>
       )}
 
-      {/* Life Path Tab */}
-      {activeTab === 'life_path' && (
-        <div className="max-w-xl mx-auto space-y-6">
-          <Card className="bg-cosmic-card border-0 shadow-soft">
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabType)} className="space-y-6">
+        <TabsList className="grid grid-cols-5 h-auto p-1 gap-1">
+          {tabConfig.map((tab) => (
+            <TabsTrigger
+              key={tab.id}
+              value={tab.id}
+              className="min-w-0 min-h-[58px] px-1 py-2 text-[11px] md:text-xs font-medium flex flex-col items-center justify-center gap-1 leading-tight data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              <tab.icon className="w-3.5 h-3.5" />
+              <span className="truncate max-w-full">{t(tab.labelKey)}</span>
+            </TabsTrigger>
+          ))}
+        </TabsList>
+
+        {/* Life Path Tab */}
+        <TabsContent value="life_path" className="max-w-xl mx-auto space-y-6">
+          <Card className="bg-card border-0 shadow-soft">
             <CardContent className="p-6">
-              <h3 className="font-display font-semibold text-cosmic-text mb-4 text-center">{t('numerology.calculateNumbers')}</h3>
+              <Heading as={3} variant={3}>{t('numerology.calculateNumbers')}</Heading>
               {isAstrologer && (
                 <ClientSelector
                   onSelectClient={handleClientSelect}
@@ -247,9 +244,9 @@ export default function NumerologyTabs() {
                 />
               )}
               <div className="space-y-3">
-                <Input placeholder={t('numerology.fullName')} value={numName} onChange={(e) => setNumName(e.target.value)} className="bg-cosmic-card border-sacred-gold" />
-                <Input type="date" value={numDob} onChange={(e) => setNumDob(e.target.value)} className="bg-cosmic-card border-sacred-gold" />
-                <Button onClick={calculateNumerology} disabled={numLoading || !numName.trim() || !numDob} className="w-full bg-sacred-gold text-cosmic-bg hover:bg-gray-50 dark">
+                <Input placeholder={t('numerology.fullName')} value={numName} onChange={(e) => setNumName(e.target.value)} className="bg-card border-sacred-gold" />
+                <Input type="date" value={numDob} onChange={(e) => setNumDob(e.target.value)} className="bg-card border-sacred-gold" />
+                <Button onClick={calculateNumerology} disabled={numLoading || !numName.trim() || !numDob} className="w-full bg-sacred-gold text-background hover:bg-gray-50 dark">
                   {numLoading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{t('common.calculating')}</> : <><Hash className="w-4 h-4 mr-2" />{t('numerology.calculate')}</>}
                 </Button>
               </div>
@@ -257,9 +254,9 @@ export default function NumerologyTabs() {
           </Card>
 
           {numResult && (
-            <Card className="bg-cosmic-card border-0 shadow-soft-lg">
+            <Card className="bg-card border-0 shadow-soft-lg">
               <CardContent className="p-6">
-                <h4 className="font-display font-semibold text-cosmic-text mb-4 text-center">{t('numerology.report')}</h4>
+                <Heading as={4} variant={4}>{t('numerology.report')}</Heading>
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   {[
                     { label: t('numerology.lifePath'), value: numResult.life_path, color: 'bg-purple-100 text-purple-700' },
@@ -267,21 +264,21 @@ export default function NumerologyTabs() {
                     { label: t('numerology.soulUrge'), value: numResult.soul_urge, color: 'bg-green-100 text-green-800' },
                     { label: t('numerology.personality'), value: numResult.personality, color: 'bg-yellow-100 text-yellow-700' },
                   ].map((n) => (
-                    <div key={n.label} className="text-center p-3 rounded-xl bg-cosmic-card">
-                      <p className="text-sm text-cosmic-text-secondary mb-1">{n.label}</p>
+                    <div key={n.label} className="text-center p-3 rounded-xl bg-card">
+                      <p className="text-sm text-muted-foreground mb-1">{n.label}</p>
                       <Badge className={`text-lg px-3 py-1 ${n.color}`}>{n.value}</Badge>
                     </div>
                   ))}
                 </div>
-                {numResult.summary && <p className="text-sm text-cosmic-text-secondary text-center">{numResult.summary}</p>}
+                {numResult.summary && <p className="text-sm text-muted-foreground text-center">{numResult.summary}</p>}
                 {numResult.predictions && (
                   Array.isArray(numResult.predictions) ? (
                     numResult.predictions.length > 0 && (
                       <div className="mt-4">
-                        <p className="text-sm font-medium text-cosmic-text mb-2">{t('numerology.predictions')}:</p>
+                        <p className="text-sm font-medium text-foreground mb-2">{t('numerology.predictions')}:</p>
                         <ul className="space-y-1">
                           {numResult.predictions.map((p, i) => (
-                            <li key={i} className="text-sm text-cosmic-text-secondary flex gap-2">
+                            <li key={i} className="text-sm text-muted-foreground flex gap-2">
                               <Sparkles className="w-4 h-4 text-sacred-gold shrink-0 mt-0.5" />{p}
                             </li>
                           ))}
@@ -290,7 +287,7 @@ export default function NumerologyTabs() {
                     )
                   ) : (
                     <div className="mt-4 space-y-3">
-                      <p className="text-sm font-medium text-cosmic-text mb-2">{t('numerology.predictions')}:</p>
+                      <p className="text-sm font-medium text-foreground mb-2">{t('numerology.predictions')}:</p>
                       {[
                         { key: 'life_path' as const, label: t('numerology.lifePath'), headerColor: 'bg-purple-100 text-purple-800', borderColor: 'border-purple-300' },
                         { key: 'destiny' as const, label: t('numerology.destiny'), headerColor: 'bg-blue-100 text-blue-800', borderColor: 'border-blue-300' },
@@ -306,7 +303,7 @@ export default function NumerologyTabs() {
                               {section.label} Number
                             </div>
                             <div className="px-4 py-3">
-                              <p className="text-sm text-cosmic-text-secondary leading-relaxed">{text}</p>
+                              <p className="text-sm text-muted-foreground leading-relaxed">{text}</p>
                             </div>
                           </div>
                         );
@@ -317,15 +314,13 @@ export default function NumerologyTabs() {
               </CardContent>
             </Card>
           )}
-        </div>
-      )}
+      </TabsContent>
 
       {/* Mobile Tab */}
-      {activeTab === 'mobile' && (
-        <div className="max-w-2xl mx-auto space-y-6">
-          <Card className="bg-cosmic-card border-0 shadow-soft">
+      <TabsContent value="mobile" className="max-w-2xl mx-auto space-y-6">
+          <Card className="bg-card border-0 shadow-soft">
             <CardContent className="p-6">
-              <h3 className="font-display font-semibold text-cosmic-text mb-4 text-center">{t('numerology.mobileAnalyzeHeading')}</h3>
+              <Heading as={3} variant={3}>{t('numerology.mobileAnalyzeHeading')}</Heading>
               {isAstrologer && (
                 <ClientSelector
                   onSelectClient={handleMobileClientSelect}
@@ -336,24 +331,24 @@ export default function NumerologyTabs() {
               <div className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-sm text-cosmic-text-secondary mb-1">{t('numerology.firstName')} <span className="text-red-600">*</span></label>
-                    <Input placeholder={t('numerology.firstName')} value={firstName} onChange={(e) => setFirstName(e.target.value)} className="bg-cosmic-card border-sacred-gold" />
+                    <label className="block text-sm text-muted-foreground mb-1">{t('numerology.firstName')} <span className="text-red-600">*</span></label>
+                    <Input placeholder={t('numerology.firstName')} value={firstName} onChange={(e) => setFirstName(e.target.value)} className="bg-card border-sacred-gold" />
                   </div>
                   <div>
-                    <label className="block text-sm text-cosmic-text-secondary mb-1">{t('numerology.middleName')}</label>
-                    <Input placeholder={`${t('numerology.middleName')} ${t('numerology.optional')}`} value={middleName} onChange={(e) => setMiddleName(e.target.value)} className="bg-cosmic-card border-sacred-gold" />
+                    <label className="block text-sm text-muted-foreground mb-1">{t('numerology.middleName')}</label>
+                    <Input placeholder={`${t('numerology.middleName')} ${t('numerology.optional')}`} value={middleName} onChange={(e) => setMiddleName(e.target.value)} className="bg-card border-sacred-gold" />
                   </div>
                   <div>
-                    <label className="block text-sm text-cosmic-text-secondary mb-1">{t('numerology.lastName')}</label>
-                    <Input placeholder={t('numerology.lastName')} value={lastName} onChange={(e) => setLastName(e.target.value)} className="bg-cosmic-card border-sacred-gold" />
+                    <label className="block text-sm text-muted-foreground mb-1">{t('numerology.lastName')}</label>
+                    <Input placeholder={t('numerology.lastName')} value={lastName} onChange={(e) => setLastName(e.target.value)} className="bg-card border-sacred-gold" />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm text-cosmic-text-secondary mb-1">{t('numerology.mobileNumber')} <span className="text-red-600">*</span></label>
+                  <label className="block text-sm text-muted-foreground mb-1">{t('numerology.mobileNumber')} <span className="text-red-600">*</span></label>
                   <div className="flex gap-2">
                     <Select value={mobileCountryCode} onValueChange={setMobileCountryCode}>
-                      <SelectTrigger className="w-24 bg-cosmic-card border-sacred-gold shrink-0">
+                      <SelectTrigger className="w-24 bg-card border-sacred-gold shrink-0">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -370,19 +365,19 @@ export default function NumerologyTabs() {
                       </SelectContent>
                     </Select>
                     <div className="relative flex-1">
-                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cosmic-text-secondary" />
-                      <Input placeholder="9876543210" value={mobilePhone} onChange={(e) => setMobilePhone(e.target.value.replace(/\D/g, ''))} className="bg-cosmic-card border-sacred-gold pl-10" maxLength={15} />
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input placeholder="9876543210" value={mobilePhone} onChange={(e) => setMobilePhone(e.target.value.replace(/\D/g, ''))} className="bg-card border-sacred-gold pl-10" maxLength={15} />
                     </div>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm text-cosmic-text-secondary mb-1">{t('numerology.dateOfBirth')} <span className="text-red-600">*</span></label>
-                  <Input type="date" value={mobileDob} onChange={(e) => setMobileDob(e.target.value)} className="bg-cosmic-card border-sacred-gold" />
+                  <label className="block text-sm text-muted-foreground mb-1">{t('numerology.dateOfBirth')} <span className="text-red-600">*</span></label>
+                  <Input type="date" value={mobileDob} onChange={(e) => setMobileDob(e.target.value)} className="bg-card border-sacred-gold" />
                 </div>
 
                 <div>
-                  <label className="block text-sm text-cosmic-text-secondary mb-2">{t('numerology.areaOfStruggle')}</label>
+                  <label className="block text-sm text-muted-foreground mb-2">{t('numerology.areaOfStruggle')}</label>
                   <div className="flex flex-wrap gap-3">
                     {['Health', 'Relationship', 'Career', 'Money', 'Job'].map((area) => (
                       <label
@@ -391,7 +386,7 @@ export default function NumerologyTabs() {
                         className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-all text-sm ${
                           selectedAreas.includes(area)
                             ? 'border-sacred-gold bg-sacred-gold/10 text-sacred-gold-dark font-medium'
-                            : 'border-gray-300 bg-white text-gray-600 hover:border-sacred-gold'
+                            : 'border-gray-300 bg-white text-muted-foreground hover:border-sacred-gold'
                         }`}
                       >
                         <input type="checkbox" checked={selectedAreas.includes(area)} onChange={() => {}} className="sr-only" />
@@ -401,7 +396,7 @@ export default function NumerologyTabs() {
                   </div>
                 </div>
 
-                <Button onClick={analyzeMobile} disabled={mobileLoading || !mobilePhone.trim() || !firstName.trim() || !mobileDob} className="w-full bg-sacred-gold text-cosmic-bg hover:bg-gray-50 dark">
+                <Button onClick={analyzeMobile} disabled={mobileLoading || !mobilePhone.trim() || !firstName.trim() || !mobileDob} className="w-full bg-sacred-gold text-background hover:bg-gray-50 dark">
                   {mobileLoading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{t('numerology.analyzing')}</> : <><Phone className="w-4 h-4 mr-2" />{t('numerology.analyzeMobileButton')}</>}
                 </Button>
               </div>
@@ -410,24 +405,24 @@ export default function NumerologyTabs() {
 
           {/* Mobile Results */}
           {mobileResult && (
-            <Card className="bg-cosmic-card border-0 shadow-soft-lg">
+            <Card className="bg-card border-0 shadow-soft-lg">
               <CardContent className="p-6 space-y-4">
                 <div className="text-center pb-4 border-b border-sacred-gold/20">
-                  <h4 className="font-display font-bold text-lg text-sacred-gold tracking-wide uppercase">{t('numerology.reportHeader')}</h4>
-                  <p className="text-sm text-cosmic-text mt-1">{mobileResult.phone_number}</p>
+                  <Heading as={4} variant={4}>{t('numerology.reportHeader')}</Heading>
+                  <p className="text-sm text-foreground mt-1">{mobileResult.phone_number}</p>
                 </div>
 
                 <div className="grid grid-cols-3 gap-4">
                   <div className="text-center p-3 bg-sacred-gold/5 rounded-lg">
-                    <p className="text-xs text-cosmic-text-secondary mb-1">Compound</p>
+                    <p className="text-xs text-muted-foreground mb-1">Compound</p>
                     <Badge className="text-lg bg-purple-100 text-purple-700">{mobileResult.compound_number}</Badge>
                   </div>
                   <div className="text-center p-3 bg-sacred-gold/5 rounded-lg">
-                    <p className="text-xs text-cosmic-text-secondary mb-1">Total</p>
-                    <Badge className="text-lg bg-sacred-gold text-cosmic-bg">{mobileResult.mobile_total}</Badge>
+                    <p className="text-xs text-muted-foreground mb-1">Total</p>
+                    <Badge className="text-lg bg-sacred-gold text-background">{mobileResult.mobile_total}</Badge>
                   </div>
                   <div className="text-center p-3 bg-sacred-gold/5 rounded-lg">
-                    <p className="text-xs text-cosmic-text-secondary mb-1">Status</p>
+                    <p className="text-xs text-muted-foreground mb-1">Status</p>
                     <Badge className={mobileResult.is_recommended ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
                       {mobileResult.is_recommended ? 'Good' : 'Caution'}
                     </Badge>
@@ -442,17 +437,17 @@ export default function NumerologyTabs() {
               </CardContent>
             </Card>
           )}
-        </div>
-      )}
+      </TabsContent>
 
       {/* Name Tab */}
-      {activeTab === 'name' && <NameNumerology birthDate={numDob} />}
+      <TabsContent value="name"><NameNumerology birthDate={numDob} /></TabsContent>
 
       {/* Vehicle Tab */}
-      {activeTab === 'vehicle' && <VehicleNumerology birthDate={numDob} />}
+      <TabsContent value="vehicle"><VehicleNumerology birthDate={numDob} /></TabsContent>
 
       {/* House Tab */}
-      {activeTab === 'house' && <HouseNumerology birthDate={numDob} />}
-    </div>
+      <TabsContent value="house"><HouseNumerology birthDate={numDob} /></TabsContent>
+    </Tabs>
+  </div>
   );
 }

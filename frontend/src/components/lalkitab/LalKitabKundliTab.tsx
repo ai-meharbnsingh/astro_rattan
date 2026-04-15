@@ -77,7 +77,7 @@ export default function LalKitabKundliTab({ chartData, apiResult }: Props) {
     <div className="space-y-8">
       {/* Header */}
       <div className="text-center space-y-2">
-        <h2 className="text-2xl font-sans font-bold text-sacred-gold flex items-center justify-center gap-2">
+        <h2 className="text-2xl font-semibold text-sacred-gold flex items-center justify-center gap-2">
           <LayoutGrid className="w-6 h-6" />
           {t('lk.kundli.title')}
         </h2>
@@ -103,21 +103,21 @@ export default function LalKitabKundliTab({ chartData, apiResult }: Props) {
         <div className="card-sacred rounded-xl p-6 border border-sacred-gold/20 text-center space-y-2">
           <Home className="w-6 h-6 text-sacred-gold/50 mx-auto" />
           <p className="text-sm text-gray-600">{t('lk.kundli.emptyHouses')}</p>
-          <p className="text-3xl font-sans font-bold text-cosmic-text">{counts.empty}</p>
+          <p className="text-3xl font-bold text-foreground">{counts.empty}</p>
         </div>
 
         {/* Strong Houses */}
         <div className="card-sacred rounded-xl p-6 border border-sacred-gold/20 text-center space-y-2">
           <ShieldCheck className="w-6 h-6 text-green-400 mx-auto" />
           <p className="text-sm text-gray-600">{t('lk.kundli.strongHouses')}</p>
-          <p className="text-3xl font-sans font-bold text-green-400">{counts.strong}</p>
+          <p className="text-3xl font-bold text-green-400">{counts.strong}</p>
         </div>
 
         {/* Weak Houses */}
         <div className="card-sacred rounded-xl p-6 border border-sacred-gold/20 text-center space-y-2">
           <ShieldAlert className="w-6 h-6 text-red-400 mx-auto" />
           <p className="text-sm text-gray-600">{t('lk.kundli.weakHouses')}</p>
-          <p className="text-3xl font-sans font-bold text-red-400">{counts.weak}</p>
+          <p className="text-3xl font-bold text-red-400">{counts.weak}</p>
         </div>
       </div>
     </div>

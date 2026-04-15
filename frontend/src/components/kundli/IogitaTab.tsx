@@ -1,4 +1,5 @@
 import { Loader2, Sparkles } from 'lucide-react';
+import { Heading } from '@/components/ui/heading';
 
 interface IogitaTabProps {
   iogitaData: any;
@@ -10,7 +11,7 @@ interface IogitaTabProps {
 export default function IogitaTab({ iogitaData, loadingIogita, language, t }: IogitaTabProps) {
   if (loadingIogita) {
     return (
-      <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-cosmic-text">{t('kundli.analyzingLifePath')}</span></div>
+      <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-primary" /><span className="ml-2 text-foreground">{t('kundli.analyzingLifePath')}</span></div>
     );
   }
 
@@ -18,22 +19,22 @@ export default function IogitaTab({ iogitaData, loadingIogita, language, t }: Io
     return (
       <div className="space-y-6">
         {/* Overall Summary Card */}
-        <div className="rounded-xl p-6 border border-sacred-gold" style={{ background: 'linear-gradient(135deg, rgba(255,153,51,0.06) 0%, rgba(248,250,252,1) 100%)' }}>
+        <div className="rounded-xl p-6 border border-border" style={{ background: 'linear-gradient(135deg, rgba(255,153,51,0.06) 0%, rgba(248,250,252,1) 100%)' }}>
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-full bg-sacred-gold flex items-center justify-center">
-              <Sparkles className="w-6 h-6 text-sacred-gold" />
+            <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+              <Sparkles className="w-6 h-6 text-primary" />
             </div>
             <div>
-              <h4 className="font-display font-bold text-xl" style={{ color: 'var(--aged-gold)' }}>{t('iogita.yourLifePattern')}: {iogitaData.basin.name}</h4>
-              <p className="text-sm" style={{ color: 'var(--ink-light)' }}>{t('iogita.basedOnPositions')}</p>
+              <Heading as={4} variant={4}>{t('iogita.yourLifePattern')}: {iogitaData.basin.name}</Heading>
+              <p className="text-sm" className="text-muted-foreground">{t('iogita.basedOnPositions')}</p>
             </div>
           </div>
-          <p className="text-sm leading-relaxed mb-4" style={{ color: 'var(--ink)' }}>{iogitaData.basin.description}</p>
+          <p className="text-sm leading-relaxed mb-4" className="text-foreground">{iogitaData.basin.description}</p>
         </div>
 
         {/* Strengths — Top Forces */}
-        <div className="rounded-xl p-5 border border-sacred-gold bg-sacred-cream">
-          <h4 className="font-display font-semibold mb-4" style={{ color: 'var(--aged-gold-dim)' }}>{t('iogita.strongestQualities')}</h4>
+        <div className="rounded-xl p-5 border border-border bg-muted">
+          <Heading as={4} variant={4} className="mb-4">{t('iogita.strongestQualities')}</Heading>
           <div className="space-y-3">
             {(iogitaData.basin.top_3_atoms || []).map(([name, val]: [string, number], idx: number) => {
               const labelsEn: Record<string, string> = {
@@ -57,8 +58,8 @@ export default function IogitaTab({ iogitaData, loadingIogita, language, t }: Io
                   <span className="text-lg font-bold w-6" style={{ color: colors[idx] }}>{idx + 1}</span>
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>{labels[name] || name}</span>
-                      <span className="text-sm" style={{ color: 'var(--ink-light)' }}>{Math.round(Math.abs(val) * 100)}%</span>
+                      <span className="text-sm font-semibold" className="text-foreground">{labels[name] || name}</span>
+                      <span className="text-sm" className="text-muted-foreground">{Math.round(Math.abs(val) * 100)}%</span>
                     </div>
                     <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(184,134,11,0.15)' }}>
                       <div className="h-full rounded-full" style={{ width: `${Math.abs(val) * 100}%`, background: colors[idx] }} />
@@ -73,7 +74,7 @@ export default function IogitaTab({ iogitaData, loadingIogita, language, t }: Io
         {/* Area to Improve */}
         {iogitaData.basin.top_negative && (
           <div className="rounded-xl p-5 border border-red-200 bg-red-50">
-            <h4 className="font-display font-semibold mb-2 text-red-700">{t('iogita.areaNeedsAttention')}</h4>
+            <Heading as={4} variant={4} className="mb-2 text-red-700">{t('iogita.areaNeedsAttention')}</Heading>
             {(() => {
               const negLabelsEn: Record<string, string> = {
                 DHARMA: 'Following your duty', SATYA: 'Being truthful', TYAGA: 'Letting go of attachments',
@@ -100,31 +101,31 @@ export default function IogitaTab({ iogitaData, loadingIogita, language, t }: Io
         {/* Guidance Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="rounded-xl p-5 border border-amber-200 bg-amber-50">
-            <h4 className="font-display font-semibold mb-2 text-amber-700">{t('iogita.beMindfulOf')}</h4>
+            <Heading as={4} variant={4} className="mb-2 text-amber-700">{t('iogita.beMindfulOf')}</Heading>
             <p className="text-sm leading-relaxed text-amber-600">{iogitaData.basin.warning}</p>
           </div>
           <div className="rounded-xl p-5 border border-emerald-200 bg-emerald-50">
-            <h4 className="font-display font-semibold mb-2 text-emerald-700">{t('iogita.pathToGrowth')}</h4>
+            <Heading as={4} variant={4} className="mb-2 text-emerald-700">{t('iogita.pathToGrowth')}</Heading>
             <p className="text-sm leading-relaxed text-emerald-600">{iogitaData.basin.escape_trigger}</p>
           </div>
         </div>
 
         {/* Overall Insight */}
         {iogitaData.iogita_insight && (
-          <div className="rounded-xl p-5 border border-sacred-gold bg-sacred-cream">
-            <h4 className="font-display font-semibold mb-3" style={{ color: 'var(--aged-gold-dim)' }}>{t('iogita.overallLifeReading')}</h4>
-            <p className="text-sm leading-relaxed" style={{ color: 'var(--ink)' }}>{iogitaData.iogita_insight}</p>
+          <div className="rounded-xl p-5 border border-border bg-muted">
+            <Heading as={4} variant={4} className="mb-3">{t('iogita.overallLifeReading')}</Heading>
+            <p className="text-sm leading-relaxed" className="text-foreground">{iogitaData.iogita_insight}</p>
           </div>
         )}
 
         {/* Normal Astrology Insights */}
         {iogitaData.normal_astrology && iogitaData.normal_astrology.length > 0 && (
-          <div className="rounded-xl p-5 border border-sacred-gold bg-sacred-cream">
-            <h4 className="font-display font-semibold mb-3" style={{ color: 'var(--aged-gold-dim)' }}>{t('iogita.kundliSummary')}</h4>
+          <div className="rounded-xl p-5 border border-border bg-muted">
+            <Heading as={4} variant={4} className="mb-3">{t('iogita.kundliSummary')}</Heading>
             <div className="space-y-2">
               {iogitaData.normal_astrology.map((point: string, idx: number) => (
-                <div key={idx} className="flex gap-2 text-sm" style={{ color: 'var(--ink)' }}>
-                  <span style={{ color: 'var(--aged-gold)' }}>•</span>
+                <div key={idx} className="flex gap-2 text-sm" className="text-foreground">
+                  <span className="text-primary">•</span>
                   <span className="leading-relaxed">{point}</span>
                 </div>
               ))}
@@ -136,8 +137,8 @@ export default function IogitaTab({ iogitaData, loadingIogita, language, t }: Io
   }
 
   if (iogitaData) {
-    return <p className="text-center py-8" style={{ color: 'var(--ink-light)' }}>{t('iogita.partialData')}</p>;
+    return <p className="text-center py-8" className="text-muted-foreground">{t('iogita.partialData')}</p>;
   }
 
-  return <p className="text-center py-8" style={{ color: 'var(--ink-light)' }}>{t('iogita.clickTab')}</p>;
+  return <p className="text-center py-8" className="text-muted-foreground">{t('iogita.clickTab')}</p>;
 }

@@ -1,11 +1,13 @@
-"""Kundli routes — generate, retrieve, list, iogita analysis, match, dosha, dasha, divisional, ashtakvarga, avakhada, yogas, geocode, pdf."""
+"""Kundli routes — generate, retrieve, list, iogita analysis, match, dosha, dasha, divisional, ashtakvarga, avakhada, yogas, geocode, pdf, free-preview."""
 import io
 import json
-from typing import Any
+import logging
+from typing import Any, Optional
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel, Field
 
 from app.auth import get_current_user, get_current_user_optional
 from app.database import get_db
@@ -34,18 +36,109 @@ from app.transit_engine import calculate_transits, calculate_transit_forecast
 from app.kp_engine import calculate_kp_cuspal
 from app.lifelong_sade_sati import calculate_lifelong_sade_sati
 from app.yogini_dasha_engine import calculate_yogini_dasha
-from app.nadi_engine import calculate_nadi_insights
 from app.reports.kundli_report import build_full_report
 from datetime import datetime
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter(prefix="/api/kundli", tags=["kundli"])
+
+
+def _prepare_shadbala_params(planets: dict, row: dict) -> dict:
+    """Extract shadbala parameters from chart planets + kundli row.
+
+    Returns a dict ready to be unpacked into calculate_shadbala(**params).
+    Used by the /shadbala endpoint, PDF builder, and full-report download.
+    """
+    planet_signs = {}
+    planet_houses = {}
+    planet_longitudes = {}
+    retrograde_planets = set()
+    for pn, pi in planets.items():
+        if not isinstance(pi, dict):
+            continue
+        planet_signs[pn] = pi.get("sign", "Aries")
+        planet_houses[pn] = pi.get("house", 1)
+        if "longitude" in pi:
+            planet_longitudes[pn] = pi["longitude"]
+        if pi.get("retrograde") or "Retrograde" in pi.get("status", "") or "retrograde" in pi.get("status", ""):
+            retrograde_planets.add(pn)
+
+    birth_time = row.get("birth_time", "12:00:00")
+    try:
+        parts = str(birth_time).split(":")
+        birth_hour = int(parts[0]) + int(parts[1]) / 60.0
+    except (ValueError, IndexError):
+        birth_hour = 12.0
+
+    sun_lon = planet_longitudes.get("Sun", 0.0)
+    moon_lon = planet_longitudes.get("Moon", 0.0)
+
+    try:
+        bd = datetime.strptime(str(row.get("birth_date", "2000-01-01")), "%Y-%m-%d")
+        weekday = bd.weekday()
+        birth_year = bd.year
+        birth_month = bd.month
+    except (ValueError, TypeError):
+        weekday, birth_year, birth_month = 0, 2000, 1
+
+    return {
+        "planet_signs": planet_signs,
+        "planet_houses": planet_houses,
+        "is_daytime": 6.0 <= birth_hour < 18.0,
+        "retrograde_planets": retrograde_planets,
+        "planet_longitudes": planet_longitudes,
+        "birth_hour": birth_hour,
+        "moon_sun_elongation": (moon_lon - sun_lon) % 360.0,
+        "weekday": weekday,
+        "birth_year": birth_year,
+        "birth_month": birth_month,
+    }
+
+
+# ── timezone lookup (singleton) ────────────────────────────
+from timezonefinder import TimezoneFinder as _TF
+_tf = _TF()
+
+
+def _get_timezone_offset(lat: float, lon: float, birth_date: str = None) -> dict:
+    """Look up the IANA timezone for coordinates and compute the UTC offset.
+
+    Uses the birth_date to account for historical DST rules.
+    Returns {"timezone_name": "Asia/Kolkata", "timezone_offset": 5.5}
+    """
+    from zoneinfo import ZoneInfo
+
+    tz_name = _tf.timezone_at(lat=lat, lng=lon)
+    if not tz_name:
+        # Fallback: approximate from longitude
+        offset = round(lon / 15.0 * 4) / 4  # nearest 0.25h
+        return {"timezone_name": f"UTC{offset:+.1f}", "timezone_offset": offset}
+
+    tz = ZoneInfo(tz_name)
+    # Use birth date for historical DST; default to today
+    if birth_date:
+        try:
+            parts = birth_date.split("-")
+            dt = datetime(int(parts[0]), int(parts[1]), int(parts[2]), 12, 0, tzinfo=tz)
+        except (ValueError, IndexError):
+            dt = datetime.now(tz)
+    else:
+        dt = datetime.now(tz)
+
+    offset_seconds = dt.utcoffset().total_seconds()
+    offset_hours = offset_seconds / 3600.0
+    return {"timezone_name": tz_name, "timezone_offset": offset_hours}
 
 
 # ── geocode ─────────────────────────────────────────────────
 
 @router.get("/geocode", status_code=status.HTTP_200_OK)
 async def geocode_place(query: str = Query(..., min_length=2, description="Place name to geocode")):
-    """Geocode a place name using the free Nominatim OpenStreetMap API."""
+    """Geocode a place name using the free Nominatim OpenStreetMap API.
+
+    Returns lat/lon AND the timezone for each result (for correct birth chart calculations).
+    """
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             resp = await client.get(
@@ -55,15 +148,33 @@ async def geocode_place(query: str = Query(..., min_length=2, description="Place
             )
             resp.raise_for_status()
             results = resp.json()
-            return [
-                {"name": r["display_name"], "lat": float(r["lat"]), "lon": float(r["lon"])}
-                for r in results
-            ]
+            out = []
+            for r in results:
+                lat, lon = float(r["lat"]), float(r["lon"])
+                tz_info = _get_timezone_offset(lat, lon)
+                out.append({
+                    "name": r["display_name"],
+                    "lat": lat,
+                    "lon": lon,
+                    "timezone_name": tz_info["timezone_name"],
+                    "timezone_offset": tz_info["timezone_offset"],
+                })
+            return out
     except httpx.HTTPError:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail="Geocoding service unavailable. Please enter coordinates manually.",
         )
+
+
+@router.get("/timezone", status_code=status.HTTP_200_OK)
+def get_timezone(
+    lat: float = Query(..., ge=-90, le=90),
+    lon: float = Query(..., ge=-180, le=180),
+    birth_date: str = Query(default=None, description="YYYY-MM-DD for historical DST"),
+):
+    """Look up timezone for coordinates + optional birth date (handles DST)."""
+    return _get_timezone_offset(lat, lon, birth_date)
 
 
 # ── helpers ──────────────────────────────────────────────────
@@ -657,59 +768,8 @@ def get_shadbala(
     chart = _chart_data(row)
     planets = chart.get("planets", {})
 
-    # Build planet_signs, planet_houses, and planet_longitudes
-    planet_signs = {}
-    planet_houses = {}
-    planet_longitudes = {}
-    for planet_name, info in planets.items():
-        planet_signs[planet_name] = info.get("sign", "Aries")
-        planet_houses[planet_name] = info.get("house", 1)
-        if "longitude" in info:
-            planet_longitudes[planet_name] = info["longitude"]
-
-    # Parse birth_hour as decimal (e.g. "14:30:00" -> 14.5)
-    birth_time = row.get("birth_time", "12:00:00")
-    try:
-        parts = str(birth_time).split(":")
-        birth_hour = int(parts[0]) + int(parts[1]) / 60.0
-    except (ValueError, IndexError):
-        birth_hour = 12.0
-    is_daytime = 6.0 <= birth_hour < 18.0
-
-    # Moon-Sun elongation for Paksha Bala
-    sun_lon = planet_longitudes.get("Sun", 0.0)
-    moon_lon = planet_longitudes.get("Moon", 0.0)
-    moon_sun_elongation = (moon_lon - sun_lon) % 360.0
-
-    # Weekday, year, month from birth_date
-    try:
-        bd = datetime.strptime(str(row.get("birth_date", "2000-01-01")), "%Y-%m-%d")
-        weekday = bd.weekday()     # Monday=0 .. Sunday=6
-        birth_year = bd.year
-        birth_month = bd.month
-    except (ValueError, TypeError):
-        weekday, birth_year, birth_month = 0, 2000, 1
-
-    # Extract retrograde planets for Cheshta Bala
-    retrograde_planets = set()
-    for planet_name, info in planets.items():
-        retro_flag = info.get("retrograde", False)
-        retro_status = info.get("status", "")
-        if retro_flag or "Retrograde" in retro_status or "retrograde" in retro_status:
-            retrograde_planets.add(planet_name)
-
-    result = calculate_shadbala(
-        planet_signs=planet_signs,
-        planet_houses=planet_houses,
-        is_daytime=is_daytime,
-        retrograde_planets=retrograde_planets,
-        planet_longitudes=planet_longitudes,
-        birth_hour=birth_hour,
-        moon_sun_elongation=moon_sun_elongation,
-        weekday=weekday,
-        birth_year=birth_year,
-        birth_month=birth_month,
-    )
+    sb_params = _prepare_shadbala_params(planets, row)
+    result = calculate_shadbala(**sb_params)
     # Bhav Bala — extract house signs from chart data
     houses_raw = chart.get("houses", [])
     house_signs: dict = {}
@@ -721,7 +781,7 @@ def get_shadbala(
                 house_signs[int(num)] = sign
     result["bhav_bala"] = calculate_bhav_bala(
         house_signs=house_signs,
-        planet_houses=planet_houses,
+        planet_houses=sb_params["planet_houses"],
         planets_result=result["planets"],
     )
 
@@ -1221,7 +1281,7 @@ def _build_kundli_pdf(row: dict, chart: dict) -> bytes:
     moon_pdf_info = planets.get("Moon", {}) if planets else {}
     moon_nakshatra = moon_pdf_info.get("nakshatra", "Ashwini")
     moon_pdf_lon = moon_pdf_info.get("longitude", None)
-    dasha_result = calculate_dasha(moon_nakshatra, str(birth_date), moon_longitude=moon_pdf_lon)
+    dasha_result = calculate_dasha(moon_nakshatra, str(raw_birth_date), moon_longitude=moon_pdf_lon)
 
     pdf.section_title("Vimshottari Dasha")
     current_md = dasha_result.get("current_dasha", "Unknown")
@@ -1385,45 +1445,8 @@ def _build_kundli_pdf(row: dict, chart: dict) -> bytes:
     pdf.ln(4)
 
     # ── Shadbala ───────────────────────────────────────────
-    planet_houses_map = {}
-    planet_longs_map = {}
-    retro_set = set()
-    for pn, pi in planets.items():
-        if isinstance(pi, dict):
-            planet_houses_map[pn] = pi.get("house", 1)
-            if "longitude" in pi:
-                planet_longs_map[pn] = pi["longitude"]
-            if pi.get("retrograde") or "Retrograde" in pi.get("status", ""):
-                retro_set.add(pn)
-    bt = row.get("birth_time", "12:00:00")
-    try:
-        _bt_parts = str(bt).split(":")
-        _pdf_birth_hour = int(_bt_parts[0]) + int(_bt_parts[1]) / 60.0
-    except (ValueError, IndexError):
-        _pdf_birth_hour = 12.0
-    is_day = 6.0 <= _pdf_birth_hour < 18.0
-    _pdf_sun_lon = planet_longs_map.get("Sun", 0.0)
-    _pdf_moon_lon = planet_longs_map.get("Moon", 0.0)
-    _pdf_elongation = (_pdf_moon_lon - _pdf_sun_lon) % 360.0
-    try:
-        _pdf_bd = datetime.strptime(str(row.get("birth_date", "2000-01-01")), "%Y-%m-%d")
-        _pdf_weekday = _pdf_bd.weekday()
-        _pdf_year = _pdf_bd.year
-        _pdf_month = _pdf_bd.month
-    except (ValueError, TypeError):
-        _pdf_weekday, _pdf_year, _pdf_month = 0, 2000, 1
-    shadbala = calculate_shadbala(
-        planet_signs=planet_signs_map,
-        planet_houses=planet_houses_map,
-        is_daytime=is_day,
-        retrograde_planets=retro_set,
-        planet_longitudes=planet_longs_map,
-        birth_hour=_pdf_birth_hour,
-        moon_sun_elongation=_pdf_elongation,
-        weekday=_pdf_weekday,
-        birth_year=_pdf_year,
-        birth_month=_pdf_month,
-    )
+    sb_params = _prepare_shadbala_params(planets, row)
+    shadbala = calculate_shadbala(**sb_params)
 
     pdf.section_title("Shadbala (Six-fold Strength)")
     sb_headers = ["Planet", "Sthana", "Dig", "Kala", "Cheshta", "Naisargika", "Drik", "Total", "Reqd", "Ratio"]
@@ -1497,25 +1520,54 @@ def download_kundli_pdf(
     )
 
 
+@router.post("/{kundli_id}/download-token", status_code=status.HTTP_200_OK)
+def create_download_token(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Create a short-lived, single-use download token for the full report.
+
+    Returns a token that can be used as ?dl_token= in the full-report URL.
+    Expires in 60 seconds. Avoids putting the real JWT in URLs/logs/referer headers.
+    """
+    import secrets
+    dl_token = secrets.token_urlsafe(32)
+    # Verify the kundli belongs to this user
+    _fetch_kundli(db, kundli_id, current_user["sub"])
+    db.execute(
+        """INSERT INTO download_tokens (token, kundli_id, user_id, expires_at)
+           VALUES (%s, %s, %s, NOW() + INTERVAL '60 seconds')""",
+        (dl_token, kundli_id, current_user["sub"]),
+    )
+    db.commit()
+    return {"download_token": dl_token}
+
+
 @router.get("/{kundli_id}/full-report", status_code=status.HTTP_200_OK)
 def download_full_report(
     kundli_id: str,
-    token: str = Query(default=None, description="JWT token for direct download links"),
+    dl_token: str = Query(default=None, description="Short-lived download token from /download-token"),
     current_user: dict = Depends(get_current_user_optional),
     db: Any = Depends(get_db),
 ):
     """Generate and stream a comprehensive Full Kundli Report PDF.
 
-    Accepts auth via Authorization header OR ?token= query param (for direct <a> links).
+    Accepts auth via Authorization header OR ?dl_token= (short-lived, single-use download token).
     Calls ALL available engines and bundles results into a multi-page professional report.
     """
-    # Support token as query param for direct download (no blob needed)
-    if current_user is None and token:
-        from app.auth import decode_token
-        payload = decode_token(token)
-        if payload is None or payload.get("type") == "refresh":
-            raise HTTPException(status_code=401, detail="Invalid token")
-        current_user = payload
+    # Support short-lived download token for direct <a> links
+    if current_user is None and dl_token:
+        row = db.execute(
+            """DELETE FROM download_tokens
+               WHERE token = %s AND kundli_id = %s AND expires_at > NOW()
+               RETURNING user_id""",
+            (dl_token, kundli_id),
+        ).fetchone()
+        db.commit()
+        if row is None:
+            raise HTTPException(status_code=401, detail="Download link expired or invalid")
+        current_user = {"sub": row["user_id"]}
     if current_user is None:
         raise HTTPException(status_code=401, detail="Not authenticated")
     row = _fetch_kundli(db, kundli_id, current_user["sub"])
@@ -1548,53 +1600,20 @@ def download_full_report(
         kundli_data["dasha"] = calculate_extended_dasha(
             moon_nakshatra, str(row["birth_date"]), moon_longitude=moon_longitude
         )
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "dasha", e)
 
     # ── Yogas & Doshas ────────────────────────────────────
     try:
         asc_sign = chart.get("ascendant", {}).get("sign", "")
         kundli_data["yogas_doshas"] = analyze_yogas_and_doshas(planets, asc_sign)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "yogas_doshas", e)
 
     # ── Shadbala ──────────────────────────────────────────
     try:
-        planet_signs = {}
-        planet_houses = {}
-        planet_longitudes = {}
-        retro_set: set = set()
-        for pn, pi in planets.items():
-            if not isinstance(pi, dict):
-                continue
-            planet_signs[pn] = pi.get("sign", "Aries")
-            planet_houses[pn] = pi.get("house", 1)
-            if "longitude" in pi:
-                planet_longitudes[pn] = pi["longitude"]
-            if pi.get("retrograde") or "Retrograde" in pi.get("status", ""):
-                retro_set.add(pn)
-
-        bt = row.get("birth_time", "12:00:00")
-        bt_parts = str(bt).split(":")
-        birth_hour = int(bt_parts[0]) + int(bt_parts[1]) / 60.0
-        is_daytime = 6.0 <= birth_hour < 18.0
-        sun_lon = planet_longitudes.get("Sun", 0.0)
-        moon_lon = planet_longitudes.get("Moon", 0.0)
-        elongation = (moon_lon - sun_lon) % 360.0
-        bd = datetime.strptime(str(row.get("birth_date", "2000-01-01")), "%Y-%m-%d")
-
-        sb_result = calculate_shadbala(
-            planet_signs=planet_signs,
-            planet_houses=planet_houses,
-            is_daytime=is_daytime,
-            retrograde_planets=retro_set,
-            planet_longitudes=planet_longitudes,
-            birth_hour=birth_hour,
-            moon_sun_elongation=elongation,
-            weekday=bd.weekday(),
-            birth_year=bd.year,
-            birth_month=bd.month,
-        )
+        sb_params = _prepare_shadbala_params(planets, row)
+        sb_result = calculate_shadbala(**sb_params)
         # Bhav Bala
         houses_raw = chart.get("houses", [])
         house_signs: dict = {}
@@ -1606,12 +1625,12 @@ def download_full_report(
                     house_signs[int(num)] = sign
         sb_result["bhav_bala"] = calculate_bhav_bala(
             house_signs=house_signs,
-            planet_houses=planet_houses,
+            planet_houses=sb_params["planet_houses"],
             planets_result=sb_result["planets"],
         )
         kundli_data["shadbala"] = sb_result
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "shadbala", e)
 
     # ── Ashtakvarga ───────────────────────────────────────
     try:
@@ -1623,24 +1642,24 @@ def download_full_report(
         if asc_sign_av:
             ps_map["Ascendant"] = asc_sign_av
         kundli_data["ashtakvarga"] = calculate_ashtakvarga(ps_map)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "ashtakvarga", e)
 
     # ── Avakhada Chakra ───────────────────────────────────
     try:
         kundli_data["avakhada"] = calculate_avakhada(
             chart, birth_date=str(row.get("birth_date", ""))
         )
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "avakhada", e)
 
     # ── Aspects ───────────────────────────────────────────
     try:
         from app.aspects_engine import calculate_aspects
         houses_for_aspects = chart.get("houses", None)
         kundli_data["aspects"] = calculate_aspects(planets, houses_for_aspects)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "aspects", e)
 
     # ── Jaimini ───────────────────────────────────────────
     try:
@@ -1648,8 +1667,8 @@ def download_full_report(
         kundli_data["jaimini"] = calculate_jaimini(
             chart, str(row.get("birth_date", ""))
         )
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "jaimini", e)
 
     # ── KP Cuspal ─────────────────────────────────────────
     try:
@@ -1671,8 +1690,8 @@ def download_full_report(
         kundli_data["kp"] = calculate_kp_cuspal(
             kp_longs, kp_cusps, chart_data=kp_chart, birth_date=row.get("birth_date")
         )
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "kp", e)
 
     # ── Sade Sati ─────────────────────────────────────────
     try:
@@ -1687,8 +1706,8 @@ def download_full_report(
         )
         saturn_sign = _today.get("planets", {}).get("Saturn", {}).get("sign", "Capricorn")
         kundli_data["sade_sati"] = check_sade_sati(moon_sign, saturn_sign)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "sade_sati", e)
 
     # ── Panchang / Hindu Calendar ─────────────────────────
     try:
@@ -1701,8 +1720,8 @@ def download_full_report(
         )
         kundli_data["hindu_calendar"] = panchang.get("hindu_calendar", {})
         kundli_data["panchang"] = panchang
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "panchang", e)
 
     # ── Sodashvarga ───────────────────────────────────────
     try:
@@ -1713,8 +1732,8 @@ def download_full_report(
                 _sv_longs[pn] = pi["longitude"]
         if _sv_longs:
             kundli_data["sodashvarga"] = calculate_sodashvarga(_sv_longs)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "sodashvarga", e)
 
     # ── Build PDF ─────────────────────────────────────────
     try:
@@ -1936,7 +1955,333 @@ async def delete_kundli(
     except HTTPException:
         raise
     except Exception as e:
-        import traceback
-        print(f"ERROR in delete_kundli: {e}")
-        print(traceback.format_exc())
+        logger.error("Error in delete_kundli: %s", e, exc_info=True)
         raise HTTPException(status_code=500, detail="An internal error occurred")
+
+
+# ---------------------------------------------------------------------------
+# Free Kundli Preview — public (no authentication)
+# ---------------------------------------------------------------------------
+
+class FreePreviewRequest(BaseModel):
+    name: str = Field(min_length=1)
+    birth_date: str
+    birth_time: str
+    birth_place: str
+    latitude: float
+    longitude: float
+    timezone_offset: float = 5.5
+    gender: str = "male"
+    phone: str = Field(min_length=1)
+    email: str = Field(min_length=1)
+    marketing_consent: bool = False
+
+
+@router.post("/free-preview", status_code=200)
+def free_kundli_preview(
+    body: FreePreviewRequest,
+    db: Any = Depends(get_db),
+):
+    """Generate a free kundli teaser preview. No authentication required.
+    Saves guest data to DB for lead tracking."""
+
+    # 1. Generate chart
+    chart_data = calculate_planet_positions(
+        birth_date=body.birth_date,
+        birth_time=body.birth_time,
+        latitude=body.latitude,
+        longitude=body.longitude,
+        tz_offset=body.timezone_offset,
+    )
+    chart_json = json.dumps(chart_data, default=str)
+    planets = chart_data.get("planets", {})
+    ascendant = chart_data.get("ascendant", {})
+
+    # 2. Identity snapshot
+    moon_info = planets.get("Moon", {})
+    sun_info = planets.get("Sun", {})
+    identity = {
+        "lagna": ascendant.get("sign", ""),
+        "lagna_degree": round(ascendant.get("longitude", 0), 2),
+        "rashi": moon_info.get("sign", ""),
+        "nakshatra": moon_info.get("nakshatra", ""),
+        "moon_sign": moon_info.get("sign", ""),
+        "sun_sign": sun_info.get("sign", ""),
+    }
+
+    # Build summary
+    strongest_planet = max(
+        planets.items(),
+        key=lambda x: abs(x[1].get("longitude", 0) % 30 - 15) if isinstance(x[1], dict) else 0,
+    )[0] if planets else "Moon"
+    identity["summary"] = (
+        f"You are a {identity['moon_sign']} Moon with {identity['lagna']} Ascendant"
+    )
+
+    # 3. Planet table
+    planet_list = []
+    for pname in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]:
+        p = planets.get(pname, {})
+        if p:
+            planet_list.append({
+                "planet": pname,
+                "sign": p.get("sign", ""),
+                "house": p.get("house", 0),
+                "degree": round(p.get("sign_degree", 0), 1),
+                "status": p.get("status", ""),
+                "retrograde": p.get("is_retrograde", False),
+            })
+
+    # 4. Current Dasha
+    current_dasha = {}
+    try:
+        from app.dasha_engine import calculate_dasha
+        moon_nak = moon_info.get("nakshatra", "Ashwini")
+        moon_lon = moon_info.get("longitude")
+        dasha_result = calculate_dasha(moon_nak, body.birth_date, moon_longitude=moon_lon)
+        if dasha_result:
+            current_md = dasha_result.get("current_mahadasha", {})
+            current_ad = dasha_result.get("current_antardasha", {})
+            md_planet = current_md.get("planet", "")
+            ad_planet = current_ad.get("planet", "") if current_ad else ""
+            current_dasha = {
+                "mahadasha": md_planet,
+                "antardasha": ad_planet,
+                "mahadasha_end": current_md.get("end_date", ""),
+                "summary": f"This is a key period influenced by {md_planet}"
+                + (f" and {ad_planet}" if ad_planet else ""),
+            }
+    except Exception as e:
+        logger.warning("Free preview dasha failed: %s", e)
+
+    # 5. Dosha/Problem highlights
+    problems = []
+    try:
+        from app.dosha_engine import check_mangal_dosha, check_kaal_sarp, check_sade_sati
+
+        mars_house = planets.get("Mars", {}).get("house", 0)
+        if mars_house:
+            mangal = check_mangal_dosha(mars_house)
+            if mangal and mangal.get("present"):
+                problems.append({
+                    "title": "Mangal Dosha detected",
+                    "detail": "Mars placement may affect marriage prospects",
+                })
+
+        rahu_house = planets.get("Rahu", {}).get("house", 0)
+        ketu_house = planets.get("Ketu", {}).get("house", 0)
+        if rahu_house and ketu_house:
+            planet_houses = {}
+            for pn, pd in planets.items():
+                if isinstance(pd, dict) and pd.get("house"):
+                    planet_houses[pn] = pd["house"]
+            kaal_sarp = check_kaal_sarp(rahu_house, ketu_house, planet_houses)
+            if kaal_sarp and kaal_sarp.get("present"):
+                problems.append({
+                    "title": "Kaal Sarp Dosha",
+                    "detail": "All planets between Rahu-Ketu axis",
+                })
+
+        moon_sign = moon_info.get("sign", "")
+        saturn_sign = planets.get("Saturn", {}).get("sign", "")
+        if moon_sign and saturn_sign:
+            sade_sati = check_sade_sati(moon_sign, saturn_sign)
+            if sade_sati and sade_sati.get("active"):
+                problems.append({
+                    "title": "Sade Sati active",
+                    "detail": "Saturn transiting near Moon — period of challenges",
+                })
+    except Exception as e:
+        logger.warning("Free preview dosha failed: %s", e)
+
+    # Add generic planet-based problems if none found
+    if not problems:
+        saturn_house = planets.get("Saturn", {}).get("house", 0)
+        if saturn_house in [1, 4, 7, 10]:
+            problems.append({
+                "title": "Saturn in key house",
+                "detail": f"Saturn in house {saturn_house} may cause delays in that life area",
+            })
+        mars_h = planets.get("Mars", {}).get("house", 0)
+        if mars_h in [7, 8]:
+            problems.append({
+                "title": "Mars affecting relationships",
+                "detail": f"Mars in house {mars_h} brings intensity to partnerships",
+            })
+
+    # 6. Life snapshot
+    life_snapshot = {}
+    lagna_sign = ascendant.get("sign", "")
+    if lagna_sign:
+        life_snapshot["personality"] = f"A {lagna_sign} Ascendant shapes your core personality and outlook"
+    else:
+        life_snapshot["personality"] = "A unique blend of planetary energies shapes your character"
+
+    # Career from 10th house planet
+    h10_planets = [p for p in planet_list if p["house"] == 10]
+    if h10_planets:
+        life_snapshot["career"] = f"{h10_planets[0]['planet']} in 10th house indicates strong professional drive"
+    else:
+        life_snapshot["career"] = "Career path shaped by your ascendant lord's placement"
+
+    # Marriage from 7th house
+    h7_planets = [p for p in planet_list if p["house"] == 7]
+    if h7_planets:
+        life_snapshot["marriage"] = f"{h7_planets[0]['planet']} in 7th house influences partnerships"
+    else:
+        life_snapshot["marriage"] = "Partnership dynamics driven by 7th lord placement"
+
+    # Health from 6th house
+    h6_planets = [p for p in planet_list if p["house"] == 6]
+    if h6_planets:
+        life_snapshot["health"] = f"Watch health areas related to {h6_planets[0]['planet']} influence"
+    else:
+        life_snapshot["health"] = "Generally stable constitution indicated by birth chart"
+
+    # 7. Lal Kitab teaser
+    lalkitab_teaser = {}
+    try:
+        from app.lalkitab_engine import get_remedies
+        planet_signs = {}
+        for pname, pdata in planets.items():
+            if isinstance(pdata, dict) and pdata.get("sign"):
+                planet_signs[pname] = pdata["sign"]
+        if planet_signs:
+            remedies = get_remedies(planet_signs)
+            # Find first planet with actual remedies
+            for rplanet, rdata in remedies.items():
+                if isinstance(rdata, dict) and rdata.get("remedies"):
+                    lalkitab_teaser = {
+                        "planet": rplanet,
+                        "remedy": rdata["remedies"][0] if isinstance(rdata["remedies"][0], str) else str(rdata["remedies"][0]),
+                        "note": f"{len(remedies)} planets analyzed. Full remedies in detailed report.",
+                    }
+                    break
+    except Exception as e:
+        logger.warning("Free preview lalkitab failed: %s", e)
+
+    # 8. Panchang teaser (today)
+    panchang_teaser = {}
+    try:
+        from app.panchang_engine import calculate_panchang
+        from datetime import date
+        today = date.today().isoformat()
+        panchang = calculate_panchang(today, body.latitude, body.longitude)
+        panchang_teaser = {
+            "tithi": panchang.get("tithi", {}).get("name", "") if isinstance(panchang.get("tithi"), dict) else str(panchang.get("tithi", "")),
+            "nakshatra": panchang.get("nakshatra", {}).get("name", "") if isinstance(panchang.get("nakshatra"), dict) else str(panchang.get("nakshatra", "")),
+            "yoga": panchang.get("yoga", {}).get("name", "") if isinstance(panchang.get("yoga"), dict) else str(panchang.get("yoga", "")),
+            "sunrise": panchang.get("sunrise", ""),
+            "note": "Daily Muhurat & complete timing available in full Panchang",
+        }
+    except Exception as e:
+        logger.warning("Free preview panchang failed: %s", e)
+
+    # 9. Numerology teaser
+    numerology_teaser = {}
+    try:
+        from app.numerology_engine import calculate_numerology
+        num_result = calculate_numerology(body.name, body.birth_date)
+        if num_result:
+            lp = num_result.get("life_path", 0)
+            lp_pred = num_result.get("predictions", {}).get("life_path", {})
+            lp_meaning = lp_pred.get("meaning", "") if isinstance(lp_pred, dict) else str(lp_pred)[:100]
+            numerology_teaser = {
+                "life_path": lp if isinstance(lp, int) else 0,
+                "summary": lp_meaning[:100] if lp_meaning else "Unique life path energy",
+            }
+    except Exception as e:
+        logger.warning("Free preview numerology failed: %s", e)
+
+    # Build preview data
+    preview_data = {
+        "identity": identity,
+        "planets": planet_list,
+        "chart_data": chart_data,
+        "life_snapshot": life_snapshot,
+        "current_dasha": current_dasha,
+        "problems": problems[:3],
+        "lalkitab_teaser": lalkitab_teaser,
+        "panchang_teaser": panchang_teaser,
+        "numerology_teaser": numerology_teaser,
+    }
+    preview_json = json.dumps(preview_data, default=str)
+
+    # 10. Save/update guest record
+    existing = db.execute(
+        "SELECT id, visit_count FROM guest_kundlis WHERE email = %s OR phone = %s LIMIT 1",
+        (body.email, body.phone),
+    ).fetchone()
+
+    if existing:
+        guest_id = existing["id"]
+        db.execute(
+            """UPDATE guest_kundlis
+               SET visit_count = visit_count + 1, last_visited_at = NOW(),
+                   chart_data = %s, preview_data = %s, name = %s,
+                   birth_date = %s, birth_time = %s, birth_place = %s,
+                   latitude = %s, longitude = %s, timezone_offset = %s,
+                   gender = %s, marketing_consent = %s
+               WHERE id = %s""",
+            (chart_json, preview_json, body.name,
+             body.birth_date, body.birth_time, body.birth_place,
+             body.latitude, body.longitude, body.timezone_offset,
+             body.gender, body.marketing_consent, guest_id),
+        )
+    else:
+        guest_id_row = db.execute(
+            """INSERT INTO guest_kundlis
+               (name, email, phone, birth_date, birth_time, birth_place,
+                latitude, longitude, timezone_offset, gender, marketing_consent,
+                chart_data, preview_data)
+               VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+               RETURNING id""",
+            (body.name, body.email, body.phone, body.birth_date, body.birth_time,
+             body.birth_place, body.latitude, body.longitude, body.timezone_offset,
+             body.gender, body.marketing_consent, chart_json, preview_json),
+        ).fetchone()
+        guest_id = guest_id_row["id"]
+
+    db.commit()
+
+    preview_data["guest_id"] = guest_id
+    return preview_data
+
+
+@router.get("/free-preview/{guest_id}/pdf", status_code=200)
+def free_preview_pdf(
+    guest_id: str,
+    lang: str = Query(default="en"),
+    db: Any = Depends(get_db),
+):
+    """Download a teaser PDF for a free preview kundli."""
+    row = db.execute(
+        "SELECT * FROM guest_kundlis WHERE id = %s", (guest_id,)
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Preview not found")
+
+    chart = json.loads(row["chart_data"]) if row["chart_data"] else {}
+
+    # Map guest_kundlis fields to the format _build_kundli_pdf expects
+    pdf_row = dict(row)
+    pdf_row["person_name"] = pdf_row.get("name", "Guest")
+    pdf_row.setdefault("ayanamsa", "lahiri")
+    pdf_row.setdefault("chart_type", "vedic")
+    pdf_row.setdefault("iogita_analysis", None)
+
+    try:
+        pdf_bytes = _build_kundli_pdf(pdf_row, chart)
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).error("Free preview PDF failed: %s", e, exc_info=True)
+        raise HTTPException(status_code=500, detail="PDF generation failed")
+
+    safe_name = (row.get("name", "kundli") or "kundli").replace(" ", "_")[:30]
+    filename = f"free-kundli-{safe_name}.pdf"
+
+    return StreamingResponse(
+        io.BytesIO(pdf_bytes),
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )

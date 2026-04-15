@@ -5,7 +5,6 @@ Core calculations for Vastu Purusha Mandala (45 Devtas),
 32 Entrance Padas analysis, and Remedial system.
 All calculations based on ancient Vastu Shastra principles.
 """
-import math
 from typing import Optional
 
 from app.vastu.data import (

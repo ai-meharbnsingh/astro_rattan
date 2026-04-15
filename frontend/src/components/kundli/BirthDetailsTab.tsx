@@ -3,6 +3,7 @@ import { getDignity, SIGN_TYPE, SIGN_ELEMENT, PLANET_NATURE, toDMS } from './kun
 import { calculateJaiminiKarakas } from './jhora-utils';
 import { useTranslation } from '@/lib/i18n';
 import { translatePlanet, translateSign, translateNakshatra, translateLabel } from '@/lib/backend-translations';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
 
 interface BirthDetailsTabProps {
   planets: any[];
@@ -20,23 +21,23 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
 
   return (
     <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="bg-sacred-gold">
-            <tr>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('auto.planet')}</th>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('auto.sign')}</th>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('auto.degree')}</th>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('auto.nakshatra')}</th>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('auto.house')}</th>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('auto.dignity')}</th>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('auto.signType')}</th>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('auto.element')}</th>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('auto.nature')}</th>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('auto.retrograde')}</th>
-              <th className="text-left p-2 font-medium text-sacred-gold-dark">{t('auto.jaimini')}</th>
-            </tr>
-          </thead>
-          <tbody>
+        <Table className="w-full text-sm">
+          <TableHeader className="bg-muted">
+            <TableRow>
+              <TableHead className="text-left p-2 font-medium text-primary">{t('auto.planet')}</TableHead>
+              <TableHead className="text-left p-2 font-medium text-primary">{t('auto.sign')}</TableHead>
+              <TableHead className="text-left p-2 font-medium text-primary">{t('auto.degree')}</TableHead>
+              <TableHead className="text-left p-2 font-medium text-primary">{t('auto.nakshatra')}</TableHead>
+              <TableHead className="text-left p-2 font-medium text-primary">{t('auto.house')}</TableHead>
+              <TableHead className="text-left p-2 font-medium text-primary">{t('auto.dignity')}</TableHead>
+              <TableHead className="text-left p-2 font-medium text-primary">{t('auto.signType')}</TableHead>
+              <TableHead className="text-left p-2 font-medium text-primary">{t('auto.element')}</TableHead>
+              <TableHead className="text-left p-2 font-medium text-primary">{t('auto.nature')}</TableHead>
+              <TableHead className="text-left p-2 font-medium text-primary">{t('auto.retrograde')}</TableHead>
+              <TableHead className="text-left p-2 font-medium text-primary">{t('auto.jaimini')}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {planets.map((p: any, idx: number) => {
               const dignity = getDignity(p.planet, p.sign);
               const signType = SIGN_TYPE[p.sign] || '\u2014';
@@ -51,37 +52,37 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
               const karaka = planetKaraka[p.planet] || '\u2014';
 
               return (
-                <tr key={idx} className={`border-t border-sacred-gold text-sm ${idx % 2 === 0 ? '' : 'bg-sacred-gold/[0.02]'}`}>
-                  <td className="p-2 font-medium text-sacred-brown font-display">
+                <TableRow key={idx} className={`border-t border-border text-sm ${idx % 2 === 0 ? '' : 'bg-muted/5'}`}>
+                  <TableCell className="p-2 font-medium text-foreground">
                     {translatePlanet(p.planet, language)}
                     {isRetro && <span className="text-red-500 ml-0.5" title={t('kundli.retrograde')}>*</span>}
-                  </td>
-                  <td className="p-2 text-sacred-brown">{translateSign(p.sign, language)}</td>
-                  <td className="p-2 text-sacred-brown">
+                  </TableCell>
+                  <TableCell className="p-2 text-foreground">{translateSign(p.sign, language)}</TableCell>
+                  <TableCell className="p-2 text-foreground">
                     {signDeg !== null ? toDMS(signDeg) : '\u2014'}
                     {isSandhi && <span className="ml-1 text-sm px-1 py-0.5 rounded bg-amber-500 text-amber-600 font-medium">{t('auto.sandhi')}</span>}
-                  </td>
-                  <td className="p-2 text-sacred-brown">{nakshatraName} ({t('auto.pada')} {pada})</td>
-                  <td className="p-2 text-sacred-brown">{p.house}</td>
-                  <td className="p-2 font-medium" style={{ color: dignityColor }}>{translateLabel(dignity, language)}</td>
-                  <td className="p-2 text-cosmic-text">{translateLabel(signType, language)}</td>
-                  <td className="p-2 text-cosmic-text">{translateLabel(element, language)}</td>
-                  <td className="p-2">
+                  </TableCell>
+                  <TableCell className="p-2 text-foreground">{nakshatraName} ({t('auto.pada')} {pada})</TableCell>
+                  <TableCell className="p-2 text-foreground">{p.house}</TableCell>
+                  <TableCell className="p-2 font-medium" style={{ color: dignityColor }}>{translateLabel(dignity, language)}</TableCell>
+                  <TableCell className="p-2 text-foreground">{translateLabel(signType, language)}</TableCell>
+                  <TableCell className="p-2 text-foreground">{translateLabel(element, language)}</TableCell>
+                  <TableCell className="p-2">
                     <span className={`text-sm px-2 py-0.5 rounded-full ${nature === 'Benefic' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                       {language === 'hi' ? (nature === 'Benefic' ? 'शुभ' : 'पापी') : nature}
                     </span>
-                  </td>
-                  <td className="p-2" style={{ color: isRetro ? '#dc2626' : 'var(--ink-light)' }}>
+                  </TableCell>
+                  <TableCell className="p-2" style={{ color: isRetro ? '#dc2626' : 'var(--ink-light)' }}>
                     {isRetro ? (language === 'hi' ? 'हाँ \u211e' : `${t('common.yes')} \u211e`) : t('common.no')}
-                  </td>
-                  <td className="p-2 font-semibold" style={{ color: karaka !== '\u2014' ? 'var(--aged-gold-dim)' : 'var(--ink-light)' }}>
+                  </TableCell>
+                  <TableCell className="p-2 font-semibold" style={{ color: karaka !== '\u2014' ? 'var(--aged-gold-dim)' : 'var(--ink-light)' }}>
                     {karaka}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               );
             })}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
   );
 }

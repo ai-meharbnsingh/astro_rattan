@@ -220,7 +220,7 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
               className="flex items-start gap-3 p-3 rounded-xl bg-orange-500/5 border border-orange-300/20"
             >
               <Zap className="w-4 h-4 text-orange-500 mt-0.5 shrink-0" />
-              <p className="text-sm text-cosmic-text/80 leading-snug">
+              <p className="text-sm text-foreground/80 leading-snug">
                 {isHi ? alert.hi : alert.en}
               </p>
             </div>
@@ -234,11 +234,11 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
           {t('lk.gochar.currentTransits')}
         </h3>
         {isLoading ? (
-          <p className="text-sm text-cosmic-text/70">{t('auto.loadingTransits')}</p>
+          <p className="text-sm text-foreground/70">{t('auto.loadingTransits')}</p>
         ) : loadError ? (
           <p className="text-sm text-red-500">{loadError}</p>
         ) : transits.length === 0 ? (
-          <p className="text-sm text-cosmic-text/70">{t('auto.noTransitDataAvailab')}</p>
+          <p className="text-sm text-foreground/70">{t('auto.noTransitDataAvailab')}</p>
         ) : (
           <div className="space-y-3">
           {transits.map((transit) => {
@@ -260,7 +260,7 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
                   <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${speedDots[transit.speedNote]}`} />
 
                   <div className="min-w-[70px]">
-                    <p className="text-sm font-semibold text-cosmic-text">
+                    <p className="text-sm font-semibold text-foreground">
                       {getPlanetLabel(transit.planet, language)}
                     </p>
                     <span

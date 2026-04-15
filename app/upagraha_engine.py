@@ -1,5 +1,3 @@
-import math
-from datetime import datetime, timedelta, timezone
 from typing import Any, Dict
 
 from app.astro_engine import (
@@ -7,15 +5,7 @@ from app.astro_engine import (
     get_sign_from_longitude,
     get_nakshatra_from_longitude,
     _parse_datetime,
-    _datetime_to_jd
 )
-
-# Optional swisseph import for accurate sunrise
-try:
-    import swisseph as swe
-    _HAS_SWE = True
-except ImportError:
-    _HAS_SWE = False
 
 def calculate_upagrahas(
     birth_date: str,

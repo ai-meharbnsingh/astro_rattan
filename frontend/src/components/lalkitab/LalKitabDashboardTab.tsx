@@ -89,7 +89,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate, kundliId, o
     if (kundliId) {
       api.get(`/api/lalkitab/advanced/${kundliId}`)
         .then(setAdvancedData)
-        .catch(console.error);
+        .catch(() => {});
     }
   }, [kundliId]);
 
@@ -179,7 +179,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate, kundliId, o
           {/* Quick stats */}
           <div className="grid grid-cols-2 gap-3 mb-5">
             <div className="text-center p-3 rounded-xl bg-sacred-gold/5 border border-sacred-gold/10">
-              <p className="text-2xl font-sans font-bold text-cosmic-text">
+              <p className="text-2xl font-sans font-bold text-foreground">
                 {counts.totalPlanets}
               </p>
               <p className="text-sm text-gray-500">
@@ -187,7 +187,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate, kundliId, o
               </p>
             </div>
             <div className="text-center p-3 rounded-xl bg-sacred-gold/5 border border-sacred-gold/10">
-              <p className="text-2xl font-sans font-bold text-cosmic-text">
+              <p className="text-2xl font-sans font-bold text-foreground">
                 {counts.empty}
               </p>
               <p className="text-sm text-gray-500">
@@ -237,7 +237,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate, kundliId, o
               return (
                 <div
                   key={houseNum}
-                  className="relative flex flex-col items-center justify-center rounded-md border border-sacred-gold/15 bg-cosmic-card/40 p-2 min-h-[52px]"
+                  className="relative flex flex-col items-center justify-center rounded-md border border-sacred-gold/15 bg-card/40 p-2 min-h-[52px]"
                 >
                   <span className="text-sm font-bold text-sacred-gold-dark">
                     {houseNum}
@@ -278,7 +278,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate, kundliId, o
               {/* Count summary */}
               <div className="flex items-center gap-2 mb-3">
                 <AlertTriangle className="w-5 h-5 text-red-500" />
-                <span className="text-sm text-cosmic-text/80">
+                <span className="text-sm text-foreground/80">
                   {detectedDoshas.length}{' '}
                   {isHi ? 'दोष पाए गए' : detectedDoshas.length === 1 ? 'dosha detected' : 'doshas detected'}
                 </span>
@@ -292,7 +292,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate, kundliId, o
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
-                    <span className="text-sm text-cosmic-text truncate">
+                    <span className="text-sm text-foreground truncate">
                       {isHi ? dosha.nameHi : dosha.nameEn}
                     </span>
                   </div>
@@ -334,7 +334,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate, kundliId, o
                     className="flex items-start gap-3 p-3 rounded-xl bg-sacred-gold/5 border border-sacred-gold/10"
                   >
                     <TypeIcon className="w-4 h-4 text-sacred-gold mt-0.5 shrink-0" />
-                    <p className="text-sm text-cosmic-text/80 leading-snug">
+                    <p className="text-sm text-foreground/80 leading-snug">
                       {remedyText}
                     </p>
                   </div>
@@ -362,7 +362,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate, kundliId, o
 
           <p className="text-sm text-gray-500 mb-4">
             {t('auto.currentAge')}:{' '}
-            <span className="font-semibold text-cosmic-text">{age}</span>
+            <span className="font-semibold text-foreground">{age}</span>
           </p>
 
           {timelinePeriods.length === 0 ? (
@@ -393,7 +393,7 @@ export default function LalKitabDashboardTab({ chartData, birthDate, kundliId, o
                     <div className="flex items-center gap-3">
                       <span
                         className={`w-2.5 h-2.5 rounded-full ${
-                          isCurrent ? 'bg-sacred-gold animate-pulse' : 'bg-cosmic-text/30'
+                          isCurrent ? 'bg-sacred-gold animate-pulse' : 'bg-foreground/30'
                         }`}
                       />
                       <div>

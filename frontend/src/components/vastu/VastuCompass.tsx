@@ -235,7 +235,7 @@ export default function VastuCompass({ value, onChange, mode = 'select', highlig
       {/* Hover tooltip */}
       {hoveredPada && (
         <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-black/90 border border-white/20 rounded-lg px-3 py-2 text-center z-10">
-          <p className="text-sm font-bold text-cosmic-text">{hoveredPada}</p>
+          <p className="text-sm font-bold text-foreground">{hoveredPada}</p>
           {PADA_NAMES[hoveredPada] && (
             <p className="text-sm text-sacred-gold">
               {isHi ? PADA_NAMES[hoveredPada].hi : PADA_NAMES[hoveredPada].en}
@@ -252,7 +252,7 @@ export default function VastuCompass({ value, onChange, mode = 'select', highlig
               />
             ))}
           </div>
-          <p className="text-sm text-cosmic-text/60 mt-0.5">
+          <p className="text-sm text-foreground/60 mt-0.5">
             {(PADA_SCORES[hoveredPada] || 0) >= 4 ? (t('auto.auspicious'))
               : (PADA_SCORES[hoveredPada] || 0) >= 3 ? (t('auto.neutral'))
               : (t('auto.challenging'))}

@@ -17,7 +17,9 @@ try:
     _ephe_path = os.getenv("EPHE_PATH", "")
     if _ephe_path:
         swe.set_ephe_path(_ephe_path)
-    swe.set_sid_mode(swe.SIDM_LAHIRI)
+    # Note: swe.set_sid_mode() NOT called here — it's global state and must be set
+    # per-calculation under _SWE_LOCK in astro_engine._calculate_swe() to avoid
+    # race conditions between concurrent Vedic/KP requests.
 except ImportError:
     _HAS_SWE = False
 
@@ -64,10 +66,10 @@ def _get_longitude(jd: float, planet_id: int) -> float:
     return (lon - ayanamsa) % 360.0
 
 
-def _binary_search_station(jd_start: float, jd_end: float, planet_id: int, precision: float = 0.01) -> float:
+def _binary_search_station(jd_start: float, jd_end: float, planet_id: int, precision: float = 0.001) -> float:
     """
     Binary search for exact moment when planet speed crosses zero.
-    Precision ~15 minutes (0.01 day).
+    Precision ~1.4 minutes (0.001 day).
     """
     while (jd_end - jd_start) > precision:
         mid = (jd_start + jd_end) / 2.0
@@ -98,50 +100,58 @@ def calculate_retrograde_stations(year: int) -> Dict[str, Any]:
     if not _HAS_SWE:
         return {name: [] for name in _RETRO_PLANETS}
 
-    # Time range: full year with 15-day buffer on each side
-    jd_start = swe.julday(year, 1, 1, 0.0)
-    jd_end = swe.julday(year, 12, 31, 23.99)
-    jd_start -= 15  # buffer for retrograde that started in Dec prev year
-    jd_end += 15    # buffer for direct station in Jan next year
+    from app.astro_engine import _SWE_LOCK
 
-    result: Dict[str, List[Dict[str, Any]]] = {}
+    # Acquire SWE lock for the entire calculation — retrograde detection
+    # makes many swe.calc_ut / swe.get_ayanamsa calls and needs consistent
+    # ayanamsa mode throughout.
+    with _SWE_LOCK:
+        swe.set_sid_mode(swe.SIDM_LAHIRI)
 
-    for planet_name, planet_id in _RETRO_PLANETS.items():
-        stations: List[Dict[str, Any]] = []
-        step = 1.0  # 1-day steps (fine enough to detect speed sign changes)
+        # Time range: full year with 15-day buffer on each side
+        jd_start = swe.julday(year, 1, 1, 0.0)
+        jd_end = swe.julday(year, 12, 31, 23.99)
+        jd_start -= 15  # buffer for retrograde that started in Dec prev year
+        jd_end += 15    # buffer for direct station in Jan next year
 
-        jd = jd_start
-        prev_speed = _get_speed(jd, planet_id)
+        result: Dict[str, List[Dict[str, Any]]] = {}
 
-        while jd < jd_end:
-            jd += step
-            curr_speed = _get_speed(jd, planet_id)
+        for planet_name, planet_id in _RETRO_PLANETS.items():
+            stations: List[Dict[str, Any]] = []
+            step = 1.0  # 1-day steps (fine enough to detect speed sign changes)
 
-            # Speed sign change detected
-            if (prev_speed > 0 and curr_speed <= 0) or (prev_speed <= 0 and curr_speed > 0):
-                # Binary search for exact station
-                exact_jd = _binary_search_station(jd - step, jd, planet_id)
-                station_date = _jd_to_date(exact_jd)
+            jd = jd_start
+            prev_speed = _get_speed(jd, planet_id)
 
-                # Only include if station date falls within the requested year
-                date_year = int(station_date[:4])
-                if date_year == year:
-                    lon = _get_longitude(exact_jd, planet_id)
-                    sign_idx = int(lon / 30.0) % 12
-                    sign = _SIGN_NAMES[sign_idx]
-                    station_type = "retrograde" if prev_speed > 0 else "direct"
+            while jd < jd_end:
+                jd += step
+                curr_speed = _get_speed(jd, planet_id)
 
-                    stations.append({
-                        "station": station_type,
-                        "date": station_date,
-                        "datetime": _jd_to_datetime(exact_jd),
-                        "sign": sign,
-                        "longitude": round(lon, 2),
-                        "sign_degree": round(lon % 30.0, 2),
-                    })
+                # Speed sign change detected
+                if (prev_speed > 0 and curr_speed <= 0) or (prev_speed <= 0 and curr_speed > 0):
+                    # Binary search for exact station
+                    exact_jd = _binary_search_station(jd - step, jd, planet_id)
+                    station_date = _jd_to_date(exact_jd)
 
-            prev_speed = curr_speed
+                    # Only include if station date falls within the requested year
+                    date_year = int(station_date[:4])
+                    if date_year == year:
+                        lon = _get_longitude(exact_jd, planet_id)
+                        sign_idx = int(lon / 30.0) % 12
+                        sign = _SIGN_NAMES[sign_idx]
+                        station_type = "retrograde" if prev_speed > 0 else "direct"
 
-        result[planet_name] = stations
+                        stations.append({
+                            "station": station_type,
+                            "date": station_date,
+                            "datetime": _jd_to_datetime(exact_jd),
+                            "sign": sign,
+                            "longitude": round(lon, 2),
+                            "sign_degree": round(lon % 30.0, 2),
+                        })
+
+                prev_speed = curr_speed
+
+            result[planet_name] = stations
 
     return result

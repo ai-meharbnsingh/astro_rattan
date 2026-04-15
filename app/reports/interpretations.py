@@ -17,7 +17,7 @@ Sections:
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, Tuple
 
 # ============================================================
 # 1. LAGNA_NATURE -- Nature & Temperament per Ascendant Sign
@@ -2169,46 +2169,3 @@ def calculate_shyanadi(
 
     # Default
     return "Gamana"
-
-
-def get_all_avasthas(
-    planet: str,
-    sign: str,
-    degree_in_sign: float,
-    house: int,
-    is_retrograde: bool = False,
-    is_combust: bool = False,
-    conjunct_malefics: bool = False,
-    conjunct_benefics: bool = False,
-    in_benefic_vargas: bool = False,
-    aspected_by_saturn: bool = False,
-    aspected_by_jupiter: bool = False,
-    aspected_by_friends: bool = False,
-    aspected_by_benefics: bool = False,
-    conjunct_moon_good: bool = False,
-    num_benefic_vargas: int = 0,
-) -> Dict[str, str]:
-    """
-    Compute all four avastha systems for a planet and return a dict.
-
-    Returns:
-        {
-            "jagradadi": "Jagrad" | "Swapna" | "Sushupti",
-            "baladi": "Bala" | "Kumara" | "Yuva" | "Vriddha" | "Mrita",
-            "deeptadi": one of 9 states,
-            "shyanadi": one of 12 states,
-        }
-    """
-    return {
-        "jagradadi": calculate_jagradadi(planet, sign),
-        "baladi": calculate_baladi(planet, sign, degree_in_sign),
-        "deeptadi": calculate_deeptadi(
-            planet, sign, is_retrograde, is_combust, conjunct_malefics, in_benefic_vargas,
-        ),
-        "shyanadi": calculate_shyanadi(
-            planet, sign, house, is_retrograde, is_combust,
-            aspected_by_saturn, aspected_by_jupiter, aspected_by_friends,
-            aspected_by_benefics, conjunct_benefics, conjunct_moon_good,
-            num_benefic_vargas,
-        ),
-    }

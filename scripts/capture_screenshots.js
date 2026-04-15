@@ -14,7 +14,7 @@ const path = require('path');
 const fs = require('fs');
 
 const BASE_URL = 'https://astrorattan.com';
-const TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmNzQ3ZDQyYzg4YWQ1NDRiMGFlNTQ2NjAwZDdhOTEzNiIsImVtYWlsIjoiYWkubWVoYXJiYW5zaW5naEBnbWFpbC5jb20iLCJyb2xlIjoiYXN0cm9sb2dlciIsImV4cCI6MTc3NjE0MTk3MSwidHYiOjB9.RuXugpgkhKDNKvszMhE4PU89agM1ODSrnKSeQYJ0JDE';
+const TOKEN = process.env.ASTRORATTAN_TOKEN || '';
 const OUT_DIR = path.join(__dirname, '../frontend/public/images/showcase');
 const VIEWPORT = { width: 1280, height: 800 };
 
@@ -139,6 +139,10 @@ async function waitForChart(page, timeout = 20000) {
 }
 
 async function main() {
+  if (!TOKEN) {
+    console.error('Fatal: ASTRORATTAN_TOKEN environment variable is required');
+    process.exit(1);
+  }
   fs.mkdirSync(OUT_DIR, { recursive: true });
 
   const browser = await chromium.launch({ headless: true });

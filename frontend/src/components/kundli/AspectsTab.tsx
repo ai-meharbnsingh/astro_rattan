@@ -1,5 +1,7 @@
 import { Loader2 } from 'lucide-react';
 import { translatePlanet } from '@/lib/backend-translations';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
+import { Heading } from '@/components/ui/heading';
 
 interface AspectsTabProps {
   aspectsData: any;
@@ -15,30 +17,30 @@ export default function AspectsTab({ aspectsData, loadingAspects, language, t }:
 
   if (loadingAspects) {
     return (
-      <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-cosmic-text">{t('kundli.loadingAspects')}</span></div>
+      <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-primary" /><span className="ml-2 text-foreground">{t('kundli.loadingAspects')}</span></div>
     );
   }
 
   if (!aspectsData) {
-    return <p className="text-center text-cosmic-text py-8">{t('common.noData')}</p>;
+    return <p className="text-center text-foreground py-8">{t('common.noData')}</p>;
   }
 
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Aspects on Planets */}
-        <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
-          <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.aspectsOnPlanets')}</h4>
+        <div className="bg-muted rounded-xl border border-border p-4">
+          <Heading as={4} variant={4} className="mb-3">{t('section.aspectsOnPlanets')}</Heading>
           <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-              <thead><tr className="bg-sacred-gold">
-                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
-                <th className="text-center p-1.5 text-sacred-gold-dark font-medium">{t('table.house')}</th>
-                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('auto.aspectedByBenefic')}</th>
-                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('auto.aspectedByMalefic')}</th>
-                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('auto.aspectsTo')}</th>
-              </tr></thead>
-              <tbody>
+            <Table className="w-full text-xs">
+              <TableHeader><TableRow className="bg-muted">
+                <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.planet')}</TableHead>
+                <TableHead className="text-center p-1.5 text-primary font-medium">{t('table.house')}</TableHead>
+                <TableHead className="text-left p-1.5 text-primary font-medium">{t('auto.aspectedByBenefic')}</TableHead>
+                <TableHead className="text-left p-1.5 text-primary font-medium">{t('auto.aspectedByMalefic')}</TableHead>
+                <TableHead className="text-left p-1.5 text-primary font-medium">{t('auto.aspectsTo')}</TableHead>
+              </TableRow></TableHeader>
+              <TableBody>
                 {(() => {
                   const summary = aspectsData.planet_aspects_summary;
                   if (summary && typeof summary === 'object' && !Array.isArray(summary)) {
@@ -48,55 +50,55 @@ export default function AspectsTab({ aspectsData, loadingAspects, language, t }:
                       const maleficList = aspBy.filter((a: any) => !BENEFICS.includes(a.planet || a));
                       const aspectsTo = data.aspects_to || [];
                       return (
-                        <tr key={planet} className="border-t border-sacred-gold hover:bg-sacred-gold/5">
-                          <td className="p-1.5 font-semibold text-sacred-brown">{translatePlanet(planet, language)}</td>
-                          <td className="p-1.5 text-center">{data.house}</td>
-                          <td className="p-1.5">
+                        <TableRow key={planet} className="border-t border-border hover:bg-muted/5">
+                          <TableCell className="p-1.5 font-semibold text-foreground">{translatePlanet(planet, language)}</TableCell>
+                          <TableCell className="p-1.5 text-center">{data.house}</TableCell>
+                          <TableCell className="p-1.5">
                             {beneficList.length > 0 ? beneficList.map((a: any, j: number) => (
                               <span key={j} className="inline-flex items-center gap-1 mr-2">
                                 <span className="text-green-600 font-medium">{translatePlanet(a.planet || a, language)}</span>
-                                <span className="text-[10px] text-cosmic-text">({a.strength || '1.0'}x {a.offset ? `${a.offset}${housePrefix}` : ''}{a.type === 'special' ? spl : ''})</span>
+                                <span className="text-[10px] text-foreground">({a.strength || '1.0'}x {a.offset ? `${a.offset}${housePrefix}` : ''}{a.type === 'special' ? spl : ''})</span>
                               </span>
-                            )) : <span className="text-cosmic-text">-</span>}
-                          </td>
-                          <td className="p-1.5">
+                            )) : <span className="text-foreground">-</span>}
+                          </TableCell>
+                          <TableCell className="p-1.5">
                             {maleficList.length > 0 ? maleficList.map((a: any, j: number) => (
                               <span key={j} className="inline-flex items-center gap-1 mr-2">
                                 <span className="text-red-500 font-medium">{translatePlanet(a.planet || a, language)}</span>
-                                <span className="text-[10px] text-cosmic-text">({a.strength || '1.0'}x {a.offset ? `${a.offset}${housePrefix}` : ''}{a.type === 'special' ? spl : ''})</span>
+                                <span className="text-[10px] text-foreground">({a.strength || '1.0'}x {a.offset ? `${a.offset}${housePrefix}` : ''}{a.type === 'special' ? spl : ''})</span>
                               </span>
-                            )) : <span className="text-cosmic-text">-</span>}
-                          </td>
-                          <td className="p-1.5">
+                            )) : <span className="text-foreground">-</span>}
+                          </TableCell>
+                          <TableCell className="p-1.5">
                             {aspectsTo.length > 0 ? aspectsTo.map((a: any, j: number) => (
                               <span key={j} className="inline-flex items-center gap-1 mr-2">
                                 <span className="font-medium">{housePrefix}{a.house}</span>
-                                <span className="text-[10px] text-cosmic-text">({a.strength}x)</span>
+                                <span className="text-[10px] text-foreground">({a.strength}x)</span>
                               </span>
-                            )) : <span className="text-cosmic-text">-</span>}
-                          </td>
-                        </tr>
+                            )) : <span className="text-foreground">-</span>}
+                          </TableCell>
+                        </TableRow>
                       );
                     });
                   }
-                  return <tr><td colSpan={5} className="text-center p-4 text-cosmic-text">{t('common.noData')}</td></tr>;
+                  return <TableRow><TableCell colSpan={5} className="text-center p-4 text-foreground">{t('common.noData')}</TableCell></TableRow>;
                 })()}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
         </div>
 
         {/* Aspects on Bhavas */}
-        <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
-          <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('section.aspectsOnBhavas')}</h4>
+        <div className="bg-muted rounded-xl border border-border p-4">
+          <Heading as={4} variant={4} className="mb-3">{t('section.aspectsOnBhavas')}</Heading>
           <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-              <thead><tr className="bg-sacred-gold">
-                <th className="text-center p-1.5 text-sacred-gold-dark font-medium w-12">{t('table.house')}</th>
-                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('auto.beneficAspectsShubh')}</th>
-                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('auto.maleficAspectsAshubh')}</th>
-              </tr></thead>
-              <tbody>
+            <Table className="w-full text-xs">
+              <TableHeader><TableRow className="bg-muted">
+                <TableHead className="text-center p-1.5 text-primary font-medium w-12">{t('table.house')}</TableHead>
+                <TableHead className="text-left p-1.5 text-primary font-medium">{t('auto.beneficAspectsShubh')}</TableHead>
+                <TableHead className="text-left p-1.5 text-primary font-medium">{t('auto.maleficAspectsAshubh')}</TableHead>
+              </TableRow></TableHeader>
+              <TableBody>
                 {(() => {
                   const bhavas = aspectsData.bhava_summary || aspectsData.bhava_aspects;
                   const bhavaAspects = aspectsData.aspects_on_bhavas || {};
@@ -120,11 +122,11 @@ export default function AspectsTab({ aspectsData, loadingAspects, language, t }:
                       });
                     }
                     return (
-                      <tr key={houseNum} className="border-t border-sacred-gold hover:bg-sacred-gold/5">
-                        <td className="p-1.5 text-center font-semibold text-sacred-brown">{houseNum}</td>
-                        <td className="p-1.5">{beneficPlanets.length > 0 ? <span className="text-green-600">{beneficPlanets.join(', ')}</span> : <span className="text-cosmic-text">-</span>}</td>
-                        <td className="p-1.5">{maleficPlanets.length > 0 ? <span className="text-red-500">{maleficPlanets.join(', ')}</span> : <span className="text-cosmic-text">-</span>}</td>
-                      </tr>
+                      <TableRow key={houseNum} className="border-t border-border hover:bg-muted/5">
+                        <TableCell className="p-1.5 text-center font-semibold text-foreground">{houseNum}</TableCell>
+                        <TableCell className="p-1.5">{beneficPlanets.length > 0 ? <span className="text-green-600">{beneficPlanets.join(', ')}</span> : <span className="text-foreground">-</span>}</TableCell>
+                        <TableCell className="p-1.5">{maleficPlanets.length > 0 ? <span className="text-red-500">{maleficPlanets.join(', ')}</span> : <span className="text-foreground">-</span>}</TableCell>
+                      </TableRow>
                     );
                   };
                   if (Array.isArray(bhavas)) {
@@ -132,8 +134,8 @@ export default function AspectsTab({ aspectsData, loadingAspects, language, t }:
                   }
                   return [1,2,3,4,5,6,7,8,9,10,11,12].map(h => renderHouse(h, (bhavas || {})[h] || (bhavas || {})[String(h)]));
                 })()}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
         </div>
       </div>

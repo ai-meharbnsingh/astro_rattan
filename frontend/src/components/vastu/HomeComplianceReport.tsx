@@ -1,5 +1,6 @@
 import { useTranslation } from '@/lib/i18n';
 import { CheckCircle, XCircle, AlertCircle, AlertTriangle, ChevronRight, Sparkles } from 'lucide-react';
+import { Heading } from "@/components/ui/heading";
 
 interface Props { result: any; }
 
@@ -29,8 +30,8 @@ export default function HomeComplianceReport({ result }: Props) {
       {/* Overall Score */}
       <div className="bg-white/5 border border-white/10 rounded-xl p-5 flex items-center justify-between">
         <div>
-          <p className="text-sm text-cosmic-text/60">{t('auto.homeVastuScore')}</p>
-          <p className="text-sm text-cosmic-text/70 mt-1">
+          <p className="text-sm text-foreground/60">{t('auto.homeVastuScore')}</p>
+          <p className="text-sm text-foreground/70 mt-1">
             {isHi ? result.overall_label_hi : result.overall_label_en}
           </p>
         </div>
@@ -38,7 +39,7 @@ export default function HomeComplianceReport({ result }: Props) {
           result.overall_score >= 80 ? 'text-emerald-400' :
           result.overall_score >= 60 ? 'text-amber-400' : 'text-red-400'
         }`}>
-          {result.overall_score}<span className="text-lg text-cosmic-text/30">/100</span>
+          {result.overall_score}<span className="text-lg text-foreground/30">/100</span>
         </div>
       </div>
 
@@ -77,18 +78,18 @@ export default function HomeComplianceReport({ result }: Props) {
             ? <Sparkles className="w-4 h-4 text-sacred-gold" />
             : <AlertTriangle className="w-4 h-4 text-red-400" />
           }
-          <span className="text-sm font-semibold text-cosmic-text">
+          <span className="text-sm font-semibold text-foreground">
             {t('auto.brahmaSthana')}
           </span>
         </div>
-        <p className="text-sm text-cosmic-text mt-1">
+        <p className="text-sm text-foreground mt-1">
           {isHi ? result.center_status.assessment_hi : result.center_status.assessment_en}
         </p>
       </div>
 
       {/* Per-Room Cards */}
       <div className="space-y-3">
-        <h3 className="text-sm font-bold text-cosmic-text">{t('auto.roomByRoomAnalysis')}</h3>
+        <Heading as={3} variant={3}>{t('auto.roomByRoomAnalysis')}</Heading>
         {result.room_results.map((r: any, i: number) => {
           const ui = COMPLIANCE_UI[r.compliance] || COMPLIANCE_UI.neutral;
           const Icon = ui.icon;
@@ -97,8 +98,8 @@ export default function HomeComplianceReport({ result }: Props) {
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-lg">{ROOM_ICONS[r.room_type] || '🏠'}</span>
                 <div className="flex-1">
-                  <p className="text-sm font-bold text-cosmic-text">{isHi ? r.room_name_hi : r.room_name_en}</p>
-                  <p className="text-sm text-cosmic-text/50">
+                  <p className="text-sm font-bold text-foreground">{isHi ? r.room_name_hi : r.room_name_en}</p>
+                  <p className="text-sm text-foreground/50">
                     {isHi ? r.assigned_direction_hi : r.assigned_direction_en} ({r.assigned_direction})
                   </p>
                 </div>
@@ -111,12 +112,12 @@ export default function HomeComplianceReport({ result }: Props) {
               </div>
 
               {/* Reason */}
-              <p className="text-sm text-cosmic-text/70 mb-2">{isHi ? r.reason_hi : r.reason_en}</p>
+              <p className="text-sm text-foreground/70 mb-2">{isHi ? r.reason_hi : r.reason_en}</p>
 
               {/* Ideal directions hint */}
               {r.compliance !== 'ideal' && (
                 <div className="flex items-center gap-1 mb-2">
-                  <span className="text-sm text-cosmic-text/50">{t('auto.ideal')}</span>
+                  <span className="text-sm text-foreground/50">{t('auto.ideal')}</span>
                   {(isHi ? r.ideal_directions_hi : r.ideal_directions).map((d: string, di: number) => (
                     <span key={di} className="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-sm font-bold">{d}</span>
                   ))}
@@ -128,7 +129,7 @@ export default function HomeComplianceReport({ result }: Props) {
                 {(isHi ? r.tips_hi : r.tips_en).slice(0, 2).map((tip: string, ti: number) => (
                   <div key={ti} className="flex items-start gap-1">
                     <ChevronRight className="w-3 h-3 text-sacred-gold mt-0.5 flex-shrink-0" />
-                    <p className="text-sm text-cosmic-text/60">{tip}</p>
+                    <p className="text-sm text-foreground/60">{tip}</p>
                   </div>
                 ))}
               </div>
@@ -139,30 +140,30 @@ export default function HomeComplianceReport({ result }: Props) {
                   <p className="text-sm font-bold text-red-400 uppercase">
                     {t('auto.remedies')}
                   </p>
-                  <p className="text-sm text-cosmic-text">{isHi ? r.remedies.relocation_hi : r.remedies.relocation_en}</p>
+                  <p className="text-sm text-foreground">{isHi ? r.remedies.relocation_hi : r.remedies.relocation_en}</p>
                   {r.remedies.explanation_en && (
-                    <p className="text-sm text-cosmic-text/60 italic">
+                    <p className="text-sm text-foreground/60 italic">
                       {isHi ? r.remedies.explanation_hi : r.remedies.explanation_en}
                     </p>
                   )}
                   {r.remedies.metal_strip && (
                     <div className="flex items-center gap-2 text-sm">
                       <span className="text-sacred-gold font-semibold">{t('auto.metal')}</span>
-                      <span className="text-cosmic-text">{isHi ? r.remedies.metal_strip.metal_hi : r.remedies.metal_strip.metal}</span>
+                      <span className="text-foreground">{isHi ? r.remedies.metal_strip.metal_hi : r.remedies.metal_strip.metal}</span>
                     </div>
                   )}
                   {r.remedies.color_therapy && (
                     <div className="flex items-center gap-2 text-sm flex-wrap">
                       <span className="text-sacred-gold font-semibold">{t('auto.colors')}</span>
                       {(isHi ? r.remedies.color_therapy.colors_hi : r.remedies.color_therapy.colors).map((c: string, ci: number) => (
-                        <span key={ci} className="px-1.5 py-0.5 rounded bg-white/10 text-cosmic-text text-sm">{c}</span>
+                        <span key={ci} className="px-1.5 py-0.5 rounded bg-white/10 text-foreground text-sm">{c}</span>
                       ))}
                     </div>
                   )}
                   {r.remedies.mantras?.map((m: any, mi: number) => (
                     <div key={mi} className="text-sm">
                       <span className="text-sacred-gold/60 italic">{m.mantra}</span>
-                      <span className="text-cosmic-text/40 ml-1">— {isHi ? m.devta_hi : m.devta}</span>
+                      <span className="text-foreground/40 ml-1">— {isHi ? m.devta_hi : m.devta}</span>
                     </div>
                   ))}
                 </div>
@@ -179,7 +180,7 @@ export default function HomeComplianceReport({ result }: Props) {
               {r.zone_devtas?.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {r.zone_devtas.map((d: any, di: number) => (
-                    <span key={di} className="text-sm px-1.5 py-0.5 rounded bg-white/5 text-cosmic-text/40">
+                    <span key={di} className="text-sm px-1.5 py-0.5 rounded bg-white/5 text-foreground/40">
                       {isHi ? d.name_hi : d.name}
                     </span>
                   ))}
@@ -193,14 +194,14 @@ export default function HomeComplianceReport({ result }: Props) {
       {/* Missing Critical Rooms */}
       {result.missing_critical_rooms?.length > 0 && (
         <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4">
-          <h4 className="text-sm font-bold text-amber-400 mb-2">
+          <Heading as={4} variant={4}>
             {t('auto.missingCriticalRooms')}
-          </h4>
+          </Heading>
           {result.missing_critical_rooms.map((m: any, i: number) => (
             <div key={i} className="flex items-center gap-2 mb-1">
               <span className="text-sm">{ROOM_ICONS[m.room_type] || '🏠'}</span>
-              <span className="text-sm text-cosmic-text">{isHi ? m.room_name_hi : m.room_name_en}</span>
-              <span className="text-sm text-cosmic-text/40">→ {(isHi ? m.ideal_directions_hi : m.ideal_directions).join(', ')}</span>
+              <span className="text-sm text-foreground">{isHi ? m.room_name_hi : m.room_name_en}</span>
+              <span className="text-sm text-foreground/40">→ {(isHi ? m.ideal_directions_hi : m.ideal_directions).join(', ')}</span>
             </div>
           ))}
         </div>

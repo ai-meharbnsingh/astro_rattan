@@ -78,7 +78,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
     return { hasError: true, error };
   }
   componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error('ErrorBoundary caught:', error, info);
+    // ErrorBoundary caught — error displayed in UI
   }
   render() {
     if (this.state.hasError) {
@@ -116,7 +116,7 @@ function NotFound() {
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
       <h2 className="text-6xl font-sans text-sacred-gold-dark mb-4">404</h2>
       <p className="text-xl text-gray-600 mb-6">{t('app.notFound')}</p>
-      <Link to="/" className="px-6 py-2 border border-sacred-gold text-sacred-gold-dark hover:bg-gray-50 dark hover:text-cosmic-bg transition-all">
+      <Link to="/" className="px-6 py-2 border border-sacred-gold text-sacred-gold-dark hover:bg-gray-50 dark hover:text-background transition-all">
         {t('app.returnHome')}
       </Link>
     </div>
@@ -173,7 +173,7 @@ function RequireAuth({ children }: { children: ReactNode }) {
 function AppInner() {
   usePageTracking();
   return (
-    <div className="min-h-screen bg-cosmic-bg text-cosmic-text overflow-x-hidden">
+    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <div className="relative">
       <Navigation />
 

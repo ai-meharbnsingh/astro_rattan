@@ -1,4 +1,7 @@
 import { Heart, Briefcase, Activity, Wallet, Sparkles } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Heading } from "@/components/ui/heading";
+import { Text } from "@/components/ui/text";
 
 interface SignMeta {
   sign: string;
@@ -54,7 +57,7 @@ export default function DailyTab({ data, loading, language, t }: Props) {
 
   if (!data) {
     return (
-      <div className="text-center py-12 text-cosmic-text-secondary">
+      <div className="text-center py-12 text-muted-foreground">
         {t('auto.selectASignToViewYou')}
       </div>
     );
@@ -65,7 +68,8 @@ export default function DailyTab({ data, loading, language, t }: Props) {
   return (
     <div className="space-y-3">
       {/* Sign Header Card */}
-      <div className="rounded-xl border border-cosmic-border bg-cosmic-card p-4">
+      <Card className="py-4">
+        <CardContent className="p-4">
         <div className="flex items-center gap-3 mb-2">
           <img
             src={`/images/zodiac-orange/zodiac-${data.sign}-orange.png`}
@@ -73,23 +77,24 @@ export default function DailyTab({ data, loading, language, t }: Props) {
             className="w-14 h-14 object-contain rounded-lg"
           />
           <div>
-            <h3 className="text-lg font-semibold text-cosmic-text">
+            <Heading as={3} variant={3}>
               {language === 'hi' ? data.sign_hindi : data.sign.charAt(0).toUpperCase() + data.sign.slice(1)}
-            </h3>
-            <p className="text-xs text-cosmic-text-secondary">{data.dates}</p>
+            </Heading>
+            <p className="text-xs text-muted-foreground">{data.dates}</p>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-2 mt-2">
           <div className="rounded-lg bg-sacred-gold/10 px-3 py-1.5">
-            <span className="text-xs text-cosmic-text-secondary">{t('auto.rulingPlanet')}</span>
-            <p className="text-sm font-medium text-cosmic-text">{language === 'hi' ? data.ruling_planet_hindi : data.ruling_planet}</p>
+            <Text variant="small" as="span">{t('auto.rulingPlanet')}</Text>
+            <p className="text-sm font-medium text-foreground">{language === 'hi' ? data.ruling_planet_hindi : data.ruling_planet}</p>
           </div>
           <div className="rounded-lg bg-sacred-gold/10 px-3 py-1.5">
-            <span className="text-xs text-cosmic-text-secondary">{t('auto.element')}</span>
-            <p className="text-sm font-medium text-cosmic-text">{language === 'hi' ? data.element_hindi : data.element.charAt(0).toUpperCase() + data.element.slice(1)}</p>
+            <Text variant="small" as="span">{t('auto.element')}</Text>
+            <p className="text-sm font-medium text-foreground">{language === 'hi' ? data.element_hindi : data.element.charAt(0).toUpperCase() + data.element.slice(1)}</p>
           </div>
         </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Section Cards — column grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -104,7 +109,7 @@ export default function DailyTab({ data, loading, language, t }: Props) {
                   {language === 'hi' ? label.hi : label.en}
                 </h4>
               </div>
-              <p className="text-sm text-gray-700 leading-relaxed">{text}</p>
+              <p className="text-sm text-foreground leading-relaxed">{text}</p>
             </div>
           );
         })}

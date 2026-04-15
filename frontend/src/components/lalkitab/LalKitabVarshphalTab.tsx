@@ -177,7 +177,7 @@ export default function LalKitabVarshphalTab({ chartData, birthDate, apiResult }
         <select
           value={selectedYear}
           onChange={(e) => setSelectedYear(Number(e.target.value))}
-          className="rounded-xl bg-cosmic-card border border-sacred-gold/20 text-cosmic-text px-4 py-3 focus:outline-none focus:border-sacred-gold/50 transition-colors"
+          className="rounded-xl bg-card border border-sacred-gold/20 text-foreground px-4 py-3 focus:outline-none focus:border-sacred-gold/50 transition-colors"
         >
           {yearRange.map((y) => (
             <option key={y} value={y}>
@@ -224,12 +224,12 @@ export default function LalKitabVarshphalTab({ chartData, birthDate, apiResult }
               className={`rounded-xl p-4 border transition-all ${
                 changed
                   ? 'bg-sacred-gold/10 border-sacred-gold/30'
-                  : 'bg-cosmic-card/30 border-sacred-gold/10'
+                  : 'bg-card/30 border-sacred-gold/10'
               }`}
             >
               {/* Planet row */}
               <div className="flex items-center justify-between mb-2">
-                <span className="font-medium text-cosmic-text">
+                <span className="font-medium text-foreground">
                   {getPlanetLabel(planet.key, language)}
                 </span>
                 <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -295,7 +295,7 @@ export default function LalKitabVarshphalTab({ chartData, birthDate, apiResult }
                     <p className="text-sm text-sacred-gold font-medium mb-0.5">
                       {planetLabel} — {t('auto.house')} {item.house}
                     </p>
-                    <p className="text-sm text-cosmic-text/80 leading-snug">
+                    <p className="text-sm text-foreground/80 leading-snug">
                       {remedyText}
                     </p>
                   </div>

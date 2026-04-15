@@ -1,38 +1,42 @@
 """Analytics routes — lightweight page-view tracking and admin reporting."""
 from typing import Any, Optional
 from fastapi import APIRouter, Depends, Request
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from slowapi import Limiter
 from app.auth import require_role
 from app.database import get_db
+from app.rate_limit import request_rate_limit_key
 
 router = APIRouter(tags=["analytics"])
+limiter = Limiter(key_func=request_rate_limit_key)
 
 
 class HitPayload(BaseModel):
-    path: str
-    session_id: str
-    referrer: Optional[str] = None
-    user_id: Optional[str] = None
+    path: str = Field(max_length=200)
+    session_id: str = Field(max_length=64)
+    referrer: Optional[str] = Field(default=None, max_length=500)
+    user_id: Optional[str] = Field(default=None, max_length=64)
 
 
 @router.post("/api/analytics/hit", status_code=204)
+@limiter.limit("10/minute")
 def record_hit(
     payload: HitPayload,
     request: Request,
     db: Any = Depends(get_db),
 ):
     """Record a single page view from the frontend SPA.
-    No auth required — called client-side on every route change."""
-    # Sanitise path — max 200 chars, must start with /
-    path = payload.path[:200] if payload.path else "/"
+    No auth required — called client-side on every route change.
+    Rate limited to 10/minute per IP to prevent spam."""
+    path = payload.path or "/"
     if not path.startswith("/"):
         path = "/" + path
-    referrer = (payload.referrer or "")[:500] or None
+    referrer = payload.referrer or None
 
     db.execute(
         """INSERT INTO page_views (path, session_id, user_id, referrer)
            VALUES (%s, %s, %s, %s)""",
-        (path, payload.session_id[:64], payload.user_id, referrer),
+        (path, payload.session_id, payload.user_id, referrer),
     )
     db.commit()
 

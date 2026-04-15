@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { apiFetch } from '@/lib/api';
 import { translatePlanet, translateRemedy } from '@/lib/backend-translations';
 import { useTranslation } from '@/lib/i18n';
+import { Heading } from '@/components/ui/heading';
 
 interface GeneralRemediesProps {
   language: string;
@@ -108,7 +109,7 @@ export default function GeneralRemedies({ language, t: tProp, title, kundliId }:
         .then((data) => {
           if (data?.remedies) setDynamicRemedies(data.remedies);
         })
-        .catch((err) => console.error('Remedies fetch failed:', err))
+        .catch(() => {})
         .finally(() => setLoading(false));
     }
   }, [kundliId]);
@@ -117,28 +118,28 @@ export default function GeneralRemedies({ language, t: tProp, title, kundliId }:
   const defaultTitle = t('auto.astrologicalRemedies');
 
   return (
-    <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold mt-6">
+    <div className="bg-muted rounded-xl p-5 border border-border mt-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-sacred-gold-dark" />
-          <h4 className="text-lg font-semibold text-gray-800">{title || defaultTitle}</h4>
+          <Sparkles className="w-5 h-5 text-primary" />
+          <Heading as={4} variant={4}>{title || defaultTitle}</Heading>
         </div>
-        {loading && <Loader2 className="w-4 h-4 animate-spin text-sacred-gold-dark" />}
+        {loading && <Loader2 className="w-4 h-4 animate-spin text-primary" />}
       </div>
       
       {/* Dynamic Results if available */}
       {dynamicRemedies && dynamicRemedies.length > 0 && (
         <div className="mb-6 space-y-3">
-          <h5 className="text-sm font-bold text-sacred-gold-dark border-b border-sacred-gold/30 pb-1">
+          <Heading as={5} variant={5} className="text-primary border-b border-border/30 pb-1">
             {t('auto.basedOnYourChart')}
-          </h5>
+          </Heading>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {dynamicRemedies.map((rem, idx) => (
-              <div key={idx} className="bg-sacred-gold/5 rounded-lg p-3 border border-sacred-gold/20">
-                <p className="text-sm font-semibold text-sacred-brown">
+              <div key={idx} className="bg-muted/5 rounded-lg p-3 border border-border/20">
+                <p className="text-sm font-semibold text-foreground">
                   {translatePlanet(rem.planet_en, lang)}
                 </p>
-                <p className="text-xs text-cosmic-text mt-1">
+                <p className="text-xs text-foreground mt-1">
                   {translateRemedy(rem.remedy_en, lang)}
                 </p>
               </div>
@@ -148,17 +149,17 @@ export default function GeneralRemedies({ language, t: tProp, title, kundliId }:
       )}
 
       {/* Baseline / General */}
-      <h5 className="text-xs font-bold text-gray-400 mb-3 uppercase tracking-wider">
+      <Heading as={5} variant={5} className="text-muted-foreground mb-3 uppercase tracking-wider">
         {t('auto.generalGuidance')}
-      </h5>
+      </Heading>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {staticRemedies.map((category, idx) => (
-          <div key={idx} className="bg-white rounded-lg p-3 border border-sacred-gold/30">
-            <h5 className="font-semibold text-sacred-brown mb-2 text-sm">{category.category}</h5>
+          <div key={idx} className="bg-white rounded-lg p-3 border border-border/30">
+            <Heading as={5} variant={5} className="mb-2">{category.category}</Heading>
             <ul className="space-y-1">
               {category.items.map((item, itemIdx) => (
-                <li key={itemIdx} className="text-sm text-cosmic-text flex items-start gap-2">
-                  <span className="w-1 h-1 rounded-full bg-sacred-gold-dark mt-2 flex-shrink-0" />
+                <li key={itemIdx} className="text-sm text-foreground flex items-start gap-2">
+                  <span className="w-1 h-1 rounded-full bg-primary mt-2 flex-shrink-0" />
                   {item}
                 </li>
               ))}
@@ -167,7 +168,7 @@ export default function GeneralRemedies({ language, t: tProp, title, kundliId }:
         ))}
       </div>
       
-      <p className="text-xs text-cosmic-text mt-4 italic">
+      <p className="text-xs text-foreground mt-4 italic">
         {t('auto.noteTheseRemediesAre')}
       </p>
     </div>

@@ -16,7 +16,7 @@ Provides:
   2. Aspects on Bhavas  — Which planets aspect which houses (bhavas).
 """
 from __future__ import annotations
-from typing import Any, Dict, List, Set
+from typing import Any, Dict, List
 
 _SIGN_NAMES = [
     "Aries", "Taurus", "Gemini", "Cancer",

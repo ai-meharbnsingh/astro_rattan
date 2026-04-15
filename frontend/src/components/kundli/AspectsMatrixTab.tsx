@@ -1,6 +1,8 @@
 import { Loader2 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { translatePlanet, translateBackend } from '@/lib/backend-translations';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
+import { Heading } from '@/components/ui/heading';
 
 interface AspectsMatrixTabProps {
   data: any;
@@ -48,14 +50,14 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
-        <span className="ml-2 text-cosmic-text">{t('common.loading')}</span>
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+        <span className="ml-2 text-foreground">{t('common.loading')}</span>
       </div>
     );
   }
 
   if (!data?.matrix) {
-    return <p className="text-center text-cosmic-text py-8">{t('common.noData')}</p>;
+    return <p className="text-center text-foreground py-8">{t('common.noData')}</p>;
   }
 
   const planets = data.planet_order || Object.keys(data.matrix);
@@ -63,44 +65,44 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
   return (
     <div className="space-y-6">
       {/* Matrix Grid */}
-      <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
-        <h4 className="font-display font-semibold text-sacred-brown mb-3">
+      <div className="bg-muted rounded-xl border border-border p-4">
+        <Heading as={4} variant={4} className="mb-3">
           {t('auto.aspectsOnPlanets')}
-        </h4>
+        </Heading>
         <div className="overflow-x-auto">
-          <table className="w-full text-data border-collapse" style={{ minWidth: '600px' }}>
-            <thead>
-              <tr>
-                <th className="p-1.5 text-left font-semibold border border-slate-200 bg-slate-100 sticky left-0 z-10" style={{ minWidth: '60px' }}>
+          <Table className="w-full text-data border-collapse" className="min-w-[600px]">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="p-1.5 text-left font-semibold border border-slate-200 bg-slate-100 sticky left-0 z-10" className="min-w-[60px]">
                   -
-                </th>
+                </TableHead>
                 {planets.map((p: string) => (
-                  <th key={p} className="p-1.5 text-center font-semibold border border-slate-200 bg-slate-100" style={{ minWidth: '55px' }}>
+                  <TableHead key={p} className="p-1.5 text-center font-semibold border border-slate-200 bg-slate-100" className="min-w-[55px]">
                     {PLANET_ABBR[p] || (translatePlanet(p, language) || p || '').slice(0, 4)}
-                  </th>
+                  </TableHead>
                 ))}
-              </tr>
-            </thead>
-            <tbody>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {planets.map((p1: string, rowIdx: number) => (
-                <tr key={p1}>
-                  <td className="p-1.5 font-semibold border border-slate-200 bg-slate-50 sticky left-0 z-10">
+                <TableRow key={p1}>
+                  <TableCell className="p-1.5 font-semibold border border-slate-200 bg-slate-50 sticky left-0 z-10">
                     {PLANET_ABBR[p1] || (translatePlanet(p1, language) || p1 || '').slice(0, 4)}
-                  </td>
+                  </TableCell>
                   {planets.map((p2: string, colIdx: number) => {
                     // Triangle format: only show upper-right half (colIdx > rowIdx)
                     if (colIdx <= rowIdx) {
                       return (
-                        <td key={p2} className="p-1 border border-slate-200 bg-slate-50" />
+                        <TableCell key={p2} className="p-1 border border-slate-200 bg-slate-50" />
                       );
                     }
                     const cell = data.matrix[p1]?.[p2];
-                    if (!cell) return <td key={p2} className="p-1 border border-slate-200" />;
+                    if (!cell) return <TableCell key={p2} className="p-1 border border-slate-200" />;
 
                     const colors = cell.aspect ? ASPECT_COLORS[cell.aspect] : null;
 
                     return (
-                      <td
+                      <TableCell
                         key={p2}
                         className="p-1 text-center border border-slate-200"
                         style={colors ? { backgroundColor: colors.bg, color: colors.text } : undefined}
@@ -110,17 +112,17 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
                         {cell.aspect && (
                           <div className="text-micro font-medium">{language === 'hi' ? (ASPECT_ABBR_HI[cell.aspect] || cell.aspect) : cell.aspect}</div>
                         )}
-                      </td>
+                      </TableCell>
                     );
                   })}
-                </tr>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
 
         {/* Legend */}
-        <div className="flex flex-wrap gap-4 mt-4 text-sm text-cosmic-text">
+        <div className="flex flex-wrap gap-4 mt-4 text-sm text-foreground">
           {[
             { abbr: 'conj', label: t('auto.conjunction0') },
             { abbr: 'sext', label: t('auto.sextile60') },
@@ -168,10 +170,10 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
 
       {/* Active Aspects List */}
       {data.aspects_list && data.aspects_list.length > 0 && (
-        <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
-          <h4 className="font-display font-semibold text-sacred-brown mb-3">
+        <div className="bg-muted rounded-xl border border-border p-4">
+          <Heading as={4} variant={4} className="mb-3">
             {t('auto.activeAspects')}
-          </h4>
+          </Heading>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {data.aspects_list.map((asp: any, i: number) => {
               const colors = ASPECT_COLORS[asp.aspect] || { bg: '#f1f5f9', text: '#334155' };
@@ -213,35 +215,35 @@ function CuspAspectGrid({ title, cuspData, planetOrder, language, t }: CuspAspec
   const abbr = language === 'hi' ? PLANET_ABBR_HI : PLANET_ABBR_EN;
 
   return (
-    <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
-      <h4 className="font-display font-semibold text-sacred-brown mb-3">{title}</h4>
+    <div className="bg-muted rounded-xl border border-border p-4">
+      <Heading as={4} variant={4} className="mb-3">{title}</Heading>
       <div className="overflow-x-auto">
-        <table className="w-full text-data border-collapse" style={{ minWidth: '700px' }}>
-          <thead>
-            <tr>
-              <th className="p-1.5 text-left font-semibold border border-slate-200 bg-slate-100 sticky left-0 z-10" style={{ minWidth: '60px' }}>
+        <Table className="w-full text-data border-collapse" className="min-w-[700px]">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="p-1.5 text-left font-semibold border border-slate-200 bg-slate-100 sticky left-0 z-10" className="min-w-[60px]">
                 -
-              </th>
+              </TableHead>
               {cusps.map((c) => (
-                <th key={c} className="p-1.5 text-center font-semibold border border-slate-200 bg-slate-100" style={{ minWidth: '50px' }}>
+                <TableHead key={c} className="p-1.5 text-center font-semibold border border-slate-200 bg-slate-100" className="min-w-[50px]">
                   C{c}
-                </th>
+                </TableHead>
               ))}
-            </tr>
-          </thead>
-          <tbody>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {planetOrder.map((planet: string) => {
               const row = cuspData[planet];
               if (!row) return null;
               return (
-                <tr key={planet}>
-                  <td className="p-1.5 font-semibold border border-slate-200 bg-slate-50 sticky left-0 z-10">
+                <TableRow key={planet}>
+                  <TableCell className="p-1.5 font-semibold border border-slate-200 bg-slate-50 sticky left-0 z-10">
                     {abbr[planet] || (translatePlanet(planet, language) || planet || '').slice(0, 4)}
-                  </td>
+                  </TableCell>
                   {row.map((cell) => {
                     const colors = cell.aspect ? ASPECT_COLORS[cell.aspect] : null;
                     return (
-                      <td
+                      <TableCell
                         key={cell.cusp}
                         className="p-1 text-center border border-slate-200"
                         style={colors ? { backgroundColor: colors.bg, color: colors.text } : undefined}
@@ -251,14 +253,14 @@ function CuspAspectGrid({ title, cuspData, planetOrder, language, t }: CuspAspec
                         {cell.aspect && (
                           <div className="text-micro font-medium">{language === 'hi' ? (ASPECT_ABBR_HI[cell.aspect] || cell.aspect) : cell.aspect}</div>
                         )}
-                      </td>
+                      </TableCell>
                     );
                   })}
-                </tr>
+                </TableRow>
               );
             })}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
     </div>
   );

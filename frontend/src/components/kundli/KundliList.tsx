@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Sparkles, ChevronRight, Clock, Trash2, AlertTriangle } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
+import { Heading } from '@/components/ui/heading';
 
 interface KundliListProps {
   savedKundlis: any[];
@@ -57,22 +58,22 @@ export default function KundliList({
   return (
     <div className="max-w-2xl mx-auto py-24 px-4">
       <div className="text-center mb-8">
-        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center mx-auto mb-4">
-          <Sparkles className="w-8 h-8 text-cosmic-bg" />
+        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-muted to-secondary flex items-center justify-center mx-auto mb-4">
+          <Sparkles className="w-8 h-8 text-background" />
         </div>
-        <h3 className="text-2xl font-display font-bold text-sacred-brown mb-2">{t('auto.myKundlis')}</h3>
-        <p className="text-cosmic-text">{t('auto.yourSavedBirthCharts')}</p>
+        <Heading as={3} variant={3} className="mb-2">{t('auto.myKundlis')}</Heading>
+        <p className="text-foreground">{t('auto.yourSavedBirthCharts')}</p>
       </div>
 
       {/* Delete All Confirmation Modal */}
       {showDeleteAllConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-cosmic-surface rounded-xl border border-red-300 p-6 max-w-md w-full shadow-xl">
+          <div className="bg-card rounded-xl border border-red-300 p-6 max-w-md w-full shadow-xl">
             <div className="flex items-center gap-3 mb-4 text-red-400">
               <AlertTriangle className="w-8 h-8" />
-              <h4 className="text-lg font-bold">{t('auto.deleteAllKundlis')}</h4>
+              <Heading as={4} variant={4}>{t('auto.deleteAllKundlis')}</Heading>
             </div>
-            <p className="text-cosmic-text-secondary mb-6">
+            <p className="text-muted-foreground mb-6">
               {t('auto.thisWillPermanentlyD')}
             </p>
             <div className="flex gap-3">
@@ -98,12 +99,12 @@ export default function KundliList({
       {/* Single Delete Confirmation Modal */}
       {deleteConfirmId && deleteConfirmKundli && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-cosmic-surface rounded-xl border border-red-300 p-6 max-w-md w-full shadow-xl">
+          <div className="bg-card rounded-xl border border-red-300 p-6 max-w-md w-full shadow-xl">
             <div className="flex items-center gap-3 mb-4 text-red-400">
               <AlertTriangle className="w-6 h-6" />
-              <h4 className="text-lg font-bold">{t('auto.deleteKundli')}</h4>
+              <Heading as={4} variant={4}>{t('auto.deleteKundli')}</Heading>
             </div>
-            <p className="text-cosmic-text-secondary mb-6">
+            <p className="text-muted-foreground mb-6">
               {language === 'hi'
                 ? `क्या आप "${deleteConfirmKundli.person_name}" की कुंडली हटाना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती।`
                 : `Are you sure you want to delete the kundli for "${deleteConfirmKundli.person_name}"? This action cannot be undone.`}
@@ -134,15 +135,15 @@ export default function KundliList({
         {savedKundlis.map((k: any) => (
           <div
             key={k.id}
-            className="group relative p-4 bg-sacred-cream rounded-xl border border-sacred-gold hover:border-sacred-gold transition-all"
+            className="group relative p-4 bg-muted rounded-xl border border-border hover:border-border transition-all"
           >
             <button onClick={() => onLoadKundli(k)} className="w-full text-left">
               <div className="flex items-center justify-between pr-10">
                 <div>
-                  <h4 className="font-display font-semibold text-sacred-brown">{k.person_name}</h4>
-                  <p className="text-sm text-cosmic-text">{k.birth_date} | {k.birth_time} | {k.birth_place}</p>
+                  <Heading as={4} variant={4}>{k.person_name}</Heading>
+                  <p className="text-sm text-foreground">{k.birth_date} | {k.birth_time} | {k.birth_place}</p>
                 </div>
-                <ChevronRight className="w-5 h-5 text-sacred-gold" />
+                <ChevronRight className="w-5 h-5 text-primary" />
               </div>
             </button>
 
@@ -163,7 +164,7 @@ export default function KundliList({
         ))}
 
         {savedKundlis.length === 0 && (
-          <p className="text-center text-cosmic-text py-8">{t('auto.noSavedKundlisYet')}</p>
+          <p className="text-center text-foreground py-8">{t('auto.noSavedKundlisYet')}</p>
         )}
       </div>
 
@@ -178,13 +179,13 @@ export default function KundliList({
         </button>
       )}
 
-      <Button onClick={onNewKundli} className="w-full bg-sacred-gold text-white hover:bg-sacred-gold/90 font-semibold">
+      <Button onClick={onNewKundli} className="w-full bg-muted text-white hover:bg-muted/90 font-semibold">
         <Sparkles className="w-5 h-5 mr-2" />{t('auto.generateNewKundli')}
       </Button>
 
-      <Button onClick={onPrashnaKundli} variant="outline" className="w-full mt-3 border-sacred-gold text-sacred-brown hover:bg-sacred-gold/10">
-        <Clock className="w-5 h-5 mr-2 text-sacred-gold" />{t('kundli.prashnaKundli')}
-        <span className="ml-2 text-sm text-cosmic-text">{t('kundli.prashnaSubtitle')}</span>
+      <Button onClick={onPrashnaKundli} variant="outline" className="w-full mt-3 border-border text-foreground hover:bg-muted/10">
+        <Clock className="w-5 h-5 mr-2 text-primary" />{t('kundli.prashnaKundli')}
+        <span className="ml-2 text-sm text-foreground">{t('kundli.prashnaSubtitle')}</span>
       </Button>
     </div>
   );

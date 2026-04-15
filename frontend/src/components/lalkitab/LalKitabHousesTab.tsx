@@ -32,7 +32,7 @@ export default function LalKitabHousesTab({ chartData }: Props) {
     <div>
       {/* Header */}
       <div className="mb-6">
-        <h2 className="text-xl font-sans font-semibold text-sacred-gold mb-1">
+        <h2 className="text-xl font-semibold text-sacred-gold mb-1">
           {t('lk.houses.title')}
         </h2>
         <p className="text-sm text-gray-500">
@@ -62,14 +62,14 @@ export default function LalKitabHousesTab({ chartData }: Props) {
                   {/* House Number */}
                   <div className="flex items-center gap-2">
                     <Home className="w-5 h-5 text-sacred-gold/60" />
-                    <span className="text-2xl font-sans font-bold text-sacred-gold">
+                    <span className="text-2xl font-bold text-sacred-gold">
                       {houseData.house}
                     </span>
                   </div>
 
                   {/* General Meaning & Badges */}
                   <div className="flex flex-col gap-1">
-                    <span className="text-sm text-cosmic-text">
+                    <span className="text-sm text-foreground">
                       {language === 'hi' ? meaning.hi : meaning.en}
                     </span>
                     <div className="flex flex-wrap gap-1">
@@ -125,7 +125,7 @@ export default function LalKitabHousesTab({ chartData }: Props) {
                     <h4 className="text-sm font-semibold text-sacred-gold mb-1">
                       {t('lk.houses.meaning')}
                     </h4>
-                    <p className="text-sm text-cosmic-text/80">
+                    <p className="text-sm text-foreground/80">
                       {language === 'hi' ? meaning.hi : meaning.en}
                     </p>
                   </div>
@@ -160,13 +160,13 @@ export default function LalKitabHousesTab({ chartData }: Props) {
 
                           return (
                             <div key={planet} className="space-y-3">
-                              <h5 className="text-sm font-medium text-cosmic-text">
+                              <h5 className="text-sm font-medium text-foreground">
                                 {planet}
                               </h5>
 
                               {effects ? (
                                 <div className="bg-sacred-gold/5 border border-sacred-gold/20 rounded-xl p-4">
-                                  <p className="text-sm text-cosmic-text/80 leading-relaxed">
+                                  <p className="text-sm text-foreground/80 leading-relaxed">
                                     {language === 'hi' ? effects.hi : effects.en}
                                   </p>
                                 </div>

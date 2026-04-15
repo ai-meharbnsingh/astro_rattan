@@ -1,8 +1,10 @@
 """H-02: Database Migration System — tracks and applies schema migrations in order."""
-import traceback
+import logging
 import psycopg2
 import psycopg2.extras
-from typing import List, Tuple, Any
+from typing import List, Tuple
+
+logger = logging.getLogger(__name__)
 
 from app.database import DATABASE_URL
 
@@ -384,6 +386,14 @@ MIGRATIONS: List[Tuple[int, str, str]] = [
     """,
     ),
     (
+        15,
+        "Add kundli_id columns to ai_chat_logs and reports",
+        """
+        ALTER TABLE ai_chat_logs ADD COLUMN IF NOT EXISTS kundli_id TEXT REFERENCES kundlis(id) ON DELETE CASCADE;
+        ALTER TABLE reports ADD COLUMN IF NOT EXISTS kundli_id TEXT REFERENCES kundlis(id) ON DELETE CASCADE;
+        """,
+    ),
+    (
         14,
         "Add nishani_text_en column to nishaniyan_master and populate English translations",
         """
@@ -534,6 +544,39 @@ MIGRATIONS: List[Tuple[int, str, str]] = [
     WHERE planet = 'ketu';
     """,
     ),
+    (16, "download_tokens table + pending_astrologer role", """
+    CREATE TABLE IF NOT EXISTS download_tokens (
+        token TEXT PRIMARY KEY,
+        kundli_id TEXT NOT NULL REFERENCES kundlis(id) ON DELETE CASCADE,
+        user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        expires_at TIMESTAMPTZ NOT NULL
+    );
+    ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check;
+    ALTER TABLE users ADD CONSTRAINT users_role_check CHECK(role IN ('user','astrologer','pending_astrologer','admin'));
+    """),
+    (17, "guest_kundlis table", """
+CREATE TABLE IF NOT EXISTS guest_kundlis (
+    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    phone TEXT NOT NULL,
+    birth_date TEXT NOT NULL,
+    birth_time TEXT NOT NULL,
+    birth_place TEXT NOT NULL,
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION,
+    timezone_offset DOUBLE PRECISION DEFAULT 5.5,
+    gender TEXT DEFAULT 'male',
+    marketing_consent BOOLEAN DEFAULT false,
+    visit_count INTEGER DEFAULT 1,
+    chart_data TEXT,
+    preview_data TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    last_visited_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_guest_email ON guest_kundlis(email);
+CREATE INDEX IF NOT EXISTS idx_guest_phone ON guest_kundlis(phone);
+    """),
 ]
 
 
@@ -630,7 +673,7 @@ def _apply_cascade_migration(conn):
                         f"ON DELETE CASCADE"
                     )
                 except Exception as e:
-                    print(f"[migration] Warning: cascade for {child_table}.{fk_col_list}: {e}")
+                    logger.warning("[migration] cascade for %s.%s: %s", child_table, fk_col_list, e)
                     conn.rollback()
     conn.commit()
 
@@ -721,9 +764,9 @@ def _apply_timestamptz_migration(conn):
                         f"ALTER TABLE {table} ALTER COLUMN {column} "
                         f"SET DEFAULT NOW()"
                     )
-                print(f"[migration] Converted {table}.{column} to TIMESTAMPTZ")
+                logger.info("[migration] Converted %s.%s to TIMESTAMPTZ", table, column)
             except Exception as e:
-                print(f"[migration] Warning: {table}.{column}: {e}")
+                logger.warning("[migration] %s.%s: %s", table, column, e)
                 conn.rollback()
     conn.commit()
 
@@ -743,7 +786,7 @@ def _apply_lk_fk_constraints(conn):
                 WHERE table_schema = 'public' AND table_name = %s
             """, (table,))
             if not cur.fetchone():
-                print(f"[migration] Table {table} not found — skip FK")
+                logger.info("[migration] Table %s not found — skip FK", table)
                 continue
             # Skip if constraint already exists
             cur.execute("""
@@ -751,16 +794,16 @@ def _apply_lk_fk_constraints(conn):
                 WHERE constraint_name = %s AND table_name = %s
             """, (constraint_name, table))
             if cur.fetchone():
-                print(f"[migration] FK {constraint_name} already exists — skip")
+                logger.info("[migration] FK %s already exists — skip", constraint_name)
                 continue
             try:
                 cur.execute(
                     f"ALTER TABLE {table} ADD CONSTRAINT {constraint_name} "
                     f"FOREIGN KEY ({col}) REFERENCES users(id) ON DELETE CASCADE"
                 )
-                print(f"[migration] Added FK {constraint_name}")
+                logger.info("[migration] Added FK %s", constraint_name)
             except Exception as e:
-                print(f"[migration] Warning: {constraint_name}: {e}")
+                logger.warning("[migration] %s: %s", constraint_name, e)
                 conn.rollback()
     conn.commit()
 
@@ -835,8 +878,7 @@ def run_migrations(db_path: str = None):
                     try:
                         cur.execute(stmt)
                     except Exception as e:
-                        print(f"[migration] Warning in v{version} statement: {e}")
-                        print(traceback.format_exc())
+                        logger.warning("[migration] v%d statement: %s", version, e, exc_info=True)
                         conn.rollback()
             conn.commit()
             if seed_blog_posts is not None:
@@ -854,8 +896,7 @@ def run_migrations(db_path: str = None):
                     try:
                         cur.execute(stmt)
                     except Exception as e:
-                        print(f"[migration] Warning in v{version} statement: {e}")
-                        print(traceback.format_exc())
+                        logger.warning("[migration] v%d statement: %s", version, e, exc_info=True)
                         conn.rollback()
             conn.commit()
 
@@ -865,6 +906,6 @@ def run_migrations(db_path: str = None):
                 (version, description),
             )
         conn.commit()
-        print(f"[migration] Applied v{version}: {description}")
+        logger.info("[migration] Applied v%d: %s", version, description)
 
     conn.close()

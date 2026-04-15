@@ -62,7 +62,7 @@ export default function LalKitabRemediesTab({ chartData, kundliId }: Props) {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-xl font-sans font-semibold text-sacred-gold mb-1">
+        <h2 className="text-xl font-semibold text-sacred-gold mb-1">
           {t('lk.remedies.title')}
         </h2>
         <p className="text-sm text-gray-500">
@@ -79,8 +79,8 @@ export default function LalKitabRemediesTab({ chartData, kundliId }: Props) {
             onClick={() => setActiveFilter(category)}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
               activeFilter === category
-                ? 'bg-sacred-gold text-cosmic-bg'
-                : 'bg-cosmic-card border border-sacred-gold/20 text-gray-600'
+                ? 'bg-sacred-gold text-background'
+                : 'bg-card border border-sacred-gold/20 text-gray-600'
             }`}
           >
             {category === 'all'
@@ -111,7 +111,7 @@ export default function LalKitabRemediesTab({ chartData, kundliId }: Props) {
           return (
             <div key={planet.key} className="space-y-4">
               {/* Section header */}
-              <h3 className="text-lg font-sans font-semibold text-sacred-gold">
+              <h3 className="text-lg font-semibold text-sacred-gold">
                 {planetName} — {t('auto.house')} {houseNumber}
               </h3>
 
@@ -138,7 +138,7 @@ export default function LalKitabRemediesTab({ chartData, kundliId }: Props) {
                         <div className="flex-1 min-w-0">
                           {/* Type label and category badge */}
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="text-sm font-medium text-cosmic-text">
+                            <span className="text-sm font-medium text-foreground">
                               {typeLabel}
                             </span>
                             <span
@@ -149,7 +149,7 @@ export default function LalKitabRemediesTab({ chartData, kundliId }: Props) {
                           </div>
 
                           {/* Remedy text */}
-                          <p className="text-sm text-cosmic-text/80">
+                          <p className="text-sm text-foreground/80">
                             {remedyText}
                           </p>
                         </div>
@@ -167,7 +167,7 @@ export default function LalKitabRemediesTab({ chartData, kundliId }: Props) {
       <div className="pt-4 border-t border-sacred-gold/20">
         <div className="flex items-center gap-2 mb-1">
           <Database className="w-5 h-5 text-sacred-gold" />
-          <h2 className="text-xl font-sans font-semibold text-sacred-gold">
+          <h2 className="text-xl font-semibold text-sacred-gold">
             {t('lk.remedies.positionBased')}
           </h2>
         </div>
@@ -194,7 +194,7 @@ export default function LalKitabRemediesTab({ chartData, kundliId }: Props) {
                   <span className="px-2.5 py-1 rounded-full bg-sacred-gold/15 text-sacred-gold-dark text-xs font-semibold">
                     {isHi ? (PLANET_HI[r.planet] ?? r.planet) : r.planet.charAt(0).toUpperCase() + r.planet.slice(1)}
                   </span>
-                  <span className="px-2.5 py-1 rounded-full bg-cosmic-text/8 text-cosmic-text text-xs font-medium">
+                  <span className="px-2.5 py-1 rounded-full bg-foreground/8 text-foreground text-xs font-medium">
                     {t('auto.houseRHouse')}
                   </span>
                   <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 text-xs border border-blue-300/30">
@@ -205,7 +205,7 @@ export default function LalKitabRemediesTab({ chartData, kundliId }: Props) {
                 </div>
 
                 {/* Remedy text */}
-                <p className="text-sm text-cosmic-text leading-relaxed mb-3">{r.remedy_text}</p>
+                <p className="text-sm text-foreground leading-relaxed mb-3">{r.remedy_text}</p>
 
                 {/* Duration + instructions + caution */}
                 <div className="space-y-1.5">

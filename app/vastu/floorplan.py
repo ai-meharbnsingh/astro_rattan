@@ -12,8 +12,6 @@ import shutil
 import subprocess
 import time
 import uuid
-from typing import Optional
-
 from app.config import STATIC_DIR
 
 log = logging.getLogger(__name__)

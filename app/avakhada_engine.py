@@ -4,9 +4,10 @@ avakhada_engine.py — Avakhada Chakra Calculation Engine
 Computes the comprehensive birth summary table (Avakhada Chakra)
 from chart data: ascendant, Moon position, Sun position, and planet data.
 """
-import math
-import traceback
-from typing import Any, Dict, List, Optional
+import logging
+from typing import Dict
+
+logger = logging.getLogger(__name__)
 
 # ============================================================
 # CONSTANTS
@@ -325,8 +326,7 @@ def calculate_avakhada(chart_data: dict, birth_date: str = "") -> dict:
             vaar_name = VAAR_NAMES.get(weekday, "")
             vaar_lord = VAAR_LORDS.get(weekday, "")
         except Exception as e:
-            print(f"ERROR in calculate_avakhada (vaar calculation): {e}")
-            print(traceback.format_exc())
+            logger.error("Error in calculate_avakhada (vaar calculation): %s", e, exc_info=True)
 
     # --- NEW: Paya (Nakshatra-based) ---
     paya_nakshatra = "Unknown"

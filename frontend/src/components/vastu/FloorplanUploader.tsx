@@ -83,7 +83,7 @@ export default function FloorplanUploader({ onUploaded }: Props) {
         {uploading ? (
           <div className="flex flex-col items-center gap-2">
             <Loader2 className="w-8 h-8 text-sacred-gold animate-spin" />
-            <p className="text-sm text-cosmic-text">{t('auto.uploading')}</p>
+            <p className="text-sm text-foreground">{t('auto.uploading')}</p>
           </div>
         ) : (
           <div className="flex flex-col items-center gap-3">
@@ -91,14 +91,14 @@ export default function FloorplanUploader({ onUploaded }: Props) {
               <Upload className="w-6 h-6 text-sacred-gold" />
             </div>
             <div>
-              <p className="text-sm sm:text-base font-semibold text-cosmic-text">
+              <p className="text-sm sm:text-base font-semibold text-foreground">
                 {t('auto.uploadFloorPlan')}
               </p>
-              <p className="text-xs sm:text-sm text-cosmic-text/50 mt-1">
+              <p className="text-xs sm:text-sm text-foreground/50 mt-1">
                 {t('auto.pNGJPGOrWebPDragDrop')}
               </p>
             </div>
-            <div className="flex items-center gap-2 text-xs sm:text-sm text-cosmic-text/40">
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-foreground/40">
               <ImageIcon className="w-3 h-3" />
               {t('auto.phonePhotosWorkToo')}
             </div>

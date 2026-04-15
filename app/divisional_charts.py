@@ -1109,16 +1109,3 @@ def calculate_divisional_houses(
         }
         for i in range(12)
     ]
-
-
-# Backward-compatible named functions
-def calculate_d9_navamsa(planet_longitudes: Dict[str, float]) -> Dict[str, str]:
-    """Calculate Navamsa (D9) sign for each planet. Returns {planet: sign}."""
-    detailed = _calculate_d9(planet_longitudes)
-    return {planet: info["sign"] for planet, info in detailed.items()}
-
-
-def calculate_d10_dasamsa(planet_longitudes: Dict[str, float]) -> Dict[str, str]:
-    """Calculate Dasamsa (D10) sign for each planet. Returns {planet: sign}."""
-    detailed = _calculate_d10(planet_longitudes)
-    return {planet: info["sign"] for planet, info in detailed.items()}

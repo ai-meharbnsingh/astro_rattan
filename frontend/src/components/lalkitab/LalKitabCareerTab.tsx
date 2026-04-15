@@ -121,7 +121,7 @@ export default function LalKitabCareerTab({ kundliId }: Props) {
                     ? (t('auto.businessSuited'))
                     : (t('auto.jobSuited'))}
                 </h3>
-                <p className="text-sm text-cosmic-text/70 mt-0.5">
+                <p className="text-sm text-foreground/70 mt-0.5">
                   {isHi ? data.advice.hi : data.advice.en}
                 </p>
               </div>
@@ -160,7 +160,7 @@ export default function LalKitabCareerTab({ kundliId }: Props) {
                   <span className="w-6 h-6 rounded-full bg-sacred-gold/20 text-sacred-gold text-xs font-bold flex items-center justify-center shrink-0">
                     {i + 1}
                   </span>
-                  <span className="text-sm text-cosmic-text">{c}</span>
+                  <span className="text-sm text-foreground">{c}</span>
                 </div>
               ))}
             </div>

@@ -81,11 +81,15 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
                 if row and row[0] > token_tv:
                     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token revoked — please log in again")
             finally:
+                try:
+                    conn.rollback()
+                except Exception:
+                    pass
                 pool.putconn(conn)
         except HTTPException:
             raise
         except Exception:
-            pass  # DB down — allow token through, health check will catch it
+            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Authentication service unavailable")
     return payload
 
 

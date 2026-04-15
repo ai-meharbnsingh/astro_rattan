@@ -233,7 +233,7 @@ export default function LalKitabRemediesTrackerTab({ chartData, kundliId }: Prop
           <p className="text-xs text-gray-400">{t('lk.tracker.days')}</p>
         </div>
         <div className="card-sacred rounded-xl p-4 border border-sacred-gold/20 text-center">
-          <p className="text-2xl font-bold text-cosmic-text">{weeklyCompliance}%</p>
+          <p className="text-2xl font-bold text-foreground">{weeklyCompliance}%</p>
           <p className="text-xs text-gray-500 mt-0.5">{t('lk.tracker.compliance')}</p>
         </div>
         <div className="card-sacred rounded-xl p-4 border border-sacred-gold/20 text-center">
@@ -276,7 +276,7 @@ export default function LalKitabRemediesTrackerTab({ chartData, kundliId }: Prop
                   <Circle className="w-4 h-4 text-gray-300 mt-0.5 shrink-0" />
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm leading-snug ${isDone ? 'line-through text-gray-400' : 'text-cosmic-text'}`}>
+                  <p className={`text-sm leading-snug ${isDone ? 'line-through text-gray-400' : 'text-foreground'}`}>
                     {isHi ? remedy.hi : remedy.en}
                   </p>
                   <div className="flex flex-wrap gap-1.5 mt-1">
@@ -305,7 +305,7 @@ export default function LalKitabRemediesTrackerTab({ chartData, kundliId }: Prop
           onChange={(e) => setJournalNote(e.target.value)}
           placeholder={t('lk.tracker.addNote')}
           rows={3}
-          className="w-full px-3 py-2.5 rounded-xl border border-sacred-gold/20 bg-white/40 text-sm text-cosmic-text placeholder:text-gray-400 resize-none focus:outline-none focus:border-sacred-gold/50"
+          className="w-full px-3 py-2.5 rounded-xl border border-sacred-gold/20 bg-white/40 text-sm text-foreground placeholder:text-gray-400 resize-none focus:outline-none focus:border-sacred-gold/50"
         />
         <button
           onClick={saveJournalEntry}
@@ -324,7 +324,7 @@ export default function LalKitabRemediesTrackerTab({ chartData, kundliId }: Prop
             {journalEntries.slice(0, 5).map((entry, idx) => (
               <div key={idx} className="p-3 rounded-xl bg-sacred-gold/5 border border-sacred-gold/10">
                 <p className="text-xs text-gray-400 mb-1">{entry.date}</p>
-                <p className="text-sm text-cosmic-text/80 leading-snug">{entry.note}</p>
+                <p className="text-sm text-foreground/80 leading-snug">{entry.note}</p>
               </div>
             ))}
           </div>

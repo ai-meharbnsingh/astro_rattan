@@ -7,6 +7,8 @@ import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '@/lib/i18n';
+import { Heading } from '@/components/ui/heading';
+import { Button } from '@/components/ui/button';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface FeedbackRecord {
@@ -34,8 +36,8 @@ function StarRating({
   return (
     <div className="flex items-start gap-4">
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-cosmic-text">{label}</p>
-        <p className="text-xs text-gray-400 mt-0.5">{sublabel}</p>
+        <p className="text-sm font-medium text-foreground">{label}</p>
+        <p className="text-xs text-muted-foreground mt-0.5">{sublabel}</p>
       </div>
       <div className="flex items-center gap-1 shrink-0">
         {[1, 2, 3, 4, 5].map(i => (
@@ -51,12 +53,12 @@ function StarRating({
               className={`w-7 h-7 transition-colors ${
                 i <= active
                   ? 'text-sacred-gold-dark fill-current'
-                  : 'text-gray-200 hover:text-gray-300'
+                  : 'text-gray-200 hover:text-muted-foreground'
               }`}
             />
           </button>
         ))}
-        <span className="ml-2 w-16 text-xs text-gray-400">
+        <span className="ml-2 w-16 text-xs text-muted-foreground">
           {active > 0 ? labels[active] : ''}
         </span>
       </div>
@@ -66,7 +68,7 @@ function StarRating({
 
 // ── StarDisplay (read-only, compact) ─────────────────────────────────────────
 function StarDisplay({ value }: { value: number | null }) {
-  if (!value) return <span className="text-xs text-gray-300">—</span>;
+  if (!value) return <span className="text-xs text-muted-foreground">—</span>;
   return (
     <span className="inline-flex items-center gap-0.5">
       {[1, 2, 3, 4, 5].map(i => (
@@ -97,7 +99,7 @@ function ActionBadge({ action }: { action: 'yes' | 'no' | 'NR' }) {
   const styles = {
     yes: 'bg-green-50 border-green-200 text-green-700',
     no:  'bg-red-50 border-red-200 text-red-600',
-    NR:  'bg-gray-50 border-gray-200 text-gray-500',
+    NR:  'bg-gray-50 border-gray-200 text-muted-foreground',
   };
   const { t } = useTranslation();
   const labels = { yes: t('feedback.action.yes'), no: t('feedback.action.no'), NR: t('feedback.action.nr') };
@@ -125,7 +127,7 @@ function FeedbackHistoryCard({
     try {
       await api.patch(`/api/feedback/${item.id}/close`, {});
       onClosed(item.id);
-    } catch (e: unknown) { console.error(e); }
+    } catch { /* ignored */ }
     setClosing(false);
   };
 
@@ -138,7 +140,7 @@ function FeedbackHistoryCard({
         <div className="flex flex-wrap gap-1.5 items-center">
           <StatusBadge status={item.status} />
           <ActionBadge action={item.action_taken} />
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-muted-foreground">
             {new Date(item.created_at).toLocaleDateString('en-IN', {
               day: 'numeric', month: 'short', year: 'numeric',
             })}
@@ -168,7 +170,7 @@ function FeedbackHistoryCard({
           { label: t('feedback.calculations'), val: item.rating_calculations },
         ].map(r => (
           <div key={r.label}>
-            <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">{r.label}</p>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">{r.label}</p>
             <StarDisplay value={r.val} />
           </div>
         ))}
@@ -177,7 +179,7 @@ function FeedbackHistoryCard({
       {/* Feedback text */}
       {item.feedback_text && (
         <div className="mb-3">
-          <p className={`text-sm text-gray-600 leading-relaxed ${expanded ? '' : 'line-clamp-2'}`}>
+          <p className={`text-sm text-muted-foreground leading-relaxed ${expanded ? '' : 'line-clamp-2'}`}>
             {item.feedback_text}
           </p>
           {hasLongText && (
@@ -231,7 +233,7 @@ export default function FeedbackPage() {
     if (isAuthenticated) {
       api.get('/api/feedback/my')
         .then(setHistory)
-        .catch(console.error)
+        .catch(() => {})
         .finally(() => setHistLoading(false));
     }
   }, [isAuthenticated]);
@@ -253,7 +255,7 @@ export default function FeedbackPage() {
       setSubmitted(true);
       setTimeout(() => setSubmitted(false), 5000);
       // refresh history
-      api.get('/api/feedback/my').then(setHistory).catch(console.error);
+      api.get('/api/feedback/my').then(setHistory).catch(() => {});
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : '';
       setSubmitError(msg || t('feedback.submitFailed'));
@@ -283,16 +285,16 @@ export default function FeedbackPage() {
       <div className="flex items-center gap-3 mb-8">
         <MessageSquare className="w-7 h-7 text-sacred-gold-dark" />
         <div>
-          <h1 className="text-2xl font-sans font-semibold text-cosmic-text">{t('feedback.title')}</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{t('feedback.subtitle')}</p>
+          <Heading as={1} variant={1}>{t('feedback.title')}</Heading>
+          <p className="text-sm text-muted-foreground mt-0.5">{t('feedback.subtitle')}</p>
         </div>
       </div>
 
       {/* ── Submit form ──────────────────────────────────────────────── */}
       <div className="border border-sacred-gold/30 rounded-2xl bg-white/60 backdrop-blur-sm p-6 mb-8 shadow-sm">
-        <h2 className="text-xs font-semibold text-sacred-gold-dark uppercase tracking-wider mb-5">
+        <Heading as={4} variant={4} className="text-sacred-gold-dark uppercase tracking-wider mb-5">
           {t('feedback.rateYourExperience')}
-        </h2>
+        </Heading>
 
         <div className="space-y-5 divide-y divide-gray-100">
           <StarRating
@@ -321,9 +323,9 @@ export default function FeedbackPage() {
 
         {/* Text area */}
         <div className="mt-6">
-          <label className="block text-sm font-medium text-cosmic-text mb-2">
+          <label className="block text-sm font-medium text-foreground mb-2">
             {t('feedback.overall')}
-            <span className="ml-1 text-xs font-normal text-gray-400">({t('feedback.optional')})</span>
+            <span className="ml-1 text-xs font-normal text-muted-foreground">({t('feedback.optional')})</span>
           </label>
           <textarea
             value={text}
@@ -331,13 +333,13 @@ export default function FeedbackPage() {
             placeholder={t('feedback.placeholder')}
             rows={4}
             maxLength={2000}
-            className="w-full px-4 py-3 border border-sacred-gold/30 rounded-xl bg-white text-cosmic-text text-sm focus:outline-none focus:ring-2 focus:ring-sacred-gold/40 resize-none placeholder:text-gray-300"
+            className="w-full px-4 py-3 border border-sacred-gold/30 rounded-xl bg-white text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-sacred-gold/40 resize-none placeholder:text-muted-foreground"
           />
           <div className="flex items-center justify-between mt-1">
             {submitError
               ? <p className="text-xs text-red-500 flex items-center gap-1"><X className="w-3 h-3" />{submitError}</p>
               : <span />}
-            <p className="text-xs text-gray-400">{text.length}/2000</p>
+            <p className="text-xs text-muted-foreground">{text.length}/2000</p>
           </div>
         </div>
 
@@ -349,10 +351,10 @@ export default function FeedbackPage() {
           </div>
         )}
 
-        <button
+        <Button
           onClick={handleSubmit}
           disabled={submitting}
-          className="mt-4 flex items-center gap-2 px-6 py-2.5 bg-sacred-gold-dark text-white rounded-xl hover:opacity-90 transition-all font-medium disabled:opacity-50 text-sm"
+          className="mt-4 flex items-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-all font-medium disabled:opacity-50 text-sm"
         >
           {submitting ? (
             <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full inline-block" />
@@ -360,15 +362,15 @@ export default function FeedbackPage() {
             <Send className="w-4 h-4" />
           )}
           {submitting ? t('feedback.submitting') : t('feedback.submit')}
-        </button>
+        </Button>
       </div>
 
       {/* ── History ──────────────────────────────────────────────────── */}
       <div>
         <div className="flex items-center gap-3 mb-4">
-          <h2 className="text-xs font-semibold text-sacred-gold-dark uppercase tracking-wider">
+          <Heading as={4} variant={4} className="text-sacred-gold-dark uppercase tracking-wider">
             {t('feedback.history')}
-          </h2>
+          </Heading>
           {history.length > 0 && (
             <div className="flex gap-1.5 text-[10px]">
               {openCount > 0 && (
@@ -391,9 +393,9 @@ export default function FeedbackPage() {
           </div>
         ) : history.length === 0 ? (
           <div className="text-center py-14 border border-dashed border-sacred-gold/30 rounded-2xl">
-            <MessageSquare className="w-8 h-8 text-gray-300 mx-auto mb-3" />
-            <p className="text-sm text-gray-400">{t('feedback.empty')}</p>
-            <p className="text-xs text-gray-300 mt-1">{t('feedback.emptySub')}</p>
+            <MessageSquare className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
+            <p className="text-sm text-muted-foreground">{t('feedback.empty')}</p>
+            <p className="text-xs text-muted-foreground mt-1">{t('feedback.emptySub')}</p>
           </div>
         ) : (
           <div className="space-y-3">

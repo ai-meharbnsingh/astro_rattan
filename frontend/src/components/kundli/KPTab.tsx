@@ -2,6 +2,8 @@ import { Loader2 } from 'lucide-react';
 import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
 import { translatePlanet, translateSign, translateNakshatra, translateBackend } from '@/lib/backend-translations';
 import GeneralRemedies from './GeneralRemedies';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
+import { Heading } from '@/components/ui/heading';
 
 interface KPTabProps {
   kpData: any;
@@ -21,45 +23,45 @@ export default function KPTab(props: KPTabProps) {
   return (
     <div className="space-y-6">
       {loadingKp ? (
-        <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-cosmic-text">{t('kundli.loadingKP')}</span></div>
+        <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-primary" /><span className="ml-2 text-foreground">{t('kundli.loadingKP')}</span></div>
       ) : kpData ? (
         <div className="space-y-6">
           {/* 1. KP Planet Table — full reference chart style */}
-          <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
-            <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('auto.krishnamurtiPaddhati')}</h4>
+          <div className="bg-muted rounded-xl border border-border p-4">
+            <Heading as={4} variant={4} className="mb-3">{t('auto.krishnamurtiPaddhati')}</Heading>
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead><tr className="bg-sacred-gold">
-                  <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium">R/C</th>
-                  <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.sign')}</th>
-                  <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.degree')}</th>
-                  <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.nakshatra')}</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium">{t('kundli.pada')}</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={t('auto.rashiLord')}>RL</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={t('auto.nakshatraLord')}>NL</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={t('auto.subLord')}>SL</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={t('auto.subSubLord')}>SS</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={t('auto.starLordOfSubLord')}>SSSL</th>
-                </tr></thead>
-                <tbody>
+              <Table className="w-full text-sm">
+                <TableHeader><TableRow className="bg-muted">
+                  <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.planet')}</TableHead>
+                  <TableHead className="text-center p-1.5 text-primary font-medium">R/C</TableHead>
+                  <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.sign')}</TableHead>
+                  <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.degree')}</TableHead>
+                  <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.nakshatra')}</TableHead>
+                  <TableHead className="text-center p-1.5 text-primary font-medium">{t('kundli.pada')}</TableHead>
+                  <TableHead className="text-center p-1.5 text-primary font-medium" title={t('auto.rashiLord')}>RL</TableHead>
+                  <TableHead className="text-center p-1.5 text-primary font-medium" title={t('auto.nakshatraLord')}>NL</TableHead>
+                  <TableHead className="text-center p-1.5 text-primary font-medium" title={t('auto.subLord')}>SL</TableHead>
+                  <TableHead className="text-center p-1.5 text-primary font-medium" title={t('auto.subSubLord')}>SS</TableHead>
+                  <TableHead className="text-center p-1.5 text-primary font-medium" title={t('auto.starLordOfSubLord')}>SSSL</TableHead>
+                </TableRow></TableHeader>
+                <TableBody>
                   {(kpData.planets || []).map((p: any) => (
-                    <tr key={p.planet} className="border-t border-sacred-gold">
-                      <td className="p-1.5 font-semibold text-sacred-brown">{translatePlanet(p.planet, language)}</td>
-                      <td className="p-1.5 text-center">{p.retrograde ? <span className="text-red-400 font-bold">{l('R', 'व')}</span> : ''}</td>
-                      <td className="p-1.5 text-cosmic-text">{translateSign(p.sign, language)}</td>
-                      <td className="p-1.5 text-cosmic-text font-mono">{p.degree_dms || (typeof p.degree === 'number' ? p.degree.toFixed(2) : p.degree)}</td>
-                      <td className="p-1.5 text-cosmic-text">{translateNakshatra(p.nakshatra, language) || '-'}</td>
-                      <td className="p-1.5 text-center text-cosmic-text">{p.pada || '-'}</td>
-                      <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{p.sign_lord ? planetShort(p.sign_lord) : '-'}</td>
-                      <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{p.star_lord || p.nakshatra_lord ? planetShort(p.star_lord || p.nakshatra_lord) : '-'}</td>
-                      <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{p.sub_lord ? planetShort(p.sub_lord) : '-'}</td>
-                      <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{p.sub_sub_lord ? planetShort(p.sub_sub_lord) : '-'}</td>
-                      <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{p.star_lord_of_sub_lord ? planetShort(p.star_lord_of_sub_lord) : '-'}</td>
-                    </tr>
+                    <TableRow key={p.planet} className="border-t border-border">
+                      <TableCell className="p-1.5 font-semibold text-foreground">{translatePlanet(p.planet, language)}</TableCell>
+                      <TableCell className="p-1.5 text-center">{p.retrograde ? <span className="text-red-400 font-bold">{l('R', 'व')}</span> : ''}</TableCell>
+                      <TableCell className="p-1.5 text-foreground">{translateSign(p.sign, language)}</TableCell>
+                      <TableCell className="p-1.5 text-foreground font-mono">{p.degree_dms || (typeof p.degree === 'number' ? p.degree.toFixed(2) : p.degree)}</TableCell>
+                      <TableCell className="p-1.5 text-foreground">{translateNakshatra(p.nakshatra, language) || '-'}</TableCell>
+                      <TableCell className="p-1.5 text-center text-foreground">{p.pada || '-'}</TableCell>
+                      <TableCell className="p-1.5 text-center text-primary font-medium">{p.sign_lord ? planetShort(p.sign_lord) : '-'}</TableCell>
+                      <TableCell className="p-1.5 text-center text-primary font-medium">{p.star_lord || p.nakshatra_lord ? planetShort(p.star_lord || p.nakshatra_lord) : '-'}</TableCell>
+                      <TableCell className="p-1.5 text-center text-primary font-medium">{p.sub_lord ? planetShort(p.sub_lord) : '-'}</TableCell>
+                      <TableCell className="p-1.5 text-center text-primary font-medium">{p.sub_sub_lord ? planetShort(p.sub_sub_lord) : '-'}</TableCell>
+                      <TableCell className="p-1.5 text-center text-primary font-medium">{p.star_lord_of_sub_lord ? planetShort(p.star_lord_of_sub_lord) : '-'}</TableCell>
+                    </TableRow>
                   ))}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             </div>
           </div>
 
@@ -95,12 +97,12 @@ export default function KPTab(props: KPTabProps) {
 
             return (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
-                  <h4 className="font-display font-semibold text-sacred-brown mb-2 text-center">{t('section.vedicBirthChart')}</h4>
+                <div className="bg-muted rounded-xl border border-border p-4">
+                  <Heading as={4} variant={4} className="mb-2 text-center">{t('section.vedicBirthChart')}</Heading>
                   <InteractiveKundli chartData={{ planets: birthPlanets, houses: birthHouses, ascendant: result?.chart_data?.ascendant } as ChartData} compact />
                 </div>
-                <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
-                  <h4 className="font-display font-semibold text-sacred-brown mb-2 text-center">{t('auto.cuspalChart')}</h4>
+                <div className="bg-muted rounded-xl border border-border p-4">
+                  <Heading as={4} variant={4} className="mb-2 text-center">{t('auto.cuspalChart')}</Heading>
                   <InteractiveKundli chartData={{ planets: cuspalPlanets, houses: cuspalHouses, ascendant: result?.chart_data?.ascendant } as ChartData} compact />
                 </div>
               </div>
@@ -108,114 +110,114 @@ export default function KPTab(props: KPTabProps) {
           })()}
 
           {/* 2. Bhava Details (Placidus) — House Cusps */}
-          <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
-            <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('auto.bhavaDetailsPlacidus')}</h4>
+          <div className="bg-muted rounded-xl border border-border p-4">
+            <Heading as={4} variant={4} className="mb-3">{t('auto.bhavaDetailsPlacidus')}</Heading>
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead><tr className="bg-sacred-gold">
-                  <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.house')}</th>
-                  <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.sign')}</th>
-                  <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.degree')}</th>
-                  <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.nakshatra')}</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium">{t('kundli.pada')}</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={t('auto.rashiLord')}>RL</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={t('auto.nakshatraLord')}>NL</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={t('auto.subLord')}>SL</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={t('auto.subSubLord')}>SS</th>
-                  <th className="text-center p-1.5 text-sacred-gold-dark font-medium" title={t('auto.starLordOfSubLord')}>SSSL</th>
-                </tr></thead>
-                <tbody>
+              <Table className="w-full text-sm">
+                <TableHeader><TableRow className="bg-muted">
+                  <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.house')}</TableHead>
+                  <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.sign')}</TableHead>
+                  <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.degree')}</TableHead>
+                  <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.nakshatra')}</TableHead>
+                  <TableHead className="text-center p-1.5 text-primary font-medium">{t('kundli.pada')}</TableHead>
+                  <TableHead className="text-center p-1.5 text-primary font-medium" title={t('auto.rashiLord')}>RL</TableHead>
+                  <TableHead className="text-center p-1.5 text-primary font-medium" title={t('auto.nakshatraLord')}>NL</TableHead>
+                  <TableHead className="text-center p-1.5 text-primary font-medium" title={t('auto.subLord')}>SL</TableHead>
+                  <TableHead className="text-center p-1.5 text-primary font-medium" title={t('auto.subSubLord')}>SS</TableHead>
+                  <TableHead className="text-center p-1.5 text-primary font-medium" title={t('auto.starLordOfSubLord')}>SSSL</TableHead>
+                </TableRow></TableHeader>
+                <TableBody>
                   {(() => {
                     const houseNames = language === 'hi'
                       ? ['प्रथम','द्वितीय','तृतीय','चतुर्थ','पंचम','षष्ठ','सप्तम','अष्टम','नवम','दशम','एकादश','द्वादश']
                       : ['First','Second','Third','Fourth','Fifth','Sixth','Seventh','Eighth','Ninth','Tenth','Eleventh','Twelfth'];
                     return (kpData.cusps || []).map((c: any, i: number) => {
                     return (
-                      <tr key={i} className="border-t border-sacred-gold">
-                        <td className="p-1.5 font-semibold text-sacred-brown">{(c.house || i + 1)}.{houseNames[i] || ''}</td>
-                        <td className="p-1.5 text-cosmic-text">{translateSign(c.sign || '', language)}</td>
-                        <td className="p-1.5 text-cosmic-text font-mono">{c.degree_dms || (typeof c.degree === 'number' ? c.degree.toFixed(2) : c.degree || '-')}</td>
-                        <td className="p-1.5 text-cosmic-text">{translateNakshatra(c.nakshatra, language) || '-'}</td>
-                        <td className="p-1.5 text-center text-cosmic-text">{c.pada || '-'}</td>
-                        <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{c.sign_lord ? c.sign_lord.slice(0, 2) : '-'}</td>
-                        <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{(c.star_lord || '-').slice(0, 2)}</td>
-                        <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{(c.sub_lord || '-').slice(0, 2)}</td>
-                        <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{(c.sub_sub_lord || '-').slice(0, 2)}</td>
-                        <td className="p-1.5 text-center text-sacred-gold-dark font-medium">{(c.star_lord_of_sub_lord || '-').slice(0, 2)}</td>
-                      </tr>
+                      <TableRow key={i} className="border-t border-border">
+                        <TableCell className="p-1.5 font-semibold text-foreground">{(c.house || i + 1)}.{houseNames[i] || ''}</TableCell>
+                        <TableCell className="p-1.5 text-foreground">{translateSign(c.sign || '', language)}</TableCell>
+                        <TableCell className="p-1.5 text-foreground font-mono">{c.degree_dms || (typeof c.degree === 'number' ? c.degree.toFixed(2) : c.degree || '-')}</TableCell>
+                        <TableCell className="p-1.5 text-foreground">{translateNakshatra(c.nakshatra, language) || '-'}</TableCell>
+                        <TableCell className="p-1.5 text-center text-foreground">{c.pada || '-'}</TableCell>
+                        <TableCell className="p-1.5 text-center text-primary font-medium">{c.sign_lord ? c.sign_lord.slice(0, 2) : '-'}</TableCell>
+                        <TableCell className="p-1.5 text-center text-primary font-medium">{(c.star_lord || '-').slice(0, 2)}</TableCell>
+                        <TableCell className="p-1.5 text-center text-primary font-medium">{(c.sub_lord || '-').slice(0, 2)}</TableCell>
+                        <TableCell className="p-1.5 text-center text-primary font-medium">{(c.sub_sub_lord || '-').slice(0, 2)}</TableCell>
+                        <TableCell className="p-1.5 text-center text-primary font-medium">{(c.star_lord_of_sub_lord || '-').slice(0, 2)}</TableCell>
+                      </TableRow>
                     );
                   });
                   })()}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             </div>
           </div>
 
           {/* 3. Significations of Houses */}
           {kpData.house_significations && Object.keys(kpData.house_significations).length > 0 && (
-            <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
-              <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('auto.significationsOfHous')}</h4>
+            <div className="bg-muted rounded-xl border border-border p-4">
+              <Heading as={4} variant={4} className="mb-3">{t('auto.significationsOfHous')}</Heading>
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead><tr className="bg-sacred-gold">
-                    <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.house')}</th>
-                    <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('auto.planetsInNakOfOccupa')}</th>
-                    <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('auto.occupants')}</th>
-                    <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('auto.planetsInNakOfCuspLo')}</th>
-                    <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('auto.cuspSignLord')}</th>
-                  </tr></thead>
-                  <tbody>
+                <Table className="w-full text-sm">
+                  <TableHeader><TableRow className="bg-muted">
+                    <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.house')}</TableHead>
+                    <TableHead className="text-left p-1.5 text-primary font-medium">{t('auto.planetsInNakOfOccupa')}</TableHead>
+                    <TableHead className="text-left p-1.5 text-primary font-medium">{t('auto.occupants')}</TableHead>
+                    <TableHead className="text-left p-1.5 text-primary font-medium">{t('auto.planetsInNakOfCuspLo')}</TableHead>
+                    <TableHead className="text-left p-1.5 text-primary font-medium">{t('auto.cuspSignLord')}</TableHead>
+                  </TableRow></TableHeader>
+                  <TableBody>
                     {[1,2,3,4,5,6,7,8,9,10,11,12].map(h => {
                       const sig = kpData.house_significations[h] || kpData.house_significations[String(h)] || {};
                       return (
-                        <tr key={h} className="border-t border-sacred-gold">
-                          <td className="p-1.5 font-semibold text-sacred-brown">{h}</td>
-                          <td className="p-1.5 text-cosmic-text">{planetList(sig.planets_in_nak_of_occupants || []) || '-'}</td>
-                          <td className="p-1.5 text-cosmic-text font-medium">{planetList(sig.occupants || []) || '-'}</td>
-                          <td className="p-1.5 text-cosmic-text">{planetList(sig.planets_in_nak_of_cusp_sign_lord || []) || '-'}</td>
-                          <td className="p-1.5 text-sacred-gold-dark font-medium">{sig.cusp_sign_lord ? translatePlanet(sig.cusp_sign_lord, language) : '-'}</td>
-                        </tr>
+                        <TableRow key={h} className="border-t border-border">
+                          <TableCell className="p-1.5 font-semibold text-foreground">{h}</TableCell>
+                          <TableCell className="p-1.5 text-foreground">{planetList(sig.planets_in_nak_of_occupants || []) || '-'}</TableCell>
+                          <TableCell className="p-1.5 text-foreground font-medium">{planetList(sig.occupants || []) || '-'}</TableCell>
+                          <TableCell className="p-1.5 text-foreground">{planetList(sig.planets_in_nak_of_cusp_sign_lord || []) || '-'}</TableCell>
+                          <TableCell className="p-1.5 text-primary font-medium">{sig.cusp_sign_lord ? translatePlanet(sig.cusp_sign_lord, language) : '-'}</TableCell>
+                        </TableRow>
                       );
                     })}
-                  </tbody>
-                </table>
+                  </TableBody>
+                </Table>
               </div>
             </div>
           )}
 
           {/* 4. Houses Signified by Planets */}
           {kpData.planet_significator_strengths && Object.keys(kpData.planet_significator_strengths).length > 0 && (
-            <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
-              <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('auto.housesSignifiedByPla')}</h4>
+            <div className="bg-muted rounded-xl border border-border p-4">
+              <Heading as={4} variant={4} className="mb-3">{t('auto.housesSignifiedByPla')}</Heading>
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead><tr className="bg-sacred-gold">
-                    <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
-                    <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('auto.veryStrong')}</th>
-                    <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('auto.strong')}</th>
-                    <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('auto.normal')}</th>
-                    <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('auto.weak')}</th>
-                  </tr></thead>
-                  <tbody>
+                <Table className="w-full text-sm">
+                  <TableHeader><TableRow className="bg-muted">
+                    <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.planet')}</TableHead>
+                    <TableHead className="text-left p-1.5 text-primary font-medium">{t('auto.veryStrong')}</TableHead>
+                    <TableHead className="text-left p-1.5 text-primary font-medium">{t('auto.strong')}</TableHead>
+                    <TableHead className="text-left p-1.5 text-primary font-medium">{t('auto.normal')}</TableHead>
+                    <TableHead className="text-left p-1.5 text-primary font-medium">{t('auto.weak')}</TableHead>
+                  </TableRow></TableHeader>
+                  <TableBody>
                     {Object.entries(kpData.planet_significator_strengths).map(([planet, levels]: [string, any]) => (
-                      <tr key={planet} className="border-t border-sacred-gold">
-                        <td className="p-1.5 font-semibold text-sacred-brown">{translatePlanet(planet, language)}</td>
-                        <td className="p-1.5 text-green-500 font-medium">{planetList(levels.very_strong || [])}</td>
-                        <td className="p-1.5 text-blue-400 font-medium">{planetList(levels.strong || [])}</td>
-                        <td className="p-1.5 text-cosmic-text">{planetList(levels.normal || [])}</td>
-                        <td className="p-1.5 text-orange-400">{planetList(levels.weak || [])}</td>
-                      </tr>
+                      <TableRow key={planet} className="border-t border-border">
+                        <TableCell className="p-1.5 font-semibold text-foreground">{translatePlanet(planet, language)}</TableCell>
+                        <TableCell className="p-1.5 text-green-500 font-medium">{planetList(levels.very_strong || [])}</TableCell>
+                        <TableCell className="p-1.5 text-blue-400 font-medium">{planetList(levels.strong || [])}</TableCell>
+                        <TableCell className="p-1.5 text-foreground">{planetList(levels.normal || [])}</TableCell>
+                        <TableCell className="p-1.5 text-orange-400">{planetList(levels.weak || [])}</TableCell>
+                      </TableRow>
                     ))}
-                  </tbody>
-                </table>
+                  </TableBody>
+                </Table>
               </div>
             </div>
           )}
 
           {/* 5. Ruling Planets */}
           {kpData.ruling_planets && Object.keys(kpData.ruling_planets).length > 0 && (
-            <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
-              <h4 className="font-display font-semibold text-sacred-brown mb-3">{t('auto.rulingPlanets')}</h4>
+            <div className="bg-muted rounded-xl border border-border p-4">
+              <Heading as={4} variant={4} className="mb-3">{t('auto.rulingPlanets')}</Heading>
               <div className="grid grid-cols-2 gap-3 text-sm">
                 {[
                   ['day_lord', t('auto.dayLord')],
@@ -227,8 +229,8 @@ export default function KPTab(props: KPTabProps) {
                   ['moon_sub_lord', t('auto.moonSubLord')],
                 ].map(([key, label]) => (
                   <div key={key} className="flex items-center justify-between bg-white rounded-lg p-2">
-                    <span className="text-cosmic-text">{translateBackend(label, language)}</span>
-                    <span className="font-semibold text-sacred-gold-dark">{kpData.ruling_planets[key] ? translatePlanet(kpData.ruling_planets[key], language) : '-'}</span>
+                    <span className="text-foreground">{translateBackend(label, language)}</span>
+                    <span className="font-semibold text-primary">{kpData.ruling_planets[key] ? translatePlanet(kpData.ruling_planets[key], language) : '-'}</span>
                   </div>
                 ))}
               </div>
@@ -236,7 +238,7 @@ export default function KPTab(props: KPTabProps) {
           )}
         </div>
       ) : (
-        <p className="text-center text-cosmic-text py-8">{t('kundli.clickKPTab')}</p>
+        <p className="text-center text-foreground py-8">{t('kundli.clickKPTab')}</p>
       )}
       <GeneralRemedies language={language} kundliId={kpData?.kundli_id} />
     </div>

@@ -1,5 +1,8 @@
 """KP Astrology and Lal Kitab Remedies routes."""
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 from datetime import date as _date
 from typing import Any
 
@@ -895,24 +898,30 @@ def get_remedies_master(
     if positions is None:
         raise HTTPException(status_code=404, detail="Kundli not found")
 
+    # Build list of active planet-house pairs (skip house=0)
+    active_planets = [p for p, h in positions.items() if h != 0]
+    active_houses = [h for p, h in positions.items() if h != 0]
+
     remedies = []
-    for planet, house in positions.items():
-        if house == 0:
-            continue
+    if active_planets:
+        # Single query instead of N separate queries (one per planet)
         rows = db.execute(
-            "SELECT * FROM remedies_master WHERE planet = %s AND house = %s",
-            (planet, house),
+            "SELECT * FROM remedies_master WHERE planet = ANY(%s) AND house = ANY(%s)",
+            (active_planets, active_houses),
         ).fetchall()
+        # Filter to only matching (planet, house) pairs since ANY is OR-based
+        valid_pairs = {(p, h) for p, h in positions.items() if h != 0}
         for r in rows:
-            remedies.append({
-                "planet": r["planet"],
-                "house": r["house"],
-                "remedy_text": r["remedy_text"],
-                "remedy_type": r["remedy_type"],
-                "duration_days": r["duration_days"],
-                "instructions": r["instructions"],
-                "caution": r["caution"],
-            })
+            if (r["planet"], r["house"]) in valid_pairs:
+                remedies.append({
+                    "planet": r["planet"],
+                    "house": r["house"],
+                    "remedy_text": r["remedy_text"],
+                    "remedy_type": r["remedy_type"],
+                    "duration_days": r["duration_days"],
+                    "instructions": r["instructions"],
+                    "caution": r["caution"],
+                })
 
     return {"remedies": remedies}
 
@@ -963,8 +972,8 @@ def get_lalkitab_advanced(
             formatted_positions, 
             birth_datetime=birth_datetime
         )
-    except Exception:
-        pass  # Hora calculation is optional
+    except Exception as e:
+        logger.warning("Hora calculation failed: %s", e)
 
     # Calculate new logic
     lk_aspects = calculate_lk_aspects(formatted_positions)

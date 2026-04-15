@@ -195,7 +195,7 @@ export default function LalKitabWealthTab({ kundliId }: Props) {
                     <span className="w-6 h-6 rounded-full bg-sacred-gold/20 text-sacred-gold text-xs font-bold flex items-center justify-center shrink-0">
                       {i + 1}
                     </span>
-                    <p className="text-sm text-cosmic-text">{isHi ? src.hi : src.en}</p>
+                    <p className="text-sm text-foreground">{isHi ? src.hi : src.en}</p>
                   </div>
                 ))}
               </div>
@@ -208,7 +208,7 @@ export default function LalKitabWealthTab({ kundliId }: Props) {
               <Coins className="w-4 h-4" />
               {t('auto.investmentAdvice')}
             </h3>
-            <p className="text-sm text-cosmic-text/80 leading-relaxed">
+            <p className="text-sm text-foreground/80 leading-relaxed">
               {isHi ? data.investment_advice.hi : data.investment_advice.en}
             </p>
           </div>
@@ -219,7 +219,7 @@ export default function LalKitabWealthTab({ kundliId }: Props) {
               <PiggyBank className="w-4 h-4" />
               {t('auto.savingsTip')}
             </h3>
-            <p className="text-sm text-cosmic-text/80 leading-relaxed">
+            <p className="text-sm text-foreground/80 leading-relaxed">
               {isHi ? data.savings_tip.hi : data.savings_tip.en}
             </p>
           </div>

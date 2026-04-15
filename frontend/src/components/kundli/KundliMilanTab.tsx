@@ -3,6 +3,8 @@ import { Heart, AlertTriangle, CheckCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
+import { Heading } from '@/components/ui/heading';
 
 interface KundliOption {
   id: string;
@@ -48,15 +50,13 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
     setLoading(true); setError(''); setResult(null);
     try {
       const data = await api.post('/api/kundli/match', { kundli_id_1: kundliId1, kundli_id_2: kundliId2 });
-      console.log('Match result:', data);
       if (!data || typeof data.total_score !== 'number') {
         throw new Error(t('common.error'));
       }
       setResult(data);
     } catch (e) { 
       const msg = e instanceof Error ? e.message : t('common.error');
-      setError(msg); 
-      console.error('Match error:', e); 
+      setError(msg);
     }
     setLoading(false);
   };
@@ -103,13 +103,13 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
   return (
     <div className="space-y-6">
       <div className="text-center mb-4">
-        <Heart className="w-8 h-8 text-sacred-gold-dark mx-auto mb-2" />
-        <h3 className="text-xl font-sans text-cosmic-text">{t('milan.title')}</h3>
-        <p className="text-sm text-cosmic-text">{t('milan.subtitle')}</p>
+        <Heart className="w-8 h-8 text-primary mx-auto mb-2" />
+        <Heading as={3} variant={3} className="font-sans">{t('milan.title')}</Heading>
+        <p className="text-sm text-foreground">{t('milan.subtitle')}</p>
       </div>
 
       {savedKundlis.length < 2 ? (
-        <div className="text-center py-8 text-cosmic-text">
+        <div className="text-center py-8 text-foreground">
           <p>{t('milan.minRequired')}</p>
           <p className="text-sm mt-2">{t('milan.generatePrompt')}</p>
         </div>
@@ -117,9 +117,9 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-sm text-cosmic-text uppercase tracking-wider mb-1 block">{t('milan.person1')}</label>
+              <label className="text-sm text-foreground uppercase tracking-wider mb-1 block">{t('milan.person1')}</label>
               <select value={kundliId1} onChange={e => setKundliId1(e.target.value)}
-                className="w-full bg-cosmic-bg border border-sacred-gold text-cosmic-text p-2 text-sm">
+                className="w-full bg-muted border border-border text-foreground p-2 text-sm">
                 <option value="">{t('milan.selectKundli')}</option>
                 {savedKundlis.map(k => (
                   <option key={k.id} value={k.id}>{k.person_name} ({k.birth_date})</option>
@@ -127,9 +127,9 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
               </select>
             </div>
             <div>
-              <label className="text-sm text-cosmic-text uppercase tracking-wider mb-1 block">{t('milan.person2')}</label>
+              <label className="text-sm text-foreground uppercase tracking-wider mb-1 block">{t('milan.person2')}</label>
               <select value={kundliId2} onChange={e => setKundliId2(e.target.value)}
-                className="w-full bg-cosmic-bg border border-sacred-gold text-cosmic-text p-2 text-sm">
+                className="w-full bg-muted border border-border text-foreground p-2 text-sm">
                 <option value="">{t('milan.selectKundli')}</option>
                 {savedKundlis.filter(k => k.id !== kundliId1).map(k => (
                   <option key={k.id} value={k.id}>{k.person_name} ({k.birth_date})</option>
@@ -142,40 +142,40 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
 
           <div className="text-center">
             <Button onClick={handleMatch} disabled={loading || !kundliId1 || !kundliId2}
-              className="bg-sacred-gold-dark text-cosmic-bg hover:bg-gray-50 px-8 py-3 font-sans uppercase tracking-wider disabled:opacity-50">
+              className="bg-primary text-background hover:bg-gray-50 px-8 py-3 font-sans uppercase tracking-wider disabled:opacity-50">
               {loading ? <><Loader2 className="w-4 h-4 animate-spin mr-2" />{t('milan.calculating')}</> : t('milan.matchButton')}
             </Button>
           </div>
 
           {result && (
             <div className="space-y-6 mt-6">
-              <div className={`text-center p-6 border ${overallColor(result.total_score)} bg-cosmic-bg`}>
-                <p className="text-5xl font-sans font-bold">{result.total_score}<span className="text-lg text-cosmic-text">/36</span></p>
+              <div className={`text-center p-6 border ${overallColor(result.total_score)} bg-muted`}>
+                <p className="text-5xl font-sans font-bold">{result.total_score}<span className="text-lg text-foreground">/36</span></p>
                 <p className="text-sm mt-1">{result.compatibility_percentage}% {t('milan.compatibility')}</p>
                 <p className="text-lg font-sans mt-2">{result.recommendation}</p>
-                <p className="text-sm text-cosmic-text mt-1">{result.person1_name} & {result.person2_name}</p>
+                <p className="text-sm text-foreground mt-1">{result.person1_name} & {result.person2_name}</p>
               </div>
 
               {/* Koot Scores Table */}
-              <div className="bg-sacred-cream rounded-xl border border-sacred-gold overflow-hidden">
-                <div className="bg-sacred-gold px-4 py-2">
-                  <h4 className="font-semibold text-sacred-brown">{t('milan.koot')} {t('milan.score')}</h4>
+              <div className="bg-muted rounded-xl border border-border overflow-hidden">
+                <div className="bg-muted px-4 py-2">
+                  <Heading as={4} variant={4}>{t('milan.koot')} {t('milan.score')}</Heading>
                 </div>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="bg-sacred-gold/50">
-                        <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('milan.koot')}</th>
-                        <th className="text-center p-3 font-medium text-sacred-gold-dark">{t('milan.score')}</th>
-                        <th className="text-center p-3 font-medium text-sacred-gold-dark">{t('milan.max')}</th>
-                        <th className="text-left p-3 font-medium text-sacred-gold-dark">{t('numerology.description')}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
+                  <Table className="w-full text-sm">
+                    <TableHeader>
+                      <TableRow className="bg-muted/50">
+                        <TableHead className="text-left p-3 font-medium text-primary">{t('milan.koot')}</TableHead>
+                        <TableHead className="text-center p-3 font-medium text-primary">{t('milan.score')}</TableHead>
+                        <TableHead className="text-center p-3 font-medium text-primary">{t('milan.max')}</TableHead>
+                        <TableHead className="text-left p-3 font-medium text-primary">{t('numerology.description')}</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
                       {Object.entries(result.koot_scores || {}).map(([name, koot]) => (
-                        <tr key={name} className="border-t border-sacred-gold/30 hover:bg-sacred-gold/10">
-                          <td className="p-3 font-medium text-sacred-brown">{name}</td>
-                          <td className="p-3 text-center">
+                        <TableRow key={name} className="border-t border-border/30 hover:bg-muted/10">
+                          <TableCell className="p-3 font-medium text-foreground">{name}</TableCell>
+                          <TableCell className="p-3 text-center">
                             <span className={`inline-block w-8 h-8 leading-8 rounded-full font-bold ${
                               koot.score >= koot.max ? 'bg-green-500 text-white' : 
                               koot.score >= koot.max * 0.5 ? 'bg-yellow-500 text-white' : 
@@ -183,16 +183,16 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
                             }`}>
                               {koot.score}
                             </span>
-                          </td>
-                          <td className="p-3 text-center text-cosmic-text">{koot.max}</td>
-                          <td className="p-3 text-sm text-cosmic-text">{koot.description}</td>
-                        </tr>
+                          </TableCell>
+                          <TableCell className="p-3 text-center text-foreground">{koot.max}</TableCell>
+                          <TableCell className="p-3 text-sm text-foreground">{koot.description}</TableCell>
+                        </TableRow>
                       ))}
-                    </tbody>
-                    <tfoot>
-                      <tr className="bg-sacred-gold/30 border-t-2 border-sacred-gold">
-                        <td className="p-3 font-bold text-sacred-brown">{t('table.total')}</td>
-                        <td className="p-3 text-center">
+                    </TableBody>
+                    <TableFooter>
+                      <TableRow className="bg-muted/30 border-t-2 border-border">
+                        <TableCell className="p-3 font-bold text-foreground">{t('table.total')}</TableCell>
+                        <TableCell className="p-3 text-center">
                           <span className={`inline-block px-3 py-1 rounded-full font-bold text-lg ${
                             result.total_score >= 24 ? 'bg-green-600 text-white' : 
                             result.total_score >= 18 ? 'bg-yellow-500 text-white' : 
@@ -200,14 +200,14 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
                           }`}>
                             {result.total_score}
                           </span>
-                        </td>
-                        <td className="p-3 text-center font-bold text-sacred-brown">36</td>
-                        <td className="p-3 text-sm font-medium text-sacred-brown">
+                        </TableCell>
+                        <TableCell className="p-3 text-center font-bold text-foreground">36</TableCell>
+                        <TableCell className="p-3 text-sm font-medium text-foreground">
                           {result.compatibility_percentage}% - {result.recommendation}
-                        </td>
-                      </tr>
-                    </tfoot>
-                  </table>
+                        </TableCell>
+                      </TableRow>
+                    </TableFooter>
+                  </Table>
                 </div>
               </div>
 
@@ -216,13 +216,13 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
                   { label: result.person1_name, details: result.person1_details },
                   { label: result.person2_name, details: result.person2_details },
                 ].map(({ label, details }) => (
-                  <div key={label} className="border border-sacred-gold p-4">
-                    <h4 className="text-sm font-sans text-sacred-gold-dark mb-3 uppercase">{label}</h4>
+                  <div key={label} className="border border-border p-4">
+                    <Heading as={4} variant={4} className="font-sans text-primary mb-3 uppercase">{label}</Heading>
                     <div className="space-y-1">
                       {Object.entries(details).map(([k, v]) => (
                         <div key={k} className="flex justify-between text-sm">
-                          <span className="text-cosmic-text capitalize">{k}</span>
-                          <span className="text-cosmic-text">{v}</span>
+                          <span className="text-foreground capitalize">{k}</span>
+                          <span className="text-foreground">{v}</span>
                         </div>
                       ))}
                     </div>
@@ -231,8 +231,8 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
               </div>
 
               {result.doshas.length > 0 && (
-                <div className="border border-sacred-gold p-4">
-                  <h4 className="text-sm font-sans text-sacred-gold-dark mb-3 uppercase">{t('milan.doshaAnalysis')}</h4>
+                <div className="border border-border p-4">
+                  <Heading as={4} variant={4} className="font-sans text-primary mb-3 uppercase">{t('milan.doshaAnalysis')}</Heading>
                   <div className="space-y-3">
                     {result.doshas.map((dosha, i) => (
                       <div key={i} className="flex items-start gap-3">
@@ -242,8 +242,8 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
                           <CheckCircle className="w-4 h-4 mt-0.5 text-green-400 shrink-0" />
                         )}
                         <div>
-                          <p className="text-sm text-cosmic-text">{dosha.name}</p>
-                          <p className="text-sm text-cosmic-text">{dosha.description}</p>
+                          <p className="text-sm text-foreground">{dosha.name}</p>
+                          <p className="text-sm text-foreground">{dosha.description}</p>
                         </div>
                       </div>
                     ))}
@@ -251,27 +251,27 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
                 </div>
               )}
 
-              <div className="border border-sacred-gold p-4">
-                <h4 className="text-sm font-sans text-sacred-gold-dark mb-3 uppercase">
+              <div className="border border-border p-4">
+                <Heading as={4} variant={4} className="font-sans text-primary mb-3 uppercase">
                   {t('auto.remediesForBoyGirl')}
-                </h4>
+                </Heading>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="bg-sacred-cream border border-sacred-gold/40 rounded-lg p-3">
-                    <p className="text-sm font-semibold text-sacred-brown mb-2">
+                  <div className="bg-muted border border-border/40 rounded-lg p-3">
+                    <p className="text-sm font-semibold text-foreground mb-2">
                       {t('auto.forResultPerson1name')}
                     </p>
-                    <ul className="space-y-2 text-sm text-cosmic-text">
+                    <ul className="space-y-2 text-sm text-foreground">
                       {getMilanRemedies(true).slice(0, 2).map((item, idx) => (
                         <li key={`p1-${idx}`}>{idx + 1}. {item}</li>
                       ))}
                     </ul>
                   </div>
 
-                  <div className="bg-sacred-cream border border-sacred-gold/40 rounded-lg p-3">
-                    <p className="text-sm font-semibold text-sacred-brown mb-2">
+                  <div className="bg-muted border border-border/40 rounded-lg p-3">
+                    <p className="text-sm font-semibold text-foreground mb-2">
                       {t('auto.forResultPerson2name')}
                     </p>
-                    <ul className="space-y-2 text-sm text-cosmic-text">
+                    <ul className="space-y-2 text-sm text-foreground">
                       {getMilanRemedies(false).slice(0, 2).map((item, idx) => (
                         <li key={`p2-${idx}`}>{idx + 1}. {item}</li>
                       ))}

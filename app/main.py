@@ -1,7 +1,10 @@
 """AstroRattan — FastAPI application entry point."""
+import logging
 import os
 import time
 from contextlib import asynccontextmanager
+
+logger = logging.getLogger(__name__)
 
 # Sentry — initialize before FastAPI if DSN is set
 _sentry_dsn = os.getenv("SENTRY_DSN", "")
@@ -9,7 +12,7 @@ if _sentry_dsn:
     import sentry_sdk
     sentry_sdk.init(dsn=_sentry_dsn, traces_sample_rate=0.1, profiles_sample_rate=0.1)
 
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -52,9 +55,9 @@ async def lifespan(app: FastAPI):
                 generate_daily_horoscopes()
                 seed_weekly_horoscopes()
             except Exception as e:
-                print(f"[startup] Background init error: {e}")
+                logger.error("[startup] Background init error: %s", e)
         else:
-            print("[startup] Skipping background seeding (AUTO_SEED=false).")
+            logger.info("[startup] Skipping background seeding (AUTO_SEED=false).")
             
     threading.Thread(target=_background_init, daemon=True).start()
     yield

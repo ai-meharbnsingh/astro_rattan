@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/lib/i18n';
 import { translatePlanet, translateSign } from '@/lib/backend-translations';
 import { api } from '@/lib/api';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
+import { Heading } from '@/components/ui/heading';
 
 interface RetrogradeStationsSectionProps {
   kundliId: string;
@@ -21,7 +23,7 @@ export default function RetrogradeStationsSection({ kundliId }: RetrogradeStatio
     try {
       const result = await api.get(`/api/kundli/${kundliId}/retrograde-stations?year=${yr}`);
       setData(result);
-    } catch (e) { console.error(e); }
+    } catch { /* ignored */ }
     setLoading(false);
   };
 
@@ -38,11 +40,11 @@ export default function RetrogradeStationsSection({ kundliId }: RetrogradeStatio
   const planets = ['Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn'];
 
   return (
-    <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4 mt-4">
+    <div className="bg-muted rounded-xl border border-border p-4 mt-4">
       <div className="flex items-center justify-between mb-3">
-        <h4 className="font-display font-semibold text-sacred-brown">
+        <Heading as={4} variant={4}>
           {t('auto.planetRetrogressionD')}
-        </h4>
+        </Heading>
         <div className="flex items-center gap-2">
           <Button
             size="sm"
@@ -52,7 +54,7 @@ export default function RetrogradeStationsSection({ kundliId }: RetrogradeStatio
           >
             ←
           </Button>
-          <span className="text-sm font-mono font-semibold" style={{ color: 'var(--ink)' }}>{year}</span>
+          <span className="text-sm font-mono font-semibold" className="text-foreground">{year}</span>
           <Button
             size="sm"
             variant="outline"
@@ -66,43 +68,43 @@ export default function RetrogradeStationsSection({ kundliId }: RetrogradeStatio
 
       {loading ? (
         <div className="flex items-center justify-center py-8">
-          <Loader2 className="w-5 h-5 animate-spin text-sacred-gold" />
-          <span className="ml-2 text-sm text-cosmic-text">{t('common.loading')}</span>
+          <Loader2 className="w-5 h-5 animate-spin text-primary" />
+          <span className="ml-2 text-sm text-foreground">{t('common.loading')}</span>
         </div>
       ) : data?.stations ? (
         <div className="overflow-x-auto">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-slate-100">
-                <th className="text-left p-2 font-medium text-slate-600">{t('auto.planet')}</th>
-                <th className="text-left p-2 font-medium text-slate-600">{t('auto.station')}</th>
-                <th className="text-left p-2 font-medium text-slate-600">{t('auto.date')}</th>
-                <th className="text-left p-2 font-medium text-slate-600">{t('auto.time')}</th>
-                <th className="text-left p-2 font-medium text-slate-600">{t('auto.sign')}</th>
-                <th className="text-center p-2 font-medium text-slate-600">{t('auto.degree')}</th>
-              </tr>
-            </thead>
-            <tbody>
+          <Table className="w-full text-sm border-collapse">
+            <TableHeader>
+              <TableRow className="bg-slate-100">
+                <TableHead className="text-left p-2 font-medium text-muted-foreground">{t('auto.planet')}</TableHead>
+                <TableHead className="text-left p-2 font-medium text-muted-foreground">{t('auto.station')}</TableHead>
+                <TableHead className="text-left p-2 font-medium text-muted-foreground">{t('auto.date')}</TableHead>
+                <TableHead className="text-left p-2 font-medium text-muted-foreground">{t('auto.time')}</TableHead>
+                <TableHead className="text-left p-2 font-medium text-muted-foreground">{t('auto.sign')}</TableHead>
+                <TableHead className="text-center p-2 font-medium text-muted-foreground">{t('auto.degree')}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {planets.map(planet => {
                 const stations = data.stations[planet] || [];
                 if (stations.length === 0) {
                   return (
-                    <tr key={planet} className="border-b border-slate-100">
-                      <td className="p-2 font-semibold">{translatePlanet(planet, language)}</td>
-                      <td colSpan={5} className="p-2 text-slate-400 text-center">
+                    <TableRow key={planet} className="border-b border-slate-100">
+                      <TableCell className="p-2 font-semibold">{translatePlanet(planet, language)}</TableCell>
+                      <TableCell colSpan={5} className="p-2 text-muted-foreground text-center">
                         {t('auto.noRetrogressionThisY')}
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   );
                 }
                 return stations.map((s: any, i: number) => (
-                  <tr key={`${planet}-${i}`} className="border-b border-slate-100">
+                  <TableRow key={`${planet}-${i}`} className="border-b border-slate-100">
                     {i === 0 && (
-                      <td className="p-2 font-semibold" rowSpan={stations.length}>
+                      <TableCell className="p-2 font-semibold" rowSpan={stations.length}>
                         {translatePlanet(planet, language)}
-                      </td>
+                      </TableCell>
                     )}
-                    <td className="p-2">
+                    <TableCell className="p-2">
                       <span
                         className="text-sm px-2 py-0.5 rounded-full font-medium"
                         style={{
@@ -114,16 +116,16 @@ export default function RetrogradeStationsSection({ kundliId }: RetrogradeStatio
                           ? (t('auto.retrograde'))
                           : (t('auto.direct'))}
                       </span>
-                    </td>
-                    <td className="p-2 font-mono text-sm">{s.date}</td>
-                    <td className="p-2 font-mono text-sm">{s.datetime ? s.datetime.split(' ')[1] : '—'}</td>
-                    <td className="p-2">{translateSign(s.sign, language)}</td>
-                    <td className="p-2 text-center font-mono">{s.sign_degree}°</td>
-                  </tr>
+                    </TableCell>
+                    <TableCell className="p-2 font-mono text-sm">{s.date}</TableCell>
+                    <TableCell className="p-2 font-mono text-sm">{s.datetime ? s.datetime.split(' ')[1] : '—'}</TableCell>
+                    <TableCell className="p-2">{translateSign(s.sign, language)}</TableCell>
+                    <TableCell className="p-2 text-center font-mono">{s.sign_degree}°</TableCell>
+                  </TableRow>
                 ));
               })}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       ) : null}
     </div>

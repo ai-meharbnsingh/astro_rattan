@@ -212,7 +212,7 @@ export default function LalKitabChandraChaalanaTab() {
                 <span className="text-xs font-bold text-sacred-gold min-w-[40px]">
                   {t('auto.dayTaskDay')}
                 </span>
-                <p className="text-xs text-cosmic-text/80 leading-snug">
+                <p className="text-xs text-foreground/80 leading-snug">
                   {isHi ? task.hi : task.en}
                 </p>
               </div>
@@ -322,7 +322,7 @@ export default function LalKitabChandraChaalanaTab() {
               {t(`lk.chandra.category${todayTask.category.charAt(0).toUpperCase() + todayTask.category.slice(1)}`)}
             </span>
           </div>
-          <p className="text-sm text-cosmic-text leading-relaxed mb-4">
+          <p className="text-sm text-foreground leading-relaxed mb-4">
             {isHi ? todayTask.hi : todayTask.en}
           </p>
           {isTodayDone ? (
@@ -353,7 +353,7 @@ export default function LalKitabChandraChaalanaTab() {
           onChange={(e) => setJournalNote(e.target.value)}
           placeholder={t('lk.chandra.journalPlaceholder')}
           rows={3}
-          className="w-full px-3 py-2.5 rounded-xl border border-sacred-gold/20 bg-white/40 text-sm text-cosmic-text placeholder:text-gray-400 resize-none focus:outline-none focus:border-sacred-gold/50"
+          className="w-full px-3 py-2.5 rounded-xl border border-sacred-gold/20 bg-white/40 text-sm text-foreground placeholder:text-gray-400 resize-none focus:outline-none focus:border-sacred-gold/50"
         />
         <button
           onClick={saveEntry}
@@ -371,7 +371,7 @@ export default function LalKitabChandraChaalanaTab() {
             {journalEntries.slice(0, 5).map((entry, idx) => (
               <div key={idx} className="p-3 rounded-xl bg-sacred-gold/5 border border-sacred-gold/10">
                 <p className="text-xs text-gray-400 mb-1">{entry.date}</p>
-                <p className="text-sm text-cosmic-text/80 leading-snug">{entry.note}</p>
+                <p className="text-sm text-foreground/80 leading-snug">{entry.note}</p>
               </div>
             ))}
           </div>

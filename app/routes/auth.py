@@ -1,8 +1,10 @@
 """Auth routes — register, login, get current user, profile management."""
-import json
+import logging
 import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
 from slowapi import Limiter
@@ -75,7 +77,7 @@ def _send_otp_email(email: str, otp: str) -> bool:
                     s.sendmail(smtp_user, [email], msg.as_string())
             return True
         except Exception as e:
-            print(f"[OTP] SMTP failed for {email[:3]}***@***: {e}")
+            logger.warning("[OTP] SMTP failed for %s***@***: %s", email[:3], e)
 
     # Fallback to Resend API
     api_key = os.getenv("RESEND_API_KEY", "")
@@ -91,10 +93,10 @@ def _send_otp_email(email: str, otp: str) -> bool:
             })
             return True
         except Exception as e:
-            print(f"[OTP] Resend failed for {email[:3]}***@***: {e}")
+            logger.warning("[OTP] Resend failed for %s***@***: %s", email[:3], e)
 
     # Dev fallback — log to console
-    print(f"[OTP] Code sent to {email[:3]}***@*** (dev mode)")
+    logger.info("[OTP] Code sent to %s***@*** (dev mode)", email[:3])
     return True
 
 
@@ -126,18 +128,20 @@ def send_otp(
     if existing:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already registered")
 
+    import hashlib
     otp = _generate_otp()
+    otp_hash = hashlib.sha256(otp.encode()).hexdigest()
     expires_at = (datetime.now(tz=timezone.utc) + timedelta(minutes=10)).isoformat()
 
     # Remove any previous OTPs for this email
     db.execute("DELETE FROM email_verifications WHERE email = %s", (body.email,))
     db.execute(
         "INSERT INTO email_verifications (email, otp, expires_at) VALUES (%s, %s, %s)",
-        (body.email, otp, expires_at),
+        (body.email, otp_hash, expires_at),
     )
     db.commit()
 
-    # Send OTP via SMTP
+    # Send OTP via SMTP (send the plaintext OTP to user, store only hash)
     sent = _send_otp_email(body.email, otp)
     if not sent:
         raise HTTPException(
@@ -162,7 +166,7 @@ def verify_otp(
     if not row:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No verification pending for this email")
 
-    # Check expiry — handle both string (Neon) and datetime (local PG) types
+    # Check expiry — handle both string and datetime types
     expires_at = row["expires_at"]
     if isinstance(expires_at, str):
         expires_at = datetime.fromisoformat(expires_at)
@@ -183,7 +187,9 @@ def verify_otp(
     db.execute("UPDATE email_verifications SET attempts = attempts + 1 WHERE id = %s", (row["id"],))
     db.commit()
 
-    if row["otp"] != body.otp:
+    import hashlib
+    submitted_hash = hashlib.sha256(body.otp.encode()).hexdigest()
+    if row["otp"] != submitted_hash:
         remaining = 5 - row["attempts"] - 1
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -245,13 +251,18 @@ def register(
     return TokenResponse(user=user, token=token, refresh_token=refresh)
 
 
-@router.post("/register-astrologer", status_code=status.HTTP_201_CREATED, response_model=TokenResponse)
+@router.post("/register-astrologer", status_code=status.HTTP_201_CREATED)
 def register_astrologer(
     body: AstrologerRegisterRequest,
     background_tasks: BackgroundTasks,
     db: Any = Depends(get_db),
 ):
-    """Register a new astrologer account. Requires a verified email_token from /verify-otp."""
+    """Register a new astrologer account (pending admin approval).
+
+    Creates the user with role='pending_astrologer'. An admin must activate
+    the account via the admin panel before the astrologer can log in with
+    full privileges.
+    """
     _verify_email_token(body.email_token, body.email)
 
     row = db.execute("SELECT id FROM users WHERE email = %s", (body.email,)).fetchone()
@@ -261,7 +272,7 @@ def register_astrologer(
     pw_hash = hash_password(body.password)
     db.execute(
         """INSERT INTO users (email, password_hash, name, role, phone)
-           VALUES (%s, %s, %s, 'astrologer', %s)""",
+           VALUES (%s, %s, %s, 'pending_astrologer', %s)""",
         (body.email, pw_hash, body.name, body.phone),
     )
     db.commit()
@@ -272,10 +283,10 @@ def register_astrologer(
         (body.email,),
     ).fetchone()
 
-    # Create astrologer profile entry
+    # Create astrologer profile entry (inactive until admin approves)
     db.execute(
-        """INSERT INTO astrologers (user_id, display_name, specializations, experience_years, per_minute_rate, languages)
-           VALUES (%s, %s, %s, %s, %s, %s)""",
+        """INSERT INTO astrologers (user_id, display_name, specializations, experience_years, per_minute_rate, languages, is_available)
+           VALUES (%s, %s, %s, %s, %s, %s, false)""",
         (
             user_row["id"],
             body.display_name or body.name,
@@ -287,22 +298,11 @@ def register_astrologer(
     )
     db.commit()
 
-    user = UserResponse(
-        id=user_row["id"],
-        email=user_row["email"],
-        name=user_row["name"],
-        role=user_row["role"],
-        phone=user_row["phone"],
-        date_of_birth=user_row["date_of_birth"],
-        gender=user_row["gender"],
-        city=user_row["city"],
-        avatar_url=user_row["avatar_url"],
-        created_at=user_row["created_at"],
-    )
-    token = create_token({"sub": user.id, "email": user.email, "role": user.role})
-    refresh = create_refresh_token({"sub": user.id})
-    # Email service removed - welcome email disabled
-    return TokenResponse(user=user, token=token, refresh_token=refresh)
+    return {
+        "message": "Astrologer registration submitted. Your account is pending admin approval.",
+        "email": user_row["email"],
+        "status": "pending_astrologer",
+    }
 
 
 @router.post("/login", status_code=status.HTTP_200_OK, response_model=TokenResponse)
@@ -350,17 +350,20 @@ def refresh_token(body: RefreshTokenRequest, db: Any = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token")
 
     user_id = payload.get("sub")
+    token_tv = payload.get("tv", 0)
     row = db.execute(
-        """SELECT id, email, role, is_active FROM users WHERE id = %s""",
+        """SELECT id, email, role, is_active, COALESCE(token_version, 0) as token_version FROM users WHERE id = %s""",
         (user_id,),
     ).fetchone()
     if not row:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
     if row["is_active"] is not None and not row["is_active"]:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account deactivated")
+    if row["token_version"] > token_tv:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token revoked")
 
-    new_token = create_token({"sub": row["id"], "email": row["email"], "role": row["role"]})
-    new_refresh = create_refresh_token({"sub": row["id"]})
+    new_token = create_token({"sub": row["id"], "email": row["email"], "role": row["role"]}, token_version=row["token_version"])
+    new_refresh = create_refresh_token({"sub": row["id"]}, token_version=row["token_version"])
     return {"token": new_token, "refresh_token": new_refresh}
 
 
@@ -552,16 +555,18 @@ def forgot_password(
         # Don't reveal whether email exists
         return {"message": "If this email is registered, a reset code has been sent."}
 
+    import hashlib
     otp = _generate_otp()
+    otp_hash = hashlib.sha256(otp.encode()).hexdigest()
     expires_at = (datetime.now(tz=timezone.utc) + timedelta(minutes=10)).isoformat()
     db.execute("DELETE FROM email_verifications WHERE email = %s", (body.email,))
     db.execute(
         "INSERT INTO email_verifications (email, otp, expires_at) VALUES (%s, %s, %s)",
-        (body.email, otp, expires_at),
+        (body.email, otp_hash, expires_at),
     )
     db.commit()
 
-    _send_otp_email(body.email, otp)  # reuses the same SMTP/Resend/dev fallback
+    _send_otp_email(body.email, otp)  # send plaintext to user, store only hash
 
     return {"message": "If this email is registered, a reset code has been sent."}
 
@@ -588,9 +593,19 @@ def reset_password(
     if expires_at.tzinfo is None:
         expires_at = expires_at.replace(tzinfo=timezone.utc)
     if datetime.now(tz=timezone.utc) > expires_at:
+        db.execute("DELETE FROM email_verifications WHERE email = %s", (body.email,))
+        db.commit()
         raise HTTPException(status_code=400, detail="Reset code expired. Please request a new one.")
 
-    if row["otp"] != body.otp:
+    # Enforce max attempts (same as verify-otp)
+    if row["attempts"] >= 5:
+        db.execute("DELETE FROM email_verifications WHERE email = %s", (body.email,))
+        db.commit()
+        raise HTTPException(status_code=429, detail="Too many attempts. Please request a new reset code.")
+
+    import hashlib
+    submitted_hash = hashlib.sha256(body.otp.encode()).hexdigest()
+    if row["otp"] != submitted_hash:
         db.execute("UPDATE email_verifications SET attempts = attempts + 1 WHERE id = %s", (row["id"],))
         db.commit()
         raise HTTPException(status_code=400, detail="Invalid code.")

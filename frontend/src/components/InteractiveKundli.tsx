@@ -653,7 +653,7 @@ function PlanetBadge({
         fill={isHovered ? 'var(--parchment)' : color}
         fontSize={13}
         fontWeight="bold"
-        fontFamily="var(--font-sacred, Inter, sans-serif)"
+        fontFamily="var(--, Inter, sans-serif)"
         style={{ pointerEvents: 'none', transition: 'fill 0.2s ease' }}
       >
         {label}
@@ -731,14 +731,14 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
       x, y: adjustedY,
       content: (
         <div className="space-y-1.5">
-          <div className="font-display font-bold text-sacred-gold text-sm">{t(`planet.${p.planet}`)}</div>
-          <div className="text-sm text-cosmic-text">
+          <div className="font-bold text-sacred-gold text-sm">{t(`planet.${p.planet}`)}</div>
+          <div className="text-sm text-foreground">
             {ZODIAC_NUMBERS[p.sign] || ''} {p.sign} {p.sign_degree?.toFixed(1)}&deg;
           </div>
-          <div className="text-sm text-cosmic-text">{t('table.nakshatra')}: {p.nakshatra || t('common.noData')}</div>
-          <div className="text-sm text-cosmic-text">{t('table.house')}: {p.house}</div>
+          <div className="text-sm text-foreground">{t('table.nakshatra')}: {p.nakshatra || t('common.noData')}</div>
+          <div className="text-sm text-foreground">{t('table.house')}: {p.house}</div>
           <div className="text-sm" style={{ color: strength.color }}>{strength.label}</div>
-          <div className="text-sm text-cosmic-text">{t('table.aspects')}: {aspects.join(', ')}</div>
+          <div className="text-sm text-foreground">{t('table.aspects')}: {aspects.join(', ')}</div>
         </div>
       ),
     });
@@ -751,12 +751,12 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
       x, y: adjustedY,
       content: (
         <div className="space-y-1.5">
-          <div className="font-display font-bold text-sacred-gold text-sm">
+          <div className="font-bold text-sacred-gold text-sm">
             {t('table.house')} {house}
           </div>
-          <div className="text-sm text-cosmic-text">{t(`kundli.house${house}`)}</div>
+          <div className="text-sm text-foreground">{t(`kundli.house${house}`)}</div>
           {housePlanets.length > 0 && (
-            <div className="text-sm text-cosmic-text">
+            <div className="text-sm text-foreground">
               {t('table.planet')}: {housePlanets.map((p) => t(`planet.${p.planet}`)).join(', ')}
             </div>
           )}
@@ -808,7 +808,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           width={CELL_SIZE * 4}
           height={CELL_SIZE * 4}
           rx={4}
-          fill="var(--sacred-purple)"
+          fill="var(--sacred-gray-light)"
         />
 
         {/* Center area label */}
@@ -818,7 +818,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           textAnchor="middle"
           fill="var(--aged-gold-dim)"
           fontSize={13}
-          fontFamily="var(--font-sacred, Inter, sans-serif)"
+          fontFamily="var(--, Inter, sans-serif)"
           
         >
           {t('chart.rasi')}
@@ -829,7 +829,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           textAnchor="middle"
           fill="var(--aged-gold-dim)"
           fontSize={9}
-          fontFamily="var(--font-sacred, Inter, sans-serif)"
+          fontFamily="var(--, Inter, sans-serif)"
           
         >
           {t('chart.southIndian')}
@@ -1078,7 +1078,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                 fill={JHORA_LINE}
                 fontSize={isTrapezoid ? 20 : 16}
                 fontWeight="bold"
-                fontFamily="var(--font-sacred, Inter, sans-serif)"
+                fontFamily="var(--, Inter, sans-serif)"
                 
               >
                 {rashiNum}
@@ -1118,7 +1118,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                       fill={getPlanetColor(p.planet)}
                       fontSize={fontSize}
                       fontWeight="bold"
-                      fontFamily="var(--font-sacred, Inter, sans-serif)"
+                      fontFamily="var(--, Inter, sans-serif)"
                       style={{ cursor: 'pointer' }}
                       onClick={(e) => { e.stopPropagation(); onPlanetClick?.(p); }}
                     >
@@ -1142,8 +1142,8 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           onClick={() => setChartStyle('north')}
           className="px-4 py-1.5 text-sm font-semibold rounded-l-md border transition-all duration-200"
           style={{
-            fontFamily: 'var(--font-sacred, Inter, sans-serif)',
-            background: chartStyle === 'north' ? 'var(--aged-gold-dim)' : 'var(--sacred-purple)',
+            fontFamily: 'var(--, Inter, sans-serif)',
+            background: chartStyle === 'north' ? 'var(--aged-gold-dim)' : 'var(--sacred-gray-light)',
             color: chartStyle === 'north' ? 'var(--parchment)' : 'var(--ink-light)',
             borderColor: 'var(--aged-gold-dim)',
           }}
@@ -1154,8 +1154,8 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           onClick={() => setChartStyle('south')}
           className="px-4 py-1.5 text-sm font-semibold rounded-r-md border transition-all duration-200"
           style={{
-            fontFamily: 'var(--font-sacred, Inter, sans-serif)',
-            background: chartStyle === 'south' ? 'var(--aged-gold-dim)' : 'var(--sacred-purple)',
+            fontFamily: 'var(--, Inter, sans-serif)',
+            background: chartStyle === 'south' ? 'var(--aged-gold-dim)' : 'var(--sacred-gray-light)',
             color: chartStyle === 'south' ? 'var(--parchment)' : 'var(--ink-light)',
             borderColor: 'var(--aged-gold-dim)',
           }}
@@ -1187,7 +1187,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
             maxWidth: 220,
           }}
         >
-          <div className="bg-cosmic-bg backdrop-blur-sm border border-sacred-gold rounded-lg p-3 shadow-lg">
+          <div className="bg-background backdrop-blur-sm border border-sacred-gold rounded-lg p-3 shadow-lg">
             {tooltip.content}
           </div>
         </div>
@@ -1200,7 +1200,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
 export function ChartLegend() {
   const { t } = useTranslation();
   return (
-    <div className="flex flex-wrap gap-x-4 gap-y-1 justify-center text-sm mt-2 px-2" style={{ color: 'var(--aged-gold)', fontFamily: 'var(--font-sacred, Inter, sans-serif)' }}>
+    <div className="flex flex-wrap gap-x-4 gap-y-1 justify-center text-sm mt-2 px-2" style={{ color: 'var(--aged-gold)', fontFamily: 'var(--, Inter, sans-serif)' }}>
       <span><strong>*</strong> {t('planet.retrograde')}</span>
       <span><strong>^</strong> {t('planet.combust')}</span>
       <span><strong>{'\u25A1'}</strong> {t('planet.vargottama')}</span>

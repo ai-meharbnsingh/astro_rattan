@@ -3,6 +3,8 @@ import InteractiveKundli, { type PlanetData, type ChartData } from '@/components
 import { PLANET_ASPECTS, toDMS } from '@/components/kundli/kundli-utils';
 import { translatePlanet, translateSign, translateLabel, translateNakshatra } from '@/lib/backend-translations';
 import type { SidePanelState } from '@/hooks/useKundliData';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
+import { Heading } from '@/components/ui/heading';
 
 interface PlanetsTabProps {
   planets: any[];
@@ -35,16 +37,16 @@ export default function PlanetsTab({
       {/* Side Panel */}
       <div className="flex-1 min-w-0">
         {sidePanel ? (
-          <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-5 animate-in fade-in slide-in-from-right-4 duration-300">
+          <div className="bg-muted rounded-xl border border-border p-5 animate-in fade-in slide-in-from-right-4 duration-300">
             <div className="flex items-center justify-between mb-4">
-              <h4 className="font-display font-bold text-sacred-brown text-lg">
+              <Heading as={4} variant={4}>
                 {sidePanel.type === 'planet'
                   ? `${translatePlanet(sidePanel.planet?.planet || '', language)}${(sidePanel.planet?.status || '').toLowerCase().includes('retrograde') ? ' (R)' : ''} — ${t('kundli.details')}`
                   : t('kundli.houseDetails')}
-              </h4>
+              </Heading>
               <button
                 onClick={() => setSidePanel(null)}
-                className="text-cosmic-text hover:text-sacred-brown transition-colors"
+                className="text-foreground hover:text-foreground transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -54,7 +56,7 @@ export default function PlanetsTab({
               const p = sidePanel.planet;
               const status = p.status?.toLowerCase() || '';
               const strengthLabel = status.includes('exalted') ? 'Exalted' : status.includes('debilitated') ? 'Debilitated' : status.includes('own') ? 'Own Sign' : p.status || t('kundli.transit');
-              const strengthColor = status.includes('exalted') ? 'text-green-500' : status.includes('debilitated') ? 'text-red-500' : status.includes('own') ? 'text-blue-500' : 'text-cosmic-text';
+              const strengthColor = status.includes('exalted') ? 'text-green-500' : status.includes('debilitated') ? 'text-red-500' : status.includes('own') ? 'text-blue-500' : 'text-foreground';
               const aspects = (PLANET_ASPECTS[p.planet] || [7]).map((offset) => {
                 const targetHouse = ((p.house - 1 + offset) % 12) + 1;
                 return `${t('table.house')} ${targetHouse}`;
@@ -63,37 +65,37 @@ export default function PlanetsTab({
               return (
                 <div className="space-y-3">
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-cosmic-card rounded-lg p-3">
-                      <p className="text-sm text-cosmic-text">{t('kundli.sign')}</p>
-                      <p className="font-semibold text-sacred-brown">{translateSign(p.sign, language)}</p>
+                    <div className="bg-card rounded-lg p-3">
+                      <p className="text-sm text-foreground">{t('kundli.sign')}</p>
+                      <p className="font-semibold text-foreground">{translateSign(p.sign, language)}</p>
                     </div>
-                    <div className="bg-cosmic-card rounded-lg p-3">
-                      <p className="text-sm text-cosmic-text">{t('kundli.degree')}</p>
-                      <p className="font-semibold text-sacred-brown">{p.sign_degree != null ? toDMS(p.sign_degree) : '\u2014'}</p>
+                    <div className="bg-card rounded-lg p-3">
+                      <p className="text-sm text-foreground">{t('kundli.degree')}</p>
+                      <p className="font-semibold text-foreground">{p.sign_degree != null ? toDMS(p.sign_degree) : '\u2014'}</p>
                     </div>
-                    <div className="bg-cosmic-card rounded-lg p-3">
-                      <p className="text-sm text-cosmic-text">{t('kundli.house')}</p>
-                      <p className="font-semibold text-sacred-brown">{p.house}</p>
+                    <div className="bg-card rounded-lg p-3">
+                      <p className="text-sm text-foreground">{t('kundli.house')}</p>
+                      <p className="font-semibold text-foreground">{p.house}</p>
                     </div>
-                    <div className="bg-cosmic-card rounded-lg p-3">
-                      <p className="text-sm text-cosmic-text">{t('kundli.nakshatra')}</p>
-                      <p className="font-semibold text-sacred-brown">
+                    <div className="bg-card rounded-lg p-3">
+                      <p className="text-sm text-foreground">{t('kundli.nakshatra')}</p>
+                      <p className="font-semibold text-foreground">
                         {translateNakshatra(p.nakshatra, language) || t('common.noData')}
                         {p.nakshatra_pada ? ` (${t('auto.pada')} ${p.nakshatra_pada})` : ''}
                       </p>
                     </div>
                   </div>
-                  <div className="bg-cosmic-card rounded-lg p-3">
-                    <p className="text-sm text-cosmic-text">{t('kundli.strength')}</p>
+                  <div className="bg-card rounded-lg p-3">
+                    <p className="text-sm text-foreground">{t('kundli.strength')}</p>
                     <p className={`font-semibold ${strengthColor}`}>{translateLabel(strengthLabel, language)}</p>
                   </div>
-                  <div className="bg-cosmic-card rounded-lg p-3">
-                    <p className="text-sm text-cosmic-text">{t('kundli.aspects')}</p>
-                    <p className="font-semibold text-sacred-brown text-sm">{aspects.join(', ')}</p>
+                  <div className="bg-card rounded-lg p-3">
+                    <p className="text-sm text-foreground">{t('kundli.aspects')}</p>
+                    <p className="font-semibold text-foreground text-sm">{aspects.join(', ')}</p>
                   </div>
-                  <div className="bg-cosmic-card rounded-lg p-3">
-                    <p className="text-sm text-cosmic-text">{t('kundli.housePlacement')}</p>
-                    <p className="text-sm text-sacred-brown">
+                  <div className="bg-card rounded-lg p-3">
+                    <p className="text-sm text-foreground">{t('kundli.housePlacement')}</p>
+                    <p className="text-sm text-foreground">
                       {translatePlanet(p.planet, language)} — {t('kundli.house')} {p.house} ({HOUSE_SIGNIFICANCE[p.house] || t('common.noData')})
                     </p>
                   </div>
@@ -104,94 +106,94 @@ export default function PlanetsTab({
             {sidePanel.type === 'house' && (
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-cosmic-card rounded-lg p-3">
-                    <p className="text-sm text-cosmic-text">{t('kundli.houseNumber')}</p>
-                    <p className="font-semibold text-sacred-brown">{sidePanel.house}</p>
+                  <div className="bg-card rounded-lg p-3">
+                    <p className="text-sm text-foreground">{t('kundli.houseNumber')}</p>
+                    <p className="font-semibold text-foreground">{sidePanel.house}</p>
                   </div>
-                  <div className="bg-cosmic-card rounded-lg p-3">
-                    <p className="text-sm text-cosmic-text">{t('kundli.sign')}</p>
-                    <p className="font-semibold text-sacred-brown">{translateSign(sidePanel.sign || '', language)}</p>
+                  <div className="bg-card rounded-lg p-3">
+                    <p className="text-sm text-foreground">{t('kundli.sign')}</p>
+                    <p className="font-semibold text-foreground">{translateSign(sidePanel.sign || '', language)}</p>
                   </div>
                 </div>
-                <div className="bg-cosmic-card rounded-lg p-3">
-                  <p className="text-sm text-cosmic-text">{t('kundli.significance')}</p>
-                  <p className="font-semibold text-sacred-brown">
+                <div className="bg-card rounded-lg p-3">
+                  <p className="text-sm text-foreground">{t('kundli.significance')}</p>
+                  <p className="font-semibold text-foreground">
                     {HOUSE_SIGNIFICANCE[sidePanel.house || 0] || t('common.noData')}
                   </p>
                 </div>
-                <div className="bg-cosmic-card rounded-lg p-3">
-                  <p className="text-sm text-cosmic-text mb-2">{t('kundli.planetsInHouse')}</p>
+                <div className="bg-card rounded-lg p-3">
+                  <p className="text-sm text-foreground mb-2">{t('kundli.planetsInHouse')}</p>
                   {(sidePanel.planets || []).length > 0 ? (
                     <div className="space-y-1">
                       {(sidePanel.planets || []).map((p) => (
                         <button
                           key={p.planet}
-                          className="w-full text-left text-sm text-sacred-brown hover:text-sacred-gold transition-colors flex items-center gap-2"
+                          className="w-full text-left text-sm text-foreground hover:text-primary transition-colors flex items-center gap-2"
                           onClick={() => setSidePanel({ type: 'planet', planet: p })}
                         >
-                          <span className="w-2 h-2 rounded-full bg-sacred-gold" />
+                          <span className="w-2 h-2 rounded-full bg-muted" />
                           {translatePlanet(p.planet, language)}{(p.status || '').toLowerCase().includes('retrograde') ? '*' : ''} ({translateSign(p.sign, language)} {p.sign_degree != null ? toDMS(p.sign_degree) : '\u2014'})
                         </button>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm text-cosmic-text">{t('kundli.noPlanets')}</p>
+                    <p className="text-sm text-foreground">{t('kundli.noPlanets')}</p>
                   )}
                 </div>
               </div>
             )}
           </div>
         ) : (
-          <div className="bg-sacred-cream rounded-xl border border-dashed border-sacred-gold p-8 flex flex-col items-center justify-center h-full min-h-[200px]">
-            <Sparkles className="w-8 h-8 text-sacred-gold mb-3" />
-            <p className="text-cosmic-text text-sm text-center">
+          <div className="bg-muted rounded-xl border border-dashed border-border p-8 flex flex-col items-center justify-center h-full min-h-[200px]">
+            <Sparkles className="w-8 h-8 text-primary mb-3" />
+            <p className="text-foreground text-sm text-center">
               {t('kundli.clickInfo')}
             </p>
           </div>
         )}
 
         {/* Planet table */}
-        <div className="mt-6 overflow-x-auto rounded-xl border border-sacred-gold">
-          <table className="w-full text-xs">
-            <thead className="bg-sacred-cream">
-              <tr>
-                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
-                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.sign')}</th>
-                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.house')}</th>
-                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.nakshatra')}</th>
-                <th className="text-left p-1.5 text-sacred-gold-dark font-medium">{t('table.status')}</th>
-              </tr>
-            </thead>
-            <tbody>
+        <div className="mt-6 overflow-x-auto rounded-xl border border-border">
+          <Table className="w-full text-xs">
+            <TableHeader className="bg-muted">
+              <TableRow>
+                <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.planet')}</TableHead>
+                <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.sign')}</TableHead>
+                <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.house')}</TableHead>
+                <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.nakshatra')}</TableHead>
+                <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.status')}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {planets.map((planet: any, index: number) => (
-                <tr
+                <TableRow
                   key={index}
-                  className={`border-t border-sacred-gold cursor-pointer transition-colors ${
+                  className={`border-t border-border cursor-pointer transition-colors ${
                     sidePanel?.type === 'planet' && sidePanel.planet?.planet === planet.planet
-                      ? 'bg-sacred-gold'
-                      : 'hover:bg-sacred-gold/5'
+                      ? 'bg-muted'
+                      : 'hover:bg-muted/5'
                   }`}
                   onClick={() => handlePlanetClick(planet)}
                 >
-                  <td className="p-1.5 text-sacred-brown font-medium">
+                  <TableCell className="p-1.5 text-foreground font-medium">
                     {translatePlanet(planet.planet, language)}
                     {(planet.status || '').toLowerCase().includes('retrograde') && <span className="text-red-500 ml-0.5" title={t('kundli.retrograde')}>*</span>}
-                  </td>
-                  <td className="p-1.5 text-cosmic-text">{translateSign(planet.sign, language)}</td>
-                  <td className="p-1.5 text-cosmic-text">{planet.house}</td>
-                  <td className="p-1.5 text-cosmic-text">
+                  </TableCell>
+                  <TableCell className="p-1.5 text-foreground">{translateSign(planet.sign, language)}</TableCell>
+                  <TableCell className="p-1.5 text-foreground">{planet.house}</TableCell>
+                  <TableCell className="p-1.5 text-foreground">
                     {translateNakshatra(planet.nakshatra, language) || '\u2014'}
                     {planet.nakshatra_pada ? ` (${t('auto.p')}${planet.nakshatra_pada})` : ''}
-                  </td>
-                  <td className="p-1.5">
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-100 text-green-800' : 'bg-cosmic-surface text-cosmic-text'}`}>
+                  </TableCell>
+                  <TableCell className="p-1.5">
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-100 text-green-800' : 'bg-card text-foreground'}`}>
                       {translateLabel(planet.status, language)}
                     </span>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       </div>
     </div>

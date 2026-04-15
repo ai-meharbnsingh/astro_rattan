@@ -1,5 +1,6 @@
 import { AlertTriangle, CheckCircle2, Sparkles, Sunrise } from 'lucide-react';
 import type { FullPanchangData } from '@/sections/Panchang';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 
 interface Props {
   panchang: FullPanchangData;
@@ -104,118 +105,118 @@ export default function MuhuratTab({ panchang, language, t }: Props) {
     <div className="space-y-3">
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
         <div className="rounded-lg border border-green-500/30 p-2">
-          <h3 className="font-bold text-cosmic-text-primary mb-1 flex items-center gap-1">
+          <h3 className="font-bold text-foreground mb-1 flex items-center gap-1">
             <CheckCircle2 className="h-4 w-4" />
             {t('auto.auspiciousMuhuratsGo')}
           </h3>
-          <table className="w-full table-fixed text-xs sm:text-sm">
-            <thead>
-              <tr className="bg-green-500/15">
-                <th className="text-left px-2 py-1 text-green-700 font-semibold w-[28%]">{t('auto.muhurta')}</th>
-                <th className="text-left px-2 py-1 text-green-700 font-semibold w-[18%]">{t('auto.start')}</th>
-                <th className="text-left px-2 py-1 text-green-700 font-semibold w-[18%]">{t('auto.end')}</th>
-                <th className="text-left px-2 py-1 text-green-700 font-semibold w-[36%]">{t('auto.notes')}</th>
-              </tr>
-            </thead>
-            <tbody>
+          <Table className="w-full table-fixed text-xs sm:text-sm">
+            <TableHeader>
+              <TableRow className="bg-green-500/15">
+                <TableHead className="text-left px-2 py-1 text-green-700 font-semibold w-[28%]">{t('auto.muhurta')}</TableHead>
+                <TableHead className="text-left px-2 py-1 text-green-700 font-semibold w-[18%]">{t('auto.start')}</TableHead>
+                <TableHead className="text-left px-2 py-1 text-green-700 font-semibold w-[18%]">{t('auto.end')}</TableHead>
+                <TableHead className="text-left px-2 py-1 text-green-700 font-semibold w-[36%]">{t('auto.notes')}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {auspiciousPeriods.map((period) => (
-                <tr key={period.key} className="border-b border-cosmic-border/50 last:border-0 align-top">
-                  <td className="px-2 py-1 font-medium text-cosmic-text-primary whitespace-normal break-words">{period.name}</td>
-                  <td className="px-2 py-1 text-cosmic-text-primary">{period.period?.start || '--'}</td>
-                  <td className="px-2 py-1 text-cosmic-text-primary">{period.period?.end || '--'}</td>
-                  <td className="px-2 py-1 text-cosmic-text-secondary whitespace-normal break-words">{period.desc}</td>
-                </tr>
+                <TableRow key={period.key} className="border-b border/50 last:border-0 align-top">
+                  <TableCell className="px-2 py-1 font-medium text-foreground whitespace-normal break-words">{period.name}</TableCell>
+                  <TableCell className="px-2 py-1 text-foreground">{period.period?.start || '--'}</TableCell>
+                  <TableCell className="px-2 py-1 text-foreground">{period.period?.end || '--'}</TableCell>
+                  <TableCell className="px-2 py-1 text-muted-foreground whitespace-normal break-words">{period.desc}</TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
 
         <div className="rounded-lg border border-red-500/30 p-2">
-          <h3 className="font-bold text-cosmic-text-primary mb-1 flex items-center gap-1">
+          <h3 className="font-bold text-foreground mb-1 flex items-center gap-1">
             <AlertTriangle className="h-4 w-4" />
             {t('auto.inauspiciousTimesAvo')}
           </h3>
-          <table className="w-full table-fixed text-xs sm:text-sm">
-            <thead>
-              <tr className="bg-red-500/15">
-                <th className="text-left px-2 py-1 text-red-700 font-semibold w-[28%]">{t('auto.period')}</th>
-                <th className="text-left px-2 py-1 text-red-700 font-semibold w-[18%]">{t('auto.start')}</th>
-                <th className="text-left px-2 py-1 text-red-700 font-semibold w-[18%]">{t('auto.end')}</th>
-                <th className="text-left px-2 py-1 text-red-700 font-semibold w-[36%]">{t('auto.notes')}</th>
-              </tr>
-            </thead>
-            <tbody>
+          <Table className="w-full table-fixed text-xs sm:text-sm">
+            <TableHeader>
+              <TableRow className="bg-red-500/15">
+                <TableHead className="text-left px-2 py-1 text-red-700 font-semibold w-[28%]">{t('auto.period')}</TableHead>
+                <TableHead className="text-left px-2 py-1 text-red-700 font-semibold w-[18%]">{t('auto.start')}</TableHead>
+                <TableHead className="text-left px-2 py-1 text-red-700 font-semibold w-[18%]">{t('auto.end')}</TableHead>
+                <TableHead className="text-left px-2 py-1 text-red-700 font-semibold w-[36%]">{t('auto.notes')}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {inauspiciousPeriods.map((period) => (
-                <tr key={period.key} className="border-b border-cosmic-border/50 last:border-0 align-top">
-                  <td className="px-2 py-1 font-medium text-cosmic-text-primary whitespace-normal break-words">{period.name}</td>
-                  <td className="px-2 py-1 text-cosmic-text-primary">{period.period?.start || '--'}</td>
-                  <td className="px-2 py-1 text-cosmic-text-primary">{period.period?.end || '--'}</td>
-                  <td className="px-2 py-1 text-cosmic-text-secondary whitespace-normal break-words">{period.desc}</td>
-                </tr>
+                <TableRow key={period.key} className="border-b border/50 last:border-0 align-top">
+                  <TableCell className="px-2 py-1 font-medium text-foreground whitespace-normal break-words">{period.name}</TableCell>
+                  <TableCell className="px-2 py-1 text-foreground">{period.period?.start || '--'}</TableCell>
+                  <TableCell className="px-2 py-1 text-foreground">{period.period?.end || '--'}</TableCell>
+                  <TableCell className="px-2 py-1 text-muted-foreground whitespace-normal break-words">{period.desc}</TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
         {specialYogas.length > 0 && (
           <div className="rounded-lg border border-sacred-gold/30 p-2">
-            <h3 className="font-bold text-cosmic-text-primary mb-1 flex items-center gap-1">
+            <h3 className="font-bold text-foreground mb-1 flex items-center gap-1">
               <Sparkles className="h-4 w-4" />
               {t('auto.specialYogas')}
             </h3>
-            <table className="w-full table-fixed text-xs sm:text-sm">
-              <thead>
-                <tr className="bg-sacred-gold/15">
-                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[30%]">{t('auto.yoga')}</th>
-                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[20%]">{t('auto.start')}</th>
-                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[20%]">{t('auto.end')}</th>
-                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[30%]">{t('auto.status')}</th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table className="w-full table-fixed text-xs sm:text-sm">
+              <TableHeader>
+                <TableRow className="bg-sacred-gold/15">
+                  <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[30%]">{t('auto.yoga')}</TableHead>
+                  <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[20%]">{t('auto.start')}</TableHead>
+                  <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[20%]">{t('auto.end')}</TableHead>
+                  <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[30%]">{t('auto.status')}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {specialYogas.map((yoga) => (
-                  <tr key={yoga.key} className="border-b border-cosmic-border/50 last:border-0 align-top">
-                    <td className="px-2 py-1 font-medium text-cosmic-text-primary whitespace-normal break-words">{yoga.name}</td>
-                    <td className="px-2 py-1 text-cosmic-text-primary">{yoga.data?.start || '--'}</td>
-                    <td className="px-2 py-1 text-cosmic-text-primary">{yoga.data?.end || '--'}</td>
-                    <td className="px-2 py-1 text-green-600 whitespace-normal break-words">
+                  <TableRow key={yoga.key} className="border-b border/50 last:border-0 align-top">
+                    <TableCell className="px-2 py-1 font-medium text-foreground whitespace-normal break-words">{yoga.name}</TableCell>
+                    <TableCell className="px-2 py-1 text-foreground">{yoga.data?.start || '--'}</TableCell>
+                    <TableCell className="px-2 py-1 text-foreground">{yoga.data?.end || '--'}</TableCell>
+                    <TableCell className="px-2 py-1 text-green-600 whitespace-normal break-words">
                       {t('auto.activeToday')}
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
         )}
 
         {sandhyaRows.length > 0 && (
-          <div className="rounded-lg border border-cosmic-border p-2">
-            <h3 className="font-bold text-cosmic-text-primary mb-1 flex items-center gap-1">
+          <div className="rounded-lg border p-2">
+            <h3 className="font-bold text-foreground mb-1 flex items-center gap-1">
               <Sunrise className="h-4 w-4 text-orange-500" />
               {t('auto.sandhyaTimes')}
             </h3>
-            <table className="w-full table-fixed text-xs sm:text-sm">
-              <thead>
-                <tr className="bg-sacred-gold/15">
-                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[28%]">{t('auto.period')}</th>
-                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[18%]">{t('auto.start')}</th>
-                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[18%]">{t('auto.end')}</th>
-                  <th className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[36%]">{t('auto.notes')}</th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table className="w-full table-fixed text-xs sm:text-sm">
+              <TableHeader>
+                <TableRow className="bg-sacred-gold/15">
+                  <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[28%]">{t('auto.period')}</TableHead>
+                  <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[18%]">{t('auto.start')}</TableHead>
+                  <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[18%]">{t('auto.end')}</TableHead>
+                  <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[36%]">{t('auto.notes')}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {sandhyaRows.map((row) => (
-                  <tr key={row.key} className="border-b border-cosmic-border/50 last:border-0 align-top">
-                    <td className="px-2 py-1 font-medium text-cosmic-text-primary whitespace-normal break-words">{row.name}</td>
-                    <td className="px-2 py-1 text-cosmic-text-primary">{row.period?.start || '--'}</td>
-                    <td className="px-2 py-1 text-cosmic-text-primary">{row.period?.end || '--'}</td>
-                    <td className="px-2 py-1 text-cosmic-text-secondary whitespace-normal break-words">{row.desc}</td>
-                  </tr>
+                  <TableRow key={row.key} className="border-b border/50 last:border-0 align-top">
+                    <TableCell className="px-2 py-1 font-medium text-foreground whitespace-normal break-words">{row.name}</TableCell>
+                    <TableCell className="px-2 py-1 text-foreground">{row.period?.start || '--'}</TableCell>
+                    <TableCell className="px-2 py-1 text-foreground">{row.period?.end || '--'}</TableCell>
+                    <TableCell className="px-2 py-1 text-muted-foreground whitespace-normal break-words">{row.desc}</TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
         )}
       </div>

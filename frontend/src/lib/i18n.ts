@@ -8,7 +8,7 @@ const translations: Record<Language, TranslationMap> = {
   en: {
     'auto.planetPositionsUnava': 'Planet positions unavailable',
     'auto.dashaDataUnavailable': 'Dasha data unavailable',
-    'auto.textCosmicTextSecond': 'text-cosmic-text-secondary',
+    'auto.textCosmicTextSecond': 'text-muted-foreground',
     'auto.noHoroscopeDataAvail': 'No horoscope data available',
     'auto.readFullHoroscope': 'Read full horoscope →',
     'auto.selectASignToViewYou': 'Select a sign to view your horoscope',

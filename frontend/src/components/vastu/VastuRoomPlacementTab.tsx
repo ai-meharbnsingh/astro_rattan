@@ -1,5 +1,6 @@
 import { useTranslation } from '@/lib/i18n';
 import { HomeIcon, CheckCircle, XCircle, AlertCircle, ChevronRight } from 'lucide-react';
+import { Heading } from "@/components/ui/heading";
 
 interface Props { data: any; }
 
@@ -22,7 +23,7 @@ export default function VastuRoomPlacementTab({ data }: Props) {
           <HomeIcon className="w-5 h-5" />
           {t('auto.vastuRoomPlacementGu')}
         </h3>
-        <p className="text-sm text-cosmic-text/60">
+        <p className="text-sm text-foreground/60">
           {t('auto.idealDirectionForEac')}
         </p>
       </div>
@@ -32,7 +33,7 @@ export default function VastuRoomPlacementTab({ data }: Props) {
           <div className="flex items-center gap-2 mb-4">
             <span className="text-2xl">{ROOM_ICONS[key] || '🏠'}</span>
             <div>
-              <h4 className="text-base font-bold text-cosmic-text">{isHi ? room.room_name_hi : room.room_name_en}</h4>
+              <Heading as={4} variant={4}>{isHi ? room.room_name_hi : room.room_name_en}</Heading>
             </div>
           </div>
 
@@ -67,7 +68,7 @@ export default function VastuRoomPlacementTab({ data }: Props) {
                     </span>
                   ))
                 ) : (
-                  <span className="text-sm text-cosmic-text/40">—</span>
+                  <span className="text-sm text-foreground/40">—</span>
                 )}
               </div>
             </div>
@@ -90,8 +91,8 @@ export default function VastuRoomPlacementTab({ data }: Props) {
 
           {/* Reason */}
           <div className="bg-white/5 rounded-lg p-3 mb-3">
-            <p className="text-sm text-cosmic-text/60 mb-1">{t('auto.reason')}</p>
-            <p className="text-sm text-cosmic-text">{isHi ? room.reason_hi : room.reason_en}</p>
+            <p className="text-sm text-foreground/60 mb-1">{t('auto.reason')}</p>
+            <p className="text-sm text-foreground">{isHi ? room.reason_hi : room.reason_en}</p>
           </div>
 
           {/* Tips */}
@@ -100,7 +101,7 @@ export default function VastuRoomPlacementTab({ data }: Props) {
             {(isHi ? room.tips_hi : room.tips_en).map((tip: string, ti: number) => (
               <div key={ti} className="flex items-start gap-1.5">
                 <ChevronRight className="w-3 h-3 text-sacred-gold mt-0.5 flex-shrink-0" />
-                <p className="text-sm text-cosmic-text">{tip}</p>
+                <p className="text-sm text-foreground">{tip}</p>
               </div>
             ))}
           </div>

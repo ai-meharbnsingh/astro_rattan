@@ -27,26 +27,6 @@ export function isPuterAvailable(): boolean {
 }
 
 /**
- * Send a single-shot chat request via Puter.js.
- * Returns the assistant's text content.
- */
-export async function puterChat(
-  prompt: string,
-  systemPrompt?: string,
-): Promise<string> {
-  if (!isPuterAvailable()) {
-    throw new Error('Puter.js not loaded');
-  }
-
-  const messages: Array<{ role: string; content: string }> = [];
-  if (systemPrompt) messages.push({ role: 'system', content: systemPrompt });
-  messages.push({ role: 'user', content: prompt });
-
-  const response = await window.puter!.ai.chat(messages, { model: 'gpt-4o' });
-  return response?.message?.content || response?.text || '';
-}
-
-/**
  * Stream a chat response via Puter.js.
  * Calls `onChunk` with the *accumulated* text so the UI can display it
  * progressively. Returns the full text when done.
@@ -79,7 +59,7 @@ export async function puterChatStream(
     return full;
   } catch (streamErr) {
     // Fallback: try non-streaming if stream fails
-    console.warn('Puter stream failed, trying non-streaming:', streamErr);
+    /* stream failed — falling back to non-streaming */
     const response = await window.puter!.ai.chat(messages, { model: 'claude-3-5-sonnet' });
     const text = response?.message?.content || response?.text || '';
     onChunk?.(text);

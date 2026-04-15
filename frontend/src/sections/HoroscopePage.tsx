@@ -136,21 +136,21 @@ export default function HoroscopePage() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Date + Time Header */}
-        <div className="rounded-xl border border-cosmic-border bg-cosmic-card p-3 mb-4">
+        <div className="rounded-xl border border-border bg-card p-3 mb-4">
           <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-            <span className="font-semibold text-cosmic-text">{dateDisplay}</span>
-            <span className="text-sm text-cosmic-text-secondary">{currentTime.toLocaleTimeString(t('auto.enIN'))}</span>
+            <span className="font-semibold text-foreground">{dateDisplay}</span>
+            <span className="text-sm text-muted-foreground">{currentTime.toLocaleTimeString(t('auto.enIN'))}</span>
           </div>
           <input
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
-            className="w-full px-2 py-1.5 rounded-lg bg-white border border-cosmic-border text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none"
+            className="w-full px-2 py-1.5 rounded-lg bg-white border border-border text-foreground text-sm focus:border-sacred-gold focus:outline-none"
           />
         </div>
 
         {/* Sign Tabs — equally spaced grid of 12 */}
-        <div className="rounded-xl border border-cosmic-border bg-cosmic-card p-2 mb-4">
+        <div className="rounded-xl border border-border bg-card p-2 mb-4">
           <div className="grid grid-cols-6 sm:grid-cols-12 gap-1">
             {SIGNS.map((s) => (
               <button
@@ -159,7 +159,7 @@ export default function HoroscopePage() {
                 className={`flex flex-col items-center gap-0.5 py-2 rounded-lg text-xs transition-all ${
                   selectedSign === s.id
                     ? 'bg-sacred-gold/[0.08] text-sacred-gold-dark shadow-sm border border-sacred-gold/30'
-                    : 'text-cosmic-text-secondary hover:bg-sacred-gold/10'
+                    : 'text-muted-foreground hover:bg-sacred-gold/10'
                 }`}
               >
                 <img
@@ -175,7 +175,7 @@ export default function HoroscopePage() {
 
         {/* Tab Navigation */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 h-auto p-1 bg-cosmic-card rounded-xl">
+          <TabsList className="grid w-full grid-cols-4 h-auto p-1 bg-card rounded-xl">
             {[
               { id: 'daily', label: t('auto.daily'), icon: Sun },
               { id: 'weekly', label: t('auto.weekly'), icon: Calendar },

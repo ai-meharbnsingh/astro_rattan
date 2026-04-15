@@ -14,7 +14,7 @@ Provides:
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from app.astro_engine import calculate_planet_positions, _datetime_to_jd, _HAS_SWE
 
@@ -51,9 +51,11 @@ TAJAKA_CYCLE = ["Sun", "Venus", "Mercury", "Moon", "Saturn", "Jupiter", "Mars"]
 def _sun_sidereal_longitude(jd: float) -> float:
     """Get sidereal Sun longitude for a Julian Day."""
     if _HAS_SWE:
-        swe.set_sid_mode(swe.SIDM_LAHIRI)
-        pos, _ = swe.calc_ut(jd, swe.SUN)
-        ayanamsa = swe.get_ayanamsa(jd)
+        from app.astro_engine import _SWE_LOCK
+        with _SWE_LOCK:
+            swe.set_sid_mode(swe.SIDM_LAHIRI)
+            pos, _ = swe.calc_ut(jd, swe.SUN)
+            ayanamsa = swe.get_ayanamsa(jd)
         return (pos[0] - ayanamsa) % 360.0
     # Fallback: approximate
     from app.astro_engine import _approx_sun_longitude, _approx_ayanamsa
@@ -153,7 +155,7 @@ def calculate_mudda_dasha(year_lord: str, solar_return_date: str) -> List[Dict[s
     try:
         start_dt = datetime.strptime(solar_return_date, "%Y-%m-%d")
     except (ValueError, TypeError):
-        start_dt = datetime.now()
+        start_dt = datetime.now(timezone.utc)
 
     periods = []
     current_dt = start_dt
@@ -218,18 +220,19 @@ def calculate_varshphal(
     sr_jd = find_solar_return_jd(natal_sun_lon, target_year, birth_month, birth_day)
     sr_dt = _jd_to_datetime(sr_jd)
 
-    # Local time adjustment
-    sr_local = sr_dt + timedelta(hours=tz_offset)
-    sr_date_str = sr_local.strftime("%Y-%m-%d")
-    sr_time_str = sr_local.strftime("%H:%M:%S")
+    # sr_dt is in UTC — pass directly with tz_offset=0 to avoid double conversion
+    # (calculate_planet_positions internally subtracts tz_offset, so passing local time
+    # with tz_offset would subtract it twice)
+    sr_date_str = sr_dt.strftime("%Y-%m-%d")
+    sr_time_str = sr_dt.strftime("%H:%M:%S")
 
-    # Calculate full chart for Solar Return moment
+    # Calculate full chart for Solar Return moment (UTC)
     varshphal_chart = calculate_planet_positions(
         birth_date=sr_date_str,
         birth_time=sr_time_str,
         latitude=latitude,
         longitude=longitude,
-        tz_offset=tz_offset,
+        tz_offset=0.0,
     )
 
     # Muntha
@@ -246,7 +249,7 @@ def calculate_varshphal(
     mudda_dasha = calculate_mudda_dasha(year_lord, sr_date_str)
 
     # Current Mudda Dasha
-    today_str = datetime.now().strftime("%Y-%m-%d")
+    today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     current_mudda = None
     for md in mudda_dasha:
         if md["start_date"] <= today_str <= md["end_date"]:

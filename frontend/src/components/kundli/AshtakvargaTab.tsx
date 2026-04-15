@@ -1,6 +1,8 @@
 import { Loader2 } from 'lucide-react';
 import { translatePlanet, translateSign, translateSignAbbr } from '@/lib/backend-translations';
 import GeneralRemedies from './GeneralRemedies';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
+import { Heading } from '@/components/ui/heading';
 
 const ALL_SIGNS  = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
 const ALL_ABBR   = ['Ari','Tau','Gem','Can','Leo','Vir','Lib','Sco','Sag','Cap','Aqu','Pis'];
@@ -94,21 +96,21 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
     <>
       {loadingAshtakvarga ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
-          <span className="ml-2 text-cosmic-text">{t('kundli.loadingAshtakvarga')}</span>
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+          <span className="ml-2 text-foreground">{t('kundli.loadingAshtakvarga')}</span>
         </div>
       ) : ashtakvargaData ? (
         <div className="space-y-6">
           {/* SAV Chart — Custom North Indian style with large bindu numbers */}
-          <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
-            <h4 className="text-lg font-semibold text-gray-800 mb-4">{t('section.sarvashtakvarga')} {t('kundli.chart')}</h4>
+          <div className="bg-muted rounded-xl p-5 border border-border">
+            <Heading as={4} variant={4} className="mb-4">{t('section.sarvashtakvarga')} {t('kundli.chart')}</Heading>
             <SAVKundliChart savData={ashtakvargaData.sarvashtakvarga || {}} language={language} lagnaSign={result?.chart_data?.ascendant?.sign || 'Aries'} />
-            <p className="text-sm text-center text-cosmic-text mt-2">{t('ashtakvarga.savDescription')}</p>
+            <p className="text-sm text-center text-foreground mt-2">{t('ashtakvarga.savDescription')}</p>
           </div>
 
           {/* SAV Bar Chart */}
-          <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
-            <h4 className="text-lg font-semibold text-gray-800 mb-4">{t('section.sarvashtakvarga')}</h4>
+          <div className="bg-muted rounded-xl p-5 border border-border">
+            <Heading as={4} variant={4} className="mb-4">{t('section.sarvashtakvarga')}</Heading>
             <div className="overflow-x-auto">
             <div className="flex items-end gap-2 h-48 min-w-[400px]">
               {signs.map((sign) => {
@@ -118,8 +120,8 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                 const isStrong = points >= 28;
                 return (
                   <div key={sign} className="flex-1 flex flex-col items-center gap-1">
-                    <span className="text-sm font-medium text-sacred-brown">{points}</span>
-                    <div className="w-full bg-sacred-gold rounded-t-md relative" style={{ height: '140px' }}>
+                    <span className="text-sm font-medium text-foreground">{points}</span>
+                    <div className="w-full bg-muted rounded-t-md relative" className="h-[140px]">
                       <div
                         className="absolute bottom-0 w-full rounded-t-md transition-all"
                         style={{
@@ -128,7 +130,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                         }}
                       />
                     </div>
-                    <span className="text-sm text-cosmic-text truncate w-full text-center" title={translateSign(sign, language)}>
+                    <span className="text-sm text-foreground truncate w-full text-center" title={translateSign(sign, language)}>
                       {translateSignAbbr(sign, language)}
                     </span>
                   </div>
@@ -136,7 +138,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
               })}
             </div>
             </div>
-            <div className="flex items-center gap-4 mt-3 text-sm text-cosmic-text">
+            <div className="flex items-center gap-4 mt-3 text-sm text-foreground">
               <div className="flex items-center gap-1">
                 <div className="w-3 h-3 rounded" style={{ backgroundColor: 'var(--aged-gold-dim)' }} />
                 <span>{t('kundli.strong')} (&ge;28)</span>
@@ -149,9 +151,9 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
           </div>
 
           {/* Bhinna Ashtakvarga Charts — Parashara's Light format: table + diamond chart per planet */}
-          <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
-            <h4 className="text-lg font-semibold text-gray-800 mb-2">{t('auto.bhinnaAshtakvargaCha')}</h4>
-            <p className="text-sm text-gray-600 mb-4">{t('auto.individualPlanetBind')} (Parashara Light format)</p>
+          <div className="bg-muted rounded-xl p-5 border border-border">
+            <Heading as={4} variant={4} className="mb-2">{t('auto.bhinnaAshtakvargaCha')}</Heading>
+            <p className="text-sm text-muted-foreground mb-4">{t('auto.individualPlanetBind')} (Parashara Light format)</p>
             <div className="grid grid-cols-1 gap-5">
               {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Lagna'].map((planet) => {
                 const bindus = ashtakvargaData.planet_bindus?.[planet] || {};
@@ -182,13 +184,13 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                 ];
 
                 return (
-                  <div key={planet} className="bg-white rounded-lg border border-sacred-gold overflow-hidden">
+                  <div key={planet} className="bg-white rounded-lg border border-border overflow-hidden">
                     {/* Planet header */}
-                    <div className="bg-sacred-gold px-4 py-2 border-b border-sacred-gold flex items-center justify-between">
-                      <h5 className="font-display font-semibold text-sacred-brown text-sm">
+                    <div className="bg-muted px-4 py-2 border-b border-border flex items-center justify-between">
+                      <Heading as={5} variant={5}>
                         {translatePlanet(planet, language)}
-                      </h5>
-                      <span className="text-sm font-semibold text-sacred-gold-dark">{t('auto.total')}: {total}</span>
+                      </Heading>
+                      <span className="text-sm font-semibold text-primary">{t('auto.total')}: {total}</span>
                     </div>
                     <div className="flex flex-col lg:flex-row">
                       {/* LEFT: Full contributor matrix table */}
@@ -197,59 +199,59 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                           const contributors = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Lagna'];
                           const contribData = ashtakvargaData.planet_details?.[planet]?.contributors;
                           return (
-                            <table className="w-full text-sm border-collapse">
-                              <thead>
-                                <tr>
-                                  <th className="text-left p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold whitespace-nowrap">{t('auto.contributor')}</th>
+                            <Table className="w-full text-sm border-collapse">
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead className="text-left p-1 text-primary font-medium border-b border-border whitespace-nowrap">{t('auto.contributor')}</TableHead>
                                   {signs.map((s, i) => (
-                                    <th key={i} className="text-center p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold min-w-[26px] text-xs">
+                                    <TableHead key={i} className="text-center p-1 text-primary font-medium border-b border-border min-w-[26px] text-xs">
                                       {language === 'hi' ? hindiSignAbbr[i] : signAbbr[i]}
-                                    </th>
+                                    </TableHead>
                                   ))}
-                                  <th className="text-center p-1 text-sacred-gold-dark font-bold border-b border-sacred-gold">&Sigma;</th>
-                                </tr>
-                              </thead>
-                              <tbody>
+                                  <TableHead className="text-center p-1 text-primary font-bold border-b border-border">&Sigma;</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
                                 {contributors.map((contrib) => {
                                   const row = contribData?.[contrib] || {};
                                   const rowVals = signs.map((s) => row[s] || 0);
                                   const rowTotal = rowVals.reduce((a, b) => a + b, 0);
                                   return (
-                                    <tr key={contrib} className="border-t border-sacred-gold hover:bg-sacred-gold/5">
-                                      <td className="p-1 text-sacred-brown font-medium whitespace-nowrap">{translatePlanet(contrib, language)}</td>
+                                    <TableRow key={contrib} className="border-t border-border hover:bg-muted/5">
+                                      <TableCell className="p-1 text-foreground font-medium whitespace-nowrap">{translatePlanet(contrib, language)}</TableCell>
                                       {rowVals.map((v, i) => (
-                                        <td key={i} className="text-center p-1">
-                                          <span className={`inline-block w-5 h-5 leading-5 rounded-sm text-sm font-semibold ${v === 1 ? 'bg-green-100 text-green-800' : 'text-cosmic-text'}`}>
+                                        <TableCell key={i} className="text-center p-1">
+                                          <span className={`inline-block w-5 h-5 leading-5 rounded-sm text-sm font-semibold ${v === 1 ? 'bg-green-100 text-green-800' : 'text-foreground'}`}>
                                             {v}
                                           </span>
-                                        </td>
+                                        </TableCell>
                                       ))}
-                                      <td className="text-center p-1 font-semibold text-sacred-brown">{rowTotal}</td>
-                                    </tr>
+                                      <TableCell className="text-center p-1 font-semibold text-foreground">{rowTotal}</TableCell>
+                                    </TableRow>
                                   );
                                 })}
                                 {/* Bindu total row */}
-                                <tr className="border-t-2 border-sacred-gold bg-sacred-gold">
-                                  <td className="p-1 text-sacred-gold-dark font-bold whitespace-nowrap">{t('auto.bindu')}</td>
+                                <TableRow className="border-t-2 border-border bg-muted">
+                                  <TableCell className="p-1 text-primary font-bold whitespace-nowrap">{t('auto.bindu')}</TableCell>
                                   {vals.map((v, i) => (
-                                    <td key={i} className="text-center p-1">
+                                    <TableCell key={i} className="text-center p-1">
                                       <span
                                         className="inline-block w-6 h-6 leading-6 rounded text-sm font-bold"
                                         style={{ backgroundColor: binduBg(v), color: binduColor(v) }}
                                       >
                                         {v}
                                       </span>
-                                    </td>
+                                    </TableCell>
                                   ))}
-                                  <td className="text-center p-1 font-bold text-sacred-brown">{total}</td>
-                                </tr>
-                              </tbody>
-                            </table>
+                                  <TableCell className="text-center p-1 font-bold text-foreground">{total}</TableCell>
+                                </TableRow>
+                              </TableBody>
+                            </Table>
                           );
                         })()}
                       </div>
                       {/* RIGHT: North Indian diamond chart SVG */}
-                      <div className="flex-shrink-0 flex items-center justify-center p-4 lg:border-l border-t lg:border-t-0 border-sacred-gold">
+                      <div className="flex-shrink-0 flex items-center justify-center p-4 lg:border-l border-t lg:border-t-0 border-border">
                         <svg viewBox="0 0 280 280" className="w-full max-w-[280px] h-auto block">
                           <rect x="2" y="2" width="276" height="276" fill="none" stroke="#c8a96e" strokeWidth="1.5" />
                           <line x1="2" y1="2" x2="278" y2="278" stroke="#c8a96e" strokeWidth="0.75" />
@@ -278,7 +280,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
               })}
             </div>
             {/* Color legend */}
-            <div className="flex items-center gap-4 mt-4 text-sm text-cosmic-text">
+            <div className="flex items-center gap-4 mt-4 text-sm text-foreground">
               <div className="flex items-center gap-1">
                 <div className="w-3 h-3 rounded border" style={{ backgroundColor: '#dcfce7', borderColor: '#86efac' }} />
                 <span>{t('auto.58Strong')}</span>
@@ -294,48 +296,48 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
             </div>
           </div>
 
-          <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
-            <h4 className="text-lg font-semibold text-gray-800 mb-4">{t('section.bhinnashtakvarga')}</h4>
+          <div className="bg-muted rounded-xl p-5 border border-border">
+            <Heading as={4} variant={4} className="mb-4">{t('section.bhinnashtakvarga')}</Heading>
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-sacred-gold">
-                    <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
+              <Table className="w-full text-sm">
+                <TableHeader>
+                  <TableRow className="border-b border-border">
+                    <TableHead className="text-left p-2 text-primary font-medium">{t('table.planet')}</TableHead>
                     {signs.map((s) => (
-                      <th key={s} className="text-center p-2 text-sacred-gold-dark font-medium text-xs">{translateSignAbbr(s, language)}</th>
+                      <TableHead key={s} className="text-center p-2 text-primary font-medium text-xs">{translateSignAbbr(s, language)}</TableHead>
                     ))}
-                    <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('table.total')}</th>
-                  </tr>
-                </thead>
-                <tbody>
+                    <TableHead className="text-center p-2 text-primary font-medium">{t('table.total')}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
                   {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
                     const bindus = ashtakvargaData.planet_bindus?.[planet] || {};
                     const total = signs.reduce((sum, s) => sum + (bindus[s] || 0), 0);
                     return (
-                      <tr key={planet} className="border-t border-sacred-gold hover:bg-sacred-gold/5">
-                        <td className="p-2 text-sacred-brown font-medium">{translatePlanet(planet, language)}</td>
+                      <TableRow key={planet} className="border-t border-border hover:bg-muted/5">
+                        <TableCell className="p-2 text-foreground font-medium">{translatePlanet(planet, language)}</TableCell>
                         {signs.map((s) => {
                           const val = bindus[s] || 0;
                           return (
-                            <td key={s} className="text-center p-2">
-                              <span className={`inline-block w-6 h-6 rounded text-sm leading-6 ${val >= 5 ? 'bg-sacred-gold-dark text-white font-bold' : val <= 2 ? 'bg-red-10 text-wax-red-deep' : 'text-cosmic-text'}`}>
+                            <TableCell key={s} className="text-center p-2">
+                              <span className={`inline-block w-6 h-6 rounded text-sm leading-6 ${val >= 5 ? 'bg-primary text-white font-bold' : val <= 2 ? 'bg-red-10 text-wax-red-deep' : 'text-foreground'}`}>
                                 {val}
                               </span>
-                            </td>
+                            </TableCell>
                           );
                         })}
-                        <td className="text-center p-2 font-semibold text-sacred-brown">{total}</td>
-                      </tr>
+                        <TableCell className="text-center p-2 font-semibold text-foreground">{total}</TableCell>
+                      </TableRow>
                     );
                   })}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             </div>
           </div>
           
-          <div className="bg-sacred-cream rounded-xl p-5 border border-sacred-gold">
-            <h4 className="text-lg font-semibold text-gray-800 mb-2">{t('ashtakvarga.purifiedPoints')}</h4>
-            <p className="text-sm text-gray-600 mb-4">{t('ashtakvarga.purificationDesc')}</p>
+          <div className="bg-muted rounded-xl p-5 border border-border">
+            <Heading as={4} variant={4} className="mb-2">{t('ashtakvarga.purifiedPoints')}</Heading>
+            <p className="text-sm text-muted-foreground mb-4">{t('ashtakvarga.purificationDesc')}</p>
             
             <div className="space-y-8">
               {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
@@ -343,49 +345,49 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                 if (!purified) return null;
 
                 return (
-                  <div key={planet} className="bg-white rounded-lg border border-sacred-gold overflow-hidden">
-                    <div className="bg-sacred-gold px-4 py-2 flex items-center justify-between">
-                      <h5 className="font-display font-semibold text-sacred-brown text-sm">
+                  <div key={planet} className="bg-white rounded-lg border border-border overflow-hidden">
+                    <div className="bg-muted px-4 py-2 flex items-center justify-between">
+                      <Heading as={5} variant={5}>
                         {translatePlanet(planet, language)} - {t('ashtakvarga.purifiedPoints')}
-                      </h5>
-                      <div className="text-sm font-bold text-sacred-gold-dark">
-                        {t('ashtakvarga.shodhyaPinda')}: <span className="text-sacred-brown text-lg">{purified.shodhya_pinda}</span>
+                      </Heading>
+                      <div className="text-sm font-bold text-primary">
+                        {t('ashtakvarga.shodhyaPinda')}: <span className="text-foreground text-lg">{purified.shodhya_pinda}</span>
                       </div>
                     </div>
                     
                     <div className="overflow-x-auto p-3">
-                      <table className="w-full text-sm border-collapse">
-                        <thead>
-                          <tr>
-                            <th className="text-left p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold">{t('auto.process')}</th>
+                      <Table className="w-full text-sm border-collapse">
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="text-left p-1 text-primary font-medium border-b border-border">{t('auto.process')}</TableHead>
                             {signs.map((s, i) => (
-                              <th key={i} className="text-center p-1 text-sacred-gold-dark font-medium border-b border-sacred-gold min-w-[26px] text-xs">
+                              <TableHead key={i} className="text-center p-1 text-primary font-medium border-b border-border min-w-[26px] text-xs">
                                 {translateSignAbbr(s, language)}
-                              </th>
+                              </TableHead>
                             ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr className="border-t border-sacred-gold hover:bg-sacred-gold/5">
-                            <td className="p-1 text-sacred-brown font-medium whitespace-nowrap">{t('ashtakvarga.trikonaShodhana')}</td>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          <TableRow className="border-t border-border hover:bg-muted/5">
+                            <TableCell className="p-1 text-foreground font-medium whitespace-nowrap">{t('ashtakvarga.trikonaShodhana')}</TableCell>
                             {signs.map((s, i) => (
-                              <td key={i} className="text-center p-1 text-cosmic-text font-semibold">
+                              <TableCell key={i} className="text-center p-1 text-foreground font-semibold">
                                 {purified.trikona[s]}
-                              </td>
+                              </TableCell>
                             ))}
-                          </tr>
-                          <tr className="border-t border-sacred-gold hover:bg-sacred-gold/5 bg-sacred-gold/5">
-                            <td className="p-1 text-sacred-brown font-bold whitespace-nowrap">{t('ashtakvarga.ekadhipatyaShodhana')}</td>
+                          </TableRow>
+                          <TableRow className="border-t border-border hover:bg-muted/5 bg-muted/5">
+                            <TableCell className="p-1 text-foreground font-bold whitespace-nowrap">{t('ashtakvarga.ekadhipatyaShodhana')}</TableCell>
                             {signs.map((s, i) => (
-                              <td key={i} className="text-center p-1">
-                                <span className={`inline-block w-6 h-6 leading-6 rounded text-sm font-bold bg-sacred-gold/20 text-sacred-gold-dark`}>
+                              <TableCell key={i} className="text-center p-1">
+                                <span className={`inline-block w-6 h-6 leading-6 rounded text-sm font-bold bg-muted/20 text-primary`}>
                                   {purified.ekadhipatya[s]}
                                 </span>
-                              </td>
+                              </TableCell>
                             ))}
-                          </tr>
-                        </tbody>
-                      </table>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
                     </div>
                   </div>
                 );
@@ -397,7 +399,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
           <GeneralRemedies language={language} t={t} kundliId={ashtakvargaData.kundli_id} />
         </div>
       ) : (
-        <p className="text-center text-cosmic-text py-8">{t('kundli.clickAshtakvargaTab')}</p>
+        <p className="text-center text-foreground py-8">{t('kundli.clickAshtakvargaTab')}</p>
       )}
     </>
   );

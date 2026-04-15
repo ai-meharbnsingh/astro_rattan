@@ -99,9 +99,9 @@
 
 | Service | URL | Status |
 |---------|-----|--------|
-| Backend API | https://astrorattan.vercel.app | Live |
+| Backend API | https://astrorattan.com/api | Live |
 | Frontend | https://astrorattan.com | Live |
-| Database | Neon PostgreSQL (neon-cinnabar-helmet) | Connected |
+| Database | PostgreSQL (Hostinger VPS) | Connected |
 | AI | Gemini 2.0 Flash via httpx | Configured |
 
 ---

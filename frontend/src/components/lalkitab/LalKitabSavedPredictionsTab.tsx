@@ -32,7 +32,7 @@ function formatDate(iso: string | null): string {
 function PredictionSummary({ type, data, isHi }: { type: string; data: Record<string, any>; isHi: boolean }) {
   if (type === 'marriage') {
     return (
-      <div className="space-y-1 text-sm text-cosmic-text/80">
+      <div className="space-y-1 text-sm text-foreground/80">
         <div>
           {t('auto.manglik')}{' '}
           <span className={data.is_manglik ? 'text-red-600 font-medium' : 'text-green-600 font-medium'}>
@@ -50,7 +50,7 @@ function PredictionSummary({ type, data, isHi }: { type: string; data: Record<st
   if (type === 'career') {
     const opts = isHi ? data.career_options : data.career_options_en;
     return (
-      <div className="text-sm text-cosmic-text/80">
+      <div className="text-sm text-foreground/80">
         {Array.isArray(opts) && opts.slice(0, 3).join(', ')}
       </div>
     );
@@ -58,7 +58,7 @@ function PredictionSummary({ type, data, isHi }: { type: string; data: Record<st
   if (type === 'health') {
     const areas = data.vulnerable_areas;
     return (
-      <div className="text-sm text-cosmic-text/80">
+      <div className="text-sm text-foreground/80">
         {isHi
           ? (Array.isArray(areas) && areas.length > 0
               ? areas.slice(0, 2).map((a: any) => a.area_hi).join(', ')
@@ -71,7 +71,7 @@ function PredictionSummary({ type, data, isHi }: { type: string; data: Record<st
   }
   if (type === 'wealth') {
     return (
-      <div className="text-sm text-cosmic-text/80">
+      <div className="text-sm text-foreground/80">
         {isHi
           ? `धन क्षमता: ${data.wealth_potential_hi ?? ''} (${data.wealth_score ?? 0}/100)`
           : `Wealth potential: ${data.wealth_potential_en ?? ''} (${data.wealth_score ?? 0}/100)`}
@@ -177,7 +177,7 @@ export default function LalKitabSavedPredictionsTab({ kundliId }: Props) {
                 {pred.note && (
                   <div className="mt-3 pt-3 border-t border-current/10">
                     <p className="text-xs text-gray-500 mb-1">{t('lk.saved.note')}</p>
-                    <p className="text-sm text-cosmic-text/80 italic">"{pred.note}"</p>
+                    <p className="text-sm text-foreground/80 italic">"{pred.note}"</p>
                   </div>
                 )}
               </div>

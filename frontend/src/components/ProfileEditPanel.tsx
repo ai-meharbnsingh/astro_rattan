@@ -67,10 +67,10 @@ export default function ProfileEditPanel() {
     setPwSaving(false);
   };
 
-  const inputClass = 'w-full px-3 py-2 rounded-lg bg-white border border-cosmic-border text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none';
+  const inputClass = 'w-full px-3 py-2 rounded-lg bg-white border text-foreground text-sm focus:border-sacred-gold focus:outline-none';
 
   return (
-    <div className="border border-sacred-gold rounded-xl p-5 bg-cosmic-bg">
+    <div className="border border-sacred-gold rounded-xl p-5 bg-background">
       <h3 className="text-sm font-semibold uppercase tracking-wider text-sacred-gold-dark mb-4 flex items-center gap-2">
         <User className="w-4 h-4" />
         {l('My Profile', 'मेरी प्रोफ़ाइल')}
@@ -78,19 +78,19 @@ export default function ProfileEditPanel() {
 
       <div className="space-y-3">
         <div>
-          <label className="text-xs text-cosmic-text-secondary mb-1 block">{l('Name', 'नाम')}</label>
+          <label className="text-xs text-muted-foreground mb-1 block">{l('Name', 'नाम')}</label>
           <input type="text" value={name} onChange={e => setName(e.target.value)} className={inputClass} />
         </div>
         <div>
-          <label className="text-xs text-cosmic-text-secondary mb-1 flex items-center gap-1"><Phone className="w-3 h-3" />{l('Phone', 'फ़ोन')}</label>
+          <label className="text-xs text-muted-foreground mb-1 flex items-center gap-1"><Phone className="w-3 h-3" />{l('Phone', 'फ़ोन')}</label>
           <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} className={inputClass} />
         </div>
         <div>
-          <label className="text-xs text-cosmic-text-secondary mb-1 flex items-center gap-1"><Calendar className="w-3 h-3" />{l('Date of Birth', 'जन्म तिथि')}</label>
+          <label className="text-xs text-muted-foreground mb-1 flex items-center gap-1"><Calendar className="w-3 h-3" />{l('Date of Birth', 'जन्म तिथि')}</label>
           <input type="date" value={dob} onChange={e => setDob(e.target.value)} className={inputClass} />
         </div>
         <div>
-          <label className="text-xs text-cosmic-text-secondary mb-1 block">{l('Gender', 'लिंग')}</label>
+          <label className="text-xs text-muted-foreground mb-1 block">{l('Gender', 'लिंग')}</label>
           <select value={gender} onChange={e => setGender(e.target.value)} className={inputClass}>
             <option value="">{l('Select', 'चुनें')}</option>
             <option value="male">{l('Male', 'पुरुष')}</option>
@@ -99,7 +99,7 @@ export default function ProfileEditPanel() {
           </select>
         </div>
         <div>
-          <label className="text-xs text-cosmic-text-secondary mb-1 flex items-center gap-1"><MapPin className="w-3 h-3" />{l('City', 'शहर')}</label>
+          <label className="text-xs text-muted-foreground mb-1 flex items-center gap-1"><MapPin className="w-3 h-3" />{l('City', 'शहर')}</label>
           <input type="text" value={city} onChange={e => setCity(e.target.value)} className={inputClass} />
         </div>
 
@@ -113,7 +113,7 @@ export default function ProfileEditPanel() {
       </div>
 
       {/* Password Change */}
-      <div className="mt-4 pt-4 border-t border-cosmic-border">
+      <div className="mt-4 pt-4 border-t border">
         {!showPwForm ? (
           <button onClick={() => setShowPwForm(true)}
             className="flex items-center gap-2 text-sm text-sacred-gold-dark hover:underline">
@@ -133,7 +133,7 @@ export default function ProfileEditPanel() {
                 {pwSaving ? l('Updating...', 'अपडेट हो रहा...') : l('Update Password', 'पासवर्ड अपडेट करें')}
               </button>
               <button onClick={() => { setShowPwForm(false); setPwMsg(''); }}
-                className="px-3 py-2 border border-cosmic-border text-cosmic-text rounded-lg text-sm">
+                className="px-3 py-2 border text-foreground rounded-lg text-sm">
                 {l('Cancel', 'रद्द')}
               </button>
             </div>
@@ -142,7 +142,7 @@ export default function ProfileEditPanel() {
       </div>
 
       {/* Account info */}
-      <div className="mt-4 pt-3 border-t border-cosmic-border text-xs text-cosmic-text-secondary space-y-1">
+      <div className="mt-4 pt-3 border-t border text-xs text-muted-foreground space-y-1">
         <p>{l('Email', 'ईमेल')}: {user?.email}</p>
         <p>{l('Role', 'भूमिका')}: {user?.role}</p>
       </div>

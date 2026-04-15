@@ -7,6 +7,7 @@ import {
   PLANET_ENEMIES,
 } from './lalkitab-data';
 import { Users, Eye, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 
 interface Props {
   chartData: LalKitabChartData;
@@ -90,7 +91,7 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h2 className="font-sans text-2xl text-sacred-gold flex items-center gap-2">
+        <h2 className="text-2xl text-sacred-gold flex items-center gap-2">
           <Users className="w-6 h-6" />
           {t('lk.relations.title')}
         </h2>
@@ -99,7 +100,7 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
 
       {/* Conjunctions (Yuti) */}
       <section>
-        <h3 className="font-sans text-lg text-sacred-gold mb-4">
+        <h3 className="text-lg text-sacred-gold mb-4">
           {t('lk.relations.conjunction')} ({t('auto.yuti')})
         </h3>
 
@@ -193,39 +194,39 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
 
       {/* Aspects (Drishti) */}
       <section>
-        <h3 className="font-sans text-lg text-sacred-gold mb-4 flex items-center gap-2">
+        <h3 className="text-lg text-sacred-gold mb-4 flex items-center gap-2">
           <Eye className="w-5 h-5" />
           {t('auto.aspectsDrishti')}
         </h3>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="border-b border-sacred-gold/10">
-                <th className="text-left py-2 px-3 text-sacred-gold/70 font-sans font-medium">
+          <Table className="w-full text-sm">
+            <TableHeader>
+              <TableRow className="border-b border-sacred-gold/10">
+                <TableHead className="text-left py-2 px-3 text-sacred-gold/70 font-medium">
                   {t('auto.planet')}
-                </th>
-                <th className="text-left py-2 px-3 text-sacred-gold/70 font-sans font-medium">
+                </TableHead>
+                <TableHead className="text-left py-2 px-3 text-sacred-gold/70 font-medium">
                   {t('auto.inHouse')}
-                </th>
-                <th className="text-left py-2 px-3 text-sacred-gold/70 font-sans font-medium">
+                </TableHead>
+                <TableHead className="text-left py-2 px-3 text-sacred-gold/70 font-medium">
                   {t('auto.aspectsHouses')}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {aspects.map((entry) => (
-                <tr
+                <TableRow
                   key={entry.planet}
                   className="border-b border-sacred-gold/10 last:border-b-0"
                 >
-                  <td className="py-2.5 px-3 text-cosmic-text font-medium">
+                  <TableCell className="py-2.5 px-3 text-foreground font-medium">
                     {getPlanetLabel(entry.planet)}
-                  </td>
-                  <td className="py-2.5 px-3 text-gray-600">
+                  </TableCell>
+                  <TableCell className="py-2.5 px-3 text-gray-600">
                     {entry.fromHouse}
-                  </td>
-                  <td className="py-2.5 px-3">
+                  </TableCell>
+                  <TableCell className="py-2.5 px-3">
                     <div className="flex gap-1.5 flex-wrap">
                       {entry.aspectHouses.map((h) => (
                         <span
@@ -236,11 +237,11 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
                         </span>
                       ))}
                     </div>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       </section>
 
@@ -249,7 +250,7 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
 
       {/* Clash Detection Summary */}
       <section>
-        <h3 className="font-sans text-lg text-sacred-gold mb-4">
+        <h3 className="text-lg text-sacred-gold mb-4">
           {t('auto.clashAnalysis')}
         </h3>
 
@@ -285,7 +286,7 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
                       <CheckCircle className="w-5 h-5 text-green-500 shrink-0" />
                     )}
                     <div>
-                      <p className="text-sm font-medium text-cosmic-text">
+                      <p className="text-sm font-medium text-foreground">
                         {t('auto.house')} {conj.house}:{' '}
                         {conj.planets.map(getPlanetLabel).join(', ')}
                       </p>

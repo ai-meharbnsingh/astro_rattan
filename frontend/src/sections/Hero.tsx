@@ -2,9 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { useTranslation } from '@/lib/i18n';
-import { Users, Grid3X3, Star, User, Phone, Calendar, Clock, MapPin, Sparkles, ChevronRight, Mail } from 'lucide-react';
+import { Users, Grid3X3, Star, User, Phone, Calendar, Clock, MapPin, Sparkles, ChevronRight, Mail, Loader2 } from 'lucide-react';
 import { api } from '@/lib/api';
 import LiveTransitWheel from '@/components/LiveTransitWheel';
+import FreeKundliModal from '@/components/FreeKundliModal';
+import { Heading } from '@/components/ui/heading';
 
 const TAGLINE = { en: 'A complete astrology platform', hi: 'एक पूर्ण ज्योतिष प्लेटफ़ॉर्म' };
 
@@ -72,15 +74,9 @@ export default function Hero() {
 
           {/* Main Title */}
           <div className="hero-title-main opacity-0 mt-0 h-10 sm:h-12">
-            <h1
-              className="text-xl sm:text-2xl lg:text-3xl text-sacred-gold-dark leading-[1.1] transition-opacity duration-500"
-              style={{
-                fontWeight: 700,
-                letterSpacing: '0',
-              }}
-            >
+            <Heading as={1} variant={1} className="text-sacred-gold-dark leading-[1.1] transition-opacity duration-500">
               {language === 'hi' ? TAGLINE.hi : TAGLINE.en}
-            </h1>
+            </Heading>
           </div>
 
         </div>
@@ -97,10 +93,10 @@ export default function Hero() {
                   border: '1px solid rgba(196,97,31,0.35)',
                   boxShadow: '0 4px 20px rgba(196,97,31,0.15), inset 0 1px 0 rgba(255,255,255,0.4)',
                 }}>
-                <h2 className="text-2xl sm:text-[1.75rem] font-bold text-sacred-gold-dark tracking-tight"
+                <Heading as={2} variant={2} className="text-sacred-gold-dark tracking-tight"
                   style={{ textShadow: '0 2px 10px rgba(196,97,31,0.3)' }}>
                   {l('Get your free kundli', 'अपनी मुफ्त कुंडली पाएं')}
-                </h2>
+                </Heading>
               </div>
               <div className="h-1 w-24 rounded-full bg-gradient-to-r from-transparent via-sacred-gold-dark to-transparent mt-2 mx-auto" />
             </div>
@@ -118,31 +114,31 @@ export default function Hero() {
         <div className="hero-stats opacity-0 mt-16">
           <div className="rounded-2xl bg-sacred-gold/5 p-4 sm:p-5">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="rounded-xl border border-sacred-gold/25 bg-cosmic-bg/70 p-3 sm:p-4 flex items-start gap-3">
+              <div className="rounded-xl border border-sacred-gold/25 bg-background/70 p-3 sm:p-4 flex items-start gap-3">
                 <div className="w-8 h-8 rounded-lg bg-sacred-gold/10 text-sacred-gold-dark flex items-center justify-center shrink-0">
                   <Star className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-base font-semibold text-cosmic-text">{l('10,000+ Kundlis Generated', '10,000+ कुंडलियां बनाई गईं')}</p>
-                  <p className="text-xs text-gray-600 mt-0.5">{l('Real usage data', 'वास्तविक उपयोग डेटा')}</p>
+                  <p className="text-base font-semibold text-foreground">{l('10,000+ Kundlis Generated', '10,000+ कुंडलियां बनाई गईं')}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{l('Real usage data', 'वास्तविक उपयोग डेटा')}</p>
                 </div>
               </div>
-              <div className="rounded-xl border border-sacred-gold/25 bg-cosmic-bg/70 p-3 sm:p-4 flex items-start gap-3">
+              <div className="rounded-xl border border-sacred-gold/25 bg-background/70 p-3 sm:p-4 flex items-start gap-3">
                 <div className="w-8 h-8 rounded-lg bg-sacred-gold/10 text-sacred-gold-dark flex items-center justify-center shrink-0">
                   <Users className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-base font-semibold text-cosmic-text">{l('Trusted by Astrologers', 'ज्योतिषियों द्वारा विश्वसनीय')}</p>
-                  <p className="text-xs text-gray-600 mt-0.5">{l('Professional daily workflows', 'पेशेवर दैनिक वर्कफ़्लो')}</p>
+                  <p className="text-base font-semibold text-foreground">{l('Trusted by Astrologers', 'ज्योतिषियों द्वारा विश्वसनीय')}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{l('Professional daily workflows', 'पेशेवर दैनिक वर्कफ़्लो')}</p>
                 </div>
               </div>
-              <div className="rounded-xl border border-sacred-gold/25 bg-cosmic-bg/70 p-3 sm:p-4 flex items-start gap-3">
+              <div className="rounded-xl border border-sacred-gold/25 bg-background/70 p-3 sm:p-4 flex items-start gap-3">
                 <div className="w-8 h-8 rounded-lg bg-sacred-gold/10 text-sacred-gold-dark flex items-center justify-center shrink-0">
                   <Grid3X3 className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-base font-semibold text-cosmic-text">{l('5 Modules in One', 'एक में 5 मॉड्यूल')}</p>
-                  <p className="text-xs text-gray-600 mt-0.5">{l('Single connected platform', 'एकीकृत सिंगल प्लेटफॉर्म')}</p>
+                  <p className="text-base font-semibold text-foreground">{l('5 Modules in One', 'एक में 5 मॉड्यूल')}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{l('Single connected platform', 'एकीकृत सिंगल प्लेटफॉर्म')}</p>
                 </div>
               </div>
             </div>
@@ -165,6 +161,9 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
   const [birthPlace, setBirthPlace] = useState('');
   const [suggestions, setSuggestions] = useState<Array<{ name: string; lat: number; lon: number }>>([]);
   const [selectedPlace, setSelectedPlace] = useState<{ lat: number; lon: number } | null>(null);
+  const [marketingConsent, setMarketingConsent] = useState(false);
+  const [previewData, setPreviewData] = useState<any>(null);
+  const [generating, setGenerating] = useState(false);
   const searchTimer = useRef<ReturnType<typeof setTimeout>>();
 
   const searchPlace = (q: string) => {
@@ -186,18 +185,38 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
     setSuggestions([]);
   };
 
-  const handleGenerate = () => {
-    navigate('/kundli', {
-      state: {
-        prefillName: name, prefillGender: gender, prefillPhone: phone, prefillEmail: email,
-        prefillDate: birthDate, prefillTime: birthTime,
-        prefillPlace: birthPlace,
-        prefillLat: selectedPlace?.lat, prefillLon: selectedPlace?.lon,
-      },
-    });
+  const handleGenerate = async () => {
+    setGenerating(true);
+    try {
+      const data = await api.post('/api/kundli/free-preview', {
+        name,
+        birth_date: birthDate,
+        birth_time: birthTime + ':00',
+        birth_place: birthPlace,
+        latitude: selectedPlace?.lat,
+        longitude: selectedPlace?.lon,
+        timezone_offset: 5.5,
+        gender,
+        phone,
+        email,
+        marketing_consent: marketingConsent,
+      });
+      setPreviewData(data);
+    } catch {
+      // fallback: navigate to /kundli as before
+      navigate('/kundli', {
+        state: {
+          prefillName: name, prefillGender: gender, prefillPhone: phone, prefillEmail: email,
+          prefillDate: birthDate, prefillTime: birthTime,
+          prefillPlace: birthPlace,
+          prefillLat: selectedPlace?.lat, prefillLon: selectedPlace?.lon,
+        },
+      });
+    }
+    setGenerating(false);
   };
 
-  const inputClass = "w-full px-3 py-1.5 pl-9 rounded-lg bg-[#f0ecf8]/40 border border-sacred-gold/50 text-cosmic-text text-sm focus:border-sacred-gold focus:outline-none placeholder:text-sacred-gold-dark/40";
+  const inputClass = "w-full px-3 py-1.5 pl-9 rounded-lg bg-[#f0ecf8]/40 border border-sacred-gold/50 text-foreground text-sm focus:border-sacred-gold focus:outline-none placeholder:text-sacred-gold-dark/40";
 
   return (
     <div className="flex flex-col justify-start gap-3">
@@ -205,7 +224,7 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
       <div className="flex flex-col gap-6">
         {/* Full Name */}
         <div>
-          <label className="text-sm font-semibold text-cosmic-text mb-0 block">{l('Full Name', 'पूरा नाम')}</label>
+          <label className="text-sm font-semibold text-foreground mb-0 block">{l('Full Name', 'पूरा नाम')}</label>
           <div className="relative mt-1">
             <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/50" />
             <input type="text" value={name} onChange={e => setName(e.target.value)}
@@ -216,20 +235,20 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
         {/* Gender + Birth Place */}
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="text-sm font-semibold text-cosmic-text mb-0 block">{l('Gender', 'लिंग')}</label>
+            <label className="text-sm font-semibold text-foreground mb-0 block">{l('Gender', 'लिंग')}</label>
             <div className="flex gap-4 mt-1">
               <button onClick={() => setGender('male')}
-                className={`flex-1 py-1.5 rounded-lg text-sm font-semibold transition-all ${gender === 'male' ? 'bg-sacred-gold-dark text-white' : 'border border-sacred-gold/50 text-cosmic-text'}`}>
+                className={`flex-1 py-1.5 rounded-lg text-sm font-semibold transition-all ${gender === 'male' ? 'bg-sacred-gold-dark text-white' : 'border border-sacred-gold/50 text-foreground'}`}>
                 {l('Male', 'पुरुष')}
               </button>
               <button onClick={() => setGender('female')}
-                className={`flex-1 py-1.5 rounded-lg text-sm font-semibold transition-all ${gender === 'female' ? 'bg-sacred-gold-dark text-white' : 'border border-sacred-gold/50 text-cosmic-text'}`}>
+                className={`flex-1 py-1.5 rounded-lg text-sm font-semibold transition-all ${gender === 'female' ? 'bg-sacred-gold-dark text-white' : 'border border-sacred-gold/50 text-foreground'}`}>
                 {l('Female', 'महिला')}
               </button>
             </div>
           </div>
           <div className="relative">
-            <label className="text-sm font-semibold text-cosmic-text mb-0 block">{l('Birth Place', 'जन्म स्थान')}</label>
+            <label className="text-sm font-semibold text-foreground mb-0 block">{l('Birth Place', 'जन्म स्थान')}</label>
             <div className="relative mt-1">
               <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/50" />
               <input type="text" value={birthPlace} onChange={e => searchPlace(e.target.value)}
@@ -239,7 +258,7 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
               <div className="absolute left-0 right-0 top-full z-30 bg-white border border-sacred-gold/30 rounded-lg shadow-lg max-h-40 overflow-y-auto mt-1">
                 {suggestions.map((s, idx) => (
                   <button key={idx} onClick={() => selectPlace(s)}
-                    className="w-full text-left px-3 py-2 text-xs text-cosmic-text hover:bg-sacred-gold/10 transition-colors">
+                    className="w-full text-left px-3 py-2 text-xs text-foreground hover:bg-sacred-gold/10 transition-colors">
                     {s.name}
                   </button>
                 ))}
@@ -251,14 +270,14 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
         {/* Birth Date + Time */}
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="text-sm font-semibold text-cosmic-text mb-0 block">{l('Birth Date', 'जन्म तिथि')}</label>
+            <label className="text-sm font-semibold text-foreground mb-0 block">{l('Birth Date', 'जन्म तिथि')}</label>
             <div className="relative mt-1">
               <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/50" />
               <input type="date" value={birthDate} onChange={e => setBirthDate(e.target.value)} className={inputClass} />
             </div>
           </div>
           <div>
-            <label className="text-sm font-semibold text-cosmic-text mb-0 block">{l('Birth Time', 'जन्म समय')}</label>
+            <label className="text-sm font-semibold text-foreground mb-0 block">{l('Birth Time', 'जन्म समय')}</label>
             <div className="relative mt-1">
               <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/50" />
               <input type="time" step="1" value={birthTime} onChange={e => setBirthTime(e.target.value)} className={inputClass} />
@@ -266,39 +285,79 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
           </div>
         </div>
 
-        {/* Phone + Email (Optional) */}
+        {/* Phone + Email (Required) */}
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="text-sm font-semibold text-cosmic-text mb-0 block">
-              {l('Phone', 'फ़ोन')} <span className="text-sacred-gold-dark/60 font-normal">{l('(Optional)', '(वैकल्पिक)')}</span>
+            <label className="text-sm font-semibold text-foreground mb-0 block">
+              {l('Phone', '\u092B\u093C\u094B\u0928')} <span className="text-red-500">*</span>
             </label>
             <div className="relative mt-1">
               <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/50" />
-              <input type="tel" value={phone} onChange={e => setPhone(e.target.value)}
-                placeholder={l('Phone number', 'फ़ोन नंबर')} className={inputClass} />
+              <input type="tel" required value={phone} onChange={e => setPhone(e.target.value)}
+                placeholder={l('Phone number', '\u092B\u093C\u094B\u0928 \u0928\u0902\u092C\u0930')} className={inputClass} />
             </div>
           </div>
           <div>
-            <label className="text-sm font-semibold text-cosmic-text mb-0 block">
-              {l('Email', 'ईमेल')} <span className="text-sacred-gold-dark/60 font-normal">{l('(Optional)', '(वैकल्पिक)')}</span>
+            <label className="text-sm font-semibold text-foreground mb-0 block">
+              {l('Email', '\u0908\u092E\u0947\u0932')} <span className="text-red-500">*</span>
             </label>
             <div className="relative mt-1">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/50" />
-              <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-                placeholder={l('Email address', 'ईमेल पता')} className={inputClass} />
+              <input type="email" required value={email} onChange={e => setEmail(e.target.value)}
+                placeholder={l('Email address', '\u0908\u092E\u0947\u0932 \u092A\u0924\u093E')} className={inputClass} />
             </div>
           </div>
         </div>
+
+        {/* Marketing consent */}
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={marketingConsent}
+            onChange={(e) => setMarketingConsent(e.target.checked)}
+            className="w-4 h-4 accent-sacred-gold"
+          />
+          <span className="text-xs text-gray-600">
+            {l('Send me astrological updates & offers', '\u092E\u0941\u091D\u0947 \u091C\u094D\u092F\u094B\u0924\u093F\u0937\u0940\u092F \u0905\u092A\u0921\u0947\u091F \u0914\u0930 \u0911\u092B\u093C\u0930 \u092D\u0947\u091C\u0947\u0902')}
+          </span>
+        </label>
       </div>
 
       {/* Submit */}
-      <button onClick={handleGenerate}
-        disabled={!name || !birthDate || !birthTime || !birthPlace}
-        className="w-full py-2.5 bg-sacred-gold/70 text-sacred-gold-dark rounded-lg font-semibold text-base hover:bg-sacred-gold hover:text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 shrink-0">
-        <Sparkles className="w-4 h-4" />
-        {l('Submit', 'जमा करें')}
-        <ChevronRight className="w-4 h-4" />
-      </button>
+      {(() => {
+        const isFormValid = name && birthDate && birthTime && birthPlace && selectedPlace && phone && email;
+        return (
+          <button onClick={handleGenerate}
+            disabled={!isFormValid || generating}
+            className={`w-full py-2.5 rounded-lg font-semibold text-base transition-all flex items-center justify-center gap-2 shrink-0 ${
+              isFormValid && !generating
+                ? 'bg-sacred-gold hover:bg-sacred-gold-dark text-white cursor-pointer'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}>
+            {generating ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                {l('Generating...', '\u092C\u0928\u093E \u0930\u0939\u0947 \u0939\u0948\u0902...')}
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4" />
+                {l('Submit', '\u091C\u092E\u093E \u0915\u0930\u0947\u0902')}
+                <ChevronRight className="w-4 h-4" />
+              </>
+            )}
+          </button>
+        );
+      })()}
+
+      {/* Free Kundli Preview Modal */}
+      {previewData && (
+        <FreeKundliModal
+          data={previewData}
+          onClose={() => setPreviewData(null)}
+          language={language}
+        />
+      )}
     </div>
   );
 }

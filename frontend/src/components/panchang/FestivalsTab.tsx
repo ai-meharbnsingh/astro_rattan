@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Calendar, Sparkles, Info, Flame, Leaf, Moon } from 'lucide-react';
 import { api } from '@/lib/api';
 import type { FullPanchangData } from '@/sections/Panchang';
+import { Heading } from "@/components/ui/heading";
 
 interface Props {
   panchang: FullPanchangData;
@@ -55,7 +56,7 @@ export default function FestivalsTab({ panchang, language, t, selectedDate }: Pr
       {/* Today's Festivals */}
       <Card className="card-sacred border-sacred-gold/30">
         <CardContent className="p-4">
-          <h3 className="text-lg font-bold text-cosmic-text-primary mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
             <Calendar className="h-5 w-5 text-sacred-gold" />
             {language === 'hi' ? 'आज के त्योहार और व्रत' : "Today's Festivals & Vrats"}
           </h3>
@@ -69,27 +70,27 @@ export default function FestivalsTab({ panchang, language, t, selectedDate }: Pr
                 return (
                   <div 
                     key={index}
-                    className="p-4 rounded-xl bg-cosmic-card/50 border border-cosmic-border hover:border-sacred-gold/30 transition-all"
+                    className="p-4 rounded-xl bg-card/50 border hover:border-sacred-gold/30 transition-all"
                   >
                     <div className="flex items-start gap-3">
                       <div className={`p-2 rounded-lg ${colorClass}`}>
                         <Icon className="h-5 w-5" />
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-semibold text-cosmic-text-primary">
+                        <Heading as={4} variant={4}>
                           {language === 'hi' && festival.name_hindi ? festival.name_hindi : festival.name}
-                        </h4>
+                        </Heading>
                         <span className={`inline-block mt-1 px-2 py-0.5 text-xs rounded-full ${colorClass}`}>
                           {language === 'hi' ? festival.type_hindi || festival.type : festival.type}
                         </span>
                         {festival.description && (
-                          <p className="text-sm text-cosmic-text-secondary mt-2">
+                          <p className="text-sm text-muted-foreground mt-2">
                             {language === 'hi' ? festival.description : festival.description}
                           </p>
                         )}
                         {festival.rituals && (
-                          <div className="mt-2 p-2 rounded-lg bg-cosmic-bg/50">
-                            <p className="text-xs text-cosmic-text-secondary">
+                          <div className="mt-2 p-2 rounded-lg bg-background/50">
+                            <p className="text-xs text-muted-foreground">
                               <strong>{t('auto.rituals')}</strong> {festival.rituals}
                             </p>
                           </div>
@@ -102,8 +103,8 @@ export default function FestivalsTab({ panchang, language, t, selectedDate }: Pr
             </div>
           ) : (
             <div className="text-center py-8">
-              <Leaf className="h-12 w-12 text-cosmic-text-secondary mx-auto mb-3" />
-              <p className="text-cosmic-text-secondary">
+              <Leaf className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+              <p className="text-muted-foreground">
                 {t('auto.noSpecialFestivalsTo')}
               </p>
             </div>
@@ -114,7 +115,7 @@ export default function FestivalsTab({ panchang, language, t, selectedDate }: Pr
       {/* Monthly Festivals */}
       <Card className="card-sacred">
         <CardContent className="p-4">
-          <h3 className="text-lg font-bold text-cosmic-text-primary mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-purple-500" />
             {t('auto.thisMonthsFestivals')}
           </h3>
@@ -132,15 +133,15 @@ export default function FestivalsTab({ panchang, language, t, selectedDate }: Pr
                 return (
                   <div 
                     key={index}
-                    className="p-3 rounded-xl bg-cosmic-card/30 border border-transparent hover:border-cosmic-border transition-all"
+                    className="p-3 rounded-xl bg-card/30 border border-transparent hover:border transition-all"
                   >
                     <div className="flex items-center gap-2">
                       <Icon className={`h-4 w-4 ${colorClass.split(' ')[0]}`} />
-                      <span className="font-medium text-cosmic-text-primary text-sm">
+                      <span className="font-medium text-foreground text-sm">
                         {language === 'hi' && festival.name_hindi ? festival.name_hindi : festival.name}
                       </span>
                     </div>
-                    <p className="text-xs text-cosmic-text-secondary mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       {festival.date} • {language === 'hi' ? festival.type_hindi || festival.type : festival.type}
                     </p>
                   </div>
@@ -148,7 +149,7 @@ export default function FestivalsTab({ panchang, language, t, selectedDate }: Pr
               })}
             </div>
           ) : (
-            <p className="text-center text-cosmic-text-secondary py-4">
+            <p className="text-center text-muted-foreground py-4">
               {t('auto.noDataAvailable')}
             </p>
           )}
@@ -162,10 +163,10 @@ export default function FestivalsTab({ panchang, language, t, selectedDate }: Pr
             <div className="flex items-start gap-3">
               <Info className="h-5 w-5 text-sacred-gold mt-0.5" />
               <div>
-                <h4 className="font-semibold text-cosmic-text-primary mb-1">
+                <Heading as={4} variant={4}>
                   {t('auto.panchak')}
-                </h4>
-                <p className="text-sm text-cosmic-text-secondary">
+                </Heading>
+                <p className="text-sm text-muted-foreground">
                   {panchang.panchaka?.active 
                     ? (t('auto.panchakIsActivePostp'))
                     : (t('auto.noPanchakToday'))
@@ -181,10 +182,10 @@ export default function FestivalsTab({ panchang, language, t, selectedDate }: Pr
             <div className="flex items-start gap-3">
               <Moon className="h-5 w-5 text-sacred-gold mt-0.5" />
               <div>
-                <h4 className="font-semibold text-cosmic-text-primary mb-1">
+                <Heading as={4} variant={4}>
                   {t('auto.gandaMoola')}
-                </h4>
-                <p className="text-sm text-cosmic-text-secondary">
+                </Heading>
+                <p className="text-sm text-muted-foreground">
                   {panchang.ganda_moola?.active 
                     ? `${t('auto.active')}: ${panchang.ganda_moola.nakshatra}`
                     : (t('auto.noGandaMoolaToday'))

@@ -1,6 +1,7 @@
 import { useTranslation } from '@/lib/i18n';
 import { translatePlanet, translateSign } from '@/lib/backend-translations';
 import { SIGN_LORD } from './kundli-utils';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
 
 interface LordshipsTabProps {
   planets: any[];
@@ -44,17 +45,17 @@ export default function LordshipsTab({ planets, houses }: LordshipsTabProps) {
 
   return (
     <div className="overflow-x-auto">
-        <table className="w-full text-xs">
-          <thead className="bg-sacred-gold">
-            <tr>
-              <th className="text-left p-1.5 font-medium text-sacred-gold-dark">{t('auto.house')}</th>
-              <th className="text-left p-1.5 font-medium text-sacred-gold-dark">{t('auto.sign')}</th>
-              <th className="text-left p-1.5 font-medium text-sacred-gold-dark">{t('auto.lord')}</th>
-              <th className="text-left p-1.5 font-medium text-sacred-gold-dark">{t('auto.placedIn')}</th>
-              <th className="text-left p-1.5 font-medium text-sacred-gold-dark">{t('auto.significance')}</th>
-            </tr>
-          </thead>
-          <tbody>
+        <Table className="w-full text-xs">
+          <TableHeader className="bg-muted">
+            <TableRow>
+              <TableHead className="text-left p-1.5 font-medium text-primary">{t('auto.house')}</TableHead>
+              <TableHead className="text-left p-1.5 font-medium text-primary">{t('auto.sign')}</TableHead>
+              <TableHead className="text-left p-1.5 font-medium text-primary">{t('auto.lord')}</TableHead>
+              <TableHead className="text-left p-1.5 font-medium text-primary">{t('auto.placedIn')}</TableHead>
+              <TableHead className="text-left p-1.5 font-medium text-primary">{t('auto.significance')}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {Array.from({ length: 12 }, (_, i) => {
               const houseNum = i + 1;
               // Houses can be an array or object
@@ -68,17 +69,17 @@ export default function LordshipsTab({ planets, houses }: LordshipsTabProps) {
               const lordPlacedIn = lordPlanet ? `${t('auto.house')} ${lordPlanet.house}` : '\u2014';
 
               return (
-                <tr key={houseNum} className={`border-t border-sacred-gold ${houseNum % 2 === 0 ? 'bg-sacred-gold/[0.02]' : ''}`}>
-                  <td className="p-1.5 font-medium text-sacred-brown font-display">{houseNum}</td>
-                  <td className="p-1.5 text-sacred-brown">{translateSign(signName, language)}</td>
-                  <td className="p-1.5 font-medium text-sacred-gold-dark">{translatePlanet(lord, language)}</td>
-                  <td className="p-1.5 text-cosmic-text">{lordPlacedIn}</td>
-                  <td className="p-1.5 text-cosmic-text">{HOUSE_SIGNIFICANCE[houseNum] || '\u2014'}</td>
-                </tr>
+                <TableRow key={houseNum} className={`border-t border-border ${houseNum % 2 === 0 ? 'bg-muted/5' : ''}`}>
+                  <TableCell className="p-1.5 font-medium text-foreground">{houseNum}</TableCell>
+                  <TableCell className="p-1.5 text-foreground">{translateSign(signName, language)}</TableCell>
+                  <TableCell className="p-1.5 font-medium text-primary">{translatePlanet(lord, language)}</TableCell>
+                  <TableCell className="p-1.5 text-foreground">{lordPlacedIn}</TableCell>
+                  <TableCell className="p-1.5 text-foreground">{HOUSE_SIGNIFICANCE[houseNum] || '\u2014'}</TableCell>
+                </TableRow>
               );
             })}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
     </div>
   );
 }

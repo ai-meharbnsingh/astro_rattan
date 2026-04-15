@@ -6,7 +6,7 @@ birth nakshatra. Vimshottari total = 120 years. Order starts from birth
 nakshatra lord. The balance of the first dasha is calculated based on
 the Moon's position within the nakshatra at birth.
 """
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 
 # ============================================================
@@ -234,7 +234,7 @@ def calculate_dasha(birth_nakshatra: str, birth_date: str, moon_longitude: float
     starting_lord = NAKSHATRA_LORD[birth_nakshatra]
     sequence = _get_dasha_sequence(starting_lord)
     birth_dt = _parse_date(birth_date)
-    now = datetime.now()
+    now = datetime.utcnow()
 
     # Calculate balance of first dasha at birth
     balance = _calculate_dasha_balance(birth_nakshatra, moon_longitude)
@@ -350,7 +350,7 @@ def calculate_extended_dasha(birth_nakshatra: str, birth_date: str, moon_longitu
     starting_lord = NAKSHATRA_LORD[birth_nakshatra]
     sequence = _get_dasha_sequence(starting_lord)
     birth_dt = _parse_date(birth_date)
-    now = datetime.now()
+    now = datetime.utcnow()
 
     # Calculate balance of first dasha at birth
     balance = _calculate_dasha_balance(birth_nakshatra, moon_longitude)

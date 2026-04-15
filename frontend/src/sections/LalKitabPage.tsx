@@ -78,7 +78,6 @@ export default function LalKitabPage() {
         setBirthDate(full.birth_date || '');
         setView('result');
       } catch (e) {
-        console.error(e);
         setError('Failed to load chart');
         setView('form');
       }
@@ -97,7 +96,7 @@ export default function LalKitabPage() {
         birth_place: formData.place,
         latitude: formData.latitude,
         longitude: formData.longitude,
-        timezone_offset: -(new Date().getTimezoneOffset() / 60),
+        timezone_offset: formData.timezone_offset ?? -(new Date().getTimezoneOffset() / 60),
         gender: formData.gender,
         chart_type: 'lalkitab',
       };
@@ -125,7 +124,7 @@ export default function LalKitabPage() {
           birth_place: formData.place,
           latitude: formData.latitude,
           longitude: formData.longitude,
-          timezone_offset: -(new Date().getTimezoneOffset() / 60),
+          timezone_offset: formData.timezone_offset ?? -(new Date().getTimezoneOffset() / 60),
           gender: formData.gender,
         });
       }
@@ -137,7 +136,7 @@ export default function LalKitabPage() {
   }, [isAstrologer]);
 
   return (
-    <div className="min-h-screen bg-cosmic-bg bg-mandala pt-32 pb-10 px-4">
+    <div className="min-h-screen bg-background bg-mandala pt-32 pb-10 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Result View Header (only show when not in form) */}
         {view !== 'form' && (
@@ -145,10 +144,10 @@ export default function LalKitabPage() {
             <div className="w-16 h-16 rounded-full bg-gradient-to-br from-red-600 to-sacred-gold flex items-center justify-center mx-auto mb-4">
               <BookOpen className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-3xl sm:text-4xl font-sans font-bold text-sacred-gold mb-2">
+            <h1 className="text-3xl sm:text-4xl  font-bold text-sacred-gold mb-2">
               {t('lk.title')}
             </h1>
-            <p className="text-cosmic-text max-w-lg mx-auto">
+            <p className="text-foreground max-w-lg mx-auto">
               {t('lk.subtitle')}
             </p>
           </div>
@@ -158,7 +157,7 @@ export default function LalKitabPage() {
         {view === 'form' && (
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-6">
-              <h1 className="text-3xl sm:text-4xl font-sans font-bold text-sacred-gold mb-2">
+              <h1 className="text-3xl sm:text-4xl  font-bold text-sacred-gold mb-2">
                 {t('lk.title')}
               </h1>
             </div>
@@ -175,7 +174,7 @@ export default function LalKitabPage() {
         {view === 'generating' && (
           <div className="flex flex-col items-center justify-center py-20">
             <Loader2 className="w-12 h-12 animate-spin text-sacred-gold mb-4" />
-            <p className="text-lg font-sans text-sacred-gold">{t('lk.generating')}</p>
+            <p className="text-lg  text-sacred-gold">{t('lk.generating')}</p>
           </div>
         )}
 
@@ -193,7 +192,7 @@ export default function LalKitabPage() {
 
             <Tabs value={activeTopTab} onValueChange={setActiveTopTab} className="w-full">
               <div className="mb-4">
-                <TabsList className="bg-sacred-cream w-full h-auto p-2 gap-1 grid grid-cols-8
+                <TabsList className="bg-muted w-full h-auto p-2 gap-1 grid grid-cols-8
                   [&>button]:min-w-0 [&>button]:min-h-[58px] [&>button]:px-1 [&>button]:py-2 [&>button]:text-[11px] md:[&>button]:text-xs
                   [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:justify-center [&>button]:gap-1 [&>button]:leading-tight
                   [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
@@ -236,7 +235,7 @@ export default function LalKitabPage() {
               </TabsContent>
               <TabsContent value="predictions" className="space-y-4">
                 <details open className="border border-sacred-gold/20 rounded-xl overflow-hidden">
-                  <summary className="p-4 bg-cosmic-card cursor-pointer font-semibold text-sacred-gold flex items-center justify-between">
+                  <summary className="p-4 bg-card cursor-pointer font-semibold text-sacred-gold flex items-center justify-between">
                     {t('auto.generalPredictions')}
                     <ChevronDown className="w-4 h-4" />
                   </summary>
@@ -245,7 +244,7 @@ export default function LalKitabPage() {
                   </div>
                 </details>
                 <details className="border border-sacred-gold/20 rounded-xl overflow-hidden">
-                  <summary className="p-4 bg-cosmic-card cursor-pointer font-semibold text-sacred-gold flex items-center justify-between">
+                  <summary className="p-4 bg-card cursor-pointer font-semibold text-sacred-gold flex items-center justify-between">
                     {t('auto.marriagePredictions')}
                     <ChevronDown className="w-4 h-4" />
                   </summary>
@@ -254,7 +253,7 @@ export default function LalKitabPage() {
                   </div>
                 </details>
                 <details className="border border-sacred-gold/20 rounded-xl overflow-hidden">
-                  <summary className="p-4 bg-cosmic-card cursor-pointer font-semibold text-sacred-gold flex items-center justify-between">
+                  <summary className="p-4 bg-card cursor-pointer font-semibold text-sacred-gold flex items-center justify-between">
                     {t('auto.careerPredictions')}
                     <ChevronDown className="w-4 h-4" />
                   </summary>
@@ -263,7 +262,7 @@ export default function LalKitabPage() {
                   </div>
                 </details>
                 <details className="border border-sacred-gold/20 rounded-xl overflow-hidden">
-                  <summary className="p-4 bg-cosmic-card cursor-pointer font-semibold text-sacred-gold flex items-center justify-between">
+                  <summary className="p-4 bg-card cursor-pointer font-semibold text-sacred-gold flex items-center justify-between">
                     {t('auto.healthPredictions')}
                     <ChevronDown className="w-4 h-4" />
                   </summary>
@@ -272,7 +271,7 @@ export default function LalKitabPage() {
                   </div>
                 </details>
                 <details className="border border-sacred-gold/20 rounded-xl overflow-hidden">
-                  <summary className="p-4 bg-cosmic-card cursor-pointer font-semibold text-sacred-gold flex items-center justify-between">
+                  <summary className="p-4 bg-card cursor-pointer font-semibold text-sacred-gold flex items-center justify-between">
                     {t('auto.wealthPredictions')}
                     <ChevronDown className="w-4 h-4" />
                   </summary>
@@ -281,7 +280,7 @@ export default function LalKitabPage() {
                   </div>
                 </details>
                 <details className="border border-sacred-gold/20 rounded-xl overflow-hidden">
-                  <summary className="p-4 bg-cosmic-card cursor-pointer font-semibold text-sacred-gold flex items-center justify-between">
+                  <summary className="p-4 bg-card cursor-pointer font-semibold text-sacred-gold flex items-center justify-between">
                     {t('auto.savedPredictions')}
                     <ChevronDown className="w-4 h-4" />
                   </summary>

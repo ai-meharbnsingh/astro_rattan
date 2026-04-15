@@ -1,4 +1,6 @@
 import { ArrowRight } from 'lucide-react';
+import { Heading } from "@/components/ui/heading";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 
 interface Transit {
   planet: string;
@@ -58,7 +60,7 @@ export default function TransitInsightsTab({ data, loading, language, t }: Props
 
   if (!data) {
     return (
-      <div className="text-center py-12 text-cosmic-text-secondary">
+      <div className="text-center py-12 text-muted-foreground">
         {t('auto.transitDataUnavailab')}
       </div>
     );
@@ -67,101 +69,101 @@ export default function TransitInsightsTab({ data, loading, language, t }: Props
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
       {/* Current Planetary Positions */}
-      <div className="rounded-xl border border-cosmic-border bg-cosmic-card p-3">
-        <h3 className="text-sm font-semibold text-sacred-gold-dark mb-2">
+      <div className="rounded-xl border bg-card p-3">
+        <Heading as={3} variant={3}>
           {t('auto.currentPlanetaryPosi')}
-        </h3>
-        <div className="rounded-lg border border-cosmic-border overflow-hidden">
-          <table className="w-full table-fixed text-xs sm:text-sm">
-            <thead>
-              <tr className="bg-sacred-gold/15">
-                <th className="text-left px-2 py-1.5 text-sacred-gold-dark font-semibold w-[40%]">
+        </Heading>
+        <div className="rounded-lg border overflow-hidden">
+          <Table className="w-full table-fixed text-xs sm:text-sm">
+            <TableHeader>
+              <TableRow className="bg-sacred-gold/15">
+                <TableHead className="text-left px-2 py-1.5 text-sacred-gold-dark font-semibold w-[40%]">
                   {t('auto.planet')}
-                </th>
-                <th className="text-left px-2 py-1.5 text-sacred-gold-dark font-semibold w-[15%]" />
-                <th className="text-left px-2 py-1.5 text-sacred-gold-dark font-semibold w-[45%]">
+                </TableHead>
+                <TableHead className="text-left px-2 py-1.5 text-sacred-gold-dark font-semibold w-[15%]" />
+                <TableHead className="text-left px-2 py-1.5 text-sacred-gold-dark font-semibold w-[45%]">
                   {t('auto.currentSign')}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {data.transits.map((tr) => (
-                <tr key={tr.planet} className="border-b border-cosmic-border/50 last:border-0">
-                  <td className="px-2 py-1.5 font-medium text-cosmic-text">
+                <TableRow key={tr.planet} className="border-b border/50 last:border-0">
+                  <TableCell className="px-2 py-1.5 font-medium text-foreground">
                     {language === 'hi' ? tr.planet_hindi : tr.planet}
-                  </td>
-                  <td className="px-2 py-1.5 text-cosmic-text-secondary">
+                  </TableCell>
+                  <TableCell className="px-2 py-1.5 text-muted-foreground">
                     <ArrowRight className="w-3 h-3" />
-                  </td>
-                  <td className="px-2 py-1.5 text-cosmic-text">
+                  </TableCell>
+                  <TableCell className="px-2 py-1.5 text-foreground">
                     {language === 'hi' ? tr.current_sign_hindi : tr.current_sign}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       </div>
 
       {/* Sign-wise Effects */}
-      <div className="rounded-xl border border-cosmic-border bg-cosmic-card p-3">
-        <h3 className="text-sm font-semibold text-sacred-gold-dark mb-2">
+      <div className="rounded-xl border bg-card p-3">
+        <Heading as={3} variant={3}>
           {t('auto.signWiseTransitEffec')}
-        </h3>
-        <div className="rounded-lg border border-cosmic-border overflow-hidden">
-          <table className="w-full table-fixed text-xs sm:text-sm">
-            <thead>
-              <tr className="bg-sacred-gold/15">
-                <th className="text-left px-2 py-1.5 text-sacred-gold-dark font-semibold w-[20%]">
+        </Heading>
+        <div className="rounded-lg border overflow-hidden">
+          <Table className="w-full table-fixed text-xs sm:text-sm">
+            <TableHeader>
+              <TableRow className="bg-sacred-gold/15">
+                <TableHead className="text-left px-2 py-1.5 text-sacred-gold-dark font-semibold w-[20%]">
                   {t('auto.sign')}
-                </th>
-                <th className="text-left px-2 py-1.5 text-sacred-gold-dark font-semibold w-[20%]">
+                </TableHead>
+                <TableHead className="text-left px-2 py-1.5 text-sacred-gold-dark font-semibold w-[20%]">
                   {t('auto.ruler')}
-                </th>
-                <th className="text-left px-2 py-1.5 text-sacred-gold-dark font-semibold w-[22%]">
+                </TableHead>
+                <TableHead className="text-left px-2 py-1.5 text-sacred-gold-dark font-semibold w-[22%]">
                   {t('auto.rulerIn')}
-                </th>
-                <th className="text-left px-2 py-1.5 text-sacred-gold-dark font-semibold w-[18%]">
+                </TableHead>
+                <TableHead className="text-left px-2 py-1.5 text-sacred-gold-dark font-semibold w-[18%]">
                   {t('auto.dignity')}
-                </th>
-                <th className="text-left px-2 py-1.5 text-sacred-gold-dark font-semibold w-[20%]">
+                </TableHead>
+                <TableHead className="text-left px-2 py-1.5 text-sacred-gold-dark font-semibold w-[20%]">
                   {t('auto.strength')}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {data.sign_effects.map((effect) => {
                 const strengthInfo = STRENGTH_LABELS[effect.strength] || STRENGTH_LABELS.moderate;
                 const dignityInfo = DIGNITY_LABELS[effect.dignity] || DIGNITY_LABELS.neutral;
                 return (
-                  <tr key={effect.sign} className="border-b border-cosmic-border/50 last:border-0 align-middle">
-                    <td className="px-2 py-1.5 font-medium text-cosmic-text">
+                  <TableRow key={effect.sign} className="border-b border/50 last:border-0 align-middle">
+                    <TableCell className="px-2 py-1.5 font-medium text-foreground">
                       <img
                         src={`/images/zodiac-orange/zodiac-${effect.sign}-orange.png`}
                         alt={effect.sign}
                         className="w-5 h-5 object-contain rounded-sm inline-block mr-1 align-text-bottom"
                       />
                       {language === 'hi' ? effect.sign_hindi : effect.sign.charAt(0).toUpperCase() + effect.sign.slice(1)}
-                    </td>
-                    <td className="px-2 py-1.5 text-cosmic-text-secondary">
+                    </TableCell>
+                    <TableCell className="px-2 py-1.5 text-muted-foreground">
                       {language === 'hi' ? effect.ruling_planet_hindi : effect.ruling_planet}
-                    </td>
-                    <td className="px-2 py-1.5 text-cosmic-text">
+                    </TableCell>
+                    <TableCell className="px-2 py-1.5 text-foreground">
                       {language === 'hi' ? effect.ruler_current_sign_hindi : effect.ruler_current_sign}
-                    </td>
-                    <td className="px-2 py-1.5 text-cosmic-text-secondary text-xs">
+                    </TableCell>
+                    <TableCell className="px-2 py-1.5 text-muted-foreground text-xs">
                       {language === 'hi' ? dignityInfo.hi : dignityInfo.en}
-                    </td>
-                    <td className="px-2 py-1.5">
+                    </TableCell>
+                    <TableCell className="px-2 py-1.5">
                       <span className={`text-[10px] px-1.5 py-0.5 rounded ${strengthInfo.bg} ${strengthInfo.color} font-medium`}>
                         {language === 'hi' ? strengthInfo.hi : strengthInfo.en}
                       </span>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 );
               })}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       </div>
     </div>

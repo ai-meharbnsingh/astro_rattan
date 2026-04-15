@@ -1,5 +1,7 @@
 import { Loader2 } from 'lucide-react';
 import { translatePlanet, translateName } from '@/lib/backend-translations';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
+import { Heading } from '@/components/ui/heading';
 
 interface YoginiTabProps {
   yoginiData: any;
@@ -11,45 +13,45 @@ interface YoginiTabProps {
 export default function YoginiTab({ yoginiData, loadingYogini, language, t }: YoginiTabProps) {
   if (loadingYogini) {
     return (
-      <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /><span className="ml-2 text-cosmic-text">{t('kundli.loadingYoginiDasha')}</span></div>
+      <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-primary" /><span className="ml-2 text-foreground">{t('kundli.loadingYoginiDasha')}</span></div>
     );
   }
 
   if (!yoginiData) {
-    return <p className="text-center text-cosmic-text py-8">{t('common.noData')}</p>;
+    return <p className="text-center text-foreground py-8">{t('common.noData')}</p>;
   }
 
   return (
     <div className="space-y-6">
-      <div className="bg-sacred-cream rounded-xl border border-sacred-gold p-4">
-        <h4 className="font-display font-semibold text-sacred-brown mb-3">
+      <div className="bg-muted rounded-xl border border-border p-4">
+        <Heading as={4} variant={4} className="mb-3">
           {t('section.yoginiDasha')}
-          {(yoginiData.current_dasha || yoginiData.current) && <span className="ml-2 text-sm px-2 py-1 rounded-full bg-sacred-gold-dark text-white-dark">{t('common.current')}: {translateName(yoginiData.current_dasha || yoginiData.current, language)}</span>}
-        </h4>
-        <table className="w-full text-sm">
-          <thead><tr className="bg-sacred-gold">
-            <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.yogini')}</th>
-            <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.planet')}</th>
-            <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.start')}</th>
-            <th className="text-left p-2 text-sacred-gold-dark font-medium">{t('table.end')}</th>
-            <th className="text-center p-2 text-sacred-gold-dark font-medium">{t('table.years')}</th>
-          </tr></thead>
-          <tbody>
+          {(yoginiData.current_dasha || yoginiData.current) && <span className="ml-2 text-sm px-2 py-1 rounded-full bg-primary text-white-dark">{t('common.current')}: {translateName(yoginiData.current_dasha || yoginiData.current, language)}</span>}
+        </Heading>
+        <Table className="w-full text-sm">
+          <TableHeader><TableRow className="bg-muted">
+            <TableHead className="text-left p-2 text-primary font-medium">{t('table.yogini')}</TableHead>
+            <TableHead className="text-left p-2 text-primary font-medium">{t('table.planet')}</TableHead>
+            <TableHead className="text-left p-2 text-primary font-medium">{t('table.start')}</TableHead>
+            <TableHead className="text-left p-2 text-primary font-medium">{t('table.end')}</TableHead>
+            <TableHead className="text-center p-2 text-primary font-medium">{t('table.years')}</TableHead>
+          </TableRow></TableHeader>
+          <TableBody>
             {(yoginiData.periods || yoginiData.dashas || []).map((d: any, i: number) => {
               const currentName = yoginiData.current_dasha || yoginiData.current;
               const isCurrent = d.yogini === currentName || d.is_current;
               return (
-                <tr key={i} className={`border-t border-sacred-gold ${isCurrent ? 'bg-sacred-gold font-semibold' : ''}`}>
-                  <td className="p-2 text-sacred-brown">{translateName(d.yogini, language)}{isCurrent ? ' \u2190' : ''}</td>
-                  <td className="p-2 text-cosmic-text">{translatePlanet(d.planet, language)}</td>
-                  <td className="p-2 text-cosmic-text">{d.start_date || d.start}</td>
-                  <td className="p-2 text-cosmic-text">{d.end_date || d.end}</td>
-                  <td className="p-2 text-center text-cosmic-text">{d.span || d.years}</td>
-                </tr>
+                <TableRow key={i} className={`border-t border-border ${isCurrent ? 'bg-muted font-semibold' : ''}`}>
+                  <TableCell className="p-2 text-foreground">{translateName(d.yogini, language)}{isCurrent ? ' \u2190' : ''}</TableCell>
+                  <TableCell className="p-2 text-foreground">{translatePlanet(d.planet, language)}</TableCell>
+                  <TableCell className="p-2 text-foreground">{d.start_date || d.start}</TableCell>
+                  <TableCell className="p-2 text-foreground">{d.end_date || d.end}</TableCell>
+                  <TableCell className="p-2 text-center text-foreground">{d.span || d.years}</TableCell>
+                </TableRow>
               );
             })}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
     </div>
   );

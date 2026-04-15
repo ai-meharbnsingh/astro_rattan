@@ -1,5 +1,8 @@
 """Application configuration — loaded from environment variables with defaults."""
+import logging
 import os
+
+logger = logging.getLogger(__name__)
 
 # Load .env file if present (development convenience)
 try:
@@ -17,9 +20,6 @@ def _env_first(*names: str, default: str = "") -> str:
             return value
     return default
 
-# Database
-DB_PATH = os.getenv("DB_PATH", "astrorattan.db")
-
 # Auth
 JWT_SECRET = os.getenv("JWT_SECRET", "")
 if not JWT_SECRET:
@@ -30,8 +30,8 @@ if not JWT_SECRET:
     
     # Fallback for local development
     import secrets
-    JWT_SECRET = "dev-secret-key-12345" # Use a stable dev key instead of random to avoid logout on reload
-    print(f"[WARNING] JWT_SECRET not set. Using stable dev key. DO NOT USE IN PRODUCTION.")
+    JWT_SECRET = secrets.token_urlsafe(32)
+    logger.warning("JWT_SECRET not set. Using stable dev key. DO NOT USE IN PRODUCTION.")
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRE_HOURS = 24
 

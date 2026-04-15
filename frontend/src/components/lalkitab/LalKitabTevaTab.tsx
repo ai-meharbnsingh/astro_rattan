@@ -168,7 +168,7 @@ export default function LalKitabTevaTab({ chartData, apiResult }: Props) {
         </p>
         <h3 className={`text-2xl font-sans font-bold mb-3 ${cfg.color}`}>{tevaLabel}</h3>
 
-        <p className="text-sm text-cosmic-text/80 leading-relaxed">
+        <p className="text-sm text-foreground/80 leading-relaxed">
           {tevaType === 'ratandh' && (
             t('auto.saturnOrRahuIsInH1Or')
           )}
@@ -282,7 +282,7 @@ export default function LalKitabTevaTab({ chartData, apiResult }: Props) {
                 <span className="text-xs font-semibold text-sacred-gold-dark">
                   {isHi ? (PLANET_HI[planet] ?? planet) : planet}
                 </span>
-                <span className="text-lg font-bold text-cosmic-text">{house}</span>
+                <span className="text-lg font-bold text-foreground">{house}</span>
                 <span className="text-xs text-gray-400">{t('auto.h')}</span>
               </div>
             ))}

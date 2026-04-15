@@ -114,10 +114,15 @@ export default function LiveTransitWheel() {
   }, []);
 
   useEffect(() => { fetchSky(); const iv = setInterval(fetchSky, 60000); return () => clearInterval(iv); }, [fetchSky]);
-  useEffect(() => { const iv = setInterval(() => setCurrentTime(new Date()), 5000); return () => clearInterval(iv); }, []);
+  useEffect(() => { const iv = setInterval(() => setCurrentTime(new Date()), 1000); return () => clearInterval(iv); }, []);
 
   const timeStr = currentTime.toLocaleTimeString(hi ? 'hi-IN' : 'en-IN', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-  const planets = skyData?.planets || [];
+  const rawPlanets = skyData?.planets || [];
+  // Guard against transient backend duplicates (same planet repeated in one payload).
+  // Keep the last occurrence so we always render each planet exactly once.
+  const deduped = new Map<string, TransitPlanet>();
+  for (const p of rawPlanets) deduped.set(p.planet, p);
+  const planets = Array.from(deduped.values());
   // ASC moves ~0.25°/min (360°/24h). Interpolate between API fetches for smooth 5s updates.
   const elapsedSec = (currentTime.getTime() - fetchedAt) / 1000;
   const lagnaLong = (skyData?.lagna_longitude || 0) + (elapsedSec * (360 / 86400));
@@ -214,15 +219,35 @@ export default function LiveTransitWheel() {
   const LANE_MIN = 162;
   const LANE_MAX = 214;
   const SIGN_PAD = 5; // degrees padding from sign boundary
-  let dotPos = planets.map(p => {
-    const baseRadius = Math.max(LANE_MIN, Math.min(LANE_MAX, RING_R[p.planet] || 180));
-    const si = signIdx(p.sign);
+  // Initial placement with per-sign angular spreading to avoid label overlap
+  const bySign: Record<number, TransitPlanet[]> = {};
+  for (let i = 0; i < 12; i++) bySign[i] = [];
+  for (const p of planets) bySign[signIdx(p.sign)].push(p);
+
+  let dotPos: Array<{ planet: TransitPlanet; angle: number; radius: number; baseRadius: number }> = [];
+  const SIGN_SPREAD_DEG = 3.2; // angular spacing between planets within the same sign sector
+  const SIGN_LANES = [-12, 0, 12]; // radial lanes for dense signs
+
+  for (let si = 0; si < 12; si++) {
+    const bucket = bySign[si].slice().sort((a, b) => (a.sign_degree || 0) - (b.sign_degree || 0));
+    const n = bucket.length;
     const signStart = si * 30 - 90;
-    // Clamp degree within sign: min SIGN_PAD, max 30-SIGN_PAD
-    const clampedDeg = Math.max(SIGN_PAD, Math.min(30 - SIGN_PAD, p.sign_degree));
-    const angle = toRad(signStart + clampedDeg);
-    return { planet: p, angle, radius: baseRadius, baseRadius };
-  });
+
+    bucket.forEach((p, idx) => {
+      const lane = SIGN_LANES[idx % SIGN_LANES.length];
+      const laneGroupOffset = Math.floor(idx / SIGN_LANES.length) * 8;
+      const baseRadius = Math.max(
+        LANE_MIN,
+        Math.min(LANE_MAX, (RING_R[p.planet] || 180) + lane + laneGroupOffset),
+      );
+      const clampedDeg = Math.max(SIGN_PAD, Math.min(30 - SIGN_PAD, p.sign_degree));
+      const centered = idx - (n - 1) / 2;
+      const spreadOffset = centered * SIGN_SPREAD_DEG;
+      const adjustedDeg = Math.max(SIGN_PAD, Math.min(30 - SIGN_PAD, clampedDeg + spreadOffset));
+      const angle = toRad(signStart + adjustedDeg);
+      dotPos.push({ planet: p, angle, radius: baseRadius, baseRadius });
+    });
+  }
 
   // Collision resolve
   for (let iter = 0; iter < 16; iter++) {
@@ -268,7 +293,7 @@ export default function LiveTransitWheel() {
     const statusStr = status.join('');
 
     return (
-      <g key={p.planet} className="transit-dot" style={{ animationDelay: `${i * 0.08}s` }}
+      <g key={`${p.planet}-${i}`} className="transit-dot" style={{ animationDelay: `${i * 0.08}s` }}
         onMouseEnter={() => setTooltip({ planet: p.planet, sign: p.sign, degree: p.sign_degree, retrograde: p.is_retrograde, x: px, y: py })}
         onMouseLeave={() => setTooltip(null)} cursor="pointer">
         <text x={px} y={py - 4} textAnchor="middle" dominantBaseline="central"
@@ -309,7 +334,7 @@ export default function LiveTransitWheel() {
                 <p className="font-bold" style={{ color: MALEFIC.has(tooltip.planet)?DARK:GOLD_MED }}>{tooltip.planet} ({hi?PLANET_FULL_HI[tooltip.planet]:tooltip.planet})</p>
                 <p style={{ color: GOLD }}>{tooltip.sign} ({hi?SIGNS[signIdx(tooltip.sign)].hi:tooltip.sign})</p>
                 <p style={{ color: GOLD_MED }}>{tooltip.degree.toFixed(1)}&deg;</p>
-                <p className="text-gray-500">{MALEFIC.has(tooltip.planet)?(hi?'पापी':'Malefic'):(hi?'शुभ':'Benefic')} · {tooltip.retrograde?(hi?'वक्री ℞':'Retro ℞'):(hi?'मार्गी':'Direct')}</p>
+                <p className="text-muted-foreground">{MALEFIC.has(tooltip.planet)?(hi?'पापी':'Malefic'):(hi?'शुभ':'Benefic')} · {tooltip.retrograde?(hi?'वक्री ℞':'Retro ℞'):(hi?'मार्गी':'Direct')}</p>
               </div>
             </div>
           )}

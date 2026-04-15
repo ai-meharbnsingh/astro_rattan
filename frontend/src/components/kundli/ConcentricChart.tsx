@@ -66,7 +66,7 @@ export default function ConcentricChart({ natalPlanets, transitPlanets, lagnaLon
   };
 
   return (
-    <div className="w-full max-w-lg mx-auto bg-white rounded-2xl shadow-lg border border-sacred-gold p-3">
+    <div className="w-full max-w-lg mx-auto bg-white rounded-2xl shadow-lg border border-border p-3">
       <svg viewBox={`0 0 ${size} ${size}`} className="w-full h-auto font-sans">
         {/* Zodiac Ring with Correct Rotation */}
         {ZODIAC_SIGNS.map((sign, i) => {
@@ -163,14 +163,14 @@ export default function ConcentricChart({ natalPlanets, transitPlanets, lagnaLon
         <text x={radius} y={radius + 4} textAnchor="middle" fontSize="10" fontWeight="bold" fill="#D4AF37">ॐ</text>
       </svg>
       
-      <div className="flex justify-center gap-6 mt-3 border-t border-sacred-gold/10 pt-3">
+      <div className="flex justify-center gap-6 mt-3 border-t border-border/10 pt-3">
         <div className="flex items-center gap-2">
           <div className="w-2.5 h-2.5 rounded-full bg-[#3D2B1F]" />
-          <span className="text-[10px] font-bold text-cosmic-text/60 uppercase">Natal</span>
+          <span className="text-[10px] font-bold text-foreground/60 uppercase">Natal</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-2.5 h-2.5 rounded-full bg-white border border-sacred-gold" />
-          <span className="text-[10px] font-bold text-cosmic-text/60 uppercase">Transit</span>
+          <div className="w-2.5 h-2.5 rounded-full bg-white border border-border" />
+          <span className="text-[10px] font-bold text-foreground/60 uppercase">Transit</span>
         </div>
       </div>
     </div>

@@ -27,7 +27,9 @@ static/reports/
 frontend/dist/
 e2e_backend.log
 e2e_frontend.log
-.vercel
 _archive/
 _trash/
 .env*.local
+# ML model files — download at build time, don't commit
+*.pt
+*.onnx

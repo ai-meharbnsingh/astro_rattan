@@ -268,7 +268,7 @@ export default function LalKitabRulesTab({ chartData }: Props) {
               key={idx}
               className="card-sacred rounded-xl p-4 border border-sacred-gold/20"
             >
-              <p className="text-sm text-cosmic-text/80">
+              <p className="text-sm text-foreground/80">
                 {isHi ? rule.hi : rule.en}
               </p>
             </div>

@@ -160,7 +160,7 @@ export default function LalKitabHealthTab({ kundliId }: Props) {
                         {t('auto.houseAreaHouse')}
                       </span>
                     </div>
-                    <p className="text-sm text-cosmic-text font-medium">
+                    <p className="text-sm text-foreground font-medium">
                       {isHi ? area.area_hi : area.area_en}
                     </p>
                   </div>
@@ -201,7 +201,7 @@ export default function LalKitabHealthTab({ kundliId }: Props) {
                     <span className="w-6 h-6 rounded-full bg-sacred-gold/15 text-sacred-gold text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
                       {i + 1}
                     </span>
-                    <p className="text-sm text-cosmic-text/80 leading-relaxed">
+                    <p className="text-sm text-foreground/80 leading-relaxed">
                       {isHi ? p.hi : p.en}
                     </p>
                   </li>
