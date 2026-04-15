@@ -65,7 +65,7 @@ export default function Hero() {
         {/* Centered header above main section */}
         <div className="text-center">
           {/* Shloka */}
-          <div className="hero-shloka opacity-0">
+          <div className="hero-shloka opacity-0 mt-6">
             <p className="font-sans text-lg sm:text-2xl lg:text-[2.2rem] opacity-70 tracking-[3px] text-gray-600"
               style={{ textShadow: '0 0 15px rgba(255, 170, 51, 0.4)' }}>
               {'\u091C\u094D\u092F\u094B\u0924\u093F\u0937\u092E\u094D \u0905\u092F\u092E\u094D \u092C\u094D\u0930\u0939\u094D\u092E'} {t('hero.shlokaSupreme')}
@@ -74,9 +74,9 @@ export default function Hero() {
 
           {/* Main Title */}
           <div className="hero-title-main opacity-0 mt-0 h-10 sm:h-12">
-            <Heading as={1} variant={1} className="text-sacred-gold-dark leading-[1.1] transition-opacity duration-500">
+            <p className="text-sacred-gold-dark leading-[1.1] transition-opacity duration-500 font-normal text-2xl md:text-3xl">
               {language === 'hi' ? TAGLINE.hi : TAGLINE.en}
-            </Heading>
+            </p>
           </div>
 
         </div>
