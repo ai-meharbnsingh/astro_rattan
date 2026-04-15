@@ -320,33 +320,6 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
 
   return (
     <div className="space-y-3">
-      {/* Month Navigation Header */}
-      <Card className="card-sacred !py-0 !gap-0">
-        <CardContent className="p-2">
-          <div className="flex items-center justify-between">
-            <Button variant="outline" size="icon" onClick={prevMonth} className="border-sacred-gold/30 h-8 w-8">
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <div className="text-center">
-              {locationName && (
-                <p className="text-[10px] text-muted-foreground flex items-center justify-center gap-1">
-                  📍 {locationName}
-                </p>
-              )}
-              <h3 className="text-lg font-bold text-foreground">{monthNames[month]} {year}</h3>
-              {p?.hindu_calendar?.maas && (
-                <p className="text-xs text-sacred-gold">
-                  {p.hindu_calendar.maas} · {language === 'hi' ? 'विक्रम संवत्' : 'Vikram Samvat'} {p.hindu_calendar.vikram_samvat}
-                </p>
-              )}
-            </div>
-            <Button variant="outline" size="icon" onClick={nextMonth} className="border-sacred-gold/30 h-8 w-8">
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Main Layout: Left Panel + Calendar Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-3">
 
@@ -354,104 +327,84 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
         <div className="space-y-3">
 
           {/* Selected Day — Full Dainik Panchang */}
-          <Card className="card-sacred">
+          <Card className="border border-sacred-gold/20 bg-[#FFF9F5] shadow-sm">
             <CardContent className="p-3">
               {selectedDayFull.loading ? (
                 <div className="flex items-center justify-center py-8">
                   <div className="animate-spin h-6 w-6 border-2 border-sacred-gold border-t-transparent rounded-full" />
                 </div>
               ) : selectedDay && p ? (
-                <div className="space-y-0.5 text-[11px]">
+                <div className="space-y-0.5 text-[12px]">
                   {/* Date heading */}
-                  <div className="text-center pb-1.5 mb-1.5 border-b border-border/40">
-                    <p className="font-bold text-foreground text-xs">
+                  <div className="text-center pb-2 mb-2 border-b border-stone-200">
+                    <p className="font-bold text-stone-800 text-sm">
                       {new Date(selectedDay.date + 'T12:00:00').toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-US', {
-                        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
                       })}
                     </p>
                   </div>
 
                   {/* Sun & Moon times */}
-                  <PanchangRow label="Sunrise" labelHi="सूर्योदय" lang={language} value={p.sunrise} />
-                  <PanchangRow label="Sunset" labelHi="सूर्यास्त" lang={language} value={p.sunset} />
-                  <PanchangRow label="Moonrise" labelHi="चन्द्रोदय" lang={language} value={p.moonrise} />
-                  <PanchangRow label="Moonset" labelHi="चन्द्रास्त" lang={language} value={p.moonset} />
+                  <PanchangRow label="Sunrise" labelHi="सूर्योदय" lang={language} value={p.sunrise} color="text-[#8B4513]" />
+                  <PanchangRow label="Sunset" labelHi="सूर्यास्त" lang={language} value={p.sunset} color="text-[#8B4513]" />
+                  <PanchangRow label="Moonrise" labelHi="चन्द्रोदय" lang={language} value={p.moonrise} color="text-[#8B4513]" />
+                  <PanchangRow label="Moonset" labelHi="चन्द्रास्त" lang={language} value={p.moonset} color="text-[#8B4513]" />
 
-                  <div className="border-t border-border/30 my-1" />
+                  <div className="border-t border-stone-200 my-1.5" />
 
                   {/* Hindu Calendar */}
-                  {p.hindu_calendar && (
-                    <>
-                      <PanchangRow label="Shaka Samvat" labelHi="शक संवत्" lang={language} value={String(p.hindu_calendar.shaka_samvat || '')} />
-                      <PanchangRow label="Vikram Samvat" labelHi="विक्रम संवत्" lang={language} value={String(p.hindu_calendar.vikram_samvat || '')} />
-                      <PanchangRow label="Month" labelHi="मास" lang={language} value={p.hindu_calendar.maas} />
-                      <PanchangRow label="Paksha" labelHi="पक्ष" lang={language}
-                        value={language === 'hi' ? translateBackend(p.hindu_calendar.paksha || '', language) : p.hindu_calendar.paksha}
-                      />
-                      <PanchangRow label="Ritu" labelHi="ऋतु" lang={language} value={p.hindu_calendar.ritu} />
-                      <PanchangRow label="Ayana" labelHi="अयन" lang={language} value={p.hindu_calendar.ayana} />
-                    </>
-                  )}
+                  <PanchangRow label="Shaka Samvat" labelHi="शक संवत्" lang={language} value={p.hindu_calendar?.shaka_samvat != null ? String(p.hindu_calendar.shaka_samvat) : ''} />
+                  <PanchangRow label="Vikram Samvat" labelHi="विक्रम संवत्" lang={language} value={p.hindu_calendar?.vikram_samvat != null ? String(p.hindu_calendar.vikram_samvat) : ''} />
+                  <PanchangRow label="Month" labelHi="मास" lang={language} value={p.hindu_calendar?.maas || ''} />
+                  <PanchangRow label="Paksha" labelHi="पक्ष" lang={language}
+                    value={p.hindu_calendar?.paksha ? (language === 'hi' ? translateBackend(p.hindu_calendar.paksha, language) : p.hindu_calendar.paksha) : (p.tithi?.paksha || '')}
+                  />
+                  <PanchangRow label="Ritu" labelHi="ऋतु" lang={language} value={p.hindu_calendar?.ritu || p.hindu_calendar?.ritu_english || ''} />
+                  <PanchangRow label="Ayana" labelHi="अयन" lang={language} value={p.hindu_calendar?.ayana || ''} />
                   <PanchangRow label="Weekday" labelHi="वार" lang={language}
-                    value={language === 'hi' ? (p.vaar?.name || '') : (p.vaar?.english || '')}
+                    value={language === 'hi' ? (p.vaar?.name || '') : (p.vaar?.english || new Date(selectedDay.date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long' }))}
                   />
 
-                  <div className="border-t border-border/30 my-1" />
+                  <div className="border-t border-stone-200 my-1.5" />
 
                   {/* Tithi, Nakshatra, Yoga, Karana */}
                   <PanchangRow label="Tithi" labelHi="तिथि" lang={language}
                     value={`${language === 'hi' ? translateBackend(p.tithi?.name || '', language) : p.tithi?.name || ''}${p.tithi?.end_time ? ` upto ${p.tithi.end_time}` : ''}`}
-                    highlight
+                    color="text-sacred-gold" bold
                   />
                   <PanchangRow label="Nakshatra" labelHi="नक्षत्र" lang={language}
                     value={`${language === 'hi' ? translateBackend(p.nakshatra?.name || '', language) : p.nakshatra?.name || ''}${p.nakshatra?.end_time ? ` upto ${p.nakshatra.end_time}` : ''}`}
-                    highlight
+                    color="text-sacred-gold" bold
                   />
                   <PanchangRow label="Yoga" labelHi="योग" lang={language}
                     value={`${language === 'hi' ? translateBackend(p.yoga?.name || '', language) : p.yoga?.name || ''}${p.yoga?.end_time ? ` upto ${p.yoga.end_time}` : ''}`}
+                    color="text-[#8B4513]"
                   />
                   <PanchangRow label="Karana" labelHi="करण" lang={language}
-                    value={language === 'hi' ? translateBackend(p.karana?.name || '', language) : p.karana?.name}
+                    value={language === 'hi' ? translateBackend(p.karana?.name || '', language) : p.karana?.name || ''}
+                    color="text-[#8B4513]"
                   />
 
-                  <div className="border-t border-border/30 my-1" />
+                  <div className="border-t border-stone-200 my-1.5" />
 
                   {/* Signs */}
-                  {p.sun_sign && <PanchangRow label="Sun Sign" labelHi="सूर्य राशि" lang={language} value={p.sun_sign} />}
-                  {p.moon_sign && <PanchangRow label="Moon Sign" labelHi="चन्द्र राशि" lang={language} value={p.moon_sign} />}
+                  <PanchangRow label="Sun Sign" labelHi="सूर्य राशि" lang={language} value={p.sun_sign || ''} />
+                  <PanchangRow label="Moon Sign" labelHi="चन्द्र राशि" lang={language} value={p.moon_sign || ''} />
 
-                  <div className="border-t border-border/30 my-1" />
+                  <div className="border-t border-stone-200 my-1.5" />
 
-                  {/* Inauspicious times */}
-                  <PanchangRow label="Rahu Kalam" labelHi="राहुकाल" lang={language}
-                    value={fmtPeriod(p.rahu_kaal)} warn
-                  />
-                  <PanchangRow label="Gulika Kalam" labelHi="गुलिक काल" lang={language}
-                    value={fmtPeriod(p.gulika_kaal)} warn
-                  />
-                  <PanchangRow label="Yamaganda" labelHi="यमगण्ड" lang={language}
-                    value={fmtPeriod(p.yamaganda)} warn
-                  />
+                  {/* Inauspicious & Auspicious times */}
+                  <PanchangRow label="Rahu Kalam" labelHi="राहुकाल" lang={language} value={fmtPeriod(p.rahu_kaal)} warn />
+                  <PanchangRow label="Gulika Kalam" labelHi="गुलिक काल" lang={language} value={fmtPeriod(p.gulika_kaal)} warn />
+                  <PanchangRow label="Yamaganda" labelHi="यमगण्ड" lang={language} value={fmtPeriod(p.yamaganda)} warn />
+                  <PanchangRow label="Abhijit" labelHi="अभिजीत" lang={language} value={fmtPeriod(p.abhijit_muhurat) || 'None'} good />
+                  <PanchangRow label="Brahma Muhurat" labelHi="ब्रह्म मुहूर्त" lang={language} value={fmtPeriod(p.brahma_muhurat)} good />
+                  <PanchangRow label="Dur Muhurtam" labelHi="दुर्मुहूर्त" lang={language} value={fmtPeriod(p.dur_muhurtam)} warn />
+                  <PanchangRow label="Varjyam" labelHi="वर्ज्यम्" lang={language} value={fmtPeriod(p.varjyam)} warn />
+                  <PanchangRow label="Amrit Kalam" labelHi="अमृत काल" lang={language} value={fmtPeriod(p.amrit_kalam)} good />
 
-                  {/* Auspicious times */}
-                  <PanchangRow label="Abhijit" labelHi="अभिजीत" lang={language}
-                    value={fmtPeriod(p.abhijit_muhurat) || 'None'} good
-                  />
-                  <PanchangRow label="Brahma Muhurat" labelHi="ब्रह्म मुहूर्त" lang={language}
-                    value={fmtPeriod(p.brahma_muhurat)} good
-                  />
-                  <PanchangRow label="Dur Muhurtam" labelHi="दुर्मुहूर्त" lang={language}
-                    value={fmtPeriod(p.dur_muhurtam)} warn
-                  />
-                  <PanchangRow label="Varjyam" labelHi="वर्ज्यम्" lang={language}
-                    value={fmtPeriod(p.varjyam)} warn
-                  />
-                  <PanchangRow label="Amrit Kalam" labelHi="अमृत काल" lang={language}
-                    value={fmtPeriod(p.amrit_kalam)} good
-                  />
-
-                  <div className="text-center mt-2 pt-1 border-t border-border/30">
-                    <p className="text-[10px] text-muted-foreground italic">
+                  <div className="text-center mt-2 pt-1.5 border-t border-stone-200">
+                    <p className="text-[10px] text-stone-400 italic">
                       {language === 'hi' ? 'विस्तृत दैनिक पंचांग' : 'detailed Dainik Panchang'}
                     </p>
                   </div>
@@ -497,6 +450,29 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
         {/* ===== RIGHT PANEL: Calendar Grid ===== */}
         <Card className="border border-sacred-gold/20 bg-[#FFF9F5] shadow-sm">
           <CardContent className="p-2 sm:p-3">
+            {/* Month heading — integrated into grid */}
+            <div className="flex items-center justify-between mb-2">
+              <Button variant="outline" size="icon" onClick={prevMonth} className="border-sacred-gold/30 h-8 w-8">
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <div className="text-center">
+                {locationName && (
+                  <p className="text-[10px] text-muted-foreground flex items-center justify-center gap-1">
+                    📍 {locationName}
+                  </p>
+                )}
+                <h3 className="text-xl font-bold text-stone-800">{monthNames[month]} {year}</h3>
+                {p?.hindu_calendar?.maas && (
+                  <p className="text-xs text-sacred-gold">
+                    {p.hindu_calendar.maas} · {language === 'hi' ? 'विक्रम संवत्' : 'Vikram Samvat'} {p.hindu_calendar.vikram_samvat}
+                  </p>
+                )}
+              </div>
+              <Button variant="outline" size="icon" onClick={nextMonth} className="border-sacred-gold/30 h-8 w-8">
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+
             {loading ? (
               <div className="flex items-center justify-center h-64">
                 <div className="animate-spin h-8 w-8 border-2 border-sacred-gold border-t-transparent rounded-full" />
@@ -846,18 +822,19 @@ function LBRow({ label, labelHi, lang, value, warn, good, highlight }: {
   );
 }
 
-function PanchangRow({ label, labelHi, lang, value, warn, good, highlight }: {
+function PanchangRow({ label, labelHi, lang, value, warn, good, color, bold }: {
   label: string; labelHi?: string; lang?: string; value?: string;
-  warn?: boolean; good?: boolean; highlight?: boolean;
+  warn?: boolean; good?: boolean; color?: string; bold?: boolean;
 }) {
   if (!value) return null;
   const displayLabel = lang === 'hi' && labelHi ? labelHi : label;
+  const labelColor = color || 'text-stone-500';
   return (
-    <div className="flex items-start justify-between gap-1.5 leading-tight py-[1px]">
-      <span className={`whitespace-nowrap ${highlight ? 'font-semibold text-sacred-gold' : 'text-muted-foreground'}`}>
+    <div className="flex items-start justify-between gap-2 leading-tight py-[2px]">
+      <span className={`whitespace-nowrap font-semibold ${labelColor}`}>
         {displayLabel}:
       </span>
-      <span className={`text-right font-medium min-w-0 ${warn ? 'text-red-400' : good ? 'text-green-400' : 'text-foreground'}`}>
+      <span className={`text-right min-w-0 ${bold ? 'font-bold' : 'font-medium'} ${warn ? 'text-red-500' : good ? 'text-green-600' : 'text-stone-800'}`}>
         {value}
       </span>
     </div>
