@@ -1998,14 +1998,24 @@ def free_kundli_preview(
     planets = chart_data.get("planets", {})
     ascendant = chart_data.get("ascendant", {})
 
+    def _deg_to_dms(deg: float) -> str:
+        """Convert decimal degrees to DD°MM'SS\" format."""
+        d = int(deg)
+        m = int((deg - d) * 60)
+        s = int(((deg - d) * 60 - m) * 60)
+        return f"{d:02d}°{m:02d}'{s:02d}\""
+
     # 2. Identity snapshot
     moon_info = planets.get("Moon", {})
     sun_info = planets.get("Sun", {})
+    asc_sign_deg = ascendant.get("sign_degree", ascendant.get("longitude", 0) % 30)
     identity = {
         "lagna": ascendant.get("sign", ""),
-        "lagna_degree": round(ascendant.get("longitude", 0), 2),
+        "lagna_degree": round(asc_sign_deg, 4),
+        "lagna_degree_dms": _deg_to_dms(asc_sign_deg),
         "rashi": moon_info.get("sign", ""),
         "nakshatra": moon_info.get("nakshatra", ""),
+        "nakshatra_pada": moon_info.get("nakshatra_pada", ""),
         "moon_sign": moon_info.get("sign", ""),
         "sun_sign": sun_info.get("sign", ""),
     }
@@ -2024,11 +2034,17 @@ def free_kundli_preview(
     for pname in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]:
         p = planets.get(pname, {})
         if p:
+            sign_deg = p.get("sign_degree", 0)
             planet_list.append({
                 "planet": pname,
                 "sign": p.get("sign", ""),
                 "house": p.get("house", 0),
-                "degree": round(p.get("sign_degree", 0), 1),
+                "degree": round(sign_deg, 4),
+                "degree_dms": _deg_to_dms(sign_deg),
+                "longitude": round(p.get("longitude", 0), 4),
+                "longitude_dms": _deg_to_dms(p.get("longitude", 0) % 360),
+                "nakshatra": p.get("nakshatra", ""),
+                "nakshatra_pada": p.get("nakshatra_pada", ""),
                 "status": p.get("status", ""),
                 "retrograde": p.get("is_retrograde", False),
             })

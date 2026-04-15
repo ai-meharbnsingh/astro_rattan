@@ -196,6 +196,7 @@ export default function FreeKundliModal({ data, onClose, language }: FreeKundliM
                           <TableHead className="text-sacred-gold-dark text-xs">{l('Sign', '\u0930\u093E\u0936\u093F')}</TableHead>
                           <TableHead className="text-sacred-gold-dark text-xs">{l('House', '\u092D\u093E\u0935')}</TableHead>
                           <TableHead className="text-sacred-gold-dark text-xs">{l('Degree', '\u0905\u0902\u0936')}</TableHead>
+                          <TableHead className="text-sacred-gold-dark text-xs">{l('Nakshatra', '\u0928\u0915\u094D\u0937\u0924\u094D\u0930')}</TableHead>
                           <TableHead className="text-sacred-gold-dark text-xs">{l('Status', '\u0938\u094D\u0925\u093F\u0924\u093F')}</TableHead>
                         </TableRow>
                       </TableHeader>
@@ -205,8 +206,12 @@ export default function FreeKundliModal({ data, onClose, language }: FreeKundliM
                             <TableCell className="text-sm font-medium">{p.planet}</TableCell>
                             <TableCell className="text-sm">{p.sign}</TableCell>
                             <TableCell className="text-sm">{p.house}</TableCell>
-                            <TableCell className="text-sm">{p.degree != null ? `${Number(p.degree).toFixed(1)}\u00b0` : '\u2014'}</TableCell>
-                            <TableCell className="text-sm">{p.status || '\u2014'}</TableCell>
+                            <TableCell className="text-sm font-mono">{p.degree_dms || (p.degree != null ? `${Number(p.degree).toFixed(2)}\u00b0` : '\u2014')}</TableCell>
+                            <TableCell className="text-sm">{p.nakshatra || '\u2014'}</TableCell>
+                            <TableCell className="text-sm">
+                              {p.retrograde && <span className="text-red-500 font-bold mr-1">R</span>}
+                              {p.status || '\u2014'}
+                            </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
