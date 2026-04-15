@@ -577,13 +577,6 @@ export default function Features() {
 
   const features = [
     {
-      image: '/images/features/feature-lalkitab.png',
-      title: l('Lal Kitab — Complete System', 'लाल किताब — पूर्ण सिस्टम'),
-      subtitle: l('ONLY HERE', 'केवल यहाँ'),
-      desc: l('Complete Lal Kitab toolkit with Nishaniyan Matcher, Chandra Chalana 43-day protocol, Remedy Tracker with streaks, Teva classification, Masnui Grah (artificial planets), Karmic Debt (Rin) analysis, Sleeping & Kayam planets, Annual Gochar — the most comprehensive Lal Kitab system available online.', 'निशानियां मैचर, चंद्र चालना 43-दिन प्रोटोकॉल, रेमेडी ट्रैकर, तेवा वर्गीकरण, मसनूई ग्रह, कर्मिक ऋण विश्लेषण, सोया और कायम ग्रह, वार्षिक गोचर — ऑनलाइन सबसे व्यापक लाल किताब प्रणाली।'),
-      badge: l('EXCLUSIVE', 'विशेष'),
-    },
-    {
       image: '/images/features/feature-kundli.jpg',
       imagePosition: 'center top',
       imageFilter: 'sepia(0.15) brightness(0.95) contrast(1.05)',
@@ -610,6 +603,13 @@ export default function Features() {
       subtitle: l('Location-Aware', 'लोकेशन-आधारित'),
       desc: l('Real-time Tithi, Nakshatra, Yoga, Karana with exact end times. 12+ Muhurat windows (Abhijit, Brahma, Vijaya, Dur Muhurtam, Varjyam), Rahu Kaal, Choghadiya, Hora table, Lagna transitions, Hindu calendar with Samvat — all for YOUR exact location.', 'सटीक अंत समय के साथ तिथि, नक्षत्र, योग, करण। 12+ मुहूर्त (अभिजित, ब्रह्म, विजय), राहु काल, चौघड़िया, होरा, लग्न, संवत सहित हिंदू कैलेंडर — आपके सटीक स्थान के लिए।'),
       badge: l('LOCATION-AWARE', 'लोकेशन-आधारित'),
+    },
+    {
+      image: '/images/features/feature-lalkitab.png',
+      title: l('Lal Kitab — Complete System', 'लाल किताब — पूर्ण सिस्टम'),
+      subtitle: l('ONLY HERE', 'केवल यहाँ'),
+      desc: l('Complete Lal Kitab toolkit with Nishaniyan Matcher, Chandra Chalana 43-day protocol, Remedy Tracker with streaks, Teva classification, Masnui Grah (artificial planets), Karmic Debt (Rin) analysis, Sleeping & Kayam planets, Annual Gochar — the most comprehensive Lal Kitab system available online.', 'निशानियां मैचर, चंद्र चालना 43-दिन प्रोटोकॉल, रेमेडी ट्रैकर, तेवा वर्गीकरण, मसनूई ग्रह, कर्मिक ऋण विश्लेषण, सोया और कायम ग्रह, वार्षिक गोचर — ऑनलाइन सबसे व्यापक लाल किताब प्रणाली।'),
+      badge: l('EXCLUSIVE', 'विशेष'),
     },
     {
       image: '/images/features/feature-numerology.jpg',
