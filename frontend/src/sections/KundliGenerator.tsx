@@ -313,9 +313,10 @@ export default function KundliGenerator() {
         {/* Tabs — controlled mode */}
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full kundli-tabs">
           <div className="mb-4">
-            <TabsList className="bg-muted w-full h-auto p-2 gap-1 grid grid-cols-6
+            <TabsList className="bg-sacred-gold/5 border border-sacred-gold/20 w-full h-auto p-2 gap-1 grid grid-cols-6
               [&>button]:min-w-0 [&>button]:min-h-[58px] [&>button]:px-1 [&>button]:py-2 [&>button]:text-[11px] md:[&>button]:text-xs
               [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:justify-center [&>button]:gap-1 [&>button]:leading-tight
+              [&>button]:text-sacred-gold-dark/70 [&>button:hover]:bg-sacred-gold/10 [&>button:hover]:text-sacred-gold-dark
               [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
               {primaryTabs.map(tab => (
                 <TabsTrigger key={tab.value} value={tab.value}>
