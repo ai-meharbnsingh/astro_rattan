@@ -321,7 +321,7 @@ function StatCard({
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { language } = useTranslation();
+  const { t, language } = useTranslation();
   const l = (en: string, hi: string) => (language === 'hi' ? hi : en);
   const [tab, setTab] = useState<'overview' | 'users' | 'kundlis' | 'live' | 'analytics' | 'feedback'>('overview');
 
