@@ -40,6 +40,7 @@ export default function Footer() {
             <Heading as={4} variant={4} className="text-[#f5d28a] mb-3">{l('More Links', 'अन्य लिंक')}</Heading>
             <div className="space-y-2 text-sm">
               <Link to="/" className="block text-amber-100 hover:text-white">{l('Home', 'होम')}</Link>
+              <Link to="/blog" className="block text-amber-100 hover:text-white">{l('Blog', 'ब्लॉग')}</Link>
               <Link to="/dashboard" className="block text-amber-100 hover:text-white">{l('Dashboard', 'डैशबोर्ड')}</Link>
               <Link to="/kundli" className="block text-amber-100 hover:text-white">{l('Book Consultation', 'कंसल्टेशन बुक करें')}</Link>
             </div>
