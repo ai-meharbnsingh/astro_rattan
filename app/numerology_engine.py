@@ -1109,6 +1109,464 @@ def _extract_dob_digits_nonzero(birth_date: str) -> list:
     return [int(ch) for ch in birth_date if ch.isdigit() and ch != '0']
 
 
+# ============================================================
+# LO SHU GRID INTERPRETATION — Arrows, Planes, Missing, Repeated
+# ============================================================
+#
+# Standard Lo Shu layout (same as LOSHU_GRID_LAYOUT above):
+#   4 | 9 | 2    <- Mental Plane (top row)
+#   3 | 5 | 7    <- Emotional Plane (middle row)
+#   8 | 1 | 6    <- Practical Plane (bottom row)
+
+ARROWS_OF_STRENGTH = {
+    "determination": {
+        "numbers": [1, 5, 9],
+        "name": "Arrow of Determination",
+        "name_hi": "दृढ़ संकल्प का तीर",
+        "meaning": "Strong willpower, persistence, achieves goals against all odds",
+        "meaning_hi": "दृढ़ इच्छाशक्ति, लगन, हर परिस्थिति में लक्ष्य प्राप्ति",
+    },
+    "spirituality": {
+        "numbers": [3, 5, 7],
+        "name": "Arrow of Spirituality",
+        "name_hi": "आध्यात्मिकता का तीर",
+        "meaning": "Deep inner wisdom, spiritual growth, strong intuition",
+        "meaning_hi": "गहन आंतरिक ज्ञान, आध्यात्मिक विकास, प्रबल अंतर्ज्ञान",
+    },
+    "intellect": {
+        "numbers": [4, 9, 2],
+        "name": "Arrow of Intellect",
+        "name_hi": "बुद्धि का तीर",
+        "meaning": "Sharp thinking, good memory, analytical mind",
+        "meaning_hi": "तीक्ष्ण सोच, अच्छी स्मृति, विश्लेषणात्मक दिमाग",
+    },
+    "action": {
+        "numbers": [8, 1, 6],
+        "name": "Arrow of Action",
+        "name_hi": "कर्म का तीर",
+        "meaning": "Practical, hardworking, materialistic success through effort",
+        "meaning_hi": "व्यावहारिक, कठिन परिश्रम, प्रयास से भौतिक सफलता",
+    },
+    "planner": {
+        "numbers": [4, 5, 6],
+        "name": "Arrow of the Planner",
+        "name_hi": "योजनाकार का तीर",
+        "meaning": "Organized, good at planning, systematic approach to life",
+        "meaning_hi": "व्यवस्थित, योजना में कुशल, जीवन के प्रति क्रमबद्ध दृष्टिकोण",
+    },
+    "willpower": {
+        "numbers": [4, 3, 8],
+        "name": "Arrow of Willpower",
+        "name_hi": "इच्छाशक्ति का तीर",
+        "meaning": "Strong will, determination to finish what is started",
+        "meaning_hi": "दृढ़ इच्छा, शुरू किए काम को पूर्ण करने का संकल्प",
+    },
+    "prosperity": {
+        "numbers": [2, 5, 8],
+        "name": "Arrow of Prosperity",
+        "name_hi": "समृद्धि का तीर",
+        "meaning": "Material abundance, financial success, wealth attraction",
+        "meaning_hi": "भौतिक प्रचुरता, आर्थिक सफलता, धन आकर्षण",
+    },
+    "frustration": {
+        "numbers": [2, 7, 6],
+        "name": "Arrow of Frustration",
+        "name_hi": "निराशा का तीर",
+        "meaning": "Emotional sensitivity, feeling misunderstood, inner turmoil",
+        "meaning_hi": "भावनात्मक संवेदनशीलता, गलत समझे जाने की पीड़ा, आंतरिक अशांति",
+    },
+}
+
+ARROWS_OF_WEAKNESS = {
+    "determination": {
+        "missing_meaning": "Lack of focus and direction, gives up easily when challenged",
+        "missing_meaning_hi": "ध्यान और दिशा की कमी, चुनौती मिलने पर आसानी से हार मान लेते हैं",
+    },
+    "spirituality": {
+        "missing_meaning": "Disconnected from inner self, superficial approach to life",
+        "missing_meaning_hi": "आंतरिक आत्म से कटे हुए, जीवन के प्रति सतही दृष्टिकोण",
+    },
+    "intellect": {
+        "missing_meaning": "Struggles with learning, poor memory and analytical weakness",
+        "missing_meaning_hi": "सीखने में कठिनाई, कमजोर स्मृति और विश्लेषण शक्ति की कमी",
+    },
+    "action": {
+        "missing_meaning": "Lazy, lacks practical sense and follow-through on plans",
+        "missing_meaning_hi": "आलस्य, व्यावहारिक समझ की कमी, योजनाओं पर अमल नहीं",
+    },
+    "planner": {
+        "missing_meaning": "Disorganized, poor at time management and planning",
+        "missing_meaning_hi": "अव्यवस्थित, समय प्रबंधन और योजना बनाने में कमजोर",
+    },
+    "willpower": {
+        "missing_meaning": "Weak determination, easily distracted, leaves tasks incomplete",
+        "missing_meaning_hi": "कमजोर संकल्प, आसानी से विचलित, कार्य अधूरे छोड़ देते हैं",
+    },
+    "prosperity": {
+        "missing_meaning": "Financial struggles, difficulty accumulating wealth",
+        "missing_meaning_hi": "आर्थिक कठिनाइयाँ, धन संचय में परेशानी",
+    },
+    "frustration": {
+        "missing_meaning": "Emotionally detached, difficulty understanding others' feelings",
+        "missing_meaning_hi": "भावनात्मक रूप से अलग-थलग, दूसरों की भावनाएँ समझने में कठिनाई",
+    },
+}
+
+
+def analyze_loshu_arrows(dob_digits: list) -> dict:
+    """Detect Lo Shu arrows of strength and weakness from DOB digits.
+
+    Strength: ALL 3 numbers of an arrow are present in DOB.
+    Weakness: ALL 3 numbers of an arrow are ABSENT from DOB.
+    (If only 1 or 2 present, the arrow is neither strength nor weakness.)
+
+    Args:
+        dob_digits: list of non-zero DOB digits (e.g. [1, 9, 9, 5, 5, 1, 9])
+
+    Returns:
+        dict with 'arrows_of_strength' and 'arrows_of_weakness' lists.
+    """
+    present = set(dob_digits)
+    strength = []
+    weakness = []
+
+    for key, arrow in ARROWS_OF_STRENGTH.items():
+        nums = arrow["numbers"]
+        if all(n in present for n in nums):
+            strength.append({**arrow, "key": key})
+        elif not any(n in present for n in nums):
+            weak_data = ARROWS_OF_WEAKNESS[key]
+            weakness.append({
+                **arrow,
+                "key": key,
+                "missing_meaning": weak_data["missing_meaning"],
+                "missing_meaning_hi": weak_data["missing_meaning_hi"],
+            })
+
+    return {"arrows_of_strength": strength, "arrows_of_weakness": weakness}
+
+
+# --- Planes Analysis ---
+
+PLANE_INTERPRETATIONS = {
+    "mental": {
+        "name": "Mental Plane",
+        "name_hi": "मानसिक तल",
+        "strong": "Strong thinker, analytical mind, excellent memory and reasoning ability",
+        "strong_hi": "प्रबल चिंतक, विश्लेषणात्मक दिमाग, उत्कृष्ट स्मृति और तर्कशक्ति",
+        "weak": "May struggle with analysis and abstract thinking",
+        "weak_hi": "विश्लेषण और अमूर्त सोच में कठिनाई हो सकती है",
+    },
+    "emotional": {
+        "name": "Emotional Plane",
+        "name_hi": "भावनात्मक तल",
+        "strong": "Deeply intuitive, creative, emotionally rich inner world",
+        "strong_hi": "गहन अंतर्ज्ञान, रचनात्मक, भावनात्मक रूप से समृद्ध आंतरिक संसार",
+        "weak": "May find it hard to express feelings or connect emotionally",
+        "weak_hi": "भावनाओं को व्यक्त करने या भावनात्मक रूप से जुड़ने में कठिनाई",
+    },
+    "practical": {
+        "name": "Practical Plane",
+        "name_hi": "व्यावहारिक तल",
+        "strong": "Action-oriented, hardworking, excels at turning ideas into reality",
+        "strong_hi": "कर्मठ, मेहनती, विचारों को वास्तविकता में बदलने में कुशल",
+        "weak": "May struggle with practical execution and material matters",
+        "weak_hi": "व्यावहारिक कार्यान्वयन और भौतिक मामलों में कठिनाई",
+    },
+}
+
+DOMINANT_PLANE_INTERPRETATION = {
+    "mental": {
+        "interpretation": "You are a strong thinker. Your mind is your greatest asset — logic, analysis, and memory dominate your personality.",
+        "interpretation_hi": "आप एक प्रबल विचारक हैं। आपका दिमाग आपकी सबसे बड़ी ताकत है — तर्क, विश्लेषण और स्मृति आपके व्यक्तित्व पर हावी हैं।",
+    },
+    "emotional": {
+        "interpretation": "You are deeply emotional and intuitive. Creativity, feelings, and spiritual awareness define your life approach.",
+        "interpretation_hi": "आप गहरे भावनात्मक और सहज ज्ञान वाले हैं। रचनात्मकता, भावनाएँ और आध्यात्मिक जागरूकता आपके जीवन दृष्टिकोण को परिभाषित करती हैं।",
+    },
+    "practical": {
+        "interpretation": "You are action-oriented and grounded. Hard work, material success, and practical implementation are your strengths.",
+        "interpretation_hi": "आप कर्मठ और व्यावहारिक हैं। कठिन परिश्रम, भौतिक सफलता और व्यावहारिक कार्यान्वयन आपकी ताकत हैं।",
+    },
+    "balanced": {
+        "interpretation": "Your planes are balanced — you have a harmonious blend of thinking, feeling, and doing. This is rare and fortunate.",
+        "interpretation_hi": "आपके तल संतुलित हैं — सोच, भावना और कर्म का सामंजस्यपूर्ण मिश्रण है। यह दुर्लभ और सौभाग्यशाली है।",
+    },
+}
+
+
+def analyze_loshu_planes(dob_digits: list) -> dict:
+    """Analyze the three Lo Shu planes from DOB digits.
+
+    Mental Plane (top row): 4, 9, 2
+    Emotional Plane (middle row): 3, 5, 7
+    Practical Plane (bottom row): 8, 1, 6
+
+    Args:
+        dob_digits: list of non-zero DOB digits
+
+    Returns:
+        dict with mental, emotional, practical plane scores, percentages,
+        dominant_plane, and bilingual interpretations.
+    """
+    from collections import Counter
+    counts = Counter(dob_digits)
+
+    mental_nums = [4, 9, 2]
+    emotional_nums = [3, 5, 7]
+    practical_nums = [8, 1, 6]
+
+    mental = sum(counts.get(d, 0) for d in mental_nums)
+    emotional = sum(counts.get(d, 0) for d in emotional_nums)
+    practical = sum(counts.get(d, 0) for d in practical_nums)
+    total = mental + emotional + practical
+
+    mental_pct = round(mental / max(total, 1) * 100)
+    emotional_pct = round(emotional / max(total, 1) * 100)
+    practical_pct = round(practical / max(total, 1) * 100)
+
+    # Determine dominant plane
+    scores = {"mental": mental, "emotional": emotional, "practical": practical}
+    max_score = max(scores.values())
+    dominant_planes = [k for k, v in scores.items() if v == max_score]
+    dominant = dominant_planes[0] if len(dominant_planes) == 1 else "balanced"
+
+    interp = DOMINANT_PLANE_INTERPRETATION[dominant]
+
+    return {
+        "mental": {
+            "score": mental,
+            "percentage": mental_pct,
+            "numbers": mental_nums,
+            "name": PLANE_INTERPRETATIONS["mental"]["name"],
+            "name_hi": PLANE_INTERPRETATIONS["mental"]["name_hi"],
+        },
+        "emotional": {
+            "score": emotional,
+            "percentage": emotional_pct,
+            "numbers": emotional_nums,
+            "name": PLANE_INTERPRETATIONS["emotional"]["name"],
+            "name_hi": PLANE_INTERPRETATIONS["emotional"]["name_hi"],
+        },
+        "practical": {
+            "score": practical,
+            "percentage": practical_pct,
+            "numbers": practical_nums,
+            "name": PLANE_INTERPRETATIONS["practical"]["name"],
+            "name_hi": PLANE_INTERPRETATIONS["practical"]["name_hi"],
+        },
+        "dominant_plane": dominant,
+        "interpretation": interp["interpretation"],
+        "interpretation_hi": interp["interpretation_hi"],
+    }
+
+
+# --- Missing Numbers Remedies ---
+
+MISSING_NUMBER_REMEDIES = {
+    1: {
+        "meaning": "Lack of confidence, difficulty expressing self, poor leadership",
+        "meaning_hi": "आत्मविश्वास की कमी, स्वयं को व्यक्त करने में कठिनाई, कमजोर नेतृत्व",
+        "remedy": "Wear red or orange on Sundays, chant Surya mantra (Om Suryaya Namah), develop leadership skills, wake up at sunrise",
+        "remedy_hi": "रविवार को लाल या नारंगी रंग पहनें, सूर्य मंत्र (ॐ सूर्याय नमः) जपें, नेतृत्व कौशल विकसित करें, सूर्योदय पर उठें",
+        "color": "Red / Orange",
+        "color_hi": "लाल / नारंगी",
+        "gemstone": "Ruby (Manik)",
+        "gemstone_hi": "माणिक्य (माणिक)",
+        "planet": "Sun",
+    },
+    2: {
+        "meaning": "Sensitivity issues, relationship difficulties, indecisiveness",
+        "meaning_hi": "संवेदनशीलता की समस्या, संबंधों में कठिनाई, अनिर्णय",
+        "remedy": "Wear white or cream on Mondays, chant Chandra mantra (Om Chandraya Namah), practice patience, drink water from silver vessel",
+        "remedy_hi": "सोमवार को सफेद या क्रीम रंग पहनें, चंद्र मंत्र (ॐ चंद्राय नमः) जपें, धैर्य का अभ्यास करें, चाँदी के बर्तन से पानी पिएँ",
+        "color": "White / Cream",
+        "color_hi": "सफेद / क्रीम",
+        "gemstone": "Pearl (Moti)",
+        "gemstone_hi": "मोती",
+        "planet": "Moon",
+    },
+    3: {
+        "meaning": "Difficulty with self-expression and creativity, lack of joy",
+        "meaning_hi": "आत्म-अभिव्यक्ति और रचनात्मकता में कठिनाई, आनंद की कमी",
+        "remedy": "Wear yellow on Thursdays, chant Guru mantra (Om Gurave Namah), engage in creative activities, teach or mentor others",
+        "remedy_hi": "गुरुवार को पीला रंग पहनें, गुरु मंत्र (ॐ गुरवे नमः) जपें, रचनात्मक गतिविधियाँ करें, दूसरों को सिखाएँ",
+        "color": "Yellow",
+        "color_hi": "पीला",
+        "gemstone": "Yellow Sapphire (Pukhraj)",
+        "gemstone_hi": "पुखराज",
+        "planet": "Jupiter",
+    },
+    4: {
+        "meaning": "Lack of discipline and organization, scattered energy, instability",
+        "meaning_hi": "अनुशासन और व्यवस्था की कमी, बिखरी ऊर्जा, अस्थिरता",
+        "remedy": "Wear dark blue on Saturdays, chant Rahu mantra (Om Rahave Namah), create daily routines, practice meditation",
+        "remedy_hi": "शनिवार को गहरा नीला रंग पहनें, राहु मंत्र (ॐ राहवे नमः) जपें, दैनिक दिनचर्या बनाएँ, ध्यान करें",
+        "color": "Dark Blue / Grey",
+        "color_hi": "गहरा नीला / स्लेटी",
+        "gemstone": "Hessonite (Gomed)",
+        "gemstone_hi": "गोमेद",
+        "planet": "Rahu",
+    },
+    5: {
+        "meaning": "Fear of change, rigidity, inability to adapt, stubbornness",
+        "meaning_hi": "बदलाव का डर, कठोरता, अनुकूलन में असमर्थता, जिद",
+        "remedy": "Wear green on Wednesdays, chant Budh mantra (Om Budhaya Namah), travel frequently, learn new skills",
+        "remedy_hi": "बुधवार को हरा रंग पहनें, बुध मंत्र (ॐ बुधाय नमः) जपें, बार-बार यात्रा करें, नए कौशल सीखें",
+        "color": "Green",
+        "color_hi": "हरा",
+        "gemstone": "Emerald (Panna)",
+        "gemstone_hi": "पन्ना",
+        "planet": "Mercury",
+    },
+    6: {
+        "meaning": "Difficulty with responsibility and home life, relationship troubles",
+        "meaning_hi": "जिम्मेदारी और पारिवारिक जीवन में कठिनाई, संबंधों में परेशानी",
+        "remedy": "Wear pink or light blue on Fridays, chant Shukra mantra (Om Shukraya Namah), beautify surroundings, practice gratitude",
+        "remedy_hi": "शुक्रवार को गुलाबी या हल्का नीला पहनें, शुक्र मंत्र (ॐ शुक्राय नमः) जपें, आसपास सुंदरता लाएँ, कृतज्ञता का अभ्यास करें",
+        "color": "Pink / Light Blue",
+        "color_hi": "गुलाबी / हल्का नीला",
+        "gemstone": "Diamond (Heera)",
+        "gemstone_hi": "हीरा",
+        "planet": "Venus",
+    },
+    7: {
+        "meaning": "Lack of spiritual depth, surface thinking, poor intuition",
+        "meaning_hi": "आध्यात्मिक गहराई की कमी, सतही सोच, कमजोर अंतर्ज्ञान",
+        "remedy": "Wear light green on Wednesdays, chant Ketu mantra (Om Ketave Namah), practice meditation and solitude, study spiritual texts",
+        "remedy_hi": "बुधवार को हल्का हरा पहनें, केतु मंत्र (ॐ केतवे नमः) जपें, ध्यान और एकांत का अभ्यास करें, आध्यात्मिक ग्रंथ पढ़ें",
+        "color": "Light Green / Grey",
+        "color_hi": "हल्का हरा / स्लेटी",
+        "gemstone": "Cat's Eye (Lahsuniya)",
+        "gemstone_hi": "लहसुनिया (वैडूर्य)",
+        "planet": "Ketu",
+    },
+    8: {
+        "meaning": "Financial struggles, poor money management, karmic obstacles",
+        "meaning_hi": "आर्थिक कठिनाइयाँ, खराब धन प्रबंधन, कार्मिक बाधाएँ",
+        "remedy": "Wear dark blue or black on Saturdays, chant Shani mantra (Om Shanaye Namah), practice discipline, serve the elderly",
+        "remedy_hi": "शनिवार को गहरा नीला या काला पहनें, शनि मंत्र (ॐ शनये नमः) जपें, अनुशासन का पालन करें, बुजुर्गों की सेवा करें",
+        "color": "Dark Blue / Black",
+        "color_hi": "गहरा नीला / काला",
+        "gemstone": "Blue Sapphire (Neelam)",
+        "gemstone_hi": "नीलम",
+        "planet": "Saturn",
+    },
+    9: {
+        "meaning": "Self-centeredness, lack of compassion, difficulty letting go",
+        "meaning_hi": "आत्म-केंद्रितता, करुणा की कमी, छोड़ने में कठिनाई",
+        "remedy": "Wear red on Tuesdays, chant Mangal mantra (Om Mangalaya Namah), volunteer and do charity, practice forgiveness",
+        "remedy_hi": "मंगलवार को लाल रंग पहनें, मंगल मंत्र (ॐ मंगलाय नमः) जपें, स्वयंसेवा और दान करें, क्षमा का अभ्यास करें",
+        "color": "Red / Coral",
+        "color_hi": "लाल / मूँगा रंग",
+        "gemstone": "Red Coral (Moonga)",
+        "gemstone_hi": "मूँगा",
+        "planet": "Mars",
+    },
+}
+
+
+def analyze_missing_numbers(dob_digits: list) -> list:
+    """Identify numbers 1-9 missing from DOB digits with remedies.
+
+    Args:
+        dob_digits: list of non-zero DOB digits
+
+    Returns:
+        list of dicts for each missing number, sorted ascending,
+        each with meaning, remedy, color, gemstone, planet (bilingual).
+    """
+    present = set(dob_digits)
+    missing = []
+    for n in range(1, 10):
+        if n not in present:
+            missing.append({"number": n, **MISSING_NUMBER_REMEDIES[n]})
+    return missing
+
+
+# --- Repeated Numbers Significance ---
+
+REPEATED_NUMBER_MEANINGS = {
+    1: {
+        2: {"meaning": "Good leadership, confident communicator", "meaning_hi": "अच्छा नेतृत्व, आत्मविश्वासी वक्ता"},
+        3: {"meaning": "Dominating personality, may not listen to others", "meaning_hi": "प्रभुत्वशाली व्यक्तित्व, दूसरों की नहीं सुनते"},
+        4: {"meaning": "Aggressive and stubborn, needs to practice patience", "meaning_hi": "आक्रामक और जिद्दी, धैर्य का अभ्यास आवश्यक"},
+    },
+    2: {
+        2: {"meaning": "Sensitive and emotional, deeply caring", "meaning_hi": "संवेदनशील और भावनात्मक, गहरी देखभाल करने वाले"},
+        3: {"meaning": "Oversensitive, easily hurt by others' words", "meaning_hi": "अति-संवेदनशील, दूसरों के शब्दों से आसानी से आहत"},
+        4: {"meaning": "Mood swings, emotional instability", "meaning_hi": "मिजाज में उतार-चढ़ाव, भावनात्मक अस्थिरता"},
+    },
+    3: {
+        2: {"meaning": "Creative thinker, imaginative and expressive", "meaning_hi": "रचनात्मक विचारक, कल्पनाशील और अभिव्यक्त"},
+        3: {"meaning": "Self-absorbed, lives in fantasy world", "meaning_hi": "आत्म-लीन, काल्पनिक दुनिया में रहते हैं"},
+        4: {"meaning": "Isolated from reality, needs grounding", "meaning_hi": "वास्तविकता से कटे हुए, ज़मीन से जुड़ने की ज़रूरत"},
+    },
+    4: {
+        2: {"meaning": "Hardworking and methodical, detail-oriented", "meaning_hi": "मेहनती और व्यवस्थित, विस्तार पर ध्यान देने वाले"},
+        3: {"meaning": "Over-cautious, misses opportunities due to rigidity", "meaning_hi": "अति-सतर्क, कठोरता के कारण अवसर चूक जाते हैं"},
+        4: {"meaning": "Extremely rigid, resistant to all change", "meaning_hi": "अत्यंत कठोर, हर बदलाव का विरोध"},
+    },
+    5: {
+        2: {"meaning": "Versatile and adaptable, quick thinker", "meaning_hi": "बहुमुखी और अनुकूलनशील, तेज़ सोच"},
+        3: {"meaning": "Restless, cannot stay focused on one thing", "meaning_hi": "बेचैन, एक चीज़ पर ध्यान नहीं टिका सकते"},
+        4: {"meaning": "Extremely scattered, prone to anxiety", "meaning_hi": "अत्यंत बिखरे हुए, चिंता की प्रवृत्ति"},
+    },
+    6: {
+        2: {"meaning": "Loving and caring, devoted to family", "meaning_hi": "प्रेमपूर्ण और देखभाल करने वाले, परिवार के प्रति समर्पित"},
+        3: {"meaning": "Overly possessive, smothering loved ones", "meaning_hi": "अत्यधिक अधिकार-भावना, प्रियजनों पर दबाव"},
+        4: {"meaning": "Controlling in relationships, needs to trust more", "meaning_hi": "रिश्तों में नियंत्रक, अधिक विश्वास करने की आवश्यकता"},
+    },
+    7: {
+        2: {"meaning": "Deeply spiritual, strong intuition and inner wisdom", "meaning_hi": "गहन आध्यात्मिक, प्रबल अंतर्ज्ञान और आंतरिक ज्ञान"},
+        3: {"meaning": "Isolated, withdrawn from social life", "meaning_hi": "अकेले रहने वाले, सामाजिक जीवन से कटे हुए"},
+        4: {"meaning": "Complete recluse, disconnected from world", "meaning_hi": "पूर्ण एकांतवासी, दुनिया से कटे हुए"},
+    },
+    8: {
+        2: {"meaning": "Strong business sense, financial intelligence", "meaning_hi": "मजबूत व्यापारिक समझ, आर्थिक बुद्धिमत्ता"},
+        3: {"meaning": "Obsessed with money and power", "meaning_hi": "पैसे और सत्ता का जुनून"},
+        4: {"meaning": "Ruthless in pursuit of material goals", "meaning_hi": "भौतिक लक्ष्यों की खोज में निर्मम"},
+    },
+    9: {
+        2: {"meaning": "Compassionate leader, humanitarian spirit", "meaning_hi": "करुणामय नेता, मानवतावादी भावना"},
+        3: {"meaning": "Idealistic to a fault, disappointed by reality", "meaning_hi": "दोषपूर्ण आदर्शवादी, वास्तविकता से निराश"},
+        4: {"meaning": "Fanatical about beliefs, needs balance", "meaning_hi": "विश्वासों के प्रति कट्टर, संतुलन आवश्यक"},
+    },
+}
+
+
+def analyze_repeated_numbers(dob_digits: list) -> list:
+    """Identify numbers appearing 2+ times in DOB digits with significance.
+
+    Args:
+        dob_digits: list of non-zero DOB digits
+
+    Returns:
+        list of dicts for each repeated number, sorted by number,
+        each with number, count, meaning, meaning_hi.
+    """
+    from collections import Counter
+    counts = Counter(dob_digits)
+    repeated = []
+
+    for num in sorted(counts):
+        count = counts[num]
+        if count >= 2 and num in REPEATED_NUMBER_MEANINGS:
+            meanings = REPEATED_NUMBER_MEANINGS[num]
+            # Use exact count if available, otherwise cap at highest defined
+            max_defined = max(meanings.keys())
+            lookup_count = min(count, max_defined)
+            entry = meanings[lookup_count]
+            repeated.append({
+                "number": num,
+                "count": count,
+                "meaning": entry["meaning"],
+                "meaning_hi": entry["meaning_hi"],
+            })
+
+    return repeated
+
+
 def calculate_mobile_numerology(
     phone_number: str,
     name: str = "",
@@ -1284,6 +1742,313 @@ def calculate_mobile_numerology(
     return result
 
 
+# ============================================================
+# PINNACLE PREDICTIONS (bilingual en + hi)
+# Keys: 0-9, 11, 22, 33
+# ============================================================
+
+PINNACLE_PREDICTIONS = {
+    0: {
+        "title": "Inner Potential",
+        "title_hi": "आंतरिक क्षमता",
+        "opportunity": "Freedom to choose any direction; all paths are open to you.",
+        "opportunity_hi": "कोई भी दिशा चुनने की स्वतंत्रता; सभी रास्ते आपके लिए खुले हैं।",
+        "lesson": "Make deliberate choices rather than drifting without purpose.",
+        "lesson_hi": "बिना उद्देश्य भटकने के बजाय सोच-समझकर निर्णय लें।",
+    },
+    1: {
+        "title": "Leadership & Independence",
+        "title_hi": "नेतृत्व और स्वतंत्रता",
+        "opportunity": "Forge your own path. Take initiative and lead boldly.",
+        "opportunity_hi": "अपना रास्ता खुद बनाएं। पहल करें और साहसपूर्वक नेतृत्व करें।",
+        "lesson": "Balance independence with collaboration; avoid isolation.",
+        "lesson_hi": "स्वतंत्रता को सहयोग के साथ संतुलित करें; अकेलेपन से बचें।",
+    },
+    2: {
+        "title": "Cooperation & Patience",
+        "title_hi": "सहयोग और धैर्य",
+        "opportunity": "Partnerships and diplomacy bring great rewards during this period.",
+        "opportunity_hi": "इस अवधि में साझेदारी और कूटनीति बड़े पुरस्कार लाती है।",
+        "lesson": "Develop patience and sensitivity to others' needs.",
+        "lesson_hi": "धैर्य और दूसरों की जरूरतों के प्रति संवेदनशीलता विकसित करें।",
+    },
+    3: {
+        "title": "Creative Expression",
+        "title_hi": "रचनात्मक अभिव्यक्ति",
+        "opportunity": "Artistic talents blossom. Social connections open doors.",
+        "opportunity_hi": "कलात्मक प्रतिभाएं खिलती हैं। सामाजिक संबंध दरवाजे खोलते हैं।",
+        "lesson": "Focus creative energy; avoid scattering your talents.",
+        "lesson_hi": "रचनात्मक ऊर्जा केंद्रित करें; अपनी प्रतिभाओं को बिखरने न दें।",
+    },
+    4: {
+        "title": "Foundation Building",
+        "title_hi": "नींव निर्माण",
+        "opportunity": "Hard work and discipline create lasting stability.",
+        "opportunity_hi": "कड़ी मेहनत और अनुशासन स्थायी स्थिरता बनाते हैं।",
+        "lesson": "Embrace structure without becoming rigid or inflexible.",
+        "lesson_hi": "कठोर या अनम्य बने बिना संरचना अपनाएं।",
+    },
+    5: {
+        "title": "Freedom & Change",
+        "title_hi": "स्वतंत्रता और परिवर्तन",
+        "opportunity": "Travel, adventure, and new experiences bring growth.",
+        "opportunity_hi": "यात्रा, साहसिक कार्य और नए अनुभव विकास लाते हैं।",
+        "lesson": "Embrace change while maintaining inner stability.",
+        "lesson_hi": "आंतरिक स्थिरता बनाए रखते हुए परिवर्तन को अपनाएं।",
+    },
+    6: {
+        "title": "Love & Responsibility",
+        "title_hi": "प्रेम और जिम्मेदारी",
+        "opportunity": "Family, home, and community service bring deep fulfillment.",
+        "opportunity_hi": "परिवार, घर और सामुदायिक सेवा गहरी पूर्णता लाती है।",
+        "lesson": "Care for others without sacrificing your own well-being.",
+        "lesson_hi": "अपनी भलाई का त्याग किए बिना दूसरों की देखभाल करें।",
+    },
+    7: {
+        "title": "Spiritual Growth & Wisdom",
+        "title_hi": "आध्यात्मिक विकास और ज्ञान",
+        "opportunity": "Study, research, and inner reflection yield profound insights.",
+        "opportunity_hi": "अध्ययन, शोध और आंतरिक चिंतन गहन अंतर्दृष्टि प्रदान करते हैं।",
+        "lesson": "Balance solitude with meaningful connections.",
+        "lesson_hi": "एकांत को सार्थक संबंधों के साथ संतुलित करें।",
+    },
+    8: {
+        "title": "Material Mastery & Power",
+        "title_hi": "भौतिक महारत और शक्ति",
+        "opportunity": "Business acumen and financial success are favored.",
+        "opportunity_hi": "व्यापार कौशल और वित्तीय सफलता अनुकूल है।",
+        "lesson": "Use power with integrity; karmic balance demands fairness.",
+        "lesson_hi": "ईमानदारी से शक्ति का उपयोग करें; कर्म संतुलन न्याय की मांग करता है।",
+    },
+    9: {
+        "title": "Humanitarian Service",
+        "title_hi": "मानवतावादी सेवा",
+        "opportunity": "Compassion and selfless service bring the greatest rewards.",
+        "opportunity_hi": "करुणा और निःस्वार्थ सेवा सबसे बड़ा पुरस्कार लाती है।",
+        "lesson": "Let go of personal attachments; serve a higher purpose.",
+        "lesson_hi": "व्यक्तिगत आसक्ति छोड़ें; उच्च उद्देश्य की सेवा करें।",
+    },
+    11: {
+        "title": "Master Intuition",
+        "title_hi": "मास्टर अंतर्ज्ञान",
+        "opportunity": "Heightened spiritual awareness and visionary leadership.",
+        "opportunity_hi": "उच्च आध्यात्मिक जागरूकता और दूरदर्शी नेतृत्व।",
+        "lesson": "Channel inspiration into tangible form; manage nervous energy.",
+        "lesson_hi": "प्रेरणा को मूर्त रूप दें; तनावपूर्ण ऊर्जा को प्रबंधित करें।",
+    },
+    22: {
+        "title": "Master Builder",
+        "title_hi": "मास्टर निर्माता",
+        "opportunity": "Turn grand visions into reality on a massive scale.",
+        "opportunity_hi": "बड़े पैमाने पर भव्य दृष्टिकोणों को वास्तविकता में बदलें।",
+        "lesson": "Practical idealism — dream big but build step by step.",
+        "lesson_hi": "व्यावहारिक आदर्शवाद — बड़े सपने देखें लेकिन कदम दर कदम बनाएं।",
+    },
+    33: {
+        "title": "Master Teacher",
+        "title_hi": "मास्टर शिक्षक",
+        "opportunity": "Selfless healing and uplifting humanity through love.",
+        "opportunity_hi": "निःस्वार्थ उपचार और प्रेम के माध्यम से मानवता का उत्थान।",
+        "lesson": "The highest expression of service — heal yourself to heal others.",
+        "lesson_hi": "सेवा की सर्वोच्च अभिव्यक्ति — दूसरों को ठीक करने के लिए स्वयं को ठीक करें।",
+    },
+}
+
+
+# ============================================================
+# CHALLENGE PREDICTIONS (bilingual en + hi)
+# Keys: 0-9
+# ============================================================
+
+CHALLENGE_PREDICTIONS = {
+    0: {
+        "title": "The Choice",
+        "title_hi": "चुनाव",
+        "obstacle": "No single focused obstacle — but the challenge of choosing your direction.",
+        "obstacle_hi": "कोई एक केंद्रित बाधा नहीं — लेकिन अपनी दिशा चुनने की चुनौती।",
+        "growth": "Develop clarity of purpose; any path can be mastered with commitment.",
+        "growth_hi": "उद्देश्य की स्पष्टता विकसित करें; प्रतिबद्धता से कोई भी मार्ग पर महारत हासिल की जा सकती है।",
+    },
+    1: {
+        "title": "Independence vs Selfishness",
+        "title_hi": "स्वतंत्रता बनाम स्वार्थ",
+        "obstacle": "Struggle between asserting yourself and dominating others.",
+        "obstacle_hi": "अपने आप को स्थापित करने और दूसरों पर हावी होने के बीच संघर्ष।",
+        "growth": "Lead with confidence without steamrolling those around you.",
+        "growth_hi": "आसपास के लोगों को कुचले बिना आत्मविश्वास से नेतृत्व करें।",
+    },
+    2: {
+        "title": "Sensitivity vs Weakness",
+        "title_hi": "संवेदनशीलता बनाम कमजोरी",
+        "obstacle": "Over-sensitivity leading to emotional fragility or dependence.",
+        "obstacle_hi": "अति-संवेदनशीलता भावनात्मक नाजुकता या निर्भरता की ओर ले जाती है।",
+        "growth": "Use sensitivity as a strength — empathy without losing yourself.",
+        "growth_hi": "संवेदनशीलता को ताकत के रूप में उपयोग करें — खुद को खोए बिना सहानुभूति।",
+    },
+    3: {
+        "title": "Expression vs Scattering",
+        "title_hi": "अभिव्यक्ति बनाम बिखराव",
+        "obstacle": "Talent spread too thin; difficulty completing creative projects.",
+        "obstacle_hi": "प्रतिभा बहुत बिखरी हुई; रचनात्मक परियोजनाओं को पूरा करने में कठिनाई।",
+        "growth": "Focus your creative gifts; depth over breadth.",
+        "growth_hi": "अपनी रचनात्मक प्रतिभाओं को केंद्रित करें; विस्तार से अधिक गहराई।",
+    },
+    4: {
+        "title": "Order vs Rigidity",
+        "title_hi": "व्यवस्था बनाम कठोरता",
+        "obstacle": "Excessive need for control and resistance to change.",
+        "obstacle_hi": "नियंत्रण की अत्यधिक आवश्यकता और परिवर्तन का प्रतिरोध।",
+        "growth": "Build structure that allows flexibility; discipline without prison.",
+        "growth_hi": "ऐसी संरचना बनाएं जो लचीलेपन की अनुमति दे; बंधन के बिना अनुशासन।",
+    },
+    5: {
+        "title": "Freedom vs Excess",
+        "title_hi": "स्वतंत्रता बनाम अतिरेक",
+        "obstacle": "Restlessness, overindulgence, and fear of commitment.",
+        "obstacle_hi": "बेचैनी, अतिभोग और प्रतिबद्धता का भय।",
+        "growth": "Find freedom within commitment; adventure with responsibility.",
+        "growth_hi": "प्रतिबद्धता में स्वतंत्रता खोजें; जिम्मेदारी के साथ साहसिक कार्य।",
+    },
+    6: {
+        "title": "Responsibility vs Martyrdom",
+        "title_hi": "जिम्मेदारी बनाम आत्म-बलिदान",
+        "obstacle": "Overburdening yourself with others' problems; perfectionism.",
+        "obstacle_hi": "दूसरों की समस्याओं से खुद को अत्यधिक बोझिल करना; पूर्णतावाद।",
+        "growth": "Serve with healthy boundaries; love yourself as you love others.",
+        "growth_hi": "स्वस्थ सीमाओं के साथ सेवा करें; जैसे आप दूसरों से प्यार करते हैं वैसे खुद से भी करें।",
+    },
+    7: {
+        "title": "Faith vs Skepticism",
+        "title_hi": "विश्वास बनाम संदेह",
+        "obstacle": "Isolation, over-analysis, and difficulty trusting others.",
+        "obstacle_hi": "अलगाव, अति-विश्लेषण और दूसरों पर भरोसा करने में कठिनाई।",
+        "growth": "Balance intellect with faith; share your wisdom openly.",
+        "growth_hi": "बुद्धि को विश्वास के साथ संतुलित करें; अपना ज्ञान खुलकर साझा करें।",
+    },
+    8: {
+        "title": "Power vs Greed",
+        "title_hi": "शक्ति बनाम लालच",
+        "obstacle": "Material obsession, workaholism, and misuse of authority.",
+        "obstacle_hi": "भौतिक जुनून, कार्यशीलता और अधिकार का दुरुपयोग।",
+        "growth": "Earn success ethically; power wielded with wisdom endures.",
+        "growth_hi": "नैतिक रूप से सफलता अर्जित करें; ज्ञान के साथ प्रयोग की गई शक्ति टिकती है।",
+    },
+    9: {
+        "title": "Letting Go vs Clinging",
+        "title_hi": "छोड़ना बनाम लिपटना",
+        "obstacle": "Difficulty releasing the past; clinging to people and outcomes.",
+        "obstacle_hi": "अतीत को छोड़ने में कठिनाई; लोगों और परिणामों से चिपकना।",
+        "growth": "Serve universally; release attachments to find true fulfillment.",
+        "growth_hi": "सार्वभौमिक रूप से सेवा करें; सच्ची पूर्णता पाने के लिए आसक्ति छोड़ें।",
+    },
+}
+
+
+# ============================================================
+# LIFE CYCLE PREDICTIONS (bilingual en + hi)
+# Keys: 1-9, 11, 22, 33
+# ============================================================
+
+LIFE_CYCLE_PREDICTIONS = {
+    1: {
+        "title": "Independence Cycle",
+        "title_hi": "स्वतंत्रता चक्र",
+        "theme": "Developing individuality, courage, and self-reliance.",
+        "theme_hi": "व्यक्तित्व, साहस और आत्मनिर्भरता विकसित करना।",
+        "advice": "Trust your instincts and take the lead in your own life.",
+        "advice_hi": "अपनी प्रवृत्ति पर भरोसा करें और अपने जीवन में नेतृत्व करें।",
+    },
+    2: {
+        "title": "Partnership Cycle",
+        "title_hi": "साझेदारी चक्र",
+        "theme": "Learning cooperation, diplomacy, and emotional sensitivity.",
+        "theme_hi": "सहयोग, कूटनीति और भावनात्मक संवेदनशीलता सीखना।",
+        "advice": "Cultivate patience; your greatest strength is gentle persuasion.",
+        "advice_hi": "धैर्य विकसित करें; आपकी सबसे बड़ी ताकत सौम्य प्रेरणा है।",
+    },
+    3: {
+        "title": "Expression Cycle",
+        "title_hi": "अभिव्यक्ति चक्र",
+        "theme": "Creative self-expression, joy, and social connection.",
+        "theme_hi": "रचनात्मक आत्म-अभिव्यक्ति, आनंद और सामाजिक संबंध।",
+        "advice": "Speak your truth and let your creative gifts flow freely.",
+        "advice_hi": "अपना सत्य बोलें और अपनी रचनात्मक प्रतिभाओं को स्वतंत्र रूप से बहने दें।",
+    },
+    4: {
+        "title": "Foundation Cycle",
+        "title_hi": "नींव चक्र",
+        "theme": "Building stability through discipline, order, and hard work.",
+        "theme_hi": "अनुशासन, व्यवस्था और कड़ी मेहनत से स्थिरता का निर्माण।",
+        "advice": "Lay strong foundations now; they will support everything that follows.",
+        "advice_hi": "अभी मजबूत नींव रखें; वे आगे आने वाली हर चीज का समर्थन करेंगी।",
+    },
+    5: {
+        "title": "Freedom Cycle",
+        "title_hi": "स्वतंत्रता चक्र",
+        "theme": "Change, travel, adventure, and embracing new experiences.",
+        "theme_hi": "परिवर्तन, यात्रा, साहसिक कार्य और नए अनुभवों को अपनाना।",
+        "advice": "Embrace change as your teacher; freedom comes from adaptability.",
+        "advice_hi": "परिवर्तन को अपना शिक्षक मानें; स्वतंत्रता अनुकूलनशीलता से आती है।",
+    },
+    6: {
+        "title": "Responsibility Cycle",
+        "title_hi": "जिम्मेदारी चक्र",
+        "theme": "Family, love, duty, and nurturing those around you.",
+        "theme_hi": "परिवार, प्रेम, कर्तव्य और अपने आसपास के लोगों का पालन-पोषण।",
+        "advice": "Your heart is your compass; serve with love but protect your boundaries.",
+        "advice_hi": "आपका हृदय आपकी दिशा है; प्रेम से सेवा करें लेकिन अपनी सीमाओं की रक्षा करें।",
+    },
+    7: {
+        "title": "Wisdom Cycle",
+        "title_hi": "ज्ञान चक्र",
+        "theme": "Spiritual seeking, study, analysis, and inner growth.",
+        "theme_hi": "आध्यात्मिक खोज, अध्ययन, विश्लेषण और आंतरिक विकास।",
+        "advice": "Seek truth relentlessly; solitude is your sanctuary for growth.",
+        "advice_hi": "अथक सत्य की खोज करें; एकांत विकास के लिए आपका अभयारण्य है।",
+    },
+    8: {
+        "title": "Achievement Cycle",
+        "title_hi": "उपलब्धि चक्र",
+        "theme": "Material success, authority, and karmic lessons about power.",
+        "theme_hi": "भौतिक सफलता, अधिकार और शक्ति के बारे में कर्म संबंधी पाठ।",
+        "advice": "Build your empire with integrity; ethical success endures.",
+        "advice_hi": "ईमानदारी से अपना साम्राज्य बनाएं; नैतिक सफलता टिकती है।",
+    },
+    9: {
+        "title": "Completion Cycle",
+        "title_hi": "पूर्णता चक्र",
+        "theme": "Humanitarianism, compassion, and universal love.",
+        "theme_hi": "मानवतावाद, करुणा और सार्वभौमिक प्रेम।",
+        "advice": "Give freely; the more you release, the more flows back to you.",
+        "advice_hi": "स्वतंत्र रूप से दें; जितना अधिक आप छोड़ेंगे, उतना अधिक आपके पास वापस आएगा।",
+    },
+    11: {
+        "title": "Illumination Cycle",
+        "title_hi": "प्रकाश चक्र",
+        "theme": "Heightened intuition, spiritual awareness, and inspired leadership.",
+        "theme_hi": "उच्च अंतर्ज्ञान, आध्यात्मिक जागरूकता और प्रेरित नेतृत्व।",
+        "advice": "Trust your inner voice; you are here to illuminate the path for others.",
+        "advice_hi": "अपनी आंतरिक आवाज पर भरोसा करें; आप दूसरों के लिए मार्ग रोशन करने के लिए हैं।",
+    },
+    22: {
+        "title": "Master Builder Cycle",
+        "title_hi": "मास्टर निर्माता चक्र",
+        "theme": "Building great works that serve humanity on a massive scale.",
+        "theme_hi": "बड़े पैमाने पर मानवता की सेवा करने वाले महान कार्यों का निर्माण।",
+        "advice": "Think globally, build practically; your vision can reshape the world.",
+        "advice_hi": "वैश्विक सोचें, व्यावहारिक बनाएं; आपकी दृष्टि दुनिया को नया रूप दे सकती है।",
+    },
+    33: {
+        "title": "Master Healer Cycle",
+        "title_hi": "मास्टर उपचारक चक्र",
+        "theme": "Selfless service, healing, and uplifting consciousness.",
+        "theme_hi": "निःस्वार्थ सेवा, उपचार और चेतना का उत्थान।",
+        "advice": "Your love is medicine; pour it out and you will never run dry.",
+        "advice_hi": "आपका प्रेम औषधि है; इसे बहाएं और आप कभी सूखेंगे नहीं।",
+    },
+}
+
+
 def _reduce_to_single(n: int) -> int:
     """Reduce a number to single digit (1-9) or master number (11, 22, 33)."""
     while n > 9 and n not in MASTER_NUMBERS:
@@ -1344,6 +2109,174 @@ def _chaldean_number(name: str) -> int:
         if ch in CHALDEAN_MAP:
             total += CHALDEAN_MAP[ch]
     return _reduce_to_single(total)
+
+
+# ============================================================
+# PINNACLES, CHALLENGES, LIFE CYCLES
+# ============================================================
+
+def _determine_current_period(birth_date: str, first_end: int) -> int:
+    """Return 1-indexed period number (1-4) based on current age.
+
+    Periods:
+        1: Birth to first_end
+        2: first_end to first_end+9
+        3: first_end+9 to first_end+18
+        4: first_end+18 onward
+    """
+    from datetime import date as _date
+    parts = birth_date.split('-')
+    birth_year = int(parts[0])
+    birth_month = int(parts[1])
+    birth_day = int(parts[2])
+    today = _date.today()
+    age = today.year - birth_year
+    if (today.month, today.day) < (birth_month, birth_day):
+        age -= 1
+
+    if age < first_end:
+        return 1
+    elif age < first_end + 9:
+        return 2
+    elif age < first_end + 18:
+        return 3
+    else:
+        return 4
+
+
+def _calculate_pinnacles(birth_date: str) -> dict:
+    """Calculate 4 Pinnacle Numbers with timing and predictions.
+
+    Args:
+        birth_date: Date string in YYYY-MM-DD format.
+
+    Returns:
+        dict with 'pinnacles' list (4 items) and 'current_pinnacle' (1-indexed).
+    """
+    month = _reduce_to_single(int(birth_date[5:7]))
+    day = _reduce_to_single(int(birth_date[8:10]))
+    year = _reduce_to_single(sum(int(d) for d in birth_date[:4]))
+    life_path = _life_path(birth_date)
+
+    p1 = _reduce_to_single(month + day)       # First Pinnacle
+    p2 = _reduce_to_single(day + year)         # Second Pinnacle
+    p3 = _reduce_to_single(p1 + p2)            # Third Pinnacle
+    p4 = _reduce_to_single(month + year)       # Fourth Pinnacle
+
+    # Timing: First pinnacle ends at age (36 - life_path), minimum 27
+    first_end = max(27, 36 - life_path)
+
+    pinnacles = [
+        {"number": p1, "period": f"Birth to age {first_end}",
+         "age_start": 0, "age_end": first_end,
+         "prediction": PINNACLE_PREDICTIONS.get(p1, PINNACLE_PREDICTIONS[9])},
+        {"number": p2, "period": f"Age {first_end} to {first_end + 9}",
+         "age_start": first_end, "age_end": first_end + 9,
+         "prediction": PINNACLE_PREDICTIONS.get(p2, PINNACLE_PREDICTIONS[9])},
+        {"number": p3, "period": f"Age {first_end + 9} to {first_end + 18}",
+         "age_start": first_end + 9, "age_end": first_end + 18,
+         "prediction": PINNACLE_PREDICTIONS.get(p3, PINNACLE_PREDICTIONS[9])},
+        {"number": p4, "period": f"Age {first_end + 18}+",
+         "age_start": first_end + 18, "age_end": 999,
+         "prediction": PINNACLE_PREDICTIONS.get(p4, PINNACLE_PREDICTIONS[9])},
+    ]
+
+    return {
+        "pinnacles": pinnacles,
+        "current_pinnacle": _determine_current_period(birth_date, first_end),
+    }
+
+
+def _calculate_challenges(birth_date: str) -> dict:
+    """Calculate 4 Challenge Numbers with timing and predictions.
+
+    Args:
+        birth_date: Date string in YYYY-MM-DD format.
+
+    Returns:
+        dict with 'challenges' list (4 items) and 'current_challenge' (1-indexed).
+    """
+    month = _reduce_to_single(int(birth_date[5:7]))
+    day = _reduce_to_single(int(birth_date[8:10]))
+    year = _reduce_to_single(sum(int(d) for d in birth_date[:4]))
+    life_path = _life_path(birth_date)
+
+    c1 = abs(month - day)            # First Challenge
+    c2 = abs(day - year)             # Second Challenge
+    c3 = abs(c1 - c2)               # Third (Main) Challenge
+    c4 = abs(month - year)           # Fourth Challenge
+
+    # Same timing as pinnacles
+    first_end = max(27, 36 - life_path)
+
+    challenges = [
+        {"number": c1, "period": f"Birth to age {first_end}",
+         "age_start": 0, "age_end": first_end,
+         "prediction": CHALLENGE_PREDICTIONS.get(c1, CHALLENGE_PREDICTIONS[0])},
+        {"number": c2, "period": f"Age {first_end} to {first_end + 9}",
+         "age_start": first_end, "age_end": first_end + 9,
+         "prediction": CHALLENGE_PREDICTIONS.get(c2, CHALLENGE_PREDICTIONS[0])},
+        {"number": c3, "period": f"Age {first_end + 9} to {first_end + 18}",
+         "age_start": first_end + 9, "age_end": first_end + 18,
+         "prediction": CHALLENGE_PREDICTIONS.get(c3, CHALLENGE_PREDICTIONS[0])},
+        {"number": c4, "period": f"Age {first_end + 18}+",
+         "age_start": first_end + 18, "age_end": 999,
+         "prediction": CHALLENGE_PREDICTIONS.get(c4, CHALLENGE_PREDICTIONS[0])},
+    ]
+
+    return {
+        "challenges": challenges,
+        "current_challenge": _determine_current_period(birth_date, first_end),
+    }
+
+
+def _calculate_life_cycles(birth_date: str) -> dict:
+    """Calculate 3 Life Cycles with predictions.
+
+    Args:
+        birth_date: Date string in YYYY-MM-DD format.
+
+    Returns:
+        dict with 'cycles' list (3 items) and 'current_cycle' (1-indexed).
+    """
+    month_cycle = _reduce_to_single(int(birth_date[5:7]))   # Early life
+    day_cycle = _reduce_to_single(int(birth_date[8:10]))     # Middle life
+    year_cycle = _reduce_to_single(sum(int(d) for d in birth_date[:4]))  # Later life
+
+    cycles = [
+        {"number": month_cycle, "period": "Early Life (Birth to ~28)",
+         "theme": LIFE_CYCLE_PREDICTIONS.get(month_cycle, LIFE_CYCLE_PREDICTIONS[9])["theme"],
+         "prediction": LIFE_CYCLE_PREDICTIONS.get(month_cycle, LIFE_CYCLE_PREDICTIONS[9])},
+        {"number": day_cycle, "period": "Middle Life (~28 to ~56)",
+         "theme": LIFE_CYCLE_PREDICTIONS.get(day_cycle, LIFE_CYCLE_PREDICTIONS[9])["theme"],
+         "prediction": LIFE_CYCLE_PREDICTIONS.get(day_cycle, LIFE_CYCLE_PREDICTIONS[9])},
+        {"number": year_cycle, "period": "Later Life (~56+)",
+         "theme": LIFE_CYCLE_PREDICTIONS.get(year_cycle, LIFE_CYCLE_PREDICTIONS[9])["theme"],
+         "prediction": LIFE_CYCLE_PREDICTIONS.get(year_cycle, LIFE_CYCLE_PREDICTIONS[9])},
+    ]
+
+    # Determine current cycle based on age
+    from datetime import date as _date
+    parts = birth_date.split('-')
+    birth_year = int(parts[0])
+    birth_month = int(parts[1])
+    birth_day = int(parts[2])
+    today = _date.today()
+    age = today.year - birth_year
+    if (today.month, today.day) < (birth_month, birth_day):
+        age -= 1
+
+    if age < 28:
+        current_cycle = 1
+    elif age < 56:
+        current_cycle = 2
+    else:
+        current_cycle = 3
+
+    return {
+        "cycles": cycles,
+        "current_cycle": current_cycle,
+    }
 
 
 def analyze_name_numerology(
@@ -1829,4 +2762,7 @@ def calculate_numerology(name: str, birth_date: str) -> dict:
         "soul_urge": soul_urge,
         "personality": personality,
         "predictions": predictions,
+        "pinnacles": _calculate_pinnacles(birth_date),
+        "challenges": _calculate_challenges(birth_date),
+        "life_cycles": _calculate_life_cycles(birth_date),
     }

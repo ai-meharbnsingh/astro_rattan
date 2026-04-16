@@ -1,4 +1,4 @@
-"""Compatibility muhurat routes used by frontend widgets."""
+"""Muhurat Finder API — activity-specific auspicious date finder + compatibility routes."""
 from __future__ import annotations
 
 import calendar
@@ -8,6 +8,8 @@ from typing import Any
 from fastapi import APIRouter, Query, status
 
 from app.panchang_engine import calculate_panchang
+from app.muhurat_rules import get_all_activities
+from app.muhurat_finder import find_muhurat_dates
 
 router = APIRouter(tags=["muhurat"])
 
@@ -84,4 +86,45 @@ def muhurat_find(
             }
         )
     return {"event_type": event_type, "date": date_str, "windows": windows}
+
+
+# ============================================================
+# NEW: Activity-specific Muhurat Finder (rules-based)
+# ============================================================
+
+@router.get("/api/muhurat/activities", status_code=status.HTTP_200_OK)
+def list_activities():
+    """List all available muhurat activity types with Hindi translations."""
+    return {"activities": get_all_activities()}
+
+
+@router.get("/api/muhurat/finder", status_code=status.HTTP_200_OK)
+def muhurat_finder(
+    activity: str = Query(..., description="Activity key (e.g. marriage, griha_pravesh, vehicle_purchase)"),
+    month: int = Query(default=None),
+    year: int = Query(default=None),
+    latitude: float = Query(default=28.6139),
+    longitude: float = Query(default=77.2090),
+    limit: int = Query(default=15, ge=1, le=31),
+):
+    """Find auspicious dates for a specific activity in a given month.
+
+    Uses traditional Vedic rules: favorable tithis, nakshatras, weekdays,
+    lagnas, and avoids Rahu Kaal, Bhadra, Panchaka, Ganda Moola, etc.
+    """
+    today = date.today()
+    target_month = month or today.month
+    target_year = year or today.year
+
+    if not (1 <= target_month <= 12):
+        return {"error": f"Invalid month: {target_month}", "dates": []}
+
+    return find_muhurat_dates(
+        activity_key=activity,
+        month=target_month,
+        year=target_year,
+        latitude=latitude,
+        longitude=longitude,
+        limit=limit,
+    )
 

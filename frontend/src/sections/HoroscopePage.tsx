@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, Loader2, Sun, Moon, Star, Sparkles, Users, Orbit } from 'lucide-react';
+import { Calendar, CalendarDays, Loader2, Sun, Moon, Star, Sparkles, Users, Orbit } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
 import DailyTab from '@/components/horoscope/DailyTab';
 import WeeklyTab from '@/components/horoscope/WeeklyTab';
+import MonthlyTab from '@/components/horoscope/MonthlyTab';
+import YearlyTab from '@/components/horoscope/YearlyTab';
 import AllSignsTab from '@/components/horoscope/AllSignsTab';
 import TransitInsightsTab from '@/components/horoscope/TransitInsightsTab';
 
@@ -43,12 +45,16 @@ export default function HoroscopePage() {
   // Data states
   const [dailyData, setDailyData] = useState<any>(null);
   const [weeklyData, setWeeklyData] = useState<any>(null);
+  const [monthlyData, setMonthlyData] = useState<any>(null);
+  const [yearlyData, setYearlyData] = useState<any>(null);
   const [allSignsData, setAllSignsData] = useState<any>(null);
   const [transitData, setTransitData] = useState<any>(null);
 
   // Loading states
   const [dailyLoading, setDailyLoading] = useState(false);
   const [weeklyLoading, setWeeklyLoading] = useState(false);
+  const [monthlyLoading, setMonthlyLoading] = useState(false);
+  const [yearlyLoading, setYearlyLoading] = useState(false);
   const [allSignsLoading, setAllSignsLoading] = useState(false);
   const [transitLoading, setTransitLoading] = useState(false);
 
@@ -87,6 +93,36 @@ export default function HoroscopePage() {
       finally { if (!cancelled) setWeeklyLoading(false); }
     };
     fetchWeekly();
+    return () => { cancelled = true; };
+  }, [selectedSign]);
+
+  // Fetch monthly when sign changes
+  useEffect(() => {
+    let cancelled = false;
+    const fetchMonthly = async () => {
+      setMonthlyLoading(true);
+      try {
+        const data = await api.get(`/api/horoscope/monthly?sign=${selectedSign}`);
+        if (!cancelled && data) setMonthlyData(data);
+      } catch { /* keep previous */ }
+      finally { if (!cancelled) setMonthlyLoading(false); }
+    };
+    fetchMonthly();
+    return () => { cancelled = true; };
+  }, [selectedSign]);
+
+  // Fetch yearly when sign changes
+  useEffect(() => {
+    let cancelled = false;
+    const fetchYearly = async () => {
+      setYearlyLoading(true);
+      try {
+        const data = await api.get(`/api/horoscope/yearly?sign=${selectedSign}`);
+        if (!cancelled && data) setYearlyData(data);
+      } catch { /* keep previous */ }
+      finally { if (!cancelled) setYearlyLoading(false); }
+    };
+    fetchYearly();
     return () => { cancelled = true; };
   }, [selectedSign]);
 
@@ -175,10 +211,12 @@ export default function HoroscopePage() {
 
         {/* Tab Navigation */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 h-auto p-1 bg-card rounded-xl">
+          <TabsList className="grid w-full grid-cols-6 h-auto p-1 bg-card rounded-xl">
             {[
               { id: 'daily', label: t('auto.daily'), icon: Sun },
               { id: 'weekly', label: t('auto.weekly'), icon: Calendar },
+              { id: 'monthly', label: t('auto.monthly'), icon: CalendarDays },
+              { id: 'yearly', label: t('auto.yearly'), icon: Star },
               { id: 'all', label: t('auto.allSigns'), icon: Users },
               { id: 'transits', label: t('auto.transits'), icon: Orbit },
             ].map(tab => (
@@ -195,6 +233,12 @@ export default function HoroscopePage() {
             </TabsContent>
             <TabsContent value="weekly">
               <WeeklyTab data={weeklyData} loading={weeklyLoading} language={language} t={t} />
+            </TabsContent>
+            <TabsContent value="monthly">
+              <MonthlyTab data={monthlyData} loading={monthlyLoading} language={language} t={t} />
+            </TabsContent>
+            <TabsContent value="yearly">
+              <YearlyTab data={yearlyData} loading={yearlyLoading} language={language} t={t} />
             </TabsContent>
             <TabsContent value="all">
               <AllSignsTab data={allSignsData} loading={allSignsLoading} language={language} t={t} onSelectSign={handleSelectFromAll} />

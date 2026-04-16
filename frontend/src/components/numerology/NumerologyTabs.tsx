@@ -78,7 +78,7 @@ const tabConfig = [
 ];
 
 export default function NumerologyTabs() {
-  const { t, language } = useTranslation();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const isAstrologer = user?.role === 'astrologer';
   const [activeTab, setActiveTab] = useState<TabType>('life_path');
@@ -104,15 +104,6 @@ export default function NumerologyTabs() {
   const [mobileLoading, setMobileLoading] = useState(false);
   const [mobileIsNewClient, setMobileIsNewClient] = useState(true);
   const [mobileSelectedClient, setMobileSelectedClient] = useState<ClientData | null>(null);
-
-  const comboTypeLabel = (type: 'Benefic' | 'Neutral' | 'Malefic') =>
-    language === 'hi'
-      ? type === 'Benefic'
-        ? 'शुभ'
-        : type === 'Neutral'
-          ? 'सामान्य'
-          : 'पापी'
-      : type;
 
   const handleClientSelect = (client: ClientData | null) => {
     setSelectedClient(client);
@@ -173,7 +164,7 @@ export default function NumerologyTabs() {
         autoRegisterClient({ name: numName.trim(), birth_date: numDob });
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Numerology calculation failed. Please try again.');
+      setError(err instanceof Error ? err.message : t('numerology.error.calculationFailed'));
     }
     setNumLoading(false);
   };
@@ -204,7 +195,7 @@ export default function NumerologyTabs() {
         autoRegisterClient({ name: fullName, phone: fullPhone, birth_date: mobileDob });
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Mobile numerology analysis failed. Please try again.');
+      setError(err instanceof Error ? err.message : t('numerology.error.mobileAnalysisFailed'));
     }
     setMobileLoading(false);
   };
@@ -390,7 +381,7 @@ export default function NumerologyTabs() {
                         }`}
                       >
                         <input type="checkbox" checked={selectedAreas.includes(area)} onChange={() => {}} className="sr-only" />
-                        {area}
+                        {t('numerology.struggle.' + area.toLowerCase())}
                       </label>
                     ))}
                   </div>
@@ -414,17 +405,17 @@ export default function NumerologyTabs() {
 
                 <div className="grid grid-cols-3 gap-4">
                   <div className="text-center p-3 bg-sacred-gold/5 rounded-lg">
-                    <p className="text-xs text-muted-foreground mb-1">Compound</p>
+                    <p className="text-xs text-muted-foreground mb-1">{t('numerology.mobile.compound')}</p>
                     <Badge className="text-lg bg-purple-100 text-purple-700">{mobileResult.compound_number}</Badge>
                   </div>
                   <div className="text-center p-3 bg-sacred-gold/5 rounded-lg">
-                    <p className="text-xs text-muted-foreground mb-1">Total</p>
+                    <p className="text-xs text-muted-foreground mb-1">{t('numerology.mobile.total')}</p>
                     <Badge className="text-lg bg-sacred-gold text-background">{mobileResult.mobile_total}</Badge>
                   </div>
                   <div className="text-center p-3 bg-sacred-gold/5 rounded-lg">
-                    <p className="text-xs text-muted-foreground mb-1">Status</p>
+                    <p className="text-xs text-muted-foreground mb-1">{t('numerology.mobile.status')}</p>
                     <Badge className={mobileResult.is_recommended ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
-                      {mobileResult.is_recommended ? 'Good' : 'Caution'}
+                      {mobileResult.is_recommended ? t('numerology.mobile.status.good') : t('numerology.mobile.status.caution')}
                     </Badge>
                   </div>
                 </div>

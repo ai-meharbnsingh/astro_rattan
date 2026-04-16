@@ -34,18 +34,25 @@ interface Props {
   t: (key: string) => string;
 }
 
-const STRENGTH_LABELS: Record<string, { en: string; hi: string; color: string; bg: string }> = {
-  very_strong: { en: 'Very Strong', hi: 'अत्यंत बलवान', color: 'text-emerald-700', bg: 'bg-emerald-100' },
-  strong: { en: 'Strong', hi: 'बलवान', color: 'text-green-700', bg: 'bg-green-100' },
-  moderate: { en: 'Moderate', hi: 'सामान्य', color: 'text-amber-700', bg: 'bg-amber-100' },
-  weak: { en: 'Weak', hi: 'दुर्बल', color: 'text-red-700', bg: 'bg-red-100' },
+const STRENGTH_STYLES: Record<string, { color: string; bg: string }> = {
+  very_strong: { color: 'text-emerald-700', bg: 'bg-emerald-100' },
+  strong: { color: 'text-green-700', bg: 'bg-green-100' },
+  moderate: { color: 'text-amber-700', bg: 'bg-amber-100' },
+  weak: { color: 'text-red-700', bg: 'bg-red-100' },
 };
 
-const DIGNITY_LABELS: Record<string, { en: string; hi: string }> = {
-  exalted: { en: 'Exalted', hi: 'उच्च' },
-  own_sign: { en: 'Own Sign', hi: 'स्वराशि' },
-  neutral: { en: 'Neutral', hi: 'सम' },
-  debilitated: { en: 'Debilitated', hi: 'नीच' },
+const STRENGTH_KEY_MAP: Record<string, string> = {
+  very_strong: 'veryStrong',
+  strong: 'strong',
+  moderate: 'moderate',
+  weak: 'weak',
+};
+
+const DIGNITY_KEY_MAP: Record<string, string> = {
+  exalted: 'exalted',
+  own_sign: 'ownSign',
+  neutral: 'neutral',
+  debilitated: 'debilitated',
 };
 
 export default function TransitInsightsTab({ data, loading, language, t }: Props) {
@@ -133,8 +140,9 @@ export default function TransitInsightsTab({ data, loading, language, t }: Props
             </TableHeader>
             <TableBody>
               {data.sign_effects.map((effect) => {
-                const strengthInfo = STRENGTH_LABELS[effect.strength] || STRENGTH_LABELS.moderate;
-                const dignityInfo = DIGNITY_LABELS[effect.dignity] || DIGNITY_LABELS.neutral;
+                const strengthStyle = STRENGTH_STYLES[effect.strength] || STRENGTH_STYLES.moderate;
+                const strengthKey = STRENGTH_KEY_MAP[effect.strength] || 'moderate';
+                const dignityKey = DIGNITY_KEY_MAP[effect.dignity] || 'neutral';
                 return (
                   <TableRow key={effect.sign} className="border-b border/50 last:border-0 align-middle">
                     <TableCell className="px-2 py-1.5 font-medium text-foreground">
@@ -152,11 +160,11 @@ export default function TransitInsightsTab({ data, loading, language, t }: Props
                       {language === 'hi' ? effect.ruler_current_sign_hindi : effect.ruler_current_sign}
                     </TableCell>
                     <TableCell className="px-2 py-1.5 text-muted-foreground text-xs">
-                      {language === 'hi' ? dignityInfo.hi : dignityInfo.en}
+                      {t('horoscope.transit.dignity.' + dignityKey)}
                     </TableCell>
                     <TableCell className="px-2 py-1.5">
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded ${strengthInfo.bg} ${strengthInfo.color} font-medium`}>
-                        {language === 'hi' ? strengthInfo.hi : strengthInfo.en}
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded ${strengthStyle.bg} ${strengthStyle.color} font-medium`}>
+                        {t('horoscope.transit.strength.' + strengthKey)}
                       </span>
                     </TableCell>
                   </TableRow>

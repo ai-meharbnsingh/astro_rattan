@@ -41,14 +41,6 @@ const SECTION_CONFIG = [
   { key: 'finance', icon: Wallet, color: 'text-purple-600', bg: 'bg-purple-50', border: 'border-purple-200' },
 ];
 
-const SECTION_LABELS: Record<string, { en: string; hi: string }> = {
-  general: { en: 'General Outlook', hi: 'सामान्य दृष्टिकोण' },
-  love: { en: 'Love & Relationships', hi: 'प्रेम एवं संबंध' },
-  career: { en: 'Career & Work', hi: 'करियर एवं कार्य' },
-  health: { en: 'Health & Wellness', hi: 'स्वास्थ्य' },
-  finance: { en: 'Finance & Wealth', hi: 'धन एवं वित्त' },
-};
-
 function formatDate(dateStr: string, _lang: string): string {
   if (!dateStr) return '';
   const d = new Date(dateStr + 'T12:00:00');
@@ -114,10 +106,10 @@ export default function WeeklyTab({ data, loading, language, t }: Props) {
         <Card className="py-4">
           <CardContent className="p-4 space-y-2.5">
             <ScoreBar label={t('auto.overallScore')} score={data.scores.overall} color="amber" />
-            <ScoreBar label={language === 'hi' ? 'प्रेम' : 'Love'} score={data.scores.love} color="pink" />
-            <ScoreBar label={language === 'hi' ? 'करियर' : 'Career'} score={data.scores.career} color="blue" />
-            <ScoreBar label={language === 'hi' ? 'वित्त' : 'Finance'} score={data.scores.finance} color="purple" />
-            <ScoreBar label={language === 'hi' ? 'स्वास्थ्य' : 'Health'} score={data.scores.health} color="green" />
+            <ScoreBar label={t('horoscope.score.love')} score={data.scores.love} color="pink" />
+            <ScoreBar label={t('horoscope.score.career')} score={data.scores.career} color="blue" />
+            <ScoreBar label={t('horoscope.score.finance')} score={data.scores.finance} color="purple" />
+            <ScoreBar label={t('horoscope.score.health')} score={data.scores.health} color="green" />
           </CardContent>
         </Card>
       )}
@@ -140,13 +132,13 @@ export default function WeeklyTab({ data, loading, language, t }: Props) {
         {SECTION_CONFIG.map(({ key, icon: Icon, color, bg, border }) => {
           const text = data.sections?.[key];
           if (!text) return null;
-          const label = SECTION_LABELS[key] || { en: key, hi: key };
+          const sectionKey = key === 'general' ? 'generalOutlook' : key;
           return (
             <div key={key} className={`rounded-xl border ${border} ${bg} p-4`}>
               <div className="flex items-center gap-2 mb-2">
                 <Icon className={`w-4 h-4 ${color}`} />
                 <h4 className={`text-sm font-semibold ${color}`}>
-                  {language === 'hi' ? label.hi : label.en}
+                  {t('horoscope.section.' + sectionKey)}
                 </h4>
               </div>
               <p className="text-sm text-foreground leading-relaxed">{text}</p>

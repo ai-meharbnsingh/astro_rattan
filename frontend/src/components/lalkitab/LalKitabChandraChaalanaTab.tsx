@@ -328,7 +328,7 @@ export default function LalKitabChandraChaalanaTab() {
           {isTodayDone ? (
             <div className="flex items-center gap-2 text-green-600 text-sm font-medium">
               <CheckCircle2 className="w-4 h-4" />
-              {isHi ? 'आज का दिन पूर्ण हो गया!' : "Today's day marked complete!"}
+              {t('lk.chandra.toast.complete')}
             </div>
           ) : (
             <button

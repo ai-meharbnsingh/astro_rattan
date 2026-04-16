@@ -10,6 +10,7 @@ from app.numerology_engine import (
     calculate_vehicle_numerology,
     calculate_house_numerology
 )
+from app.numerology_forecast_engine import calculate_forecast
 
 router = APIRouter()
 
@@ -29,6 +30,11 @@ class VehicleNumerologyRequest(BaseModel):
 class HouseNumerologyRequest(BaseModel):
     address: str = Field(min_length=1, max_length=500)
     birth_date: Optional[str] = Field(default="", max_length=20)
+
+
+class ForecastRequest(BaseModel):
+    birth_date: str = Field(min_length=8, max_length=20)
+    target_date: Optional[str] = Field(default=None, max_length=20)
 
 
 @router.post("/api/numerology/calculate")
@@ -116,5 +122,24 @@ def house_numerology(req: HouseNumerologyRequest):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(exc),
+        )
+    return result
+
+
+@router.post("/api/numerology/forecast")
+def numerology_forecast(req: ForecastRequest):
+    """
+    Personal Year/Month/Day + Universal Year/Month/Day numerology forecast.
+    No authentication required.
+    """
+    try:
+        result = calculate_forecast(
+            birth_date=req.birth_date,
+            target_date=req.target_date,
+        )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid input — please check your date format (YYYY-MM-DD)",
         )
     return result

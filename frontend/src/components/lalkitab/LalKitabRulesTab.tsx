@@ -12,113 +12,7 @@ interface Props {
   chartData: LalKitabChartData;
 }
 
-interface HiddenRule {
-  en: string;
-  hi: string;
-}
 
-const HIDDEN_INFLUENCE_RULES: HiddenRule[] = [
-  {
-    en: 'If a house is empty, its mirror house lord controls it.',
-    hi: 'यदि कोई भाव खाली है, तो उसके दर्पण भाव का स्वामी उसे नियंत्रित करता है।',
-  },
-  {
-    en: 'Planets in 3rd house affect 9th house fortune directly.',
-    hi: 'तीसरे भाव के ग्रह सीधे 9वें भाव के भाग्य को प्रभावित करते हैं।',
-  },
-  {
-    en: 'A planet in its Pakka Ghar activates its full power for good or ill.',
-    hi: 'पक्का घर में ग्रह अच्छे या बुरे के लिए अपनी पूर्ण शक्ति सक्रिय करता है।',
-  },
-  {
-    en: 'Two enemy planets in the same house cancel each other\'s good effects.',
-    hi: 'एक ही भाव में दो शत्रु ग्रह एक-दूसरे के शुभ प्रभावों को रद्द कर देते हैं।',
-  },
-  {
-    en: 'An empty 7th house is governed by the planet in the 1st house.',
-    hi: 'खाली 7वें भाव को 1ले भाव के ग्रह द्वारा नियंत्रित किया जाता है।',
-  },
-  {
-    en: 'Planets sleeping (dormant) get activated when their Pakka Ghar is triggered.',
-    hi: 'सोए हुए (निष्क्रिय) ग्रह तब सक्रिय होते हैं जब उनका पक्का घर सक्रिय होता है।',
-  },
-];
-
-interface CrossHouseRule {
-  fromHouse: number;
-  toHouse: number;
-  domainEn: string;
-  domainHi: string;
-  effectEn: string;
-  effectHi: string;
-}
-
-const CROSS_HOUSE_RULES: CrossHouseRule[] = [
-  {
-    fromHouse: 1,
-    toHouse: 7,
-    domainEn: 'marriage & partnerships',
-    domainHi: 'विवाह और साझेदारी',
-    effectEn: 'Planet in 1st house directly influences 7th house marriage prospects.',
-    effectHi: '1ले भाव का ग्रह सीधे 7वें भाव के विवाह की संभावनाओं को प्रभावित करता है।',
-  },
-  {
-    fromHouse: 4,
-    toHouse: 10,
-    domainEn: 'career & status',
-    domainHi: 'करियर और स्थिति',
-    effectEn: 'Planet in 4th house shapes 10th house career and public image.',
-    effectHi: '4थे भाव का ग्रह 10वें भाव के करियर और सार्वजनिक छवि को आकार देता है।',
-  },
-  {
-    fromHouse: 5,
-    toHouse: 9,
-    domainEn: 'luck & fortune',
-    domainHi: 'भाग्य और सौभाग्य',
-    effectEn: 'Planet in 5th house activates 9th house luck and spiritual merit.',
-    effectHi: '5वें भाव का ग्रह 9वें भाव के भाग्य और आध्यात्मिक पुण्य को सक्रिय करता है।',
-  },
-  {
-    fromHouse: 2,
-    toHouse: 8,
-    domainEn: 'inheritance & longevity',
-    domainHi: 'विरासत और दीर्घायु',
-    effectEn: 'Planet in 2nd house controls 8th house inheritance and transformation.',
-    effectHi: '2रे भाव का ग्रह 8वें भाव की विरासत और परिवर्तन को नियंत्रित करता है।',
-  },
-  {
-    fromHouse: 3,
-    toHouse: 9,
-    domainEn: 'fortune & dharma',
-    domainHi: 'भाग्य और धर्म',
-    effectEn: 'Planet in 3rd house influences 9th house dharma and long journeys.',
-    effectHi: '3रे भाव का ग्रह 9वें भाव के धर्म और लंबी यात्राओं को प्रभावित करता है।',
-  },
-  {
-    fromHouse: 6,
-    toHouse: 12,
-    domainEn: 'expenses & losses',
-    domainHi: 'खर्च और हानि',
-    effectEn: 'Planet in 6th house triggers 12th house expenses and foreign travel.',
-    effectHi: '6ठे भाव का ग्रह 12वें भाव के खर्च और विदेश यात्रा को सक्रिय करता है।',
-  },
-  {
-    fromHouse: 7,
-    toHouse: 1,
-    domainEn: 'self & personality',
-    domainHi: 'स्वयं और व्यक्तित्व',
-    effectEn: 'Planet in 7th house reflects back on 1st house personality and health.',
-    effectHi: '7वें भाव का ग्रह 1ले भाव के व्यक्तित्व और स्वास्थ्य पर प्रभाव डालता है।',
-  },
-  {
-    fromHouse: 10,
-    toHouse: 4,
-    domainEn: 'home & mother',
-    domainHi: 'घर और माता',
-    effectEn: 'Planet in 10th house impacts 4th house domestic peace and property.',
-    effectHi: '10वें भाव का ग्रह 4थे भाव की घरेलू शांति और संपत्ति को प्रभावित करता है।',
-  },
-];
 
 export default function LalKitabRulesTab({ chartData }: Props) {
   const { t, language } = useTranslation();
@@ -263,13 +157,13 @@ export default function LalKitabRulesTab({ chartData }: Props) {
         </h3>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          {HIDDEN_INFLUENCE_RULES.map((rule, idx) => (
+          {Array.from({ length: 6 }, (_, i) => i + 1).map((idx) => (
             <div
               key={idx}
               className="card-sacred rounded-xl p-4 border border-sacred-gold/20"
             >
               <p className="text-sm text-foreground/80">
-                {isHi ? rule.hi : rule.en}
+                {t('lk.rules.hidden.' + idx)}
               </p>
             </div>
           ))}
@@ -287,7 +181,16 @@ export default function LalKitabRulesTab({ chartData }: Props) {
         </h3>
 
         <div className="space-y-4">
-          {CROSS_HOUSE_RULES.map((rule, idx) => {
+          {[
+            { fromHouse: 1, toHouse: 7 },
+            { fromHouse: 4, toHouse: 10 },
+            { fromHouse: 5, toHouse: 9 },
+            { fromHouse: 2, toHouse: 8 },
+            { fromHouse: 3, toHouse: 9 },
+            { fromHouse: 6, toHouse: 12 },
+            { fromHouse: 7, toHouse: 1 },
+            { fromHouse: 10, toHouse: 4 },
+          ].map((rule, idx) => {
             const planetsFrom = housePlanets[rule.fromHouse] ?? [];
             const hasPlanets = planetsFrom.length > 0;
 
@@ -308,13 +211,13 @@ export default function LalKitabRulesTab({ chartData }: Props) {
                     {t('auto.house')} {rule.toHouse}
                   </span>
                   <span className="text-sm text-gray-500">
-                    ({isHi ? rule.domainHi : rule.domainEn})
+                    ({t('lk.rules.cross.domain.' + (idx + 1))})
                   </span>
                 </div>
 
                 {/* Rule text */}
                 <p className="text-sm text-gray-600">
-                  {isHi ? rule.effectHi : rule.effectEn}
+                  {t('lk.rules.cross.' + (idx + 1))}
                 </p>
 
                 {/* Applied chart data */}

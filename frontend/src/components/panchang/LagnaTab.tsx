@@ -74,6 +74,11 @@ export default function LagnaTab({ panchang, language, t, timezoneOffset, minute
                 ? currentLagna.lagna_hindi || RASHI_HINDI[currentLagna.lagna] || currentLagna.lagna
                 : currentLagna.lagna}
             </span>
+            {(panchang as any).samvat?.pushkara?.active && (
+              <span className="inline-flex items-center gap-0.5 ml-1 px-1.5 py-0.5 rounded-full bg-amber-100 border border-amber-400/50 text-amber-700 text-[10px] font-semibold" title={language === 'hi' ? 'वर्तमान लग्न पुष्कर नवांश में है — अत्यन्त शुभ' : 'Current lagna is in Pushkara Navamsha — highly auspicious'}>
+                ✦ {language === 'hi' ? 'पुष्कर नवांश' : 'Pushkara Navamsha'}
+              </span>
+            )}
             <span className="mx-2 text-sacred-gold">{currentLagna.start} - {currentLagna.end}</span>
             {LAGNA_INFO[currentLagna.lagna] && (
               <Text variant="small" as="span">

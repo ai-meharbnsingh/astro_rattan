@@ -62,6 +62,12 @@ HINDI_TITHIS = {
 }
 
 HINDI_PAKSHA = {'Shukla': 'शुक्ल', 'Krishna': 'कृष्ण'}
+HINDI_RASHI = {
+    'Mesha': 'मेष', 'Vrishabha': 'वृषभ', 'Mithuna': 'मिथुन',
+    'Karka': 'कर्क', 'Simha': 'सिंह', 'Kanya': 'कन्या',
+    'Tula': 'तुला', 'Vrishchika': 'वृश्चिक', 'Dhanu': 'धनु',
+    'Makara': 'मकर', 'Kumbha': 'कुम्भ', 'Meena': 'मीन',
+}
 HINDI_AYANA = {'Uttarayana': 'उत्तरायण', 'Dakshinayana': 'दक्षिणायन'}
 HINDI_RITU = {
     'Vasanta': 'वसंत', 'Grishma': 'ग्रीष्म', 'Varsha': 'वर्षा',
@@ -308,18 +314,32 @@ def get_monthly_panchang(
                 maas="",  # maas not stored in cache; tithi+solar still match
                 gregorian_date=d_str,
             )
+            # Derive moon_sign from extended cache data if available
+            _ext_raw = cached.get("choghadiya", "")
+            _ext = {}
+            if _ext_raw and _ext_raw not in ("", "[]", "{}"):
+                try:
+                    _ext = json.loads(_ext_raw) if isinstance(_ext_raw, str) else _ext_raw
+                except (json.JSONDecodeError, TypeError):
+                    _ext = {}
+            _moon_sign = _ext.get("moon_sign", "") if isinstance(_ext, dict) else ""
             days.append({
                 "date": d_str,
                 "weekday": d.strftime("%A"),
                 "tithi": t_name,
                 "tithi_number": t_number,
+                "tithi_hindi": HINDI_TITHIS.get(t_name, ""),
                 "paksha": t_paksha,
+                "paksha_hindi": HINDI_PAKSHA.get(t_paksha, ""),
                 "nakshatra": n_name,
+                "nakshatra_hindi": HINDI_NAKSHATRAS.get(n_name, ""),
                 "yoga": yoga.get("name", "") if isinstance(yoga, dict) else str(yoga),
                 "sunrise": cached["sunrise"],
                 "sunset": cached["sunset"],
                 "moonrise": cached.get("moonrise", "--:--"),
                 "moonset": cached.get("moonset", "--:--"),
+                "moon_sign": _moon_sign,
+                "moon_sign_hindi": HINDI_RASHI.get(_moon_sign, ""),
                 "festivals": [f["name"] for f in cached_festivals],
             })
             continue
@@ -349,18 +369,27 @@ def get_monthly_panchang(
             ),
         )
         db.commit()
+        _t_name = panchang["tithi"]["name"]
+        _t_paksha = panchang["tithi"]["paksha"]
+        _n_name = panchang["nakshatra"]["name"]
+        _m_sign = panchang.get("moon_sign", "")
         days.append({
             "date": d_str,
             "weekday": d.strftime("%A"),
-            "tithi": panchang["tithi"]["name"],
+            "tithi": _t_name,
             "tithi_number": panchang["tithi"].get("number", 0),
-            "paksha": panchang["tithi"]["paksha"],
-            "nakshatra": panchang["nakshatra"]["name"],
+            "tithi_hindi": HINDI_TITHIS.get(_t_name, ""),
+            "paksha": _t_paksha,
+            "paksha_hindi": HINDI_PAKSHA.get(_t_paksha, ""),
+            "nakshatra": _n_name,
+            "nakshatra_hindi": HINDI_NAKSHATRAS.get(_n_name, ""),
             "yoga": panchang["yoga"]["name"],
             "sunrise": panchang["sunrise"],
             "sunset": panchang["sunset"],
             "moonrise": panchang.get("moonrise", "--:--"),
             "moonset": panchang.get("moonset", "--:--"),
+            "moon_sign": _m_sign,
+            "moon_sign_hindi": HINDI_RASHI.get(_m_sign, ""),
             "festivals": [f["name"] for f in festivals],
         })
 
