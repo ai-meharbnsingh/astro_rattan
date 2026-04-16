@@ -76,18 +76,19 @@ const HOUSE_CENTERS: { x: number; y: number }[] = [
 // Center houses (1,4,7,10) are along the diamond edges, not clustered
 // Triangle houses are near their corner of the triangle
 const HOUSE_NUM_POS: { x: number; y: number }[] = [
-  { x: 165, y: 155 }, // 1  — above center-left, along top diamond edge
-  { x: 95,  y: 42 },  // 2  — top-left area
-  { x: 42,  y: 95 },  // 3  — left side upper
-  { x: 120, y: 200 }, // 4  — left of center, along left diamond edge
-  { x: 42,  y: 305 }, // 5  — left side lower
-  { x: 95,  y: 358 }, // 6  — bottom-left area
-  { x: 235, y: 245 }, // 7  — below center-right, along bottom diamond edge
-  { x: 305, y: 358 }, // 8  — bottom-right area
-  { x: 358, y: 305 }, // 9  — right side lower
-  { x: 280, y: 200 }, // 10 — right of center, along right diamond edge
-  { x: 358, y: 95 },  // 11 — right side upper
-  { x: 305, y: 42 },  // 12 — top-right area
+  // Matching reference image EXACTLY — numbers hug the diamond lines inside each house
+  { x: 180, y: 160 }, // 1  — just left of center, tucked below top diamond line
+  { x: 100, y: 60 },  // 2  — top-left triangle, near diamond line junction
+  { x: 65,  y: 95 },  // 3  — below "2", near left diagonal line
+  { x: 155, y: 190 }, // 4  — left of center, near left diamond vertex
+  { x: 60,  y: 310 }, // 5  — bottom-left triangle, near left edge
+  { x: 95,  y: 345 }, // 6  — just right of "5", near bottom-left junction
+  { x: 210, y: 225 }, // 7  — just right of center, tucked below "1"
+  { x: 305, y: 345 }, // 8  — bottom-right triangle, near junction
+  { x: 340, y: 310 }, // 9  — just above "8", near right edge
+  { x: 245, y: 190 }, // 10 — right of center, near right diamond vertex
+  { x: 335, y: 95 },  // 11 — top-right area, near right diagonal
+  { x: 300, y: 60 },  // 12 — top-right triangle, near diamond line junction
 ];
 
 function ascMarkerPos(degInSign: number): { x: number; y: number } {
