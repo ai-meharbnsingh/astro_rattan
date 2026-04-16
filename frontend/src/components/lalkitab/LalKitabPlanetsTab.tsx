@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Star, ChevronDown, ChevronUp, Moon, ShieldCheck, Zap } from 'lucide-react';
+import { Star, ChevronDown, ChevronUp, Moon, ShieldCheck, Zap, BookOpen } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import type { LalKitabChartData } from './lalkitab-data';
@@ -21,11 +21,17 @@ export default function LalKitabPlanetsTab({ chartData, kundliId }: Props) {
   const isHi = language === 'hi';
   const [expandedPlanet, setExpandedPlanet] = useState<string | null>(null);
   const [advancedData, setAdvancedData] = useState<any>(null);
+  const [interpretations, setInterpretations] = useState<any[]>([]);
 
   useEffect(() => {
     if (kundliId) {
       api.get(`/api/lalkitab/advanced/${kundliId}`)
         .then(setAdvancedData)
+        .catch(() => {});
+
+      // Fetch LK house interpretations
+      api.post('/api/kp-lalkitab/lk-interpretations', { kundli_id: kundliId })
+        .then((res: any) => setInterpretations(Array.isArray(res?.interpretations) ? res.interpretations : []))
         .catch(() => {});
     }
   }, [kundliId]);
@@ -232,6 +238,53 @@ export default function LalKitabPlanetsTab({ chartData, kundliId }: Props) {
                       </div>
                     </div>
                   )}
+
+                  {/* LK House Interpretation */}
+                  {(() => {
+                    const interp = interpretations.find((ip: any) => ip.planet === planet.key);
+                    if (!interp) return null;
+                    const natureBadgeStyles: Record<string, string> = {
+                      raja: 'bg-purple-100 text-purple-800 border-purple-200',
+                      fakir: 'bg-gray-100 text-gray-700 border-gray-200',
+                      mixed: 'bg-amber-100 text-amber-800 border-amber-200',
+                      manda: 'bg-orange-100 text-orange-700 border-orange-200',
+                      uchcha: 'bg-green-100 text-green-800 border-green-200',
+                      neech: 'bg-red-100 text-red-800 border-red-200',
+                    };
+                    const badgeStyle = natureBadgeStyles[interp.nature?.toLowerCase()] || 'bg-gray-100 text-gray-600 border-gray-200';
+                    return (
+                      <div className="bg-sacred-gold/5 p-3 rounded-lg border border-sacred-gold/15">
+                        <div className="flex items-center gap-2 mb-2">
+                          <BookOpen className="w-3.5 h-3.5 text-sacred-gold" />
+                          <span className="text-[10px] font-bold text-sacred-gold uppercase tracking-widest">
+                            {isHi ? 'लाल किताब व्याख्या' : 'Lal Kitab Interpretation'}
+                          </span>
+                          {interp.nature && (
+                            <span className={`ml-auto px-2 py-0.5 rounded text-[10px] font-bold border ${badgeStyle}`}>
+                              {interp.nature}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-foreground leading-relaxed mb-2">
+                          {isHi ? interp.effect_hi : interp.effect_en}
+                        </p>
+                        {interp.conditions && (
+                          <p className="text-[10px] text-foreground/60 italic mb-2">
+                            <span className="font-semibold">{isHi ? 'शर्तें:' : 'Conditions:'}</span> {interp.conditions}
+                          </p>
+                        )}
+                        {interp.keywords && interp.keywords.length > 0 && (
+                          <div className="flex flex-wrap gap-1">
+                            {(Array.isArray(interp.keywords) ? interp.keywords : [interp.keywords]).map((kw: string, ki: number) => (
+                              <span key={ki} className="text-[9px] px-1.5 py-0.5 rounded bg-sacred-gold/10 text-sacred-gold-dark border border-sacred-gold/20">
+                                {kw}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
               )}
             </div>

@@ -3,8 +3,8 @@ import { useTranslation } from '@/lib/i18n';
 import type { LalKitabChartData } from './lalkitab-data';
 import { PLANETS, REMEDIES } from './lalkitab-data';
 import { api } from '@/lib/api';
-import { Heart, Gift, Home, Zap, Filter, Database, Loader2, Clock } from 'lucide-react';
-import { translateBackend } from '@/lib/backend-translations';
+import { Heart, Gift, Home, Zap, Filter, Database, Loader2, Clock, BadgeCheck, ShieldCheck } from 'lucide-react';
+import { translateBackend, translatePlanet } from '@/lib/backend-translations';
 
 interface Props {
   chartData: LalKitabChartData;
@@ -48,14 +48,24 @@ export default function LalKitabRemediesTab({ chartData, kundliId }: Props) {
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [masterRemedies, setMasterRemedies] = useState<MasterRemedy[]>([]);
   const [masterLoading, setMasterLoading] = useState(false);
+  const [validatedRemedies, setValidatedRemedies] = useState<any[]>([]);
+  const [validatedLoading, setValidatedLoading] = useState(false);
+  const [validatedError, setValidatedError] = useState('');
 
   useEffect(() => {
-    if (!kundliId) { setMasterRemedies([]); return; }
+    if (!kundliId) { setMasterRemedies([]); setValidatedRemedies([]); return; }
     setMasterLoading(true);
     api.get(`/api/lalkitab/remedies/master/${kundliId}`)
       .then((res: any) => setMasterRemedies(Array.isArray(res?.remedies) ? res.remedies : []))
       .catch(() => setMasterRemedies([]))
       .finally(() => setMasterLoading(false));
+
+    // Fetch validated remedies
+    setValidatedLoading(true);
+    api.post('/api/kp-lalkitab/lk-validated-remedies', { kundli_id: kundliId })
+      .then((res: any) => setValidatedRemedies(Array.isArray(res?.remedies) ? res.remedies : []))
+      .catch(() => setValidatedError(isHi ? 'सत्यापित उपाय लोड करने में विफल' : 'Failed to load validated remedies'))
+      .finally(() => setValidatedLoading(false));
   }, [kundliId]);
 
   return (
@@ -88,6 +98,84 @@ export default function LalKitabRemediesTab({ chartData, kundliId }: Props) {
               : t(`lk.remedies.${category}`)}
           </button>
         ))}
+      </div>
+
+      {/* ─── Validated Remedies (from LK analysis) ─── */}
+      <div className="pt-2">
+        <div className="flex items-center gap-2 mb-1">
+          <BadgeCheck className="w-5 h-5 text-green-600" />
+          <h2 className="text-xl font-semibold text-sacred-gold">
+            {isHi ? 'सत्यापित उपाय' : 'Validated Remedies'}
+          </h2>
+        </div>
+        <p className="text-sm text-gray-500 mb-4">
+          {isHi
+            ? 'लाल किताब नियमों से सत्यापित — ये उपाय आपकी कुंडली के अनुसार प्रमाणित हैं।'
+            : 'Verified against Lal Kitab rules — these remedies are validated for your chart.'}
+        </p>
+
+        {validatedLoading && (
+          <div className="flex items-center justify-center py-10">
+            <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
+          </div>
+        )}
+
+        {validatedError && !validatedLoading && (
+          <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm text-center mb-4">
+            {validatedError}
+          </div>
+        )}
+
+        {!validatedLoading && !validatedError && validatedRemedies.length === 0 && kundliId && (
+          <p className="text-sm text-gray-400 text-center py-6 mb-4">
+            {isHi ? 'कोई सत्यापित उपाय नहीं मिले।' : 'No validated remedies found.'}
+          </p>
+        )}
+
+        {!validatedLoading && validatedRemedies.length > 0 && (
+          <div className="grid gap-4 mb-6">
+            {validatedRemedies.map((r: any, idx: number) => {
+              const isFullyValidated = r.validated === true || r.validated === 'full';
+              return (
+                <div key={idx} className="card-sacred rounded-xl border border-green-200/50 bg-green-500/5 p-4">
+                  {/* Top row: name + planet + validated badge */}
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
+                    <span className="text-sm font-bold text-foreground">
+                      {isHi ? r.name_hi : r.name_en}
+                    </span>
+                    {r.for_planet && (
+                      <span className="px-2.5 py-1 rounded-full bg-sacred-gold/15 text-sacred-gold-dark text-xs font-semibold">
+                        {translatePlanet(r.for_planet, language)}
+                      </span>
+                    )}
+                    <span className={`ml-auto flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold ${
+                      isFullyValidated
+                        ? 'bg-green-200 text-green-800 border border-green-300'
+                        : 'bg-amber-200 text-amber-800 border border-amber-300'
+                    }`}>
+                      <ShieldCheck className="w-3 h-3" />
+                      {isFullyValidated
+                        ? (isHi ? 'सत्यापित' : 'Validated')
+                        : (isHi ? 'आंशिक सत्यापित' : 'Partially Validated')}
+                    </span>
+                  </div>
+
+                  {/* Procedure */}
+                  <p className="text-sm text-foreground leading-relaxed mb-2">
+                    {isHi ? r.procedure_hi : r.procedure_en}
+                  </p>
+
+                  {/* Condition */}
+                  {r.condition && (
+                    <p className="text-xs text-foreground/60 italic">
+                      <span className="font-semibold">{isHi ? 'शर्त:' : 'Condition:'}</span> {r.condition}
+                    </p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Remedies per planet */}

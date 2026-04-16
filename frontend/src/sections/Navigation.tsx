@@ -15,6 +15,7 @@ const serviceLinks: { key: string; href: string; highlight?: boolean }[] = [
   { key: 'nav.lalKitab', href: '/lal-kitab' },
   { key: 'nav.numerology', href: '/numerology' },
   ...(!isProduction ? [{ key: 'nav.vastu', href: '/vastu', highlight: true }] : []),
+  { key: 'nav.blog', href: '/blog' },
 ];
 
 // Routes that require authentication — unauthenticated users go to /login

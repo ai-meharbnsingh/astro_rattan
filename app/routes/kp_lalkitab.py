@@ -22,7 +22,14 @@ from app.lalkitab_advanced import (
     get_prohibitions,
     calculate_lk_aspects,
     calculate_sleeping_status,
-    calculate_kayam_grah
+    calculate_kayam_grah,
+    calculate_bunyaad,
+    calculate_takkar,
+    calculate_enemy_presence,
+)
+from app.lalkitab_interpretations import (
+    get_all_interpretations_for_chart,
+    get_lk_validated_remedies,
 )
 
 router = APIRouter()
@@ -991,6 +998,198 @@ def get_lalkitab_advanced(
         "sleeping": sleeping_info,
         "kayam": kayam_planets
     }
+
+
+# ─────────────────────────────────────────────────────────────
+# Lal Kitab Bunyaad / Takkar / Enemy Presence Analysis
+# ─────────────────────────────────────────────────────────────
+
+@router.post("/api/kp-lalkitab/lk-analysis")
+def lk_analysis(
+    payload: dict,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """
+    Combined Lal Kitab analysis: Bunyaad (Foundation), Takkar (Collision), Enemy Presence.
+
+    Contract input: {kundli_id}
+    Returns bunyaad, takkar, and enemy_presence results.
+    """
+    kundli_id = payload.get("kundli_id")
+    if not kundli_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="kundli_id is required",
+        )
+
+    row = db.execute(
+        "SELECT chart_data FROM kundlis WHERE id = %s AND user_id = %s",
+        (kundli_id, user["sub"]),
+    ).fetchone()
+
+    if not row:
+        raise HTTPException(status_code=404, detail="Kundli not found")
+
+    chart_data = json.loads(row["chart_data"])
+
+    # Build formatted_positions matching the pattern used by advanced endpoint
+    formatted_positions = []
+    for planet_name, info in chart_data.get("planets", {}).items():
+        if planet_name not in _KNOWN_PLANETS:
+            continue
+        sign = info.get("sign", "Aries")
+        house = _SIGN_TO_LK_HOUSE.get(sign, 0)
+        if house:
+            formatted_positions.append({
+                "planet": planet_name,
+                "house": house,
+            })
+
+    if not formatted_positions:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Chart data has no planet positions",
+        )
+
+    try:
+        bunyaad = calculate_bunyaad(formatted_positions)
+        takkar = calculate_takkar(formatted_positions)
+        enemy_presence = calculate_enemy_presence(formatted_positions)
+    except Exception as exc:
+        logger.error("LK analysis error: %s", exc, exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Calculation error — please try again",
+        )
+
+    return {
+        "bunyaad": bunyaad,
+        "takkar": takkar,
+        "enemy_presence": enemy_presence,
+    }
+
+
+# ─────────────────────────────────────────────────────────────
+# Lal Kitab House-by-House Planet Interpretations
+# ─────────────────────────────────────────────────────────────
+
+@router.post("/api/kp-lalkitab/lk-interpretations")
+def lk_interpretations(
+    payload: dict,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """
+    Return per-house Lal Kitab interpretations for every planet in the kundli.
+
+    Contract input: {kundli_id}
+    Returns list of interpretation dicts with nature, effect_en/hi, conditions, keywords.
+    """
+    kundli_id = payload.get("kundli_id")
+    if not kundli_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="kundli_id is required",
+        )
+
+    row = db.execute(
+        "SELECT chart_data FROM kundlis WHERE id = %s AND user_id = %s",
+        (kundli_id, user["sub"]),
+    ).fetchone()
+
+    if not row:
+        raise HTTPException(status_code=404, detail="Kundli not found")
+
+    chart_data = json.loads(row["chart_data"])
+
+    formatted_positions = []
+    for planet_name, info in chart_data.get("planets", {}).items():
+        if planet_name not in _KNOWN_PLANETS:
+            continue
+        sign = info.get("sign", "Aries")
+        house = _SIGN_TO_LK_HOUSE.get(sign, 0)
+        if house:
+            formatted_positions.append({
+                "planet": planet_name,
+                "house": house,
+            })
+
+    if not formatted_positions:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Chart data has no planet positions",
+        )
+
+    try:
+        interpretations = get_all_interpretations_for_chart(formatted_positions)
+    except Exception as exc:
+        logger.error("LK interpretations error: %s", exc, exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Calculation error — please try again",
+        )
+
+    return {"interpretations": interpretations}
+
+
+@router.post("/api/kp-lalkitab/lk-validated-remedies")
+def lk_validated_remedies(
+    payload: dict,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """
+    Return applicable validated Lal Kitab remedies based on planet positions.
+
+    Contract input: {kundli_id}
+    Returns list of remedy dicts with name, procedure, validation status.
+    """
+    kundli_id = payload.get("kundli_id")
+    if not kundli_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="kundli_id is required",
+        )
+
+    row = db.execute(
+        "SELECT chart_data FROM kundlis WHERE id = %s AND user_id = %s",
+        (kundli_id, user["sub"]),
+    ).fetchone()
+
+    if not row:
+        raise HTTPException(status_code=404, detail="Kundli not found")
+
+    chart_data = json.loads(row["chart_data"])
+
+    formatted_positions = []
+    for planet_name, info in chart_data.get("planets", {}).items():
+        if planet_name not in _KNOWN_PLANETS:
+            continue
+        sign = info.get("sign", "Aries")
+        house = _SIGN_TO_LK_HOUSE.get(sign, 0)
+        if house:
+            formatted_positions.append({
+                "planet": planet_name,
+                "house": house,
+            })
+
+    if not formatted_positions:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Chart data has no planet positions",
+        )
+
+    try:
+        remedies = get_lk_validated_remedies(formatted_positions)
+    except Exception as exc:
+        logger.error("LK validated remedies error: %s", exc, exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Calculation error — please try again",
+        )
+
+    return {"remedies": remedies}
 
 
 # ─────────────────────────────────────────────────────────────

@@ -1013,6 +1013,360 @@ def calculate_hora_lord(
     }
 
 
+# ============================================================
+# BUNYAAD (FOUNDATION HOUSE) ANALYSIS
+# ============================================================
+
+# Pakka Ghar (Permanent House) for each planet in Lal Kitab
+PAKKA_GHAR = {
+    "Sun": 1,
+    "Moon": 4,
+    "Mars": 3,
+    "Mercury": 7,
+    "Jupiter": 2,
+    "Venus": 7,
+    "Saturn": 8,
+    "Rahu": 12,
+    "Ketu": 6,
+}
+
+# Lal Kitab enemy relationships (used across bunyaad, takkar, enemy presence)
+LK_ENEMIES = {
+    "Sun": {"Saturn", "Rahu", "Ketu"},
+    "Moon": {"Rahu", "Ketu"},
+    "Mars": {"Mercury", "Ketu"},
+    "Mercury": {"Moon", "Ketu"},
+    "Jupiter": {"Mercury", "Venus", "Rahu", "Ketu", "Saturn"},
+    "Venus": {"Sun", "Moon", "Rahu"},
+    "Saturn": {"Sun", "Moon", "Mars"},
+    "Rahu": {"Sun", "Moon", "Jupiter"},
+    "Ketu": {"Moon", "Mars"},
+}
+
+# Bunyaad house = 9th from pakka ghar (precomputed)
+BUNYAAD_HOUSE = {planet: ((ghar - 1 + 8) % 12) + 1 for planet, ghar in PAKKA_GHAR.items()}
+
+
+def calculate_bunyaad(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    For each planet, calculate its bunyaad (foundation house) and check if it's afflicted.
+
+    Bunyaad house = 9th house from the planet's pakka ghar (permanent house).
+
+    Returns a dict with per-planet bunyaad analysis, collapsed planets, and strong foundations.
+    """
+    # Build house → planets map
+    house_map: Dict[int, List[str]] = {}
+    for p in planet_positions:
+        h = p.get("house")
+        name = p.get("planet", "")
+        if h and name:
+            house_map.setdefault(h, []).append(name)
+
+    planets_result: Dict[str, Dict[str, Any]] = {}
+    collapsed_planets: List[str] = []
+    strong_foundations: List[str] = []
+
+    all_planet_names = [p["planet"] for p in planet_positions if p.get("planet") in PAKKA_GHAR]
+
+    for planet_name in all_planet_names:
+        pakka = PAKKA_GHAR[planet_name]
+        bunyaad_h = BUNYAAD_HOUSE[planet_name]
+        planets_in_bunyaad = house_map.get(bunyaad_h, [])
+        enemies = LK_ENEMIES.get(planet_name, set())
+        enemies_in_bunyaad = [p for p in planets_in_bunyaad if p in enemies]
+
+        if enemies_in_bunyaad:
+            bunyaad_status = "afflicted"
+            collapsed_planets.append(planet_name)
+            enemy_list_en = ", ".join(enemies_in_bunyaad)
+            enemy_list_hi = ", ".join(enemies_in_bunyaad)
+            interpretation_en = (
+                f"{planet_name}'s foundation (House {bunyaad_h}) is afflicted by {enemy_list_en}. "
+                f"Despite its own placement, {planet_name}'s results will collapse under enemy pressure."
+            )
+            interpretation_hi = (
+                f"{planet_name} की बुनियाद (भाव {bunyaad_h}) पर दुश्मन {enemy_list_hi} का कब्ज़ा है। "
+                f"अपनी जगह अच्छी होने के बावजूद {planet_name} के फल नष्ट होंगे।"
+            )
+        elif planets_in_bunyaad:
+            bunyaad_status = "strong"
+            strong_foundations.append(planet_name)
+            interpretation_en = (
+                f"{planet_name}'s foundation (House {bunyaad_h}) is occupied by friendly/neutral planets. "
+                f"Foundation is strong — {planet_name}'s results are supported."
+            )
+            interpretation_hi = (
+                f"{planet_name} की बुनियाद (भाव {bunyaad_h}) में मित्र/सम ग्रह हैं। "
+                f"बुनियाद मज़बूत है — {planet_name} के फल अच्छे रहेंगे।"
+            )
+        else:
+            bunyaad_status = "empty"
+            strong_foundations.append(planet_name)
+            interpretation_en = (
+                f"{planet_name}'s foundation (House {bunyaad_h}) is empty. "
+                f"No enemy interference — foundation is clear by default."
+            )
+            interpretation_hi = (
+                f"{planet_name} की बुनियाद (भाव {bunyaad_h}) खाली है। "
+                f"कोई दुश्मन नहीं — बुनियाद सुरक्षित है।"
+            )
+
+        planets_result[planet_name] = {
+            "pakka_ghar": pakka,
+            "bunyaad_house": bunyaad_h,
+            "bunyaad_status": bunyaad_status,
+            "planets_in_bunyaad": planets_in_bunyaad,
+            "enemies_in_bunyaad": enemies_in_bunyaad,
+            "interpretation_en": interpretation_en,
+            "interpretation_hi": interpretation_hi,
+        }
+
+    return {
+        "planets": planets_result,
+        "collapsed_planets": collapsed_planets,
+        "strong_foundations": strong_foundations,
+    }
+
+
+# ============================================================
+# TAKKAR (COLLISION) ANALYSIS — 1-8 AND 1-6 AXIS
+# ============================================================
+
+def calculate_takkar(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    Detect all 1-8 axis collisions and 6-1 obstructions between planets.
+
+    Rules:
+    - If planet A is in house H and planet B is in house (H+7)%12, they are in 1-8 takkar.
+    - The planet in the LATER house (8th position from attacker) receives the collision.
+    - If they are enemies, severity = "destructive"; otherwise "mild".
+    - Also checks 1-6 axis: planet in (H+5)%12 from another creates obstruction.
+
+    Returns collisions list, counts, most attacked planet, and safe planets.
+    """
+    collisions: List[Dict[str, Any]] = []
+    attack_count: Dict[str, int] = {}
+
+    all_planets = [p for p in planet_positions if p.get("planet") in LK_ENEMIES]
+
+    # Initialize attack count
+    for p in all_planets:
+        attack_count[p["planet"]] = 0
+
+    # Check all ordered pairs for 1-8 axis
+    for i, pa in enumerate(all_planets):
+        for j, pb in enumerate(all_planets):
+            if i == j:
+                continue
+            ha = pa["house"]
+            hb = pb["house"]
+            if ha is None or hb is None:
+                continue
+
+            # Check 1-8 axis: is pb in the 8th house from pa?
+            eighth_from_a = ((ha - 1 + 7) % 12) + 1
+            if hb == eighth_from_a:
+                attacker = pa["planet"]
+                receiver = pb["planet"]
+                are_enemies = receiver in LK_ENEMIES.get(attacker, set()) or attacker in LK_ENEMIES.get(receiver, set())
+                severity = "destructive" if are_enemies else "mild"
+
+                if severity == "destructive":
+                    interp_en = (
+                        f"{attacker} in House {ha} strikes {receiver} in House {hb} (1-8 takkar). "
+                        f"As enemies, {receiver}'s root is uprooted — its significations suffer severely."
+                    )
+                    interp_hi = (
+                        f"{attacker} भाव {ha} से {receiver} भाव {hb} पर टक्कर (1-8 अक्ष)। "
+                        f"दुश्मनी होने से {receiver} की जड़ उखड़ जाती है — इसके फल नष्ट होते हैं।"
+                    )
+                else:
+                    interp_en = (
+                        f"{attacker} in House {ha} collides with {receiver} in House {hb} (1-8 axis). "
+                        f"Not enemies — mild friction, but no root destruction."
+                    )
+                    interp_hi = (
+                        f"{attacker} भाव {ha} से {receiver} भाव {hb} पर टक्कर (1-8 अक्ष)। "
+                        f"दुश्मनी नहीं — हल्का घर्षण, जड़ सुरक्षित।"
+                    )
+
+                collisions.append({
+                    "attacker": attacker,
+                    "attacker_house": ha,
+                    "receiver": receiver,
+                    "receiver_house": hb,
+                    "axis": "1-8",
+                    "are_enemies": are_enemies,
+                    "severity": severity,
+                    "interpretation_en": interp_en,
+                    "interpretation_hi": interp_hi,
+                })
+                attack_count[receiver] = attack_count.get(receiver, 0) + 1
+
+            # Check 1-6 axis: is pb in the 6th house from pa?
+            sixth_from_a = ((ha - 1 + 5) % 12) + 1
+            if hb == sixth_from_a:
+                attacker = pa["planet"]
+                receiver = pb["planet"]
+                are_enemies = receiver in LK_ENEMIES.get(attacker, set()) or attacker in LK_ENEMIES.get(receiver, set())
+                severity = "destructive" if are_enemies else "mild"
+
+                if severity == "destructive":
+                    interp_en = (
+                        f"{attacker} in House {ha} obstructs {receiver} in House {hb} (1-6 axis). "
+                        f"Enemy obstruction — {receiver} faces persistent obstacles and delays."
+                    )
+                    interp_hi = (
+                        f"{attacker} भाव {ha} से {receiver} भाव {hb} पर रुकावट (1-6 अक्ष)। "
+                        f"दुश्मन बाधा — {receiver} को लगातार रुकावटें और देरी।"
+                    )
+                else:
+                    interp_en = (
+                        f"{attacker} in House {ha} creates friction with {receiver} in House {hb} (1-6 axis). "
+                        f"Not enemies — minor delays, manageable."
+                    )
+                    interp_hi = (
+                        f"{attacker} भाव {ha} से {receiver} भाव {hb} पर हल्की रुकावट (1-6 अक्ष)। "
+                        f"दुश्मनी नहीं — मामूली देरी, सम्भाल सकते हैं।"
+                    )
+
+                collisions.append({
+                    "attacker": attacker,
+                    "attacker_house": ha,
+                    "receiver": receiver,
+                    "receiver_house": hb,
+                    "axis": "1-6",
+                    "are_enemies": are_enemies,
+                    "severity": severity,
+                    "interpretation_en": interp_en,
+                    "interpretation_hi": interp_hi,
+                })
+                attack_count[receiver] = attack_count.get(receiver, 0) + 1
+
+    destructive_count = sum(1 for c in collisions if c["severity"] == "destructive")
+    mild_count = sum(1 for c in collisions if c["severity"] == "mild")
+
+    # Most attacked planet
+    most_attacked = max(attack_count, key=attack_count.get) if attack_count else None
+    if most_attacked and attack_count[most_attacked] == 0:
+        most_attacked = None
+
+    # Safe planets (zero attacks received)
+    safe_planets = [name for name, count in attack_count.items() if count == 0]
+
+    return {
+        "collisions": collisions,
+        "destructive_count": destructive_count,
+        "mild_count": mild_count,
+        "most_attacked_planet": most_attacked,
+        "safe_planets": safe_planets,
+    }
+
+
+# ============================================================
+# ENEMY PRESENCE DETECTION IN KEY HOUSES
+# ============================================================
+
+def calculate_enemy_presence(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    For each planet, count how many of its enemies are present in:
+    1. Its pakka ghar (permanent house)
+    2. The house it currently sits in
+    3. Houses that it aspects (LK aspects)
+
+    Returns per-planet enemy siege analysis, most/least besieged planets.
+    """
+    # Build house → planets map
+    house_map: Dict[int, List[str]] = {}
+    planet_house: Dict[str, int] = {}
+    for p in planet_positions:
+        h = p.get("house")
+        name = p.get("planet", "")
+        if h and name:
+            house_map.setdefault(h, []).append(name)
+            planet_house[name] = h
+
+    # Get LK aspects for aspected houses
+    lk_aspects = calculate_lk_aspects(planet_positions)
+
+    planets_result: Dict[str, Dict[str, Any]] = {}
+    all_planet_names = [p["planet"] for p in planet_positions if p.get("planet") in PAKKA_GHAR]
+
+    for planet_name in all_planet_names:
+        enemies = LK_ENEMIES.get(planet_name, set())
+        pakka = PAKKA_GHAR[planet_name]
+        current_h = planet_house.get(planet_name)
+
+        # 1. Enemies in pakka ghar
+        enemies_in_pakka = [p for p in house_map.get(pakka, []) if p in enemies and p != planet_name]
+
+        # 2. Enemies in current house
+        enemies_in_current = [p for p in house_map.get(current_h, []) if p in enemies and p != planet_name] if current_h else []
+
+        # 3. Enemies in aspected houses
+        aspected_houses = set()
+        for asp in lk_aspects.get(planet_name, []):
+            aspected_houses.add(asp["house"])
+
+        enemies_in_aspected = []
+        for ah in aspected_houses:
+            for p in house_map.get(ah, []):
+                if p in enemies and p != planet_name and p not in enemies_in_aspected:
+                    enemies_in_aspected.append(p)
+
+        total_enemies = len(set(enemies_in_pakka + enemies_in_current + enemies_in_aspected))
+
+        if total_enemies >= 3:
+            siege_level = "severe"
+        elif total_enemies == 2:
+            siege_level = "moderate"
+        elif total_enemies == 1:
+            siege_level = "mild"
+        else:
+            siege_level = "none"
+
+        if total_enemies > 0:
+            all_enemy_names = sorted(set(enemies_in_pakka + enemies_in_current + enemies_in_aspected))
+            interp_en = (
+                f"{planet_name} faces {total_enemies} enem{'y' if total_enemies == 1 else 'ies'} "
+                f"({', '.join(all_enemy_names)}) across its key houses. "
+                f"Siege level: {siege_level}."
+            )
+            interp_hi = (
+                f"{planet_name} के प्रमुख भावों में {total_enemies} दुश्मन "
+                f"({', '.join(all_enemy_names)}) मौजूद हैं। "
+                f"घेराबंदी स्तर: {'गंभीर' if siege_level == 'severe' else 'मध्यम' if siege_level == 'moderate' else 'हल्का'}।"
+            )
+        else:
+            interp_en = f"{planet_name} has no enemies in its key houses. It operates freely."
+            interp_hi = f"{planet_name} के प्रमुख भावों में कोई दुश्मन नहीं। यह स्वतंत्र रूप से कार्य करता है।"
+
+        planets_result[planet_name] = {
+            "total_enemies": total_enemies,
+            "enemies_in_pakka_ghar": enemies_in_pakka,
+            "enemies_in_current_house": enemies_in_current,
+            "enemies_in_aspected_houses": enemies_in_aspected,
+            "enemy_siege_level": siege_level,
+            "interpretation_en": interp_en,
+            "interpretation_hi": interp_hi,
+        }
+
+    # Determine most/least besieged
+    if planets_result:
+        most_besieged = max(planets_result, key=lambda k: planets_result[k]["total_enemies"])
+        least_besieged = min(planets_result, key=lambda k: planets_result[k]["total_enemies"])
+    else:
+        most_besieged = None
+        least_besieged = None
+
+    return {
+        "planets": planets_result,
+        "most_besieged": most_besieged,
+        "least_besieged": least_besieged,
+    }
+
+
 def calculate_karmic_debts_with_hora(
     planet_positions: List[Dict[str, Any]],
     birth_datetime=None,
