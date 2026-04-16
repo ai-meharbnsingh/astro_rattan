@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "check:i18n": "node scripts/check-i18n.cjs",
+    "scan:i18n": "node scripts/scan-i18n.cjs",
+    "build": "node scripts/check-i18n.cjs && vite build",
+    "build:skip-check": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
