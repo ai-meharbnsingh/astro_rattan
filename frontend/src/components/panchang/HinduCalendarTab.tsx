@@ -421,29 +421,29 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
                           ${isToday ? 'bg-[#F5DEB3] ring-2 ring-inset ring-[#C45A00]' : isSelected ? 'bg-[#FFF0D4]' : isSunday ? 'bg-[#FFF5F5]' : 'bg-[#FFF9F5]'}
                         `}
                       >
-                        {/* Tithi + Paksha header */}
-                        <div className={`w-full px-1.5 py-0.5 text-[8px] sm:text-[10px] font-medium truncate leading-tight ${isSunday ? 'text-red-600' : 'text-stone-500'}`}>
-                          {tithiDisplay} {pakshaDisplay}
+                        {/* Tithi + Paksha header + moon phase top-right */}
+                        <div className="w-full flex items-center justify-between px-1.5 py-0.5">
+                          <span className={`text-[8px] sm:text-[10px] font-medium truncate leading-tight ${isSunday ? 'text-red-600' : 'text-stone-500'}`}>
+                            {tithiDisplay} {pakshaDisplay}
+                          </span>
+                          {moonIcon && (
+                            <span className="text-sm sm:text-base leading-none">{moonIcon}</span>
+                          )}
                         </div>
 
                         {/* Main content area */}
                         <div className="flex-1 flex flex-col items-center justify-center px-1.5 py-1">
 
-                          {/* DATE number + tithi badge + moon phase */}
+                          {/* DATE number + tithi badge */}
                           <div className="flex items-start justify-center gap-0.5 mb-1">
                             <span className={`text-3xl sm:text-4xl font-bold leading-none ${isSunday ? 'text-red-600' : isToday ? 'text-[#C45A00]' : 'text-stone-800'}`}>
                               {day}
                             </span>
-                            <div className="flex flex-col items-center gap-0">
-                              {tithiNum && (
-                                <span className="text-[8px] sm:text-[9px] font-bold border border-stone-400 text-stone-600 rounded px-0.5 leading-tight mt-0.5">
-                                  {tithiNum}
-                                </span>
-                              )}
-                              {moonIcon && (
-                                <span className="text-[10px] sm:text-[12px] leading-none">{moonIcon}</span>
-                              )}
-                            </div>
+                            {tithiNum && (
+                              <span className="text-[8px] sm:text-[9px] font-bold border border-stone-400 text-stone-600 rounded px-0.5 leading-tight mt-0.5">
+                                {tithiNum}
+                              </span>
+                            )}
                           </div>
 
                           {/* Sunrise/Sunset + Moonrise/Moonset */}
