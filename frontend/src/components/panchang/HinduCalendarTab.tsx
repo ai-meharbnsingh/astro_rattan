@@ -383,7 +383,7 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
                 <div className="grid grid-cols-7 gap-px bg-[#E8D5B7]">
                   {/* Leading empty cells */}
                   {Array.from({ length: firstDayOfMonth }).map((_, i) => (
-                    <div key={`e-${i}`} className="min-h-[120px] sm:min-h-[140px] bg-[#FFF9F5]" />
+                    <div key={`e-${i}`} className="min-h-[130px] sm:min-h-[150px] bg-[#FFF9F5]" />
                   ))}
 
                   {/* Day cells — dense layout matching Drik Panchang */}
@@ -416,81 +416,70 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
                         key={day}
                         onClick={() => dayData && openLightbox(dayData)}
                         className={`
-                          min-h-[120px] sm:min-h-[140px] p-0 text-left relative overflow-hidden flex flex-col
-                          transition-all hover:brightness-95 cursor-pointer
-                          ${isToday ? 'bg-[#F5DEB3] ring-2 ring-inset ring-sacred-gold' : isSelected ? 'bg-[#FFF0D4]' : isSunday ? 'bg-[#FFF5F5]' : 'bg-[#FFF9F5] hover:bg-[#FFF3E0]'}
+                          min-h-[130px] sm:min-h-[150px] p-0 text-left relative overflow-hidden flex flex-col
+                          transition-all hover:brightness-[0.97] cursor-pointer
+                          ${isToday ? 'bg-[#F5DEB3] ring-2 ring-inset ring-[#C45A00]' : isSelected ? 'bg-[#FFF0D4]' : isSunday ? 'bg-[#FFF5F5]' : 'bg-[#FFF9F5]'}
                         `}
                       >
-                        {/* ROW 1: Tithi + Paksha + moon icon — NO underline */}
-                        <div className={`w-full px-1 py-0.5 flex items-center justify-between ${isSunday ? 'text-red-600' : 'text-stone-600'}`}>
-                          <span className="text-[8px] sm:text-[10px] font-medium truncate leading-tight">
-                            {tithiDisplay} {pakshaDisplay}
-                          </span>
-                          {moonIcon && <span className="text-xs sm:text-sm leading-none shrink-0">{moonIcon}</span>}
+                        {/* Tithi + Paksha header */}
+                        <div className={`w-full px-1.5 py-0.5 text-[8px] sm:text-[10px] font-medium truncate leading-tight ${isSunday ? 'text-red-600' : 'text-stone-500'}`}>
+                          {tithiDisplay} {pakshaDisplay}
                         </div>
 
-                        {/* ROW 2: Sunrise (left) — Sunset (right) */}
-                        {dayData && (
-                          <div className="flex items-center justify-between px-1 mt-0.5">
-                            <span className="text-[7px] sm:text-[9px] text-orange-500">🌅{dayData.sunrise?.slice(0, 5)}</span>
-                            <span className="text-[7px] sm:text-[9px] text-orange-700">🌇{dayData.sunset?.slice(0, 5)}</span>
-                          </div>
-                        )}
+                        {/* Main content area */}
+                        <div className="flex-1 flex flex-col items-center justify-center px-1.5 py-1">
 
-                        {/* ROW 3: DATE (big center) + tithi badge */}
-                        <div className="flex items-center justify-center gap-1 py-0.5">
-                          <span className={`text-2xl sm:text-3xl font-bold leading-none ${isSunday ? 'text-red-600' : isToday ? 'text-amber-700' : 'text-stone-800'}`}>
-                            {day}
-                          </span>
-                          {tithiNum && (
-                            <span className="text-[8px] sm:text-[10px] font-bold bg-[#D4945A] text-white rounded px-1 leading-tight self-start mt-0.5">
-                              {tithiNum}
+                          {/* DATE number + tithi badge */}
+                          <div className="flex items-start justify-center gap-0.5 mb-1">
+                            <span className={`text-3xl sm:text-4xl font-bold leading-none ${isSunday ? 'text-red-600' : isToday ? 'text-[#C45A00]' : 'text-stone-800'}`}>
+                              {day}
                             </span>
+                            {tithiNum && (
+                              <span className="text-[8px] sm:text-[9px] font-bold border border-stone-400 text-stone-600 rounded px-0.5 leading-tight mt-0.5">
+                                {tithiNum}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Sunrise ☀ left — Sunset ☀ right */}
+                          {dayData && (
+                            <div className="flex items-center justify-between w-full text-[8px] sm:text-[10px] text-stone-400">
+                              <span><span className="text-[#C45A00]">☀</span> {dayData.sunrise?.slice(0, 5)}</span>
+                              <span><span className="text-[#C45A00]">☀</span> {dayData.sunset?.slice(0, 5)}</span>
+                            </div>
                           )}
                         </div>
 
-                        {/* ROW 4: Moonrise (left) — Moonset (right) */}
-                        {dayData && (
-                          <div className="flex items-center justify-between px-1">
-                            {dayData.moonrise && dayData.moonrise !== '--:--' ? (
-                              <span className="text-[7px] sm:text-[9px] text-indigo-500">🌙{dayData.moonrise?.slice(0, 5)}</span>
-                            ) : <span />}
-                            {dayData.moonset && dayData.moonset !== '--:--' ? (
-                              <span className="text-[7px] sm:text-[9px] text-slate-500">🌘{dayData.moonset?.slice(0, 5)}</span>
-                            ) : <span />}
-                          </div>
-                        )}
-
-                        {/* ROW 5: Festival — centered, WRAPPED */}
+                        {/* Festival name */}
                         {majorFests.length > 0 && (
-                          <div className="px-0.5 mt-auto">
-                            {majorFests.slice(0, 2).map((f, i) => (
-                              <p key={i} className="text-[8px] sm:text-[10px] font-bold text-red-600 leading-tight text-center break-words">
+                          <div className="px-1 text-center">
+                            {majorFests.slice(0, 1).map((f, i) => (
+                              <p key={i} className="text-[8px] sm:text-[10px] font-bold text-red-600 leading-tight break-words">
                                 {language === 'hi' ? translateBackend(f, language) : f}
                               </p>
                             ))}
                           </div>
                         )}
                         {vrats.length > 0 && majorFests.length === 0 && (
-                          <div className="px-0.5 mt-auto">
+                          <div className="px-1 text-center">
                             {vrats.slice(0, 1).map((f, i) => (
-                              <p key={i} className="text-[8px] sm:text-[10px] font-semibold text-purple-700 leading-tight text-center break-words">
+                              <p key={i} className="text-[8px] sm:text-[10px] font-semibold text-purple-700 leading-tight break-words">
                                 {language === 'hi' ? translateBackend(f, language) : f}
                               </p>
                             ))}
                           </div>
                         )}
 
-                        {/* ROW 6: Moon sign + Nakshatra — centered bottom */}
-                        <div className="px-0.5 pb-0.5 mt-auto text-center space-y-0">
+                        {/* Moon sign + Nakshatra at bottom */}
+                        <div className="w-full px-1 pb-1 mt-auto text-center">
                           {moonSignDisplay && (
-                            <p className="text-[7px] sm:text-[9px] text-teal-700 leading-tight">
-                              ♈ {moonSignDisplay}
+                            <p className="text-[8px] sm:text-[9px] text-stone-400 leading-tight">
+                              ☽ {moonSignDisplay}
                             </p>
                           )}
                           {nakDisplay && (
-                            <p className="text-[7px] sm:text-[9px] text-indigo-700/70 leading-tight">
-                              ✦ {nakDisplay}
+                            <p className="text-[8px] sm:text-[9px] text-stone-400 leading-tight">
+                              ☆ {nakDisplay}
                             </p>
                           )}
                         </div>
@@ -500,21 +489,18 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
 
                   {/* Trailing empty cells */}
                   {Array.from({ length: Math.max(0, 42 - (firstDayOfMonth + daysInMonth)) }).map((_, i) => (
-                    <div key={`te-${i}`} className="min-h-[120px] sm:min-h-[140px] bg-[#FFF9F5]" />
+                    <div key={`te-${i}`} className="min-h-[130px] sm:min-h-[150px] bg-[#FFF9F5]" />
                   ))}
                 </div>
 
                 {/* Legend */}
-                <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 mt-2 text-[10px] text-stone-600">
-                  <span><span className="inline-block w-4 text-center bg-[#D4945A] text-white rounded text-[8px] font-bold mr-0.5">x</span> {language === 'hi' ? 'तिथि क्रम' : 'Tithi #'}</span>
-                  <span>🌕 {language === 'hi' ? 'पूर्णिमा' : 'Purnima'}</span>
-                  <span>🌑 {language === 'hi' ? 'अमावस्या' : 'Amavasya'}</span>
-                  <span className="text-red-600 font-semibold">{language === 'hi' ? 'पर्व' : 'Festival'}</span>
+                <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 mt-3 text-[10px] text-stone-400">
+                  <span><span className="inline-block border border-stone-400 text-stone-600 rounded text-[8px] font-bold px-0.5 mr-0.5">x</span> {language === 'hi' ? 'तिथि' : 'Tithi'}</span>
+                  <span><span className="text-[#C45A00]">☀</span> {language === 'hi' ? 'सूर्योदय / सूर्यास्त' : 'Sunrise / Sunset'}</span>
+                  <span>☽ {language === 'hi' ? 'चंद्र राशि' : 'Moon Sign'}</span>
+                  <span>☆ {language === 'hi' ? 'नक्षत्र' : 'Nakshatra'}</span>
+                  <span className="text-red-600">{language === 'hi' ? 'पर्व' : 'Festival'}</span>
                   <span className="text-purple-700">{language === 'hi' ? 'व्रत' : 'Vrat'}</span>
-                  <span><span className="text-teal-700">♈</span> {language === 'hi' ? 'चंद्र राशि' : 'Moon Sign'}</span>
-                  <span><span className="text-indigo-700">✦</span> {language === 'hi' ? 'नक्षत्र' : 'Nakshatra'}</span>
-                  <span>🌅 {language === 'hi' ? 'सूर्योदय' : 'Sunrise'} 🌇 {language === 'hi' ? 'सूर्यास्त' : 'Sunset'}</span>
-                  <span>🌙 {language === 'hi' ? 'चन्द्रोदय' : 'Moonrise'} 🌘 {language === 'hi' ? 'चन्द्रास्त' : 'Moonset'}</span>
                 </div>
               </>
             )}
