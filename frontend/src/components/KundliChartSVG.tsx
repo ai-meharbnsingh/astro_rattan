@@ -36,6 +36,22 @@ const DARK = '#1a1a2e';
 const GOLD = '#8B4513';
 const MALEFIC = new Set(['Sun', 'Mars', 'Saturn', 'Rahu', 'Ketu']);
 
+// Zodiac sign images — same orange images as transit wheel
+const SIGN_IMAGES = [
+  '/images/zodiac-orange/zodiac-aries-orange.png',
+  '/images/zodiac-orange/zodiac-taurus-orange.png',
+  '/images/zodiac-orange/zodiac-gemini-orange.png',
+  '/images/zodiac-orange/zodiac-cancer-orange.png',
+  '/images/zodiac-orange/zodiac-leo-orange.png',
+  '/images/zodiac-orange/zodiac-virgo-orange.png',
+  '/images/zodiac-orange/zodiac-libra-orange.png',
+  '/images/zodiac-orange/zodiac-scorpio-orange.png',
+  '/images/zodiac-orange/zodiac-sagittarius-orange.png',
+  '/images/zodiac-orange/zodiac-capricorn-orange.png',
+  '/images/zodiac-orange/zodiac-aquarius-orange.png',
+  '/images/zodiac-orange/zodiac-pisces-orange.png',
+];
+
 function planetColor(p: PlanetEntry): string {
   if (p.is_exalted) return '#059669';
   if (p.is_debilitated) return '#DC2626';
@@ -164,7 +180,18 @@ export default function KundliChartSVG({ planets, ascendantSign, ascendantDegree
       <line x1={S} y1={E} x2={M} y2={M} stroke={GOLD} strokeWidth="0.7" opacity="0.35" />
       <line x1={E} y1={E} x2={M} y2={M} stroke={GOLD} strokeWidth="0.7" opacity="0.35" />
 
-      {/* No ASC dot — degree shown in table only */}
+      {/* Zodiac sign images — orange, low opacity, behind planets */}
+      {HOUSE_CENTERS.map((c, i) => {
+        const imgSize = 32;
+        return (
+          <image key={`sign-img-${i}`}
+            href={SIGN_IMAGES[i]}
+            x={c.x - imgSize / 2} y={c.y - imgSize / 2}
+            width={imgSize} height={imgSize}
+            opacity="0.15"
+          />
+        );
+      })}
 
       {/* Sign numbers — fixed: 1=Aries(top), 2=Taurus(top-left)... 12=Pisces(top-right) */}
       {HOUSE_NUM_POS.map((pos, i) => (
