@@ -79,7 +79,7 @@ const HOUSE_CENTERS: { x: number; y: number }[] = [
 const HOUSE_NUM_POS: { x: number; y: number }[] = [
   { x: pct(50),   y: pct(45) },    // 1
   { x: pct(27.5), y: pct(22.5) },  // 2
-  { x: pct(2),    y: pct(8) },     // 3
+  { x: pct(5),    y: pct(15) },    // 3
   { x: pct(45),   y: pct(50) },    // 4
   { x: pct(22.5), y: pct(71.25) }, // 5
   { x: pct(28),   y: pct(77.5) },  // 6
