@@ -295,6 +295,8 @@ export default function Features() {
   const [locSearchLoading, setLocSearchLoading] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [currentSky, setCurrentSky] = useState<any>(null);
+  const [numeroDob, setNumeroDob] = useState<string>('');
+  const [numeroResult, setNumeroResult] = useState<{ lifePath: number; personalDay: number } | null>(null);
   const locSearchRef = useRef<HTMLDivElement>(null);
   const locSearchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -668,13 +670,13 @@ export default function Features() {
       image: '/images/features/feature-numerology.jpg',
       imagePosition: 'center center',
       imageFilter: 'sepia(0.15) brightness(0.95) contrast(1.05)',
-      title: l('Numerology — Name + Mobile', 'अंकशास्त्र — नाम + मोबाइल'),
-      subtitle: l('Dual Engine', 'डुअल इंजन'),
+      title: l('Numerology — 7 Analysis Types', 'अंकशास्त्र — 7 विश्लेषण प्रकार'),
+      subtitle: l('Complete System', 'पूर्ण प्रणाली'),
       desc: l(
-        'Pythagorean + Chaldean name numerology, mobile number vibration analysis, Lo Shu & Vedic grids, vehicle number & property address numerology. Life Path, Expression, Soul Urge numbers with lucky colors, career guidance, and compatibility insights.',
-        'पाइथागोरियन + कैल्डियन नाम अंक शास्त्र, मोबाइल नंबर कंपन विश्लेषण, लो शू और वैदिक ग्रिड, वाहन नंबर और संपत्ति पता अंक शास्त्र। जीवन पथ, भाग्यांक, आत्मांक संख्याएं।'
+        'Life Path, Expression, Soul Urge, Personality, Birthday, Maturity & Karmic Debt numbers. Pinnacles, Challenges, Personal Year/Month/Day forecast. Lo Shu Grid with Arrows & Planes analysis. Mobile, Vehicle, House & Name numerology — plus daily universal and personal day forecasts.',
+        'जीवन पथ, भाग्यांक, आत्मांक, व्यक्तित्व, जन्मदिन, परिपक्वता और कर्मिक ऋण अंक। शिखर, चुनौतियां, व्यक्तिगत वर्ष/माह/दिन पूर्वानुमान। लो शू ग्रिड एरो और प्लेन विश्लेषण। मोबाइल, वाहन, घर और नाम अंकशास्त्र — साथ ही दैनिक सार्वभौमिक और व्यक्तिगत दिन पूर्वानुमान।'
       ),
-      badge: l('DUAL ENGINE', 'डुअल इंजन'),
+      badge: l('7 TYPES', '7 प्रकार'),
     },
     {
       image: '/images/features/feature-vastu.jpg',
@@ -691,11 +693,85 @@ export default function Features() {
   ];
 
 
+  // ── Numerology helpers ──────────────────────────────────────
+  const reduceToSingle = (n: number): number => {
+    while (n > 9 && n !== 11 && n !== 22 && n !== 33) {
+      n = [...`${n}`].reduce((a, c) => a + parseInt(c), 0);
+    }
+    return n;
+  };
+
+  const universalDayNumber = (() => {
+    const today = new Date();
+    const y = today.getFullYear();
+    const m = today.getMonth() + 1;
+    const d = today.getDate();
+    const sum = [...`${y}${m}${d}`].reduce((a, c) => a + parseInt(c), 0);
+    return reduceToSingle(sum);
+  })();
+
+  const calcLifePath = (dob: string): number => {
+    const [y, m, d] = dob.split('-').map(Number);
+    if (!y || !m || !d) return 0;
+    return reduceToSingle(reduceToSingle(m) + reduceToSingle(d) + reduceToSingle(y));
+  };
+
+  const calcPersonalDay = (dob: string): number => {
+    const [, m, d] = dob.split('-').map(Number);
+    if (!m || !d) return 0;
+    const today = new Date();
+    const cm = today.getMonth() + 1;
+    const cd = today.getDate();
+    const cy = today.getFullYear();
+    const personalYear = reduceToSingle(reduceToSingle(m) + reduceToSingle(d) + reduceToSingle(cy));
+    return reduceToSingle(reduceToSingle(cm) + reduceToSingle(cd) + reduceToSingle(personalYear));
+  };
+
+  const NUMERO_MEANINGS: Record<number, { en: string; hi: string; title_en: string; title_hi: string }> = {
+    1: { title_en: 'The Leader', title_hi: 'नेता', en: 'Independent, ambitious, pioneering spirit.', hi: 'स्वतंत्र, महत्वाकांक्षी, अग्रणी भावना।' },
+    2: { title_en: 'The Diplomat', title_hi: 'कूटनीतिज्ञ', en: 'Cooperative, sensitive, peacemaking nature.', hi: 'सहयोगी, संवेदनशील, शांतिप्रिय स्वभाव।' },
+    3: { title_en: 'The Communicator', title_hi: 'संवादक', en: 'Creative, expressive, joyful energy.', hi: 'रचनात्मक, अभिव्यक्त, आनंदमय ऊर्जा।' },
+    4: { title_en: 'The Builder', title_hi: 'निर्माता', en: 'Practical, disciplined, strong foundation.', hi: 'व्यावहारिक, अनुशासित, मज़बूत नींव।' },
+    5: { title_en: 'The Adventurer', title_hi: 'साहसी', en: 'Freedom-loving, versatile, dynamic change.', hi: 'स्वतंत्रता-प्रेमी, बहुमुखी, गतिशील परिवर्तन।' },
+    6: { title_en: 'The Nurturer', title_hi: 'पालनकर्ता', en: 'Responsible, loving, domestic harmony.', hi: 'जिम्मेदार, स्नेही, पारिवारिक सामंजस्य।' },
+    7: { title_en: 'The Seeker', title_hi: 'खोजी', en: 'Spiritual, analytical, introspective depth.', hi: 'आध्यात्मिक, विश्लेषणात्मक, आत्मनिरीक्षण।' },
+    8: { title_en: 'The Powerhouse', title_hi: 'शक्तिशाली', en: 'Power, achievement, material success.', hi: 'शक्ति, उपलब्धि, भौतिक सफलता।' },
+    9: { title_en: 'The Humanitarian', title_hi: 'मानवतावादी', en: 'Compassionate, wise, universal service.', hi: 'करुणामय, बुद्धिमान, सार्वभौमिक सेवा।' },
+    11: { title_en: 'The Intuitive', title_hi: 'अंतर्ज्ञानी', en: 'Master number — visionary, inspiring, spiritually gifted.', hi: 'मास्टर अंक — दूरदर्शी, प्रेरणादायक, आध्यात्मिक।' },
+    22: { title_en: 'The Master Builder', title_hi: 'मास्टर निर्माता', en: 'Master number — turns dreams into reality on a grand scale.', hi: 'मास्टर अंक — बड़े पैमाने पर सपनों को साकार करता है।' },
+    33: { title_en: 'The Master Teacher', title_hi: 'मास्टर गुरु', en: 'Master number — selfless service, spiritual upliftment.', hi: 'मास्टर अंक — निःस्वार्थ सेवा, आध्यात्मिक उत्थान।' },
+  };
+
+  const PERSONAL_DAY_MEANINGS: Record<number, { en: string; hi: string }> = {
+    1: { en: 'New beginnings and bold action.', hi: 'नई शुरुआत और साहसिक कदम।' },
+    2: { en: 'Partnership, patience, and diplomacy.', hi: 'साझेदारी, धैर्य और कूटनीति।' },
+    3: { en: 'Self-expression and social connections.', hi: 'आत्म-अभिव्यक्ति और सामाजिक संबंध।' },
+    4: { en: 'Hard work, planning, and building.', hi: 'कड़ी मेहनत, योजना और निर्माण।' },
+    5: { en: 'Expect changes and adventure!', hi: 'बदलाव और रोमांच की उम्मीद करें!' },
+    6: { en: 'Family, responsibility, and love.', hi: 'परिवार, जिम्मेदारी और प्रेम।' },
+    7: { en: 'Reflection, study, and inner wisdom.', hi: 'चिंतन, अध्ययन और आंतरिक ज्ञान।' },
+    8: { en: 'Money matters and power moves.', hi: 'धन के मामले और शक्ति कदम।' },
+    9: { en: 'Completion, compassion, and letting go.', hi: 'पूर्णता, करुणा और समर्पण।' },
+    11: { en: 'Heightened intuition and inspiration.', hi: 'उन्नत अंतर्ज्ञान और प्रेरणा।' },
+    22: { en: 'Manifest big visions into reality.', hi: 'बड़े सपनों को वास्तविकता में बदलें।' },
+    33: { en: 'Selfless service and spiritual healing.', hi: 'निःस्वार्थ सेवा और आध्यात्मिक उपचार।' },
+  };
+
+  const handleNumeroSubmit = () => {
+    if (!numeroDob) return;
+    const lp = calcLifePath(numeroDob);
+    const pd = calcPersonalDay(numeroDob);
+    if (lp > 0) setNumeroResult({ lifePath: lp, personalDay: pd });
+  };
+
+  const universalMeaning = NUMERO_MEANINGS[universalDayNumber] || NUMERO_MEANINGS[1];
+
   useEffect(() => {
     if (gsap.globalTimeline.timeScale() === 0) return;
     const ctx = gsap.context(() => {
       gsap.fromTo('.features-title', { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out', scrollTrigger: { trigger: sectionRef.current, start: 'top 80%' } });
       gsap.fromTo('.feature-card', { y: 80, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: 'power3.out', scrollTrigger: { trigger: sectionRef.current, start: 'top 70%' } });
+      gsap.fromTo('.numero-section', { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out', scrollTrigger: { trigger: '.numero-section', start: 'top 80%' } });
     }, sectionRef);
     return () => ctx.revert();
   }, []);
@@ -1224,6 +1300,206 @@ export default function Features() {
           <a href="/panchang" className="text-sm text-sacred-gold-dark hover:underline font-medium flex items-center gap-1">
             {l('Click here to view more in detail', 'विस्तार से देखने के लिए यहां क्लिक करें')} →
           </a>
+        </div>
+
+        {/* ── Today's Numerology — Quick Widget ──────────────────── */}
+        <div id="numerology-widget" className="numero-section features-title mb-12">
+          <Heading as={2} variant={2} className="text-sacred-gold-dark mb-6 leading-[1.1] text-center">
+            {l("Today's Numerology", 'आज का अंकशास्त्र')}
+          </Heading>
+          <div className="max-w-full mx-auto text-lg text-gray-600 leading-relaxed mb-6 text-center">
+            <p>
+              <strong className="text-sacred-gold-dark">
+                {l('Discover how numbers shape your day', 'जानें कैसे अंक आपका दिन बनाते हैं')}
+              </strong>
+              {l(' — enter your date of birth and get instant insights. No login required.', ' — अपनी जन्मतिथि दर्ज करें और तुरंत जानकारी पाएं। लॉगिन की जरूरत नहीं।')}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
+            {/* LEFT: Universal Day + Quick Calculator (3 cols) */}
+            <div className="lg:col-span-3 space-y-4">
+              {/* Universal Day Number */}
+              <div className="rounded-xl border border-sacred-gold/20 bg-transparent backdrop-blur-[1px] shadow-sm overflow-hidden">
+                <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
+                  {l('Universal Day Number', 'सार्वभौमिक दिन अंक')}
+                </div>
+                <div className="p-4 flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-gold-dark flex items-center justify-center shrink-0 shadow-lg shadow-sacred-gold/30">
+                    <span className="text-3xl font-bold text-white">{universalDayNumber}</span>
+                  </div>
+                  <div>
+                    <p className="text-base font-semibold text-foreground">
+                      {l(`Today is a Universal Day ${universalDayNumber}`, `आज सार्वभौमिक दिन ${universalDayNumber} है`)}
+                      {' — '}
+                      <span className="text-sacred-gold-dark">{l(universalMeaning.title_en, universalMeaning.title_hi)}</span>
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-0.5">
+                      {l(universalMeaning.en, universalMeaning.hi)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Calculator */}
+              <div className="rounded-xl border border-sacred-gold/20 bg-transparent backdrop-blur-[1px] shadow-sm overflow-hidden">
+                <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
+                  {l("What's Your Number?", 'आपका अंक क्या है?')}
+                </div>
+                <div className="p-4">
+                  <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-end">
+                    <div className="flex-1 w-full">
+                      <label className="text-sm font-medium text-foreground mb-1 block">
+                        {l('Date of Birth', 'जन्म तिथि')}
+                      </label>
+                      <input
+                        type="date"
+                        value={numeroDob}
+                        onChange={(e) => {
+                          setNumeroDob(e.target.value);
+                          setNumeroResult(null);
+                        }}
+                        max={new Date().toISOString().split('T')[0]}
+                        className="w-full px-3 py-2.5 text-sm border border-sacred-gold/30 rounded-lg focus:outline-none focus:border-sacred-gold focus:ring-1 focus:ring-sacred-gold/30 text-[#333] bg-white"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleNumeroSubmit}
+                      disabled={!numeroDob}
+                      className="px-6 py-2.5 bg-sacred-gold-dark text-white rounded-lg font-semibold text-sm hover:bg-sacred-gold transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-md shadow-sacred-gold/20 whitespace-nowrap"
+                    >
+                      {l('Calculate', 'गणना करें')}
+                    </button>
+                  </div>
+
+                  {/* Results */}
+                  {numeroResult && (
+                    <div className="mt-4 space-y-3">
+                      {/* Life Path */}
+                      <div className="rounded-lg border border-sacred-gold/15 bg-sacred-gold/[0.04] p-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-gold-dark flex items-center justify-center shrink-0">
+                            <span className="text-lg font-bold text-white">{numeroResult.lifePath}</span>
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-foreground">
+                              {l(`Your Life Path is ${numeroResult.lifePath}`, `आपका मूलांक ${numeroResult.lifePath} है`)}
+                              {' — '}
+                              <span className="text-sacred-gold-dark">
+                                {l(
+                                  (NUMERO_MEANINGS[numeroResult.lifePath] || NUMERO_MEANINGS[1]).title_en,
+                                  (NUMERO_MEANINGS[numeroResult.lifePath] || NUMERO_MEANINGS[1]).title_hi
+                                )}
+                              </span>
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {l(
+                                (NUMERO_MEANINGS[numeroResult.lifePath] || NUMERO_MEANINGS[1]).en,
+                                (NUMERO_MEANINGS[numeroResult.lifePath] || NUMERO_MEANINGS[1]).hi
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Personal Day */}
+                      <div className="rounded-lg border border-sacred-gold/15 bg-sacred-gold/[0.04] p-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center shrink-0">
+                            <span className="text-lg font-bold text-white">{numeroResult.personalDay}</span>
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-foreground">
+                              {l(`Your Personal Day is ${numeroResult.personalDay}`, `आपका व्यक्तिगत दिन अंक ${numeroResult.personalDay} है`)}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {l(
+                                (PERSONAL_DAY_MEANINGS[numeroResult.personalDay] || PERSONAL_DAY_MEANINGS[1]).en,
+                                (PERSONAL_DAY_MEANINGS[numeroResult.personalDay] || PERSONAL_DAY_MEANINGS[1]).hi
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* CTA */}
+                      <a
+                        href="/numerology"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-sacred-gold-dark text-white rounded-lg font-semibold text-sm hover:bg-sacred-gold transition-all shadow-md shadow-sacred-gold/20 mt-1"
+                      >
+                        {l('See Full Analysis', 'पूर्ण विश्लेषण देखें')} →
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* RIGHT: Visual Number Circle (2 cols) */}
+            <div className="lg:col-span-2 flex items-center justify-center">
+              <div className="relative w-full max-w-[320px] aspect-square">
+                {/* Outer ring */}
+                <div className="absolute inset-0 rounded-full border-4 border-sacred-gold/20" />
+                <div className="absolute inset-3 rounded-full border-2 border-sacred-gold/15" />
+                {/* Number positions around the circle */}
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => {
+                  const angle = ((n - 1) * 40 - 90) * (Math.PI / 180);
+                  const radius = 42;
+                  const left = 50 + radius * Math.cos(angle);
+                  const top = 50 + radius * Math.sin(angle);
+                  const isUniversal = n === universalDayNumber;
+                  const isLifePath = numeroResult && n === numeroResult.lifePath;
+                  return (
+                    <div
+                      key={n}
+                      className={`absolute w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
+                        isUniversal
+                          ? 'bg-sacred-gold-dark text-white shadow-lg shadow-sacred-gold/40 scale-110'
+                          : isLifePath
+                            ? 'bg-gradient-to-br from-amber-500 to-amber-700 text-white shadow-md shadow-amber-500/30 scale-105'
+                            : 'bg-sacred-gold/10 text-sacred-gold-dark border border-sacred-gold/20'
+                      }`}
+                      style={{
+                        left: `calc(${left}% - 20px)`,
+                        top: `calc(${top}% - 20px)`,
+                      }}
+                    >
+                      {n}
+                    </div>
+                  );
+                })}
+                {/* Center content */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-gold-dark flex items-center justify-center shadow-xl shadow-sacred-gold/30">
+                    <span className="text-4xl font-bold text-white">{universalDayNumber}</span>
+                  </div>
+                  <p className="text-xs font-semibold text-sacred-gold-dark mt-2 text-center">
+                    {l('Universal Day', 'सार्वभौमिक दिन')}
+                  </p>
+                </div>
+                {/* Legend */}
+                <div className="absolute -bottom-8 left-0 right-0 flex items-center justify-center gap-4 text-[11px]">
+                  <span className="flex items-center gap-1">
+                    <span className="w-3 h-3 rounded-full bg-sacred-gold-dark inline-block" />
+                    {l('Universal', 'सार्वभौमिक')}
+                  </span>
+                  {numeroResult && (
+                    <span className="flex items-center gap-1">
+                      <span className="w-3 h-3 rounded-full bg-gradient-to-br from-amber-500 to-amber-700 inline-block" />
+                      {l('Life Path', 'मूलांक')}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end mt-6">
+            <a href="/numerology" className="text-sm text-sacred-gold-dark hover:underline font-medium flex items-center gap-1">
+              {l('Explore full numerology analysis', 'पूर्ण अंकशास्त्र विश्लेषण देखें')} →
+            </a>
+          </div>
         </div>
 
         <div className="features-title text-center mb-16">

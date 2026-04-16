@@ -117,7 +117,7 @@ export default function LalKitabNishaniyaTab({ kundliId }: Props) {
             <div className="flex items-center gap-3">
               <div className="text-right">
                 <p className="text-2xl font-black text-sacred-gold leading-none">{accuracyScore}%</p>
-                <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mt-1">VERIFIED</p>
+                <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mt-1">{t('lk.nishani.verifiedLabel')}</p>
               </div>
               <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
                 <div 
@@ -163,7 +163,7 @@ export default function LalKitabNishaniyaTab({ kundliId }: Props) {
                 : 'bg-sacred-gold/10 text-sacred-gold hover:bg-sacred-gold/20'
             }`}
           >
-            {isHi ? (cat === 'all' ? 'सभी' : cat) : cat.charAt(0).toUpperCase() + cat.slice(1)}
+            {t('lk.nishani.category.' + cat)}
           </button>
         ))}
       </div>

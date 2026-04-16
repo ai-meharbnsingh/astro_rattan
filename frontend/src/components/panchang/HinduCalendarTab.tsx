@@ -830,17 +830,17 @@ function FullPanchangPanel({ selectedDay, fullData, language, t, locationName }:
 
             <div className="border-t border-stone-200 my-1.5" />
 
-            {/* Panchang Elements */}
+            {/* Panchang Elements (with transitions) */}
             <PanchangRow label="Tithi" labelHi="तिथि" lang={language}
-              value={`${language === 'hi' ? translateBackend(p.tithi?.name || '', language) : p.tithi?.name || ''}${p.tithi?.end_time ? ` ${l('upto', 'तक')} ${fmt(p.tithi.end_time)}` : ''}`}
+              value={`${language === 'hi' ? translateBackend(p.tithi?.name || '', language) : p.tithi?.name || ''}${p.tithi?.end_time ? ` ${l('upto', 'तक')} ${fmt(p.tithi.end_time)}` : ''}${p.tithi?.next ? ` → ${language === 'hi' ? translateBackend(p.tithi.next, language) : p.tithi.next}` : ''}`}
               color="text-[#2E7D32]" bold
             />
             <PanchangRow label="Nakshatra" labelHi="नक्षत्र" lang={language}
-              value={`${language === 'hi' ? translateBackend(p.nakshatra?.name || '', language) : p.nakshatra?.name || ''}${p.nakshatra?.end_time ? ` ${l('upto', 'तक')} ${fmt(p.nakshatra.end_time)}` : ''}`}
+              value={`${language === 'hi' ? translateBackend(p.nakshatra?.name || '', language) : p.nakshatra?.name || ''}${p.nakshatra?.end_time ? ` ${l('upto', 'तक')} ${fmt(p.nakshatra.end_time)}` : ''}${p.nakshatra?.next ? ` → ${language === 'hi' ? translateBackend(p.nakshatra.next, language) : p.nakshatra.next}` : ''}`}
               color="text-[#2E7D32]" bold
             />
             <PanchangRow label="Yoga" labelHi="योग" lang={language}
-              value={`${language === 'hi' ? translateBackend(p.yoga?.name || '', language) : p.yoga?.name || ''}${p.yoga?.end_time ? ` ${l('upto', 'तक')} ${fmt(p.yoga.end_time)}` : ''}`}
+              value={`${language === 'hi' ? translateBackend(p.yoga?.name || '', language) : p.yoga?.name || ''}${p.yoga?.end_time ? ` ${l('upto', 'तक')} ${fmt(p.yoga.end_time)}` : ''}${p.yoga?.next ? ` → ${language === 'hi' ? translateBackend(p.yoga.next, language) : p.yoga.next}` : ''}`}
               color="text-[#2E7D32]" bold
             />
             <PanchangRow label="Karana" labelHi="करण" lang={language}
@@ -866,6 +866,20 @@ function FullPanchangPanel({ selectedDay, fullData, language, t, locationName }:
             <PanchangRow label="Month" labelHi="मास" lang={language} value={p.hindu_calendar?.maas || ''} color="text-[#8B4513]" bold />
             <PanchangRow label="Shaka Samvat" labelHi="शक संवत्" lang={language} value={p.hindu_calendar?.shaka_samvat != null ? String(p.hindu_calendar.shaka_samvat) : ''} color="text-[#8B4513]" />
             <PanchangRow label="Vikram Samvat" labelHi="विक्रम संवत्" lang={language} value={p.hindu_calendar?.vikram_samvat != null ? String(p.hindu_calendar.vikram_samvat) : ''} color="text-[#8B4513]" />
+            <PanchangRow label="Brihaspati Samvatsara" labelHi="बृहस्पति संवत्सर" lang={language}
+              value={p.samvat?.brihaspati ? (language === 'hi' ? p.samvat.brihaspati.name_hindi : p.samvat.brihaspati.name) : ''}
+              color="text-[#8B4513]"
+            />
+            <PanchangRow label="Gujarati Samvat" labelHi="गुजराती संवत्" lang={language}
+              value={p.samvat?.gujarati ? `${p.samvat.gujarati.year}${p.samvat.gujarati.samvatsara ? ` (${language === 'hi' ? p.samvat.gujarati.samvatsara_hindi : p.samvat.gujarati.samvatsara})` : ''}` : ''}
+              color="text-[#8B4513]"
+            />
+            <PanchangRow label="Purnimant" labelHi="पूर्णिमान्त" lang={language}
+              value={p.samvat?.month_systems?.purnimant ? (language === 'hi' ? p.samvat.month_systems.purnimant.month_hindi : p.samvat.month_systems.purnimant.month) : ''}
+            />
+            <PanchangRow label="Amant" labelHi="अमान्त" lang={language}
+              value={p.samvat?.month_systems?.amant ? (language === 'hi' ? p.samvat.month_systems.amant.month_hindi : p.samvat.month_systems.amant.month) : ''}
+            />
             <PanchangRow label="Ritu" labelHi="ऋतु" lang={language} value={p.hindu_calendar?.ritu || p.hindu_calendar?.ritu_english || ''} />
             <PanchangRow label="Ayana" labelHi="अयन" lang={language} value={p.hindu_calendar?.ayana || ''} />
 
@@ -896,6 +910,98 @@ function FullPanchangPanel({ selectedDay, fullData, language, t, locationName }:
             <PanchangRow label="Brahma Muhurat" labelHi="ब्रह्म मुहूर्त" lang={language} value={fmtP(p.brahma_muhurat)} good />
             <PanchangRow label="Amrit Kalam" labelHi="अमृत काल" lang={language} value={fmtP(p.amrit_kalam)} good />
 
+            {/* Special Yogas */}
+            {p.special_yogas && (() => {
+              const yogas = p.special_yogas;
+              const activeYogas: { name: string; nameHi: string; type: 'good' | 'bad' }[] = [];
+              if (yogas.sarvartha_siddhi?.active) activeYogas.push({ name: yogas.sarvartha_siddhi.name, nameHi: yogas.sarvartha_siddhi.name_hindi, type: 'good' });
+              if (yogas.amrit_siddhi?.active) activeYogas.push({ name: yogas.amrit_siddhi.name, nameHi: yogas.amrit_siddhi.name_hindi, type: 'good' });
+              if (yogas.dwipushkar?.active) activeYogas.push({ name: yogas.dwipushkar.name, nameHi: yogas.dwipushkar.name_hindi, type: 'good' });
+              if (yogas.tripushkar?.active) activeYogas.push({ name: yogas.tripushkar.name, nameHi: yogas.tripushkar.name_hindi, type: 'good' });
+              if (yogas.ganda_moola?.active) activeYogas.push({ name: yogas.ganda_moola.name, nameHi: yogas.ganda_moola.name_hindi, type: 'bad' });
+              if (activeYogas.length === 0) return null;
+              return (
+                <>
+                  <div className="border-t border-stone-200 my-1.5" />
+                  <p className="text-[10px] font-bold text-[#8B4513] uppercase tracking-wider mb-1">
+                    {l('Special Yogas', 'विशेष योग')}
+                  </p>
+                  <div className="flex flex-wrap gap-1">
+                    {activeYogas.map((y, i) => (
+                      <span key={i} className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${
+                        y.type === 'good'
+                          ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                          : 'bg-red-100 text-red-700 border border-red-300'
+                      }`}>
+                        {y.type === 'good' ? '✦' : '⚠'} {language === 'hi' ? y.nameHi : y.name}
+                      </span>
+                    ))}
+                  </div>
+                </>
+              );
+            })()}
+
+            {/* Disha Shool */}
+            {p.directions?.disha_shool && (
+              <>
+                <div className="border-t border-stone-200 my-1.5" />
+                <PanchangRow label="Disha Shool" labelHi="दिशा शूल" lang={language}
+                  value={language === 'hi' ? p.directions.disha_shool.direction_hindi : p.directions.disha_shool.direction}
+                  warn
+                />
+              </>
+            )}
+
+            {/* Anandadi Yoga */}
+            {p.directions?.anandadi_yoga && (
+              <PanchangRow label="Anandadi Yoga" labelHi="आनन्दादि योग" lang={language}
+                value={`${language === 'hi' ? p.directions.anandadi_yoga.name_hindi : p.directions.anandadi_yoga.name} ${p.directions.anandadi_yoga.auspicious ? '✓' : '✗'}`}
+                good={p.directions.anandadi_yoga.auspicious}
+                warn={!p.directions.anandadi_yoga.auspicious}
+              />
+            )}
+
+            {/* Lucky Color / Number / Direction */}
+            {p.directions?.lucky && (
+              <>
+                <div className="border-t border-stone-200 my-1.5" />
+                <p className="text-[10px] font-bold text-[#8B4513] uppercase tracking-wider mb-1">
+                  {l('Lucky', 'शुभ')}
+                </p>
+                <PanchangRow label="Lucky Color" labelHi="शुभ रंग" lang={language}
+                  value={language === 'hi' ? p.directions.lucky.color_hindi : p.directions.lucky.color}
+                  color="text-[#2E7D32]"
+                />
+                <PanchangRow label="Lucky Number" labelHi="शुभ अंक" lang={language}
+                  value={String(p.directions.lucky.number)}
+                  color="text-[#2E7D32]"
+                />
+                <PanchangRow label="Lucky Direction" labelHi="शुभ दिशा" lang={language}
+                  value={language === 'hi' ? p.directions.lucky.direction_hindi : p.directions.lucky.direction}
+                  color="text-[#2E7D32]"
+                />
+              </>
+            )}
+
+            {/* Ekadashi Parana */}
+            {p.ekadashi_parana && (
+              <>
+                <div className="border-t border-stone-200 my-1.5" />
+                <p className="text-[10px] font-bold text-[#8B4513] uppercase tracking-wider mb-1">
+                  {language === 'hi' ? p.ekadashi_parana.name_hindi : p.ekadashi_parana.name}
+                </p>
+                <PanchangRow label="Parana Time" labelHi="पारण समय" lang={language}
+                  value={`${fmt(p.ekadashi_parana.start)} ${l('to', 'से')} ${fmt(p.ekadashi_parana.end)}`}
+                  good
+                />
+                {p.ekadashi_parana.note && (
+                  <p className="text-[10px] text-stone-500 italic">
+                    {language === 'hi' ? p.ekadashi_parana.note_hindi : p.ekadashi_parana.note}
+                  </p>
+                )}
+              </>
+            )}
+
             {/* Festivals */}
             {selectedDay.festivals.length > 0 && (
               <>
@@ -909,6 +1015,26 @@ function FullPanchangPanel({ selectedDay, fullData, language, t, locationName }:
                     <span className="font-medium">{language === 'hi' ? translateBackend(f, language) : f}</span>
                   </p>
                 ))}
+              </>
+            )}
+
+            {/* Astronomical Data */}
+            {p.misc?.astronomical && (
+              <>
+                <div className="border-t border-stone-200 my-1.5" />
+                <p className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">
+                  {l('Astronomical', 'खगोलीय')}
+                </p>
+                <div className="text-[10px] text-stone-400 space-y-0.5">
+                  <div className="flex justify-between">
+                    <span>{l('Kaliyuga', 'कलियुग')}</span>
+                    <span>{p.misc.astronomical.kaliyuga_year} {l('Years', 'वर्ष')}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>{l('Ayanamsha', 'अयनांश')}</span>
+                    <span>{p.misc.astronomical.ayanamsha_label} {p.misc.astronomical.ayanamsha.toFixed(4)}{'\u00B0'}</span>
+                  </div>
+                </div>
               </>
             )}
 

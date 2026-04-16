@@ -27,7 +27,7 @@ const CHOGHADIYA_HINDI: Record<string, string> = {
   'Udveg': 'उद्वेग', 'Kaal': 'काल', 'Rog': 'रोग',
 };
 
-type ChoghadiyaPeriod = { name: string; quality: string; start: string; end: string; name_hindi?: string };
+type ChoghadiyaPeriod = { name: string; quality: string; start: string; end: string; name_hindi?: string; vaar_vela?: boolean; kaal_vela?: boolean; kaal_ratri?: boolean };
 
 export default function ChoghadiyaTab({ panchang, language, t, timezoneOffset, minuteTick }: Props) {
   const dayChoghadiya = panchang.choghadiya || [];
@@ -59,21 +59,39 @@ export default function ChoghadiyaTab({ panchang, language, t, timezoneOffset, m
     const q = CHOGHADIYA_QUALITY[period.name] || { label: '?', labelHi: '?', color: 'text-muted-foreground', bg: 'bg-gray-500/10', border: 'border-gray-500/20' };
     const key = `${period.start}-${period.end}`;
     const isCurrent = key === currentPeriodKey;
+    const hasVelaFlag = period.vaar_vela || period.kaal_vela || period.kaal_ratri;
 
     return (
       <TableRow
         key={key}
-        className={`border-b border/50 last:border-0 ${isCurrent ? 'bg-amber-500/15 border-l-2 border-l-amber-500' : ''}`}
+        className={`border-b border/50 last:border-0 ${hasVelaFlag ? 'bg-red-50/50' : ''} ${isCurrent ? 'bg-amber-500/15 border-l-2 border-l-amber-500' : ''}`}
       >
         <TableCell className="px-2 py-1">
-          <span className={`font-medium ${isCurrent ? 'text-sacred-gold' : 'text-foreground'}`}>
-            {language === 'hi' ? period.name_hindi || CHOGHADIYA_HINDI[period.name] || period.name : period.name}
-          </span>
-          {isCurrent && (
-            <span className="ml-1 px-1.5 py-0.5 text-xs bg-sacred-gold text-background rounded-full">
-              {t('auto.now')}
+          <div className="flex flex-wrap items-center gap-1">
+            <span className={`font-medium ${isCurrent ? 'text-sacred-gold' : 'text-foreground'}`}>
+              {language === 'hi' ? period.name_hindi || CHOGHADIYA_HINDI[period.name] || period.name : period.name}
             </span>
-          )}
+            {isCurrent && (
+              <span className="px-1.5 py-0.5 text-xs bg-sacred-gold text-background rounded-full">
+                {t('auto.now')}
+              </span>
+            )}
+            {period.vaar_vela && (
+              <span className="bg-red-100 text-red-700 text-[9px] px-1.5 py-0.5 rounded-full font-medium" title={language === 'hi' ? 'अशुभ उप-काल' : 'Inauspicious sub-period'}>
+                {language === 'hi' ? 'वार वेला' : 'Vaar Vela'}
+              </span>
+            )}
+            {period.kaal_vela && (
+              <span className="bg-red-100 text-red-700 text-[9px] px-1.5 py-0.5 rounded-full font-medium" title={language === 'hi' ? 'अशुभ उप-काल' : 'Inauspicious sub-period'}>
+                {language === 'hi' ? 'काल वेला' : 'Kaal Vela'}
+              </span>
+            )}
+            {period.kaal_ratri && (
+              <span className="bg-red-100 text-red-700 text-[9px] px-1.5 py-0.5 rounded-full font-medium" title={language === 'hi' ? 'अशुभ रात्रि काल' : 'Inauspicious night period'}>
+                {language === 'hi' ? 'काल रात्रि' : 'Kaal Ratri'}
+              </span>
+            )}
+          </div>
         </TableCell>
         <TableCell className="px-2 py-1">
           <span className={`inline-block px-1.5 py-0.5 rounded text-xs font-medium ${q.bg} ${q.color}`}>
@@ -192,6 +210,33 @@ export default function ChoghadiyaTab({ panchang, language, t, timezoneOffset, m
               {t('auto.kaal')}
             </span>
             <span className="text-muted-foreground ml-auto">{t('auto.avoid')}</span>
+          </div>
+        </div>
+        {/* Vaar Vela / Kaal Vela / Kaal Ratri legend */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 text-xs mt-2">
+          <div className="flex items-center gap-1.5 px-1.5 py-1 rounded bg-red-50">
+            <span className="bg-red-100 text-red-700 text-[9px] px-1.5 py-0.5 rounded-full font-medium flex-shrink-0">
+              {language === 'hi' ? 'वार वेला' : 'Vaar Vela'}
+            </span>
+            <span className="text-muted-foreground">
+              {language === 'hi' ? 'अशुभ वार काल' : 'Inauspicious weekday period'}
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5 px-1.5 py-1 rounded bg-red-50">
+            <span className="bg-red-100 text-red-700 text-[9px] px-1.5 py-0.5 rounded-full font-medium flex-shrink-0">
+              {language === 'hi' ? 'काल वेला' : 'Kaal Vela'}
+            </span>
+            <span className="text-muted-foreground">
+              {language === 'hi' ? 'अशुभ काल' : 'Inauspicious time period'}
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5 px-1.5 py-1 rounded bg-red-50">
+            <span className="bg-red-100 text-red-700 text-[9px] px-1.5 py-0.5 rounded-full font-medium flex-shrink-0">
+              {language === 'hi' ? 'काल रात्रि' : 'Kaal Ratri'}
+            </span>
+            <span className="text-muted-foreground">
+              {language === 'hi' ? 'अशुभ रात्रि काल' : 'Inauspicious night period'}
+            </span>
           </div>
         </div>
       </div>

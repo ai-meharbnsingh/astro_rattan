@@ -61,7 +61,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
     setAnalysisLoading(true);
     api.post('/api/kp-lalkitab/lk-analysis', { kundli_id: kundliId })
       .then(setAnalysisData)
-      .catch(() => setAnalysisError(isHi ? 'विश्लेषण लोड करने में विफल' : 'Failed to load analysis'))
+      .catch(() => setAnalysisError(t('lk.advanced.loadingAnalysis')))
       .finally(() => setAnalysisLoading(false));
   }, [kundliId]);
 
@@ -211,7 +211,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
           </div>
           {masnuiList.length > 0 && (
             <span className="text-[10px] font-bold text-sacred-gold-dark bg-sacred-gold/10 px-2 py-1 rounded border border-sacred-gold/20 uppercase tracking-widest animate-pulse">
-              ALCHEMICAL SYNTHESIS ACTIVE
+              {t('lk.advanced.badge')}
             </span>
           )}
         </div>
@@ -291,10 +291,10 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
         <div className="grid lg:grid-cols-5 gap-6">
           {masnuiList.length > 0 && (
             <div className="lg:col-span-2 p-4 rounded-2xl bg-sacred-gold/5 border border-sacred-gold/20 flex flex-col items-center">
-              <p className="text-[10px] font-bold text-sacred-gold uppercase tracking-widest mb-4">Visual Alchemy Map</p>
+              <p className="text-[10px] font-bold text-sacred-gold uppercase tracking-widest mb-4">{t('lk.advanced.mapTitle')}</p>
               <LalKitabDiagnosticChart type="masnui" planetPositions={planetPositions} masnuiData={masnuiList} />
               <p className="text-[10px] text-foreground/50 mt-4 text-center px-4 italic">
-                Glowing circles indicate synthetic planets formed by alchemical conjunctions.
+                {t('lk.advanced.mapDesc')}
               </p>
             </div>
           )}
@@ -549,7 +549,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
       {analysisLoading && (
         <div className="flex flex-col items-center justify-center py-12">
           <Loader2 className="w-8 h-8 animate-spin text-sacred-gold mb-3" />
-          <p className="text-sacred-gold text-sm">{isHi ? 'विश्लेषण लोड हो रहा है...' : 'Loading analysis...'}</p>
+          <p className="text-sacred-gold text-sm">{t('lk.advanced.loadingAnalysis')}</p>
         </div>
       )}
 
@@ -566,13 +566,11 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
             <div className="flex items-center gap-2 mb-2">
               <Building2 className="w-5 h-5 text-sacred-gold" />
               <h3 className="text-xl font-sans font-bold text-foreground">
-                {isHi ? 'बुन्याद (नींव)' : 'Bunyaad (Foundation)'}
+                {t('lk.advanced.bunyaadTitle')}
               </h3>
             </div>
             <p className="text-sm text-foreground/60 mb-4">
-              {isHi
-                ? 'हर ग्रह की नींव — क्या उनकी बुन्याद मज़बूत है या शत्रुओं ने कमज़ोर कर दी है।'
-                : 'The foundation of each planet — whether their base house is strong or undermined by enemies.'}
+              {t('lk.advanced.bunyaadDesc')}
             </p>
 
             {/* Collapsed Planets Banner */}
@@ -581,7 +579,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                 <XCircle className="w-5 h-5 text-red-600 shrink-0" />
                 <div>
                   <p className="text-sm font-bold text-red-800">
-                    {isHi ? 'ढही हुई बुन्याद:' : 'Collapsed Foundations:'}
+                    {t('lk.advanced.collapsedFoundations')}
                   </p>
                   <div className="flex flex-wrap gap-1.5 mt-1">
                     {analysisData.bunyaad.collapsed_planets.map((p: string) => (
@@ -598,7 +596,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
             {analysisData.bunyaad?.strong_foundations && analysisData.bunyaad.strong_foundations.length > 0 && (
               <div className="mb-4 flex flex-wrap items-center gap-2">
                 <span className="text-xs font-bold text-green-700 uppercase tracking-wider">
-                  {isHi ? 'मज़बूत नींव:' : 'Strong Foundations:'}
+                  {t('lk.advanced.strongFoundations')}
                 </span>
                 {analysisData.bunyaad.strong_foundations.map((p: string) => (
                   <span key={p} className="px-2 py-0.5 rounded bg-green-100 text-green-800 text-xs font-bold border border-green-200">
@@ -617,10 +615,10 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                     ? 'bg-red-100 text-red-800 border-red-200'
                     : 'bg-gray-100 text-gray-600 border-gray-200';
                 const statusLabel = info.bunyaad_status === 'strong'
-                  ? (isHi ? 'मज़बूत' : 'Strong')
+                  ? t('lk.advanced.foundation.strong')
                   : info.bunyaad_status === 'afflicted'
-                    ? (isHi ? 'पीड़ित' : 'Afflicted')
-                    : (isHi ? 'खाली' : 'Empty');
+                    ? t('lk.advanced.foundation.afflicted')
+                    : t('lk.advanced.foundation.empty');
 
                 return (
                   <div key={planet} className="card-sacred p-4 rounded-xl border border-sacred-gold/20 bg-white/40">
@@ -634,18 +632,18 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-xs mb-2">
                       <div>
-                        <span className="text-foreground/50 font-semibold">{isHi ? 'पक्का घर' : 'Pakka Ghar'}</span>
+                        <span className="text-foreground/50 font-semibold">{t('lk.advanced.pakkaGhar')}</span>
                         <p className="font-bold text-foreground">{info.pakka_ghar}</p>
                       </div>
                       <div>
-                        <span className="text-foreground/50 font-semibold">{isHi ? 'बुन्याद घर' : 'Bunyaad House'}</span>
+                        <span className="text-foreground/50 font-semibold">{t('lk.advanced.bunyaadHouse')}</span>
                         <p className="font-bold text-foreground">{info.bunyaad_house}</p>
                       </div>
                     </div>
                     {info.enemies_in_bunyaad && info.enemies_in_bunyaad.length > 0 && (
                       <div className="mb-2">
                         <span className="text-[10px] text-red-600 font-bold uppercase tracking-wider">
-                          {isHi ? 'बुन्याद में शत्रु:' : 'Enemies in Bunyaad:'}
+                          {t('lk.advanced.enemiesInBunyaad')}
                         </span>
                         <div className="flex flex-wrap gap-1 mt-0.5">
                           {info.enemies_in_bunyaad.map((e: string) => (
@@ -670,30 +668,28 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
             <div className="flex items-center gap-2 mb-2">
               <Swords className="w-5 h-5 text-red-600" />
               <h3 className="text-xl font-sans font-bold text-foreground">
-                {isHi ? 'टक्कर (टकराव)' : 'Takkar (Collision)'}
+                {t('lk.advanced.takkarTitle')}
               </h3>
             </div>
             <p className="text-sm text-foreground/60 mb-4">
-              {isHi
-                ? 'ग्रहों के बीच विनाशकारी और हल्के टकराव — कौन किस पर हमला कर रहा है।'
-                : 'Destructive and mild collisions between planets — who is attacking whom.'}
+              {t('lk.advanced.takkarDesc')}
             </p>
 
             {/* Summary Row */}
             <div className="flex flex-wrap gap-3 mb-4">
               {analysisData.takkar?.destructive_count != null && (
                 <span className="px-3 py-1 rounded-full bg-red-100 text-red-800 text-xs font-bold border border-red-200">
-                  {isHi ? 'विनाशकारी' : 'Destructive'}: {analysisData.takkar.destructive_count}
+                  {t('lk.advanced.takkar.destructive')}: {analysisData.takkar.destructive_count}
                 </span>
               )}
               {analysisData.takkar?.mild_count != null && (
                 <span className="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold border border-amber-200">
-                  {isHi ? 'हल्के' : 'Mild'}: {analysisData.takkar.mild_count}
+                  {t('lk.advanced.takkar.mild')}: {analysisData.takkar.mild_count}
                 </span>
               )}
               {analysisData.takkar?.most_attacked_planet && (
                 <span className="px-3 py-1 rounded-full bg-red-500/10 text-red-700 text-xs font-bold border border-red-300">
-                  {isHi ? 'सबसे ज़्यादा आक्रमित' : 'Most Attacked'}: {translatePlanet(analysisData.takkar.most_attacked_planet, language)}
+                  {t('lk.advanced.takkar.mostAttacked')}: {translatePlanet(analysisData.takkar.most_attacked_planet, language)}
                 </span>
               )}
             </div>
@@ -703,7 +699,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
               <div className="mb-4 flex flex-wrap items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-green-600" />
                 <span className="text-xs font-bold text-green-700 uppercase tracking-wider">
-                  {isHi ? 'सुरक्षित ग्रह:' : 'Safe Planets:'}
+                  {t('lk.advanced.safePlanets')}
                 </span>
                 {analysisData.takkar.safe_planets.map((p: string) => (
                   <span key={p} className="px-2 py-0.5 rounded bg-green-100 text-green-800 text-xs font-bold border border-green-200">
@@ -740,12 +736,12 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                             ? 'bg-red-200 text-red-800'
                             : 'bg-amber-200 text-amber-800'
                         }`}>
-                          {isDestructive ? (isHi ? 'विनाशकारी' : 'Destructive') : (isHi ? 'हल्का' : 'Mild')}
+                          {isDestructive ? t('lk.advanced.takkar.destructive') : t('lk.advanced.takkar.mild')}
                         </span>
                       </div>
                       {c.axis && (
                         <p className="text-xs text-foreground/60 mb-1">
-                          <span className="font-semibold">{isHi ? 'अक्ष' : 'Axis'}:</span> {c.axis}
+                          <span className="font-semibold">{t('lk.advanced.takkar.axis')}:</span> {c.axis}
                         </p>
                       )}
                       <p className="text-xs text-foreground/70 italic">
@@ -757,7 +753,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
               ) : (
                 <div className="py-10 text-center border border-dashed border-gray-200 rounded-xl bg-green-500/5">
                   <p className="text-green-700 font-medium italic">
-                    {isHi ? 'कोई टकराव नहीं पाया गया।' : 'No collisions detected.'}
+                    {t('lk.advanced.noCollisions')}
                   </p>
                 </div>
               )}
@@ -769,25 +765,23 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
             <div className="flex items-center gap-2 mb-2">
               <Shield className="w-5 h-5 text-orange-600" />
               <h3 className="text-xl font-sans font-bold text-foreground">
-                {isHi ? 'शत्रु घेराबंदी' : 'Enemy Siege'}
+                {t('lk.advanced.enemySiegeTitle')}
               </h3>
             </div>
             <p className="text-sm text-foreground/60 mb-4">
-              {isHi
-                ? 'हर ग्रह के पक्के घर में शत्रुओं की मौजूदगी — कितनी गंभीर है घेराबंदी।'
-                : 'Enemy presence in each planet\'s pakka ghar — how severe is the siege.'}
+              {t('lk.advanced.enemySiegeDesc')}
             </p>
 
             {/* Highlight Row */}
             <div className="flex flex-wrap gap-3 mb-4">
               {analysisData.enemy_presence?.most_besieged && (
                 <span className="px-3 py-1 rounded-full bg-red-100 text-red-800 text-xs font-bold border border-red-200">
-                  {isHi ? 'सबसे ज़्यादा घिरा' : 'Most Besieged'}: {translatePlanet(analysisData.enemy_presence.most_besieged, language)}
+                  {t('lk.advanced.mostBesieged')}: {translatePlanet(analysisData.enemy_presence.most_besieged, language)}
                 </span>
               )}
               {analysisData.enemy_presence?.least_besieged && (
                 <span className="px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-bold border border-green-200">
-                  {isHi ? 'सबसे कम घिरा' : 'Least Besieged'}: {translatePlanet(analysisData.enemy_presence.least_besieged, language)}
+                  {t('lk.advanced.leastBesieged')}: {translatePlanet(analysisData.enemy_presence.least_besieged, language)}
                 </span>
               )}
             </div>
@@ -802,9 +796,12 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                   mild: 'bg-amber-100 text-amber-800 border-amber-200',
                   none: 'bg-green-100 text-green-800 border-green-200',
                 };
-                const siegeLabelMap: Record<string, string> = isHi
-                  ? { severe: 'गंभीर', moderate: 'मध्यम', mild: 'हल्का', none: 'कोई नहीं' }
-                  : { severe: 'Severe', moderate: 'Moderate', mild: 'Mild', none: 'None' };
+                const siegeLabelMap: Record<string, string> = {
+                  severe: t('lk.advanced.siege.severe'),
+                  moderate: t('lk.advanced.siege.moderate'),
+                  mild: t('lk.advanced.siege.mild'),
+                  none: t('lk.advanced.siege.none'),
+                };
 
                 return (
                   <div key={planet} className="card-sacred p-4 rounded-xl border border-sacred-gold/20 bg-white/40">
@@ -818,11 +815,11 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-xs mb-2">
                       <div>
-                        <span className="text-foreground/50 font-semibold">{isHi ? 'कुल शत्रु' : 'Total Enemies'}</span>
+                        <span className="text-foreground/50 font-semibold">{t('lk.advanced.totalEnemies')}</span>
                         <p className="font-bold text-foreground">{info.total_enemies ?? 0}</p>
                       </div>
                       <div>
-                        <span className="text-foreground/50 font-semibold">{isHi ? 'पक्के घर में शत्रु' : 'In Pakka Ghar'}</span>
+                        <span className="text-foreground/50 font-semibold">{t('lk.advanced.inPakkaGhar')}</span>
                         <p className="font-bold text-foreground">{info.enemies_in_pakka_ghar ?? 0}</p>
                       </div>
                     </div>

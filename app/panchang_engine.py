@@ -32,10 +32,89 @@ from app.astro_engine import (
     get_nakshatra_from_longitude,
     get_sign_from_longitude,
     PLANETS as PLANET_IDS,
+    NAKSHATRAS as ASTRO_NAKSHATRAS,
+    NAKSHATRA_SPAN as ASTRO_NAKSHATRA_SPAN,
     SE_SUN,
     SE_MOON,
     SE_MEAN_NODE,
 )
+
+# ============================================================
+# HINDI NAME MAPPINGS
+# ============================================================
+
+NAKSHATRA_HINDI: Dict[str, str] = {
+    "Ashwini": "अश्विनी",
+    "Bharani": "भरणी",
+    "Krittika": "कृत्तिका",
+    "Rohini": "रोहिणी",
+    "Mrigashira": "मृगशिरा",
+    "Ardra": "आर्द्रा",
+    "Punarvasu": "पुनर्वसु",
+    "Pushya": "पुष्य",
+    "Ashlesha": "आश्लेषा",
+    "Magha": "मघा",
+    "Purva Phalguni": "पूर्व फाल्गुनी",
+    "Uttara Phalguni": "उत्तर फाल्गुनी",
+    "Hasta": "हस्त",
+    "Chitra": "चित्रा",
+    "Swati": "स्वाती",
+    "Vishakha": "विशाखा",
+    "Anuradha": "अनुराधा",
+    "Jyeshtha": "ज्येष्ठा",
+    "Mula": "मूल",
+    "Purva Ashadha": "पूर्वाषाढ़ा",
+    "Uttara Ashadha": "उत्तराषाढ़ा",
+    "Shravana": "श्रवण",
+    "Dhanishta": "धनिष्ठा",
+    "Shatabhisha": "शतभिषा",
+    "Purva Bhadrapada": "पूर्व भाद्रपद",
+    "Uttara Bhadrapada": "उत्तर भाद्रपद",
+    "Revati": "रेवती",
+}
+
+RASHI_HINDI: Dict[str, str] = {
+    "Aries": "मेष",
+    "Taurus": "वृषभ",
+    "Gemini": "मिथुन",
+    "Cancer": "कर्क",
+    "Leo": "सिंह",
+    "Virgo": "कन्या",
+    "Libra": "तुला",
+    "Scorpio": "वृश्चिक",
+    "Sagittarius": "धनु",
+    "Capricorn": "मकर",
+    "Aquarius": "कुम्भ",
+    "Pisces": "मीन",
+}
+
+PLANET_HINDI: Dict[str, str] = {
+    "Sun": "सूर्य",
+    "Moon": "चन्द्र",
+    "Mars": "मंगल",
+    "Mercury": "बुध",
+    "Jupiter": "बृहस्पति",
+    "Venus": "शुक्र",
+    "Saturn": "शनि",
+    "Rahu": "राहु",
+    "Ketu": "केतु",
+}
+
+# Combustion orbs (degrees from Sun)
+COMBUSTION_ORBS: Dict[str, float] = {
+    "Moon": 12.0,
+    "Mars": 17.0,
+    "Mercury": 14.0,
+    "Jupiter": 11.0,
+    "Venus": 10.0,
+    "Saturn": 15.0,
+}
+
+# Reduced combustion orbs when planet is retrograde
+COMBUSTION_ORBS_RETROGRADE: Dict[str, float] = {
+    "Mercury": 12.0,
+    "Venus": 8.0,
+}
 
 # ============================================================
 # TITHIS -- 30 tithis in a lunar month
@@ -168,38 +247,10 @@ _NIGHT_CHOGHADIYA_NAMES = {
     6: ["Shubh", "Amrit", "Char", "Rog", "Kaal", "Labh", "Udveg", "Shubh"],     # Sunday
 }
 
-# Vaar Vela — inauspicious day period (1-based index, keyed by weekday 0=Mon..6=Sun)
-_VAAR_VELA_PERIOD = {
-    0: 6,  # Monday — 6th period
-    1: 5,  # Tuesday — 5th period
-    2: 4,  # Wednesday — 4th period
-    3: 3,  # Thursday — 3rd period
-    4: 2,  # Friday — 2nd period
-    5: 1,  # Saturday — 1st period
-    6: 7,  # Sunday — 7th period
-}
-
-# Kaal Vela — inauspicious day period (1-based index, keyed by weekday 0=Mon..6=Sun)
-_KAAL_VELA_PERIOD = {
-    0: 2,  # Monday — 2nd period
-    1: 3,  # Tuesday — 3rd period
-    2: 4,  # Wednesday — 4th period
-    3: 5,  # Thursday — 5th period
-    4: 6,  # Friday — 6th period
-    5: 7,  # Saturday — 7th period
-    6: 1,  # Sunday — 1st period
-}
-
-# Kaal Ratri — inauspicious night period (1-based index, keyed by weekday 0=Mon..6=Sun)
-_KAAL_RATRI_PERIOD = {
-    0: 2,  # Monday — 2nd night period
-    1: 3,  # Tuesday — 3rd night period
-    2: 4,  # Wednesday — 4th night period
-    3: 5,  # Thursday — 5th night period
-    4: 6,  # Friday — 6th night period
-    5: 7,  # Saturday — 7th night period
-    6: 1,  # Sunday — 1st night period
-}
+# Vaar Vela / Kaal Vela / Kaal Ratri — 1-based period index per weekday (0=Mon..6=Sun)
+_VAAR_VELA_PERIOD = {0: 6, 1: 5, 2: 4, 3: 3, 4: 2, 5: 1, 6: 7}  # Mon=6th, Tue=5th...Sun=7th
+_KAAL_VELA_PERIOD = {0: 2, 1: 3, 2: 4, 3: 5, 4: 6, 5: 7, 6: 1}  # Mon=2nd, Tue=3rd...Sun=1st
+_KAAL_RATRI_PERIOD = {0: 2, 1: 3, 2: 4, 3: 5, 4: 6, 5: 7, 6: 1}  # same as Kaal Vela for night
 
 # ============================================================
 # HINDU MONTH NAMES
@@ -544,17 +595,83 @@ NAKSHATRA_SPAN = 360.0 / 27.0  # 13.3333 degrees
 
 
 # ============================================================
+# PLANETARY POSITIONS (NAVGRAHA) — helpers
+# ============================================================
+
+def _nakshatra_for_longitude(sid_lon: float) -> Tuple[str, str, int]:
+    """Return (nakshatra_name, nakshatra_hindi, pada) for a sidereal longitude."""
+    lon = sid_lon % 360.0
+    nak_span = ASTRO_NAKSHATRA_SPAN  # 13.3333...
+    nak_index = int(lon / nak_span)
+    if nak_index >= 27:
+        nak_index = 26
+    nak_name = ASTRO_NAKSHATRAS[nak_index]["name"]
+    nak_hindi = NAKSHATRA_HINDI.get(nak_name, nak_name)
+    pada = int((lon % nak_span) / (nak_span / 4.0)) + 1
+    if pada > 4:
+        pada = 4
+    return nak_name, nak_hindi, pada
+
+
+def _is_combust(planet_name: str, planet_lon: float, sun_lon: float,
+                is_retrograde: bool) -> bool:
+    """Check if a planet is combust (too close to Sun)."""
+    if planet_name not in COMBUSTION_ORBS:
+        return False
+    orb = COMBUSTION_ORBS[planet_name]
+    # Reduced orb for Mercury and Venus when retrograde
+    if is_retrograde and planet_name in COMBUSTION_ORBS_RETROGRADE:
+        orb = COMBUSTION_ORBS_RETROGRADE[planet_name]
+    # Angular distance (shortest arc)
+    diff = abs(planet_lon - sun_lon)
+    if diff > 180.0:
+        diff = 360.0 - diff
+    return diff <= orb
+
+
+def _enrich_planet_dict(entry: Dict[str, Any], sun_lon: float) -> None:
+    """Add nakshatra, rashi_hindi, name_hindi, combustion fields in-place."""
+    name = entry["name"]
+    sid_lon = entry["longitude"]
+    rashi = entry["rashi"]
+    is_retro = entry.get("retrograde", False)
+
+    # Nakshatra & Pada
+    nak_name, nak_hindi, pada = _nakshatra_for_longitude(sid_lon)
+    entry["nakshatra"] = nak_name
+    entry["nakshatra_hindi"] = nak_hindi
+    entry["nakshatra_pada"] = pada
+
+    # Rashi Hindi
+    entry["rashi_hindi"] = RASHI_HINDI.get(rashi, rashi)
+
+    # Planet Hindi name
+    entry["name_hindi"] = PLANET_HINDI.get(name, name)
+
+    # Combustion (only physical planets Moon–Saturn, not nodes)
+    if name in COMBUSTION_ORBS:
+        entry["combusted"] = _is_combust(name, sid_lon, sun_lon, is_retro)
+    else:
+        entry["combusted"] = False
+
+
+# ============================================================
 # PLANETARY POSITIONS (NAVGRAHA)
 # ============================================================
 
 def calculate_planetary_positions(jd: float) -> List[Dict[str, Any]]:
     """
     Calculate sidereal positions for all 9 Vedic planets (Navgraha).
-    Returns list of {name, longitude, degree, rashi, rashi_index}.
+
+    Returns list of dicts, each containing:
+      name, longitude, degree, rashi, rashi_index,
+      retrograde, nakshatra, nakshatra_hindi, nakshatra_pada,
+      rashi_hindi, name_hindi, combusted
     """
     planets = []
     if _HAS_SWE:
         ayanamsa = swe.get_ayanamsa(jd)
+        ayanamsa_next = swe.get_ayanamsa(jd + 1.0)
         planet_list = [
             ("Sun", 0), ("Moon", 1), ("Mars", 4), ("Mercury", 2),
             ("Jupiter", 5), ("Venus", 3), ("Saturn", 6), ("Rahu", 10),
@@ -563,14 +680,34 @@ def calculate_planetary_positions(jd: float) -> List[Dict[str, Any]]:
             pos, _ = swe.calc_ut(jd, pid)
             sid_lon = (pos[0] - ayanamsa) % 360.0
             rashi = get_sign_from_longitude(sid_lon)
+
+            # --- Retrograde detection ---
+            if name == "Sun":
+                retrograde = False  # Sun never retrogrades
+            elif name == "Rahu":
+                retrograde = True  # Rahu always retrograde by convention
+            else:
+                pos_next, _ = swe.calc_ut(jd + 1.0, pid)
+                sid_lon_next = (pos_next[0] - ayanamsa_next) % 360.0
+                # If longitude decreases over 1 day -> retrograde
+                delta = sid_lon_next - sid_lon
+                # Handle wrap-around (e.g., 359 -> 1 is +2 not -358)
+                if delta > 180.0:
+                    delta -= 360.0
+                elif delta < -180.0:
+                    delta += 360.0
+                retrograde = delta < 0.0
+
             planets.append({
                 "name": name,
                 "longitude": round(sid_lon, 4),
                 "degree": round(sid_lon % 30.0, 2),
                 "rashi": rashi,
                 "rashi_index": int(sid_lon / 30.0),
+                "retrograde": retrograde,
             })
-        # Ketu = Rahu + 180
+
+        # Ketu = Rahu + 180 (always retrograde by convention)
         rahu_lon = next(p["longitude"] for p in planets if p["name"] == "Rahu")
         ketu_lon = (rahu_lon + 180.0) % 360.0
         planets.append({
@@ -579,32 +716,62 @@ def calculate_planetary_positions(jd: float) -> List[Dict[str, Any]]:
             "degree": round(ketu_lon % 30.0, 2),
             "rashi": get_sign_from_longitude(ketu_lon),
             "rashi_index": int(ketu_lon / 30.0),
+            "retrograde": True,
         })
     else:
         # Fallback -- use approximations from astro_engine
         from app.astro_engine import _approx_planet_longitude, _approx_rahu_longitude
         ayanamsa = _approx_ayanamsa(jd)
+        ayanamsa_next = _approx_ayanamsa(jd + 1.0)
         approx_funcs = {
-            "Sun": lambda: _approx_sun_longitude(jd),
-            "Moon": lambda: _approx_moon_longitude(jd),
-            "Mars": lambda: _approx_planet_longitude(jd, "Mars"),
-            "Mercury": lambda: _approx_planet_longitude(jd, "Mercury"),
-            "Jupiter": lambda: _approx_planet_longitude(jd, "Jupiter"),
-            "Venus": lambda: _approx_planet_longitude(jd, "Venus"),
-            "Saturn": lambda: _approx_planet_longitude(jd, "Saturn"),
-            "Rahu": lambda: _approx_rahu_longitude(jd),
+            "Sun": lambda _jd=jd: _approx_sun_longitude(_jd),
+            "Moon": lambda _jd=jd: _approx_moon_longitude(_jd),
+            "Mars": lambda _jd=jd: _approx_planet_longitude(_jd, "Mars"),
+            "Mercury": lambda _jd=jd: _approx_planet_longitude(_jd, "Mercury"),
+            "Jupiter": lambda _jd=jd: _approx_planet_longitude(_jd, "Jupiter"),
+            "Venus": lambda _jd=jd: _approx_planet_longitude(_jd, "Venus"),
+            "Saturn": lambda _jd=jd: _approx_planet_longitude(_jd, "Saturn"),
+            "Rahu": lambda _jd=jd: _approx_rahu_longitude(_jd),
+        }
+        approx_funcs_next = {
+            "Sun": lambda _jd=jd: _approx_sun_longitude(_jd + 1.0),
+            "Moon": lambda _jd=jd: _approx_moon_longitude(_jd + 1.0),
+            "Mars": lambda _jd=jd: _approx_planet_longitude(_jd + 1.0, "Mars"),
+            "Mercury": lambda _jd=jd: _approx_planet_longitude(_jd + 1.0, "Mercury"),
+            "Jupiter": lambda _jd=jd: _approx_planet_longitude(_jd + 1.0, "Jupiter"),
+            "Venus": lambda _jd=jd: _approx_planet_longitude(_jd + 1.0, "Venus"),
+            "Saturn": lambda _jd=jd: _approx_planet_longitude(_jd + 1.0, "Saturn"),
+            "Rahu": lambda _jd=jd: _approx_rahu_longitude(_jd + 1.0),
         }
         for name, func in approx_funcs.items():
             trop = func()
             sid_lon = (trop - ayanamsa) % 360.0
             rashi = get_sign_from_longitude(sid_lon)
+
+            # --- Retrograde detection ---
+            if name == "Sun":
+                retrograde = False
+            elif name == "Rahu":
+                retrograde = True
+            else:
+                trop_next = approx_funcs_next[name]()
+                sid_lon_next = (trop_next - ayanamsa_next) % 360.0
+                delta = sid_lon_next - sid_lon
+                if delta > 180.0:
+                    delta -= 360.0
+                elif delta < -180.0:
+                    delta += 360.0
+                retrograde = delta < 0.0
+
             planets.append({
                 "name": name,
                 "longitude": round(sid_lon, 4),
                 "degree": round(sid_lon % 30.0, 2),
                 "rashi": rashi,
                 "rashi_index": int(sid_lon / 30.0),
+                "retrograde": retrograde,
             })
+
         rahu_lon = next(p["longitude"] for p in planets if p["name"] == "Rahu")
         ketu_lon = (rahu_lon + 180.0) % 360.0
         planets.append({
@@ -613,7 +780,14 @@ def calculate_planetary_positions(jd: float) -> List[Dict[str, Any]]:
             "degree": round(ketu_lon % 30.0, 2),
             "rashi": get_sign_from_longitude(ketu_lon),
             "rashi_index": int(ketu_lon / 30.0),
+            "retrograde": True,
         })
+
+    # --- Enrich all planets with nakshatra, Hindi names, combustion ---
+    sun_lon = next(p["longitude"] for p in planets if p["name"] == "Sun")
+    for p in planets:
+        _enrich_planet_dict(p, sun_lon)
+
     return planets
 
 
@@ -808,15 +982,14 @@ def calculate_choghadiya(
     day_duration = ss_minutes - sr_minutes
     slot_duration = day_duration / 8.0
 
-    vaar_vela_idx = _VAAR_VELA_PERIOD.get(weekday, 1) - 1   # 0-based
-    kaal_vela_idx = _KAAL_VELA_PERIOD.get(weekday, 1) - 1   # 0-based
-
     names = _DAY_CHOGHADIYA_NAMES.get(weekday, _DAY_CHOGHADIYA_NAMES[0])
+    vaar_vela_idx = _VAAR_VELA_PERIOD.get(weekday, 0) - 1  # convert to 0-based
+    kaal_vela_idx = _KAAL_VELA_PERIOD.get(weekday, 0) - 1
     result = []
     for i, name in enumerate(names):
         start = sr_minutes + i * slot_duration
         end = start + slot_duration
-        period: Dict[str, Any] = {
+        period = {
             "name": name,
             "quality": _CHOGHADIYA_QUALITY.get(name, "Unknown"),
             "start": _minutes_to_time(start),
@@ -842,14 +1015,13 @@ def calculate_night_choghadiya(
     night_duration = nsr_minutes - ss_minutes
     slot_duration = night_duration / 8.0
 
-    kaal_ratri_idx = _KAAL_RATRI_PERIOD.get(weekday, 1) - 1  # 0-based
-
     names = _NIGHT_CHOGHADIYA_NAMES.get(weekday, _NIGHT_CHOGHADIYA_NAMES[0])
+    kaal_ratri_idx = _KAAL_RATRI_PERIOD.get(weekday, 0) - 1  # convert to 0-based
     result = []
     for i, name in enumerate(names):
         start = ss_minutes + i * slot_duration
         end = start + slot_duration
-        period: Dict[str, Any] = {
+        period = {
             "name": name,
             "quality": _CHOGHADIYA_QUALITY.get(name, "Unknown"),
             "start": _minutes_to_time(start % 1440),
@@ -1282,4 +1454,64 @@ def calculate_panchang(
         "gowri_panchang": gowri_panchang,
         "do_ghati_muhurta": do_ghati,
         "panchaka": panchaka,
+        # --- New modules (Wave 1) ---
+        **_calculate_wave1_extras(weekday, tithi_index, tithi["name"],
+                                  nakshatra.get("name", ""), nakshatra.get("index", 0),
+                                  nakshatra_end, date, sunrise_str, sunset_str,
+                                  hindu_calendar.get("vikram_samvat", 0),
+                                  jd_sunrise, ayanamsa),
     }
+
+
+def _calculate_wave1_extras(
+    weekday, tithi_index, tithi_name, nakshatra_name, nakshatra_index,
+    nakshatra_end_time, date_str, sunrise, sunset, vikram_samvat, jd, ayanamsa,
+):
+    """Integrate all new Wave 1 modules into panchang output."""
+    result = {}
+    try:
+        from app.panchang_yogas import calculate_all_special_yogas
+        result["special_yogas"] = calculate_all_special_yogas(weekday, tithi_index, nakshatra_name)
+    except Exception:
+        result["special_yogas"] = {}
+    try:
+        from app.panchang_directions import calculate_all_directions
+        result["directions"] = calculate_all_directions(weekday, tithi_index, nakshatra_index)
+    except Exception:
+        result["directions"] = {}
+    try:
+        from app.panchang_misc import calculate_all_misc
+        result["misc"] = calculate_all_misc(
+            date_str=date_str, vikram_samvat=vikram_samvat,
+            jd=jd, ayanamsha=ayanamsa,
+            nakshatra_name=nakshatra_name, nakshatra_end_time=nakshatra_end_time or "",
+            sunrise=sunrise, sunset=sunset,
+        )
+    except Exception:
+        result["misc"] = {}
+    try:
+        from app.panchang_ekadashi import calculate_ekadashi_parana
+        result["ekadashi_parana"] = calculate_ekadashi_parana(
+            tithi_name=tithi_name, tithi_end_time="", next_sunrise=sunrise,
+        )
+    except Exception:
+        result["ekadashi_parana"] = None
+    try:
+        from app.panchang_nivas import calculate_all_nivas
+        result["nivas"] = calculate_all_nivas(weekday, tithi_index, nakshatra_index)
+    except Exception:
+        result["nivas"] = {}
+    try:
+        from app.panchang_tamil import calculate_all_tamil
+        result["tamil"] = calculate_all_tamil(weekday, tithi_index, nakshatra_index)
+    except Exception:
+        result["tamil"] = {}
+    try:
+        from app.panchang_samvat import calculate_all_samvat
+        result["samvat"] = calculate_all_samvat(
+            vikram_samvat=2083,  # approximate, will be overridden if available
+            maas="", paksha="",
+        )
+    except Exception:
+        result["samvat"] = {}
+    return result

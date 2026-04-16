@@ -118,21 +118,20 @@ function renderMarkdown(md: string) {
 
 /* ---------- Comparison Table ---------- */
 function ComparisonTable() {
-  const { language } = useTranslation();
-  const l = (en: string, hi: string) => language === 'hi' ? hi : en;
+  const { t } = useTranslation();
   const data = comparisonData as any;
 
   return (
     <div className="mt-12">
-      <h2 className="text-2xl font-bold text-foreground mb-6">{l('Feature Comparison', 'सुविधा तुलना')}</h2>
+      <h2 className="text-2xl font-bold text-foreground mb-6">{t('blog.compare.title')}</h2>
       <div className="overflow-x-auto rounded-xl border border-cosmic-border">
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-sacred-gold/10">
-              <th className="text-left py-3 px-4 text-sacred-gold-dark font-semibold">{l('Feature', 'सुविधा')}</th>
+              <th className="text-left py-3 px-4 text-sacred-gold-dark font-semibold">{t('blog.compare.feature')}</th>
               <th className="text-center py-3 px-4 text-sacred-gold font-bold">AstroRattan</th>
-              <th className="text-center py-3 px-4 text-foreground/60">{l('Generic Free', 'सामान्य मुफ्त')}</th>
-              <th className="text-center py-3 px-4 text-foreground/60">{l('Premium', 'प्रीमियम')}</th>
+              <th className="text-center py-3 px-4 text-foreground/60">{t('blog.compare.genericFree')}</th>
+              <th className="text-center py-3 px-4 text-foreground/60">{t('blog.compare.premium')}</th>
             </tr>
           </thead>
           <tbody>
@@ -189,8 +188,7 @@ function StatsBanner() {
 
 /* ---------- Main Blog Page ---------- */
 export default function BlogPage() {
-  const { language } = useTranslation();
-  const l = (en: string, hi: string) => language === 'hi' ? hi : en;
+  const { t, language } = useTranslation();
   const hero = landingHero as any;
   const [activeTab, setActiveTab] = useState<'article' | 'compare' | 'accuracy'>('article');
 
@@ -200,7 +198,7 @@ export default function BlogPage() {
       <div className="relative overflow-hidden bg-gradient-to-b from-sacred-gold/5 to-transparent">
         <div className="max-w-4xl mx-auto px-4 pt-8 pb-6 relative">
           <Link to="/" className="inline-flex items-center gap-2 text-sacred-gold hover:text-sacred-gold-dark text-sm mb-6 transition-colors">
-            <ArrowLeft className="w-4 h-4" /> {l('Back to Home', 'होम पर वापस जाएं')}
+            <ArrowLeft className="w-4 h-4" /> {t('blog.backToHome')}
           </Link>
           <div className="inline-block bg-sacred-gold/10 border border-sacred-gold/30 text-sacred-gold-dark text-xs font-medium px-3 py-1 rounded-full mb-4">
             {language === 'hi' ? (hero.accuracy_badge_hi || hero.accuracy_badge) : hero.accuracy_badge}
@@ -219,9 +217,9 @@ export default function BlogPage() {
       <div className="max-w-4xl mx-auto px-4">
         <div className="flex gap-1 bg-sacred-gold/10 rounded-lg p-1 mb-8 border border-sacred-gold/20">
           {([
-            { key: 'article' as const, label: l('Blog Article', 'ब्लॉग लेख') },
-            { key: 'compare' as const, label: l('Feature Comparison', 'सुविधा तुलना') },
-            { key: 'accuracy' as const, label: l('Accuracy Audit', 'सटीकता ऑडिट') },
+            { key: 'article' as const, label: t('blog.tab.article') },
+            { key: 'compare' as const, label: t('blog.tab.compare') },
+            { key: 'accuracy' as const, label: t('blog.tab.accuracy') },
           ]).map(tab => (
             <button
               key={tab.key}
@@ -250,7 +248,7 @@ export default function BlogPage() {
             <ComparisonTable />
             {(comparisonData as any).unique_to_astrorattan && (
               <div className="mt-8 p-6 bg-sacred-gold/5 border border-sacred-gold/20 rounded-xl">
-                <h3 className="text-lg font-semibold text-sacred-gold-dark mb-3">{l('Unique to AstroRattan', 'AstroRattan की विशेषता')}</h3>
+                <h3 className="text-lg font-semibold text-sacred-gold-dark mb-3">{t('blog.article.uniqueTitle')}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                   {(comparisonData as any).unique_to_astrorattan.map((item: string, i: number) => (
                     <div key={i} className="flex items-center gap-2 text-sm text-foreground/80">
@@ -267,12 +265,12 @@ export default function BlogPage() {
         {/* Accuracy Audit */}
         {activeTab === 'accuracy' && (
           <div className="pb-20 space-y-8">
-            <h2 className="text-2xl font-bold text-foreground">{l('Technical Accuracy Audit', 'तकनीकी सटीकता ऑडिट')}</h2>
+            <h2 className="text-2xl font-bold text-foreground">{t('blog.accuracy.title')}</h2>
 
             {/* Engine */}
             {(accuracyAudit as any).engine && (
               <div className="bg-white border border-cosmic-border rounded-xl p-6 shadow-sm">
-                <h3 className="text-lg font-semibold text-sacred-gold-dark mb-3">{l('Calculation Engine', 'गणना इंजन')}</h3>
+                <h3 className="text-lg font-semibold text-sacred-gold-dark mb-3">{t('blog.accuracy.calculationEngine')}</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                   {Object.entries((accuracyAudit as any).engine).map(([k, v]: [string, any]) => (
                     <div key={k}>
@@ -288,7 +286,7 @@ export default function BlogPage() {
             {(accuracyAudit as any).dasha_systems && (
               <div className="bg-white border border-cosmic-border rounded-xl p-6 shadow-sm">
                 <h3 className="text-lg font-semibold text-sacred-gold-dark mb-3">
-                  {(accuracyAudit as any).dasha_systems.length} {l('Dasha Systems', 'दशा पद्धतियाँ')}
+                  {(accuracyAudit as any).dasha_systems.length} {t('blog.accuracy.dashaSystems')}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {(accuracyAudit as any).dasha_systems.map((d: any, i: number) => (
@@ -308,7 +306,7 @@ export default function BlogPage() {
             {(accuracyAudit as any).yogas && (
               <div className="bg-white border border-cosmic-border rounded-xl p-6 shadow-sm">
                 <h3 className="text-lg font-semibold text-sacred-gold-dark mb-3">
-                  {(accuracyAudit as any).yogas.total_count} {l('Yogas Detected', 'योग पाए गए')}
+                  {(accuracyAudit as any).yogas.total_count} {t('blog.accuracy.yogasDetected')}
                 </h3>
                 <div className="space-y-3">
                   {(accuracyAudit as any).yogas.categories?.map((cat: any, i: number) => (
@@ -329,7 +327,7 @@ export default function BlogPage() {
             {(accuracyAudit as any).divisional_charts && (
               <div className="bg-white border border-cosmic-border rounded-xl p-6 shadow-sm">
                 <h3 className="text-lg font-semibold text-sacred-gold-dark mb-3">
-                  {(accuracyAudit as any).divisional_charts.length} {l('Divisional Charts', 'वर्ग कुंडलियाँ')}
+                  {(accuracyAudit as any).divisional_charts.length} {t('blog.accuracy.divisionalCharts')}
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
                   {(accuracyAudit as any).divisional_charts.map((d: any, i: number) => (
@@ -348,7 +346,7 @@ export default function BlogPage() {
                 to="/kundli"
                 className="inline-flex items-center gap-2 bg-sacred-gold hover:bg-sacred-gold-dark text-white font-semibold px-8 py-3 rounded-xl transition-colors"
               >
-                {l('Generate Your Kundli', 'अपनी कुंडली बनाएं')} <ExternalLink className="w-4 h-4" />
+                {t('blog.cta.generateKundli')} <ExternalLink className="w-4 h-4" />
               </Link>
             </div>
           </div>
