@@ -72,11 +72,21 @@ const HOUSE_CENTERS: { x: number; y: number }[] = [
   { x: 318, y: 55 },   // 12 — top-right triangle
 ];
 
+// House numbers — matching standard North Indian layout (reference image)
+// Numbers sit along the inner diamond edges, inside each house
 const HOUSE_NUM_POS: { x: number; y: number }[] = [
-  { x: 200, y: 34 },  { x: 58,  y: 34 },  { x: 26, y: 105 },
-  { x: 58,  y: 168 }, { x: 26,  y: 230 }, { x: 58, y: 300 },
-  { x: 200, y: 368 }, { x: 342, y: 300 }, { x: 374, y: 230 },
-  { x: 342, y: 168 }, { x: 374, y: 105 }, { x: 342, y: 34 },
+  { x: 185, y: 185 }, // 1  — center-top, below diamond intersection
+  { x: 110, y: 50 },  // 2  — top-left, inside upper triangle
+  { x: 50,  y: 110 }, // 3  — left-top, inside left triangle
+  { x: 145, y: 185 }, // 4  — center-left, left of center
+  { x: 50,  y: 290 }, // 5  — left-bottom, inside lower-left triangle
+  { x: 110, y: 350 }, // 6  — bottom-left, inside lower triangle
+  { x: 215, y: 215 }, // 7  — center-bottom, below diamond intersection
+  { x: 290, y: 350 }, // 8  — bottom-right, inside lower triangle
+  { x: 350, y: 290 }, // 9  — right-bottom, inside right triangle
+  { x: 255, y: 185 }, // 10 — center-right, right of center
+  { x: 350, y: 110 }, // 11 — right-top, inside upper-right triangle
+  { x: 290, y: 50 },  // 12 — top-right, inside upper triangle
 ];
 
 function ascMarkerPos(degInSign: number): { x: number; y: number } {
