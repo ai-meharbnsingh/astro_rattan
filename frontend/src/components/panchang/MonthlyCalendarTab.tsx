@@ -452,7 +452,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
               <>
                 {/* Weekday Headers */}
                 <div className="grid grid-cols-7 gap-1 mb-1">
-                  {weekdays[t('auto.en')].map((day) => (
+                  {(language === 'hi' ? weekdays.hi : weekdays.en).map((day) => (
                     <div key={day} className="text-center text-xs font-semibold text-sacred-gold py-1">
                       {day}
                     </div>

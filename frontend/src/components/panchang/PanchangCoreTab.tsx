@@ -8,6 +8,7 @@ interface Props {
 }
 
 export default function PanchangCoreTab({ panchang, language, t }: Props) {
+  const l = (en: string, hi: string) => language === 'hi' ? hi : en;
   const coreRows = [
     {
       metric: language === 'hi' ? 'तिथि' : t('panchang.tithi'),
@@ -47,12 +48,12 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
       details: t('auto.dayEnd'),
     },
     {
-      metric: 'Moonrise',
+      metric: l('Moonrise', 'चन्द्रोदय'),
       value: panchang.moonrise || '--',
       details: t('auto.moonRise'),
     },
     {
-      metric: 'Moonset',
+      metric: l('Moonset', 'चन्द्रास्त'),
       value: panchang.moonset || '--',
       details: t('auto.moonSet'),
     },
