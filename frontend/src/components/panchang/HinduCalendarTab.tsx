@@ -319,12 +319,12 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
   const p = selectedDayFull.panchang as any;
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {/* Main Layout: Left Panel + Calendar Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-3">
+      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-2">
 
         {/* ===== LEFT PANEL: Selected Day Details + Festivals ===== */}
-        <div className="space-y-3">
+        <div className="space-y-2">
 
           {/* Selected Day — Full Dainik Panchang (Drik Panchang style) */}
           <FullPanchangPanel
@@ -497,14 +497,14 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
                     );
                   })}
 
-                  {/* Trailing empty cells */}
-                  {Array.from({ length: Math.max(0, 42 - (firstDayOfMonth + daysInMonth)) }).map((_, i) => (
+                  {/* Trailing empty cells — only complete the last row, no extra rows */}
+                  {Array.from({ length: (7 - ((firstDayOfMonth + daysInMonth) % 7)) % 7 }).map((_, i) => (
                     <div key={`te-${i}`} className="min-h-[130px] sm:min-h-[150px] bg-[#FFF9F5]" />
                   ))}
                 </div>
 
                 {/* Legend */}
-                <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 mt-3 text-[10px] text-stone-400">
+                <div className="flex flex-wrap items-center justify-center gap-x-1.5 gap-y-0.5 mt-2 text-[10px] text-stone-400">
                   <span><span className="inline-block border border-stone-400 text-stone-600 rounded text-[8px] font-bold px-0.5 mr-0.5">x</span> {language === 'hi' ? 'तिथि' : 'Tithi'}</span>
                   <span><span className="text-[#C45A00]">☀</span> {language === 'hi' ? 'सूर्योदय / सूर्यास्त' : 'Sunrise / Sunset'}</span>
                   <span>☽ {language === 'hi' ? 'चंद्र राशि' : 'Moon Sign'}</span>
@@ -766,7 +766,7 @@ function FullPanchangPanel({ selectedDay, fullData, language, t, locationName }:
       </div>
 
       {/* Time format tabs */}
-      <div className="flex items-center justify-center gap-1 px-3 pt-2">
+      <div className="flex items-center justify-center gap-1 px-3 pt-1.5">
         {(['12', '24', '24+'] as const).map((f) => (
           <button
             key={f}
