@@ -82,16 +82,24 @@ export default function Hero() {
           {/* Quick nav links */}
           <div className="hero-shloka opacity-0 flex flex-wrap justify-center items-center gap-x-0 gap-y-0.5 mt-3 text-[11px] sm:text-[13px] text-sacred-gold-dark">
             {[
-              { label: language === 'hi' ? 'राशिफल' : 'Horoscope', id: 'horoscope-section' },
-              { label: language === 'hi' ? 'पंचांग' : 'Panchang', id: 'panchang-section' },
-              { label: language === 'hi' ? 'होरा' : 'Hora', id: 'hora-section' },
-              { label: language === 'hi' ? 'चौघड़िया' : 'Choghadiya', id: 'hora-section' },
-              { label: 'FAQ', id: 'faq-section' },
+              { label: language === 'hi' ? 'राशिफल' : 'Horoscope', id: 'horoscope-section', href: '/horoscope' },
+              { label: language === 'hi' ? 'पंचांग' : 'Panchang', id: 'panchang-section', href: '/panchang' },
+              { label: language === 'hi' ? 'होरा' : 'Hora', id: 'hora-section', href: '/panchang' },
+              { label: language === 'hi' ? 'चौघड़िया' : 'Choghadiya', id: 'hora-section', href: '/panchang' },
+              { label: 'FAQ', id: 'faq-section', href: '' },
             ].map((item, i, arr) => (
               <span key={item.label} className="inline-flex items-center">
                 <button
                   type="button"
-                  onClick={() => document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                  onClick={() => {
+                    const el = document.getElementById(item.id);
+                    if (el) {
+                      const y = el.getBoundingClientRect().top + window.scrollY - 80;
+                      window.scrollTo({ top: y, behavior: 'smooth' });
+                    } else if (item.href) {
+                      window.location.href = item.href;
+                    }
+                  }}
                   className="hover:underline hover:text-sacred-gold cursor-pointer px-1.5 sm:px-2"
                 >
                   {item.label}
