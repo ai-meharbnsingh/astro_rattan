@@ -222,19 +222,7 @@ export default function KundliChartSVG({ planets, ascendantSign, className }: Ku
         });
       })}
 
-      {/* Ascendant sign in center */}
-      <text
-        x={M}
-        y={M}
-        textAnchor="middle"
-        dominantBaseline="central"
-        fontSize="11"
-        fontFamily="sans-serif"
-        fontWeight="600"
-        className="fill-sacred-gold/50"
-      >
-        {ascendantSign || ''}
-      </text>
+      {/* North Indian kundli: center is empty — ascendant is House 1 (top diamond) */}
     </svg>
   );
 }
