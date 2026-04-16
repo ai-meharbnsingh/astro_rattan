@@ -168,6 +168,39 @@ _NIGHT_CHOGHADIYA_NAMES = {
     6: ["Shubh", "Amrit", "Char", "Rog", "Kaal", "Labh", "Udveg", "Shubh"],     # Sunday
 }
 
+# Vaar Vela — inauspicious day period (1-based index, keyed by weekday 0=Mon..6=Sun)
+_VAAR_VELA_PERIOD = {
+    0: 6,  # Monday — 6th period
+    1: 5,  # Tuesday — 5th period
+    2: 4,  # Wednesday — 4th period
+    3: 3,  # Thursday — 3rd period
+    4: 2,  # Friday — 2nd period
+    5: 1,  # Saturday — 1st period
+    6: 7,  # Sunday — 7th period
+}
+
+# Kaal Vela — inauspicious day period (1-based index, keyed by weekday 0=Mon..6=Sun)
+_KAAL_VELA_PERIOD = {
+    0: 2,  # Monday — 2nd period
+    1: 3,  # Tuesday — 3rd period
+    2: 4,  # Wednesday — 4th period
+    3: 5,  # Thursday — 5th period
+    4: 6,  # Friday — 6th period
+    5: 7,  # Saturday — 7th period
+    6: 1,  # Sunday — 1st period
+}
+
+# Kaal Ratri — inauspicious night period (1-based index, keyed by weekday 0=Mon..6=Sun)
+_KAAL_RATRI_PERIOD = {
+    0: 2,  # Monday — 2nd night period
+    1: 3,  # Tuesday — 3rd night period
+    2: 4,  # Wednesday — 4th night period
+    3: 5,  # Thursday — 5th night period
+    4: 6,  # Friday — 6th night period
+    5: 7,  # Saturday — 7th night period
+    6: 1,  # Sunday — 1st night period
+}
+
 # ============================================================
 # HINDU MONTH NAMES
 # ============================================================
@@ -775,17 +808,25 @@ def calculate_choghadiya(
     day_duration = ss_minutes - sr_minutes
     slot_duration = day_duration / 8.0
 
+    vaar_vela_idx = _VAAR_VELA_PERIOD.get(weekday, 1) - 1   # 0-based
+    kaal_vela_idx = _KAAL_VELA_PERIOD.get(weekday, 1) - 1   # 0-based
+
     names = _DAY_CHOGHADIYA_NAMES.get(weekday, _DAY_CHOGHADIYA_NAMES[0])
     result = []
     for i, name in enumerate(names):
         start = sr_minutes + i * slot_duration
         end = start + slot_duration
-        result.append({
+        period: Dict[str, Any] = {
             "name": name,
             "quality": _CHOGHADIYA_QUALITY.get(name, "Unknown"),
             "start": _minutes_to_time(start),
             "end": _minutes_to_time(end),
-        })
+        }
+        if i == vaar_vela_idx:
+            period["vaar_vela"] = True
+        if i == kaal_vela_idx:
+            period["kaal_vela"] = True
+        result.append(period)
     return result
 
 
@@ -801,17 +842,22 @@ def calculate_night_choghadiya(
     night_duration = nsr_minutes - ss_minutes
     slot_duration = night_duration / 8.0
 
+    kaal_ratri_idx = _KAAL_RATRI_PERIOD.get(weekday, 1) - 1  # 0-based
+
     names = _NIGHT_CHOGHADIYA_NAMES.get(weekday, _NIGHT_CHOGHADIYA_NAMES[0])
     result = []
     for i, name in enumerate(names):
         start = ss_minutes + i * slot_duration
         end = start + slot_duration
-        result.append({
+        period: Dict[str, Any] = {
             "name": name,
             "quality": _CHOGHADIYA_QUALITY.get(name, "Unknown"),
             "start": _minutes_to_time(start % 1440),
             "end": _minutes_to_time(end % 1440),
-        })
+        }
+        if i == kaal_ratri_idx:
+            period["kaal_ratri"] = True
+        result.append(period)
     return result
 
 

@@ -70,6 +70,7 @@ def _sign_meta(sign: str) -> dict:
 def get_daily_horoscope(
     sign: str = Query(..., description="Zodiac sign (e.g. aries)"),
     target_date: str = Query(None, alias="date", description="Date YYYY-MM-DD (default today)"),
+    lang: str = Query("en", description="Language: en or hi"),
     db: Any = Depends(get_db),
 ):
     """Get daily horoscope for a specific sign and date."""
@@ -80,7 +81,37 @@ def get_daily_horoscope(
     if not target_date:
         target_date = date.today().isoformat()
 
-    # Try DB first
+    # Try transit engine for rich response
+    try:
+        from app.transit_engine import generate_transit_horoscope
+        result = generate_transit_horoscope(sign=sign, period="daily", target_date=target_date)
+        if result and result.get("sections"):
+            # Flatten sections to selected language for backward compat
+            sections_bilingual = result.get("sections", {})
+            sections_flat = {}
+            for k, v in sections_bilingual.items():
+                if isinstance(v, dict):
+                    sections_flat[k] = v.get(lang, v.get("en", ""))
+                else:
+                    sections_flat[k] = v
+
+            return {
+                **_sign_meta(sign),
+                "period": "daily",
+                "date": target_date,
+                "sections": sections_flat,
+                "sections_bilingual": sections_bilingual,
+                "scores": result.get("scores", {}),
+                "mood": result.get("mood", {}),
+                "lucky": result.get("lucky", {}),
+                "dos": result.get("dos", []),
+                "donts": result.get("donts", []),
+                "source": result.get("source", "transit_engine"),
+            }
+    except Exception:
+        pass
+
+    # Fallback: existing DB + template logic
     row = db.execute(
         "SELECT content, created_at FROM horoscopes WHERE sign = %s AND period_type = 'daily' AND period_date = %s",
         (sign, target_date),
@@ -111,6 +142,7 @@ def get_daily_horoscope(
 @router.get("/api/horoscope/weekly", status_code=status.HTTP_200_OK)
 def get_weekly_horoscope(
     sign: str = Query(..., description="Zodiac sign (e.g. aries)"),
+    lang: str = Query("en", description="Language: en or hi"),
     db: Any = Depends(get_db),
 ):
     """Get weekly horoscope for a specific sign."""
@@ -123,6 +155,37 @@ def get_weekly_horoscope(
     week_date = monday.isoformat()
     week_end = (monday + timedelta(days=6)).isoformat()
 
+    # Try transit engine for rich response
+    try:
+        from app.transit_engine import generate_transit_horoscope
+        result = generate_transit_horoscope(sign=sign, period="weekly", target_date=week_date)
+        if result and result.get("sections"):
+            sections_bilingual = result.get("sections", {})
+            sections_flat = {}
+            for k, v in sections_bilingual.items():
+                if isinstance(v, dict):
+                    sections_flat[k] = v.get(lang, v.get("en", ""))
+                else:
+                    sections_flat[k] = v
+
+            return {
+                **_sign_meta(sign),
+                "period": "weekly",
+                "week_start": week_date,
+                "week_end": week_end,
+                "sections": sections_flat,
+                "sections_bilingual": sections_bilingual,
+                "scores": result.get("scores", {}),
+                "mood": result.get("mood", {}),
+                "lucky": result.get("lucky", {}),
+                "dos": result.get("dos", []),
+                "donts": result.get("donts", []),
+                "source": result.get("source", "transit_engine"),
+            }
+    except Exception:
+        pass
+
+    # Fallback: existing DB + template logic
     row = db.execute(
         "SELECT content, created_at FROM horoscopes WHERE sign = %s AND period_type = 'weekly' AND period_date = %s",
         (sign, week_date),
@@ -154,6 +217,7 @@ def get_weekly_horoscope(
 @router.get("/api/horoscope/monthly", status_code=status.HTTP_200_OK)
 def get_monthly_horoscope(
     sign: str = Query(..., description="Zodiac sign (e.g. aries)"),
+    lang: str = Query("en", description="Language: en or hi"),
     db: Any = Depends(get_db),
 ):
     """Get monthly horoscope for a specific sign."""
@@ -164,6 +228,48 @@ def get_monthly_horoscope(
     today = date.today()
     month_start = today.replace(day=1).isoformat()
 
+    # Try transit engine for rich response
+    try:
+        from app.transit_engine import generate_transit_horoscope
+        result = generate_transit_horoscope(sign=sign, period="monthly", target_date=month_start)
+        if result and result.get("sections"):
+            sections_bilingual = result.get("sections", {})
+            sections_flat = {}
+            for k, v in sections_bilingual.items():
+                if isinstance(v, dict):
+                    sections_flat[k] = v.get(lang, v.get("en", ""))
+                else:
+                    sections_flat[k] = v
+
+            response = {
+                **_sign_meta(sign),
+                "period": "monthly",
+                "month_start": month_start,
+                "sections": sections_flat,
+                "sections_bilingual": sections_bilingual,
+                "scores": result.get("scores", {}),
+                "mood": result.get("mood", {}),
+                "lucky": result.get("lucky", {}),
+                "dos": result.get("dos", []),
+                "donts": result.get("donts", []),
+                "source": result.get("source", "transit_engine"),
+            }
+
+            # Monthly extras: phases and key_dates
+            try:
+                from app.transit_engine import generate_monthly_extras
+                extras = generate_monthly_extras(sign=sign, target_date=month_start)
+                response["phases"] = extras.get("phases", [])
+                response["key_dates"] = extras.get("key_dates", [])
+            except Exception:
+                response["phases"] = []
+                response["key_dates"] = []
+
+            return response
+    except Exception:
+        pass
+
+    # Fallback: existing DB + template logic
     row = db.execute(
         "SELECT content, created_at FROM horoscopes WHERE sign = %s AND period_type = 'monthly' AND period_date = %s",
         (sign, month_start),
@@ -193,6 +299,7 @@ def get_monthly_horoscope(
 @router.get("/api/horoscope/yearly", status_code=status.HTTP_200_OK)
 def get_yearly_horoscope(
     sign: str = Query(..., description="Zodiac sign (e.g. aries)"),
+    lang: str = Query("en", description="Language: en or hi"),
     db: Any = Depends(get_db),
 ):
     """Get yearly horoscope for a specific sign."""
@@ -202,6 +309,50 @@ def get_yearly_horoscope(
 
     year_start = date.today().replace(month=1, day=1).isoformat()
 
+    # Try transit engine for rich response
+    try:
+        from app.transit_engine import generate_transit_horoscope
+        result = generate_transit_horoscope(sign=sign, period="yearly", target_date=year_start)
+        if result and result.get("sections"):
+            sections_bilingual = result.get("sections", {})
+            sections_flat = {}
+            for k, v in sections_bilingual.items():
+                if isinstance(v, dict):
+                    sections_flat[k] = v.get(lang, v.get("en", ""))
+                else:
+                    sections_flat[k] = v
+
+            response = {
+                **_sign_meta(sign),
+                "period": "yearly",
+                "year_start": year_start,
+                "sections": sections_flat,
+                "sections_bilingual": sections_bilingual,
+                "scores": result.get("scores", {}),
+                "mood": result.get("mood", {}),
+                "lucky": result.get("lucky", {}),
+                "dos": result.get("dos", []),
+                "donts": result.get("donts", []),
+                "source": result.get("source", "transit_engine"),
+            }
+
+            # Yearly extras: quarters, best_months, annual_theme
+            try:
+                from app.transit_engine import generate_yearly_extras
+                extras = generate_yearly_extras(sign=sign)
+                response["quarters"] = extras.get("quarters", [])
+                response["best_months"] = extras.get("best_months", {})
+                response["annual_theme"] = extras.get("annual_theme", {})
+            except Exception:
+                response["quarters"] = []
+                response["best_months"] = {}
+                response["annual_theme"] = {}
+
+            return response
+    except Exception:
+        pass
+
+    # Fallback: existing DB + template logic
     row = db.execute(
         "SELECT content, created_at FROM horoscopes WHERE sign = %s AND period_type = 'yearly' AND period_date = %s",
         (sign, year_start),
