@@ -26,7 +26,6 @@ function LiveClock({ language }: { language: string }) {
       <strong className="text-sacred-gold-dark">{hi ? 'अभी ग्रहों की लाइव स्थिति' : 'Live planetary positions right now'}</strong>
       {' — '}
       <span className="font-mono text-sacred-gold-dark">{date} {time} IST</span>
-      <span className="ml-2 inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse" title="Live" />
     </p>
   );
 }

@@ -79,7 +79,7 @@ const HOUSE_CENTERS: { x: number; y: number }[] = [
 const HOUSE_NUM_POS: { x: number; y: number }[] = [
   { x: pct(50),   y: pct(45) },    // 1
   { x: pct(27.5), y: pct(22.5) },  // 2
-  { x: pct(5),    y: pct(15) },    // 3
+  { x: pct(10),   y: pct(10) },    // 3
   { x: pct(45),   y: pct(50) },    // 4
   { x: pct(22.5), y: pct(71.25) }, // 5
   { x: pct(28),   y: pct(77.5) },  // 6
@@ -131,10 +131,7 @@ export default function KundliChartSVG({ planets, ascendantDegree, className }: 
       <line x1={S} y1={E} x2={M} y2={M} stroke={GOLD} strokeWidth="0.7" opacity="0.35" />
       <line x1={E} y1={E} x2={M} y2={M} stroke={GOLD} strokeWidth="0.7" opacity="0.35" />
 
-      {/* ASC dot */}
-      <circle cx={marker.x} cy={marker.y} r={3} fill={GOLD_MED} opacity={0.7}>
-        <animate attributeName="r" values="2;4;2" dur="2s" repeatCount="indefinite" />
-      </circle>
+      {/* No ASC dot — degree shown in table only */}
 
       {/* House numbers */}
       {HOUSE_NUM_POS.map((pos, i) => (
