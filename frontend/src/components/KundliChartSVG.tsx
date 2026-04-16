@@ -138,14 +138,13 @@ export default function KundliChartSVG({ planets, ascendantSign, ascendantDegree
   const liveDeg = (baseDeg + tick * 0.004167) % 360;
   const marker = ascMarkerPos(liveDeg % 30);
 
-  // Group planets by SIGN POSITION (not house number)
-  // In North Indian chart, each position = fixed sign
-  const planetsByPosition: Record<number, PlanetEntry[]> = {};
+  // Group planets by HOUSE NUMBER (1-12)
+  // House is computed by caller: ((planetSign - lagnaSign + 12) % 12) + 1
+  const planetsByHouse: Record<number, PlanetEntry[]> = {};
   for (const pl of planets) {
-    const signIdx = SIGNS_ORDER.indexOf(pl.sign);
-    if (signIdx >= 0) {
-      if (!planetsByPosition[signIdx]) planetsByPosition[signIdx] = [];
-      planetsByPosition[signIdx].push(pl);
+    if (pl.house >= 1 && pl.house <= 12) {
+      if (!planetsByHouse[pl.house]) planetsByHouse[pl.house] = [];
+      planetsByHouse[pl.house].push(pl);
     }
   }
 
@@ -175,11 +174,11 @@ export default function KundliChartSVG({ planets, ascendantSign, ascendantDegree
         </text>
       ))}
 
-      {/* Planets — placed by sign position, font 13px/800 matching transit wheel */}
-      {Array.from({ length: 12 }, (_, i) => i).map((posIdx) => {
-        const hp = planetsByPosition[posIdx] || [];
+      {/* Planets — placed by house number, font 13px/800 matching transit wheel */}
+      {Array.from({ length: 12 }, (_, i) => i + 1).map((house) => {
+        const hp = planetsByHouse[house] || [];
         if (!hp.length) return null;
-        const c = HOUSE_CENTERS[posIdx];
+        const c = HOUSE_CENTERS[house - 1];
         const count = hp.length;
         const lineH = count > 4 ? 13 : count > 3 ? 14 : 16;
         const startY = c.y - ((count - 1) * lineH) / 2;
@@ -190,7 +189,7 @@ export default function KundliChartSVG({ planets, ascendantSign, ascendantDegree
           const color = planetColor(pl);
 
           return (
-            <g key={`p-${posIdx}-${pi}`}>
+            <g key={`p-${house}-${pi}`}>
               {/* Planet name */}
               <text x={c.x} y={startY + pi * lineH}
                 textAnchor="middle" dominantBaseline="central"
