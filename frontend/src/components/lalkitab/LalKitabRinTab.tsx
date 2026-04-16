@@ -47,7 +47,7 @@ const PLANET_COLOR: Record<string, string> = {
 };
 
 export default function LalKitabRinTab({ kundliId }: Props) {
-  const { language } = useTranslation();
+  const { t, language } = useTranslation();
   const isHi = language === 'hi';
 
   const [debts, setDebts] = useState<Debt[]>([]);
