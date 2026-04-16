@@ -19,8 +19,8 @@ function LiveClock({ language }: { language: string }) {
     return () => clearInterval(id);
   }, []);
   const hi = language === 'hi';
-  const date = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-  const time = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+  const date = now.toLocaleDateString(hi ? 'hi-IN' : 'en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+  const time = now.toLocaleTimeString(hi ? 'hi-IN' : 'en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
   return (
     <p className="text-center text-lg text-gray-600 mb-6">
       <strong className="text-sacred-gold-dark">{hi ? 'अभी ग्रहों की लाइव स्थिति' : 'Live planetary positions right now'}</strong>
@@ -221,6 +221,15 @@ const KARANA_HI: Record<string, string> = {
 const PAKSHA_HI: Record<string, string> = {
   Shukla: 'शुक्ल', Krishna: 'कृष्ण',
 };
+const PLANET_HI: Record<string, string> = {
+  Sun: 'सूर्य', Moon: 'चंद्र', Mars: 'मंगल', Mercury: 'बुध',
+  Jupiter: 'गुरु', Venus: 'शुक्र', Saturn: 'शनि',
+  Rahu: 'राहु', Ketu: 'केतु', Uranus: 'यूरेनस', Neptune: 'नेपच्यून', Pluto: 'प्लूटो',
+};
+const CHOGHADIYA_HI: Record<string, string> = {
+  Amrit: 'अमृत', Shubh: 'शुभ', Labh: 'लाभ', Char: 'चर',
+  Rog: 'रोग', Kaal: 'काल', Udveg: 'उद्वेग',
+};
 const FESTIVAL_HI: Record<string, string> = {
   'Pradosh Vrat': 'प्रदोष व्रत', 'Guruvar Vrat': 'गुरुवार व्रत', 'Masik Shivaratri': 'मासिक शिवरात्रि',
   'Amavasya': 'अमावस्या', 'Shukravar Vrat': 'शुक्रवार व्रत', 'Shani Vrat': 'शनि व्रत',
@@ -244,9 +253,9 @@ const samvatsaraName = (year?: number, offset = 12, lang = 'en') => {
   return lang === 'hi' ? SAMVATSARA_60_HI[idx] : SAMVATSARA_60[idx];
 };
 
-const compactLine = (value?: string) => {
+const compactLine = (value?: string, fallback = 'Guidance will update shortly.') => {
   const text = (value || '').replace(/\s+/g, ' ').trim();
-  if (!text) return 'Guidance will update shortly.';
+  if (!text) return fallback;
   const sentence = text.split(/(?<=[.!?])\s+/)[0] || text;
   return sentence.length > 95 ? `${sentence.slice(0, 92).trim()}...` : sentence;
 };
@@ -753,7 +762,7 @@ export default function Features() {
                 <div className="rounded-xl border border-sacred-gold/20 bg-transparent backdrop-blur-[1px] overflow-hidden">
                   <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center justify-between">
                     <span>{l('Planetary Positions', 'ग्रह स्थिति')}</span>
-                    <span className="text-xs font-normal opacity-80">{l('Lagna', 'लग्न')}: {currentSky.lagna_sign}</span>
+                    <span className="text-xs font-normal opacity-80">{l('Lagna', 'लग्न')}: {hi ? (SIGN_HI[currentSky.lagna_sign] || currentSky.lagna_sign) : currentSky.lagna_sign}</span>
                   </div>
                   <table className="w-full text-sm">
                     <thead>
@@ -769,7 +778,7 @@ export default function Features() {
                       {/* Ascendant row */}
                       <tr className="border-b border-sacred-gold/20 bg-sacred-gold/[0.06]">
                         <td className="px-3 py-2 font-bold text-sacred-gold-dark">{l('Ascendant', 'लग्न')}</td>
-                        <td className="px-3 py-2 font-semibold text-sacred-gold-dark">{currentSky.lagna_sign || '--'}</td>
+                        <td className="px-3 py-2 font-semibold text-sacred-gold-dark">{hi ? (SIGN_HI[currentSky.lagna_sign] || currentSky.lagna_sign || '--') : (currentSky.lagna_sign || '--')}</td>
                         <td className="px-3 py-2 text-right text-muted-foreground">
                           {currentSky.chart_data?.ascendant?.sign_degree != null ? `${currentSky.chart_data.ascendant.sign_degree}°` : '--'}
                         </td>
@@ -780,8 +789,8 @@ export default function Features() {
                       </tr>
                       {(currentSky.planets || []).map((p: any, i: number) => (
                         <tr key={p.planet} className={`border-b border-sacred-gold/10 ${i % 2 === 0 ? 'bg-sacred-gold/[0.03]' : ''}`}>
-                          <td className="px-3 py-2 font-semibold text-foreground">{p.planet}</td>
-                          <td className="px-3 py-2 text-foreground">{p.sign}</td>
+                          <td className="px-3 py-2 font-semibold text-foreground">{hi ? (PLANET_HI[p.planet] || p.planet) : p.planet}</td>
+                          <td className="px-3 py-2 text-foreground">{hi ? (SIGN_HI[p.sign] || p.sign) : p.sign}</td>
                           <td className="px-3 py-2 text-right text-muted-foreground">{p.sign_degree != null ? `${p.sign_degree}°` : '--'}</td>
                           <td className="px-3 py-2 text-right text-muted-foreground">{p.longitude != null ? `${Number(p.longitude).toFixed(2)}°` : '--'}</td>
                           <td className="px-3 py-2 text-center text-xs font-bold">
@@ -848,7 +857,7 @@ export default function Features() {
                   >
                     <img
                       src={`/images/zodiac-orange/zodiac-${s.id}-orange.png`}
-                      alt={s.en}
+                      alt={language === 'hi' ? s.hi : s.en}
                       className="w-10 h-10 object-contain"
                       loading="lazy"
                     />
@@ -891,11 +900,11 @@ export default function Features() {
                       <p className="text-xs text-muted-foreground">{horoscopeData?.dates || ''}</p>
                     </div>
                     <div className="space-y-1.5 text-sm text-foreground">
-                      <p><span className="font-semibold text-sacred-gold-dark">{l('General', 'सामान्य')}:</span> {compactLine(horoscopeData?.sections?.general)}</p>
-                      <p><span className="font-semibold text-sacred-gold-dark">{l('Love', 'प्रेम')}:</span> {compactLine(horoscopeData?.sections?.love)}</p>
-                      <p><span className="font-semibold text-sacred-gold-dark">{l('Career', 'करियर')}:</span> {compactLine(horoscopeData?.sections?.career)}</p>
-                      <p><span className="font-semibold text-sacred-gold-dark">{l('Health', 'स्वास्थ्य')}:</span> {compactLine(horoscopeData?.sections?.health)}</p>
-                      <p><span className="font-semibold text-sacred-gold-dark">{l('Finance', 'वित्त')}:</span> {compactLine(horoscopeData?.sections?.finance)}</p>
+                      <p><span className="font-semibold text-sacred-gold-dark">{l('General', 'सामान्य')}:</span> {compactLine(horoscopeData?.sections?.general, l('Guidance will update shortly.', 'मार्गदर्शन शीघ्र अपडेट होगा।'))}</p>
+                      <p><span className="font-semibold text-sacred-gold-dark">{l('Love', 'प्रेम')}:</span> {compactLine(horoscopeData?.sections?.love, l('Guidance will update shortly.', 'मार्गदर्शन शीघ्र अपडेट होगा।'))}</p>
+                      <p><span className="font-semibold text-sacred-gold-dark">{l('Career', 'करियर')}:</span> {compactLine(horoscopeData?.sections?.career, l('Guidance will update shortly.', 'मार्गदर्शन शीघ्र अपडेट होगा।'))}</p>
+                      <p><span className="font-semibold text-sacred-gold-dark">{l('Health', 'स्वास्थ्य')}:</span> {compactLine(horoscopeData?.sections?.health, l('Guidance will update shortly.', 'मार्गदर्शन शीघ्र अपडेट होगा।'))}</p>
+                      <p><span className="font-semibold text-sacred-gold-dark">{l('Finance', 'वित्त')}:</span> {compactLine(horoscopeData?.sections?.finance, l('Guidance will update shortly.', 'मार्गदर्शन शीघ्र अपडेट होगा।'))}</p>
                     </div>
                   </>
                 )}
@@ -1122,7 +1131,7 @@ export default function Features() {
                       {panchangData.hora_table.map((h: any, i: number) => (
                         <tr key={i} className="border-b border-sacred-gold/10 last:border-0">
                           <td className="px-2 py-1.5 font-medium text-foreground">{h.hora}</td>
-                          <td className="px-2 py-1.5 text-foreground">{h.lord}</td>
+                          <td className="px-2 py-1.5 text-foreground">{hi ? (PLANET_HI[h.lord] || h.lord) : h.lord}</td>
                           <td className="px-2 py-1.5 text-muted-foreground">{h.start} - {h.end}</td>
                           <td className="px-2 py-1.5 text-center">
                             <span className={`text-xs px-1.5 py-0.5 rounded-full ${h.type === 'day' ? 'bg-amber-50 text-amber-700' : 'bg-indigo-50 text-indigo-700'}`}>
@@ -1160,7 +1169,7 @@ export default function Features() {
                           'bg-red-50 text-red-600';
                         return (
                           <tr key={i} className="border-b border-sacred-gold/10 last:border-0">
-                            <td className="px-2 py-1.5 font-medium text-foreground">{c.name}</td>
+                            <td className="px-2 py-1.5 font-medium text-foreground">{hi ? (CHOGHADIYA_HI[c.name] || c.name) : c.name}</td>
                             <td className="px-2 py-1.5 text-muted-foreground">{c.start} - {c.end}</td>
                             <td className="px-2 py-1.5 text-center">
                               <span className={`text-xs px-1.5 py-0.5 rounded-full ${qualityColor}`}>
@@ -1181,7 +1190,7 @@ export default function Features() {
                           'bg-red-50 text-red-600';
                         return (
                           <tr key={`night-${i}`} className="border-b border-sacred-gold/10 last:border-0 bg-indigo-50/30">
-                            <td className="px-2 py-1.5 font-medium text-foreground">{c.name} <span className="text-[10px] text-indigo-500">{l('(Night)', '(रात)')}</span></td>
+                            <td className="px-2 py-1.5 font-medium text-foreground">{hi ? (CHOGHADIYA_HI[c.name] || c.name) : c.name} <span className="text-[10px] text-indigo-500">{l('(Night)', '(रात)')}</span></td>
                             <td className="px-2 py-1.5 text-muted-foreground">{c.start} - {c.end}</td>
                             <td className="px-2 py-1.5 text-center">
                               <span className={`text-xs px-1.5 py-0.5 rounded-full ${qualityColor}`}>
@@ -1552,7 +1561,7 @@ export default function Features() {
               type="button"
               onClick={() => setLightbox(null)}
               className="text-gray-500 hover:text-gray-800 transition-colors"
-              aria-label="Close"
+              aria-label={l('Close', 'बंद करें')}
             >
               <X className="w-5 h-5" />
             </button>

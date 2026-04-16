@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Mail, Phone, Heart, MessageSquare } from 'lucide-react';
+import { Mail, Phone, MessageSquare } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { Heading } from '@/components/ui/heading';
 
@@ -7,8 +7,7 @@ import { Heading } from '@/components/ui/heading';
 const isProduction = typeof window !== 'undefined' && window.location.hostname === 'astrorattan.com';
 
 export default function Footer() {
-  const { t, language } = useTranslation();
-  const l = (en: string, hi: string) => (language === 'hi' ? hi : en);
+  const { t } = useTranslation();
 
   return (
     <footer className="bg-sacred-gold-dark border-t border-white/20 mt-12">
@@ -18,17 +17,17 @@ export default function Footer() {
           <div>
             <Heading as={4} variant={4} className="text-[#f5d28a] mb-3">{t('footer.services')}</Heading>
             <div className="space-y-2 text-sm">
-              <Link to="/kundli" className="block text-amber-100 hover:text-white">{l('Kundli', 'कुंडली')}</Link>
-              <Link to="/horoscope" className="block text-amber-100 hover:text-white">{l('Horoscope', 'राशिफल')}</Link>
-              <Link to="/panchang" className="block text-amber-100 hover:text-white">{l('Panchang', 'पंचांग')}</Link>
-              <Link to="/lal-kitab" className="block text-amber-100 hover:text-white">{l('Lal Kitab', 'लाल किताब')}</Link>
-              <Link to="/numerology" className="block text-amber-100 hover:text-white">{l('Numerology', 'अंकशास्त्र')}</Link>
-              {!isProduction && <Link to="/vastu" className="block text-amber-100 hover:text-white">{l('Vastu', 'वास्तु')}</Link>}
+              <Link to="/kundli" className="block text-amber-100 hover:text-white">{t('nav.kundli')}</Link>
+              <Link to="/horoscope" className="block text-amber-100 hover:text-white">{t('nav.horoscope')}</Link>
+              <Link to="/panchang" className="block text-amber-100 hover:text-white">{t('nav.panchang')}</Link>
+              <Link to="/lal-kitab" className="block text-amber-100 hover:text-white">{t('nav.lalKitab')}</Link>
+              <Link to="/numerology" className="block text-amber-100 hover:text-white">{t('nav.numerology')}</Link>
+              {!isProduction && <Link to="/vastu" className="block text-amber-100 hover:text-white">{t('nav.vastu')}</Link>}
             </div>
           </div>
 
           <div>
-            <Heading as={4} variant={4} className="text-[#f5d28a] mb-3">{l('Important Links', 'महत्वपूर्ण लिंक')}</Heading>
+            <Heading as={4} variant={4} className="text-[#f5d28a] mb-3">{t('footer.importantLinks')}</Heading>
             <div className="space-y-2 text-sm">
               <Link to="/about" className="block text-amber-100 hover:text-white">{t('footer.aboutUs')}</Link>
               <Link to="/feedback" className="block text-amber-100 hover:text-white">{t('nav.feedback')}</Link>
@@ -37,17 +36,17 @@ export default function Footer() {
           </div>
 
           <div>
-            <Heading as={4} variant={4} className="text-[#f5d28a] mb-3">{l('More Links', 'अन्य लिंक')}</Heading>
+            <Heading as={4} variant={4} className="text-[#f5d28a] mb-3">{t('footer.moreLinks')}</Heading>
             <div className="space-y-2 text-sm">
-              <Link to="/" className="block text-amber-100 hover:text-white">{l('Home', 'होम')}</Link>
-              <Link to="/blog" className="block text-amber-100 hover:text-white">{l('Blog', 'ब्लॉग')}</Link>
-              <Link to="/dashboard" className="block text-amber-100 hover:text-white">{l('Dashboard', 'डैशबोर्ड')}</Link>
-              <Link to="/kundli" className="block text-amber-100 hover:text-white">{l('Book Consultation', 'कंसल्टेशन बुक करें')}</Link>
+              <Link to="/" className="block text-amber-100 hover:text-white">{t('nav.home')}</Link>
+              <Link to="/blog" className="block text-amber-100 hover:text-white">{t('nav.blog')}</Link>
+              <Link to="/dashboard" className="block text-amber-100 hover:text-white">{t('nav.dashboard')}</Link>
+              <Link to="/kundli" className="block text-amber-100 hover:text-white">{t('footer.bookConsultation')}</Link>
             </div>
           </div>
 
           <div>
-            <Heading as={4} variant={4} className="text-[#f5d28a] mb-3">{l('Contact Us', 'संपर्क करें')}</Heading>
+            <Heading as={4} variant={4} className="text-[#f5d28a] mb-3">{t('footer.contact')}</Heading>
             <div className="space-y-3 text-sm">
               <a href="mailto:info@astrorattan.com" className="flex items-center gap-2 text-amber-100 hover:text-white">
                 <Mail className="w-4 h-4" />info@astrorattan.com
@@ -70,7 +69,7 @@ export default function Footer() {
                 </a>
               </div>
               <Link to="/feedback" className="inline-flex items-center gap-2 text-amber-100 hover:text-white">
-                <MessageSquare className="w-4 h-4" />{l('Send Feedback', 'फीडबैक भेजें')}
+                <MessageSquare className="w-4 h-4" />{t('footer.sendFeedback')}
               </Link>
             </div>
           </div>
@@ -78,7 +77,7 @@ export default function Footer() {
 
         {/* Bottom strip */}
         <div className="mt-8 border-t border-white/20 pt-4 flex flex-col gap-3 items-center text-center">
-          <span className="text-sm text-amber-100/85">&copy; {new Date().getFullYear()} Astro Rattan (Powered by: <a href="https://www.adaptive-mind.com" target="_blank" rel="noopener noreferrer" className="text-[#f5d28a] hover:text-white underline">Semantic Gravity</a>). All Rights Reserved</span>
+          <span className="text-sm text-amber-100/85">&copy; {new Date().getFullYear()} Astro Rattan ({t('footer.poweredBy')}: <a href="https://www.adaptive-mind.com" target="_blank" rel="noopener noreferrer" className="text-[#f5d28a] hover:text-white underline">Semantic Gravity</a>). {t('footer.allRightsReserved')}</span>
         </div>
       </div>
     </footer>
