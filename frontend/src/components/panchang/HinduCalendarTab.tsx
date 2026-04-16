@@ -754,7 +754,7 @@ function FullPanchangPanel({ selectedDay, fullData, language, t, locationName }:
   return (
     <Card className="border border-sacred-gold/20 bg-[#FFF9F5] shadow-sm overflow-hidden">
       {/* Header bar */}
-      <div className="bg-[#8B4513] px-3 py-2">
+      <div className="bg-[#C45A00] px-3 py-2 rounded-t-lg">
         <h4 className="text-white font-bold text-sm">
           {language === 'hi' ? 'आज का पंचांग' : 'Panchang for Today'}
         </h4>
@@ -768,8 +768,8 @@ function FullPanchangPanel({ selectedDay, fullData, language, t, locationName }:
             onClick={() => setTimeFormat(f)}
             className={`px-3 py-1 text-xs rounded-full border transition-colors ${
               timeFormat === f
-                ? 'bg-sacred-gold text-white border-sacred-gold'
-                : 'border-stone-300 text-stone-600 hover:border-sacred-gold'
+                ? 'bg-[#C45A00] text-white border-[#C45A00]'
+                : 'border-stone-300 text-stone-600 hover:border-[#C45A00]'
             }`}
           >
             {f === '12' ? '12 Hour' : f === '24' ? '24 Hour' : '24 Plus'}
@@ -785,11 +785,9 @@ function FullPanchangPanel({ selectedDay, fullData, language, t, locationName }:
         ) : selectedDay && p ? (
           <div className="space-y-0.5 text-[12px]">
             {/* Location + Date */}
-            {locationName && (
-              <p className="font-bold text-stone-800 text-base flex items-center gap-1">
-                {locationName} <span className="text-sacred-gold">📍</span>
-              </p>
-            )}
+            <p className="font-bold text-stone-800 text-base flex items-center gap-1">
+              {locationName || (language === 'hi' ? 'नई दिल्ली, भारत' : 'New Delhi, India')} <span className="text-[#C45A00]">📍</span>
+            </p>
             <p className="text-[#2E7D32] font-semibold text-sm mb-2">
               {new Date(selectedDay.date + 'T12:00:00').toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-US', {
                 weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
