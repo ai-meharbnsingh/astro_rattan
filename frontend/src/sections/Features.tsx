@@ -703,19 +703,26 @@ export default function Features() {
               <div className="lg:col-span-2 flex justify-center">
                 <div className="w-full max-w-[380px] aspect-square">
                   <KundliChartSVG
-                    planets={(currentSky.planets || []).map((p: any) => ({
-                      planet: p.planet || '',
-                      sign: p.sign || '',
-                      house: p.house || 0,
-                      sign_degree: p.sign_degree || 0,
-                      is_retrograde: !!p.is_retrograde,
-                      is_combust: !!p.is_combust,
-                      is_vargottama: !!p.is_vargottama,
-                      is_exalted: p.status?.includes('Exalted') || !!p.is_exalted,
-                      is_debilitated: p.status?.includes('Debilitated') || !!p.is_debilitated,
-                    }))}
+                    planets={(currentSky.planets || []).map((p: any) => {
+                      // Compute house from sign relative to lagna (whole sign)
+                      const SIGNS_ORDER = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+                      const lagnaIdx = SIGNS_ORDER.indexOf(currentSky.lagna_sign || '');
+                      const planetIdx = SIGNS_ORDER.indexOf(p.sign || '');
+                      const house = lagnaIdx >= 0 && planetIdx >= 0 ? ((planetIdx - lagnaIdx + 12) % 12) + 1 : (p.house || 0);
+                      return {
+                        planet: p.planet || '',
+                        sign: p.sign || '',
+                        house,
+                        sign_degree: p.sign_degree || 0,
+                        is_retrograde: !!p.is_retrograde,
+                        is_combust: !!p.is_combust,
+                        is_vargottama: !!p.is_vargottama,
+                        is_exalted: p.status?.includes('Exalted') || !!p.is_exalted,
+                        is_debilitated: p.status?.includes('Debilitated') || !!p.is_debilitated,
+                      };
+                    })}
                     ascendantSign={currentSky.lagna_sign || ''}
-                    ascendantDegree={currentSky.chart_data?.ascendant?.longitude}
+                    ascendantDegree={currentSky.lagna_longitude || currentSky.chart_data?.ascendant?.longitude}
                   />
                 </div>
               </div>
