@@ -59,36 +59,36 @@ const M = pct(50);
 const SI = pct(6);
 const EI = pct(94);
 
-// Planet centers — inside houses, clear of lines AND edges
+// Planet centers
 const HOUSE_CENTERS: { x: number; y: number }[] = [
-  { x: pct(50), y: pct(28) },  // 1  — top diamond
-  { x: pct(28), y: pct(15) },  // 2  — top-left corner
-  { x: pct(15), y: pct(28) },  // 3  — left-upper
-  { x: pct(28), y: pct(50) },  // 4  — left diamond
-  { x: pct(18), y: pct(65) },  // 5  — left-lower
-  { x: pct(28), y: pct(86) },  // 6  — bottom-left corner
-  { x: pct(50), y: pct(72) },  // 7  — bottom diamond
-  { x: pct(72), y: pct(86) },  // 8  — bottom-right corner
-  { x: pct(82), y: pct(65) },  // 9  — right-lower
-  { x: pct(72), y: pct(50) },  // 10 — right diamond
-  { x: pct(82), y: pct(35) },  // 11 — right-upper
-  { x: pct(78), y: pct(18) },  // 12 — top-right corner
+  { x: pct(50),   y: pct(28) },    // 1  — top diamond
+  { x: pct(28),   y: pct(14) },    // 2  — top-left corner
+  { x: pct(12.5), y: pct(28) },    // 3  — left-upper
+  { x: pct(28),   y: pct(50) },    // 4  — left diamond
+  { x: pct(12.5), y: pct(72) },    // 5  — left-lower
+  { x: pct(28),   y: pct(86) },    // 6  — bottom-left corner
+  { x: pct(50),   y: pct(72) },    // 7  — bottom diamond
+  { x: pct(72),   y: pct(86) },    // 8  — bottom-right corner
+  { x: pct(87.5), y: pct(72) },    // 9  — right-lower
+  { x: pct(72),   y: pct(50) },    // 10 — right diamond
+  { x: pct(87.5), y: pct(28) },    // 11 — right-upper
+  { x: pct(72),   y: pct(14) },    // 12 — top-right corner
 ];
 
-// House numbers — reference image positions
+// House numbers
 const HOUSE_NUM_POS: { x: number; y: number }[] = [
   { x: pct(50),   y: pct(45) },    // 1
-  { x: pct(12),   y: pct(9) },     // 2
-  { x: pct(9),    y: pct(12) },    // 3
+  { x: pct(12),   y: pct(8) },     // 2
+  { x: pct(8),    y: pct(12) },    // 3
   { x: pct(45),   y: pct(50) },    // 4
-  { x: pct(9),    y: pct(88) },    // 5
-  { x: pct(12),   y: pct(91) },    // 6
+  { x: pct(8),    y: pct(88) },    // 5
+  { x: pct(12),   y: pct(92) },    // 6
   { x: pct(50),   y: pct(55) },    // 7
-  { x: pct(88),   y: pct(91) },    // 8
-  { x: pct(91),   y: pct(88) },    // 9
+  { x: pct(88),   y: pct(92) },    // 8
+  { x: pct(92),   y: pct(88) },    // 9
   { x: pct(55),   y: pct(50) },    // 10
-  { x: pct(91),   y: pct(12) },    // 11
-  { x: pct(88),   y: pct(9) },     // 12
+  { x: pct(92),   y: pct(12) },    // 11
+  { x: pct(88),   y: pct(8) },     // 12
 ];
 
 function ascMarkerPos(degInSign: number): { x: number; y: number } {
