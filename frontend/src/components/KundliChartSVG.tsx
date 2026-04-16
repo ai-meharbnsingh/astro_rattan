@@ -180,13 +180,26 @@ export default function KundliChartSVG({ planets, ascendantSign, ascendantDegree
       <line x1={S} y1={E} x2={M} y2={M} stroke={GOLD} strokeWidth="0.7" opacity="0.35" />
       <line x1={E} y1={E} x2={M} y2={M} stroke={GOLD} strokeWidth="0.7" opacity="0.35" />
 
-      {/* Zodiac sign images — orange, low opacity, behind planets */}
-      {HOUSE_CENTERS.map((c, i) => {
+      {/* Zodiac sign images — orange, low opacity, at fixed sign positions */}
+      {[
+        { x: pct(50),   y: pct(28) },   // Aries — top diamond
+        { x: pct(28),   y: pct(14) },   // Taurus — top-left corner
+        { x: pct(12.5), y: pct(28) },   // Gemini — left-upper
+        { x: pct(28),   y: pct(50) },   // Cancer — left diamond
+        { x: pct(12.5), y: pct(72) },   // Leo — left-lower
+        { x: pct(28),   y: pct(86) },   // Virgo — bottom-left corner
+        { x: pct(50),   y: pct(72) },   // Libra — bottom diamond
+        { x: pct(72),   y: pct(86) },   // Scorpio — bottom-right corner
+        { x: pct(87.5), y: pct(72) },   // Sagittarius — right-lower
+        { x: pct(72),   y: pct(50) },   // Capricorn — right diamond
+        { x: pct(87.5), y: pct(28) },   // Aquarius — right-upper
+        { x: pct(72),   y: pct(14) },   // Pisces — top-right corner
+      ].map((pos, i) => {
         const imgSize = 32;
         return (
           <image key={`sign-img-${i}`}
             href={SIGN_IMAGES[i]}
-            x={c.x - imgSize / 2} y={c.y - imgSize / 2}
+            x={pos.x - imgSize / 2} y={pos.y - imgSize / 2}
             width={imgSize} height={imgSize}
             opacity="0.15"
           />
