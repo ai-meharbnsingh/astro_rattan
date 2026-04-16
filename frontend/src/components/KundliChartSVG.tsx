@@ -66,8 +66,8 @@ const HOUSE_CENTERS: { x: number; y: number }[] = [
   { x: pct(18), y: pct(35) },  // 3  — left-upper
   { x: pct(22), y: pct(50) },  // 4  — left diamond
   { x: pct(18), y: pct(65) },  // 5  — left-lower
-  { x: pct(21), y: pct(82) },  // 6  — bottom-left corner
-  { x: pct(50), y: pct(78) },  // 7  — bottom diamond
+  { x: pct(25), y: pct(82) },  // 6  — bottom-left corner
+  { x: pct(50), y: pct(75) },  // 7  — bottom diamond
   { x: pct(78), y: pct(78) },  // 8  — bottom-right corner
   { x: pct(82), y: pct(65) },  // 9  — right-lower
   { x: pct(78), y: pct(50) },  // 10 — right diamond
