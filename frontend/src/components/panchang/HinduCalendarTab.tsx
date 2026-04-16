@@ -176,16 +176,17 @@ const getTithiNumber = (day: DayPanchang): number | null => {
 };
 
 // Helper to safely format a time period
-const fmtPeriod = (period: any): string => {
+const fmtPeriod = (period: any, sep: string = 'to'): string => {
   if (!period) return '';
   if (typeof period === 'string') return period;
   const s = period.start || period.begin || '';
   const e = period.end || '';
   if (!s && !e) return '';
-  return `${s} to ${e}`;
+  return `${s} ${sep} ${e}`;
 };
 
 export default function HinduCalendarTab({ language, t, latitude, longitude, locationName }: Props) {
+  const l = (en: string, hi: string) => language === 'hi' ? hi : en;
   const [currentDate, setCurrentDate] = useState(new Date());
   const [monthlyData, setMonthlyData] = useState<DayPanchang[]>([]);
   const [loading, setLoading] = useState(false);
@@ -520,16 +521,16 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
                 </div>
 
                 {/* Legend */}
-                <div className="flex flex-wrap items-center justify-center gap-x-1.5 gap-y-0.5 mt-2 text-[10px] text-stone-400">
-                  <span><span className="inline-block border border-stone-400 text-stone-600 rounded text-[8px] font-bold px-0.5 mr-0.5">x</span> {language === 'hi' ? 'तिथि' : 'Tithi'}</span>
+                <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 mt-3 text-xs text-stone-500">
+                  <span><span className="inline-block border border-stone-400 text-stone-600 rounded text-[10px] font-bold px-1 mr-1">x</span> {language === 'hi' ? 'तिथि' : 'Tithi'}</span>
                   <span>🌕🌑 {language === 'hi' ? 'चन्द्र कला' : 'Moon Phase'}</span>
                   <span><span className="text-[#C45A00]">☀↑</span> {language === 'hi' ? 'सूर्योदय' : 'Sunrise'}</span>
                   <span><span className="text-[#C45A00]">☀↓</span> {language === 'hi' ? 'सूर्यास्त' : 'Sunset'}</span>
                   <span><span className="text-blue-400">☽↑</span> {language === 'hi' ? 'चन्द्रोदय' : 'Moonrise'}</span>
                   <span><span className="text-blue-400">☽↓</span> {language === 'hi' ? 'चन्द्रास्त' : 'Moonset'}</span>
                   <span>☆ {language === 'hi' ? 'नक्षत्र' : 'Nakshatra'}</span>
-                  <span className="text-red-600">{language === 'hi' ? 'पर्व' : 'Festival'}</span>
-                  <span className="text-purple-700">{language === 'hi' ? 'व्रत' : 'Vrat'}</span>
+                  <span className="text-red-600 font-medium">{language === 'hi' ? 'पर्व' : 'Festival'}</span>
+                  <span className="text-purple-700 font-medium">{language === 'hi' ? 'व्रत' : 'Fast'}</span>
                 </div>
               </>
             )}
@@ -624,7 +625,7 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
                 </div>
               ) : (() => {
                 const fp = selectedDayFull.panchang as any;
-                if (!fp) return <p className="text-center text-muted-foreground py-8">Loading...</p>;
+                if (!fp) return <p className="text-center text-muted-foreground py-8">{l('Loading...', 'लोड हो रहा है...')}</p>;
                 return (
                   <>
                     {/* Sun & Moon */}
@@ -651,15 +652,15 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
                     {/* Panchang Elements */}
                     <LightboxSection title={language === 'hi' ? 'पंचांग तत्व' : 'Panchang Elements'}>
                       <LBRow label="Tithi" labelHi="तिथि" lang={language}
-                        value={`${language === 'hi' ? translateBackend(fp.tithi?.name || '', language) : fp.tithi?.name || ''}${fp.tithi?.end_time ? ` upto ${fp.tithi.end_time}` : ''}`}
+                        value={`${language === 'hi' ? translateBackend(fp.tithi?.name || '', language) : fp.tithi?.name || ''}${fp.tithi?.end_time ? ` ${l('upto', 'तक')} ${fp.tithi.end_time}` : ''}`}
                         highlight
                       />
                       <LBRow label="Nakshatra" labelHi="नक्षत्र" lang={language}
-                        value={`${language === 'hi' ? translateBackend(fp.nakshatra?.name || '', language) : fp.nakshatra?.name || ''}${fp.nakshatra?.end_time ? ` upto ${fp.nakshatra.end_time}` : ''}`}
+                        value={`${language === 'hi' ? translateBackend(fp.nakshatra?.name || '', language) : fp.nakshatra?.name || ''}${fp.nakshatra?.end_time ? ` ${l('upto', 'तक')} ${fp.nakshatra.end_time}` : ''}`}
                         highlight
                       />
                       <LBRow label="Yoga" labelHi="योग" lang={language}
-                        value={`${language === 'hi' ? translateBackend(fp.yoga?.name || '', language) : fp.yoga?.name || ''}${fp.yoga?.end_time ? ` upto ${fp.yoga.end_time}` : ''}`}
+                        value={`${language === 'hi' ? translateBackend(fp.yoga?.name || '', language) : fp.yoga?.name || ''}${fp.yoga?.end_time ? ` ${l('upto', 'तक')} ${fp.yoga.end_time}` : ''}`}
                       />
                       <LBRow label="Karana" labelHi="करण" lang={language}
                         value={language === 'hi' ? translateBackend(fp.karana?.name || '', language) : fp.karana?.name}
@@ -677,22 +678,22 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
                     {/* Inauspicious */}
                     <LightboxSection title={language === 'hi' ? 'अशुभ काल' : 'Inauspicious Periods'}>
                       <LBRow label="Rahu Kalam" labelHi="राहुकाल" lang={language}
-                        value={fp.rahu_kaal ? `${fp.rahu_kaal.start} to ${fp.rahu_kaal.end}` : ''} warn
+                        value={fp.rahu_kaal ? `${fp.rahu_kaal.start} ${l('to', 'से')} ${fp.rahu_kaal.end}` : ''} warn
                       />
                       <LBRow label="Gulika Kalam" labelHi="गुलिक काल" lang={language}
-                        value={fp.gulika_kaal ? `${fp.gulika_kaal.start} to ${fp.gulika_kaal.end}` : ''} warn
+                        value={fp.gulika_kaal ? `${fp.gulika_kaal.start} ${l('to', 'से')} ${fp.gulika_kaal.end}` : ''} warn
                       />
                       <LBRow label="Yamaganda" labelHi="यमगण्ड" lang={language}
-                        value={fp.yamaganda ? `${fp.yamaganda.start} to ${fp.yamaganda.end}` : ''} warn
+                        value={fp.yamaganda ? `${fp.yamaganda.start} ${l('to', 'से')} ${fp.yamaganda.end}` : ''} warn
                       />
                       {fp.dur_muhurtam && (
                         <LBRow label="Dur Muhurtam" labelHi="दुर्मुहूर्त" lang={language}
-                          value={`${fp.dur_muhurtam.start} to ${fp.dur_muhurtam.end}`} warn
+                          value={`${fp.dur_muhurtam.start} ${l('to', 'से')} ${fp.dur_muhurtam.end}`} warn
                         />
                       )}
                       {fp.varjyam && (
                         <LBRow label="Varjyam" labelHi="वर्ज्यम्" lang={language}
-                          value={`${fp.varjyam.start} to ${fp.varjyam.end}`} warn
+                          value={`${fp.varjyam.start} ${l('to', 'से')} ${fp.varjyam.end}`} warn
                         />
                       )}
                     </LightboxSection>
@@ -700,11 +701,11 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
                     {/* Auspicious */}
                     <LightboxSection title={language === 'hi' ? 'शुभ मुहूर्त' : 'Auspicious Muhurat'}>
                       <LBRow label="Abhijit" labelHi="अभिजीत" lang={language}
-                        value={fp.abhijit_muhurat ? `${fp.abhijit_muhurat.start} to ${fp.abhijit_muhurat.end}` : 'None'} good
+                        value={fp.abhijit_muhurat ? `${fp.abhijit_muhurat.start} ${l('to', 'से')} ${fp.abhijit_muhurat.end}` : l('None', 'नहीं')} good
                       />
                       {fp.brahma_muhurat && (
                         <LBRow label="Brahma Muhurat" labelHi="ब्रह्म मुहूर्त" lang={language}
-                          value={`${fp.brahma_muhurat.start} to ${fp.brahma_muhurat.end}`} good
+                          value={`${fp.brahma_muhurat.start} ${l('to', 'से')} ${fp.brahma_muhurat.end}`} good
                         />
                       )}
                     </LightboxSection>
@@ -744,6 +745,7 @@ function FullPanchangPanel({ selectedDay, fullData, language, t, locationName }:
   t: (key: string) => string;
   locationName?: string;
 }) {
+  const l = (en: string, hi: string) => language === 'hi' ? hi : en;
   const [timeFormat, setTimeFormat] = useState<'12' | '24' | '24+'>('24');
 
   const fmt = (time: string | undefined) => {
@@ -767,7 +769,7 @@ function FullPanchangPanel({ selectedDay, fullData, language, t, locationName }:
   };
 
   const fmtP = (period: any): string => {
-    const s = fmtPeriod(period);
+    const s = fmtPeriod(period, l('to', 'से'));
     if (!s) return '';
     // format both times in the period string "HH:MM to HH:MM"
     return s.replace(/\d{1,2}:\d{2}/g, (match: string) => fmt(match));
@@ -796,7 +798,7 @@ function FullPanchangPanel({ selectedDay, fullData, language, t, locationName }:
                 : 'border-stone-300 text-stone-600 hover:border-[#C45A00]'
             }`}
           >
-            {f === '12' ? '12 Hour' : f === '24' ? '24 Hour' : '24 Plus'}
+            {f === '12' ? l('12 Hour', '12 घंटा') : f === '24' ? l('24 Hour', '24 घंटा') : l('24 Plus', '24 प्लस')}
           </button>
         ))}
       </div>
@@ -830,19 +832,19 @@ function FullPanchangPanel({ selectedDay, fullData, language, t, locationName }:
 
             {/* Panchang Elements */}
             <PanchangRow label="Tithi" labelHi="तिथि" lang={language}
-              value={`${language === 'hi' ? translateBackend(p.tithi?.name || '', language) : p.tithi?.name || ''}${p.tithi?.end_time ? ` upto ${fmt(p.tithi.end_time)}` : ''}`}
+              value={`${language === 'hi' ? translateBackend(p.tithi?.name || '', language) : p.tithi?.name || ''}${p.tithi?.end_time ? ` ${l('upto', 'तक')} ${fmt(p.tithi.end_time)}` : ''}`}
               color="text-[#2E7D32]" bold
             />
             <PanchangRow label="Nakshatra" labelHi="नक्षत्र" lang={language}
-              value={`${language === 'hi' ? translateBackend(p.nakshatra?.name || '', language) : p.nakshatra?.name || ''}${p.nakshatra?.end_time ? ` upto ${fmt(p.nakshatra.end_time)}` : ''}`}
+              value={`${language === 'hi' ? translateBackend(p.nakshatra?.name || '', language) : p.nakshatra?.name || ''}${p.nakshatra?.end_time ? ` ${l('upto', 'तक')} ${fmt(p.nakshatra.end_time)}` : ''}`}
               color="text-[#2E7D32]" bold
             />
             <PanchangRow label="Yoga" labelHi="योग" lang={language}
-              value={`${language === 'hi' ? translateBackend(p.yoga?.name || '', language) : p.yoga?.name || ''}${p.yoga?.end_time ? ` upto ${fmt(p.yoga.end_time)}` : ''}`}
+              value={`${language === 'hi' ? translateBackend(p.yoga?.name || '', language) : p.yoga?.name || ''}${p.yoga?.end_time ? ` ${l('upto', 'तक')} ${fmt(p.yoga.end_time)}` : ''}`}
               color="text-[#2E7D32]" bold
             />
             <PanchangRow label="Karana" labelHi="करण" lang={language}
-              value={`${language === 'hi' ? translateBackend(p.karana?.name || '', language) : p.karana?.name || ''}${p.karana?.end_time ? ` upto ${fmt(p.karana.end_time)}` : ''}`}
+              value={`${language === 'hi' ? translateBackend(p.karana?.name || '', language) : p.karana?.name || ''}${p.karana?.end_time ? ` ${l('upto', 'तक')} ${fmt(p.karana.end_time)}` : ''}`}
               color="text-[#2E7D32]" bold
             />
 
@@ -850,7 +852,7 @@ function FullPanchangPanel({ selectedDay, fullData, language, t, locationName }:
 
             {/* Paksha & Weekday */}
             <PanchangRow label="Paksha" labelHi="पक्ष" lang={language}
-              value={p.hindu_calendar?.paksha ? (language === 'hi' ? translateBackend(p.hindu_calendar.paksha, language) : p.hindu_calendar.paksha + ' Paksha') : (p.tithi?.paksha ? p.tithi.paksha + ' Paksha' : '')}
+              value={p.hindu_calendar?.paksha ? (language === 'hi' ? translateBackend(p.hindu_calendar.paksha, language) : p.hindu_calendar.paksha + ' Paksha') : (p.tithi?.paksha ? (language === 'hi' ? translateBackend(p.tithi.paksha, language) : p.tithi.paksha + ' Paksha') : '')}
               color="text-[#8B4513]" bold
             />
             <PanchangRow label="Weekday" labelHi="वार" lang={language}
@@ -890,7 +892,7 @@ function FullPanchangPanel({ selectedDay, fullData, language, t, locationName }:
             <PanchangRow label="Varjyam" labelHi="वर्ज्यम्" lang={language} value={fmtP(p.varjyam)} warn />
 
             {/* Auspicious times (green) */}
-            <PanchangRow label="Abhijit" labelHi="अभिजीत" lang={language} value={fmtP(p.abhijit_muhurat) || 'None'} good />
+            <PanchangRow label="Abhijit" labelHi="अभिजीत" lang={language} value={fmtP(p.abhijit_muhurat) || l('None', 'नहीं')} good />
             <PanchangRow label="Brahma Muhurat" labelHi="ब्रह्म मुहूर्त" lang={language} value={fmtP(p.brahma_muhurat)} good />
             <PanchangRow label="Amrit Kalam" labelHi="अमृत काल" lang={language} value={fmtP(p.amrit_kalam)} good />
 
@@ -912,7 +914,7 @@ function FullPanchangPanel({ selectedDay, fullData, language, t, locationName }:
 
             <div className="text-center mt-2 pt-1.5 border-t border-stone-200">
               <p className="text-[10px] text-stone-400 italic">
-                {language === 'hi' ? 'विस्तृत दैनिक पंचांग' : 'detailed Dainik Panchang'}
+                {l('Detailed Dainik Panchang', 'विस्तृत दैनिक पंचांग')}
               </p>
             </div>
           </div>
