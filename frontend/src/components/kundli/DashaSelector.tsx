@@ -58,11 +58,11 @@ interface DashaSystemMeta {
 }
 
 const DASHA_SYSTEMS: DashaSystemMeta[] = [
-  { key: 'vimshottari', labelEn: 'Vimshottari (120yr)', labelHi: 'विंशोत्तरी (120 वर्ष)', endpoint: '/api/kundli/dasha/vimshottari' },
-  { key: 'yogini', labelEn: 'Yogini (36yr)', labelHi: 'योगिनी (36 वर्ष)', endpoint: '/api/kundli/dasha/yogini' },
-  { key: 'ashtottari', labelEn: 'Ashtottari (108yr)', labelHi: 'अष्टोत्तरी (108 वर्ष)', endpoint: '/api/kundli/dasha/ashtottari' },
-  { key: 'moola', labelEn: 'Moola', labelHi: 'मूल', endpoint: '/api/kundli/dasha/moola' },
-  { key: 'tara', labelEn: 'Tara', labelHi: 'तारा', endpoint: '/api/kundli/dasha/tara' },
+  { key: 'vimshottari', labelEn: 'Vimshottari (120yr)', labelHi: 'विंशोत्तरी (120 वर्ष)', endpoint: '/api/kundli/{id}/dasha' },
+  { key: 'yogini', labelEn: 'Yogini (36yr)', labelHi: 'योगिनी (36 वर्ष)', endpoint: '/api/kundli/{id}/yogini-dasha' },
+  { key: 'ashtottari', labelEn: 'Ashtottari (108yr)', labelHi: 'अष्टोत्तरी (108 वर्ष)', endpoint: '/api/kundli/{id}/ashtottari-dasha' },
+  { key: 'moola', labelEn: 'Moola', labelHi: 'मूल', endpoint: '/api/kundli/{id}/moola-dasha' },
+  { key: 'tara', labelEn: 'Tara', labelHi: 'तारा', endpoint: '/api/kundli/{id}/tara-dasha' },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -152,7 +152,8 @@ export default function DashaSelector({
     setError(null);
     try {
       const meta = DASHA_SYSTEMS.find((s) => s.key === system)!;
-      const res = await api.post(meta.endpoint, { kundli_id: kundliId });
+      const url = meta.endpoint.replace('{id}', kundliId);
+      const res = await api.get(url);
       setData((prev) => ({ ...prev, [system]: res }));
     } catch (err: any) {
       setError(err?.message || 'Failed to load dasha data');

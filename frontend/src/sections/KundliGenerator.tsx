@@ -70,7 +70,7 @@ const TAB_DEFS: Omit<TabDef, 'onActivate'>[] = [
   { value: 'sarvatobhadra', labelEn: 'Sarvatobhadra',   labelHi: 'सर्वतोभद्र चक्र',   primary: false, category: 'charts' },
   // Timing
   { value: 'yogini',        labelEn: 'Yogini Dasha',   labelHi: 'योगिनी दशा',       primary: false, category: 'timing' },
-  { value: 'dasha-systems', labelEn: 'Dasha Systems',  labelHi: 'दशा पद्धतियाँ',     primary: false, category: 'timing' },
+  // dasha-systems merged into "dasha" tab via DashaSelector (5 systems in one)
   { value: 'varshphal',     labelEn: 'Varshphal',      labelHi: 'वर्षफल',           primary: false, category: 'timing' },
   { value: 'transits',      labelEn: 'Transits',       labelHi: 'गोचर',            primary: false, category: 'timing' },
   { value: 'sadesati',      labelEn: 'Sade Sati',      labelHi: 'साढ़े साती',        primary: false, category: 'timing' },
@@ -509,12 +509,12 @@ export default function KundliGenerator() {
           </TabsContent>
 
           <TabsContent value="dasha" className="min-h-[300px]">
-            <DashaTab
-              dashaData={dashaData} extendedDashaData={extendedDashaData}
-              loadingDasha={loadingDasha} loadingExtendedDasha={loadingExtendedDasha}
-              expandedMahadasha={expandedMahadasha} setExpandedMahadasha={setExpandedMahadasha}
-              expandedAntardasha={expandedAntardasha} setExpandedAntardasha={setExpandedAntardasha}
-              language={language} t={t}
+            <DashaSelector
+              kundliId={result?.id || ''}
+              vimshottariData={dashaData}
+              yoginiData={yoginiData}
+              language={language}
+              t={t}
             />
           </TabsContent>
 
@@ -606,15 +606,7 @@ export default function KundliGenerator() {
             <KundliMilanTab savedKundlis={savedKundlis} currentKundliId={result?.id} />
           </TabsContent>
 
-          <TabsContent value="dasha-systems" className="min-h-[300px]">
-            <DashaSelector
-              kundliId={result?.id || ''}
-              vimshottariData={dashaData}
-              yoginiData={yoginiData}
-              language={language}
-              t={t}
-            />
-          </TabsContent>
+          {/* DashaSelector is now inside the "dasha" tab above — removed duplicate */}
 
           <TabsContent value="d108" className="min-h-[300px]">
             <D108Analysis

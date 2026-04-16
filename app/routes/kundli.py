@@ -913,6 +913,85 @@ def get_kalachakra_dasha(
     return result
 
 
+@router.get("/{kundli_id}/ashtottari-dasha", status_code=status.HTTP_200_OK)
+def get_ashtottari_dasha(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Calculate Ashtottari Dasha (108-year cycle) for a kundli."""
+    from app.ashtottari_dasha_engine import calculate_ashtottari_dasha
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    moon_info = chart.get("planets", {}).get("Moon", {})
+    result = calculate_ashtottari_dasha(
+        birth_nakshatra=moon_info.get("nakshatra", "Ashwini"),
+        birth_date=str(row["birth_date"]),
+        moon_longitude=moon_info.get("longitude", 0.0),
+    )
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
+@router.get("/{kundli_id}/moola-dasha", status_code=status.HTTP_200_OK)
+def get_moola_dasha(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Calculate Moola Dasha (Jaimini sign-based) for a kundli."""
+    from app.moola_dasha_engine import calculate_moola_dasha
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    asc = chart.get("ascendant", {})
+    houses = chart.get("houses", [])
+    lagna_sign = asc.get("sign", "Aries")
+    seventh_sign = ""
+    for h in houses:
+        if isinstance(h, dict) and h.get("house") == 7:
+            seventh_sign = h.get("sign", "")
+            break
+    if not seventh_sign:
+        from app.avakhada_engine import ZODIAC_SIGNS
+        idx = ZODIAC_SIGNS.index(lagna_sign) if lagna_sign in ZODIAC_SIGNS else 0
+        seventh_sign = ZODIAC_SIGNS[(idx + 6) % 12]
+    planet_positions = {}
+    for pname, pdata in chart.get("planets", {}).items():
+        if isinstance(pdata, dict):
+            planet_positions[pname] = pdata.get("sign", "")
+    result = calculate_moola_dasha(
+        lagna_sign=lagna_sign,
+        seventh_sign=seventh_sign,
+        planet_positions=planet_positions,
+        birth_date=str(row["birth_date"]),
+    )
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
+@router.get("/{kundli_id}/tara-dasha", status_code=status.HTTP_200_OK)
+def get_tara_dasha(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Calculate Tara Dasha (9 Tara groups) for a kundli."""
+    from app.tara_dasha_engine import calculate_tara_dasha
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    moon_info = chart.get("planets", {}).get("Moon", {})
+    result = calculate_tara_dasha(
+        birth_nakshatra=moon_info.get("nakshatra", "Ashwini"),
+        birth_date=str(row["birth_date"]),
+        moon_longitude=moon_info.get("longitude", 0.0),
+    )
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
 @router.get("/{kundli_id}/upagrahas", status_code=status.HTTP_200_OK)
 def get_upagrahas(
     kundli_id: str,
