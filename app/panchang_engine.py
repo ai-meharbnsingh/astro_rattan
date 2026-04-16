@@ -250,7 +250,8 @@ _NIGHT_CHOGHADIYA_NAMES = {
 # Vaar Vela / Kaal Vela / Kaal Ratri — 1-based period index per weekday (0=Mon..6=Sun)
 _VAAR_VELA_PERIOD = {0: 6, 1: 5, 2: 4, 3: 3, 4: 2, 5: 1, 6: 7}  # Mon=6th, Tue=5th...Sun=7th
 _KAAL_VELA_PERIOD = {0: 2, 1: 3, 2: 4, 3: 5, 4: 6, 5: 7, 6: 1}  # Mon=2nd, Tue=3rd...Sun=1st
-_KAAL_RATRI_PERIOD = {0: 2, 1: 3, 2: 4, 3: 5, 4: 6, 5: 7, 6: 1}  # same as Kaal Vela for night
+# Kaal Ratri follows a DIFFERENT sequence from Kaal Vela (traditional night mapping)
+_KAAL_RATRI_PERIOD = {0: 2, 1: 7, 2: 5, 3: 6, 4: 4, 5: 3, 6: 8}  # Mon=2, Tue=7, Wed=5, Thu=6, Fri=4, Sat=3, Sun=8
 
 # ============================================================
 # HINDU MONTH NAMES
@@ -1285,28 +1286,38 @@ def calculate_panchang(
         sign_idx = int(asc_sid / 30) % 12
         return {"sign": sign_idx, "longitude": asc_sid}
     
-    # Calculate ascendant at sunrise
-    ascendant_sunrise = _calculate_ascendant(jd_sunrise, latitude, longitude)
-    asc_sign_idx = ascendant_sunrise["sign"]
-    
-    # Generate lagna table: each lagna lasts ~2 hours (30 degrees / 15 deg per hour)
-    # Start from the ascendant at sunrise, then progress through all 12 signs
-    lagna_duration_mins = 120  # 2 hours per lagna
-    
-    for i in range(12):
-        sign_idx = (asc_sign_idx + i) % 12
-        start_mins = sunrise_mins + i * lagna_duration_mins
-        end_mins = start_mins + lagna_duration_mins
-        
-        # Handle wrap-around past midnight
-        start_str = _minutes_to_time(start_mins % 1440)
-        end_str = _minutes_to_time(end_mins % 1440)
-        
+    # Calculate lagna boundaries by sampling ascendant every 5 minutes for 24h
+    # This gives accurate durations that vary by latitude and season
+    _SAMPLE_INTERVAL = 5  # minutes
+    _TOTAL_SAMPLES = (24 * 60) // _SAMPLE_INTERVAL + 1  # 289 samples for 24h
+    _jd_per_min = 1.0 / 1440.0
+
+    samples = []
+    for s in range(_TOTAL_SAMPLES):
+        t_mins = s * _SAMPLE_INTERVAL
+        jd_t = jd_sunrise + t_mins * _jd_per_min
+        asc = _calculate_ascendant(jd_t, latitude, longitude)
+        samples.append((t_mins, asc["sign"]))
+
+    # Detect sign boundaries
+    boundaries = [(0, samples[0][1])]  # (minutes_from_sunrise, sign_idx)
+    for i in range(1, len(samples)):
+        if samples[i][1] != samples[i - 1][1]:
+            boundaries.append((samples[i][0], samples[i][1]))
+
+    # Build lagna table from boundaries
+    for i, (start_offset, sign_idx) in enumerate(boundaries):
+        if i + 1 < len(boundaries):
+            end_offset = boundaries[i + 1][0]
+        else:
+            end_offset = 24 * 60  # full 24h
+        start_str = _minutes_to_time((sunrise_mins + start_offset) % 1440)
+        end_str = _minutes_to_time((sunrise_mins + end_offset) % 1440)
         lagna_table.append({
             "lagna": _RASHI_NAMES[sign_idx],
             "lagna_hindi": _RASHI_NAMES_HINDI[sign_idx],
             "start": start_str,
-            "end": end_str
+            "end": end_str,
         })
 
     # 24. Chandrabalam (Moon strength for each Rashi)
@@ -1380,7 +1391,8 @@ def calculate_panchang(
         })
 
     # 28. Panchaka check (5 elements — inauspicious when Moon in certain nakshatras)
-    panchaka_nakshatras = [1, 6, 11, 16, 21, 26]  # Bharani, Ardra, P.Phalguni, Vishakha, P.Ashadha, U.Bhadrapada
+    # 0-based: Dhanishta=22, Shatabhisha=23, P.Bhadrapada=24, U.Bhadrapada=25, Revati=26
+    panchaka_nakshatras = [22, 23, 24, 25, 26]  # Dhanishta, Shatabhisha, P.Bhadrapada, U.Bhadrapada, Revati
     is_panchaka = moon_nak_idx in panchaka_nakshatras
     panchaka = {"active": is_panchaka, "rahita": not is_panchaka}
 
@@ -1457,7 +1469,7 @@ def calculate_panchang(
         # --- New modules (Wave 1) ---
         **_calculate_wave1_extras(weekday, tithi_index, tithi["name"],
                                   nakshatra.get("name", ""), nakshatra.get("index", 0),
-                                  nakshatra_end, date, sunrise_str, sunset_str,
+                                  nakshatra_end, tithi_end, date, sunrise_str, sunset_str,
                                   hindu_calendar.get("vikram_samvat", 0),
                                   jd_sunrise, ayanamsa),
     }
@@ -1465,7 +1477,7 @@ def calculate_panchang(
 
 def _calculate_wave1_extras(
     weekday, tithi_index, tithi_name, nakshatra_name, nakshatra_index,
-    nakshatra_end_time, date_str, sunrise, sunset, vikram_samvat, jd, ayanamsa,
+    nakshatra_end_time, tithi_end_time, date_str, sunrise, sunset, vikram_samvat, jd, ayanamsa,
 ):
     """Integrate all new Wave 1 modules into panchang output."""
     result = {}
@@ -1492,7 +1504,9 @@ def _calculate_wave1_extras(
     try:
         from app.panchang_ekadashi import calculate_ekadashi_parana
         result["ekadashi_parana"] = calculate_ekadashi_parana(
-            tithi_name=tithi_name, tithi_end_time="", next_sunrise=sunrise,
+            tithi_name=tithi_name,
+            tithi_end_time=tithi_end_time or "",
+            next_sunrise=sunrise,
         )
     except Exception:
         result["ekadashi_parana"] = None

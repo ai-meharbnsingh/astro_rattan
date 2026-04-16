@@ -1,3 +1,5 @@
+import { useTranslation } from '@/lib/i18n';
+
 /**
  * SarvatobhadraChakra — Pure SVG 9x9 Sarvatobhadra Chakra Grid
  *
@@ -122,6 +124,8 @@ export default function SarvatobhadraChakra({
   showVedhaLines = true,
   className,
 }: SarvatobhadraChakraProps) {
+  const { t } = useTranslation();
+
   if (!grid || grid.length !== 9) return null;
 
   /** Get pixel center of a cell */
@@ -152,7 +156,7 @@ export default function SarvatobhadraChakra({
         fontFamily="sans-serif"
         fontWeight="600"
       >
-        Sarvatobhadra Chakra
+        {t('panchang.sarvatobhadraChakra')}
       </text>
 
       {/* Grid cells */}
@@ -312,10 +316,10 @@ export default function SarvatobhadraChakra({
       {/* Legend */}
       <g transform={`translate(${PADDING}, ${TOTAL_SIZE - 6})`}>
         {[
-          { label: 'Nakshatra', color: CELL_COLORS.nakshatra.bg, border: CELL_COLORS.nakshatra.border },
-          { label: 'Sign', color: CELL_COLORS.sign.bg, border: CELL_COLORS.sign.border },
-          { label: 'Vowel', color: CELL_COLORS.vowel.bg, border: CELL_COLORS.vowel.border },
-          { label: 'Day', color: CELL_COLORS.day.bg, border: CELL_COLORS.day.border },
+          { label: t('auto.nakshatra'), color: CELL_COLORS.nakshatra.bg, border: CELL_COLORS.nakshatra.border },
+          { label: t('auto.sign'), color: CELL_COLORS.sign.bg, border: CELL_COLORS.sign.border },
+          { label: t('numerology.vowel'), color: CELL_COLORS.vowel.bg, border: CELL_COLORS.vowel.border },
+          { label: t('auto.weekday'), color: CELL_COLORS.day.bg, border: CELL_COLORS.day.border },
         ].map((item, i) => (
           <g key={`legend-${i}`} transform={`translate(${i * 100}, 0)`}>
             <rect x="0" y="-5" width="8" height="8" fill={item.color} stroke={item.border} strokeWidth="0.5" />
