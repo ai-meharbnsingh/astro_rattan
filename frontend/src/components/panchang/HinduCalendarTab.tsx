@@ -429,31 +429,36 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
                         {/* Main content area */}
                         <div className="flex-1 flex flex-col items-center justify-center px-1.5 py-1">
 
-                          {/* DATE number + tithi badge */}
+                          {/* DATE number + tithi badge + moon phase */}
                           <div className="flex items-start justify-center gap-0.5 mb-1">
                             <span className={`text-3xl sm:text-4xl font-bold leading-none ${isSunday ? 'text-red-600' : isToday ? 'text-[#C45A00]' : 'text-stone-800'}`}>
                               {day}
                             </span>
-                            {tithiNum && (
-                              <span className="text-[8px] sm:text-[9px] font-bold border border-stone-400 text-stone-600 rounded px-0.5 leading-tight mt-0.5">
-                                {tithiNum}
-                              </span>
-                            )}
+                            <div className="flex flex-col items-center gap-0">
+                              {tithiNum && (
+                                <span className="text-[8px] sm:text-[9px] font-bold border border-stone-400 text-stone-600 rounded px-0.5 leading-tight mt-0.5">
+                                  {tithiNum}
+                                </span>
+                              )}
+                              {moonIcon && (
+                                <span className="text-[10px] sm:text-[12px] leading-none">{moonIcon}</span>
+                              )}
+                            </div>
                           </div>
 
                           {/* Sunrise/Sunset + Moonrise/Moonset */}
                           {dayData && (
                             <>
                               <div className="flex items-center justify-between w-full text-[8px] sm:text-[10px] text-stone-400">
-                                <span><span className="text-[#C45A00]">☀</span> {dayData.sunrise?.slice(0, 5)}</span>
-                                <span><span className="text-[#C45A00]">☀</span> {dayData.sunset?.slice(0, 5)}</span>
+                                <span><span className="text-[#C45A00]">☀↑</span> {dayData.sunrise?.slice(0, 5)}</span>
+                                <span><span className="text-[#C45A00]">☀↓</span> {dayData.sunset?.slice(0, 5)}</span>
                               </div>
                               <div className="flex items-center justify-between w-full text-[8px] sm:text-[10px] text-stone-400">
                                 {dayData.moonrise && dayData.moonrise !== '--:--'
-                                  ? <span>☽ {dayData.moonrise?.slice(0, 5)}</span>
+                                  ? <span><span className="text-blue-400">☽↑</span> {dayData.moonrise?.slice(0, 5)}</span>
                                   : <span />}
                                 {dayData.moonset && dayData.moonset !== '--:--'
-                                  ? <span>☽ {dayData.moonset?.slice(0, 5)}</span>
+                                  ? <span><span className="text-blue-400">☽↓</span> {dayData.moonset?.slice(0, 5)}</span>
                                   : <span />}
                               </div>
                             </>
@@ -506,8 +511,11 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
                 {/* Legend */}
                 <div className="flex flex-wrap items-center justify-center gap-x-1.5 gap-y-0.5 mt-2 text-[10px] text-stone-400">
                   <span><span className="inline-block border border-stone-400 text-stone-600 rounded text-[8px] font-bold px-0.5 mr-0.5">x</span> {language === 'hi' ? 'तिथि' : 'Tithi'}</span>
-                  <span><span className="text-[#C45A00]">☀</span> {language === 'hi' ? 'सूर्योदय / सूर्यास्त' : 'Sunrise / Sunset'}</span>
-                  <span>☽ {language === 'hi' ? 'चंद्र राशि' : 'Moon Sign'}</span>
+                  <span>🌕🌑 {language === 'hi' ? 'चन्द्र कला' : 'Moon Phase'}</span>
+                  <span><span className="text-[#C45A00]">☀↑</span> {language === 'hi' ? 'सूर्योदय' : 'Sunrise'}</span>
+                  <span><span className="text-[#C45A00]">☀↓</span> {language === 'hi' ? 'सूर्यास्त' : 'Sunset'}</span>
+                  <span><span className="text-blue-400">☽↑</span> {language === 'hi' ? 'चन्द्रोदय' : 'Moonrise'}</span>
+                  <span><span className="text-blue-400">☽↓</span> {language === 'hi' ? 'चन्द्रास्त' : 'Moonset'}</span>
                   <span>☆ {language === 'hi' ? 'नक्षत्र' : 'Nakshatra'}</span>
                   <span className="text-red-600">{language === 'hi' ? 'पर्व' : 'Festival'}</span>
                   <span className="text-purple-700">{language === 'hi' ? 'व्रत' : 'Vrat'}</span>
