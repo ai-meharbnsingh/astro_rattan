@@ -528,7 +528,7 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
 
       {/* ===== FESTIVALS GRID (horizontal, below calendar) ===== */}
       {monthFestivals.length > 0 && (
-        <Card className="border border-sacred-gold/20 bg-[#FFF9F5] shadow-sm overflow-hidden">
+        <Card className="border border-sacred-gold/20 bg-[#FFF9F5] shadow-sm overflow-hidden !py-0 !gap-0">
           <div className="bg-[#C45A00] px-3 py-1.5">
             <h4 className="text-white font-bold text-sm text-center">
               {monthNames[month]} {year} {language === 'hi' ? 'व्रत एवं पर्व' : 'Festivals'}
@@ -765,7 +765,7 @@ function FullPanchangPanel({ selectedDay, fullData, language, t, locationName }:
   const p = fullData.panchang as any;
 
   return (
-    <Card className="border border-sacred-gold/20 bg-[#FFF9F5] shadow-sm overflow-hidden">
+    <Card className="border border-sacred-gold/20 bg-[#FFF9F5] shadow-sm overflow-hidden !py-0 !gap-0">
       {/* Header bar */}
       <div className="bg-[#C45A00] px-3 py-2 rounded-t-lg">
         <h4 className="text-white font-bold text-sm">
