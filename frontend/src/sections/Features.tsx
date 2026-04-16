@@ -704,21 +704,35 @@ export default function Features() {
                 <div className="w-full max-w-[380px] aspect-square">
                   <KundliChartSVG
                     planets={(currentSky.planets || []).map((p: any) => {
-                      // Compute house from sign relative to lagna (whole sign)
                       const SIGNS_ORDER = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
                       const lagnaIdx = SIGNS_ORDER.indexOf(currentSky.lagna_sign || '');
                       const planetIdx = SIGNS_ORDER.indexOf(p.sign || '');
                       const house = lagnaIdx >= 0 && planetIdx >= 0 ? ((planetIdx - lagnaIdx + 12) % 12) + 1 : (p.house || 0);
+
+                      // Compute statuses from sign (API doesn't send these)
+                      const EXALTED: Record<string,string> = {Sun:'Aries',Moon:'Taurus',Mars:'Capricorn',Mercury:'Virgo',Jupiter:'Cancer',Venus:'Pisces',Saturn:'Libra'};
+                      const DEBILITATED: Record<string,string> = {Sun:'Libra',Moon:'Scorpio',Mars:'Cancer',Mercury:'Pisces',Jupiter:'Capricorn',Venus:'Virgo',Saturn:'Aries'};
+                      const sign = p.sign || '';
+                      const name = p.planet || '';
+
+                      // Combust: planet within ~10° of Sun (except Rahu/Ketu)
+                      const sunData = (currentSky.planets || []).find((s: any) => s.planet === 'Sun');
+                      const sunLong = sunData?.longitude ?? -999;
+                      const pLong = p.longitude ?? -999;
+                      const diff = Math.abs(pLong - sunLong);
+                      const angDiff = diff > 180 ? 360 - diff : diff;
+                      const isCombust = name !== 'Sun' && name !== 'Rahu' && name !== 'Ketu' && angDiff < 10;
+
                       return {
-                        planet: p.planet || '',
-                        sign: p.sign || '',
+                        planet: name,
+                        sign,
                         house,
                         sign_degree: p.sign_degree || 0,
                         is_retrograde: !!p.is_retrograde,
-                        is_combust: !!p.is_combust,
-                        is_vargottama: !!p.is_vargottama,
-                        is_exalted: p.status?.includes('Exalted') || !!p.is_exalted,
-                        is_debilitated: p.status?.includes('Debilitated') || !!p.is_debilitated,
+                        is_combust: isCombust,
+                        is_vargottama: false, // needs navamsa calc — skip for current sky
+                        is_exalted: EXALTED[name] === sign,
+                        is_debilitated: DEBILITATED[name] === sign,
                       };
                     })}
                     ascendantSign={currentSky.lagna_sign || ''}
