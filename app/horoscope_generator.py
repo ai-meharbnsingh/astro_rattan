@@ -115,6 +115,16 @@ def _get_current_transits() -> Dict[str, str]:
         transits[p_name] = p_data.get("sign", "Aries").lower()
     return transits
 
+
+def _get_current_transits_full(target_date: str = None) -> Dict[str, Dict]:
+    """Get full planetary data for transit calculations (not just sign names)."""
+    d = target_date or date.today().isoformat()
+    try:
+        res = calculate_planet_positions(d, "12:00:00", 28.6, 77.2, 5.5)
+        return res.get("planets", {})
+    except Exception:
+        return {}
+
 def _generate_template_horoscope(sign: str, transits: Optional[Dict[str, str]] = None) -> str:
     """
     Generate a horoscope using template pools, weighted by the 
@@ -520,12 +530,17 @@ def generate_ai_horoscope(
     ruler = _RULERS[sign]
     element = _ELEMENTS[sign]
 
-    # AI engine removed — use template-based generation
-    sections = None
-    source = "template"
+    # Try transit engine first
+    try:
+        from app.transit_engine import generate_transit_horoscope
+        result = generate_transit_horoscope(sign=sign, period=period, target_date=None)
+        if result and result.get("sections"):
+            return result
+    except Exception:
+        pass
 
-    if sections is None:
-        sections = _template_fallback_sections(sign, period)
+    # Fallback to templates
+    sections = _template_fallback_sections(sign, period)
 
     return {
         "sign": sign,
@@ -533,6 +548,6 @@ def generate_ai_horoscope(
         "ruling_planet": ruler,
         "element": element,
         "sections": sections,
-        "source": source,
-        "personalized": birth_data is not None and source == "ai",
+        "source": "template",
+        "personalized": False,
     }
