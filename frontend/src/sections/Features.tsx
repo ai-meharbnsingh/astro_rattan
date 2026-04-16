@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { api } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
-import { Calendar, ChevronDown, ChevronUp, Loader2, MapPin, Sparkles, Sun, X } from 'lucide-react';
+import { Calendar, ChevronDown, ChevronUp, Loader2, MapPin, Sparkles, Star, Sun, X } from 'lucide-react';
 import { Heading } from '@/components/ui/heading';
 import KundliChartSVG from '@/components/KundliChartSVG';
 
@@ -58,6 +58,7 @@ type HoroscopeData = {
   sign_hindi?: string;
   dates?: string;
   sections?: HoroscopeSections;
+  scores?: { overall: number; love: number; career: number; finance: number; health: number };
 };
 
 type PanchangData = {
@@ -714,7 +715,7 @@ export default function Features() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
               {/* LEFT: Chart (50% — equal to table) */}
-              <div className="flex justify-center">
+              <div className="flex justify-center -mt-[5px]">
                 <div className="w-full max-w-[480px] aspect-square">
                   <KundliChartSVG
                     planets={(currentSky.planets || []).map((p: any) => {
@@ -895,9 +896,17 @@ export default function Features() {
                 ) : (
                   <>
                     <div className="mb-3">
-                      <p className="text-base font-semibold text-foreground">
-                        {language === 'hi' ? (horoscopeData?.sign_hindi || '') : (horoscopeData?.sign || horoscopeSign).toString().replace(/^./, c => c.toUpperCase())}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-base font-semibold text-foreground">
+                          {language === 'hi' ? (horoscopeData?.sign_hindi || '') : (horoscopeData?.sign || horoscopeSign).toString().replace(/^./, c => c.toUpperCase())}
+                        </p>
+                        {horoscopeData?.scores?.overall != null && (
+                          <span className="inline-flex items-center gap-0.5 rounded-full bg-amber-100 text-amber-800 px-1.5 py-0.5 text-xs font-semibold">
+                            <Star className="w-3 h-3" />
+                            {horoscopeData.scores.overall}/10
+                          </span>
+                        )}
+                      </div>
                       <p className="text-xs text-muted-foreground">{horoscopeData?.dates || ''}</p>
                     </div>
                     <div className="space-y-1.5 text-sm text-foreground">
