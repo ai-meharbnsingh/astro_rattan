@@ -177,7 +177,7 @@ export default function KundliGenerator() {
     if (sbcGrid || !result?.id) return;
     setLoadingSbc(true);
     try {
-      const res = await api.post('/api/kundli/sarvatobhadra', { kundli_id: result.id });
+      const res = await api.get(`/api/kundli/${result.id}/sarvatobhadra`);
       setSbcGrid(res.grid || null);
       setSbcVedhas(res.vedhas || []);
     } catch (err) {

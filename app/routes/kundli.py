@@ -2454,7 +2454,68 @@ def birth_rectification(
 
 
 # ─────────────────────────────────────────────────────────────
-# Sarvatobhadra Chakra — 9x9 grid with Vedha analysis
+# D108 by kundli_id  (GET — auto-extracts planet longitudes)
+# ─────────────────────────────────────────────────────────────
+
+@router.get("/{kundli_id}/d108-analysis", status_code=status.HTTP_200_OK)
+def get_d108_analysis(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """D108 Ashtottaramsa analysis from a saved kundli."""
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    planet_longs = {}
+    for pname, pdata in chart.get("planets", {}).items():
+        if isinstance(pdata, dict):
+            planet_longs[pname] = pdata.get("longitude", 0.0)
+    result = calculate_d108_analysis(planet_longitudes=planet_longs)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
+# ─────────────────────────────────────────────────────────────
+# Sarvatobhadra by kundli_id (GET — auto-extracts positions)
+# ─────────────────────────────────────────────────────────────
+
+@router.get("/{kundli_id}/sarvatobhadra", status_code=status.HTTP_200_OK)
+def get_sarvatobhadra(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Sarvatobhadra Chakra from a saved kundli with current transits."""
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    natal = {}
+    for pname, pdata in chart.get("planets", {}).items():
+        if isinstance(pdata, dict):
+            natal[pname] = pdata.get("longitude", 0.0)
+    # Get current transits
+    transit = None
+    try:
+        transit_result = calculate_transits(
+            chart,
+            row.get("latitude") or 28.6,
+            row.get("longitude") or 77.2,
+        )
+        if transit_result and "planets" in transit_result:
+            transit = {}
+            for pname, pdata in transit_result["planets"].items():
+                if isinstance(pdata, dict):
+                    transit[pname] = pdata.get("longitude", 0.0)
+    except Exception:
+        pass
+    result = calculate_sarvatobhadra(planet_positions=natal, transit_positions=transit)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
+# ─────────────────────────────────────────────────────────────
+# Sarvatobhadra Chakra — 9x9 grid with Vedha analysis (POST — raw data)
 # ─────────────────────────────────────────────────────────────
 
 @router.post("/sarvatobhadra", status_code=status.HTTP_200_OK)

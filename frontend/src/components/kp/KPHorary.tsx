@@ -116,16 +116,28 @@ export default function KPHorary({ language, t }: KPHoraryProps) {
     setPrediction(null);
 
     try {
-      const payload = {
-        horary_number: num,
+      const now = new Date();
+      const queryDatetime = now.getFullYear() + '-' +
+        String(now.getMonth() + 1).padStart(2, '0') + '-' +
+        String(now.getDate()).padStart(2, '0') + ' ' +
+        String(now.getHours()).padStart(2, '0') + ':' +
+        String(now.getMinutes()).padStart(2, '0') + ':' +
+        String(now.getSeconds()).padStart(2, '0');
+
+      const chartPayload = {
+        number: num,
+        query_datetime: queryDatetime,
+      };
+      const predictPayload = {
+        number: num,
         question_type: questionType,
-        question: questionText || undefined,
+        query_datetime: queryDatetime,
       };
 
       // Fetch chart and prediction in parallel
       const [chart, pred] = await Promise.all([
-        api.post('/api/kp/horary', payload),
-        api.post('/api/kp/horary/predict', payload),
+        api.post('/api/kp/horary', chartPayload),
+        api.post('/api/kp/horary/predict', predictPayload),
       ]);
 
       setChartResult(chart);

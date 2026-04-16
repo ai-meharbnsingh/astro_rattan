@@ -27,6 +27,7 @@ const DIVISIONAL_OPTIONS_EN = [
   { value: 'D40', label: 'D40 Khavedamsha' },
   { value: 'D45', label: 'D45 Akshavedamsha' },
   { value: 'D60', label: 'D60 Shashtiamsha' },
+  { value: 'D108', label: 'D108 Ashtottaramsha' },
 ];
 
 const DIVISIONAL_OPTIONS_HI = [
@@ -47,6 +48,7 @@ const DIVISIONAL_OPTIONS_HI = [
   { value: 'D40', label: 'D40 खवेदांश' },
   { value: 'D45', label: 'D45 अक्षवेदांश' },
   { value: 'D60', label: 'D60 षष्ट्यंश' },
+  { value: 'D108', label: 'D108 अष्टोत्तरांश' },
 ];
 
 interface JHoraKundliViewProps {

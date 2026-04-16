@@ -138,7 +138,7 @@ export default function D108Analysis({ kundliId, language, t }: D108AnalysisProp
       setLoading(true);
       setError(null);
       try {
-        const res = await api.post('/api/kundli/divisional/d108', { kundli_id: kundliId });
+        const res = await api.get(`/api/kundli/${kundliId}/d108-analysis`);
         if (!cancelled) setData(res);
       } catch (err: any) {
         if (!cancelled) setError(err?.message || 'Failed to load D108 analysis');

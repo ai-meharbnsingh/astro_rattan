@@ -112,6 +112,7 @@ export function getDivisionalChartOptions(language?: string) {
       { code: 'D40', name: 'खवेदांश (D40)' },
       { code: 'D45', name: 'अक्षवेदांश (D45)' },
       { code: 'D60', name: 'षष्ट्यंश (D60)' },
+      { code: 'D108', name: 'अष्टोत्तरांश (D108)' },
     ];
   }
   return [
@@ -132,6 +133,7 @@ export function getDivisionalChartOptions(language?: string) {
     { code: 'D40', name: 'Khavedamsha (D40)' },
     { code: 'D45', name: 'Akshavedamsha (D45)' },
     { code: 'D60', name: 'Shashtiamsha (D60)' },
+    { code: 'D108', name: 'Ashtottaramsha (D108)' },
   ];
 }
 // Backward-compatible alias
