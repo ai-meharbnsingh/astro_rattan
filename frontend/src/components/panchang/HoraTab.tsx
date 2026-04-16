@@ -5,6 +5,17 @@ import { Heading } from "@/components/ui/heading";
 import { Text } from "@/components/ui/text";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 
+const PLANET_HI: Record<string, string> = {
+  Sun: 'सूर्य', Moon: 'चंद्र', Mars: 'मंगल', Mercury: 'बुध',
+  Jupiter: 'गुरु', Venus: 'शुक्र', Saturn: 'शनि', Rahu: 'राहु', Ketu: 'केतु',
+};
+const TYPE_HI: Record<string, string> = {
+  good: 'शुभ', bad: 'अशुभ', neutral: 'सामान्य',
+  day: 'दिन', night: 'रात',
+};
+const hiPlanet = (name: string) => PLANET_HI[name] || name;
+const hiType = (type: string) => TYPE_HI[type.toLowerCase()] || type;
+
 interface Props {
   panchang: FullPanchangData;
   language: string;
@@ -14,6 +25,7 @@ interface Props {
 }
 
 export default function HoraTab({ panchang, language, t, timezoneOffset, minuteTick }: Props) {
+  const hi = language === 'hi';
   const horaTable = panchang.hora_table || [];
 
   const toMinutes = (time: string): number => {
@@ -80,15 +92,15 @@ export default function HoraTab({ panchang, language, t, timezoneOffset, minuteT
               {t('auto.currentHora')}
             </p>
             <span className="font-bold text-foreground">
-              {language === 'hi' ? currentHora.hora_hindi || currentHora.hora : currentHora.hora}
+              {hi ? hiPlanet(currentHora.hora) : currentHora.hora}
             </span>
             <span className="mx-2 text-sacred-gold">{currentHora.start} - {currentHora.end}</span>
             <Text variant="muted" as="span">
-              {t('auto.lord')}: {language === 'hi' ? currentHora.lord_hindi || currentHora.lord : currentHora.lord}
+              {t('auto.lord')}: {hi ? hiPlanet(currentHora.lord) : currentHora.lord}
             </Text>
           </div>
           <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getQualityColor(currentHora.type)}`}>
-            {language === 'hi' ? currentHora.type_hindi || currentHora.type : currentHora.type}
+            {hi ? hiType(currentHora.type) : currentHora.type}
           </span>
         </div>
       )}
@@ -120,15 +132,15 @@ export default function HoraTab({ panchang, language, t, timezoneOffset, minuteT
                         <div className="flex items-center gap-1">
                           <LordIcon className={`h-3 w-3 ${hora.type.toLowerCase().includes('good') ? 'text-yellow-500' : 'text-slate-400'}`} />
                           <span className={`font-medium whitespace-normal break-words ${isCurrent ? 'text-sacred-gold' : 'text-foreground'}`}>
-                            {language === 'hi' ? hora.hora_hindi || hora.hora : hora.hora}
+                            {hi ? hiPlanet(hora.hora) : hora.hora}
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell className="px-2 py-1 text-muted-foreground whitespace-normal break-words">{language === 'hi' ? hora.lord_hindi || hora.lord : hora.lord}</TableCell>
+                      <TableCell className="px-2 py-1 text-muted-foreground whitespace-normal break-words">{hi ? hiPlanet(hora.lord) : hora.lord}</TableCell>
                       <TableCell className="px-2 py-1 text-muted-foreground whitespace-normal break-words">{hora.start} - {hora.end}</TableCell>
                       <TableCell className="px-2 py-1 text-center">
                         <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium ${getQualityColor(hora.type)}`}>
-                          {language === 'hi' ? hora.type_hindi || hora.type : hora.type}
+                          {hi ? hiType(hora.type) : hora.type}
                         </span>
                       </TableCell>
                     </TableRow>
@@ -162,15 +174,15 @@ export default function HoraTab({ panchang, language, t, timezoneOffset, minuteT
                         <div className="flex items-center gap-1">
                           <LordIcon className={`h-3 w-3 ${hora.type.toLowerCase().includes('good') ? 'text-yellow-500' : 'text-slate-400'}`} />
                           <span className={`font-medium whitespace-normal break-words ${isCurrent ? 'text-sacred-gold' : 'text-foreground'}`}>
-                            {language === 'hi' ? hora.hora_hindi || hora.hora : hora.hora}
+                            {hi ? hiPlanet(hora.hora) : hora.hora}
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell className="px-2 py-1 text-muted-foreground whitespace-normal break-words">{language === 'hi' ? hora.lord_hindi || hora.lord : hora.lord}</TableCell>
+                      <TableCell className="px-2 py-1 text-muted-foreground whitespace-normal break-words">{hi ? hiPlanet(hora.lord) : hora.lord}</TableCell>
                       <TableCell className="px-2 py-1 text-muted-foreground whitespace-normal break-words">{hora.start} - {hora.end}</TableCell>
                       <TableCell className="px-2 py-1 text-center">
                         <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium ${getQualityColor(hora.type)}`}>
-                          {language === 'hi' ? hora.type_hindi || hora.type : hora.type}
+                          {hi ? hiType(hora.type) : hora.type}
                         </span>
                       </TableCell>
                     </TableRow>
