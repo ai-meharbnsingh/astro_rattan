@@ -139,13 +139,10 @@ export default function KundliChartSVG({ planets, ascendantDegree, className }: 
       <line x1={SI} y1={EI} x2={M} y2={M} stroke={GOLD} strokeWidth="0.6" opacity="0.3" />
       <line x1={EI} y1={EI} x2={M} y2={M} stroke={GOLD} strokeWidth="0.6" opacity="0.3" />
 
-      {/* ASC pulsing marker */}
-      <circle cx={marker.x} cy={marker.y} r={4} fill={GOLD_MED} opacity={0.8 + 0.2 * Math.sin(tick * 0.5)}>
-        <animate attributeName="r" values="3;5;3" dur="2s" repeatCount="indefinite" />
+      {/* ASC marker — dot only, no text (degree shown in table below) */}
+      <circle cx={marker.x} cy={marker.y} r={3} fill={GOLD_MED} opacity={0.7}>
+        <animate attributeName="r" values="2;4;2" dur="2s" repeatCount="indefinite" />
       </circle>
-      <text x={marker.x + 8} y={marker.y - 1} fontSize="8" fontFamily="'Inter',sans-serif" fontWeight="700" fill={GOLD_MED} opacity="0.9">
-        ASC {liveDeg.toFixed(1)}°
-      </text>
 
       {/* House numbers */}
       {HOUSE_NUM_POS.map((pos, i) => (
