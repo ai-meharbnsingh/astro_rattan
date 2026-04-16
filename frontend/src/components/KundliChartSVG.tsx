@@ -61,13 +61,13 @@ const EI = pct(94);
 
 // Planet centers — inside houses, clear of lines AND edges
 const HOUSE_CENTERS: { x: number; y: number }[] = [
-  { x: pct(50), y: pct(18) },  // 1  — top diamond
-  { x: pct(22), y: pct(18) },  // 2  — top-left corner
+  { x: pct(50), y: pct(22) },  // 1  — top diamond
+  { x: pct(21), y: pct(18) },  // 2  — top-left corner
   { x: pct(18), y: pct(35) },  // 3  — left-upper
   { x: pct(22), y: pct(50) },  // 4  — left diamond
   { x: pct(18), y: pct(65) },  // 5  — left-lower
-  { x: pct(22), y: pct(78) },  // 6  — bottom-left corner
-  { x: pct(50), y: pct(82) },  // 7  — bottom diamond
+  { x: pct(21), y: pct(82) },  // 6  — bottom-left corner
+  { x: pct(50), y: pct(78) },  // 7  — bottom diamond
   { x: pct(78), y: pct(78) },  // 8  — bottom-right corner
   { x: pct(82), y: pct(65) },  // 9  — right-lower
   { x: pct(78), y: pct(50) },  // 10 — right diamond
