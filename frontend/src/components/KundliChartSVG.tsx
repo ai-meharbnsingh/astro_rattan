@@ -72,21 +72,22 @@ const HOUSE_CENTERS: { x: number; y: number }[] = [
   { x: 318, y: 55 },   // 12 — top-right triangle
 ];
 
-// House numbers — matching standard North Indian layout (reference image)
-// Numbers sit along the inner diamond edges, inside each house
+// House numbers — standard North Indian kundli positions
+// Center houses (1,4,7,10) are along the diamond edges, not clustered
+// Triangle houses are near their corner of the triangle
 const HOUSE_NUM_POS: { x: number; y: number }[] = [
-  { x: 185, y: 185 }, // 1  — center-top, below diamond intersection
-  { x: 110, y: 50 },  // 2  — top-left, inside upper triangle
-  { x: 50,  y: 110 }, // 3  — left-top, inside left triangle
-  { x: 145, y: 185 }, // 4  — center-left, left of center
-  { x: 50,  y: 290 }, // 5  — left-bottom, inside lower-left triangle
-  { x: 110, y: 350 }, // 6  — bottom-left, inside lower triangle
-  { x: 215, y: 215 }, // 7  — center-bottom, below diamond intersection
-  { x: 290, y: 350 }, // 8  — bottom-right, inside lower triangle
-  { x: 350, y: 290 }, // 9  — right-bottom, inside right triangle
-  { x: 255, y: 185 }, // 10 — center-right, right of center
-  { x: 350, y: 110 }, // 11 — right-top, inside upper-right triangle
-  { x: 290, y: 50 },  // 12 — top-right, inside upper triangle
+  { x: 165, y: 155 }, // 1  — above center-left, along top diamond edge
+  { x: 95,  y: 42 },  // 2  — top-left area
+  { x: 42,  y: 95 },  // 3  — left side upper
+  { x: 120, y: 200 }, // 4  — left of center, along left diamond edge
+  { x: 42,  y: 305 }, // 5  — left side lower
+  { x: 95,  y: 358 }, // 6  — bottom-left area
+  { x: 235, y: 245 }, // 7  — below center-right, along bottom diamond edge
+  { x: 305, y: 358 }, // 8  — bottom-right area
+  { x: 358, y: 305 }, // 9  — right side lower
+  { x: 280, y: 200 }, // 10 — right of center, along right diamond edge
+  { x: 358, y: 95 },  // 11 — right side upper
+  { x: 305, y: 42 },  // 12 — top-right area
 ];
 
 function ascMarkerPos(degInSign: number): { x: number; y: number } {
