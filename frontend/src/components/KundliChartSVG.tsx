@@ -195,7 +195,7 @@ export default function KundliChartSVG({ planets, ascendantSign, ascendantDegree
         { x: pct(87.5), y: pct(28) },   // Aquarius — right-upper
         { x: pct(72),   y: pct(14) },   // Pisces — top-right corner
       ].map((pos, i) => {
-        const imgSize = 32;
+        const imgSize = 40;
         return (
           <image key={`sign-img-${i}`}
             href={SIGN_IMAGES[i]}
