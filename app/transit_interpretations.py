@@ -278,4 +278,274 @@ TRANSIT_FRAGMENTS: Dict[str, Dict[int, Dict[str, Dict[str, str]]]] = {
             },
         },
     },
+    # =========================================================================
+    # MOON (Chandra) — Mind, emotions, mother, public, fluids, comfort
+    # Conditional benefic. Karaka of mind, mother, emotions.
+    # =========================================================================
+    "Moon": {
+        1: {
+            "general": {
+                "en": "Moon transiting your 1st house heightens emotional sensitivity and intuition. Public interactions increase as your approachable nature draws people in. Mental clarity fluctuates with the Moon's phase.",
+                "hi": "चंद्रमा का प्रथम भाव में गोचर भावनात्मक संवेदनशीलता और अंतर्ज्ञान को बढ़ाता है। आपका मिलनसार स्वभाव लोगों को आकर्षित करता है और सार्वजनिक संपर्क बढ़ता है। मानसिक स्पष्टता चंद्रमा की कला के साथ उतार-चढ़ाव करती है।"
+            },
+            "love": {
+                "en": "Emotional availability makes you highly attractive to potential partners. Your nurturing nature draws romantic attention naturally. Be mindful of mood swings that could create unnecessary misunderstandings.",
+                "hi": "भावनात्मक उपलब्धता आपको संभावित साथियों के लिए अत्यधिक आकर्षक बनाती है। आपका पोषणकारी स्वभाव स्वाभाविक रूप से रोमांटिक ध्यान आकर्षित करता है। मनोदशा में उतार-चढ़ाव से अनावश्यक गलतफहमी पैदा हो सकती है।"
+            },
+            "career": {
+                "en": "Public-facing roles and careers involving people management thrive. Your empathetic approach wins client trust and team loyalty. Creative and hospitality industries see particular benefit.",
+                "hi": "जनसंपर्क भूमिकाएं और लोगों के प्रबंधन से जुड़े करियर फलते-फूलते हैं। आपका सहानुभूतिपूर्ण दृष्टिकोण ग्राहक विश्वास और टीम निष्ठा जीतता है। रचनात्मक और आतिथ्य उद्योगों को विशेष लाभ मिलता है।"
+            },
+            "finance": {
+                "en": "Income from public-related work and the hospitality sector increases. Emotional spending tendencies need conscious management. Liquid assets and short-term investments are more suitable now.",
+                "hi": "जनसंपर्क कार्य और आतिथ्य क्षेत्र से आय बढ़ती है। भावनात्मक खर्च की प्रवृत्तियों के लिए सचेत प्रबंधन आवश्यक है। तरल संपत्ति और अल्पकालिक निवेश अभी अधिक उपयुक्त हैं।"
+            },
+            "health": {
+                "en": "Water retention and fluid imbalance may occur during this transit. Mental health requires nurturing through rest and emotional expression. Stay hydrated and pay attention to your body's natural rhythms.",
+                "hi": "इस गोचर के दौरान जल प्रतिधारण और तरल असंतुलन हो सकता है। विश्राम और भावनात्मक अभिव्यक्ति के माध्यम से मानसिक स्वास्थ्य का पोषण आवश्यक है। पर्याप्त जल पिएं और शरीर की प्राकृतिक लय पर ध्यान दें।"
+            },
+        },
+        2: {
+            "general": {
+                "en": "Moon in your 2nd house brings emotional attachment to family and possessions. Speech becomes sweet and emotionally charged. Food habits and dietary preferences may shift during this period.",
+                "hi": "दूसरे भाव में चंद्रमा परिवार और संपत्ति के प्रति भावनात्मक लगाव लाता है। वाणी मधुर और भावनात्मक रूप से प्रभावित हो जाती है। इस अवधि में खान-पान की आदतें और आहार प्राथमिकताएं बदल सकती हैं।"
+            },
+            "love": {
+                "en": "Love is expressed through nurturing and providing for family. Comfort food shared together strengthens romantic bonds. Your gentle, caring speech melts hearts and deepens emotional connections.",
+                "hi": "प्रेम परिवार के पोषण और देखभाल के माध्यम से व्यक्त होता है। साथ मिलकर भोजन करना रोमांटिक बंधनों को मजबूत करता है। आपकी कोमल, देखभाल भरी वाणी दिलों को पिघलाती है और भावनात्मक जुड़ाव गहरा करती है।"
+            },
+            "career": {
+                "en": "Careers in food, hospitality, and family businesses gain momentum. Your persuasive and sweet communication style wins deals. Financial advisory and wealth management roles suit you well now.",
+                "hi": "खाद्य, आतिथ्य और पारिवारिक व्यवसायों में करियर को गति मिलती है। आपकी प्रेरक और मधुर संवाद शैली सौदे जीतती है। वित्तीय सलाहकार और धन प्रबंधन भूमिकाएं अभी आपके लिए उपयुक्त हैं।"
+            },
+            "finance": {
+                "en": "Savings and accumulated wealth fluctuate with emotional spending patterns. Family resources and inherited wealth bring comfort. Investments in food, dairy, or silver may prove beneficial.",
+                "hi": "बचत और संचित धन भावनात्मक खर्च पैटर्न के साथ उतार-चढ़ाव करता है। पारिवारिक संसाधन और विरासत में मिली संपत्ति आराम प्रदान करती है। खाद्य, डेयरी या चांदी में निवेश लाभदायक सिद्ध हो सकता है।"
+            },
+            "health": {
+                "en": "Face, throat, and mouth areas may experience sensitivity. Comfort eating could lead to weight fluctuations. Focus on nourishing, home-cooked meals and maintain regular eating schedules.",
+                "hi": "चेहरे, गले और मुंह के क्षेत्र में संवेदनशीलता हो सकती है। भावनात्मक भोजन वजन में उतार-चढ़ाव का कारण बन सकता है। पौष्टिक, घर के बने भोजन पर ध्यान दें और नियमित भोजन समय बनाए रखें।"
+            },
+        },
+        3: {
+            "general": {
+                "en": "Moon transiting your 3rd house stimulates emotional intelligence in communication. Short journeys bring mental refreshment and new connections. Siblings and neighbors become sources of emotional support.",
+                "hi": "तीसरे भाव में चंद्रमा का गोचर संवाद में भावनात्मक बुद्धिमत्ता को उत्तेजित करता है। छोटी यात्राएं मानसिक ताजगी और नए संपर्क लाती हैं। भाई-बहन और पड़ोसी भावनात्मक सहारे का स्रोत बनते हैं।"
+            },
+            "love": {
+                "en": "Heartfelt communication strengthens romantic relationships. Love letters, messages, and emotional expression flow easily. Short romantic getaways bring wonderful rejuvenation to your love life.",
+                "hi": "हृदयस्पर्शी संवाद रोमांटिक रिश्तों को मजबूत करता है। प्रेम पत्र, संदेश और भावनात्मक अभिव्यक्ति सहजता से प्रवाहित होती है। छोटी रोमांटिक यात्राएं आपके प्रेम जीवन में अद्भुत ताजगी लाती हैं।"
+            },
+            "career": {
+                "en": "Writing, blogging, and emotional storytelling resonate powerfully with audiences. Sales and marketing benefit from your intuitive communication. Collaborative projects with siblings or close associates flourish.",
+                "hi": "लेखन, ब्लॉगिंग और भावनात्मक कहानी सुनाना दर्शकों के साथ शक्तिशाली रूप से गूंजता है। बिक्री और विपणन को आपके सहज संवाद से लाभ मिलता है। भाई-बहनों या करीबी सहयोगियों के साथ सहयोगी परियोजनाएं फलती-फूलती हैं।"
+            },
+            "finance": {
+                "en": "Small but consistent gains from communication and media work are likely. Travel expenses increase but bring proportional returns. Collaborative ventures with siblings yield moderate financial benefits.",
+                "hi": "संवाद और मीडिया कार्य से छोटे लेकिन निरंतर लाभ की संभावना है। यात्रा खर्च बढ़ते हैं लेकिन आनुपातिक रिटर्न लाते हैं। भाई-बहनों के साथ सहयोगी उपक्रम मध्यम वित्तीय लाभ देते हैं।"
+            },
+            "health": {
+                "en": "Arms, shoulders, and nervous system may feel sensitive during this transit. Mental restlessness can be channeled through creative writing or art. Short walks in nature calm the mind effectively.",
+                "hi": "इस गोचर में भुजाओं, कंधों और तंत्रिका तंत्र में संवेदनशीलता महसूस हो सकती है। मानसिक बेचैनी को रचनात्मक लेखन या कला के माध्यम से प्रसारित किया जा सकता है। प्रकृति में छोटी सैर मन को प्रभावी रूप से शांत करती है।"
+            },
+        },
+        4: {
+            "general": {
+                "en": "Moon in your 4th house is powerfully placed, bringing deep emotional fulfillment and domestic happiness. Connection with mother strengthens and home feels like a sanctuary. Inner peace and contentment prevail.",
+                "hi": "चौथे भाव में चंद्रमा शक्तिशाली स्थिति में है, गहरी भावनात्मक पूर्ति और घरेलू सुख लाता है। माता से जुड़ाव मजबूत होता है और घर एक अभयारण्य जैसा लगता है। आंतरिक शांति और संतोष की अनुभूति होती है।"
+            },
+            "love": {
+                "en": "Romantic life is deeply nurturing and emotionally satisfying during this transit. Creating a cozy home environment together strengthens your bond. Emotional security in relationships reaches its highest point.",
+                "hi": "इस गोचर के दौरान प्रेम जीवन गहराई से पोषणकारी और भावनात्मक रूप से संतोषजनक होता है। साथ मिलकर एक आरामदायक घरेलू वातावरण बनाना आपके बंधन को मजबूत करता है। रिश्तों में भावनात्मक सुरक्षा अपने उच्चतम बिंदु पर पहुंचती है।"
+            },
+            "career": {
+                "en": "Real estate, interior design, and home-based businesses are especially favored. Nurturing roles in education and childcare bring satisfaction. Work-from-home arrangements prove unusually productive.",
+                "hi": "अचल संपत्ति, इंटीरियर डिजाइन और घर-आधारित व्यवसाय विशेष रूप से अनुकूल हैं। शिक्षा और बाल देखभाल में पोषणकारी भूमिकाएं संतोष देती हैं। घर से काम करने की व्यवस्था असामान्य रूप से उत्पादक सिद्ध होती है।"
+            },
+            "finance": {
+                "en": "Property investments and home-related purchases are well-timed. Mother may contribute to your financial wellbeing. Emotional decisions about money should be balanced with practical wisdom.",
+                "hi": "संपत्ति निवेश और घर-संबंधित खरीदारी का सही समय है। माता आपकी वित्तीय स्थिति में योगदान दे सकती हैं। धन के बारे में भावनात्मक निर्णयों को व्यावहारिक बुद्धि से संतुलित करना चाहिए।"
+            },
+            "health": {
+                "en": "Chest, lungs, and emotional heart center need gentle care. Comfort at home directly influences your physical wellbeing. Warm milk with turmeric before sleep and peaceful domestic routines support healing.",
+                "hi": "छाती, फेफड़े और भावनात्मक हृदय केंद्र को कोमल देखभाल की आवश्यकता है। घर में आराम सीधे आपकी शारीरिक सेहत को प्रभावित करता है। सोने से पहले हल्दी वाला गर्म दूध और शांतिपूर्ण घरेलू दिनचर्या उपचार में सहायक है।"
+            },
+        },
+        5: {
+            "general": {
+                "en": "Moon transiting your 5th house enhances creativity, romance, and emotional joy. Connection with children deepens and brings happiness. Artistic inspiration flows freely and imagination reaches new heights.",
+                "hi": "पांचवें भाव में चंद्रमा का गोचर रचनात्मकता, प्रेम और भावनात्मक आनंद को बढ़ाता है। बच्चों से जुड़ाव गहरा होता है और सुख प्रदान करता है। कलात्मक प्रेरणा स्वतंत्र रूप से बहती है और कल्पना नई ऊंचाइयों तक पहुंचती है।"
+            },
+            "love": {
+                "en": "This is one of the most romantic transits for emotional connection and playful love. Hearts open wide and feelings are expressed with poetic beauty. New romances begin with deep emotional resonance.",
+                "hi": "भावनात्मक जुड़ाव और खिलवाड़ भरे प्रेम के लिए यह सबसे रोमांटिक गोचरों में से एक है। हृदय खुलकर प्रकट होते हैं और भावनाएं काव्यात्मक सुंदरता से व्यक्त होती हैं। नए प्रेम संबंध गहरे भावनात्मक अनुनाद से शुरू होते हैं।"
+            },
+            "career": {
+                "en": "Creative arts, entertainment, and education careers receive a powerful emotional boost. Teaching and mentoring roles bring deep fulfillment. Performance arts and emotional storytelling captivate audiences.",
+                "hi": "रचनात्मक कला, मनोरंजन और शिक्षा करियर को शक्तिशाली भावनात्मक बल मिलता है। शिक्षण और मार्गदर्शन भूमिकाएं गहरी पूर्ति लाती हैं। प्रदर्शन कला और भावनात्मक कथा-कथन दर्शकों को मोहित करता है।"
+            },
+            "finance": {
+                "en": "Emotional investments in creative projects may yield returns. Avoid speculative decisions based purely on gut feelings. Children-related expenses bring joy despite the financial outlay.",
+                "hi": "रचनात्मक परियोजनाओं में भावनात्मक निवेश लाभ दे सकता है। केवल आंतरिक भावनाओं पर आधारित सट्टा निर्णयों से बचें। बच्चों से संबंधित खर्च वित्तीय व्यय के बावजूद आनंद प्रदान करते हैं।"
+            },
+            "health": {
+                "en": "Stomach and digestive health are influenced by emotional states. Joy and laughter serve as powerful medicine during this transit. Creative expression through dance or music provides therapeutic benefits.",
+                "hi": "पेट और पाचन स्वास्थ्य भावनात्मक स्थितियों से प्रभावित होते हैं। इस गोचर में हंसी और खुशी शक्तिशाली औषधि का काम करती है। नृत्य या संगीत के माध्यम से रचनात्मक अभिव्यक्ति चिकित्सीय लाभ प्रदान करती है।"
+            },
+        },
+        6: {
+            "general": {
+                "en": "Moon in your 6th house creates emotional turbulence through conflicts and health concerns. Daily routines feel emotionally draining and service to others becomes necessary. Mental resilience is tested through everyday challenges.",
+                "hi": "छठे भाव में चंद्रमा संघर्षों और स्वास्थ्य चिंताओं के माध्यम से भावनात्मक उथल-पुथल पैदा करता है। दैनिक दिनचर्या भावनात्मक रूप से थकाऊ लगती है और दूसरों की सेवा आवश्यक हो जाती है। रोजमर्रा की चुनौतियों से मानसिक लचीलेपन की परीक्षा होती है।"
+            },
+            "love": {
+                "en": "Emotional conflicts in relationships require patience and understanding. Serving your partner with care heals existing wounds. Avoid projecting workplace frustrations onto your romantic life.",
+                "hi": "रिश्तों में भावनात्मक संघर्षों के लिए धैर्य और समझ आवश्यक है। देखभाल के साथ साथी की सेवा मौजूदा घावों को भरती है। कार्यस्थल की निराशाओं को प्रेम जीवन पर प्रक्षेपित करने से बचें।"
+            },
+            "career": {
+                "en": "Healthcare, nursing, and social service careers resonate deeply during this transit. Emotional intelligence helps navigate workplace conflicts. Daily work routines may need restructuring for mental wellbeing.",
+                "hi": "स्वास्थ्य सेवा, नर्सिंग और सामाजिक सेवा करियर इस गोचर में गहराई से गूंजते हैं। भावनात्मक बुद्धिमत्ता कार्यस्थल संघर्षों को नेविगेट करने में मदद करती है। मानसिक स्वास्थ्य के लिए दैनिक कार्य दिनचर्या का पुनर्गठन आवश्यक हो सकता है।"
+            },
+            "finance": {
+                "en": "Medical expenses or costs related to daily necessities may increase. Lending money based on emotional appeals should be avoided. Structured budgeting helps manage the financial drain of this period.",
+                "hi": "चिकित्सा खर्च या दैनिक आवश्यकताओं से संबंधित लागत बढ़ सकती है। भावनात्मक अपील पर आधारित उधार देने से बचना चाहिए। व्यवस्थित बजट बनाना इस अवधि के वित्तीय बोझ को प्रबंधित करने में मदद करता है।"
+            },
+            "health": {
+                "en": "Digestive disturbances linked to emotional stress are common during this transit. Anxiety and worry weaken immunity and overall vitality. Establish calming routines including warm baths and herbal teas.",
+                "hi": "इस गोचर में भावनात्मक तनाव से जुड़ी पाचन गड़बड़ी आम है। चिंता और व्याकुलता रोग प्रतिरोधक क्षमता और समग्र जीवन शक्ति को कमजोर करती है। गर्म स्नान और हर्बल चाय सहित शांत करने वाली दिनचर्या स्थापित करें।"
+            },
+        },
+        7: {
+            "general": {
+                "en": "Moon in your 7th house brings emotional focus on partnerships and marriage. Public dealings increase with greater sensitivity to others' needs. Emotional bonds with your spouse or partner deepen significantly.",
+                "hi": "सातवें भाव में चंद्रमा साझेदारी और विवाह पर भावनात्मक ध्यान लाता है। दूसरों की जरूरतों के प्रति अधिक संवेदनशीलता के साथ सार्वजनिक व्यवहार बढ़ता है। जीवनसाथी या साथी के साथ भावनात्मक बंधन काफी गहरा होता है।"
+            },
+            "love": {
+                "en": "Emotional intimacy in relationships reaches beautiful depths during this transit. Your empathetic nature creates deep romantic fulfillment. Marriage proposals and commitments carry strong emotional significance.",
+                "hi": "इस गोचर के दौरान रिश्तों में भावनात्मक अंतरंगता सुंदर गहराई तक पहुंचती है। आपका सहानुभूतिपूर्ण स्वभाव गहरी रोमांटिक पूर्ति पैदा करता है। विवाह प्रस्ताव और प्रतिबद्धताएं मजबूत भावनात्मक महत्व रखती हैं।"
+            },
+            "career": {
+                "en": "Client-facing roles and partnership-based businesses benefit from emotional intelligence. Negotiations succeed through empathy and understanding. Counseling and relationship-oriented professions are especially rewarding.",
+                "hi": "ग्राहक-सम्मुख भूमिकाओं और साझेदारी-आधारित व्यवसायों को भावनात्मक बुद्धिमत्ता से लाभ मिलता है। सहानुभूति और समझ के माध्यम से बातचीत सफल होती है। परामर्श और रिश्ता-उन्मुख पेशे विशेष रूप से पुरस्कृत होते हैं।"
+            },
+            "finance": {
+                "en": "Spouse's income and joint finances gain prominence. Business partnerships based on emotional trust can be profitable. Avoid making major financial decisions during highly emotional states.",
+                "hi": "जीवनसाथी की आय और संयुक्त वित्त प्रमुखता प्राप्त करते हैं। भावनात्मक विश्वास पर आधारित व्यावसायिक साझेदारी लाभदायक हो सकती है। अत्यधिक भावनात्मक अवस्थाओं में बड़े वित्तीय निर्णय लेने से बचें।"
+            },
+            "health": {
+                "en": "Kidneys and lower back need attention, especially regarding fluid balance. Relationship harmony directly impacts your physical health now. Partner-based activities like couples yoga support mutual wellbeing.",
+                "hi": "गुर्दे और पीठ के निचले हिस्से पर ध्यान देने की आवश्यकता है, विशेषकर तरल संतुलन के संबंध में। रिश्तों का सामंजस्य अभी सीधे आपके शारीरिक स्वास्थ्य को प्रभावित करता है। कपल योग जैसी साझा गतिविधियां पारस्परिक स्वास्थ्य का समर्थन करती हैं।"
+            },
+        },
+        8: {
+            "general": {
+                "en": "Moon transiting your 8th house brings emotional intensity and encounters with hidden fears. Transformation through emotional crisis leads to profound inner growth. Psychic sensitivity and intuitive dreams increase.",
+                "hi": "आठवें भाव में चंद्रमा का गोचर भावनात्मक तीव्रता और छिपे भय से सामना लाता है। भावनात्मक संकट के माध्यम से परिवर्तन गहन आंतरिक विकास की ओर ले जाता है। मानसिक संवेदनशीलता और सहज ज्ञान युक्त स्वप्न बढ़ते हैं।"
+            },
+            "love": {
+                "en": "Emotional depth in relationships intensifies, revealing hidden layers. Trust issues and vulnerability become central themes in love. Allowing yourself to be truly seen creates transformative intimacy.",
+                "hi": "रिश्तों में भावनात्मक गहराई तीव्र होती है, छिपी परतों को प्रकट करती है। विश्वास के मुद्दे और भेद्यता प्रेम में केंद्रीय विषय बन जाते हैं। अपने आप को वास्तव में देखने देना परिवर्तनकारी अंतरंगता पैदा करता है।"
+            },
+            "career": {
+                "en": "Research, psychology, and healing professions gain emotional depth and insight. Insurance and financial investigation work benefits from enhanced intuition. Avoid emotional decision-making in high-stakes professional matters.",
+                "hi": "अनुसंधान, मनोविज्ञान और उपचार पेशों को भावनात्मक गहराई और अंतर्दृष्टि मिलती है। बीमा और वित्तीय जांच कार्य को बढ़ी हुई अंतर्ज्ञान से लाभ मिलता है। उच्च-दांव व्यावसायिक मामलों में भावनात्मक निर्णय लेने से बचें।"
+            },
+            "finance": {
+                "en": "Unexpected financial shifts may cause emotional distress. Inheritance or insurance matters carry emotional weight alongside financial significance. Guard against impulsive financial decisions triggered by fear or anxiety.",
+                "hi": "अप्रत्याशित वित्तीय बदलाव भावनात्मक कष्ट का कारण बन सकते हैं। विरासत या बीमा मामले वित्तीय महत्व के साथ भावनात्मक भार भी वहन करते हैं। भय या चिंता से प्रेरित आवेगी वित्तीय निर्णयों से सावधान रहें।"
+            },
+            "health": {
+                "en": "Reproductive health and hormonal balance require attention during this transit. Emotional suppression can manifest as chronic physical conditions. Deep breathing, meditation, and emotional release therapies provide relief.",
+                "hi": "इस गोचर में प्रजनन स्वास्थ्य और हार्मोनल संतुलन पर ध्यान देने की आवश्यकता है। भावनात्मक दमन पुरानी शारीरिक स्थितियों के रूप में प्रकट हो सकता है। गहरी सांस, ध्यान और भावनात्मक विमोचन चिकित्सा राहत प्रदान करती है।"
+            },
+        },
+        9: {
+            "general": {
+                "en": "Moon in your 9th house creates emotional connection to spiritual and philosophical pursuits. Long journeys bring peace of mind and emotional renewal. The relationship with your mother and guru deepens.",
+                "hi": "नवम भाव में चंद्रमा आध्यात्मिक और दार्शनिक गतिविधियों से भावनात्मक जुड़ाव पैदा करता है। लंबी यात्राएं मन की शांति और भावनात्मक नवीनीकरण लाती हैं। माता और गुरु के साथ संबंध गहरा होता है।"
+            },
+            "love": {
+                "en": "Love finds expression through shared spiritual values and pilgrimages together. Cross-cultural romantic connections carry deep emotional meaning. Philosophy and wisdom in love create lasting emotional bonds.",
+                "hi": "साझा आध्यात्मिक मूल्यों और एक साथ तीर्थ यात्राओं के माध्यम से प्रेम अभिव्यक्ति पाता है। अंतर-सांस्कृतिक रोमांटिक संबंध गहरा भावनात्मक अर्थ रखते हैं। प्रेम में दर्शन और ज्ञान स्थायी भावनात्मक बंधन बनाते हैं।"
+            },
+            "career": {
+                "en": "Teaching, counseling, and spiritual guidance careers resonate with emotional authenticity. International work brings emotional fulfillment. Publishing and academic pursuits benefit from intuitive insights.",
+                "hi": "शिक्षण, परामर्श और आध्यात्मिक मार्गदर्शन करियर भावनात्मक प्रामाणिकता से गूंजते हैं। अंतर्राष्ट्रीय कार्य भावनात्मक पूर्ति लाता है। प्रकाशन और शैक्षणिक गतिविधियों को सहज अंतर्दृष्टि से लाभ मिलता है।"
+            },
+            "finance": {
+                "en": "Financial blessings come through spiritual practices and acts of compassion. Foreign investments guided by intuition may prove rewarding. Charitable donations during this period generate positive karmic returns.",
+                "hi": "आध्यात्मिक अभ्यास और करुणा के कार्यों से वित्तीय आशीर्वाद मिलता है। अंतर्ज्ञान द्वारा निर्देशित विदेशी निवेश पुरस्कृत सिद्ध हो सकते हैं। इस अवधि में दान सकारात्मक कर्मफल उत्पन्न करता है।"
+            },
+            "health": {
+                "en": "Thighs and liver need gentle care during this transit period. Pilgrimage and spiritual retreats provide profound healing for body and mind. Faith and positive emotions significantly strengthen your immune system.",
+                "hi": "इस गोचर अवधि में जांघों और यकृत को कोमल देखभाल की आवश्यकता है। तीर्थयात्रा और आध्यात्मिक एकांतवास शरीर और मन के लिए गहन उपचार प्रदान करते हैं। विश्वास और सकारात्मक भावनाएं आपकी प्रतिरक्षा प्रणाली को महत्वपूर्ण रूप से मजबूत करती हैं।"
+            },
+        },
+        10: {
+            "general": {
+                "en": "Moon transiting your 10th house brings emotional investment in career and public image. Your nurturing qualities earn public appreciation and recognition. Reputation is influenced by how emotionally connected you appear.",
+                "hi": "दसवें भाव में चंद्रमा का गोचर करियर और सार्वजनिक छवि में भावनात्मक निवेश लाता है। आपके पोषणकारी गुण सार्वजनिक प्रशंसा और मान्यता अर्जित करते हैं। प्रतिष्ठा इस बात से प्रभावित होती है कि आप कितने भावनात्मक रूप से जुड़े दिखते हैं।"
+            },
+            "love": {
+                "en": "Your public success and emotional warmth make you especially attractive now. Work-life balance challenges may strain romantic relationships. A partner who supports your career ambitions strengthens the bond immensely.",
+                "hi": "आपकी सार्वजनिक सफलता और भावनात्मक गर्मजोशी अभी आपको विशेष रूप से आकर्षक बनाती है। कार्य-जीवन संतुलन की चुनौतियां रोमांटिक रिश्तों पर दबाव डाल सकती हैं। करियर महत्वाकांक्षाओं का समर्थन करने वाला साथी बंधन को बेहद मजबूत करता है।"
+            },
+            "career": {
+                "en": "Public visibility peaks as your emotional authenticity resonates with people. Careers in public service, healthcare management, and hospitality shine. Let your genuine care for others guide professional decisions.",
+                "hi": "आपकी भावनात्मक प्रामाणिकता लोगों के साथ गूंजने से सार्वजनिक दृश्यता चरम पर होती है। सार्वजनिक सेवा, स्वास्थ्य प्रबंधन और आतिथ्य में करियर चमकता है। दूसरों के लिए आपकी सच्ची देखभाल को व्यावसायिक निर्णयों का मार्गदर्शन करने दें।"
+            },
+            "finance": {
+                "en": "Professional income benefits from public approval and emotional connection with clients. Government or institutional support for your work may materialize. Invest in building your professional reputation as a long-term asset.",
+                "hi": "सार्वजनिक अनुमोदन और ग्राहकों के साथ भावनात्मक जुड़ाव से व्यावसायिक आय को लाभ मिलता है। आपके कार्य के लिए सरकारी या संस्थागत सहायता मिल सकती है। अपनी व्यावसायिक प्रतिष्ठा को दीर्घकालिक संपत्ति के रूप में बनाने में निवेश करें।"
+            },
+            "health": {
+                "en": "Knees and skeletal system may feel the strain of emotional pressures at work. Public scrutiny can cause anxiety affecting physical health. Set clear boundaries between professional obligations and personal rest.",
+                "hi": "कार्य पर भावनात्मक दबाव से घुटनों और कंकाल तंत्र पर तनाव महसूस हो सकता है। सार्वजनिक जांच चिंता पैदा कर सकती है जो शारीरिक स्वास्थ्य को प्रभावित करती है। व्यावसायिक दायित्वों और व्यक्तिगत विश्राम के बीच स्पष्ट सीमाएं निर्धारित करें।"
+            },
+        },
+        11: {
+            "general": {
+                "en": "Moon in your 11th house brings emotional fulfillment through social connections and group activities. Desires and wishes find emotional support from friends. Elder siblings provide nurturing guidance during this period.",
+                "hi": "ग्यारहवें भाव में चंद्रमा सामाजिक संपर्कों और सामूहिक गतिविधियों के माध्यम से भावनात्मक पूर्ति लाता है। इच्छाओं और कामनाओं को मित्रों से भावनात्मक सहयोग मिलता है। बड़े भाई-बहन इस अवधि में पोषणकारी मार्गदर्शन प्रदान करते हैं।"
+            },
+            "love": {
+                "en": "Friendships may blossom into romantic relationships with emotional depth. Social events create opportunities for meaningful romantic encounters. Love shared within community contexts feels particularly fulfilling.",
+                "hi": "मित्रता भावनात्मक गहराई के साथ रोमांटिक रिश्तों में खिल सकती है। सामाजिक कार्यक्रम सार्थक रोमांटिक मुलाकातों के अवसर पैदा करते हैं। सामुदायिक संदर्भ में साझा प्रेम विशेष रूप से संतोषजनक लगता है।"
+            },
+            "career": {
+                "en": "Networking and team-based projects bring both emotional satisfaction and professional gains. Social media and community management roles thrive. Your ability to emotionally connect with large groups creates opportunities.",
+                "hi": "नेटवर्किंग और टीम-आधारित परियोजनाएं भावनात्मक संतुष्टि और व्यावसायिक लाभ दोनों लाती हैं। सोशल मीडिया और सामुदायिक प्रबंधन भूमिकाएं फलती-फूलती हैं। बड़े समूहों से भावनात्मक रूप से जुड़ने की आपकी क्षमता अवसर पैदा करती है।"
+            },
+            "finance": {
+                "en": "Income through social networks and group ventures increases. Friends may introduce profitable financial opportunities. Emotional satisfaction from gains matters as much as the monetary value itself.",
+                "hi": "सामाजिक नेटवर्क और सामूहिक उपक्रमों से आय बढ़ती है। मित्र लाभदायक वित्तीय अवसरों से परिचय करा सकते हैं। लाभ से भावनात्मक संतुष्टि मौद्रिक मूल्य जितनी ही महत्वपूर्ण है।"
+            },
+            "health": {
+                "en": "Calves and circulatory system benefit from group physical activities. Social support networks directly enhance your mental wellbeing. Laughter with friends proves to be the best medicine during this transit.",
+                "hi": "सामूहिक शारीरिक गतिविधियों से पिंडलियों और रक्त संचार तंत्र को लाभ मिलता है। सामाजिक सहायता नेटवर्क सीधे आपकी मानसिक सेहत को बढ़ाते हैं। इस गोचर में मित्रों के साथ हंसी सबसे अच्छी दवा सिद्ध होती है।"
+            },
+        },
+        12: {
+            "general": {
+                "en": "Moon transiting your 12th house heightens spiritual sensitivity and need for solitude. Dreams become vivid and emotionally significant. This is a period of emotional release, healing, and preparation for renewal.",
+                "hi": "बारहवें भाव में चंद्रमा का गोचर आध्यात्मिक संवेदनशीलता और एकांत की आवश्यकता को बढ़ाता है। स्वप्न ज्वलंत और भावनात्मक रूप से महत्वपूर्ण हो जाते हैं। यह भावनात्मक विमोचन, उपचार और नवीनीकरण की तैयारी का समय है।"
+            },
+            "love": {
+                "en": "Love takes on a deeply spiritual and selfless dimension. Hidden emotions or secret attractions may surface for resolution. Unconditional compassion and forgiveness transform your romantic relationships.",
+                "hi": "प्रेम गहराई से आध्यात्मिक और निस्वार्थ आयाम धारण करता है। छिपी भावनाएं या गुप्त आकर्षण समाधान के लिए सामने आ सकते हैं। निःशर्त करुणा और क्षमा आपके रोमांटिक रिश्तों को रूपांतरित करती है।"
+            },
+            "career": {
+                "en": "Careers in hospitals, ashrams, and foreign lands bring emotional peace. Creative work done in solitude yields profound results. Take time for introspection before making major career decisions.",
+                "hi": "अस्पतालों, आश्रमों और विदेशों में करियर भावनात्मक शांति लाता है। एकांत में किया गया रचनात्मक कार्य गहन परिणाम देता है। बड़े करियर निर्णय लेने से पहले आत्मनिरीक्षण के लिए समय लें।"
+            },
+            "finance": {
+                "en": "Expenses on comfort, sleep aids, and spiritual retreats may increase. Foreign earnings or hidden sources of income may surface. Practice detachment from material outcomes while maintaining practical financial discipline.",
+                "hi": "आराम, नींद सहायता और आध्यात्मिक एकांतवास पर खर्च बढ़ सकता है। विदेशी आय या आय के छिपे स्रोत सामने आ सकते हैं। व्यावहारिक वित्तीय अनुशासन बनाए रखते हुए भौतिक परिणामों से वैराग्य का अभ्यास करें।"
+            },
+            "health": {
+                "en": "Sleep quality and feet health require careful attention during this transit. Emotional exhaustion can manifest as physical fatigue and lethargy. Warm foot soaks, adequate sleep, and gentle meditation support complete healing.",
+                "hi": "इस गोचर में नींद की गुणवत्ता और पैरों के स्वास्थ्य पर सावधानीपूर्वक ध्यान देने की आवश्यकता है। भावनात्मक थकान शारीरिक थकान और सुस्ती के रूप में प्रकट हो सकती है। गर्म पैर स्नान, पर्याप्त नींद और कोमल ध्यान पूर्ण उपचार का समर्थन करते हैं।"
+            },
+        },
+    },
 }

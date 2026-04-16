@@ -298,6 +298,7 @@ def get_monthly_panchang(
             yoga = json.loads(cached["yoga"]) if isinstance(cached["yoga"], str) else cached["yoga"]
             t_name = tithi.get("name", "") if isinstance(tithi, dict) else str(tithi)
             t_paksha = tithi.get("paksha", "") if isinstance(tithi, dict) else ""
+            t_number = tithi.get("number", 0) if isinstance(tithi, dict) else 0
             n_name = nak.get("name", "") if isinstance(nak, dict) else str(nak)
             # Run festival detection even for cached data
             cached_festivals = detect_festivals(
@@ -311,6 +312,7 @@ def get_monthly_panchang(
                 "date": d_str,
                 "weekday": d.strftime("%A"),
                 "tithi": t_name,
+                "tithi_number": t_number,
                 "paksha": t_paksha,
                 "nakshatra": n_name,
                 "yoga": yoga.get("name", "") if isinstance(yoga, dict) else str(yoga),
@@ -351,6 +353,7 @@ def get_monthly_panchang(
             "date": d_str,
             "weekday": d.strftime("%A"),
             "tithi": panchang["tithi"]["name"],
+            "tithi_number": panchang["tithi"].get("number", 0),
             "paksha": panchang["tithi"]["paksha"],
             "nakshatra": panchang["nakshatra"]["name"],
             "yoga": panchang["yoga"]["name"],
