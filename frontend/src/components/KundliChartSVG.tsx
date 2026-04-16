@@ -130,31 +130,20 @@ export default function KundliChartSVG({ planets, ascendantSign, className }: Ku
         fill="none" stroke={LINE_COLOR} strokeWidth="1.5"
       />
 
-      {/* ---- House divider lines ---- */}
+      {/* ---- Traditional North Indian: NO center box ---- */}
+      {/* The diamond + 4 corner-to-center diagonals create all 12 houses */}
 
-      {/* Top triangle: horizontal line dividing houses 2 | 1 | 12 from inner */}
-      <line x1={Q1} y1={Q1} x2={Q3} y2={Q1} stroke={LINE_COLOR} strokeWidth="0.8" />
+      {/* Top-left corner to center — divides houses 2 and 3 */}
+      <line x1={S + 5} y1={S + 5} x2={M} y2={M} stroke={LINE_COLOR} strokeWidth="0.8" />
 
-      {/* Bottom triangle: horizontal line dividing houses 6 | 7 | 8 from inner */}
-      <line x1={Q1} y1={Q3} x2={Q3} y2={Q3} stroke={LINE_COLOR} strokeWidth="0.8" />
+      {/* Top-right corner to center — divides houses 11 and 12 */}
+      <line x1={E - 5} y1={S + 5} x2={M} y2={M} stroke={LINE_COLOR} strokeWidth="0.8" />
 
-      {/* Left triangle: vertical line dividing houses 3 | 4 | 5 from inner */}
-      <line x1={Q1} y1={Q1} x2={Q1} y2={Q3} stroke={LINE_COLOR} strokeWidth="0.8" />
+      {/* Bottom-left corner to center — divides houses 5 and 6 */}
+      <line x1={S + 5} y1={E - 5} x2={M} y2={M} stroke={LINE_COLOR} strokeWidth="0.8" />
 
-      {/* Right triangle: vertical line dividing houses 9 | 10 | 11 from inner */}
-      <line x1={Q3} y1={Q1} x2={Q3} y2={Q3} stroke={LINE_COLOR} strokeWidth="0.8" />
-
-      {/* Top-left corner diagonals (split triangle into houses 2 and 3) */}
-      <line x1={S + 5} y1={S + 5} x2={Q1} y2={Q1} stroke={LINE_COLOR} strokeWidth="0.8" />
-
-      {/* Top-right corner diagonals (split triangle into houses 11 and 12) */}
-      <line x1={E - 5} y1={S + 5} x2={Q3} y2={Q1} stroke={LINE_COLOR} strokeWidth="0.8" />
-
-      {/* Bottom-left corner diagonals (split triangle into houses 5 and 6) */}
-      <line x1={S + 5} y1={E - 5} x2={Q1} y2={Q3} stroke={LINE_COLOR} strokeWidth="0.8" />
-
-      {/* Bottom-right corner diagonals (split triangle into houses 8 and 9) */}
-      <line x1={E - 5} y1={E - 5} x2={Q3} y2={Q3} stroke={LINE_COLOR} strokeWidth="0.8" />
+      {/* Bottom-right corner to center — divides houses 8 and 9 */}
+      <line x1={E - 5} y1={E - 5} x2={M} y2={M} stroke={LINE_COLOR} strokeWidth="0.8" />
 
       {/* ============================================= */}
       {/* TEXT CONTENT — house numbers, Asc, planets    */}
