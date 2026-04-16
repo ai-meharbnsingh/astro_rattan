@@ -167,20 +167,13 @@ export default function KundliChartSVG({ planets, ascendantSign, ascendantDegree
 
       {/* No ASC dot — degree shown in table only */}
 
-      {/* House numbers — dynamic based on lagna */}
-      {HOUSE_NUM_POS.map((pos, i) => {
-        const lagnaIdx = SIGNS_ORDER.indexOf(ascendantSign || '');
-        const signIdx = SIGNS_ORDER.indexOf(SIGN_AT_POSITION[i]);
-        const houseNum = lagnaIdx >= 0 && signIdx >= 0
-          ? ((signIdx - lagnaIdx + 12) % 12) + 1
-          : i + 1;
-        return (
-          <text key={`h-${i}`} x={pos.x} y={pos.y} textAnchor="middle" dominantBaseline="central"
-            fontSize="10" fontWeight="600" fill={GOLD} opacity="0.45" fontFamily="'Inter',sans-serif">
-            {houseNum}
-          </text>
-        );
-      })}
+      {/* Sign numbers — fixed: 1=Aries(top), 2=Taurus(top-left)... 12=Pisces(top-right) */}
+      {HOUSE_NUM_POS.map((pos, i) => (
+        <text key={`h-${i}`} x={pos.x} y={pos.y} textAnchor="middle" dominantBaseline="central"
+          fontSize="10" fontWeight="600" fill={GOLD} opacity="0.45" fontFamily="'Inter',sans-serif">
+          {i + 1}
+        </text>
+      ))}
 
       {/* Planets — placed by sign position, font 13px/800 matching transit wheel */}
       {Array.from({ length: 12 }, (_, i) => i).map((posIdx) => {
