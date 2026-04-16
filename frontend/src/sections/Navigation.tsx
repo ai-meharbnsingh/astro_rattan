@@ -61,7 +61,7 @@ export default function Navigation() {
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center gap-6">
+            <div className="hidden lg:flex items-center gap-6 notranslate" translate="no">
               {serviceLinks.map((link) => (
                 <Link
                   key={link.key}
