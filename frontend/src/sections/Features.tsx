@@ -698,10 +698,10 @@ export default function Features() {
             </Heading>
             <LiveClock language={language} />
 
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-              {/* LEFT: Chart (40%) */}
-              <div className="lg:col-span-2 flex justify-center">
-                <div className="w-full max-w-[380px] aspect-square">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+              {/* LEFT: Chart (50% — equal to table) */}
+              <div className="flex justify-center">
+                <div className="w-full max-w-[480px] aspect-square">
                   <KundliChartSVG
                     planets={(currentSky.planets || []).map((p: any) => {
                       const SIGNS_ORDER = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
@@ -742,7 +742,7 @@ export default function Features() {
               </div>
 
               {/* RIGHT: Planet Details (60%) */}
-              <div className="lg:col-span-3">
+              <div>
                 <div className="rounded-xl border border-sacred-gold/20 bg-transparent backdrop-blur-[1px] overflow-hidden">
                   <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center justify-between">
                     <span>{l('Planetary Positions', 'ग्रह स्थिति')}</span>

@@ -1,10 +1,9 @@
 /**
  * KundliChartSVG — Live North Indian Kundli Chart
  *
- * ALL positions defined as percentages (0-100) of box size.
- * Scales perfectly at any resolution.
- * Colors match transit wheel: GOLD_MED(benefic) / DARK(malefic)
- * Symbols: ^Retro  vCombust  +Vargottama
+ * ALL positions as percentages. Font matches transit wheel (13px/800).
+ * Symbols: * Retro, ^ Combust, + Vargottama
+ * Colors: green=exalted, red=debilitated, GOLD_MED=benefic, DARK=malefic
  */
 import { useState, useEffect } from 'react';
 
@@ -45,57 +44,51 @@ function planetColor(p: PlanetEntry): string {
 
 function statusSuffix(p: PlanetEntry): string {
   let s = '';
-  if (p.is_retrograde) s += '^';
-  if (p.is_combust) s += 'v';
+  if (p.is_retrograde) s += '*';
+  if (p.is_combust) s += '^';
   if (p.is_vargottama) s += '+';
   return s;
 }
 
-// ── ALL POSITIONS AS PERCENTAGES (0-100) ──
-// Box = 400x400 viewBox. pct(28.75) = 115px on 400.
-// This ensures perfect scaling at ANY size.
-
 const BOX = 400;
-const p = (pct: number) => (pct / 100) * BOX; // percentage to pixels
+const pct = (v: number) => (v / 100) * BOX;
 
-// Outer square edges (5% padding)
-const S = p(5);    // 20
-const E = p(95);   // 380
-const M = p(50);   // 200
-// Inner border offset
-const SI = p(6);   // 24
-const EI = p(94);  // 376
+const S = pct(5);
+const E = pct(95);
+const M = pct(50);
+const SI = pct(6);
+const EI = pct(94);
 
-// Planet placement centers (% based)
+// Planet centers — DEEP inside each house, away from all lines
 const HOUSE_CENTERS: { x: number; y: number }[] = [
-  { x: p(50), y: p(18) },  // 1  — top diamond
-  { x: p(20), y: p(14) },  // 2  — top-left
-  { x: p(10), y: p(30) },  // 3  — left-top
-  { x: p(20), y: p(50) },  // 4  — left diamond
-  { x: p(10), y: p(70) },  // 5  — left-bottom
-  { x: p(20), y: p(86) },  // 6  — bottom-left
-  { x: p(50), y: p(82) },  // 7  — bottom diamond
-  { x: p(80), y: p(86) },  // 8  — bottom-right
-  { x: p(90), y: p(70) },  // 9  — right-bottom
-  { x: p(80), y: p(50) },  // 10 — right diamond
-  { x: p(90), y: p(30) },  // 11 — right-top
-  { x: p(80), y: p(14) },  // 12 — top-right
+  { x: pct(50), y: pct(15) },  // 1  — top diamond (high up, clear of center)
+  { x: pct(18), y: pct(13) },  // 2  — top-left triangle
+  { x: pct(10), y: pct(27) },  // 3  — left-top triangle
+  { x: pct(15), y: pct(50) },  // 4  — left diamond (far left, clear of center)
+  { x: pct(10), y: pct(73) },  // 5  — left-bottom triangle
+  { x: pct(18), y: pct(87) },  // 6  — bottom-left triangle
+  { x: pct(50), y: pct(85) },  // 7  — bottom diamond (low, clear of center)
+  { x: pct(82), y: pct(87) },  // 8  — bottom-right triangle
+  { x: pct(90), y: pct(73) },  // 9  — right-bottom triangle
+  { x: pct(85), y: pct(50) },  // 10 — right diamond (far right, clear of center)
+  { x: pct(90), y: pct(27) },  // 11 — right-top triangle
+  { x: pct(82), y: pct(13) },  // 12 — top-right triangle
 ];
 
-// House number positions — from reference image, as percentages
+// House numbers — reference image positions
 const HOUSE_NUM_POS: { x: number; y: number }[] = [
-  { x: p(50),   y: p(45) },    // 1  → center-top
-  { x: p(28.75),y: p(22.5) },  // 2  → top-left corner
-  { x: p(22.5), y: p(28.75) }, // 3  → left-upper
-  { x: p(45),   y: p(50) },    // 4  → center-left
-  { x: p(22.5), y: p(71.25) }, // 5  → left-lower
-  { x: p(28.75),y: p(77.5) },  // 6  → bottom-left corner
-  { x: p(50),   y: p(55) },    // 7  → center-bottom
-  { x: p(71.25),y: p(77.5) },  // 8  → bottom-right corner
-  { x: p(77.5), y: p(71.25) }, // 9  → right-lower
-  { x: p(55),   y: p(50) },    // 10 → center-right
-  { x: p(77.5), y: p(28.75) }, // 11 → right-upper
-  { x: p(70),   y: p(22.5) },  // 12 → top-right corner
+  { x: pct(50),   y: pct(45) },    // 1
+  { x: pct(28.75),y: pct(22.5) },  // 2
+  { x: pct(22.5), y: pct(28.75) }, // 3
+  { x: pct(45),   y: pct(50) },    // 4
+  { x: pct(22.5), y: pct(71.25) }, // 5
+  { x: pct(28.75),y: pct(77.5) },  // 6
+  { x: pct(50),   y: pct(55) },    // 7
+  { x: pct(71.25),y: pct(77.5) },  // 8
+  { x: pct(77.5), y: pct(71.25) }, // 9
+  { x: pct(55),   y: pct(50) },    // 10
+  { x: pct(77.5), y: pct(28.75) }, // 11
+  { x: pct(70),   y: pct(22.5) },  // 12
 ];
 
 function ascMarkerPos(degInSign: number): { x: number; y: number } {
@@ -139,7 +132,7 @@ export default function KundliChartSVG({ planets, ascendantDegree, className }: 
       <line x1={SI} y1={EI} x2={M} y2={M} stroke={GOLD} strokeWidth="0.6" opacity="0.3" />
       <line x1={EI} y1={EI} x2={M} y2={M} stroke={GOLD} strokeWidth="0.6" opacity="0.3" />
 
-      {/* ASC marker — dot only, no text (degree shown in table below) */}
+      {/* ASC dot */}
       <circle cx={marker.x} cy={marker.y} r={3} fill={GOLD_MED} opacity={0.7}>
         <animate attributeName="r" values="2;4;2" dur="2s" repeatCount="indefinite" />
       </circle>
@@ -147,40 +140,49 @@ export default function KundliChartSVG({ planets, ascendantDegree, className }: 
       {/* House numbers */}
       {HOUSE_NUM_POS.map((pos, i) => (
         <text key={`h-${i}`} x={pos.x} y={pos.y} textAnchor="middle" dominantBaseline="central"
-          fontSize="10" fontWeight="600" fill={GOLD} opacity="0.5" fontFamily="'Inter',sans-serif">
+          fontSize="10" fontWeight="600" fill={GOLD} opacity="0.45" fontFamily="'Inter',sans-serif">
           {i + 1}
         </text>
       ))}
 
-      {/* Planets */}
+      {/* Planets — font 13px/800 matching transit wheel */}
       {Array.from({ length: 12 }, (_, i) => i + 1).map((house) => {
         const hp = planetsByHouse[house] || [];
         if (!hp.length) return null;
         const c = HOUSE_CENTERS[house - 1];
         const count = hp.length;
-        const isDiamond = [1, 4, 7, 10].includes(house);
-        const lineH = count > 4 ? 10 : count > 3 ? 11 : isDiamond ? 14 : 12;
-        const fSize = count > 4 ? 10 : 12;
+        const lineH = count > 4 ? 13 : count > 3 ? 14 : 16;
         const startY = c.y - ((count - 1) * lineH) / 2;
 
         return hp.map((pl, pi) => {
           const abbr = PLANET_ABBR[pl.planet] || pl.planet.slice(0, 2);
           const suffix = statusSuffix(pl);
           const color = planetColor(pl);
-          const label = suffix ? `${abbr}${suffix}` : abbr;
+
           return (
-            <text key={`p-${house}-${pi}`} x={c.x} y={startY + pi * lineH}
-              textAnchor="middle" dominantBaseline="central"
-              fontSize={fSize} fontWeight="800" fontFamily="'Inter',sans-serif" fill={color}>
-              {label}
-            </text>
+            <g key={`p-${house}-${pi}`}>
+              {/* Planet name */}
+              <text x={c.x} y={startY + pi * lineH}
+                textAnchor="middle" dominantBaseline="central"
+                fontSize="13" fontWeight="800" fontFamily="'Inter',sans-serif" fill={color}>
+                {abbr}
+              </text>
+              {/* Status suffix — smaller, right after name */}
+              {suffix && (
+                <text x={c.x + 16} y={startY + pi * lineH - 2}
+                  textAnchor="start" dominantBaseline="central"
+                  fontSize="8" fontWeight="700" fontFamily="'Inter',sans-serif" fill={color} opacity="0.8">
+                  {suffix}
+                </text>
+              )}
+            </g>
           );
         });
       })}
 
       {/* Legend */}
-      <text x={M} y={p(98.5)} textAnchor="middle" fontSize="6.5" fontFamily="'Inter',sans-serif" fill={GOLD} opacity="0.5">
-        ^Retro  vCombust  +Vargottama
+      <text x={M} y={pct(98.5)} textAnchor="middle" fontSize="7" fontFamily="'Inter',sans-serif" fill={GOLD} opacity="0.5">
+        *Retro  ^Combust  +Vargottama
       </text>
     </svg>
   );
