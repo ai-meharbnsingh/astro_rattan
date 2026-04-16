@@ -231,7 +231,10 @@ def get_current_sky():
                 "sign": p.get("sign", "Aries"),
                 "longitude": round(float(p.get("longitude", 0)), 4),
                 "sign_degree": round(float(p.get("sign_degree", 0)), 2),
-                "is_retrograde": bool(p.get("is_retrograde", False)),
+                "is_retrograde": bool(p.get("retrograde", p.get("is_retrograde", False))),
+                "is_combust": bool(p.get("combust", p.get("is_combust", False))),
+                "is_vargottama": bool(p.get("vargottama", p.get("is_vargottama", False))),
+                "status": p.get("status", ""),
             })
 
     ascendant = chart.get("ascendant", {})
