@@ -119,18 +119,17 @@ export default function KundliChartSVG({ planets, ascendantDegree, className }: 
     <svg viewBox={`0 0 ${BOX} ${BOX}`} xmlns="http://www.w3.org/2000/svg"
       className={className || ''} style={{ width: '100%', height: '100%' }}>
 
-      {/* Outer double border */}
-      <rect x={S} y={S} width={E-S} height={E-S} fill="none" stroke={GOLD} strokeWidth="2" opacity="0.4" />
-      <rect x={SI} y={SI} width={EI-SI} height={EI-SI} fill="none" stroke={GOLD} strokeWidth="0.8" opacity="0.3" />
+      {/* Single outer box */}
+      <rect x={S} y={S} width={E-S} height={E-S} fill="none" stroke={GOLD} strokeWidth="1.5" opacity="0.5" />
 
-      {/* Inner diamond */}
-      <polygon points={`${M},${SI} ${EI},${M} ${M},${EI} ${SI},${M}`} fill="none" stroke={GOLD} strokeWidth="1.2" opacity="0.4" />
+      {/* Inner diamond — connects midpoints of each side */}
+      <polygon points={`${M},${S} ${E},${M} ${M},${E} ${S},${M}`} fill="none" stroke={GOLD} strokeWidth="1" opacity="0.4" />
 
-      {/* Corner-to-center diagonals */}
-      <line x1={SI} y1={SI} x2={M} y2={M} stroke={GOLD} strokeWidth="0.6" opacity="0.3" />
-      <line x1={EI} y1={SI} x2={M} y2={M} stroke={GOLD} strokeWidth="0.6" opacity="0.3" />
-      <line x1={SI} y1={EI} x2={M} y2={M} stroke={GOLD} strokeWidth="0.6" opacity="0.3" />
-      <line x1={EI} y1={EI} x2={M} y2={M} stroke={GOLD} strokeWidth="0.6" opacity="0.3" />
+      {/* Corner-to-center diagonals — equal triangles */}
+      <line x1={S} y1={S} x2={M} y2={M} stroke={GOLD} strokeWidth="0.7" opacity="0.35" />
+      <line x1={E} y1={S} x2={M} y2={M} stroke={GOLD} strokeWidth="0.7" opacity="0.35" />
+      <line x1={S} y1={E} x2={M} y2={M} stroke={GOLD} strokeWidth="0.7" opacity="0.35" />
+      <line x1={E} y1={E} x2={M} y2={M} stroke={GOLD} strokeWidth="0.7" opacity="0.35" />
 
       {/* ASC dot */}
       <circle cx={marker.x} cy={marker.y} r={3} fill={GOLD_MED} opacity={0.7}>
