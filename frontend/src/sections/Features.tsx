@@ -692,8 +692,13 @@ export default function Features() {
                       house: p.house || 0,
                       sign_degree: p.sign_degree || 0,
                       is_retrograde: !!p.is_retrograde,
+                      is_combust: !!p.is_combust,
+                      is_vargottama: !!p.is_vargottama,
+                      is_exalted: p.status?.includes('Exalted') || !!p.is_exalted,
+                      is_debilitated: p.status?.includes('Debilitated') || !!p.is_debilitated,
                     }))}
                     ascendantSign={currentSky.lagna_sign || ''}
+                    ascendantDegree={currentSky.chart_data?.ascendant?.longitude}
                   />
                 </div>
               </div>
