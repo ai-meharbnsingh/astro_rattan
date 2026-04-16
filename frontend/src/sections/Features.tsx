@@ -738,24 +738,9 @@ export default function Features() {
                     ascendantDegree={currentSky.lagna_longitude || currentSky.chart_data?.ascendant?.longitude}
                   />
                 </div>
-                {/* Legend — same style as transit wheel */}
-                <div className="rounded-lg bg-sacred-gold/5 px-3 py-1 mt-2 text-sm text-center" style={{ fontFamily: 'Inter,sans-serif', color: '#C4611F' }}>
-                  <span className="flex items-center justify-center gap-3 flex-wrap">
-                    <span className="flex items-center gap-1"><span className="font-bold" style={{ color: '#C4611F' }}>*</span>{l('Retro', 'वक्री')}</span>
-                    <span className="flex items-center gap-1"><span className="font-bold" style={{ color: '#C4611F' }}>^</span>{l('Combust', 'अस्त')}</span>
-                    <span className="flex items-center gap-1"><span className="font-bold" style={{ color: '#C4611F' }}>v</span>{l('Vargottama', 'वर्गोत्तम')}</span>
-                    <span className="flex items-center gap-1"><span className="font-bold" style={{ color: '#059669' }}>+</span>{l('Exalted', 'उच्च')}</span>
-                    <span className="flex items-center gap-1"><span className="font-bold" style={{ color: '#DC2626' }}>-</span>{l('Debilitated', 'नीच')}</span>
-                  </span>
-                  <span className="flex items-center justify-center gap-3 flex-wrap mt-0.5">
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full inline-block" style={{ background: '#C4611F' }} />{l('Benefic', 'शुभ')}</span>
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full inline-block" style={{ background: '#1a1a2e' }} />{l('Malefic', 'पापी')}</span>
-                    <span className="flex items-center gap-1"><span style={{ color: '#C4611F' }}>▲</span>{l('ASC', 'लग्न')}</span>
-                  </span>
-                </div>
               </div>
 
-              {/* RIGHT: Planet Details (60%) */}
+              {/* RIGHT: Planet Details */}
               <div>
                 <div className="rounded-xl border border-sacred-gold/20 bg-transparent backdrop-blur-[1px] overflow-hidden">
                   <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center justify-between">
@@ -798,6 +783,22 @@ export default function Features() {
                   </table>
                 </div>
               </div>
+            </div>
+
+            {/* Legend — below chart, full width, same as transit wheel */}
+            <div className="rounded-lg bg-sacred-gold/5 px-3 py-1.5 mt-3 text-sm text-center" style={{ fontFamily: 'Inter,sans-serif', color: '#C4611F' }}>
+              <span className="flex items-center justify-center gap-4 flex-wrap">
+                <span className="flex items-center gap-1"><span className="font-bold" style={{ color: '#C4611F' }}>*</span>{l('Retro', 'वक्री')}</span>
+                <span className="flex items-center gap-1"><span className="font-bold" style={{ color: '#C4611F' }}>^</span>{l('Combust', 'अस्त')}</span>
+                <span className="flex items-center gap-1"><span className="font-bold" style={{ color: '#C4611F' }}>v</span>{l('Vargottama', 'वर्गोत्तम')}</span>
+                <span className="flex items-center gap-1"><span className="font-bold" style={{ color: '#059669' }}>+</span>{l('Exalted', 'उच्च')}</span>
+                <span className="flex items-center gap-1"><span className="font-bold" style={{ color: '#DC2626' }}>-</span>{l('Debilitated', 'नीच')}</span>
+              </span>
+              <span className="flex items-center justify-center gap-4 flex-wrap mt-0.5">
+                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full inline-block" style={{ background: '#C4611F' }} />{l('Benefic', 'शुभ')}</span>
+                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full inline-block" style={{ background: '#1a1a2e' }} />{l('Malefic', 'पापी')}</span>
+                <span className="flex items-center gap-1"><span style={{ color: '#C4611F' }}>▲</span>{l('ASC', 'लग्न')}</span>
+              </span>
             </div>
           </div>
         )}
