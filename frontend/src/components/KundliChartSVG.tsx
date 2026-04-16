@@ -61,16 +61,16 @@ const EI = pct(94);
 
 // Planet centers — inside houses, clear of lines AND edges
 const HOUSE_CENTERS: { x: number; y: number }[] = [
-  { x: pct(50), y: pct(22) },  // 1  — top diamond
+  { x: pct(50), y: pct(28) },  // 1  — top diamond
   { x: pct(21), y: pct(18) },  // 2  — top-left corner
   { x: pct(18), y: pct(35) },  // 3  — left-upper
-  { x: pct(22), y: pct(50) },  // 4  — left diamond
+  { x: pct(28), y: pct(50) },  // 4  — left diamond
   { x: pct(18), y: pct(65) },  // 5  — left-lower
-  { x: pct(28), y: pct(85) },  // 6  — bottom-left corner
-  { x: pct(50), y: pct(75) },  // 7  — bottom diamond
-  { x: pct(78), y: pct(78) },  // 8  — bottom-right corner
+  { x: pct(28), y: pct(86) },  // 6  — bottom-left corner
+  { x: pct(50), y: pct(72) },  // 7  — bottom diamond
+  { x: pct(72), y: pct(86) },  // 8  — bottom-right corner
   { x: pct(82), y: pct(65) },  // 9  — right-lower
-  { x: pct(78), y: pct(50) },  // 10 — right diamond
+  { x: pct(72), y: pct(50) },  // 10 — right diamond
   { x: pct(82), y: pct(35) },  // 11 — right-upper
   { x: pct(78), y: pct(18) },  // 12 — top-right corner
 ];
@@ -78,16 +78,16 @@ const HOUSE_CENTERS: { x: number; y: number }[] = [
 // House numbers — reference image positions
 const HOUSE_NUM_POS: { x: number; y: number }[] = [
   { x: pct(50),   y: pct(45) },    // 1
-  { x: pct(28.75),y: pct(22.5) },  // 2
-  { x: pct(22.5), y: pct(28.75) }, // 3
+  { x: pct(28),   y: pct(22.5) },  // 2
+  { x: pct(22.5), y: pct(28) },    // 3
   { x: pct(45),   y: pct(50) },    // 4
   { x: pct(22.5), y: pct(71.25) }, // 5
-  { x: pct(28.75),y: pct(77.5) },  // 6
+  { x: pct(28),   y: pct(77.5) },  // 6
   { x: pct(50),   y: pct(55) },    // 7
   { x: pct(71.25),y: pct(77.5) },  // 8
   { x: pct(77.5), y: pct(71.25) }, // 9
   { x: pct(55),   y: pct(50) },    // 10
-  { x: pct(77.5), y: pct(28.75) }, // 11
+  { x: pct(77.5), y: pct(28) },    // 11
   { x: pct(70),   y: pct(22.5) },  // 12
 ];
 
