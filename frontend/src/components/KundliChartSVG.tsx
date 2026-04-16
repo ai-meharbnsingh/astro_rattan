@@ -59,20 +59,20 @@ const M = pct(50);
 const SI = pct(6);
 const EI = pct(94);
 
-// Planet centers — DEEP inside each house, away from all lines
+// Planet centers — inside houses, clear of lines AND edges
 const HOUSE_CENTERS: { x: number; y: number }[] = [
-  { x: pct(50), y: pct(15) },  // 1  — top diamond (high up, clear of center)
-  { x: pct(18), y: pct(13) },  // 2  — top-left triangle
-  { x: pct(10), y: pct(27) },  // 3  — left-top triangle
-  { x: pct(15), y: pct(50) },  // 4  — left diamond (far left, clear of center)
-  { x: pct(10), y: pct(73) },  // 5  — left-bottom triangle
-  { x: pct(18), y: pct(87) },  // 6  — bottom-left triangle
-  { x: pct(50), y: pct(85) },  // 7  — bottom diamond (low, clear of center)
-  { x: pct(82), y: pct(87) },  // 8  — bottom-right triangle
-  { x: pct(90), y: pct(73) },  // 9  — right-bottom triangle
-  { x: pct(85), y: pct(50) },  // 10 — right diamond (far right, clear of center)
-  { x: pct(90), y: pct(27) },  // 11 — right-top triangle
-  { x: pct(82), y: pct(13) },  // 12 — top-right triangle
+  { x: pct(50), y: pct(18) },  // 1  — top diamond
+  { x: pct(22), y: pct(18) },  // 2  — top-left corner
+  { x: pct(18), y: pct(35) },  // 3  — left-upper
+  { x: pct(22), y: pct(50) },  // 4  — left diamond
+  { x: pct(18), y: pct(65) },  // 5  — left-lower
+  { x: pct(22), y: pct(78) },  // 6  — bottom-left corner
+  { x: pct(50), y: pct(82) },  // 7  — bottom diamond
+  { x: pct(78), y: pct(78) },  // 8  — bottom-right corner
+  { x: pct(82), y: pct(65) },  // 9  — right-lower
+  { x: pct(78), y: pct(50) },  // 10 — right diamond
+  { x: pct(82), y: pct(35) },  // 11 — right-upper
+  { x: pct(78), y: pct(18) },  // 12 — top-right corner
 ];
 
 // House numbers — reference image positions
