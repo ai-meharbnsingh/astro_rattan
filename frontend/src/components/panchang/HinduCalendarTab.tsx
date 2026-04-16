@@ -17,6 +17,7 @@ interface Props {
 interface DayPanchang {
   date: string;
   tithi: string;
+  tithi_number?: number;
   tithi_hindi?: string;
   nakshatra: string;
   nakshatra_hindi?: string;
@@ -145,16 +146,30 @@ const isVrat = (name: string) => {
   return ['vrat', 'ekadashi', 'pradosh', 'chaturthi'].some((w) => l.includes(w));
 };
 
-// Tithi number: Pratipada=1, Dwitiya=2, ... Chaturdashi=14, Purnima=15/30, Amavasya=30
-const TITHI_NUM: Record<string, number> = {
+// Tithi number: Drik Panchang style
+// Shukla: Pratipada=1 ... Purnima=15
+// Krishna: Pratipada=1 ... Chaturdashi=14, Amavasya=30
+// Backend uses 1-30 continuous: Shukla 1-15, Krishna 16-29, Amavasya=30
+const TITHI_NUM_FROM_NAME: Record<string, number> = {
   pratipada: 1, dwitiya: 2, tritiya: 3, chaturthi: 4, panchami: 5,
   shashthi: 6, saptami: 7, ashtami: 8, navami: 9, dashami: 10,
   ekadashi: 11, dwadashi: 12, trayodashi: 13, chaturdashi: 14,
   purnima: 15, amavasya: 30,
 };
-const getTithiNumber = (tithi: string): number | null => {
-  const t = tithi.toLowerCase();
-  for (const [key, num] of Object.entries(TITHI_NUM)) {
+const backendToDrikNum = (num: number): number => {
+  // Shukla 1-15 → 1-15, Krishna 16-29 → 1-14, Amavasya 30 → 30
+  if (num <= 15) return num;
+  if (num === 30) return 30;
+  return num - 15; // 16→1, 17→2, ... 29→14
+};
+const getTithiNumber = (day: DayPanchang): number | null => {
+  // Prefer API number (from backend calculation)
+  if (day.tithi_number && day.tithi_number > 0) {
+    return backendToDrikNum(day.tithi_number);
+  }
+  // Fallback: parse from tithi name
+  const t = day.tithi.toLowerCase();
+  for (const [key, num] of Object.entries(TITHI_NUM_FROM_NAME)) {
     if (t.includes(key)) return num;
   }
   return null;
@@ -240,6 +255,7 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
           const day = enrichDayFestivals({
             date: p.date || '',
             tithi: p.tithi || '',
+            tithi_number: p.tithi_number || undefined,
             tithi_hindi: p.tithi_hindi,
             nakshatra: p.nakshatra || '',
             nakshatra_hindi: p.nakshatra_hindi,
@@ -339,30 +355,25 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
         </div>
 
         {/* ===== RIGHT PANEL: Calendar Grid ===== */}
-        <Card className="border border-sacred-gold/20 bg-[#FFF9F5] shadow-sm">
-          <CardContent className="p-2 sm:p-3">
-            {/* Month heading — integrated into grid */}
-            <div className="flex items-center justify-between mb-2">
-              <Button variant="outline" size="icon" onClick={prevMonth} className="border-sacred-gold/30 h-8 w-8">
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <div className="text-center">
-                {locationName && (
-                  <p className="text-[10px] text-muted-foreground flex items-center justify-center gap-1">
-                    📍 {locationName}
-                  </p>
-                )}
-                <h3 className="text-xl font-bold text-[#C45A00]">{monthNames[month]} {year}</h3>
-                {p?.hindu_calendar?.maas && (
-                  <p className="text-xs text-sacred-gold">
-                    {p.hindu_calendar.maas} · {language === 'hi' ? 'विक्रम संवत्' : 'Vikram Samvat'} {p.hindu_calendar.vikram_samvat}
-                  </p>
-                )}
-              </div>
-              <Button variant="outline" size="icon" onClick={nextMonth} className="border-sacred-gold/30 h-8 w-8">
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+        <Card className="border border-sacred-gold/20 bg-[#FFF9F5] shadow-sm overflow-hidden !py-0 !gap-0">
+          {/* Orange header bar — month + samvat on same line */}
+          <div className="bg-[#C45A00] px-2 py-2 flex items-center justify-between">
+            <Button variant="ghost" size="icon" onClick={prevMonth} className="h-7 w-7 text-white hover:bg-white/20 shrink-0">
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <div className="flex items-center gap-2 flex-wrap justify-center min-w-0">
+              <h3 className="text-sm sm:text-base font-bold text-white whitespace-nowrap">{monthNames[month]} {year}</h3>
+              {p?.hindu_calendar?.maas && (
+                <span className="text-white/80 text-[11px] sm:text-xs whitespace-nowrap">
+                  {p.hindu_calendar.maas} · {language === 'hi' ? 'विक्रम संवत्' : 'Vikram Samvat'} {p.hindu_calendar.vikram_samvat}
+                </span>
+              )}
             </div>
+            <Button variant="ghost" size="icon" onClick={nextMonth} className="h-7 w-7 text-white hover:bg-white/20 shrink-0">
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+          <CardContent className="p-2 sm:p-3">
 
             {loading ? (
               <div className="flex items-center justify-center h-64">
@@ -409,7 +420,7 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
                       ? (language === 'hi' ? dayData.moon_sign_hindi || translateBackend(dayData.moon_sign, language) : dayData.moon_sign)
                       : '';
 
-                    const tithiNum = dayData ? getTithiNumber(dayData.tithi) : null;
+                    const tithiNum = dayData ? getTithiNumber(dayData) : null;
 
                     return (
                       <button
