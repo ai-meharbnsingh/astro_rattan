@@ -1,8 +1,8 @@
 /**
- * KundliChartSVG — Pure SVG North Indian Kundli Chart
+ * KundliChartSVG — Professional North Indian Kundli Chart (Diamond-in-Square)
  *
- * Transparent background, sacred gold lines, planet abbreviations with colors,
- * retrograde indicators, ascendant marker. Responsive via viewBox.
+ * Fully transparent background with clean geometric lines.
+ * Matches the traditional North Indian chart layout.
  */
 
 interface PlanetEntry {
@@ -45,44 +45,52 @@ const PLANET_COLORS: Record<string, string> = {
   Ketu: '#78909C',
 };
 
+// North Indian chart geometry (viewBox 400x400)
+// Outer square: (20,20) to (380,380)
+// Diamond midpoints: top(200,20), right(380,200), bottom(200,380), left(20,200)
+// Center: (200,200)
+const S = 20;   // start
+const E = 380;  // end
+const M = 200;  // midpoint
+const Q1 = 110; // quarter from start (for inner dividers)
+const Q3 = 290; // quarter from end
+
 /**
- * North Indian chart house center positions (viewBox 400x400).
- *
- * The chart is an outer square (20,20)-(380,380) with a diamond connecting midpoints.
- * Houses 1-12 flow clockwise from top-center.
+ * House center positions for planet text placement.
+ * Houses 1-12 flow clockwise from top-center (North Indian layout).
  */
 const HOUSE_CENTERS: { x: number; y: number }[] = [
-  { x: 200, y: 72 },   // House 1  — top center
-  { x: 92, y: 72 },    // House 2  — top left
-  { x: 52, y: 148 },   // House 3  — left top
-  { x: 92, y: 200 },   // House 4  — left center
-  { x: 52, y: 255 },   // House 5  — left bottom
-  { x: 92, y: 330 },   // House 6  — bottom left
-  { x: 200, y: 330 },  // House 7  — bottom center
-  { x: 308, y: 330 },  // House 8  — bottom right
-  { x: 348, y: 255 },  // House 9  — right bottom
-  { x: 308, y: 200 },  // House 10 — right center
-  { x: 348, y: 148 },  // House 11 — right top
-  { x: 308, y: 72 },   // House 12 — top right
+  { x: 200, y: 75 },   // House 1  — top center diamond
+  { x: 88,  y: 58 },   // House 2  — top-left triangle
+  { x: 42,  y: 145 },  // House 3  — left-top triangle
+  { x: 88,  y: 200 },  // House 4  — left center diamond
+  { x: 42,  y: 255 },  // House 5  — left-bottom triangle
+  { x: 88,  y: 342 },  // House 6  — bottom-left triangle
+  { x: 200, y: 325 },  // House 7  — bottom center diamond
+  { x: 312, y: 342 },  // House 8  — bottom-right triangle
+  { x: 358, y: 255 },  // House 9  — right-bottom triangle
+  { x: 312, y: 200 },  // House 10 — right center diamond
+  { x: 358, y: 145 },  // House 11 — right-top triangle
+  { x: 312, y: 58 },   // House 12 — top-right triangle
 ];
 
-/** Small offset position for the house number label (top-left corner of each house area) */
+/** House number label positions (subtle, in corner of each house) */
 const HOUSE_NUMBER_POS: { x: number; y: number }[] = [
-  { x: 200, y: 38 },   // 1
-  { x: 68, y: 38 },    // 2
-  { x: 28, y: 115 },   // 3
-  { x: 68, y: 168 },   // 4
-  { x: 28, y: 222 },   // 5
-  { x: 68, y: 295 },   // 6
-  { x: 200, y: 365 },  // 7
-  { x: 332, y: 295 },  // 8
-  { x: 372, y: 222 },  // 9
-  { x: 332, y: 168 },  // 10
-  { x: 372, y: 115 },  // 11
-  { x: 332, y: 38 },   // 12
+  { x: 200, y: 36 },   // 1
+  { x: 65,  y: 36 },   // 2
+  { x: 28,  y: 110 },  // 3
+  { x: 65,  y: 170 },  // 4
+  { x: 28,  y: 225 },  // 5
+  { x: 65,  y: 300 },  // 6
+  { x: 200, y: 366 },  // 7
+  { x: 335, y: 300 },  // 8
+  { x: 372, y: 225 },  // 9
+  { x: 335, y: 170 },  // 10
+  { x: 372, y: 110 },  // 11
+  { x: 335, y: 36 },   // 12
 ];
 
-const STROKE_COLOR = '#B45309';
+const LINE_COLOR = 'currentColor';
 
 export default function KundliChartSVG({ planets, ascendantSign, className }: KundliChartSVGProps) {
   // Group planets by house
@@ -98,41 +106,61 @@ export default function KundliChartSVG({ planets, ascendantSign, className }: Ku
     <svg
       viewBox="0 0 400 400"
       xmlns="http://www.w3.org/2000/svg"
-      className={className}
+      className={`text-sacred-gold/25 ${className || ''}`}
       style={{ width: '100%', height: '100%' }}
     >
-      {/* --- Chart Structure --- */}
+      {/* ============================================= */}
+      {/* CHART STRUCTURE — all lines use currentColor  */}
+      {/* The parent className sets the line opacity     */}
+      {/* ============================================= */}
 
-      {/* Outer square */}
+      {/* Outer square — double border effect */}
       <rect
-        x="20" y="20" width="360" height="360"
-        fill="none" stroke={STROKE_COLOR} strokeWidth="1.5"
+        x={S} y={S} width={E - S} height={E - S}
+        fill="none" stroke={LINE_COLOR} strokeWidth="2.5"
+      />
+      <rect
+        x={S + 5} y={S + 5} width={E - S - 10} height={E - S - 10}
+        fill="none" stroke={LINE_COLOR} strokeWidth="1"
       />
 
-      {/* Inner diamond — midpoint to midpoint */}
+      {/* Inner diamond — connects midpoints of each side */}
       <polygon
-        points="200,20 380,200 200,380 20,200"
-        fill="none" stroke={STROKE_COLOR} strokeWidth="1"
+        points={`${M},${S + 5} ${E - 5},${M} ${M},${E - 5} ${S + 5},${M}`}
+        fill="none" stroke={LINE_COLOR} strokeWidth="1.5"
       />
 
-      {/* Corner-to-center diagonals that divide the edge triangles into houses */}
-      {/* Top-left corner to bottom-right corner */}
-      {/* These lines go from each corner to the two opposite midpoints of that corner's triangle */}
+      {/* ---- House divider lines ---- */}
 
-      {/* Top row: line from top-left corner to top-right corner through diamond center area */}
-      {/* Horizontal divider for top triangle: from left-diamond to right-diamond through ~y=110 */}
-      <line x1="110" y1="110" x2="290" y2="110" stroke={STROKE_COLOR} strokeWidth="0.5" opacity="0.35" />
+      {/* Top triangle: horizontal line dividing houses 2 | 1 | 12 from inner */}
+      <line x1={Q1} y1={Q1} x2={Q3} y2={Q1} stroke={LINE_COLOR} strokeWidth="0.8" />
 
-      {/* Bottom row: divider for bottom triangle */}
-      <line x1="110" y1="290" x2="290" y2="290" stroke={STROKE_COLOR} strokeWidth="0.5" opacity="0.35" />
+      {/* Bottom triangle: horizontal line dividing houses 6 | 7 | 8 from inner */}
+      <line x1={Q1} y1={Q3} x2={Q3} y2={Q3} stroke={LINE_COLOR} strokeWidth="0.8" />
 
-      {/* Left column: divider for left triangle */}
-      <line x1="110" y1="110" x2="110" y2="290" stroke={STROKE_COLOR} strokeWidth="0.5" opacity="0.35" />
+      {/* Left triangle: vertical line dividing houses 3 | 4 | 5 from inner */}
+      <line x1={Q1} y1={Q1} x2={Q1} y2={Q3} stroke={LINE_COLOR} strokeWidth="0.8" />
 
-      {/* Right column: divider for right triangle */}
-      <line x1="290" y1="110" x2="290" y2="290" stroke={STROKE_COLOR} strokeWidth="0.5" opacity="0.35" />
+      {/* Right triangle: vertical line dividing houses 9 | 10 | 11 from inner */}
+      <line x1={Q3} y1={Q1} x2={Q3} y2={Q3} stroke={LINE_COLOR} strokeWidth="0.8" />
 
-      {/* --- House Numbers --- */}
+      {/* Top-left corner diagonals (split triangle into houses 2 and 3) */}
+      <line x1={S + 5} y1={S + 5} x2={Q1} y2={Q1} stroke={LINE_COLOR} strokeWidth="0.8" />
+
+      {/* Top-right corner diagonals (split triangle into houses 11 and 12) */}
+      <line x1={E - 5} y1={S + 5} x2={Q3} y2={Q1} stroke={LINE_COLOR} strokeWidth="0.8" />
+
+      {/* Bottom-left corner diagonals (split triangle into houses 5 and 6) */}
+      <line x1={S + 5} y1={E - 5} x2={Q1} y2={Q3} stroke={LINE_COLOR} strokeWidth="0.8" />
+
+      {/* Bottom-right corner diagonals (split triangle into houses 8 and 9) */}
+      <line x1={E - 5} y1={E - 5} x2={Q3} y2={Q3} stroke={LINE_COLOR} strokeWidth="0.8" />
+
+      {/* ============================================= */}
+      {/* TEXT CONTENT — house numbers, Asc, planets    */}
+      {/* ============================================= */}
+
+      {/* House Numbers — subtle reference */}
       {HOUSE_NUMBER_POS.map((pos, i) => (
         <text
           key={`hnum-${i}`}
@@ -140,47 +168,45 @@ export default function KundliChartSVG({ planets, ascendantSign, className }: Ku
           y={pos.y}
           textAnchor="middle"
           dominantBaseline="central"
-          fontSize="10"
-          fill="#9CA3AF"
+          fontSize="9"
+          fill="currentColor"
           fontFamily="sans-serif"
-          opacity="0.6"
+          opacity="0.5"
+          className="text-foreground/30"
         >
           {i + 1}
         </text>
       ))}
 
-      {/* --- Ascendant marker in House 1 --- */}
+      {/* Ascendant marker */}
       <text
-        x={200}
-        y={55}
+        x={M}
+        y={52}
         textAnchor="middle"
         dominantBaseline="central"
         fontSize="10"
-        fill="#B45309"
         fontFamily="sans-serif"
         fontStyle="italic"
         fontWeight="600"
-        opacity="0.8"
+        className="fill-sacred-gold/60"
       >
         Asc
       </text>
 
-      {/* --- Planets in each house --- */}
+      {/* Planets in each house */}
       {Array.from({ length: 12 }, (_, i) => i + 1).map((house) => {
         const housePlanets = planetsByHouse[house] || [];
         if (housePlanets.length === 0) return null;
 
         const center = HOUSE_CENTERS[house - 1];
         const count = housePlanets.length;
-        // Stack planets vertically around center; 14px per line
-        const lineH = 14;
+        const lineH = count > 3 ? 12 : 14;
         const startY = center.y - ((count - 1) * lineH) / 2;
 
         return housePlanets.map((p, pIdx) => {
           const abbr = PLANET_ABBR[p.planet] || p.planet.slice(0, 2);
           const color = PLANET_COLORS[p.planet] || '#4B5563';
           const yPos = startY + pIdx * lineH;
-          const label = p.is_retrograde ? `${abbr}(R)` : abbr;
 
           return (
             <text
@@ -197,27 +223,26 @@ export default function KundliChartSVG({ planets, ascendantSign, className }: Ku
               {p.is_retrograde ? (
                 <>
                   <tspan fill={color}>{abbr}</tspan>
-                  <tspan fill="#DC2626" fontSize="9">(R)</tspan>
+                  <tspan fill="#DC2626" fontSize="8">(R)</tspan>
                 </>
               ) : (
-                label
+                abbr
               )}
             </text>
           );
         });
       })}
 
-      {/* --- Ascendant sign label in center diamond --- */}
+      {/* Ascendant sign in center */}
       <text
-        x={200}
-        y={200}
+        x={M}
+        y={M}
         textAnchor="middle"
         dominantBaseline="central"
-        fontSize="12"
-        fill="#B45309"
+        fontSize="11"
         fontFamily="sans-serif"
         fontWeight="600"
-        opacity="0.7"
+        className="fill-sacred-gold/50"
       >
         {ascendantSign || ''}
       </text>
