@@ -4,7 +4,7 @@ export type Language = 'en' | 'hi';
 
 type TranslationMap = Record<string, string>;
 
-const translations: Record<Language, TranslationMap> = {
+export const translations: Record<Language, TranslationMap> = {
   en: {
     'auto.planetPositionsUnava': 'Planet positions unavailable',
     'auto.dashaDataUnavailable': 'Dasha data unavailable',

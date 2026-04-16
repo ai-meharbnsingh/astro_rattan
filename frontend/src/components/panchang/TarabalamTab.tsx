@@ -31,7 +31,7 @@ export default function TarabalamTab({ panchang, language, t }: Props) {
 
   const emptyMessage = (
     <div className="text-center py-6 text-muted-foreground text-sm">
-      {hi ? 'डेटा उपलब्ध नहीं है' : 'Data unavailable'}
+      {t('auto.noDataAvailable')}
     </div>
   );
 
@@ -41,10 +41,10 @@ export default function TarabalamTab({ panchang, language, t }: Props) {
       <div className="rounded-lg border overflow-hidden">
         <div className="px-3 py-2 bg-sacred-gold/10 border-b border-sacred-gold/20">
           <h3 className="font-bold text-foreground text-sm">
-            {hi ? 'तारा बल' : 'Tarabalam'}
+            {t('panchang.tarabalam')}
           </h3>
           <p className="text-xs text-muted-foreground">
-            {hi ? 'आज के लिए नक्षत्र अनुकूलता' : 'Nakshatra compatibility for today'}
+            {t('panchang.nakshatraCompatToday')}
           </p>
         </div>
 
@@ -54,13 +54,13 @@ export default function TarabalamTab({ panchang, language, t }: Props) {
               <TableHeader>
                 <TableRow className="bg-sacred-gold/15">
                   <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[40%]">
-                    {hi ? 'नक्षत्र' : 'Nakshatra'}
+                    {t('auto.nakshatra')}
                   </TableHead>
                   <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[35%]">
-                    {hi ? 'तारा' : 'Tara'}
+                    {t('panchang.tara')}
                   </TableHead>
                   <TableHead className="text-center px-2 py-1 text-sacred-gold-dark font-semibold w-[25%]">
-                    {hi ? 'स्थिति' : 'Status'}
+                    {t('auto.status')}
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -79,11 +79,11 @@ export default function TarabalamTab({ panchang, language, t }: Props) {
                     <TableCell className="px-2 py-1 text-center">
                       {row.good ? (
                         <span className="inline-block px-1.5 py-0.5 rounded text-xs font-medium bg-green-500/15 text-green-600">
-                          {hi ? 'शुभ' : 'Good'} ✓
+                          {t('auto.good')} ✓
                         </span>
                       ) : (
                         <span className="inline-block px-1.5 py-0.5 rounded text-xs font-medium bg-red-500/10 text-red-600">
-                          {hi ? 'अशुभ' : 'Bad'} ✗
+                          {t('panchang.bad')} ✗
                         </span>
                       )}
                     </TableCell>
@@ -99,10 +99,10 @@ export default function TarabalamTab({ panchang, language, t }: Props) {
       <div className="rounded-lg border overflow-hidden">
         <div className="px-3 py-2 bg-sacred-gold/10 border-b border-sacred-gold/20">
           <h3 className="font-bold text-foreground text-sm">
-            {hi ? 'चन्द्र बल' : 'Chandrabalam'}
+            {t('panchang.chandrabalam')}
           </h3>
           <p className="text-xs text-muted-foreground">
-            {hi ? 'राशि अनुसार चन्द्र बल' : 'Moon strength by Rashi'}
+            {t('panchang.moonStrengthByRashi')}
           </p>
         </div>
 
@@ -112,13 +112,13 @@ export default function TarabalamTab({ panchang, language, t }: Props) {
               <TableHeader>
                 <TableRow className="bg-sacred-gold/15">
                   <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[35%]">
-                    {hi ? 'राशि' : 'Rashi'}
+                    {t('auto.rashi')}
                   </TableHead>
                   <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[30%]">
-                    {hi ? 'बलम्' : 'Balam'}
+                    {t('panchang.balam')}
                   </TableHead>
                   <TableHead className="text-center px-2 py-1 text-sacred-gold-dark font-semibold w-[35%]">
-                    {hi ? 'स्थिति' : 'Status'}
+                    {t('auto.status')}
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -134,7 +134,7 @@ export default function TarabalamTab({ panchang, language, t }: Props) {
                         {hi ? hiRashi(row.rashi) : row.rashi}
                         {isAshtama && (
                           <span className="ml-1 inline-block px-1 py-0.5 rounded text-[10px] font-bold bg-red-600 text-white leading-none">
-                            {hi ? 'अष्टम चन्द्र' : 'Ashtama'}
+                            {t('panchang.ashtama')}
                           </span>
                         )}
                       </TableCell>
@@ -144,11 +144,11 @@ export default function TarabalamTab({ panchang, language, t }: Props) {
                       <TableCell className="px-2 py-1 text-center">
                         {row.good ? (
                           <span className="inline-block px-1.5 py-0.5 rounded text-xs font-medium bg-green-500/15 text-green-600">
-                            {hi ? 'शुभ' : 'Good'} ✓
+                            {t('auto.good')} ✓
                           </span>
                         ) : (
                           <span className="inline-block px-1.5 py-0.5 rounded text-xs font-medium bg-red-500/10 text-red-600">
-                            {hi ? 'अशुभ' : 'Bad'} ✗
+                            {t('panchang.bad')} ✗
                           </span>
                         )}
                       </TableCell>
