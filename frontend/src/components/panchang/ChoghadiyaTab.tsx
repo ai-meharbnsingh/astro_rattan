@@ -96,7 +96,7 @@ export default function ChoghadiyaTab({ panchang, language, t, timezoneOffset, m
         {title}
       </h3>
       <div className="overflow-x-auto">
-        <Table className="w-full text-sm">
+        <Table className="w-full table-fixed text-xs sm:text-sm">
           <TableHeader>
             <TableRow className="bg-sacred-gold/15">
               <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
