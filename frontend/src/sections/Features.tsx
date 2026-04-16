@@ -617,10 +617,13 @@ export default function Features() {
       image: '/images/features/feature-kundli.jpg',
       imagePosition: 'center top',
       imageFilter: 'sepia(0.15) brightness(0.95) contrast(1.05)',
-      title: l('Kundli — 3 Vedic Systems', 'कुंडली — 3 वैदिक सिस्टम'),
-      subtitle: l('Unmatched Depth', 'बेजोड़ गहराई'),
-      desc: l('Parashari, Jaimini & KP System in one place. Ashtakvarga, Shadbala, Dasha timeline, Varshphal, Kundli Milan, 10+ Divisional Charts (D9 Navamsha to D60), Dosha analysis, General Remedies — 12+ deep-analysis modules, not just a birth chart.', 'पाराशरी, जैमिनी और केपी प्रणाली एक जगह। अष्टकवर्ग, षड्बल, दशा समयरेखा, वर्षफल, कुंडली मिलान, 10+ वर्ग चार्ट, दोष विश्लेषण — 12+ गहन विश्लेषण मॉड्यूल।'),
-      badge: l('UNMATCHED DEPTH', 'बेजोड़ गहराई'),
+      title: l('Kundli — 29 Analysis Modules', 'कुंडली — 29 विश्लेषण मॉड्यूल'),
+      subtitle: l('29 Tabs, 3 Systems', '29 टैब, 3 सिस्टम'),
+      desc: l(
+        'Parashari, Jaimini & KP System in one place. 6 Dasha systems (Vimshottari, Ashtottari, Yogini, Moola, Tara, Kalachakra), 17 Divisional Charts (D1 to D108), KP Horary 1-249, Sarvatobhadra Chakra, Birth Time Rectification, Chart Animation, Ashtakvarga, Shadbala, Sodashvarga, 27 Yogas, 11 Doshas, Kundli Milan — the deepest Vedic analysis available online.',
+        'पाराशरी, जैमिनी और केपी एक जगह। 6 दशा पद्धतियाँ (विंशोत्तरी, अष्टोत्तरी, योगिनी, मूल, तारा, कालचक्र), 17 वर्ग कुंडलियाँ (D1 से D108), केपी प्रश्न 1-249, सर्वतोभद्र चक्र, जन्म समय शोधन, चार्ट एनिमेशन, अष्टकवर्ग, षड्बल, 27 योग, 11 दोष — ऑनलाइन सबसे गहन वैदिक विश्लेषण।'
+      ),
+      badge: l('29 MODULES', '29 मॉड्यूल'),
     },
     {
       image: '/images/features/feature-horoscope.jpg',
@@ -643,10 +646,13 @@ export default function Features() {
     },
     {
       image: '/images/features/feature-lalkitab.png',
-      title: l('Lal Kitab — Complete System', 'लाल किताब — पूर्ण सिस्टम'),
+      title: l('Lal Kitab — 20 Tabs + Bunyaad', 'लाल किताब — 20 टैब + बुनियाद'),
       subtitle: l('ONLY HERE', 'केवल यहाँ'),
-      desc: l('Complete Lal Kitab toolkit with Nishaniyan Matcher, Chandra Chalana 43-day protocol, Remedy Tracker with streaks, Teva classification, Masnui Grah (artificial planets), Karmic Debt (Rin) analysis, Sleeping & Kayam planets, Annual Gochar — the most comprehensive Lal Kitab system available online.', 'निशानियां मैचर, चंद्र चालना 43-दिन प्रोटोकॉल, रेमेडी ट्रैकर, तेवा वर्गीकरण, मसनूई ग्रह, कर्मिक ऋण विश्लेषण, सोया और कायम ग्रह, वार्षिक गोचर — ऑनलाइन सबसे व्यापक लाल किताब प्रणाली।'),
-      badge: l('EXCLUSIVE', 'विशेष'),
+      desc: l(
+        '20-tab Lal Kitab system: Nishaniyan Matcher, Chandra Chalana 43-day protocol, Remedy Tracker, Teva, Masnui Grah, Karmic Rin, Sleeping/Kayam planets, Gochar. NEW: Bunyaad (foundation) analysis, Takkar (1-8 collision) detection, Enemy Siege mapping, 108 per-house interpretations, 5 validated remedies (Mitti ka Kuja, Kanya Pujan, Hanuman Halwa) — the most comprehensive Lal Kitab system available anywhere.',
+        '20-टैब लाल किताब: निशानियां, चंद्र चालना, रेमेडी ट्रैकर, तेवा, मसनूई ग्रह, कर्मिक ऋण, गोचर। नया: बुनियाद विश्लेषण, टक्कर (1-8) पहचान, दुश्मन घेराबंदी, 108 भाव-अनुसार फलादेश, 5 प्रमाणित उपाय (मिट्टी का कूजा, कन्या पूजन, हनुमान हलवा) — कहीं भी उपलब्ध सबसे व्यापक लाल किताब प्रणाली।'
+      ),
+      badge: l('20 TABS', '20 टैब'),
     },
     {
       image: '/images/features/feature-numerology.jpg',
@@ -665,12 +671,12 @@ export default function Features() {
       imagePosition: 'center center',
       imageFilter: 'sepia(0.15) brightness(0.95) contrast(1.05)',
       title: l('Vastu Shastra Analyzer', 'वास्तु शास्त्र विश्लेषक'),
-      subtitle: l('Pro', 'प्रो'),
+      subtitle: l('AI + Mandala', 'एआई + मंडल'),
       desc: l(
-        '45-Devta Vastu Purusha Mandala scoring with zone-wise energy mapping. 32-entrance Pada analysis, direction optimization for every room, metal remedies (copper, iron, silver, gold), color therapy — for homes and offices.',
-        '45-देवता वास्तु पुरुष मंडल स्कोरिंग। 32-प्रवेश पद विश्लेषण, हर कमरे के लिए दिशा अनुकूलन, धातु उपाय (तांबा, लोहा, चांदी, सोना), रंग चिकित्सा — घरों और कार्यालयों के लिए।'
+        '45-Devta Vastu Purusha Mandala scoring with zone-wise energy mapping. AI-powered floor plan detection, 32-entrance Pada analysis, direction optimization for every room, metal remedies (copper, iron, silver, gold), color therapy — for homes and offices.',
+        '45-देवता वास्तु पुरुष मंडल स्कोरिंग। एआई-संचालित फ्लोर प्लान पहचान, 32-प्रवेश पद विश्लेषण, हर कमरे के लिए दिशा अनुकूलन, धातु उपाय (तांबा, लोहा, चांदी, सोना), रंग चिकित्सा — घरों और कार्यालयों के लिए।'
       ),
-      badge: l('MANDALA-BASED', 'मंडल-आधारित'),
+      badge: l('AI + MANDALA', 'एआई + मंडल'),
     },
   ];
 
