@@ -43,7 +43,7 @@ const overallConfig = {
 };
 
 export default function LalKitabHealthTab({ kundliId }: Props) {
-  const { language } = useTranslation();
+  const { t, language } = useTranslation();
   const isHi = language === 'hi';
 
   const [data, setData] = useState<HealthData | null>(null);

@@ -24,7 +24,7 @@ const PLANET_HI: Record<string, string> = {
 };
 
 export default function LalKitabMarriageTab({ kundliId }: Props) {
-  const { language } = useTranslation();
+  const { t, language } = useTranslation();
   const isHi = language === 'hi';
 
   const [data, setData] = useState<MarriageData | null>(null);

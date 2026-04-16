@@ -143,7 +143,11 @@ export default function KPHorary({ language, t }: KPHoraryProps) {
       setChartResult(chart);
       setPrediction(pred);
     } catch (err: any) {
-      setError(err?.message || 'Failed to get horary analysis');
+      const msg = typeof err?.message === 'string' ? err.message
+        : typeof err?.detail === 'string' ? err.detail
+        : typeof err?.detail === 'object' ? JSON.stringify(err.detail)
+        : 'Failed to get horary analysis';
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -292,7 +296,7 @@ export default function KPHorary({ language, t }: KPHoraryProps) {
                 {verdictConfig[prediction.verdict]?.label}
               </Heading>
               <p className="text-sm mt-1">
-                {hi ? prediction.summary_hi : prediction.summary}
+                {String(hi ? prediction.summary_hi || prediction.summary || '' : prediction.summary || '')}
               </p>
               {prediction.timing && (
                 <p className="text-xs mt-2 opacity-80">
@@ -465,7 +469,7 @@ export default function KPHorary({ language, t }: KPHoraryProps) {
             {l('Detailed Analysis', 'विस्तृत विश्लेषण')}
           </Heading>
           <div className="text-sm text-foreground leading-relaxed whitespace-pre-line">
-            {hi ? prediction.analysis_hi : prediction.analysis}
+            {String(hi ? prediction.analysis_hi || prediction.analysis || '' : prediction.analysis || '')}
           </div>
         </div>
       )}

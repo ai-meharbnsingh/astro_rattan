@@ -38,7 +38,7 @@ function scoreColor(score: number) {
 }
 
 export default function LalKitabWealthTab({ kundliId }: Props) {
-  const { language } = useTranslation();
+  const { t, language } = useTranslation();
   const isHi = language === 'hi';
 
   const [data, setData] = useState<WealthData | null>(null);
