@@ -24,11 +24,17 @@ export interface KundliChartSVGProps {
   ascendantSign: string;
   ascendantDegree?: number;
   className?: string;
+  language?: string;
 }
 
 const PLANET_ABBR: Record<string, string> = {
   Sun: 'Su', Moon: 'Mo', Mars: 'Ma', Mercury: 'Me',
   Jupiter: 'Ju', Venus: 'Ve', Saturn: 'Sa', Rahu: 'Ra', Ketu: 'Ke',
+};
+
+const PLANET_ABBR_HI: Record<string, string> = {
+  Sun: 'सू', Moon: 'चं', Mars: 'मं', Mercury: 'बु',
+  Jupiter: 'गु', Venus: 'शु', Saturn: 'श', Rahu: 'रा', Ketu: 'के',
 };
 
 const GOLD_MED = '#C4611F';
@@ -143,7 +149,8 @@ const SIGN_AT_POSITION = [
   'Pisces',      // pos 11 = top-right corner
 ];
 
-export default function KundliChartSVG({ planets, ascendantSign, ascendantDegree, className }: KundliChartSVGProps) {
+export default function KundliChartSVG({ planets, ascendantSign, ascendantDegree, className, language = 'en' }: KundliChartSVGProps) {
+  const isHi = language === 'hi';
   const [tick, setTick] = useState(0);
   useEffect(() => {
     const id = setInterval(() => setTick(t => t + 1), 1000);
@@ -224,7 +231,7 @@ export default function KundliChartSVG({ planets, ascendantSign, ascendantDegree
         const startY = c.y - ((count - 1) * lineH) / 2;
 
         return hp.map((pl, pi) => {
-          const abbr = PLANET_ABBR[pl.planet] || pl.planet.slice(0, 2);
+          const abbr = isHi ? (PLANET_ABBR_HI[pl.planet] || pl.planet.slice(0, 2)) : (PLANET_ABBR[pl.planet] || pl.planet.slice(0, 2));
           const suffix = statusSuffix(pl);
           const color = planetColor(pl);
 

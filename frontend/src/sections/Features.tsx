@@ -753,6 +753,7 @@ export default function Features() {
                     })}
                     ascendantSign={currentSky.lagna_sign || ''}
                     ascendantDegree={currentSky.lagna_longitude || currentSky.chart_data?.ascendant?.longitude}
+                    language={language}
                   />
                 </div>
               </div>
