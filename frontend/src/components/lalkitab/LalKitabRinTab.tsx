@@ -180,6 +180,7 @@ export default function LalKitabRinTab({ kundliId }: Props) {
 }
 
 function DebtCard({ debt, isHi }: { debt: Debt; isHi: boolean }) {
+  const { t } = useTranslation();
   const PLANET_COLOR: Record<string, string> = {
     sun: 'bg-orange-400/15 text-orange-700', moon: 'bg-blue-400/15 text-blue-700',
     mars: 'bg-red-400/15 text-red-700', mercury: 'bg-green-400/15 text-green-700',

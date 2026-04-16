@@ -30,6 +30,7 @@ function formatDate(iso: string | null): string {
 
 /** Render a brief summary of the prediction data based on its type */
 function PredictionSummary({ type, data, isHi }: { type: string; data: Record<string, any>; isHi: boolean }) {
+  const { t } = useTranslation();
   if (type === 'marriage') {
     return (
       <div className="space-y-1 text-sm text-foreground/80">
