@@ -78,17 +78,17 @@ const HOUSE_CENTERS: { x: number; y: number }[] = [
 // House numbers — reference image positions
 const HOUSE_NUM_POS: { x: number; y: number }[] = [
   { x: pct(50),   y: pct(45) },    // 1
-  { x: pct(10),   y: pct(7) },     // 2
-  { x: pct(7),    y: pct(10) },    // 3
+  { x: pct(12),   y: pct(9) },     // 2
+  { x: pct(9),    y: pct(12) },    // 3
   { x: pct(45),   y: pct(50) },    // 4
-  { x: pct(22.5), y: pct(71.25) }, // 5
-  { x: pct(28),   y: pct(77.5) },  // 6
+  { x: pct(9),    y: pct(88) },    // 5
+  { x: pct(12),   y: pct(91) },    // 6
   { x: pct(50),   y: pct(55) },    // 7
-  { x: pct(71.25),y: pct(77.5) },  // 8
-  { x: pct(77.5), y: pct(71.25) }, // 9
+  { x: pct(88),   y: pct(91) },    // 8
+  { x: pct(91),   y: pct(88) },    // 9
   { x: pct(55),   y: pct(50) },    // 10
-  { x: pct(77.5), y: pct(28) },    // 11
-  { x: pct(70),   y: pct(22.5) },  // 12
+  { x: pct(91),   y: pct(12) },    // 11
+  { x: pct(88),   y: pct(9) },     // 12
 ];
 
 function ascMarkerPos(degInSign: number): { x: number; y: number } {
