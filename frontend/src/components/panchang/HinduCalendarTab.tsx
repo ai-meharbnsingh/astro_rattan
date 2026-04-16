@@ -441,12 +441,22 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
                             )}
                           </div>
 
-                          {/* Sunrise ☀ left — Sunset ☀ right */}
+                          {/* Sunrise/Sunset + Moonrise/Moonset */}
                           {dayData && (
-                            <div className="flex items-center justify-between w-full text-[8px] sm:text-[10px] text-stone-400">
-                              <span><span className="text-[#C45A00]">☀</span> {dayData.sunrise?.slice(0, 5)}</span>
-                              <span><span className="text-[#C45A00]">☀</span> {dayData.sunset?.slice(0, 5)}</span>
-                            </div>
+                            <>
+                              <div className="flex items-center justify-between w-full text-[8px] sm:text-[10px] text-stone-400">
+                                <span><span className="text-[#C45A00]">☀</span> {dayData.sunrise?.slice(0, 5)}</span>
+                                <span><span className="text-[#C45A00]">☀</span> {dayData.sunset?.slice(0, 5)}</span>
+                              </div>
+                              <div className="flex items-center justify-between w-full text-[8px] sm:text-[10px] text-stone-400">
+                                {dayData.moonrise && dayData.moonrise !== '--:--'
+                                  ? <span>☽ {dayData.moonrise?.slice(0, 5)}</span>
+                                  : <span />}
+                                {dayData.moonset && dayData.moonset !== '--:--'
+                                  ? <span>☽ {dayData.moonset?.slice(0, 5)}</span>
+                                  : <span />}
+                              </div>
+                            </>
                           )}
                         </div>
 
