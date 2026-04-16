@@ -76,18 +76,18 @@ const HOUSE_CENTERS: { x: number; y: number }[] = [
 // Center houses (1,4,7,10) are along the diamond edges, not clustered
 // Triangle houses are near their corner of the triangle
 const HOUSE_NUM_POS: { x: number; y: number }[] = [
-  { x: 165, y: 155 }, // 1  — above center-left, along top diamond edge
-  { x: 95,  y: 42 },  // 2  — top-left area
-  { x: 42,  y: 95 },  // 3  — left side upper
-  { x: 120, y: 200 }, // 4  — left of center, along left diamond edge
-  { x: 42,  y: 305 }, // 5  — left side lower
-  { x: 95,  y: 358 }, // 6  — bottom-left area
-  { x: 235, y: 245 }, // 7  — below center-right, along bottom diamond edge
-  { x: 305, y: 358 }, // 8  — bottom-right area
-  { x: 358, y: 305 }, // 9  — right side lower
-  { x: 280, y: 200 }, // 10 — right of center, along right diamond edge
-  { x: 358, y: 95 },  // 11 — right side upper
-  { x: 305, y: 42 },  // 12 — top-right area
+  { x: 200, y: 45 },  // 1  — top apex, near outer edge of top triangle
+  { x: 75,  y: 45 },  // 2  — top-left corner triangle
+  { x: 45,  y: 135 }, // 3  — left-upper triangle
+  { x: 45,  y: 200 }, // 4  — left apex, near outer edge of left triangle
+  { x: 45,  y: 265 }, // 5  — left-lower triangle
+  { x: 75,  y: 355 }, // 6  — bottom-left corner triangle
+  { x: 200, y: 355 }, // 7  — bottom apex, near outer edge of bottom triangle
+  { x: 325, y: 355 }, // 8  — bottom-right corner triangle
+  { x: 355, y: 265 }, // 9  — right-lower triangle
+  { x: 355, y: 200 }, // 10 — right apex, near outer edge of right triangle
+  { x: 355, y: 135 }, // 11 — right-upper triangle
+  { x: 325, y: 45 },  // 12 — top-right corner triangle
 ];
 
 function ascMarkerPos(degInSign: number): { x: number; y: number } {
