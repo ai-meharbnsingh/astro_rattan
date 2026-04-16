@@ -140,7 +140,7 @@ def get_panchang(
 
     # Serve from cache only if it has extended data (new engine format)
     raw_ext_check = cached.get("choghadiya", "") if cached else ""
-    cache_has_extended = cached and raw_ext_check and raw_ext_check not in ("", "[]")
+    cache_has_extended = cached and raw_ext_check and raw_ext_check not in ("", "[]", "{}")
 
     if cache_has_extended:
         tithi = cached["tithi"]
@@ -219,7 +219,13 @@ def get_panchang(
            (date, latitude, longitude, tithi, nakshatra, yoga, karana,
             rahu_kaal, choghadiya, sunrise, sunset, moonrise, moonset)
            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-           ON CONFLICT (date, latitude, longitude) DO NOTHING""",
+           ON CONFLICT (date, latitude, longitude) DO UPDATE SET
+               tithi = EXCLUDED.tithi, nakshatra = EXCLUDED.nakshatra,
+               yoga = EXCLUDED.yoga, karana = EXCLUDED.karana,
+               rahu_kaal = EXCLUDED.rahu_kaal, choghadiya = EXCLUDED.choghadiya,
+               sunrise = EXCLUDED.sunrise, sunset = EXCLUDED.sunset,
+               moonrise = EXCLUDED.moonrise, moonset = EXCLUDED.moonset,
+               created_at = NOW()""",
         (
             target_date, latitude, longitude,
             tithi_str, nak_str, yoga_str, karana_str,
