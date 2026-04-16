@@ -335,34 +335,7 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
             locationName={locationName}
           />
 
-          {/* Festivals & Vrat this month */}
-          {monthFestivals.length > 0 && (
-            <Card className="card-sacred">
-              <CardContent className="p-3">
-                <h4 className="font-semibold text-foreground text-sm mb-2 flex items-center gap-1.5">
-                  <Star className="h-4 w-4 text-sacred-gold" />
-                  {language === 'hi' ? 'व्रत एवं पर्व' : 'Festivals & Vrat'}
-                </h4>
-                <div className="space-y-1.5 max-h-48 overflow-y-auto">
-                  {monthFestivals.slice(0, 15).map((f, i) => (
-                    <div key={i} className="flex items-start gap-2 text-xs">
-                      <span className="text-base leading-none mt-0.5">
-                        {f.type === 'major' ? '🪔' : '🙏'}
-                      </span>
-                      <div className="min-w-0">
-                        <p className="font-medium text-foreground leading-tight">
-                          {language === 'hi' ? translateBackend(f.name, language) : f.name}
-                        </p>
-                        <p className="text-[10px] text-muted-foreground">
-                          {new Date(f.date + 'T12:00:00').toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-US', { month: 'short', day: 'numeric' })}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          {/* Festivals moved to below the calendar grid */}
         </div>
 
         {/* ===== RIGHT PANEL: Calendar Grid ===== */}
@@ -548,6 +521,42 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
           </CardContent>
         </Card>
       </div>
+
+      {/* ===== FESTIVALS GRID (horizontal, below calendar) ===== */}
+      {monthFestivals.length > 0 && (
+        <Card className="border border-sacred-gold/20 bg-[#FFF9F5] shadow-sm overflow-hidden">
+          <div className="bg-[#C45A00] px-3 py-1.5">
+            <h4 className="text-white font-bold text-sm text-center">
+              {monthNames[month]} {year} {language === 'hi' ? 'व्रत एवं पर्व' : 'Festivals'}
+            </h4>
+            {p?.hindu_calendar?.maas && (
+              <p className="text-white/80 text-[10px] text-center">
+                {p.hindu_calendar.maas} - {language === 'hi' ? 'विक्रम संवत्' : 'Vikram Samvat'} {p.hindu_calendar.vikram_samvat}
+              </p>
+            )}
+          </div>
+          <CardContent className="p-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-1">
+              {monthFestivals.map((f, i) => {
+                const d = new Date(f.date + 'T12:00:00');
+                const dayNum = d.getDate();
+                const dayName = d.toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-US', { weekday: 'long' });
+                return (
+                  <div key={i} className="flex items-baseline gap-2 py-1 border-b border-stone-100 last:border-0">
+                    <span className="text-lg font-bold text-[#C45A00] w-8 text-right shrink-0">{String(dayNum).padStart(2, '0')}</span>
+                    <div className="min-w-0">
+                      <p className="text-[11px] font-bold text-stone-700 leading-tight">
+                        {language === 'hi' ? translateBackend(f.name, language) : f.name}
+                      </p>
+                      <p className="text-[9px] text-stone-400">{dayName}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* ===== LIGHTBOX MODAL ===== */}
       {lightboxOpen && selectedDay && (
