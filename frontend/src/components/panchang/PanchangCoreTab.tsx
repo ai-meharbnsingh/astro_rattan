@@ -82,7 +82,7 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
   ];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3">
+    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2">
       <div className="rounded-lg border p-2">
         <Table className="w-full table-fixed text-xs sm:text-sm">
           <TableHeader>
