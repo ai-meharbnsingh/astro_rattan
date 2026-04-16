@@ -72,21 +72,20 @@ const HOUSE_CENTERS: { x: number; y: number }[] = [
   { x: 318, y: 55 },   // 12 — top-right triangle
 ];
 
-// HARDCODED house number positions — fixed percentages on 400x400 canvas
-// DO NOT calculate dynamically
+// HARDCODED — mapped from reference image, DO NOT calculate
 const HOUSE_NUM_POS: { x: number; y: number }[] = [
-  { x: 200, y: 72 },  // 1  → (50%, 18%) top triangle
-  { x: 88,  y: 88 },  // 2  → (22%, 22%) top-left corner
-  { x: 60,  y: 152 }, // 3  → (15%, 38%) left-upper
-  { x: 72,  y: 200 }, // 4  → (18%, 50%) left triangle
-  { x: 60,  y: 260 }, // 5  → (15%, 65%) left-lower
-  { x: 88,  y: 312 }, // 6  → (22%, 78%) bottom-left corner
-  { x: 200, y: 328 }, // 7  → (50%, 82%) bottom triangle
-  { x: 312, y: 312 }, // 8  → (78%, 78%) bottom-right corner
-  { x: 340, y: 260 }, // 9  → (85%, 65%) right-lower
-  { x: 328, y: 200 }, // 10 → (82%, 50%) right triangle
-  { x: 340, y: 152 }, // 11 → (85%, 38%) right-upper
-  { x: 312, y: 88 },  // 12 → (78%, 22%) top-right corner
+  { x: 200, y: 55  }, // 1  → top triangle (just below apex)
+  { x: 105, y: 75  }, // 2  → top-left corner
+  { x: 55,  y: 130 }, // 3  → left-upper
+  { x: 55,  y: 200 }, // 4  → left triangle center
+  { x: 55,  y: 270 }, // 5  → left-lower
+  { x: 105, y: 325 }, // 6  → bottom-left corner
+  { x: 200, y: 345 }, // 7  → bottom triangle
+  { x: 295, y: 325 }, // 8  → bottom-right corner
+  { x: 345, y: 270 }, // 9  → right-lower
+  { x: 345, y: 200 }, // 10 → right triangle center
+  { x: 345, y: 130 }, // 11 → right-upper
+  { x: 295, y: 75  }, // 12 → top-right corner
 ];
 
 function ascMarkerPos(degInSign: number): { x: number; y: number } {
