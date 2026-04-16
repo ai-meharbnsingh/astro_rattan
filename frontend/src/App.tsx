@@ -60,6 +60,7 @@ const Dashboard       = lazyWithReload(() => import('./sections/Dashboard'));
 const ClientProfile   = lazyWithReload(() => import('./sections/ClientProfile'));
 const VastuShastraPage = lazyWithReload(() => import('./sections/VastuShastraPage'));
 const HoroscopePage    = lazyWithReload(() => import('./sections/HoroscopePage'));
+const BlogPage         = lazyWithReload(() => import('./sections/BlogPage'));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -195,6 +196,7 @@ function AppInner() {
           <Route path="/vastu" element={<RequireAuth><ErrorBoundary><VastuShastraPage /></ErrorBoundary></RequireAuth>} />
           <Route path="/admin" element={<RequireAuth><ErrorBoundary><AdminDashboard /></ErrorBoundary></RequireAuth>} />
           <Route path="/feedback" element={<RequireAuth><ErrorBoundary><FeedbackPage /></ErrorBoundary></RequireAuth>} />
+          <Route path="/blog" element={<ErrorBoundary><BlogPage /></ErrorBoundary>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         </Suspense>
