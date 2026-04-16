@@ -249,10 +249,6 @@ export default function KundliChartSVG({ planets, ascendantSign, ascendantDegree
         });
       })}
 
-      {/* Legend */}
-      <text x={M} y={pct(98.5)} textAnchor="middle" fontSize="7" fontFamily="'Inter',sans-serif" fill={GOLD} opacity="0.5">
-        *Retro  ^Combust  +Vargottama
-      </text>
     </svg>
   );
 }
