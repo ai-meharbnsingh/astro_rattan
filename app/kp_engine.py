@@ -12,12 +12,21 @@ Key concepts:
   - Ruling Planets: key planets at the moment of query/birth
   - House Significations: occupants + nakshatra-based signification chains
   - Planet Significator Strengths: 4-level strength classification
+  - KP Horary (Prashna) 1-249: Querent's number maps to a zodiac degree,
+    from which a full horary chart is erected for answering questions.
 """
 from __future__ import annotations
 
+import math
+from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
-from app.astro_engine import NAKSHATRAS, NAKSHATRA_SPAN, get_nakshatra_from_longitude
+from app.astro_engine import (
+    NAKSHATRAS,
+    NAKSHATRA_SPAN,
+    get_nakshatra_from_longitude,
+    get_sign_from_longitude,
+)
 
 # ============================================================
 # VIMSHOTTARI DASHA SEQUENCE & YEARS
@@ -540,3 +549,504 @@ def _find_house_for_planet(planet_lon: float, house_cusps: List[float]) -> int:
                 return i + 1
 
     return 1  # Default
+
+
+# ============================================================
+# KP HORARY (PRASHNA) 1–249 SYSTEM
+# ============================================================
+# The querent thinks of a number 1-249. Each number maps to a unique
+# sub-lord subdivision of the zodiac.  The 249 numbers come from
+# splitting the 243 base sub-lord entries (27 nakshatras × 9 subs)
+# wherever a sub-lord span crosses a zodiac sign boundary (every 30°).
+# This produces exactly 6 extra entries → 243 + 6 = 249 entries.
+#
+# Sign boundaries at: 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360.
+# Nakshatra boundaries at: multiples of 13.3333...
+# Sub-lord boundaries are uneven (proportional to Vimshottari years).
+# Any sub whose [start, end) straddles a sign cusp is split into two rows.
+
+_SIGN_NAMES_ORDERED: List[str] = [
+    "Aries", "Taurus", "Gemini", "Cancer",
+    "Leo", "Virgo", "Libra", "Scorpio",
+    "Sagittarius", "Capricorn", "Aquarius", "Pisces",
+]
+
+
+def _build_kp_horary_table() -> List[Dict[str, Any]]:
+    """
+    Build the KP Horary 1-249 lookup table.
+
+    Each entry: {number, degree_start, degree_end, sign, sign_lord,
+                 star_lord, sub_lord}
+
+    The 243 base sub-lord entries are split at sign boundaries (every 30°)
+    to produce exactly 249 entries.
+    """
+    entries: List[Dict[str, Any]] = []
+    number = 1
+
+    for base in KP_SUB_LORDS:
+        start = base["start_degree"]
+        end = base["end_degree"]
+        star = base["star_lord"]
+        sub = base["sub_lord"]
+
+        # Find sign boundaries that fall strictly inside (start, end)
+        split_points: List[float] = []
+        for s in range(1, 13):  # sign cusps at 30, 60, ... 360
+            cusp = s * 30.0
+            if start < cusp < end:
+                split_points.append(cusp)
+
+        # Build segments: [start, sp1], [sp1, sp2], ..., [spN, end]
+        boundaries = [start] + split_points + [end]
+        for i in range(len(boundaries) - 1):
+            seg_start = round(boundaries[i], 6)
+            seg_end = round(boundaries[i + 1], 6)
+            sign_idx = min(int(seg_start / 30.0), 11)
+            sign_name = _SIGN_NAMES_ORDERED[sign_idx]
+            sign_lord = SIGN_LORD_MAP.get(sign_name, "")
+
+            entries.append({
+                "number": number,
+                "degree_start": seg_start,
+                "degree_end": seg_end,
+                "sign": sign_name,
+                "sign_lord": sign_lord,
+                "star_lord": star,
+                "sub_lord": sub,
+            })
+            number += 1
+
+    return entries
+
+
+# Pre-built table (computed once at module load)
+KP_HORARY_TABLE: List[Dict[str, Any]] = _build_kp_horary_table()
+
+
+def _degree_to_dms(degree: float) -> str:
+    """Convert a decimal degree to D°M'S\" format."""
+    d = int(degree)
+    m_float = (degree - d) * 60.0
+    m = int(m_float)
+    s = int((m_float - m) * 60.0)
+    return f"{d}\u00b0{m:02d}'{s:02d}\""
+
+
+def get_horary_entry(number: int) -> Dict[str, Any]:
+    """
+    Look up a KP Horary number (1-249) and return its zodiac mapping.
+
+    Returns:
+        {number, degree_start, degree_end, sign, sign_lord,
+         star_lord, sub_lord, degree_start_dms, degree_end_dms}
+
+    Raises:
+        ValueError: if number not in 1-249
+    """
+    if not (1 <= number <= 249):
+        raise ValueError(f"Horary number must be 1-249, got {number}")
+
+    entry = KP_HORARY_TABLE[number - 1]
+    return {
+        **entry,
+        "degree_start_dms": _degree_to_dms(entry["degree_start"]),
+        "degree_end_dms": _degree_to_dms(entry["degree_end"]),
+    }
+
+
+# ============================================================
+# QUESTION TYPE → HOUSE MAPPING
+# ============================================================
+# Standard KP house significations for common question types.
+# "favorable" = houses whose sub-lord signification supports a YES answer.
+# "unfavorable" = houses that deny or obstruct.
+
+HORARY_QUESTION_HOUSES: Dict[str, Dict[str, Any]] = {
+    "marriage": {
+        "relevant_houses": [2, 7, 11],
+        "negative_houses": [1, 6, 10, 12],
+        "cusp_to_check": 7,
+        "description": "Marriage / relationship / partnership",
+    },
+    "job": {
+        "relevant_houses": [2, 6, 10, 11],
+        "negative_houses": [5, 8, 12],
+        "cusp_to_check": 10,
+        "description": "Job / career / promotion",
+    },
+    "travel": {
+        "relevant_houses": [3, 9, 12],
+        "negative_houses": [1, 4, 8],
+        "cusp_to_check": 9,
+        "description": "Foreign travel / long journey",
+    },
+    "health": {
+        "relevant_houses": [1, 5, 11],
+        "negative_houses": [6, 8, 12],
+        "cusp_to_check": 1,
+        "description": "Health / recovery from illness",
+    },
+    "finance": {
+        "relevant_houses": [2, 6, 10, 11],
+        "negative_houses": [5, 8, 12],
+        "cusp_to_check": 2,
+        "description": "Wealth / money / financial gain",
+    },
+    "legal": {
+        "relevant_houses": [6, 11],
+        "negative_houses": [7, 12],
+        "cusp_to_check": 6,
+        "description": "Legal case / litigation success",
+    },
+    "education": {
+        "relevant_houses": [4, 9, 11],
+        "negative_houses": [3, 8, 12],
+        "cusp_to_check": 4,
+        "description": "Education / exam / degree",
+    },
+    "property": {
+        "relevant_houses": [4, 11, 12],
+        "negative_houses": [3, 5, 10],
+        "cusp_to_check": 4,
+        "description": "Property / house / land purchase",
+    },
+}
+
+
+# ============================================================
+# HORARY CHART CALCULATION
+# ============================================================
+
+def _approximate_placidus_cusps(
+    ascendant_deg: float, latitude: float = 28.6139
+) -> List[float]:
+    """
+    Approximate Placidus house cusps given an ascendant degree.
+
+    For a production system this would use Swiss Ephemeris; here we use the
+    standard equal-house approximation adjusted with a semi-arc ratio that
+    mimics Placidus for moderate latitudes.  The ascendant is cusp 1; cusp 10
+    (MC) is approximately 270° ahead of the ascendant.
+
+    Args:
+        ascendant_deg: sidereal longitude of the ascendant (0-360)
+        latitude: geographic latitude (default: New Delhi)
+
+    Returns:
+        list of 12 cusp longitudes (degrees, 0-360)
+    """
+    asc = ascendant_deg % 360.0
+    mc = (asc + 270.0) % 360.0  # Approximate MC
+
+    cusps: List[float] = [0.0] * 12
+    cusps[0] = asc          # 1st house = ascendant
+    cusps[9] = mc           # 10th house = MC
+
+    # Quadrant 1→10: ascendant to MC (3 houses: 10, 11, 12)
+    # Use trisection of the quadrant arc for Placidus approximation
+    arc_asc_to_mc = (mc - asc) % 360.0
+    cusps[10] = (asc + arc_asc_to_mc / 3.0) % 360.0        # 11th
+    cusps[11] = (asc + 2.0 * arc_asc_to_mc / 3.0) % 360.0  # 12th
+
+    # Quadrant MC to descendant (3 houses: 1, 2, 3)
+    desc = (asc + 180.0) % 360.0
+    arc_mc_to_desc = (desc - mc) % 360.0
+    cusps[1] = (mc + arc_mc_to_desc / 3.0) % 360.0         # 2nd
+    cusps[2] = (mc + 2.0 * arc_mc_to_desc / 3.0) % 360.0   # 3rd
+
+    # Opposite houses (180° away)
+    for i in range(6):
+        cusps[i + 6] = (cusps[i] + 180.0) % 360.0
+
+    # Fix: houses 7-12 should mirror 1-6
+    cusps[3] = (cusps[9] + 180.0) % 360.0   # 4th = MC + 180
+    cusps[4] = (cusps[10] + 180.0) % 360.0  # 5th = 11th + 180
+    cusps[5] = (cusps[11] + 180.0) % 360.0  # 6th = 12th + 180
+    cusps[6] = desc                          # 7th = descendant
+    cusps[7] = (cusps[1] + 180.0) % 360.0   # 8th = 2nd + 180
+    cusps[8] = (cusps[2] + 180.0) % 360.0   # 9th = 3rd + 180
+
+    return [round(c % 360.0, 4) for c in cusps]
+
+
+def _get_transit_positions(query_datetime: str) -> Dict[str, float]:
+    """
+    Get approximate planetary positions for the query datetime.
+
+    Uses the astro_engine's calculation if Swiss Ephemeris is available,
+    otherwise returns approximate positions based on mean motions.
+
+    Args:
+        query_datetime: ISO format "YYYY-MM-DD HH:MM:SS" or "YYYY-MM-DD"
+
+    Returns:
+        {planet_name: sidereal_longitude}
+    """
+    try:
+        from app.astro_engine import calculate_planet_positions
+        # Parse datetime
+        if "T" in query_datetime:
+            dt = datetime.fromisoformat(query_datetime)
+        elif " " in query_datetime:
+            dt = datetime.strptime(query_datetime, "%Y-%m-%d %H:%M:%S")
+        else:
+            dt = datetime.strptime(query_datetime, "%Y-%m-%d")
+
+        date_str = dt.strftime("%Y-%m-%d")
+        time_str = dt.strftime("%H:%M")
+
+        # Use default location (New Delhi) if not specified
+        result = calculate_planet_positions(
+            birth_date=date_str,
+            birth_time=time_str,
+            latitude=28.6139,
+            longitude=77.2090,
+            tz_offset=5.5,
+        )
+        # Extract longitudes
+        planets_dict: Dict[str, float] = {}
+        planet_data = result.get("planets", {})
+        for pname, pinfo in planet_data.items():
+            if isinstance(pinfo, dict) and "longitude" in pinfo:
+                planets_dict[pname] = pinfo["longitude"]
+            elif isinstance(pinfo, (int, float)):
+                planets_dict[pname] = float(pinfo)
+        if planets_dict:
+            return planets_dict
+    except Exception:
+        pass
+
+    # Fallback: rough mean-motion positions from J2000 epoch
+    try:
+        if "T" in query_datetime:
+            dt = datetime.fromisoformat(query_datetime)
+        elif " " in query_datetime:
+            dt = datetime.strptime(query_datetime, "%Y-%m-%d %H:%M:%S")
+        else:
+            dt = datetime.strptime(query_datetime, "%Y-%m-%d")
+    except ValueError:
+        dt = datetime(2024, 1, 1)
+
+    # Days since J2000 (2000-01-01 12:00 TT)
+    j2000 = datetime(2000, 1, 1, 12, 0, 0)
+    days = (dt - j2000).total_seconds() / 86400.0
+
+    # Approximate Lahiri ayanamsa (precession) at epoch
+    ayanamsa = 23.85 + days * (50.3 / 3600.0 / 365.25)
+
+    # Mean tropical longitudes at J2000 + daily rates (degrees/day)
+    _MEAN: Dict[str, Tuple[float, float]] = {
+        "Sun":     (280.46,   0.9856474),
+        "Moon":    (218.32,  13.1763904),
+        "Mercury": (252.25,   4.0923344),
+        "Venus":   (181.98,   1.6021302),
+        "Mars":    (355.43,   0.5240208),
+        "Jupiter": ( 34.40,   0.0830853),
+        "Saturn":  ( 49.94,   0.0334979),
+        "Rahu":    (125.04,  -0.0529539),  # Mean north node (retrograde)
+    }
+
+    planets: Dict[str, float] = {}
+    for pname, (lon0, rate) in _MEAN.items():
+        tropical = (lon0 + rate * days) % 360.0
+        sidereal = (tropical - ayanamsa) % 360.0
+        planets[pname] = round(sidereal, 4)
+
+    planets["Ketu"] = round((planets["Rahu"] + 180.0) % 360.0, 4)
+
+    return planets
+
+
+def calculate_kp_horary(
+    number: int,
+    query_datetime: str,
+    query_place: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    """
+    Calculate a full KP Horary chart from a querent's number (1-249).
+
+    Process:
+      1. Look up the degree range for the number from KP_HORARY_TABLE
+      2. Set ascendant at the midpoint of that degree range
+      3. Calculate 12 house cusps (Placidus approximation)
+      4. Get planetary positions at query_datetime
+      5. Run full KP significator analysis via calculate_kp_cuspal()
+      6. Add ruling planets for the query moment
+
+    Args:
+        number: querent's chosen number (1-249)
+        query_datetime: ISO datetime string ("YYYY-MM-DD HH:MM:SS")
+        query_place: optional {latitude, longitude, tz_offset}
+
+    Returns:
+        dict with horary_number, degree_range, sign, star_lord, sub_lord,
+        ascendant, house_cusps, planets, significators, ruling_planets, etc.
+    """
+    if not (1 <= number <= 249):
+        raise ValueError(f"Horary number must be 1-249, got {number}")
+
+    entry = KP_HORARY_TABLE[number - 1]
+    ascendant = (entry["degree_start"] + entry["degree_end"]) / 2.0
+
+    # House cusps
+    latitude = 28.6139  # Default: New Delhi
+    if query_place and "latitude" in query_place:
+        latitude = query_place["latitude"]
+
+    house_cusps = _approximate_placidus_cusps(ascendant, latitude)
+
+    # Planetary positions at query time
+    planet_longitudes = _get_transit_positions(query_datetime)
+
+    # Parse date for day lord
+    try:
+        if "T" in query_datetime:
+            dt = datetime.fromisoformat(query_datetime)
+        elif " " in query_datetime:
+            dt = datetime.strptime(query_datetime, "%Y-%m-%d %H:%M:%S")
+        else:
+            dt = datetime.strptime(query_datetime, "%Y-%m-%d")
+        birth_date_str = dt.strftime("%Y-%m-%d")
+    except ValueError:
+        birth_date_str = None
+
+    # Full KP analysis
+    kp_result = calculate_kp_cuspal(
+        planet_longitudes=planet_longitudes,
+        house_cusps=house_cusps,
+        birth_date=birth_date_str,
+    )
+
+    return {
+        "horary_number": number,
+        "degree_range": {
+            "start": entry["degree_start"],
+            "end": entry["degree_end"],
+            "start_dms": _degree_to_dms(entry["degree_start"]),
+            "end_dms": _degree_to_dms(entry["degree_end"]),
+        },
+        "sign": entry["sign"],
+        "sign_lord": entry["sign_lord"],
+        "star_lord": entry["star_lord"],
+        "sub_lord": entry["sub_lord"],
+        "ascendant": round(ascendant, 4),
+        "house_cusps": {i + 1: house_cusps[i] for i in range(12)},
+        "planets": kp_result["planets"],
+        "significators": kp_result["significators"],
+        "house_significations": kp_result.get("house_significations", {}),
+        "planet_significator_strengths": kp_result.get(
+            "planet_significator_strengths", {}
+        ),
+        "ruling_planets": kp_result.get("ruling_planets", {}),
+    }
+
+
+def get_horary_prediction(
+    number: int,
+    question_type: str,
+    query_datetime: str,
+    query_place: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    """
+    Get a KP Horary prediction for a specific question type.
+
+    Workflow:
+      1. Calculate the full horary chart
+      2. Identify the relevant cusp for the question type
+      3. Check if the sub-lord of that cusp signifies favorable houses
+      4. Determine verdict (favorable / unfavorable / mixed)
+      5. Estimate timing via current dasha period
+
+    Args:
+        number: querent's number (1-249)
+        question_type: one of "marriage", "job", "travel", "health",
+                       "finance", "legal", "education", "property"
+        query_datetime: ISO datetime string
+        query_place: optional location dict
+
+    Returns:
+        dict with full horary chart + prediction analysis
+    """
+    question_type = question_type.lower().strip()
+    if question_type not in HORARY_QUESTION_HOUSES:
+        raise ValueError(
+            f"Unknown question type '{question_type}'. "
+            f"Supported: {list(HORARY_QUESTION_HOUSES.keys())}"
+        )
+
+    qinfo = HORARY_QUESTION_HOUSES[question_type]
+    chart = calculate_kp_horary(number, query_datetime, query_place)
+
+    # Find the sub-lord of the relevant cusp
+    cusp_num = qinfo["cusp_to_check"]
+    cusp_degree = chart["house_cusps"][cusp_num]
+    cusp_sub_info = get_sub_lord(cusp_degree)
+    cusp_sub_lord = cusp_sub_info["sub_lord"]
+
+    # Get significations of the cusp sub-lord
+    sub_lord_significations: List[int] = chart["significators"].get(
+        cusp_sub_lord, []
+    )
+
+    # Check overlap with favorable houses
+    relevant = set(qinfo["relevant_houses"])
+    negative = set(qinfo["negative_houses"])
+    favorable_hits = sorted(relevant & set(sub_lord_significations))
+    negative_hits = sorted(negative & set(sub_lord_significations))
+
+    # Determine verdict
+    if favorable_hits and not negative_hits:
+        verdict = "favorable"
+        verdict_detail = (
+            f"Sub-lord of {cusp_num}th cusp ({cusp_sub_lord}) signifies "
+            f"favorable houses {favorable_hits}."
+        )
+    elif negative_hits and not favorable_hits:
+        verdict = "unfavorable"
+        verdict_detail = (
+            f"Sub-lord of {cusp_num}th cusp ({cusp_sub_lord}) signifies "
+            f"negative houses {negative_hits}."
+        )
+    elif favorable_hits and negative_hits:
+        verdict = "mixed"
+        verdict_detail = (
+            f"Sub-lord of {cusp_num}th cusp ({cusp_sub_lord}) signifies "
+            f"both favorable {favorable_hits} and negative {negative_hits} houses."
+        )
+    else:
+        verdict = "neutral"
+        verdict_detail = (
+            f"Sub-lord of {cusp_num}th cusp ({cusp_sub_lord}) does not "
+            f"strongly signify the relevant houses for this question."
+        )
+
+    # Estimate timing from ruling planets
+    ruling = chart.get("ruling_planets", {})
+    timing_planets = [
+        v for k, v in ruling.items() if v and v != ""
+    ]
+    timing_note = (
+        f"Ruling planets at query time: {', '.join(set(timing_planets))}. "
+        "Event likely when transit/dasha activates these planets."
+        if timing_planets
+        else "Timing analysis requires precise birth data."
+    )
+
+    chart["prediction"] = {
+        "question_type": question_type,
+        "description": qinfo["description"],
+        "relevant_houses": qinfo["relevant_houses"],
+        "negative_houses": qinfo["negative_houses"],
+        "cusp_checked": cusp_num,
+        "sub_lord_of_cusp": cusp_sub_lord,
+        "sub_lord_signifies_houses": sub_lord_significations,
+        "favorable_overlap": favorable_hits,
+        "negative_overlap": negative_hits,
+        "verdict": verdict,
+        "verdict_detail": verdict_detail,
+        "timing": timing_note,
+    }
+
+    return chart

@@ -27,6 +27,7 @@ from app.divisional_charts import (
     calculate_divisional_chart_detailed,
     calculate_divisional_houses,
     calculate_d60_analysis,
+    calculate_d108_analysis,
     DIVISIONAL_CHARTS,
 )
 from app.ashtakvarga_engine import calculate_ashtakvarga
@@ -36,7 +37,11 @@ from app.transit_engine import calculate_transits, calculate_transit_forecast
 from app.kp_engine import calculate_kp_cuspal
 from app.lifelong_sade_sati import calculate_lifelong_sade_sati
 from app.yogini_dasha_engine import calculate_yogini_dasha
+from app.kalachakra_engine import calculate_kalachakra_dasha
 from app.reports.kundli_report import build_full_report
+from app.birth_rectification_engine import calculate_rectification
+from app.sarvatobhadra_chakra_engine import calculate_sarvatobhadra
+from app.models import BirthRectificationRequest, SarvatobhadraRequest, D108AnalysisRequest
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -885,6 +890,29 @@ def get_yogini_dasha(
     moon_longitude = moon_info.get("longitude", 0.0)
     result = calculate_yogini_dasha(moon_nakshatra, str(row["birth_date"]), moon_longitude)
     return result
+
+
+@router.get("/{kundli_id}/kalachakra-dasha", status_code=status.HTTP_200_OK)
+def get_kalachakra_dasha(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Calculate Kalachakra Dasha periods for a kundli."""
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    moon_info = chart.get("planets", {}).get("Moon", {})
+    moon_longitude = moon_info.get("longitude", 0.0)
+    result = calculate_kalachakra_dasha(
+        moon_longitude=moon_longitude,
+        birth_date=str(row["birth_date"]),
+        birth_time=row.get("birth_time") or "12:00:00",
+    )
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
 @router.get("/{kundli_id}/upagrahas", status_code=status.HTTP_200_OK)
 def get_upagrahas(
     kundli_id: str,
@@ -2302,3 +2330,116 @@ def free_preview_pdf(
         media_type="application/pdf",
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )
+
+
+# ─────────────────────────────────────────────────────────────
+# Birth Rectification — test multiple times against life events
+# ─────────────────────────────────────────────────────────────
+
+@router.post("/birth-rectification", status_code=status.HTTP_200_OK)
+def birth_rectification(
+    body: BirthRectificationRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Test multiple birth times within a window and score each candidate
+    by how well Vimshottari Dasha + transits explain known life events.
+    Returns the top candidates ranked by score.
+    """
+    # Convert LifeEvent models to plain dicts for the engine
+    life_events = [{"date": e.date, "type": e.type} for e in body.life_events]
+
+    try:
+        result = calculate_rectification(
+            birth_date=body.birth_date,
+            time_window_start=body.time_window_start,
+            time_window_end=body.time_window_end,
+            birth_place=body.birth_place,
+            life_events=life_events,
+            step_minutes=body.step_minutes,
+            tz_offset=body.tz_offset,
+        )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(exc),
+        )
+    except Exception as exc:
+        logger.error("Birth rectification error: %s", exc, exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Calculation error — please try again",
+        )
+
+    return result
+
+
+# ─────────────────────────────────────────────────────────────
+# Sarvatobhadra Chakra — 9x9 grid with Vedha analysis
+# ─────────────────────────────────────────────────────────────
+
+@router.post("/sarvatobhadra", status_code=status.HTTP_200_OK)
+def sarvatobhadra_chakra(
+    body: SarvatobhadraRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Calculate the Sarvatobhadra Chakra with natal and transit placements
+    and Vedha (obstruction) analysis.
+
+    Returns 9x9 grid, natal/transit placements, vedha relationships,
+    and auspicious/inauspicious transit effects.
+    """
+    try:
+        result = calculate_sarvatobhadra(
+            planet_positions=body.natal_positions,
+            transit_positions=body.transit_positions,
+        )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(exc),
+        )
+    except Exception as exc:
+        logger.error("Sarvatobhadra chakra error: %s", exc, exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Calculation error — please try again",
+        )
+
+    return result
+
+
+# ─────────────────────────────────────────────────────────────
+# D108 Ashtottaramsa — deepest karmic divisional chart
+# ─────────────────────────────────────────────────────────────
+
+@router.post("/divisional/d108", status_code=status.HTTP_200_OK)
+def d108_analysis(
+    body: D108AnalysisRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Detailed D108 Ashtottaramsa analysis — deepest karmic chart.
+
+    D108 reveals past-life spiritual progress, moksha indicators, and
+    the deepest karmic patterns. Returns d108 positions, spiritual
+    indicators, moksha potential, past-life karma, and interpretation.
+    """
+    try:
+        result = calculate_d108_analysis(
+            planet_longitudes=body.planet_longitudes,
+        )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(exc),
+        )
+    except Exception as exc:
+        logger.error("D108 analysis error: %s", exc, exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Calculation error — please try again",
+        )
+
+    return result

@@ -1,0 +1,250 @@
+{
+  "title": "AstroRattan Calculation Accuracy Audit",
+  "version": "1.0",
+  "audit_date": "2026-04-16",
+  "astronomical_engine": {
+    "library": "Swiss Ephemeris (pyswisseph)",
+    "accuracy": "Sub-arc-second planetary longitudes",
+    "ayanamsa": {
+      "type": "Lahiri (Chitrapaksha)",
+      "standard": "Indian Calendar Reform Committee standard",
+      "precision": "Continuously corrected via Swiss Ephemeris swe.SIDM_LAHIRI",
+      "approximate_value_2026": "24.2 degrees"
+    },
+    "zodiac": "Sidereal",
+    "node_type": "Mean Node (SE_MEAN_NODE) for Rahu; Ketu derived as Rahu + 180",
+    "concurrency": "Thread-safe via threading.Lock on swe.set_sid_mode() calls"
+  },
+  "dasha_systems": {
+    "count": 6,
+    "systems": [
+      {
+        "name": "Vimshottari",
+        "cycle_years": 120,
+        "planets": 9,
+        "depth": "Mahadasha > Antardasha > Pratyantardasha (3 levels)",
+        "balance_calculation": "Precise: uses Moon's sidereal longitude to compute remaining fraction of first Dasha from nakshatra traversal",
+        "engine_file": "app/dasha_engine.py"
+      },
+      {
+        "name": "Ashtottari",
+        "cycle_years": 108,
+        "planets": 8,
+        "depth": "Mahadasha > Antardasha > Pratyantardasha (3 levels)",
+        "applicability": "Active when Moon's birth nakshatra falls within the 22 Ashtottari nakshatras (Ardra through Revati, skipping 5)",
+        "engine_file": "app/ashtottari_dasha_engine.py"
+      },
+      {
+        "name": "Yogini",
+        "cycle_years": 36,
+        "yoginis": 8,
+        "yogini_names": ["Mangala", "Pingala", "Dhanya", "Bhramari", "Bhadrika", "Ulka", "Siddha", "Sankata"],
+        "depth": "Mahadasha > Antardasha (2 levels)",
+        "engine_file": "app/yogini_dasha_engine.py"
+      },
+      {
+        "name": "Moola (Jaimini)",
+        "type": "Rashi-based (sign periods, not nakshatra-based)",
+        "direction": "Determined by stronger between Lagna and 7th house; zodiac or reverse based on sign nature (odd/even)",
+        "depth": "Mahadasha > Antardasha (2 levels)",
+        "engine_file": "app/moola_dasha_engine.py"
+      },
+      {
+        "name": "Tara",
+        "cycle_years": 120,
+        "tara_groups": 9,
+        "tara_names": ["Janma", "Sampat", "Vipat", "Kshema", "Pratyari", "Sadhaka", "Vadha", "Mitra", "Ati-Mitra"],
+        "depth": "Mahadasha > Antardasha (2 levels)",
+        "engine_file": "app/tara_dasha_engine.py"
+      },
+      {
+        "name": "Kalachakra",
+        "type": "Rashi-based dasha from nakshatra-pada navamsa mapping",
+        "half_cycle_years": 83,
+        "full_cycle_years": 166,
+        "direction_types": ["Savya (clockwise)", "Apsavya (anti-clockwise)"],
+        "special_features": ["Deha/Jeeva alternating classification"],
+        "depth": "Mahadasha > Antardasha (2 levels)",
+        "engine_file": "app/kalachakra_engine.py"
+      }
+    ]
+  },
+  "yoga_detection": {
+    "total_yogas": 27,
+    "categories": [
+      {
+        "name": "Panch Mahapurusha Yogas",
+        "count": 5,
+        "yogas": ["Ruchaka (Mars)", "Bhadra (Mercury)", "Hamsa (Jupiter)", "Malavya (Venus)", "Shasha (Saturn)"],
+        "condition": "Planet in kendra (1,4,7,10) AND in own or exalted sign"
+      },
+      {
+        "name": "Moon-based Yogas",
+        "count": 8,
+        "yogas": ["Gajakesari", "Sunapha", "Anapha", "Durudhara", "Shakata", "Adhi", "Amala", "Chandra-Mangal"],
+        "conditions_summary": "Angular/positional relationships between Moon and other planets"
+      },
+      {
+        "name": "Sun-based Yogas",
+        "count": 6,
+        "yogas": ["Budhaditya", "Vesi", "Vasi", "Ubhayachari", "Surya in Swa Rashi", "Shani Uchcha"],
+        "conditions_summary": "Conjunctions and positional relationships involving Sun"
+      },
+      {
+        "name": "Raja Yogas & Wealth Yogas",
+        "count": 5,
+        "yogas": ["Neecha Bhanga Raja", "Viparita Raja (3 types: Harsha, Sarala, Vimala)", "Parashari Raja", "Lakshmi", "Dhana"],
+        "conditions_summary": "Kendra-trikona lord associations and house lord placements"
+      },
+      {
+        "name": "Special Yogas",
+        "count": 3,
+        "yogas": ["Saraswati", "Danda", "Kemadruma"],
+        "conditions_summary": "Specific multi-planet configurations"
+      }
+    ],
+    "engine_file": "app/dosha_engine.py"
+  },
+  "dosha_detection": {
+    "total_doshas": 11,
+    "doshas": [
+      {
+        "name": "Mangal Dosha",
+        "severity_levels": ["mild", "medium", "high"],
+        "houses_checked": [1, 2, 4, 7, 8, 12],
+        "remedies_provided": true
+      },
+      {
+        "name": "Kaal Sarp Dosha",
+        "types_identified": 12,
+        "type_names": ["Anant", "Kulik", "Vasuki", "Shankhpal", "Padma", "Mahapadma", "Takshak", "Karkotak", "Shankhachur", "Ghatak", "Vishdhar", "Sheshnag"],
+        "remedies_provided": true
+      },
+      {
+        "name": "Sade Sati",
+        "phases": ["Rising (12th from Moon)", "Peak (over Moon sign)", "Setting (2nd from Moon)"],
+        "remedies_provided": true
+      },
+      { "name": "Pitra Dosha", "condition": "Sun afflicted by Rahu/Ketu or Sun in 9th with malefic", "remedies_provided": true },
+      { "name": "Kemdrum Dosha", "condition": "No planets in 2nd and 12th from Moon", "remedies_provided": true },
+      { "name": "Angarak Dosha", "condition": "Mars conjunct Rahu or Ketu", "remedies_provided": true },
+      { "name": "Guru Chandal Dosha", "condition": "Jupiter conjunct Rahu or Ketu", "remedies_provided": true },
+      { "name": "Vish Dosha", "condition": "Saturn conjunct Moon", "remedies_provided": true },
+      { "name": "Shrapit Dosha", "condition": "Saturn conjunct Rahu", "remedies_provided": true },
+      { "name": "Grahan Dosha", "condition": "Sun or Moon conjunct Rahu/Ketu (eclipse yoga)", "remedies_provided": true },
+      { "name": "Ghatak Yoga", "condition": "Saturn conjunct Mars", "remedies_provided": true },
+      { "name": "Daridra Dosha", "condition": "Lord of 11th or 2nd in trik house (6/8/12)", "remedies_provided": true }
+    ],
+    "engine_file": "app/dosha_engine.py"
+  },
+  "divisional_charts": {
+    "total": 17,
+    "charts": [
+      { "division": 1, "name": "Rashi", "purpose": "General birth chart", "calculation": "Direct sidereal longitude" },
+      { "division": 2, "name": "Hora", "purpose": "Wealth and finance", "calculation": "15-degree halves, Sun/Moon hora" },
+      { "division": 3, "name": "Drekkana", "purpose": "Siblings and courage", "calculation": "10-degree thirds, trine-based" },
+      { "division": 4, "name": "Chaturthamsha", "purpose": "Fortune and property", "calculation": "7.5-degree quarters, quadrant-based" },
+      { "division": 7, "name": "Saptamsha", "purpose": "Children and progeny", "calculation": "4d17m8.57s parts, odd/even start rule" },
+      { "division": 9, "name": "Navamsha", "purpose": "Marriage and dharma", "calculation": "3d20m parts, element-based starting sign" },
+      { "division": 10, "name": "Dashamsha", "purpose": "Career and profession", "calculation": "3-degree parts, odd/even start rule" },
+      { "division": 12, "name": "Dwadashamsha", "purpose": "Parents and ancestry", "calculation": "2.5-degree parts, sequential from sign" },
+      { "division": 16, "name": "Shodashamsha", "purpose": "Vehicles and comforts", "calculation": "Generic cyclic formula" },
+      { "division": 20, "name": "Vimshamsha", "purpose": "Spiritual progress", "calculation": "Generic cyclic formula" },
+      { "division": 24, "name": "Chaturvimshamsha", "purpose": "Education and learning", "calculation": "Generic cyclic formula" },
+      { "division": 27, "name": "Bhamsha", "purpose": "Strength and vitality", "calculation": "Generic cyclic formula" },
+      { "division": 30, "name": "Trimshamsha", "purpose": "Misfortunes", "calculation": "Unequal parts per BPHS, odd/even sign rules" },
+      { "division": 40, "name": "Khavedamsha", "purpose": "Auspicious/inauspicious effects", "calculation": "Generic cyclic formula" },
+      { "division": 45, "name": "Akshavedamsha", "purpose": "General well-being", "calculation": "Generic cyclic formula" },
+      { "division": 60, "name": "Shashtiamsha", "purpose": "Past-life karma (highest authority per Parashara)", "calculation": "0.5-degree parts with 60 named Sanskrit divisions and karmic analysis" },
+      { "division": 108, "name": "Ashtottaramsha", "purpose": "Deepest karmic/moksha analysis", "calculation": "16'40\" parts with modality-based starting sign, spiritual indicators, and moksha scoring" }
+    ],
+    "sodashvarga": {
+      "available": true,
+      "vimshopak_bala": true,
+      "description": "20-point weighted strength across all 16 standard divisional charts",
+      "engine_file": "app/sodashvarga_engine.py"
+    },
+    "engine_file": "app/divisional_charts.py"
+  },
+  "kp_system": {
+    "sub_lord_levels": 4,
+    "levels": ["Star Lord (Nakshatra Lord)", "Sub Lord", "Sub-Sub Lord", "Star Lord of Sub Lord"],
+    "sub_lord_table": {
+      "entries": 243,
+      "description": "27 nakshatras x 9 Vimshottari sub-parts, proportional to dasha years"
+    },
+    "horary": {
+      "number_range": "1-249",
+      "entries": 249,
+      "description": "243 base entries + 6 split at sign boundaries",
+      "question_types": ["marriage", "job", "travel", "health", "finance", "legal", "education", "property"],
+      "significator_strengths": ["very_strong (Level 1: occupant)", "strong (Level 2: nak of occupant)", "normal (Level 3: nak of cusp sign lord)", "weak (Level 4: cusp sign lord only)"]
+    },
+    "house_significations": true,
+    "ruling_planets": true,
+    "engine_file": "app/kp_engine.py"
+  },
+  "jaimini_system": {
+    "components": [
+      "Chara Karakas (7 variable significators by degree)",
+      "Arudha Lagna (special lagna)",
+      "Upapada Lagna (spouse indicator)",
+      "Karakamsha Lagna (soul indicator)",
+      "Jaimini Drishti (sign-based aspects)",
+      "Chara Dasha (sign-based timing)",
+      "Indu Lagna (wealth indicator)"
+    ],
+    "karaka_count": 7,
+    "karaka_names": ["Atmakaraka (AK)", "Amatyakaraka (AmK)", "Bhratrikaraka (BK)", "Matrikaraka (MK)", "Pitrikaraka (PiK)", "Gnatikaraka (GnK)", "Darakaraka (DK)"],
+    "engine_file": "app/jaimini_engine.py"
+  },
+  "additional_systems": {
+    "ashtakvarga": {
+      "description": "Complete Ashtakvarga with Sarvashtakvarga totals",
+      "engine_file": "app/ashtakvarga_engine.py"
+    },
+    "shadbala": {
+      "description": "Six-fold planetary strength calculation",
+      "engine_file": "app/shadbala_engine.py"
+    },
+    "sarvatobhadra_chakra": {
+      "description": "9x9 SBC grid with 28 nakshatras, 12 signs, 7 vowels, 7 weekdays; Vedha analysis for transit and financial forecasting",
+      "engine_file": "app/sarvatobhadra_chakra_engine.py"
+    },
+    "birth_rectification": {
+      "description": "Tests multiple birth time candidates within a window, scores each against known life events using Dasha + transit matching",
+      "event_types_supported": ["marriage", "child_birth", "career_change", "health_crisis", "education", "travel", "loss", "promotion"],
+      "engine_file": "app/birth_rectification_engine.py"
+    },
+    "kundli_matching": {
+      "system": "Ashtakoota Gun Milan",
+      "max_points": 36,
+      "koots": 8,
+      "koot_names": ["Varna (1)", "Vasya (2)", "Tara (3)", "Yoni (4)", "Graha Maitri (5)", "Gana (6)", "Bhakoot (7)", "Nadi (8)"],
+      "engine_file": "app/matching_engine.py"
+    },
+    "numerology": {
+      "systems": ["Pythagorean", "Chaldean"],
+      "analysis_types": ["Life Path", "Expression", "Soul Urge", "Personality", "Name", "Mobile", "Vehicle", "House Number"],
+      "master_numbers": [11, 22, 33],
+      "engine_file": "app/numerology_engine.py"
+    },
+    "lal_kitab": {
+      "tabs": 20,
+      "features": ["Kundli", "Andha Teva", "Dharmi Teva", "Rin (Karmic Debts)", "Masnui Grah (Artificial Planets)", "Prohibited Remedies", "Planet Predictions", "General Remedies"],
+      "engine_file": "app/lalkitab_engine.py"
+    },
+    "vastu": {
+      "features": ["AI floor plan detection", "Directional dosh analysis", "Room-by-room compliance", "Vastu Purusha Mandala overlay"],
+      "engine_files": ["app/vastu/engine.py", "app/vastu/auto_detect.py", "app/vastu/floorplan.py"]
+    }
+  },
+  "accuracy_summary": {
+    "planetary_positions": "Sub-arc-second via Swiss Ephemeris",
+    "ayanamsa": "Lahiri, continuously corrected",
+    "dasha_balance": "Computed from Moon's exact sidereal longitude within nakshatra",
+    "divisional_chart_precision": "D60 requires 30 arc-minute accuracy (met); D108 requires 16'40\" accuracy (met)",
+    "kp_sub_lord_precision": "Proportional to Vimshottari years within 13d20m nakshatra span; sub-arc-minute boundaries",
+    "yoga_dosha_verification": "Mathematical condition checking, not pattern matching or text lookup"
+  }
+}

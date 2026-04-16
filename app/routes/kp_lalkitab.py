@@ -11,8 +11,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.auth import get_current_user
 from app.astro_engine import calculate_planet_positions
 from app.database import get_db
-from app.kp_engine import calculate_kp_cuspal
+from app.kp_engine import calculate_kp_cuspal, calculate_kp_horary, get_horary_prediction
 from app.lalkitab_engine import get_remedies
+from app.models import KPHoraryRequest, KPHoraryPredictRequest
 from app.lalkitab_advanced import (
     calculate_masnui_planets,
     calculate_karmic_debts,
@@ -1061,3 +1062,75 @@ def delete_saved_prediction(
     if result.rowcount == 0:
         raise HTTPException(status_code=404, detail="Prediction not found")
     return {"ok": True}
+
+
+# ─────────────────────────────────────────────────────────────
+# KP Horary (Prashna) — 1-249 Number System
+# ─────────────────────────────────────────────────────────────
+
+@router.post("/api/kp/horary")
+def kp_horary(
+    body: KPHoraryRequest,
+    user: dict = Depends(get_current_user),
+):
+    """
+    Calculate a full KP Horary chart from querent's number (1-249).
+
+    Returns horary number details, house cusps, planets with star/sub lords,
+    significators, and ruling planets for the query moment.
+    """
+    try:
+        result = calculate_kp_horary(
+            number=body.number,
+            query_datetime=body.query_datetime,
+            query_place=body.query_place,
+        )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(exc),
+        )
+    except Exception as exc:
+        logger.error("KP Horary calculation error: %s", exc, exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Calculation error — please try again",
+        )
+
+    return result
+
+
+@router.post("/api/kp/horary/predict")
+def kp_horary_predict(
+    body: KPHoraryPredictRequest,
+    user: dict = Depends(get_current_user),
+):
+    """
+    Get a KP Horary prediction for a specific question type.
+
+    Supported question types: marriage, job, travel, health, finance,
+    legal, education, property.
+
+    Returns full horary chart plus prediction analysis with verdict
+    (favorable / unfavorable / mixed) and timing estimate.
+    """
+    try:
+        result = get_horary_prediction(
+            number=body.number,
+            question_type=body.question_type,
+            query_datetime=body.query_datetime,
+            query_place=body.query_place,
+        )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(exc),
+        )
+    except Exception as exc:
+        logger.error("KP Horary prediction error: %s", exc, exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Calculation error — please try again",
+        )
+
+    return result

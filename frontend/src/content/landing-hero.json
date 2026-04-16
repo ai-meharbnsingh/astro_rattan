@@ -1,0 +1,110 @@
+{
+  "headline_en": "Vedic Astrology with Swiss Ephemeris Precision",
+  "headline_hi": "स्विस इफ़ेमेरिस सटीकता के साथ वैदिक ज्योतिष",
+  "subheadline_en": "Professional-grade Kundli, Lal Kitab, KP System, and more -- powered by NASA-grade astronomical calculations. Available in Hindi and English.",
+  "subheadline_hi": "पेशेवर स्तर की कुंडली, लाल किताब, केपी सिस्टम और बहुत कुछ -- NASA-स्तरीय खगोलीय गणनाओं द्वारा संचालित। हिंदी और अंग्रेजी में उपलब्ध।",
+  "stats": [
+    {
+      "value": "17",
+      "label_en": "Divisional Charts",
+      "label_hi": "वर्ग कुंडलियां",
+      "detail_en": "D1 through D108",
+      "detail_hi": "डी1 से डी108 तक"
+    },
+    {
+      "value": "6",
+      "label_en": "Dasha Systems",
+      "label_hi": "दशा पद्धतियां",
+      "detail_en": "Vimshottari, Ashtottari, Yogini, Moola, Tara, Kalachakra",
+      "detail_hi": "विंशोत्तरी, अष्टोत्तरी, योगिनी, मूल, तारा, कालचक्र"
+    },
+    {
+      "value": "38",
+      "label_en": "Yogas & Doshas Checked",
+      "label_hi": "योग और दोष जांचे गए",
+      "detail_en": "27 yogas + 11 doshas",
+      "detail_hi": "27 योग + 11 दोष"
+    },
+    {
+      "value": "20",
+      "label_en": "Lal Kitab Tabs",
+      "label_hi": "लाल किताब टैब",
+      "detail_en": "Kundli, Teva, Rin, Remedies & more",
+      "detail_hi": "कुंडली, टेवा, ऋण, उपाय और बहुत कुछ"
+    },
+    {
+      "value": "249",
+      "label_en": "KP Horary Numbers",
+      "label_hi": "केपी प्रश्न कुंडली",
+      "detail_en": "Complete KP Prashna system",
+      "detail_hi": "संपूर्ण केपी प्रश्न पद्धति"
+    }
+  ],
+  "features_highlight": [
+    {
+      "title_en": "Kundli Generation",
+      "title_hi": "कुंडली निर्माण",
+      "description_en": "Complete birth chart with planetary positions, nakshatras, houses, and aspects -- all calculated using Swiss Ephemeris with Lahiri ayanamsa.",
+      "description_hi": "ग्रहों की स्थिति, नक्षत्र, भाव और दृष्टि के साथ संपूर्ण जन्म कुंडली -- स्विस इफ़ेमेरिस और लाहिरी अयनांश से गणना।",
+      "icon": "kundli"
+    },
+    {
+      "title_en": "Lal Kitab",
+      "title_hi": "लाल किताब",
+      "description_en": "20 specialized analysis tabs covering Andha Teva, Dharmi Teva, Rin, Masnui Grah, prohibited remedies, and planet-by-planet predictions.",
+      "description_hi": "अंधा टेवा, धर्मी टेवा, ऋण, मसनुई ग्रह, वर्जित उपाय और ग्रह-दर-ग्रह भविष्यवाणी सहित 20 विशेष विश्लेषण टैब।",
+      "icon": "lalkitab"
+    },
+    {
+      "title_en": "KP System",
+      "title_hi": "केपी पद्धति",
+      "description_en": "4-level sub-lord precision with Star Lord, Sub Lord, Sub-Sub Lord analysis. Complete KP Horary (Prashna) with 1-249 number system.",
+      "description_hi": "स्टार लॉर्ड, सब लॉर्ड, सब-सब लॉर्ड विश्लेषण के साथ 4-स्तरीय उप-स्वामी सटीकता। 1-249 संख्या पद्धति के साथ संपूर्ण केपी प्रश्न कुंडली।",
+      "icon": "kp"
+    },
+    {
+      "title_en": "Dasha Predictions",
+      "title_hi": "दशा भविष्यवाणी",
+      "description_en": "Six Dasha systems with three levels of depth (Mahadasha, Antardasha, Pratyantardasha). Precise timing from Moon's exact nakshatra position.",
+      "description_hi": "तीन स्तरों की गहराई (महादशा, अंतर्दशा, प्रत्यंतर्दशा) के साथ छह दशा पद्धतियां। चंद्रमा की सटीक नक्षत्र स्थिति से सटीक समय।",
+      "icon": "dasha"
+    },
+    {
+      "title_en": "Kundli Matching",
+      "title_hi": "कुंडली मिलान",
+      "description_en": "Full 36-point Ashtakoota Gun Milan with detailed scoring on all 8 Koots: Varna, Vasya, Tara, Yoni, Graha Maitri, Gana, Bhakoot, and Nadi.",
+      "description_hi": "सभी 8 कूटों पर विस्तृत अंकन के साथ पूर्ण 36-अंक अष्टकूट गुण मिलान: वर्ण, वश्य, तारा, योनि, ग्रह मैत्री, गण, भकूट, और नाड़ी।",
+      "icon": "matching"
+    },
+    {
+      "title_en": "Vastu Shastra",
+      "title_hi": "वास्तु शास्त्र",
+      "description_en": "Upload your floor plan for AI-powered directional analysis. Detects Vastu doshas and provides room-by-room compliance assessment.",
+      "description_hi": "एआई-संचालित दिशात्मक विश्लेषण के लिए अपना फ्लोर प्लान अपलोड करें। वास्तु दोषों का पता लगाता है और कमरे-दर-कमरे अनुपालन मूल्यांकन प्रदान करता है।",
+      "icon": "vastu"
+    }
+  ],
+  "cta_text_en": "Generate Your Free Kundli",
+  "cta_text_hi": "अपनी मुफ्त कुंडली बनाएं",
+  "cta_secondary_en": "Explore All Features",
+  "cta_secondary_hi": "सभी सुविधाएं देखें",
+  "accuracy_badge": "Swiss Ephemeris Powered -- NASA-Grade Accuracy",
+  "accuracy_badge_hi": "स्विस इफ़ेमेरिस संचालित -- NASA-स्तरीय सटीकता",
+  "trust_signals": [
+    {
+      "label_en": "Swiss Ephemeris",
+      "label_hi": "स्विस इफ़ेमेरिस",
+      "description_en": "Sub-arc-second planetary positions"
+    },
+    {
+      "label_en": "Lahiri Ayanamsa",
+      "label_hi": "लाहिरी अयनांश",
+      "description_en": "Indian government standard for Vedic astrology"
+    },
+    {
+      "label_en": "Bilingual",
+      "label_hi": "द्विभाषी",
+      "description_en": "Complete Hindi and English support"
+    }
+  ]
+}

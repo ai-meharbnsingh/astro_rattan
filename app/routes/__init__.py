@@ -13,6 +13,10 @@ from app.routes.ai import router as ai_router
 from app.routes.muhurat import router as muhurat_router
 from app.routes.horoscope import router as horoscope_router
 from app.vastu.routes import router as vastu_router
+from app.routes.yoga_search import router as yoga_search_router
+from app.routes.astro_map import router as astro_map_router
+from app.routes.dasha import router as dasha_router
+from app.routes.interpretations import router as interpretations_router
 
 all_routers = [
     auth_router,
@@ -29,4 +33,8 @@ all_routers = [
     muhurat_router,
     horoscope_router,
     vastu_router,
+    yoga_search_router,
+    astro_map_router,
+    dasha_router,
+    interpretations_router,
 ]

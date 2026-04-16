@@ -1,0 +1,236 @@
+{
+  "title": "Feature Comparison: AstroRattan vs Other Astrology Platforms",
+  "last_updated": "2026-04-16",
+  "competitors": {
+    "astrorattan": {
+      "name": "AstroRattan",
+      "tier": "Professional"
+    },
+    "competitor_generic": {
+      "name": "Generic Free Apps",
+      "tier": "Basic"
+    },
+    "competitor_premium": {
+      "name": "Premium Competitors",
+      "tier": "Premium"
+    }
+  },
+  "categories": [
+    {
+      "name": "Calculation Engine",
+      "features": [
+        {
+          "name": "Swiss Ephemeris (NASA-grade accuracy)",
+          "astrorattan": { "supported": true, "detail": "Sub-arc-second planetary positions via pyswisseph" },
+          "competitor_generic": { "supported": false, "detail": "Simplified mean-motion calculations or basic ephemeris" },
+          "competitor_premium": { "supported": "partial", "detail": "Some use Swiss Ephemeris, many use lower-precision libraries" }
+        },
+        {
+          "name": "Sidereal Zodiac (Vedic)",
+          "astrorattan": { "supported": true, "detail": "Lahiri ayanamsa (Indian government standard)" },
+          "competitor_generic": { "supported": false, "detail": "Tropical zodiac only (Western system)" },
+          "competitor_premium": { "supported": true, "detail": "Most Vedic apps support sidereal" }
+        },
+        {
+          "name": "Ayanamsa Precision",
+          "astrorattan": { "supported": true, "detail": "Continuously corrected Lahiri ayanamsa via Swiss Ephemeris" },
+          "competitor_generic": { "supported": false, "detail": "No ayanamsa correction or rough approximation" },
+          "competitor_premium": { "supported": "partial", "detail": "Fixed or infrequently updated ayanamsa values" }
+        }
+      ]
+    },
+    {
+      "name": "Dasha Systems",
+      "features": [
+        {
+          "name": "Dasha Systems Available",
+          "astrorattan": { "supported": true, "detail": "6 systems: Vimshottari, Ashtottari, Yogini, Moola, Tara, Kalachakra" },
+          "competitor_generic": { "supported": "partial", "detail": "Vimshottari only (if any)" },
+          "competitor_premium": { "supported": "partial", "detail": "Typically 1-3 systems (Vimshottari + sometimes Yogini)" }
+        },
+        {
+          "name": "Dasha Depth (Sub-periods)",
+          "astrorattan": { "supported": true, "detail": "3 levels: Mahadasha, Antardasha, Pratyantardasha" },
+          "competitor_generic": { "supported": "partial", "detail": "Mahadasha only or Mahadasha + Antardasha" },
+          "competitor_premium": { "supported": "partial", "detail": "Usually 2 levels (Mahadasha + Antardasha)" }
+        },
+        {
+          "name": "Dasha Balance from Moon Position",
+          "astrorattan": { "supported": true, "detail": "Precise balance calculated from Moon's sidereal longitude within nakshatra" },
+          "competitor_generic": { "supported": false, "detail": "Full first Dasha assumed or rough estimate" },
+          "competitor_premium": { "supported": "partial", "detail": "Some calculate balance, many approximate" }
+        }
+      ]
+    },
+    {
+      "name": "Divisional Charts",
+      "features": [
+        {
+          "name": "Divisional Charts Available",
+          "astrorattan": { "supported": true, "detail": "17 charts: D1 through D108 (including D60 Shashtiamsha and D108 Ashtottaramsha)" },
+          "competitor_generic": { "supported": "partial", "detail": "D1 (Rashi) only, sometimes D9 (Navamsha)" },
+          "competitor_premium": { "supported": "partial", "detail": "Typically D1-D12, rarely D60 or higher" }
+        },
+        {
+          "name": "D60 Shashtiamsha (Past-Life Karma)",
+          "astrorattan": { "supported": true, "detail": "Full 60-division analysis with Sanskrit names, karmic summary, and birth time sensitivity assessment" },
+          "competitor_generic": { "supported": false, "detail": "Not available" },
+          "competitor_premium": { "supported": "partial", "detail": "Basic D60 chart without karmic interpretation" }
+        },
+        {
+          "name": "D108 Ashtottaramsha (Deepest Karmic Chart)",
+          "astrorattan": { "supported": true, "detail": "Full analysis with spiritual indicators, moksha potential scoring, and past-life karma assessment" },
+          "competitor_generic": { "supported": false, "detail": "Not available" },
+          "competitor_premium": { "supported": false, "detail": "Extremely rare; most platforms stop at D60" }
+        },
+        {
+          "name": "Sodashvarga (16-Chart Summary)",
+          "astrorattan": { "supported": true, "detail": "Complete Sodashvarga with Vimshopak Bala (20-point weighted strength)" },
+          "competitor_generic": { "supported": false, "detail": "Not available" },
+          "competitor_premium": { "supported": "partial", "detail": "Some offer Sodashvarga, few compute Vimshopak Bala" }
+        }
+      ]
+    },
+    {
+      "name": "Advanced Systems",
+      "features": [
+        {
+          "name": "KP System (Krishnamurti Paddhati)",
+          "astrorattan": { "supported": true, "detail": "4-level sub-lord precision (Star Lord, Sub Lord, Sub-Sub Lord, Star Lord of Sub Lord) + Horary 1-249" },
+          "competitor_generic": { "supported": false, "detail": "Not available" },
+          "competitor_premium": { "supported": "partial", "detail": "Basic KP with Star Lord + Sub Lord only" }
+        },
+        {
+          "name": "Jaimini System",
+          "astrorattan": { "supported": true, "detail": "Chara Karakas, Arudha/Upapada/Karakamsha Lagnas, Jaimini Drishti, Chara Dasha, Indu Lagna" },
+          "competitor_generic": { "supported": false, "detail": "Not available" },
+          "competitor_premium": { "supported": "partial", "detail": "Chara Karakas only, rarely full Jaimini suite" }
+        },
+        {
+          "name": "Sarvatobhadra Chakra",
+          "astrorattan": { "supported": true, "detail": "Full 9x9 SBC grid with Vedha analysis for transit and financial forecasting" },
+          "competitor_generic": { "supported": false, "detail": "Not available" },
+          "competitor_premium": { "supported": false, "detail": "Very rare; mostly found in desktop software" }
+        },
+        {
+          "name": "Ashtakvarga System",
+          "astrorattan": { "supported": true, "detail": "Complete Ashtakvarga with Sarvashtakvarga totals" },
+          "competitor_generic": { "supported": false, "detail": "Not available" },
+          "competitor_premium": { "supported": "partial", "detail": "Basic Ashtakvarga tables" }
+        },
+        {
+          "name": "Shadbala (Six-fold Strength)",
+          "astrorattan": { "supported": true, "detail": "Full Shadbala computation for all planets" },
+          "competitor_generic": { "supported": false, "detail": "Not available" },
+          "competitor_premium": { "supported": "partial", "detail": "Some offer basic strength indicators" }
+        }
+      ]
+    },
+    {
+      "name": "Yoga and Dosha Analysis",
+      "features": [
+        {
+          "name": "Yoga Detection",
+          "astrorattan": { "supported": true, "detail": "27 yogas with mathematical verification (Panch Mahapurusha, Gajakesari, Raja Yogas, etc.)" },
+          "competitor_generic": { "supported": "partial", "detail": "5-10 basic yogas, often text-matched not calculated" },
+          "competitor_premium": { "supported": "partial", "detail": "10-15 yogas, varying calculation accuracy" }
+        },
+        {
+          "name": "Dosha Detection",
+          "astrorattan": { "supported": true, "detail": "11 doshas with severity grading, specific remedies, and cancellation checks" },
+          "competitor_generic": { "supported": "partial", "detail": "Mangal Dosha only, binary yes/no" },
+          "competitor_premium": { "supported": "partial", "detail": "3-5 doshas, basic severity" }
+        }
+      ]
+    },
+    {
+      "name": "Lal Kitab",
+      "features": [
+        {
+          "name": "Lal Kitab Analysis",
+          "astrorattan": { "supported": true, "detail": "20 tabs: Kundli, Teva (Andha/Dharmi), Rin, Prohibited Remedies, Masnui Grah, predictions, remedies, and more" },
+          "competitor_generic": { "supported": false, "detail": "Not available" },
+          "competitor_premium": { "supported": "partial", "detail": "Basic Lal Kitab remedies, 1-3 features" }
+        }
+      ]
+    },
+    {
+      "name": "Practical Tools",
+      "features": [
+        {
+          "name": "Birth Time Rectification",
+          "astrorattan": { "supported": true, "detail": "Tests multiple candidates within a time window, scoring against known life events using Dasha + transit matching" },
+          "competitor_generic": { "supported": false, "detail": "Not available" },
+          "competitor_premium": { "supported": false, "detail": "Extremely rare; usually requires paid consultation" }
+        },
+        {
+          "name": "Chart Animation (Transit Visualization)",
+          "astrorattan": { "supported": true, "detail": "Animated transit overlay on birth chart" },
+          "competitor_generic": { "supported": false, "detail": "Static charts only" },
+          "competitor_premium": { "supported": "partial", "detail": "Some offer basic transit overlays" }
+        },
+        {
+          "name": "Kundli Matching (Gun Milan)",
+          "astrorattan": { "supported": true, "detail": "Full 36-point Ashtakoota with all 8 Koots scored individually" },
+          "competitor_generic": { "supported": "partial", "detail": "Basic score only, no detailed Koot breakdown" },
+          "competitor_premium": { "supported": true, "detail": "Most Vedic apps offer Gun Milan" }
+        },
+        {
+          "name": "Vastu Shastra",
+          "astrorattan": { "supported": true, "detail": "AI-powered floor plan analysis with directional dosh detection" },
+          "competitor_generic": { "supported": false, "detail": "Not available" },
+          "competitor_premium": { "supported": "partial", "detail": "Basic Vastu tips, no floor plan analysis" }
+        },
+        {
+          "name": "Numerology",
+          "astrorattan": { "supported": true, "detail": "Pythagorean + Chaldean systems; name, mobile, vehicle, house number analysis" },
+          "competitor_generic": { "supported": "partial", "detail": "Basic life path number only" },
+          "competitor_premium": { "supported": "partial", "detail": "Pythagorean system, limited analysis types" }
+        },
+        {
+          "name": "Panchang (Hindu Calendar)",
+          "astrorattan": { "supported": true, "detail": "Daily tithi, nakshatra, yoga, karana, festivals, sunrise/sunset" },
+          "competitor_generic": { "supported": "partial", "detail": "Basic daily horoscope, no panchang" },
+          "competitor_premium": { "supported": true, "detail": "Most Vedic apps include panchang" }
+        },
+        {
+          "name": "Horoscope (Daily/Weekly/Monthly)",
+          "astrorattan": { "supported": true, "detail": "Transit-based predictions for all 12 signs" },
+          "competitor_generic": { "supported": true, "detail": "Generic predictions, often not transit-based" },
+          "competitor_premium": { "supported": true, "detail": "Available on most platforms" }
+        }
+      ]
+    },
+    {
+      "name": "Platform",
+      "features": [
+        {
+          "name": "Bilingual (Hindi + English)",
+          "astrorattan": { "supported": true, "detail": "Full Hindi and English support throughout all features" },
+          "competitor_generic": { "supported": false, "detail": "English only (Western apps)" },
+          "competitor_premium": { "supported": "partial", "detail": "Some offer Hindi, many English-only" }
+        },
+        {
+          "name": "Professional Accuracy",
+          "astrorattan": { "supported": true, "detail": "Swiss Ephemeris + Lahiri ayanamsa + thread-safe concurrent computation" },
+          "competitor_generic": { "supported": false, "detail": "Approximate calculations, entertainment-grade" },
+          "competitor_premium": { "supported": "partial", "detail": "Varies widely between platforms" }
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "astrorattan_total_features": 30,
+    "astrorattan_unique_features": [
+      "D108 Ashtottaramsha chart",
+      "6 Dasha systems with 3-level depth",
+      "KP Horary 1-249 system",
+      "Full Jaimini suite (5 components)",
+      "Sarvatobhadra Chakra",
+      "Birth time rectification engine",
+      "20-tab Lal Kitab analysis",
+      "AI-powered Vastu floor plan analysis",
+      "27 yogas + 11 doshas with severity grading"
+    ]
+  }
+}

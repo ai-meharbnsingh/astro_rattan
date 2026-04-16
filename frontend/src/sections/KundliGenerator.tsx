@@ -35,6 +35,12 @@ import SodashvargaTab from '@/components/kundli/SodashvargaTab';
 import AspectsTab from '@/components/kundli/AspectsTab';
 import SadesatiTab from '@/components/kundli/SadesatiTab';
 import MundaneTab from '@/components/kundli/MundaneTab';
+import DashaSelector from '@/components/kundli/DashaSelector';
+import D108Analysis from '@/components/kundli/D108Analysis';
+import ChartAnimation from '@/components/kundli/ChartAnimation';
+import BirthRectification from '@/components/kundli/BirthRectification';
+import KPHorary from '@/components/kp/KPHorary';
+import SarvatobhadraChakra from '@/components/sarvatobhadra/SarvatobhadraChakra';
 
 // ── Single source of truth for ALL tab definitions ──────────
 interface TabDef {
@@ -59,19 +65,25 @@ const TAB_DEFS: Omit<TabDef, 'onActivate'>[] = [
   // Charts
   { value: 'ashtakvarga',   labelEn: 'Ashtakvarga',    labelHi: 'अष्टकवर्ग',        primary: false, category: 'charts' },
   { value: 'sodashvarga',   labelEn: 'Sodashvarga',    labelHi: 'षोडशवर्ग',         primary: false, category: 'charts' },
+  { value: 'd108',          labelEn: 'D108 Chart',     labelHi: 'D108 अष्टोत्तरांश',  primary: false, category: 'charts' },
+  { value: 'animation',     labelEn: 'Chart Animation', labelHi: 'चार्ट एनिमेशन',    primary: false, category: 'charts' },
+  { value: 'sarvatobhadra', labelEn: 'Sarvatobhadra',   labelHi: 'सर्वतोभद्र चक्र',   primary: false, category: 'charts' },
   // Timing
   { value: 'yogini',        labelEn: 'Yogini Dasha',   labelHi: 'योगिनी दशा',       primary: false, category: 'timing' },
+  { value: 'dasha-systems', labelEn: 'Dasha Systems',  labelHi: 'दशा पद्धतियाँ',     primary: false, category: 'timing' },
   { value: 'varshphal',     labelEn: 'Varshphal',      labelHi: 'वर्षफल',           primary: false, category: 'timing' },
   { value: 'transits',      labelEn: 'Transits',       labelHi: 'गोचर',            primary: false, category: 'timing' },
   { value: 'sadesati',      labelEn: 'Sade Sati',      labelHi: 'साढ़े साती',        primary: false, category: 'timing' },
   // Analysis
   { value: 'shadbala',      labelEn: 'Shadbala',       labelHi: 'षड्बल',            primary: false, category: 'analysis' },
   { value: 'kp',            labelEn: 'KP System',      labelHi: 'केपी सिस्टम',      primary: false, category: 'analysis' },
+  { value: 'kp-horary',     labelEn: 'KP Horary',     labelHi: 'केपी प्रश्न',       primary: false, category: 'analysis' },
   { value: 'jaimini',       labelEn: 'Jaimini',        labelHi: 'जैमिनी',           primary: false, category: 'analysis' },
   { value: 'iogita',        labelEn: 'Iogita',         labelHi: 'आयोगिता',          primary: false, category: 'analysis' },
   { value: 'aspects-matrix',labelEn: 'Aspects Matrix',  labelHi: 'दृष्टि मैट्रिक्स', primary: false, category: 'analysis' },
   // Advanced
   { value: 'mundane',       labelEn: 'Mundane',        labelHi: 'मुंडन ज्योतिष',    primary: false, category: 'advanced' },
+  { value: 'rectification', labelEn: 'Birth Rectification', labelHi: 'जन्म समय शोधन', primary: false, category: 'advanced' },
   { value: 'upagrahas',     labelEn: 'Upagrahas',      labelHi: 'उपग्रह',           primary: false, category: 'advanced' },
   { value: 'lordships',     labelEn: 'Lordships',      labelHi: 'लॉर्डशिप',         primary: false, category: 'advanced' },
   { value: 'details',       labelEn: 'Birth Details',   labelHi: 'विवरण',            primary: false, category: 'advanced' },
@@ -144,6 +156,11 @@ export default function KundliGenerator() {
   const [showMobileMoreSheet, setShowMobileMoreSheet] = useState(false);
   const moreDropdownRef = useRef<HTMLDivElement>(null);
 
+  // Sarvatobhadra Chakra state
+  const [sbcGrid, setSbcGrid] = useState<any[][] | null>(null);
+  const [sbcVedhas, setSbcVedhas] = useState<any[]>([]);
+  const [loadingSbc, setLoadingSbc] = useState(false);
+
   // Close desktop dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -154,6 +171,21 @@ export default function KundliGenerator() {
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
+
+  // Fetch Sarvatobhadra Chakra data
+  const fetchSarvatobhadra = async () => {
+    if (sbcGrid || !result?.id) return;
+    setLoadingSbc(true);
+    try {
+      const res = await api.post('/api/kundli/sarvatobhadra', { kundli_id: result.id });
+      setSbcGrid(res.grid || null);
+      setSbcVedhas(res.vedhas || []);
+    } catch (err) {
+      console.error('Failed to load Sarvatobhadra data', err);
+    } finally {
+      setLoadingSbc(false);
+    }
+  };
 
   // Map of tab value -> onActivate fetch function
   const tabActivateMap: Record<string, () => void> = {
@@ -175,6 +207,7 @@ export default function KundliGenerator() {
     'aspects-matrix': fetchWesternAspects,
     'jaimini': fetchJaimini,
     'sadesati': fetchSadesati,
+    'sarvatobhadra': fetchSarvatobhadra,
   };
 
   const handleTabChange = (tabValue: string) => {
@@ -572,6 +605,77 @@ export default function KundliGenerator() {
           <TabsContent value="milan" className="min-h-[300px]">
             <KundliMilanTab savedKundlis={savedKundlis} currentKundliId={result?.id} />
           </TabsContent>
+
+          <TabsContent value="dasha-systems" className="min-h-[300px]">
+            <DashaSelector
+              kundliId={result?.id || ''}
+              vimshottariData={dashaData}
+              yoginiData={yoginiData}
+              language={language}
+              t={t}
+            />
+          </TabsContent>
+
+          <TabsContent value="d108" className="min-h-[300px]">
+            <D108Analysis
+              kundliId={result?.id || ''}
+              language={language}
+              t={t}
+            />
+          </TabsContent>
+
+          <TabsContent value="animation" className="min-h-[300px]">
+            <ChartAnimation
+              kundliId={result?.id || ''}
+              natalPlanets={(planets || []).map((p: any) => ({
+                planet: p.planet,
+                sign: p.sign,
+                longitude: typeof p.longitude === 'number' ? p.longitude : (p.sign_degree || 0),
+              }))}
+              lagnaLongitude={result?.chart_data?.lagna_degree || 0}
+              language={language}
+              t={t}
+            />
+          </TabsContent>
+
+          <TabsContent value="rectification" className="min-h-[300px]">
+            <BirthRectification
+              birthDate={result?.birth_date || formData.date}
+              birthPlace={{
+                lat: formData.latitude,
+                lon: formData.longitude,
+                name: result?.birth_place || formData.place,
+              }}
+              language={language}
+              t={t}
+            />
+          </TabsContent>
+
+          <TabsContent value="kp-horary" className="min-h-[300px]">
+            <KPHorary language={language} t={t} />
+          </TabsContent>
+
+          <TabsContent value="sarvatobhadra" className="min-h-[300px]">
+            {loadingSbc ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                <span className="ml-2 text-foreground">{language === 'hi' ? 'सर्वतोभद्र चक्र लोड हो रहा है...' : 'Loading Sarvatobhadra Chakra...'}</span>
+              </div>
+            ) : sbcGrid ? (
+              <div className="max-w-2xl mx-auto">
+                <SarvatobhadraChakra
+                  grid={sbcGrid}
+                  vedhas={sbcVedhas}
+                  showVedhaLines={true}
+                  className="w-full"
+                />
+              </div>
+            ) : (
+              <p className="text-center text-foreground py-8">
+                {language === 'hi' ? 'सर्वतोभद्र चक्र डेटा उपलब्ध नहीं है' : 'No Sarvatobhadra Chakra data available'}
+              </p>
+            )}
+          </TabsContent>
         </Tabs>
 
         {/* Summary Modal */}
@@ -672,7 +776,7 @@ export default function KundliGenerator() {
       <section className="max-w-3xl mx-auto px-4 pb-20 pt-2">
         <div className="text-center mb-6">
           <h2 className="text-xl sm:text-2xl  text-foreground">
-            {hi ? '23 विश्लेषण मॉड्यूल — एक ही जगह' : '23 Analysis Modules — All in One Place'}
+            {hi ? '29 विश्लेषण मॉड्यूल — एक ही जगह' : '29 Analysis Modules — All in One Place'}
           </h2>
         </div>
 

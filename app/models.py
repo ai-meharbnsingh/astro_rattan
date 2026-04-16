@@ -174,6 +174,73 @@ class DivisionalChartRequest(BaseModel):
 
 
 # ============================================================
+# Dasha (Ashtottari, Moola, Tara)
+# ============================================================
+class AshtottariDashaRequest(BaseModel):
+    birth_nakshatra: str = Field(min_length=1, description="Moon's birth nakshatra (e.g. 'Ardra', 'Pushya')")
+    birth_date: str  # YYYY-MM-DD
+    moon_longitude: Optional[float] = Field(default=None, ge=0, le=360, description="Moon's sidereal longitude in degrees")
+
+class MoolaDashaRequest(BaseModel):
+    lagna_sign: str = Field(min_length=1, description="Ascendant sign (e.g. 'Aries')")
+    seventh_sign: str = Field(min_length=1, description="7th house sign (e.g. 'Libra')")
+    planet_positions: dict = Field(description="Planet positions as {planet: sign} or {planet: {sign, longitude}}")
+    birth_date: str  # YYYY-MM-DD
+
+class TaraDashaRequest(BaseModel):
+    birth_nakshatra: str = Field(min_length=1, description="Moon's birth nakshatra (e.g. 'Ashwini', 'Rohini')")
+    birth_date: str  # YYYY-MM-DD
+    moon_longitude: Optional[float] = Field(default=None, ge=0, le=360, description="Moon's sidereal longitude in degrees")
+
+
+# ============================================================
+# KP Horary
+# ============================================================
+class KPHoraryRequest(BaseModel):
+    number: int = Field(ge=1, le=249, description="Querent's chosen horary number (1-249)")
+    query_datetime: str = Field(description="ISO datetime of query (YYYY-MM-DD HH:MM:SS)")
+    query_place: Optional[dict] = Field(default=None, description="Optional {latitude, longitude, tz_offset}")
+
+class KPHoraryPredictRequest(BaseModel):
+    number: int = Field(ge=1, le=249, description="Querent's chosen horary number (1-249)")
+    question_type: str = Field(min_length=1, description="Question type: marriage, job, travel, health, finance, legal, education, property")
+    query_datetime: str = Field(description="ISO datetime of query (YYYY-MM-DD HH:MM:SS)")
+    query_place: Optional[dict] = Field(default=None, description="Optional {latitude, longitude, tz_offset}")
+
+
+# ============================================================
+# Birth Rectification
+# ============================================================
+class LifeEvent(BaseModel):
+    date: str = Field(description="Event date YYYY-MM-DD")
+    type: str = Field(description="Event type: marriage, child_birth, job_start, job_loss, accident, education, foreign_travel, etc.")
+
+class BirthRectificationRequest(BaseModel):
+    birth_date: str = Field(description="Birth date YYYY-MM-DD")
+    time_window_start: str = Field(description="Search window start HH:MM")
+    time_window_end: str = Field(description="Search window end HH:MM")
+    birth_place: dict = Field(description="Birth place as {lat: float, lon: float}")
+    life_events: list[LifeEvent] = Field(min_length=1, description="List of known life events")
+    step_minutes: int = Field(default=1, ge=1, le=30, description="Minutes between candidate times")
+    tz_offset: float = Field(default=5.5, ge=-12, le=14, description="Timezone offset in hours")
+
+
+# ============================================================
+# Sarvatobhadra Chakra
+# ============================================================
+class SarvatobhadraRequest(BaseModel):
+    natal_positions: dict = Field(description="Natal planet positions: {planet: longitude} or {planet: {longitude: float}}")
+    transit_positions: Optional[dict] = Field(default=None, description="Transit planet positions in same format")
+
+
+# ============================================================
+# D108 Chart
+# ============================================================
+class D108AnalysisRequest(BaseModel):
+    planet_longitudes: dict = Field(description="Planet longitudes as {planet_name: longitude_degrees}")
+
+
+# ============================================================
 # Numerology
 # ============================================================
 class NumerologyRequest(BaseModel):

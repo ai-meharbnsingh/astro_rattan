@@ -176,6 +176,181 @@ PAYA_CHANDRA_MAP = {
     "Iron (Loha)": ["Cancer", "Scorpio", "Pisces"],         # Water
 }
 
+# Nakshatra lords by index (Vimshottari sequence)
+NAKSHATRA_LORD_BY_INDEX = [
+    "Ketu", "Venus", "Sun", "Moon", "Mars", "Rahu",
+    "Jupiter", "Saturn", "Mercury", "Ketu", "Venus", "Sun",
+    "Moon", "Mars", "Rahu", "Jupiter", "Saturn", "Mercury",
+    "Ketu", "Venus", "Sun", "Moon", "Mars", "Rahu",
+    "Jupiter", "Saturn", "Mercury",
+]
+
+# Lucky Metal by nakshatra lord
+LUCKY_METAL = {
+    "Sun": "Gold", "Moon": "Silver", "Mars": "Copper",
+    "Mercury": "Bronze", "Jupiter": "Gold", "Venus": "Silver",
+    "Saturn": "Iron", "Rahu": "Lead", "Ketu": "Iron",
+}
+
+# Evil Numbers by nakshatra lord (classical reference — lord's enemy numbers)
+EVIL_NUMBERS_BY_NAK_LORD = {
+    "Sun": [8], "Moon": [4], "Mars": [6, 5],
+    "Mercury": [9, 1], "Jupiter": [6, 8], "Venus": [1, 8],
+    "Saturn": [1, 4], "Rahu": [9, 1], "Ketu": [6, 5],
+}
+
+# Good Numbers by nakshatra lord
+GOOD_NUMBERS_BY_NAK_LORD = {
+    "Sun": [1, 4, 5], "Moon": [2, 7, 9], "Mars": [3, 9, 1],
+    "Mercury": [5, 4, 6], "Jupiter": [3, 1, 9], "Venus": [6, 2, 7],
+    "Saturn": [8, 5, 6], "Rahu": [4, 7, 8], "Ketu": [7, 9, 3],
+}
+
+# Lucky Number (primary) = nakshatra lord's number
+LUCKY_NUMBER_BY_NAK_LORD = {
+    "Sun": 1, "Moon": 2, "Mars": 9, "Mercury": 5,
+    "Jupiter": 3, "Venus": 6, "Saturn": 8, "Rahu": 4, "Ketu": 7,
+}
+
+# Friendly Signs per lagna sign
+FRIENDLY_SIGNS = {
+    "Aries": ["Leo", "Sagittarius", "Scorpio"],
+    "Taurus": ["Virgo", "Capricorn", "Libra"],
+    "Gemini": ["Libra", "Aquarius", "Virgo"],
+    "Cancer": ["Scorpio", "Pisces", "Sagittarius"],
+    "Leo": ["Aries", "Sagittarius", "Scorpio"],
+    "Virgo": ["Taurus", "Capricorn", "Gemini"],
+    "Libra": ["Gemini", "Aquarius", "Taurus"],
+    "Scorpio": ["Cancer", "Pisces", "Aries"],
+    "Sagittarius": ["Aries", "Leo", "Cancer"],
+    "Capricorn": ["Taurus", "Virgo", "Aquarius"],
+    "Aquarius": ["Gemini", "Libra", "Capricorn"],
+    "Pisces": ["Cancer", "Scorpio", "Sagittarius"],
+}
+
+# Good Lagna (auspicious lagna for important tasks)
+GOOD_LAGNA = {
+    "Aries": ["Sagittarius", "Leo"],
+    "Taurus": ["Capricorn", "Virgo"],
+    "Gemini": ["Aquarius", "Libra"],
+    "Cancer": ["Pisces", "Scorpio"],
+    "Leo": ["Aries", "Sagittarius"],
+    "Virgo": ["Taurus", "Capricorn"],
+    "Libra": ["Gemini", "Aquarius"],
+    "Scorpio": ["Cancer", "Pisces"],
+    "Sagittarius": ["Leo", "Aries"],
+    "Capricorn": ["Virgo", "Taurus"],
+    "Aquarius": ["Libra", "Gemini"],
+    "Pisces": ["Scorpio", "Cancer"],
+}
+
+# Lucky Days by nakshatra lord
+LUCKY_DAYS = {
+    "Sun": ["Sunday"], "Moon": ["Monday"], "Mars": ["Tuesday", "Thursday"],
+    "Mercury": ["Wednesday", "Thursday"], "Jupiter": ["Thursday", "Tuesday"],
+    "Venus": ["Friday", "Wednesday"], "Saturn": ["Saturday", "Thursday"],
+    "Rahu": ["Saturday", "Wednesday"], "Ketu": ["Tuesday", "Thursday"],
+}
+
+# Good Planets (friendly planets for the nakshatra lord)
+GOOD_PLANETS = {
+    "Sun": ["Jupiter", "Mars", "Moon"], "Moon": ["Sun", "Mercury", "Jupiter"],
+    "Mars": ["Sun", "Moon", "Jupiter"], "Mercury": ["Venus", "Saturn", "Rahu"],
+    "Jupiter": ["Sun", "Moon", "Mars"], "Venus": ["Mercury", "Saturn", "Rahu"],
+    "Saturn": ["Mercury", "Venus", "Rahu"], "Rahu": ["Venus", "Saturn", "Mercury"],
+    "Ketu": ["Mars", "Jupiter", "Sun"],
+}
+
+# ============================================================
+# GHATAK (MALEFICS) TABLE
+# ============================================================
+# 9 groups of 3 nakshatras each. Group index = nakshatra_index // 3.
+# Each group shares the same Ghatak (inauspicious) indicators.
+
+GHATAK_TABLE = {
+    # Group 0: Ashwini / Bharani / Krittika
+    0: {
+        "bad_day": "Saturday", "bad_karan": "Vishti",
+        "bad_lagna": "Aquarius", "bad_month": "Magha",
+        "bad_nakshatra": "Dhanishta", "bad_prahar": 1,
+        "bad_rasi": "Aquarius",
+        "bad_tithi": [4, 9, 14], "bad_yoga": "Vishkambha",
+        "bad_planets": ["Saturn"],
+    },
+    # Group 1: Rohini / Mrigashira / Ardra
+    1: {
+        "bad_day": "Friday", "bad_karan": "Garaja",
+        "bad_lagna": "Capricorn", "bad_month": "Paush",
+        "bad_nakshatra": "Shravana", "bad_prahar": 2,
+        "bad_rasi": "Capricorn",
+        "bad_tithi": [2, 7, 12], "bad_yoga": "Harshana",
+        "bad_planets": ["Saturn"],
+    },
+    # Group 2: Punarvasu / Pushya / Ashlesha
+    2: {
+        "bad_day": "Wednesday", "bad_karan": "Balava",
+        "bad_lagna": "Sagittarius", "bad_month": "Ashwin",
+        "bad_nakshatra": "Mula", "bad_prahar": 3,
+        "bad_rasi": "Sagittarius",
+        "bad_tithi": [3, 8, 13], "bad_yoga": "Vajra",
+        "bad_planets": ["Jupiter"],
+    },
+    # Group 3: Magha / Purva Phalguni / Uttara Phalguni
+    3: {
+        "bad_day": "Tuesday", "bad_karan": "Kaulava",
+        "bad_lagna": "Scorpio", "bad_month": "Bhadrapada",
+        "bad_nakshatra": "Jyeshtha", "bad_prahar": 4,
+        "bad_rasi": "Scorpio",
+        "bad_tithi": [1, 6, 11], "bad_yoga": "Parigha",
+        "bad_planets": ["Mars"],
+    },
+    # Group 4: Hasta / Chitra / Swati
+    4: {
+        "bad_day": "Monday", "bad_karan": "Taitila",
+        "bad_lagna": "Libra", "bad_month": "Shravana",
+        "bad_nakshatra": "Vishakha", "bad_prahar": 1,
+        "bad_rasi": "Libra",
+        "bad_tithi": [5, 10, 15], "bad_yoga": "Siddhi",
+        "bad_planets": ["Venus"],
+    },
+    # Group 5: Vishakha / Anuradha / Jyeshtha
+    5: {
+        "bad_day": "Sunday", "bad_karan": "Vanija",
+        "bad_lagna": "Virgo", "bad_month": "Ashadha",
+        "bad_nakshatra": "Hasta", "bad_prahar": 2,
+        "bad_rasi": "Virgo",
+        "bad_tithi": [4, 9, 14], "bad_yoga": "Shula",
+        "bad_planets": ["Mercury"],
+    },
+    # Group 6: Mula / Purva Ashadha / Uttara Ashadha
+    6: {
+        "bad_day": "Friday", "bad_karan": "Garaja",
+        "bad_lagna": "Leo", "bad_month": "Jyeshtha",
+        "bad_nakshatra": "Magha", "bad_prahar": 3,
+        "bad_rasi": "Cancer",
+        "bad_tithi": [2, 7, 12], "bad_yoga": "Atiganda",
+        "bad_planets": ["Sun"],
+    },
+    # Group 7: Shravana / Dhanishta / Shatabhisha
+    7: {
+        "bad_day": "Thursday", "bad_karan": "Bava",
+        "bad_lagna": "Cancer", "bad_month": "Vaishakha",
+        "bad_nakshatra": "Pushya", "bad_prahar": 4,
+        "bad_rasi": "Gemini",
+        "bad_tithi": [3, 8, 13], "bad_yoga": "Vyatipata",
+        "bad_planets": ["Moon"],
+    },
+    # Group 8: Purva Bhadrapada / Uttara Bhadrapada / Revati
+    8: {
+        "bad_day": "Wednesday", "bad_karan": "Vishti",
+        "bad_lagna": "Aries", "bad_month": "Chaitra",
+        "bad_nakshatra": "Ashwini", "bad_prahar": 1,
+        "bad_rasi": "Pisces",
+        "bad_tithi": [1, 6, 11], "bad_yoga": "Brahma",
+        "bad_planets": ["Mercury"],
+    },
+}
+
 # Western Sun signs by degree range
 WESTERN_SIGNS = [
     (0, 30, "Aries"), (30, 60, "Taurus"), (60, 90, "Gemini"),
@@ -230,6 +405,49 @@ def _get_western_sign(longitude: float) -> str:
         if start <= deg < end:
             return sign
     return "Pisces"
+
+
+def _get_nakshatra_lord(nakshatra_idx: int) -> str:
+    """Get the Vimshottari lord for a nakshatra index (0-26)."""
+    if 0 <= nakshatra_idx < 27:
+        return NAKSHATRA_LORD_BY_INDEX[nakshatra_idx]
+    return "Unknown"
+
+
+def _compute_good_years(lucky_number: int) -> list:
+    """
+    Compute significant life years based on lucky number.
+    Formula: multiples of lucky number that are common life milestones
+    (up to age 100), plus nearby milestone markers.
+    """
+    if lucky_number < 1 or lucky_number > 9:
+        return []
+    years = sorted(set(
+        n for n in range(lucky_number, 101, lucky_number)
+        if n > 0
+    ))
+    return years
+
+
+def _calculate_ghatak(nakshatra_index: int) -> dict:
+    """
+    Calculate Ghatak (malefic/inauspicious) indicators from birth nakshatra.
+
+    The 27 nakshatras are divided into 9 groups of 3.
+    Each group shares the same Ghatak data: bad day, karan, lagna,
+    month, nakshatra, prahar, rasi, tithis, yoga, and planets.
+
+    Args:
+        nakshatra_index: Birth nakshatra index (0-26).
+
+    Returns:
+        Dict with all Ghatak fields, or empty dict if index is invalid.
+    """
+    if not (0 <= nakshatra_index < 27):
+        logger.warning("Invalid nakshatra index %s for Ghatak calculation", nakshatra_index)
+        return {}
+    group = nakshatra_index // 3
+    return GHATAK_TABLE.get(group, {})
 
 
 # ============================================================
@@ -342,6 +560,23 @@ def calculate_avakhada(chart_data: dict, birth_date: str = "") -> dict:
             paya_chandra = paya_label
             break
 
+    # --- Nakshatra Lord derived fields ---
+    nak_lord = _get_nakshatra_lord(nakshatra_idx)
+    lucky_metal = LUCKY_METAL.get(nak_lord, "Unknown")
+    evil_numbers = EVIL_NUMBERS_BY_NAK_LORD.get(nak_lord, [])
+    good_numbers = GOOD_NUMBERS_BY_NAK_LORD.get(nak_lord, [])
+    lucky_number = LUCKY_NUMBER_BY_NAK_LORD.get(nak_lord, 0)
+    good_years = _compute_good_years(lucky_number)
+    lucky_days = LUCKY_DAYS.get(nak_lord, [])
+    good_planets = GOOD_PLANETS.get(nak_lord, [])
+
+    # --- Lagna-based fields ---
+    friendly_signs = FRIENDLY_SIGNS.get(asc_sign, [])
+    good_lagna = GOOD_LAGNA.get(asc_sign, [])
+
+    # --- Ghatak (malefics) ---
+    ghatak = _calculate_ghatak(nakshatra_idx)
+
     return {
         "ascendant": asc_sign,
         "ascendant_lord": asc_lord,
@@ -367,4 +602,18 @@ def calculate_avakhada(chart_data: dict, birth_date: str = "") -> dict:
         "vaar_lord": vaar_lord,
         "paya_nakshatra": paya_nakshatra,
         "paya_chandra": paya_chandra,
+        # Nakshatra lord derived fields
+        "nakshatra_lord": nak_lord,
+        "lucky_metal": lucky_metal,
+        "evil_numbers": evil_numbers,
+        "good_numbers": good_numbers,
+        "lucky_number": lucky_number,
+        "good_years": good_years,
+        "lucky_days": lucky_days,
+        "good_planets": good_planets,
+        # Lagna-based fields
+        "friendly_signs": friendly_signs,
+        "good_lagna": good_lagna,
+        # Ghatak (malefics)
+        "ghatak": ghatak,
     }

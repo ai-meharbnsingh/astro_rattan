@@ -14,6 +14,10 @@ Sections:
   7. ANTARDASHA_INTERPRETATIONS - 81 MD-AD combinations
   8. MANGALA_DOSHA_TEXT     - Classical shloka references + remedies
   9. GRAHA_AVASTHAS         - Planetary states & calculation rules
+  10. LIFE_PREDICTIONS      - 8 life areas based on house-sign analysis
+  11. NAKSHATRA_PHAL        - 27 nakshatras x 4 padas detailed predictions
+  12. ASCENDANT_PERSONALITY - Extended personality profiles per ascendant
+  13. MAHADASHA_DETAILED    - Mahadasha effects by planet's house placement
 """
 from __future__ import annotations
 
@@ -2169,3 +2173,2404 @@ def calculate_shyanadi(
 
     # Default
     return "Gamana"
+
+
+# ============================================================
+# 10. LIFE_PREDICTIONS -- 8 Life Areas by House Sign
+# ============================================================
+
+LIFE_PREDICTIONS: Dict[str, Dict[str, str]] = {
+    "career": {
+        "Aries": (
+            "Strong leadership drives your professional life. You excel in competitive environments "
+            "where initiative and courage are rewarded -- military, sports, surgery, engineering, or entrepreneurship. "
+            "Mars energy makes you a self-starter who prefers to lead rather than follow. "
+            "Career breakthroughs often come through bold, independent action rather than patient waiting."
+        ),
+        "Taurus": (
+            "Steady career growth through persistence and reliability defines your professional journey. "
+            "You thrive in banking, agriculture, real estate, luxury goods, hospitality, and fine arts. "
+            "Venus-ruled Taurus on the 10th gives an eye for aesthetics that can translate into profitable ventures. "
+            "Financial security matters more to you than fame, and your patience eventually builds lasting wealth."
+        ),
+        "Gemini": (
+            "Communication is the cornerstone of your career success. You shine in writing, journalism, "
+            "teaching, marketing, trading, and information technology. Mercury's influence gives versatility -- "
+            "you may hold multiple roles or change fields more than once. Your networking ability and quick wit "
+            "open doors that remain closed to others, but focus is essential to avoid scattered energies."
+        ),
+        "Cancer": (
+            "Your career flourishes in nurturing, caregiving, and emotionally resonant professions. "
+            "Hospitality, food industry, nursing, counselling, interior design, and public welfare suit you well. "
+            "The Moon's rulership makes your professional life subject to emotional tides -- periods of intense "
+            "productivity alternate with withdrawal. Working close to home or in family businesses is highly favourable."
+        ),
+        "Leo": (
+            "The stage is your natural workplace. Politics, entertainment, senior management, government, "
+            "and creative direction are fields where your Sun-ruled 10th house sign shines brightest. "
+            "You need recognition and authority in your role; subordinate positions breed discontent. "
+            "Your generosity and personal magnetism attract loyal teams, making you a natural CEO or director."
+        ),
+        "Virgo": (
+            "Analytical precision and service orientation define your professional path. Healthcare, "
+            "accounting, editing, quality control, data science, and pharmaceutical work suit you perfectly. "
+            "Mercury's rulership gives meticulous attention to detail that others find extraordinary. "
+            "Promotions may come slowly but your work speaks for itself and builds an impeccable reputation over time."
+        ),
+        "Libra": (
+            "Partnership and diplomacy are central to your career success. Law, judiciary, diplomacy, "
+            "fashion design, mediation, and luxury retail are ideal fields. Venus-ruled Libra on the 10th "
+            "gives an elegant public image and skill in managing relationships. Joint ventures and collaborations "
+            "bring greater success than solo efforts, and fairness in dealings earns lasting professional respect."
+        ),
+        "Scorpio": (
+            "Intensity and transformation mark your professional journey. Research, investigation, surgery, "
+            "psychology, insurance, occult sciences, and crisis management are your forte. Mars and Ketu's "
+            "combined influence gives unmatched focus and willingness to probe hidden truths. Your career often "
+            "involves dramatic shifts that ultimately lead to positions of deep influence behind the scenes."
+        ),
+        "Sagittarius": (
+            "Wisdom and expansion drive your career. Higher education, law, publishing, foreign trade, "
+            "philosophy, religious leadership, and long-distance travel industries suit you. Jupiter's rulership "
+            "bestows optimism and ethical conduct that earns trust in positions of authority. International "
+            "connections play a significant role, and your career often takes you far from your birthplace."
+        ),
+        "Capricorn": (
+            "Ambition and structure are the pillars of your professional life. Government administration, "
+            "mining, construction, corporate management, and traditional industries reward your disciplined nature. "
+            "Saturn's rulership demands patience -- career heights are reached in the 30s and 40s rather than early. "
+            "Your capacity for hard work and organisational skill eventually places you in positions of lasting authority."
+        ),
+        "Aquarius": (
+            "Innovation and social reform characterise your career path. Technology, aviation, social work, "
+            "NGO leadership, scientific research, and network-based businesses are ideal. Saturn and Rahu's "
+            "combined influence gives both discipline and unconventional thinking. Your greatest professional "
+            "success comes through serving collective goals rather than purely personal ambition."
+        ),
+        "Pisces": (
+            "Intuition and compassion guide your professional life. Spiritual teaching, music, cinema, "
+            "marine industries, hospital administration, charitable work, and the healing arts suit you. "
+            "Jupiter's rulership bestows wisdom and selflessness that earns deep respect. Your career may "
+            "lack conventional structure but its impact on others' lives is profound and your reputation endures."
+        ),
+    },
+    "health": {
+        "Aries": (
+            "With Aries influencing your health house, you are prone to acute conditions -- fevers, "
+            "inflammation, headaches, and blood-related disorders. Your body runs hot and responds quickly "
+            "to both illness and recovery. Regular physical activity is essential to channel excess Mars energy. "
+            "Guard especially against head injuries, migraines, and skin eruptions caused by pitta imbalance."
+        ),
+        "Taurus": (
+            "Taurus on the 6th house gives a generally robust constitution but vulnerability in the throat, "
+            "thyroid, and cervical spine. Overindulgence in rich foods leads to weight gain and metabolic issues. "
+            "Your recovery from illness is slow but thorough once you commit to treatment. "
+            "Diabetes, tonsillitis, and neck stiffness are conditions to monitor throughout life."
+        ),
+        "Gemini": (
+            "Gemini influencing health brings nervous system sensitivity and respiratory vulnerability. "
+            "Anxiety, insomnia, bronchial issues, and shoulder-arm complaints are common patterns. "
+            "Your mental health is deeply tied to physical well-being -- stress manifests as bodily symptoms quickly. "
+            "Regular pranayama, moderate exercise, and digital detoxes protect your delicate nervous constitution."
+        ),
+        "Cancer": (
+            "The Moon's influence on your health house makes you susceptible to digestive and emotional ailments. "
+            "Acidity, water retention, chest congestion, and hormonal fluctuations follow lunar cycles. "
+            "Emotional eating and comfort-seeking behaviour can lead to stomach disorders. "
+            "A calm domestic environment and regular meal timing are your best preventive medicines."
+        ),
+        "Leo": (
+            "Leo on the 6th house gives vitality but vulnerability in the heart, spine, and eyes. "
+            "Blood pressure, cardiac rhythm issues, and spinal problems require monitoring after age 35. "
+            "Your constitution is strong when the Sun is well-placed but weakens dramatically under stress. "
+            "Regular cardiovascular exercise, avoiding excessive anger, and sun salutations keep you robust."
+        ),
+        "Virgo": (
+            "Mercury-ruled Virgo on the health house creates sensitivity in the intestines and nervous digestion. "
+            "IBS, food allergies, skin issues from internal toxins, and anxiety-driven ailments are common. "
+            "Your tendency to worry amplifies minor symptoms into major concerns. "
+            "A clean diet, herbal supplements, and routine health check-ups serve you far better than overthinking."
+        ),
+        "Libra": (
+            "Libra influencing health brings kidney, lower back, and urinary tract vulnerabilities. "
+            "Sugar imbalances, skin conditions related to blood impurity, and reproductive health issues arise. "
+            "Your health improves dramatically when emotional relationships are harmonious. "
+            "Adequate water intake, avoiding processed foods, and maintaining work-life balance are essential."
+        ),
+        "Scorpio": (
+            "Scorpio on the 6th house indicates intense health crises that ultimately lead to transformation. "
+            "Reproductive organs, excretory system, and hidden infections are vulnerable areas. "
+            "Surgical interventions may be necessary at some point in life but lead to complete recovery. "
+            "Detoxification routines, sexual health awareness, and regular screening prevent serious complications."
+        ),
+        "Sagittarius": (
+            "Jupiter's influence on health gives a generally optimistic constitution but excess in liver, "
+            "hips, and thighs. Fatty liver, sciatica, and weight gain from overindulgence are common patterns. "
+            "Your faith and positive outlook aid recovery remarkably well. "
+            "Moderation in diet, hip-strengthening exercises, and periodic fasting maintain your natural vitality."
+        ),
+        "Capricorn": (
+            "Saturn-ruled Capricorn on the health house brings chronic but manageable conditions. "
+            "Joint pain, arthritis, dental issues, knee problems, and skin dryness develop gradually over time. "
+            "Your constitution strengthens with age -- health in the 40s is often better than in the 20s. "
+            "Calcium-rich diet, joint mobility exercises, and patience with slow-healing conditions are advised."
+        ),
+        "Aquarius": (
+            "Aquarius influencing health brings unusual or hard-to-diagnose conditions affecting circulation "
+            "and the nervous system. Varicose veins, ankle injuries, and sudden onset ailments are characteristic. "
+            "Your health benefits greatly from unconventional healing modalities -- acupuncture, energy healing, "
+            "and Ayurvedic approaches may work better than conventional medicine for your constitution."
+        ),
+        "Pisces": (
+            "Pisces on the 6th house creates sensitivity to allergies, foot problems, and immune system "
+            "fluctuations. Lymphatic congestion, psychosomatic illness, and sensitivity to medications are common. "
+            "Your health is deeply influenced by your spiritual and emotional state. "
+            "Meditation, swimming, adequate sleep, and avoiding intoxicants are your most powerful health practices."
+        ),
+    },
+    "marriage": {
+        "Aries": (
+            "Mars-ruled Aries on the 7th house brings a passionate, dynamic, but sometimes combative marriage. "
+            "You attract strong-willed, independent partners who challenge you to grow. Arguments are frequent "
+            "but reconciliations are equally intense. Early marriage may face turbulence; maturity improves harmony. "
+            "Physical attraction and mutual respect are the bedrock of your partnerships."
+        ),
+        "Taurus": (
+            "Venus-ruled Taurus on the 7th house promises a stable, sensual, and materially comfortable marriage. "
+            "Your spouse is likely attractive, loyal, and fond of good living. Possessiveness and stubbornness "
+            "are the main challenges. The relationship deepens with time like fine wine. "
+            "Shared appreciation for beauty, food, music, and nature strengthens the bond."
+        ),
+        "Gemini": (
+            "Mercury's influence on your 7th house brings an intellectually stimulating partnership. "
+            "Your spouse is communicative, witty, and possibly younger in spirit or age. Variety and mental "
+            "connection matter more than physical passion. The risk is superficiality or multiple attachments. "
+            "A partner who shares your curiosity and love of learning makes marriage a lifelong conversation."
+        ),
+        "Cancer": (
+            "The Moon ruling your 7th house gives an emotionally deep and nurturing marriage. Your spouse is "
+            "caring, domestic, and deeply attached to family. Mood swings and emotional dependency can strain "
+            "the relationship. A secure home environment is essential for marital happiness. "
+            "Children and family traditions become the glue that holds the partnership together."
+        ),
+        "Leo": (
+            "The Sun on your 7th house attracts a proud, dignified, and authoritative spouse. Your partner "
+            "commands attention and expects loyalty and admiration. Power struggles are the main challenge. "
+            "When both egos are managed, the marriage is grand, warm, and generous. "
+            "Public status and social standing of the couple matter significantly in this combination."
+        ),
+        "Virgo": (
+            "Mercury-ruled Virgo on the 7th house brings a practical, service-oriented marriage. Your spouse "
+            "is detail-oriented, health-conscious, and possibly critical. Perfectionism can create friction. "
+            "The partnership improves when both focus on serving each other rather than finding faults. "
+            "Shared routines, health goals, and intellectual pursuits create lasting harmony."
+        ),
+        "Libra": (
+            "Venus-ruled Libra on the 7th house is the ideal placement for marriage. Partnership, romance, "
+            "and mutual respect come naturally. Your spouse is charming, fair-minded, and socially graceful. "
+            "Indecisiveness and avoidance of conflict are the only weaknesses. "
+            "This placement favours love marriage and enduring conjugal happiness built on true companionship."
+        ),
+        "Scorpio": (
+            "Mars-Ketu ruled Scorpio on the 7th house creates an intensely transformative marriage. "
+            "Passion runs deep but so do jealousy and possessiveness. Your spouse has magnetic appeal and "
+            "strong willpower. Trust issues and power dynamics require conscious work. "
+            "When both partners surrender control, the marriage becomes a vehicle for profound spiritual growth."
+        ),
+        "Sagittarius": (
+            "Jupiter's blessing on the 7th house brings an expansive, philosophical, and fortunate marriage. "
+            "Your spouse is wise, optimistic, and often from a different cultural or educational background. "
+            "Freedom within the relationship is essential -- neither partner tolerates possessiveness. "
+            "Travel, higher learning, and shared spiritual values keep the marriage vibrant across decades."
+        ),
+        "Capricorn": (
+            "Saturn-ruled Capricorn on the 7th house delays marriage but ensures its durability. Your spouse "
+            "is mature, responsible, and possibly older. The early years may feel dry or burdensome. "
+            "With patience, the partnership becomes a rock-solid foundation for shared ambitions. "
+            "Mutual respect for each other's career goals and a practical approach to love are the keys."
+        ),
+        "Aquarius": (
+            "Saturn-Rahu ruled Aquarius on the 7th house creates an unconventional marriage. Your spouse is "
+            "independent, progressive, and possibly eccentric. Traditional relationship expectations are challenged. "
+            "Friendship-based marriage works best; possessiveness destroys the bond. "
+            "Shared humanitarian values, intellectual companionship, and personal space sustain this unusual union."
+        ),
+        "Pisces": (
+            "Jupiter-ruled Pisces on the 7th house brings a spiritually elevated and compassionate marriage. "
+            "Your spouse is gentle, intuitive, artistic, and possibly self-sacrificing. Boundaries may blur. "
+            "Escapism through fantasy or substances is the main risk. "
+            "When grounded in devotion and mutual care, this marriage feels like a divine partnership."
+        ),
+    },
+    "finance": {
+        "Aries": (
+            "Mars-ruled Aries on the 2nd house gives aggressive earning capacity and bold financial decisions. "
+            "Income comes through competitive fields, sports, engineering, or self-employment. You earn quickly "
+            "but spend impulsively. Building savings requires conscious discipline against your fiery nature. "
+            "Investments in real estate and metals tend to be more profitable than speculative ventures."
+        ),
+        "Taurus": (
+            "Venus-ruled Taurus on the 2nd house is the most favourable placement for wealth accumulation. "
+            "Steady income, a love of saving, and good taste in investments mark your financial life. "
+            "Banking, agriculture, luxury goods, and real estate are your strongest wealth channels. "
+            "Family wealth and inheritance are likely, and your financial position improves steadily with age."
+        ),
+        "Gemini": (
+            "Mercury-ruled Gemini on the 2nd house creates multiple income streams and financial versatility. "
+            "Earnings come through communication, trading, brokerage, writing, or intellectual property. "
+            "Your financial situation fluctuates -- brilliant gains alternate with careless losses. "
+            "Systematic investing and avoiding gossip-driven financial decisions protect your wealth."
+        ),
+        "Cancer": (
+            "The Moon on the 2nd house makes finances subject to emotional tides and cyclical patterns. "
+            "Income from food, hospitality, real estate, and maternal family is indicated. "
+            "Savings grow when you feel emotionally secure; insecurity triggers spending on comfort. "
+            "Property investment, particularly residential, is your safest and most rewarding avenue."
+        ),
+        "Leo": (
+            "The Sun on the 2nd house brings wealth through government, authority, and positions of power. "
+            "You earn well but spend lavishly on maintaining status and generosity toward dependents. "
+            "Gold, government bonds, and investments in entertainment or education are favourable. "
+            "Your financial peak often coincides with periods of public recognition or political influence."
+        ),
+        "Virgo": (
+            "Mercury-ruled Virgo on the 2nd house gives careful, analytical financial management. "
+            "Income from healthcare, service industries, accounting, and detailed work is indicated. "
+            "You rarely make impulsive financial decisions and prefer low-risk, steady-return investments. "
+            "Tax planning and budgeting come naturally, making you financially secure if not spectacularly wealthy."
+        ),
+        "Libra": (
+            "Venus-ruled Libra on the 2nd house attracts wealth through partnerships and aesthetic enterprises. "
+            "Fashion, jewellery, art dealing, legal practice, and collaborative ventures are profitable. "
+            "Your financial success is often intertwined with your spouse's or business partner's fortunes. "
+            "Balanced spending on beauty and comfort does not diminish wealth but rather attracts more of it."
+        ),
+        "Scorpio": (
+            "Mars-Ketu ruled Scorpio on the 2nd house creates intense financial experiences -- inheritance, "
+            "insurance payouts, or sudden gains and losses. Research, mining, surgery, and occult-related income. "
+            "You have a secretive approach to money and rarely reveal your true financial position. "
+            "Transformation through financial crises ultimately leads to deeper wisdom about true value."
+        ),
+        "Sagittarius": (
+            "Jupiter's blessing on the 2nd house is highly auspicious for wealth and family prosperity. "
+            "Income from teaching, law, publishing, foreign trade, and religious or spiritual work. "
+            "You are generous with money and your open-handedness is rewarded by Providence. "
+            "Long-term investments, especially in education and foreign markets, yield excellent returns."
+        ),
+        "Capricorn": (
+            "Saturn-ruled Capricorn on the 2nd house builds wealth slowly but permanently. "
+            "Income from government, construction, mining, oil, and traditional industries. "
+            "Early life may see financial constraints, but discipline creates substantial wealth by middle age. "
+            "Real estate, fixed deposits, and conservative blue-chip investments suit your cautious temperament."
+        ),
+        "Aquarius": (
+            "Saturn-Rahu ruled Aquarius on the 2nd house brings unconventional income sources. "
+            "Technology, cryptocurrency, network marketing, aviation, and social enterprises are indicated. "
+            "Your financial philosophy is progressive -- you value freedom over accumulation. "
+            "Sudden gains through innovation or technology disruption can dramatically change your financial standing."
+        ),
+        "Pisces": (
+            "Jupiter-ruled Pisces on the 2nd house attracts wealth through intuition and spiritual alignment. "
+            "Income from music, cinema, hospital administration, charity, marine activities, and healing arts. "
+            "You are generous to a fault and may lose money through misplaced trust or lack of boundaries. "
+            "When your financial decisions align with your spiritual values, abundance flows naturally."
+        ),
+    },
+    "education": {
+        "Aries": (
+            "Mars-ruled Aries influencing education gives a competitive, fast-learning mind that excels under "
+            "pressure. You prefer practical, hands-on learning over theoretical study. Engineering, military "
+            "science, surgery, and sports education are naturally suited fields. Early academic life may show "
+            "impulsiveness, but focused coaching channels your energy into impressive academic achievements."
+        ),
+        "Taurus": (
+            "Venus-ruled Taurus on the education house gives a steady, methodical learning approach. "
+            "You absorb knowledge slowly but retain it permanently. Fine arts, music, agriculture, economics, "
+            "and culinary arts are ideal fields of study. A comfortable, aesthetically pleasing study environment "
+            "dramatically improves your concentration and academic output."
+        ),
+        "Gemini": (
+            "Mercury-ruled Gemini is among the strongest placements for intellectual achievement. "
+            "You excel in languages, mathematics, commerce, journalism, and computer science. Your learning "
+            "speed is exceptional but depth may suffer due to scattered interests. Debate, quizzing, and "
+            "competitive examinations showcase your mental agility and communication skills."
+        ),
+        "Cancer": (
+            "Moon-ruled Cancer on the education house gives excellent memory and intuitive learning ability. "
+            "History, psychology, nursing, home science, and marine biology suit your emotional intelligence. "
+            "Your academic performance fluctuates with emotional state -- supportive teachers matter immensely. "
+            "Education received at home or in a nurturing environment yields the best results."
+        ),
+        "Leo": (
+            "Sun-ruled Leo influencing education gives confidence and flair in academic settings. "
+            "Political science, performing arts, administration, and leadership programmes suit you well. "
+            "You prefer being the best student in class rather than part of the crowd. "
+            "Government scholarships and recognition for academic excellence are strongly indicated."
+        ),
+        "Virgo": (
+            "Mercury-ruled Virgo is the finest placement for analytical and scientific education. "
+            "Medicine, pharmacy, statistics, editing, research methodology, and environmental science are ideal. "
+            "Your attention to detail makes you a natural scholar who produces meticulous work. "
+            "Overly critical self-assessment can create examination anxiety despite strong preparation."
+        ),
+        "Libra": (
+            "Venus-ruled Libra on the education house favours artistic and social sciences. "
+            "Law, diplomacy, fashion design, architecture, and international relations are naturally suited fields. "
+            "You learn best through discussion and collaboration rather than solitary study. "
+            "Aesthetic subjects and those requiring balanced judgement bring out your highest intellectual abilities."
+        ),
+        "Scorpio": (
+            "Mars-Ketu ruled Scorpio influencing education gives intense, focused research ability. "
+            "Psychology, forensic science, surgery, occult studies, and detective work suit your probing mind. "
+            "You are drawn to hidden knowledge and excel in subjects others find dark or difficult. "
+            "Academic breakthroughs often come through obsessive deep study rather than breadth of learning."
+        ),
+        "Sagittarius": (
+            "Jupiter's blessing on the education house is supremely favourable for higher learning. "
+            "Philosophy, theology, law, foreign languages, and university teaching are natural fields. "
+            "You are drawn to wisdom traditions and excel in environments that value ethical thinking. "
+            "Study abroad or distance education from foreign universities is strongly indicated and successful."
+        ),
+        "Capricorn": (
+            "Saturn-ruled Capricorn on the education house delays academic success but makes it permanent. "
+            "Civil engineering, architecture, geology, public administration, and traditional crafts suit you. "
+            "Early academic life may show obstacles or late starts, but persistence pays off handsomely. "
+            "Professional certifications and practical qualifications serve you better than theoretical degrees."
+        ),
+        "Aquarius": (
+            "Saturn-Rahu influenced Aquarius on the education house favours cutting-edge and unconventional study. "
+            "Aerospace, information technology, social sciences, astrology, and futuristic research suit you. "
+            "You learn best through experimentation and may be self-taught in key areas. "
+            "Group study and online learning platforms enhance your naturally network-oriented intelligence."
+        ),
+        "Pisces": (
+            "Jupiter-ruled Pisces influencing education gives exceptional intuitive and creative intelligence. "
+            "Fine arts, music, spiritual philosophy, marine science, and healing arts are your ideal fields. "
+            "Your learning style is absorptive rather than analytical -- you understand through feeling. "
+            "Meditation and retreats may contribute more to your real education than formal classroom instruction."
+        ),
+    },
+    "character": {
+        "Aries": (
+            "You are a born pioneer with a courageous, direct, and fiercely independent character. "
+            "Honesty to the point of bluntness, quick temper that cools equally fast, and restless energy "
+            "define your personality. You lead from the front and cannot tolerate cowardice or dishonesty. "
+            "Your greatest virtue is courage; your greatest challenge is patience."
+        ),
+        "Taurus": (
+            "You possess a steady, patient, and deeply loyal character rooted in material reality. "
+            "Reliability, sensuality, and a stubborn refusal to be rushed are your hallmarks. "
+            "You value comfort, beauty, and security above adventure or novelty. "
+            "Your greatest virtue is dependability; your greatest challenge is resistance to change."
+        ),
+        "Gemini": (
+            "An intellectually curious, quick-witted, and endlessly adaptable character defines you. "
+            "You process information faster than most and communicate with charm and precision. "
+            "Duality is inherent -- you can argue both sides of any issue with equal conviction. "
+            "Your greatest virtue is versatility; your greatest challenge is consistency."
+        ),
+        "Cancer": (
+            "You carry a deeply emotional, nurturing, and protective character beneath a tough exterior. "
+            "Family and emotional security are your core motivations in every decision you make. "
+            "Your memory is powerful and you hold onto both love and grudges with equal tenacity. "
+            "Your greatest virtue is devotion; your greatest challenge is letting go of the past."
+        ),
+        "Leo": (
+            "A generous, dignified, and magnificently confident character radiates from your being. "
+            "You command attention effortlessly and feel most alive when appreciated and respected. "
+            "Leadership comes naturally, though your pride can make you vulnerable to flattery. "
+            "Your greatest virtue is magnanimity; your greatest challenge is ego management."
+        ),
+        "Virgo": (
+            "You embody a precise, analytical, and service-oriented character with exacting standards. "
+            "Detail-oriented to a remarkable degree, you notice what others miss entirely. "
+            "Self-criticism and a desire for perfection drive both your achievements and your anxieties. "
+            "Your greatest virtue is discrimination; your greatest challenge is self-acceptance."
+        ),
+        "Libra": (
+            "Balance, harmony, and aesthetic refinement characterise your elegant personality. "
+            "You seek fairness in all dealings and are deeply uncomfortable with conflict or ugliness. "
+            "Partnership is essential -- you understand yourself best through relationship with others. "
+            "Your greatest virtue is diplomacy; your greatest challenge is decisiveness."
+        ),
+        "Scorpio": (
+            "Intensity, depth, and unwavering determination define your powerful character. "
+            "You see beneath surfaces and are drawn to life's hidden dimensions -- psychology, mystery, power. "
+            "Loyalty to your chosen few is absolute, but betrayal triggers devastating consequences. "
+            "Your greatest virtue is transformative power; your greatest challenge is releasing control."
+        ),
+        "Sagittarius": (
+            "An optimistic, freedom-loving, and philosophically minded character propels your life. "
+            "You seek meaning above material gain and feel stifled by routine or narrow thinking. "
+            "Honesty is your default mode, sometimes delivered with uncomfortable directness. "
+            "Your greatest virtue is wisdom-seeking; your greatest challenge is commitment."
+        ),
+        "Capricorn": (
+            "Disciplined, ambitious, and profoundly responsible -- your character is built for endurance. "
+            "You take life seriously, often shouldering burdens others would refuse, without complaint. "
+            "Time is your ally; you grow stronger, wiser, and more prosperous as you age. "
+            "Your greatest virtue is perseverance; your greatest challenge is allowing joy."
+        ),
+        "Aquarius": (
+            "You are an independent thinker with a humanitarian, progressive, and sometimes eccentric character. "
+            "Conventional expectations feel like chains to you; your mind operates ahead of its time. "
+            "You value friendship and collective well-being over personal emotional attachment. "
+            "Your greatest virtue is originality; your greatest challenge is emotional warmth."
+        ),
+        "Pisces": (
+            "A deeply compassionate, intuitive, and spiritually attuned character flows through your being. "
+            "You absorb others' emotions like a sponge and feel the pain of the world acutely. "
+            "Artistic and mystical gifts are abundant, though practical reality can feel overwhelming. "
+            "Your greatest virtue is unconditional compassion; your greatest challenge is boundaries."
+        ),
+    },
+    "hobbies": {
+        "Aries": (
+            "You are naturally drawn to high-energy, competitive pursuits. Martial arts, trekking, motorsports, "
+            "and adventure travel satisfy your Mars-driven need for adrenaline. You enjoy being the first to try "
+            "new activities and quickly lose interest in passive entertainment. Physical challenges, outdoor sports, "
+            "and DIY projects keep your restless spirit engaged and happy."
+        ),
+        "Taurus": (
+            "Sensory pleasures define your leisure time. Cooking, gardening, music appreciation, pottery, "
+            "and collecting fine objects bring deep satisfaction. You prefer hobbies that produce tangible results "
+            "and engage the senses. Nature walks, wine tasting, and interior decoration reflect your Venus-ruled "
+            "desire for beauty and comfort in every aspect of life."
+        ),
+        "Gemini": (
+            "Intellectual stimulation is the thread connecting all your hobbies. Reading, puzzles, board games, "
+            "podcasting, blogging, and learning new languages keep your Mercury-ruled mind active. "
+            "You tend to have many hobbies simultaneously and cycle between them. Social hobbies -- debating, "
+            "quiz competitions, and book clubs -- satisfy your need for mental sparring and human connection."
+        ),
+        "Cancer": (
+            "Home-centred and emotionally nourishing activities are your preferred pastimes. Cooking family "
+            "recipes, scrapbooking, home decoration, swimming, and genealogy research satisfy your lunar nature. "
+            "You enjoy hobbies that connect you with your roots and create lasting memories. "
+            "Caring for pets, tending a home garden, and hosting intimate gatherings bring genuine joy."
+        ),
+        "Leo": (
+            "Creative performance and self-expression drive your leisure pursuits. Theatre, dance, painting, "
+            "photography, and any activity where you can shine before an audience captivate you. "
+            "You enjoy organising events and being the life of social gatherings. "
+            "Luxury hobbies -- fine dining, fashion, and travel to glamorous destinations -- appeal to your royal nature."
+        ),
+        "Virgo": (
+            "Precision-based and health-oriented hobbies suit your analytical Virgo nature. Yoga, herbal "
+            "gardening, journaling, jigsaw puzzles, and craft-making satisfy your need for order and detail. "
+            "You enjoy hobbies that improve your skills incrementally over time. Reading non-fiction, organising "
+            "spaces, and volunteering for service-oriented causes bring quiet but deep fulfilment."
+        ),
+        "Libra": (
+            "Aesthetic and social hobbies define your leisure. Painting, music, fashion design, ballroom dancing, "
+            "and art gallery visits feed your Venus-ruled craving for beauty and harmony. "
+            "You enjoy activities you can share with a partner or close friends. "
+            "Hosting elegant gatherings, interior styling, and cultural events are pastimes you naturally excel at."
+        ),
+        "Scorpio": (
+            "Intense, investigative, and transformative hobbies attract you. True crime research, psychology "
+            "study, scuba diving, martial arts, and mystery-solving games engage your probing Scorpio nature. "
+            "You prefer depth over variety and may pursue a single hobby with obsessive dedication. "
+            "Occult studies, tantric meditation, and extreme sports provide the intensity you crave."
+        ),
+        "Sagittarius": (
+            "Adventure and learning are inseparable in your leisure life. Long-distance travel, horse riding, "
+            "archery, philosophy reading, and foreign culture exploration light up your Jupiter-ruled spirit. "
+            "You are the eternal student who finds joy in every new experience and place. "
+            "Outdoor activities, spiritual retreats, and cultural festivals are your favourite pastimes."
+        ),
+        "Capricorn": (
+            "Structured, goal-oriented hobbies satisfy your Saturn-ruled temperament. Mountain climbing, chess, "
+            "woodworking, numismatics, and historical study appeal to your disciplined nature. "
+            "You prefer hobbies that build skill over time and produce measurable results. "
+            "Antique collecting, architecture appreciation, and strategic board games are lifelong interests."
+        ),
+        "Aquarius": (
+            "Unconventional and technology-driven hobbies excite your progressive nature. Astronomy, coding, "
+            "drone flying, electronic music production, and social activism are characteristic pursuits. "
+            "You enjoy hobbies that connect you with like-minded communities or push societal boundaries. "
+            "Science fiction, futuristic gadgets, and humanitarian volunteering reflect your visionary Aquarian spirit."
+        ),
+        "Pisces": (
+            "Creative and spiritual hobbies nourish your sensitive Piscean soul. Music, painting, poetry, "
+            "swimming, meditation, and dream journaling are natural outlets for your vast imagination. "
+            "You are drawn to activities near water and those that allow emotional or spiritual expression. "
+            "Film appreciation, charity work, and healing arts like Reiki or crystal therapy bring deep peace."
+        ),
+    },
+    "family": {
+        "Aries": (
+            "Mars energy on the 4th house creates a dynamic but sometimes volatile home environment. "
+            "You take charge of family matters with decisive authority. Property disputes or renovation "
+            "projects are common themes. Independence was established early -- you may have left home young. "
+            "Family relationships improve when you channel competitive energy into protecting rather than controlling."
+        ),
+        "Taurus": (
+            "Venus-ruled Taurus on the 4th house is excellent for domestic happiness and property ownership. "
+            "Your home is comfortable, well-decorated, and a source of genuine pride. Family bonds are strong "
+            "and enduring, especially with your mother. Ancestral property and family wealth are likely. "
+            "Stability and tradition are the pillars of your family life across generations."
+        ),
+        "Gemini": (
+            "Mercury's influence on the 4th house creates an intellectually stimulating home environment. "
+            "Family discussions, debates, and a house full of books and media define your domestic space. "
+            "You may change residences frequently or have multiple properties. Family communication "
+            "is lively but sometimes superficial -- deeper emotional bonding requires conscious effort."
+        ),
+        "Cancer": (
+            "The Moon ruling the 4th house is the most natural and powerful placement for family happiness. "
+            "Your mother's influence is profound and your attachment to ancestral home and traditions is deep. "
+            "Nurturing your family is your primary source of emotional fulfilment. "
+            "Property near water, a well-stocked kitchen, and family gatherings define your domestic bliss."
+        ),
+        "Leo": (
+            "Sun-ruled Leo on the 4th house creates a proud, dignified home environment. "
+            "Your residence reflects your status -- spacious, well-lit, and impressive. Father's influence "
+            "on family culture is strong. You take pride in your lineage and family achievements. "
+            "Generosity toward family members and a regal household atmosphere characterise your home life."
+        ),
+        "Virgo": (
+            "Mercury-ruled Virgo on the 4th house creates an orderly, health-conscious home environment. "
+            "Cleanliness, routine, and practical efficiency define your domestic life. Your mother is "
+            "detail-oriented and health-focused. Property investments are carefully researched and sensible. "
+            "Family relationships improve when you relax your critical standards and accept imperfection."
+        ),
+        "Libra": (
+            "Venus-ruled Libra on the 4th house blesses the home with beauty, harmony, and social grace. "
+            "Your residence is tastefully decorated and serves as a gathering place for friends and family. "
+            "Both parents contribute equally to your upbringing. Property with aesthetic appeal attracts you. "
+            "Family peace depends on maintaining balance and avoiding taking sides in domestic disputes."
+        ),
+        "Scorpio": (
+            "Mars-Ketu ruled Scorpio on the 4th house creates deep, intense family dynamics. "
+            "Family secrets, ancestral karma, and transformative domestic experiences shape your inner life. "
+            "Property matters may involve disputes or dramatic changes. Your emotional attachment to home "
+            "runs very deep despite an outward appearance of detachment. Healing family karma is a life theme."
+        ),
+        "Sagittarius": (
+            "Jupiter's blessing on the 4th house creates an expansive, philosophical, and fortunate home life. "
+            "Your family values education, ethics, and spiritual growth. Property ownership is indicated, "
+            "often in multiple locations or abroad. Your home functions as a place of learning and wisdom. "
+            "International connections within the family and a liberal, open-minded household atmosphere prevail."
+        ),
+        "Capricorn": (
+            "Saturn-ruled Capricorn on the 4th house creates a structured, disciplined family environment. "
+            "Emotional warmth may have been scarce in early life, replaced by duty and responsibility. "
+            "Property accumulation is slow but substantial. Family traditions and ancestral obligations are "
+            "taken seriously. Domestic happiness increases markedly after middle age as Saturn rewards patience."
+        ),
+        "Aquarius": (
+            "Saturn-Rahu influenced Aquarius on the 4th house creates an unconventional home life. "
+            "Your family may be progressive, scattered geographically, or non-traditional in structure. "
+            "Technology plays a large role in your domestic space. Emotional distance from roots is possible "
+            "but compensated by chosen-family bonds. Property in unusual locations or modern apartments suits you."
+        ),
+        "Pisces": (
+            "Jupiter-ruled Pisces on the 4th house creates a spiritually rich and emotionally nourishing home. "
+            "Your mother is compassionate and possibly spiritually inclined. The home serves as a sanctuary "
+            "from the world's harshness. Property near water is highly favourable. "
+            "Family life is gentle, artistic, and deeply connected to devotion and selfless love."
+        ),
+    },
+}
+
+
+# ============================================================
+# 11. NAKSHATRA_PHAL -- 27 Nakshatras x 4 Padas Predictions
+# ============================================================
+
+NAKSHATRA_PHAL: Dict[str, Dict[int, str]] = {
+    "Ashwini": {
+        1: (
+            "Born in Ashwini Pada 1 (Aries navamsha), you are blessed with extraordinary healing abilities "
+            "and a pioneering spirit. Your energy is electric -- you initiate projects with remarkable speed "
+            "and inspire others through fearless action. Career success comes in medicine, emergency services, "
+            "or entrepreneurship. Spiritually, you carry the gift of renewal and can help others recover from crisis."
+        ),
+        2: (
+            "Ashwini Pada 2 (Taurus navamsha) natives combine healing gifts with a strong material drive. "
+            "You seek financial security through your skills and are attracted to luxury and beauty. "
+            "Career in veterinary science, ayurveda, cosmetics, or automobile industries is favoured. "
+            "Family life is comfortable and you invest wisely. Spiritual growth comes through grounding practices."
+        ),
+        3: (
+            "Ashwini Pada 3 (Gemini navamsha) brings intellectual agility combined with Ashwini's healing nature. "
+            "You are an excellent communicator who can translate complex health or technical knowledge for others. "
+            "Media, medical writing, pharmaceutical marketing, and technical education suit you. "
+            "Restlessness is your challenge -- multiple interests scatter your considerable talents."
+        ),
+        4: (
+            "Ashwini Pada 4 (Cancer navamsha) natives are nurturing healers with deep emotional intelligence. "
+            "You are drawn to caregiving professions and have an intuitive understanding of others' pain. "
+            "Nursing, paediatrics, midwifery, and emotional counselling are ideal careers. "
+            "Family bonds are exceptionally strong and your home serves as a healing sanctuary for many."
+        ),
+    },
+    "Bharani": {
+        1: (
+            "Bharani Pada 1 (Leo navamsha) gives a fiery, creative personality with strong reproductive energy. "
+            "You are a natural leader in creative fields -- cinema, theatre, fertility medicine, and event management. "
+            "Your magnetism attracts attention but also jealousy. Children and creative projects define your legacy. "
+            "Spiritual evolution comes through learning to channel Bharani's intense Venusian-Yama energy wisely."
+        ),
+        2: (
+            "Bharani Pada 2 (Virgo navamsha) balances Bharani's intensity with analytical precision. "
+            "You are methodical in managing life's transformative events -- birth, death, inheritance, taxation. "
+            "Career in forensic accounting, surgery, quality control, or critical care nursing suits you well. "
+            "Health-consciousness and self-improvement are lifelong themes. Perfectionism needs moderation."
+        ),
+        3: (
+            "Bharani Pada 3 (Libra navamsha) combines Bharani's transformative power with Venusian grace. "
+            "You navigate life's extremes with remarkable poise and attract deep, passionate relationships. "
+            "Career in marriage counselling, family law, luxury hospitality, or reproductive health is ideal. "
+            "Partnership is central to your evolution; the right spouse transforms your entire life trajectory."
+        ),
+        4: (
+            "Bharani Pada 4 (Scorpio navamsha) is Bharani at its most intense -- Pushkara navamsha amplifies depth. "
+            "You are drawn to life's mysteries: psychology, tantra, inheritance law, and transformative healing. "
+            "Emotional resilience is extraordinary but trust issues need conscious work. "
+            "Your spiritual path involves confronting death, rebirth, and the deepest layers of consciousness."
+        ),
+    },
+    "Krittika": {
+        1: (
+            "Krittika Pada 1 (Sagittarius navamsha) combines fire with wisdom -- you are a righteous warrior. "
+            "Truth and dharma are non-negotiable principles in your life. Teaching, law, military leadership, "
+            "and religious scholarship suit you. Your sharp tongue can wound, but your intentions are pure. "
+            "Spiritual advancement comes through discipline, fire rituals, and adherence to ethical conduct."
+        ),
+        2: (
+            "Krittika Pada 2 (Capricorn navamsha) natives are disciplined, ambitious, and sharply focused. "
+            "You climb to positions of authority through sheer determination and principled conduct. "
+            "Government administration, metallurgy, heavy industry, and structural engineering suit you. "
+            "Patience is your greatest asset -- success comes late but is permanent and deeply respected."
+        ),
+        3: (
+            "Krittika Pada 3 (Aquarius navamsha) directs Krittika's fire toward humanitarian and innovative goals. "
+            "You fight for social justice with a sharp, incisive mind. Technology, social reform, astronomy, "
+            "and network-based leadership are your fields. Unconventional approaches to traditional knowledge "
+            "set you apart. Spiritual growth comes through service to collective humanity."
+        ),
+        4: (
+            "Krittika Pada 4 (Pisces navamsha) softens the fire with compassion and spiritual depth. "
+            "You are a mystic warrior -- fierce in protecting the vulnerable yet gentle in personal dealings. "
+            "Charity work, spiritual healing, music, and temple administration suit you. "
+            "Your life purpose involves purifying karma through selfless service and devotion to the divine."
+        ),
+    },
+    "Rohini": {
+        1: (
+            "Rohini Pada 1 (Aries navamsha) combines Rohini's fertility with Martian initiative. "
+            "You are an assertive creator -- agriculture, fashion launching, product development, and business "
+            "startups thrive under your hands. Material abundance comes through bold, beautiful ventures. "
+            "Impulsive spending is the main challenge; channelling creative urges into lasting projects builds wealth."
+        ),
+        2: (
+            "Rohini Pada 2 (Taurus navamsha) is Rohini at its most powerful -- Pushkara navamsha in own sign. "
+            "You embody Venus-Moon synergy: beauty, wealth, artistic talent, and sensual magnetism. "
+            "Agriculture, music, fashion, jewellery, and luxury real estate are ideal careers. "
+            "Family life is rich and comfortable. Material and romantic fulfilment come with remarkable ease."
+        ),
+        3: (
+            "Rohini Pada 3 (Gemini navamsha) adds intellectual sparkle to Rohini's creative beauty. "
+            "You are a charming communicator with talent in advertising, beauty writing, social media, and trading. "
+            "Multiple income sources from creative and commercial activities are indicated. "
+            "Restlessness in relationships needs attention; settling down requires conscious commitment."
+        ),
+        4: (
+            "Rohini Pada 4 (Cancer navamsha) deepens Rohini's nurturing quality to its most maternal expression. "
+            "You create abundance through emotional connection -- hospitality, food, real estate, and caregiving. "
+            "Your home is beautiful and abundantly stocked. Mother's influence is profound and protective. "
+            "Emotional security is your primary need; when fulfilled, creativity and wealth flow effortlessly."
+        ),
+    },
+    "Mrigashira": {
+        1: (
+            "Mrigashira Pada 1 (Leo navamsha) combines the searching nature with regal confidence. "
+            "You pursue knowledge and creative expression with dramatic flair. Entertainment, academic research, "
+            "fashion, and wildlife exploration suit you. Your curiosity attracts admirers who enjoy your stories. "
+            "The challenge is finishing what you start; royal focus on a single pursuit yields the greatest results."
+        ),
+        2: (
+            "Mrigashira Pada 2 (Virgo navamsha) brings analytical precision to the eternal search. "
+            "You are a meticulous researcher, naturalist, or scientist who finds beauty in detail. "
+            "Textile analysis, botanical research, editing, and pharmaceutical work suit your nature. "
+            "Overthinking and excessive caution can delay action; trust your instinct alongside your analysis."
+        ),
+        3: (
+            "Mrigashira Pada 3 (Libra navamsha) directs the search toward beauty, balance, and partnership. "
+            "You are a gentle aesthete who seeks harmony in relationships and surroundings. "
+            "Interior design, textile art, music, and diplomacy are ideal career paths. "
+            "Marriage is an important milestone; the right partner satisfies your restless search for completion."
+        ),
+        4: (
+            "Mrigashira Pada 4 (Scorpio navamsha) intensifies the search into deep, investigative territory. "
+            "You probe beneath surfaces and are drawn to mystery, research, and hidden knowledge. "
+            "Detective work, archaeological research, mining, and psychological therapy suit your nature. "
+            "Obsessive searching can become a trap; knowing when you have found enough is the key to peace."
+        ),
+    },
+    "Ardra": {
+        1: (
+            "Ardra Pada 1 (Sagittarius navamsha) channels the storm energy toward philosophical wisdom. "
+            "You transform suffering into teaching and guide others through their own storms. "
+            "Higher education, philosophical counselling, and transformative coaching are your calling. "
+            "Life presents extreme challenges early, but your optimism and wisdom ultimately triumph."
+        ),
+        2: (
+            "Ardra Pada 2 (Capricorn navamsha) grounds Ardra's intensity in practical, worldly ambition. "
+            "You are a tough, resilient worker who endures hardship without complaint. "
+            "Technology, engineering, government service under pressure, and crisis management suit you. "
+            "Emotional expression is difficult; learning to communicate feelings prevents internal storms."
+        ),
+        3: (
+            "Ardra Pada 3 (Aquarius navamsha) combines Ardra's transformative power with humanitarian vision. "
+            "You are a revolutionary thinker who disrupts outdated systems for collective benefit. "
+            "Software development, social reform, electrical engineering, and scientific innovation are ideal. "
+            "Detachment from personal ego allows your considerable intellect to serve the greater good."
+        ),
+        4: (
+            "Ardra Pada 4 (Pisces navamsha) softens the storm with compassion and spiritual sensitivity. "
+            "You feel the world's suffering deeply and are motivated to heal through creative or spiritual means. "
+            "Music therapy, spiritual counselling, charity, and marine research suit your nature. "
+            "Emotional overwhelm is your challenge; establishing boundaries protects your sensitive constitution."
+        ),
+    },
+    "Punarvasu": {
+        1: (
+            "Punarvasu Pada 1 (Aries navamsha) combines renewal energy with initiative and courage. "
+            "You bounce back from setbacks with remarkable speed and inspire others through resilient action. "
+            "Startup entrepreneurship, coaching, emergency restoration, and sports training suit you. "
+            "Your optimism is contagious; you are the person others turn to when hope seems lost."
+        ),
+        2: (
+            "Punarvasu Pada 2 (Taurus navamsha) brings material stability to Punarvasu's renewing nature. "
+            "You rebuild financial security after disruption with patient, steady effort. "
+            "Real estate restoration, agriculture, banking, and luxury goods renewal suit your talent. "
+            "Comfort and beauty return to your life cyclically; each restoration cycle builds greater wealth."
+        ),
+        3: (
+            "Punarvasu Pada 3 (Gemini navamsha) expresses renewal through intellectual communication. "
+            "You are a gifted teacher who helps others rediscover lost knowledge and forgotten truths. "
+            "Publishing, archival research, language revival, and counselling are ideal careers. "
+            "Your versatile mind bounces between subjects, always returning to core wisdom."
+        ),
+        4: (
+            "Punarvasu Pada 4 (Cancer navamsha) is the most nurturing expression -- returning to the cosmic mother. "
+            "You create safe emotional havens for yourself and others. Home restoration, family counselling, "
+            "nutritional healing, and maternal care are your gifts. Each emotional setback deepens your compassion. "
+            "Your spiritual path leads back to the heart, to nurturing, and to unconditional acceptance."
+        ),
+    },
+    "Pushya": {
+        1: (
+            "Pushya Pada 1 (Leo navamsha) combines nourishing energy with leadership and generosity. "
+            "You are a magnanimous provider who nourishes communities through authoritative guidance. "
+            "Hospital administration, government welfare, education leadership, and charitable foundations suit you. "
+            "Your dignified generosity earns deep respect and lasting influence in society."
+        ),
+        2: (
+            "Pushya Pada 2 (Virgo navamsha) brings meticulous service to Pushya's nourishing nature. "
+            "You are a precise caregiver who improves systems of support with analytical skill. "
+            "Healthcare management, dietary science, social work planning, and agricultural optimisation are ideal. "
+            "Your attention to detail ensures that help reaches those who need it most effectively."
+        ),
+        3: (
+            "Pushya Pada 3 (Libra navamsha) directs nourishment through partnership and social harmony. "
+            "You build bridges between people and create nourishing communities through diplomacy and grace. "
+            "Marriage counselling, cooperative business, social events management, and arts patronage suit you. "
+            "Your greatest nourishment comes through balanced, loving relationships."
+        ),
+        4: (
+            "Pushya Pada 4 (Scorpio navamsha) deepens nourishment into transformative emotional healing. "
+            "You are drawn to heal the deepest wounds -- trauma, grief, addiction, and family dysfunction. "
+            "Psychotherapy, hospice care, rehabilitation counselling, and regenerative medicine are your calling. "
+            "Your own suffering becomes the fuel for profound compassion and therapeutic power."
+        ),
+    },
+    "Ashlesha": {
+        1: (
+            "Ashlesha Pada 1 (Sagittarius navamsha) channels serpent wisdom into philosophical and ethical teaching. "
+            "You understand hidden truths and use this knowledge to guide others toward dharmic living. "
+            "Vedic astrology, philosophical counselling, snake venom research, and toxicology suit you. "
+            "Your penetrating insight sees through deception, making you a natural guardian of truth."
+        ),
+        2: (
+            "Ashlesha Pada 2 (Capricorn navamsha) grounds serpent intelligence in worldly power structures. "
+            "You navigate political and corporate hierarchies with strategic brilliance. "
+            "Pharmaceutical industry, political strategy, mining, and intelligence services are ideal fields. "
+            "Ambition is intense; ethical boundaries prevent your power from becoming self-destructive."
+        ),
+        3: (
+            "Ashlesha Pada 3 (Aquarius navamsha) combines Ashlesha's cunning with humanitarian innovation. "
+            "You devise unconventional solutions to deep-rooted problems others cannot even perceive. "
+            "Genetic research, environmental toxicology, social hacking for good, and cybersecurity suit you. "
+            "Your genius operates best when directed toward collective benefit rather than personal gain."
+        ),
+        4: (
+            "Ashlesha Pada 4 (Pisces navamsha) dissolves the serpent's grip through spiritual surrender. "
+            "You carry deep karmic patterns that seek resolution through devotion and compassion. "
+            "Kundalini yoga, spiritual healing, marine biology, and addiction counselling are your paths. "
+            "Release of control and trust in the divine current transforms your powerful serpent energy into moksha."
+        ),
+    },
+    "Magha": {
+        1: (
+            "Magha Pada 1 (Aries navamsha) combines royal ancestry energy with pioneering action. "
+            "You are a born leader who carries ancestral authority into new territories. "
+            "Government leadership, military command, corporate founding, and dynasty building suit you. "
+            "Your connection to ancestors is palpable -- pitru karma shapes major life decisions and turning points."
+        ),
+        2: (
+            "Magha Pada 2 (Taurus navamsha) directs royal energy toward wealth preservation and legacy building. "
+            "You protect and grow family assets with unwavering dedication. "
+            "Heritage management, luxury brands, ancestral property, and traditional crafts suit you. "
+            "Material legacy and cultural preservation are sacred duties you fulfil with dignity."
+        ),
+        3: (
+            "Magha Pada 3 (Gemini navamsha) channels ancestral wisdom through communication and teaching. "
+            "You are a storyteller who preserves family history and cultural narratives for future generations. "
+            "Genealogy, historical writing, cultural documentation, and ancestral research are ideal pursuits. "
+            "Your intellect connects past wisdom with present application, bridging generations."
+        ),
+        4: (
+            "Magha Pada 4 (Cancer navamsha) deepens the ancestral connection to its most emotional and nurturing level. "
+            "You feel your ancestors' presence and channel their blessings into family care. "
+            "Temple trust management, family counselling, maternal health, and ancestral rituals are your domain. "
+            "Home is your throne -- a place where past and present merge in loving continuity."
+        ),
+    },
+    "Purva Phalguni": {
+        1: (
+            "Purva Phalguni Pada 1 (Leo navamsha) amplifies creative, royal, and romantic energy to its peak. "
+            "You are a star performer -- charismatic, generous, and meant for the spotlight. "
+            "Entertainment, fine arts, luxury hospitality, and creative direction are your domains. "
+            "Love and romance are central themes; your heart's desires shape your life's grandest chapters."
+        ),
+        2: (
+            "Purva Phalguni Pada 2 (Virgo navamsha) refines the pleasure principle with practical discernment. "
+            "You create beauty with precision and manage luxury enterprises with analytical skill. "
+            "Event planning, fashion quality control, cosmetic formulation, and arts administration suit you. "
+            "Balancing indulgence with discipline is your lifelong theme; when achieved, success flows abundantly."
+        ),
+        3: (
+            "Purva Phalguni Pada 3 (Libra navamsha) expresses love and creativity through partnership and social grace. "
+            "You are the consummate host, diplomat, and social connector who brings people together in joy. "
+            "Wedding planning, social media, luxury partnerships, and artistic collaboration are ideal. "
+            "Your happiest moments are shared ones; partnership in both love and business elevates your life."
+        ),
+        4: (
+            "Purva Phalguni Pada 4 (Scorpio navamsha) takes pleasure into transformative and intense depths. "
+            "Your creative and romantic life is marked by intensity, passion, and occasional upheaval. "
+            "Tantric arts, transformative therapy, deep relationship work, and crisis-born creativity suit you. "
+            "You discover your greatest artistic power through emotional catharsis and fearless self-expression."
+        ),
+    },
+    "Uttara Phalguni": {
+        1: (
+            "Uttara Phalguni Pada 1 (Sagittarius navamsha) combines patronage with wisdom and philosophical purpose. "
+            "You are a generous benefactor who supports education, religion, and ethical enterprise. "
+            "University endowment, dharmic leadership, publishing, and philanthropic management suit you. "
+            "Your life's purpose is to use Sun-ruled authority to uplift others through wisdom and generosity."
+        ),
+        2: (
+            "Uttara Phalguni Pada 2 (Capricorn navamsha) channels patronage energy into disciplined institution-building. "
+            "You create lasting structures -- organisations, trusts, and enterprises that outlive you. "
+            "Government administration, corporate law, institutional reform, and estate management are ideal. "
+            "Patience and structure transform your generous impulses into permanent societal contributions."
+        ),
+        3: (
+            "Uttara Phalguni Pada 3 (Aquarius navamsha) directs Uttara Phalguni's helping nature toward social innovation. "
+            "You build networks of support that reach underserved communities through progressive methods. "
+            "Social enterprise, technology for good, cooperative housing, and innovative welfare programs suit you. "
+            "Your philanthropic vision is ahead of its time; persistence eventually brings recognition."
+        ),
+        4: (
+            "Uttara Phalguni Pada 4 (Pisces navamsha) dissolves the patron's ego into selfless spiritual service. "
+            "You give without expectation and find deepest fulfilment in anonymous acts of kindness. "
+            "Ashram management, spiritual retreat centres, hospital charity, and devotional arts are your calling. "
+            "Your generous heart becomes a channel for divine grace when personal ambition is transcended."
+        ),
+    },
+    "Hasta": {
+        1: (
+            "Hasta Pada 1 (Aries navamsha) directs Hasta's manual skill and cunning toward bold enterprise. "
+            "You are a quick-handed entrepreneur -- skilled in crafts, surgery, and mechanical innovation. "
+            "Surgical specialisation, precision engineering, gem-cutting, and artisan entrepreneurship suit you. "
+            "Your hands are blessed; what you make or fix becomes more valuable through your touch."
+        ),
+        2: (
+            "Hasta Pada 2 (Taurus navamsha) brings Hasta's dexterity into the realm of material beauty and value. "
+            "You create tangible wealth through skilled craftsmanship and aesthetic production. "
+            "Jewellery making, pottery, massage therapy, cooking, and luxury crafts are ideal careers. "
+            "Your steady hands produce works of lasting beauty that appreciate in value over time."
+        ),
+        3: (
+            "Hasta Pada 3 (Gemini navamsha) combines manual skill with intellectual versatility and communication. "
+            "You are equally adept with hands and words -- writing, sign language, typing, and gesture-based arts. "
+            "Calligraphy, technical writing, data entry systems, and hand-based healing modalities suit you. "
+            "Your ability to translate thought into precise physical action makes you exceptionally productive."
+        ),
+        4: (
+            "Hasta Pada 4 (Cancer navamsha) nurtures through Hasta's healing touch and emotional sensitivity. "
+            "You are a natural healer whose hands carry soothing, maternal energy. "
+            "Nursing, midwifery, infant massage, cooking therapy, and emotionally supportive bodywork suit you. "
+            "Your home cooking and handmade gifts carry a quality of love that commercially produced goods cannot match."
+        ),
+    },
+    "Chitra": {
+        1: (
+            "Chitra Pada 1 (Leo navamsha) amplifies the celestial architect's creative fire into dramatic self-expression. "
+            "You are a visionary artist whose creations demand attention and admiration. "
+            "Architecture, fashion design, film direction, and monumental sculpture are ideal fields. "
+            "Your creative ego is powerful -- channelling it into magnificent works rather than personal drama is key."
+        ),
+        2: (
+            "Chitra Pada 2 (Virgo navamsha) refines Chitra's creative impulse with Mercury's analytical precision. "
+            "You are a detail-oriented creator who achieves perfection through painstaking refinement. "
+            "Industrial design, technical illustration, precision engineering, and medical device design suit you. "
+            "Your creations work flawlessly because you obsess over every detail until it meets your exacting standards."
+        ),
+        3: (
+            "Chitra Pada 3 (Libra navamsha) directs the celestial architect toward beauty, partnership, and social harmony. "
+            "You create beauty that brings people together -- public spaces, fashion, music, and social platforms. "
+            "Interior architecture, event design, fashion styling, and arts curation are your talents. "
+            "Collaboration with equally talented partners produces your most stunning work."
+        ),
+        4: (
+            "Chitra Pada 4 (Scorpio navamsha) takes Chitra's creative power into intense, transformative territory. "
+            "You create works that disturb, transform, and provoke deep emotional responses. "
+            "Tattoo artistry, reconstructive surgery, avant-garde art, and architectural renovation suit you. "
+            "Your creativity reaches its peak when you work with materials others consider broken or discarded."
+        ),
+    },
+    "Swati": {
+        1: (
+            "Swati Pada 1 (Sagittarius navamsha) combines independence with philosophical purpose and ethical conduct. "
+            "You are a free-spirited seeker of truth who travels widely in pursuit of wisdom. "
+            "International trade, philosophical writing, travel industry, and diplomatic service suit you. "
+            "Your independence is not rebellion but a genuine quest for higher meaning and broader horizons."
+        ),
+        2: (
+            "Swati Pada 2 (Capricorn navamsha) grounds Swati's restless independence in disciplined worldly achievement. "
+            "You are a self-made professional who builds success through patient, solitary effort. "
+            "Wind energy, aviation maintenance, corporate consulting, and independent business suit you. "
+            "Financial discipline transforms your freedom-loving nature into lasting prosperity."
+        ),
+        3: (
+            "Swati Pada 3 (Aquarius navamsha) amplifies Swati's independence into social innovation and networking. "
+            "You connect diverse groups and ideas, creating unexpected synergies. "
+            "Technology startups, social networking, cooperative ventures, and progressive advocacy suit you. "
+            "Your greatest achievements come through empowering others' independence rather than centralising power."
+        ),
+        4: (
+            "Swati Pada 4 (Pisces navamsha) dissolves Swati's fierce independence into spiritual surrender. "
+            "You learn that true freedom comes through releasing attachment rather than accumulating options. "
+            "Spiritual retreat facilitation, music, oceanic research, and pilgrimage organising suit you. "
+            "Your restless wind settles into the vast ocean of consciousness, finding peace in surrender."
+        ),
+    },
+    "Vishakha": {
+        1: (
+            "Vishakha Pada 1 (Aries navamsha) ignites the goal-focused energy with fiery initiative. "
+            "You are a relentless achiever who attacks targets with singular military precision. "
+            "Competitive sports, military strategy, surgical specialisation, and executive leadership suit you. "
+            "Your determination is unmatched; you define a goal and will not rest until it is conquered."
+        ),
+        2: (
+            "Vishakha Pada 2 (Taurus navamsha) directs Vishakha's goal-orientation toward material wealth and stability. "
+            "You pursue financial targets with unwavering patience and practical strategy. "
+            "Banking, agricultural empire building, luxury brand development, and real estate suit you. "
+            "Your determination combined with Venusian patience creates substantial, lasting wealth."
+        ),
+        3: (
+            "Vishakha Pada 3 (Gemini navamsha) combines single-minded pursuit with intellectual versatility. "
+            "You are a strategic communicator who convinces others to support your vision. "
+            "Political campaigning, sales management, media strategy, and debate competition suit you. "
+            "Your ability to articulate goals and rally support makes you a formidable force in any arena."
+        ),
+        4: (
+            "Vishakha Pada 4 (Cancer navamsha) channels Vishakha's determination toward emotional and family goals. "
+            "You pursue domestic security and family well-being with the same intensity others reserve for career. "
+            "Family business leadership, maternal healthcare, home building, and heritage preservation suit you. "
+            "Your deepest fulfilment comes when professional success translates into family prosperity."
+        ),
+    },
+    "Anuradha": {
+        1: (
+            "Anuradha Pada 1 (Leo navamsha) combines devotion and friendship with regal self-expression. "
+            "You are a loyal leader whose authority comes from genuine love for your people. "
+            "Organisational leadership, diplomatic corps, creative direction, and social enterprise suit you. "
+            "Your devotion to friends and causes inspires fierce loyalty in return."
+        ),
+        2: (
+            "Anuradha Pada 2 (Virgo navamsha) brings analytical precision to Anuradha's devotional nature. "
+            "You serve your chosen cause with meticulous attention and practical competence. "
+            "Data-driven social work, health service coordination, religious scholarship, and NGO management suit you. "
+            "Your devotion is expressed through perfect execution rather than emotional display."
+        ),
+        3: (
+            "Anuradha Pada 3 (Libra navamsha) directs devotion through partnership, beauty, and social harmony. "
+            "You are a bridge-builder whose friendships span diverse groups and cultures. "
+            "International relations, arts patronage, marriage counselling, and cultural exchange suit you. "
+            "Your greatest spiritual growth comes through devoted, balanced partnership."
+        ),
+        4: (
+            "Anuradha Pada 4 (Scorpio navamsha) intensifies devotion into profound, transformative spiritual practice. "
+            "You are drawn to mystery traditions, deep meditation, and unwavering spiritual commitment. "
+            "Tantra, psychotherapy, mystery school teaching, and regenerative medicine suit you. "
+            "Your devotion to truth takes you into the darkest corners, where you find the brightest light."
+        ),
+    },
+    "Jyeshtha": {
+        1: (
+            "Jyeshtha Pada 1 (Sagittarius navamsha) channels elder authority into philosophical leadership. "
+            "You are a wise ruler who earns respect through ethical conduct and expansive vision. "
+            "University administration, judicial authority, religious leadership, and philanthropic direction suit you. "
+            "Your protective nature extends beyond family to encompass entire communities."
+        ),
+        2: (
+            "Jyeshtha Pada 2 (Capricorn navamsha) grounds Jyeshtha's power in practical, structural authority. "
+            "You are a disciplined administrator who builds lasting institutions through patient effort. "
+            "Government bureaucracy, corporate governance, infrastructure planning, and elder care management suit you. "
+            "Your authority grows with age; the latter half of life is far more powerful than the first."
+        ),
+        3: (
+            "Jyeshtha Pada 3 (Aquarius navamsha) transforms Jyeshtha's hierarchical power into democratic leadership. "
+            "You challenge outdated power structures while maintaining respect for genuine authority. "
+            "Social reform, technology governance, cooperative management, and progressive politics suit you. "
+            "Your greatest legacy is dismantling unjust systems while preserving what genuinely serves humanity."
+        ),
+        4: (
+            "Jyeshtha Pada 4 (Pisces navamsha) dissolves worldly power into spiritual authority and selfless service. "
+            "You learn that true authority comes from surrender to the divine rather than worldly dominance. "
+            "Ashram leadership, spiritual counselling, charitable hospital management, and prayer suit you. "
+            "The power you release from ego returns multiplied as spiritual grace and inner peace."
+        ),
+    },
+    "Mula": {
+        1: (
+            "Mula Pada 1 (Aries navamsha) combines root-destruction energy with fiery initiative and courage. "
+            "You are a fearless destroyer of what no longer serves -- old systems, outdated beliefs, toxic patterns. "
+            "Crisis management, demolition engineering, root cause analysis, and revolutionary leadership suit you. "
+            "Your life begins with destruction of the old so that something authentic can emerge."
+        ),
+        2: (
+            "Mula Pada 2 (Taurus navamsha) grounds Mula's destructive power in practical, material rebuilding. "
+            "After uprooting the old, you rebuild with patient attention to quality and lasting value. "
+            "Soil science, dental surgery, foundation engineering, and heritage restoration suit you. "
+            "Your unique gift is transforming destruction into creation -- what you rebuild endures."
+        ),
+        3: (
+            "Mula Pada 3 (Gemini navamsha) channels root energy through intellectual inquiry and communication. "
+            "You question fundamental assumptions and communicate disruptive truths with clarity. "
+            "Investigative journalism, linguistic etymology, genetic research, and philosophical deconstruction suit you. "
+            "Your mind goes to the root of every question; superficial answers are intolerable."
+        ),
+        4: (
+            "Mula Pada 4 (Cancer navamsha) directs Mula's root energy toward emotional and ancestral healing. "
+            "You are drawn to heal family trauma, ancestral patterns, and deep-seated emotional wounds. "
+            "Family therapy, genealogical healing, real estate clearing, and maternal lineage work suit you. "
+            "Your most profound transformation comes through returning to your roots and healing them from within."
+        ),
+    },
+    "Purva Ashadha": {
+        1: (
+            "Purva Ashadha Pada 1 (Leo navamsha) combines invincible energy with creative, regal self-expression. "
+            "You declare your intentions boldly and follow through with unwavering commitment to victory. "
+            "Motivational speaking, political campaigning, film production, and sports coaching suit you. "
+            "Your confidence is infectious; you are the person others follow into battle knowing victory is certain."
+        ),
+        2: (
+            "Purva Ashadha Pada 2 (Virgo navamsha) brings analytical strategy to Purva Ashadha's invincibility. "
+            "You win through superior preparation, attention to detail, and methodical execution. "
+            "Military intelligence, surgical excellence, quality assurance, and research triumph suit you. "
+            "Your victories are built on data and precision; nothing is left to chance."
+        ),
+        3: (
+            "Purva Ashadha Pada 3 (Libra navamsha) achieves victory through diplomacy, partnership, and grace. "
+            "You win hearts rather than battles and achieve your goals through charm and strategic alliances. "
+            "Diplomatic service, legal advocacy, peace negotiation, and luxury brand ambassadorship suit you. "
+            "Your invincibility comes from making allies of former adversaries."
+        ),
+        4: (
+            "Purva Ashadha Pada 4 (Scorpio navamsha) takes invincibility into the deepest, most transformative battles. "
+            "You conquer fear, death, and the darkest challenges that would destroy lesser souls. "
+            "Trauma surgery, crisis therapy, undercover investigation, and spiritual warfare suit you. "
+            "Your greatest victory is over your own shadow -- once achieved, no external challenge can defeat you."
+        ),
+    },
+    "Uttara Ashadha": {
+        1: (
+            "Uttara Ashadha Pada 1 (Sagittarius navamsha) amplifies the universal soldier's wisdom and purpose. "
+            "You fight for dharma with philosophical conviction and international perspective. "
+            "International law, humanitarian aid, educational reform, and ethical leadership suit you. "
+            "Your authority is recognised universally because it serves truth rather than personal power."
+        ),
+        2: (
+            "Uttara Ashadha Pada 2 (Capricorn navamsha) is Uttara Ashadha at its most powerful -- Sun exalted potential. "
+            "You build structures of authority that serve universal justice and lasting governance. "
+            "Government founding, constitutional law, institutional leadership, and national service suit you. "
+            "Your discipline and moral authority place you in positions of permanent, respected power."
+        ),
+        3: (
+            "Uttara Ashadha Pada 3 (Aquarius navamsha) directs universal authority toward humanitarian innovation. "
+            "You reform systems to serve all people equally, using technology and progressive thinking. "
+            "International development, technology policy, democratic reform, and scientific governance suit you. "
+            "Your leadership style is inclusive and forward-looking; hierarchy serves function, not ego."
+        ),
+        4: (
+            "Uttara Ashadha Pada 4 (Pisces navamsha) dissolves worldly authority into spiritual universality. "
+            "You recognise that the highest authority belongs to the divine and serve as its humble instrument. "
+            "Spiritual leadership, interfaith dialogue, charitable governance, and selfless public service suit you. "
+            "Your final victory is not over others but over your own attachment to power and recognition."
+        ),
+    },
+    "Shravana": {
+        1: (
+            "Shravana Pada 1 (Aries navamsha) combines deep listening ability with bold, initiative-driven action. "
+            "You hear what others miss and act on it before anyone else can react. "
+            "Intelligence gathering, strategic consulting, emergency dispatch, and audio engineering suit you. "
+            "Your listening is not passive but active -- you hear and act with warrior-like precision."
+        ),
+        2: (
+            "Shravana Pada 2 (Taurus navamsha) brings Shravana's listening ability into practical, wealth-generating activity. "
+            "You translate what you hear in the market into profitable, stable ventures. "
+            "Music production, market research, agricultural advisory, and acoustic engineering suit you. "
+            "Your ear for quality and value makes you an exceptional judge of investments and opportunities."
+        ),
+        3: (
+            "Shravana Pada 3 (Gemini navamsha) amplifies the listening-communication loop to extraordinary levels. "
+            "You are a master interviewer, translator, and connector who bridges different worlds through words. "
+            "Journalism, language interpretation, counselling, and podcast production suit you. "
+            "Your ability to truly hear and then clearly articulate makes you invaluable in any field requiring mediation."
+        ),
+        4: (
+            "Shravana Pada 4 (Cancer navamsha) deepens listening into emotional and intuitive hearing. "
+            "You hear the unspoken -- feelings, needs, and ancestral whispers guide your actions. "
+            "Therapy, maternal counselling, music therapy, and intuitive healing suit you. "
+            "Your home is a place of deep listening where family members feel truly heard and understood."
+        ),
+    },
+    "Dhanishta": {
+        1: (
+            "Dhanishta Pada 1 (Leo navamsha) combines rhythmic wealth energy with dramatic, regal creative expression. "
+            "You are a prosperous performer whose rhythm attracts abundance and admiration. "
+            "Music performance, entertainment industry leadership, sports drumming, and gold trading suit you. "
+            "Your natural sense of timing makes you lucky in speculation and performance arts."
+        ),
+        2: (
+            "Dhanishta Pada 2 (Virgo navamsha) refines Dhanishta's rhythm and wealth through analytical precision. "
+            "You build wealth through systematic, rhythmic effort -- consistent saving and measured investment. "
+            "Musical instrument crafting, financial auditing, rhythmic therapy, and precision manufacturing suit you. "
+            "Your disciplined approach to wealth ensures steady growth without speculative risk."
+        ),
+        3: (
+            "Dhanishta Pada 3 (Libra navamsha) channels rhythmic energy into social harmony and partnership wealth. "
+            "You create prosperity through collaborative ventures and socially harmonious enterprises. "
+            "Wedding music, social event management, cooperative banking, and arts partnership suit you. "
+            "Your sense of rhythm extends to relationships -- you know when to give, receive, and balance."
+        ),
+        4: (
+            "Dhanishta Pada 4 (Scorpio navamsha) intensifies the rhythm into transformative, powerful beats. "
+            "You are drawn to intense musical forms, deep financial markets, and hidden wealth channels. "
+            "Percussion mastery, investment banking, insurance, and inheritance management suit you. "
+            "Your rhythm penetrates surfaces; you find wealth and power where others see only noise."
+        ),
+    },
+    "Shatabhisha": {
+        1: (
+            "Shatabhisha Pada 1 (Sagittarius navamsha) combines the hundred healers' energy with philosophical wisdom. "
+            "You are a visionary healer who understands the broader principles behind specific cures. "
+            "Medical research, public health policy, pharmaceutical philosophy, and holistic education suit you. "
+            "Your healing extends beyond individuals to entire populations through wise, principled practice."
+        ),
+        2: (
+            "Shatabhisha Pada 2 (Capricorn navamsha) grounds the healing energy in practical, institutional structures. "
+            "You build hospitals, clinics, and healthcare systems that endure and serve reliably. "
+            "Hospital administration, pharmaceutical manufacturing, public health infrastructure, and medical governance suit you. "
+            "Your disciplined approach to healing ensures consistent, accessible care for communities."
+        ),
+        3: (
+            "Shatabhisha Pada 3 (Aquarius navamsha) is Shatabhisha at full power -- the innovative healer-scientist. "
+            "You invent new healing technologies, medicines, and methodologies that transform healthcare. "
+            "Medical technology, space medicine, electrical therapies, and scientific research suit you. "
+            "Your unique healing insights come from unconventional thinking and willingness to experiment."
+        ),
+        4: (
+            "Shatabhisha Pada 4 (Pisces navamsha) dissolves the healer's science into spiritual and intuitive medicine. "
+            "You heal through prayer, energy, water therapies, and compassionate presence. "
+            "Spiritual healing, hydrotherapy, music medicine, and charitable healthcare suit you. "
+            "Your most powerful healing occurs when you surrender scientific ego to compassionate intuition."
+        ),
+    },
+    "Purva Bhadrapada": {
+        1: (
+            "Purva Bhadrapada Pada 1 (Aries navamsha) ignites the one-footed goat's fire into explosive spiritual action. "
+            "You are a fierce spiritual warrior who attacks ignorance and injustice with zealous passion. "
+            "Social revolution, spiritual combat, emergency spiritual counselling, and fire rituals suit you. "
+            "Your intensity burns away impurities; what survives your fire is genuinely sacred."
+        ),
+        2: (
+            "Purva Bhadrapada Pada 2 (Taurus navamsha) grounds the intense spiritual fire in practical, material expression. "
+            "You fund spiritual causes, build temples, and create material foundations for transcendent work. "
+            "Charitable trust management, temple construction, spiritual commerce, and occult investment suit you. "
+            "Your wealth serves your spiritual mission; money is a tool for transformation, not accumulation."
+        ),
+        3: (
+            "Purva Bhadrapada Pada 3 (Gemini navamsha) channels transformative fire through words and communication. "
+            "You are a powerful orator whose words can inflame or illuminate depending on your maturity. "
+            "Fiery journalism, spiritual writing, transformative coaching, and political speechwriting suit you. "
+            "Your words carry the power to change minds and hearts; choose them with care."
+        ),
+        4: (
+            "Purva Bhadrapada Pada 4 (Cancer navamsha) brings the spiritual fire into emotional and domestic realms. "
+            "You transform family karma through intense emotional processing and spiritual practice at home. "
+            "Family healing, ancestral ritual, home-based spiritual practice, and maternal spiritual guidance suit you. "
+            "Your home becomes an ashram; emotional intensity is the fuel for your family's spiritual evolution."
+        ),
+    },
+    "Uttara Bhadrapada": {
+        1: (
+            "Uttara Bhadrapada Pada 1 (Leo navamsha) combines deep serpent wisdom with regal, generous self-expression. "
+            "You are a wise elder whose depth of understanding inspires respect and devotion. "
+            "Spiritual leadership, Vedic teaching, charitable governance, and wisdom literature suit you. "
+            "Your calm authority comes from genuine inner depth rather than worldly power."
+        ),
+        2: (
+            "Uttara Bhadrapada Pada 2 (Virgo navamsha) brings analytical precision to Uttara Bhadrapada's deep wisdom. "
+            "You are a meticulous scholar who organises spiritual knowledge into accessible, practical systems. "
+            "Religious scholarship, scriptural translation, monastic administration, and ethical auditing suit you. "
+            "Your detailed spiritual knowledge serves others by making the profound simple and applicable."
+        ),
+        3: (
+            "Uttara Bhadrapada Pada 3 (Libra navamsha) channels deep wisdom through balanced partnership and social grace. "
+            "You counsel others with compassionate fairness and create harmony in turbulent environments. "
+            "Marriage counselling, interfaith dialogue, judicial mediation, and spiritual partnership suit you. "
+            "Your wisdom is most effective when shared through loving, balanced relationships."
+        ),
+        4: (
+            "Uttara Bhadrapada Pada 4 (Scorpio navamsha) takes the deep serpent into the most intense, transformative waters. "
+            "You are drawn to the deepest mysteries of existence -- birth, death, and what lies beyond. "
+            "Hospice spiritual care, death midwifery, kundalini research, and mystical practice suit you. "
+            "Your spiritual depth is unfathomable; few can accompany you to the places you naturally go."
+        ),
+    },
+    "Revati": {
+        1: (
+            "Revati Pada 1 (Sagittarius navamsha) combines Revati's compassionate journey-end with philosophical wisdom. "
+            "You guide others to their destination -- physical, emotional, or spiritual -- with wise counsel. "
+            "Travel guidance, spiritual pilgrimage organisation, philosophical counselling, and end-of-life care suit you. "
+            "Your presence brings comfort at life's major transitions and journeys' ends."
+        ),
+        2: (
+            "Revati Pada 2 (Capricorn navamsha) grounds Revati's gentle, final-journey energy in practical service. "
+            "You organise the practical details of life's transitions with caring efficiency. "
+            "Estate planning, funeral direction, retirement counselling, and heritage preservation suit you. "
+            "Your disciplined kindness ensures that endings are handled with dignity and completeness."
+        ),
+        3: (
+            "Revati Pada 3 (Aquarius navamsha) channels compassion into innovative, collective care systems. "
+            "You build networks of support that ensure no one faces life's final chapters alone. "
+            "Hospice innovation, elder-care technology, community end-of-life services, and progressive charity suit you. "
+            "Your humanitarian vision transforms how society cares for its most vulnerable members."
+        ),
+        4: (
+            "Revati Pada 4 (Pisces navamsha) is the final expression of the entire zodiac -- complete surrender to the divine. "
+            "You embody pure compassion, artistic sensitivity, and readiness for spiritual liberation. "
+            "Devotional music, spiritual art, meditation mastery, and selfless service are your domain. "
+            "Your soul is completing its journey; peace, surrender, and divine love are your natural state."
+        ),
+    },
+}
+
+
+# ============================================================
+# 12. ASCENDANT_PERSONALITY -- Extended Profiles per Ascendant
+# ============================================================
+
+ASCENDANT_PERSONALITY: Dict[str, Dict[str, str]] = {
+    "Aries": {
+        "overview": (
+            "The Aries ascendant stamps the personality with Mars energy -- courageous, impulsive, and fiercely "
+            "independent. You are a natural pioneer who leads from the front without waiting for permission. "
+            "First impressions are of someone direct, energetic, and perhaps slightly intimidating. "
+            "You live in the present moment, making quick decisions and taking immediate action. "
+            "Challenges excite rather than frighten you; boredom is your true enemy. "
+            "Your life story is one of constant new beginnings, bold initiatives, and hard-won victories."
+        ),
+        "health_tendencies": (
+            "The head, brain, and adrenal system are your most sensitive areas. Migraines, fevers, "
+            "and inflammatory conditions flare under stress. Your metabolism runs fast, burning through "
+            "energy quickly -- regular meals and adequate sleep prevent burnout. Physical activity is "
+            "not optional but essential for maintaining both mental and physical equilibrium."
+        ),
+        "temperament": (
+            "Quick to anger and equally quick to forgive, your emotional responses are intense but brief. "
+            "You cannot hold grudges for long because your attention naturally moves forward. "
+            "Patience is your lifelong lesson; learning to wait without losing enthusiasm "
+            "transforms your impulsive nature into strategic boldness."
+        ),
+        "physical_appearance": (
+            "Medium to tall stature with an athletic, lean build and quick, purposeful movements. "
+            "The forehead is typically prominent, and the eyes carry a sharp, alert expression. "
+            "A scar or birthmark on the face or head is commonly observed. "
+            "You age well, maintaining physical vitality longer than most ascendant types."
+        ),
+        "career_aptitude": (
+            "You excel in roles requiring initiative, courage, and independent decision-making. "
+            "Military, surgery, sports, entrepreneurship, emergency services, and engineering are ideal. "
+            "Subordinate roles without autonomy drain your spirit; you need freedom to lead and act. "
+            "Self-employment or a position with significant independence produces your best work."
+        ),
+    },
+    "Taurus": {
+        "overview": (
+            "The Taurus ascendant radiates stability, sensuality, and quiet strength under Venus's gracious rule. "
+            "You move through life at a measured, deliberate pace that others may mistake for slowness. "
+            "First impressions are of warmth, reliability, and an undeniable appreciation for beauty. "
+            "Material security is not mere desire but a psychological necessity for your peace of mind. "
+            "Loyalty runs deep -- once you commit, whether to a person, project, or principle, you are unwavering. "
+            "Your life builds slowly toward impressive material and emotional wealth that endures across generations."
+        ),
+        "health_tendencies": (
+            "The throat, thyroid, and neck are your most vulnerable areas. Tonsillitis, thyroid imbalance, "
+            "and cervical spondylosis are conditions to watch. Your metabolism tends toward slowness, "
+            "making weight management a lifelong consideration. Rich food and sedentary habits are your "
+            "health enemies; regular walking and dietary moderation are your best medicines."
+        ),
+        "temperament": (
+            "Calm, patient, and slow to anger, but once provoked your fury is formidable and unforgettable. "
+            "You process emotions slowly and thoroughly, rarely making impulsive emotional decisions. "
+            "Stubbornness is your shadow side -- an inability to change course even when the evidence demands it. "
+            "Learning flexibility without losing your grounded stability is the Taurus ascendant's emotional mastery."
+        ),
+        "physical_appearance": (
+            "Strong, well-proportioned body with broad shoulders and a thick, attractive neck. "
+            "The face is pleasant with large, expressive eyes and full lips. Voice is typically melodious. "
+            "There is a natural elegance to your movement despite a solid build. "
+            "You tend toward weight gain in middle age, particularly around the midsection."
+        ),
+        "career_aptitude": (
+            "You thrive in careers offering stability, beauty, and tangible rewards. "
+            "Banking, agriculture, real estate, luxury goods, hospitality, music, and fine arts are ideal. "
+            "You need time to do things properly and produce your best work in unhurried environments. "
+            "Roles involving financial management, aesthetic judgement, or resource stewardship leverage your natural gifts."
+        ),
+    },
+    "Gemini": {
+        "overview": (
+            "The Gemini ascendant electrifies the personality with Mercury's quicksilver intelligence. "
+            "You process information at extraordinary speed and communicate with wit and charm. "
+            "First impressions are of someone youthful, curious, and endlessly interesting to talk to. "
+            "Duality is your nature -- you genuinely hold multiple perspectives simultaneously. "
+            "Social connections are your currency; you know everyone and can bridge any two worlds. "
+            "Your life is a tapestry of varied experiences, multiple careers, and an ever-expanding network of knowledge."
+        ),
+        "health_tendencies": (
+            "The nervous system, lungs, arms, and hands are your vulnerable areas. Anxiety, insomnia, "
+            "bronchitis, and carpal tunnel syndrome are conditions to watch. Your mind's restless activity "
+            "can exhaust the body; nervous exhaustion is a real risk. Regular breathing exercises, digital "
+            "detox periods, and calming routines counterbalance your naturally overactive nervous system."
+        ),
+        "temperament": (
+            "Intellectually restless, socially charming, and emotionally variable -- your moods shift with your thoughts. "
+            "You avoid emotional depth not from coldness but from an instinctive preference for lightness and movement. "
+            "Boredom is genuinely painful to you; you need constant mental stimulation to feel alive. "
+            "Developing emotional consistency without losing your brilliant adaptability is your growth edge."
+        ),
+        "physical_appearance": (
+            "Slim, tall build with long limbs and expressive, animated hand gestures. "
+            "The face is youthful with bright, darting eyes that reflect constant mental activity. "
+            "Your appearance tends to be fashionable and current, as you naturally adopt new styles. "
+            "You maintain a youthful look well into middle age, appearing younger than your years."
+        ),
+        "career_aptitude": (
+            "You excel in careers requiring communication, intellectual versatility, and social networking. "
+            "Journalism, teaching, marketing, trading, IT, translation, and public relations are ideal fields. "
+            "Monotonous, routine-heavy roles are unbearable; you need variety and mental challenges. "
+            "Portfolio careers with multiple simultaneous projects suit your nature better than a single lifelong role."
+        ),
+    },
+    "Cancer": {
+        "overview": (
+            "The Cancer ascendant wraps the personality in the Moon's protective, nurturing, and emotionally rich energy. "
+            "You approach the world through feeling rather than thinking, absorbing emotional atmospheres instantly. "
+            "First impressions are of warmth, sensitivity, and a caring nature that puts others at ease. "
+            "Home and family are not just priorities but the very foundation of your identity and well-being. "
+            "Memory is your superpower -- you remember kindnesses and slights with photographic emotional detail. "
+            "Your life builds around creating and protecting a secure, loving environment for yourself and those you cherish."
+        ),
+        "health_tendencies": (
+            "The stomach, chest, breasts, and lymphatic system are your sensitive areas. Acidity, "
+            "digestive disorders, water retention, and hormonal imbalances follow emotional cycles. "
+            "Your health directly reflects your emotional state -- stress goes straight to the stomach. "
+            "Warm, home-cooked meals, emotional security, and regular emotional expression are your best medicines."
+        ),
+        "temperament": (
+            "Deeply emotional, protective, and occasionally moody -- your emotional landscape is as changeable as the Moon. "
+            "You care profoundly for loved ones and will sacrifice enormously to protect them. "
+            "Retreating into your shell when hurt is instinctive; learning to communicate pain rather than withdraw "
+            "is the Cancer ascendant's great emotional breakthrough."
+        ),
+        "physical_appearance": (
+            "Medium height with a round, pleasant face and large, expressive, often watery eyes. "
+            "The chest area is typically broad or prominent. Skin is fair and sensitive to the sun. "
+            "Body type tends toward soft and curvy rather than angular. "
+            "Your facial expressions are remarkably transparent, reflecting every inner emotion."
+        ),
+        "career_aptitude": (
+            "You excel in careers involving nurturing, emotional intelligence, and domestic arts. "
+            "Hospitality, nursing, cooking, real estate, counselling, and maternal healthcare are ideal. "
+            "You work best in environments that feel like extended family rather than cold corporate settings. "
+            "Entrepreneurship in food, home goods, or childcare leverages your natural protective instincts."
+        ),
+    },
+    "Leo": {
+        "overview": (
+            "The Leo ascendant blazes with the Sun's majestic, generous, and commanding energy. "
+            "You radiate warmth and confidence that naturally draws others into your orbit. "
+            "First impressions are of someone dignified, warm-hearted, and unmistakably present. "
+            "Leadership is not something you pursue -- it follows you because people instinctively look to you for direction. "
+            "Recognition and appreciation are as essential to your well-being as food and water. "
+            "Your life is a grand narrative of creative expression, generous service, and the pursuit of personal significance."
+        ),
+        "health_tendencies": (
+            "The heart, spine, and eyes are your most vulnerable areas. Blood pressure, cardiac issues, "
+            "and spinal problems require monitoring especially after age 40. Your vitality is naturally strong "
+            "but can be depleted by emotional wounds to your pride. Cardiovascular exercise, avoiding excessive "
+            "anger, and receiving genuine appreciation are essential to your long-term health."
+        ),
+        "temperament": (
+            "Generous, warm, and magnanimous in your natural state, but wounded pride can trigger dramatic anger. "
+            "You need to be appreciated -- not from vanity but from a deep need to know your light matters. "
+            "Flattery can deceive you because you want to believe the best about yourself. "
+            "Learning humility without losing your magnificent confidence is the Leo ascendant's mastery."
+        ),
+        "physical_appearance": (
+            "Commanding presence with a broad chest, strong shoulders, and often a mane-like quality to the hair. "
+            "The face is broad with a warm, radiant smile. Eyes are bright and engaging. "
+            "Your posture is naturally upright and regal; you carry yourself with unconscious dignity. "
+            "You tend to dress with flair, favouring bold colours and statement pieces."
+        ),
+        "career_aptitude": (
+            "You excel in careers requiring leadership, creative direction, and public presence. "
+            "Politics, entertainment, senior management, education leadership, and creative arts are ideal. "
+            "You need a role that offers both authority and recognition; behind-the-scenes work frustrates you. "
+            "Government service, theatre direction, and positions with ceremonial significance satisfy your Sun-ruled nature."
+        ),
+    },
+    "Virgo": {
+        "overview": (
+            "The Virgo ascendant refines the personality with Mercury's analytical, service-oriented, and perfectionist energy. "
+            "You see the world in terms of systems, details, and opportunities for improvement. "
+            "First impressions are of someone neat, intelligent, and observant with a quiet, unassuming manner. "
+            "Service to others is not a burden but your natural mode of expression and source of fulfilment. "
+            "You notice what everyone else misses -- the typo, the misaligned beam, the overlooked symptom. "
+            "Your life is a continuous process of refinement, improvement, and the quiet pursuit of perfection."
+        ),
+        "health_tendencies": (
+            "The intestines, digestive system, and nervous system are your sensitive areas. IBS, food allergies, "
+            "and anxiety-related digestive issues are common. Hypochondria can amplify minor symptoms. "
+            "Your health obsession is both a strength and a weakness -- it keeps you healthy but also anxious. "
+            "Simple, clean eating, regular routines, and mental relaxation practices maintain your delicate balance."
+        ),
+        "temperament": (
+            "Analytical, self-critical, and quietly devoted to those you love. Your emotional expression is reserved "
+            "but your loyalty and care are demonstrated through practical acts of service. "
+            "You can be harshly critical of both yourself and others when standards are not met. "
+            "Learning to accept imperfection -- in yourself and the world -- is the Virgo ascendant's deepest lesson."
+        ),
+        "physical_appearance": (
+            "Neat, refined appearance with a slender to medium build. The face is oval with intelligent, "
+            "observant eyes and a tendency toward a youthful look. Hands are typically well-shaped and expressive. "
+            "Your appearance is always tidy and appropriate; you prefer understated elegance to flashy display. "
+            "Posture may reflect tension in the shoulders and neck from carrying responsibility."
+        ),
+        "career_aptitude": (
+            "You excel in careers demanding precision, analysis, and service orientation. "
+            "Healthcare, accounting, editing, research, quality control, and data science are ideal fields. "
+            "You produce your best work in structured environments with clear standards and measurable outcomes. "
+            "Roles involving improvement of systems, health advisory, or meticulous research leverage your Mercury gifts."
+        ),
+    },
+    "Libra": {
+        "overview": (
+            "The Libra ascendant graces the personality with Venus's aesthetic sensibility, diplomatic skill, and partnership focus. "
+            "You experience the world through relationship and are most fully yourself in the mirror of another person. "
+            "First impressions are of someone charming, fair-minded, and aesthetically refined. "
+            "Balance is your obsession -- you instinctively weigh options, opinions, and outcomes before deciding. "
+            "Injustice and ugliness disturb you at a visceral level; you are driven to create harmony wherever you go. "
+            "Your life is a continuous negotiation between self and other, independence and partnership, beauty and truth."
+        ),
+        "health_tendencies": (
+            "The kidneys, lower back, and bladder are your vulnerable areas. Urinary tract issues, "
+            "lower back pain, and skin conditions related to blood impurity need attention. "
+            "Your health deteriorates when relationships are troubled -- emotional harmony is physical medicine. "
+            "Adequate hydration, anti-inflammatory foods, and stress management protect your sensitive system."
+        ),
+        "temperament": (
+            "Diplomatic, charming, and conflict-averse to a fault. You can see every perspective, "
+            "which makes decisive action genuinely difficult. You avoid ugliness -- emotional and aesthetic. "
+            "People-pleasing can override your own needs and create suppressed resentment. "
+            "Learning to choose and stand firm, even when it creates temporary disharmony, is your growth edge."
+        ),
+        "physical_appearance": (
+            "Attractive, well-proportioned body with a graceful, balanced build. The face is often symmetrical "
+            "and classically handsome or beautiful with a pleasant, disarming smile. "
+            "You have a natural sense of style and present yourself with effortless elegance. "
+            "Dimples, a clear complexion, and an overall impression of refined beauty are typical."
+        ),
+        "career_aptitude": (
+            "You excel in careers requiring partnership, aesthetic judgement, and diplomatic skill. "
+            "Law, judiciary, fashion, art curation, diplomacy, interior design, and counselling are ideal. "
+            "You work best in partnership or team settings rather than solo ventures. "
+            "Careers that combine beauty with justice -- courtroom advocacy, design, or mediation -- are your sweet spot."
+        ),
+    },
+    "Scorpio": {
+        "overview": (
+            "The Scorpio ascendant forges the personality in Mars-Ketu's intense, transformative, and deeply perceptive fire. "
+            "You see beneath surfaces -- pretence, hidden motives, and buried truths are transparent to your penetrating gaze. "
+            "First impressions are of someone magnetic, intense, and perhaps slightly dangerous. "
+            "You live at life's extremes; mediocrity is intolerable to your all-or-nothing nature. "
+            "Trust is earned slowly with you, but once given, your loyalty is absolute and your betrayal catastrophic. "
+            "Your life is a series of deaths and rebirths -- you reinvent yourself more completely than any other ascendant."
+        ),
+        "health_tendencies": (
+            "The reproductive organs, excretory system, and pelvic region are your sensitive areas. "
+            "Infections, surgical needs, and conditions requiring deep intervention are characteristic health themes. "
+            "Your constitution is actually very resilient -- you recover from crises that would devastate others. "
+            "Regular detoxification, honest expression of emotions, and sexual health awareness maintain your powerful system."
+        ),
+        "temperament": (
+            "Intense, passionate, and emotionally powerful with a tendency toward all-or-nothing responses. "
+            "You feel everything deeply and forgive nothing easily -- grudges can persist for years. "
+            "Jealousy and possessiveness are your shadow emotions; control is your defence mechanism. "
+            "Learning to trust, release, and transform rather than destroy is the Scorpio ascendant's ultimate evolution."
+        ),
+        "physical_appearance": (
+            "Medium build with a magnetic, intense presence that belies physical stature. "
+            "The eyes are the defining feature -- deep, penetrating, and impossible to look away from. "
+            "Features may be sharp, with a prominent nose and defined jawline. "
+            "Your physical presence commands attention not through size but through sheer energetic intensity."
+        ),
+        "career_aptitude": (
+            "You excel in careers requiring investigation, transformation, and working with hidden dimensions. "
+            "Surgery, psychology, research, detective work, insurance, mining, and crisis management are ideal. "
+            "You need work that has real stakes and genuine depth; superficial roles bore you immediately. "
+            "Positions of behind-the-scenes power suit you better than public-facing leadership roles."
+        ),
+    },
+    "Sagittarius": {
+        "overview": (
+            "The Sagittarius ascendant expands the personality with Jupiter's wisdom, optimism, and restless love of freedom. "
+            "You are a seeker -- of truth, meaning, adventure, and the furthest horizons of human experience. "
+            "First impressions are of someone enthusiastic, honest, and infectiously optimistic. "
+            "Your mind naturally operates at the level of principles and big pictures rather than details. "
+            "Freedom -- intellectual, physical, and spiritual -- is non-negotiable for your well-being. "
+            "Your life is an epic journey through philosophies, cultures, and experiences that continuously expand your worldview."
+        ),
+        "health_tendencies": (
+            "The hips, thighs, liver, and sciatic nerve are your vulnerable areas. Sciatica, liver disorders, "
+            "and weight gain from overindulgence are common health patterns. Your optimistic nature means you "
+            "often ignore symptoms until they become serious. Moderation in eating and drinking, hip-opening "
+            "exercises, and periodic liver cleanses maintain your naturally robust constitution."
+        ),
+        "temperament": (
+            "Optimistic, philosophically inclined, and brutally honest -- sometimes to the point of tactlessness. "
+            "Your enthusiasm for ideas can make you preachy or dogmatic without realising it. "
+            "Commitment is your deepest challenge -- the next horizon always beckons. "
+            "Learning depth alongside breadth, and devotion alongside freedom, is your path to emotional maturity."
+        ),
+        "physical_appearance": (
+            "Tall, athletic build with long limbs and an open, friendly face. The forehead is broad, "
+            "and the expression is characteristically cheerful and approachable. "
+            "Your gait is energetic, often with a slight bounce that reflects your optimistic nature. "
+            "You tend toward a larger frame in later years, particularly in the hip and thigh area."
+        ),
+        "career_aptitude": (
+            "You excel in careers involving wisdom, teaching, travel, and expansive vision. "
+            "Higher education, law, philosophy, publishing, foreign trade, and religious leadership are ideal. "
+            "You need a role that allows travel, continued learning, and exposure to diverse cultures. "
+            "Academic institutions, international organisations, and spiritual teaching platforms are your natural homes."
+        ),
+    },
+    "Capricorn": {
+        "overview": (
+            "The Capricorn ascendant structures the personality with Saturn's discipline, ambition, and profound sense of duty. "
+            "You take life seriously from a young age and carry responsibilities that others your age would refuse. "
+            "First impressions are of someone mature, reserved, and perhaps older than their years. "
+            "Achievement through sustained effort is your fundamental approach to everything in life. "
+            "You may lack the sparkle of fire signs or the charm of air signs, but your results speak louder. "
+            "Your life follows a reverse trajectory -- difficult youth gives way to increasingly prosperous and satisfied maturity."
+        ),
+        "health_tendencies": (
+            "The knees, joints, bones, teeth, and skin are your vulnerable areas. Arthritis, dental issues, "
+            "knee injuries, and skin dryness are characteristic conditions. Your health actually improves with age "
+            "as Saturn rewards your disciplined lifestyle. Cold and damp aggravate your conditions. "
+            "Calcium-rich diet, weight-bearing exercise, and consistent health routines are your best medicines."
+        ),
+        "temperament": (
+            "Serious, responsible, and emotionally reserved with a dry wit that surprises those who know you well. "
+            "You suppress emotions in favour of duty and may struggle to express vulnerability. "
+            "Pessimism and melancholy are real tendencies, especially in youth. "
+            "Learning that joy is not frivolous and that emotional expression is not weakness transforms your inner life."
+        ),
+        "physical_appearance": (
+            "Lean, bony frame with prominent bone structure, especially cheekbones and jawline. "
+            "The face tends to be long and serious with deep-set, observant eyes. "
+            "You may appear older than your age in youth but age remarkably well, looking distinguished in maturity. "
+            "Posture is typically upright and controlled, reflecting your disciplined nature."
+        ),
+        "career_aptitude": (
+            "You excel in careers requiring structure, authority, and long-term strategic thinking. "
+            "Government administration, corporate management, engineering, architecture, and law are ideal. "
+            "You build your career brick by brick and reach peak positions through undeniable competence. "
+            "Roles with clear hierarchy and measurable advancement suit your patient, ambitious nature."
+        ),
+    },
+    "Aquarius": {
+        "overview": (
+            "The Aquarius ascendant electrifies the personality with Saturn-Rahu's unique combination of discipline and eccentricity. "
+            "You think differently from everyone around you -- not for rebellion's sake but because your mind genuinely operates on different frequencies. "
+            "First impressions are of someone intelligent, detached, and slightly unconventional. "
+            "Individuality is sacred to you; conforming to expectations feels like a betrayal of your nature. "
+            "Friendship and collective well-being matter more to you than romantic attachment or family tradition. "
+            "Your life is dedicated to ideas, innovation, and the betterment of humanity through progressive action."
+        ),
+        "health_tendencies": (
+            "The calves, ankles, circulatory system, and nervous system are your vulnerable areas. "
+            "Varicose veins, ankle sprains, blood circulation issues, and sudden-onset nervous conditions are typical. "
+            "Your health benefits from unconventional healing modalities that others might dismiss. "
+            "Regular leg exercises, adequate circulation, and avoiding prolonged standing protect your lower extremities."
+        ),
+        "temperament": (
+            "Intellectually brilliant, emotionally detached, and firmly committed to personal freedom. "
+            "You value friendship above romance and ideas above emotions. Your detachment is not coldness "
+            "but a genuine orientation toward universal rather than personal concerns. "
+            "Learning to be present with individual emotional experiences without intellectualising them is your growth path."
+        ),
+        "physical_appearance": (
+            "Tall, lean build with distinctive features -- something about your appearance is memorable and unusual. "
+            "The face may be angular with bright, intelligent eyes that seem to look at something beyond the immediate. "
+            "Your style of dress tends toward the unique or unconventional, often ahead of fashion trends. "
+            "An electric quality to your presence makes you recognisable even in a crowd."
+        ),
+        "career_aptitude": (
+            "You excel in careers involving innovation, technology, and humanitarian service. "
+            "Software development, aerospace, social reform, scientific research, and network-based enterprises are ideal. "
+            "Conventional corporate environments stifle your creativity; you need intellectual freedom. "
+            "Startups, research institutions, NGOs, and technology companies provide the progressive environment you require."
+        ),
+    },
+    "Pisces": {
+        "overview": (
+            "The Pisces ascendant dissolves the personality's boundaries with Jupiter's compassion and Neptune's mystical sensitivity. "
+            "You absorb the emotional atmosphere of every room you enter and feel others' pain as your own. "
+            "First impressions are of someone gentle, dreamy, and radiating a subtle, otherworldly quality. "
+            "Your imagination is vast, your intuition uncanny, and your capacity for compassion seemingly limitless. "
+            "Material reality often feels less real to you than the inner world of feelings, visions, and spiritual perception. "
+            "Your life is a poetic journey through the realms of art, devotion, sacrifice, and the search for divine connection."
+        ),
+        "health_tendencies": (
+            "The feet, lymphatic system, and immune system are your sensitive areas. Foot problems, "
+            "allergies, susceptibility to infections, and sensitivity to medications and substances are characteristic. "
+            "Your constitution is absorbent -- you take in environmental toxins and emotional pollution easily. "
+            "Clean environments, pure food, adequate sleep, and spiritual practice are essential for maintaining your delicate health."
+        ),
+        "temperament": (
+            "Compassionate, imaginative, and emotionally absorbent to an extraordinary degree. "
+            "You feel everything -- your own emotions and those of everyone around you simultaneously. "
+            "Escapism through fantasy, substances, or withdrawal is your defence when overwhelmed. "
+            "Learning healthy boundaries while keeping your heart open is the Pisces ascendant's great spiritual challenge."
+        ),
+        "physical_appearance": (
+            "Medium build, often with a soft, rounded quality. The eyes are large, dreamy, and deeply expressive -- "
+            "often the most memorable feature. Skin tends to be sensitive and fair. "
+            "There is an ethereal, otherworldly quality to your appearance that others find captivating. "
+            "Your movements are fluid and graceful, almost as if you are swimming through air rather than walking."
+        ),
+        "career_aptitude": (
+            "You excel in careers requiring imagination, compassion, and spiritual sensitivity. "
+            "Music, cinema, spiritual teaching, nursing, marine biology, art therapy, and charitable work are ideal. "
+            "You need work that feels meaningful at a soul level; purely profit-driven roles drain your spirit. "
+            "Creative environments, healing institutions, and spiritual communities are where you produce your finest work."
+        ),
+    },
+}
+
+
+# ============================================================
+# 13. MAHADASHA_DETAILED -- Mahadasha Effects by House Placement
+# ============================================================
+
+MAHADASHA_DETAILED: Dict[str, Dict[int, str]] = {
+    "Sun": {
+        1: (
+            "Sun Mahadasha with Sun in the 1st house brings a powerful period of self-assertion and personal authority. "
+            "Health and vitality are strong; you gain recognition through your own merits and personality. "
+            "Government favour, promotion, and leadership roles come naturally. Ego conflicts with authority figures "
+            "need management. This is a period of self-discovery, confidence-building, and establishing your identity."
+        ),
+        2: (
+            "Sun Mahadasha with Sun in the 2nd house activates wealth through government or authority positions. "
+            "Speech becomes commanding and influential; family life gains structure and direction. "
+            "Inheritance from father or government grants is possible. Eye or dental issues may surface. "
+            "Investments in gold and government securities yield good returns during this period."
+        ),
+        3: (
+            "Sun Mahadasha with Sun in the 3rd house stimulates courage, communication, and short travels. "
+            "Relations with siblings improve if Sun is well-placed; conflicts arise if afflicted. "
+            "Success in media, writing, and administrative communication. Self-confidence in daily dealings increases. "
+            "Chest and shoulder strength improve; physical vitality supports adventurous pursuits."
+        ),
+        4: (
+            "Sun Mahadasha with Sun in the 4th house brings focus to home, mother, and property matters. "
+            "Government land allocation or property through authority connections is possible. "
+            "Domestic peace may be disturbed by father's dominance or authority conflicts at home. "
+            "Heart health needs monitoring. Inner confidence grows despite external domestic challenges."
+        ),
+        5: (
+            "Sun Mahadasha with Sun in the 5th house is excellent for intelligence, creativity, and children. "
+            "Speculative gains, success in competitive examinations, and political connections flourish. "
+            "Romantic life carries dignity and warmth. Children bring pride and recognition. "
+            "Stomach or digestive issues may arise. Spiritual inclination through mantra practice increases."
+        ),
+        6: (
+            "Sun Mahadasha with Sun in the 6th house brings victory over enemies and competitors. "
+            "Government jobs, especially in defence, police, or medical services, are highly favoured. "
+            "Health issues related to bile, acidity, and inflammation surface but are overcome through treatment. "
+            "Legal disputes resolve favourably. Service-oriented work brings recognition and steady advancement."
+        ),
+        7: (
+            "Sun Mahadasha with Sun in the 7th house activates partnerships, marriage, and public dealings. "
+            "The spouse may be authoritative or connected to government. Business partnerships with "
+            "powerful individuals are indicated. Ego clashes in marriage need careful handling. "
+            "Public reputation rises but personal relationships require humility and compromise."
+        ),
+        8: (
+            "Sun Mahadasha with Sun in the 8th house is a period of transformation and hidden challenges. "
+            "Health crises, particularly related to bones, heart, or vitality, require vigilance. "
+            "Inheritance or insurance matters come to the forefront. Research and occult interests deepen. "
+            "Government penalties or sudden falls from grace are possible if Sun is afflicted. Inner strength grows through trials."
+        ),
+        9: (
+            "Sun Mahadasha with Sun in the 9th house is highly auspicious for fortune, dharma, and higher learning. "
+            "Father's blessings and guidance bring prosperity. Pilgrimages, foreign travel, and spiritual growth flourish. "
+            "Recognition in academic, legal, or religious circles. Government patronage for educational pursuits. "
+            "This is one of the best periods for overall luck, wisdom, and righteous living."
+        ),
+        10: (
+            "Sun Mahadasha with Sun in the 10th house is the zenith of career and public achievement. "
+            "Government positions, political power, and administrative authority are at their peak. "
+            "Professional reputation soars; you become a figure of authority and respect in your field. "
+            "Father's influence supports career growth. Health remains strong as purpose drives vitality."
+        ),
+        11: (
+            "Sun Mahadasha with Sun in the 11th house brings fulfilment of desires and significant income gains. "
+            "Powerful friends, government connections, and influential social circles expand your reach. "
+            "Elder siblings prosper. Speculative and investment income is favourable. "
+            "Recognition and awards for past achievements arrive. This is an excellent period for networking and ambition."
+        ),
+        12: (
+            "Sun Mahadasha with Sun in the 12th house directs energy toward spirituality, foreign lands, and seclusion. "
+            "Expenditure increases; foreign travel or residence abroad is possible. Hospitalisation or retreat "
+            "may be necessary. Father may face health challenges. Government matters cause hidden expenses. "
+            "Spiritual awakening through solitude and meditation is the highest expression of this placement."
+        ),
+    },
+    "Moon": {
+        1: (
+            "Moon Mahadasha with Moon in the 1st house brings emotional prominence, public visibility, and "
+            "heightened sensitivity. Your popularity increases as others find you approachable and empathetic. "
+            "Health fluctuates with emotional state; skin and chest areas need attention. "
+            "This is a period of self-awareness, emotional maturation, and establishing your public persona."
+        ),
+        2: (
+            "Moon Mahadasha with Moon in the 2nd house activates family wealth, eloquent speech, and domestic prosperity. "
+            "Income from food, hospitality, or liquid assets increases. Family gatherings and traditions strengthen. "
+            "Your voice and communication carry emotional power that influences others deeply. "
+            "Eye health and dietary balance need attention. Savings grow through emotionally intelligent decisions."
+        ),
+        3: (
+            "Moon Mahadasha with Moon in the 3rd house brings creative communication, short travels, and sibling bonding. "
+            "Writing, blogging, and artistic expression flourish. Emotional courage develops through small adventures. "
+            "Relations with neighbours and siblings become emotionally rich. "
+            "Mental restlessness needs grounding; creative hobbies provide the best outlet."
+        ),
+        4: (
+            "Moon Mahadasha with Moon in the 4th house is deeply auspicious for domestic happiness, property, and maternal bonds. "
+            "Purchase of home, vehicle, or land is strongly indicated. Mother's influence is profound and supportive. "
+            "Inner peace and emotional security reach a high point. Educational pursuits succeed. "
+            "This is one of the most comfortable and emotionally fulfilling dasha periods."
+        ),
+        5: (
+            "Moon Mahadasha with Moon in the 5th house blesses with emotional intelligence, romance, and creative output. "
+            "Children bring joy and emotional fulfilment. Love relationships are emotionally deep and nurturing. "
+            "Artistic pursuits, especially music and poetry, flourish. Speculative gains through intuition are possible. "
+            "Stomach health needs monitoring. Spiritual practice through devotional means deepens."
+        ),
+        6: (
+            "Moon Mahadasha with Moon in the 6th house brings emotional challenges through enemies, illness, or service demands. "
+            "Digestive issues, water-related ailments, and emotional disturbances from workplace conflicts arise. "
+            "Service in hospitals, food industry, or maternal care brings purpose despite difficulties. "
+            "Emotional resilience grows through overcoming adversity; mother's health may need attention."
+        ),
+        7: (
+            "Moon Mahadasha with Moon in the 7th house activates marriage, partnerships, and public emotional engagement. "
+            "The spouse is nurturing, emotionally expressive, and deeply connected. Business partnerships "
+            "based on emotional trust prosper. Public popularity increases dramatically. "
+            "Emotional dependency in relationships needs balancing; healthy boundaries preserve marital happiness."
+        ),
+        8: (
+            "Moon Mahadasha with Moon in the 8th house is a period of emotional transformation and hidden disturbances. "
+            "Inheritance through maternal family is possible. Emotional crises lead to deep psychological growth. "
+            "Chronic health issues related to hormones, chest, or reproductive system may surface. "
+            "Occult interests and psychic abilities develop. This period transforms emotional vulnerability into spiritual power."
+        ),
+        9: (
+            "Moon Mahadasha with Moon in the 9th house brings emotional wisdom, maternal blessings, and fortunate travels. "
+            "Pilgrimages to sacred water bodies are especially favoured. Mother's spiritual guidance influences your path. "
+            "Higher education in arts, counselling, or spirituality succeeds. Fortune comes through emotional intelligence. "
+            "This is a deeply auspicious period for dharmic living and spiritual maturation."
+        ),
+        10: (
+            "Moon Mahadasha with Moon in the 10th house brings public recognition through emotionally resonant work. "
+            "Career in hospitality, nursing, public welfare, or food industry reaches its peak. "
+            "Professional reputation benefits from your empathetic, caring approach. Mother's influence supports career. "
+            "Emotional fluctuations at work need management; consistency in public image builds lasting success."
+        ),
+        11: (
+            "Moon Mahadasha with Moon in the 11th house brings income through networks, elder siblings, and fulfilled desires. "
+            "Social circle expands with emotionally supportive friendships. Income from female contacts or public dealings. "
+            "Elder siblings and maternal connections bring opportunities. Speculative gains through intuition prosper. "
+            "This is a period of emotional abundance, social fulfilment, and material comfort."
+        ),
+        12: (
+            "Moon Mahadasha with Moon in the 12th house directs emotional energy toward spiritual liberation and foreign lands. "
+            "Expenditure on spiritual pursuits, hospitalisation, or foreign residence increases. "
+            "Sleep quality and dream life become significant. Emotional isolation may feel overwhelming at times. "
+            "Meditation near water, charitable acts, and surrender to the divine bring the deepest peace."
+        ),
+    },
+    "Mars": {
+        1: (
+            "Mars Mahadasha with Mars in the 1st house is a period of intense energy, courage, and physical dynamism. "
+            "Athletic ability, personal initiative, and self-assertion reach their peak. Leadership through action inspires others. "
+            "Anger management is critical; accidents and head injuries need vigilance. "
+            "This period forges an indomitable will through challenges that demand physical and moral courage."
+        ),
+        2: (
+            "Mars Mahadasha with Mars in the 2nd house brings aggressive earning, property acquisition, and family conflicts. "
+            "Speech becomes sharp and commanding. Income through engineering, real estate, or military service increases. "
+            "Dental and eye issues may arise. Family arguments over money or property need diplomatic handling. "
+            "Savings grow rapidly when impulse spending is controlled."
+        ),
+        3: (
+            "Mars Mahadasha with Mars in the 3rd house is excellent for courage, siblings, and physical endeavours. "
+            "Victory in competitions, sports achievements, and success in short journeys are indicated. "
+            "Relations with siblings are dynamic and competitive but ultimately strengthening. "
+            "Communication becomes bold and effective. Physical strength and stamina reach impressive levels."
+        ),
+        4: (
+            "Mars Mahadasha with Mars in the 4th house brings property-related activity, domestic energy, and potential conflict at home. "
+            "Land purchase, construction, or renovation of property is strongly indicated. Vehicle acquisition is likely. "
+            "Domestic peace is disrupted by arguments or aggressive home energy. Mother's health needs monitoring. "
+            "Real estate investments made during this period yield significant long-term value."
+        ),
+        5: (
+            "Mars Mahadasha with Mars in the 5th house activates competitive intelligence, sports, and children's affairs. "
+            "Success in competitive examinations, sports, and speculative ventures is indicated. "
+            "Children may be athletic or competitive. Romantic relationships are passionate but potentially conflictual. "
+            "Stomach and digestive fire are strong. Mantra practice with fiery deities yields powerful results."
+        ),
+        6: (
+            "Mars Mahadasha with Mars in the 6th house is one of the best placements for defeating enemies and disease. "
+            "Legal victories, competitive triumphs, and physical recovery from illness are strongly favoured. "
+            "Career in military, police, surgery, or competitive sports thrives. Physical fitness improves dramatically. "
+            "Debts are cleared through aggressive action. This is a period of conquering all obstacles through force of will."
+        ),
+        7: (
+            "Mars Mahadasha with Mars in the 7th house brings passionate but potentially turbulent partnerships. "
+            "Marriage is dynamic with strong physical attraction but frequent arguments. Business partnerships "
+            "are energetic but need conflict management. Mangala Dosha effects manifest most strongly. "
+            "Marital counselling and conscious anger management preserve the relationship's powerful potential."
+        ),
+        8: (
+            "Mars Mahadasha with Mars in the 8th house is a period of intense transformation, surgery, and hidden battles. "
+            "Surgical interventions, accident risk, and sudden health crises demand caution. "
+            "Inheritance or insurance matters bring unexpected gains. Occult and tantric interests intensify. "
+            "This challenging period destroys the weak within you and forges an unbreakable inner warrior."
+        ),
+        9: (
+            "Mars Mahadasha with Mars in the 9th house energises dharma, father, and long-distance endeavours. "
+            "Pilgrimages with physical challenge, defence-related higher education, and father's health are themes. "
+            "Religious or philosophical debates become passionate. Fortune comes through bold, courageous action. "
+            "Property or land connected to temples or religious institutions is possible."
+        ),
+        10: (
+            "Mars Mahadasha with Mars in the 10th house is the peak of professional power through action and initiative. "
+            "Career in engineering, military, surgery, sports, or real estate reaches its zenith. "
+            "Authority comes through demonstrated competence and fearless leadership. "
+            "Workplace conflicts are won decisively. Physical projects and construction ventures succeed spectacularly."
+        ),
+        11: (
+            "Mars Mahadasha with Mars in the 11th house brings income through competition, siblings, and aggressive networking. "
+            "Desires are fulfilled through forceful pursuit. Friendships with military, sports, or engineering professionals benefit you. "
+            "Elder siblings prosper or provide support. Speculative gains through bold market moves are indicated. "
+            "This is a period of ambition fulfilled through action and competitive excellence."
+        ),
+        12: (
+            "Mars Mahadasha with Mars in the 12th house increases expenditure, foreign travel, and hidden conflicts. "
+            "Hospitalisation due to surgery or accidents is possible. Foreign employment, especially in military or engineering. "
+            "Bed pleasures and secret activities increase. Spiritual growth through rigorous physical practices like yoga. "
+            "Mars energy turned inward through discipline becomes a powerful force for liberation."
+        ),
+    },
+    "Mercury": {
+        1: (
+            "Mercury Mahadasha with Mercury in the 1st house enhances intelligence, communication, and youthful appearance. "
+            "Business acumen, intellectual confidence, and social networking ability reach their peak. "
+            "Skin health and nervous system need attention. Speech and writing become primary tools of success. "
+            "This is an excellent period for starting businesses, learning new skills, and building intellectual reputation."
+        ),
+        2: (
+            "Mercury Mahadasha with Mercury in the 2nd house is superb for wealth through intellect and speech. "
+            "Income from trading, writing, accounting, and communication-based businesses flourishes. "
+            "Family life is intellectually stimulating. Voice and speech become commercially valuable assets. "
+            "Financial planning skills peak; investments in education and intellectual property yield returns."
+        ),
+        3: (
+            "Mercury Mahadasha with Mercury in the 3rd house is the finest period for communication, media, and short travel. "
+            "Writing, blogging, journalism, and media production succeed brilliantly. Relations with siblings improve "
+            "through shared intellectual interests. Short courses and skill-building workshops yield immediate career benefits. "
+            "Courage in expressing ideas leads to recognition in your immediate environment."
+        ),
+        4: (
+            "Mercury Mahadasha with Mercury in the 4th house brings intellectual activity at home and educational success. "
+            "Study environment improves; academic qualifications are completed. Home becomes a place of learning "
+            "and intellectual exchange. Property transactions through documentation and legal work succeed. "
+            "Mother's intellectual influence is significant. Mental peace comes through knowledge and learning."
+        ),
+        5: (
+            "Mercury Mahadasha with Mercury in the 5th house blesses with sharp intelligence, creative writing, and speculative gains. "
+            "Success in competitive examinations, intellectual competitions, and academic research is strongly indicated. "
+            "Children show intellectual precocity. Romantic relationships begin through intellectual connection. "
+            "Mantra practice yields quick results; Mercury-related mantras are especially powerful."
+        ),
+        6: (
+            "Mercury Mahadasha with Mercury in the 6th house helps overcome enemies through intellectual strategy. "
+            "Legal matters are resolved through documentation and logical argument. Health issues related to "
+            "nervous system, skin, or digestive tract surface but respond well to analytical medical approaches. "
+            "Career in healthcare documentation, legal analysis, or service industry management prospers."
+        ),
+        7: (
+            "Mercury Mahadasha with Mercury in the 7th house activates intellectual partnerships and business dealings. "
+            "Marriage or partnership with an intelligent, communicative person is indicated. Business contracts "
+            "and legal agreements are exceptionally well-crafted. Trading and brokerage partnerships prosper. "
+            "Communication is the foundation of marital harmony during this period."
+        ),
+        8: (
+            "Mercury Mahadasha with Mercury in the 8th house activates research, investigation, and hidden knowledge. "
+            "Insurance, inheritance documentation, and forensic work succeed. Nervous system and skin need attention. "
+            "Interest in astrology, occult sciences, and mystery traditions deepens. "
+            "Analytical ability applied to life's mysteries yields profound understanding."
+        ),
+        9: (
+            "Mercury Mahadasha with Mercury in the 9th house is superb for higher education, publishing, and fortune through intellect. "
+            "Academic degrees, published works, and philosophical teaching bring recognition. "
+            "Travel for educational purposes is highly favourable. Father's intellectual legacy benefits you. "
+            "This is one of the most intellectually productive and fortunate periods of life."
+        ),
+        10: (
+            "Mercury Mahadasha with Mercury in the 10th house elevates career through communication and intellectual authority. "
+            "Positions in media, education, IT, publishing, and administrative communication reach their peak. "
+            "Professional reputation is built on intellectual competence and articulate expression. "
+            "Business ventures using technology and communication flourish during this highly productive period."
+        ),
+        11: (
+            "Mercury Mahadasha with Mercury in the 11th house brings income through networks, intellect, and multiple streams. "
+            "Friendships with intellectuals, writers, and business professionals expand your opportunities. "
+            "Income from trading, consulting, and intellectual property is significant. Social media and digital platforms "
+            "become especially profitable. This is a period of abundant intellectual and financial networking gains."
+        ),
+        12: (
+            "Mercury Mahadasha with Mercury in the 12th house directs intellect toward foreign lands and spiritual study. "
+            "Foreign education, online international business, and remote intellectual work are indicated. "
+            "Expenditure on education and communication tools increases. Sleep disturbances and nervous tension abroad. "
+            "Spiritual knowledge through study of scriptures and philosophical texts deepens understanding."
+        ),
+    },
+    "Jupiter": {
+        1: (
+            "Jupiter Mahadasha with Jupiter in the 1st house is one of the most auspicious periods for personal growth and wisdom. "
+            "Health, fortune, and social reputation expand simultaneously. Spiritual inclination deepens naturally. "
+            "Weight gain and liver health need attention. You become a source of guidance and wisdom for others. "
+            "This period establishes your reputation as a person of integrity, learning, and generous spirit."
+        ),
+        2: (
+            "Jupiter Mahadasha with Jupiter in the 2nd house is supremely auspicious for wealth, family, and speech. "
+            "Income through education, religious work, counselling, and financial advisory flourishes. "
+            "Family life is prosperous and harmonious. Speech carries wisdom and influence. "
+            "Savings grow substantially; gold, education funds, and traditional investments are highly favourable."
+        ),
+        3: (
+            "Jupiter Mahadasha with Jupiter in the 3rd house brings wisdom to communication, travel, and sibling relationships. "
+            "Religious writing, philosophical publishing, and wise counsel to siblings characterise this period. "
+            "Short pilgrimages and educational tours are beneficial. Courage rooted in faith develops. "
+            "Your communication carries weight and authority; mentoring others becomes a natural role."
+        ),
+        4: (
+            "Jupiter Mahadasha with Jupiter in the 4th house blesses with property, domestic peace, and educational achievement. "
+            "Purchase of a spacious, auspicious home is strongly indicated. Mother's blessings flow abundantly. "
+            "Higher education or advanced degrees are completed successfully. Vehicles and comforts increase. "
+            "This is a period of deep contentment, inner wisdom, and domestic prosperity."
+        ),
+        5: (
+            "Jupiter Mahadasha with Jupiter in the 5th house is outstanding for children, intelligence, and spiritual practice. "
+            "Birth of children, especially sons, is strongly indicated. Creative and intellectual output is at its finest. "
+            "Speculative gains through wise investment are favourable. Romantic relationships carry dignity and depth. "
+            "Mantra siddhi and spiritual initiation are powerfully supported during this exceptionally blessed period."
+        ),
+        6: (
+            "Jupiter Mahadasha with Jupiter in the 6th house brings mixed results -- triumph over enemies but potential health excess. "
+            "Legal victories and defeat of competitors through ethical means are indicated. "
+            "Liver, obesity, and diabetic tendencies need monitoring. Service in educational or religious institutions prospers. "
+            "Enemies are transformed into allies through your magnanimous and fair approach to conflict."
+        ),
+        7: (
+            "Jupiter Mahadasha with Jupiter in the 7th house is highly auspicious for marriage, partnerships, and public life. "
+            "Marriage to a wise, educated, and spiritually inclined partner is indicated. Business partnerships "
+            "based on ethical principles prosper enormously. Public reputation for fairness and wisdom grows. "
+            "This is one of the finest periods for marital happiness and partnership-based prosperity."
+        ),
+        8: (
+            "Jupiter Mahadasha with Jupiter in the 8th house brings spiritual transformation, longevity, and hidden gains. "
+            "Interest in philosophy, metaphysics, and life after death deepens. Insurance and inheritance matters "
+            "are resolved favourably. Longevity increases; recovery from illness is supported by divine grace. "
+            "This period transforms material loss into spiritual wealth through surrender and wisdom."
+        ),
+        9: (
+            "Jupiter Mahadasha with Jupiter in the 9th house is the most auspicious of all -- Dharma Karmadhipati Yoga potential. "
+            "Fortune, father's blessings, higher education, and spiritual initiation all flourish simultaneously. "
+            "International travel, particularly for religious or educational purposes, is strongly favoured. "
+            "This period represents the highest expression of Jupiter: wisdom, generosity, dharma, and divine grace."
+        ),
+        10: (
+            "Jupiter Mahadasha with Jupiter in the 10th house brings the pinnacle of professional success through wisdom. "
+            "Career in education, judiciary, banking, counselling, or religious leadership reaches its zenith. "
+            "Public reputation for integrity and competence is at its highest. Government recognition is possible. "
+            "Professional authority is earned through genuine wisdom and ethical conduct during this powerful period."
+        ),
+        11: (
+            "Jupiter Mahadasha with Jupiter in the 11th house brings maximum fulfilment of desires and abundant income. "
+            "Wealthy and wise friendships expand your horizons. Income through education, advisory, and investments flourishes. "
+            "Elder siblings prosper. All major desires -- property, vehicle, marriage, children -- move toward fulfilment. "
+            "This is a period of abundance, social recognition, and the materialisation of long-held aspirations."
+        ),
+        12: (
+            "Jupiter Mahadasha with Jupiter in the 12th house is exceptional for spiritual liberation and foreign prosperity. "
+            "Foreign travel for education, spiritual retreat, or pilgrimage is strongly indicated. "
+            "Expenditure on charitable and spiritual causes increases but returns spiritual dividends. "
+            "Moksha-oriented practices deepen. Hospital or ashram-related work brings inner peace and divine connection."
+        ),
+    },
+    "Venus": {
+        1: (
+            "Venus Mahadasha with Venus in the 1st house is a period of beauty, charm, and material comfort. "
+            "Personal attractiveness increases dramatically; romantic opportunities multiply. "
+            "Artistic talents flourish and your aesthetic sensibility earns appreciation. "
+            "Health is generally good but reproductive system needs attention. This is a period of pleasure, luxury, and self-love."
+        ),
+        2: (
+            "Venus Mahadasha with Venus in the 2nd house brings wealth, family harmony, and sweet speech. "
+            "Income through arts, fashion, jewellery, luxury goods, and beauty products increases substantially. "
+            "Family life is filled with celebrations, feasts, and material abundance. Voice becomes melodious and persuasive. "
+            "Savings in gold, diamonds, and beautiful assets appreciate in value. This is one of the finest periods for wealth."
+        ),
+        3: (
+            "Venus Mahadasha with Venus in the 3rd house activates artistic communication, creative media, and pleasant journeys. "
+            "Success in creative writing, music production, fashion blogging, and artistic media is strongly indicated. "
+            "Relations with younger siblings are harmonious and mutually beneficial. Short romantic getaways bring joy. "
+            "Artistic courage develops; you express beauty and love through creative media confidently."
+        ),
+        4: (
+            "Venus Mahadasha with Venus in the 4th house blesses with a beautiful home, vehicle, and domestic luxury. "
+            "Purchase of an aesthetically pleasing property is strongly indicated. Vehicle acquisition, especially luxury. "
+            "Mother's love and artistic influence enrich your inner life. Academic success in arts and culture. "
+            "This is a period of domestic beauty, emotional comfort, and deep inner peace."
+        ),
+        5: (
+            "Venus Mahadasha with Venus in the 5th house is exceptional for romance, creativity, and artistic achievement. "
+            "Love relationships are deeply fulfilling and may lead to marriage. Creative output reaches its artistic peak. "
+            "Speculative gains through art, entertainment, or luxury investments are favourable. "
+            "Children are artistically gifted. This is the most romantically and creatively blessed period."
+        ),
+        6: (
+            "Venus Mahadasha with Venus in the 6th house brings challenges to relationships and health but success through service. "
+            "Reproductive health, kidney, and sugar-related issues need monitoring. Workplace conflicts involve jealousy. "
+            "Success in beauty services, fashion healthcare, or artistic therapy provides income. "
+            "The period teaches that true beauty endures through service and overcoming vanity."
+        ),
+        7: (
+            "Venus Mahadasha with Venus in the 7th house is the most powerful period for marriage, love, and partnership. "
+            "Marriage to a beautiful, charming, and cultured partner is strongly indicated. Business partnerships "
+            "in luxury, beauty, or arts prosper enormously. Public image radiates grace and attractiveness. "
+            "This is Venus at its most powerful for conjugal happiness and partnership-based wealth creation."
+        ),
+        8: (
+            "Venus Mahadasha with Venus in the 8th house brings transformation through relationships and hidden pleasures. "
+            "Inheritance through spouse or in-laws is possible. Sexual magnetism and secretive romantic experiences increase. "
+            "Reproductive health and urinary tract need attention. Insurance and shared financial resources grow. "
+            "The deepest beauty and love are discovered through vulnerability and emotional transformation."
+        ),
+        9: (
+            "Venus Mahadasha with Venus in the 9th house brings fortune through beauty, art, and cultural pursuits. "
+            "International travel to beautiful destinations is indicated. Marriage to someone from a different cultural background. "
+            "Higher education in fine arts, music, or culture studies succeeds. Father's support is gracious. "
+            "This period combines dharma with beauty -- your fortune comes through aesthetic and cultural excellence."
+        ),
+        10: (
+            "Venus Mahadasha with Venus in the 10th house elevates career in beauty, arts, and luxury industries. "
+            "Career in fashion, cinema, hospitality, interior design, or luxury management reaches its peak. "
+            "Professional reputation for elegance and artistic excellence grows. Government recognition in cultural fields. "
+            "The public sees you as graceful and accomplished during this highly successful professional period."
+        ),
+        11: (
+            "Venus Mahadasha with Venus in the 11th house brings income through arts, luxury, and social networks. "
+            "Wealthy, influential friendships in arts and fashion expand your reach. Income from beauty products, "
+            "entertainment investments, and luxury ventures is substantial. All material desires move toward fulfilment. "
+            "Elder siblings prosper. Social life is vibrant, glamorous, and financially rewarding."
+        ),
+        12: (
+            "Venus Mahadasha with Venus in the 12th house directs pleasure toward spiritual experiences and foreign lands. "
+            "Foreign travel to beautiful destinations, spiritual retreats, and artistic pilgrimages are indicated. "
+            "Bed pleasures, dream life, and private romantic experiences are heightened. "
+            "Expenditure on luxury and beauty increases. Spiritual growth through art, music, and devotion deepens."
+        ),
+    },
+    "Saturn": {
+        1: (
+            "Saturn Mahadasha with Saturn in the 1st house is a period of serious self-reflection, discipline, and endurance. "
+            "Health challenges, particularly bones, joints, and teeth, demand attention. Physical appearance may age. "
+            "Responsibilities increase dramatically. Character is tested and tempered through sustained difficulty. "
+            "This period builds indestructible inner strength; what you endure now becomes your greatest source of authority."
+        ),
+        2: (
+            "Saturn Mahadasha with Saturn in the 2nd house restricts finances initially but builds lasting wealth through discipline. "
+            "Speech becomes measured and authoritative. Family responsibilities weigh heavily. "
+            "Income grows slowly but steadily through traditional industries, government, or agriculture. "
+            "Dental and eye issues need attention. Savings built through extreme frugality create permanent security."
+        ),
+        3: (
+            "Saturn Mahadasha with Saturn in the 3rd house develops courage through hardship and persistent effort. "
+            "Relations with siblings are burdened with responsibility. Short travels involve hard work. "
+            "Communication becomes serious and authoritative. Physical stamina builds through sustained effort. "
+            "Success in writing, administrative work, and disciplined media production comes late but endures."
+        ),
+        4: (
+            "Saturn Mahadasha with Saturn in the 4th house brings domestic hardship, property burdens, and emotional austerity. "
+            "Mother's health or emotional availability may be limited. Property comes with responsibilities or litigation. "
+            "Emotional comfort is scarce; inner life feels austere. Educational achievements require double effort. "
+            "The period teaches that true security comes from inner discipline, not external comfort."
+        ),
+        5: (
+            "Saturn Mahadasha with Saturn in the 5th house creates challenges in children, creativity, and romance. "
+            "Delayed children or difficulties with education are possible. Romantic life is serious and lacks spontaneity. "
+            "Creative output is disciplined rather than inspired. Speculative ventures need extreme caution. "
+            "Traditional spiritual practices requiring discipline -- japa, austerity, fasting -- yield deep results."
+        ),
+        6: (
+            "Saturn Mahadasha with Saturn in the 6th house is excellent for overcoming enemies and chronic health management. "
+            "Legal victories through persistent litigation. Career in law, medicine, or government service prospers. "
+            "Chronic health issues are identified and managed with disciplined treatment protocols. "
+            "Debts are cleared through systematic repayment. This is Saturn at its most constructively powerful."
+        ),
+        7: (
+            "Saturn Mahadasha with Saturn in the 7th house brings delayed but durable marriage and serious partnerships. "
+            "Spouse is older, mature, or Saturnine in temperament. Marriage improves significantly after initial difficulties. "
+            "Business partnerships require patience and long-term commitment to yield results. "
+            "Public dealings are characterised by seriousness and reliability. Marital maturity develops over time."
+        ),
+        8: (
+            "Saturn Mahadasha with Saturn in the 8th house is among the most challenging -- chronic illness, obstacles, and transformation. "
+            "Health crises involving bones, chronic conditions, or surgical needs demand vigilance. "
+            "Inheritance matters are delayed or disputed. Longevity is actually protected despite apparent dangers. "
+            "Spiritual transformation through confronting mortality and suffering is the profound gift of this difficult period."
+        ),
+        9: (
+            "Saturn Mahadasha with Saturn in the 9th house tests faith, fortune, and relationship with father. "
+            "Father's health or fortune declines. Higher education is delayed but eventually completed. "
+            "Religious practices become austere and disciplined. Fortune requires extreme patience. "
+            "Travel is for duty rather than pleasure. This period builds unshakeable faith through testing."
+        ),
+        10: (
+            "Saturn Mahadasha with Saturn in the 10th house is the period of maximum professional achievement through discipline. "
+            "Career in government, construction, mining, agriculture, or traditional industries peaks. "
+            "Authority is earned through demonstrated competence and years of disciplined service. "
+            "Professional legacy is established during this period. The fruits of decades of effort finally materialise."
+        ),
+        11: (
+            "Saturn Mahadasha with Saturn in the 11th house gradually fulfils long-held desires and builds income. "
+            "Friendships with older, experienced professionals provide lasting support. Income increases steadily. "
+            "Elder siblings may face challenges. Social position improves through reliable, consistent contribution. "
+            "This is one of Saturn's better placements -- rewards for patience and persistent effort arrive."
+        ),
+        12: (
+            "Saturn Mahadasha with Saturn in the 12th house brings isolation, foreign residence, and spiritual austerity. "
+            "Expenditure increases through hospitalisation, foreign living, or spiritual retreats. "
+            "Sleep disturbances and chronic health issues in foreign lands need management. "
+            "Spiritual growth through solitude, renunciation, and disciplined meditation is profound. "
+            "This period teaches liberation through letting go of worldly attachments."
+        ),
+    },
+    "Rahu": {
+        1: (
+            "Rahu Mahadasha with Rahu in the 1st house creates an intense period of identity transformation and worldly ambition. "
+            "Personality undergoes dramatic shifts; you may reinvent yourself completely. "
+            "Unconventional appearance or lifestyle changes attract attention. Health anxieties and skin issues arise. "
+            "This period propels you toward your karmic destiny through desire-driven action and bold self-presentation."
+        ),
+        2: (
+            "Rahu Mahadasha with Rahu in the 2nd house brings unconventional wealth and speech patterns. "
+            "Income from foreign sources, technology, speculation, or unconventional means increases. "
+            "Family life is disrupted by unusual circumstances. Speech becomes persuasive but potentially deceptive. "
+            "Financial volatility is high; disciplined investment of sudden gains creates lasting wealth."
+        ),
+        3: (
+            "Rahu Mahadasha with Rahu in the 3rd house is powerful for media, communication, and courageous ventures. "
+            "Success in technology-driven media, social networking, and unconventional communication flourishes. "
+            "Relations with siblings involve unusual dynamics. Short travels to unusual destinations are indicated. "
+            "Bold marketing, viral content creation, and innovative communication strategies succeed spectacularly."
+        ),
+        4: (
+            "Rahu Mahadasha with Rahu in the 4th house creates unusual domestic circumstances and property opportunities. "
+            "Residence in foreign lands or unconventional properties is indicated. Mother's health or situation is unusual. "
+            "Property through unconventional means -- foreign investment, technology land deals. "
+            "Inner peace is disturbed by restless desires; meditation and grounding practices are essential."
+        ),
+        5: (
+            "Rahu Mahadasha with Rahu in the 5th house amplifies intelligence, speculation, and unconventional creativity. "
+            "Speculative gains through technology, foreign markets, or unconventional investments are possible. "
+            "Children may be precocious or unusual. Romantic relationships are intense and unconventional. "
+            "Creative output is innovative and ahead of its time. Risk management in speculation is crucial."
+        ),
+        6: (
+            "Rahu Mahadasha with Rahu in the 6th house is excellent for defeating enemies through unconventional strategies. "
+            "Foreign enemies are defeated. Legal matters involving international or unusual circumstances resolve well. "
+            "Health issues may be rare, unusual, or hard to diagnose. Career in technology, foreign companies, or investigation prospers. "
+            "This is one of Rahu's better placements -- desire energy channelled into overcoming obstacles yields victory."
+        ),
+        7: (
+            "Rahu Mahadasha with Rahu in the 7th house brings intense, unconventional partnerships and foreign spouse. "
+            "Marriage to someone from a different culture, religion, or background is strongly indicated. "
+            "Business partnerships involving foreign elements or technology prosper. "
+            "Obsession in relationships needs management. The most transformative growth comes through partnership."
+        ),
+        8: (
+            "Rahu Mahadasha with Rahu in the 8th house is a period of intense hidden transformation and sudden events. "
+            "Unexpected gains or losses through inheritance, insurance, or sudden reversals mark this period. "
+            "Health anxieties and unusual medical conditions may arise. Occult interests deepen dramatically. "
+            "Research into hidden subjects yields breakthrough understanding. This period destroys illusions and reveals truth."
+        ),
+        9: (
+            "Rahu Mahadasha with Rahu in the 9th house creates unconventional spiritual journeys and foreign fortune. "
+            "Higher education abroad or in unconventional subjects is indicated. Father's situation involves foreign elements. "
+            "Religious beliefs may shift dramatically. Fortune comes through foreign connections and innovation. "
+            "This period challenges traditional belief systems and builds a unique spiritual philosophy."
+        ),
+        10: (
+            "Rahu Mahadasha with Rahu in the 10th house is a period of ambitious career expansion and public image transformation. "
+            "Career in technology, foreign companies, media, or unconventional industries skyrockets. "
+            "Public reputation may be controversial but commanding. Political ambitions manifest. "
+            "Professional success comes through innovative approaches that disrupt established patterns."
+        ),
+        11: (
+            "Rahu Mahadasha with Rahu in the 11th house is the most materially rewarding -- maximum desire fulfilment. "
+            "Income through technology, foreign connections, networks, and unconventional means soars. "
+            "Social circle expands with powerful, unusual personalities. All worldly desires accelerate toward fulfilment. "
+            "Elder siblings face unusual circumstances. This is Rahu's most powerful placement for material abundance."
+        ),
+        12: (
+            "Rahu Mahadasha with Rahu in the 12th house intensifies foreign residence, spiritual seeking, and expenditure. "
+            "Long-term residence abroad is strongly indicated. Expenditure on foreign luxury and unusual comforts increases. "
+            "Sleep disturbances, vivid dreams, and psychic experiences are characteristic. "
+            "Spiritual growth through foreign mystical traditions or unconventional meditation practices is profound."
+        ),
+    },
+    "Ketu": {
+        1: (
+            "Ketu Mahadasha with Ketu in the 1st house brings spiritual awakening, detachment, and identity dissolution. "
+            "Physical appearance may become austere or unusual. Health issues involving skin or mysterious ailments arise. "
+            "Worldly ambitions diminish as spiritual interests intensify. You become increasingly detached from ego-driven pursuits. "
+            "This period strips away false identities, revealing your essential spiritual nature."
+        ),
+        2: (
+            "Ketu Mahadasha with Ketu in the 2nd house creates detachment from family wealth and conventional speech. "
+            "Financial patterns are unpredictable -- sudden losses alternate with unexpected gains. "
+            "Family relationships feel distant or karmically complex. Speech becomes cryptic or spiritually oriented. "
+            "Eye and dental health need attention. Liberation from material attachment is this period's deepest gift."
+        ),
+        3: (
+            "Ketu Mahadasha with Ketu in the 3rd house develops inner courage through spiritual practice rather than worldly action. "
+            "Relations with siblings may be distant or karmically complex. Communication becomes introverted. "
+            "Interest in mystical writing, silent meditation, and solitary spiritual practice increases. "
+            "Physical stamina is unpredictable. True courage -- facing inner demons -- is the gift of this period."
+        ),
+        4: (
+            "Ketu Mahadasha with Ketu in the 4th house creates detachment from home, mother, and domestic comfort. "
+            "Sudden changes in residence, emotional distance from mother, and property-related spiritual lessons arise. "
+            "Inner peace comes through renunciation rather than accumulation. Academic interests become spiritual. "
+            "This period teaches that true home is within -- external domesticity is temporary."
+        ),
+        5: (
+            "Ketu Mahadasha with Ketu in the 5th house brings spiritual intelligence, past-life connections, and mystical creativity. "
+            "Children's karma plays a significant role. Romantic relationships carry past-life intensity. "
+            "Creative output is mystical, abstract, or spiritually inspired. Speculative losses teach non-attachment. "
+            "Mantra practice, especially Ketu-related mantras, yields extraordinary spiritual progress."
+        ),
+        6: (
+            "Ketu Mahadasha with Ketu in the 6th house is excellent for spiritual victory over enemies and disease. "
+            "Mysterious healing abilities develop. Enemies are neutralised through spiritual means rather than confrontation. "
+            "Health issues may involve unusual diagnoses but respond to alternative healing. "
+            "Service becomes selfless and karmically liberating. This is one of Ketu's most constructive placements."
+        ),
+        7: (
+            "Ketu Mahadasha with Ketu in the 7th house creates spiritual lessons through partnerships and marriage. "
+            "Marriage may feel empty or karmically burdened. Spouse may be spiritually inclined or detached. "
+            "Business partnerships dissolve or transform into spiritual collaborations. "
+            "The deepest lesson is that union with the divine matters more than any worldly partnership."
+        ),
+        8: (
+            "Ketu Mahadasha with Ketu in the 8th house is profoundly transformative -- moksha-oriented and intensely spiritual. "
+            "Mystical experiences, kundalini awakening, and psychic abilities may manifest. "
+            "Health crises involving mysterious conditions lead to spiritual breakthroughs. "
+            "Inheritance karma resolves. This is one of the most powerful placements for spiritual liberation and occult mastery."
+        ),
+        9: (
+            "Ketu Mahadasha with Ketu in the 9th house challenges conventional religion and builds personal spiritual philosophy. "
+            "Father's health or fortune may decline. Traditional religious practices feel empty. "
+            "Pilgrimage to unusual or remote spiritual sites is indicated. Foreign spiritual teachers guide your path. "
+            "This period replaces inherited belief with direct spiritual experience and personal realisation."
+        ),
+        10: (
+            "Ketu Mahadasha with Ketu in the 10th house creates detachment from career and worldly ambition. "
+            "Professional reputation may suffer or shift dramatically. Interest in spiritual vocation increases. "
+            "Government or corporate positions lose appeal. Alternative or spiritual career paths emerge. "
+            "This period teaches that lasting legacy comes through spiritual service, not worldly achievement."
+        ),
+        11: (
+            "Ketu Mahadasha with Ketu in the 11th house reduces material desires and transforms social connections. "
+            "Income fluctuates as attachment to money decreases. Friendships become spiritually oriented. "
+            "Elder siblings' karma affects you. Desires fulfilled in this period carry a quality of hollowness "
+            "that teaches the ultimate lesson: fulfilment comes from within, not from external achievement."
+        ),
+        12: (
+            "Ketu Mahadasha with Ketu in the 12th house is the ultimate moksha placement -- total spiritual liberation potential. "
+            "Foreign spiritual journeys, prolonged meditation retreats, and complete worldly detachment are indicated. "
+            "Health issues dissolve through spiritual healing. Expenditure is on spiritual causes exclusively. "
+            "This is the rarest and most powerful placement for enlightenment, samadhi, and final liberation of the soul."
+        ),
+    },
+}

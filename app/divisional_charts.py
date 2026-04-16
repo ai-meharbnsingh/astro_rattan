@@ -9,7 +9,7 @@ to a sign in the divisional chart based on specific mathematical divisions.
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 # Sign names in order (0-indexed)
 _SIGN_NAMES = [
@@ -36,6 +36,7 @@ DIVISIONAL_CHARTS: Dict[int, str] = {
     40: "Khavedamsha (D40)",
     45: "Akshavedamsha (D45)",
     60: "Shashtiamsha (D60)",
+    108: "Ashtottaramsha (D108)",
 }
 
 # ============================================================
@@ -986,6 +987,231 @@ def _calculate_d30(planet_longitudes: Dict[str, float]) -> Dict[str, Dict[str, A
 
 
 # ============================================================
+# D108 -- Ashtottaramsa
+# ============================================================
+
+# Sign classification for D108 (navamsa-like cycling)
+_MOVABLE_SIGNS = {0, 3, 6, 9}    # Aries, Cancer, Libra, Capricorn
+_FIXED_SIGNS = {1, 4, 7, 10}     # Taurus, Leo, Scorpio, Aquarius
+_DUAL_SIGNS = {2, 5, 8, 11}      # Gemini, Virgo, Sagittarius, Pisces
+
+# Exaltation and own-sign data for spiritual strength assessment in D108
+_EXALTATION_SIGNS = {
+    "Sun": 0, "Moon": 1, "Mars": 9, "Mercury": 5,
+    "Jupiter": 3, "Venus": 11, "Saturn": 6,
+    "Rahu": 1, "Ketu": 7,
+}
+_OWN_SIGNS = {
+    "Sun": [4], "Moon": [3], "Mars": [0, 7], "Mercury": [2, 5],
+    "Jupiter": [8, 11], "Venus": [1, 6], "Saturn": [9, 10],
+    "Rahu": [10], "Ketu": [7],
+}
+
+
+def _calculate_d108(planet_longitudes: Dict[str, float]) -> Dict[str, Dict[str, Any]]:
+    """
+    Ashtottaramsa (D108): divide each sign into 108 parts (16'40" = 0.27778 deg each).
+    Uses navamsa-like starting-sign logic:
+      - Movable signs (Aries, Cancer, Libra, Capricorn): start from same sign
+      - Fixed signs (Taurus, Leo, Scorpio, Aquarius): start from 9th sign (+8)
+      - Dual signs (Gemini, Virgo, Sagittarius, Pisces): start from 5th sign (+4)
+    Then count part_number signs forward from the starting sign.
+    """
+    result: Dict[str, Dict[str, Any]] = {}
+    part_size = 30.0 / 108.0  # 0.277777... degrees
+
+    for planet, lon in planet_longitudes.items():
+        lon = lon % 360.0
+        rasi_index = int(lon / 30.0) % 12
+        degree_in_sign = lon - (int(lon / 30.0)) * 30.0
+
+        part = min(int(degree_in_sign / part_size), 107)
+
+        # Determine starting sign based on sign type (navamsa-like rule)
+        if rasi_index in _MOVABLE_SIGNS:
+            start = rasi_index           # same sign
+        elif rasi_index in _FIXED_SIGNS:
+            start = (rasi_index + 8) % 12  # 9th from sign
+        else:  # dual
+            start = (rasi_index + 4) % 12  # 5th from sign
+
+        div_sign_index = (start + part) % 12
+
+        degree_within = (degree_in_sign % part_size) * 108.0
+        degree_within = degree_within % 30.0  # clamp float boundary
+
+        result[planet] = {
+            "sign": _SIGN_NAMES[div_sign_index],
+            "sign_index": div_sign_index,
+            "degree": round(degree_within, 4),
+        }
+    return result
+
+
+def calculate_d108_analysis(
+    planet_longitudes: Dict[str, float],
+) -> Dict[str, Any]:
+    """
+    Detailed D108 Ashtottaramsa analysis — deepest karmic chart.
+
+    D108 reveals past-life spiritual progress, moksha indicators, and the
+    deepest karmic patterns.  108 is the sacred count of Vedic beads,
+    Sri Yantra intersections, and Upanishadic mantras.
+
+    Returns:
+        {
+          d108_positions, spiritual_indicators, moksha_potential,
+          past_life_karma, interpretation
+        }
+    """
+    # 1. Compute D108 positions
+    d108_raw = _calculate_d108(planet_longitudes)
+    d108_positions: Dict[str, Dict[str, Any]] = {}
+    for planet, info in d108_raw.items():
+        d108_positions[planet] = {
+            "sign": info["sign"],
+            "degree": info["degree"],
+        }
+
+    # 2. Spiritual indicators — planets in own sign or exalted in D108
+    spiritual_indicators: List[Dict[str, Any]] = []
+    moksha_factors: List[str] = []
+    moksha_score = 0
+
+    for planet, info in d108_raw.items():
+        sign_idx = info["sign_index"]
+        is_exalted = (_EXALTATION_SIGNS.get(planet) == sign_idx)
+        is_own = sign_idx in _OWN_SIGNS.get(planet, [])
+
+        if is_exalted:
+            spiritual_indicators.append({
+                "planet": planet,
+                "condition": "exalted",
+                "sign": info["sign"],
+                "meaning": f"{planet} exalted in D108 — strong spiritual karma from past lives",
+            })
+            moksha_score += 15
+
+        if is_own:
+            spiritual_indicators.append({
+                "planet": planet,
+                "condition": "own_sign",
+                "sign": info["sign"],
+                "meaning": f"{planet} in own sign in D108 — self-earned spiritual merit",
+            })
+            moksha_score += 10
+
+    # Moksha-karaka planets (Jupiter, Ketu, Moon) in kendra (1,4,7,10)
+    # from D108 Ascendant-equivalent (Sun used as proxy)
+    sun_d108_sign = d108_raw.get("Sun", {}).get("sign_index", 0)
+    moksha_karakas = ["Jupiter", "Ketu", "Moon"]
+    for mk in moksha_karakas:
+        if mk in d108_raw:
+            mk_sign = d108_raw[mk]["sign_index"]
+            house_from_sun = (mk_sign - sun_d108_sign) % 12 + 1
+            if house_from_sun in (1, 4, 7, 10):
+                factor = f"{mk} in kendra (house {house_from_sun}) from D108 Sun — moksha support"
+                moksha_factors.append(factor)
+                moksha_score += 12
+
+    # Saturn-Ketu conjunction or mutual aspect enhances detachment
+    if "Saturn" in d108_raw and "Ketu" in d108_raw:
+        if d108_raw["Saturn"]["sign_index"] == d108_raw["Ketu"]["sign_index"]:
+            moksha_factors.append("Saturn-Ketu conjunction in D108 — deep vairagya (detachment)")
+            moksha_score += 10
+
+    # Jupiter-Ketu conjunction — gnana yoga
+    if "Jupiter" in d108_raw and "Ketu" in d108_raw:
+        if d108_raw["Jupiter"]["sign_index"] == d108_raw["Ketu"]["sign_index"]:
+            moksha_factors.append("Jupiter-Ketu conjunction in D108 — Gnana Yoga (liberation through wisdom)")
+            moksha_score += 15
+
+    moksha_score = min(moksha_score, 100)
+
+    # 3. Past-life karma analysis
+    past_life_karma: List[Dict[str, str]] = []
+
+    # Rahu-Ketu axis in D108 reveals the karmic direction
+    if "Rahu" in d108_raw and "Ketu" in d108_raw:
+        rahu_sign = d108_raw["Rahu"]["sign"]
+        ketu_sign = d108_raw["Ketu"]["sign"]
+        past_life_karma.append({
+            "axis": "Rahu-Ketu",
+            "rahu_sign": rahu_sign,
+            "ketu_sign": ketu_sign,
+            "meaning": (
+                f"Ketu in {ketu_sign} (D108) — mastered qualities of {ketu_sign} in past lives. "
+                f"Rahu in {rahu_sign} — current life soul growth direction."
+            ),
+        })
+
+    # Saturn in D108 — karmic debts
+    if "Saturn" in d108_raw:
+        sat_sign = d108_raw["Saturn"]["sign"]
+        sat_idx = d108_raw["Saturn"]["sign_index"]
+        sat_exalted = (_EXALTATION_SIGNS.get("Saturn") == sat_idx)
+        sat_own = sat_idx in _OWN_SIGNS.get("Saturn", [])
+        if sat_exalted or sat_own:
+            past_life_karma.append({
+                "planet": "Saturn",
+                "sign": sat_sign,
+                "meaning": f"Saturn dignified in D108 ({sat_sign}) — past-life duties fulfilled; lighter karmic load",
+            })
+        else:
+            past_life_karma.append({
+                "planet": "Saturn",
+                "sign": sat_sign,
+                "meaning": f"Saturn in {sat_sign} in D108 — unresolved karmic debts requiring discipline and service",
+            })
+
+    # Sun in D108 — soul's past-life identity
+    if "Sun" in d108_raw:
+        sun_sign = d108_raw["Sun"]["sign"]
+        past_life_karma.append({
+            "planet": "Sun",
+            "sign": sun_sign,
+            "meaning": f"Sun in {sun_sign} in D108 — the soul's core identity carried from past incarnations",
+        })
+
+    # 4. Build overall interpretation
+    if moksha_score >= 70:
+        interpretation = (
+            "Very strong spiritual chart. Multiple indicators suggest advanced spiritual "
+            "progress from past lives. Moksha (liberation) is a realistic pursuit in this "
+            "lifetime with dedicated sadhana."
+        )
+    elif moksha_score >= 40:
+        interpretation = (
+            "Moderate spiritual potential. Some past-life spiritual merit is present. "
+            "Consistent practice and guru guidance can unlock deeper realization. "
+            "Focus on the moksha-karaka planets for remedial support."
+        )
+    elif moksha_score >= 20:
+        interpretation = (
+            "Developing spiritual chart. Past-life karma is more material than spiritual. "
+            "This lifetime offers opportunities to begin serious spiritual work. "
+            "Service (seva) and devotion (bhakti) are recommended starting points."
+        )
+    else:
+        interpretation = (
+            "Predominantly material karmic pattern in D108. Past lives were focused on "
+            "worldly achievement rather than spiritual growth. Current life can plant seeds "
+            "of spiritual progress through charity, pilgrimage, and mantra practice."
+        )
+
+    return {
+        "d108_positions": d108_positions,
+        "spiritual_indicators": spiritual_indicators,
+        "moksha_potential": {
+            "score": moksha_score,
+            "factors": moksha_factors,
+        },
+        "past_life_karma": past_life_karma,
+        "interpretation": interpretation,
+    }
+
+
+# ============================================================
 # GENERIC -- For D16, D20, D24, D27, D40, D45, D60
 # ============================================================
 
@@ -1064,6 +1290,7 @@ def calculate_divisional_chart_detailed(
         10: _calculate_d10,
         12: _calculate_d12,
         30: _calculate_d30,
+        108: _calculate_d108,
     }
 
     if division in dispatch:
