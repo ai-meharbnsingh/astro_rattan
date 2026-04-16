@@ -11,6 +11,26 @@ import KundliChartSVG from '@/components/KundliChartSVG';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Live ticking clock for Present Kundli section
+function LiveClock({ language }: { language: string }) {
+  const [now, setNow] = useState(new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const hi = language === 'hi';
+  const date = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+  const time = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+  return (
+    <p className="text-center text-lg text-gray-600 mb-6">
+      <strong className="text-sacred-gold-dark">{hi ? 'अभी ग्रहों की लाइव स्थिति' : 'Live planetary positions right now'}</strong>
+      {' — '}
+      <span className="font-mono text-sacred-gold-dark">{date} {time} IST</span>
+      <span className="ml-2 inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse" title="Live" />
+    </p>
+  );
+}
+
 const SIGNS = [
   { id: 'aries', en: 'Aries', hi: 'मेष' },
   { id: 'taurus', en: 'Taurus', hi: 'वृषभ' },
@@ -676,10 +696,7 @@ export default function Features() {
             <Heading as={2} variant={2} className="text-sacred-gold-dark mb-6 leading-[1.1] text-center">
               {l('Present Kundli — Current Sky', 'वर्तमान कुंडली — आकाश दर्शन')}
             </Heading>
-            <p className="text-center text-lg text-gray-600 mb-6">
-              <strong className="text-sacred-gold-dark">{l('Live planetary positions right now', 'अभी ग्रहों की लाइव स्थिति')}</strong>
-              {l(` — ${currentSky.date} at ${currentSky.time} IST`, ` — ${currentSky.date} ${currentSky.time} IST पर`)}
-            </p>
+            <LiveClock language={language} />
 
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
               {/* LEFT: Chart (40%) */}
