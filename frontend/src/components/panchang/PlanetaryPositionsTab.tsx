@@ -33,6 +33,13 @@ const PLANET_HINDI: Record<string, string> = {
   Ketu: 'केतु',
 };
 
+// Hindi names for signs (rashi)
+const RASHI_HINDI: Record<string, string> = {
+  'Aries': 'मेष', 'Taurus': 'वृषभ', 'Gemini': 'मिथुन', 'Cancer': 'कर्क',
+  'Leo': 'सिंह', 'Virgo': 'कन्या', 'Libra': 'तुला', 'Scorpio': 'वृश्चिक',
+  'Sagittarius': 'धनु', 'Capricorn': 'मकर', 'Aquarius': 'कुंभ', 'Pisces': 'मीन',
+};
+
 export default function PlanetaryPositionsTab({ panchang, language, t }: Props) {
   const planets = panchang.planetary_positions || [];
 
@@ -72,7 +79,7 @@ export default function PlanetaryPositionsTab({ panchang, language, t }: Props) 
                     {language === 'hi' ? PLANET_HINDI[planet.name] || planet.name : planet.name}
                   </TableCell>
                   <TableCell className="px-2 py-1 text-muted-foreground">
-                    {language === 'hi' && planet.rashi_hindi ? planet.rashi_hindi : planet.rashi}
+                    {language === 'hi' ? RASHI_HINDI[planet.rashi] || planet.rashi : planet.rashi}
                   </TableCell>
                   <TableCell className="px-2 py-1 text-right text-muted-foreground">
                     {planet.degree}°
