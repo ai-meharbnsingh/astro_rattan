@@ -722,16 +722,18 @@ export default function Features() {
                       const angDiff = diff > 180 ? 360 - diff : diff;
                       const isCombust = name !== 'Sun' && name !== 'Rahu' && name !== 'Ketu' && angDiff < 10;
 
+                      // Use API values first, fallback to frontend computation
+                      const status = (p.status || '').toLowerCase();
                       return {
                         planet: name,
                         sign,
                         house,
                         sign_degree: p.sign_degree || 0,
-                        is_retrograde: !!p.is_retrograde,
-                        is_combust: isCombust,
-                        is_vargottama: false, // needs navamsa calc — skip for current sky
-                        is_exalted: EXALTED[name] === sign,
-                        is_debilitated: DEBILITATED[name] === sign,
+                        is_retrograde: !!p.is_retrograde || status.includes('retrograde'),
+                        is_combust: !!p.is_combust || isCombust || status.includes('combust'),
+                        is_vargottama: !!p.is_vargottama || status.includes('vargottama'),
+                        is_exalted: EXALTED[name] === sign || status.includes('exalted'),
+                        is_debilitated: DEBILITATED[name] === sign || status.includes('debilitated'),
                       };
                     })}
                     ascendantSign={currentSky.lagna_sign || ''}
@@ -776,7 +778,18 @@ export default function Features() {
                           <td className="px-3 py-2 text-foreground">{p.sign}</td>
                           <td className="px-3 py-2 text-right text-muted-foreground">{p.sign_degree != null ? `${p.sign_degree}°` : '--'}</td>
                           <td className="px-3 py-2 text-right text-muted-foreground">{p.longitude != null ? `${Number(p.longitude).toFixed(2)}°` : '--'}</td>
-                          <td className="px-3 py-2 text-center">{p.is_retrograde ? <span className="text-red-600 font-bold text-xs">R</span> : <span className="text-muted-foreground">--</span>}</td>
+                          <td className="px-3 py-2 text-center text-xs font-bold">
+                            {(() => {
+                              const st = (p.status || '').toLowerCase();
+                              const parts: string[] = [];
+                              if (p.is_retrograde || st.includes('retrograde')) parts.push('*');
+                              if (p.is_combust || st.includes('combust')) parts.push('^');
+                              if (st.includes('vargottama')) parts.push('v');
+                              if (st.includes('exalted')) parts.push('+');
+                              if (st.includes('debilitated')) parts.push('-');
+                              return parts.length ? <span className="text-sacred-gold-dark">{parts.join('')}</span> : <span className="text-muted-foreground">--</span>;
+                            })()}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
