@@ -72,23 +72,21 @@ const HOUSE_CENTERS: { x: number; y: number }[] = [
   { x: 318, y: 55 },   // 12 — top-right triangle
 ];
 
-// House numbers — standard North Indian kundli positions
-// Center houses (1,4,7,10) are along the diamond edges, not clustered
-// Triangle houses are near their corner of the triangle
+// HARDCODED house number positions — fixed percentages on 400x400 canvas
+// DO NOT calculate dynamically
 const HOUSE_NUM_POS: { x: number; y: number }[] = [
-  // Matching reference image EXACTLY — numbers hug the diamond lines inside each house
-  { x: 180, y: 160 }, // 1  — just left of center, tucked below top diamond line
-  { x: 100, y: 60 },  // 2  — top-left triangle, near diamond line junction
-  { x: 65,  y: 95 },  // 3  — below "2", near left diagonal line
-  { x: 155, y: 190 }, // 4  — left of center, near left diamond vertex
-  { x: 60,  y: 310 }, // 5  — bottom-left triangle, near left edge
-  { x: 95,  y: 345 }, // 6  — just right of "5", near bottom-left junction
-  { x: 210, y: 225 }, // 7  — just right of center, tucked below "1"
-  { x: 305, y: 345 }, // 8  — bottom-right triangle, near junction
-  { x: 340, y: 310 }, // 9  — just above "8", near right edge
-  { x: 245, y: 190 }, // 10 — right of center, near right diamond vertex
-  { x: 335, y: 95 },  // 11 — top-right area, near right diagonal
-  { x: 300, y: 60 },  // 12 — top-right triangle, near diamond line junction
+  { x: 200, y: 72 },  // 1  → (50%, 18%) top triangle
+  { x: 88,  y: 88 },  // 2  → (22%, 22%) top-left corner
+  { x: 60,  y: 152 }, // 3  → (15%, 38%) left-upper
+  { x: 72,  y: 200 }, // 4  → (18%, 50%) left triangle
+  { x: 60,  y: 260 }, // 5  → (15%, 65%) left-lower
+  { x: 88,  y: 312 }, // 6  → (22%, 78%) bottom-left corner
+  { x: 200, y: 328 }, // 7  → (50%, 82%) bottom triangle
+  { x: 312, y: 312 }, // 8  → (78%, 78%) bottom-right corner
+  { x: 340, y: 260 }, // 9  → (85%, 65%) right-lower
+  { x: 328, y: 200 }, // 10 → (82%, 50%) right triangle
+  { x: 340, y: 152 }, // 11 → (85%, 38%) right-upper
+  { x: 312, y: 88 },  // 12 → (78%, 22%) top-right corner
 ];
 
 function ascMarkerPos(degInSign: number): { x: number; y: number } {
