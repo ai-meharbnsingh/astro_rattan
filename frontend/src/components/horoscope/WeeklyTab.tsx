@@ -1,5 +1,9 @@
 import { Heart, Briefcase, Activity, Wallet, Sparkles, CalendarDays } from 'lucide-react';
 import { Text } from "@/components/ui/text";
+import { Card, CardContent } from '@/components/ui/card';
+import ScoreBar from './ScoreBar';
+import LuckyMetadataCard from './LuckyMetadataCard';
+import DosAndDonts from './DosAndDonts';
 
 interface WeeklyData {
   sign: string;
@@ -15,6 +19,11 @@ interface WeeklyData {
   week_end: string;
   sections: Record<string, string>;
   source: string;
+  scores?: { overall: number; love: number; career: number; finance: number; health: number };
+  mood?: { en: string; hi: string };
+  lucky?: { number: number; color: { en: string; hi: string }; time: { en: string; hi: string }; compatible_sign: { en: string; hi: string }; gemstone: { en: string; hi: string }; mantra: string };
+  dos?: Array<{ en: string; hi: string }>;
+  donts?: Array<{ en: string; hi: string }>;
 }
 
 interface Props {
@@ -100,6 +109,32 @@ export default function WeeklyTab({ data, loading, language, t }: Props) {
         </div>
       </div>
 
+      {/* Score Bars */}
+      {data.scores && (
+        <Card className="py-4">
+          <CardContent className="p-4 space-y-2.5">
+            <ScoreBar label={t('auto.overallScore')} score={data.scores.overall} color="amber" />
+            <ScoreBar label={language === 'hi' ? 'प्रेम' : 'Love'} score={data.scores.love} color="pink" />
+            <ScoreBar label={language === 'hi' ? 'करियर' : 'Career'} score={data.scores.career} color="blue" />
+            <ScoreBar label={language === 'hi' ? 'वित्त' : 'Finance'} score={data.scores.finance} color="purple" />
+            <ScoreBar label={language === 'hi' ? 'स्वास्थ्य' : 'Health'} score={data.scores.health} color="green" />
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Mood */}
+      {data.mood && (
+        <div className="rounded-xl border bg-card px-4 py-2.5 flex items-center gap-2">
+          <Text variant="small" as="span">{t('auto.mood')}:</Text>
+          <span className="text-sm font-medium text-foreground">{language === 'hi' ? data.mood.hi : data.mood.en}</span>
+        </div>
+      )}
+
+      {/* Lucky Metadata */}
+      {data.lucky && (
+        <LuckyMetadataCard lucky={data.lucky} language={language} t={t} />
+      )}
+
       {/* Section Cards — column grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {SECTION_CONFIG.map(({ key, icon: Icon, color, bg, border }) => {
@@ -119,6 +154,11 @@ export default function WeeklyTab({ data, loading, language, t }: Props) {
           );
         })}
       </div>
+
+      {/* Dos and Donts */}
+      {data.dos && data.donts && data.dos.length > 0 && data.donts.length > 0 && (
+        <DosAndDonts dos={data.dos} donts={data.donts} language={language} t={t} />
+      )}
     </div>
   );
 }
