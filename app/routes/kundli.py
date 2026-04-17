@@ -1145,6 +1145,22 @@ def get_jaimini(
     return result
 
 
+@router.get("/{kundli_id}/pravrajya", status_code=status.HTTP_200_OK)
+def get_pravrajya(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Pravrajya (ascetic/renunciation) yogas — Phaladeepika Adhyaya 27."""
+    from app.pravrajya_engine import detect_pravrajya
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    result = detect_pravrajya(chart)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
 # ── PDF Download ────────────────────────────────────────────
 
 # Sign → Lord mapping used for house lordships table
