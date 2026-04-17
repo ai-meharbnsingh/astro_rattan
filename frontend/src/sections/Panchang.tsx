@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Heading } from '@/components/ui/heading';
-import { Calendar, Clock, Download, Loader2, MapPin, Search, Share2, Sun, Moon, Star, Sparkles, Timer } from 'lucide-react';
+import { Calendar, Clock, Download, Loader2, MapPin, Search, Share2, Sun, Moon, Star, Sparkles, Timer, Microscope } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
 import { translateBackend } from '@/lib/backend-translations';
