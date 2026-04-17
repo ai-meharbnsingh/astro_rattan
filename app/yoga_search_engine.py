@@ -13,6 +13,7 @@ import json
 import logging
 
 from app.dosha_engine import analyze_yogas_and_doshas
+from app.yoga_rule_engine import detect_all_yogas as _detect_declarative_yogas, load_yoga_rules
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +56,15 @@ YOGA_TYPES = [
     "Danda Yoga",
 ]
 
+# Extend with all declarative yoga names so search resolves them too
+try:
+    for _y in load_yoga_rules():
+        _name = _y.get("name_en", "")
+        if _name and _name not in YOGA_TYPES:
+            YOGA_TYPES.append(_name)
+except Exception:
+    pass  # don't break existing behavior if JSON load fails
+
 # Lowercase lookup set for quick matching
 _YOGA_LOWER = {y.lower() for y in YOGA_TYPES}
 
@@ -94,21 +104,52 @@ def detect_yogas_in_chart(chart_data: dict) -> List[Dict[str, Any]]:
     """
     Run full yoga detection on a parsed chart_data dict.
 
+    Merges legacy dosha_engine yoga detection (~34 yogas) with declarative
+    yoga_rule_engine detection (~50 additional yogas from JSON).
+
     Returns list of *present* yogas, each as
-    ``{name, description, planets_involved}`` (only those with present=True).
+    ``{name, description, planets_involved, category, sloka_ref, nature}``.
     """
     planets = chart_data.get("planets", {})
     asc_sign = chart_data.get("ascendant", {}).get("sign", "")
 
     result = analyze_yogas_and_doshas(planets, asc_sign)
-    present = []
+    present: List[Dict[str, Any]] = []
+    seen_keys: set = set()
     for y in result.get("yogas", []):
         if y.get("present"):
+            key = (y["name"] or "").strip().lower()
+            if key in seen_keys:
+                continue
+            seen_keys.add(key)
             present.append({
                 "name": y["name"],
                 "description": y.get("description", ""),
                 "planets_involved": y.get("planets_involved", []),
+                "category": y.get("category", "classical"),
+                "sloka_ref": y.get("sloka_ref", ""),
+                "nature": y.get("nature", "mixed"),
             })
+
+    # Merge declarative (data-driven) yogas
+    for d in _detect_declarative_yogas(chart_data):
+        key = (d.get("name_en") or "").strip().lower()
+        if key in seen_keys:
+            continue
+        seen_keys.add(key)
+        present.append({
+            "name": d.get("name_en", ""),
+            "name_hi": d.get("name_hi", ""),
+            "description": d.get("effect_en", ""),
+            "description_hi": d.get("effect_hi", ""),
+            "planets_involved": [],
+            "category": d.get("category", ""),
+            "category_label_en": d.get("category_label_en", ""),
+            "category_label_hi": d.get("category_label_hi", ""),
+            "sloka_ref": d.get("sloka_ref", ""),
+            "nature": d.get("nature", "mixed"),
+        })
+
     return present
 
 
