@@ -65,25 +65,58 @@ interface AreaAffirmation {
 
 interface MobileNumerologyResult {
   phone_number: string;
-  name?: string;
-  birth_date?: string;
   compound_number: number;
   mobile_total: number;
-  mobile_total_prediction?: string;
-  recommended_totals?: number[];
-  loshu_grid?: (number | null)[][];
-  vedic_grid?: (number | null)[][];
-  lucky_colours?: string[];
-  unlucky_colours?: string[];
+
+  // Prediction & qualities
+  prediction?: Record<string, any>;
+  lucky_qualities?: string[];
+  challenges?: string[];
+  best_for?: string;
+  compatibility_numbers?: number[];
+
+  // Lucky / Unlucky
+  lucky_colors?: string[];
+  unlucky_colors?: string[];
   lucky_numbers?: number[];
   unlucky_numbers?: number[];
   neutral_numbers?: number[];
-  missing_numbers?: number[];
-  combinations?: MobileCombination[];
+
+  // Missing numbers (simple digit list OR enriched objects from DOB analysis)
+  missing_numbers?: number[] | Array<{ number: number; meaning?: string; meaning_hi?: string; remedy?: string; remedy_hi?: string; color?: string; color_hi?: string; gemstone?: string; gemstone_hi?: string }>;
+
+  // Mobile combinations
+  mobile_combinations?: MobileCombination[];
+  has_malefic?: boolean;
+  benefic_count?: number;
+  malefic_count?: number;
+  recommendation?: string;
+
+  // Affirmations (dict keyed by area)
+  affirmations?: Record<string, string> | AreaAffirmation[];
+
+  // Vibration / legacy
+  vibration_number?: number;
+  total_sum?: number;
+
+  // DOB-based
+  loshu_grid?: number[][];
+  loshu_values?: Record<number, string>;
+  loshu_arrows?: any;
+  loshu_planes?: any;
+  vedic_grid?: number[][];
+  vedic_values?: Record<number, string>;
+  repeated_numbers?: Array<{ number: number; count: number; meaning?: string; meaning_hi?: string }>;
+  recommended_totals?: number[];
   is_recommended?: boolean;
+  life_path?: number;
+
+  // Backward compat aliases
   recommendation_message?: string;
+  combinations?: MobileCombination[];
+  lucky_colours?: string[];
+  unlucky_colours?: string[];
   predictions?: string[];
-  affirmations?: AreaAffirmation[];
 }
 
 type TabType = 'life_path' | 'mobile' | 'name' | 'vehicle' | 'house';
@@ -813,6 +846,8 @@ export default function NumerologyTabs() {
 
           {/* Mobile Results */}
           {mobileResult && (
+            <div className="space-y-4">
+            {/* Header: Compound / Total / Status */}
             <Card className="bg-card border-0 shadow-soft-lg">
               <CardContent className="p-6 space-y-4">
                 <div className="text-center pb-4 border-b border-sacred-gold/20">
@@ -837,13 +872,428 @@ export default function NumerologyTabs() {
                   </div>
                 </div>
 
-                {mobileResult.recommendation_message && (
+                {/* Recommendation message */}
+                {(mobileResult.recommendation || mobileResult.recommendation_message) && (
                   <div className={`p-3 rounded-lg text-center text-sm ${mobileResult.is_recommended ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
-                    {mobileResult.recommendation_message}
+                    {mobileResult.recommendation || mobileResult.recommendation_message}
+                  </div>
+                )}
+
+                {/* Life Path + Recommended Totals */}
+                {(mobileResult.life_path != null || !!mobileResult.recommended_totals?.length) && (
+                  <div className="flex flex-wrap gap-3 items-center justify-center">
+                    {mobileResult.life_path != null && (
+                      <div className="text-center p-2 bg-purple-50 rounded-lg">
+                        <p className="text-[10px] text-muted-foreground">{t('numerology.mobile.lifePath')}</p>
+                        <Badge className="bg-purple-100 text-purple-700">{mobileResult.life_path}</Badge>
+                      </div>
+                    )}
+                    {!!mobileResult.recommended_totals?.length && (
+                      <div className="text-center p-2 bg-blue-50 rounded-lg">
+                        <p className="text-[10px] text-muted-foreground">{t('numerology.mobile.recommendedTotals')}</p>
+                        <div className="flex gap-1 mt-1 justify-center">
+                          {mobileResult.recommended_totals.map((n) => (
+                            <Badge key={n} className={`text-xs ${mobileResult.mobile_total === n ? 'bg-green-200 text-green-800' : 'bg-blue-100 text-blue-700'}`}>{n}</Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </CardContent>
             </Card>
+
+            {/* Prediction & Qualities */}
+            {(mobileResult.prediction || mobileResult.lucky_qualities || mobileResult.challenges || mobileResult.best_for) && (
+              <Card className="bg-card border-0 shadow-soft">
+                <CardContent className="p-6 space-y-4">
+                  <Heading as={5} variant={5}>{t('numerology.mobile.prediction')}</Heading>
+
+                  {mobileResult.prediction && (
+                    <div className="text-sm text-muted-foreground leading-relaxed">
+                      {typeof mobileResult.prediction === 'string'
+                        ? mobileResult.prediction
+                        : (isHi
+                            ? (mobileResult.prediction.description_hi || mobileResult.prediction.description || mobileResult.prediction.title_hi || mobileResult.prediction.title || JSON.stringify(mobileResult.prediction))
+                            : (mobileResult.prediction.description || mobileResult.prediction.title || JSON.stringify(mobileResult.prediction))
+                          )}
+                    </div>
+                  )}
+
+                  {!!mobileResult.lucky_qualities?.length && (
+                    <div>
+                      <p className="text-sm font-medium text-foreground mb-2">{t('numerology.mobile.luckyQualities')}</p>
+                      <div className="flex flex-wrap gap-2">
+                        {mobileResult.lucky_qualities.map((q, i) => (
+                          <Badge key={i} className="bg-green-100 text-green-800 text-xs">{q}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {!!mobileResult.challenges?.length && (
+                    <div>
+                      <p className="text-sm font-medium text-foreground mb-2">{t('numerology.mobile.challenges')}</p>
+                      <div className="flex flex-wrap gap-2">
+                        {mobileResult.challenges.map((c, i) => (
+                          <Badge key={i} className="bg-red-100 text-red-800 text-xs">{c}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {mobileResult.best_for && (
+                    <div>
+                      <p className="text-sm font-medium text-foreground mb-1">{t('numerology.mobile.bestFor')}</p>
+                      <p className="text-sm text-muted-foreground">{mobileResult.best_for}</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Lucky / Unlucky Numbers */}
+            {(!!mobileResult.lucky_numbers?.length || !!mobileResult.unlucky_numbers?.length || !!mobileResult.neutral_numbers?.length) && (
+              <Card className="bg-card border-0 shadow-soft">
+                <CardContent className="p-6 space-y-4">
+                  {!!mobileResult.lucky_numbers?.length && (
+                    <div>
+                      <p className="text-sm font-medium text-foreground mb-2">{t('numerology.mobile.luckyNumbers')}</p>
+                      <div className="flex flex-wrap gap-2">
+                        {mobileResult.lucky_numbers.map((n) => (
+                          <Badge key={n} className="bg-green-100 text-green-800 text-sm px-3 py-1">{n}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {!!mobileResult.unlucky_numbers?.length && (
+                    <div>
+                      <p className="text-sm font-medium text-foreground mb-2">{t('numerology.mobile.unluckyNumbers')}</p>
+                      <div className="flex flex-wrap gap-2">
+                        {mobileResult.unlucky_numbers.map((n) => (
+                          <Badge key={n} className="bg-red-100 text-red-800 text-sm px-3 py-1">{n}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {!!mobileResult.neutral_numbers?.length && (
+                    <div>
+                      <p className="text-sm font-medium text-foreground mb-2">{t('numerology.mobile.neutralNumbers')}</p>
+                      <div className="flex flex-wrap gap-2">
+                        {mobileResult.neutral_numbers.map((n) => (
+                          <Badge key={n} className="bg-gray-100 text-gray-700 text-sm px-3 py-1">{n}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Compatibility Numbers */}
+                  {!!mobileResult.compatibility_numbers?.length && (
+                    <div>
+                      <p className="text-sm font-medium text-foreground mb-2">{t('numerology.mobile.compatibilityNumbers')}</p>
+                      <div className="flex flex-wrap gap-2">
+                        {mobileResult.compatibility_numbers.map((n) => (
+                          <Badge key={n} className="bg-blue-100 text-blue-700 text-sm px-3 py-1">{n}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Lucky / Unlucky Colors */}
+            {(!!((mobileResult.lucky_colors || mobileResult.lucky_colours)?.length) || !!((mobileResult.unlucky_colors || mobileResult.unlucky_colours)?.length)) && (
+              <Card className="bg-card border-0 shadow-soft">
+                <CardContent className="p-6 space-y-4">
+                  {!!((mobileResult.lucky_colors || mobileResult.lucky_colours)?.length) && (
+                    <div>
+                      <p className="text-sm font-medium text-foreground mb-2">{t('numerology.mobile.luckyColors')}</p>
+                      <div className="flex flex-wrap gap-2">
+                        {(mobileResult.lucky_colors || mobileResult.lucky_colours || []).map((c, i) => (
+                          <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-50 border border-green-200 text-sm text-green-800">
+                            <span className="w-3 h-3 rounded-full border border-green-300" style={{ backgroundColor: c.toLowerCase().replace(/\s+/g, '') }} />
+                            {c}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {!!((mobileResult.unlucky_colors || mobileResult.unlucky_colours)?.length) && (
+                    <div>
+                      <p className="text-sm font-medium text-foreground mb-2">{t('numerology.mobile.unluckyColors')}</p>
+                      <div className="flex flex-wrap gap-2">
+                        {(mobileResult.unlucky_colors || mobileResult.unlucky_colours || []).map((c, i) => (
+                          <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-50 border border-red-200 text-sm text-red-800">
+                            <span className="w-3 h-3 rounded-full border border-red-300" style={{ backgroundColor: c.toLowerCase().replace(/\s+/g, '') }} />
+                            {c}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Mobile Combinations (Pair Analysis) */}
+            {!!((mobileResult.mobile_combinations || mobileResult.combinations)?.length) && (() => {
+              const combos = mobileResult.mobile_combinations || mobileResult.combinations || [];
+              return (
+                <Card className="bg-card border-0 shadow-soft">
+                  <CardContent className="p-6 space-y-4">
+                    <Heading as={5} variant={5}>{t('numerology.mobile.pairAnalysis')}</Heading>
+
+                    {/* Stats bar */}
+                    <div className="flex gap-3 justify-center text-sm">
+                      <span className="px-3 py-1 rounded-full bg-green-100 text-green-800">
+                        {t('numerology.mobile.beneficCount')}: {mobileResult.benefic_count ?? combos.filter(c => c.type === 'Benefic').length}
+                      </span>
+                      <span className="px-3 py-1 rounded-full bg-red-100 text-red-800">
+                        {t('numerology.mobile.maleficCount')}: {mobileResult.malefic_count ?? combos.filter(c => c.type === 'Malefic').length}
+                      </span>
+                    </div>
+
+                    {/* Table */}
+                    <div className="overflow-x-auto rounded-xl border border-sacred-gold/20">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="bg-sacred-gold/10">
+                            <th className="px-4 py-2 text-left font-medium text-foreground">{t('numerology.mobile.pair')}</th>
+                            <th className="px-4 py-2 text-left font-medium text-foreground">{t('numerology.mobile.type')}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {combos.map((c, i) => (
+                            <tr key={i} className={`border-t border-sacred-gold/10 ${c.type === 'Benefic' ? 'bg-green-50/50' : c.type === 'Malefic' ? 'bg-red-50/50' : ''}`}>
+                              <td className="px-4 py-2 font-mono text-foreground">{c.pair}</td>
+                              <td className="px-4 py-2">
+                                <Badge className={
+                                  c.type === 'Benefic' ? 'bg-green-100 text-green-800' :
+                                  c.type === 'Malefic' ? 'bg-red-100 text-red-800' :
+                                  'bg-gray-100 text-gray-700'
+                                }>{t(`numerology.compatibility.${c.type.toLowerCase() as 'benefic' | 'neutral' | 'malefic'}`)}</Badge>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })()}
+
+            {/* Lo Shu Grid */}
+            {mobileResult.loshu_grid && mobileResult.loshu_values && (
+              <Card className="bg-card border-0 shadow-soft">
+                <CardContent className="p-6 space-y-4">
+                  <Heading as={5} variant={5}>{t('numerology.mobile.loshuGrid')}</Heading>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                    {/* Grid */}
+                    <div className="rounded-xl border border-sacred-gold/25 bg-white p-4">
+                      <div className="grid grid-cols-3 gap-2">
+                        {mobileResult.loshu_grid.flat().map((cell: number, idx: number) => {
+                          const v = mobileResult.loshu_values?.[cell] || '';
+                          const strengthNums = new Set<number>((mobileResult.loshu_arrows?.arrows_of_strength || []).flatMap((a: any) => a.numbers || []));
+                          const weaknessNums = new Set<number>((mobileResult.loshu_arrows?.arrows_of_weakness || []).flatMap((a: any) => a.numbers || []));
+                          const isStrength = strengthNums.has(cell);
+                          const isWeakness = weaknessNums.has(cell);
+                          const isMissing = !v;
+                          const boxClass = isStrength
+                            ? 'border-green-300 bg-green-50'
+                            : isWeakness
+                              ? 'border-red-300 bg-red-50'
+                              : 'border-sacred-gold/25 bg-card';
+                          return (
+                            <div key={idx} className={`rounded-lg border ${boxClass} p-2 text-center`}>
+                              <p className="text-[10px] text-muted-foreground">{cell}</p>
+                              <p className={`text-sm font-semibold ${isMissing ? 'text-muted-foreground' : 'text-foreground'}`}>
+                                {v || '-'}
+                              </p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <p className="text-[11px] text-muted-foreground mt-3">{t('numerology.loshuLegend')}</p>
+                    </div>
+
+                    {/* Arrows + Planes */}
+                    <div className="space-y-3">
+                      {!!mobileResult.loshu_arrows?.arrows_of_strength?.length && (
+                        <div className="rounded-xl border border-green-200 bg-green-50 p-4">
+                          <p className="text-sm font-semibold text-green-800">{t('numerology.arrowsOfStrength')}</p>
+                          <div className="mt-2 space-y-2">
+                            {mobileResult.loshu_arrows.arrows_of_strength.map((a: any) => (
+                              <div key={a.key} className="text-xs text-green-800">
+                                <span className="font-medium">{isHi ? (a.name_hi || a.name) : a.name}</span>
+                                {a.meaning ? `: ${isHi ? (a.meaning_hi || a.meaning) : a.meaning}` : ''}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {!!mobileResult.loshu_arrows?.arrows_of_weakness?.length && (
+                        <div className="rounded-xl border border-red-200 bg-red-50 p-4">
+                          <p className="text-sm font-semibold text-red-800">{t('numerology.arrowsOfWeakness')}</p>
+                          <div className="mt-2 space-y-2">
+                            {mobileResult.loshu_arrows.arrows_of_weakness.map((a: any) => (
+                              <div key={a.key} className="text-xs text-red-800">
+                                <span className="font-medium">{isHi ? (a.name_hi || a.name) : a.name}</span>
+                                {a.missing_meaning ? `: ${isHi ? (a.missing_meaning_hi || a.missing_meaning) : a.missing_meaning}` : ''}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Lo Shu Planes */}
+                      {mobileResult.loshu_planes && (
+                        <div className="rounded-xl border border-sacred-gold/25 bg-white p-4">
+                          <p className="text-sm font-semibold text-foreground">{t('numerology.planes')}</p>
+                          <div className="mt-3 space-y-3">
+                            {(['mental', 'emotional', 'practical'] as const).map((k) => {
+                              const plane = mobileResult.loshu_planes?.[k];
+                              if (!plane) return null;
+                              const pct = plane.percentage ?? 0;
+                              const colorMap = { mental: 'bg-blue-500', emotional: 'bg-pink-500', practical: 'bg-amber-500' };
+                              return (
+                                <div key={k}>
+                                  <div className="flex justify-between text-xs mb-1">
+                                    <span className="text-muted-foreground">{isHi ? (plane.name_hi || plane.name) : plane.name}</span>
+                                    <span className="font-medium text-foreground">{plane.score} ({pct}%)</span>
+                                  </div>
+                                  <div className="w-full h-2 rounded-full bg-gray-200 overflow-hidden">
+                                    <div className={`h-full rounded-full ${colorMap[k]}`} style={{ width: `${Math.min(pct, 100)}%` }} />
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                          {(mobileResult.loshu_planes.interpretation || mobileResult.loshu_planes.interpretation_hi) && (
+                            <p className="text-xs text-muted-foreground mt-3 leading-relaxed">
+                              {pick(mobileResult.loshu_planes, 'interpretation')}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Vedic Grid */}
+            {mobileResult.vedic_grid && mobileResult.vedic_values && (
+              <Card className="bg-card border-0 shadow-soft">
+                <CardContent className="p-6 space-y-4">
+                  <Heading as={5} variant={5}>{t('numerology.mobile.vedicGrid')}</Heading>
+                  <div className="rounded-xl border border-sacred-gold/25 bg-white p-4 max-w-xs mx-auto">
+                    <div className="grid grid-cols-3 gap-2">
+                      {mobileResult.vedic_grid.flat().map((cell: number, idx: number) => {
+                        const v = mobileResult.vedic_values?.[cell] || '';
+                        const isMissing = !v;
+                        return (
+                          <div key={idx} className={`rounded-lg border border-sacred-gold/25 p-2 text-center ${isMissing ? 'bg-gray-50' : 'bg-sacred-gold/5'}`}>
+                            <p className="text-[10px] text-muted-foreground">{cell}</p>
+                            <p className={`text-sm font-semibold ${isMissing ? 'text-muted-foreground' : 'text-foreground'}`}>
+                              {v || '-'}
+                            </p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Missing Numbers with interpretations */}
+            {!!mobileResult.missing_numbers?.length && (
+              <Card className="bg-card border-0 shadow-soft">
+                <CardContent className="p-6 space-y-3">
+                  <Heading as={5} variant={5}>{t('numerology.mobile.missingNumbers')}</Heading>
+                  {(() => {
+                    const nums = mobileResult.missing_numbers!;
+                    // Check if enriched objects (from DOB analysis) or simple digit list
+                    const isEnriched = nums.length > 0 && typeof nums[0] === 'object' && nums[0] !== null;
+                    if (isEnriched) {
+                      return (
+                        <div className="space-y-2">
+                          {(nums as Array<any>).map((m: any) => (
+                            <div key={m.number} className="rounded-xl border border-sacred-gold/25 bg-sacred-gold/5 p-4">
+                              <p className="text-sm font-semibold text-foreground">{t('numerology.number')} {m.number}</p>
+                              {m.meaning && <p className="text-xs text-muted-foreground mt-1">{pick(m, 'meaning')}</p>}
+                              {m.remedy && (
+                                <p className="text-xs text-muted-foreground mt-2">
+                                  <span className="font-medium">{t('numerology.remedy')}:</span> {pick(m, 'remedy')}
+                                </p>
+                              )}
+                              <div className="mt-2 grid grid-cols-2 gap-2 text-[11px] text-muted-foreground">
+                                {m.color && <div>{t('numerology.color')}: {pick(m, 'color')}</div>}
+                                {m.gemstone && <div>{t('numerology.gemstone')}: {pick(m, 'gemstone')}</div>}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    }
+                    // Simple digit list
+                    return (
+                      <div className="flex flex-wrap gap-2">
+                        {(nums as number[]).map((n) => (
+                          <Badge key={n} className="bg-gray-100 text-gray-700 text-sm px-3 py-1">{n}</Badge>
+                        ))}
+                      </div>
+                    );
+                  })()}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Repeated Numbers */}
+            {!!mobileResult.repeated_numbers?.length && (
+              <Card className="bg-card border-0 shadow-soft">
+                <CardContent className="p-6 space-y-3">
+                  <Heading as={5} variant={5}>{t('numerology.mobile.repeatedNumbers')}</Heading>
+                  <div className="space-y-2">
+                    {mobileResult.repeated_numbers.map((r: any) => (
+                      <div key={r.number} className="rounded-xl border border-sacred-gold/25 bg-white p-4">
+                        <p className="text-sm font-semibold text-foreground">{t('numerology.number')} {r.number}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{t('numerology.count')}: {r.count}</p>
+                        {r.meaning && <p className="text-xs text-muted-foreground mt-1">{pick(r, 'meaning')}</p>}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Affirmations */}
+            {mobileResult.affirmations && (() => {
+              // API returns either a dict {area: text} or an array [{area, affirmation}]
+              const aff = mobileResult.affirmations;
+              const entries: Array<{area: string; text: string}> = Array.isArray(aff)
+                ? aff.map((a: any) => ({ area: a.area, text: a.affirmation }))
+                : Object.entries(aff).map(([area, text]) => ({ area, text: text as string }));
+              if (!entries.length) return null;
+              return (
+                <Card className="bg-card border-0 shadow-soft">
+                  <CardContent className="p-6 space-y-3">
+                    <Heading as={5} variant={5}>{t('numerology.mobile.affirmations')}</Heading>
+                    <div className="space-y-3">
+                      {entries.map((e) => (
+                        <div key={e.area} className="rounded-xl border border-sacred-gold/25 bg-sacred-gold/5 p-4">
+                          <p className="text-sm font-semibold text-foreground capitalize">{t(`numerology.struggle.${e.area}` as any) || e.area}</p>
+                          <p className="text-xs text-muted-foreground mt-1 leading-relaxed italic">&ldquo;{e.text}&rdquo;</p>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })()}
+            </div>
           )}
       </TabsContent>
 
