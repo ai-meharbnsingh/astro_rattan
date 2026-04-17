@@ -26,7 +26,7 @@ export default function FestivalsTab({ panchang, language, t, selectedDate }: Pr
         const date = new Date(selectedDate);
         const year = date.getFullYear();
         const month = date.getMonth() + 1;
-        const res = await api.get(`/api/festivals?year=${year}&month=${month}`);
+        const res = await api.get(`/api/festivals?year=${year}&month=${month}&lang=${language}`);
         setMonthlyFestivals(res.data?.festivals || []);
       } catch (e) {
         setMonthlyFestivals([]);
@@ -83,15 +83,15 @@ export default function FestivalsTab({ panchang, language, t, selectedDate }: Pr
                         <span className={`inline-block mt-1 px-2 py-0.5 text-xs rounded-full ${colorClass}`}>
                           {language === 'hi' ? festival.type_hindi || festival.type : festival.type}
                         </span>
-                        {festival.description && (
+                        {((language === 'hi' && festival.description_hindi) || festival.description) && (
                           <p className="text-sm text-muted-foreground mt-2">
-                            {language === 'hi' ? festival.description : festival.description}
+                            {language === 'hi' ? festival.description_hindi || festival.description : festival.description}
                           </p>
                         )}
-                        {festival.rituals && (
+                        {((language === 'hi' && festival.rituals_hindi) || festival.rituals) && (
                           <div className="mt-2 p-2 rounded-lg bg-background/50">
                             <p className="text-xs text-muted-foreground">
-                              <strong>{t('auto.rituals')}</strong> {festival.rituals}
+                              <strong>{language === 'hi' ? 'अनुष्ठान:' : t('auto.rituals')}</strong> {language === 'hi' ? festival.rituals_hindi || festival.rituals : festival.rituals}
                             </p>
                           </div>
                         )}

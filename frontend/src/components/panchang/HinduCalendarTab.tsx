@@ -235,7 +235,7 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
       // Festivals from dedicated endpoint
       let monthlyFestivalMap: Record<string, FestivalDetail[]> = {};
       try {
-        const monthlyRes: any = await api.get(`/api/festivals?year=${year}&month=${month + 1}`);
+        const monthlyRes: any = await api.get(`/api/festivals?year=${year}&month=${month + 1}&lang=${language}`);
         const rows: any[] = monthlyRes?.festivals || monthlyRes?.data?.festivals || [];
         monthlyFestivalMap = rows.reduce((acc: Record<string, FestivalDetail[]>, row: any) => {
           const dateStr = String(row?.date || '').slice(0, 10);
@@ -247,7 +247,7 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
       } catch (_) { /* ignore */ }
 
       try {
-        const res = await api.get(`/api/panchang/month?month=${month + 1}&year=${year}&latitude=${latitude}&longitude=${longitude}`);
+        const res = await api.get(`/api/panchang/month?month=${month + 1}&year=${year}&latitude=${latitude}&longitude=${longitude}&lang=${language}`);
         const rawDays = (res as any)?.days || res || [];
 
         const data: DayPanchang[] = rawDays.map((p: any) => {
@@ -298,7 +298,7 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
     const fetchFull = async () => {
       setSelectedDayFull((prev) => ({ ...prev, loading: true }));
       try {
-        const data = await api.get(`/api/panchang?date=${selectedDay.date}&latitude=${latitude}&longitude=${longitude}`);
+        const data = await api.get(`/api/panchang?date=${selectedDay.date}&latitude=${latitude}&longitude=${longitude}&lang=${language}`);
         if (!cancelled) setSelectedDayFull({ panchang: data as any, loading: false });
       } catch (_) {
         if (!cancelled) setSelectedDayFull({ panchang: null, loading: false });
