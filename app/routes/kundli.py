@@ -1218,6 +1218,22 @@ def get_conjunctions(
     }
 
 
+@router.get("/{kundli_id}/roga-analysis", status_code=status.HTTP_200_OK)
+def get_roga_analysis(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Classical disease (Roga) analysis — Phaladeepika Adhyaya 14."""
+    from app.roga_engine import analyze_diseases
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    result = analyze_diseases(chart)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
 # ── PDF Download ────────────────────────────────────────────
 
 # Sign → Lord mapping used for house lordships table
