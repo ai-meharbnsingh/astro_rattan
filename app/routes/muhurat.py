@@ -129,11 +129,20 @@ def muhurat_finder(
     latitude: float = Query(default=28.6139),
     longitude: float = Query(default=77.2090),
     limit: int = Query(default=15, ge=1, le=31),
+    birth_moon_rashi: int = Query(default=None, ge=0, le=11,
+        description="Birth Moon rashi index (0=Aries … 11=Pisces) for Chandra Balam"),
+    birth_nakshatra: int = Query(default=None, ge=0, le=26,
+        description="Birth nakshatra index (0=Ashwini … 26=Revati) for Tara Balam"),
 ):
     """Find auspicious dates for a specific activity in a given month.
 
     Uses traditional Vedic rules: favorable tithis, nakshatras, weekdays,
-    lagnas, and avoids Rahu Kaal, Bhadra, Panchaka, Ganda Moola, etc.
+    lagnas, and avoids Rahu Kaal, Bhadra, Panchaka, Ganda Moola, Sankranti,
+    Dagdha Tithi, Guru/Shukra Asta, Guru Vakri, Shani Vakri, Kula Kanthaka,
+    Simha Surya.
+
+    Pass birth_moon_rashi + birth_nakshatra for personalised Chandra Balam
+    and Tara Balam scoring.
     """
     from fastapi import HTTPException
     if not (-90.0 <= latitude <= 90.0) or not (-180.0 <= longitude <= 180.0):
@@ -152,5 +161,7 @@ def muhurat_finder(
         latitude=latitude,
         longitude=longitude,
         limit=limit,
+        birth_moon_rashi=birth_moon_rashi,
+        birth_nakshatra=birth_nakshatra,
     )
 

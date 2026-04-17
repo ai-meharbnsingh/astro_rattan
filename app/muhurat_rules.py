@@ -75,10 +75,18 @@ MUHURAT_REASONS = {
     "rahu_kaal": {"en": "Rahu Kaal", "hi": "राहु काल"},
     "panchaka": {"en": "Panchaka", "hi": "पंचक"},
     "ganda_moola": {"en": "Ganda Moola", "hi": "गण्ड मूल"},
-    "dagdha_tithi": {"en": "Dagdha Tithi (burned day)", "hi": "दग्ध तिथि"},
-    "guru_asta": {"en": "Jupiter combust (Guru Asta) — marriage forbidden", "hi": "गुरु अस्त — विवाह वर्जित"},
-    "shukra_asta": {"en": "Venus combust (Shukra Asta) — marriage forbidden", "hi": "शुक्र अस्त — विवाह वर्जित"},
-    "kula_kanthaka": {"en": "Kula Kanthaka Dosha (Mars afflicts Moon)", "hi": "कुल कण्टक दोष (मंगल चंद्र से अशुभ भाव में)"},
+    "dagdha_tithi":      {"en": "Dagdha Tithi (burned day)", "hi": "दग्ध तिथि"},
+    "guru_asta":         {"en": "Jupiter combust (Guru Asta) — marriage forbidden", "hi": "गुरु अस्त — विवाह वर्जित"},
+    "shukra_asta":       {"en": "Venus combust (Shukra Asta) — marriage forbidden", "hi": "शुक्र अस्त — विवाह वर्जित"},
+    "kula_kanthaka":     {"en": "Kula Kanthaka Dosha (Mars afflicts Moon)", "hi": "कुल कण्टक दोष (मंगल चंद्र से अशुभ भाव में)"},
+    "sankranti":         {"en": "Sankranti (Sun sign ingress) — inauspicious", "hi": "संक्रान्ति — अशुभ काल"},
+    "retrograde_jupiter":{"en": "Jupiter retrograde (Guru Vakri) — samskaras forbidden", "hi": "गुरु वक्री — संस्कार वर्जित"},
+    "retrograde_saturn": {"en": "Saturn retrograde (Shani Vakri) — griha/property inauspicious", "hi": "शनि वक्री — गृह/सम्पत्ति कार्य अशुभ"},
+    "simha_surya":       {"en": "Sun in Leo (Simha Surya) — marriage inauspicious", "hi": "सूर्य सिंह राशि — विवाह अशुभ"},
+    "chandra_balam_weak":{"en": "Chandra Balam weak for your birth Moon", "hi": "जन्म चंद्र से चंद्रबल कमज़ोर"},
+    "chandra_balam_good":{"en": "Chandra Balam strong for your birth Moon", "hi": "जन्म चंद्र से चंद्रबल शुभ"},
+    "tara_balam_bad":    {"en": "Tara Balam unfavorable for your birth nakshatra", "hi": "जन्म नक्षत्र से तारा बल अशुभ"},
+    "tara_balam_good":   {"en": "Tara Balam favorable for your birth nakshatra", "hi": "जन्म नक्षत्र से तारा बल शुभ"},
 }
 
 # ============================================================
@@ -113,10 +121,14 @@ MUHURAT_RULES: Dict[str, Dict[str, Any]] = {
             "Dhanishta", "Uttara Bhadrapada", "Revati",
         ],
         "favorable_weekdays": [0, 1, 2, 3, 4],  # Mon-Fri
-        "favorable_lagnas": ["Tula", "Dhanu", "Mithuna", "Kanya", "Meena"],
+        "favorable_lagnas": ["Tula", "Dhanu", "Mithuna", "Kanya", "Meena"],  # Simha excluded
         "favorable_months": ["Magha", "Phalguna", "Vaishakha", "Jyeshtha"],
         "avoid_krishna_paksha": False,
-        "avoid_conditions": ["rahu_kaal", "bhadra", "panchaka", "ganda_moola", "amavasya", "ekadashi", "sankranti"],
+        "avoid_conditions": [
+            "rahu_kaal", "bhadra", "panchaka", "ganda_moola", "amavasya",
+            "ekadashi", "sankranti", "retrograde_jupiter",
+        ],
+        "samskara": True,  # flag: apply Guru-Vakri + Chandra/Tara Balam checks
     },
     "griha_pravesh": {
         "favorable_tithis": [2, 3, 5, 7, 10, 11, 12, 13],
@@ -129,7 +141,11 @@ MUHURAT_RULES: Dict[str, Dict[str, Any]] = {
         "favorable_lagnas": ["Vrishabha", "Mithuna", "Karka", "Simha", "Tula", "Dhanu"],
         "favorable_months": ["Vaishakha", "Jyeshtha", "Magha", "Phalguna"],
         "avoid_krishna_paksha": False,
-        "avoid_conditions": ["rahu_kaal", "bhadra", "panchaka", "ganda_moola", "amavasya", "ekadashi"],
+        "avoid_conditions": [
+            "rahu_kaal", "bhadra", "panchaka", "ganda_moola", "amavasya",
+            "ekadashi", "sankranti", "retrograde_jupiter", "retrograde_saturn",
+        ],
+        "samskara": True,
     },
     "vehicle_purchase": {
         "favorable_tithis": [2, 3, 5, 6, 7, 10, 11, 12, 13],
@@ -140,9 +156,10 @@ MUHURAT_RULES: Dict[str, Dict[str, Any]] = {
         ],
         "favorable_weekdays": [0, 2, 3, 4],  # Mon, Wed, Thu, Fri
         "favorable_lagnas": ["Vrishabha", "Mithuna", "Karka", "Kanya", "Tula", "Dhanu", "Meena"],
-        "favorable_months": [],  # all months ok
+        "favorable_months": ["Chaitra", "Vaishakha", "Jyeshtha", "Magha", "Phalguna"],
         "avoid_krishna_paksha": False,
-        "avoid_conditions": ["rahu_kaal", "bhadra", "panchaka", "ganda_moola", "amavasya"],
+        "avoid_conditions": ["rahu_kaal", "bhadra", "panchaka", "ganda_moola", "amavasya", "sankranti"],
+        "samskara": False,
     },
     "property_purchase": {
         "favorable_tithis": [2, 3, 5, 6, 7, 10, 11, 12, 13],
@@ -153,9 +170,13 @@ MUHURAT_RULES: Dict[str, Dict[str, Any]] = {
         ],
         "favorable_weekdays": [0, 1, 2, 3, 4],  # Mon-Fri (Tue ok for aggressive deals)
         "favorable_lagnas": ["Vrishabha", "Mithuna", "Karka", "Simha", "Tula", "Dhanu"],
-        "favorable_months": [],  # all months ok
+        "favorable_months": ["Vaishakha", "Jyeshtha", "Magha", "Phalguna"],
         "avoid_krishna_paksha": False,
-        "avoid_conditions": ["rahu_kaal", "bhadra", "panchaka", "ganda_moola", "amavasya", "ekadashi"],
+        "avoid_conditions": [
+            "rahu_kaal", "bhadra", "panchaka", "ganda_moola", "amavasya",
+            "ekadashi", "sankranti", "retrograde_saturn",
+        ],
+        "samskara": False,
     },
     "mundan": {
         "favorable_tithis": [2, 3, 5, 6, 7, 10, 11, 12, 13],
@@ -165,9 +186,13 @@ MUHURAT_RULES: Dict[str, Dict[str, Any]] = {
         ],
         "favorable_weekdays": [0, 2, 3, 4],  # Mon, Wed, Thu, Fri
         "favorable_lagnas": ["Vrishabha", "Mithuna", "Karka", "Kanya", "Tula", "Dhanu"],
-        "favorable_months": [],
+        "favorable_months": ["Chaitra", "Vaishakha", "Magha", "Phalguna"],
         "avoid_krishna_paksha": True,
-        "avoid_conditions": ["rahu_kaal", "bhadra", "panchaka", "ganda_moola", "amavasya", "ekadashi"],
+        "avoid_conditions": [
+            "rahu_kaal", "bhadra", "panchaka", "ganda_moola", "amavasya",
+            "ekadashi", "sankranti", "retrograde_jupiter",
+        ],
+        "samskara": True,
     },
     "annaprashan": {
         "favorable_tithis": [2, 3, 5, 6, 7, 10, 11, 12, 13],
@@ -178,9 +203,13 @@ MUHURAT_RULES: Dict[str, Dict[str, Any]] = {
         ],
         "favorable_weekdays": [0, 2, 3, 4],
         "favorable_lagnas": ["Vrishabha", "Mithuna", "Karka", "Kanya", "Tula", "Dhanu"],
-        "favorable_months": [],
+        "favorable_months": ["Vaishakha", "Jyeshtha", "Magha", "Phalguna"],
         "avoid_krishna_paksha": True,
-        "avoid_conditions": ["rahu_kaal", "bhadra", "panchaka", "ganda_moola", "amavasya"],
+        "avoid_conditions": [
+            "rahu_kaal", "bhadra", "panchaka", "ganda_moola", "amavasya",
+            "sankranti", "retrograde_jupiter",
+        ],
+        "samskara": True,
     },
     "upanayana": {
         "favorable_tithis": [2, 3, 5, 7, 10, 11, 12, 13],
@@ -193,7 +222,11 @@ MUHURAT_RULES: Dict[str, Dict[str, Any]] = {
         "favorable_lagnas": ["Vrishabha", "Mithuna", "Kanya", "Tula", "Dhanu"],
         "favorable_months": ["Chaitra", "Phalguna", "Magha", "Vaishakha"],
         "avoid_krishna_paksha": True,
-        "avoid_conditions": ["rahu_kaal", "bhadra", "panchaka", "ganda_moola", "amavasya", "ekadashi"],
+        "avoid_conditions": [
+            "rahu_kaal", "bhadra", "panchaka", "ganda_moola", "amavasya",
+            "ekadashi", "sankranti", "retrograde_jupiter",
+        ],
+        "samskara": True,
     },
     "nama_karana": {
         "favorable_tithis": [2, 3, 5, 6, 7, 10, 11, 12, 13],
@@ -205,9 +238,12 @@ MUHURAT_RULES: Dict[str, Dict[str, Any]] = {
         ],
         "favorable_weekdays": [0, 2, 3, 4],
         "favorable_lagnas": ["Vrishabha", "Mithuna", "Karka", "Simha", "Kanya", "Tula", "Dhanu", "Meena"],
-        "favorable_months": [],
+        "favorable_months": [],  # naming can happen any month (11th day from birth)
         "avoid_krishna_paksha": False,
-        "avoid_conditions": ["rahu_kaal", "bhadra", "ganda_moola", "amavasya"],
+        "avoid_conditions": [
+            "rahu_kaal", "bhadra", "ganda_moola", "amavasya", "sankranti", "retrograde_jupiter",
+        ],
+        "samskara": True,
     },
     "business_start": {
         "favorable_tithis": [2, 3, 5, 6, 7, 10, 11, 12, 13],
@@ -218,9 +254,10 @@ MUHURAT_RULES: Dict[str, Dict[str, Any]] = {
         ],
         "favorable_weekdays": [0, 2, 3, 4],
         "favorable_lagnas": ["Vrishabha", "Mithuna", "Kanya", "Tula", "Dhanu"],
-        "favorable_months": [],
+        "favorable_months": ["Chaitra", "Vaishakha", "Magha", "Phalguna"],
         "avoid_krishna_paksha": False,
-        "avoid_conditions": ["rahu_kaal", "bhadra", "panchaka", "ganda_moola", "amavasya"],
+        "avoid_conditions": ["rahu_kaal", "bhadra", "panchaka", "ganda_moola", "amavasya", "sankranti"],
+        "samskara": False,
     },
 }
 
