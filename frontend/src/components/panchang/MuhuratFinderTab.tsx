@@ -33,7 +33,7 @@ interface MuhuratDate {
   reasons_good: string[];
   sunrise: string;
   sunset: string;
-  rahu_kaal: string;
+  rahu_kaal: { start: string; end: string } | string;
   lagna_windows: LagnaWindow[];
 }
 
@@ -310,7 +310,7 @@ export default function MuhuratFinderTab({ language, t, latitude, longitude }: P
                     <AlertTriangle className="w-3 h-3 text-red-500" />
                     {language === 'hi' ? 'राहुकाल' : 'Rahu Kaal'}
                   </span>
-                  <br />{d.rahu_kaal}
+                  <br />{typeof d.rahu_kaal === 'object' && d.rahu_kaal ? `${d.rahu_kaal.start} - ${d.rahu_kaal.end}` : String(d.rahu_kaal || '--')}
                 </div>
               </div>
 
