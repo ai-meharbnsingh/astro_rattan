@@ -194,7 +194,7 @@ export default function LalKitabCareerTab({ kundliId }: Props) {
                 { planet: 'mercury', house: data.mercury_house, hi: 'बुध' },
               ].map(({ planet, house, hi }) => (
                 <div key={planet} className="text-center p-3 rounded-xl bg-sacred-gold/5 border border-sacred-gold/15">
-                  <p className="text-xs text-gray-500 mb-1">{isHi ? hi : planet.charAt(0).toUpperCase() + planet.slice(1)}</p>
+                  <p className="text-xs text-gray-500 mb-1">{isHi ? hi : (planet || "").charAt(0).toUpperCase() + planet.slice(1)}</p>
                   <p className="text-xl font-bold text-sacred-gold">{house}</p>
                   <p className="text-xs text-gray-400">{t('auto.house')}</p>
                 </div>

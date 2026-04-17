@@ -189,7 +189,7 @@ export default function LalKitabNishaniyaTab({ kundliId }: Props) {
             const isConfirmed = confirmedIds.has(n.id);
             const planetLabel = isHi 
               ? ({sun:'सूर्य', moon:'चंद्र', mars:'मंगल', mercury:'बुध', jupiter:'गुरु', venus:'शुक्र', saturn:'शनि', rahu:'राहु', ketu:'केतु'}[n.planet] || n.planet)
-              : n.planet.charAt(0).toUpperCase() + n.planet.slice(1);
+              : (n.planet || '').charAt(0).toUpperCase() + (n.planet || '').slice(1);
 
             return (
               <div

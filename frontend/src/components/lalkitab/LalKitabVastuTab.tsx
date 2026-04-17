@@ -282,7 +282,7 @@ function HomeFloorPlan({ map, warnings, hi }: FloorPlanProps) {
                 <span key={h} className="text-xs font-semibold text-muted-foreground/70 mr-1">H{h}</span>
               ))}
               <div className="text-xs font-semibold text-foreground mt-0.5 leading-tight">
-                {hi ? dir_hi : dir.split(' ').map(w => w.charAt(0) + w.slice(1)).join(' ')}
+                {hi ? dir_hi : (dir || "").split(' ').map(w => w.charAt(0) + w.slice(1)).join(' ')}
               </div>
               {!isCenter && planets.length > 0 && (
                 <div className="flex flex-wrap gap-0.5 mt-1">
