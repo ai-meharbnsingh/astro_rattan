@@ -285,12 +285,12 @@ export default function MuhuratTab({ panchang: _panchang, language, t }: Props) 
         if (sy.dwipushkar?.active)
           badges.push({
             label: language === 'hi' ? (sy.dwipushkar.name_hindi || 'द्विपुष्कर योग') : (sy.dwipushkar.name || 'Dwipushkar Yoga'),
-            color: 'bg-blue-500/20 text-blue-700 border-blue-500/40',
+            color: 'bg-yellow-500/20 text-yellow-700 border-yellow-500/40',
           });
         if (sy.tripushkar?.active)
           badges.push({
             label: language === 'hi' ? (sy.tripushkar.name_hindi || 'त्रिपुष्कर योग') : (sy.tripushkar.name || 'Tripushkar Yoga'),
-            color: 'bg-blue-500/20 text-blue-700 border-blue-500/40',
+            color: 'bg-yellow-500/20 text-yellow-700 border-yellow-500/40',
           });
         if (sy.ganda_moola?.active)
           badges.push({
