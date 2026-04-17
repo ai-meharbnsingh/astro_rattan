@@ -93,9 +93,32 @@ def muhurat_find(
 # ============================================================
 
 @router.get("/api/muhurat/activities", status_code=status.HTTP_200_OK)
-def list_activities():
-    """List all available muhurat activity types with Hindi translations."""
-    return {"activities": get_all_activities()}
+def list_activities(lang: str = Query(default="en")):
+    """List all available muhurat activity types with localization."""
+    activities = get_all_activities()
+    if lang == "hi":
+        return {
+            "activities": [
+                {
+                    "key": a["key"],
+                    "name": a.get("name_hindi", a["name"]),
+                    "description": a.get("description_hindi", a["description"]),
+                    "icon": a["icon"]
+                }
+                for a in activities
+            ]
+        }
+    return {
+        "activities": [
+            {
+                "key": a["key"],
+                "name": a["name"],
+                "description": a["description"],
+                "icon": a["icon"]
+            }
+            for a in activities
+        ]
+    }
 
 
 @router.get("/api/muhurat/finder", status_code=status.HTTP_200_OK)

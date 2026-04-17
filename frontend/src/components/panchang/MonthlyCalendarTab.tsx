@@ -306,7 +306,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
       setLoading(true);
       let monthlyFestivalMap: Record<string, FestivalDetail[]> = {};
       try {
-        const monthlyRes: any = await api.get(`/api/festivals?year=${year}&month=${month + 1}`);
+        const monthlyRes: any = await api.get(`/api/festivals?year=${year}&month=${month + 1}&lang=${language}`);
         const monthlyRows: any[] = monthlyRes?.festivals || monthlyRes?.data?.festivals || [];
         monthlyFestivalMap = monthlyRows.reduce((acc: Record<string, FestivalDetail[]>, row: any) => {
           const dateStr = String(row?.date || '').slice(0, 10);
@@ -319,7 +319,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
         monthlyFestivalMap = {};
       }
       try {
-        const res = await api.get(`/api/panchang/month?month=${month + 1}&year=${year}&latitude=${latitude}&longitude=${longitude}`);
+        const res = await api.get(`/api/panchang/month?month=${month + 1}&year=${year}&latitude=${latitude}&longitude=${longitude}&lang=${language}`);
         const rawDays = (res as any)?.days || res || [];
 
         const data: DayPanchang[] = rawDays.map((p: any) => {
@@ -358,7 +358,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
           for (let day = 1; day <= daysInMonth; day++) {
             const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             try {
-              const dayRes = await api.get(`/api/panchang?date=${dateStr}&latitude=${latitude}&longitude=${longitude}`);
+              const dayRes = await api.get(`/api/panchang?date=${dateStr}&latitude=${latitude}&longitude=${longitude}&lang=${language}`);
               const p = dayRes as any;
               const festsRaw = Array.isArray(p.festivals) ? p.festivals : (p.festivals ? [p.festivals] : []);
               const festDetails = uniqFestivalDetails(festsRaw.map((f: any) => normalizeFestivalDetail(f)).filter(Boolean) as FestivalDetail[]);

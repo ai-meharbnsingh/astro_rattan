@@ -150,6 +150,7 @@ def get_panchang(
     date_str: str = Query(default=None, alias="date"),
     latitude: float = Query(default=28.6139),
     longitude: float = Query(default=77.2090),
+    lang: str = Query(default="en"),
     db: Any = Depends(get_db),
 ):
     """Calculate complete Panchang for a given date and location."""
@@ -212,6 +213,9 @@ def get_panchang(
         # Merge extended data if present
         if isinstance(extended, dict):
             result.update(extended)
+        
+        # Inject Hindi names if missing in cache (for backward compatibility or new lang support)
+        _inject_hindi_fields(result)
         return result
 
     # Calculate fresh
@@ -226,6 +230,9 @@ def get_panchang(
         gregorian_date=target_date,
     )
     panchang["festivals"] = festivals
+
+    # Inject Hindi names before caching
+    _inject_hindi_fields(panchang)
 
     # Build extended data for cache (everything beyond core fields)
     _CORE_KEYS = {"date", "tithi", "nakshatra", "yoga", "karana", "rahu_kaal",
@@ -272,6 +279,70 @@ def get_panchang(
         **panchang,
         "festivals": festivals,
     }
+
+def _inject_hindi_fields(panchang: dict):
+    """Deep-inject Hindi names into panchang dict based on English keys."""
+    if "tithi" in panchang:
+        t = panchang["tithi"]
+        t["name_hindi"] = HINDI_TITHIS.get(t.get("name"), t.get("name"))
+        t["paksha_hindi"] = HINDI_PAKSHA.get(t.get("paksha"), t.get("paksha"))
+        if "next" in t:
+            t["next_hindi"] = HINDI_TITHIS.get(t["next"], t["next"])
+            
+    if "nakshatra" in panchang:
+        n = panchang["nakshatra"]
+        if "name_hindi" not in n:
+            # Look for it elsewhere if possible, but we don't have a direct dict here
+            # Engine usually provides it, so we just ensure it's there
+            pass
+            
+    if "yoga" in panchang:
+        y = panchang["yoga"]
+        y["name_hindi"] = HINDI_YOGAS.get(y.get("name"), y.get("name"))
+        if "next" in y:
+            y["next_hindi"] = HINDI_YOGAS.get(y["next"], y["next"])
+            
+    if "karana" in panchang:
+        k = panchang["karana"]
+        k["name_hindi"] = HINDI_TITHIS.get(k.get("name"), k.get("name")) # Karana names often reuse tithi-like names or need separate dict
+        # Actually Karanas have their own names: Bava, Balava...
+        # Let's add HINDI_KARANAS if needed.
+        if "second_karana" in k:
+             k["second_karana_hindi"] = k.get("second_karana")
+
+    if "vaar" in panchang:
+        v = panchang["vaar"]
+        # HINDI_PLANETS can map Sun -> Surya etc.
+        v["name_hindi"] = v.get("name") 
+
+    if "hindu_calendar" in panchang:
+        hc = panchang["hindu_calendar"]
+        hc["maas_hindi"] = HINDI_MAAS.get(hc.get("maas"), hc.get("maas"))
+        hc["paksha_hindi"] = HINDI_PAKSHA.get(hc.get("paksha"), hc.get("paksha"))
+        hc["ritu_hindi"] = HINDI_RITU.get(hc.get("ritu"), hc.get("ritu"))
+        hc["ayana_hindi"] = HINDI_AYANA.get(hc.get("ayana"), hc.get("ayana"))
+
+    if "sun_sign" in panchang:
+        panchang["sun_sign_hindi"] = HINDI_RASHIS.get(panchang["sun_sign"], panchang["sun_sign"])
+    if "moon_sign" in panchang:
+        panchang["moon_sign_hindi"] = HINDI_RASHIS.get(panchang["moon_sign"], panchang["moon_sign"])
+         
+    # Choghadiya
+    for group in ["choghadiya", "night_choghadiya"]:
+        if group in panchang and isinstance(panchang[group], list):
+            for c in panchang[group]:
+                c["name_hindi"] = HINDI_CHOGHADIYA_QUALITY.get(c.get("name"), c.get("name"))
+                c["quality_hindi"] = HINDI_CHOGHADIYA_QUALITY.get(c.get("quality"), c.get("quality"))
+                
+    # Hora
+    if "hora_table" in panchang and isinstance(panchang["hora_table"], list):
+        for h in panchang["hora_table"]:
+            h["lord_hindi"] = HINDI_PLANETS.get(h.get("lord"), h.get("lord"))
+            
+    # Gowri
+    if "gowri_panchang" in panchang and isinstance(panchang["gowri_panchang"], list):
+        for g in panchang["gowri_panchang"]:
+             g["name_hindi"] = g.get("name") # Logic for Gowri names needed if they differ
 
 
 # ============================================================

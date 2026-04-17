@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
-import { Loader2, ChevronLeft, ChevronRight, Search, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { Loader2, ChevronLeft, ChevronRight, Search, CheckCircle2, AlertTriangle, AlertCircle } from 'lucide-react';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -97,7 +97,7 @@ export default function MuhuratFinderTab({ language, t, latitude, longitude }: P
     (async () => {
       setLoadingActivities(true);
       try {
-        const data = await api.get('/api/muhurat/activities');
+        const data = await api.get(`/api/muhurat/activities?lang=${language}`);
         if (!cancelled && data?.activities) {
           setActivities(data.activities);
         }
@@ -108,7 +108,7 @@ export default function MuhuratFinderTab({ language, t, latitude, longitude }: P
       }
     })();
     return () => { cancelled = true; };
-  }, []);
+  }, [language]);
 
   // Month navigation
   const goToPrevMonth = () => {
@@ -137,6 +137,7 @@ export default function MuhuratFinderTab({ language, t, latitude, longitude }: P
         year: String(year),
         latitude,
         longitude,
+        lang: language,
       });
       const data = await api.get(`/api/muhurat/finder?${params}`);
       if (data) setResults(data as MuhuratResult);
@@ -336,7 +337,19 @@ export default function MuhuratFinderTab({ language, t, latitude, longitude }: P
                   {d.reasons_good.map((reason, i) => (
                     <div key={i} className="flex items-start gap-1 text-xs text-green-700">
                       <CheckCircle2 className="w-3.5 h-3.5 mt-0.5 shrink-0" />
-                      <span>{reason}</span>
+                      <span>{language === 'hi' ? (d.reasons_good_hindi?.[i] || reason) : reason}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Reasons bad */}
+              {d.reasons_bad && d.reasons_bad.length > 0 && (
+                <div className="space-y-0.5 mt-1 border-t border-red-100 pt-1">
+                  {d.reasons_bad.map((reason, i) => (
+                    <div key={i} className="flex items-start gap-1 text-xs text-red-600">
+                      <AlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                      <span>{language === 'hi' ? (d.reasons_bad_hindi?.[i] || reason) : reason}</span>
                     </div>
                   ))}
                 </div>

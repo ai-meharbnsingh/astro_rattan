@@ -21,11 +21,11 @@ from typing import Any, Dict, List, Optional
 
 TITHI_FESTIVALS: List[Dict[str, Any]] = [
     # ── Chaitra ──────────────────────────────────────────────
-    {"maas": "Chaitra", "paksha": "Shukla", "tithi": "Pratipada", "name": "Hindu Nav Varsh", "name_hindi": "हिन्दू नव वर्ष", "type": "major", "description": "Hindu New Year - start of Chaitra Navratri"},
-    {"maas": "Chaitra", "paksha": "Shukla", "tithi": "Pratipada", "name": "Chaitra Navratri Begins", "name_hindi": "चैत्र नवरात्रि आरम्भ", "type": "major", "description": "Nine nights of Goddess Durga worship begin"},
-    {"maas": "Chaitra", "paksha": "Shukla", "tithi": "Navami", "name": "Ram Navami", "name_hindi": "राम नवमी", "type": "major", "description": "Birthday of Lord Rama"},
-    {"maas": "Chaitra", "paksha": "Shukla", "tithi": "Purnima", "name": "Hanuman Jayanti", "name_hindi": "हनुमान जयंती", "type": "major", "description": "Birthday of Lord Hanuman"},
-    {"maas": "Chaitra", "paksha": "Shukla", "tithi": "Purnima", "name": "Chaitra Purnima", "name_hindi": "चैत्र पूर्णिमा", "type": "major", "description": "Full moon of Chaitra month"},
+    {"maas": "Chaitra", "paksha": "Shukla", "tithi": "Pratipada", "name": "Hindu Nav Varsh", "name_hindi": "हिन्दू नव वर्ष", "type": "major", "description": "Hindu New Year - start of Chaitra Navratri", "description_hindi": "हिंदू नव वर्ष - चैत्र नवरात्रि का प्रारंभ"},
+    {"maas": "Chaitra", "paksha": "Shukla", "tithi": "Pratipada", "name": "Chaitra Navratri Begins", "name_hindi": "चैत्र नवरात्रि आरम्भ", "type": "major", "description": "Nine nights of Goddess Durga worship begin", "description_hindi": "मां दुर्गा की नौ रात्रियों की पूजा शुरू"},
+    {"maas": "Chaitra", "paksha": "Shukla", "tithi": "Navami", "name": "Ram Navami", "name_hindi": "राम नवमी", "type": "major", "description": "Birthday of Lord Rama", "description_hindi": "भगवान श्री राम का जन्म दिवस"},
+    {"maas": "Chaitra", "paksha": "Shukla", "tithi": "Purnima", "name": "Hanuman Jayanti", "name_hindi": "हनुमान जयंती", "type": "major", "description": "Birthday of Lord Hanuman", "description_hindi": "भगवान हनुमान का जन्म दिवस"},
+    {"maas": "Chaitra", "paksha": "Shukla", "tithi": "Purnima", "name": "Chaitra Purnima", "name_hindi": "चैत्र पूर्णिमा", "type": "major", "description": "Full moon of Chaitra month", "description_hindi": "चैत्र मास की पूर्णिमा"},
 
     # ── Vaishakha ────────────────────────────────────────────
     {"maas": "Vaishakha", "paksha": "Shukla", "tithi": "Tritiya", "name": "Akshaya Tritiya", "name_hindi": "अक्षय तृतीया", "type": "major", "description": "Most auspicious day for new beginnings, gold purchase"},
@@ -62,11 +62,11 @@ TITHI_FESTIVALS: List[Dict[str, Any]] = [
     {"maas": "Ashwin", "paksha": "Krishna", "tithi": "Chaturthi", "name": "Karwa Chauth", "name_hindi": "करवा चौथ", "type": "fasting", "description": "Married women fast for husband's longevity"},
 
     # ── Kartik ───────────────────────────────────────────────
-    {"maas": "Kartik", "paksha": "Krishna", "tithi": "Trayodashi", "name": "Dhanteras", "name_hindi": "धनतेरस", "type": "major", "description": "Festival of wealth - buy gold/silver"},
-    {"maas": "Kartik", "paksha": "Krishna", "tithi": "Chaturdashi", "name": "Narak Chaturdashi / Choti Diwali", "name_hindi": "नरक चतुर्दशी / छोटी दिवाली", "type": "major", "description": "Small Diwali"},
-    {"maas": "Kartik", "paksha": "Krishna", "tithi": "Amavasya", "name": "Diwali / Deepawali", "name_hindi": "दीपावली", "type": "major", "description": "Festival of Lights - Lakshmi Puja"},
-    {"maas": "Kartik", "paksha": "Shukla", "tithi": "Pratipada", "name": "Govardhan Puja", "name_hindi": "गोवर्धन पूजा", "type": "major", "description": "Worship of Govardhan Hill"},
-    {"maas": "Kartik", "paksha": "Shukla", "tithi": "Dwitiya", "name": "Bhai Dooj", "name_hindi": "भाई दूज", "type": "major", "description": "Brother-sister festival"},
+    {"maas": "Kartik", "paksha": "Krishna", "tithi": "Trayodashi", "name": "Dhanteras", "name_hindi": "धनतेरस", "type": "major", "description": "Festival of wealth - buy gold/silver", "description_hindi": "धन और समृद्धि का उत्सव - सोना/चांदी खरीदना शुभ"},
+    {"maas": "Kartik", "paksha": "Krishna", "tithi": "Chaturdashi", "name": "Narak Chaturdashi / Choti Diwali", "name_hindi": "नरक चतुर्दशी / छोटी दिवाली", "type": "major", "description": "Small Diwali", "description_hindi": "छोटी दिवाली"},
+    {"maas": "Kartik", "paksha": "Krishna", "tithi": "Amavasya", "name": "Diwali / Deepawali", "name_hindi": "दीपावली", "type": "major", "description": "Festival of Lights - Lakshmi Puja", "description_hindi": "प्रकाश का उत्सव - लक्ष्मी पूजा"},
+    {"maas": "Kartik", "paksha": "Shukla", "tithi": "Pratipada", "name": "Govardhan Puja", "name_hindi": "गोवर्धन पूजा", "type": "major", "description": "Worship of Govardhan Hill", "description_hindi": "गोवर्धन पर्वत की पूजा"},
+    {"maas": "Kartik", "paksha": "Shukla", "tithi": "Dwitiya", "name": "Bhai Dooj", "name_hindi": "भाई दूज", "type": "major", "description": "Brother-sister festival", "description_hindi": "भाई-बहन के प्रेम का उत्सव"},
     {"maas": "Kartik", "paksha": "Shukla", "tithi": "Ekadashi", "name": "Dev Uthani Ekadashi", "name_hindi": "देव उठनी एकादशी", "type": "major", "description": "Lord Vishnu wakes up - marriages resume"},
 
     # ── Margashirsha ─────────────────────────────────────────

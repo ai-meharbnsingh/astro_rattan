@@ -57,6 +57,27 @@ MUHURAT_ACTIVITIES: Dict[str, Dict[str, str]] = {
 }
 
 # ============================================================
+# Localized Reasons
+# ============================================================
+MUHURAT_REASONS = {
+    "favorable_tithi": {"en": "Favorable tithi", "hi": "शुभ तिथि"},
+    "unfavorable_tithi": {"en": "Unfavorable tithi", "hi": "अशुभ तिथि"},
+    "favorable_nakshatra": {"en": "Favorable nakshatra", "hi": "शुभ नक्षत्र"},
+    "unfavorable_nakshatra": {"en": "Unfavorable nakshatra", "hi": "अशुभ नक्षत्र"},
+    "favorable_weekday": {"en": "Favorable weekday", "hi": "शुभ वार"},
+    "unfavorable_weekday": {"en": "Unfavorable weekday", "hi": "अशुभ वार"},
+    "favorable_month": {"en": "Favorable month", "hi": "शुभ मास"},
+    "unfavorable_month": {"en": "Unfavorable month", "hi": "अशुभ मास"},
+    "krishna_paksha_avoided": {"en": "Krishna Paksha avoided", "hi": "कृष्ण पक्ष वर्जित"},
+    "amavasya": {"en": "Amavasya (New Moon)", "hi": "अमावस्या"},
+    "ekadashi": {"en": "Ekadashi", "hi": "एकादशी"},
+    "bhadra": {"en": "Bhadra Kaal", "hi": "भद्रा काल"},
+    "rahu_kaal": {"en": "Rahu Kaal", "hi": "राहु काल"},
+    "panchaka": {"en": "Panchaka", "hi": "पंचक"},
+    "ganda_moola": {"en": "Ganda Moola", "hi": "गण्ड मूल"},
+}
+
+# ============================================================
 # Rules per activity
 # ============================================================
 # Weekdays: 0=Mon, 1=Tue, 2=Wed, 3=Thu, 4=Fri, 5=Sat, 6=Sun (Python convention)
@@ -231,44 +252,54 @@ def check_day_favorable(
 
     reasons_good: List[str] = []
     reasons_bad: List[str] = []
+    reasons_good_hindi: List[str] = []
+    reasons_bad_hindi: List[str] = []
     norm_tithi = normalize_tithi_for_rules(tithi_index)
+
+    def _add_good(key: str):
+        reasons_good.append(MUHURAT_REASONS[key]["en"])
+        reasons_good_hindi.append(MUHURAT_REASONS[key]["hi"])
+
+    def _add_bad(key: str):
+        reasons_bad.append(MUHURAT_REASONS[key]["en"])
+        reasons_bad_hindi.append(MUHURAT_REASONS[key]["hi"])
 
     # Check Krishna Paksha avoidance
     if rules["avoid_krishna_paksha"] and paksha.lower() == "krishna":
-        reasons_bad.append("Krishna Paksha avoided")
+        _add_bad("krishna_paksha_avoided")
 
     # Tithi check
     if norm_tithi in rules["favorable_tithis"]:
-        reasons_good.append("Favorable tithi")
+        _add_good("favorable_tithi")
     elif norm_tithi == 30:
-        reasons_bad.append("Amavasya")
+        _add_bad("amavasya")
     else:
-        reasons_bad.append("Unfavorable tithi")
+        _add_bad("unfavorable_tithi")
 
     # Nakshatra check
     if nakshatra_name in rules["favorable_nakshatras"]:
-        reasons_good.append("Favorable nakshatra")
+        _add_good("favorable_nakshatra")
     else:
-        reasons_bad.append("Unfavorable nakshatra")
+        _add_bad("unfavorable_nakshatra")
 
     # Weekday check
     if weekday in rules["favorable_weekdays"]:
-        reasons_good.append("Favorable weekday")
+        _add_good("favorable_weekday")
     else:
-        reasons_bad.append("Unfavorable weekday")
+        _add_bad("unfavorable_weekday")
 
     # Month check (empty = all months ok)
     if rules["favorable_months"]:
         if hindu_month in rules["favorable_months"]:
-            reasons_good.append("Favorable month")
+            _add_good("favorable_month")
         else:
-            reasons_bad.append("Unfavorable month")
+            _add_bad("unfavorable_month")
 
     # Avoid conditions (checked externally, but flag if tithi is Ekadashi/Amavasya)
     if "ekadashi" in rules["avoid_conditions"] and norm_tithi == 11:
-        reasons_bad.append("Ekadashi")
+        _add_bad("ekadashi")
     if "amavasya" in rules["avoid_conditions"] and norm_tithi == 30:
-        reasons_bad.append("Amavasya")
+        _add_bad("amavasya")
 
     # Score: good reasons add points, bad reasons subtract
     score = max(0, min(100, len(reasons_good) * 25 - len(reasons_bad) * 25 + 50))
@@ -279,4 +310,6 @@ def check_day_favorable(
         "score": score,
         "reasons_good": reasons_good,
         "reasons_bad": reasons_bad,
+        "reasons_good_hindi": reasons_good_hindi,
+        "reasons_bad_hindi": reasons_bad_hindi,
     }
