@@ -400,14 +400,14 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-white p-3 rounded-lg border border-purple-100">
                   <span className="text-xs text-purple-600 uppercase font-bold">{t('auto.dayLord')}</span>
-                  <p className="text-lg font-bold text-purple-900">{data.karmic_debts_hora_analysis.hora_analysis.day_lord}</p>
-                  <p className="text-xs text-purple-600">{data.karmic_debts_hora_analysis.hora_analysis.weekday_name}</p>
+                  <p className="text-lg font-bold text-purple-900">{typeof data.karmic_debts_hora_analysis.hora_analysis.day_lord === 'string' ? data.karmic_debts_hora_analysis.hora_analysis.day_lord : pickLang(data.karmic_debts_hora_analysis.hora_analysis.day_lord, isHi)}</p>
+                  <p className="text-xs text-purple-600">{typeof data.karmic_debts_hora_analysis.hora_analysis.weekday_name === 'string' ? data.karmic_debts_hora_analysis.hora_analysis.weekday_name : pickLang(data.karmic_debts_hora_analysis.hora_analysis.weekday_name, isHi)}</p>
                 </div>
                 <div className="bg-white p-3 rounded-lg border border-purple-100">
                   <span className="text-xs text-purple-600 uppercase font-bold">{t('auto.horaLord')}</span>
-                  <p className="text-lg font-bold text-purple-900">{data.karmic_debts_hora_analysis.hora_analysis.hora_lord}</p>
+                  <p className="text-lg font-bold text-purple-900">{typeof data.karmic_debts_hora_analysis.hora_analysis.hora_lord === 'string' ? data.karmic_debts_hora_analysis.hora_analysis.hora_lord : pickLang(data.karmic_debts_hora_analysis.hora_analysis.hora_lord, isHi)}</p>
                   <p className="text-xs text-purple-600">
-                    {data.karmic_debts_hora_analysis.hora_analysis.hours_elapsed_since_sunrise} {t('auto.hrsAfterSunrise')}
+                    {typeof data.karmic_debts_hora_analysis.hora_analysis.hours_elapsed_since_sunrise === 'string' ? data.karmic_debts_hora_analysis.hora_analysis.hours_elapsed_since_sunrise : pickLang(data.karmic_debts_hora_analysis.hora_analysis.hours_elapsed_since_sunrise, isHi)} {t('auto.hrsAfterSunrise')}
                   </p>
                 </div>
               </div>
@@ -681,7 +681,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                     <div className="grid grid-cols-2 gap-2 text-xs mb-2">
                       <div>
                         <span className="text-foreground/50 font-semibold">{t('lk.advanced.pakkaGhar')}</span>
-                        <p className="font-bold text-foreground">{info.pakka_ghar}</p>
+                        <p className="font-bold text-foreground">{typeof info.pakka_ghar === 'string' ? info.pakka_ghar : pickLang(info.pakka_ghar, isHi)}</p>
                       </div>
                       <div>
                         <span className="text-foreground/50 font-semibold">{t('lk.advanced.bunyaadHouse')}</span>
