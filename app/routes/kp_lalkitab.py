@@ -1499,8 +1499,23 @@ def get_forbidden_list(
 
 
 # ═══════════════════════════════════════════════════════════════════
-# FAMILY CHART LINKING (Grah-Gasti) — stub, full feature TBD
+# FAMILY CHART LINKING (Grah-Gasti)
 # ═══════════════════════════════════════════════════════════════════
+
+def _positions_from_chart(chart_data: dict) -> list:
+    """Parse planet positions from a chart_data dict (no DB lookup)."""
+    positions = []
+    for planet_name, info in (chart_data or {}).get("planets", {}).items():
+        if planet_name not in _KNOWN_PLANETS or not isinstance(info, dict):
+            continue
+        if "house" in info and isinstance(info["house"], int):
+            house = info["house"]
+        else:
+            house = _SIGN_TO_LK_HOUSE.get(info.get("sign", ""), 0)
+        if house > 0:
+            positions.append({"planet": planet_name, "house": house})
+    return positions
+
 
 @router.get("/api/lalkitab/family/{kundli_id}")
 def get_family_links(
@@ -1508,18 +1523,133 @@ def get_family_links(
     user: dict = Depends(get_current_user),
     db: Any = Depends(get_db),
 ):
-    """Return family chart links for this kundli. Currently returns empty list (feature in development)."""
-    # Verify kundli belongs to user (auth check) without crashing
-    row = db.execute(
+    """Return family chart links with per-member harmony analysis."""
+    from app.lalkitab_family import calculate_family_harmony, get_family_dominant_planet, get_family_theme
+
+    owner_row = db.execute(
+        "SELECT id, chart_data FROM kundlis WHERE id = %s AND user_id = %s",
+        (kundli_id, user["sub"]),
+    ).fetchone()
+    if not owner_row:
+        raise HTTPException(status_code=404, detail="Kundli not found")
+
+    try:
+        raw = owner_row["chart_data"]
+        owner_chart = json.loads(raw) if isinstance(raw, str) else (raw or {})
+    except Exception:
+        owner_chart = {}
+    owner_positions = _positions_from_chart(owner_chart)
+
+    links = db.execute(
+        """SELECT lf.id AS link_id, lf.member_kundli_id, lf.relation,
+                  k.person_name, k.birth_date, k.chart_data
+           FROM lal_kitab_family_links lf
+           JOIN kundlis k ON k.id = lf.member_kundli_id
+           WHERE lf.owner_kundli_id = %s AND lf.user_id = %s
+           ORDER BY lf.created_at""",
+        (kundli_id, user["sub"]),
+    ).fetchall()
+
+    linked_members = []
+    all_scores = []
+    all_positions = list(owner_positions)
+
+    for link in links:
+        try:
+            raw_m = link["chart_data"]
+            member_chart = json.loads(raw_m) if isinstance(raw_m, str) else (raw_m or {})
+        except Exception:
+            member_chart = {}
+        member_positions = _positions_from_chart(member_chart)
+        harmony = calculate_family_harmony(owner_positions, member_positions)
+        all_scores.append(harmony["harmony_score"])
+        all_positions.extend(member_positions)
+        linked_members.append({
+            "link_id": link["link_id"],
+            "kundli_id": link["member_kundli_id"],
+            "name": link["person_name"],
+            "relation": link["relation"],
+            "birth_date": link["birth_date"],
+            "harmony_score": harmony["harmony_score"],
+            "shared_planets": harmony["shared_planets"],
+            "support_planets": harmony["support_planets"],
+            "tension_planets": harmony["tension_planets"],
+            "theme": harmony["theme"],
+        })
+
+    avg_score = round(sum(all_scores) / len(all_scores)) if all_scores else 0
+    dominant_planet = get_family_dominant_planet(all_positions) if all_positions else None
+    family_theme = get_family_theme(avg_score) if all_scores else None
+
+    return {
+        "kundli_id": kundli_id,
+        "linked_members": linked_members,
+        "family_harmony": avg_score,
+        "dominant_planet": dominant_planet,
+        "family_theme": family_theme,
+    }
+
+
+@router.post("/api/lalkitab/family/{kundli_id}/link")
+def add_family_link(
+    kundli_id: str,
+    payload: dict,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Link a family member kundli to the owner kundli. payload: {member_kundli_id, relation}"""
+    member_kundli_id = payload.get("member_kundli_id", "").strip()
+    relation = payload.get("relation", "family").strip()
+    if not member_kundli_id:
+        raise HTTPException(status_code=400, detail="member_kundli_id required")
+    if member_kundli_id == kundli_id:
+        raise HTTPException(status_code=400, detail="Cannot link kundli to itself")
+
+    owner = db.execute(
         "SELECT id FROM kundlis WHERE id = %s AND user_id = %s",
         (kundli_id, user["sub"]),
     ).fetchone()
+    if not owner:
+        raise HTTPException(status_code=404, detail="Owner kundli not found")
+
+    member = db.execute(
+        "SELECT id FROM kundlis WHERE id = %s AND user_id = %s",
+        (member_kundli_id, user["sub"]),
+    ).fetchone()
+    if not member:
+        raise HTTPException(status_code=404, detail="Member kundli not found or not yours")
+
+    try:
+        row = db.execute(
+            """INSERT INTO lal_kitab_family_links (owner_kundli_id, member_kundli_id, relation, user_id)
+               VALUES (%s, %s, %s, %s)
+               ON CONFLICT (owner_kundli_id, member_kundli_id) DO UPDATE SET relation = EXCLUDED.relation
+               RETURNING id""",
+            (kundli_id, member_kundli_id, relation, user["sub"]),
+        ).fetchone()
+        db.commit()
+    except Exception as e:
+        logger.warning("[family_link] insert error: %s", e)
+        raise HTTPException(status_code=500, detail="Failed to create link")
+
+    return {"link_id": row["id"], "status": "linked"}
+
+
+@router.delete("/api/lalkitab/family/{kundli_id}/link/{link_id}")
+def remove_family_link(
+    kundli_id: str,
+    link_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Remove a family member link."""
+    row = db.execute(
+        """DELETE FROM lal_kitab_family_links
+           WHERE id = %s AND owner_kundli_id = %s AND user_id = %s
+           RETURNING id""",
+        (link_id, kundli_id, user["sub"]),
+    ).fetchone()
     if not row:
-        raise HTTPException(status_code=404, detail="Kundli not found")
-    return {
-        "kundli_id": kundli_id,
-        "linked_members": [],
-        "family_harmony": 0,
-        "dominant_planet": None,
-        "family_theme": None,
-    }
+        raise HTTPException(status_code=404, detail="Link not found")
+    db.commit()
+    return {"status": "unlinked"}
