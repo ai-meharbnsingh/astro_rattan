@@ -838,12 +838,48 @@ def get_yogas_and_doshas(
     current_user: dict = Depends(get_current_user),
     db: Any = Depends(get_db),
 ):
-    """Comprehensive Yoga & Dosha analysis — positive yogas and negative doshas."""
+    """Comprehensive Yoga & Dosha analysis — positive yogas and negative doshas.
+
+    Merges legacy analyzer output with the declarative rule-engine results
+    (50+ new yogas from Phaladeepika Adh. 6-7). Deduplicates by yoga key.
+    """
     row = _fetch_kundli(db, kundli_id, current_user["sub"])
     chart = _chart_data(row)
     planets = chart.get("planets", {})
     asc_sign = chart.get("ascendant", {}).get("sign", "")
     result = analyze_yogas_and_doshas(planets, asc_sign)
+
+    # Merge declarative-engine yogas (Phaladeepika Adh. 6-7) into result.yogas
+    try:
+        from app.yoga_rule_engine import detect_all_yogas
+        existing_yogas = result.get("yogas", []) or []
+        existing_names_lower = {
+            str(y.get("name", "")).strip().lower() for y in existing_yogas if y.get("name")
+        }
+        new_matches = detect_all_yogas(chart)
+        for y in new_matches:
+            name_en = y.get("name_en", "")
+            if name_en.strip().lower() in existing_names_lower:
+                continue  # dedupe: skip yogas already reported by legacy analyzer
+            existing_yogas.append({
+                "name": name_en,
+                "name_en": name_en,
+                "name_hi": y.get("name_hi", ""),
+                "description": y.get("effect_en", ""),
+                "description_en": y.get("effect_en", ""),
+                "description_hi": y.get("effect_hi", ""),
+                "present": True,
+                "category": y.get("category", ""),
+                "category_label_en": y.get("category_label_en", ""),
+                "category_label_hi": y.get("category_label_hi", ""),
+                "sloka_ref": y.get("sloka_ref", ""),
+                "nature": y.get("nature", "mixed"),
+                "source": "rule_engine",
+            })
+        result["yogas"] = existing_yogas
+    except Exception:
+        logger.exception("Rule-engine yoga merge failed for kundli %s", kundli_id)
+
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result
