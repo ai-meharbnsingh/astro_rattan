@@ -110,10 +110,10 @@ export default function PredictionsTab({
       {/* Prediction content */}
       {!loadingPredictions && currentData && (
         <div className="rounded-xl p-6 border" style={{ backgroundColor: 'var(--parchment)', borderColor: 'rgba(184,134,11,0.25)' }}>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(184,134,11,0.15)' }}>
-              <Sparkles className="w-5 h-5" className="text-primary" />
-            </div>
+	          <div className="flex items-center gap-3 mb-4">
+	            <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(184,134,11,0.15)' }}>
+	              <Sparkles className="w-5 h-5 text-primary" />
+	            </div>
             <div>
               <Heading as={4} variant={4}>
                 {language === 'hi'
@@ -136,10 +136,10 @@ export default function PredictionsTab({
               </span>
             )}
           </div>
-          <div className="max-w-none" className="text-foreground">
-            {renderMarkdown(currentData.interpretation || currentData.response || currentData.text || (t('auto.generatingPrediction')))}
-            {currentData._streaming && <span className="inline-block w-1.5 h-4 ml-0.5 bg-muted animate-pulse align-middle" />}
-          </div>
+	          <div className="max-w-none text-foreground">
+	            {renderMarkdown(currentData.interpretation || currentData.response || currentData.text || (t('auto.generatingPrediction')))}
+	            {currentData._streaming && <span className="inline-block w-1.5 h-4 ml-0.5 bg-muted animate-pulse align-middle" />}
+	          </div>
         </div>
       )}
 
@@ -170,11 +170,11 @@ export default function PredictionsTab({
                  activePeriod === 'yearly' ? 'Yearly Outlook' :
                  'Get Predictions')}
           </Button>
-          {isPuterAvailable() && (
-            <p className="text-sm mt-3" className="text-muted-foreground">{t('auto.freeAIAvailableAsBac')}</p>
-          )}
-        </div>
-      )}
+	          {isPuterAvailable() && (
+	            <p className="text-sm mt-3 text-muted-foreground">{t('auto.freeAIAvailableAsBac')}</p>
+	          )}
+	        </div>
+	      )}
     </div>
   );
 }

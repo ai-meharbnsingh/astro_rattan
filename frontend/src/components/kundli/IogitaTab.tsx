@@ -24,13 +24,13 @@ export default function IogitaTab({ iogitaData, loadingIogita, language, t }: Io
             <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
               <Sparkles className="w-6 h-6 text-primary" />
             </div>
-            <div>
-              <Heading as={4} variant={4}>{t('iogita.yourLifePattern')}: {iogitaData.basin.name}</Heading>
-              <p className="text-sm" className="text-muted-foreground">{t('iogita.basedOnPositions')}</p>
-            </div>
-          </div>
-          <p className="text-sm leading-relaxed mb-4" className="text-foreground">{iogitaData.basin.description}</p>
-        </div>
+	            <div>
+	              <Heading as={4} variant={4}>{t('iogita.yourLifePattern')}: {iogitaData.basin.name}</Heading>
+	              <p className="text-sm text-muted-foreground">{t('iogita.basedOnPositions')}</p>
+	            </div>
+	          </div>
+	          <p className="text-sm leading-relaxed mb-4 text-foreground">{iogitaData.basin.description}</p>
+	        </div>
 
         {/* Strengths — Top Forces */}
         <div className="rounded-xl p-5 border border-border bg-muted">
@@ -56,11 +56,11 @@ export default function IogitaTab({ iogitaData, loadingIogita, language, t }: Io
               return (
                 <div key={name} className="flex items-center gap-3">
                   <span className="text-lg font-bold w-6" style={{ color: colors[idx] }}>{idx + 1}</span>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-semibold" className="text-foreground">{labels[name] || name}</span>
-                      <span className="text-sm" className="text-muted-foreground">{Math.round(Math.abs(val) * 100)}%</span>
-                    </div>
+	                  <div className="flex-1">
+	                    <div className="flex items-center justify-between mb-1">
+	                      <span className="text-sm font-semibold text-foreground">{labels[name] || name}</span>
+	                      <span className="text-sm text-muted-foreground">{Math.round(Math.abs(val) * 100)}%</span>
+	                    </div>
                     <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(184,134,11,0.15)' }}>
                       <div className="h-full rounded-full" style={{ width: `${Math.abs(val) * 100}%`, background: colors[idx] }} />
                     </div>
@@ -111,34 +111,34 @@ export default function IogitaTab({ iogitaData, loadingIogita, language, t }: Io
         </div>
 
         {/* Overall Insight */}
-        {iogitaData.iogita_insight && (
-          <div className="rounded-xl p-5 border border-border bg-muted">
-            <Heading as={4} variant={4} className="mb-3">{t('iogita.overallLifeReading')}</Heading>
-            <p className="text-sm leading-relaxed" className="text-foreground">{iogitaData.iogita_insight}</p>
-          </div>
-        )}
+	        {iogitaData.iogita_insight && (
+	          <div className="rounded-xl p-5 border border-border bg-muted">
+	            <Heading as={4} variant={4} className="mb-3">{t('iogita.overallLifeReading')}</Heading>
+	            <p className="text-sm leading-relaxed text-foreground">{iogitaData.iogita_insight}</p>
+	          </div>
+	        )}
 
         {/* Normal Astrology Insights */}
         {iogitaData.normal_astrology && iogitaData.normal_astrology.length > 0 && (
           <div className="rounded-xl p-5 border border-border bg-muted">
             <Heading as={4} variant={4} className="mb-3">{t('iogita.kundliSummary')}</Heading>
-            <div className="space-y-2">
-              {iogitaData.normal_astrology.map((point: string, idx: number) => (
-                <div key={idx} className="flex gap-2 text-sm" className="text-foreground">
-                  <span className="text-primary">•</span>
-                  <span className="leading-relaxed">{point}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
+	            <div className="space-y-2">
+	              {iogitaData.normal_astrology.map((point: string, idx: number) => (
+	                <div key={idx} className="flex gap-2 text-sm text-foreground">
+	                  <span className="text-primary">•</span>
+	                  <span className="leading-relaxed">{point}</span>
+	                </div>
+	              ))}
+	            </div>
+	          </div>
+	        )}
+	      </div>
+	    );
+	  }
 
-  if (iogitaData) {
-    return <p className="text-center py-8" className="text-muted-foreground">{t('iogita.partialData')}</p>;
-  }
+	  if (iogitaData) {
+	    return <p className="text-center py-8 text-muted-foreground">{t('iogita.partialData')}</p>;
+	  }
 
-  return <p className="text-center py-8" className="text-muted-foreground">{t('iogita.clickTab')}</p>;
+	  return <p className="text-center py-8 text-muted-foreground">{t('iogita.clickTab')}</p>;
 }

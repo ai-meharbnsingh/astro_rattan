@@ -516,6 +516,20 @@ export default function MuhuratTab({ panchang: _panchang, language, t }: Props) 
                 )}
               </p>
               <p className={`text-xs ${descCol} mt-0.5`}>{desc}</p>
+              <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1">
+                {pr.unsafe_window_label && (
+                  <p className="text-[11px] font-bold text-red-700">
+                    {language === 'hi' ? 'अशुभ: ' : 'Unsafe: '}
+                    <span className="font-mono">{language === 'hi' ? pr.unsafe_window_label_hindi : pr.unsafe_window_label}</span>
+                  </p>
+                )}
+                {pr.safe_window && pr.safe_window_label && (
+                  <p className="text-[11px] font-bold text-green-700">
+                    {language === 'hi' ? 'शुभ: ' : 'Safe: '}
+                    <span className="font-mono">{language === 'hi' ? pr.safe_window_label_hindi : pr.safe_window_label}</span>
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         );

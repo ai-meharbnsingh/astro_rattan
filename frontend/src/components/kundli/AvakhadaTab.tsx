@@ -149,7 +149,7 @@ export default function AvakhadaTab({ avakhadaData, loadingAvakhada, language, t
                 className="rounded-xl p-4 border"
                 style={{ backgroundColor: 'var(--parchment)', borderColor: 'rgba(184,134,11,0.2)' }}
               >
-                <p className="text-sm font-medium mb-2" className="text-muted-foreground">{item.label}</p>
+                <p className="text-sm font-medium mb-2 text-muted-foreground">{item.label}</p>
                 <div className="flex flex-wrap gap-2">
                   {syllables.map((s, idx) => (
                     <span
@@ -182,8 +182,8 @@ export default function AvakhadaTab({ avakhadaData, loadingAvakhada, language, t
               className="rounded-xl p-4 border"
               style={{ backgroundColor: 'var(--parchment)', borderColor: 'rgba(184,134,11,0.2)' }}
             >
-              <p className="text-sm font-medium mb-1" className="text-muted-foreground">{item.label}</p>
-              <p className="font-semibold text-base" className="text-foreground">{item.value}</p>
+              <p className="text-sm font-medium mb-1 text-muted-foreground">{item.label}</p>
+              <p className="font-semibold text-base text-foreground">{item.value}</p>
             </div>
           );
         })}

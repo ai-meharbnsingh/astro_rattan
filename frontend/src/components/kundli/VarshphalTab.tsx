@@ -54,7 +54,7 @@ export default function VarshphalTab({
               </div>
               <div className="bg-white rounded-lg p-3">
                 <p className="text-sm text-foreground">{t('section.yearLord')}</p>
-                <p className="font-semibold" className="text-primary">{translatePlanet(varshphalData.year_lord, language)}</p>
+                <p className="font-semibold text-primary">{translatePlanet(varshphalData.year_lord, language)}</p>
               </div>
               <div className="bg-white rounded-lg p-3">
                 <p className="text-sm text-foreground">{t('varshphal.completedYears')}</p>
@@ -77,7 +77,7 @@ export default function VarshphalTab({
               </div>
               <div className="bg-white rounded-lg p-3">
                 <p className="text-sm text-foreground">{t('section.munthaLord')}</p>
-                <p className="font-semibold" className="text-primary">{translatePlanet(varshphalData.muntha?.lord || '', language)}</p>
+                <p className="font-semibold text-primary">{translatePlanet(varshphalData.muntha?.lord || '', language)}</p>
               </div>
               <div className="bg-white rounded-lg p-3">
                 <p className="text-sm text-foreground">{t('table.status')}</p>
