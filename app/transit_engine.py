@@ -496,8 +496,8 @@ def compute_scores(
         raw_total += h_score + nature + d_bonus
 
     # Theoretical range: 7 planets * (worst: -2 + -1.0 + -2 = -5) to (best: 3 + 1.5 + 2 = 6.5)
-    # That's -35 to +45.5. Normalize to 1-10.
-    overall = _normalize_score(raw_total, min_val=-35.0, max_val=45.5)
+    # real world range is usually much narrower. Normalize to 1-10 using tighter bounds.
+    overall = _normalize_score(raw_total, min_val=-15.0, max_val=25.0)
 
     # -- Area scores --
     area_scores: Dict[str, int] = {}
@@ -522,8 +522,8 @@ def compute_scores(
             avg = raw_area / total_weight
         else:
             avg = 0.0
-        # Per-planet range is -5 to +6.5, weighted average stays in that range
-        area_scores[area] = _normalize_score(avg, min_val=-5.0, max_val=6.5)
+        # Per-planet range is -5 to +6.5, but normally stays between -2 and +4
+        area_scores[area] = _normalize_score(avg, min_val=-2.0, max_val=4.0)
 
     return {
         "overall": overall,
@@ -576,60 +576,50 @@ def generate_transit_horoscope(
     # Compute scores
     scores = compute_scores(sign_lower, planet_houses, planet_data)
 
-    # Derive lucky elements
-    ruling_planet = RULERS.get(sign_lower, "Sun") if RULERS else "Sun"
-    mantra = (PLANET_MANTRAS or _DEFAULT_MANTRAS).get(ruling_planet, _DEFAULT_MANTRAS.get(ruling_planet, ""))
-    # GEMSTONE_DATA in transit_lucky is keyed by planet name, not sign
-    gemstone_src = GEMSTONE_DATA or {}
-    gemstone_data = gemstone_src.get(ruling_planet, {})
-    # Extract just the gem name for the lucky.gemstone field (bilingual)
-    if gemstone_data and "gem" in gemstone_data:
-        gemstone = gemstone_data["gem"]
-    else:
-        gemstone = _DEFAULT_GEMSTONES.get(sign_lower, {"en": "Pearl (Moti)", "hi": "\u092e\u094b\u0924\u0940"})
-
     # Extract Moon nakshatra data for lucky derivations
     moon_info = planet_data.get("Moon", {})
-    moon_nakshatra_name = moon_info.get("nakshatra", "Ashwini")
+    moon_nak_idx = _nakshatra_name_to_index(moon_info.get("nakshatra", "Ashwini"))
     moon_pada = moon_info.get("nakshatra_pada", 1)
-    # Build nakshatra index from name
-    moon_nak_idx = _nakshatra_name_to_index(moon_nakshatra_name)
 
     # Build dignity map for all planets
-    planet_dignities = {
-        p: get_planet_dignity(p, planet_data.get(p, {})) for p in MAIN_PLANETS
-    }
+    planet_dignities = {p: get_planet_dignity(p, planet_data.get(p, {})) for p in MAIN_PLANETS}
 
-    # Resolve target_date string for deterministic derivations
+    # Use target_date or today's date
     date_str = target_date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
-    lucky_number = derive_lucky_number(moon_nak_idx, moon_pada, date_str)
-    lucky_color = derive_lucky_color(sign_lower, moon_pada)
-    compatible_sign = derive_compatible_sign(sign_lower, planet_dignities)
-    mood = derive_mood(scores.get("overall", 5))
-    dos = derive_dos(planet_houses, planet_dignities)
-    donts = derive_donts(planet_houses, planet_dignities)
+    # Derive ALL lucky elements using the lucky module - Centralized Source of Truth
+    lucky_meta = get_all_lucky_metadata(
+        sign=sign_lower,
+        moon_nakshatra_index=moon_nak_idx,
+        moon_pada=moon_pada,
+        date_str=date_str,
+        overall_score=int(scores.get("overall", 5)),
+        planet_houses=planet_houses,
+        planet_dignities=planet_dignities,
+        transit_dignities=planet_dignities
+    )
 
-    # Lucky time based on sign index
-    sign_idx = SIGN_INDEX.get(sign_lower, 0)
-    lucky_time = _LUCKY_TIMES[sign_idx % len(_LUCKY_TIMES)]
+    # Extract clean gemstone name for frontend
+    gem_data = lucky_meta.get("gemstone", {})
+    gem_name = gem_data.get("gem", {"en": "Pearl (Moti)", "hi": "\u092e\u094b\u0924\u0940"})
 
     return {
         "sign": sign_lower,
         "period": period_lower,
+        "date": date_str,
         "sections": sections,
         "scores": scores,
-        "mood": mood,
+        "mood": lucky_meta["mood"],
         "lucky": {
-            "number": lucky_number,
-            "color": lucky_color,
-            "time": lucky_time,
-            "compatible_sign": compatible_sign,
-            "gemstone": gemstone,
-            "mantra": mantra,
+            "number": lucky_meta["lucky_number"],
+            "color": lucky_meta["lucky_color"],
+            "time": lucky_meta["lucky_time"],
+            "compatible_sign": lucky_meta["compatible_sign"],
+            "gemstone": gem_name,
+            "mantra": lucky_meta["mantra"],
         },
-        "dos": dos,
-        "donts": donts,
+        "dos": lucky_meta["dos"],
+        "donts": lucky_meta["donts"],
         "source": "transit_engine",
     }
 

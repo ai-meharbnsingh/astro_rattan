@@ -1,5 +1,5 @@
 i18n Hardcoded String Scan Report
-Generated: 2026-04-16T23:20:14.812Z
+Generated: 2026-04-17T03:12:34.971Z
 Files scanned: 148
 Suspected hardcoded strings: 52
 ======================================================================
