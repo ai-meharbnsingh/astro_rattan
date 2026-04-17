@@ -87,7 +87,7 @@ export default function LalKitabDashboardTab({ onNavigateTab }: { onNavigateTab?
                   {t('auto.activePlanet')}: {ageData.active.planet}
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  ({ageData.active.age_start}–{ageData.active.age_end})
+                  ({isNaN(Number(ageData.active.age_start)) ? 0 : ageData.active.age_start}–{isNaN(Number(ageData.active.age_end)) ? 0 : ageData.active.age_end})
                 </span>
               </div>
               <div className="text-xs text-muted-foreground mt-1">
