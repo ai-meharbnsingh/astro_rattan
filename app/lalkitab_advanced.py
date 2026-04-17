@@ -950,33 +950,56 @@ def calculate_hora_lord(
     
     Args:
         birth_datetime: Python datetime object
-        sunrise_time: Optional sunrise time (defaults to 6:00 AM)
-        longitude: Optional longitude for precise sunrise calculation
-        latitude: Optional latitude for precise sunrise calculation
-        
+        sunrise_time: REQUIRED real sunrise time for the birth date + location
+                      (datetime.time object). If None, Hora debt is not computed —
+                      the function returns {"hora_lord": None, "_skipped": True, ...}
+                      so callers can surface "hora_debt_available: False" to the UI.
+        longitude: Optional longitude (informational only — caller must compute
+                   sunrise and pass it in via sunrise_time).
+        latitude: Optional latitude (informational only — see longitude).
+
     Returns:
-        Dict with hora_lord, day_lord, hours_elapsed, conflict_info
+        Dict with hora_lord, day_lord, hours_elapsed, conflict_info.
+        When sunrise_time is None, returns {"hora_lord": None, "_skipped": True,
+        "reason": "sunrise not provided"} instead of silently falling back.
     """
     from datetime import datetime, time
-    
-    # Get day of week and day lord
+
+    # Get day of week and day lord (still valid without sunrise)
     weekday = birth_datetime.weekday()  # 0=Monday
     day_lord = DAY_LORDS[weekday]
-    
-    # Determine sunrise (simplified: 6:00 AM, or calculate if location provided)
+
+    # Honest guard: without a real sunrise we cannot compute the Hora cycle.
+    # Returning a skip sentinel here lets callers mark
+    # hora_debt_available=False instead of presenting a 06:00-fallback lie.
     if sunrise_time is None:
-        # Simplified: use 6:00 AM local time
-        sunrise = datetime.combine(birth_datetime.date(), time(6, 0))
-    else:
-        sunrise = datetime.combine(birth_datetime.date(), sunrise_time)
-    
+        return {
+            "hora_lord": None,
+            "day_lord": day_lord,
+            "weekday": weekday,
+            "weekday_name": birth_datetime.strftime("%A"),
+            "hours_elapsed_since_sunrise": None,
+            "minutes_into_hour": None,
+            "boundary_warning": None,
+            "conflict_modification": None,
+            "base_debt": {},
+            "_skipped": True,
+            "reason": {
+                "en": "Hora debt not computed — real sunrise (date + lat/lon) was not provided.",
+                "hi": "होरा ऋण की गणना नहीं की गई — वास्तविक सूर्योदय (तिथि + अक्षांश/देशांतर) उपलब्ध नहीं था।",
+            },
+        }
+
+    sunrise = datetime.combine(birth_datetime.date(), sunrise_time)
+
     # Calculate hours elapsed since sunrise
     # Handle case where birth is before sunrise (previous day's cycle)
     if birth_datetime < sunrise:
-        # Use previous day's cycle - find yesterday's sunrise
+        # Use previous day's cycle - approximate yesterday's sunrise with the
+        # same sunrise_time (adequate within minutes for a 1-day delta).
         from datetime import timedelta
         yesterday = birth_datetime - timedelta(days=1)
-        sunrise = datetime.combine(yesterday.date(), time(6, 0))
+        sunrise = datetime.combine(yesterday.date(), sunrise_time)
     
     elapsed = birth_datetime - sunrise
     hours_elapsed = elapsed.total_seconds() / 3600.0
@@ -1435,7 +1458,16 @@ def calculate_karmic_debts_with_hora(
     # Calculate Hora lord and associated debt
     hora_info = calculate_hora_lord(birth_datetime, sunrise_time)
     result["hora_analysis"] = hora_info
-    
+
+    # Honest skip: if Hora was not computed (no real sunrise), do not
+    # manufacture a debt entry. Surface the skip reason to callers.
+    if hora_info.get("_skipped"):
+        result["hora_influence"] = {
+            "added_new_debt": False,
+            "reason": "Hora debt skipped — real sunrise not available",
+        }
+        return result
+
     # Determine effective debt based on Hora
     base_debt_info = hora_info.get("base_debt", {})
     effective_debt = base_debt_info.get("debt")

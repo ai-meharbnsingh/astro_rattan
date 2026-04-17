@@ -64,6 +64,7 @@ export default function LalKitabChandraChaalanaTab() {
   const [state, setState] = useState<ProtocolState>(loadState);
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>(loadJournal);
   const [journalNote, setJournalNote] = useState('');
+  const [syncError, setSyncError] = useState(false);
 
   const today = todayStr();
 
@@ -84,8 +85,12 @@ export default function LalKitabChandraChaalanaTab() {
           setJournalEntries(data.journal);
           saveJournal(data.journal);
         }
+        setSyncError(false);
       })
-      .catch(() => {/* silent — localStorage already loaded */});
+      .catch((err) => {
+        console.error('Chandra Chaalana sync failed — using local storage:', err);
+        setSyncError(true);
+      });
   }, []);
 
   const { currentDay, isMissed, isComplete } = useMemo(() => {
@@ -110,7 +115,10 @@ export default function LalKitabChandraChaalanaTab() {
     apiFetch('/api/lalkitab/chandra/start', {
       method: 'POST',
       body: JSON.stringify({ start_date: today }),
-    }).catch(() => {});
+    }).catch((err) => {
+      console.error('Chandra Chaalana start sync failed — using local storage:', err);
+      setSyncError(true);
+    });
   };
 
   const restartProtocol = () => {
@@ -120,7 +128,10 @@ export default function LalKitabChandraChaalanaTab() {
     apiFetch('/api/lalkitab/chandra/start', {
       method: 'POST',
       body: JSON.stringify({ start_date: today }),
-    }).catch(() => {});
+    }).catch((err) => {
+      console.error('Chandra Chaalana start sync failed — using local storage:', err);
+      setSyncError(true);
+    });
   };
 
   const markDayDone = () => {
@@ -143,8 +154,12 @@ export default function LalKitabChandraChaalanaTab() {
         const reconciled: ProtocolState = { ...updated, completedDays: data.completed_days };
         saveState(reconciled);
         setState(reconciled);
+        setSyncError(false);
       })
-      .catch(() => {/* keep optimistic state */});
+      .catch((err) => {
+        console.error('Chandra Chaalana mark-done sync failed — keeping optimistic state:', err);
+        setSyncError(true);
+      });
   };
 
   const saveEntry = () => {
@@ -158,7 +173,10 @@ export default function LalKitabChandraChaalanaTab() {
     apiFetch('/api/lalkitab/chandra/journal', {
       method: 'POST',
       body: JSON.stringify({ date: today, note: entry.note }),
-    }).catch(() => {});
+    }).catch((err) => {
+      console.error('Chandra Chaalana journal sync failed — using local storage:', err);
+      setSyncError(true);
+    });
   };
 
   const progressPct = state.startDate ? Math.min(100, Math.round((state.completedDays.length / 43) * 100)) : 0;
@@ -172,6 +190,11 @@ export default function LalKitabChandraChaalanaTab() {
   if (!state.startDate) {
     return (
       <div className="space-y-6">
+        {syncError && (
+          <div className="p-2 mb-2 bg-amber-50 border border-amber-200 rounded text-xs text-amber-800">
+            {isHi ? 'सर्वर से सिंक नहीं हो सका — स्थानीय डेटा उपयोग में' : 'Could not sync with server — using local data'}
+          </div>
+        )}
         <div>
           <h2 className="text-xl font-sans font-semibold text-sacred-gold flex items-center gap-2 mb-1">
             <Moon className="w-5 h-5" />
@@ -229,6 +252,11 @@ export default function LalKitabChandraChaalanaTab() {
 
   return (
     <div className="space-y-6">
+      {syncError && (
+        <div className="p-2 mb-2 bg-amber-50 border border-amber-200 rounded text-xs text-amber-800">
+          {isHi ? 'सर्वर से सिंक नहीं हो सका — स्थानीय डेटा उपयोग में' : 'Could not sync with server — using local data'}
+        </div>
+      )}
       {/* Header */}
       <div>
         <h2 className="text-xl font-sans font-semibold text-sacred-gold flex items-center gap-2 mb-1">

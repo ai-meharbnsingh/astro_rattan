@@ -21,7 +21,11 @@ from app.dosha_engine import (
     analyze_yogas_and_doshas,
     to_translation_key,
 )
-from app.dasha_engine import calculate_dasha, calculate_extended_dasha
+from app.dasha_engine import (
+    calculate_dasha,
+    calculate_extended_dasha,
+    get_current_dasha_phala,
+)
 from app.varshphal_engine import calculate_varshphal
 from app.divisional_charts import (
     calculate_divisional_chart_detailed,
@@ -630,6 +634,29 @@ def get_dasha(
 ):
     """Calculate Vimshottari Dasha periods for a kundli (POST — kept for backward compatibility)."""
     return _compute_dasha(db, kundli_id, current_user["sub"])
+
+
+@router.get("/{kundli_id}/dasha-phala", status_code=status.HTTP_200_OK)
+def get_dasha_phala(
+    kundli_id: str,
+    as_of: Optional[str] = Query(None, description="YYYY-MM-DD (defaults to today)"),
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """
+    Phaladeepika Adh. 20 + 21 — classical effect synthesis for the currently
+    running Mahadasha + Antardasha of a kundli (bilingual EN + HI).
+    """
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    result = get_current_dasha_phala(
+        chart_data=chart,
+        birth_date=str(row["birth_date"]),
+        as_of_date=as_of,
+    )
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
 
 
 @router.get("/{kundli_id}/divisional-charts", status_code=status.HTTP_200_OK)

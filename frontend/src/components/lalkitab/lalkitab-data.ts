@@ -1,3 +1,31 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════
+ * LALKITAB-DATA.TS — FRONTEND FALLBACK LAYER
+ * ═══════════════════════════════════════════════════════════════════
+ *
+ * ARCHITECTURE NOTE (per Gemini audit):
+ *
+ * This file provides CLIENT-SIDE chart generation and analysis
+ * as a FALLBACK when backend endpoints are unavailable. The
+ * AUTHORITATIVE source of truth for all Lal Kitab calculations is:
+ *
+ *   Backend:  app/lalkitab_engine.py      (remedies, strength)
+ *             app/lalkitab_advanced.py     (teva, masnui, bunyaad)
+ *             app/lalkitab_technical.py    (chalti gaadi, dhur dhur aage)
+ *             app/routes/kp_lalkitab.py    (47 endpoints serving computed results)
+ *
+ * Frontend tabs should PREFER backend data (via /api/lalkitab/full/{id}
+ * or individual endpoints) over local computations. Local functions here
+ * exist for:
+ *   1. Immediate UI rendering before API response arrives
+ *   2. Offline/error fallback when backend is unreachable
+ *   3. Dosha detection (local-only, not yet in backend)
+ *
+ * DO NOT add new calculation logic here. Add it to the backend instead
+ * and consume via API.
+ * ═══════════════════════════════════════════════════════════════════
+ */
+
 // Lal Kitab data types and constants
 
 export interface LalKitabHouse {
@@ -339,6 +367,79 @@ export const REMEDIES: Record<string, Record<number, Array<{ type: 'feeding' | '
   },
 };
 
+// ═══ SCORING CONSTANTS ═══
+// All numeric thresholds used in scoring/strength functions. Named for auditability.
+
+/** Neutral starting score for any planet evaluation (midpoint of 0-100 scale). */
+const SCORE_NEUTRAL_BASE = 50;
+/** Bonus when a planet sits in its Pakka Ghar (permanent Lal Kitab house). */
+const SCORE_PAKKA_GHAR_BONUS = 30;
+/** Bonus when a planet sits in one of the life area's primary houses. */
+const SCORE_PRIMARY_HOUSE_BONUS = 20;
+/** Bonus when the house the planet occupies is classified as 'strong'. */
+const SCORE_STRONG_HOUSE_BONUS = 12;
+/** Penalty when the house the planet occupies is classified as 'weak'. */
+const SCORE_WEAK_HOUSE_PENALTY = 25;
+/** Extra bonus for a naturally benefic planet placed in a primary house. */
+const SCORE_BENEFIC_PRIMARY_BONUS = 12;
+/** Penalty for a naturally benefic planet placed in a dusthana (6/8/12). */
+const SCORE_BENEFIC_DUSTHANA_PENALTY = 10;
+/** Penalty for a malefic planet placed in a dusthana (6/8/12). */
+const SCORE_MALEFIC_DUSTHANA_PENALTY = 20;
+/** Penalty for a malefic in a primary house without Pakka Ghar dignity. */
+const SCORE_MALEFIC_NO_DIGNITY_PENALTY = 5;
+/** Bonus when another area planet also sits in a primary house (mutual support). */
+const SCORE_CO_SUPPORT_BONUS = 5;
+/** Bonus for Vargottama placement (same sign in D1 and D9 charts). */
+const SCORE_VARGOTTAMA_BONUS = 15;
+/** Bonus when planet is exalted in Navamsa (D9) chart. */
+const SCORE_NAVAMSA_EXALTED_BONUS = 12;
+/** Penalty when planet is debilitated in Navamsa (D9) chart. */
+const SCORE_NAVAMSA_DEBILITATED_PENALTY = 15;
+/** Floor: minimum score any single planet evaluation can contribute. */
+const SCORE_FLOOR = 5;
+/** Ceiling: maximum score any single planet evaluation can contribute. */
+const SCORE_CEILING = 100;
+/** Default area score returned when no planets can be evaluated. */
+const SCORE_DEFAULT_EMPTY = 50;
+
+/** Threshold at or above which an area is classified as 'high' confidence. */
+const CONFIDENCE_HIGH_THRESHOLD = 70;
+/** Threshold at or above which an area is classified as 'moderate' confidence. */
+const CONFIDENCE_MODERATE_THRESHOLD = 55;
+/** Threshold at or above which an area is classified as 'low' confidence. */
+const CONFIDENCE_LOW_THRESHOLD = 40;
+
+/** Degrees per zodiac sign (360 / 12 signs). Used for longitude-to-house conversion. */
+const DEGREES_PER_SIGN = 30;
+/** Total degrees in the zodiac circle. */
+const DEGREES_FULL_CIRCLE = 360;
+/** Total number of houses in the chart. */
+const TOTAL_HOUSES = 12;
+/** Total number of Navamsa divisions per sign. */
+const NAVAMSA_DIVISIONS_PER_SIGN = 9;
+/** Total Navamsa signs in the cycle. */
+const NAVAMSA_SIGN_COUNT = 12;
+
+/** Approximate milliseconds in one year (365.25 days accounting for leap years). */
+const MS_PER_YEAR = 365.25 * 24 * 60 * 60 * 1000;
+
+/** Minimum number of malefics in dusthana houses to trigger Karmic Debt (Rini) Dosh. */
+const KARMIC_DEBT_MIN_MALEFICS = 2;
+/** Number of malefics in dusthana that escalates Karmic Debt severity to 'high'. */
+const KARMIC_DEBT_HIGH_MALEFICS = 3;
+
+/** Houses where Saturn placement triggers Shani Dosh. */
+const SHANI_DOSH_HOUSES = [1, 4, 7, 8, 10] as const;
+/** Saturn in 8th house specifically escalates Shani Dosh to 'high' severity. */
+const SHANI_DOSH_HIGH_SEVERITY_HOUSE = 8;
+/** Dusthana houses: houses of difficulty (enemies, obstacles, loss). */
+const DUSTHANA_HOUSES = [6, 8, 12] as const;
+/** House of father/fortune where Sun conjunction triggers Pitra Dosh. */
+const PITRA_DOSH_HOUSE = 9;
+
+// ═══ END SCORING CONSTANTS ═══
+
 // Dosha detection
 export interface DoshaResult {
   key: string;
@@ -352,6 +453,11 @@ export interface DoshaResult {
   remedyHi: string;
 }
 
+/**
+ * Detect Lal Kitab doshas from planet positions.
+ * NOTE: Frontend-only detection. No backend equivalent yet.
+ * TODO: Migrate to backend for single source of truth.
+ */
 function detectDoshas(planetPositions: Record<string, number>): DoshaResult[] {
   const results: DoshaResult[] = [];
 
@@ -361,7 +467,7 @@ function detectDoshas(planetPositions: Record<string, number>): DoshaResult[] {
   const rahuH = planetPositions['Rahu'];
   const ketuH = planetPositions['Ketu'];
   const moonH = planetPositions['Moon'];
-  const pitraDetected = sunH === 9 && (satH === 9 || rahuH === 9);
+  const pitraDetected = sunH === PITRA_DOSH_HOUSE && (satH === PITRA_DOSH_HOUSE || rahuH === PITRA_DOSH_HOUSE);
   results.push({
     key: 'pitraDosh',
     nameEn: 'Pitra Dosh',
@@ -388,30 +494,30 @@ function detectDoshas(planetPositions: Record<string, number>): DoshaResult[] {
     remedyHi: 'बहते पानी में नारियल बहाएं। काले और सफेद तिल दान करें।',
   });
 
-  // Shani Dosh: Saturn in 1, 4, 7, 8, or 10
-  const shaniDetected = [1, 4, 7, 8, 10].includes(satH);
+  // Shani Dosh: Saturn in specific challenging houses
+  const shaniDetected = SHANI_DOSH_HOUSES.includes(satH as typeof SHANI_DOSH_HOUSES[number]);
   results.push({
     key: 'shaniDosh',
     nameEn: 'Shani Dosh',
     nameHi: 'शनि दोष',
     detected: shaniDetected,
-    severity: shaniDetected ? (satH === 8 ? 'high' : 'medium') : 'low',
+    severity: shaniDetected ? (satH === SHANI_DOSH_HIGH_SEVERITY_HOUSE ? 'high' : 'medium') : 'low',
     descEn: 'Saturn creating delays, hard work without reward, and karmic lessons in life.',
     descHi: 'शनि देरी, बिना फल के कठिन परिश्रम और कार्मिक सबक दे रहा है।',
     remedyEn: 'Feed crows and black dogs. Donate iron and mustard oil on Saturdays.',
     remedyHi: 'कौओं और काले कुत्तों को खिलाएं। शनिवार को लोहा और सरसों का तेल दान करें।',
   });
 
-  // Karmic Debts: Multiple malefics in 6, 8, 12
+  // Karmic Debts: Multiple malefics in dusthana houses (6, 8, 12)
   const marsH = planetPositions['Mars'];
-  const maleficsIn6812 = [satH, marsH, rahuH, ketuH].filter(h => [6, 8, 12].includes(h)).length;
-  const karmicDetected = maleficsIn6812 >= 2;
+  const maleficsIn6812 = [satH, marsH, rahuH, ketuH].filter(h => (DUSTHANA_HOUSES as readonly number[]).includes(h)).length;
+  const karmicDetected = maleficsIn6812 >= KARMIC_DEBT_MIN_MALEFICS;
   results.push({
     key: 'debtKarma',
     nameEn: 'Karmic Debts (Rini Dosh)',
     nameHi: 'कार्मिक ऋण (ऋणी दोष)',
     detected: karmicDetected,
-    severity: karmicDetected ? (maleficsIn6812 >= 3 ? 'high' : 'medium') : 'low',
+    severity: karmicDetected ? (maleficsIn6812 >= KARMIC_DEBT_HIGH_MALEFICS ? 'high' : 'medium') : 'low',
     descEn: 'Past-life debts manifesting as recurring obstacles, financial issues, or relationship problems.',
     descHi: 'पूर्व जन्म के ऋण बार-बार बाधाओं, वित्तीय समस्याओं या संबंध समस्याओं के रूप में प्रकट हो रहे हैं।',
     remedyEn: 'Donate food and clothes to the needy. Serve elders and parents sincerely.',
@@ -443,12 +549,16 @@ function getActivePlanetForAge(birthDate: string | Date | undefined): typeof AGE
   if (isNaN(bd.getTime())) return AGE_PLANET_ACTIVATION[0];
   const now = new Date();
   const ageMs = now.getTime() - bd.getTime();
-  const ageYears = Math.floor(ageMs / (365.25 * 24 * 60 * 60 * 1000));
+  const ageYears = Math.floor(ageMs / MS_PER_YEAR);
   const match = AGE_PLANET_ACTIVATION.find(p => ageYears >= p.ageStart && ageYears <= p.ageEnd);
   return match || AGE_PLANET_ACTIVATION[AGE_PLANET_ACTIVATION.length - 1];  // beyond 84 = last one
 }
 
-// Generate Lal Kitab chart from API data
+/**
+ * Generate a Lal Kitab chart from API data.
+ * NOTE: This is a FRONTEND FALLBACK. Backend /api/lalkitab/full/{id}
+ * provides the same data with authoritative calculations.
+ */
 export function generateLalKitabChart(apiData: any, birthDate?: string | Date): LalKitabChartData {
   const planetPositions: Record<string, number> = {};
   const planetLongitudes: Record<string, number> = {};
@@ -459,10 +569,29 @@ export function generateLalKitabChart(apiData: any, birthDate?: string | Date): 
   for (const pObj of PLANETS) {
     const pData = chartPlanets[pObj.key] || chartPlanets[pObj.en];
     if (pData) {
-      const house = pData.house || pData.House || Math.ceil(((pData.longitude || pData.degree || 0) % 360) / 30) || 1;
-      planetPositions[pObj.key] = typeof house === 'number' ? house : parseInt(house) || 1;
-      const rawLon = pData.longitude || pData.degree || 0;
-      planetLongitudes[pObj.key] = typeof rawLon === 'number' ? rawLon : parseFloat(rawLon) || 0;
+      let house: number | null = null;
+      if (typeof pData.house === 'number' && pData.house >= 1 && pData.house <= TOTAL_HOUSES) {
+        house = pData.house;
+      } else if (typeof pData.House === 'number' && pData.House >= 1 && pData.House <= TOTAL_HOUSES) {
+        house = pData.House;
+      } else if (typeof pData.longitude === 'number' && pData.longitude >= 0) {
+        house = Math.ceil((pData.longitude % DEGREES_FULL_CIRCLE) / DEGREES_PER_SIGN) || null;
+        if (house && house > TOTAL_HOUSES) house = ((house - 1) % TOTAL_HOUSES) + 1;
+      } else if (typeof pData.degree === 'number' && pData.degree >= 0) {
+        house = Math.ceil((pData.degree % DEGREES_FULL_CIRCLE) / DEGREES_PER_SIGN) || null;
+        if (house && house > TOTAL_HOUSES) house = ((house - 1) % TOTAL_HOUSES) + 1;
+      }
+
+      if (house === null) {
+        // Data present but house is indeterminable — treat as missing
+        missingPlanets.push(pObj.key);
+        planetPositions[pObj.key] = 0;
+        planetLongitudes[pObj.key] = NaN;
+      } else {
+        planetPositions[pObj.key] = house;
+        const rawLon = pData.longitude ?? pData.degree ?? 0;
+        planetLongitudes[pObj.key] = typeof rawLon === 'number' ? rawLon : parseFloat(rawLon) || 0;
+      }
     } else {
       // Planet missing from API — mark incomplete. Do NOT fabricate position.
       missingPlanets.push(pObj.key);
@@ -473,7 +602,7 @@ export function generateLalKitabChart(apiData: any, birthDate?: string | Date): 
 
   // Build houses
   const houses: LalKitabHouse[] = [];
-  for (let h = 1; h <= 12; h++) {
+  for (let h = 1; h <= TOTAL_HOUSES; h++) {
     const planetsInHouse = Object.entries(planetPositions)
       .filter(([, hNum]) => hNum === h)
       .map(([planet]) => planet);
@@ -688,7 +817,11 @@ const NAVAMSA_DEBIL: Record<string, number> = {
   Sun: 6, Moon: 7, Mars: 3, Mercury: 11, Jupiter: 9, Venus: 5, Saturn: 0, Rahu: 7, Ketu: 2,
 };
 
-/** Compute a natal score (0–100) for a life area based on chart data */
+/**
+ * Compute area scores for chart analysis dashboard.
+ * NOTE: Frontend fallback. Uses named constants below for all thresholds.
+ * Backend strength model: app/lalkitab_engine.get_planet_strength_detailed()
+ */
 export function computeAreaScore(
   area: PredictionArea,
   planetPositions: Record<string, number>,
@@ -699,66 +832,66 @@ export function computeAreaScore(
   let count = 0;
   const benefics = new Set(['Jupiter', 'Venus', 'Moon', 'Mercury']);
   const malefics = new Set(['Saturn', 'Mars', 'Rahu', 'Ketu', 'Sun']);
-  const dushthanas = new Set([6, 8, 12]);
+  const dushthanas = new Set(DUSTHANA_HOUSES);
 
   for (const planetKey of area.primaryPlanets) {
     const house = planetPositions[planetKey];
     if (house == null) continue;
-    let score = 50; // neutral base
+    let score = SCORE_NEUTRAL_BASE;
 
     // Pakka Ghar: planet in its own LK house — strong dignity
     const isPakka = house === PAKKA_GHAR[planetKey];
-    if (isPakka) score += 30;
+    if (isPakka) score += SCORE_PAKKA_GHAR_BONUS;
 
     // Planet in a house that directly supports this life area
     const inPrimaryHouse = area.primaryHouses.includes(house);
-    if (inPrimaryHouse) score += 20;
+    if (inPrimaryHouse) score += SCORE_PRIMARY_HOUSE_BONUS;
 
     // House strength from chart calculation
     const houseData = houses.find((h) => h.house === house);
-    if (houseData?.strength === 'strong') score += 12;
-    if (houseData?.strength === 'weak') score -= 25;
+    if (houseData?.strength === 'strong') score += SCORE_STRONG_HOUSE_BONUS;
+    if (houseData?.strength === 'weak') score -= SCORE_WEAK_HOUSE_PENALTY;
 
     // Benefic in a primary house → extra support
-    if (benefics.has(planetKey) && inPrimaryHouse) score += 12;
+    if (benefics.has(planetKey) && inPrimaryHouse) score += SCORE_BENEFIC_PRIMARY_BONUS;
     // Benefic in dusthana → less effective
-    if (benefics.has(planetKey) && dushthanas.has(house)) score -= 10;
+    if (benefics.has(planetKey) && dushthanas.has(house)) score -= SCORE_BENEFIC_DUSTHANA_PENALTY;
 
     // Malefic in dusthana → harms the area
-    if (malefics.has(planetKey) && dushthanas.has(house)) score -= 20;
+    if (malefics.has(planetKey) && dushthanas.has(house)) score -= SCORE_MALEFIC_DUSTHANA_PENALTY;
     // Malefic in primary house without dignity → mixed influence
-    if (malefics.has(planetKey) && inPrimaryHouse && !isPakka) score -= 5;
+    if (malefics.has(planetKey) && inPrimaryHouse && !isPakka) score -= SCORE_MALEFIC_NO_DIGNITY_PENALTY;
 
     // Mutual support: another area planet also placed in a primary house
     const coSupport = area.primaryPlanets.filter(
       (p) => p !== planetKey && area.primaryHouses.includes(planetPositions[p] ?? -1),
     ).length;
-    if (coSupport > 0) score += 5;
+    if (coSupport > 0) score += SCORE_CO_SUPPORT_BONUS;
 
     // Navamsa (D9) dignity — vargottama, exaltation, debilitation
     if (planetLongitudes) {
       const lon = planetLongitudes[planetKey] ?? 0;
-      const d1Sign = Math.floor(lon / 30) % 12;
-      const pada = Math.floor((lon % 30) * 9 / 30);
-      const navamsaSign = (d1Sign * 9 + pada) % 12;
-      if (d1Sign === navamsaSign) score += 15;                           // vargottama
-      if (NAVAMSA_EXALT[planetKey] === navamsaSign) score += 12;        // navamsa exalted
-      if (NAVAMSA_DEBIL[planetKey] === navamsaSign) score -= 15;        // navamsa debilitated
+      const d1Sign = Math.floor(lon / DEGREES_PER_SIGN) % NAVAMSA_SIGN_COUNT;
+      const pada = Math.floor((lon % DEGREES_PER_SIGN) * NAVAMSA_DIVISIONS_PER_SIGN / DEGREES_PER_SIGN);
+      const navamsaSign = (d1Sign * NAVAMSA_DIVISIONS_PER_SIGN + pada) % NAVAMSA_SIGN_COUNT;
+      if (d1Sign === navamsaSign) score += SCORE_VARGOTTAMA_BONUS;
+      if (NAVAMSA_EXALT[planetKey] === navamsaSign) score += SCORE_NAVAMSA_EXALTED_BONUS;
+      if (NAVAMSA_DEBIL[planetKey] === navamsaSign) score -= SCORE_NAVAMSA_DEBILITATED_PENALTY;
     }
 
-    totalScore += Math.max(5, Math.min(100, score));
+    totalScore += Math.max(SCORE_FLOOR, Math.min(SCORE_CEILING, score));
     count++;
   }
 
-  if (count === 0) return 50;
+  if (count === 0) return SCORE_DEFAULT_EMPTY;
   return Math.round(totalScore / count);
 }
 
-/** Map score 0–100 to a confidence label */
+/** Map score 0-100 to a confidence label */
 export function scoreToConfidence(score: number): 'high' | 'moderate' | 'low' | 'speculative' {
-  if (score >= 70) return 'high';
-  if (score >= 55) return 'moderate';
-  if (score >= 40) return 'low';
+  if (score >= CONFIDENCE_HIGH_THRESHOLD) return 'high';
+  if (score >= CONFIDENCE_MODERATE_THRESHOLD) return 'moderate';
+  if (score >= CONFIDENCE_LOW_THRESHOLD) return 'low';
   return 'speculative';
 }
 

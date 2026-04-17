@@ -22,17 +22,29 @@ export default function LalKitabPlanetsTab({ chartData, kundliId }: Props) {
   const [expandedPlanet, setExpandedPlanet] = useState<string | null>(null);
   const [advancedData, setAdvancedData] = useState<any>(null);
   const [interpretations, setInterpretations] = useState<any[]>([]);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     if (kundliId) {
+      setLoadError(null);
       api.get(`/api/lalkitab/advanced/${kundliId}`)
         .then(setAdvancedData)
-        .catch(() => {});
+        .catch((err) => {
+          console.error('Failed to load advanced planet data:', err);
+          const msg = err instanceof Error ? err.message : (typeof err === 'string' ? err : 'Unknown error');
+          setLoadError(msg);
+        });
 
       // Fetch LK house interpretations
+      // NOTE: Backend uses /api/kp-lalkitab/ prefix for this endpoint (naming inconsistency).
+      // Do not change to /api/lalkitab/ — the backend route is registered as /api/kp-lalkitab/lk-interpretations.
       api.post('/api/kp-lalkitab/lk-interpretations', { kundli_id: kundliId })
         .then((res: any) => setInterpretations(Array.isArray(res?.interpretations) ? res.interpretations : []))
-        .catch(() => {});
+        .catch((err) => {
+          console.error('Failed to load LK interpretations:', err);
+          const msg = err instanceof Error ? err.message : (typeof err === 'string' ? err : 'Unknown error');
+          setLoadError(msg);
+        });
     }
   }, [kundliId]);
 
@@ -61,6 +73,12 @@ export default function LalKitabPlanetsTab({ chartData, kundliId }: Props) {
           {t('lk.planets.desc')}
         </p>
       </div>
+
+      {loadError && (
+        <div className="p-3 mb-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-800">
+          {isHi ? 'डेटा लोड करने में त्रुटि' : 'Failed to load data'}: {loadError}
+        </div>
+      )}
 
       {/* Legend */}
       <div className="flex flex-wrap justify-center gap-4 py-2 border-y border-sacred-gold/10">

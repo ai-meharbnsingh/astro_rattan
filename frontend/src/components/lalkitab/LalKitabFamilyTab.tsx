@@ -295,13 +295,19 @@ export default function LalKitabFamilyTab({ kundliId, language }: Props) {
   const [loading, setLoading] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [removingId, setRemovingId] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const load = useCallback(() => {
     if (!kundliId) return;
     setLoading(true);
+    setLoadError(null);
     api.get(`/api/lalkitab/family/${kundliId}`)
       .then(setData)
-      .catch(() => {})
+      .catch((err) => {
+        console.error('Failed to load family data:', err);
+        const msg = err instanceof Error ? err.message : (typeof err === 'string' ? err : 'Unknown error');
+        setLoadError(msg);
+      })
       .finally(() => setLoading(false));
   }, [kundliId]);
 
@@ -313,8 +319,10 @@ export default function LalKitabFamilyTab({ kundliId, language }: Props) {
     try {
       await api.delete(`/api/lalkitab/family/${kundliId}/link/${linkId}`);
       load();
-    } catch {
-      // silent
+    } catch (err) {
+      console.error('Failed to remove family link:', err);
+      const msg = err instanceof Error ? err.message : (typeof err === 'string' ? err : 'Unknown error');
+      setLoadError(msg);
     } finally {
       setRemovingId(null);
     }
@@ -337,6 +345,11 @@ export default function LalKitabFamilyTab({ kundliId, language }: Props) {
 
   return (
     <div className="space-y-4">
+      {loadError && (
+        <div className="p-3 mb-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-800">
+          {hi ? 'डेटा लोड करने में त्रुटि' : 'Failed to load data'}: {loadError}
+        </div>
+      )}
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <div>

@@ -37,6 +37,7 @@ import AspectsTab from '@/components/kundli/AspectsTab';
 import SadesatiTab from '@/components/kundli/SadesatiTab';
 import MundaneTab from '@/components/kundli/MundaneTab';
 import DashaSelector from '@/components/kundli/DashaSelector';
+import DashaPhalaTab from '@/components/kundli/DashaPhalaTab';
 import D108Analysis from '@/components/kundli/D108Analysis';
 import ChartAnimation from '@/components/kundli/ChartAnimation';
 import BirthRectification from '@/components/kundli/BirthRectification';
@@ -70,12 +71,14 @@ const TAB_DEFS: Omit<TabDef, 'onActivate'>[] = [
   { value: 'aspects',       labelEn: 'Aspects',        labelHi: 'दृष्टि',           primary: true, icon: Eye },
   // Charts
   { value: 'ashtakvarga',   labelEn: 'Ashtakvarga',    labelHi: 'अष्टकवर्ग',        primary: false, category: 'charts' },
+  { value: 'ashtakvarga-phala', labelEn: 'Ashtakvarga Effects', labelHi: 'अष्टकवर्ग फल', primary: false, category: 'analysis' },
   { value: 'sodashvarga',   labelEn: 'Sodashvarga',    labelHi: 'षोडशवर्ग',         primary: false, category: 'charts' },
   { value: 'd108',          labelEn: 'D108 Chart',     labelHi: 'D108 अष्टोत्तरांश',  primary: false, category: 'charts' },
   { value: 'animation',     labelEn: 'Chart Animation', labelHi: 'चार्ट एनिमेशन',    primary: false, category: 'charts' },
   { value: 'sarvatobhadra', labelEn: 'Sarvatobhadra',   labelHi: 'सर्वतोभद्र चक्र',   primary: false, category: 'charts' },
   // Timing
   { value: 'yogini',        labelEn: 'Yogini Dasha',   labelHi: 'योगिनी दशा',       primary: false, category: 'timing' },
+  { value: 'dasha-phala',   labelEn: 'Dasha Effects',  labelHi: 'दशा फल',           primary: false, category: 'timing' },
   // dasha-systems merged into "dasha" tab via DashaSelector (5 systems in one)
   { value: 'varshphal',     labelEn: 'Varshphal',      labelHi: 'वर्षफल',           primary: false, category: 'timing' },
   { value: 'transits',      labelEn: 'Transits',       labelHi: 'गोचर',            primary: false, category: 'timing' },
@@ -529,6 +532,14 @@ export default function KundliGenerator() {
             />
           </TabsContent>
 
+          <TabsContent value="dasha-phala" className="min-h-[300px]">
+            <DashaPhalaTab
+              kundliId={result?.id || ''}
+              language={language}
+              t={t}
+            />
+          </TabsContent>
+
           <TabsContent value="divisional" className="min-h-[300px]">
             <DivisionalTab
               divisionalData={divisionalData} loadingDivisional={loadingDivisional}
@@ -542,6 +553,14 @@ export default function KundliGenerator() {
             <AshtakvargaTab
               ashtakvargaData={ashtakvargaData} loadingAshtakvarga={loadingAshtakvarga}
               result={result} language={language} t={t}
+            />
+          </TabsContent>
+
+          <TabsContent value="ashtakvarga-phala" className="min-h-[300px]">
+            <AshtakvargaPhalaTab
+              kundliId={result?.id || ''}
+              language={language}
+              t={t}
             />
           </TabsContent>
 

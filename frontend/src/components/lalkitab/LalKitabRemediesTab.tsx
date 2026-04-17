@@ -192,9 +192,14 @@ export default function LalKitabRemediesTab({ chartData, kundliId }: Props) {
       .finally(() => setLoading(false));
 
     setValidatedLoading(true);
+    // NOTE: Backend uses /api/kp-lalkitab/ prefix for this endpoint (naming inconsistency).
+    // Do not change to /api/lalkitab/ — the backend route is registered as /api/kp-lalkitab/lk-validated-remedies.
     api.post('/api/kp-lalkitab/lk-validated-remedies', { kundli_id: kundliId })
       .then((res: any) => setValidated(Array.isArray(res?.remedies) ? res.remedies : []))
-      .catch(() => {})
+      .catch((err: any) => {
+        console.error('Validated remedies fetch failed:', err);
+        setError(isHi ? 'सत्यापित उपाय लोड नहीं हो सके' : 'Could not load validated remedies');
+      })
       .finally(() => setValidatedLoading(false));
   }, [kundliId]);
 

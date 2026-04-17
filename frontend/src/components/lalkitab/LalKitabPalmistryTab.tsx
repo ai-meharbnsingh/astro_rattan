@@ -39,12 +39,20 @@ export default function LalKitabPalmistryTab({ kundliId, language }: Props) {
   const [result, setResult] = useState<CorrelationResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const hi = language === 'hi';
 
   useEffect(() => {
     setLoading(true);
+    setLoadError(null);
     api.get('/api/lalkitab/palm/zones')
-      .then(r => setZones(r.zones ?? r)).catch(() => {}).finally(() => setLoading(false));
+      .then(r => setZones(r.zones ?? r))
+      .catch((err) => {
+        console.error('Failed to load palm zones:', err);
+        const msg = err instanceof Error ? err.message : (typeof err === 'string' ? err : 'Unknown error');
+        setLoadError(msg);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const handleZoneClick = (zoneId: string) => {
@@ -75,11 +83,14 @@ export default function LalKitabPalmistryTab({ kundliId, language }: Props) {
   const analyze = async () => {
     if (!kundliId || marks.length === 0) return;
     setAnalyzing(true);
+    setLoadError(null);
     try {
       const res = await api.post('/api/lalkitab/palm/correlate', { kundli_id: kundliId, palm_marks: marks });
       setResult(res);
-    } catch (e) {
-      // silent
+    } catch (err) {
+      console.error('Failed to analyze palm correlations:', err);
+      const msg = err instanceof Error ? err.message : (typeof err === 'string' ? err : 'Unknown error');
+      setLoadError(msg);
     } finally {
       setAnalyzing(false);
     }
@@ -99,6 +110,11 @@ export default function LalKitabPalmistryTab({ kundliId, language }: Props) {
 
   return (
     <div className="space-y-4">
+      {loadError && (
+        <div className="p-3 mb-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-800">
+          {hi ? 'डेटा लोड करने में त्रुटि' : 'Failed to load data'}: {loadError}
+        </div>
+      )}
       {/* Header */}
       <div className="text-center">
         <div className="text-3xl mb-1">🖐️</div>

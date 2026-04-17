@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
-import { Loader2, ChevronLeft, ChevronRight, Search, CheckCircle2, AlertTriangle, AlertCircle } from 'lucide-react';
+import { Loader2, ChevronLeft, ChevronRight, ChevronDown, Search, CheckCircle2, AlertTriangle, AlertCircle } from 'lucide-react';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -31,6 +31,9 @@ interface MuhuratDate {
   paksha: string;
   score: number;
   reasons_good: string[];
+  reasons_good_hindi?: string[];
+  reasons_bad?: string[];
+  reasons_bad_hindi?: string[];
   sunrise: string;
   sunset: string;
   rahu_kaal: { start: string; end: string } | string;
@@ -91,6 +94,11 @@ export default function MuhuratFinderTab({ language, t, latitude, longitude }: P
   const [loadingResults, setLoadingResults] = useState(false);
   const [searched, setSearched] = useState(false);
 
+  // Personal options for Chandra Balam + Tara Balam scoring
+  const [showPersonal, setShowPersonal] = useState(false);
+  const [birthNakshatra, setBirthNakshatra] = useState<number | null>(null);
+  const [birthMoonRashi, setBirthMoonRashi] = useState<number | null>(null);
+
   // Fetch activities on mount
   useEffect(() => {
     let cancelled = false;
@@ -139,6 +147,8 @@ export default function MuhuratFinderTab({ language, t, latitude, longitude }: P
         longitude,
         lang: language,
       });
+      if (birthNakshatra !== null) params.append('birth_nakshatra', String(birthNakshatra));
+      if (birthMoonRashi !== null) params.append('birth_moon_rashi', String(birthMoonRashi));
       const data = await api.get(`/api/muhurat/finder?${params}`);
       if (data) setResults(data as MuhuratResult);
     } catch {
@@ -212,6 +222,75 @@ export default function MuhuratFinderTab({ language, t, latitude, longitude }: P
               <Button variant="ghost" size="sm" onClick={goToNextMonth} className="px-2">
                 <ChevronRight className="w-4 h-4" />
               </Button>
+            </div>
+
+            {/* Personal options toggle */}
+            <div className="border-t border-border/40 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowPersonal(s => !s)}
+                className="w-full flex items-center justify-between text-sm text-muted-foreground hover:text-foreground py-1"
+              >
+                <span>
+                  {language === 'hi' ? 'व्यक्तिगत मुहूर्त (वैकल्पिक)' : 'Personal Muhurat (optional)'}
+                </span>
+                <ChevronDown className={`w-4 h-4 transition-transform ${showPersonal ? 'rotate-180' : ''}`} />
+              </button>
+
+              {showPersonal && (
+                <div className="space-y-2 pt-2 border-t border-border/50">
+                  <p className="text-xs text-muted-foreground">
+                    {language === 'hi'
+                      ? 'चन्द्रबल + तारा बल गणना के लिए जन्म विवरण दें'
+                      : 'Enter for personalized Chandra Balam + Tara Balam scoring'}
+                  </p>
+
+                  {/* Birth Nakshatra */}
+                  <div className="space-y-1">
+                    <label className="text-xs font-medium text-foreground">
+                      {language === 'hi' ? 'जन्म नक्षत्र' : 'Birth Nakshatra'}
+                    </label>
+                    <select
+                      value={birthNakshatra !== null ? String(birthNakshatra) : ''}
+                      onChange={e => setBirthNakshatra(e.target.value === '' ? null : Number(e.target.value))}
+                      className="w-full rounded-md border border-input bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-sacred-gold"
+                    >
+                      <option value="">{language === 'hi' ? '-- चुनें --' : '-- Not set --'}</option>
+                      {[
+                        'Ashwini', 'Bharani', 'Krittika', 'Rohini', 'Mrigashira', 'Ardra',
+                        'Punarvasu', 'Pushya', 'Ashlesha', 'Magha', 'Purva Phalguni',
+                        'Uttara Phalguni', 'Hasta', 'Chitra', 'Swati', 'Vishakha',
+                        'Anuradha', 'Jyeshtha', 'Mula', 'Purva Ashadha', 'Uttara Ashadha',
+                        'Shravana', 'Dhanishta', 'Shatabhisha', 'Purva Bhadrapada',
+                        'Uttara Bhadrapada', 'Revati',
+                      ].map((name, idx) => (
+                        <option key={idx} value={idx}>{idx + 1}. {name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Birth Moon Rashi */}
+                  <div className="space-y-1">
+                    <label className="text-xs font-medium text-foreground">
+                      {language === 'hi' ? 'जन्म चन्द्र राशि' : 'Birth Moon Sign'}
+                    </label>
+                    <select
+                      value={birthMoonRashi !== null ? String(birthMoonRashi) : ''}
+                      onChange={e => setBirthMoonRashi(e.target.value === '' ? null : Number(e.target.value))}
+                      className="w-full rounded-md border border-input bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-sacred-gold"
+                    >
+                      <option value="">{language === 'hi' ? '-- चुनें --' : '-- Not set --'}</option>
+                      {[
+                        'Aries / Mesh', 'Taurus / Vrishabha', 'Gemini / Mithuna', 'Cancer / Karka',
+                        'Leo / Simha', 'Virgo / Kanya', 'Libra / Tula', 'Scorpio / Vrishchika',
+                        'Sagittarius / Dhanu', 'Capricorn / Makara', 'Aquarius / Kumbha', 'Pisces / Meena',
+                      ].map((name, idx) => (
+                        <option key={idx} value={idx}>{name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Search button */}

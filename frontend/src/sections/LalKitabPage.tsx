@@ -1,3 +1,5 @@
+// NOTE: LalKitabContext is available for all child tabs via useLalKitab().
+// New tabs should prefer context over props. Existing tabs will be migrated gradually.
 import { useState, useCallback, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -10,6 +12,7 @@ import NotesWidget from '@/components/NotesWidget';
 import { Button } from '@/components/ui/button';
 import type { LalKitabChartData } from '@/components/lalkitab/lalkitab-data';
 import { generateLalKitabChart } from '@/components/lalkitab/lalkitab-data';
+import { LalKitabProvider, useLalKitab } from '@/components/lalkitab/LalKitabContext';
 import LalKitabForm from '@/components/lalkitab/LalKitabForm';
 import type { LalKitabFormData } from '@/components/lalkitab/LalKitabForm';
 import LalKitabDashboardTab from '@/components/lalkitab/LalKitabDashboardTab';
@@ -47,7 +50,16 @@ import LalKitabRemedyTrackerTab from '@/components/lalkitab/LalKitabRemedyTracke
 type View = 'form' | 'generating' | 'result';
 
 export default function LalKitabPage() {
+  return (
+    <LalKitabProvider>
+      <LalKitabPageInner />
+    </LalKitabProvider>
+  );
+}
+
+function LalKitabPageInner() {
   const { t, language } = useTranslation();
+  const ctx = useLalKitab();
   const isHi = language === 'hi';
   const { user } = useAuth();
   const isAstrologer = user?.role === 'astrologer';
@@ -61,8 +73,27 @@ export default function LalKitabPage() {
   const [clientId, setClientId] = useState(locState.clientId || '');
   const [kundliId, setKundliId] = useState(locState.loadKundliId || '');
   const [activeTopTab, setActiveTopTab] = useState('dashboard');
+  const [timezoneAutoDetected, setTimezoneAutoDetected] = useState(false);
   const [edition, setEdition] = useState<'1939' | '1941' | '1942' | '1952'>('1952');
   const EDITIONS = ['1939', '1941', '1942', '1952'] as const;
+
+  // Sync local state to LalKitabContext so child tabs can access via useLalKitab()
+  useEffect(() => { ctx.setChartData(chartData); }, [chartData]);
+  useEffect(() => { ctx.setApiResult(apiResult); }, [apiResult]);
+  useEffect(() => { ctx.setBirthDate(birthDate || null); }, [birthDate]);
+  useEffect(() => { ctx.setKundliId(kundliId || null); }, [kundliId]);
+
+  // Fetch consolidated data when kundli is loaded
+  // NOTE: /api/lalkitab/full/{id} endpoint is not yet implemented in backend.
+  // Uncomment when the backend endpoint is available:
+  // useEffect(() => {
+  //   if (kundliId) {
+  //     api.get(`/api/lalkitab/full/${kundliId}`)
+  //       .then(data => ctx.setFullData(data))
+  //       .catch(err => console.error('Consolidated LK fetch failed:', err));
+  //   }
+  // }, [kundliId]);
+
   const topTabs = [
     { value: 'dashboard', label: t('lk.tab.dashboard'), icon: LayoutDashboard },
     { value: 'chart', label: t('auto.chart'), icon: ChartPie },
@@ -99,6 +130,7 @@ export default function LalKitabPage() {
   const handleGenerate = useCallback(async (formData: LalKitabFormData) => {
     setView('generating');
     setError('');
+    setTimezoneAutoDetected(!formData.timezone_offset);
     setBirthDate(formData.date);
     try {
       const payload: any = {
@@ -111,6 +143,7 @@ export default function LalKitabPage() {
         timezone_offset: formData.timezone_offset ?? (() => {
           const browserOffset = -(new Date().getTimezoneOffset() / 60);
           console.warn('Timezone offset not explicitly provided — using browser timezone:', browserOffset);
+          setTimezoneAutoDetected(true);
           return browserOffset;
         })(),
         gender: formData.gender,
@@ -227,6 +260,38 @@ export default function LalKitabPage() {
               <ArrowLeft className="w-4 h-4 mr-2" />
               {t('lk.backToForm')}
             </Button>
+
+            {timezoneAutoDetected && (
+              <div className="flex items-center gap-2 p-3 mb-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
+                <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>
+                  {language === 'hi'
+                    ? 'समय क्षेत्र स्वचालित रूप से ब्राउज़र से लिया गया है। सटीक कुंडली के लिए जन्म स्थान का समय क्षेत्र सत्यापित करें।'
+                    : 'Timezone auto-detected from browser. Verify birth location timezone for accurate charts.'}
+                </span>
+              </div>
+            )}
+
+            {chartData?.isIncomplete && (
+              <div className="p-4 mb-4 bg-amber-50 border-2 border-amber-300 rounded-xl">
+                <h3 className="font-semibold text-amber-900 mb-1">
+                  {language === 'hi' ? '⚠️ अधूरी कुंडली' : '⚠️ Incomplete Chart'}
+                </h3>
+                <p className="text-sm text-amber-800">
+                  {language === 'hi'
+                    ? 'कुछ ग्रहों की स्थिति उपलब्ध नहीं है। विश्लेषण की सटीकता प्रभावित हो सकती है।'
+                    : 'Some planet positions are missing. Analysis accuracy may be affected.'}
+                </p>
+                {chartData.missingPlanets?.length > 0 && (
+                  <p className="text-xs text-amber-700 mt-2">
+                    {language === 'hi' ? 'अनुपस्थित ग्रह: ' : 'Missing planets: '}
+                    <span className="font-mono">{chartData.missingPlanets.join(', ')}</span>
+                  </p>
+                )}
+              </div>
+            )}
 
             <Tabs value={activeTopTab} onValueChange={setActiveTopTab} className="w-full">
               <div className="mb-4">

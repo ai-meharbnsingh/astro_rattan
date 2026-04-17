@@ -65,6 +65,8 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
   useEffect(() => {
     if (!kundliId) return;
     setAnalysisLoading(true);
+    // NOTE: Backend uses /api/kp-lalkitab/ prefix for this endpoint (naming inconsistency).
+    // Do not change to /api/lalkitab/ — the backend route is registered as /api/kp-lalkitab/lk-analysis.
     api.post('/api/kp-lalkitab/lk-analysis', { kundli_id: kundliId })
       .then(setAnalysisData)
       .catch(() => setAnalysisError(t('lk.advanced.loadingAnalysis')))

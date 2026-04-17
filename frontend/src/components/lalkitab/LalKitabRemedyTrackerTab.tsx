@@ -198,13 +198,19 @@ export default function LalKitabRemedyTrackerTab({ kundliId, language }: Props) 
   const [loading, setLoading] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
   const [actionId, setActionId] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const load = useCallback(() => {
     if (!kundliId) return;
     setLoading(true);
+    setLoadError(null);
     api.get(`/api/lalkitab/remedy-tracker/${kundliId}`)
       .then((d: { trackers: TrackerEntry[] }) => setTrackers(d.trackers))
-      .catch(() => {})
+      .catch((err) => {
+        console.error('Failed to load remedy trackers:', err);
+        const msg = err instanceof Error ? err.message : (typeof err === 'string' ? err : 'Unknown error');
+        setLoadError(msg);
+      })
       .finally(() => setLoading(false));
   }, [kundliId]);
 
@@ -215,7 +221,11 @@ export default function LalKitabRemedyTrackerTab({ kundliId, language }: Props) 
     try {
       await api.post(`/api/lalkitab/remedy-tracker/${trackerId}/checkin`, { missed });
       load();
-    } catch { /* silent */ }
+    } catch (err) {
+      console.error('Failed to check in remedy:', err);
+      const msg = err instanceof Error ? err.message : (typeof err === 'string' ? err : 'Unknown error');
+      setLoadError(msg);
+    }
     setActionId(null);
   };
 
@@ -224,7 +234,11 @@ export default function LalKitabRemedyTrackerTab({ kundliId, language }: Props) 
     try {
       await api.delete(`/api/lalkitab/remedy-tracker/${trackerId}`);
       load();
-    } catch { /* silent */ }
+    } catch (err) {
+      console.error('Failed to delete tracker:', err);
+      const msg = err instanceof Error ? err.message : (typeof err === 'string' ? err : 'Unknown error');
+      setLoadError(msg);
+    }
     setActionId(null);
   };
 
@@ -244,6 +258,11 @@ export default function LalKitabRemedyTrackerTab({ kundliId, language }: Props) 
 
   return (
     <div className="space-y-4">
+      {loadError && (
+        <div className="p-3 mb-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-800">
+          {hi ? 'डेटा लोड करने में त्रुटि' : 'Failed to load data'}: {loadError}
+        </div>
+      )}
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <div>

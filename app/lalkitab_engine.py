@@ -998,7 +998,20 @@ def get_remedies(planet_positions: dict, chart_data: "dict | None" = None) -> di
     result = {}
 
     for planet, sign in planet_positions.items():
-        lk_house = _SIGN_TO_LK_HOUSE.get(sign, 1)
+        # Invalid sign = unknown house, NOT Aries/house-1. Surface honestly.
+        lk_house = _SIGN_TO_LK_HOUSE.get(sign, 0)
+        if lk_house == 0:
+            result[planet] = {
+                "sign": sign,
+                "lk_house": 0,
+                "dignity": "Unknown",
+                "strength": 0.0,
+                "remedy": None,
+                "has_remedy": False,
+                "remedies": [],
+                "error": f"Invalid sign '{sign}' — cannot compute Lal Kitab house",
+            }
+            continue
         afflictions: list = []
 
         if chart_data and isinstance(chart_data, dict) and "planets" in chart_data:

@@ -12,13 +12,21 @@ const PLANET_DOT: Record<string, string> = {
 export default function LalKitabTechnicalTab({ kundliId, language }: Props) {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const hi = language === 'hi';
 
   useEffect(() => {
     if (!kundliId) return;
     setLoading(true);
+    setLoadError(null);
     api.get(`/api/lalkitab/technical/${kundliId}`)
-      .then(setData).catch(() => {}).finally(() => setLoading(false));
+      .then(setData)
+      .catch((err) => {
+        console.error('Failed to load technical data:', err);
+        const msg = err instanceof Error ? err.message : (typeof err === 'string' ? err : 'Unknown error');
+        setLoadError(msg);
+      })
+      .finally(() => setLoading(false));
   }, [kundliId]);
 
   if (!kundliId) return (
@@ -27,6 +35,11 @@ export default function LalKitabTechnicalTab({ kundliId, language }: Props) {
     </div>
   );
   if (loading) return <div className="flex justify-center py-16"><Loader2 className="w-8 h-8 animate-spin text-sacred-gold" /></div>;
+  if (loadError && !data) return (
+    <div className="p-3 mb-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-800">
+      {hi ? 'डेटा लोड करने में त्रुटि' : 'Failed to load data'}: {loadError}
+    </div>
+  );
   if (!data) return null;
 
   const { chalti_gaadi, dhur_dhur_aage, soya_ghar, planet_statuses, muththi, kayam } = data;
@@ -49,6 +62,11 @@ export default function LalKitabTechnicalTab({ kundliId, language }: Props) {
 
   return (
     <div className="space-y-6">
+      {loadError && (
+        <div className="p-3 mb-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-800">
+          {hi ? 'डेटा लोड करने में त्रुटि' : 'Failed to load data'}: {loadError}
+        </div>
+      )}
 
       {/* ── 1. CHALTI GAADI ── */}
       <div className="card-sacred rounded-xl p-4">
