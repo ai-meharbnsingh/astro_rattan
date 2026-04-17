@@ -71,10 +71,30 @@ MUHURAT_REASONS = {
     "krishna_paksha_avoided": {"en": "Krishna Paksha avoided", "hi": "कृष्ण पक्ष वर्जित"},
     "amavasya": {"en": "Amavasya (New Moon)", "hi": "अमावस्या"},
     "ekadashi": {"en": "Ekadashi", "hi": "एकादशी"},
-    "bhadra": {"en": "Bhadra Kaal", "hi": "भद्रा काल"},
+    "bhadra": {"en": "Bhadra Kaal (Earth realm)", "hi": "भद्रा काल (भू-लोक)"},
     "rahu_kaal": {"en": "Rahu Kaal", "hi": "राहु काल"},
     "panchaka": {"en": "Panchaka", "hi": "पंचक"},
     "ganda_moola": {"en": "Ganda Moola", "hi": "गण्ड मूल"},
+    "dagdha_tithi": {"en": "Dagdha Tithi (burned day)", "hi": "दग्ध तिथि"},
+    "guru_asta": {"en": "Jupiter combust (Guru Asta) — marriage forbidden", "hi": "गुरु अस्त — विवाह वर्जित"},
+    "shukra_asta": {"en": "Venus combust (Shukra Asta) — marriage forbidden", "hi": "शुक्र अस्त — विवाह वर्जित"},
+    "kula_kanthaka": {"en": "Kula Kanthaka Dosha (Mars afflicts Moon)", "hi": "कुल कण्टक दोष (मंगल चंद्र से अशुभ भाव में)"},
+}
+
+# ============================================================
+# DAGDHA TITHI — Burned day: specific Tithi + Weekday combos
+# (Muhurta Chintamani, Shubhashubha Prakarana)
+# Weekday: 0=Mon, 1=Tue, 2=Wed, 3=Thu, 4=Fri, 5=Sat, 6=Sun
+# Tithi: normalised 1-15
+# ============================================================
+DAGDHA_TITHIS: Dict[int, int] = {
+    6: 2,   # Sunday  + Dwitiya (2)
+    0: 7,   # Monday  + Saptami (7)
+    1: 12,  # Tuesday + Dwadashi (12)
+    2: 3,   # Wednesday + Tritiya (3)
+    3: 11,  # Thursday + Ekadashi (11)
+    4: 6,   # Friday  + Shashthi (6)
+    5: 9,   # Saturday + Navami (9)
 }
 
 # ============================================================

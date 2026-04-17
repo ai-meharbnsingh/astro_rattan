@@ -4,7 +4,7 @@ from datetime import date
 from typing import Any, Dict, List
 
 from app.muhurat_rules import (
-    MUHURAT_RULES, MUHURAT_ACTIVITIES,
+    MUHURAT_RULES, MUHURAT_ACTIVITIES, DAGDHA_TITHIS,
     get_all_activities, check_day_favorable, normalize_tithi_for_rules,
 )
 from app.panchang_engine import calculate_panchang
@@ -66,26 +66,81 @@ def find_muhurat_dates(
         # Check avoid conditions from panchang data
         skip = False
         avoid = rules.get("avoid_conditions", [])
+        planets = panchang.get("planetary_positions", [])
 
-        if "rahu_kaal" in avoid:
-            # Rahu Kaal exists but we just note it, don't skip the whole day
-            pass
+        # Helper: get a planet dict by name
+        def _planet(name: str):
+            for p in planets:
+                if p.get("name") == name:
+                    return p
+            return {}
+
+        # --- Rahu Kaal: note only, never skip the whole day ---
+        # (Rahu Kaal is shown in results so user can pick a window outside it)
+
+        # --- FIX 1: Bhadra realm — only Earth-realm Vishti is dangerous ---
+        # Moon in Simha(4)/Kanya(5) or Kumbha(10)/Meena(11) = Bhadra on Earth = forbidden
+        # Moon in all other signs = Bhadra in Swarga/Patala = harmless
         if "bhadra" in avoid:
             karana_name = panchang.get("karana", {}).get("name", "").lower()
             if "vishti" in karana_name or "bhadra" in karana_name:
-                result["reasons_bad"].append("Bhadra/Vishti Karana active")
-                skip = True
+                moon_rashi_idx = _planet("Moon").get("rashi_index")
+                BHADRA_EARTH_SIGNS = {4, 5, 10, 11}  # Leo, Virgo, Aquarius, Pisces
+                if moon_rashi_idx is None or moon_rashi_idx in BHADRA_EARTH_SIGNS:
+                    result["reasons_bad"].append("Bhadra/Vishti on Earth (Leo/Virgo/Aquarius/Pisces Moon)")
+                    result["reasons_bad_hindi"] = result.get("reasons_bad_hindi", [])
+                    result["reasons_bad_hindi"].append("भद्रा काल — भू-लोक (सिंह/कन्या/कुम्भ/मीन राशि चंद्र)")
+                    skip = True
+                # else: Bhadra in Swarga/Patala — harmless, do not skip
+
+        # --- Panchaka ---
         if "panchaka" in avoid:
             panchaka = panchang.get("panchaka")
             if isinstance(panchaka, dict) and panchaka.get("active"):
                 result["reasons_bad"].append("Panchaka active")
                 skip = True
+
+        # --- Ganda Moola ---
         if "ganda_moola" in avoid:
             special = panchang.get("special_yogas", {})
             gm = special.get("ganda_moola", {})
             if isinstance(gm, dict) and gm.get("active"):
                 result["reasons_bad"].append("Ganda Moola active")
                 skip = True
+
+        # --- FIX 2: Dagdha Tithi — burned day for ALL activities ---
+        norm_t = normalize_tithi_for_rules(tithi_index)
+        if DAGDHA_TITHIS.get(weekday) == norm_t:
+            result["reasons_bad"].append("Dagdha Tithi (burned day — avoid all new work)")
+            skip = True
+
+        # ============================================================
+        # Marriage-specific classical checks (Muhurta Chintamani)
+        # ============================================================
+        if activity_key == "marriage":
+            # --- FIX 3: Guru/Shukra Asta — Jupiter or Venus combust ---
+            # Per classical rule: when Guru or Shukra is asta (combust),
+            # all marriages are absolutely forbidden.
+            guru = _planet("Jupiter")
+            shukra = _planet("Venus")
+            if guru.get("combusted"):
+                result["reasons_bad"].append("Guru Asta (Jupiter combust) — marriages forbidden")
+                skip = True
+            if shukra.get("combusted"):
+                result["reasons_bad"].append("Shukra Asta (Venus combust) — marriages forbidden")
+                skip = True
+
+            # --- FIX 4: Kula Kanthaka Dosha ---
+            # Mars in 1st, 8th, or 12th house from Moon = destruction of marriage
+            moon_ridx = _planet("Moon").get("rashi_index")
+            mars_ridx = _planet("Mars").get("rashi_index")
+            if moon_ridx is not None and mars_ridx is not None:
+                mars_house = ((mars_ridx - moon_ridx) % 12) + 1
+                if mars_house in (1, 8, 12):
+                    result["reasons_bad"].append(
+                        f"Kula Kanthaka Dosha — Mars in H{mars_house} from Moon"
+                    )
+                    skip = True
 
         if skip:
             continue
