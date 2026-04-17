@@ -1952,3 +1952,59 @@ def get_lk_dasha(
         current_date=_date_today.today().isoformat(),
     )
     return result
+
+
+# ─────────────────────────────────────────────────────────────
+# Lal Kitab Prediction Feedback (per-kundli, per-area ratings)
+# ─────────────────────────────────────────────────────────────
+
+@router.get("/api/lalkitab/predictions/feedback/{kundli_id}")
+def get_prediction_feedback(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Return saved prediction feedback ratings for a kundli."""
+    row = db.execute(
+        "SELECT feedback FROM lk_prediction_feedback WHERE user_id = %s AND kundli_id = %s",
+        (user["sub"], kundli_id),
+    ).fetchone()
+    return {"feedback": json.loads(row["feedback"]) if row else {}}
+
+
+@router.post("/api/lalkitab/predictions/feedback")
+def save_prediction_feedback(
+    payload: dict,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Upsert prediction feedback ratings. payload: {kundli_id, feedback: {areaKey: rating}}"""
+    kundli_id = payload.get("kundli_id")
+    feedback = payload.get("feedback", {})
+    if not kundli_id:
+        raise HTTPException(status_code=400, detail="kundli_id required")
+
+    # Verify kundli ownership
+    row = db.execute(
+        "SELECT id FROM kundlis WHERE id = %s AND user_id = %s",
+        (kundli_id, user["sub"]),
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Kundli not found")
+
+    existing = db.execute(
+        "SELECT id FROM lk_prediction_feedback WHERE user_id = %s AND kundli_id = %s",
+        (user["sub"], kundli_id),
+    ).fetchone()
+    if existing:
+        db.execute(
+            "UPDATE lk_prediction_feedback SET feedback = %s, updated_at = NOW() WHERE user_id = %s AND kundli_id = %s",
+            (json.dumps(feedback), user["sub"], kundli_id),
+        )
+    else:
+        db.execute(
+            "INSERT INTO lk_prediction_feedback (user_id, kundli_id, feedback) VALUES (%s, %s, %s)",
+            (user["sub"], kundli_id, json.dumps(feedback)),
+        )
+    db.commit()
+    return {"ok": True}

@@ -278,7 +278,7 @@ export default function LalKitabPage() {
                     <ChevronDown className="w-4 h-4" />
                   </summary>
                   <div className="p-4">
-                    <LalKitabPredictionTab chartData={chartData} />
+                    <LalKitabPredictionTab chartData={chartData} kundliId={kundliId} />
                   </div>
                 </details>
                 <details className="border border-sacred-gold/20 rounded-xl overflow-hidden">
