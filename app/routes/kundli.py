@@ -21,7 +21,11 @@ from app.dosha_engine import (
     analyze_yogas_and_doshas,
     to_translation_key,
 )
-from app.dasha_engine import calculate_dasha, calculate_extended_dasha
+from app.dasha_engine import (
+    calculate_dasha,
+    calculate_extended_dasha,
+    get_current_dasha_phala,
+)
 from app.varshphal_engine import calculate_varshphal
 from app.divisional_charts import (
     calculate_divisional_chart_detailed,
@@ -31,6 +35,7 @@ from app.divisional_charts import (
     DIVISIONAL_CHARTS,
 )
 from app.ashtakvarga_engine import calculate_ashtakvarga
+from app.varga_grading_engine import calculate_varga_strength
 from app.shadbala_engine import calculate_shadbala, calculate_bhav_bala
 from app.avakhada_engine import calculate_avakhada
 from app.transit_engine import calculate_transits, calculate_transit_forecast
@@ -631,6 +636,29 @@ def get_dasha(
     return _compute_dasha(db, kundli_id, current_user["sub"])
 
 
+@router.get("/{kundli_id}/dasha-phala", status_code=status.HTTP_200_OK)
+def get_dasha_phala(
+    kundli_id: str,
+    as_of: Optional[str] = Query(None, description="YYYY-MM-DD (defaults to today)"),
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """
+    Phaladeepika Adh. 20 + 21 — classical effect synthesis for the currently
+    running Mahadasha + Antardasha of a kundli (bilingual EN + HI).
+    """
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    result = get_current_dasha_phala(
+        chart_data=chart,
+        birth_date=str(row["birth_date"]),
+        as_of_date=as_of,
+    )
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
 @router.get("/{kundli_id}/divisional-charts", status_code=status.HTTP_200_OK)
 def list_divisional_charts(
     kundli_id: str,
@@ -711,6 +739,15 @@ def get_divisional_chart(
         birth_time_uncertainty = body.birth_time_uncertainty_seconds
         d60_analysis = calculate_d60_analysis(planet_longitudes, birth_time_uncertainty)
 
+    # Phaladeepika Adh. 3 (Vargadhyaya) — Saptavarga strength grading.
+    # Always returned (independent of which divisional chart is being viewed)
+    # so the frontend can show the tier table alongside any divisional view.
+    try:
+        varga_strength = calculate_varga_strength(planet_longitudes)
+    except Exception:  # pragma: no cover — defensive guard only
+        logger.exception("Varga-strength grading failed")
+        varga_strength = None
+
     return {
         "kundli_id": kundli_id,
         "person_name": row["person_name"],
@@ -721,6 +758,7 @@ def get_divisional_chart(
         "planet_positions": planet_positions,
         "houses": houses,
         "d60_analysis": d60_analysis,
+        "varga_strength": varga_strength,
     }
 
 
@@ -1265,6 +1303,22 @@ def get_roga_analysis(
     row = _fetch_kundli(db, kundli_id, current_user["sub"])
     chart = _chart_data(row)
     result = analyze_diseases(chart)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
+@router.get("/{kundli_id}/bhava-phala", status_code=status.HTTP_200_OK)
+def get_bhava_phala(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Classical Bhava Phala (Adh. 8) + Bhava-misra-phala (Adh. 16) — Phaladeepika."""
+    from app.bhava_phala_engine import analyze_bhava_phala
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    result = analyze_bhava_phala(chart)
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result

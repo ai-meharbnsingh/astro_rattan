@@ -101,6 +101,74 @@ export default function DivisionalTab({
             </div>
           </div>
 
+          {/* Varga Strength (Phaladeepika Adh. 3 — Vargadhyaya) */}
+          {divisionalData.varga_strength?.planets && (
+            <div className="bg-muted rounded-xl p-5 border border-border shadow-sm animate-in fade-in slide-in-from-bottom-4">
+              <div className="mb-3 border-b border-border/30 pb-3">
+                <Heading as={4} variant={4} className="text-primary">
+                  {t('auto.vargaStrength')}
+                </Heading>
+                <p className="text-xs text-foreground/70 mt-1">
+                  {t('auto.vargaStrengthDesc')}
+                </p>
+                {divisionalData.varga_strength.sloka_ref && (
+                  <p className="text-[10px] italic text-foreground/50 mt-1">
+                    {divisionalData.varga_strength.sloka_ref}
+                  </p>
+                )}
+              </div>
+
+              <div className="overflow-x-auto">
+                <Table className="w-full text-sm border-collapse">
+                  <TableHeader>
+                    <TableRow className="bg-muted/10">
+                      <TableHead className="text-left p-2.5 text-primary font-bold border-b border-border">
+                        {t('table.planet')}
+                      </TableHead>
+                      <TableHead className="text-center p-2.5 text-primary font-bold border-b border-border">
+                        {t('auto.ownVargas')}
+                      </TableHead>
+                      <TableHead className="text-left p-2.5 text-primary font-bold border-b border-border">
+                        {t('auto.vargaTier')}
+                      </TableHead>
+                      <TableHead className="text-left p-2.5 text-primary font-bold border-b border-border">
+                        {t('auto.vargaStrengthDesc').split('.')[0]}
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {Object.entries(divisionalData.varga_strength.planets).map(
+                      ([planet, info]: [string, any]) => {
+                        const tier = info.tier || {};
+                        const tierName = language === 'hi' ? tier.name_hi : tier.name;
+                        const tierDesc = language === 'hi' ? tier.description_hi : tier.description;
+                        return (
+                          <TableRow
+                            key={planet}
+                            className="border-t border-border/20 hover:bg-muted/5 transition-colors"
+                          >
+                            <TableCell className="p-2.5 text-foreground font-bold whitespace-nowrap">
+                              {translatePlanet(planet, language)}
+                            </TableCell>
+                            <TableCell className="p-2.5 text-center text-foreground font-mono">
+                              {info.count}/7
+                            </TableCell>
+                            <TableCell className="p-2.5 text-primary font-bold italic">
+                              {tierName}
+                            </TableCell>
+                            <TableCell className="p-2.5 text-foreground text-xs leading-relaxed">
+                              {tierDesc}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      }
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          )}
+
           {/* D60 Special Analysis */}
           {divisionalData.d60_analysis && (
             <div className="bg-muted rounded-xl p-5 border border-border shadow-sm animate-in fade-in slide-in-from-bottom-4 space-y-6">

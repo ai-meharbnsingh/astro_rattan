@@ -56,6 +56,24 @@ _PLANET_SPEED = {
 _KNOWN_PLANETS = set(_PLANET_SPEED.keys())
 
 
+def _derive_lk_house(info: dict) -> int:
+    """
+    Consistent LK-house derivation used by every route.
+
+    Prefers explicit chart_data.planets[p]["house"] (authoritative)
+    and falls back to sign-based mapping only when house is missing.
+    Matches the logic inside _get_lk_positions() and _positions_from_chart()
+    so we have ONE rule across the codebase.
+    """
+    if isinstance(info, dict):
+        house_val = info.get("house")
+        if isinstance(house_val, int) and house_val > 0:
+            return house_val
+        sign = info.get("sign", "")
+        return _SIGN_TO_LK_HOUSE.get(sign, 0)
+    return 0
+
+
 @router.post("/api/kp/cuspal")
 def kp_cuspal(payload: dict, user: dict = Depends(get_current_user), db: Any = Depends(get_db)):
     """
@@ -156,19 +174,27 @@ def lalkitab_remedies(payload: dict, user: dict = Depends(get_current_user), db:
 
     chart_data = json.loads(row["chart_data"])
 
-    # Extract planet positions as {planet: sign}
+    # Extract planet positions as {planet: sign}. Skip planets without a valid sign
+    # rather than silently defaulting to "Aries" (which would fabricate remedies).
     planet_positions = {}
+    missing_sign_planets = []
     for planet_name, info in chart_data.get("planets", {}).items():
-        planet_positions[planet_name] = info.get("sign", "Aries")
+        sign = info.get("sign")
+        if isinstance(sign, str) and sign in _SIGN_TO_LK_HOUSE:
+            planet_positions[planet_name] = sign
+        else:
+            missing_sign_planets.append(planet_name)
 
     if not planet_positions:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Chart data has no planet positions",
+            detail="Chart data has no planet positions with valid signs",
         )
 
     try:
-        res = get_remedies(planet_positions)
+        # Pass chart_data so the enriched strength model runs (house +
+        # combustion + retrograde), not just sign-only dignity.
+        res = get_remedies(planet_positions, chart_data=chart_data)
         # Transform into flat list for frontend with translations.
         # Look up the authentic Hindi (Devanagari) version from REMEDIES_BY_HOUSE
         # using the planet + lk_house. If no match is found we emit remedy_hi=None
@@ -220,11 +246,18 @@ def get_enriched_remedies(kundli_id: str, user: dict = Depends(get_current_user)
         raise HTTPException(status_code=404, detail="Kundli not found")
 
     chart_data = json.loads(row["chart_data"])
-    planet_positions = {p: info.get("sign", "Aries") for p, info in chart_data.get("planets", {}).items()}
+    # Only include planets with valid signs — do NOT silently default to Aries.
+    planet_positions = {
+        p: info.get("sign")
+        for p, info in chart_data.get("planets", {}).items()
+        if isinstance(info.get("sign"), str) and info.get("sign") in _SIGN_TO_LK_HOUSE
+    }
     if not planet_positions:
-        raise HTTPException(status_code=400, detail="No planet positions in chart")
+        raise HTTPException(status_code=400, detail="No planet positions with valid signs in chart")
 
-    res = get_remedies(planet_positions)
+    # Pass chart_data so enriched remedies use the full strength model
+    # (house + combustion + retrograde), not sign-only dignity.
+    res = get_remedies(planet_positions, chart_data=chart_data)
     enriched = []
     for planet, info in res.items():
         r = info["remedy"]
@@ -471,8 +504,8 @@ def get_nishaniyan(
     for planet_name, info in chart_data.get("planets", {}).items():
         if planet_name not in _KNOWN_PLANETS:
             continue
-        sign = info.get("sign", "Aries")
-        house = _SIGN_TO_LK_HOUSE.get(sign, 0)
+        # Unified derivation: prefer explicit house, fall back to sign
+        house = _derive_lk_house(info)
         if house:
             planet_house_pairs.append((planet_name.lower(), house))
 
@@ -555,8 +588,8 @@ def get_rin(
     for planet_name, info in chart_data.get("planets", {}).items():
         if planet_name not in _KNOWN_PLANETS:
             continue
-        sign = info.get("sign", "Aries")
-        house = _SIGN_TO_LK_HOUSE.get(sign, 0)
+        # Unified derivation: prefer explicit house, fall back to sign
+        house = _derive_lk_house(info)
         # NOTE: Simplified affliction model — checks only houses 6/8/12 (Dusthana).
         # Does not include lordship afflictions or Pakka Ghar deviations. Full
         # affliction model lives in lalkitab_advanced.analyze_full_affliction().
@@ -684,8 +717,8 @@ def _get_planet_positions(kundli_id: str, user_id: str, db: Any) -> dict:
     for planet_name, info in chart_data.get("planets", {}).items():
         if planet_name not in _KNOWN_PLANETS:
             continue
-        sign = info.get("sign", "Aries")
-        house = _SIGN_TO_LK_HOUSE.get(sign, 0)
+        # Unified derivation: prefer explicit house, fall back to sign
+        house = _derive_lk_house(info)
         positions[planet_name.lower()] = house
     return positions
 
@@ -1025,20 +1058,63 @@ def get_lalkitab_advanced(
         for p in positions
     ]
 
-    # Calculate Hora-based karmic debts if birth datetime available
+    # Calculate Hora-based karmic debts if birth datetime available.
+    # Hora requires the REAL sunrise for the birth date + location — we compute
+    # it from panchang_engine and only enable the Hora path when sunrise
+    # succeeds. When it fails we pass sunrise_time=None so the advanced
+    # calculator emits "_skipped=True" rather than silently using 06:00.
     hora_debt_analysis = None
+    hora_debt_available = False
+    hora_debt_reason = None
     try:
         from datetime import datetime
         birth_datetime = datetime.combine(
             datetime.strptime(row["birth_date"], "%Y-%m-%d").date(),
             datetime.strptime(row["birth_time"], "%H:%M:%S").time()
         )
+
+        # Pull real sunrise from Panchang engine (uses Swiss Ephemeris
+        # when available, falls back to NOAA approximation).
+        sunrise_time_obj = None
+        # Only compute Hora sunrise if kundli has real location data.
+        # Silent fallback to Delhi would produce wrong Hora lord for any non-Delhi birth.
+        if (row["latitude"] is None or row["longitude"] is None or row["timezone_offset"] is None):
+            hora_debt_reason = "kundli missing location/timezone — Hora requires real birth coordinates"
+        else:
+            try:
+                from app.panchang_engine import _compute_sun_times
+                sun_times = _compute_sun_times(
+                    row["birth_date"],
+                    float(row["latitude"]),
+                    float(row["longitude"]),
+                    float(row["timezone_offset"]),
+                )
+                sr_str = sun_times.get("sunrise")
+                if sr_str and sr_str != "--:--":
+                    sunrise_time_obj = datetime.strptime(sr_str, "%H:%M").time()
+            except Exception as sr_exc:
+                logger.warning("Sunrise computation failed for Hora: %s", sr_exc)
+                hora_debt_reason = "sunrise computation failed"
+
+        if sunrise_time_obj is None and hora_debt_reason is None:
+            hora_debt_reason = "sunrise not available"
+
         hora_debt_analysis = calculate_karmic_debts_with_hora(
-            formatted_positions, 
-            birth_datetime=birth_datetime
+            formatted_positions,
+            birth_datetime=birth_datetime,
+            sunrise_time=sunrise_time_obj,
         )
+        # If the analysis skipped (no sunrise), surface the flag; otherwise
+        # treat as available.
+        hora_info_local = (hora_debt_analysis or {}).get("hora_analysis") or {}
+        if hora_info_local.get("_skipped"):
+            hora_debt_available = False
+            hora_debt_reason = hora_debt_reason or "sunrise not computed"
+        else:
+            hora_debt_available = True
     except Exception as e:
         logger.warning("Hora calculation failed: %s", e)
+        hora_debt_reason = f"exception: {type(e).__name__}"
 
     # Calculate new logic
     lk_aspects = calculate_lk_aspects(formatted_positions)
@@ -1049,6 +1125,8 @@ def get_lalkitab_advanced(
         "masnui_planets": calculate_masnui_planets(formatted_positions),
         "karmic_debts": hora_debt_analysis["final_debts"] if hora_debt_analysis else calculate_karmic_debts(formatted_positions),
         "karmic_debts_hora_analysis": hora_debt_analysis,
+        "hora_debt_available": hora_debt_available,
+        "hora_debt_reason": hora_debt_reason,
         "teva_type": identify_teva_type(formatted_positions),
         "prohibitions": get_prohibitions(formatted_positions),
         "aspects": lk_aspects,
@@ -1095,8 +1173,8 @@ def lk_analysis(
     for planet_name, info in chart_data.get("planets", {}).items():
         if planet_name not in _KNOWN_PLANETS:
             continue
-        sign = info.get("sign", "Aries")
-        house = _SIGN_TO_LK_HOUSE.get(sign, 0)
+        # Unified derivation: prefer explicit house, fall back to sign
+        house = _derive_lk_house(info)
         if house:
             formatted_positions.append({
                 "planet": planet_name,
@@ -1164,8 +1242,8 @@ def lk_interpretations(
     for planet_name, info in chart_data.get("planets", {}).items():
         if planet_name not in _KNOWN_PLANETS:
             continue
-        sign = info.get("sign", "Aries")
-        house = _SIGN_TO_LK_HOUSE.get(sign, 0)
+        # Unified derivation: prefer explicit house, fall back to sign
+        house = _derive_lk_house(info)
         if house:
             formatted_positions.append({
                 "planet": planet_name,
@@ -1223,8 +1301,8 @@ def lk_validated_remedies(
     for planet_name, info in chart_data.get("planets", {}).items():
         if planet_name not in _KNOWN_PLANETS:
             continue
-        sign = info.get("sign", "Aries")
-        house = _SIGN_TO_LK_HOUSE.get(sign, 0)
+        # Unified derivation: prefer explicit house, fall back to sign
+        house = _derive_lk_house(info)
         if house:
             formatted_positions.append({
                 "planet": planet_name,
@@ -1415,12 +1493,7 @@ def _get_lk_positions(kundli_id: str, user_sub: str, db: Any):
             continue
         if not isinstance(info, dict):
             continue
-        # Prefer explicit house number if present, else derive from sign
-        if "house" in info and isinstance(info["house"], int):
-            house = info["house"]
-        else:
-            sign = info.get("sign", "")
-            house = _SIGN_TO_LK_HOUSE.get(sign, 0)
+        house = _derive_lk_house(info)
         if house > 0:
             positions.append({"planet": planet_name, "house": house})
     return positions, row
@@ -1567,10 +1640,7 @@ def _positions_from_chart(chart_data: dict) -> list:
     for planet_name, info in (chart_data or {}).get("planets", {}).items():
         if planet_name not in _KNOWN_PLANETS or not isinstance(info, dict):
             continue
-        if "house" in info and isinstance(info["house"], int):
-            house = info["house"]
-        else:
-            house = _SIGN_TO_LK_HOUSE.get(info.get("sign", ""), 0)
+        house = _derive_lk_house(info)
         if house > 0:
             positions.append({"planet": planet_name, "house": house})
     return positions
@@ -2014,3 +2084,233 @@ def save_prediction_feedback(
         )
     db.commit()
     return {"ok": True}
+
+
+# ═══════════════════════════════════════════════════════════════════
+# CONSOLIDATED FULL ENDPOINT — eliminates 15+ waterfall API calls
+# ═══════════════════════════════════════════════════════════════════
+
+@router.get("/api/lalkitab/full/{kundli_id}", status_code=status.HTTP_200_OK)
+def get_lalkitab_full(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """
+    Consolidated Lal Kitab endpoint — returns all core analysis in one response.
+    Eliminates waterfall of individual API calls from the frontend.
+
+    Each section is independently try/except-wrapped so a single failure
+    does not kill the entire response. Failed sections appear in _errors.
+    """
+    result = {
+        "kundli_id": kundli_id,
+        "positions": [],
+        "advanced": None,
+        "remedies": None,
+        "dasha": None,
+        "technical": None,
+        "sacrifice": None,
+        "forbidden": None,
+        "milestones": None,
+        "_errors": {},
+    }
+
+    # ── Positions (always needed — if this fails, bail out entirely) ──
+    positions, row = _get_lk_positions(kundli_id, user["sub"], db)
+    result["positions"] = positions
+
+    raw = row["chart_data"]
+    chart_data = json.loads(raw) if isinstance(raw, str) else (raw or {})
+    birth_date = str(row.get("birth_date") or row.get("dob") or "").strip()
+
+    # Pre-compute formatted_positions used by multiple sections
+    formatted_positions = [
+        {"planet": p["planet"].capitalize(), "house": p["house"]}
+        for p in positions
+    ]
+
+    # ── Advanced (masnui, karmic debts with hora, teva, prohibitions, etc.) ──
+    try:
+        # Hora-based karmic debts
+        hora_debt_analysis = None
+        hora_debt_available = False
+        hora_debt_reason = None
+        try:
+            from datetime import datetime
+            birth_datetime = datetime.combine(
+                datetime.strptime(row["birth_date"], "%Y-%m-%d").date(),
+                datetime.strptime(row["birth_time"], "%H:%M:%S").time()
+            )
+            sunrise_time_obj = None
+            if row["latitude"] is None or row["longitude"] is None or row["timezone_offset"] is None:
+                hora_debt_reason = "kundli missing location/timezone — Hora requires real birth coordinates"
+            else:
+                try:
+                    from app.panchang_engine import _compute_sun_times
+                    sun_times = _compute_sun_times(
+                        row["birth_date"],
+                        float(row["latitude"]),
+                        float(row["longitude"]),
+                        float(row["timezone_offset"]),
+                    )
+                    sr_str = sun_times.get("sunrise")
+                    if sr_str and sr_str != "--:--":
+                        sunrise_time_obj = datetime.strptime(sr_str, "%H:%M").time()
+                except Exception as sr_exc:
+                    logger.warning("full: Sunrise computation failed for Hora: %s", sr_exc)
+                    hora_debt_reason = "sunrise computation failed"
+
+            if sunrise_time_obj is None and hora_debt_reason is None:
+                hora_debt_reason = "sunrise not available"
+
+            hora_debt_analysis = calculate_karmic_debts_with_hora(
+                formatted_positions,
+                birth_datetime=birth_datetime,
+                sunrise_time=sunrise_time_obj,
+            )
+            hora_info_local = (hora_debt_analysis or {}).get("hora_analysis") or {}
+            if hora_info_local.get("_skipped"):
+                hora_debt_available = False
+                hora_debt_reason = hora_debt_reason or "sunrise not computed"
+            else:
+                hora_debt_available = True
+        except Exception as e:
+            logger.warning("full: Hora calculation failed: %s", e)
+            hora_debt_reason = f"exception: {type(e).__name__}"
+
+        lk_aspects = calculate_lk_aspects(formatted_positions)
+        sleeping_info = calculate_sleeping_status(formatted_positions)
+        kayam_planets = calculate_kayam_grah(formatted_positions, lk_aspects)
+
+        result["advanced"] = {
+            "masnui_planets": calculate_masnui_planets(formatted_positions),
+            "karmic_debts": hora_debt_analysis["final_debts"] if hora_debt_analysis else calculate_karmic_debts(formatted_positions),
+            "karmic_debts_hora_analysis": hora_debt_analysis,
+            "hora_debt_available": hora_debt_available,
+            "hora_debt_reason": hora_debt_reason,
+            "teva_type": identify_teva_type(formatted_positions),
+            "prohibitions": get_prohibitions(formatted_positions),
+            "aspects": lk_aspects,
+            "sleeping": sleeping_info,
+            "kayam": kayam_planets,
+        }
+    except Exception as e:
+        logger.warning("full: advanced section failed: %s", e, exc_info=True)
+        result["_errors"]["advanced"] = str(e)
+
+    # ── Remedies (enriched) ──
+    try:
+        planet_positions = {
+            p: info.get("sign")
+            for p, info in chart_data.get("planets", {}).items()
+            if isinstance(info.get("sign"), str) and info.get("sign") in _SIGN_TO_LK_HOUSE
+        }
+        if planet_positions:
+            res = get_remedies(planet_positions, chart_data=chart_data)
+            enriched = []
+            for planet, info in res.items():
+                r = info["remedy"]
+                enriched.append({
+                    "planet": planet,
+                    "planet_hi": PLANET_NAMES_HI.get(planet, planet),
+                    "sign": info["sign"],
+                    "lk_house": info["lk_house"],
+                    "dignity": info["dignity"],
+                    "strength": info["strength"],
+                    "has_remedy": info["has_remedy"],
+                    "urgency": r.get("urgency", "low"),
+                    "remedy_en": r.get("en", ""),
+                    "remedy_hi": r.get("hi", ""),
+                    "problem_en": r.get("problem_en", ""),
+                    "problem_hi": r.get("problem_hi", ""),
+                    "reason_en": r.get("reason_en", ""),
+                    "reason_hi": r.get("reason_hi", ""),
+                    "how_en": r.get("how_en", ""),
+                    "how_hi": r.get("how_hi", ""),
+                })
+            urgency_order = {"high": 0, "medium": 1, "low": 2}
+            enriched.sort(key=lambda x: (0 if x["has_remedy"] else 1, urgency_order.get(x["urgency"], 2), x["lk_house"]))
+            result["remedies"] = {"remedies": enriched}
+        else:
+            result["_errors"]["remedies"] = "no planet positions with valid signs"
+    except Exception as e:
+        logger.warning("full: remedies section failed: %s", e, exc_info=True)
+        result["_errors"]["remedies"] = str(e)
+
+    # ── Dasha (Saala Grah timeline) ──
+    try:
+        if birth_date:
+            result["dasha"] = _get_dasha_timeline(
+                birth_date=birth_date,
+                current_date=_date.today().isoformat(),
+            )
+        else:
+            result["_errors"]["dasha"] = "birth_date not available"
+    except Exception as e:
+        logger.warning("full: dasha section failed: %s", e, exc_info=True)
+        result["_errors"]["dasha"] = str(e)
+
+    # ── Technical (chalti gaadi, dhur-dhur-aage, soya ghar, etc.) ──
+    try:
+        from app.lalkitab_technical import (
+            calculate_chalti_gaadi,
+            calculate_dhur_dhur_aage,
+            calculate_soya_ghar,
+            classify_all_planet_statuses,
+            calculate_muththi,
+        )
+        lk_aspects_tech = calculate_lk_aspects(positions)
+        result["technical"] = {
+            "chalti_gaadi": calculate_chalti_gaadi(positions),
+            "dhur_dhur_aage": calculate_dhur_dhur_aage(positions),
+            "soya_ghar": calculate_soya_ghar(positions),
+            "planet_statuses": classify_all_planet_statuses(positions),
+            "muththi": calculate_muththi(positions),
+            "kayam": calculate_kayam_grah(positions, lk_aspects_tech),
+        }
+    except Exception as e:
+        logger.warning("full: technical section failed: %s", e, exc_info=True)
+        result["_errors"]["technical"] = str(e)
+
+    # ── Sacrifice (Bali Ka Bakra) ──
+    try:
+        from app.lalkitab_sacrifice import analyze_sacrifice
+        sacrifice_results = analyze_sacrifice(positions)
+        result["sacrifice"] = {
+            "sacrifice_count": len(sacrifice_results),
+            "has_sacrifices": len(sacrifice_results) > 0,
+            "results": sacrifice_results,
+        }
+    except Exception as e:
+        logger.warning("full: sacrifice section failed: %s", e, exc_info=True)
+        result["_errors"]["sacrifice"] = str(e)
+
+    # ── Forbidden ──
+    try:
+        from app.lalkitab_forbidden import get_forbidden_remedies
+        forbidden_results = get_forbidden_remedies(positions)
+        result["forbidden"] = {
+            "forbidden_count": len(forbidden_results),
+            "rules": forbidden_results,
+        }
+    except Exception as e:
+        logger.warning("full: forbidden section failed: %s", e, exc_info=True)
+        result["_errors"]["forbidden"] = str(e)
+
+    # ── Milestones (Safar-e-Zindagi) ──
+    try:
+        from app.lalkitab_milestones import calculate_age_milestones
+        if birth_date:
+            result["milestones"] = calculate_age_milestones(birth_date, positions)
+        else:
+            result["_errors"]["milestones"] = "birth_date not available"
+    except Exception as e:
+        logger.warning("full: milestones section failed: %s", e, exc_info=True)
+        result["_errors"]["milestones"] = str(e)
+
+    # Strip _errors if empty (clean response when everything succeeds)
+    if not result["_errors"]:
+        del result["_errors"]
+
+    return result

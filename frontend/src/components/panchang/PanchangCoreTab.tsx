@@ -55,6 +55,49 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
     </span>
   ) : null;
 
+  // Yoga quality badge
+  const yogaData = panchang.yoga as any;
+  const yogaBadge = yogaData?.quality === 'bad' || yogaData?.auspicious === false ? (
+    <span
+      title={`${yogaData?.name || ''} — Yoga Dosha (inauspicious yoga)`}
+      className="inline-block text-[10px] font-bold px-1.5 py-0.5 rounded border bg-red-100 text-red-700 border-red-200 cursor-help"
+    >
+      {isHi ? 'योग दोष' : 'Yoga Dosha'}
+    </span>
+  ) : (
+    <span
+      title={`${yogaData?.name || ''} — Shubha (auspicious yoga)`}
+      className="inline-block text-[10px] font-bold px-1.5 py-0.5 rounded border bg-green-100 text-green-700 border-green-200 cursor-help"
+    >
+      {isHi ? 'शुभ' : 'Shubha'}
+    </span>
+  );
+
+  // Karana quality badge
+  const karanaData = panchang.karana as any;
+  const karanaBadge = karanaData?.is_vishti === true ? (
+    <span
+      title="Inauspicious Karana — avoid new work"
+      className="inline-block text-[10px] font-bold px-1.5 py-0.5 rounded border bg-red-100 text-red-700 border-red-200 cursor-help"
+    >
+      {isHi ? 'विष्टि/भद्रा' : 'Vishti/Bhadra'}
+    </span>
+  ) : karanaData?.type === 'sthira' ? (
+    <span
+      title={`${karanaData?.name || ''} — Sthira (fixed) Karana`}
+      className="inline-block text-[10px] font-bold px-1.5 py-0.5 rounded border bg-slate-100 text-slate-600 border-slate-200 cursor-help"
+    >
+      {isHi ? 'स्थिर' : 'Sthira'}
+    </span>
+  ) : (
+    <span
+      title={`${karanaData?.name || ''} — Chara (moveable) Karana`}
+      className="inline-block text-[10px] font-bold px-1.5 py-0.5 rounded border bg-blue-100 text-blue-600 border-blue-200 cursor-help"
+    >
+      {isHi ? 'चर' : 'Chara'}
+    </span>
+  );
+
   // Dagdha Tithi check (burned day — avoid all new auspicious work)
   const vaarNum = panchang.vaar?.number ?? -1;
   const dagdhaTithiNum = DAGDHA_TITHIS[vaarNum];
@@ -84,14 +127,14 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
       value: isHi ? panchang.yoga.name_hindi || panchang.yoga.name : panchang.yoga.name,
       details: `${t('auto.no')} ${panchang.yoga.number}`,
       endTime: panchang.yoga.end_time || '--',
-      badge: null as React.ReactNode,
+      badge: yogaBadge,
     },
     {
       metric: isHi ? 'करण' : t('panchang.karana'),
       value: isHi ? panchang.karana.name_hindi || panchang.karana.name : panchang.karana.name,
       details: `${t('auto.no')} ${panchang.karana.number}`,
       endTime: panchang.karana.end_time || '--',
-      badge: null as React.ReactNode,
+      badge: karanaBadge,
     },
   ];
 

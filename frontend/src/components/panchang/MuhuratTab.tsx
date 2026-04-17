@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { AlertTriangle, CheckCircle2, Sparkles, Sunrise, Compass, Clover, CircleAlert, Clock } from 'lucide-react';
 import type { FullPanchangData } from '@/sections/Panchang';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
@@ -64,6 +65,30 @@ interface Props {
 
 export default function MuhuratTab({ panchang: _panchang, language, t }: Props) {
   const panchang = _panchang as ExtPanchang;
+
+  // ── Feature 7: Rahu Kaal live status (local browser time) ──
+  const [nowMinutes, setNowMinutes] = useState(() => {
+    const now = new Date();
+    return now.getHours() * 60 + now.getMinutes();
+  });
+  useEffect(() => {
+    const id = setInterval(() => {
+      const now = new Date();
+      setNowMinutes(now.getHours() * 60 + now.getMinutes());
+    }, 60000);
+    return () => clearInterval(id);
+  }, []);
+
+  const toMin = (t: string) => {
+    const [h, m] = (t || '').split(':').map(Number);
+    return isNaN(h) ? -1 : h * 60 + m;
+  };
+  const rahuStart = toMin(panchang.rahu_kaal?.start ?? '');
+  const rahuEnd   = toMin(panchang.rahu_kaal?.end ?? '');
+  const isRahuActive   = rahuStart >= 0 && rahuEnd >= 0 && nowMinutes >= rahuStart && nowMinutes < rahuEnd;
+  const minsToRahu     = rahuStart >= 0 && nowMinutes < rahuStart ? rahuStart - nowMinutes : -1;
+  const minsRemaining  = isRahuActive ? rahuEnd - nowMinutes : -1;
+
   // Inauspicious periods
   const inauspiciousPeriods = [
     {
@@ -258,7 +283,34 @@ export default function MuhuratTab({ panchang: _panchang, language, t }: Props) 
                   <TableCell className="px-2 py-1 font-medium text-foreground whitespace-normal break-words">{period.name}</TableCell>
                   <TableCell className="px-2 py-1 text-foreground">{period.period?.start || '--'}</TableCell>
                   <TableCell className="px-2 py-1 text-foreground">{period.period?.end || '--'}</TableCell>
-                  <TableCell className="px-2 py-1 text-muted-foreground whitespace-normal break-words">{period.desc}</TableCell>
+                  <TableCell className="px-2 py-1 text-muted-foreground whitespace-normal break-words">
+                    {period.desc}
+                    {period.key === 'rahu_kaal' && (
+                      <>
+                        {isRahuActive && (
+                          <span className="ml-1 inline-flex items-center gap-1 text-red-600 font-semibold">
+                            <span className="relative flex h-2 w-2 flex-shrink-0">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
+                              <span className="relative inline-flex h-2 w-2 rounded-full bg-red-600" />
+                            </span>
+                            {language === 'hi' ? 'अभी सक्रिय' : 'Active now'}
+                            {minsRemaining > 0 && (
+                              <span className="font-normal text-red-500">
+                                ({minsRemaining}{language === 'hi' ? 'मि' : 'm'})
+                              </span>
+                            )}
+                          </span>
+                        )}
+                        {!isRahuActive && minsToRahu > 0 && minsToRahu <= 60 && (
+                          <span className="ml-1 inline-flex items-center gap-1 text-orange-600 font-semibold">
+                            {language === 'hi'
+                              ? `${minsToRahu}मिनट में`
+                              : `in ${minsToRahu}m`}
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -701,6 +753,69 @@ export default function MuhuratTab({ panchang: _panchang, language, t }: Props) 
           </div>
         </div>
       )}
+
+      {/* ============================================================ */}
+      {/*  Feature 8: Vrat & Fasting (type = fasting | vrat)           */}
+      {/* ============================================================ */}
+      {(() => {
+        const vratas = (panchang.festivals || []).filter(
+          (f) => f.type === 'fasting' || f.type === 'vrat'
+        );
+        if (vratas.length === 0) return null;
+        return (
+          <div>
+            <h3 className="text-sm font-bold text-sacred-gold uppercase tracking-wider mb-2">
+              {language === 'hi' ? 'आज के व्रत एवं उपवास' : "Today's Vrats & Fasting"}
+            </h3>
+            <div className="space-y-2">
+              {vratas.map((v, i) => (
+                <div key={i} className="rounded-lg border border-sacred-gold/20 bg-sacred-gold/5 p-3">
+                  <div className="flex items-start gap-2">
+                    <span className="text-lg flex-shrink-0">🙏</span>
+                    <div>
+                      <p className="font-semibold text-foreground text-sm">
+                        {language === 'hi' ? v.name_hindi || v.name : v.name}
+                      </p>
+                      {(v.description || v.description_hindi) && (
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {language === 'hi' ? v.description_hindi || v.description : v.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* ============================================================ */}
+      {/*  Feature 8: All Festivals Today (non-fasting)                */}
+      {/* ============================================================ */}
+      {(() => {
+        const festivals = (panchang.festivals || []).filter(
+          (f) => f.type !== 'fasting' && f.type !== 'vrat'
+        );
+        if (festivals.length === 0) return null;
+        return (
+          <div>
+            <h3 className="text-sm font-bold text-sacred-gold uppercase tracking-wider mb-2">
+              {language === 'hi' ? 'आज के त्योहार' : 'Festivals Today'}
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {festivals.map((f, i) => (
+                <span
+                  key={i}
+                  className="inline-flex items-center gap-1 rounded-full border border-sacred-gold/40 bg-sacred-gold/10 px-3 py-1 text-xs font-semibold text-sacred-gold-dark"
+                >
+                  🌅 {language === 'hi' ? f.name_hindi || f.name : f.name}
+                </span>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

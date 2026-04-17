@@ -298,6 +298,29 @@ class TestDashaCalculation:
         resp = client.post("/api/kundli/nonexistent_xyz/dasha", headers=auth_headers)
         assert resp.status_code == 404
 
+    def test_dasha_phala_success(self, client, auth_headers):
+        """GET /api/kundli/{id}/dasha-phala → 200 with MD + AD analysis."""
+        list_resp = client.get("/api/kundli/list", headers=auth_headers)
+        kundli_id = list_resp.json()[0]["id"]
+
+        resp = client.get(
+            f"/api/kundli/{kundli_id}/dasha-phala?as_of=2025-05-15",
+            headers=auth_headers,
+        )
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["kundli_id"] == kundli_id
+        assert data["as_of"] == "2025-05-15"
+        # Either an analysis is present or an informative error — both acceptable
+        # since the seeded test kundli only has a Sun stub.
+        assert "mahadasha" in data
+        assert "antardasha" in data
+
+    def test_dasha_phala_nonexistent(self, client, auth_headers):
+        """GET /api/kundli/{nonexistent}/dasha-phala → 404."""
+        resp = client.get("/api/kundli/nonexistent_xyz/dasha-phala", headers=auth_headers)
+        assert resp.status_code == 404
+
 
 # ── 8. POST /api/kundli/{id}/divisional ──────────────────
 

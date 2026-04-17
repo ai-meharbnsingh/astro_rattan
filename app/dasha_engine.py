@@ -5,8 +5,16 @@ Computes Mahadasha, Antardasha, and Pratyantar Dasha periods based on
 birth nakshatra. Vimshottari total = 120 years. Order starts from birth
 nakshatra lord. The balance of the first dasha is calculated based on
 the Moon's position within the nakshatra at birth.
+
+Also provides classical effect synthesis (Phaladeepika Adhyaya 20 & 21):
+  - analyze_mahadasha_phala()
+  - analyze_antardasha_phala()
+  - get_current_dasha_phala()
 """
+import json
+import os
 from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, List, Optional
 
 
 # ============================================================
@@ -415,4 +423,386 @@ def calculate_extended_dasha(birth_nakshatra: str, birth_date: str, moon_longitu
         "current_dasha": current_dasha,
         "current_antardasha": current_antardasha,
         "current_pratyantar": current_pratyantar,
+    }
+
+
+# ============================================================
+# PHALADEEPIKA ADHYAYA 20 + 21 — DASHA-PHALA SYNTHESIS
+# ============================================================
+
+# Data file path
+_DASHA_PHALA_PATH = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "data", "dasha_phala.json"
+)
+
+# Classical tables (kept local so this module has no hard dependency
+# on ayurdaya_engine and remains importable even if that module changes)
+_SIGN_LORD = {
+    "Aries": "Mars", "Taurus": "Venus", "Gemini": "Mercury",
+    "Cancer": "Moon", "Leo": "Sun", "Virgo": "Mercury",
+    "Libra": "Venus", "Scorpio": "Mars", "Sagittarius": "Jupiter",
+    "Capricorn": "Saturn", "Aquarius": "Saturn", "Pisces": "Jupiter",
+}
+_EXALTATION_SIGN = {
+    "Sun": "Aries", "Moon": "Taurus", "Mars": "Capricorn",
+    "Mercury": "Virgo", "Jupiter": "Cancer", "Venus": "Pisces",
+    "Saturn": "Libra",
+}
+_DEBILITATION_SIGN = {
+    "Sun": "Libra", "Moon": "Scorpio", "Mars": "Cancer",
+    "Mercury": "Pisces", "Jupiter": "Capricorn", "Venus": "Virgo",
+    "Saturn": "Aries",
+}
+_KENDRAS = {1, 4, 7, 10}
+_TRIKONAS = {1, 5, 9}
+_DUSTHANAS = {6, 8, 12}
+_BENEFICS = {"Jupiter", "Venus", "Mercury", "Moon"}
+_MALEFICS = {"Sun", "Mars", "Saturn", "Rahu", "Ketu"}
+
+_DASHA_PHALA_CACHE: Optional[Dict[str, Any]] = None
+
+
+def _load_dasha_phala() -> Dict[str, Any]:
+    """Load the Phaladeepika mahadasha + antardasha effect data (cached)."""
+    global _DASHA_PHALA_CACHE
+    if _DASHA_PHALA_CACHE is not None:
+        return _DASHA_PHALA_CACHE
+    try:
+        with open(_DASHA_PHALA_PATH, "r", encoding="utf-8") as f:
+            _DASHA_PHALA_CACHE = json.load(f)
+    except (OSError, json.JSONDecodeError):
+        _DASHA_PHALA_CACHE = {"mahadasha_effects": {}, "antardasha_matrix": {}}
+    return _DASHA_PHALA_CACHE
+
+
+def _planet_info(planet: str, chart_data: dict) -> Dict[str, Any]:
+    """Safely extract {sign, house, combust, retrograde} for a planet."""
+    planets = (chart_data or {}).get("planets", {}) or {}
+    info = planets.get(planet) or {}
+    sign = str(info.get("sign", "") or "")
+    try:
+        house = int(info.get("house", 0) or 0)
+    except (TypeError, ValueError):
+        house = 0
+    combust = bool(info.get("combust", info.get("is_combust", False)))
+    retro = bool(info.get("retrograde", info.get("is_retrograde", False)))
+    return {"sign": sign, "house": house, "combust": combust, "retrograde": retro}
+
+
+def _assess_planet_strength(planet: str, chart_data: dict) -> Dict[str, Any]:
+    """
+    Classify a planet as 'strong' | 'weak' | 'neutral' and collect evidence.
+
+    Rules (Phaladeepika-aligned):
+      STRONG  : exalted, own-sign, OR in Kendra (1/4/7/10) or Trikona (1/5/9)
+      WEAK    : debilitated, in Dusthana (6/8/12), or combust
+      NEUTRAL : anything else
+    """
+    info = _planet_info(planet, chart_data)
+    sign, house = info["sign"], info["house"]
+    factors: List[str] = []
+
+    if not sign and not house:
+        return {"strength": "neutral", "factors": ["no_data"], "info": info}
+
+    # Strong signals
+    if _EXALTATION_SIGN.get(planet) == sign:
+        factors.append("exalted")
+    if _SIGN_LORD.get(sign) == planet:
+        factors.append("own_sign")
+    if house in _KENDRAS:
+        factors.append("kendra")
+    if house in _TRIKONAS:
+        factors.append("trikona")
+
+    # Weak signals
+    if _DEBILITATION_SIGN.get(planet) == sign:
+        factors.append("debilitated")
+    if house in _DUSTHANAS:
+        factors.append("dusthana")
+    if info["combust"]:
+        factors.append("combust")
+
+    strong_hits = {"exalted", "own_sign", "kendra", "trikona"} & set(factors)
+    weak_hits = {"debilitated", "dusthana", "combust"} & set(factors)
+
+    # Debilitated/combust dominates any positional goodness
+    if {"debilitated", "combust"} & weak_hits:
+        strength = "weak"
+    elif strong_hits and not weak_hits:
+        strength = "strong"
+    elif weak_hits and not strong_hits:
+        strength = "weak"
+    elif strong_hits and weak_hits:
+        strength = "neutral"
+    else:
+        strength = "neutral"
+
+    return {"strength": strength, "factors": factors, "info": info}
+
+
+def analyze_mahadasha_phala(planet: str, chart_data: dict) -> Dict[str, Any]:
+    """
+    Synthesize the classical effect of a mahadasha per Phaladeepika Adh. 20.
+
+    Args:
+        planet: One of Sun/Moon/Mars/Rahu/Jupiter/Saturn/Mercury/Ketu/Venus
+        chart_data: Kundli chart dict with `planets` keyed by name.
+
+    Returns:
+        {
+            planet, strength, factors, effect_en, effect_hi,
+            when_strong_en/hi, when_weak_en/hi, general_en/hi,
+            sloka_ref
+        }
+    """
+    data = _load_dasha_phala()
+    entry = (data.get("mahadasha_effects") or {}).get(planet, {})
+
+    if not entry:
+        return {
+            "planet": planet,
+            "strength": "neutral",
+            "factors": [],
+            "effect_en": "",
+            "effect_hi": "",
+            "sloka_ref": "",
+            "error": f"No mahadasha data for planet: {planet}",
+        }
+
+    assessment = _assess_planet_strength(planet, chart_data or {})
+    strength = assessment["strength"]
+
+    if strength == "strong":
+        effect_en = entry.get("when_strong_en", entry.get("general_en", ""))
+        effect_hi = entry.get("when_strong_hi", entry.get("general_hi", ""))
+    elif strength == "weak":
+        effect_en = entry.get("when_weak_en", entry.get("general_en", ""))
+        effect_hi = entry.get("when_weak_hi", entry.get("general_hi", ""))
+    else:
+        effect_en = entry.get("general_en", "")
+        effect_hi = entry.get("general_hi", "")
+
+    return {
+        "planet": planet,
+        "strength": strength,
+        "factors": assessment["factors"],
+        "effect_en": effect_en,
+        "effect_hi": effect_hi,
+        "general_en": entry.get("general_en", ""),
+        "general_hi": entry.get("general_hi", ""),
+        "when_strong_en": entry.get("when_strong_en", ""),
+        "when_strong_hi": entry.get("when_strong_hi", ""),
+        "when_weak_en": entry.get("when_weak_en", ""),
+        "when_weak_hi": entry.get("when_weak_hi", ""),
+        "sloka_ref": entry.get("sloka_ref", ""),
+    }
+
+
+def _planet_nature(planet: str) -> str:
+    """Return 'benefic' | 'malefic' | 'neutral' for a planet (rough)."""
+    if planet in _BENEFICS:
+        return "benefic"
+    if planet in _MALEFICS:
+        return "malefic"
+    return "neutral"
+
+
+def analyze_antardasha_phala(
+    mahadasha_lord: str, bhukti_lord: str, chart_data: dict
+) -> Dict[str, Any]:
+    """
+    Synthesize the combined effect of an antardasha per Phaladeepika Adh. 21.
+
+    Args:
+        mahadasha_lord: Outer (mahadasha) planet
+        bhukti_lord: Inner (antardasha) planet
+        chart_data: Kundli chart dict
+
+    Returns:
+        {
+            mahadasha, bhukti, effect_en, effect_hi, sloka_ref,
+            severity: 'favorable' | 'mixed' | 'challenging',
+            severity_factors: [...]
+        }
+    """
+    data = _load_dasha_phala()
+    matrix = data.get("antardasha_matrix", {}) or {}
+    row = matrix.get(mahadasha_lord, {}) or {}
+    entry = row.get(bhukti_lord, {}) or {}
+
+    if not entry:
+        return {
+            "mahadasha": mahadasha_lord,
+            "bhukti": bhukti_lord,
+            "effect_en": "",
+            "effect_hi": "",
+            "sloka_ref": "",
+            "severity": "mixed",
+            "severity_factors": [],
+            "error": f"No antardasha data for {mahadasha_lord}-{bhukti_lord}",
+        }
+
+    # Start from the classical baseline nature (from the data file)
+    base = str(entry.get("nature", "mixed")).lower()
+    if base not in {"favorable", "mixed", "challenging"}:
+        base = "mixed"
+
+    # Adjust using chart placement
+    md_assess = _assess_planet_strength(mahadasha_lord, chart_data or {})
+    bk_assess = _assess_planet_strength(bhukti_lord, chart_data or {})
+
+    factors: List[str] = []
+    score = 0  # positive -> favorable, negative -> challenging
+    if base == "favorable":
+        score += 1
+    elif base == "challenging":
+        score -= 1
+
+    for who, a in (("md", md_assess), ("bk", bk_assess)):
+        if a["strength"] == "strong":
+            score += 1
+            factors.append(f"{who}_strong")
+        elif a["strength"] == "weak":
+            score -= 1
+            factors.append(f"{who}_weak")
+
+    # Benefic/malefic leaning
+    if _planet_nature(mahadasha_lord) == "benefic":
+        factors.append("md_benefic")
+    elif _planet_nature(mahadasha_lord) == "malefic":
+        factors.append("md_malefic")
+    if _planet_nature(bhukti_lord) == "benefic":
+        factors.append("bk_benefic")
+    elif _planet_nature(bhukti_lord) == "malefic":
+        factors.append("bk_malefic")
+
+    if score >= 2:
+        severity = "favorable"
+    elif score <= -2:
+        severity = "challenging"
+    else:
+        severity = "mixed"
+
+    return {
+        "mahadasha": mahadasha_lord,
+        "bhukti": bhukti_lord,
+        "effect_en": entry.get("effect_en", ""),
+        "effect_hi": entry.get("effect_hi", ""),
+        "sloka_ref": entry.get("sloka_ref", ""),
+        "severity": severity,
+        "severity_factors": factors,
+        "base_nature": base,
+    }
+
+
+def get_current_dasha_phala(
+    chart_data: dict, birth_date: str, as_of_date: Optional[str] = None
+) -> Dict[str, Any]:
+    """
+    Return classical effect narrative for the currently running
+    Mahadasha + Antardasha of the native.
+
+    Args:
+        chart_data: Kundli chart dict with `planets` and Moon's `nakshatra`.
+        birth_date: Birth date as 'YYYY-MM-DD'
+        as_of_date: Optional 'YYYY-MM-DD' — defaults to today.
+
+    Returns:
+        {
+            as_of,
+            mahadasha: {planet, start, end, analysis(=analyze_mahadasha_phala)},
+            antardasha: {planet, start, end, analysis(=analyze_antardasha_phala)},
+        }
+    """
+    planets = (chart_data or {}).get("planets", {}) or {}
+    moon = planets.get("Moon", {}) or {}
+    moon_nakshatra = moon.get("nakshatra", "Ashwini")
+    moon_longitude = moon.get("longitude", None)
+
+    if moon_nakshatra not in NAKSHATRA_LORD:
+        return {
+            "as_of": as_of_date or datetime.utcnow().strftime("%Y-%m-%d"),
+            "error": f"Unknown nakshatra: {moon_nakshatra}",
+            "mahadasha": None,
+            "antardasha": None,
+        }
+
+    starting_lord = NAKSHATRA_LORD[moon_nakshatra]
+    sequence = _get_dasha_sequence(starting_lord)
+    try:
+        birth_dt = _parse_date(birth_date)
+    except (ValueError, TypeError):
+        return {
+            "as_of": as_of_date or datetime.utcnow().strftime("%Y-%m-%d"),
+            "error": f"Invalid birth_date: {birth_date}",
+            "mahadasha": None,
+            "antardasha": None,
+        }
+
+    if as_of_date:
+        try:
+            now = _parse_date(as_of_date)
+        except ValueError:
+            now = datetime.utcnow()
+    else:
+        now = datetime.utcnow()
+
+    balance = _calculate_dasha_balance(moon_nakshatra, moon_longitude)
+
+    # Walk mahadasha chain until we find the one containing `now`
+    current_start = birth_dt
+    mahadasha_record = None
+    # Iterate up to 3 full cycles (enough for 360 years)
+    full_seq = sequence * 3
+    for i, planet in enumerate(full_seq):
+        full_years = DASHA_YEARS[planet]
+        effective_years = full_years * balance if i == 0 else full_years
+        end_dt = current_start + timedelta(days=effective_years * 365.25)
+        if current_start <= now <= end_dt:
+            mahadasha_record = {
+                "planet": planet,
+                "start": current_start.strftime("%Y-%m-%d"),
+                "end": end_dt.strftime("%Y-%m-%d"),
+                "years": round(effective_years, 4),
+            }
+            md_start = current_start
+            md_years = effective_years
+            break
+        current_start = end_dt
+
+    if mahadasha_record is None:
+        return {
+            "as_of": now.strftime("%Y-%m-%d"),
+            "error": "as_of_date outside computed mahadasha chain",
+            "mahadasha": None,
+            "antardasha": None,
+        }
+
+    md_planet = mahadasha_record["planet"]
+    md_analysis = analyze_mahadasha_phala(md_planet, chart_data or {})
+    mahadasha_record["analysis"] = md_analysis
+
+    # Find the antardasha within this mahadasha
+    antardasha_record = None
+    ad_seq = _get_dasha_sequence(md_planet)
+    ad_start = md_start
+    for ad_planet in ad_seq:
+        ad_years = DASHA_YEARS[ad_planet]
+        ad_duration_days = (md_years * ad_years / VIMSHOTTARI_TOTAL) * 365.25
+        ad_end = ad_start + timedelta(days=ad_duration_days)
+        if ad_start <= now <= ad_end:
+            antardasha_record = {
+                "planet": ad_planet,
+                "start": ad_start.strftime("%Y-%m-%d"),
+                "end": ad_end.strftime("%Y-%m-%d"),
+                "analysis": analyze_antardasha_phala(md_planet, ad_planet, chart_data or {}),
+            }
+            break
+        ad_start = ad_end
+
+    return {
+        "as_of": now.strftime("%Y-%m-%d"),
+        "mahadasha": mahadasha_record,
+        "antardasha": antardasha_record,
     }
