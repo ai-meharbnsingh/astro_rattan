@@ -33,3 +33,7 @@ _trash/
 # ML model files — download at build time, don't commit
 *.pt
 *.onnx
+
+# docs/ folder — don't auto-push research docs, PDFs, drafts
+# User will ask explicitly if any doc needs to be committed
+docs/
