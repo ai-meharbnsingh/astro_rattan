@@ -27,6 +27,28 @@ interface Props {
   chartData: any;
 }
 
+/**
+ * Safely render a bilingual value. Accepts:
+ *  - a plain string/number → returned as-is
+ *  - a {hi, en} object → returns the requested language
+ *  - null/undefined → returns ''
+ * Prevents React Error #31 when backend returns a `{hi, en}` object
+ * where the frontend expected a string.
+ */
+function pickLang(value: any, isHi: boolean): string {
+  if (value == null) return '';
+  if (typeof value === 'string' || typeof value === 'number') return String(value);
+  if (typeof value === 'object') {
+    const picked = isHi ? value.hi : value.en;
+    if (picked != null) return String(picked);
+    // Fallback to the other language if preferred is missing
+    const other = isHi ? value.en : value.hi;
+    if (other != null) return String(other);
+    return '';
+  }
+  return String(value);
+}
+
 export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
   const { t, language } = useTranslation();
   const isHi = language === 'hi';
@@ -103,19 +125,26 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
 
   // Calculate Karmic Confidence Score
   let score = 80;
-  score -= (data.karmic_debts.length * 8);
-  if (data.teva_type.is_andha) score -= 20;
-  if (data.teva_type.is_ratondha) score -= 10;
-  if (data.teva_type.is_dharmi) score += 20;
+  if (data?.karmic_debts && Array.isArray(data.karmic_debts)) {
+    score -= (data.karmic_debts.length * 8);
+  }
+  
+  if (data?.teva_type) {
+    if (data.teva_type.is_andha) score -= 20;
+    if (data.teva_type.is_ratondha) score -= 10;
+    if (data.teva_type.is_dharmi) score += 20;
+  }
   
   // Use new masnui structure
-  const masnuiList = data.masnui_planets?.masnui_planets || data.masnui_planets || [];
+  const rawMasnui = data?.masnui_planets?.masnui_planets || data?.masnui_planets || [];
+  const masnuiList = Array.isArray(rawMasnui) ? rawMasnui : [];
+  
   masnuiList.forEach((m: any) => {
-    if (['Jupiter', 'Sun', 'Moon'].includes(m.masnui_planet)) score += 5;
-    if (['Rahu', 'Saturn'].includes(m.masnui_planet)) score -= 5;
+    if (m && ['Jupiter', 'Sun', 'Moon'].includes(m.masnui_planet)) score += 5;
+    if (m && ['Rahu', 'Saturn'].includes(m.masnui_planet)) score -= 5;
   });
 
-  const finalScore = Math.max(10, Math.min(100, score));
+  const finalScore = isNaN(score) ? 50 : Math.max(10, Math.min(100, score));
   const scoreColor = finalScore >= 75 ? 'text-green-600' : finalScore >= 45 ? 'text-sacred-gold-dark' : 'text-red-600';
   const scoreBg = finalScore >= 75 ? 'bg-green-500' : finalScore >= 45 ? 'bg-sacred-gold' : 'bg-red-500';
   const scoreLabel = finalScore >= 75 ? t('lk.advanced.highConfidence') : finalScore >= 45 ? t('lk.advanced.midConfidence') : t('lk.advanced.lowConfidence');
@@ -174,7 +203,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
               <h3 className="font-sans font-bold text-lg">{t('lk.advanced.andhaTeva')}</h3>
             </div>
             <p className="text-xs text-foreground/80 leading-relaxed mb-4">
-              {isHi ? data.teva_type.description.andha.hi : data.teva_type.description.andha.en}
+              {pickLang(data.teva_type?.description?.andha, isHi)}
             </p>
           </div>
           {data.teva_type.is_andha && (
@@ -191,7 +220,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
               <h3 className="font-sans font-bold text-lg">{t('lk.advanced.ratondhaTeva')}</h3>
             </div>
             <p className="text-xs text-foreground/80 leading-relaxed mb-4">
-              {isHi ? data.teva_type.description.ratondha.hi : data.teva_type.description.ratondha.en}
+              {pickLang(data.teva_type?.description?.ratondha, isHi)}
             </p>
           </div>
           {data.teva_type.is_ratondha && (
@@ -208,7 +237,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
               <h3 className="font-sans font-bold text-lg">{t('lk.advanced.dharmiTeva')}</h3>
             </div>
             <p className="text-xs text-foreground/80 leading-relaxed mb-4">
-              {isHi ? data.teva_type.description.dharmi.hi : data.teva_type.description.dharmi.en}
+              {pickLang(data.teva_type?.description?.dharmi, isHi)}
             </p>
           </div>
           {data.teva_type.is_dharmi && (
@@ -240,21 +269,15 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
               {t('auto.psychologicalProfile')}
             </h4>
             <p className="text-sm text-foreground mb-2">
-              {isHi 
-                ? data.masnui_planets.psychological_profile.dominant_quality?.hi 
-                : data.masnui_planets.psychological_profile.dominant_quality?.en}
+              {pickLang(data.masnui_planets?.psychological_profile?.dominant_quality, isHi)}
             </p>
             <p className="text-xs text-foreground/70">
               <span className="font-semibold">{t('auto.behavioralTendencies')}</span>
-              {isHi 
-                ? data.masnui_planets.psychological_profile.behavioral_tendencies?.hi 
-                : data.masnui_planets.psychological_profile.behavioral_tendencies?.en}
+              {pickLang(data.masnui_planets?.psychological_profile?.behavioral_tendencies, isHi)}
             </p>
             <p className="text-xs text-foreground/70 mt-1">
               <span className="font-semibold">{t('auto.relationshipApproach')}</span>
-              {isHi 
-                ? data.masnui_planets.psychological_profile.relationship_approach?.hi 
-                : data.masnui_planets.psychological_profile.relationship_approach?.en}
+              {pickLang(data.masnui_planets?.psychological_profile?.relationship_approach, isHi)}
             </p>
           </div>
         )}
@@ -272,16 +295,16 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                     {t('auto.houseHouseNum')}
                   </span>
                   <span className="text-sm font-bold text-amber-800">
-                    {isHi ? override.house_name?.hi : override.house_name?.en}
+                    {pickLang(override?.house_name, isHi)}
                   </span>
                 </div>
                 <p className="text-xs text-foreground mb-2">
                   <span className="font-semibold">{t('auto.effects')}</span>
-                  {isHi ? override.effects?.hi : override.effects?.en}
+                  {pickLang(override?.effects, isHi)}
                 </p>
                 <p className="text-xs text-amber-700 italic">
                   <span className="font-semibold">{t('auto.predictiveNote')}</span>
-                  {isHi ? override.predictive_note?.hi : override.predictive_note?.en}
+                  {pickLang(override?.predictive_note, isHi)}
                 </p>
               </div>
             ))}
@@ -298,7 +321,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
               {data.masnui_planets.predictive_notes.map((note: any, i: number) => (
                 <li key={i} className="text-xs text-foreground flex items-start gap-2">
                   <span className="text-blue-500 mt-0.5">•</span>
-                  <span>{isHi ? note.note?.hi : note.note?.en}</span>
+                  <span>{pickLang(note?.note, isHi)}</span>
                 </li>
               ))}
             </ul>
@@ -341,7 +364,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                   </span>
                 )}
                 <p className="text-xs text-foreground/70 italic border-t border-sacred-gold/10 pt-2 mt-2">
-                  {t('lk.advanced.affectedDomain')}: {isHi ? m.affected_domain.hi : m.affected_domain.en}
+                  {t('lk.advanced.affectedDomain')}: {pickLang(m?.affected_domain, isHi)}
                 </p>
                 {m.house_override && (
                   <p className="text-xs text-amber-700 mt-2">
@@ -394,10 +417,18 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                 <div className="bg-white p-4 rounded-lg border border-purple-100">
                   <h4 className="font-bold text-purple-800 mb-2">
                     {t('auto.horaBasedDebt')}
-                    {isHi ? data.karmic_debts_hora_analysis.hora_analysis.base_debt.debt_hi : data.karmic_debts_hora_analysis.hora_analysis.base_debt.debt}
+                    {pickLang(
+                      data.karmic_debts_hora_analysis?.hora_analysis?.base_debt
+                        ? {
+                            en: data.karmic_debts_hora_analysis.hora_analysis.base_debt.debt,
+                            hi: data.karmic_debts_hora_analysis.hora_analysis.base_debt.debt_hi,
+                          }
+                        : '',
+                      isHi
+                    )}
                   </h4>
                   <p className="text-sm text-foreground">
-                    {isHi ? data.karmic_debts_hora_analysis.hora_analysis.base_debt.description.hi : data.karmic_debts_hora_analysis.hora_analysis.base_debt.description.en}
+                    {pickLang(data.karmic_debts_hora_analysis?.hora_analysis?.base_debt?.description, isHi)}
                   </p>
                 </div>
               )}
@@ -417,7 +448,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                         }
                       </p>
                       <p className="text-xs text-amber-700">
-                        {isHi ? conflict.reason?.hi : conflict.reason?.en}
+                        {pickLang(conflict?.reason, isHi)}
                       </p>
                     </div>
                   ))}
@@ -429,7 +460,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                 <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
                   <p className="text-sm text-yellow-800">
                     <span className="font-bold">{t('auto.timeSensitivity')}</span>
-                    {isHi ? data.karmic_debts_hora_analysis.time_sensitivity_warning.message.hi : data.karmic_debts_hora_analysis.time_sensitivity_warning.message.en}
+                    {pickLang(data.karmic_debts_hora_analysis?.time_sensitivity_warning?.message, isHi)}
                   </p>
                 </div>
               )}
@@ -474,7 +505,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                 <div>
                   <div className="flex items-center gap-2">
-                    <h4 className="text-lg font-bold text-red-800">{isHi ? debt.name.hi : debt.name.en}</h4>
+                    <h4 className="text-lg font-bold text-red-800">{pickLang(debt?.name, isHi)}</h4>
                     {debt.is_hora_based && (
                       <span className="px-2 py-0.5 rounded bg-purple-200 text-purple-800 text-[10px] font-bold">
                         {t('auto.hORABASED')}
@@ -486,24 +517,24 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                       </span>
                     )}
                   </div>
-                  <p className="text-xs font-semibold text-red-600/70">{t('lk.advanced.type')}: {isHi ? debt.type.hi : debt.type.en}</p>
+                  <p className="text-xs font-semibold text-red-600/70">{t('lk.advanced.type')}: {pickLang(debt?.type, isHi)}</p>
                   {debt.source && (
                     <p className="text-xs text-purple-600 italic">
-                      {isHi ? debt.source.hi : debt.source.en}
+                      {pickLang(debt?.source, isHi)}
                     </p>
                   )}
-                  <p className="text-xs font-semibold text-red-600/70">{t('lk.advanced.reason')}: {isHi ? debt.reason.hi : debt.reason.en}</p>
+                  <p className="text-xs font-semibold text-red-600/70">{t('lk.advanced.reason')}: {pickLang(debt?.reason, isHi)}</p>
                 </div>
                 <span className="px-3 py-1 rounded-full bg-red-600 text-white text-xs font-bold self-start">{t('auto.aCTIVEDEBT')}</span>
               </div>
               <div className="bg-white/60 p-3 rounded-lg border border-red-100 mb-3">
                 <p className="text-xs font-bold text-red-800 mb-1 uppercase tracking-tighter">{t('lk.advanced.manifestation')}</p>
-                <p className="text-sm text-foreground leading-relaxed">{isHi ? debt.manifestation.hi : debt.manifestation.en}</p>
+                <p className="text-sm text-foreground leading-relaxed">{pickLang(debt?.manifestation, isHi)}</p>
               </div>
               {debt.remedy && (
                 <div className="bg-green-600/5 p-3 rounded-lg border border-green-600/20">
                   <p className="text-xs font-bold text-green-800 mb-1 uppercase tracking-tighter">{t('lk.advanced.remedy')}</p>
-                  <p className="text-sm text-foreground leading-relaxed font-medium">{isHi ? debt.remedy.hi : debt.remedy.en}</p>
+                  <p className="text-sm text-foreground leading-relaxed font-medium">{pickLang(debt?.remedy, isHi)}</p>
                 </div>
               )}
             </div>
@@ -542,11 +573,11 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                 </div>
                 <div className="flex flex-wrap gap-2 items-center mb-3">
                   <span className="text-sm font-bold text-red-700 uppercase tracking-tight">{t('lk.advanced.forbidden')}:</span>
-                  <span className="text-sm bg-white px-2 py-0.5 rounded border border-orange-300 font-medium text-orange-800">{isHi ? p.forbidden.hi : p.forbidden.en}</span>
+                  <span className="text-sm bg-white px-2 py-0.5 rounded border border-orange-300 font-medium text-orange-800">{pickLang(p?.forbidden, isHi)}</span>
                 </div>
                 <div className="flex items-start gap-2 text-xs">
                   <AlertTriangle className="w-3 h-3 text-red-600 mt-0.5" />
-                  <span className="text-foreground/70"><strong className="text-red-600">{t('lk.advanced.backlashRisk')}:</strong> {isHi ? p.backlash_risk.hi : p.backlash_risk.en}</span>
+                  <span className="text-foreground/70"><strong className="text-red-600">{t('lk.advanced.backlashRisk')}:</strong> {pickLang(p?.backlash_risk, isHi)}</span>
                 </div>
               </div>
             </div>
@@ -672,7 +703,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                       </div>
                     )}
                     <p className="text-xs text-foreground/70 italic border-t border-sacred-gold/10 pt-2 mt-2">
-                      {isHi ? info.interpretation_hi : info.interpretation_en}
+                      {pickLang({ en: info?.interpretation_en, hi: info?.interpretation_hi }, isHi)}
                     </p>
                   </div>
                 );
@@ -762,7 +793,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                         </p>
                       )}
                       <p className="text-xs text-foreground/70 italic">
-                        {isHi ? c.interpretation_hi : c.interpretation_en}
+                        {pickLang({ en: c?.interpretation_en, hi: c?.interpretation_hi }, isHi)}
                       </p>
                     </div>
                   );
@@ -841,7 +872,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                       </div>
                     </div>
                     <p className="text-xs text-foreground/70 italic border-t border-sacred-gold/10 pt-2 mt-2">
-                      {isHi ? info.interpretation_hi : info.interpretation_en}
+                      {pickLang({ en: info?.interpretation_en, hi: info?.interpretation_hi }, isHi)}
                     </p>
                   </div>
                 );
@@ -912,28 +943,34 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                       >
                         <div className="flex items-start justify-between gap-3 mb-2">
                           <h5 className={`font-bold text-sm ${isHigh ? 'text-red-800' : 'text-orange-800'}`}>
-                            {item.name}
+                            {pickLang(item?.name ?? item?.dhoka_name, isHi)}
                           </h5>
                           <span className={`shrink-0 px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${
                             isHigh
                               ? 'bg-red-200 text-red-800 border-red-300'
                               : 'bg-orange-100 text-orange-800 border-orange-200'
                           }`}>
-                            {item.severity}
+                            {isHi ? (isHigh ? 'उच्च' : 'मध्यम') : (typeof item?.severity === 'string' ? item.severity : '')}
                           </span>
                         </div>
                         <div className="flex items-center gap-1.5 text-xs text-foreground/60 mb-2">
-                          <span className="font-semibold">{isHi ? 'भाव' : 'House'} {item.house_src}</span>
+                          <span className="font-semibold">{isHi ? 'भाव' : 'House'} {item?.house_src ?? item?.source_house}</span>
                           <ArrowRight className="w-3 h-3" />
-                          <span className="font-semibold">{isHi ? 'भाव' : 'House'} {item.house_tgt}</span>
-                          {item.planets_involved && item.planets_involved.length > 0 && (
-                            <span className="ml-1">
-                              ({item.planets_involved.map((p: string) => translatePlanet(p, language)).join(', ')})
-                            </span>
-                          )}
+                          <span className="font-semibold">{isHi ? 'भाव' : 'House'} {item?.house_tgt ?? item?.target_house}</span>
+                          {(() => {
+                            const planets = item?.planets_involved || item?.malefics_causing || [];
+                            return planets.length > 0 ? (
+                              <span className="ml-1">
+                                ({planets.map((p: string) => translatePlanet(p, language)).join(', ')})
+                              </span>
+                            ) : null;
+                          })()}
                         </div>
                         <p className="text-xs text-foreground/70 leading-relaxed">
-                          {isHi ? item.desc_hi : item.desc_en}
+                          {pickLang(
+                            item?.description ?? { en: item?.desc_en, hi: item?.desc_hi },
+                            isHi
+                          )}
                         </p>
                       </div>
                     );
@@ -956,30 +993,33 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                       className="p-4 rounded-xl border border-red-300 bg-red-500/5"
                     >
                       <div className="flex items-start justify-between gap-3 mb-2">
-                        <h5 className="font-bold text-sm text-red-800">{item.name}</h5>
+                        <h5 className="font-bold text-sm text-red-800">{pickLang(item?.name ?? item?.strike_name, isHi)}</h5>
                         <span className="shrink-0 flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-red-200 text-red-800 border border-red-300">
                           <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />
                           {isHi ? 'खतरा' : 'DANGER'}
                         </span>
                       </div>
                       <div className="flex items-center gap-1.5 text-xs text-foreground/60 mb-2">
-                        <span className="font-semibold">{isHi ? 'प्रहारक भाव' : 'Striker H'}{item.striker_house}</span>
+                        <span className="font-semibold">{isHi ? 'प्रहारक भाव' : 'Striker H'}{item?.striker_house}</span>
                         <ArrowRight className="w-3 h-3" />
-                        <span className="font-semibold">{isHi ? 'लक्ष्य भाव' : 'Target H'}{item.target_house}</span>
-                        {item.planets_involved && item.planets_involved.length > 0 && (
-                          <span className="ml-1">
-                            ({item.planets_involved.map((p: string) => translatePlanet(p, language)).join(', ')})
-                          </span>
-                        )}
+                        <span className="font-semibold">{isHi ? 'लक्ष्य भाव' : 'Target H'}{item?.target_house ?? item?.victim_house}</span>
+                        {(() => {
+                          const planets = item?.planets_involved || item?.malefics || [];
+                          return planets.length > 0 ? (
+                            <span className="ml-1">
+                              ({planets.map((p: string) => translatePlanet(p, language)).join(', ')})
+                            </span>
+                          ) : null;
+                        })()}
                       </div>
                       <p className="text-xs text-foreground/70 leading-relaxed mb-2">
-                        {isHi ? item.desc_hi : item.desc_en}
+                        {pickLang(item?.description ?? { en: item?.desc_en, hi: item?.desc_hi }, isHi)}
                       </p>
-                      {(item.warning_en || item.warning_hi) && (
+                      {(item?.warning || item?.warning_en || item?.warning_hi) && (
                         <div className="flex items-start gap-1.5 mt-2 p-2 rounded-lg bg-amber-50 border border-amber-200">
                           <AlertTriangle className="w-3.5 h-3.5 text-amber-600 mt-0.5 shrink-0" />
                           <p className="text-xs text-amber-700 font-medium">
-                            {isHi ? item.warning_hi : item.warning_en}
+                            {pickLang(item?.warning ?? { en: item?.warning_en, hi: item?.warning_hi }, isHi)}
                           </p>
                         </div>
                       )}
