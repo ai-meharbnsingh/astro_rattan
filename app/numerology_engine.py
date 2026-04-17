@@ -1730,6 +1730,13 @@ def calculate_mobile_numerology(
     if loshu_data is not None:
         result["loshu_grid"] = loshu_data["grid"]
         result["loshu_values"] = loshu_data["values"]
+        # Lo Shu interpretation features
+        dob_digits = [int(c) for c in birth_date.replace("-", "") if c.isdigit() and c != "0"] if birth_date else []
+        if dob_digits:
+            result["loshu_arrows"] = analyze_loshu_arrows(dob_digits)
+            result["loshu_planes"] = analyze_loshu_planes(dob_digits)
+            result["missing_numbers"] = analyze_missing_numbers(dob_digits)
+            result["repeated_numbers"] = analyze_repeated_numbers(dob_digits)
     if vedic_data is not None:
         result["vedic_grid"] = vedic_data["grid"]
         result["vedic_values"] = vedic_data["values"]
@@ -2733,6 +2740,155 @@ def _get_house_enhancement_tips(house_num: int) -> list:
     return tips.get(house_num, ["Keep home clean and organized", "Balance the 5 elements"])
 
 
+# ============================================================
+# CORE NUMBERS: Birthday, Maturity, Karmic Debt, Hidden Passion,
+#               Subconscious Self, Karmic Lessons
+# ============================================================
+
+def _birthday_number(birth_date: str) -> int:
+    """Birthday Number — just the birth day reduced."""
+    day = int(birth_date[8:10])
+    return _reduce_to_single(day)
+
+def _maturity_number(life_path: int, expression: int) -> int:
+    """Maturity Number — Life Path + Expression, reduced."""
+    return _reduce_to_single(life_path + expression)
+
+def _detect_karmic_debt(birth_date: str, name: str) -> list:
+    """Detect Karmic Debt numbers (13, 14, 16, 19) in intermediate sums."""
+    KARMIC = {13, 14, 16, 19}
+    debts = []
+    # Check birthday
+    day = int(birth_date[8:10])
+    if day in KARMIC:
+        debts.append({"number": day, "source": "birthday", "source_hi": "जन्म तिथि"})
+    # Check life path intermediate
+    m = int(birth_date[5:7]); d = int(birth_date[8:10]); y = sum(int(c) for c in birth_date[:4])
+    mr = _reduce_to_single(m); dr = _reduce_to_single(d); yr = _reduce_to_single(y)
+    lp_sum = mr + dr + yr
+    if lp_sum in KARMIC:
+        debts.append({"number": lp_sum, "source": "life_path", "source_hi": "मूलांक"})
+    # Check expression intermediate
+    exp_raw = sum(PYTHAGOREAN_MAP.get(c.upper(), 0) for c in name if c.isalpha())
+    if exp_raw in KARMIC:
+        debts.append({"number": exp_raw, "source": "expression", "source_hi": "भाग्यांक"})
+    # Check soul urge intermediate
+    vowels = set("AEIOUaeiou")
+    su_raw = sum(PYTHAGOREAN_MAP.get(c.upper(), 0) for c in name if c.isalpha() and c in vowels)
+    if su_raw in KARMIC:
+        debts.append({"number": su_raw, "source": "soul_urge", "source_hi": "आत्मांक"})
+    # Add interpretations
+    for d in debts:
+        d.update(KARMIC_DEBT_INTERPRETATIONS.get(d["number"], {}))
+    return debts
+
+KARMIC_DEBT_INTERPRETATIONS = {
+    13: {"title": "Hard Work", "title_hi": "कठिन परिश्रम", "meaning": "Past-life laziness. Must work diligently, no shortcuts.", "meaning_hi": "पूर्व जन्म में आलस्य। कठिन परिश्रम करें, शॉर्टकट नहीं।"},
+    14: {"title": "Freedom & Discipline", "title_hi": "स्वतंत्रता और अनुशासन", "meaning": "Past abuse of freedom. Must exercise moderation and self-control.", "meaning_hi": "स्वतंत्रता का दुरुपयोग। संयम और आत्म-नियंत्रण अपनाएं।"},
+    16: {"title": "Ego Destruction", "title_hi": "अहंकार विनाश", "meaning": "Past vanity and ego. Ego will be destroyed to rebuild spiritually.", "meaning_hi": "पूर्व जन्म में अहंकार। आध्यात्मिक पुनर्निर्माण के लिए अहंकार नष्ट होगा।"},
+    19: {"title": "Independence", "title_hi": "स्वावलंबन", "meaning": "Past selfishness. Must learn to stand alone while helping others.", "meaning_hi": "पूर्व जन्म में स्वार्थ। दूसरों की मदद करते हुए स्वावलंबी बनें।"},
+}
+
+def _hidden_passion(name: str) -> dict:
+    """Hidden Passion — most repeated number (1-9) in full name."""
+    counts = {}
+    for c in name:
+        if c.isalpha():
+            n = PYTHAGOREAN_MAP.get(c.upper(), 0)
+            if n: counts[n] = counts.get(n, 0) + 1
+    if not counts: return {"number": 0, "count": 0}
+    max_num = max(counts, key=counts.get)
+    return {"number": max_num, "count": counts[max_num], **HIDDEN_PASSION_PREDICTIONS.get(max_num, {})}
+
+HIDDEN_PASSION_PREDICTIONS = {
+    1: {"title": "Leadership Drive", "title_hi": "नेतृत्व क्षमता", "meaning": "Passionate about independence and leading.", "meaning_hi": "स्वतंत्रता और नेतृत्व के प्रति जुनूनी।"},
+    2: {"title": "Partnership", "title_hi": "साझेदारी", "meaning": "Deep need for harmony and cooperation.", "meaning_hi": "सामंजस्य और सहयोग की गहरी आवश्यकता।"},
+    3: {"title": "Creative Expression", "title_hi": "रचनात्मक अभिव्यक्ति", "meaning": "Burning desire to express creatively.", "meaning_hi": "रचनात्मक अभिव्यक्ति की तीव्र इच्छा।"},
+    4: {"title": "Stability Builder", "title_hi": "स्थिरता निर्माता", "meaning": "Driven to build solid foundations.", "meaning_hi": "मजबूत नींव बनाने की प्रेरणा।"},
+    5: {"title": "Freedom Seeker", "title_hi": "स्वतंत्रता खोजी", "meaning": "Passionate about variety and adventure.", "meaning_hi": "विविधता और रोमांच के प्रति जुनूनी।"},
+    6: {"title": "Nurturer", "title_hi": "पालनकर्ता", "meaning": "Deep desire to nurture and protect.", "meaning_hi": "पालन-पोषण और रक्षा की गहरी इच्छा।"},
+    7: {"title": "Truth Seeker", "title_hi": "सत्य खोजी", "meaning": "Driven to understand deeper truths.", "meaning_hi": "गहरे सत्य को समझने की प्रेरणा।"},
+    8: {"title": "Power & Achievement", "title_hi": "शक्ति और उपलब्धि", "meaning": "Passionate about material success.", "meaning_hi": "भौतिक सफलता के प्रति जुनूनी।"},
+    9: {"title": "Humanitarian", "title_hi": "मानवतावादी", "meaning": "Deep compassion for humanity.", "meaning_hi": "मानवता के प्रति गहरी करुणा।"},
+}
+
+def _subconscious_self(name: str) -> dict:
+    """Subconscious Self — count of distinct numbers (1-9) present in name."""
+    present = set()
+    for c in name:
+        if c.isalpha():
+            n = PYTHAGOREAN_MAP.get(c.upper(), 0)
+            if n: present.add(n)
+    missing = [n for n in range(1, 10) if n not in present]
+    count = len(present)
+    return {"number": count, "missing_count": len(missing), "missing_numbers": missing, **SUBCONSCIOUS_SELF_PREDICTIONS.get(count, {})}
+
+SUBCONSCIOUS_SELF_PREDICTIONS = {
+    3: {"title": "Scattered", "title_hi": "बिखरा हुआ", "meaning": "Many gaps in skills; easily overwhelmed.", "meaning_hi": "कौशल में कई कमियां; आसानी से अभिभूत।"},
+    4: {"title": "Developing", "title_hi": "विकासशील", "meaning": "Several areas need growth.", "meaning_hi": "कई क्षेत्रों में विकास आवश्यक।"},
+    5: {"title": "Balanced", "title_hi": "संतुलित", "meaning": "Average inner resources; can handle most situations.", "meaning_hi": "औसत आंतरिक संसाधन।"},
+    6: {"title": "Capable", "title_hi": "सक्षम", "meaning": "Good inner strength; handles pressure well.", "meaning_hi": "अच्छी आंतरिक शक्ति।"},
+    7: {"title": "Strong", "title_hi": "मजबूत", "meaning": "High inner resources; rarely caught off guard.", "meaning_hi": "उच्च आंतरिक संसाधन।"},
+    8: {"title": "Very Strong", "title_hi": "बहुत मजबूत", "meaning": "Almost complete inner toolkit.", "meaning_hi": "लगभग पूर्ण आंतरिक क्षमता।"},
+    9: {"title": "Complete", "title_hi": "पूर्ण", "meaning": "All 9 numbers present — complete inner strength.", "meaning_hi": "सभी 9 अंक उपस्थित — पूर्ण आंतरिक शक्ति।"},
+}
+
+def _karmic_lessons(name: str) -> list:
+    """Karmic Lessons — numbers 1-9 absent from full birth name."""
+    present = set()
+    for c in name:
+        if c.isalpha():
+            n = PYTHAGOREAN_MAP.get(c.upper(), 0)
+            if n: present.add(n)
+    lessons = []
+    for n in range(1, 10):
+        if n not in present:
+            lessons.append({"number": n, **KARMIC_LESSON_INTERPRETATIONS.get(n, {})})
+    return lessons
+
+KARMIC_LESSON_INTERPRETATIONS = {
+    1: {"lesson": "Develop confidence and assertiveness.", "lesson_hi": "आत्मविश्वास और दृढ़ता विकसित करें।", "remedy": "Wear red, lead projects.", "remedy_hi": "लाल रंग पहनें, परियोजनाओं का नेतृत्व करें।"},
+    2: {"lesson": "Learn patience and cooperation.", "lesson_hi": "धैर्य और सहयोग सीखें।", "remedy": "Practice diplomacy, wear white/cream.", "remedy_hi": "कूटनीति अपनाएं, सफेद/क्रीम पहनें।"},
+    3: {"lesson": "Express yourself creatively.", "lesson_hi": "रचनात्मक रूप से अभिव्यक्ति करें।", "remedy": "Write, sing, paint. Wear yellow.", "remedy_hi": "लिखें, गाएं, चित्रकारी करें। पीला पहनें।"},
+    4: {"lesson": "Build discipline and structure.", "lesson_hi": "अनुशासन और व्यवस्था बनाएं।", "remedy": "Follow routines, wear blue.", "remedy_hi": "दिनचर्या का पालन करें, नीला पहनें।"},
+    5: {"lesson": "Embrace change and adaptability.", "lesson_hi": "परिवर्तन और अनुकूलता अपनाएं।", "remedy": "Travel, try new things. Wear grey.", "remedy_hi": "यात्रा करें, नई चीज़ें आज़माएं। भूरा पहनें।"},
+    6: {"lesson": "Accept responsibility for others.", "lesson_hi": "दूसरों के लिए जिम्मेदारी स्वीकारें।", "remedy": "Serve family, wear pink.", "remedy_hi": "परिवार की सेवा करें, गुलाबी पहनें।"},
+    7: {"lesson": "Develop spiritual depth.", "lesson_hi": "आध्यात्मिक गहराई विकसित करें।", "remedy": "Meditate, study philosophy. Wear purple.", "remedy_hi": "ध्यान करें, दर्शनशास्त्र पढ़ें। बैंगनी पहनें।"},
+    8: {"lesson": "Master money and material world.", "lesson_hi": "धन और भौतिक जगत में महारत हासिल करें।", "remedy": "Budget carefully, wear dark tones.", "remedy_hi": "बजट सावधानी से बनाएं, गहरे रंग पहनें।"},
+    9: {"lesson": "Develop compassion and selflessness.", "lesson_hi": "करुणा और निस्वार्थता विकसित करें।", "remedy": "Volunteer, help others. Wear gold.", "remedy_hi": "स्वयंसेवा करें, दूसरों की मदद करें। सुनहरा पहनें।"},
+}
+
+BIRTHDAY_PREDICTIONS = {
+    1: {"title": "The Leader", "title_hi": "नेता", "talent": "Natural leadership and originality.", "talent_hi": "प्राकृतिक नेतृत्व और मौलिकता।"},
+    2: {"title": "The Diplomat", "title_hi": "राजनयिक", "talent": "Mediation and partnership skills.", "talent_hi": "मध्यस्थता और साझेदारी कौशल।"},
+    3: {"title": "The Communicator", "title_hi": "संवादक", "talent": "Gifted self-expression and creativity.", "talent_hi": "प्रतिभाशाली आत्म-अभिव्यक्ति और रचनात्मकता।"},
+    4: {"title": "The Builder", "title_hi": "निर्माता", "talent": "Systematic and disciplined approach.", "talent_hi": "व्यवस्थित और अनुशासित दृष्टिकोण।"},
+    5: {"title": "The Adventurer", "title_hi": "साहसी", "talent": "Versatility and quick thinking.", "talent_hi": "बहुमुखी प्रतिभा और तीव्र सोच।"},
+    6: {"title": "The Nurturer", "title_hi": "पालनकर्ता", "talent": "Caring and responsibility.", "talent_hi": "देखभाल और जिम्मेदारी।"},
+    7: {"title": "The Analyst", "title_hi": "विश्लेषक", "talent": "Deep thinking and spiritual insight.", "talent_hi": "गहन चिंतन और आध्यात्मिक अंतर्दृष्टि।"},
+    8: {"title": "The Achiever", "title_hi": "उपलब्धिकर्ता", "talent": "Business acumen and ambition.", "talent_hi": "व्यापार कौशल और महत्वाकांक्षा।"},
+    9: {"title": "The Humanitarian", "title_hi": "मानवतावादी", "talent": "Compassion and global vision.", "talent_hi": "करुणा और वैश्विक दृष्टि।"},
+    11: {"title": "The Illuminator", "title_hi": "प्रकाशक", "talent": "Spiritual inspiration and intuition.", "talent_hi": "आध्यात्मिक प्रेरणा और अंतर्ज्ञान।"},
+    22: {"title": "The Master Builder", "title_hi": "मास्टर निर्माता", "talent": "Turning grand visions into reality.", "talent_hi": "भव्य दृष्टिकोण को वास्तविकता में बदलना।"},
+    33: {"title": "The Master Teacher", "title_hi": "मास्टर शिक्षक", "talent": "Healing and uplifting humanity.", "talent_hi": "मानवता का उपचार और उत्थान।"},
+}
+
+MATURITY_PREDICTIONS = {
+    1: {"title": "Independent Maturity", "title_hi": "स्वतंत्र परिपक्वता", "theme": "Growing into leadership and self-reliance after 35-40.", "theme_hi": "35-40 के बाद नेतृत्व और आत्मनिर्भरता में विकास।"},
+    2: {"title": "Diplomatic Maturity", "title_hi": "कूटनीतिक परिपक्वता", "theme": "Deepening relationships and finding inner peace.", "theme_hi": "संबंध गहरे होना और आंतरिक शांति।"},
+    3: {"title": "Creative Maturity", "title_hi": "रचनात्मक परिपक्वता", "theme": "Full creative expression blooms in later years.", "theme_hi": "बाद के वर्षों में पूर्ण रचनात्मक अभिव्यक्ति।"},
+    4: {"title": "Structured Maturity", "title_hi": "व्यवस्थित परिपक्वता", "theme": "Building lasting legacy through discipline.", "theme_hi": "अनुशासन से स्थायी विरासत निर्माण।"},
+    5: {"title": "Freedom Maturity", "title_hi": "स्वतंत्रता परिपक्वता", "theme": "Embracing change and travel in later years.", "theme_hi": "बाद के वर्षों में परिवर्तन और यात्रा।"},
+    6: {"title": "Family Maturity", "title_hi": "पारिवारिक परिपक्वता", "theme": "Deepening family bonds and community service.", "theme_hi": "पारिवारिक बंधन और सामुदायिक सेवा।"},
+    7: {"title": "Spiritual Maturity", "title_hi": "आध्यात्मिक परिपक्वता", "theme": "Inner wisdom and spiritual seeking intensifies.", "theme_hi": "आंतरिक ज्ञान और आध्यात्मिक खोज तीव्र होती है।"},
+    8: {"title": "Material Maturity", "title_hi": "भौतिक परिपक्वता", "theme": "Financial mastery and power consolidation.", "theme_hi": "वित्तीय महारत और शक्ति संचय।"},
+    9: {"title": "Humanitarian Maturity", "title_hi": "मानवतावादी परिपक्वता", "theme": "Serving humanity and letting go of the personal.", "theme_hi": "मानवता की सेवा और व्यक्तिगत से ऊपर उठना।"},
+    11: {"title": "Intuitive Maturity", "title_hi": "सहज परिपक्वता", "theme": "Becoming a spiritual guide for others.", "theme_hi": "दूसरों के लिए आध्यात्मिक मार्गदर्शक बनना।"},
+    22: {"title": "Visionary Maturity", "title_hi": "दूरदर्शी परिपक्वता", "theme": "Manifesting large-scale humanitarian projects.", "theme_hi": "बड़े पैमाने पर मानवतावादी परियोजनाओं को साकार करना।"},
+    33: {"title": "Selfless Maturity", "title_hi": "निस्वार्थ परिपक्वता", "theme": "Becoming a master healer and teacher.", "theme_hi": "मास्टर उपचारक और शिक्षक बनना।"},
+}
+
+
 def calculate_numerology(name: str, birth_date: str) -> dict:
     """
     Full numerology calculation.
@@ -2756,13 +2912,31 @@ def calculate_numerology(name: str, birth_date: str) -> dict:
         "personality": PERSONALITY_PREDICTIONS.get(personality, PERSONALITY_PREDICTIONS[9]),
     }
 
+    # DOB digits for Lo Shu analysis
+    dob_digits = [int(c) for c in birth_date.replace("-", "") if c.isdigit() and c != "0"]
+
+    birthday = _birthday_number(birth_date)
+    maturity = _maturity_number(life_path, destiny)
+
     return {
         "life_path": life_path,
         "destiny": destiny,
         "soul_urge": soul_urge,
         "personality": personality,
+        "birthday_number": birthday,
+        "birthday_prediction": BIRTHDAY_PREDICTIONS.get(birthday, {}),
+        "maturity_number": maturity,
+        "maturity_prediction": MATURITY_PREDICTIONS.get(maturity, {}),
         "predictions": predictions,
         "pinnacles": _calculate_pinnacles(birth_date),
         "challenges": _calculate_challenges(birth_date),
         "life_cycles": _calculate_life_cycles(birth_date),
+        "karmic_debts": _detect_karmic_debt(birth_date, name),
+        "hidden_passion": _hidden_passion(name),
+        "subconscious_self": _subconscious_self(name),
+        "karmic_lessons": _karmic_lessons(name),
+        "loshu_arrows": analyze_loshu_arrows(dob_digits),
+        "loshu_planes": analyze_loshu_planes(dob_digits),
+        "missing_numbers": analyze_missing_numbers(dob_digits),
+        "repeated_numbers": analyze_repeated_numbers(dob_digits),
     }
