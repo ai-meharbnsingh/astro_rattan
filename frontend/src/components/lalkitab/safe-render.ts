@@ -6,6 +6,8 @@
  * This is a safety layer to catch edge cases where backend returns unexpected data.
  */
 
+import type React from 'react';
+
 export function pickLang(value: any, isHi: boolean): string {
   if (value === null || value === undefined) return '';
   if (typeof value === 'string') return value;
@@ -57,4 +59,29 @@ export function isBilingualObject(value: any): boolean {
     !Array.isArray(value) &&
     (typeof (value as any).hi === 'string' || typeof (value as any).en === 'string')
   );
+}
+
+/**
+ * Safe wrapper for rendering any value - catches bilingual objects at render time
+ * Returns the value as-is if it's a safe primitive, converts to string if object
+ */
+export function safeValue(value: any, isHi?: boolean): string | React.ReactNode {
+  if (isHi === undefined) isHi = false;
+
+  if (value === null || value === undefined) return '';
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number') return value;
+  if (typeof value === 'boolean') return value ? 'true' : 'false';
+
+  // Convert objects and arrays to safe strings
+  if (typeof value === 'object') {
+    // Bilingual object
+    if (!Array.isArray(value) && (value.hi || value.en)) {
+      return pickLang(value, isHi);
+    }
+    // Other objects/arrays - return empty to prevent React Error #31
+    return '';
+  }
+
+  return value;
 }
