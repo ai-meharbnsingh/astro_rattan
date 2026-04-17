@@ -131,7 +131,7 @@ export default function LongevityTab({ kundliId, language, t }: Props) {
           <div className="flex items-center gap-2">
             <Heart className="w-5 h-5" />
             <h3 className="font-semibold text-foreground">
-              {isHi ? 'समग्र आयु-बल' : 'Overall Longevity Strength'}
+              {t('auto.overallLongevityStrength')}
             </h3>
           </div>
           <span className={`text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded ${overallStyle.badge}`}>
@@ -168,7 +168,7 @@ export default function LongevityTab({ kundliId, language, t }: Props) {
           })}
           {data.maraka_planets.length === 0 && (
             <div className="md:col-span-2 p-4 rounded-lg bg-gray-50 border border-gray-200 text-sm text-gray-600 italic">
-              {isHi ? 'मारक ग्रहों की जानकारी उपलब्ध नहीं।' : 'Maraka planet data not available.'}
+              {t('auto.marakaDataNotAvailable')}
             </div>
           )}
         </div>
@@ -182,7 +182,7 @@ export default function LongevityTab({ kundliId, language, t }: Props) {
             {t('auto.eighthHouseAnalysis')}
           </h3>
           <div className="text-xs text-muted-foreground mb-2">
-            {isHi ? 'अष्टमेश' : '8th Lord'}:{' '}
+            {t('auto.eighthLord')}:{' '}
             <span className="font-semibold text-foreground">
               {data.eighth_house_analysis.eighth_lord
                 ? planetName(data.eighth_house_analysis.eighth_lord)
@@ -190,13 +190,13 @@ export default function LongevityTab({ kundliId, language, t }: Props) {
             </span>
             {data.eighth_house_analysis.eighth_lord_placement > 0 && (
               <span className="ml-1">
-                ({isHi ? 'भाव' : 'H'} {data.eighth_house_analysis.eighth_lord_placement})
+                ({t('auto.bhavaShort')} {data.eighth_house_analysis.eighth_lord_placement})
               </span>
             )}
           </div>
           {data.eighth_house_analysis.planets_in_8th.length > 0 && (
             <div className="text-xs text-muted-foreground mb-3">
-              {isHi ? 'अष्टम में ग्रह' : 'Planets in 8th'}:{' '}
+              {t('auto.planetsIn8th')}:{' '}
               <span className="text-foreground">
                 {data.eighth_house_analysis.planets_in_8th.map(planetName).join(', ')}
               </span>
@@ -213,10 +213,10 @@ export default function LongevityTab({ kundliId, language, t }: Props) {
             {t('auto.saturnLongevity')}
           </h3>
           <div className="text-xs text-muted-foreground mb-3">
-            {isHi ? 'स्थान' : 'Placement'}:{' '}
+            {t('auto.placement')}:{' '}
             <span className="font-semibold text-foreground">
               {data.saturn_longevity_assessment.saturn_placement > 0
-                ? `${isHi ? 'भाव' : 'H'} ${data.saturn_longevity_assessment.saturn_placement}`
+                ? `${t('auto.bhavaShort')} ${data.saturn_longevity_assessment.saturn_placement}`
                 : '—'}
             </span>
             {data.saturn_longevity_assessment.saturn_sign && (

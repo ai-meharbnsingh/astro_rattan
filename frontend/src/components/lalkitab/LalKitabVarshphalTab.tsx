@@ -1,16 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { Calendar } from 'lucide-react';
-import type { LalKitabChartData } from './lalkitab-data';
 import { api } from '@/lib/api';
 import { useLalKitab } from './LalKitabContext';
 import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
-
-interface Props {
-  chartData: LalKitabChartData;
-  birthDate: string;
-  apiResult?: any;
-}
 
 /** Build the current year and +/- 5 years range. */
 function getYearRange(): number[] {
@@ -22,7 +15,7 @@ function getYearRange(): number[] {
   return years;
 }
 
-export default function LalKitabVarshphalTab(_props: Props) {
+export default function LalKitabVarshphalTab() {
   const { t, language } = useTranslation();
   const { kundliId } = useLalKitab();
   const isHi = language === 'hi';

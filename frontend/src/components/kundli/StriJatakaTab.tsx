@@ -165,36 +165,36 @@ export default function StriJatakaTab({ kundliId, language, t }: Props) {
           </div>
           <div>
             <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-              {isHi ? 'स्थिति' : 'Placement'}
+              {t('auto.placement')}
             </p>
             <p className="font-medium">
-              {sa.seventh_lord_placement ? (isHi ? `भाव ${sa.seventh_lord_placement}` : `House ${sa.seventh_lord_placement}`) : '—'}
+              {sa.seventh_lord_placement ? `${t('auto.house')} ${sa.seventh_lord_placement}` : '—'}
             </p>
           </div>
           <div>
             <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-              {isHi ? 'बल' : 'Strength'}
+              {t('auto.strength')}
             </p>
             <p className="font-medium capitalize">{sa.seventh_lord_strength || '—'}</p>
           </div>
           <div>
             <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-              {isHi ? '7वें में पापी ग्रह' : 'Malefics in 7th'}
+              {t('auto.maleficsIn7th')}
             </p>
             <p className="font-medium">{sa.malefics_in_7th?.length ? sa.malefics_in_7th.join(', ') : '—'}</p>
           </div>
           <div>
             <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-              {isHi ? '7वें में शुभ ग्रह' : 'Benefics in 7th'}
+              {t('auto.beneficsIn7th')}
             </p>
             <p className="font-medium">{sa.benefics_in_7th?.length ? sa.benefics_in_7th.join(', ') : '—'}</p>
           </div>
           <div>
             <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-              {isHi ? 'गुरु दृष्टि' : 'Jupiter aspects 7th'}
+              {t('auto.jupiterAspects7th')}
             </p>
             <p className="font-medium">
-              {sa.jupiter_aspects_7th ? (isHi ? 'हाँ' : 'Yes') : (isHi ? 'नहीं' : 'No')}
+              {sa.jupiter_aspects_7th ? t('common.yes') : t('common.no')}
             </p>
           </div>
         </div>
@@ -258,7 +258,7 @@ export default function StriJatakaTab({ kundliId, language, t }: Props) {
         </div>
       ) : (
         <div className="p-4 rounded-xl bg-gray-50 border border-gray-200 text-gray-700 text-sm">
-          {isHi ? 'कोई विशेष स्त्री-जातक योग नहीं पाया गया।' : 'No specific Stri-Jataka yogas detected.'}
+          {t('auto.noStriJatakaYogas')}
         </div>
       )}
 

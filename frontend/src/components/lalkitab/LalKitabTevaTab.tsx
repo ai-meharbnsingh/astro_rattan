@@ -1,15 +1,15 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from '@/lib/i18n';
-import type { LalKitabChartData } from './lalkitab-data';
-import { EyeOff, Star, Baby, Info } from 'lucide-react';
+import { Info } from 'lucide-react';
 import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
+import { api } from '@/lib/api';
+import { useLalKitab } from './LalKitabContext';
 
 interface Props {
-  chartData: LalKitabChartData;
   apiResult?: any;
 }
 
-type TevaType = 'ratandh' | 'dharmi' | 'nabalik' | 'normal';
+type TevaType = 'andha' | 'ratondha' | 'dharmi' | 'nabalig' | 'khali';
 
 const PLANET_HI: Record<string, string> = {
   Sun: 'सूर्य', Moon: 'चंद्र', Mars: 'मंगल', Mercury: 'बुध',
@@ -22,89 +22,59 @@ const ZODIAC_SIGNS = [
 ];
 
 const TEVA_CONFIG: Record<TevaType, { color: string; bgColor: string; borderColor: string }> = {
-  ratandh: { color: 'text-red-700',         bgColor: 'bg-red-500/8',         borderColor: 'border-red-300/40' },
-  dharmi:  { color: 'text-green-700',        bgColor: 'bg-green-500/8',        borderColor: 'border-green-300/40' },
-  nabalik: { color: 'text-orange-700',       bgColor: 'bg-orange-500/8',       borderColor: 'border-orange-300/40' },
-  normal:  { color: 'text-sacred-gold-dark', bgColor: 'bg-sacred-gold/8',      borderColor: 'border-sacred-gold/30' },
+  andha:    { color: 'text-red-700',         bgColor: 'bg-red-500/8',          borderColor: 'border-red-300/40' },
+  ratondha: { color: 'text-red-700',         bgColor: 'bg-red-500/8',          borderColor: 'border-red-300/40' },
+  dharmi:   { color: 'text-green-700',       bgColor: 'bg-green-500/8',        borderColor: 'border-green-300/40' },
+  nabalig:  { color: 'text-orange-700',      bgColor: 'bg-orange-500/8',       borderColor: 'border-orange-300/40' },
+  khali:    { color: 'text-amber-800',       bgColor: 'bg-amber-400/10',       borderColor: 'border-amber-300/40' },
 };
 
-/**
- * Derive TevaType from authoritative backend `/advanced` endpoint response.
- * Prefers apiResult.teva_type flags; falls back to 'normal' if missing.
- */
-function deriveTevaTypeFromApi(apiResult: any): TevaType {
-  const tt = apiResult?.teva_type;
-  if (!tt) return 'normal';
-  // Explicit type string wins if recognised
-  const explicit = (tt.type || '').toString().toLowerCase();
-  if (explicit === 'ratandh' || explicit === 'ratondha') return 'ratandh';
-  if (explicit === 'dharmi') return 'dharmi';
-  if (explicit === 'nabalik') return 'nabalik';
-  if (explicit === 'normal') return 'normal';
-  // Fallback to boolean flags (backend exposes is_ratondha / is_dharmi / is_nabalik / is_andha)
-  if (tt.is_ratondha || tt.is_ratandh || tt.is_andha) return 'ratandh';
-  if (tt.is_dharmi) return 'dharmi';
-  if (tt.is_nabalik) return 'nabalik';
-  return 'normal';
-}
-
-/** Blind planets: Rahu, Ketu always + any planet in H6/8/12 */
-function getBlindPlanets(positions: Record<string, number>): string[] {
-  const blind = new Set<string>(['Rahu', 'Ketu']);
-  for (const [planet, house] of Object.entries(positions)) {
-    if (house === 6 || house === 8 || house === 12) blind.add(planet);
+function pickPrimaryType(active: string[] | undefined | null): TevaType | null {
+  if (!active || active.length === 0) return null;
+  const known: TevaType[] = ['andha', 'ratondha', 'dharmi', 'nabalig', 'khali'];
+  for (const k of known) {
+    if (active.includes(k)) return k;
   }
-  return [...blind].filter((p) => positions[p] !== undefined || p === 'Rahu' || p === 'Ketu');
+  return null;
 }
 
-/** Righteous planets: Jupiter always + Moon in H4 + Venus in H2/H7 */
-function getRighteousPlanets(positions: Record<string, number>): string[] {
-  const righteous: string[] = ['Jupiter'];
-  if (positions['Moon'] === 4) righteous.push('Moon');
-  if (positions['Venus'] === 2 || positions['Venus'] === 7) righteous.push('Venus');
-  return righteous;
-}
-
-/** Underage planets: Moon in H8/H12 + Mercury in H12 */
-function getUnderagePlanets(positions: Record<string, number>): string[] {
-  const underage: string[] = [];
-  if (positions['Moon'] === 8 || positions['Moon'] === 12) underage.push('Moon');
-  if (positions['Mercury'] === 12) underage.push('Mercury');
-  return underage;
-}
-
-interface PlanetChipProps {
-  planet: string;
-  house: number;
-  isHi: boolean;
-  colorClass: string;
-}
-
-function PlanetChip({ planet, house, isHi, colorClass }: PlanetChipProps) {
-  const name = isHi ? (PLANET_HI[planet] ?? planet) : planet;
-  return (
-    <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium border ${colorClass}`}>
-      {name}
-      {house > 0 && (
-        <span className="text-xs opacity-70">H{house}</span>
-      )}
-    </span>
-  );
-}
-
-export default function LalKitabTevaTab({ chartData, apiResult }: Props) {
+export default function LalKitabTevaTab({ apiResult }: Props) {
   const { t, language } = useTranslation();
   const isHi = language === 'hi';
-  const positions = chartData.planetPositions;
+  const { kundliId, fullData, chartData } = useLalKitab();
 
-  const tevaType = deriveTevaTypeFromApi(apiResult);
-  const blindPlanets = getBlindPlanets(positions);
-  const righteousPlanets = getRighteousPlanets(positions);
-  const underagePlanets = getUnderagePlanets(positions);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>('');
+  const [advanced, setAdvanced] = useState<any | null>(null);
 
-  const cfg = TEVA_CONFIG[tevaType];
+  // Prefer consolidated fullData, otherwise load advanced.
+  useEffect(() => {
+    const adv = fullData?.advanced;
+    if (adv) { setAdvanced(adv); return; }
+    if (!kundliId) { setAdvanced(null); return; }
+    let cancelled = false;
+    setLoading(true);
+    setError('');
+    api.get(`/api/lalkitab/advanced/${kundliId}`)
+      .then((res) => { if (!cancelled) setAdvanced(res); })
+      .catch(() => { if (!cancelled) setError(isHi ? 'तेवा डेटा लोड नहीं हो पाया।' : 'Failed to load Teva data.'); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [kundliId, fullData?.advanced, isHi]);
 
-  const tevaLabel = t(`lk.teva.${tevaType}`);
+  const teva = (advanced?.teva_type || fullData?.advanced?.teva_type) ?? null;
+  const activeTypes: string[] = Array.isArray(teva?.active_types) ? teva.active_types : [];
+  const primary = pickPrimaryType(activeTypes);
+  const cfg = primary ? TEVA_CONFIG[primary] : TEVA_CONFIG.khali;
+
+  const labelKeyByType: Record<string, string> = {
+    andha: 'lk.teva.andha',
+    ratondha: 'lk.teva.ratondha',
+    dharmi: 'lk.teva.dharmi',
+    nabalig: 'lk.teva.nabalig',
+    khali: 'lk.teva.khali',
+  };
+  const tevaLabel = primary ? t(labelKeyByType[primary] || 'lk.teva.type') : (isHi ? 'अज्ञात' : 'Unknown');
 
   const interactiveChartData: ChartData | null = useMemo(() => {
     const planetsRaw = apiResult?.chart_data?.planets;
@@ -160,6 +130,12 @@ export default function LalKitabTevaTab({ chartData, apiResult }: Props) {
         <p className="text-sm text-gray-500">{t('lk.teva.desc')}</p>
       </div>
 
+      {!!error && (
+        <div className="p-4 rounded-xl border border-red-200 bg-red-50 text-red-800 text-sm">
+          {error}
+        </div>
+      )}
+
       {/* Teva type card */}
       <div className={`rounded-xl border p-6 ${cfg.bgColor} ${cfg.borderColor}`}>
         <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
@@ -167,96 +143,44 @@ export default function LalKitabTevaTab({ chartData, apiResult }: Props) {
         </p>
         <h3 className={`text-2xl font-sans font-bold mb-3 ${cfg.color}`}>{tevaLabel}</h3>
 
-        <p className="text-sm text-foreground/80 leading-relaxed">
-          {tevaType === 'ratandh' && (
-            t('auto.saturnOrRahuIsInH1Or')
-          )}
-          {tevaType === 'dharmi' && (
-            t('auto.jupiterIsInItsOwnSig')
-          )}
-          {tevaType === 'nabalik' && (
-            t('auto.moonIsInH812OrMercur')
-          )}
-          {tevaType === 'normal' && (
-            t('auto.planetsAreInNormalPo')
-          )}
-        </p>
+        {loading && (
+          <p className="text-sm text-foreground/70">{isHi ? 'लोड हो रहा है...' : 'Loading...'}</p>
+        )}
+
+        {!loading && teva && activeTypes.length > 0 && (
+          <div className="space-y-3">
+            <div className="flex flex-wrap gap-2">
+              {activeTypes.map((ty) => (
+                <span
+                  key={ty}
+                  className="text-xs px-2 py-1 rounded-full border border-sacred-gold/30 bg-white/40 text-sacred-gold-dark font-semibold"
+                >
+                  {t(labelKeyByType[ty] || 'lk.teva.type')}
+                </span>
+              ))}
+            </div>
+            {activeTypes.map((ty) => {
+              const desc = teva?.description?.[ty];
+              const text = isHi ? desc?.hi : desc?.en;
+              if (!text) return null;
+              return (
+                <p key={`desc-${ty}`} className="text-sm text-foreground/80 leading-relaxed">
+                  {text}
+                </p>
+              );
+            }).filter(Boolean)}
+          </div>
+        )}
+
+        {!loading && (!teva || activeTypes.length === 0) && (
+          <p className="text-sm text-foreground/70">
+            {isHi ? 'तेवा प्रकार उपलब्ध नहीं है।' : 'Teva type not available.'}
+          </p>
+        )}
       </div>
 
-      {/* Three planet classification cards */}
-      <div className="grid gap-4 md:grid-cols-3">
-        {/* Blind planets */}
-        <div className="card-sacred rounded-xl border border-red-300/30 p-5 bg-red-500/5">
-          <div className="flex items-center gap-2 mb-3">
-            <EyeOff className="w-4 h-4 text-red-600" />
-            <h3 className="font-sans font-semibold text-red-700 text-sm">
-              {t('lk.teva.blind')}
-            </h3>
-          </div>
-          <p className="text-xs text-gray-500 mb-3">{t('lk.teva.blindDesc')}</p>
-          <div className="flex flex-wrap gap-2">
-            {blindPlanets.map((p) => (
-              <PlanetChip
-                key={p}
-                planet={p}
-                house={positions[p] ?? 0}
-                isHi={isHi}
-                colorClass="bg-red-500/10 text-red-700 border-red-300/40"
-              />
-            ))}
-            {blindPlanets.length === 0 && (
-              <span className="text-xs text-gray-400">{t('auto.none')}</span>
-            )}
-          </div>
-        </div>
-
-        {/* Righteous planets */}
-        <div className="card-sacred rounded-xl border border-green-300/30 p-5 bg-green-500/5">
-          <div className="flex items-center gap-2 mb-3">
-            <Star className="w-4 h-4 text-green-600" />
-            <h3 className="font-sans font-semibold text-green-700 text-sm">
-              {t('lk.teva.righteous')}
-            </h3>
-          </div>
-          <p className="text-xs text-gray-500 mb-3">{t('lk.teva.righteousDesc')}</p>
-          <div className="flex flex-wrap gap-2">
-            {righteousPlanets.map((p) => (
-              <PlanetChip
-                key={p}
-                planet={p}
-                house={positions[p] ?? 0}
-                isHi={isHi}
-                colorClass="bg-green-500/10 text-green-700 border-green-300/40"
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Underage planets */}
-        <div className="card-sacred rounded-xl border border-orange-300/30 p-5 bg-orange-500/5">
-          <div className="flex items-center gap-2 mb-3">
-            <Baby className="w-4 h-4 text-orange-600" />
-            <h3 className="font-sans font-semibold text-orange-700 text-sm">
-              {t('lk.teva.underage')}
-            </h3>
-          </div>
-          <p className="text-xs text-gray-500 mb-3">{t('lk.teva.underageDesc')}</p>
-          <div className="flex flex-wrap gap-2">
-            {underagePlanets.map((p) => (
-              <PlanetChip
-                key={p}
-                planet={p}
-                house={positions[p] ?? 0}
-                isHi={isHi}
-                colorClass="bg-orange-500/10 text-orange-700 border-orange-300/40"
-              />
-            ))}
-            {underagePlanets.length === 0 && (
-              <span className="text-xs text-gray-400">{t('auto.none')}</span>
-            )}
-          </div>
-        </div>
-      </div>
+      {/* NOTE: Planet classification (blind/righteous/underage) was previously fabricated client-side.
+          In strict mode we do not render those until a backend section provides authoritative lists. */}
 
       {/* Kundli chart */}
       {interactiveChartData ? (
@@ -276,12 +200,12 @@ export default function LalKitabTevaTab({ chartData, apiResult }: Props) {
             {t('auto.planetPositionsLalKi')}
           </h3>
           <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-            {Object.entries(positions).map(([planet, house]) => (
+            {Object.entries(chartData?.planetPositions || {}).map(([planet, house]: [string, any]) => (
               <div key={planet} className="flex flex-col items-center p-2 rounded-lg bg-sacred-gold/5 border border-sacred-gold/10">
                 <span className="text-xs font-semibold text-sacred-gold-dark">
                   {isHi ? (PLANET_HI[planet] ?? planet) : planet}
                 </span>
-                <span className="text-lg font-bold text-foreground">{house}</span>
+                <span className="text-lg font-bold text-foreground">{Number(house) || 0}</span>
                 <span className="text-xs text-gray-400">{t('auto.h')}</span>
               </div>
             ))}

@@ -1,9 +1,8 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from '@/lib/i18n';
-import type { LalKitabChartData } from './lalkitab-data';
-import { PLANETS } from './lalkitab-data';
 import { Navigation, AlertTriangle, Info, Zap, RefreshCw } from 'lucide-react';
 import { apiFetch } from '@/lib/api';
+import type { LalKitabChartLite } from './lalkitab-core';
 
 interface ApproxTransit {
   planet: string;
@@ -14,7 +13,7 @@ interface ApproxTransit {
 }
 
 interface Props {
-  chartData: LalKitabChartData;
+  chartData: LalKitabChartLite;
   apiResult?: any;
 }
 
@@ -51,8 +50,20 @@ const SIGN_HI: Record<string, string> = {
   Sagittarius: 'धनु', Capricorn: 'मकर', Aquarius: 'कुंभ', Pisces: 'मीन',
 };
 
+const PLANET_LABELS: Record<string, { en: string; hi: string }> = {
+  Sun: { en: 'Sun', hi: 'सूर्य' },
+  Moon: { en: 'Moon', hi: 'चंद्र' },
+  Mars: { en: 'Mars', hi: 'मंगल' },
+  Mercury: { en: 'Mercury', hi: 'बुध' },
+  Jupiter: { en: 'Jupiter', hi: 'गुरु' },
+  Venus: { en: 'Venus', hi: 'शुक्र' },
+  Saturn: { en: 'Saturn', hi: 'शनि' },
+  Rahu: { en: 'Rahu', hi: 'राहु' },
+  Ketu: { en: 'Ketu', hi: 'केतु' },
+};
+
 function getPlanetLabel(key: string, language: string): string {
-  const p = PLANETS.find((pl) => pl.key === key);
+  const p = PLANET_LABELS[key];
   if (!p) return key;
   return language === 'hi' ? p.hi : p.en;
 }
@@ -108,7 +119,7 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
     return () => {
       isMounted = false;
     };
-  }, [isHi]);
+  }, [language, t]);
 
   // Lagna sign number (0 = Aries … 11 = Pisces)
   // Transit alerts come ONLY from backend /api/lalkitab/gochar (no client-side heuristics).
@@ -144,7 +155,7 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
     return map;
   }, [lagnaSignNum, transits, globalToNatal]);
 
-  const houseLabel = (n: number) => (t('auto.houseN'));
+  const houseLabel = (n: number) => t('auto.houseN', { n });
 
   return (
     <div className="space-y-6">
@@ -160,7 +171,7 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
         {asOf && (
           <div className="flex items-center gap-1.5 text-xs text-green-600 bg-green-500/10 border border-green-300/30 rounded-full px-2.5 py-1 shrink-0">
             <RefreshCw className="w-3 h-3" />
-            {t('auto.liveAsOf')}
+            {t('auto.liveAsOf', { asOf })}
           </div>
         )}
       </div>

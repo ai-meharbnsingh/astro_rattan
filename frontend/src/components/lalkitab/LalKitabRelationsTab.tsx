@@ -1,95 +1,58 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from '@/lib/i18n';
-import type { LalKitabChartData } from './lalkitab-data';
-import {
-  PLANETS,
-  PLANET_FRIENDS,
-  PLANET_ENEMIES,
-} from './lalkitab-data';
+import { api } from '@/lib/api';
+import { useLalKitab } from './LalKitabContext';
 import { Users, Eye, AlertTriangle, CheckCircle } from 'lucide-react';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 
-interface Props {
-  chartData: LalKitabChartData;
+interface RelationsResponse {
+  kundli_id: string;
+  conjunctions: Array<{
+    house: number;
+    planets: string[];
+    clashes: [string, string][];
+    friendships: [string, string][];
+  }>;
+  aspects: Array<{
+    planet: string;
+    from_house: number;
+    aspect_houses: number[];
+  }>;
 }
 
-interface Conjunction {
-  house: number;
-  planets: string[];
-}
-
-interface AspectEntry {
-  planet: string;
-  fromHouse: number;
-  aspectHouses: number[];
-}
-
-// Lal Kitab special aspects (additional aspects beyond the universal 7th)
-const SPECIAL_ASPECTS: Record<string, number[]> = {
-  Mars: [4, 8],
-  Jupiter: [5, 9],
-  Saturn: [3, 10],
-  Rahu: [5, 9],
-};
-
-export default function LalKitabRelationsTab({ chartData }: Props) {
+export default function LalKitabRelationsTab() {
   const { t, language } = useTranslation();
   const isHi = language === 'hi';
+  const { kundliId } = useLalKitab();
+  const [data, setData] = useState<RelationsResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const getPlanetLabel = (key: string) => {
-    const planet = PLANETS.find((p) => p.key === key);
-    if (!planet) return key;
-    return isHi ? planet.hi : planet.en;
-  };
+  useEffect(() => {
+    if (!kundliId) { setData(null); return; }
+    setError(null);
+    api.get(`/api/lalkitab/relations/${kundliId}`)
+      .then((res: any) => setData(res as RelationsResponse))
+      .catch((e: any) => setError(e instanceof Error ? e.message : (isHi ? 'लोड नहीं हो सका' : 'Failed to load')));
+  }, [kundliId]);
 
-  // Find conjunctions: planets sharing the same house
-  const conjunctions = useMemo<Conjunction[]>(() => {
-    const houseMap: Record<number, string[]> = {};
-    for (const [planet, house] of Object.entries(chartData.planetPositions)) {
-      if (house == null) continue;
-      if (!houseMap[house]) houseMap[house] = [];
-      houseMap[house].push(planet);
-    }
-    return Object.entries(houseMap)
-      .filter(([, planets]) => planets.length >= 2)
-      .map(([house, planets]) => ({ house: Number(house), planets }));
-  }, [chartData.planetPositions]);
+  const conjunctions = data?.conjunctions || [];
+  const aspects = data?.aspects || [];
 
-  // Calculate aspects for each planet
-  const aspects = useMemo<AspectEntry[]>(() => {
-    const entries: AspectEntry[] = [];
-    for (const planet of PLANETS) {
-      const fromHouse = chartData.planetPositions[planet.key];
-      if (fromHouse == null) continue;
+  const hasAny = conjunctions.length > 0 || aspects.length > 0;
+  const sortedAspects = useMemo(() => {
+    return [...aspects].sort((a, b) => (a.from_house - b.from_house) || a.planet.localeCompare(b.planet));
+  }, [data]);
 
-      const aspectHouses: number[] = [];
-
-      // Universal 7th house aspect
-      aspectHouses.push(((fromHouse - 1 + 6) % 12) + 1);
-
-      // Special aspects
-      const special = SPECIAL_ASPECTS[planet.key];
-      if (special) {
-        for (const offset of special) {
-          aspectHouses.push(((fromHouse - 1 + offset - 1) % 12) + 1);
-        }
-      }
-
-      entries.push({ planet: planet.key, fromHouse, aspectHouses });
-    }
-    return entries;
-  }, [chartData.planetPositions]);
-
-  // Check friendship/enmity
-  const areFriends = (p1: string, p2: string) =>
-    PLANET_FRIENDS[p1]?.includes(p2) ?? false;
-
-  const areEnemies = (p1: string, p2: string) =>
-    PLANET_ENEMIES[p1]?.includes(p2) ?? false;
+  if (!kundliId) {
+    return (
+      <div className="text-center py-10 text-muted-foreground text-sm">
+        {isHi ? 'कुंडली चुनें या बनाएं।' : 'Select or generate a Kundli.'}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
-      {/* Header */}
       <div>
         <h2 className="text-2xl text-sacred-gold flex items-center gap-2">
           <Users className="w-6 h-6" />
@@ -98,6 +61,18 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
         <p className="text-gray-500 mt-1">{t('lk.relations.desc')}</p>
       </div>
 
+      {error && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-700 text-sm">
+          {error}
+        </div>
+      )}
+
+      {!error && !hasAny && (
+        <p className="text-sm text-gray-600 italic">
+          {t('auto.noDataAvailable')}
+        </p>
+      )}
+
       {/* Conjunctions (Yuti) */}
       <section>
         <h3 className="text-lg text-sacred-gold mb-4">
@@ -105,81 +80,45 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
         </h3>
 
         {conjunctions.length === 0 ? (
-          <p className="text-sm text-gray-600 italic">
-            {t('auto.noConjunctionsFound')}
-          </p>
+          <p className="text-sm text-gray-600 italic">{t('auto.noConjunctionsFound')}</p>
         ) : (
           <div className="space-y-4">
             {conjunctions.map((conj) => {
-              // Check for clashes in this conjunction
-              const clashes: [string, string][] = [];
-              const friendships: [string, string][] = [];
-
-              for (let i = 0; i < conj.planets.length; i++) {
-                for (let j = i + 1; j < conj.planets.length; j++) {
-                  const p1 = conj.planets[i];
-                  const p2 = conj.planets[j];
-                  if (areEnemies(p1, p2) || areEnemies(p2, p1)) {
-                    clashes.push([p1, p2]);
-                  } else if (areFriends(p1, p2) || areFriends(p2, p1)) {
-                    friendships.push([p1, p2]);
-                  }
-                }
-              }
-
-              const hasClash = clashes.length > 0;
-
+              const hasClash = (conj.clashes || []).length > 0;
               return (
                 <div
                   key={conj.house}
                   className={`rounded-xl p-5 border transition-all ${
-                    hasClash
-                      ? 'border-red-300/30 bg-red-500/5'
-                      : 'border-blue-500/20 bg-blue-500/5'
+                    hasClash ? 'border-red-300/30 bg-red-500/5' : 'border-blue-500/20 bg-blue-500/5'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-3">
                     <div>
-                      <span className="text-sm text-gray-600">
-                        {t('auto.house')} {conj.house}
-                      </span>
+                      <span className="text-sm text-gray-600">{t('auto.house')} {conj.house}</span>
                       <div className="flex items-center gap-2 mt-1 flex-wrap">
                         {conj.planets.map((planet) => (
                           <span
                             key={planet}
                             className="px-2.5 py-1 rounded-full bg-sacred-gold/10 text-sacred-gold text-sm font-medium"
                           >
-                            {getPlanetLabel(planet)}
+                            {planet}
                           </span>
                         ))}
                       </div>
                     </div>
                   </div>
 
-                  {/* Clash / no-clash indicators */}
-                  {clashes.map(([p1, p2]) => (
-                    <div
-                      key={`${p1}-${p2}`}
-                      className="flex items-center gap-2 mt-2 text-sm text-red-500"
-                    >
+                  {(conj.clashes || []).map(([p1, p2]) => (
+                    <div key={`${p1}-${p2}`} className="flex items-center gap-2 mt-2 text-sm text-red-600">
                       <AlertTriangle className="w-4 h-4 shrink-0" />
-                      <span>
-                        {t('lk.relations.clash')}: {getPlanetLabel(p1)} &{' '}
-                        {getPlanetLabel(p2)}
-                      </span>
+                      <span>{t('lk.relations.clash')}: {p1} &amp; {p2}</span>
                     </div>
                   ))}
 
-                  {friendships.map(([p1, p2]) => (
-                    <div
-                      key={`${p1}-${p2}`}
-                      className="flex items-center gap-2 mt-2 text-sm text-green-500"
-                    >
+                  {(conj.friendships || []).map(([p1, p2]) => (
+                    <div key={`${p1}-${p2}`} className="flex items-center gap-2 mt-2 text-sm text-green-600">
                       <CheckCircle className="w-4 h-4 shrink-0" />
-                      <span>
-                        {t('lk.relations.noClash')}: {getPlanetLabel(p1)} &{' '}
-                        {getPlanetLabel(p2)}
-                      </span>
+                      <span>{t('lk.relations.noClash')}: {p1} &amp; {p2}</span>
                     </div>
                   ))}
                 </div>
@@ -189,7 +128,6 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
         )}
       </section>
 
-      {/* Separator */}
       <div className="border-t border-sacred-gold/10" />
 
       {/* Aspects (Drishti) */}
@@ -203,110 +141,33 @@ export default function LalKitabRelationsTab({ chartData }: Props) {
           <Table className="w-full text-sm">
             <TableHeader>
               <TableRow className="border-b border-sacred-gold/10">
-                <TableHead className="text-left py-2 px-3 text-sacred-gold/70 font-medium">
-                  {t('auto.planet')}
-                </TableHead>
-                <TableHead className="text-left py-2 px-3 text-sacred-gold/70 font-medium">
-                  {t('auto.inHouse')}
-                </TableHead>
-                <TableHead className="text-left py-2 px-3 text-sacred-gold/70 font-medium">
-                  {t('auto.aspectsHouses')}
-                </TableHead>
+                <TableHead className="text-left py-2 px-3 text-sacred-gold/70 font-medium">{t('auto.planet')}</TableHead>
+                <TableHead className="text-left py-2 px-3 text-sacred-gold/70 font-medium">{t('auto.inHouse')}</TableHead>
+                <TableHead className="text-left py-2 px-3 text-sacred-gold/70 font-medium">{t('auto.aspectsHouses')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {aspects.map((entry) => (
-                <TableRow
-                  key={entry.planet}
-                  className="border-b border-sacred-gold/10 last:border-b-0"
-                >
-                  <TableCell className="py-2.5 px-3 text-foreground font-medium">
-                    {getPlanetLabel(entry.planet)}
-                  </TableCell>
-                  <TableCell className="py-2.5 px-3 text-gray-600">
-                    {entry.fromHouse}
-                  </TableCell>
-                  <TableCell className="py-2.5 px-3">
-                    <div className="flex gap-1.5 flex-wrap">
-                      {entry.aspectHouses.map((h) => (
-                        <span
-                          key={h}
-                          className="px-2 py-0.5 rounded bg-sacred-gold/10 text-sacred-gold text-sm font-medium"
-                        >
-                          {h}
-                        </span>
-                      ))}
-                    </div>
+              {sortedAspects.map((entry) => (
+                <TableRow key={entry.planet} className="border-b border-sacred-gold/10">
+                  <TableCell className="py-2 px-3 font-medium text-foreground">{entry.planet}</TableCell>
+                  <TableCell className="py-2 px-3 text-muted-foreground">{entry.from_house}</TableCell>
+                  <TableCell className="py-2 px-3 text-muted-foreground">
+                    {(entry.aspect_houses || []).join(', ')}
                   </TableCell>
                 </TableRow>
               ))}
+              {sortedAspects.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={3} className="py-6 text-center text-xs text-muted-foreground">
+                    {isHi ? 'कोई दृष्टि डेटा नहीं।' : 'No aspects data.'}
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </div>
       </section>
-
-      {/* Separator */}
-      <div className="border-t border-sacred-gold/10" />
-
-      {/* Clash Detection Summary */}
-      <section>
-        <h3 className="text-lg text-sacred-gold mb-4">
-          {t('auto.clashAnalysis')}
-        </h3>
-
-        {conjunctions.length === 0 ? (
-          <div className="flex items-center gap-2 text-sm text-green-500">
-            <CheckCircle className="w-5 h-5" />
-            <span>
-              {t('auto.noPlanetaryConjuncti')}
-            </span>
-          </div>
-        ) : (
-          <div className="grid gap-3 sm:grid-cols-2">
-            {conjunctions.map((conj) => {
-              const hasClash = conj.planets.some((p1) =>
-                conj.planets.some(
-                  (p2) => p1 !== p2 && (areEnemies(p1, p2) || areEnemies(p2, p1))
-                )
-              );
-
-              return (
-                <div
-                  key={conj.house}
-                  className={`rounded-xl p-4 border ${
-                    hasClash
-                      ? 'border-red-300/30 bg-red-500/5'
-                      : 'border-green-300/30 bg-green-500/5'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    {hasClash ? (
-                      <AlertTriangle className="w-5 h-5 text-red-500 shrink-0" />
-                    ) : (
-                      <CheckCircle className="w-5 h-5 text-green-500 shrink-0" />
-                    )}
-                    <div>
-                      <p className="text-sm font-medium text-foreground">
-                        {t('auto.house')} {conj.house}:{' '}
-                        {conj.planets.map(getPlanetLabel).join(', ')}
-                      </p>
-                      <p
-                        className={`text-sm mt-0.5 ${
-                          hasClash ? 'text-red-500' : 'text-green-500'
-                        }`}
-                      >
-                        {hasClash
-                          ? t('lk.relations.clash')
-                          : t('lk.relations.noClash')}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </section>
     </div>
   );
 }
+

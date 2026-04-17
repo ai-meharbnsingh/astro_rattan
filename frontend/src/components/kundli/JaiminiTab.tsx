@@ -162,7 +162,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
             ))}
           </div>
           <p className="text-[10px] text-foreground/50 mt-3 italic text-center uppercase tracking-widest">
-            {isHi ? "* आत्माकारक के नवांश स्थान को लग्न मानकर गणना की गई है" : "* Houses calculated treating the AK's Navamsha sign as the Ascendant"}
+            {t('auto.akNavamshaNote')}
           </p>
         </div>
       )}

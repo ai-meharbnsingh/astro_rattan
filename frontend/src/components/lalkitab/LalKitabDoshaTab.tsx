@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n';
-import type { LalKitabChartData } from './lalkitab-data';
 import { useLalKitab } from './LalKitabContext';
 import { apiFetch } from '@/lib/api';
 import { AlertTriangle, CheckCircle, Shield } from 'lucide-react';
@@ -15,10 +14,6 @@ interface DoshaResult {
   descHi: string;
   remedyEn: string;
   remedyHi: string;
-}
-
-interface Props {
-  chartData: LalKitabChartData;
 }
 
 const severityStyles: Record<DoshaResult['severity'], string> = {
@@ -46,16 +41,18 @@ function mapBackendDosha(d: any): DoshaResult {
   };
 }
 
-export default function LalKitabDoshaTab({ chartData }: Props) {
+export default function LalKitabDoshaTab() {
   const { t, language } = useTranslation();
   const isHi = language === 'hi';
   const { fullData, kundliId } = useLalKitab();
   const [backendDoshas, setBackendDoshas] = useState<DoshaResult[] | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     // Priority 1: Use doshas from consolidated /api/lalkitab/full/{id} response
     if (fullData?.doshas && !fullData?._errors?.doshas) {
       setBackendDoshas(fullData.doshas.map(mapBackendDosha));
+      setLoadError(null);
       return;
     }
 
@@ -65,16 +62,17 @@ export default function LalKitabDoshaTab({ chartData }: Props) {
         .then((res: any) => {
           if (res?.doshas && Array.isArray(res.doshas)) {
             setBackendDoshas(res.doshas.map(mapBackendDosha));
+            setLoadError(null);
           }
         })
         .catch(() => {
-          // Fall through to local detection (Priority 3)
+          setBackendDoshas([]);
+          setLoadError(isHi ? 'दोष लोड नहीं हो सके' : 'Could not load doshas');
         });
     }
   }, [kundliId, fullData]);
 
-  // Priority 3: Fall back to frontend-generated doshas from chartData
-  const doshas: DoshaResult[] = backendDoshas ?? (chartData.doshas ?? []);
+  const doshas: DoshaResult[] = backendDoshas ?? [];
   const detectedDoshas = doshas.filter((d) => d.detected);
   const cleanDoshas = doshas.filter((d) => !d.detected);
   const sortedDoshas = [...detectedDoshas, ...cleanDoshas];
@@ -103,6 +101,12 @@ export default function LalKitabDoshaTab({ chartData }: Props) {
           )}
         </div>
       </div>
+
+      {loadError && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-700 text-sm">
+          {loadError}
+        </div>
+      )}
 
       {/* Dosha cards */}
       <div className="space-y-4">
