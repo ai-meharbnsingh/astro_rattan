@@ -1,0 +1,13 @@
+{
+  "_source": "Phaladeepika Adhyaya 26 slokas 36-40",
+  "_note": "Prishta Latta (front-kick) = +25% strengthen when transiting planet reaches this nakshatra-count from natal Moon's nakshatra. Pratyak Latta (back-kick) = -25% weaken.",
+  "Sun":     {"prishta": 12, "pratyak": 16},
+  "Moon":    {"prishta": 22, "pratyak": 5},
+  "Mars":    {"prishta": 3,  "pratyak": 1},
+  "Mercury": {"prishta": 7,  "pratyak": 9},
+  "Jupiter": {"prishta": 6,  "pratyak": 8},
+  "Venus":   {"prishta": 5,  "pratyak": 7},
+  "Saturn":  {"prishta": 8,  "pratyak": 2},
+  "Rahu":    {"prishta": 8,  "pratyak": 2},
+  "Ketu":    {"prishta": 3,  "pratyak": 1}
+}
