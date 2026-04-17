@@ -2087,6 +2087,30 @@ def save_prediction_feedback(
 
 
 # ═══════════════════════════════════════════════════════════════════
+# DOSHA DETECTION
+# ═══════════════════════════════════════════════════════════════════
+
+@router.get("/api/lalkitab/doshas/{kundli_id}", status_code=status.HTTP_200_OK)
+def get_lalkitab_doshas(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Detect Lal Kitab doshas from the kundli's planet positions."""
+    positions, row = _get_lk_positions(kundli_id, user["sub"], db)
+
+    from app.lalkitab_dosha import detect_lalkitab_doshas
+    doshas = detect_lalkitab_doshas(positions)
+
+    return {
+        "kundli_id": kundli_id,
+        "doshas": doshas,
+        "total": len(doshas),
+        "high_severity_count": sum(1 for d in doshas if d["severity"] == "high"),
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════
 # CONSOLIDATED FULL ENDPOINT — eliminates 15+ waterfall API calls
 # ═══════════════════════════════════════════════════════════════════
 
@@ -2308,6 +2332,14 @@ def get_lalkitab_full(
     except Exception as e:
         logger.warning("full: milestones section failed: %s", e, exc_info=True)
         result["_errors"]["milestones"] = str(e)
+
+    # ── Doshas (Lal Kitab dosha detection) ──
+    try:
+        from app.lalkitab_dosha import detect_lalkitab_doshas
+        result["doshas"] = detect_lalkitab_doshas(positions)
+    except Exception as e:
+        logger.warning("full: doshas section failed: %s", e, exc_info=True)
+        result["_errors"]["doshas"] = str(e)
 
     # Strip _errors if empty (clean response when everything succeeds)
     if not result["_errors"]:

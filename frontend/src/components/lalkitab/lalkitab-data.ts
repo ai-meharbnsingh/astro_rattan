@@ -455,8 +455,11 @@ export interface DoshaResult {
 
 /**
  * Detect Lal Kitab doshas from planet positions.
- * NOTE: Frontend-only detection. No backend equivalent yet.
- * TODO: Migrate to backend for single source of truth.
+ * NOTE: Frontend FALLBACK only. Backend source of truth is at:
+ *   - GET /api/lalkitab/doshas/{kundli_id}  (dedicated endpoint)
+ *   - GET /api/lalkitab/full/{kundli_id}     (consolidated, includes doshas section)
+ * Backend engine: app/lalkitab_dosha.py (detect_lalkitab_doshas)
+ * LalKitabDoshaTab.tsx prefers backend data and falls back to this function.
  */
 function detectDoshas(planetPositions: Record<string, number>): DoshaResult[] {
   const results: DoshaResult[] = [];

@@ -122,7 +122,7 @@ SIGNS: List[str] = [
 
 SIGN_INDEX: Dict[str, int] = {s: i for i, s in enumerate(SIGNS)}
 
-MAIN_PLANETS: List[str] = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
+MAIN_PLANETS: List[str] = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
 
 AREAS: List[str] = ["general", "love", "career", "finance", "health"]
 
@@ -183,6 +183,8 @@ HOUSE_SCORES: Dict[int, int] = {
 PLANET_NATURE: Dict[str, float] = {
     "Jupiter": 1.5, "Venus": 1.0, "Moon": 0.5, "Mercury": 0.5,
     "Sun": 0.0, "Mars": -0.5, "Saturn": -1.0,
+    # Shadow planets: treat as natural malefics for scoring.
+    "Rahu": -0.7, "Ketu": -0.7,
 }
 
 DIGNITY_BONUS: Dict[str, int] = {

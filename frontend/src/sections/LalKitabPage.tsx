@@ -83,16 +83,21 @@ function LalKitabPageInner() {
   useEffect(() => { ctx.setBirthDate(birthDate || null); }, [birthDate]);
   useEffect(() => { ctx.setKundliId(kundliId || null); }, [kundliId]);
 
-  // Fetch consolidated data when kundli is loaded
-  // NOTE: /api/lalkitab/full/{id} endpoint is not yet implemented in backend.
-  // Uncomment when the backend endpoint is available:
-  // useEffect(() => {
-  //   if (kundliId) {
-  //     api.get(`/api/lalkitab/full/${kundliId}`)
-  //       .then(data => ctx.setFullData(data))
-  //       .catch(err => console.error('Consolidated LK fetch failed:', err));
-  //   }
-  // }, [kundliId]);
+  // Fetch consolidated Lal Kitab data when kundli is loaded.
+  // Tabs can prefer ctx.fullData to avoid waterfall calls.
+  useEffect(() => {
+    if (!kundliId) { ctx.setFullData(null); return; }
+    let cancelled = false;
+    (async () => {
+      try {
+        const full = await api.get(`/api/lalkitab/full/${kundliId}`);
+        if (!cancelled) ctx.setFullData(full);
+      } catch {
+        if (!cancelled) ctx.setFullData({ _errors: { full: 'Failed to load consolidated data' } });
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [kundliId]);
 
   const topTabs = [
     { value: 'dashboard', label: t('lk.tab.dashboard'), icon: LayoutDashboard },
