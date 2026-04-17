@@ -373,8 +373,8 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
           <div className="space-y-2">
             {data.argala.house_argalas.map((ha: any) => (
               <div key={ha.house} className="rounded-lg p-3 border border-slate-200 bg-white">
-                <p className="font-semibold text-sm mb-1" className="text-foreground">
-                  {t('auto.houseHaHouse')}
+                <p className="font-semibold text-sm mb-1 text-foreground">
+                  {t('table.house')} {ha.house}
                 </p>
                 <div className="space-y-2">
                   {ha.argalas.map((a: any, i: number) => (

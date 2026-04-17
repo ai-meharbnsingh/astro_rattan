@@ -178,6 +178,20 @@ export default function KPHorary({ language, t }: KPHoraryProps) {
   const planetShort = (name: string) =>
     (translatePlanet(name || '', language) || name || '-').slice(0, 2);
 
+  /** Safely render a value that may be an object (e.g. {start, end, start_dms, end_dms}). */
+  const safeStr = (v: unknown): string => {
+    if (v == null) return '-';
+    if (typeof v === 'string') return v;
+    if (typeof v === 'number') return v.toFixed(2);
+    if (typeof v === 'object') {
+      const o = v as Record<string, unknown>;
+      if ('start_dms' in o && 'end_dms' in o) return `${o.start_dms} - ${o.end_dms}`;
+      if ('start' in o && 'end' in o) return `${o.start} - ${o.end}`;
+      return JSON.stringify(v);
+    }
+    return String(v);
+  };
+
   /* ---------------------------------------------------------------- */
   /*  Render                                                           */
   /* ---------------------------------------------------------------- */
@@ -339,7 +353,7 @@ export default function KPHorary({ language, t }: KPHoraryProps) {
             {chartResult.degree_range && (
               <div className="bg-white rounded-lg p-3 text-center border border-border/20">
                 <p className="text-[10px] uppercase text-foreground/50 font-bold">{l('Degree Range', 'अंश सीमा')}</p>
-                <p className="text-sm font-bold text-foreground">{chartResult.degree_range}</p>
+                <p className="text-sm font-bold text-foreground">{safeStr(chartResult.degree_range)}</p>
               </div>
             )}
           </div>
@@ -371,7 +385,7 @@ export default function KPHorary({ language, t }: KPHoraryProps) {
                           {p.retrograde && <span className="ml-1 text-red-400 text-[10px] font-bold">(R)</span>}
                         </TableCell>
                         <TableCell className="p-1.5 text-foreground">{translateSign(p.sign, language)}</TableCell>
-                        <TableCell className="p-1.5 text-foreground font-mono">{p.degree_dms || (typeof p.degree === 'number' ? p.degree.toFixed(2) : p.degree || '-')}</TableCell>
+                        <TableCell className="p-1.5 text-foreground font-mono">{safeStr(p.degree_dms || p.degree)}</TableCell>
                         <TableCell className="p-1.5 text-foreground">{p.nakshatra ? translateNakshatra(p.nakshatra, language) : '-'}</TableCell>
                         <TableCell className="p-1.5 text-center text-primary font-medium">{p.sign_lord ? planetShort(p.sign_lord) : '-'}</TableCell>
                         <TableCell className="p-1.5 text-center text-primary font-medium">{p.star_lord ? planetShort(p.star_lord) : '-'}</TableCell>
@@ -408,7 +422,7 @@ export default function KPHorary({ language, t }: KPHoraryProps) {
                       <TableRow key={i} className="border-t border-border">
                         <TableCell className="p-1.5 font-semibold text-foreground">{c.house}</TableCell>
                         <TableCell className="p-1.5 text-foreground">{translateSign(c.sign, language)}</TableCell>
-                        <TableCell className="p-1.5 text-foreground font-mono">{c.degree_dms || (typeof c.degree === 'number' ? c.degree.toFixed(2) : '-')}</TableCell>
+                        <TableCell className="p-1.5 text-foreground font-mono">{safeStr(c.degree_dms || c.degree)}</TableCell>
                         <TableCell className="p-1.5 text-foreground">{c.nakshatra ? translateNakshatra(c.nakshatra, language) : '-'}</TableCell>
                         <TableCell className="p-1.5 text-center text-primary font-medium">{c.sign_lord ? planetShort(c.sign_lord) : '-'}</TableCell>
                         <TableCell className="p-1.5 text-center text-primary font-medium">{c.star_lord ? planetShort(c.star_lord) : '-'}</TableCell>

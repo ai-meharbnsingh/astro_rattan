@@ -16,7 +16,7 @@ function rotateByLagna<T>(arr: T[], lagnaSign: string): T[] {
 }
 
 // SAV Kundli Chart — North Indian diamond SVG with Lagna at H1
-function SAVKundliChart({ savData, language, lagnaSign }: { savData: Record<string, number>; language: string; lagnaSign: string }) {
+function SAVKundliChart({ savData, language, lagnaSign, t }: { savData: Record<string, number>; language: string; lagnaSign: string; t: (key: string) => string }) {
   const signs    = rotateByLagna(ALL_SIGNS, lagnaSign);
   const signAbbr = rotateByLagna(ALL_ABBR,  lagnaSign);
   const hiAbbr   = rotateByLagna(ALL_HI,    lagnaSign);
@@ -104,7 +104,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
           {/* SAV Chart — Custom North Indian style with large bindu numbers */}
           <div className="bg-muted rounded-xl p-5 border border-border">
             <Heading as={4} variant={4} className="mb-4">{t('section.sarvashtakvarga')} {t('kundli.chart')}</Heading>
-            <SAVKundliChart savData={ashtakvargaData.sarvashtakvarga || {}} language={language} lagnaSign={result?.chart_data?.ascendant?.sign || 'Aries'} />
+            <SAVKundliChart savData={ashtakvargaData.sarvashtakvarga || {}} language={language} lagnaSign={result?.chart_data?.ascendant?.sign || 'Aries'} t={t} />
             <p className="text-sm text-center text-foreground mt-2">{t('ashtakvarga.savDescription')}</p>
           </div>
 
