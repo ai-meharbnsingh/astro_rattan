@@ -335,6 +335,260 @@ def compute_area_score(
     return int(round(total_score / count))
 
 
+# ─────────────────────────────────────────────────────────────
+# Chart-specific text generation (Codex R3 fix)
+# Adds planet-name / house / dignity references into each area
+# so predictions stop reading like generic templates.
+# ─────────────────────────────────────────────────────────────
+
+# Area-specific one-line themes per planet. Keeps text focused on
+# what this planet *means* for this area (career/money/health/…).
+AREA_PLANET_THEME: Dict[str, Dict[str, str]] = {
+    "career":    {"Sun": "public authority and recognition",
+                  "Saturn": "long-term discipline and partnerships",
+                  "Mars": "drive and initiative"},
+    "money":     {"Jupiter": "wisdom-led wealth",
+                  "Venus": "luxury and accumulated assets",
+                  "Mercury": "commerce and skill-based income"},
+    "love":      {"Venus": "harmony and partnership",
+                  "Moon": "emotional connection",
+                  "Mercury": "communication in relationships"},
+    "health":    {"Sun": "core vitality",
+                  "Mars": "physical energy and inflammation",
+                  "Saturn": "longevity, bones and joints"},
+    "education": {"Mercury": "learning and skill acquisition",
+                  "Jupiter": "wisdom and higher study",
+                  "Moon": "receptivity and memory"},
+    "family":    {"Moon": "mother and home-feel",
+                  "Venus": "domestic harmony",
+                  "Jupiter": "elders and dharma at home"},
+    "legal":     {"Mars": "aggression and combat",
+                  "Saturn": "verdicts and delays",
+                  "Rahu": "hidden agendas"},
+    "spiritual": {"Jupiter": "dharma and teacher connection",
+                  "Ketu": "detachment and liberation",
+                  "Sun": "inner light"},
+}
+
+# Mapping for the remedy sentence: the specific life-area consequence
+# of the weakest planet, so the remedy hook makes sense contextually.
+AREA_WEAKEST_HOOK_EN: Dict[str, str] = {
+    "career":    "career output",
+    "money":     "financial flow",
+    "love":     "relationship stability",
+    "health":    "physical vitality",
+    "education": "study progress",
+    "family":    "domestic peace",
+    "legal":     "legal standing",
+    "spiritual": "inner progress",
+}
+
+# Dignity → rank (higher is stronger)
+_DIGNITY_RANK = {
+    "Exalted": 5, "Own Sign": 4, "Friendly": 3,
+    "Neutral": 2, "Enemy": 1, "Debilitated": 0,
+}
+
+def _dignity_phrase(dignity: str) -> str:
+    return {
+        "Exalted":     "exalted",
+        "Own Sign":    "in own sign",
+        "Friendly":    "in friendly sign",
+        "Neutral":     "in neutral sign",
+        "Enemy":       "in enemy sign",
+        "Debilitated": "debilitated",
+    }.get(dignity, "")
+
+
+def _strength_verdict(dignity: str) -> str:
+    rank = _DIGNITY_RANK.get(dignity, 2)
+    if rank >= 4:
+        return "strong"
+    if rank == 3:
+        return "supportive"
+    if rank == 2:
+        return "neutral"
+    return "weakened"
+
+
+def _build_specific_text(
+    area: "PredictionArea",
+    planet_positions: Dict[str, int],
+    planet_longitudes: Optional[Dict[str, float]],
+) -> Dict[str, str]:
+    """
+    Generate chart-specific EN/HI text for one prediction area.
+
+    Returns a dict with positive_en, caution_en, remedy_en (plus HI)
+    that names the actual trace planets, their houses and dignities.
+    Falls back to empty strings if the chart has no trace planets.
+    """
+    # Local imports to avoid cycles
+    from app.astro_engine import get_sign_from_longitude
+    from app.lalkitab_engine import _get_dignity_label, REMEDIES_BY_HOUSE
+
+    # Build a list of (planet, house, sign, dignity) for trace planets.
+    details = []
+    for p in area.primary_planets:
+        h = planet_positions.get(p)
+        if not h:
+            continue
+        sign = ""
+        if planet_longitudes and p in planet_longitudes:
+            try:
+                sign = get_sign_from_longitude(float(planet_longitudes[p]))
+            except Exception:
+                sign = ""
+        dignity = _get_dignity_label(p, sign) if sign else "Neutral"
+        details.append({"planet": p, "house": h, "sign": sign, "dignity": dignity})
+
+    if not details:
+        return {}
+
+    # Sort by strength (strongest first)
+    details.sort(key=lambda d: _DIGNITY_RANK.get(d["dignity"], 2), reverse=True)
+    strongest = details[0]
+    weakest = details[-1]
+    area_themes = AREA_PLANET_THEME.get(area.key, {})
+
+    # Detect cluster (2+ trace planets in same house)
+    house_counts: Dict[int, int] = {}
+    for d in details:
+        house_counts[d["house"]] = house_counts.get(d["house"], 0) + 1
+    clustered = [h for h, c in house_counts.items() if c >= 2]
+
+    def describe(d: dict) -> str:
+        theme = area_themes.get(d["planet"], "")
+        dig_phrase = _dignity_phrase(d["dignity"])
+        theme_note = f" — {theme}" if theme else ""
+        return f"{d['planet']} {dig_phrase} in H{d['house']}{theme_note}"
+
+    # ── Positive sentence: strongest + (optionally) 2nd strong ──
+    positive_parts = []
+    for d in details:
+        rank = _DIGNITY_RANK.get(d["dignity"], 2)
+        if rank >= 3:  # Friendly or better
+            positive_parts.append(describe(d))
+    if positive_parts:
+        positive_en = "Strengths: " + "; ".join(positive_parts) + "."
+    else:
+        positive_en = (
+            f"No planet in this area's trace is classically strong in its sign. "
+            f"{strongest['planet']} in H{strongest['house']} is the best available "
+            f"anchor, but results stay moderate."
+        )
+
+    # ── Caution sentence: weakest (only if actually weak) ──
+    rank_weakest = _DIGNITY_RANK.get(weakest["dignity"], 2)
+    if rank_weakest <= 1:  # Enemy or Debilitated
+        caution_en = (
+            f"Caution: {describe(weakest)} is the risk vector — its weakness drags "
+            f"down {AREA_WEAKEST_HOOK_EN.get(area.key, 'this life area')}."
+        )
+    elif rank_weakest == 2:
+        caution_en = (
+            f"Caution: {weakest['planet']} neutral in H{weakest['house']} is the "
+            f"softest link — no crisis, just ordinary friction."
+        )
+    else:
+        caution_en = (
+            "Caution: no planet in this area's trace is seriously afflicted. "
+            "Standard diligence is enough."
+        )
+
+    # ── Cluster note (if 2+ trace planets share a house) ──
+    if clustered:
+        ch = clustered[0]
+        cluster_planets = [d["planet"] for d in details if d["house"] == ch]
+        caution_en += (
+            f" Note: {len(cluster_planets)} of the {area.en.lower()} "
+            f"planets ({', '.join(cluster_planets)}) cluster in H{ch} — the axis "
+            f"of H{ch} carries disproportionate weight for this area."
+        )
+
+    # ── Remedy: target the WEAKEST planet's LK position remedy ──
+    wp_name, wp_house = weakest["planet"], weakest["house"]
+    canonical = REMEDIES_BY_HOUSE.get(wp_name, {}).get(wp_house, {})
+    hook = AREA_WEAKEST_HOOK_EN.get(area.key, "this area")
+    if canonical.get("en"):
+        remedy_en = (
+            f"Remedy: the weakest trace planet is {wp_name} in H{wp_house} "
+            f"({weakest['dignity']}). Targeting it directly uplifts {hook}. "
+            f"{canonical['en']}"
+        )
+        remedy_hi = (
+            f"उपाय: इस क्षेत्र में सबसे कमज़ोर ग्रह {wp_name} भाव {wp_house} में "
+            f"({weakest['dignity']}) है। उसे सीधे बल देने से {hook} सुधरता है। "
+            f"{canonical.get('hi', '')}"
+        )
+    else:
+        remedy_en = (
+            f"Remedy: weakest trace planet is {wp_name} in H{wp_house}. "
+            f"Use its standard Lal Kitab remedy for this house."
+        )
+        remedy_hi = (
+            f"उपाय: सबसे कमज़ोर ग्रह {wp_name} भाव {wp_house}। उसका "
+            f"लाल किताब उपाय अपनाएं।"
+        )
+
+    # ── Hindi positive / caution (transliterated structurally) ──
+    def describe_hi(d):
+        theme = area_themes.get(d["planet"], "")
+        dig_phrase = {
+            "Exalted": "उच्च का", "Own Sign": "स्वराशि में",
+            "Friendly": "मित्र राशि में", "Neutral": "तटस्थ",
+            "Enemy": "शत्रु राशि में", "Debilitated": "नीच का",
+        }.get(d["dignity"], "")
+        theme_note = f" — {theme}" if theme else ""
+        return f"{d['planet']} भाव {d['house']} में {dig_phrase}{theme_note}"
+
+    if positive_parts:
+        positive_hi = "बल: " + "; ".join(describe_hi(d) for d in details
+                                         if _DIGNITY_RANK.get(d["dignity"], 2) >= 3) + "।"
+    else:
+        positive_hi = (
+            f"इस क्षेत्र के त्रिकोण में कोई ग्रह स्वतः बली नहीं। "
+            f"{strongest['planet']} भाव {strongest['house']} में सर्वश्रेष्ठ उपलब्ध सहारा है।"
+        )
+
+    if rank_weakest <= 1:
+        caution_hi = (
+            f"सावधानी: {describe_hi(weakest)} — यह कमज़ोरी "
+            f"{AREA_WEAKEST_HOOK_EN.get(area.key, 'इस क्षेत्र')} को प्रभावित करती है।"
+        )
+    elif rank_weakest == 2:
+        caution_hi = (
+            f"सावधानी: {weakest['planet']} भाव {weakest['house']} में तटस्थ — "
+            f"संकट नहीं, पर सामान्य रुकावट।"
+        )
+    else:
+        caution_hi = "सावधानी: इस क्षेत्र के ग्रह गंभीर रूप से पीड़ित नहीं — सामान्य सावधानी पर्याप्त।"
+
+    if clustered:
+        ch = clustered[0]
+        cp = [d["planet"] for d in details if d["house"] == ch]
+        caution_hi += (
+            f" टिप्पणी: इस क्षेत्र के {len(cp)} ग्रह "
+            f"({', '.join(cp)}) भाव {ch} में इकट्ठे हैं — इस अक्ष पर अधिक भार।"
+        )
+
+    return {
+        "positive_en": positive_en,
+        "positive_hi": positive_hi,
+        "caution_en": caution_en,
+        "caution_hi": caution_hi,
+        "remedy_en": remedy_en,
+        "remedy_hi": remedy_hi,
+        "weakest_planet": wp_name,
+        "weakest_house": wp_house,
+        "weakest_dignity": weakest["dignity"],
+        "strongest_planet": strongest["planet"],
+        "strongest_house": strongest["house"],
+        "strongest_dignity": strongest["dignity"],
+        "trace_details": details,
+    }
+
+
 def build_prediction_studio(
     planet_positions: Dict[str, int],
     planet_longitudes: Optional[Dict[str, float]] = None,
@@ -360,6 +614,18 @@ def build_prediction_studio(
             h = int(planet_positions.get(p) or 0)
             if h:
                 trace.append({"planet": p, "house": h})
+
+        # Build chart-specific text that names actual planets + houses
+        # + dignities instead of emitting the generic template.
+        specific = _build_specific_text(area, planet_positions, planet_longitudes)
+
+        positive_en = specific.get("positive_en") or area.positive_en
+        positive_hi = specific.get("positive_hi") or area.positive_hi
+        caution_en  = specific.get("caution_en")  or area.caution_en
+        caution_hi  = specific.get("caution_hi")  or area.caution_hi
+        remedy_en   = specific.get("remedy_en")   or area.remedy_en
+        remedy_hi   = specific.get("remedy_hi")   or area.remedy_hi
+
         areas_out.append(
             {
                 "key": area.key,
@@ -368,13 +634,20 @@ def build_prediction_studio(
                 "score": score,
                 "confidence": conf,
                 "is_positive": score >= 55,
-                "positive_en": area.positive_en,
-                "positive_hi": area.positive_hi,
-                "caution_en": area.caution_en,
-                "caution_hi": area.caution_hi,
-                "remedy_en": area.remedy_en,
-                "remedy_hi": area.remedy_hi,
+                "positive_en": positive_en,
+                "positive_hi": positive_hi,
+                "caution_en": caution_en,
+                "caution_hi": caution_hi,
+                "remedy_en": remedy_en,
+                "remedy_hi": remedy_hi,
                 "trace": trace,
+                # Chart-specific metadata for the frontend / audit:
+                "weakest_planet": specific.get("weakest_planet"),
+                "weakest_house": specific.get("weakest_house"),
+                "weakest_dignity": specific.get("weakest_dignity"),
+                "strongest_planet": specific.get("strongest_planet"),
+                "strongest_house": specific.get("strongest_house"),
+                "strongest_dignity": specific.get("strongest_dignity"),
             }
         )
     from app.lalkitab_source_tags import source_of

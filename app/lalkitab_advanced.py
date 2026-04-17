@@ -1430,6 +1430,50 @@ def calculate_takkar(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
         debil_bonus = 2 if is_debilitated else 0
         h8_bonus = 1 if phouse == 8 else 0
         score = base + dust_bonus + debil_bonus + h8_bonus
+
+        # Classify WHERE the vulnerability comes from (Codex R3 fix).
+        has_internal = dust_bonus + debil_bonus + h8_bonus > 0
+        has_external = base > 0
+        if has_internal and has_external:
+            reason = "mixed"
+        elif has_internal:
+            reason = "internal"
+        elif has_external:
+            reason = "external"
+        else:
+            reason = "none"
+
+        # Build human-readable explanation of WHY this planet is vulnerable.
+        intrinsic_bits = []
+        if is_debilitated:
+            intrinsic_bits.append(f"debilitated in H{phouse}")
+        elif phouse == 8:
+            intrinsic_bits.append("placed in H8 (ultimate dusthana)")
+        elif phouse in DUSTHANA:
+            intrinsic_bits.append(f"placed in dusthana H{phouse}")
+        external_bit = (
+            f"attacked by {base} axis-enemy planet{'s' if base != 1 else ''}"
+            if base > 0 else ""
+        )
+
+        if reason == "internal":
+            explanation = (
+                f"Internal — weakness is intrinsic ("
+                f"{', '.join(intrinsic_bits)}), not from external enemy attack."
+            )
+        elif reason == "external":
+            explanation = (
+                f"External — {external_bit} across the opposite axis; "
+                f"the planet itself is in a workable sign/house."
+            )
+        elif reason == "mixed":
+            explanation = (
+                f"Both — intrinsic weakness ({', '.join(intrinsic_bits)}) "
+                f"AMPLIFIED by {external_bit}."
+            )
+        else:
+            explanation = "None — no vulnerability factors detected."
+
         vulnerability[pname] = {
             "takkar_attacks": base,
             "in_dusthana": phouse in DUSTHANA,
@@ -1440,6 +1484,8 @@ def calculate_takkar(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
                 f"base({base}) + dusthana({dust_bonus}) + "
                 f"debil({debil_bonus}) + h8({h8_bonus}) = {score}"
             ),
+            "vulnerability_reason": reason,       # internal | external | mixed | none
+            "vulnerability_explanation": explanation,
         }
 
     def _rank_key(item):
@@ -1856,11 +1902,190 @@ _RIN_ACTIVATION_HOUSE: Dict[str, int] = {
     "Matru Rin":    4,   # Mother house
     "Sva Rin":      1,   # Self house
     "Bhratri Rin":  3,   # Siblings house
-    "Stri Rin":     7,   # Spouse house
+    "Bhagini Rin":  3,   # Sister house
+    "Stri Rin":     7,   # Spouse house (legacy key)
+    "Stree Rin":    7,   # Spouse house
     "Guru Rin":     9,   # Teacher/fortune house
     "Dev Rin":      5,   # Piety / past merit house
+    "Deva Rin":     5,   # Alternate spelling
     "Rishi Rin":    12,  # Liberation / spirituality house
     "Nag Rin":      8,   # Hidden/serpent house
+    "Nara Rin":     7,   # Humanity/service/partnership house
+    "Prakriti Rin": 10,  # Work/public-service house
+}
+
+# Per-Rin activation triggers (Codex R3 fix): when the debt is
+# expected to SURFACE in life, and what life-area it dominates.
+# Used by enrich_debts_active_passive() to emit:
+#   activates_during: Saturn saala grah (age 41) OR H7 Saturn transit...
+#   life_area:       Career delays, chronic partnership obstacles...
+_RIN_ACTIVATION_TRIGGERS: Dict[str, Dict[str, str]] = {
+    "Pitru Rin": {
+        "planet": "Rahu",
+        "activates_during_en": (
+            "Rahu/Ketu saala grah or dasha, during pitra-paksha (September), "
+            "or when a major father-figure/authority event occurs."
+        ),
+        "activates_during_hi": (
+            "राहु/केतु की साला ग्रह या दशा, पितृ-पक्ष (सितंबर), "
+            "अथवा पिता-तुल्य/अधिकारी घटना के समय।"
+        ),
+        "life_area_en": (
+            "Paternal line issues, authority blocks, 9th-house fortune "
+            "stagnation, ancestral-property disputes."
+        ),
+        "life_area_hi": (
+            "पैतृक पक्ष की समस्याएं, अधिकार में बाधा, 9वें भाव का "
+            "भाग्य रुकावट, पैतृक-संपत्ति विवाद।"
+        ),
+    },
+    "Matru Rin": {
+        "planet": "Moon",
+        "activates_during_en": (
+            "Moon saala grah, Monday pradoshas, or whenever mother/home-life "
+            "crises surface."
+        ),
+        "activates_during_hi": (
+            "चंद्र साला ग्रह, सोमवार प्रदोष, अथवा माता/घर से जुड़े संकट।"
+        ),
+        "life_area_en": (
+            "Mother's health, emotional security, home-property stability, "
+            "sleep disturbances."
+        ),
+        "life_area_hi": (
+            "माता का स्वास्थ्य, भावनात्मक सुरक्षा, घर-संपत्ति स्थिरता, "
+            "नींद में विघ्न।"
+        ),
+    },
+    "Sva Rin": {
+        "planet": "Rahu",
+        "activates_during_en": (
+            "Rahu saala grah, or during periods of ego-conflict / legal "
+            "trouble / 5th-house creative ventures."
+        ),
+        "activates_during_hi": (
+            "राहु साला ग्रह, अथवा अहंकार-विवाद, कानूनी समस्या, 5वें भाव के "
+            "रचनात्मक उपक्रमों के समय।"
+        ),
+        "life_area_en": (
+            "Self-worth, children's welfare, legal penalties despite innocence, "
+            "heart issues, atheistic drift."
+        ),
+        "life_area_hi": (
+            "आत्म-सम्मान, संतान कल्याण, निर्दोष होकर भी कानूनी दंड, "
+            "हृदय रोग, नास्तिकता की ओर झुकाव।"
+        ),
+    },
+    "Bhratri Rin": {
+        "planet": "Mars",
+        "activates_during_en": (
+            "Mars saala grah, during disputes with siblings/friends, or on "
+            "property-partition / blood-injury events."
+        ),
+        "activates_during_hi": (
+            "मंगल साला ग्रह, भाई/मित्र विवाद, या संपत्ति-बंटवारा/रक्त-चोट की घटनाओं पर।"
+        ),
+        "life_area_en": (
+            "Sibling relationships, friendship betrayal, property disputes, "
+            "courage and initiative."
+        ),
+        "life_area_hi": (
+            "भाई-बहन के रिश्ते, मित्रता का विश्वासघात, संपत्ति विवाद, "
+            "साहस और पहल।"
+        ),
+    },
+    "Bhagini Rin": {
+        "planet": "Mercury",
+        "activates_during_en": (
+            "Mercury saala grah or around the birth of a daughter/female "
+            "relative; 3rd/6th house transits."
+        ),
+        "activates_during_hi": (
+            "बुध साला ग्रह, कन्या/महिला संबंधी के जन्म पर, 3रे/6ठे भाव के गोचर में।"
+        ),
+        "life_area_en": (
+            "Welfare of female children and sisters, exploitation patterns, "
+            "inauspicious events at female births."
+        ),
+        "life_area_hi": (
+            "कन्याओं/बहनों का कल्याण, शोषण पैटर्न, स्त्री-जन्म पर अशुभ घटनाएं।"
+        ),
+    },
+    "Deva Rin": {
+        "planet": "Jupiter",
+        "activates_during_en": (
+            "Jupiter saala grah, guru-disrespect events, or periods of "
+            "temple / spiritual-teacher conflict."
+        ),
+        "activates_during_hi": (
+            "गुरु साला ग्रह, गुरु-अनादर की घटनाएं, या मंदिर/आध्यात्मिक-गुरु विवाद के समय।"
+        ),
+        "life_area_en": (
+            "Spiritual progress, guru connection, respect for teachers and "
+            "priests, sacred-place/tree maintenance."
+        ),
+        "life_area_hi": (
+            "आध्यात्मिक प्रगति, गुरु से संबंध, शिक्षकों/पुजारियों का सम्मान, "
+            "पवित्र स्थल/वृक्ष की देखभाल।"
+        ),
+    },
+    "Stree Rin": {
+        "planet": "Venus",
+        "activates_during_en": (
+            "Venus saala grah, marriage-related transits, or when H2/H7 "
+            "houses are activated by Sun/Moon/Rahu."
+        ),
+        "activates_during_hi": (
+            "शुक्र साला ग्रह, विवाह-संबंधी गोचर, अथवा 2रे/7वें भाव पर "
+            "सूर्य/चंद्र/राहु की सक्रियता।"
+        ),
+        "life_area_en": (
+            "Marriage stability, relationship harmony, treatment of women "
+            "in family, female-exploitation patterns."
+        ),
+        "life_area_hi": (
+            "विवाह-स्थिरता, संबंधों में सामंजस्य, परिवार में स्त्रियों का "
+            "व्यवहार, स्त्री-शोषण पैटर्न।"
+        ),
+    },
+    "Nara Rin": {
+        "planet": "Saturn",
+        "activates_during_en": (
+            "Saturn saala grah (any Saturn year) OR any Saturn transit of "
+            "H1/H7/H10 OR when partnership/service/labour disputes arise."
+        ),
+        "activates_during_hi": (
+            "शनि साला ग्रह (शनि का कोई भी वर्ष) अथवा शनि का 1/7/10 भाव में "
+            "गोचर, या साझेदारी/सेवा/मजदूर विवाद के समय।"
+        ),
+        "life_area_en": (
+            "Career delays, chronic obstacles in partnerships and service, "
+            "generalised feeling of being cursed, humanitarian debt."
+        ),
+        "life_area_hi": (
+            "करियर में देरी, साझेदारी और सेवा में पुरानी बाधाएं, "
+            "सामान्य शापित होने की भावना, मानवता का ऋण।"
+        ),
+    },
+    "Prakriti Rin": {
+        "planet": "Mercury",
+        "activates_during_en": (
+            "Mercury saala grah, natural-disaster-prone periods, Rahu/Ketu "
+            "ingress, or when environmental/animal-welfare events trigger."
+        ),
+        "activates_during_hi": (
+            "बुध साला ग्रह, प्राकृतिक आपदा की अवधि, राहु/केतु का प्रवेश, "
+            "या पर्यावरण/पशु-कल्याण की घटनाओं पर।"
+        ),
+        "life_area_en": (
+            "Environmental issues, natural-disaster vulnerability, treatment "
+            "of animals, past-life ecological debts."
+        ),
+        "life_area_hi": (
+            "पर्यावरणीय समस्याएं, प्राकृतिक आपदा की संवेदनशीलता, पशुओं का "
+            "व्यवहार, पूर्व जन्म के पारिस्थितिकीय ऋण।"
+        ),
+    },
 }
 
 def enrich_debts_active_passive(
@@ -1883,10 +2108,16 @@ def enrich_debts_active_passive(
     enriched = []
     for debt in debts:
         debt_name_en = debt.get("name", {}).get("en", "")
-        activation_house = next(
-            (v for k, v in _RIN_ACTIVATION_HOUSE.items() if k in debt_name_en or debt_name_en in k),
+        # Find the matching trigger key (supports variants like Stri / Stree / Dev / Deva).
+        trigger_key = next(
+            (k for k in _RIN_ACTIVATION_HOUSE
+             if k in debt_name_en or debt_name_en in k),
             None
         )
+        activation_house = _RIN_ACTIVATION_HOUSE.get(trigger_key) if trigger_key else None
+        trigger_info = _RIN_ACTIVATION_TRIGGERS.get(trigger_key) if trigger_key else None
+
+        # Resolve activation status ────────────────────────────────
         if activation_house is None:
             debt["activation_status"] = "latent"
             debt["activation_house"] = None
@@ -1909,5 +2140,24 @@ def enrich_debts_active_passive(
             debt["activation_status"] = status
             debt["activation_house"] = activation_house
             debt["activation_urgency"] = {"en": urgency_en, "hi": urgency_hi}
+
+        # ── Per-Rin activation trigger + life-area (Codex R3 fix) ──
+        # Always populate these — even for "latent" Rins we describe
+        # WHEN they would activate and WHICH life area they touch.
+        if trigger_info:
+            debt["activating_planet"] = trigger_info.get("planet")
+            debt["activates_during"] = {
+                "en": trigger_info.get("activates_during_en", ""),
+                "hi": trigger_info.get("activates_during_hi", ""),
+            }
+            debt["life_area"] = {
+                "en": trigger_info.get("life_area_en", ""),
+                "hi": trigger_info.get("life_area_hi", ""),
+            }
+        else:
+            debt["activating_planet"] = None
+            debt["activates_during"] = {"en": "", "hi": ""}
+            debt["life_area"] = {"en": "", "hi": ""}
+
         enriched.append(debt)
     return enriched

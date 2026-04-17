@@ -165,10 +165,15 @@ def main():
     H("6 · ACTIVE vs PASSIVE RIN (full urgency)", engine="enrich_debts_active_passive")
     for d in enrich_debts_active_passive(debts, pp):
         P(f"\n{pick(d.get('name')):<20} status={d.get('activation_status')}  "
-          f"house={d.get('activation_house')}")
+          f"house={d.get('activation_house')}  "
+          f"activating_planet={d.get('activating_planet')}")
         if d.get("activation_urgency"):
-            P(f"  urgency (EN): {pick(d['activation_urgency'])}")
-            P(f"  urgency (HI): {pick(d['activation_urgency'], hi=True)}")
+            P(f"  urgency (EN)    : {pick(d['activation_urgency'])}")
+            P(f"  urgency (HI)    : {pick(d['activation_urgency'], hi=True)}")
+        if pick(d.get("activates_during")):
+            P(f"  activates_during: {pick(d.get('activates_during'))}")
+        if pick(d.get("life_area")):
+            P(f"  life_area       : {pick(d.get('life_area'))}")
 
     # Masnui
     H("7 · MASNUI GRAH (full)", engine="calculate_masnui_planets")
@@ -236,7 +241,11 @@ def main():
         P("\n— Vulnerability ranking (weighted: base + dusthana + debil + H8) —")
         for rank, name in enumerate(t.get("vulnerability_ranking") or [], 1):
             v = sub_vuln.get(name, {})
-            P(f"  {rank}. {name:<10}  {v.get('breakdown','')}")
+            tag = f"[{v.get('vulnerability_reason','?')}]"
+            P(f"  {rank}. {name:<10}  {v.get('breakdown','')}  {tag}")
+            expl = v.get("vulnerability_explanation")
+            if expl and v.get("score", 0) > 0:
+                P(f"      → {expl}")
     for c in (t.get("collisions") or []):
         P(f"\n• {c.get('attacker')} → {c.get('receiver')}  axis {c.get('axis')}  "
           f"severity {c.get('severity')}")
