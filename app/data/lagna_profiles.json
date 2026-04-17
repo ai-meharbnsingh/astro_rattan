@@ -1,0 +1,134 @@
+{
+  "Aries": {
+    "body_type_en": "Medium height, lean but muscular build, reddish or tawny complexion, sharp features with prominent forehead, often with a scar or mark on the head or face.",
+    "body_type_hi": "मध्यम कद, दुबला किन्तु सुगठित शरीर, रक्त या ताम्र वर्ण, तीक्ष्ण आकृति, ललाट प्रमुख; शिर या मुख पर प्राय: चिह्न या घाव।",
+    "temperament_en": "Bold, impulsive, energetic, pioneering, quick-tempered yet forgiving; courageous and independent, loves action and challenge.",
+    "temperament_hi": "साहसी, आवेगशील, ऊर्जावान, अग्रणी, शीघ्र क्रोधी किन्तु क्षमाशील; स्वतंत्र प्रकृति, कर्म एवं चुनौती प्रिय।",
+    "fortune_en": "Rises through self-effort and martial or leadership pursuits; wealth and honour come by enterprise, often after early struggles; gains in foreign or southern lands.",
+    "fortune_hi": "स्वप्रयत्न तथा सैन्य या नेतृत्व कार्यों से उन्नति; पूर्व संघर्ष के पश्चात् धन-मान की प्राप्ति; विदेश या दक्षिण दिशा में लाभ।",
+    "lucky_directions_en": ["East", "South"],
+    "lucky_directions_hi": ["पूर्व", "दक्षिण"],
+    "sloka_ref": "Phaladeepika Adh. 9 sloka 1"
+  },
+  "Taurus": {
+    "body_type_en": "Medium-to-short stature, stout and fleshy build, broad shoulders, thick neck, handsome features with large eyes and curly hair.",
+    "body_type_hi": "मध्यम या न्यून कद, पुष्ट एवं मांसल शरीर, विस्तृत कंधे, स्थूल ग्रीवा, सुन्दर आकृति, विशाल नेत्र एवं कुंचित केश।",
+    "temperament_en": "Patient, steady, sensual, fond of comforts and the arts; stubborn when crossed, deeply loyal, practical and musically inclined.",
+    "temperament_hi": "धैर्यवान, स्थिर, इन्द्रियप्रिय, सुख एवं कला का अनुरागी; विरोध में हठी, प्रगाढ़ स्नेही, व्यावहारिक एवं संगीतप्रेमी।",
+    "fortune_en": "Steady accumulation of wealth, lands, vehicles; success in agriculture, luxury trade, perfumery, arts; marriage brings fortune.",
+    "fortune_hi": "धन, भूमि एवं वाहन की स्थिर वृद्धि; कृषि, भोग-विलास वस्त्र, सुगन्ध, कला में सफलता; विवाह से भाग्योदय।",
+    "lucky_directions_en": ["South", "South-East"],
+    "lucky_directions_hi": ["दक्षिण", "आग्नेय"],
+    "sloka_ref": "Phaladeepika Adh. 9 sloka 2"
+  },
+  "Gemini": {
+    "body_type_en": "Tall, slender, upright posture, long arms and fingers, fair or greenish complexion, expressive face with bright darting eyes.",
+    "body_type_hi": "दीर्घ एवं कृश शरीर, सीधा गठन, दीर्घ भुजाएँ एवं अंगुलियाँ, गौर या हरिताभ वर्ण, भावप्रद मुख एवं चञ्चल नेत्र।",
+    "temperament_en": "Witty, curious, versatile, talkative, clever at arts and speech; dual-natured, changeable, loves learning, games and travel.",
+    "temperament_hi": "विदग्ध, जिज्ञासु, बहुमुखी, वाचाल, कला एवं वाणी में प्रवीण; द्विस्वभाव, चञ्चल, विद्या, क्रीड़ा तथा भ्रमण प्रिय।",
+    "fortune_en": "Gains through writing, teaching, commerce, intermediation, short journeys; many friends and siblings; astrology and mathematics bring renown.",
+    "fortune_hi": "लेखन, अध्यापन, वाणिज्य, मध्यस्थता एवं अल्प-यात्राओं से लाभ; अनेक मित्र एवं भ्राता; ज्योतिष तथा गणित में यश।",
+    "lucky_directions_en": ["West", "North"],
+    "lucky_directions_hi": ["पश्चिम", "उत्तर"],
+    "sloka_ref": "Phaladeepika Adh. 9 sloka 3"
+  },
+  "Cancer": {
+    "body_type_en": "Medium stature, rounded face and body, short limbs, pale or pearl-white complexion, soft skin, prominent chest, walking slightly stooped.",
+    "body_type_hi": "मध्यम कद, गोल मुख एवं देह, छोटी भुजाएँ एवं पाद, श्वेत या मुक्त वर्ण, मृदु त्वचा, पुष्ट वक्ष, किंचित् अवनत चाल।",
+    "temperament_en": "Emotional, nurturing, imaginative, home-loving, moody yet compassionate; attached to mother, family and water; devout and intuitive.",
+    "temperament_hi": "भावुक, पालन-पोषक, कल्पनाशील, गृहप्रेमी, शीघ्र भावपरिवर्ती किन्तु दयालु; माता, कुल एवं जल से स्नेह; श्रद्धालु तथा अन्तर्ज्ञानी।",
+    "fortune_en": "Fortune through mother, property, water-related trade, fluids, dairy; changing residences; public popularity and hospitality professions.",
+    "fortune_hi": "माता, सम्पत्ति, जल-व्यापार, द्रव, दुग्ध से भाग्य; निवास-परिवर्तन; जनप्रिय एवं आतिथ्य-वृत्ति में सफलता।",
+    "lucky_directions_en": ["North", "North-West"],
+    "lucky_directions_hi": ["उत्तर", "वायव्य"],
+    "sloka_ref": "Phaladeepika Adh. 9 sloka 4"
+  },
+  "Leo": {
+    "body_type_en": "Tall, broad-chested, powerful build, golden or tawny complexion, leonine gait, full head of hair, commanding presence.",
+    "body_type_hi": "दीर्घ कद, विस्तृत वक्षस्थल, सुदृढ़ शरीर, स्वर्ण या पिंगल वर्ण, सिंह-सदृश गति, पूर्ण केश-राशि, प्रभावशाली रूप।",
+    "temperament_en": "Dignified, generous, magnanimous, proud, ambitious, leadership-prone; short-tempered but noble; loves honour, authority and display.",
+    "temperament_hi": "गरिमायुक्त, उदार, महान् हृदय, अभिमानी, महत्त्वाकांक्षी, नेतृत्वप्रिय; शीघ्र क्रोधी किन्तु आर्य; मान, अधिकार एवं वैभव का प्रेमी।",
+    "fortune_en": "Rises to position and fame through service to rulers or in government, politics, administration; forests, hills and kingly favours bring wealth.",
+    "fortune_hi": "राज-सेवा, शासन, राजनीति, प्रशासन से पद एवं यश; वन, पर्वत तथा राजकृपा से धन-लाभ।",
+    "lucky_directions_en": ["East", "North-East"],
+    "lucky_directions_hi": ["पूर्व", "ईशान"],
+    "sloka_ref": "Phaladeepika Adh. 9 sloka 5"
+  },
+  "Virgo": {
+    "body_type_en": "Medium height, neat and graceful frame, fair complexion, soft voice, modest bearing, long arms, pleasing eyes, often shy demeanour.",
+    "body_type_hi": "मध्यम कद, स्वच्छ एवं सुडौल शरीर, गौर वर्ण, मधुर स्वर, विनीत गति, दीर्घ भुजाएँ, मनोहर नेत्र, प्राय: लज्जालु स्वभाव।",
+    "temperament_en": "Analytical, meticulous, discriminating, skilled in fine arts and writing; chaste and methodical; worries in minutiae, loves service and learning.",
+    "temperament_hi": "विवेचक, सूक्ष्मदर्शी, विवेकी, ललित कला तथा लेखन में कुशल; पवित्र तथा व्यवस्थित; सूक्ष्मता में चिन्तित, सेवा एवं विद्या प्रेमी।",
+    "fortune_en": "Gains through learning, writing, fine arts, medicine, healing, accountancy; success in intellectual and analytical pursuits; often celibate or late-married.",
+    "fortune_hi": "विद्या, लेखन, ललित-कला, चिकित्सा, गणना से लाभ; बौद्धिक एवं विश्लेषणात्मक कार्यों में सफलता; प्राय: ब्रह्मचर्य या विलम्ब-विवाह।",
+    "lucky_directions_en": ["South", "West"],
+    "lucky_directions_hi": ["दक्षिण", "पश्चिम"],
+    "sloka_ref": "Phaladeepika Adh. 9 sloka 6"
+  },
+  "Libra": {
+    "body_type_en": "Tall, slender, balanced and graceful proportions, fair and handsome face, well-shaped limbs, charming smile and pleasing voice.",
+    "body_type_hi": "दीर्घ एवं कृश, सुसन्तुलित सुडौल अंग, गौर एवं मनोहर मुख, सुगठित हस्त-पाद, मोहक मुस्कान एवं मधुर स्वर।",
+    "temperament_en": "Refined, just, social, diplomatic, fond of beauty, arts and partnership; peace-loving but indecisive; romantic and affectionate.",
+    "temperament_hi": "सुसंस्कृत, न्यायप्रिय, सामाजिक, कूटनीतिज्ञ, सौन्दर्य, कला एवं साझेदारी का प्रेमी; शान्तिप्रिय किन्तु अनिश्चित; प्रेमी एवं स्नेही।",
+    "fortune_en": "Wealth through trade, luxury, beauty, arts, partnership, diplomacy; honour from strangers and distant lands; success in refined occupations.",
+    "fortune_hi": "व्यापार, विलास, सौन्दर्य, कला, साझेदारी, कूटनीति से धन; विदेशियों एवं दूरस्थ देशों से मान; उत्कृष्ट वृत्तियों में सफलता।",
+    "lucky_directions_en": ["West", "North-West"],
+    "lucky_directions_hi": ["पश्चिम", "वायव्य"],
+    "sloka_ref": "Phaladeepika Adh. 9 sloka 7"
+  },
+  "Scorpio": {
+    "body_type_en": "Medium stature, broad chest, dark or reddish-brown complexion, thick hair, piercing eyes, strong limbs, often with a mark or scar on body.",
+    "body_type_hi": "मध्यम कद, विस्तृत वक्ष, श्याम या रक्त-श्याम वर्ण, घने केश, तीक्ष्ण नेत्र, बलिष्ठ अंग, शरीर पर प्राय: चिह्न अथवा घाव।",
+    "temperament_en": "Intense, passionate, secretive, penetrating, fearless, resolute, vengeful if wronged; strong-willed, occult-inclined, deeply magnetic.",
+    "temperament_hi": "उग्र, रागी, गोपनशील, मर्मज्ञ, निर्भय, दृढ़निश्चयी, अपकार सहन न करने वाला; दृढ़-संकल्पी, रहस्य-विद्या में रुचि, गहन आकर्षक।",
+    "fortune_en": "Gains through martial or mechanical pursuits, surgery, chemistry, occult sciences, research; wealth after hardship; wounds or accidents possible.",
+    "fortune_hi": "शस्त्र, यन्त्र, शल्य, रसायन, गूढ़-विद्या, अन्वेषण से लाभ; कष्ट के अनन्तर धन-प्राप्ति; व्रण या दुर्घटना की सम्भावना।",
+    "lucky_directions_en": ["North", "East"],
+    "lucky_directions_hi": ["उत्तर", "पूर्व"],
+    "sloka_ref": "Phaladeepika Adh. 9 sloka 8"
+  },
+  "Sagittarius": {
+    "body_type_en": "Tall, well-proportioned, upright and powerful frame, oval face, high forehead, golden or fair complexion, dignified walk.",
+    "body_type_hi": "दीर्घ, सुसन्तुलित, सीधा एवं बलवान शरीर, अण्डाकार मुख, उन्नत ललाट, स्वर्ण या गौर वर्ण, गरिमायुक्त चाल।",
+    "temperament_en": "Wise, truthful, religious, optimistic, philosophical, frank, benevolent; loves teaching, justice, long journeys and higher learning.",
+    "temperament_hi": "विद्वान, सत्यवादी, धार्मिक, आशावादी, दार्शनिक, स्पष्टवक्ता, परोपकारी; अध्यापन, न्याय, दीर्घ-यात्रा एवं उच्च-विद्या का प्रेमी।",
+    "fortune_en": "Prosperity through teaching, law, priesthood, counselling, philosophy; honour from elders and rulers; gains abroad; benefactor to many.",
+    "fortune_hi": "अध्यापन, विधि, पौरोहित्य, परामर्श, दर्शन से समृद्धि; वृद्धों तथा शासकों से सम्मान; विदेश में लाभ; अनेकों का उपकारक।",
+    "lucky_directions_en": ["North-East", "East"],
+    "lucky_directions_hi": ["ईशान", "पूर्व"],
+    "sloka_ref": "Phaladeepika Adh. 9 sloka 9"
+  },
+  "Capricorn": {
+    "body_type_en": "Medium-to-tall, lean and wiry build, dark or earthen complexion, long face and neck, slow steady gait, prominent cheekbones.",
+    "body_type_hi": "मध्यम या दीर्घ कद, कृश एवं कठोर शरीर, श्याम या मृत्तिकावर्ण, दीर्घ मुख एवं ग्रीवा, मन्द-स्थिर गति, उन्नत कपोलास्थि।",
+    "temperament_en": "Serious, disciplined, persevering, thrifty, cautious, ambitious, hardworking; melancholic yet resourceful, attains by long effort.",
+    "temperament_hi": "गम्भीर, अनुशासित, दृढ़-प्रयत्नी, मितव्ययी, सावधान, महत्त्वाकांक्षी, परिश्रमी; विषादी किन्तु साधनसम्पन्न, दीर्घ-प्रयत्न से सिद्धि।",
+    "fortune_en": "Rise through industry, labour, mining, lands, agriculture, low-caste trade, servitude to elders; gains late in life after toil and obstacles.",
+    "fortune_hi": "उद्योग, श्रम, खनन, भूमि, कृषि, निम्न-कुल व्यवसाय, वृद्ध-सेवा से उन्नति; कष्ट एवं बाधा के पश्चात् उत्तर-वयस् में लाभ।",
+    "lucky_directions_en": ["South", "West"],
+    "lucky_directions_hi": ["दक्षिण", "पश्चिम"],
+    "sloka_ref": "Phaladeepika Adh. 9 sloka 10"
+  },
+  "Aquarius": {
+    "body_type_en": "Tall, lean, slightly stooped, dark or dusky complexion, long face, deep eyes, thick hair, unusual or distinctive features.",
+    "body_type_hi": "दीर्घ, कृश, किंचित् अवनत, श्याम या कृष्णाभ वर्ण, दीर्घ मुख, गम्भीर नेत्र, घने केश, विलक्षण आकृति।",
+    "temperament_en": "Thoughtful, humanitarian, original, eccentric, reserved, friendly to all yet solitary within; inventive, philosophical, unorthodox.",
+    "temperament_hi": "चिन्तनशील, मानवतावादी, मौलिक, विलक्षण, संकोची, सबका मित्र किन्तु भीतर से एकाकी; आविष्कारी, दार्शनिक, अपरम्परागत।",
+    "fortune_en": "Gains through intellectual labour, sciences, service, large organisations, foreign or unusual pursuits; modest yet respected livelihood.",
+    "fortune_hi": "बौद्धिक श्रम, विज्ञान, सेवा, बृहद् संस्थान, विदेशी या अद्वितीय कार्यों से लाभ; सामान्य किन्तु सम्मानित जीविका।",
+    "lucky_directions_en": ["West", "South-West"],
+    "lucky_directions_hi": ["पश्चिम", "नैर्ऋत्य"],
+    "sloka_ref": "Phaladeepika Adh. 9 sloka 11"
+  },
+  "Pisces": {
+    "body_type_en": "Medium height, plump or soft body, fair and pleasing complexion, large lustrous eyes, smooth skin, full lips, gentle gait.",
+    "body_type_hi": "मध्यम कद, पुष्ट या कोमल देह, गौर एवं मनोहर वर्ण, दीप्तिमान विशाल नेत्र, स्निग्ध त्वचा, पुष्ट ओष्ठ, मृदु गति।",
+    "temperament_en": "Compassionate, devotional, imaginative, intuitive, dreamy, selfless; impressionable, artistic, deeply spiritual and sympathetic.",
+    "temperament_hi": "दयालु, भक्तिपरायण, कल्पनाशील, अन्तर्ज्ञानी, स्वप्नशील, निःस्वार्थ; प्रभाव-ग्राही, कलाप्रेमी, गहन आध्यात्मिक एवं सहानुभूतिशील।",
+    "fortune_en": "Wealth through learning, sacred knowledge, water-trade, aquatic produce, charity, pilgrimage, arts; devotion and dharma bring merit.",
+    "fortune_hi": "विद्या, शास्त्र-ज्ञान, जल-व्यापार, जल-उत्पाद, दान, तीर्थाटन, कला से धन; भक्ति एवं धर्म से पुण्य-लाभ।",
+    "lucky_directions_en": ["North", "North-East"],
+    "lucky_directions_hi": ["उत्तर", "ईशान"],
+    "sloka_ref": "Phaladeepika Adh. 9 sloka 12"
+  }
+}
