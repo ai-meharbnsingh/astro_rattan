@@ -86,7 +86,7 @@ export default function FloorplanMapper({
   markers, onAddMarker, onRemoveMarker,
   northRotation, onNorthRotationChange,
 }: Props) {
-  const { language } = useTranslation();
+  const { t, language } = useTranslation();
   const isHi = language === 'hi';
   const containerRef = useRef<HTMLDivElement>(null);
   const [clickPos, setClickPos] = useState<{ x: number; y: number } | null>(null);
@@ -323,10 +323,10 @@ export default function FloorplanMapper({
         {showGrid && (
           <div className="flex items-center gap-1">
             <span className="text-xs text-foreground/50 mr-1">{t('auto.center')}</span>
-            <button onClick={() => setGridOffset(o => ({ ...o, y: o.y - 3 }))} className="min-w-[28px] min-h-[28px] flex items-center justify-center rounded bg-white/5 text-foreground/50 hover:text-sacred-gold text-xs" title="Move up">↑</button>
-            <button onClick={() => setGridOffset(o => ({ ...o, y: o.y + 3 }))} className="min-w-[28px] min-h-[28px] flex items-center justify-center rounded bg-white/5 text-foreground/50 hover:text-sacred-gold text-xs" title="Move down">↓</button>
-            <button onClick={() => setGridOffset(o => ({ ...o, x: o.x - 3 }))} className="min-w-[28px] min-h-[28px] flex items-center justify-center rounded bg-white/5 text-foreground/50 hover:text-sacred-gold text-xs" title="Move left">←</button>
-            <button onClick={() => setGridOffset(o => ({ ...o, x: o.x + 3 }))} className="min-w-[28px] min-h-[28px] flex items-center justify-center rounded bg-white/5 text-foreground/50 hover:text-sacred-gold text-xs" title="Move right">→</button>
+            <button onClick={() => setGridOffset(o => ({ ...o, y: o.y - 3 }))} className="min-w-[28px] min-h-[28px] flex items-center justify-center rounded bg-white/5 text-foreground/50 hover:text-sacred-gold text-xs" title={t('auto.moveUp')}>↑</button>
+            <button onClick={() => setGridOffset(o => ({ ...o, y: o.y + 3 }))} className="min-w-[28px] min-h-[28px] flex items-center justify-center rounded bg-white/5 text-foreground/50 hover:text-sacred-gold text-xs" title={t('auto.moveDown')}>↓</button>
+            <button onClick={() => setGridOffset(o => ({ ...o, x: o.x - 3 }))} className="min-w-[28px] min-h-[28px] flex items-center justify-center rounded bg-white/5 text-foreground/50 hover:text-sacred-gold text-xs" title={t('auto.moveLeft')}>←</button>
+            <button onClick={() => setGridOffset(o => ({ ...o, x: o.x + 3 }))} className="min-w-[28px] min-h-[28px] flex items-center justify-center rounded bg-white/5 text-foreground/50 hover:text-sacred-gold text-xs" title={t('auto.moveRight')}>→</button>
             {(gridOffset.x !== 0 || gridOffset.y !== 0) && (
               <button onClick={() => setGridOffset({ x: 0, y: 0 })} className="text-xs text-foreground/40 hover:text-white ml-1">{t('auto.reset')}</button>
             )}
