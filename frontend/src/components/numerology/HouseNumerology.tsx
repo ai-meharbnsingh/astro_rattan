@@ -140,7 +140,7 @@ export default function HouseNumerology({ birthDate }: Props) {
 
       {/* Results */}
       {result && (
-        <div className="space-y-6 max-w-4xl mx-auto">
+        <div className="space-y-6 w-full">
           {/* Header */}
           <Card className="bg-card border-0 shadow-soft-lg overflow-hidden">
             <div className="bg-gradient-to-r from-sacred-gold to-sacred-gold-dark px-6 py-4 text-center">
