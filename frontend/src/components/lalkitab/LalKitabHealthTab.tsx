@@ -170,7 +170,7 @@ export default function LalKitabHealthTab({ kundliId }: Props) {
           )}
 
           {/* Chronic risk */}
-          {data.chronic_risk_planets.length > 0 && (
+          {Array.isArray(data.chronic_risk_planets) && data.chronic_risk_planets.filter(Boolean).length > 0 && (
             <div className="flex items-start gap-3 p-4 rounded-xl border border-orange-300/30 bg-orange-500/5">
               <AlertTriangle className="w-4 h-4 text-orange-500 mt-0.5 shrink-0" />
               <div>
@@ -178,11 +178,14 @@ export default function LalKitabHealthTab({ kundliId }: Props) {
                   {t('auto.chronicIllnessRisk8t')}
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {data.chronic_risk_planets.map((p) => (
-                    <span key={p} className="px-2.5 py-0.5 rounded-full bg-orange-400/15 text-orange-700 text-xs font-medium">
-                      {isHi ? (PLANET_HI[p] ?? p) : p.charAt(0).toUpperCase() + p.slice(1)}
-                    </span>
-                  ))}
+                  {data.chronic_risk_planets.filter(Boolean).map((raw: any, idx: number) => {
+                    const p = String(raw || '');
+                    return (
+                      <span key={`${p || 'p'}-${idx}`} className="px-2.5 py-0.5 rounded-full bg-orange-400/15 text-orange-700 text-xs font-medium">
+                        {isHi ? (PLANET_HI[p] ?? p) : (p.charAt(0).toUpperCase() + p.slice(1))}
+                      </span>
+                    );
+                  })}
                 </div>
               </div>
             </div>

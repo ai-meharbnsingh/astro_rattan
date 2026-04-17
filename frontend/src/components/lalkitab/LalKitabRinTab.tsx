@@ -101,11 +101,15 @@ export default function LalKitabRinTab({ kundliId }: Props) {
               {t('auto.afflictedPlanetsIn6t')}
             </p>
             <div className="flex flex-wrap gap-2">
-              {afflicted.map((p) => (
-                <span key={p} className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${PLANET_COLOR[p] ?? 'bg-gray-100 text-gray-600'}`}>
-                  {isHi ? (PLANET_HI[p] ?? p) : p.charAt(0).toUpperCase() + p.slice(1)}
-                </span>
-              ))}
+              {afflicted.filter(Boolean).map((raw: any, idx: number) => {
+                const p = String(raw || '').toLowerCase();
+                const label = p ? (p.charAt(0).toUpperCase() + p.slice(1)) : '';
+                return (
+                  <span key={`${p || 'p'}-${idx}`} className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${PLANET_COLOR[p] ?? 'bg-gray-100 text-gray-600'}`}>
+                    {isHi ? (PLANET_HI[p] ?? p) : label}
+                  </span>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -184,6 +188,7 @@ export default function LalKitabRinTab({ kundliId }: Props) {
 
 function DebtCard({ debt, isHi }: { debt: Debt; isHi: boolean }) {
   const { t } = useTranslation();
+  const planetKey = String((debt as any)?.planet || '').toLowerCase();
   const PLANET_COLOR: Record<string, string> = {
     sun: 'bg-orange-400/15 text-orange-700', moon: 'bg-blue-400/15 text-blue-700',
     mars: 'bg-red-400/15 text-red-700', mercury: 'bg-green-400/15 text-green-700',
@@ -208,8 +213,10 @@ function DebtCard({ debt, isHi }: { debt: Debt; isHi: boolean }) {
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2 flex-wrap">
           <h4 className="font-sans font-semibold text-foreground">{debt.debt_type}</h4>
-          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${PLANET_COLOR[debt.planet] ?? 'bg-gray-100 text-gray-600'}`}>
-            {isHi ? (PLANET_HI[debt.planet] ?? debt.planet) : debt.planet.charAt(0).toUpperCase() + debt.planet.slice(1)}
+          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${PLANET_COLOR[planetKey] ?? 'bg-gray-100 text-gray-600'}`}>
+            {isHi
+              ? (PLANET_HI[planetKey] ?? (debt.planet || ''))
+              : (planetKey ? planetKey.charAt(0).toUpperCase() + planetKey.slice(1) : (isHi ? '' : ''))}
           </span>
           {/* Activation status badge */}
           {debt.activation_status === 'active' && (

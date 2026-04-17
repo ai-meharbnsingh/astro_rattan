@@ -133,13 +133,16 @@ export default function LalKitabCareerTab({ kundliId }: Props) {
             <h3 className="font-sans font-semibold text-sacred-gold mb-3">
               {t('auto.10thHousePlanets')}
             </h3>
-            {data.tenth_house_planets.length > 0 ? (
+            {Array.isArray(data.tenth_house_planets) && data.tenth_house_planets.filter(Boolean).length > 0 ? (
               <div className="flex flex-wrap gap-2">
-                {data.tenth_house_planets.map((p) => (
-                  <span key={p} className="px-3 py-1 rounded-full bg-sacred-gold/10 text-sacred-gold-dark text-sm font-medium">
-                    {isHi ? (PLANET_HI[p] ?? p) : p.charAt(0).toUpperCase() + p.slice(1)}
-                  </span>
-                ))}
+                {data.tenth_house_planets.filter(Boolean).map((raw: any, idx: number) => {
+                  const p = String(raw || '');
+                  return (
+                    <span key={`${p || 'p'}-${idx}`} className="px-3 py-1 rounded-full bg-sacred-gold/10 text-sacred-gold-dark text-sm font-medium">
+                      {isHi ? (PLANET_HI[p] ?? p) : (p.charAt(0).toUpperCase() + p.slice(1))}
+                    </span>
+                  );
+                })}
               </div>
             ) : (
               <p className="text-sm text-gray-500">
