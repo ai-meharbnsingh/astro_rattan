@@ -67,6 +67,28 @@ def _derive_lk_house(info: dict) -> int:
     return 0
 
 
+# Status tokens that belong to the Vedic/Parashari overlay but are NOT
+# part of Lal Kitab 1952. `_lk_status_string()` filters them out so LK
+# surfaces never display "Combust" / "Sandhi" etc. The raw astro_engine
+# `status` string is preserved on `info` for any future Vedic module.
+_VEDIC_ONLY_TOKENS = {"Combust", "Sandhi"}
+
+
+def _lk_status_string(info: dict) -> str:
+    """
+    Return the planet status string as used in Lal Kitab output.
+
+    Strips Vedic-only tokens (Combust, Sandhi) while keeping LK-relevant
+    tokens (Exalted, Debilitated, Own Sign, Retrograde, Vargottama).
+    """
+    raw = (info or {}).get("status", "") if isinstance(info, dict) else ""
+    if not raw:
+        return ""
+    parts = [p.strip() for p in raw.split(",") if p.strip()]
+    lk_parts = [p for p in parts if p not in _VEDIC_ONLY_TOKENS]
+    return ", ".join(lk_parts)
+
+
 @router.post("/api/kp/cuspal")
 def kp_cuspal(payload: dict, user: dict = Depends(get_current_user), db: Any = Depends(get_db)):
     """

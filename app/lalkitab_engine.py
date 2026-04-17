@@ -648,9 +648,16 @@ REMEDIES_BY_HOUSE: dict = {
     # ── RAHU ─────────────────────────────────────────────────
     "Rahu": {
         1: {
-            "en": "Keep a piece of silver square with you; store water in the southwest corner of your home.",
-            "hi": "चांदी का चौकोर टुकड़ा अपने पास रखें; घर के दक्षिण-पश्चिम कोने में पानी भरकर रखें।",
-            "material": "silver/water",
+            # Standard Rahu-in-H1 LK remedy. Do NOT recommend SW water
+            # storage here — that contradicts the Vastu engine, which
+            # correctly flags SW as Saturn's dry zone.
+            "en": "Keep a solid silver square piece with you at all times "
+                  "(in pocket or wallet); keep fennel seeds (saunf) "
+                  "handy and avoid blue/black clothing near the face.",
+            "hi": "हमेशा अपने पास एक ठोस चांदी का चौकोर टुकड़ा रखें "
+                  "(जेब या पर्स में); सौंफ साथ रखें और नीले/काले "
+                  "कपड़े चेहरे के पास पहनने से बचें।",
+            "material": "silver square/fennel",
             "day": "Saturday",
             "urgency": "high",
         },
@@ -925,11 +932,12 @@ def get_planet_strength_detailed(
         elif house in (1, 4, 5, 7, 9, 10):
             house_modifier = +0.10
 
-    # Combustion (within orb of Sun) — weakens (except Sun itself)
+    # Combustion is a Vedic/Parashari concept — NOT used in Lal Kitab 1952.
+    # We keep the `is_combust` parameter for callers that still pass it
+    # (e.g. future Vedic overlay modules) but do NOT penalise LK strength
+    # and do NOT add "combust" to the LK afflictions list.
     combust_modifier = 0.0
-    if is_combust and planet != "Sun":
-        combust_modifier = -0.2
-        afflictions.append("combust")
+    _ = is_combust  # intentionally ignored in LK context (vedic_overlay)
 
     # Retrograde — Lal Kitab treats as "confused planet"
     # (Sun/Moon never retrograde; Rahu/Ketu are always retrograde by nature)
