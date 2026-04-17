@@ -2179,17 +2179,26 @@ def _calculate_pinnacles(birth_date: str) -> dict:
     # Timing: First pinnacle ends at age (36 - life_path), minimum 27
     first_end = max(27, 36 - life_path)
 
+    def _period_hi_birth_to(end_age: int) -> str:
+        return f"जन्म से आयु {end_age} तक"
+
+    def _period_hi_age_to(start_age: int, end_age: int) -> str:
+        return f"आयु {start_age} से {end_age} तक"
+
+    def _period_hi_age_plus(start_age: int) -> str:
+        return f"आयु {start_age} से आगे"
+
     pinnacles = [
-        {"number": p1, "period": f"Birth to age {first_end}",
+        {"number": p1, "period": f"Birth to age {first_end}", "period_hi": _period_hi_birth_to(first_end),
          "age_start": 0, "age_end": first_end,
          "prediction": PINNACLE_PREDICTIONS.get(p1, PINNACLE_PREDICTIONS[9])},
-        {"number": p2, "period": f"Age {first_end} to {first_end + 9}",
+        {"number": p2, "period": f"Age {first_end} to {first_end + 9}", "period_hi": _period_hi_age_to(first_end, first_end + 9),
          "age_start": first_end, "age_end": first_end + 9,
          "prediction": PINNACLE_PREDICTIONS.get(p2, PINNACLE_PREDICTIONS[9])},
-        {"number": p3, "period": f"Age {first_end + 9} to {first_end + 18}",
+        {"number": p3, "period": f"Age {first_end + 9} to {first_end + 18}", "period_hi": _period_hi_age_to(first_end + 9, first_end + 18),
          "age_start": first_end + 9, "age_end": first_end + 18,
          "prediction": PINNACLE_PREDICTIONS.get(p3, PINNACLE_PREDICTIONS[9])},
-        {"number": p4, "period": f"Age {first_end + 18}+",
+        {"number": p4, "period": f"Age {first_end + 18}+", "period_hi": _period_hi_age_plus(first_end + 18),
          "age_start": first_end + 18, "age_end": 999,
          "prediction": PINNACLE_PREDICTIONS.get(p4, PINNACLE_PREDICTIONS[9])},
     ]
@@ -2222,17 +2231,26 @@ def _calculate_challenges(birth_date: str) -> dict:
     # Same timing as pinnacles
     first_end = max(27, 36 - life_path)
 
+    def _period_hi_birth_to(end_age: int) -> str:
+        return f"जन्म से आयु {end_age} तक"
+
+    def _period_hi_age_to(start_age: int, end_age: int) -> str:
+        return f"आयु {start_age} से {end_age} तक"
+
+    def _period_hi_age_plus(start_age: int) -> str:
+        return f"आयु {start_age} से आगे"
+
     challenges = [
-        {"number": c1, "period": f"Birth to age {first_end}",
+        {"number": c1, "period": f"Birth to age {first_end}", "period_hi": _period_hi_birth_to(first_end),
          "age_start": 0, "age_end": first_end,
          "prediction": CHALLENGE_PREDICTIONS.get(c1, CHALLENGE_PREDICTIONS[0])},
-        {"number": c2, "period": f"Age {first_end} to {first_end + 9}",
+        {"number": c2, "period": f"Age {first_end} to {first_end + 9}", "period_hi": _period_hi_age_to(first_end, first_end + 9),
          "age_start": first_end, "age_end": first_end + 9,
          "prediction": CHALLENGE_PREDICTIONS.get(c2, CHALLENGE_PREDICTIONS[0])},
-        {"number": c3, "period": f"Age {first_end + 9} to {first_end + 18}",
+        {"number": c3, "period": f"Age {first_end + 9} to {first_end + 18}", "period_hi": _period_hi_age_to(first_end + 9, first_end + 18),
          "age_start": first_end + 9, "age_end": first_end + 18,
          "prediction": CHALLENGE_PREDICTIONS.get(c3, CHALLENGE_PREDICTIONS[0])},
-        {"number": c4, "period": f"Age {first_end + 18}+",
+        {"number": c4, "period": f"Age {first_end + 18}+", "period_hi": _period_hi_age_plus(first_end + 18),
          "age_start": first_end + 18, "age_end": 999,
          "prediction": CHALLENGE_PREDICTIONS.get(c4, CHALLENGE_PREDICTIONS[0])},
     ]
@@ -2257,13 +2275,13 @@ def _calculate_life_cycles(birth_date: str) -> dict:
     year_cycle = _reduce_to_single(sum(int(d) for d in birth_date[:4]))  # Later life
 
     cycles = [
-        {"number": month_cycle, "period": "Early Life (Birth to ~28)",
+        {"number": month_cycle, "period": "Early Life (Birth to ~28)", "period_hi": "प्रारंभिक जीवन (जन्म से ~28)",
          "theme": LIFE_CYCLE_PREDICTIONS.get(month_cycle, LIFE_CYCLE_PREDICTIONS[9])["theme"],
          "prediction": LIFE_CYCLE_PREDICTIONS.get(month_cycle, LIFE_CYCLE_PREDICTIONS[9])},
-        {"number": day_cycle, "period": "Middle Life (~28 to ~56)",
+        {"number": day_cycle, "period": "Middle Life (~28 to ~56)", "period_hi": "मध्य जीवन (~28 से ~56)",
          "theme": LIFE_CYCLE_PREDICTIONS.get(day_cycle, LIFE_CYCLE_PREDICTIONS[9])["theme"],
          "prediction": LIFE_CYCLE_PREDICTIONS.get(day_cycle, LIFE_CYCLE_PREDICTIONS[9])},
-        {"number": year_cycle, "period": "Later Life (~56+)",
+        {"number": year_cycle, "period": "Later Life (~56+)", "period_hi": "उत्तर जीवन (~56 से आगे)",
          "theme": LIFE_CYCLE_PREDICTIONS.get(year_cycle, LIFE_CYCLE_PREDICTIONS[9])["theme"],
          "prediction": LIFE_CYCLE_PREDICTIONS.get(year_cycle, LIFE_CYCLE_PREDICTIONS[9])},
     ]
