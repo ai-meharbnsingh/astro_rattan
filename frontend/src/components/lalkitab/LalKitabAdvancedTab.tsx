@@ -531,6 +531,42 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                 <p className="text-xs font-bold text-red-800 mb-1 uppercase tracking-tighter">{t('lk.advanced.manifestation')}</p>
                 <p className="text-sm text-foreground leading-relaxed">{pickLang(debt?.manifestation, isHi)}</p>
               </div>
+
+              {/* Activation Trigger (Rin activating_planet / activates_during / life_area) */}
+              {(debt?.activating_planet || debt?.activates_during || debt?.life_area) && (
+                <div className="bg-amber-50 p-3 rounded-lg border border-amber-200 mb-3">
+                  <p className="text-xs font-bold text-amber-800 mb-2 uppercase tracking-tighter">
+                    {isHi ? 'सक्रियण ट्रिगर' : 'Activation Trigger'}
+                  </p>
+                  {debt?.activating_planet && (
+                    <p className="text-xs text-foreground mb-1">
+                      <span className="font-semibold text-amber-900">
+                        {isHi ? 'सक्रियकर्ता ग्रह: ' : 'Activating Planet: '}
+                      </span>
+                      <span className="inline-block px-2 py-0.5 rounded bg-amber-200 text-amber-900 text-[11px] font-bold">
+                        {translatePlanet(debt.activating_planet, language)}
+                      </span>
+                    </p>
+                  )}
+                  {debt?.activates_during && (
+                    <p className="text-xs text-foreground mb-1">
+                      <span className="font-semibold text-amber-900">
+                        {isHi ? 'सक्रिय होता है: ' : 'Activates During: '}
+                      </span>
+                      {pickLang(debt.activates_during, isHi)}
+                    </p>
+                  )}
+                  {debt?.life_area && (
+                    <p className="text-xs text-foreground">
+                      <span className="font-semibold text-amber-900">
+                        {isHi ? 'जीवन क्षेत्र: ' : 'Life Area: '}
+                      </span>
+                      {pickLang(debt.life_area, isHi)}
+                    </p>
+                  )}
+                </div>
+              )}
+
               {debt.remedy && (
                 <div className="bg-green-600/5 p-3 rounded-lg border border-green-600/20">
                   <p className="text-xs font-bold text-green-800 mb-1 uppercase tracking-tighter">{t('lk.advanced.remedy')}</p>
@@ -642,7 +678,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
 
             {/* Strong Foundations Badge Row */}
             {analysisData.bunyaad?.strong_foundations && analysisData.bunyaad.strong_foundations.length > 0 && (
-              <div className="mb-4 flex flex-wrap items-center gap-2">
+              <div className="mb-3 flex flex-wrap items-center gap-2">
                 <span className="text-xs font-bold text-green-700 uppercase tracking-wider">
                   {t('lk.advanced.strongFoundations')}
                 </span>
@@ -654,19 +690,54 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
               </div>
             )}
 
+            {/* Neutral Foundations Badge Row */}
+            {analysisData.bunyaad?.neutral_foundations && analysisData.bunyaad.neutral_foundations.length > 0 && (
+              <div className="mb-3 flex flex-wrap items-center gap-2">
+                <span className="text-xs font-bold text-gray-600 uppercase tracking-wider">
+                  {isHi ? 'तटस्थ नींव' : 'Neutral Foundations'}
+                </span>
+                {analysisData.bunyaad.neutral_foundations.map((p: string) => (
+                  <span key={p} className="px-2 py-0.5 rounded bg-gray-100 text-gray-700 text-xs font-bold border border-gray-200">
+                    {translatePlanet(p, language)}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Clear Foundations Badge Row */}
+            {analysisData.bunyaad?.clear_foundations && analysisData.bunyaad.clear_foundations.length > 0 && (
+              <div className="mb-4 flex flex-wrap items-center gap-2">
+                <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider">
+                  {isHi ? 'स्पष्ट नींव' : 'Clear Foundations'}
+                </span>
+                {analysisData.bunyaad.clear_foundations.map((p: string) => (
+                  <span key={p} className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200">
+                    {translatePlanet(p, language)}
+                  </span>
+                ))}
+              </div>
+            )}
+
             {/* Planet Bunyaad Cards */}
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {analysisData.bunyaad?.planets && Object.entries(analysisData.bunyaad.planets).map(([planet, info]: [string, any]) => {
-                const statusColor = info.bunyaad_status === 'strong'
-                  ? 'bg-green-100 text-green-800 border-green-200'
-                  : info.bunyaad_status === 'afflicted'
-                    ? 'bg-red-100 text-red-800 border-red-200'
-                    : 'bg-gray-100 text-gray-600 border-gray-200';
-                const statusLabel = info.bunyaad_status === 'strong'
-                  ? t('lk.advanced.foundation.strong')
-                  : info.bunyaad_status === 'afflicted'
-                    ? t('lk.advanced.foundation.afflicted')
-                    : t('lk.advanced.foundation.empty');
+                // 4-way status map: strong / afflicted / neutral / clear (legacy: empty → clear)
+                const rawStatus = info.bunyaad_status;
+                const normalizedStatus = rawStatus === 'empty' ? 'clear' : rawStatus;
+                const statusStyleMap: Record<string, string> = {
+                  strong: 'bg-green-100 text-green-800 border-green-200',
+                  afflicted: 'bg-red-100 text-red-800 border-red-200',
+                  neutral: 'bg-gray-100 text-gray-600 border-gray-200',
+                  clear: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                };
+                const statusColor = statusStyleMap[normalizedStatus] || statusStyleMap.clear;
+                const statusLabelMap: Record<string, string> = {
+                  strong: t('lk.advanced.foundation.strong'),
+                  afflicted: t('lk.advanced.foundation.afflicted'),
+                  neutral: isHi ? 'तटस्थ' : 'Neutral',
+                  clear: t('lk.advanced.foundation.empty'),
+                };
+                const statusLabel = statusLabelMap[normalizedStatus] || statusLabelMap.clear;
 
                 return (
                   <div key={planet} className="card-sacred p-4 rounded-xl border border-sacred-gold/20 bg-white/40">
@@ -735,12 +806,86 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                   {t('lk.advanced.takkar.mild')}: {analysisData.takkar.mild_count}
                 </span>
               )}
-              {analysisData.takkar?.most_attacked_planet && (
+              {(analysisData.takkar?.most_vulnerable_planet || analysisData.takkar?.most_attacked_planet) && (
                 <span className="px-3 py-1 rounded-full bg-red-500/10 text-red-700 text-xs font-bold border border-red-300">
-                  {t('lk.advanced.takkar.mostAttacked')}: {translatePlanet(analysisData.takkar.most_attacked_planet, language)}
+                  {isHi ? 'सर्वाधिक असुरक्षित' : 'Most Vulnerable'}: {translatePlanet(
+                    analysisData.takkar.most_vulnerable_planet || analysisData.takkar.most_attacked_planet,
+                    language
+                  )}
                 </span>
               )}
             </div>
+
+            {/* Vulnerability Ranking Table (per-planet reason badges) */}
+            {analysisData.takkar?.vulnerability_scores && Object.keys(analysisData.takkar.vulnerability_scores).length > 0 && (
+              <div className="mb-4 p-4 rounded-xl border border-red-200 bg-white/60">
+                <h4 className="text-xs font-bold text-red-800 uppercase tracking-wider mb-3">
+                  {isHi ? 'असुरक्षा रैंकिंग' : 'Vulnerability Ranking'}
+                </h4>
+                <div className="space-y-1.5">
+                  {Object.entries(analysisData.takkar.vulnerability_scores)
+                    .sort(([, a]: [string, any], [, b]: [string, any]) => {
+                      const sa = typeof a?.score === 'number' ? a.score : (typeof a === 'number' ? a : 0);
+                      const sb = typeof b?.score === 'number' ? b.score : (typeof b === 'number' ? b : 0);
+                      return sb - sa;
+                    })
+                    .map(([planet, info]: [string, any]) => {
+                      const reason = info?.vulnerability_reason || 'none';
+                      const explanation = info?.vulnerability_explanation;
+                      const breakdown = info?.breakdown;
+                      const score = typeof info?.score === 'number'
+                        ? info.score
+                        : (typeof info === 'number' ? info : null);
+                      const reasonStyleMap: Record<string, string> = {
+                        internal: 'bg-yellow-100 text-yellow-800 border-yellow-300',
+                        external: 'bg-red-100 text-red-800 border-red-300',
+                        mixed: 'bg-orange-100 text-orange-800 border-orange-300',
+                        none: 'bg-green-50 text-green-700 border-green-200',
+                      };
+                      const reasonLabelMap: Record<string, string> = {
+                        internal: isHi ? 'आंतरिक' : 'Internal',
+                        external: isHi ? 'बाहरी' : 'External',
+                        mixed: isHi ? 'मिश्रित' : 'Mixed',
+                        none: isHi ? 'कोई नहीं' : 'None',
+                      };
+                      const reasonStyle = reasonStyleMap[reason] || reasonStyleMap.none;
+                      const reasonLabel = reasonLabelMap[reason] || reason;
+                      return (
+                        <details key={planet} className="group rounded-lg border border-red-100 bg-white hover:bg-red-50/30">
+                          <summary className="cursor-pointer list-none p-2.5 flex items-center gap-3 flex-wrap">
+                            <span className="text-sm font-bold text-sacred-gold-dark flex-1 min-w-[80px]">
+                              {translatePlanet(planet, language)}
+                            </span>
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${reasonStyle}`}>
+                              {reasonLabel}
+                            </span>
+                            {score != null && (
+                              <span className="text-xs font-bold text-foreground/70">
+                                {isHi ? 'स्कोर: ' : 'Score: '}{score}
+                              </span>
+                            )}
+                            <span className="text-[10px] text-foreground/40 group-open:hidden">
+                              {isHi ? 'विस्तार ▸' : 'expand ▸'}
+                            </span>
+                          </summary>
+                          <div className="px-3 pb-3 pt-1 border-t border-red-100 space-y-2">
+                            {explanation && (
+                              <p className="text-xs text-foreground/70 leading-relaxed">
+                                {pickLang(explanation, isHi)}
+                              </p>
+                            )}
+                            {breakdown && (
+                              <p className="text-[11px] text-foreground/60 font-mono bg-gray-50 rounded px-2 py-1 border border-gray-100">
+                                {pickLang(breakdown, isHi)}
+                              </p>
+                            )}
+                          </div>
+                        </details>
+                      );
+                    })}
+                </div>
+              </div>
+            )}
 
             {/* Safe Planets */}
             {analysisData.takkar?.safe_planets && analysisData.takkar.safe_planets.length > 0 && (

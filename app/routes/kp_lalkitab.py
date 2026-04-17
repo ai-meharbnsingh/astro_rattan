@@ -297,6 +297,11 @@ def get_enriched_remedies(kundli_id: str, user: dict = Depends(get_current_user)
             "reason_hi": r.get("reason_hi", ""),
             "how_en": r.get("how_en", ""),
             "how_hi": r.get("how_hi", ""),
+            # P0 safety layer (LK 4.08 / 4.09 / 2.12 / 4.14)
+            "savdhaniyan": info.get("savdhaniyan"),
+            "time_rule": info.get("time_rule"),
+            "reversal_risk": info.get("reversal_risk"),
+            "andhe_grah_warning": info.get("andhe_grah_warning"),
         })
     # Sort: weak/high urgency first, then by house number
     urgency_order = {"high": 0, "medium": 1, "low": 2}

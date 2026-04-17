@@ -1080,9 +1080,63 @@ def get_remedies(planet_positions: dict, chart_data: "dict | None" = None) -> di
     # provenance tag — these per-planet remedies come directly from the
     # position tables in Lal Kitab 1952.
     from app.lalkitab_source_tags import source_of
+    from app.lalkitab_savdhaniyan import get_remedy_precautions
+    from app.lalkitab_andhe_grah import detect_andhe_grah
     src = source_of("get_remedies")
-    for planet_entry in result.values():
+
+    # P0.2 — run blind-planet detector once so both remedy entries and
+    # adjacency warnings are sourced from the same pass.
+    pp_list = [
+        {"planet": pn, "house": pe.get("lk_house"), "sign": pe.get("sign")}
+        for pn, pe in result.items()
+        if isinstance(pe.get("lk_house"), int) and pe.get("lk_house") > 0
+    ]
+    andhe = detect_andhe_grah(pp_list, chart_data=chart_data)
+    blind_map = andhe.get("per_planet") or {}
+    adjacency = {w["planet"]: w for w in (andhe.get("adjacency_warnings") or [])}
+
+    for planet_name, planet_entry in result.items():
         planet_entry.setdefault("source", src)
         if isinstance(planet_entry.get("remedy"), dict):
             planet_entry["remedy"].setdefault("source", src)
+
+        # P0.1 — attach the Savdhaniyan bundle (LK 4.08 + 4.09) so the UI
+        # surfaces every mandatory precaution BEFORE the remedy action.
+        rem = planet_entry.get("remedy") or {}
+        precaution_bundle = get_remedy_precautions(
+            planet_name,
+            house=planet_entry.get("lk_house"),
+            remedy_material=rem.get("material", "") if isinstance(rem, dict) else "",
+        )
+        planet_entry["savdhaniyan"] = precaution_bundle
+        planet_entry["time_rule"] = precaution_bundle["time_rule"]
+        planet_entry["reversal_risk"] = precaution_bundle["reversal_risk"]
+
+        # P0.3 — blind-planet warning attached to remedies that target a
+        # blind planet OR a planet adjacent to one. Rendered BEFORE the
+        # remedy per LK 4.14.
+        blind_info = blind_map.get(planet_name) or {}
+        adj_info = adjacency.get(planet_name)
+        blind_warning = None
+        if blind_info.get("is_blind"):
+            blind_warning = {
+                "kind": "blind_planet",
+                "severity": blind_info.get("severity"),
+                "reasons": blind_info.get("reasons"),
+                "en": blind_info.get("warning_en"),
+                "hi": blind_info.get("warning_hi"),
+                "lk_ref": "4.14",
+            }
+        elif adj_info:
+            blind_warning = {
+                "kind": "adjacent_to_blind",
+                "severity": "medium",
+                "adjacent_to_blind": adj_info.get("adjacent_to_blind"),
+                "en": adj_info.get("note_en"),
+                "hi": adj_info.get("note_hi"),
+                "lk_ref": "4.14",
+            }
+        if blind_warning:
+            planet_entry["andhe_grah_warning"] = blind_warning
+
     return result

@@ -46,6 +46,8 @@ ENGINE_SOURCE = {
     "get_prohibitions":                    LK_CANONICAL,   # 11 forbidden rules
     "get_forbidden_remedies":              LK_CANONICAL,
     "get_remedies":                        LK_CANONICAL,   # Per-planet LK remedy
+    "get_remedy_precautions":              LK_CANONICAL,   # Savdhaniyan (LK 4.08 + 4.09)
+    "detect_andhe_grah":                   LK_CANONICAL,   # Blind planets (LK 2.12 + 4.14)
     "get_lk_house_interpretation":         LK_CANONICAL,   # Grahfal/Bhavfal
     "get_all_interpretations_for_chart":   LK_CANONICAL,
     "get_lk_validated_remedies":           LK_CANONICAL,

@@ -4,6 +4,7 @@ import { Calendar } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useLalKitab } from './LalKitabContext';
 import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
+import { lkStatusString } from './safe-render';
 
 /** Build the current year and +/- 5 years range. */
 function getYearRange(): number[] {
@@ -61,9 +62,9 @@ export default function LalKitabVarshphalTab() {
       house: p?.house || 0,
       nakshatra: p?.nakshatra || '',
       sign_degree: p?.sign_degree || 0,
-      status: p?.status || '',
+      status: lkStatusString(p?.status || ''),
       is_retrograde: p?.retrograde || p?.is_retrograde || false,
-      is_combust: p?.combust || p?.is_combust || false,
+      is_combust: false,  // LK does not use combustion
       is_vargottama: p?.vargottama || p?.is_vargottama || false,
     }));
 

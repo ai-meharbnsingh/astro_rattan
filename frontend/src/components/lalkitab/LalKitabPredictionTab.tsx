@@ -2,7 +2,15 @@ import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import { useLalKitab } from './LalKitabContext';
-import { Star, Info, ThumbsUp, Meh } from 'lucide-react';
+import { Star, Info, ThumbsUp, Meh, AlertTriangle, TrendingUp, Scale, Shield } from 'lucide-react';
+import { pickLang } from './safe-render';
+
+type StudioLabel = 'STRONG' | 'MODERATE' | 'NEEDS ATTENTION';
+
+interface BilingualText {
+  en?: string;
+  hi?: string;
+}
 
 interface StudioArea {
   key: string;
@@ -10,6 +18,7 @@ interface StudioArea {
   title_hi: string;
   score: number;
   confidence: 'high' | 'moderate' | 'low' | 'speculative';
+  label?: StudioLabel | string;
   is_positive: boolean;
   positive_en: string;
   positive_hi: string;
@@ -18,6 +27,51 @@ interface StudioArea {
   remedy_en: string;
   remedy_hi: string;
   trace: Array<{ planet: string; house: number }>;
+  // 3-part cause structure (backend Codex R4-P5)
+  primary_cause?: BilingualText;
+  secondary_modifier?: BilingualText;
+  supporting_factor?: BilingualText;
+  weakest_planet?: string | null;
+  weakest_house?: number | null;
+  weakest_dignity?: string | null;
+  strongest_planet?: string | null;
+  strongest_house?: number | null;
+  strongest_dignity?: string | null;
+}
+
+const labelConfig: Record<string, { bg: string; text: string; border: string; icon: typeof Star; en: string; hi: string }> = {
+  STRONG: {
+    bg: 'bg-green-600',
+    text: 'text-white',
+    border: 'border-green-700',
+    icon: TrendingUp,
+    en: 'STRONG',
+    hi: 'सशक्त',
+  },
+  MODERATE: {
+    bg: 'bg-amber-500',
+    text: 'text-white',
+    border: 'border-amber-600',
+    icon: Scale,
+    en: 'MODERATE',
+    hi: 'मध्यम',
+  },
+  'NEEDS ATTENTION': {
+    bg: 'bg-red-600',
+    text: 'text-white',
+    border: 'border-red-700',
+    icon: AlertTriangle,
+    en: 'NEEDS ATTENTION',
+    hi: 'ध्यान आवश्यक',
+  },
+};
+
+function getLabelConfig(label: string | undefined, score: number) {
+  if (label && labelConfig[label]) return labelConfig[label];
+  // Fallback derivation matching backend thresholds
+  if (score >= 70) return labelConfig.STRONG;
+  if (score >= 55) return labelConfig.MODERATE;
+  return labelConfig['NEEDS ATTENTION'];
 }
 
 interface StudioResponse {
@@ -137,15 +191,26 @@ export default function LalKitabPredictionTab() {
         const isPositive = !!a.is_positive;
         const StatusIcon = isPositive ? ThumbsUp : Meh;
         const trace = a.trace || [];
+        const lbl = getLabelConfig(a.label, a.score);
+        const LabelIcon = lbl.icon;
+
+        const primaryCause = pickLang(a.primary_cause, isHi);
+        const secondaryModifier = pickLang(a.secondary_modifier, isHi);
+        const supportingFactor = pickLang(a.supporting_factor, isHi);
+        const hasCauseBreakdown = !!(primaryCause || secondaryModifier || supportingFactor);
 
         return (
           <div key={a.key} className={`rounded-2xl border p-5 ${cfg.border} ${cfg.bg}`}>
             <div className="flex items-start justify-between gap-4 mb-3">
-              <div>
+              <div className="flex-1 min-w-0">
                 <h3 className="text-lg font-sans font-bold text-sacred-gold">
                   {isHi ? a.title_hi : a.title_en}
                 </h3>
-                <div className="flex items-center gap-2 mt-1">
+                <div className="flex items-center gap-2 mt-2 flex-wrap">
+                  <span className={`inline-flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-full border font-bold shadow-sm ${lbl.bg} ${lbl.text} ${lbl.border}`}>
+                    <LabelIcon className="w-3 h-3" />
+                    {isHi ? lbl.hi : lbl.en}
+                  </span>
                   <span className={`text-[10px] px-2 py-0.5 rounded-full border font-bold ${cfg.badge}`}>
                     {a.confidence.toUpperCase()}
                   </span>
@@ -170,6 +235,50 @@ export default function LalKitabPredictionTab() {
                 {isPositive ? (isHi ? a.positive_hi : a.positive_en) : (isHi ? a.caution_hi : a.caution_en)}
               </p>
             </div>
+
+            {hasCauseBreakdown && (
+              <div className="mb-4 space-y-2">
+                <p className="text-xs font-bold text-sacred-gold uppercase tracking-widest mb-1.5">
+                  {isHi ? 'चार्ट विश्लेषण' : 'Chart Analysis'}
+                </p>
+
+                {primaryCause && (
+                  <div className="rounded-lg border border-red-300/30 bg-red-500/5 p-3">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <AlertTriangle className="w-3.5 h-3.5 text-red-600" />
+                      <p className="text-[10px] font-bold text-red-700 uppercase tracking-wider">
+                        {isHi ? 'प्राथमिक कारण' : 'Primary Cause'}
+                      </p>
+                    </div>
+                    <p className="text-xs text-foreground/80 leading-relaxed">{primaryCause}</p>
+                  </div>
+                )}
+
+                {secondaryModifier && (
+                  <div className="rounded-lg border border-amber-300/30 bg-amber-500/5 p-3">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <Scale className="w-3.5 h-3.5 text-amber-600" />
+                      <p className="text-[10px] font-bold text-amber-700 uppercase tracking-wider">
+                        {isHi ? 'द्वितीयक प्रभाव' : 'Secondary Modifier'}
+                      </p>
+                    </div>
+                    <p className="text-xs text-foreground/80 leading-relaxed">{secondaryModifier}</p>
+                  </div>
+                )}
+
+                {supportingFactor && (
+                  <div className="rounded-lg border border-green-300/30 bg-green-500/5 p-3">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <Shield className="w-3.5 h-3.5 text-green-600" />
+                      <p className="text-[10px] font-bold text-green-700 uppercase tracking-wider">
+                        {isHi ? 'सहायक कारक' : 'Supporting Factor'}
+                      </p>
+                    </div>
+                    <p className="text-xs text-foreground/80 leading-relaxed">{supportingFactor}</p>
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className="mb-4">
               <p className="text-xs font-bold text-sacred-gold uppercase tracking-widest mb-1.5">{t('lk.studio.actionLabel')}</p>

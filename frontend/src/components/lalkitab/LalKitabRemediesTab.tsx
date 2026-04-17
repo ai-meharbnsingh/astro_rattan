@@ -27,6 +27,27 @@ interface EnrichedRemedy {
   reason_hi: string;
   how_en: string;
   how_hi: string;
+  // P0 safety layer — LK 4.08 / 4.09 / 2.12 / 4.14
+  savdhaniyan?: {
+    precautions?: Array<{
+      en?: string; hi?: string; severity?: string;
+      category?: string; lk_ref?: string;
+    }>;
+    time_rule?: string;
+    reversal_risk?: boolean;
+    lk_refs?: string[];
+  };
+  time_rule?: string;
+  reversal_risk?: boolean;
+  andhe_grah_warning?: {
+    kind: string;
+    severity?: string;
+    reasons?: string[];
+    en?: string;
+    hi?: string;
+    lk_ref?: string;
+    adjacent_to_blind?: string[];
+  };
 }
 
 interface ValidatedRemedy {
@@ -126,6 +147,59 @@ function RemedyCard({ r, isHi }: { r: EnrichedRemedy; isHi: boolean }) {
               </p>
             </div>
           </div>
+
+          {/* 2-B — ANDHE GRAH WARNING (LK 4.14) — shown BEFORE remedy */}
+          {r.andhe_grah_warning && (r.andhe_grah_warning.en || r.andhe_grah_warning.hi) && (
+            <div className="rounded-lg border-2 border-red-400 bg-red-50 p-3">
+              <div className="flex items-start gap-2">
+                <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-xs font-bold text-red-700 uppercase tracking-wide mb-1">
+                    {isHi ? '⚠ अंधा ग्रह चेतावनी' : '⚠ Blind Planet Warning'}
+                    <span className="ml-2 text-[10px] font-normal opacity-75">
+                      LK 4.14 · severity: {r.andhe_grah_warning.severity}
+                    </span>
+                  </p>
+                  <p className="text-sm text-red-900 leading-relaxed">
+                    {isHi ? r.andhe_grah_warning.hi : r.andhe_grah_warning.en}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 2-C — SAVDHANIYAN (LK 4.08 + 4.09) — mandatory precautions */}
+          {r.savdhaniyan?.precautions && r.savdhaniyan.precautions.length > 0 && (
+            <div className="rounded-lg border border-orange-300 bg-orange-50 p-3">
+              <div className="flex items-start gap-2">
+                <HelpCircle className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-xs font-bold text-orange-700 uppercase tracking-wide mb-1">
+                    {isHi ? '🔔 सावधानियाँ (अनिवार्य)' : '🔔 Savdhaniyan — Mandatory Precautions'}
+                    <span className="ml-2 text-[10px] font-normal opacity-75">
+                      LK {(r.savdhaniyan.lk_refs || []).join(', ')} · time: {r.time_rule}
+                      {r.reversal_risk && ' · reversal-risk'}
+                    </span>
+                  </p>
+                  <ol className="list-decimal list-inside space-y-1 text-xs text-orange-900 leading-relaxed">
+                    {r.savdhaniyan.precautions.map((p, i) => (
+                      <li key={i}>
+                        <span className="font-semibold uppercase text-[10px] mr-1">
+                          [{p.severity || 'info'} / {p.category || '—'}]
+                        </span>
+                        {isHi ? (p.hi || p.en) : (p.en || p.hi)}
+                      </li>
+                    ))}
+                  </ol>
+                  <p className="text-[10px] text-orange-700 mt-2 italic">
+                    {isHi
+                      ? 'लाल किताब 4.08 के अनुसार — सावधानी छूटने पर उपाय उल्टा पड़ सकता है।'
+                      : 'Per LK 4.08 — omitting a precaution can silently reverse the remedy.'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* 3 — REMEDY */}
           <div className="flex gap-2.5">
@@ -276,7 +350,7 @@ export default function LalKitabRemediesTab({ kundliId }: Props) {
               {isHi ? 'इस श्रेणी में कोई उपाय नहीं।' : 'No remedies in this category.'}
             </p>
           ) : (
-            filtered.map((r, i) => <RemedyCard key={`${r.planet}-${r.lk_house}`} r={r} isHi={isHi} />)
+            filtered.map((r) => <RemedyCard key={`${r.planet}-${r.lk_house}`} r={r} isHi={isHi} />)
           )}
         </div>
       )}
