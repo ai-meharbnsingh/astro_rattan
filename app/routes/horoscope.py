@@ -1,6 +1,7 @@
 """Horoscope routes — daily, weekly, all-signs, and transit-aware horoscopes."""
 from __future__ import annotations
 
+import logging
 from datetime import date, timedelta
 from typing import Any
 
@@ -17,6 +18,8 @@ from app.horoscope_generator import (
     _DEBILITATED_SIGNS,
     _OWN_SIGNS,
 )
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["horoscope"])
 
@@ -77,6 +80,9 @@ def get_daily_horoscope(
     sign = sign.strip().lower()
     if sign not in SIGNS:
         raise HTTPException(status_code=400, detail=f"Invalid sign: {sign}")
+    lang = lang.strip().lower() if lang else "en"
+    if lang not in ("en", "hi"):
+        lang = "en"
 
     if not target_date:
         target_date = date.today().isoformat()
@@ -109,7 +115,7 @@ def get_daily_horoscope(
                 "source": result.get("source", "transit_engine"),
             }
     except Exception:
-        pass
+        logger.exception("Transit engine failed for daily %s/%s", sign, target_date)
 
     # Fallback: existing DB + template logic
     row = db.execute(
@@ -149,6 +155,9 @@ def get_weekly_horoscope(
     sign = sign.strip().lower()
     if sign not in SIGNS:
         raise HTTPException(status_code=400, detail=f"Invalid sign: {sign}")
+    lang = lang.strip().lower() if lang else "en"
+    if lang not in ("en", "hi"):
+        lang = "en"
 
     today = date.today()
     monday = today - timedelta(days=today.weekday())
@@ -183,7 +192,7 @@ def get_weekly_horoscope(
                 "source": result.get("source", "transit_engine"),
             }
     except Exception:
-        pass
+        logger.exception("Transit engine failed for weekly %s", sign)
 
     # Fallback: existing DB + template logic
     row = db.execute(
@@ -224,6 +233,9 @@ def get_monthly_horoscope(
     sign = sign.strip().lower()
     if sign not in SIGNS:
         raise HTTPException(status_code=400, detail=f"Invalid sign: {sign}")
+    lang = lang.strip().lower() if lang else "en"
+    if lang not in ("en", "hi"):
+        lang = "en"
 
     today = date.today()
     month_start = today.replace(day=1).isoformat()
@@ -262,12 +274,13 @@ def get_monthly_horoscope(
                 response["phases"] = extras.get("phases", [])
                 response["key_dates"] = extras.get("key_dates", [])
             except Exception:
+                logger.exception("Monthly extras failed for %s", sign)
                 response["phases"] = []
                 response["key_dates"] = []
 
             return response
     except Exception:
-        pass
+        logger.exception("Transit engine failed for monthly %s", sign)
 
     # Fallback: existing DB + template logic
     row = db.execute(
@@ -306,6 +319,9 @@ def get_yearly_horoscope(
     sign = sign.strip().lower()
     if sign not in SIGNS:
         raise HTTPException(status_code=400, detail=f"Invalid sign: {sign}")
+    lang = lang.strip().lower() if lang else "en"
+    if lang not in ("en", "hi"):
+        lang = "en"
 
     year_start = date.today().replace(month=1, day=1).isoformat()
 
@@ -344,13 +360,14 @@ def get_yearly_horoscope(
                 response["best_months"] = extras.get("best_months", {})
                 response["annual_theme"] = extras.get("annual_theme", {})
             except Exception:
+                logger.exception("Yearly extras failed for %s", sign)
                 response["quarters"] = []
                 response["best_months"] = {}
                 response["annual_theme"] = {}
 
             return response
     except Exception:
-        pass
+        logger.exception("Transit engine failed for yearly %s", sign)
 
     # Fallback: existing DB + template logic
     row = db.execute(

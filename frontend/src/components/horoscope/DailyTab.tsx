@@ -126,12 +126,13 @@ export default function DailyTab({ data, loading, language, t }: Props) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {sections.map(({ key, icon: Icon, color, bg, border }) => {
           const text = data.sections[key];
+          const sectionKey = key === 'general' ? 'generalOutlook' : key;
           return (
             <div key={key} className={`rounded-xl border ${border} ${bg} p-4`}>
               <div className="flex items-center gap-2 mb-2">
                 <Icon className={`w-4 h-4 ${color}`} />
                 <h4 className={`text-sm font-semibold ${color}`}>
-                  {t('horoscope.section.' + key)}
+                  {t('horoscope.section.' + sectionKey)}
                 </h4>
               </div>
               <p className="text-sm text-foreground leading-relaxed">{text}</p>

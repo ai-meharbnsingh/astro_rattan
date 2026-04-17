@@ -1522,9 +1522,9 @@ def _calculate_wave1_extras(
         result["tamil"] = {}
     try:
         from app.panchang_samvat import calculate_all_samvat
+        _vs = vikram_samvat if vikram_samvat else 2083
         result["samvat"] = calculate_all_samvat(
-            vikram_samvat=2083,  # approximate, will be overridden if available
-            maas="", paksha="",
+            vikram_samvat=_vs, maas="", paksha="",
         )
     except Exception:
         result["samvat"] = {}

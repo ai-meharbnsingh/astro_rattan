@@ -579,14 +579,36 @@ def generate_transit_horoscope(
     # Derive lucky elements
     ruling_planet = RULERS.get(sign_lower, "Sun") if RULERS else "Sun"
     mantra = (PLANET_MANTRAS or _DEFAULT_MANTRAS).get(ruling_planet, _DEFAULT_MANTRAS.get(ruling_planet, ""))
-    gemstone = (GEMSTONE_DATA or _DEFAULT_GEMSTONES).get(sign_lower, _DEFAULT_GEMSTONES.get(sign_lower, {"en": "Pearl (Moti)", "hi": "\u092e\u094b\u0924\u0940"}))
+    # GEMSTONE_DATA in transit_lucky is keyed by planet name, not sign
+    gemstone_src = GEMSTONE_DATA or {}
+    gemstone_data = gemstone_src.get(ruling_planet, {})
+    # Extract just the gem name for the lucky.gemstone field (bilingual)
+    if gemstone_data and "gem" in gemstone_data:
+        gemstone = gemstone_data["gem"]
+    else:
+        gemstone = _DEFAULT_GEMSTONES.get(sign_lower, {"en": "Pearl (Moti)", "hi": "\u092e\u094b\u0924\u0940"})
 
-    lucky_number = derive_lucky_number(sign_lower, planet_data)
-    lucky_color = derive_lucky_color(sign_lower)
-    compatible_sign = derive_compatible_sign(sign_lower)
-    mood = derive_mood(sign_lower, scores)
-    dos = derive_dos(sign_lower, planet_data)
-    donts = derive_donts(sign_lower, planet_data)
+    # Extract Moon nakshatra data for lucky derivations
+    moon_info = planet_data.get("Moon", {})
+    moon_nakshatra_name = moon_info.get("nakshatra", "Ashwini")
+    moon_pada = moon_info.get("nakshatra_pada", 1)
+    # Build nakshatra index from name
+    moon_nak_idx = _nakshatra_name_to_index(moon_nakshatra_name)
+
+    # Build dignity map for all planets
+    planet_dignities = {
+        p: get_planet_dignity(p, planet_data.get(p, {})) for p in MAIN_PLANETS
+    }
+
+    # Resolve target_date string for deterministic derivations
+    date_str = target_date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    lucky_number = derive_lucky_number(moon_nak_idx, moon_pada, date_str)
+    lucky_color = derive_lucky_color(sign_lower, moon_pada)
+    compatible_sign = derive_compatible_sign(sign_lower, planet_dignities)
+    mood = derive_mood(scores.get("overall", 5))
+    dos = derive_dos(planet_houses, planet_dignities)
+    donts = derive_donts(planet_houses, planet_dignities)
 
     # Lucky time based on sign index
     sign_idx = SIGN_INDEX.get(sign_lower, 0)
@@ -779,6 +801,25 @@ def generate_yearly_extras(sign: str, year: int = None) -> Dict[str, Any]:
 # Internal helpers
 # ===================================================================
 
+# 27 Nakshatra names (same order as astro_engine._NAKSHATRA_DATA)
+_NAKSHATRA_NAMES: List[str] = [
+    "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra",
+    "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni",
+    "Uttara Phalguni", "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha",
+    "Jyeshtha", "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana",
+    "Dhanishta", "Shatabhisha", "Purva Bhadrapada", "Uttara Bhadrapada",
+    "Revati",
+]
+
+
+def _nakshatra_name_to_index(name: str) -> int:
+    """Convert a nakshatra name to its 0-based index (0-26)."""
+    try:
+        return _NAKSHATRA_NAMES.index(name)
+    except ValueError:
+        return 0
+
+
 def _lookup_fragment(planet: str, house: int, area: str, language: str) -> str:
     """Look up a text fragment from the interpretation matrix, returning empty string if missing."""
     try:
@@ -788,9 +829,12 @@ def _lookup_fragment(planet: str, house: int, area: str, language: str) -> str:
 
 
 def _get_dignity_modifier(dignity: str, language: str) -> str:
-    """Get a prefix/suffix phrase for a given dignity from the DIGNITY_MODIFIERS data."""
+    """Get a prefix phrase for a given dignity from the DIGNITY_MODIFIERS data."""
     try:
-        return DIGNITY_MODIFIERS.get(dignity, {}).get(language, "")
+        mod = DIGNITY_MODIFIERS.get(dignity, {})
+        # DIGNITY_MODIFIERS uses nested structure: {prefix: {en, hi}, suffix: {en, hi}}
+        prefix = mod.get("prefix", {}).get(language, "")
+        return prefix
     except (AttributeError, TypeError):
         return ""
 

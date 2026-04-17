@@ -113,11 +113,31 @@ def _today() -> str:
 def _parse_date(date_str: str) -> datetime:
     """Parse a date string, raising HTTPException on invalid format."""
     try:
-        return datetime.strptime(date_str, "%Y-%m-%d")
+        dt = datetime.strptime(date_str, "%Y-%m-%d")
+        if dt.year < 1900 or dt.year > 2100:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Year out of range: {dt.year}. Must be 1900-2100.",
+            )
+        return dt
     except (ValueError, TypeError):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid date format: '{date_str}'. Expected YYYY-MM-DD.",
+        )
+
+
+def _validate_coords(latitude: float, longitude: float) -> None:
+    """Validate latitude and longitude ranges."""
+    if not (-90.0 <= latitude <= 90.0):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid latitude: {latitude}. Must be -90 to 90.",
+        )
+    if not (-180.0 <= longitude <= 180.0):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid longitude: {longitude}. Must be -180 to 180.",
         )
 
 
@@ -133,6 +153,7 @@ def get_panchang(
     db: Any = Depends(get_db),
 ):
     """Calculate complete Panchang for a given date and location."""
+    _validate_coords(latitude, longitude)
     target_date = date_str or _today()
     _parse_date(target_date)
 
@@ -266,6 +287,7 @@ def get_monthly_panchang(
     db: Any = Depends(get_db),
 ):
     """Get panchang summary for each day of a month."""
+    _validate_coords(latitude, longitude)
     today = date.today()
     target_year = year or today.year
     target_month = month or today.month
