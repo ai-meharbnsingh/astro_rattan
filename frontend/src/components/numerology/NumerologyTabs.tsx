@@ -31,6 +31,25 @@ interface NumerologyResult {
   personality: number;
   predictions?: string[] | NumerologyPredictions;
   summary?: string;
+
+  // Upgraded core numerology fields
+  birthday_number?: number;
+  maturity_number?: number;
+  karmic_debts?: Array<any>;
+  hidden_passion?: any;
+  subconscious_self?: any;
+  karmic_lessons?: Array<any>;
+
+  pinnacles?: any;
+  challenges?: any;
+  life_cycles?: any;
+
+  loshu_grid?: number[][];
+  loshu_values?: Record<number, string>;
+  loshu_arrows?: any;
+  loshu_planes?: any;
+  missing_numbers?: Array<any>;
+  repeated_numbers?: Array<any>;
 }
 
 interface MobileCombination {
@@ -78,10 +97,18 @@ const tabConfig = [
 ];
 
 export default function NumerologyTabs() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { user } = useAuth();
   const isAstrologer = user?.role === 'astrologer';
   const [activeTab, setActiveTab] = useState<TabType>('life_path');
+  const isHi = language === 'hi';
+
+  const pick = (obj: any, key: string): string => {
+    if (!obj) return '';
+    const hi = obj[`${key}_hi`];
+    const en = obj[key];
+    return (isHi ? (hi ?? en) : (en ?? hi)) ?? '';
+  };
 
   // Life Path states
   const [isNewClient, setIsNewClient] = useState(true);
@@ -89,6 +116,7 @@ export default function NumerologyTabs() {
   const [numName, setNumName] = useState('');
   const [numDob, setNumDob] = useState('');
   const [numResult, setNumResult] = useState<NumerologyResult | null>(null);
+  const [forecastResult, setForecastResult] = useState<any | null>(null);
   const [numLoading, setNumLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -153,13 +181,19 @@ export default function NumerologyTabs() {
     if (!numName.trim() || !numDob) return;
     setNumLoading(true);
     setNumResult(null);
+    setForecastResult(null);
     setError('');
     try {
-      const data = await api.post('/api/numerology/calculate', { name: numName.trim(), birth_date: numDob });
+      const [core, forecast] = await Promise.all([
+        api.post('/api/numerology/calculate', { name: numName.trim(), birth_date: numDob }),
+        api.post('/api/numerology/forecast', { name: numName.trim(), birth_date: numDob }),
+      ]);
+      const data = core as any;
       if (data.predictions && typeof data.predictions === 'string') {
         data.predictions = [data.predictions];
       }
       setNumResult(data);
+      setForecastResult(forecast as any);
       if (isAstrologer && isNewClient && !selectedClient) {
         autoRegisterClient({ name: numName.trim(), birth_date: numDob });
       }
@@ -291,7 +325,7 @@ export default function NumerologyTabs() {
                           <div key={section.key} className={`rounded-xl border ${section.borderColor} overflow-hidden`}>
                             <div className={`px-4 py-2 ${section.headerColor} font-medium text-sm flex items-center gap-2`}>
                               <Sparkles className="w-4 h-4 shrink-0" />
-                              {section.label} Number
+                              {section.label} {t('numerology.number')}
                             </div>
                             <div className="px-4 py-3">
                               <p className="text-sm text-muted-foreground leading-relaxed">{text}</p>
