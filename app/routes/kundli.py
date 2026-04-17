@@ -1179,6 +1179,26 @@ def get_ayu_classification(
     }
 
 
+@router.get("/{kundli_id}/lifespan", status_code=status.HTTP_200_OK)
+def get_lifespan(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Full 3-method Ayurdaya — Pindayu/Nisargayu/Amsayu + Haranas (Phaladeepika Adh. 22)."""
+    from app.ayurdaya_engine import calculate_lifespan, classify_ayu, check_balarishta
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    lifespan = calculate_lifespan(chart)
+    return {
+        "kundli_id": kundli_id,
+        "person_name": row["person_name"],
+        "lifespan": lifespan,
+        "ayu_class": classify_ayu(chart),
+        "balarishta": check_balarishta(chart),
+    }
+
+
 # ── PDF Download ────────────────────────────────────────────
 
 # Sign → Lord mapping used for house lordships table

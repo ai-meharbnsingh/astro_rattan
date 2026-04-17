@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Loader2, HeartPulse, AlertTriangle, ShieldCheck, BookOpen, CheckCircle2 } from 'lucide-react';
+import { Loader2, HeartPulse, AlertTriangle, ShieldCheck, BookOpen, CheckCircle2, ChevronDown, ChevronUp, Sun, Moon, Compass } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Heading } from '@/components/ui/heading';
 
@@ -25,11 +25,40 @@ interface AyuClass {
   sloka_ref: string;
 }
 
-interface LifespanData {
+interface Harana {
+  name: string;
+  name_hi: string;
+  reason: string;
+  fraction: string;
+  reduction_years: number;
+}
+
+interface MethodResult {
+  raw: number;
+  after_haranas: number;
+  haranas: Harana[];
+  breakdown?: Array<{ planet: string; [k: string]: any }>;
+  notes?: string[];
+}
+
+interface LifespanPayload {
+  pindayu: MethodResult;
+  nisargayu: MethodResult;
+  amsayu: MethodResult;
+  selected_method: 'pindayu' | 'nisargayu' | 'amsayu';
+  selection_reason_en: string;
+  selection_reason_hi: string;
+  final_years: number;
+  classification: 'Alpayu' | 'Madhyayu' | 'Dirghayu' | 'Purnayu';
+  sloka_ref: string;
+}
+
+interface ApiResponse {
   kundli_id?: string;
   person_name?: string;
-  balarishta: BalarishtaData;
+  lifespan: LifespanPayload;
   ayu_class: AyuClass;
+  balarishta: BalarishtaData;
 }
 
 interface Props {
@@ -66,10 +95,17 @@ const RISK_KEY_MAP: Record<string, string> = {
   severe: 'auto.riskSevere',
 };
 
+const METHOD_META: Record<string, { key: string; icon: any; color: string }> = {
+  pindayu:   { key: 'auto.pindayu',   icon: Sun,     color: 'text-amber-600' },
+  nisargayu: { key: 'auto.nisargayu', icon: Moon,    color: 'text-indigo-500' },
+  amsayu:    { key: 'auto.amsayu',    icon: Compass, color: 'text-emerald-600' },
+};
+
 export default function LifespanTab({ kundliId, language, t }: Props) {
-  const [data, setData] = useState<LifespanData | null>(null);
+  const [data, setData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [expandedMethod, setExpandedMethod] = useState<string | null>(null);
   const isHi = language === 'hi';
 
   useEffect(() => {
@@ -79,8 +115,15 @@ export default function LifespanTab({ kundliId, language, t }: Props) {
     setError('');
     (async () => {
       try {
-        const res = await api.get<LifespanData>(`/api/kundli/${kundliId}/ayu-classification`);
-        if (!cancelled) setData(res);
+        // Prefer the richer /lifespan endpoint (includes all 3 methods);
+        // fallback to /ayu-classification if old backend
+        try {
+          const res = await api.get<ApiResponse>(`/api/kundli/${kundliId}/lifespan`);
+          if (!cancelled) setData(res);
+        } catch {
+          const fallback = await api.get<any>(`/api/kundli/${kundliId}/ayu-classification`);
+          if (!cancelled) setData({ ...fallback, lifespan: null as any });
+        }
       } catch (err: any) {
         if (!cancelled) setError(err?.message || 'Failed to load lifespan data');
       } finally {
@@ -108,7 +151,7 @@ export default function LifespanTab({ kundliId, language, t }: Props) {
 
   if (!data) return null;
 
-  const { balarishta, ayu_class } = data;
+  const { balarishta, ayu_class, lifespan } = data;
   const categoryName = isHi ? ayu_class.category_hi : ayu_class.category_en;
   const reasoning = isHi ? ayu_class.reasoning_hi : ayu_class.reasoning_en;
 
@@ -123,71 +166,171 @@ export default function LifespanTab({ kundliId, language, t }: Props) {
         <p className="text-sm text-muted-foreground">{t('auto.lifespanDesc')}</p>
       </div>
 
-      {/* AYU Category Card */}
-      <div className={`rounded-xl border-2 p-6 ${CATEGORY_COLOR[ayu_class.category] || CATEGORY_COLOR.Madhyayu}`}>
-        <div className="flex items-start justify-between gap-4 mb-4">
+      {/* Final lifespan hero */}
+      {lifespan && (
+        <div className={`rounded-xl border-2 p-6 ${CATEGORY_COLOR[lifespan.classification] || CATEGORY_COLOR.Madhyayu}`}>
+          <div className="flex items-start justify-between gap-4 flex-wrap">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider opacity-70">
+                {t('auto.finalLifespan')}
+              </p>
+              <div className="flex items-baseline gap-3 mt-1">
+                <span className="text-5xl font-bold">{lifespan.final_years.toFixed(1)}</span>
+                <span className="text-lg">{isHi ? 'वर्ष' : 'years'}</span>
+              </div>
+              <p className="text-sm mt-2">
+                <span className="font-semibold">{t(CATEGORY_KEY_MAP[lifespan.classification])}</span>
+              </p>
+            </div>
+            <div className="text-sm text-right">
+              <p className="font-semibold">{t('auto.selectedMethod')}</p>
+              <p className="opacity-80">
+                {t(METHOD_META[lifespan.selected_method]?.key || 'auto.pindayu')}
+              </p>
+              <p className="text-xs mt-1 opacity-70 max-w-xs">
+                {isHi ? lifespan.selection_reason_hi : lifespan.selection_reason_en}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5 mt-4 pt-3 border-t border-current/20 text-[11px] opacity-70">
+            <BookOpen className="w-3 h-3" />
+            <span className="italic">{lifespan.sloka_ref}</span>
+          </div>
+        </div>
+      )}
+
+      {/* 3 methods comparison */}
+      {lifespan && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {(['pindayu', 'nisargayu', 'amsayu'] as const).map((method) => {
+            const m = lifespan[method];
+            const isSelected = lifespan.selected_method === method;
+            const meta = METHOD_META[method];
+            const Icon = meta.icon;
+            const expanded = expandedMethod === method;
+
+            return (
+              <div
+                key={method}
+                className={`rounded-xl border-2 p-4 transition-all ${
+                  isSelected
+                    ? 'border-sacred-gold bg-sacred-gold/10 shadow-md'
+                    : 'border-sacred-gold/20 bg-white'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Icon className={`w-5 h-5 ${meta.color}`} />
+                    <span className="text-sm font-semibold text-foreground">
+                      {t(meta.key)}
+                    </span>
+                  </div>
+                  {isSelected && (
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-sacred-gold-dark text-white">
+                      {isHi ? 'चयनित' : 'Selected'}
+                    </span>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  <div>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                      {t('auto.rawYears')}
+                    </p>
+                    <p className="text-lg font-semibold text-foreground">{m.raw.toFixed(1)}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                      {t('auto.afterHaranas')}
+                    </p>
+                    <p className="text-lg font-semibold text-sacred-gold-dark">
+                      {m.after_haranas.toFixed(1)}
+                    </p>
+                  </div>
+                </div>
+
+                {(m.haranas.length > 0 || (m.breakdown && m.breakdown.length > 0) || (m.notes && m.notes.length > 0)) && (
+                  <button
+                    type="button"
+                    onClick={() => setExpandedMethod(expanded ? null : method)}
+                    className="w-full flex items-center justify-center gap-1 text-xs text-sacred-gold-dark hover:text-sacred-gold pt-2 border-t border-sacred-gold/15"
+                  >
+                    {expanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                    {isHi ? 'विवरण' : 'Details'}
+                  </button>
+                )}
+
+                {expanded && (
+                  <div className="mt-3 space-y-3 text-xs">
+                    {m.haranas.length > 0 && (
+                      <div>
+                        <p className="font-semibold text-foreground mb-1">{t('auto.haranasApplied')}</p>
+                        <ul className="space-y-1">
+                          {m.haranas.map((h, i) => (
+                            <li key={i} className="text-muted-foreground">
+                              <span className="font-medium text-foreground">
+                                {isHi ? h.name_hi : h.name}
+                              </span>{' '}
+                              ({h.fraction}) — <span className="text-red-600">−{h.reduction_years}y</span>
+                              <p className="pl-2 text-[10px]">{h.reason}</p>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {m.breakdown && m.breakdown.length > 0 && (
+                      <div>
+                        <p className="font-semibold text-foreground mb-1">{t('auto.methodBreakdown')}</p>
+                        <ul className="space-y-0.5">
+                          {m.breakdown.map((b, i) => (
+                            <li key={i} className="flex justify-between text-muted-foreground">
+                              <span className="font-medium text-foreground">{b.planet}</span>
+                              <span>{b.contribution?.toFixed?.(1) ?? b.contribution} y</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {m.notes && m.notes.length > 0 && (
+                      <ul className="list-disc pl-4 text-muted-foreground space-y-0.5">
+                        {m.notes.map((n, i) => (
+                          <li key={i}>{n}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Ayu classification (from rule-based method) */}
+      <div className={`rounded-xl border-2 p-5 ${CATEGORY_COLOR[ayu_class.category] || CATEGORY_COLOR.Madhyayu}`}>
+        <div className="flex items-start justify-between gap-4 mb-3 flex-wrap">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider opacity-70">
               {t(CATEGORY_KEY_MAP[ayu_class.category] || 'auto.madhyayu')}
             </p>
-            <h3 className="text-2xl font-bold mt-1">{categoryName}</h3>
+            <h3 className="text-xl font-bold mt-1">{categoryName}</h3>
           </div>
           <div className="text-right">
             <p className="text-[11px] uppercase tracking-wider opacity-70">{t('auto.yearsRange')}</p>
             <p className="text-lg font-semibold">{ayu_class.years_range}</p>
           </div>
         </div>
-
-        <p className="text-sm leading-relaxed mb-4">{reasoning}</p>
-
+        <p className="text-sm leading-relaxed mb-3">{reasoning}</p>
         {ayu_class.matched_rules.length > 0 && (
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wider opacity-70 mb-2">
-              {t('auto.reasoningFactors')}
-            </p>
-            <ul className="space-y-1">
-              {ayu_class.matched_rules.map((rule, i) => (
-                <li key={i} className="text-sm flex items-start gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 shrink-0 mt-0.5 opacity-70" />
-                  <span>{rule}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <ul className="space-y-1">
+            {ayu_class.matched_rules.map((rule, i) => (
+              <li key={i} className="text-xs flex items-start gap-1.5">
+                <CheckCircle2 className="w-3 h-3 shrink-0 mt-0.5 opacity-70" />
+                <span>{rule}</span>
+              </li>
+            ))}
+          </ul>
         )}
-
-        <div className="flex items-center gap-1.5 mt-4 pt-3 border-t border-current/20 text-[11px] opacity-70">
-          <BookOpen className="w-3 h-3" />
-          <span className="italic">{ayu_class.sloka_ref}</span>
-        </div>
-      </div>
-
-      {/* Score bars */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="p-4 rounded-lg border border-sacred-gold/25 bg-gradient-to-br from-emerald-50 to-white">
-          <p className="text-xs font-semibold text-emerald-800 mb-2">
-            {t('auto.dirghayu')} {isHi ? 'संकेतक' : 'Score'}
-          </p>
-          <p className="text-2xl font-bold text-emerald-900">{ayu_class.dirghayu_score}</p>
-          <div className="w-full h-1.5 rounded-full bg-emerald-100 mt-2 overflow-hidden">
-            <div
-              className="h-full bg-emerald-500"
-              style={{ width: `${Math.min(100, ayu_class.dirghayu_score * 12)}%` }}
-            />
-          </div>
-        </div>
-        <div className="p-4 rounded-lg border border-sacred-gold/25 bg-gradient-to-br from-orange-50 to-white">
-          <p className="text-xs font-semibold text-orange-800 mb-2">
-            {t('auto.alpayu')} {isHi ? 'संकेतक' : 'Score'}
-          </p>
-          <p className="text-2xl font-bold text-orange-900">{ayu_class.alpayu_score}</p>
-          <div className="w-full h-1.5 rounded-full bg-orange-100 mt-2 overflow-hidden">
-            <div
-              className="h-full bg-orange-500"
-              style={{ width: `${Math.min(100, ayu_class.alpayu_score * 15)}%` }}
-            />
-          </div>
-        </div>
       </div>
 
       {/* Balarishta */}
@@ -195,37 +338,29 @@ export default function LifespanTab({ kundliId, language, t }: Props) {
         <div className={`rounded-xl border-2 p-5 ${RISK_COLOR[balarishta.risk_level] || RISK_COLOR.low}`}>
           <div className="flex items-start gap-3 mb-3">
             <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
-            <div className="flex-1">
+            <div>
               <h3 className="font-bold">{t('auto.balarishtaRisk')}</h3>
               <p className="text-xs mt-0.5 opacity-80">
-                {t('auto.riskLevel')}: <span className="font-semibold">{t(RISK_KEY_MAP[balarishta.risk_level])}</span>
+                {t('auto.riskLevel')}:{' '}
+                <span className="font-semibold">{t(RISK_KEY_MAP[balarishta.risk_level])}</span>
               </p>
             </div>
           </div>
           {balarishta.factors.length > 0 && (
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-wider opacity-70 mb-2">
-                {t('auto.riskFactors')}
-              </p>
-              <ul className="space-y-1">
-                {balarishta.factors.map((f, i) => (
-                  <li key={i} className="text-sm flex items-start gap-1.5">
-                    <span className="mt-0.5 shrink-0">•</span>
-                    <span>{f}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <ul className="space-y-1">
+              {balarishta.factors.map((f, i) => (
+                <li key={i} className="text-sm flex items-start gap-1.5">
+                  <span className="mt-0.5 shrink-0">•</span>
+                  <span>{f}</span>
+                </li>
+              ))}
+            </ul>
           )}
           {balarishta.remedies_recommended && (
             <p className="text-xs mt-3 pt-3 border-t border-current/20 font-medium">
               {t('auto.remediesRecommended')}
             </p>
           )}
-          <div className="flex items-center gap-1.5 mt-3 pt-2 border-t border-current/20 text-[11px] opacity-70">
-            <BookOpen className="w-3 h-3" />
-            <span className="italic">{balarishta.sloka_ref}</span>
-          </div>
         </div>
       ) : balarishta.cancelled ? (
         <div className="rounded-xl border-2 border-emerald-300 bg-emerald-50 p-5 text-emerald-800">
