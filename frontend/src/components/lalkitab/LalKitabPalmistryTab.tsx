@@ -44,7 +44,7 @@ export default function LalKitabPalmistryTab({ kundliId, language }: Props) {
   useEffect(() => {
     setLoading(true);
     api.get('/api/lalkitab/palm/zones')
-      .then(setZones).catch(() => {}).finally(() => setLoading(false));
+      .then(r => setZones(r.zones ?? r)).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
   const handleZoneClick = (zoneId: string) => {

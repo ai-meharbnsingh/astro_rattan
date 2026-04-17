@@ -1363,8 +1363,8 @@ def _get_lk_positions(kundli_id: str, user_sub: str, db: Any):
 # ═══════════════════════════════════════════════════════════════════
 
 @router.get("/api/lalkitab/palm/zones")
-def get_palm_zones(user: dict = Depends(get_current_user)):
-    """Return all palm zones (mounts + lines) with planet/house mappings."""
+def get_palm_zones():
+    """Return all palm zones (mounts + lines) with planet/house mappings. No auth required."""
     from app.lalkitab_palmistry import get_palm_zones as _zones, MARK_TYPES
     return {"zones": _zones(), "mark_types": MARK_TYPES}
 
