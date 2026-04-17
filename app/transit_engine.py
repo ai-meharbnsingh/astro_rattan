@@ -44,6 +44,10 @@ try:
         derive_mood,
         derive_dos,
         derive_donts,
+        derive_lucky_time,
+        derive_gemstone,
+        derive_mantra,
+        get_all_lucky_metadata,
         GEMSTONE_DATA,
         PLANET_MANTRAS,
         RULERS,
@@ -68,6 +72,28 @@ except ImportError:
 
     def derive_donts(sign: str, planet_data: dict, **kw) -> List[Dict[str, str]]:
         return [{"en": "Avoid impulsive decisions.", "hi": "\u0906\u0935\u0947\u0917\u092a\u0942\u0930\u094d\u0923 \u0928\u093f\u0930\u094d\u0923\u092f\u094b\u0902 \u0938\u0947 \u092c\u091a\u0947\u0902\u0964"}]
+
+    def derive_lucky_time(sign: str, ruler: str, **kw) -> Dict[str, str]:
+        return {"en": "10:00 AM - 11:00 AM", "hi": "सुबह 10:00 - 11:00"}
+
+    def derive_gemstone(ruler: str, **kw) -> Dict[str, Any]:
+        return {"gem": {"en": "Pearl (Moti)", "hi": "मोती"}, "metal": {"en": "Silver", "hi": "चांदी"}, "finger": {"en": "Little finger", "hi": "कनिष्ठा"}, "day": {"en": "Monday", "hi": "सोमवार"}}
+
+    def derive_mantra(ruler: str, **kw) -> str:
+        return "Om Namah Shivaya"
+
+    def get_all_lucky_metadata(sign: str, **kw) -> Dict[str, Any]:
+        return {
+            "lucky_number": 7,
+            "lucky_color": {"en": "Green", "hi": "हरा"},
+            "lucky_time": {"en": "10:00 AM - 11:00 AM", "hi": "सुबह 10:00 - 11:00"},
+            "compatible_sign": {"en": "Leo", "hi": "सिंह"},
+            "gemstone": {"gem": {"en": "Pearl (Moti)", "hi": "मोती"}},
+            "mantra": "Om Namah Shivaya",
+            "mood": {"en": "Balanced", "hi": "संतुलित"},
+            "dos": [{"en": "Stay positive.", "hi": "सकारात्मक रहें।"}],
+            "donts": [{"en": "Avoid impulsive decisions.", "hi": "आवेगपूर्ण निर्णयों से बचें।"}],
+        }
 
     GEMSTONE_DATA: Dict[str, Dict[str, str]] = {}
     PLANET_MANTRAS: Dict[str, str] = {}

@@ -247,22 +247,6 @@ class NumerologyRequest(BaseModel):
     name: str = Field(min_length=1, max_length=200)
     birth_date: str  # YYYY-MM-DD
 
-    @field_validator("birth_date")
-    @classmethod
-    def validate_birth_date_range(cls, v: str):
-        from datetime import date, datetime
-        try:
-            bd = datetime.strptime(v, "%Y-%m-%d").date()
-        except Exception:
-            raise ValueError("birth_date must be YYYY-MM-DD format")
-
-        today = date.today()
-        if bd > today:
-            raise ValueError("birth_date cannot be in the future")
-        if (today.year - bd.year) > 120:
-            raise ValueError("birth_date is too far in the past")
-        return v
-
 class MobileNumerologyRequest(BaseModel):
     phone_number: str = Field(min_length=4)
     name: str = ""
