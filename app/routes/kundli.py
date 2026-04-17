@@ -1199,6 +1199,25 @@ def get_lifespan(
     }
 
 
+@router.get("/{kundli_id}/conjunctions", status_code=status.HTTP_200_OK)
+def get_conjunctions(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """45 two-planet conjunction effects — Phaladeepika Adhyaya 18."""
+    from app.conjunction_engine import detect_conjunctions
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    conjunctions = detect_conjunctions(chart)
+    return {
+        "kundli_id": kundli_id,
+        "person_name": row["person_name"],
+        "conjunctions": conjunctions,
+        "count": len(conjunctions),
+    }
+
+
 # ── PDF Download ────────────────────────────────────────────
 
 # Sign → Lord mapping used for house lordships table
