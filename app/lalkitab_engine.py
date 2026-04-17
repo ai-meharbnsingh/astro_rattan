@@ -13,6 +13,7 @@ Key LK principles encoded:
 - Source: Pt. Roop Chand Joshi's Lal Kitab tradition; Er. Rohit Sharma's Nishaniya series
 """
 from app.astro_iogita_engine import get_planet_strength
+from app.lalkitab_remedy_context import REMEDY_CONTEXT as _REMEDY_CONTEXT
 
 # Sign → LK house (Aries=1 through Pisces=12)
 _SIGN_TO_LK_HOUSE = {
@@ -898,6 +899,10 @@ def get_remedies(planet_positions: dict) -> dict:
 
         is_weak = strength < 0.5
 
+        # Merge remedy context (problem / reason / how_it_works) into remedy dict
+        ctx = _REMEDY_CONTEXT.get((planet, lk_house), {})
+        enriched_remedy = {**house_remedy, **ctx}
+
         # Backward-compat: old tests check result[planet]["remedies"] as a list
         compat_remedies = [house_remedy["en"]] if is_weak else []
 
@@ -906,7 +911,7 @@ def get_remedies(planet_positions: dict) -> dict:
             "lk_house": lk_house,
             "dignity": dignity,
             "strength": round(strength, 2),
-            "remedy": house_remedy,
+            "remedy": enriched_remedy,
             "has_remedy": is_weak,
             # Backward compatibility key — old tests expect this
             "remedies": compat_remedies,

@@ -81,36 +81,37 @@ const M = pct(50);
 const SI = pct(6);
 const EI = pct(94);
 
-// Planet centers
-const HOUSE_CENTERS: { x: number; y: number }[] = [
-  { x: pct(50),   y: pct(28) },    // 1  — top diamond
-  { x: pct(28),   y: pct(14) },    // 2  — top-left corner
-  { x: pct(15),   y: pct(28) },    // 3  — left-upper
-  { x: pct(28),   y: pct(50) },    // 4  — left diamond
-  { x: pct(15),   y: pct(72) },    // 5  — left-lower
-  { x: pct(28),   y: pct(86) },    // 6  — bottom-left corner
-  { x: pct(50),   y: pct(72) },    // 7  — bottom diamond
-  { x: pct(72),   y: pct(86) },    // 8  — bottom-right corner
-  { x: pct(87.5), y: pct(72) },    // 9  — right-lower
-  { x: pct(72),   y: pct(50) },    // 10 — right diamond
-  { x: pct(87.5), y: pct(28) },    // 11 — right-upper
-  { x: pct(72),   y: pct(14) },    // 12 — top-right corner
+// Sign-indexed planet centers (index 0 = Aries position, 1 = Taurus position, etc.)
+// Signs are fixed in North Indian chart; only the HOUSE NUMBER rotates with lagna.
+const SIGN_CENTERS: { x: number; y: number }[] = [
+  { x: pct(50),   y: pct(28) },    // 0  Aries       — top diamond
+  { x: pct(28),   y: pct(14) },    // 1  Taurus      — top-left corner
+  { x: pct(15),   y: pct(28) },    // 2  Gemini      — left-upper
+  { x: pct(28),   y: pct(50) },    // 3  Cancer      — left diamond
+  { x: pct(15),   y: pct(72) },    // 4  Leo         — left-lower
+  { x: pct(28),   y: pct(86) },    // 5  Virgo       — bottom-left corner
+  { x: pct(50),   y: pct(72) },    // 6  Libra       — bottom diamond
+  { x: pct(72),   y: pct(86) },    // 7  Scorpio     — bottom-right corner
+  { x: pct(87.5), y: pct(72) },    // 8  Sagittarius — right-lower
+  { x: pct(72),   y: pct(50) },    // 9  Capricorn   — right diamond
+  { x: pct(87.5), y: pct(28) },    // 10 Aquarius    — right-upper
+  { x: pct(72),   y: pct(14) },    // 11 Pisces      — top-right corner
 ];
 
-// House numbers
+// House-number label positions (indexed by SIGN position, not house number)
 const HOUSE_NUM_POS: { x: number; y: number }[] = [
-  { x: pct(50),   y: pct(45) },    // 1
-  { x: pct(12),   y: pct(8) },     // 2
-  { x: pct(8),    y: pct(12) },    // 3
-  { x: pct(45),   y: pct(50) },    // 4
-  { x: pct(8),    y: pct(88) },    // 5
-  { x: pct(12),   y: pct(92) },    // 6
-  { x: pct(50),   y: pct(55) },    // 7
-  { x: pct(88),   y: pct(92) },    // 8
-  { x: pct(92),   y: pct(88) },    // 9
-  { x: pct(55),   y: pct(50) },    // 10
-  { x: pct(92),   y: pct(12) },    // 11
-  { x: pct(88),   y: pct(8) },     // 12
+  { x: pct(50),   y: pct(45) },    // Aries       pos
+  { x: pct(12),   y: pct(8) },     // Taurus      pos
+  { x: pct(8),    y: pct(12) },    // Gemini      pos
+  { x: pct(45),   y: pct(50) },    // Cancer      pos
+  { x: pct(8),    y: pct(88) },    // Leo         pos
+  { x: pct(12),   y: pct(92) },    // Virgo       pos
+  { x: pct(50),   y: pct(55) },    // Libra       pos
+  { x: pct(88),   y: pct(92) },    // Scorpio     pos
+  { x: pct(92),   y: pct(88) },    // Sagittarius pos
+  { x: pct(55),   y: pct(50) },    // Capricorn   pos
+  { x: pct(92),   y: pct(12) },    // Aquarius    pos
+  { x: pct(88),   y: pct(8) },     // Pisces      pos
 ];
 
 function ascMarkerPos(degInSign: number): { x: number; y: number } {
@@ -161,14 +162,18 @@ export default function KundliChartSVG({ planets, ascendantSign, ascendantDegree
   const liveDeg = (baseDeg + tick * 0.004167) % 360;
   const marker = ascMarkerPos(liveDeg % 30);
 
-  // Group planets by HOUSE NUMBER (1-12)
-  // House is computed by caller: ((planetSign - lagnaSign + 12) % 12) + 1
-  const planetsByHouse: Record<number, PlanetEntry[]> = {};
+  // Lagna sign index (0=Aries, 1=Taurus, ..., 11=Pisces). -1 if unknown.
+  const lagnaSignIdx = SIGNS_ORDER.indexOf(ascendantSign);
+
+  // Group planets by their SIGN POSITION (0-11) so they render at the fixed
+  // sign positions on the North Indian chart. The HOUSE NUMBER is derived
+  // from the offset between sign position and lagna position.
+  const planetsBySignPos: Record<number, PlanetEntry[]> = {};
   for (const pl of planets) {
-    if (pl.house >= 1 && pl.house <= 12) {
-      if (!planetsByHouse[pl.house]) planetsByHouse[pl.house] = [];
-      planetsByHouse[pl.house].push(pl);
-    }
+    const signIdx = SIGNS_ORDER.indexOf(pl.sign);
+    if (signIdx < 0) continue;
+    if (!planetsBySignPos[signIdx]) planetsBySignPos[signIdx] = [];
+    planetsBySignPos[signIdx].push(pl);
   }
 
   return (
@@ -213,19 +218,26 @@ export default function KundliChartSVG({ planets, ascendantSign, ascendantDegree
         );
       })}
 
-      {/* Sign numbers — fixed: 1=Aries(top), 2=Taurus(top-left)... 12=Pisces(top-right) */}
-      {HOUSE_NUM_POS.map((pos, i) => (
-        <text key={`h-${i}`} x={pos.x} y={pos.y} textAnchor="middle" dominantBaseline="central"
-          fontSize="10" fontWeight="600" fill={GOLD} opacity="0.45" fontFamily="'Inter',sans-serif">
-          {i + 1}
-        </text>
-      ))}
+      {/* House numbers — rotate with lagna. House 1 always sits at the lagna sign. */}
+      {HOUSE_NUM_POS.map((pos, i) => {
+        // Position i corresponds to sign index i in SIGNS_ORDER.
+        // House at this sign = ((signIdx - lagnaSignIdx + 12) % 12) + 1
+        const houseNum = lagnaSignIdx >= 0
+          ? ((i - lagnaSignIdx + 12) % 12) + 1
+          : i + 1;
+        return (
+          <text key={`h-${i}`} x={pos.x} y={pos.y} textAnchor="middle" dominantBaseline="central"
+            fontSize="10" fontWeight="600" fill={GOLD} opacity="0.45" fontFamily="'Inter',sans-serif">
+            {houseNum}
+          </text>
+        );
+      })}
 
-      {/* Planets — placed by house number, font 13px/800 matching transit wheel */}
-      {Array.from({ length: 12 }, (_, i) => i + 1).map((house) => {
-        const hp = planetsByHouse[house] || [];
+      {/* Planets — placed at their sign position (fixed on chart), font 13px/800 */}
+      {Array.from({ length: 12 }, (_, i) => i).map((signIdx) => {
+        const hp = planetsBySignPos[signIdx] || [];
         if (!hp.length) return null;
-        const c = HOUSE_CENTERS[house - 1];
+        const c = SIGN_CENTERS[signIdx];
         const count = hp.length;
         const lineH = count > 4 ? 13 : count > 3 ? 14 : 16;
         const startY = c.y - ((count - 1) * lineH) / 2;
@@ -236,7 +248,7 @@ export default function KundliChartSVG({ planets, ascendantSign, ascendantDegree
           const color = planetColor(pl);
 
           return (
-            <g key={`p-${house}-${pi}`}>
+            <g key={`p-${signIdx}-${pi}`}>
               {/* Planet name */}
               <text x={c.x} y={startY + pi * lineH}
                 textAnchor="middle" dominantBaseline="central"

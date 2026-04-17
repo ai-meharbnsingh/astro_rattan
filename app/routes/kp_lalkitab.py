@@ -190,6 +190,56 @@ def lalkitab_remedies(payload: dict, user: dict = Depends(get_current_user), db:
         )
 
 
+@router.get("/api/lalkitab/remedies/enriched/{kundli_id}")
+def get_enriched_remedies(kundli_id: str, user: dict = Depends(get_current_user), db: Any = Depends(get_db)):
+    """
+    Return enriched remedies for ALL 9 planets: problem / reason / remedy / how_it_works.
+    Always returns all planets (not just weak ones) so the UI can show education for every house.
+    """
+    row = db.execute(
+        "SELECT chart_data, birth_date FROM kundlis WHERE id = %s AND user_id = %s",
+        (kundli_id, user["sub"]),
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Kundli not found")
+
+    chart_data = json.loads(row["chart_data"])
+    planet_positions = {p: info.get("sign", "Aries") for p, info in chart_data.get("planets", {}).items()}
+    if not planet_positions:
+        raise HTTPException(status_code=400, detail="No planet positions in chart")
+
+    res = get_remedies(planet_positions)
+    enriched = []
+    for planet, info in res.items():
+        r = info["remedy"]
+        enriched.append({
+            "planet": planet,
+            "planet_hi": PLANET_NAMES_HI.get(planet, planet),
+            "sign": info["sign"],
+            "lk_house": info["lk_house"],
+            "dignity": info["dignity"],
+            "strength": info["strength"],
+            "has_remedy": info["has_remedy"],
+            "urgency": r.get("urgency", "low"),
+            "material": r.get("material", ""),
+            "day": r.get("day", ""),
+            # Remedy action
+            "remedy_en": r.get("en", ""),
+            "remedy_hi": r.get("hi", ""),
+            # Education fields
+            "problem_en": r.get("problem_en", ""),
+            "problem_hi": r.get("problem_hi", ""),
+            "reason_en": r.get("reason_en", ""),
+            "reason_hi": r.get("reason_hi", ""),
+            "how_en": r.get("how_en", ""),
+            "how_hi": r.get("how_hi", ""),
+        })
+    # Sort: weak/high urgency first, then by house number
+    urgency_order = {"high": 0, "medium": 1, "low": 2}
+    enriched.sort(key=lambda x: (0 if x["has_remedy"] else 1, urgency_order.get(x["urgency"], 2), x["lk_house"]))
+    return {"remedies": enriched}
+
+
 # ─────────────────────────────────────────────────────────────
 # Lal Kitab Remedy Tracker
 # ─────────────────────────────────────────────────────────────

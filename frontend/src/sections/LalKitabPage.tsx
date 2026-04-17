@@ -25,7 +25,7 @@ import LalKitabRulesTab from '@/components/lalkitab/LalKitabRulesTab';
 import LalKitabNishaniyaTab from '@/components/lalkitab/LalKitabNishaniyaTab';
 import LalKitabGocharTab from '@/components/lalkitab/LalKitabGocharTab';
 import LalKitabPredictionTab from '@/components/lalkitab/LalKitabPredictionTab';
-import LalKitabRemediesTrackerTab from '@/components/lalkitab/LalKitabRemediesTrackerTab';
+import LalKitabDashaTab from '@/components/lalkitab/LalKitabDashaTab';
 import LalKitabChandraChaalanaTab from '@/components/lalkitab/LalKitabChandraChaalanaTab';
 import LalKitabRinTab from '@/components/lalkitab/LalKitabRinTab';
 import LalKitabMarriageTab from '@/components/lalkitab/LalKitabMarriageTab';
@@ -61,6 +61,8 @@ export default function LalKitabPage() {
   const [clientId, setClientId] = useState(locState.clientId || '');
   const [kundliId, setKundliId] = useState(locState.loadKundliId || '');
   const [activeTopTab, setActiveTopTab] = useState('dashboard');
+  const [edition, setEdition] = useState<'1939' | '1941' | '1942' | '1952'>('1952');
+  const EDITIONS = ['1939', '1941', '1942', '1952'] as const;
   const topTabs = [
     { value: 'dashboard', label: t('lk.tab.dashboard'), icon: LayoutDashboard },
     { value: 'chart', label: t('auto.chart'), icon: ChartPie },
@@ -160,6 +162,28 @@ export default function LalKitabPage() {
             <p className="text-foreground max-w-lg mx-auto">
               {t('lk.subtitle')}
             </p>
+            {/* Edition Selector */}
+            <div className="flex items-center justify-center gap-1.5 mt-4 flex-wrap">
+              <span className="text-xs text-muted-foreground mr-1">{isHi ? 'संस्करण:' : 'Edition:'}</span>
+              {EDITIONS.map((ed) => (
+                <button
+                  key={ed}
+                  onClick={() => setEdition(ed)}
+                  className={`text-xs px-3 py-1 rounded-full border transition-all ${
+                    edition === ed
+                      ? 'bg-sacred-gold text-white border-sacred-gold font-semibold'
+                      : 'border-sacred-gold/30 text-muted-foreground hover:border-sacred-gold/60'
+                  }`}
+                >
+                  {ed}
+                </button>
+              ))}
+              {edition !== '1952' && (
+                <span className="text-xs text-amber-600 ml-2">
+                  {isHi ? `${edition} संस्करण: कुछ उपाय भिन्न हो सकते हैं` : `${edition} ed: some remedies may vary`}
+                </span>
+              )}
+            </div>
           </div>
         )}
 
@@ -236,6 +260,7 @@ export default function LalKitabPage() {
                 <LalKitabTechnicalTab kundliId={kundliId} language={language} />
               </TabsContent>
               <TabsContent value="timing" className="space-y-8">
+                <LalKitabDashaTab kundliId={kundliId} language={language} />
                 <LalKitabMilestonesTab kundliId={kundliId} language={language} />
                 <LalKitabYearlyTab chartData={chartData} birthDate={birthDate} />
                 <LalKitabVarshphalTab chartData={chartData} birthDate={birthDate} apiResult={apiResult} />
@@ -244,7 +269,6 @@ export default function LalKitabPage() {
               <TabsContent value="upay" className="space-y-8">
                 <LalKitabForbiddenTab kundliId={kundliId} language={language} />
                 <LalKitabRemediesTab chartData={chartData} kundliId={kundliId} />
-                <LalKitabRemediesTrackerTab chartData={chartData} kundliId={kundliId} />
                 <LalKitabChandraChaalanaTab />
               </TabsContent>
               <TabsContent value="predictions" className="space-y-4">

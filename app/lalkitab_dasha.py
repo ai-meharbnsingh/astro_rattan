@@ -196,10 +196,8 @@ def get_dasha_timeline(birth_date: str, current_date: str) -> Dict[str, Any]:
 
     # ── Current Saala Grah ───────────────────────────────────────────────────
     csg_data = get_saala_grah(age)
-    # The current year ruler started at the beginning of the current age year
-    # (birthday to next birthday).
-    started_year = bd.year + age          # calendar year when this age started
-    ends_year = started_year + 1          # next birthday year ends this ruler
+    started_year = bd.year + age
+    ends_year = started_year + 1
 
     current_saala_grah = {
         "planet": csg_data["planet"],
@@ -207,6 +205,8 @@ def get_dasha_timeline(birth_date: str, current_date: str) -> Dict[str, Any]:
         "age": age,
         "started_year": started_year,
         "ends_year": ends_year,
+        "sequence_position": csg_data["sequence_position"],
+        "cycle_year": csg_data["cycle_year"],
         "en_desc": csg_data["en_desc"],
         "hi_desc": csg_data["hi_desc"],
     }
@@ -219,28 +219,25 @@ def get_dasha_timeline(birth_date: str, current_date: str) -> Dict[str, Any]:
         "planet_hi": nsg_data["planet_hi"],
         "starts_at_age": next_age,
         "starts_year": ends_year,
+        "en_desc": nsg_data["en_desc"],
+        "hi_desc": nsg_data["hi_desc"],
     }
 
     # ── Life Phase ───────────────────────────────────────────────────────────
-    # Phase 1: birth → 35, Phase 2: 36 → 70, Phase 3: 71+
     if age <= 35:
-        phase = 1
-        years_in_phase = age
+        phase_num = 1
+        years_into_phase = age
         phase_end_age = 35
     elif age <= 70:
-        phase = 2
-        years_in_phase = age - 35
+        phase_num = 2
+        years_into_phase = age - 35
         phase_end_age = 70
     else:
-        phase = 3
-        years_in_phase = age - 70
+        phase_num = 3
+        years_into_phase = age - 70
         phase_end_age = 105
 
-    life_phase = {
-        "phase": phase,
-        "years_in_phase": years_in_phase,
-        "phase_end_age": phase_end_age,
-    }
+    years_remaining = max(0, phase_end_age - age)
 
     # ── Upcoming periods (next 5 years) ──────────────────────────────────────
     upcoming_periods: List[Dict[str, Any]] = []
@@ -252,6 +249,8 @@ def get_dasha_timeline(birth_date: str, current_date: str) -> Dict[str, Any]:
             "year": bd.year + a,
             "planet": planet,
             "planet_hi": _PLANET_HI[planet],
+            "en_desc": _EN_DESC[planet],
+            "hi_desc": _HI_DESC[planet],
         })
 
     # ── Past periods (last 3 years) ───────────────────────────────────────────
@@ -266,13 +265,22 @@ def get_dasha_timeline(birth_date: str, current_date: str) -> Dict[str, Any]:
             "year": bd.year + a,
             "planet": planet,
             "planet_hi": _PLANET_HI[planet],
+            "en_desc": _EN_DESC[planet],
+            "hi_desc": _HI_DESC[planet],
         })
 
     return {
         "current_age": age,
         "current_saala_grah": current_saala_grah,
         "next_saala_grah": next_saala_grah,
-        "life_phase": life_phase,
+        "life_phase": {
+            "phase": phase_num,
+            "label": f"Phase {phase_num}",
+            "years_in_phase": years_into_phase,
+            "phase_end_age": phase_end_age,
+        },
+        "years_into_phase": years_into_phase,
+        "years_remaining_in_phase": years_remaining,
         "upcoming_periods": upcoming_periods,
         "past_periods": past_periods,
     }
