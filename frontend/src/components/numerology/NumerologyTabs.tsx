@@ -532,7 +532,9 @@ export default function NumerologyTabs() {
                           {numResult.pinnacles.pinnacles.map((p: any, i: number) => (
                             <div key={i} className="rounded-xl border border-sacred-gold/25 bg-white p-4">
                               <p className="text-sm font-semibold text-foreground">{t('numerology.pinnacle')} {i + 1}</p>
-                              <p className="text-xs text-muted-foreground mt-1">{t('numerology.period')}: {p.period}</p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {t('numerology.period')}: {isHi ? (p.period_hi || p.period) : p.period}
+                              </p>
                               <Badge className="mt-2 bg-purple-100 text-purple-800">{p.number}</Badge>
                               {p.prediction?.title && (
                                 <p className="text-xs text-muted-foreground mt-2">
@@ -551,7 +553,9 @@ export default function NumerologyTabs() {
                           {numResult.challenges.challenges.map((c: any, i: number) => (
                             <div key={i} className="rounded-xl border border-sacred-gold/25 bg-white p-4">
                               <p className="text-sm font-semibold text-foreground">{t('numerology.challenge')} {i + 1}</p>
-                              <p className="text-xs text-muted-foreground mt-1">{t('numerology.period')}: {c.period}</p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {t('numerology.period')}: {isHi ? (c.period_hi || c.period) : c.period}
+                              </p>
                               <Badge className="mt-2 bg-blue-100 text-blue-800">{c.number}</Badge>
                               {c.prediction?.title && (
                                 <p className="text-xs text-muted-foreground mt-2">
@@ -570,7 +574,9 @@ export default function NumerologyTabs() {
                           {numResult.life_cycles.cycles.map((c: any, i: number) => (
                             <div key={i} className="rounded-xl border border-sacred-gold/25 bg-white p-4">
                               <p className="text-sm font-semibold text-foreground">{t('numerology.lifeCycle')} {i + 1}</p>
-                              <p className="text-xs text-muted-foreground mt-1">{c.period}</p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {isHi ? (c.period_hi || c.period) : c.period}
+                              </p>
                               <Badge className="mt-2 bg-green-100 text-green-800">{c.number}</Badge>
                               {c.prediction?.title && (
                                 <p className="text-xs text-muted-foreground mt-2">
