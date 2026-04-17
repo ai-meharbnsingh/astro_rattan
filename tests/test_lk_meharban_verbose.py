@@ -205,22 +205,38 @@ def main():
     # Bunyaad full
     H("10 · BUNYAAD (foundation interpretations)", engine="calculate_bunyaad")
     b = calculate_bunyaad(pp)
-    P(f"Collapsed : {b.get('collapsed_planets') or []}")
-    P(f"Strong    : {b.get('strong_foundations') or []}")
+    P(f"Afflicted (collapsed) : {b.get('collapsed_planets') or []}")
+    P(f"Strong (friends)      : {b.get('strong_foundations') or []}")
+    P(f"Neutral               : {b.get('neutral_foundations') or []}")
+    P(f"Clear (empty)         : {b.get('clear_foundations') or []}")
     for planet, info in (b.get("planets") or {}).items():
         P(f"\n• {planet}  pakka H{info.get('pakka_ghar')}  "
           f"bunyaad H{info.get('bunyaad_house')}  "
           f"status={info.get('bunyaad_status')}")
+        if info.get("friends_in_bunyaad"):
+            P(f"   friends in bunyaad : {info.get('friends_in_bunyaad')}")
         if info.get("enemies_in_bunyaad"):
-            P(f"   enemies in bunyaad: {info.get('enemies_in_bunyaad')}")
+            P(f"   enemies in bunyaad : {info.get('enemies_in_bunyaad')}")
+        if info.get("neutrals_in_bunyaad"):
+            P(f"   neutrals in bunyaad: {info.get('neutrals_in_bunyaad')}")
         P(f"   EN: {info.get('interpretation_en','')}")
         P(f"   HI: {info.get('interpretation_hi','')}")
 
     # Takkar full
     H("11 · TAKKAR (collision, full interpretations)", engine="calculate_takkar")
     t = calculate_takkar(pp)
-    P(f"Destructive={t.get('destructive_count',0)}  Mild={t.get('mild_count',0)}  "
-      f"Most attacked={t.get('most_attacked_planet')}  Safe={t.get('safe_planets')}")
+    P(f"Destructive={t.get('destructive_count',0)}  "
+      f"Mild={t.get('mild_count',0)}  "
+      f"Moderate={t.get('moderate_count',0)}  "
+      f"Philosophical={t.get('philosophical_count',0)}")
+    P(f"Most vulnerable: {t.get('most_vulnerable_planet')}  "
+      f"Safe: {t.get('safe_planets')}")
+    sub_vuln = t.get("vulnerability_scores") or {}
+    if sub_vuln:
+        P("\n— Vulnerability ranking (weighted: base + dusthana + debil + H8) —")
+        for rank, name in enumerate(t.get("vulnerability_ranking") or [], 1):
+            v = sub_vuln.get(name, {})
+            P(f"  {rank}. {name:<10}  {v.get('breakdown','')}")
     for c in (t.get("collisions") or []):
         P(f"\n• {c.get('attacker')} → {c.get('receiver')}  axis {c.get('axis')}  "
           f"severity {c.get('severity')}")
@@ -313,8 +329,14 @@ def main():
     P(f"{calculate_muththi(pp)}")
 
     # Relations / Rules / Doshas
-    H("16 · DOSHAS (full descriptions & remedies)", engine="detect_lalkitab_doshas")
-    for d in detect_lalkitab_doshas(pp) or []:
+    # Split Lal-Kitab doshas into the main block (LK canon) and a
+    # separate "Vedic overlays" block so only pure LK material sits
+    # alongside the other LK_CANONICAL sections.
+    all_doshas = detect_lalkitab_doshas(pp) or []
+    lk_doshas = [d for d in all_doshas if d.get("source") != "vedic_influenced"]
+    vedic_doshas = [d for d in all_doshas if d.get("source") == "vedic_influenced"]
+
+    def _print_dosha(d):
         flag = "★ DETECTED" if d.get("detected") else "  not detected"
         src = d.get("source")
         src_tag = f"  source={src}" if src else ""
@@ -325,6 +347,22 @@ def main():
         P(f"   remedy HI: {d.get('remedy_hint_hi','')}")
         if d.get("affected_planets"):
             P(f"   affected planets: {d.get('affected_planets')}")
+
+    H("16 · DOSHAS (Lal Kitab canon only)", engine="detect_lalkitab_doshas")
+    if not lk_doshas:
+        P("\n(No Lal-Kitab-canon doshas to display.)")
+    for d in lk_doshas:
+        _print_dosha(d)
+
+    # ── 16-B · VEDIC OVERLAYS (reference only — not claimed as LK) ──
+    H("16-B · VEDIC OVERLAYS (for reference only — not LK)")
+    P("Items below are detected by classical Vedic/Parashari rules but "
+      "are NOT part of the Lal Kitab 1952 canon. Shown for cross-")
+    P("reference only — do NOT treat as Lal Kitab guidance.")
+    if not vedic_doshas:
+        P("\n(No Vedic-overlay items active for this chart.)")
+    for d in vedic_doshas:
+        _print_dosha(d)
 
     # Vastu
     H("17 · VASTU (full warnings + fixes)", engine="get_vastu_diagnosis")

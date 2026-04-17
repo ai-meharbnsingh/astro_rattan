@@ -108,9 +108,18 @@ def calculate_chalti_gaadi(planet_positions: List[Dict[str, Any]]) -> Dict[str, 
         rules.append({"rule": "enemy_engine_passenger", "applies": True, "note": {"en": "Conflicts between initiative and partnership delay progress.", "hi": "पहल और साझेदारी के बीच संघर्ष प्रगति में देरी करता है।"}})
     elif engine and brakes and is_enemy(engine, brakes):
         train_status = "dangerous"
-        interp_en = f"Engine {engine} is blocked by Brakes {brakes} — enemies in 1st and 8th cause sudden accidents or health crises."
-        interp_hi = f"इंजन {engine} ब्रेक {brakes} से अवरुद्ध है — 1st और 8th में शत्रु अचानक दुर्घटना या स्वास्थ्य संकट का कारण।"
-        rules.append({"rule": "enemy_engine_brakes", "applies": True, "note": {"en": "High accident and health risk. Avoid rash decisions.", "hi": "उच्च दुर्घटना और स्वास्थ्य जोखिम।"}})
+        interp_en = (
+            f"Engine {engine} is blocked by Brakes {brakes} — enemies in 1st and 8th "
+            f"indicate an elevated tendency toward sudden disruption; health needs attention."
+        )
+        interp_hi = (
+            f"इंजन {engine} ब्रेक {brakes} से अवरुद्ध है — 1st और 8th में शत्रुता से अचानक "
+            f"व्यवधान की प्रवृत्ति बढ़ती है; स्वास्थ्य पर ध्यान देने की आवश्यकता है।"
+        )
+        rules.append({"rule": "enemy_engine_brakes", "applies": True, "note": {
+            "en": "Elevated tendency toward disruption; health needs attention. Avoid rash decisions.",
+            "hi": "व्यवधान की बढ़ी हुई प्रवृत्ति; स्वास्थ्य पर ध्यान देने की आवश्यकता। उतावले निर्णयों से बचें।"
+        }})
     elif engine and passenger and is_friend(engine, passenger):
         train_status = "smooth"
         interp_en = f"Engine {engine} and Passenger {passenger} are friends — life progresses naturally, efforts bring results, partnerships are harmonious."

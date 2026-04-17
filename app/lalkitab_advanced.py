@@ -1099,6 +1099,23 @@ LK_ENEMIES = {
     "Ketu": {"Moon", "Mars"},
 }
 
+# Canonical LK friendship table per Codex R2-P5 audit.
+# Used by bunyaad to decide truly-strong foundations (friendly planets
+# present) vs merely-not-hostile (neutrals).
+LK_FRIENDS = {
+    "Sun":     {"Moon", "Mars", "Jupiter"},
+    "Moon":    {"Sun", "Mercury"},
+    "Mars":    {"Sun", "Moon", "Jupiter"},
+    "Mercury": {"Sun", "Venus"},
+    "Jupiter": {"Sun", "Moon", "Mars"},
+    "Venus":   {"Mercury", "Saturn"},
+    "Saturn":  {"Mercury", "Venus", "Rahu"},
+    # Rahu/Ketu are not explicitly classified in Codex's list;
+    # we take the reciprocal of Saturn's entry and leave Ketu empty.
+    "Rahu":    {"Saturn"},
+    "Ketu":    set(),
+}
+
 # Bunyaad house = 9th from pakka ghar (precomputed)
 BUNYAAD_HOUSE = {planet: ((ghar - 1 + 8) % 12) + 1 for planet, ghar in PAKKA_GHAR.items()}
 
@@ -1125,40 +1142,73 @@ def calculate_bunyaad(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
 
     all_planet_names = [p["planet"] for p in planet_positions if p.get("planet") in PAKKA_GHAR]
 
+    neutral_foundations: List[str] = []
+    clear_foundations: List[str] = []
+
     for planet_name in all_planet_names:
         pakka = PAKKA_GHAR[planet_name]
         bunyaad_h = BUNYAAD_HOUSE[planet_name]
-        planets_in_bunyaad = house_map.get(bunyaad_h, [])
+        # A planet standing in its own bunyaad does NOT support itself —
+        # exclude self-presence from the foundation check.
+        planets_in_bunyaad = [
+            p for p in house_map.get(bunyaad_h, []) if p != planet_name
+        ]
         enemies = LK_ENEMIES.get(planet_name, set())
+        friends = LK_FRIENDS.get(planet_name, set())
         enemies_in_bunyaad = [p for p in planets_in_bunyaad if p in enemies]
+        friends_in_bunyaad = [p for p in planets_in_bunyaad if p in friends]
+        neutrals_in_bunyaad = [
+            p for p in planets_in_bunyaad
+            if p not in enemies and p not in friends
+        ]
 
+        # Codex R2-P5 rule:
+        #   enemies present  → afflicted
+        #   friends present  → strong  (truly reinforces the foundation)
+        #   only neutrals    → neutral (workable, not reinforcing)
+        #   empty            → clear   (default safe, no interference)
         if enemies_in_bunyaad:
             bunyaad_status = "afflicted"
             collapsed_planets.append(planet_name)
-            enemy_list_en = ", ".join(enemies_in_bunyaad)
-            enemy_list_hi = ", ".join(enemies_in_bunyaad)
+            en_list = ", ".join(enemies_in_bunyaad)
+            hi_list = ", ".join(enemies_in_bunyaad)
             interpretation_en = (
-                f"{planet_name}'s foundation (House {bunyaad_h}) is afflicted by {enemy_list_en}. "
-                f"Despite its own placement, {planet_name}'s results will collapse under enemy pressure."
+                f"{planet_name}'s foundation (House {bunyaad_h}) is afflicted by {en_list}. "
+                f"Despite its own placement, {planet_name}'s results collapse under enemy pressure."
             )
             interpretation_hi = (
-                f"{planet_name} की बुनियाद (भाव {bunyaad_h}) पर दुश्मन {enemy_list_hi} का कब्ज़ा है। "
+                f"{planet_name} की बुनियाद (भाव {bunyaad_h}) पर दुश्मन {hi_list} का कब्ज़ा है। "
                 f"अपनी जगह अच्छी होने के बावजूद {planet_name} के फल नष्ट होंगे।"
             )
-        elif planets_in_bunyaad:
+        elif friends_in_bunyaad:
             bunyaad_status = "strong"
             strong_foundations.append(planet_name)
+            fr_list = ", ".join(friends_in_bunyaad)
             interpretation_en = (
-                f"{planet_name}'s foundation (House {bunyaad_h}) is occupied by friendly/neutral planets. "
-                f"Foundation is strong — {planet_name}'s results are supported."
+                f"{planet_name}'s foundation (House {bunyaad_h}) is reinforced by friendly "
+                f"planet(s) {fr_list}. Foundation is genuinely strong — {planet_name}'s "
+                f"results are actively supported."
             )
             interpretation_hi = (
-                f"{planet_name} की बुनियाद (भाव {bunyaad_h}) में मित्र/सम ग्रह हैं। "
-                f"बुनियाद मज़बूत है — {planet_name} के फल अच्छे रहेंगे।"
+                f"{planet_name} की बुनियाद (भाव {bunyaad_h}) में मित्र ग्रह {fr_list} हैं। "
+                f"बुनियाद वास्तव में मज़बूत है — {planet_name} के फल सक्रिय रूप से समर्थित।"
+            )
+        elif neutrals_in_bunyaad:
+            bunyaad_status = "neutral"
+            neutral_foundations.append(planet_name)
+            ne_list = ", ".join(neutrals_in_bunyaad)
+            interpretation_en = (
+                f"{planet_name}'s foundation (House {bunyaad_h}) has only neutral planet(s) "
+                f"{ne_list} — no enemy pressure, but no active reinforcement either. "
+                f"Foundation is workable, not uplifting."
+            )
+            interpretation_hi = (
+                f"{planet_name} की बुनियाद (भाव {bunyaad_h}) में केवल तटस्थ ग्रह {ne_list} हैं — "
+                f"शत्रुता नहीं, पर सक्रिय समर्थन भी नहीं। बुनियाद टिकाऊ है, पर उत्थानशील नहीं।"
             )
         else:
-            bunyaad_status = "empty"
-            strong_foundations.append(planet_name)
+            bunyaad_status = "clear"
+            clear_foundations.append(planet_name)
             interpretation_en = (
                 f"{planet_name}'s foundation (House {bunyaad_h}) is empty. "
                 f"No enemy interference — foundation is clear by default."
@@ -1173,7 +1223,9 @@ def calculate_bunyaad(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
             "bunyaad_house": bunyaad_h,
             "bunyaad_status": bunyaad_status,
             "planets_in_bunyaad": planets_in_bunyaad,
+            "friends_in_bunyaad": friends_in_bunyaad,
             "enemies_in_bunyaad": enemies_in_bunyaad,
+            "neutrals_in_bunyaad": neutrals_in_bunyaad,
             "interpretation_en": interpretation_en,
             "interpretation_hi": interpretation_hi,
         }
@@ -1182,6 +1234,8 @@ def calculate_bunyaad(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
         "planets": planets_result,
         "collapsed_planets": collapsed_planets,
         "strong_foundations": strong_foundations,
+        "neutral_foundations": neutral_foundations,
+        "clear_foundations": clear_foundations,
     }
 
 
@@ -1206,11 +1260,27 @@ def calculate_takkar(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
 
     Rule: planet A in house H and planet B in house (H+6 mod 12) are on
     the same LK axis and form a takkar. Each axis pair is reported once.
-    Both planets receive the collision (it is mutual across the axis),
-    but the LK-enemy relation decides severity:
-      - enemies      → destructive (root is uprooted)
-      - friends/neutral → mild     (minor friction)
+
+    Severity is conditional on both the enemy relationship AND the
+    dignity of each planet (Codex audit R2-P3):
+      - enemies + BOTH afflicted (debilitated / in enemy sign)
+                                         → "destructive"
+      - enemies but AT LEAST ONE strong  → "mild friction"
+                                           (Exalted / Own / Friendly)
+      - not LK enemies                   → "philosophical conflict"
+                                           (axis tension, no harm)
     """
+    from app.lalkitab_engine import _get_dignity_label  # local import to avoid cycle
+
+    # Classify a planet as afflicted / strong from its sign.
+    def _affliction_state(planet: str, sign: str) -> str:
+        dignity = _get_dignity_label(planet, sign) if sign else "Neutral"
+        if dignity in ("Debilitated", "Enemy"):
+            return "afflicted"
+        if dignity in ("Exalted", "Own Sign", "Friendly"):
+            return "strong"
+        return "neutral"
+
     collisions: List[Dict[str, Any]] = []
     attack_count: Dict[str, int] = {}
 
@@ -1237,7 +1307,22 @@ def calculate_takkar(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
                 b_name in LK_ENEMIES.get(a_name, set())
                 or a_name in LK_ENEMIES.get(b_name, set())
             )
-            severity = "destructive" if are_enemies else "mild"
+
+            # Dignity-aware severity ladder
+            state_a = _affliction_state(a_name, pa.get("sign", ""))
+            state_b = _affliction_state(b_name, pb.get("sign", ""))
+            both_afflicted = state_a == "afflicted" and state_b == "afflicted"
+            any_strong = state_a == "strong" or state_b == "strong"
+
+            if are_enemies and both_afflicted:
+                severity = "destructive"
+            elif are_enemies and any_strong:
+                severity = "mild friction"
+            elif are_enemies:
+                # enemies + both neutral → between destructive & mild
+                severity = "moderate friction"
+            else:
+                severity = "philosophical conflict"
 
             # Axis label is always the lower-numbered house first.
             low, high = (ha, hb) if ha < hb else (hb, ha)
@@ -1245,23 +1330,45 @@ def calculate_takkar(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
 
             if severity == "destructive":
                 interp_en = (
-                    f"{a_name} (H{ha}) and {b_name} (H{hb}) are on the {axis_label} axis. "
-                    f"As LK enemies, both planets destroy each other's significations "
-                    f"across this opposite-house pair."
+                    f"{a_name} (H{ha}, {state_a}) and {b_name} (H{hb}, {state_b}) are on the "
+                    f"{axis_label} axis. Both planets are LK enemies AND afflicted — their "
+                    f"significations will actively undermine each other across this axis."
+                )
+                interp_hi = (
+                    f"{a_name} (भाव {ha}, {state_a}) और {b_name} (भाव {hb}, {state_b}) "
+                    f"{axis_label} अक्ष पर शत्रु हैं और दोनों पीड़ित — एक-दूसरे के फलों को "
+                    f"सक्रिय रूप से कमज़ोर करेंगे।"
+                )
+            elif severity == "mild friction":
+                interp_en = (
+                    f"{a_name} (H{ha}, {state_a}) and {b_name} (H{hb}, {state_b}) are LK "
+                    f"enemies on the {axis_label} axis, but at least one is strong — the "
+                    f"strong side largely contains the damage, expect mild friction only."
+                )
+                interp_hi = (
+                    f"{a_name} (भाव {ha}, {state_a}) और {b_name} (भाव {hb}, {state_b}) "
+                    f"{axis_label} अक्ष पर शत्रु हैं, पर एक बली है — बली पक्ष क्षति को "
+                    f"सीमित करता है, केवल हल्का घर्षण अपेक्षित।"
+                )
+            elif severity == "moderate friction":
+                interp_en = (
+                    f"{a_name} (H{ha}) and {b_name} (H{hb}) are LK enemies on the {axis_label} "
+                    f"axis, both in neutral dignity — workable friction, not destructive."
                 )
                 interp_hi = (
                     f"{a_name} (भाव {ha}) और {b_name} (भाव {hb}) {axis_label} अक्ष पर "
-                    f"आमने-सामने हैं। लाल किताब में शत्रु होने से दोनों एक-दूसरे के "
-                    f"फलों को नष्ट करते हैं।"
+                    f"शत्रु हैं, दोनों तटस्थ — प्रबंधनीय घर्षण, विनाशकारी नहीं।"
                 )
-            else:
+            else:  # philosophical conflict (not LK enemies)
                 interp_en = (
                     f"{a_name} (H{ha}) and {b_name} (H{hb}) share the {axis_label} axis "
-                    f"but are not LK enemies — mild friction only, the axis is workable."
+                    f"but are not LK enemies — a philosophical conflict of themes, not "
+                    f"a harmful clash. The axis is workable."
                 )
                 interp_hi = (
                     f"{a_name} (भाव {ha}) और {b_name} (भाव {hb}) {axis_label} अक्ष पर हैं "
-                    f"पर शत्रु नहीं — हल्का घर्षण, अक्ष टिकाऊ है।"
+                    f"पर शत्रु नहीं — विषयों का दार्शनिक मतभेद, हानिकारक टकराव नहीं। "
+                    f"अक्ष टिकाऊ है।"
                 )
 
             collisions.append({
@@ -1280,6 +1387,8 @@ def calculate_takkar(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
                 "axis": axis_label,
                 "are_enemies": are_enemies,
                 "severity": severity,
+                "state_a": state_a,
+                "state_b": state_b,
                 "interpretation_en": interp_en,
                 "interpretation_hi": interp_hi,
                 "source": "LK_CANONICAL",
@@ -1287,23 +1396,85 @@ def calculate_takkar(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
             attack_count[a_name] = attack_count.get(a_name, 0) + 1
             attack_count[b_name] = attack_count.get(b_name, 0) + 1
 
+    # Severity counts under the new dignity-aware ladder
     destructive_count = sum(1 for c in collisions if c["severity"] == "destructive")
-    mild_count = sum(1 for c in collisions if c["severity"] == "mild")
+    moderate_count    = sum(1 for c in collisions if c["severity"] == "moderate friction")
+    mild_count        = sum(1 for c in collisions if c["severity"] == "mild friction")
+    philosophical_count = sum(1 for c in collisions if c["severity"] == "philosophical conflict")
 
-    # Most attacked planet
-    most_attacked = max(attack_count, key=attack_count.get) if attack_count else None
-    if most_attacked and attack_count[most_attacked] == 0:
-        most_attacked = None
+    # ── WEIGHTED VULNERABILITY SCORE (Codex R2-P4) ────────────────
+    # Pure takkar count under-ranks Moon H8 Debilitated because Moon
+    # has no axis partner — yet LK places H8 Moon as the single most
+    # vulnerable position. Codex weighting:
+    #   base = # takkar attacks
+    #   dusthana house (H6/H8/H12)   +2
+    #   debilitated dignity           +2
+    #   H8 specifically              +1   (H8 is the ultimate dusthana)
+    #
+    # Tie-breaker order (per LK severity intuition):
+    #   1. higher weighted score
+    #   2. planet in H8 > any other dusthana > non-dusthana
+    #   3. debilitated > non-debilitated
+    #   4. alphabetical (deterministic)
+    DUSTHANA = {6, 8, 12}
+    vulnerability: Dict[str, Dict[str, Any]] = {}
+    sign_by_planet = {p["planet"]: p.get("sign", "") for p in planet_positions}
+    for p in all_planets:
+        pname = p["planet"]
+        phouse = p.get("house")
+        sign = sign_by_planet.get(pname, "")
+        dignity = _get_dignity_label(pname, sign) if sign else "Neutral"
+        is_debilitated = dignity == "Debilitated"
+        base = attack_count.get(pname, 0)
+        dust_bonus = 2 if phouse in DUSTHANA else 0
+        debil_bonus = 2 if is_debilitated else 0
+        h8_bonus = 1 if phouse == 8 else 0
+        score = base + dust_bonus + debil_bonus + h8_bonus
+        vulnerability[pname] = {
+            "takkar_attacks": base,
+            "in_dusthana": phouse in DUSTHANA,
+            "in_h8": phouse == 8,
+            "debilitated": is_debilitated,
+            "score": score,
+            "breakdown": (
+                f"base({base}) + dusthana({dust_bonus}) + "
+                f"debil({debil_bonus}) + h8({h8_bonus}) = {score}"
+            ),
+        }
 
-    # Safe planets (zero attacks received)
-    safe_planets = [name for name, count in attack_count.items() if count == 0]
+    def _rank_key(item):
+        name, v = item
+        return (
+            -v["score"],                # higher score first
+            0 if v["in_h8"] else 1,     # H8 beats non-H8
+            0 if v["in_dusthana"] else 1,
+            0 if v["debilitated"] else 1,
+            name,                       # alphabetical tie-break
+        )
+    ranked = sorted(vulnerability.items(), key=_rank_key)
+    most_vulnerable = ranked[0][0] if ranked and ranked[0][1]["score"] > 0 else None
+
+    # Keep backwards-compatible alias so the frontend doesn't break
+    # but repoint it to the weighted winner (Codex: "Recalculate
+    # 'most attacked' with this weight").
+    most_attacked = most_vulnerable
+
+    # Safe planets (zero takkar attacks received AND no vulnerability factors)
+    safe_planets = [
+        name for name, v in vulnerability.items() if v["score"] == 0
+    ]
 
     from app.lalkitab_source_tags import source_of
     return {
         "collisions": collisions,
         "destructive_count": destructive_count,
+        "moderate_count": moderate_count,
         "mild_count": mild_count,
-        "most_attacked_planet": most_attacked,
+        "philosophical_count": philosophical_count,
+        "most_attacked_planet": most_attacked,       # legacy alias, now weighted
+        "most_vulnerable_planet": most_vulnerable,   # new explicit name
+        "vulnerability_scores": vulnerability,
+        "vulnerability_ranking": [name for name, _ in ranked],
         "safe_planets": safe_planets,
         "source": source_of("calculate_takkar"),
     }
