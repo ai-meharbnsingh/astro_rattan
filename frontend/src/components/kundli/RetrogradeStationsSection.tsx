@@ -54,7 +54,7 @@ export default function RetrogradeStationsSection({ kundliId }: RetrogradeStatio
           >
             ←
           </Button>
-          <span className="text-sm font-mono font-semibold" className="text-foreground">{year}</span>
+          <span className="text-sm font-mono font-semibold text-foreground">{year}</span>
           <Button
             size="sm"
             variant="outline"

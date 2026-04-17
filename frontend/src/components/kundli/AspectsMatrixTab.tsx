@@ -68,21 +68,21 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
       <div className="bg-muted rounded-xl border border-border p-4">
         <Heading as={4} variant={4} className="mb-3">
           {t('auto.aspectsOnPlanets')}
-        </Heading>
-        <div className="overflow-x-auto">
-          <Table className="w-full text-data border-collapse" className="min-w-[600px]">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="p-1.5 text-left font-semibold border border-slate-200 bg-slate-100 sticky left-0 z-10" className="min-w-[60px]">
-                  -
-                </TableHead>
-                {planets.map((p: string) => (
-                  <TableHead key={p} className="p-1.5 text-center font-semibold border border-slate-200 bg-slate-100" className="min-w-[55px]">
-                    {PLANET_ABBR[p] || (translatePlanet(p, language) || p || '').slice(0, 4)}
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
+	        </Heading>
+	        <div className="overflow-x-auto">
+	          <Table className="w-full text-data border-collapse min-w-[600px]">
+	            <TableHeader>
+	              <TableRow>
+	                <TableHead className="p-1.5 text-left font-semibold border border-slate-200 bg-slate-100 sticky left-0 z-10 min-w-[60px]">
+	                  -
+	                </TableHead>
+	                {planets.map((p: string) => (
+	                  <TableHead key={p} className="p-1.5 text-center font-semibold border border-slate-200 bg-slate-100 min-w-[55px]">
+	                    {PLANET_ABBR[p] || (translatePlanet(p, language) || p || '').slice(0, 4)}
+	                  </TableHead>
+	                ))}
+	              </TableRow>
+	            </TableHeader>
             <TableBody>
               {planets.map((p1: string, rowIdx: number) => (
                 <TableRow key={p1}>
@@ -214,23 +214,23 @@ function CuspAspectGrid({ title, cuspData, planetOrder, language, t }: CuspAspec
   const cusps = Array.from({ length: 12 }, (_, i) => i + 1);
   const abbr = language === 'hi' ? PLANET_ABBR_HI : PLANET_ABBR_EN;
 
-  return (
-    <div className="bg-muted rounded-xl border border-border p-4">
-      <Heading as={4} variant={4} className="mb-3">{title}</Heading>
-      <div className="overflow-x-auto">
-        <Table className="w-full text-data border-collapse" className="min-w-[700px]">
-          <TableHeader>
-            <TableRow>
-              <TableHead className="p-1.5 text-left font-semibold border border-slate-200 bg-slate-100 sticky left-0 z-10" className="min-w-[60px]">
-                -
-              </TableHead>
-              {cusps.map((c) => (
-                <TableHead key={c} className="p-1.5 text-center font-semibold border border-slate-200 bg-slate-100" className="min-w-[50px]">
-                  C{c}
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
+	  return (
+	    <div className="bg-muted rounded-xl border border-border p-4">
+	      <Heading as={4} variant={4} className="mb-3">{title}</Heading>
+	      <div className="overflow-x-auto">
+	        <Table className="w-full text-data border-collapse min-w-[700px]">
+	          <TableHeader>
+	            <TableRow>
+	              <TableHead className="p-1.5 text-left font-semibold border border-slate-200 bg-slate-100 sticky left-0 z-10 min-w-[60px]">
+	                -
+	              </TableHead>
+	              {cusps.map((c) => (
+	                <TableHead key={c} className="p-1.5 text-center font-semibold border border-slate-200 bg-slate-100 min-w-[50px]">
+	                  C{c}
+	                </TableHead>
+	              ))}
+	            </TableRow>
+	          </TableHeader>
           <TableBody>
             {planetOrder.map((planet: string) => {
               const row = cuspData[planet];

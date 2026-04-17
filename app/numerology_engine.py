@@ -2782,28 +2782,89 @@ def _detect_karmic_debt(birth_date: str, name: str) -> list:
     """Detect Karmic Debt numbers (13, 14, 16, 19) in intermediate sums."""
     KARMIC = {13, 14, 16, 19}
     debts = []
-    # Check birthday
-    day = int(birth_date[8:10])
-    if day in KARMIC:
-        debts.append({"number": day, "source": "birthday", "source_hi": "जन्म तिथि"})
-    # Check life path intermediate
-    m = int(birth_date[5:7]); d = int(birth_date[8:10]); y = sum(int(c) for c in birth_date[:4])
-    mr = _reduce_to_single(m); dr = _reduce_to_single(d); yr = _reduce_to_single(y)
+
+    def _trace_reduction(n: int) -> list:
+        """
+        Return all intermediate values encountered during digit-sum reduction.
+        Example: 1990 year digit-sum is 19 -> [19, 10, 1]
+        We intentionally keep 11/22/33 as terminal values, but karmic-debt
+        detection is about 13/14/16/19 anywhere in the chain.
+        """
+        vals = [int(n)]
+        cur = int(n)
+        while cur > 9 and cur not in (11, 22, 33):
+            cur = sum(int(c) for c in str(cur))
+            vals.append(cur)
+        return vals
+
+    def _add_debt(num: int, source: str, source_hi: str) -> None:
+        debts.append({"number": num, "source": source, "source_hi": source_hi})
+
+    # DOB components
+    m = int(birth_date[5:7])
+    d = int(birth_date[8:10])
+    y_digit_sum = sum(int(c) for c in birth_date[:4])  # e.g. 1990 -> 19
+
+    # Birthday/day can itself be a karmic-debt number (13/14/16/19)
+    for hit in _trace_reduction(d):
+        if hit in KARMIC:
+            _add_debt(hit, "birthday", "जन्म तिथि")
+            break
+
+    # Year digit-sum can be a karmic-debt number (common case: 19)
+    for hit in _trace_reduction(y_digit_sum):
+        if hit in KARMIC:
+            _add_debt(hit, "birth_year", "जन्म वर्ष")
+            break
+
+    # Life path intermediate sum (month/day/year reduced then added) can also be karmic.
+    mr = _reduce_to_single(m)
+    dr = _reduce_to_single(d)
+    yr = _reduce_to_single(y_digit_sum)
     lp_sum = mr + dr + yr
-    if lp_sum in KARMIC:
-        debts.append({"number": lp_sum, "source": "life_path", "source_hi": "मूलांक"})
-    # Check expression intermediate
+    for hit in _trace_reduction(lp_sum):
+        if hit in KARMIC:
+            _add_debt(hit, "life_path", "मूलांक")
+            break
+
+    # Name sums: Expression, Soul Urge, Personality (scan reduction trace, not just raw total)
     exp_raw = sum(PYTHAGOREAN_MAP.get(c.upper(), 0) for c in name if c.isalpha())
-    if exp_raw in KARMIC:
-        debts.append({"number": exp_raw, "source": "expression", "source_hi": "भाग्यांक"})
-    # Check soul urge intermediate
+    for hit in _trace_reduction(exp_raw):
+        if hit in KARMIC:
+            _add_debt(hit, "expression", "भाग्यांक")
+            break
+
     vowels = set("AEIOUaeiou")
     su_raw = sum(PYTHAGOREAN_MAP.get(c.upper(), 0) for c in name if c.isalpha() and c in vowels)
-    if su_raw in KARMIC:
-        debts.append({"number": su_raw, "source": "soul_urge", "source_hi": "आत्मांक"})
+    for hit in _trace_reduction(su_raw):
+        if hit in KARMIC:
+            _add_debt(hit, "soul_urge", "आत्मांक")
+            break
+
+    con_raw = sum(PYTHAGOREAN_MAP.get(c.upper(), 0) for c in name if c.isalpha() and c not in vowels)
+    for hit in _trace_reduction(con_raw):
+        if hit in KARMIC:
+            _add_debt(hit, "personality", "व्यक्तित्व अंक")
+            break
+
+    # Deduplicate (same debt may be found via multiple traces)
+    seen = set()
+    uniq = []
+    for it in debts:
+        k = (it.get("number"), it.get("source"))
+        if k in seen:
+            continue
+        seen.add(k)
+        uniq.append(it)
+    debts = uniq
+
     # Add interpretations
     for d in debts:
-        d.update(KARMIC_DEBT_INTERPRETATIONS.get(d["number"], {}))
+        interp = KARMIC_DEBT_INTERPRETATIONS.get(d["number"], {})
+        # Keep legacy flattened keys (title/meaning/title_hi/meaning_hi) for UI,
+        # but also expose a structured "interpretation" field for tests/consumers.
+        d["interpretation"] = interp
+        d.update(interp)
     return debts
 
 KARMIC_DEBT_INTERPRETATIONS = {

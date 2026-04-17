@@ -164,7 +164,7 @@ export default function AshtakvargaPhalaTab({ kundliId, language, t }: Props) {
       <div className="p-4 rounded-xl border border-sacred-gold/30 bg-gradient-to-r from-sacred-gold/5 to-transparent">
         <div className="flex items-center gap-3 mb-2">
           <Gauge className="w-5 h-5 text-sacred-gold-dark" />
-          <h3 className="text-base font-bold text-sacred-gold-dark">{t('auto.overallScore')}</h3>
+          <h3 className="text-base font-bold text-sacred-gold-dark">{t('auto.overallAshtakvargaScore')}</h3>
         </div>
         <div className="flex items-baseline gap-2 mb-2">
           <span className={`text-4xl font-bold ${scoreColor}`}>{score}</span>

@@ -146,25 +146,25 @@ export default function TransitsTab(props: TransitsTabProps) {
   return (
     <div className="space-y-6">
             {/* Date/Time Picker — always visible */}
-            <div className="rounded-xl p-4 mb-4 border" className="bg-primary/5 border-border/25">
+            <div className="rounded-xl p-4 mb-4 border bg-primary/5 border-border/25">
               <Heading as={4} variant={4} className="mb-3">{t('section.gocharPredictions')}</Heading>
               <div className="flex flex-wrap items-end gap-3">
                 <div>
-                  <label className="text-sm block mb-1" className="text-muted-foreground">{t('common.date')}</label>
+                  <label className="text-sm block mb-1 text-muted-foreground">{t('common.date')}</label>
                   <input
                     type="date"
                     value={transitDate}
                     onChange={(e) => setTransitDate(e.target.value)}
-                    className="px-3 py-1.5 rounded-lg text-sm border" className="bg-card border-border/30 text-foreground"
+                    className="px-3 py-1.5 rounded-lg text-sm border bg-card border-border/30 text-foreground"
                   />
                 </div>
                 <div>
-                  <label className="text-sm block mb-1" className="text-muted-foreground">{t('common.time')}</label>
+                  <label className="text-sm block mb-1 text-muted-foreground">{t('common.time')}</label>
                   <input
                     type="time"
                     value={transitTime}
                     onChange={(e) => setTransitTime(e.target.value)}
-                    className="px-3 py-1.5 rounded-lg text-sm border" className="bg-card border-border/30 text-foreground"
+                    className="px-3 py-1.5 rounded-lg text-sm border bg-card border-border/30 text-foreground"
                   />
                 </div>
                 <Button
@@ -172,14 +172,14 @@ export default function TransitsTab(props: TransitsTabProps) {
                   onClick={() => {
                     refreshTransit(transitDate || undefined, transitTime ? `${transitTime}:00` : undefined);
                   }}
-                  className="px-4" className="bg-primary text-primary-foreground"
+                  className="px-4 bg-primary text-primary-foreground"
                 >
                   {transitDate ? t('transit.viewTransits') : t('transit.currentTransits')}
                 </Button>
                 {transitDate && (
                   <button
                     onClick={() => { resetTransitFilters(); }}
-                    className="text-sm px-3 py-1.5 rounded-lg border" className="border-border/30 text-muted-foreground"
+                    className="text-sm px-3 py-1.5 rounded-lg border border-border/30 text-muted-foreground"
                   >
                     {t('transit.resetToNow')}
                   </button>
@@ -225,7 +225,7 @@ export default function TransitsTab(props: TransitsTabProps) {
                     <div className="w-full max-w-[600px] mx-auto min-h-[520px] flex items-center justify-center">
                       {viewMode === 'diamond' ? (
                         <div className="w-full animate-in fade-in zoom-in-95 duration-500">
-                          <p className="text-sm mb-3 text-center" className="text-muted-foreground">{t('kundli.clickHouseToRotate')}</p>
+                          <p className="text-sm mb-3 text-center text-muted-foreground">{t('kundli.clickHouseToRotate')}</p>
                           {(() => {
                             const shift = transitHouseShift;
                             const transitPlanetsMap = (transitData.transits || []).map((tr: any) => ({
@@ -268,7 +268,7 @@ export default function TransitsTab(props: TransitsTabProps) {
                       <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full" style={{backgroundColor: 'var(--aged-gold)'}} /> {t('transit.benefic')}</span>
                       <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full" style={{backgroundColor: 'var(--wax-red)'}} /> {t('transit.malefic')}</span>
                       {transitHouseShift > 0 && viewMode === 'diamond' && (
-                        <button onClick={() => setTransitHouseShift(0)} className="text-sm px-2 py-0.5 rounded border" className="border-border/30 text-primary">
+                        <button onClick={() => setTransitHouseShift(0)} className="text-sm px-2 py-0.5 rounded border border-border/30 text-primary">
                           {t('common.resetView')}
                         </button>
                       )}
@@ -276,14 +276,14 @@ export default function TransitsTab(props: TransitsTabProps) {
                   </div>
 
                   {/* Transit Table */}
-                  <div className="rounded-xl border overflow-hidden shadow-sm h-fit" className="border-border/25 bg-card">
+                  <div className="rounded-xl border overflow-hidden shadow-sm h-fit border-border/25 bg-card">
                     <Table className="w-full text-sm">
                       <TableHeader>
                         <TableRow className="bg-primary/10">
-                          <TableHead className="text-left p-3 font-semibold" className="text-foreground">{t('table.planet')}</TableHead>
-                          <TableHead className="text-left p-3 font-semibold" className="text-foreground">{t('transit.currentSign')}</TableHead>
-                          <TableHead className="text-center p-3 font-semibold" className="text-foreground">{t('transit.houseFromMoon')}</TableHead>
-                          <TableHead className="text-center p-3 font-semibold" className="text-foreground">{t('transit.effect')}</TableHead>
+                          <TableHead className="text-left p-3 font-semibold text-foreground">{t('table.planet')}</TableHead>
+                          <TableHead className="text-left p-3 font-semibold text-foreground">{t('transit.currentSign')}</TableHead>
+                          <TableHead className="text-center p-3 font-semibold text-foreground">{t('transit.houseFromMoon')}</TableHead>
+                          <TableHead className="text-center p-3 font-semibold text-foreground">{t('transit.effect')}</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -293,9 +293,9 @@ export default function TransitsTab(props: TransitsTabProps) {
                             className="border-t hover:bg-muted/5 transition-colors"
                             style={{ borderColor: 'rgba(184,134,11,0.15)', backgroundColor: idx % 2 === 0 ? 'transparent' : 'rgba(184,134,11,0.02)' }}
                           >
-                            <TableCell className="p-3 font-medium" className="text-foreground">{translatePlanet(tr.planet, language)}</TableCell>
-                            <TableCell className="p-3" className="text-muted-foreground">{translateSign(tr.current_sign, language)}</TableCell>
-                            <TableCell className="p-3 text-center" className="text-muted-foreground">{tr.natal_house_from_moon}</TableCell>
+                            <TableCell className="p-3 font-medium text-foreground">{translatePlanet(tr.planet, language)}</TableCell>
+                            <TableCell className="p-3 text-muted-foreground">{translateSign(tr.current_sign, language)}</TableCell>
+                            <TableCell className="p-3 text-center text-muted-foreground">{tr.natal_house_from_moon}</TableCell>
                             <TableCell className="p-3 text-center">
                               <span className={`inline-flex items-center gap-1 text-sm px-2 py-1 rounded-full font-medium ${tr.effect === 'favorable' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                                 {tr.effect === 'favorable' ? <CheckCircle className="w-3 h-3" /> : <AlertTriangle className="w-3 h-3" />}

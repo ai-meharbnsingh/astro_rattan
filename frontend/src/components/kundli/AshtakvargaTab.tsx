@@ -121,7 +121,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                 return (
                   <div key={sign} className="flex-1 flex flex-col items-center gap-1">
                     <span className="text-sm font-medium text-foreground">{points}</span>
-                    <div className="w-full bg-muted rounded-t-md relative" className="h-[140px]">
+                    <div className="w-full bg-muted rounded-t-md relative h-[140px]">
                       <div
                         className="absolute bottom-0 w-full rounded-t-md transition-all"
                         style={{

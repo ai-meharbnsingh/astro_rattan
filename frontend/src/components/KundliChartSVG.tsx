@@ -99,8 +99,10 @@ const HOUSE_CENTERS: { x: number; y: number }[] = [
   { x: pct(72),   y: pct(14) },    // 11 Pisces      — top-right corner
 ];
 
-// House-number label positions (indexed by house position 1..12 in the layout)
-const HOUSE_NUM_POS: { x: number; y: number }[] = [
+// Number label positions (indexed by house position 1..12 in the layout).
+// We render *rashi* numbers (Aries=1..Pisces=12) that rotate with Lagna,
+// matching the main Kundli (InteractiveKundli) North-Indian chart behavior.
+const NUMBER_LABEL_POS: { x: number; y: number }[] = [
   { x: pct(50),   y: pct(45) },    // Aries       pos
   { x: pct(12),   y: pct(8) },     // Taurus      pos
   { x: pct(8),    y: pct(12) },    // Gemini      pos
@@ -198,12 +200,24 @@ export default function KundliChartSVG({ planets, ascendantSign, ascendantDegree
         );
       })}
 
-      {/* House numbers — fixed positions (true North-Indian). */}
-      {HOUSE_NUM_POS.map((pos, i) => {
+      {/* Rashi numbers (1..12) — rotate with Lagna (Aries=1..Pisces=12). */}
+      {NUMBER_LABEL_POS.map((pos, i) => {
+        const signIdx = lagnaSignIdx >= 0 ? (lagnaSignIdx + i) % 12 : i;
+        const rashiNum = signIdx + 1;
         return (
-          <text key={`h-${i}`} x={pos.x} y={pos.y} textAnchor="middle" dominantBaseline="central"
-            fontSize="10" fontWeight="600" fill={GOLD} opacity="0.45" fontFamily="'Inter',sans-serif">
-            {i + 1}
+          <text
+            key={`rashi-${i}`}
+            x={pos.x}
+            y={pos.y}
+            textAnchor="middle"
+            dominantBaseline="central"
+            fontSize="12"
+            fontWeight="700"
+            fill={GOLD}
+            opacity="0.5"
+            fontFamily="'Inter',sans-serif"
+          >
+            {rashiNum}
           </text>
         );
       })}

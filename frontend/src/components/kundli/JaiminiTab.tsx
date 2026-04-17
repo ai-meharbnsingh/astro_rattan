@@ -128,7 +128,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
                     {language === 'hi' ? title_hi : title_en}
                   </Heading>
                 </div>
-                <p className="text-2xl font-bold" className="text-primary">
+                <p className="text-2xl font-bold text-primary">
                   {translateSign(lagna.sign, language)}
                 </p>
                 <div className="flex items-center justify-between mt-1">
@@ -177,21 +177,21 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="rounded-lg p-3 border" style={{ backgroundColor: 'var(--parchment)', borderColor: 'rgba(184,134,11,0.2)' }}>
               <p className="text-sm text-muted-foreground">{t('auto.induLagnaSign')}</p>
-              <p className="text-lg font-bold" className="text-primary">
+              <p className="text-lg font-bold text-primary">
                 {translateSign(data.indu_lagna.indu_lagna_sign, language)}
               </p>
             </div>
             <div className="rounded-lg p-3 border" style={{ backgroundColor: 'var(--parchment)', borderColor: 'rgba(184,134,11,0.2)' }}>
               <p className="text-sm text-muted-foreground">{t('auto.house')}</p>
-              <p className="text-lg font-bold" className="text-foreground">{data.indu_lagna.indu_lagna_house}</p>
+              <p className="text-lg font-bold text-foreground">{data.indu_lagna.indu_lagna_house}</p>
             </div>
             <div className="rounded-lg p-3 border" style={{ backgroundColor: 'var(--parchment)', borderColor: 'rgba(184,134,11,0.2)' }}>
               <p className="text-sm text-muted-foreground">{t('auto.9thLordLagna')}</p>
-              <p className="text-lg font-bold" className="text-foreground">{translatePlanet(data.indu_lagna.ninth_lord_lagna, language)}</p>
+              <p className="text-lg font-bold text-foreground">{translatePlanet(data.indu_lagna.ninth_lord_lagna, language)}</p>
             </div>
             <div className="rounded-lg p-3 border" style={{ backgroundColor: 'var(--parchment)', borderColor: 'rgba(184,134,11,0.2)' }}>
               <p className="text-sm text-muted-foreground">{t('auto.9thLordMoon')}</p>
-              <p className="text-lg font-bold" className="text-foreground">{translatePlanet(data.indu_lagna.ninth_lord_moon, language)}</p>
+              <p className="text-lg font-bold text-foreground">{translatePlanet(data.indu_lagna.ninth_lord_moon, language)}</p>
             </div>
           </div>
         </div>
@@ -285,7 +285,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {Object.entries(data.jaimini_drishti.sign_aspects).map(([sign, targets]: [string, any]) => (
               <div key={sign} className="rounded-lg p-2 border border-slate-200 bg-white">
-                <span className="font-semibold text-sm" className="text-foreground">
+                <span className="font-semibold text-sm text-foreground">
                   {translateSign(sign, language)}
                 </span>
                 <span className="text-sm text-muted-foreground mx-1">→</span>
