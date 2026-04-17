@@ -196,7 +196,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
           </div>
           {data.teva_type.is_ratondha && (
             <div className="mt-2">
-              <LalKitabDiagnosticChart type="andha" planetPositions={planetPositions} />
+              <LalKitabDiagnosticChart type="ratondha" planetPositions={planetPositions} />
             </div>
           )}
         </div>

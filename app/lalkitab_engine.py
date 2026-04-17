@@ -843,7 +843,12 @@ DIGNITY_LABELS = {
 
 
 def _get_dignity_label(planet: str, sign: str) -> str:
-    """Determine dignity label for a planet in a sign."""
+    """Determine dignity label for a planet in a sign.
+
+    NOTE: This is a simplified model based on SIGN ONLY.
+    For full affliction analysis including house/combustion/retrograde/nakshatra,
+    use `get_planet_strength_detailed()` instead.
+    """
     from app.astro_iogita_engine import EXALTED, DEBILITATED, OWN_SIGNS, FRIEND_SIGNS, ENEMY_SIGNS
 
     if sign == EXALTED.get(planet):
@@ -859,13 +864,122 @@ def _get_dignity_label(planet: str, sign: str) -> str:
     return "Neutral"
 
 
-def get_remedies(planet_positions: dict) -> dict:
+def get_planet_strength_detailed(
+    planet: str,
+    sign: str,
+    house: "int | None" = None,
+    is_retrograde: bool = False,
+    is_combust: bool = False,
+    nakshatra: "str | None" = None,
+) -> dict:
+    """
+    Enriched Lal Kitab strength model — accounts for dignity, house,
+    retrograde, combustion, and nakshatra.
+
+    Unlike the sign-only `get_planet_strength()` (imported from
+    `astro_iogita_engine`), this function returns a structured report
+    that surfaces specific afflictions Codex flagged as missing from
+    the shallow model: dusthana (6/8/12) placement, combustion near
+    Sun, retrograde motion, and (future) nakshatra friendliness.
+
+    Args:
+        planet:        e.g., "Sun", "Mars", "Rahu"
+        sign:          zodiac sign, e.g., "Aries"
+        house:         1..12 house placement (optional)
+        is_retrograde: planet in retrograde motion
+        is_combust:    planet within combustion orb of Sun
+        nakshatra:     nakshatra name (optional, reserved for future)
+
+    Returns:
+        {
+            "dignity": str,              # Exalted/Own Sign/Friendly/Neutral/Enemy/Debilitated
+            "strength_score": float,     # 0.0 (weakest) to 1.0 (strongest)
+            "afflictions": list[str],    # e.g., ["combust", "debilitated", "in dusthana house 8"]
+            "is_afflicted": bool,        # True if strength_score < 0.4
+        }
+    """
+    # Base dignity label (string) — uses existing classical rule set
+    dignity = _get_dignity_label(planet, sign)
+
+    # Dignity → base score (matches astro_iogita_engine.get_planet_strength values
+    # for parity with the rest of the system)
+    dignity_score_map = {
+        "Exalted": 1.0,
+        "Own Sign": 0.85,
+        "Friendly": 0.65,
+        "Neutral": 0.5,
+        "Enemy": 0.25,
+        "Debilitated": 0.1,
+    }
+    base = dignity_score_map.get(dignity, 0.5)
+
+    afflictions: list = []
+
+    # House placement modifiers
+    # Dusthana (6/8/12) weakens; Kendras (1/4/7/10) and Trikonas (1/5/9) strengthen
+    house_modifier = 0.0
+    if house is not None:
+        if house in (6, 8, 12):
+            house_modifier = -0.15
+            afflictions.append(f"in dusthana house {house}")
+        elif house in (1, 4, 5, 7, 9, 10):
+            house_modifier = +0.10
+
+    # Combustion (within orb of Sun) — weakens (except Sun itself)
+    combust_modifier = 0.0
+    if is_combust and planet != "Sun":
+        combust_modifier = -0.2
+        afflictions.append("combust")
+
+    # Retrograde — Lal Kitab treats as "confused planet"
+    # (Sun/Moon never retrograde; Rahu/Ketu are always retrograde by nature)
+    retrograde_modifier = 0.0
+    if is_retrograde and planet not in ("Sun", "Moon", "Rahu", "Ketu"):
+        retrograde_modifier = -0.1
+        afflictions.append("retrograde")
+
+    # Nakshatra — reserved for future enrichment. Currently neutral hook.
+    nakshatra_modifier = 0.0
+    if nakshatra:
+        # Future: compare nakshatra lord vs. planet friendship
+        pass
+
+    # Record dignity-based afflictions
+    if dignity == "Debilitated":
+        afflictions.append("debilitated")
+    elif dignity == "Enemy":
+        afflictions.append("in enemy sign")
+
+    # Final score (clamped to 0..1)
+    strength_score = (
+        base
+        + house_modifier
+        + combust_modifier
+        + retrograde_modifier
+        + nakshatra_modifier
+    )
+    strength_score = max(0.0, min(1.0, strength_score))
+
+    return {
+        "dignity": dignity,
+        "strength_score": round(strength_score, 3),
+        "afflictions": afflictions,
+        "is_afflicted": strength_score < 0.4,
+    }
+
+
+def get_remedies(planet_positions: dict, chart_data: "dict | None" = None) -> dict:
     """
     Get Lal Kitab remedies based on planet × house placement.
 
     Args:
         planet_positions: {planet_name: sign_name} where sign maps to LK house
             via _SIGN_TO_LK_HOUSE (Aries=1 through Pisces=12)
+        chart_data: optional full chart dict (shape: {"planets": {planet: {house, retrograde,
+            combust, nakshatra, ...}}}) — when provided, enriched strength is
+            computed via `get_planet_strength_detailed` (accounts for combustion,
+            retrograde, dusthana house, nakshatra) and the resulting
+            `afflictions` list is added to each planet's entry.
 
     Returns:
         dict of {planet: {
@@ -876,6 +990,7 @@ def get_remedies(planet_positions: dict) -> dict:
             remedy: dict (en/hi/material/day/urgency — always present for the house),
             has_remedy: bool (True when strength < 0.5),
             remedies: list[str]  (backward-compat: populated only when has_remedy=True),
+            afflictions: list[str]  (only populated when chart_data provided)
         }}
         Remedies are prescribed only for planets with strength < 0.5
         (enemy or debilitated placements).
@@ -883,9 +998,26 @@ def get_remedies(planet_positions: dict) -> dict:
     result = {}
 
     for planet, sign in planet_positions.items():
-        strength = get_planet_strength(planet, sign)
-        dignity = _get_dignity_label(planet, sign)
         lk_house = _SIGN_TO_LK_HOUSE.get(sign, 1)
+        afflictions: list = []
+
+        if chart_data and isinstance(chart_data, dict) and "planets" in chart_data:
+            p_info = chart_data["planets"].get(planet, {}) or {}
+            detailed = get_planet_strength_detailed(
+                planet=planet,
+                sign=sign,
+                house=p_info.get("house"),
+                is_retrograde=p_info.get("retrograde", p_info.get("is_retrograde", False)),
+                is_combust=p_info.get("combust", p_info.get("is_combust", False)),
+                nakshatra=p_info.get("nakshatra"),
+            )
+            strength = detailed["strength_score"]
+            dignity = detailed["dignity"]
+            afflictions = detailed["afflictions"]
+        else:
+            # Backward compat path — sign-only strength
+            strength = get_planet_strength(planet, sign)
+            dignity = _get_dignity_label(planet, sign)
 
         # Get house-specific remedy (always present for reference)
         planet_houses = REMEDIES_BY_HOUSE.get(planet, {})
@@ -906,7 +1038,7 @@ def get_remedies(planet_positions: dict) -> dict:
         # Backward-compat: old tests check result[planet]["remedies"] as a list
         compat_remedies = [house_remedy["en"]] if is_weak else []
 
-        result[planet] = {
+        entry = {
             "sign": sign,
             "lk_house": lk_house,
             "dignity": dignity,
@@ -916,5 +1048,11 @@ def get_remedies(planet_positions: dict) -> dict:
             # Backward compatibility key — old tests expect this
             "remedies": compat_remedies,
         }
+        # Only expose afflictions when the enriched path ran (keeps
+        # backward-compat callers untouched)
+        if chart_data and isinstance(chart_data, dict) and "planets" in chart_data:
+            entry["afflictions"] = afflictions
+
+        result[planet] = entry
 
     return result

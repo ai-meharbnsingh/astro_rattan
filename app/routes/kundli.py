@@ -1161,6 +1161,24 @@ def get_pravrajya(
     return result
 
 
+@router.get("/{kundli_id}/ayu-classification", status_code=status.HTTP_200_OK)
+def get_ayu_classification(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Balarishta risk + Ayu classification — Phaladeepika Adhyaya 13."""
+    from app.ayurdaya_engine import check_balarishta, classify_ayu
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    return {
+        "kundli_id": kundli_id,
+        "person_name": row["person_name"],
+        "balarishta": check_balarishta(chart),
+        "ayu_class": classify_ayu(chart),
+    }
+
+
 # ── PDF Download ────────────────────────────────────────────
 
 # Sign → Lord mapping used for house lordships table

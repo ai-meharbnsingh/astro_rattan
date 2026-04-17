@@ -111,46 +111,12 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
   }, [isHi]);
 
   // Lagna sign number (0 = Aries … 11 = Pisces)
-  // Calculate alerts dynamically based on transits
-  const alerts = useMemo(() => {
-    const houseToPlanets: Record<number, string[]> = {};
-    for (const t of transits) {
-      if (t.lkHouse > 0) {
-        if (!houseToPlanets[t.lkHouse]) houseToPlanets[t.lkHouse] = [];
-        houseToPlanets[t.lkHouse].push(t.planet);
-      }
-    }
-
-    const calculated: { en: string; hi: string }[] = [];
-    for (const [house, planets] of Object.entries(houseToPlanets)) {
-      const hNum = parseInt(house);
-      if (planets.includes('Saturn') && planets.includes('Rahu')) {
-        calculated.push({
-          en: `Saturn + Rahu both in house ${hNum}: Potential for unexpected shifts. Stay ethical.`,
-          hi: `शनि + राहु दोनों ${hNum}वें भाव में: अप्रत्याशित बदलावों की संभावना। नैतिक बने रहें।`
-        });
-      }
-      if (planets.includes('Jupiter') && hNum === 3) {
-        calculated.push({
-          en: 'Jupiter in 3rd house: Favorable for short travel and siblings.',
-          hi: 'गुरु तीसरे भाव में: छोटी यात्रा और भाई-बहनों के लिए अनुकूल।'
-        });
-      }
-      if (planets.includes('Ketu') && hNum === 5) {
-        calculated.push({
-          en: 'Ketu in 5th house: Focus on education and children needed.',
-          hi: 'केतु ५वें भाव में: शिक्षा और संतान पर ध्यान देने की आवश्यकता।'
-        });
-      }
-    }
-
-    if (calculated.length === 0) {
-      calculated.push({
-        en: 'No major transit alerts for current alignment.',
-        hi: 'वर्तमान संरेखण के लिए कोई प्रमुख गोचर अलर्ट नहीं है।'
-      });
-    }
-    return calculated;
+  // Transit alerts come ONLY from backend /api/lalkitab/gochar (no client-side heuristics).
+  const alerts = useMemo<{ en: string; hi: string }[]>(() => {
+    // If the backend ever returns an `alerts` field on the gochar payload, render it here.
+    // Until then, no alerts are rendered — previously this component fabricated alerts
+    // from hardcoded rules which duplicated (and conflicted with) backend logic.
+    return [];
   }, [transits]);
 
   const lagnaSignNum = useMemo(() => {
@@ -207,26 +173,28 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
         </p>
       </div>
 
-      {/* Transit Alerts */}
-      <div className="card-sacred rounded-xl p-5 border border-sacred-gold/20">
-        <h3 className="font-sans font-semibold text-sacred-gold mb-4 flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4" />
-          {t('lk.gochar.alerts')}
-        </h3>
-        <div className="space-y-3">
-          {alerts.map((alert, idx) => (
-            <div
-              key={idx}
-              className="flex items-start gap-3 p-3 rounded-xl bg-orange-500/5 border border-orange-300/20"
-            >
-              <Zap className="w-4 h-4 text-orange-500 mt-0.5 shrink-0" />
-              <p className="text-sm text-foreground/80 leading-snug">
-                {isHi ? alert.hi : alert.en}
-              </p>
-            </div>
-          ))}
+      {/* Transit Alerts (rendered only when backend supplies them) */}
+      {alerts.length > 0 && (
+        <div className="card-sacred rounded-xl p-5 border border-sacred-gold/20">
+          <h3 className="font-sans font-semibold text-sacred-gold mb-4 flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4" />
+            {t('lk.gochar.alerts')}
+          </h3>
+          <div className="space-y-3">
+            {alerts.map((alert, idx) => (
+              <div
+                key={idx}
+                className="flex items-start gap-3 p-3 rounded-xl bg-orange-500/5 border border-orange-300/20"
+              >
+                <Zap className="w-4 h-4 text-orange-500 mt-0.5 shrink-0" />
+                <p className="text-sm text-foreground/80 leading-snug">
+                  {isHi ? alert.hi : alert.en}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Current Transits table */}
       <div className="card-sacred rounded-xl p-5 border border-sacred-gold/20">

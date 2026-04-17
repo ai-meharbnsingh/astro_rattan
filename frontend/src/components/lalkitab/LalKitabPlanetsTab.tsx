@@ -244,14 +244,24 @@ export default function LalKitabPlanetsTab({ chartData, kundliId }: Props) {
                     const interp = interpretations.find((ip: any) => ip.planet === planet.key);
                     if (!interp) return null;
                     const natureBadgeStyles: Record<string, string> = {
+                      // Legacy keys (older API)
                       raja: 'bg-purple-100 text-purple-800 border-purple-200',
                       fakir: 'bg-gray-100 text-gray-700 border-gray-200',
                       mixed: 'bg-amber-100 text-amber-800 border-amber-200',
                       manda: 'bg-orange-100 text-orange-700 border-orange-200',
                       uchcha: 'bg-green-100 text-green-800 border-green-200',
                       neech: 'bg-red-100 text-red-800 border-red-200',
+                      // Backend dignity values (get_planet_strength returns these)
+                      own: 'bg-blue-100 text-blue-800 border-blue-200',
+                      exalted: 'bg-green-100 text-green-800 border-green-200',
+                      debilitated: 'bg-red-100 text-red-800 border-red-200',
+                      enemy: 'bg-orange-100 text-orange-700 border-orange-200',
+                      neutral: 'bg-gray-100 text-gray-700 border-gray-200',
+                      // Also support snake_case combos the audit mentioned
+                      raja_or_fakir: 'bg-amber-100 text-amber-800 border-amber-200',
                     };
-                    const badgeStyle = natureBadgeStyles[interp.nature?.toLowerCase()] || 'bg-gray-100 text-gray-600 border-gray-200';
+                    const natureKey = (interp.nature || interp.dignity || '').toLowerCase().trim();
+                    const badgeStyle = natureBadgeStyles[natureKey] || 'bg-gray-100 text-gray-600 border-gray-200';
                     return (
                       <div className="bg-sacred-gold/5 p-3 rounded-lg border border-sacred-gold/15">
                         <div className="flex items-center gap-2 mb-2">

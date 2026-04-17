@@ -175,9 +175,13 @@ export default function LalKitabChandraChaalanaTab() {
         <div>
           <h2 className="text-xl font-sans font-semibold text-sacred-gold flex items-center gap-2 mb-1">
             <Moon className="w-5 h-5" />
-            {t('lk.chandra.title')}
+            {t('lk.43DayProtocol')}
           </h2>
-          <p className="text-sm text-gray-500">{t('lk.chandra.desc')}</p>
+          <p className="text-sm text-gray-500">
+            {isHi
+              ? '43-दिवसीय आध्यात्मिक अभ्यास ट्रैकर — दैनिक प्रतिबद्धताओं को दर्ज करें'
+              : '43-day spiritual practice tracker — record daily commitments'}
+          </p>
         </div>
 
         <div className="card-sacred rounded-xl p-8 border border-sacred-gold/20 text-center">
@@ -229,9 +233,13 @@ export default function LalKitabChandraChaalanaTab() {
       <div>
         <h2 className="text-xl font-sans font-semibold text-sacred-gold flex items-center gap-2 mb-1">
           <Moon className="w-5 h-5" />
-          {t('lk.chandra.title')}
+          {t('lk.43DayProtocol')}
         </h2>
-        <p className="text-sm text-gray-500">{t('lk.chandra.desc')}</p>
+        <p className="text-sm text-gray-500">
+          {isHi
+            ? '43-दिवसीय आध्यात्मिक अभ्यास ट्रैकर — दैनिक प्रतिबद्धताओं को दर्ज करें'
+            : '43-day spiritual practice tracker — record daily commitments'}
+        </p>
       </div>
 
       {/* Complete banner */}

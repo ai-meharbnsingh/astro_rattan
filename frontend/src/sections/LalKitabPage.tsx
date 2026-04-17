@@ -82,7 +82,7 @@ export default function LalKitabPage() {
     (async () => {
       try {
         const full = await api.get(`/api/kundli/${locState.loadKundliId}`);
-        const lkChart = generateLalKitabChart(full);
+        const lkChart = generateLalKitabChart(full, full?.birth_date);
         setChartData(lkChart);
         setApiResult(full);
         setClientId(full.client_id || '');
@@ -108,7 +108,11 @@ export default function LalKitabPage() {
         birth_place: formData.place,
         latitude: formData.latitude,
         longitude: formData.longitude,
-        timezone_offset: formData.timezone_offset ?? -(new Date().getTimezoneOffset() / 60),
+        timezone_offset: formData.timezone_offset ?? (() => {
+          const browserOffset = -(new Date().getTimezoneOffset() / 60);
+          console.warn('Timezone offset not explicitly provided — using browser timezone:', browserOffset);
+          return browserOffset;
+        })(),
         gender: formData.gender,
         chart_type: 'lalkitab',
       };
@@ -118,7 +122,7 @@ export default function LalKitabPage() {
       if (formData.selectedClientId) payload.client_id = formData.selectedClientId;
 
       const result = await api.post('/api/kundli/generate', payload);
-      const lkChart = generateLalKitabChart(result);
+      const lkChart = generateLalKitabChart(result, formData.date);
       setChartData(lkChart);
       setApiResult(result);
       setClientId(result.client_id || '');
