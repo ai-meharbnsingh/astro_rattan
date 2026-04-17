@@ -164,7 +164,7 @@ export default function LalKitabPredictionTab({ chartData }: Props) {
                   </div>
                   <div className="text-right shrink-0">
                     <p className="text-xl font-bold text-foreground">{score}</p>
-                    <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Score</p>
+                    <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">{t('auto.score')}</p>
                   </div>
                 </div>
 

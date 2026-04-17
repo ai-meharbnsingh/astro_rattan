@@ -17,7 +17,7 @@ type MainMode = 'select' | 'analysis' | 'home-grid' | 'floorplan';
 type AnalysisView = 'form' | 'generating' | 'result';
 
 export default function VastuShastraPage() {
-  const { language } = useTranslation();
+  const { t, language } = useTranslation();
   const isHi = language === 'hi';
 
   const [mainMode, setMainMode] = useState<MainMode>('select');
@@ -91,8 +91,8 @@ export default function VastuShastraPage() {
                 {t('auto.enterBuildingTypeEnt')}
               </p>
               <div className="mt-4 flex flex-wrap gap-1.5">
-                {['45 Devtas', '32 Padas', 'Remedies', 'Rooms'].map(t => (
-                  <span key={t} className="text-sm px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold-dark border border-sacred-gold/20">{t}</span>
+                {(['auto.45Devtas', 'auto.32Padas', 'auto.remedies', 'auto.rooms'] as const).map(key => (
+                  <span key={key} className="text-sm px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold-dark border border-sacred-gold/20">{t(key)}</span>
                 ))}
               </div>
             </button>
@@ -112,8 +112,8 @@ export default function VastuShastraPage() {
                 {t('auto.clickA33DirectionGri')}
               </p>
               <div className="mt-4 flex flex-wrap gap-1.5">
-                {['No upload needed', 'Instant report', 'Devta remedies'].map(t => (
-                  <span key={t} className="text-sm px-2 py-0.5 rounded-full bg-emerald-400/10 text-emerald-600 border border-emerald-400/20">{t}</span>
+                {(['auto.noUploadNeeded', 'auto.instantReport', 'auto.devtaRemedies'] as const).map(key => (
+                  <span key={key} className="text-sm px-2 py-0.5 rounded-full bg-emerald-400/10 text-emerald-600 border border-emerald-400/20">{t(key)}</span>
                 ))}
               </div>
             </button>
@@ -133,8 +133,8 @@ export default function VastuShastraPage() {
                 {t('auto.uploadYourHomePhotoS')}
               </p>
               <div className="mt-4 flex flex-wrap gap-1.5">
-                {['Image upload', 'North rotation', 'Click to place', 'Zoom & pan'].map(t => (
-                  <span key={t} className="text-sm px-2 py-0.5 rounded-full bg-blue-400/10 text-blue-600 border border-blue-400/20">{t}</span>
+                {(['auto.imageUpload', 'auto.northRotation', 'auto.clickToPlace', 'auto.zoomAndPan'] as const).map(key => (
+                  <span key={key} className="text-sm px-2 py-0.5 rounded-full bg-blue-400/10 text-blue-600 border border-blue-400/20">{t(key)}</span>
                 ))}
               </div>
             </button>

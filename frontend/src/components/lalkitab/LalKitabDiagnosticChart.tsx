@@ -81,7 +81,7 @@ const PLANET_COLORS: Record<string, string> = {
 };
 
 export default function LalKitabDiagnosticChart({ type, planetPositions, masnuiData, dharmiData }: Props) {
-  const { language } = useTranslation();
+  const { t, language } = useTranslation();
 
   const planetsByHouse = useMemo(() => {
     const map: Record<number, string[]> = {};
@@ -207,7 +207,7 @@ export default function LalKitabDiagnosticChart({ type, planetPositions, masnuiD
               >
                 {translatePlanetAbbr(m.masnui_planet, language)}
               </text>
-              <text x={centroid.x} y={centroid.y - 14} textAnchor="middle" fontSize="9" fill="#D4AF37" fontWeight="bold">MASNUI</text>
+              <text x={centroid.x} y={centroid.y - 14} textAnchor="middle" fontSize="9" fill="#D4AF37" fontWeight="bold">{t('auto.masnui')}</text>
             </g>
           );
         })}

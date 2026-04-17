@@ -368,7 +368,7 @@ export default function KundliGenerator() {
                     : 'bg-muted border-sacred-gold/40 text-foreground hover:bg-sacred-gold/10'
                 }`}
               >
-                {hi ? 'और विश्लेषण' : 'More Analysis'}
+                {t('auto.moreAnalysis')}
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showMoreTabs ? 'rotate-180' : ''}`} />
               </button>
               {showMoreTabs && (
@@ -410,7 +410,7 @@ export default function KundliGenerator() {
                   : 'bg-muted border-sacred-gold/40 text-foreground'
               }`}
             >
-              {hi ? 'और विश्लेषण' : 'More Analysis'}
+              {t('auto.moreAnalysis')}
               <ChevronDown className="w-3 h-3" />
             </button>
           </div>
@@ -422,7 +422,7 @@ export default function KundliGenerator() {
               <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[70vh] overflow-y-auto p-5 pb-8 animate-in slide-in-from-bottom">
                 <div className="flex items-center justify-between mb-4">
                   <Heading as={3} variant={5} className="text-sacred-brown">
-                    {hi ? 'और विश्लेषण' : 'More Analysis'}
+                    {t('auto.moreAnalysis')}
                   </Heading>
                   <button onClick={() => setShowMobileMoreSheet(false)} className="p-1 rounded-full hover:bg-sacred-gold/10">
                     <X className="w-5 h-5 text-foreground" />
@@ -768,7 +768,7 @@ export default function KundliGenerator() {
       <section className="max-w-3xl mx-auto px-4 pb-20 pt-2">
         <div className="text-center mb-6">
           <h2 className="text-xl sm:text-2xl  text-foreground">
-            {hi ? '29 विश्लेषण मॉड्यूल — एक ही जगह' : '29 Analysis Modules — All in One Place'}
+            {t('auto.analysisModulesHeading')}
           </h2>
         </div>
 

@@ -63,6 +63,14 @@ class TestPinnacleCalculation:
         assert "Birth to age 33" in result["pinnacles"][0]["period"]
         assert "Age 51" in result["pinnacles"][3]["period"]
 
+    def test_pinnacle_period_hi_present(self):
+        from app.numerology_engine import _calculate_pinnacles
+        result = _calculate_pinnacles("1990-05-15")
+        for p in result["pinnacles"]:
+            assert "period_hi" in p
+            assert isinstance(p["period_hi"], str)
+            assert len(p["period_hi"]) > 0
+
     def test_pinnacle_minimum_age_27(self):
         """First pinnacle end age should be at least 27."""
         from app.numerology_engine import _calculate_pinnacles
@@ -120,6 +128,14 @@ class TestChallengeCalculation:
         assert "current_challenge" in result
         assert isinstance(result["current_challenge"], int)
 
+    def test_challenge_period_hi_present(self):
+        from app.numerology_engine import _calculate_challenges
+        result = _calculate_challenges("1990-05-15")
+        for c in result["challenges"]:
+            assert "period_hi" in c
+            assert isinstance(c["period_hi"], str)
+            assert len(c["period_hi"]) > 0
+
 
 # ============================================================
 # Life Cycles
@@ -153,6 +169,14 @@ class TestLifeCycles:
         from app.numerology_engine import _calculate_life_cycles
         result = _calculate_life_cycles("1990-05-15")
         assert result["current_cycle"] == 2  # 1-indexed: 1=early, 2=middle, 3=later
+
+    def test_life_cycle_period_hi_present(self):
+        from app.numerology_engine import _calculate_life_cycles
+        result = _calculate_life_cycles("1990-05-15")
+        for c in result["cycles"]:
+            assert "period_hi" in c
+            assert isinstance(c["period_hi"], str)
+            assert len(c["period_hi"]) > 0
 
 
 # ============================================================
