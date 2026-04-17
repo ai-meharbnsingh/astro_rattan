@@ -521,9 +521,9 @@ def compute_scores(
 
         raw_total += h_score + nature + d_bonus
 
-    # Theoretical range: 7 planets * (worst: -2 + -1.0 + -2 = -5) to (best: 3 + 1.5 + 2 = 6.5)
-    # real world range is usually much narrower. Normalize to 1-10 using tighter bounds.
-    overall = _normalize_score(raw_total, min_val=-15.0, max_val=25.0)
+    # Theoretical range: 7 planets * (worst: -5) to (best: +6.5) = -35 to +45.5
+    # Real-world range clusters around -5 to +15. Use tighter bounds for better spread.
+    overall = _normalize_score(raw_total, min_val=-8.0, max_val=18.0)
 
     # -- Area scores --
     area_scores: Dict[str, int] = {}
@@ -548,8 +548,8 @@ def compute_scores(
             avg = raw_area / total_weight
         else:
             avg = 0.0
-        # Per-planet range is -5 to +6.5, but normally stays between -2 and +4
-        area_scores[area] = _normalize_score(avg, min_val=-2.0, max_val=4.0)
+        # Per-planet weighted avg typically ranges -3 to +5. Tighter bounds for better spread.
+        area_scores[area] = _normalize_score(avg, min_val=-3.0, max_val=5.0)
 
     return {
         "overall": overall,
