@@ -90,7 +90,7 @@ export default function LalKitabYearlyTab() {
                 <Star className="w-5 h-5 text-sacred-gold mt-0.5 shrink-0" />
                 <div>
                   <h3 className="font-sans text-lg text-sacred-gold mb-1">
-                    {data.active.planet} — {t('lk.yearly.ageRange')}: {data.active.age_start}–{data.active.age_end}
+                    {data.active.planet} — {t('lk.yearly.ageRange')}: {isNaN(Number(data.active.age_start)) ? 0 : data.active.age_start}–{isNaN(Number(data.active.age_end)) ? 0 : data.active.age_end}
                   </h3>
                   <p className="text-sm text-foreground/80">
                     {isHi ? 'यह समय-चक्र बैकएंड से वास्तविक उम्र के आधार पर गणना किया गया है।' : 'This timing cycle is calculated on the backend from your real age.'}

@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import type { LalKitabChartLite } from '@/components/lalkitab/lalkitab-core';
 import { buildLalKitabChartLite } from '@/components/lalkitab/lalkitab-core';
 import { LalKitabProvider, useLalKitab } from '@/components/lalkitab/LalKitabContext';
+import LalKitabErrorBoundary from '@/components/lalkitab/LalKitabErrorBoundary';
 import LalKitabForm from '@/components/lalkitab/LalKitabForm';
 import type { LalKitabFormData } from '@/components/lalkitab/LalKitabForm';
 import LalKitabDashboardTab from '@/components/lalkitab/LalKitabDashboardTab';
@@ -51,9 +52,11 @@ type View = 'form' | 'generating' | 'result';
 
 export default function LalKitabPage() {
   return (
-    <LalKitabProvider>
-      <LalKitabPageInner />
-    </LalKitabProvider>
+    <LalKitabErrorBoundary>
+      <LalKitabProvider>
+        <LalKitabPageInner />
+      </LalKitabProvider>
+    </LalKitabErrorBoundary>
   );
 }
 
