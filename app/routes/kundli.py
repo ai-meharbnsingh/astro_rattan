@@ -1271,6 +1271,24 @@ def get_apatya(
     return result
 
 
+@router.get("/{kundli_id}/stri-jataka", status_code=status.HTTP_200_OK)
+def get_stri_jataka(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Stri-Jataka — women's horoscope analysis (Phaladeepika Adhyaya 11)."""
+    from app.stri_jataka_engine import analyze_stri_jataka
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    gender = str(row.get("gender") or "female").strip().lower()
+    result = analyze_stri_jataka(chart, gender=gender)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    result["gender"] = gender
+    return result
+
+
 @router.get("/{kundli_id}/ayu-classification", status_code=status.HTTP_200_OK)
 def get_ayu_classification(
     kundli_id: str,
