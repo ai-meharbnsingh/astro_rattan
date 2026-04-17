@@ -316,7 +316,9 @@ def main():
     H("16 · DOSHAS (full descriptions & remedies)", engine="detect_lalkitab_doshas")
     for d in detect_lalkitab_doshas(pp) or []:
         flag = "★ DETECTED" if d.get("detected") else "  not detected"
-        P(f"\n• {d.get('name_en')} ({d.get('name_hi')}) — severity {d.get('severity')}  [{flag}]")
+        src = d.get("source")
+        src_tag = f"  source={src}" if src else ""
+        P(f"\n• {d.get('name_en')} ({d.get('name_hi')}) — severity {d.get('severity')}  [{flag}]{src_tag}")
         P(f"   EN: {d.get('description_en','')}")
         P(f"   HI: {d.get('description_hi','')}")
         P(f"   remedy EN: {d.get('remedy_hint_en','')}")
