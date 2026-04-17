@@ -42,6 +42,7 @@ import BirthRectification from '@/components/kundli/BirthRectification';
 import KPHorary from '@/components/kp/KPHorary';
 import SarvatobhadraChakra from '@/components/sarvatobhadra/SarvatobhadraChakra';
 import PravrajyaTab from '@/components/kundli/PravrajyaTab';
+import LifespanTab from '@/components/kundli/LifespanTab';
 
 // ── Single source of truth for ALL tab definitions ──────────
 interface TabDef {
@@ -81,6 +82,7 @@ const TAB_DEFS: Omit<TabDef, 'onActivate'>[] = [
   { value: 'kp-horary',     labelEn: 'KP Horary',     labelHi: 'केपी प्रश्न',       primary: false, category: 'analysis' },
   { value: 'jaimini',       labelEn: 'Jaimini',        labelHi: 'जैमिनी',           primary: false, category: 'analysis' },
   { value: 'pravrajya',     labelEn: 'Pravrajya Yogas', labelHi: 'प्रव्रज्या योग',   primary: false, category: 'analysis' },
+  { value: 'lifespan',      labelEn: 'Lifespan',        labelHi: 'आयुर्दाय',         primary: false, category: 'analysis' },
   { value: 'iogita',        labelEn: 'Iogita',         labelHi: 'आयोगिता',          primary: false, category: 'analysis' },
   { value: 'aspects-matrix',labelEn: 'Aspects Matrix',  labelHi: 'दृष्टि मैट्रिक्स', primary: false, category: 'analysis' },
   // Advanced
@@ -598,6 +600,10 @@ export default function KundliGenerator() {
 
           <TabsContent value="pravrajya" className="min-h-[300px]">
             <PravrajyaTab kundliId={kundliId} language={language} t={t} />
+          </TabsContent>
+
+          <TabsContent value="lifespan" className="min-h-[300px]">
+            <LifespanTab kundliId={kundliId} language={language} t={t} />
           </TabsContent>
 
           <TabsContent value="sadesati" className="min-h-[300px]">
