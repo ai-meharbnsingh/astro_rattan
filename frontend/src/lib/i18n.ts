@@ -2530,6 +2530,30 @@ export const translations: Record<Language, TranslationMap> = {
     'auto.moonStrongest': 'Moon strongest — public & nurturing career',
     'auto.lagnaStrongest': 'Lagna strongest — self-made career',
     'auto.careerGuidance': 'Career Guidance',
+
+    // Bhava Vichara (Phaladeepika Adh. 15)
+    'auto.bhavaVichara': 'Bhava Analysis',
+    'auto.bhavaVicharaDesc': 'Flourishing vs destruction of each house with the karaka-as-Lagna lens — Phaladeepika Adhyaya 15',
+    'auto.bhavaFlourishing': 'Flourishing',
+    'auto.bhavaDestructionRisk': 'Destruction Risk',
+    'auto.karakaAsLagna': 'Karaka-as-Lagna',
+    'auto.strongestHouses': 'Strongest Houses',
+    'auto.weakestHouses': 'Houses Under Pressure',
+    'auto.bhavaLord': 'Lord',
+    'auto.bhavaKaraka': 'Karaka',
+
+    // Longevity Indicators (Phaladeepika Adh. 17) — philosophical framing
+    'auto.longevity': 'Longevity Indicators',
+    'auto.longevityDesc': 'Philosophical longevity and karmic transition lens — Phaladeepika Adhyaya 17',
+    'auto.longevityDisclaimer': 'This analysis provides philosophical insight into longevity indicators — not specific predictions.',
+    'auto.longevityStrong': 'Strong',
+    'auto.longevityModerate': 'Moderate',
+    'auto.longevityWeak': 'Requires Care',
+    'auto.marakaPlanets': 'Maraka Planets',
+    'auto.eighthHouseAnalysis': '8th House Analysis',
+    'auto.saturnLongevity': 'Saturn — Longevity Significator',
+    'auto.karmicTransitions': 'Karmic Transitions',
+    'auto.lifeChapters': 'Life Chapters',
   },
 
   hi: {
@@ -5056,6 +5080,30 @@ export const translations: Record<Language, TranslationMap> = {
     'auto.moonStrongest': 'चन्द्र सर्वाधिक बली — जन-सम्पर्क एवं पोषण-युक्त आजीविका',
     'auto.lagnaStrongest': 'लग्न सर्वाधिक बली — स्व-पुरुषार्थ से आजीविका',
     'auto.careerGuidance': 'व्यवसाय मार्गदर्शन',
+
+    // Bhava Vichara (Phaladeepika Adh. 15)
+    'auto.bhavaVichara': 'भाव विचार',
+    'auto.bhavaVicharaDesc': 'फलदीपिका अध्याय 15 — प्रत्येक भाव की वृद्धि एवं नाश, कारक-से-लग्न दृष्टिकोण सहित',
+    'auto.bhavaFlourishing': 'वृद्धि',
+    'auto.bhavaDestructionRisk': 'नाश का संकेत',
+    'auto.karakaAsLagna': 'कारक-से-लग्न',
+    'auto.strongestHouses': 'प्रबल भाव',
+    'auto.weakestHouses': 'दबावग्रस्त भाव',
+    'auto.bhavaLord': 'भावेश',
+    'auto.bhavaKaraka': 'भाव-कारक',
+
+    // Longevity Indicators (Phaladeepika Adh. 17) — philosophical framing
+    'auto.longevity': 'आयु संकेतक',
+    'auto.longevityDesc': 'फलदीपिका अध्याय 17 — आयु एवं कर्म-संक्रमण का दार्शनिक दृष्टिकोण',
+    'auto.longevityDisclaimer': 'यह विश्लेषण आयु के संकेतकों पर दार्शनिक दृष्टि देता है — किसी विशेष घटना की भविष्यवाणी नहीं।',
+    'auto.longevityStrong': 'प्रबल',
+    'auto.longevityModerate': 'मध्यम',
+    'auto.longevityWeak': 'सावधानी अपेक्षित',
+    'auto.marakaPlanets': 'मारक ग्रह',
+    'auto.eighthHouseAnalysis': 'अष्टम भाव विश्लेषण',
+    'auto.saturnLongevity': 'शनि — आयुकारक',
+    'auto.karmicTransitions': 'कर्म-संक्रमण',
+    'auto.lifeChapters': 'जीवन अध्याय',
   },
 };
 
