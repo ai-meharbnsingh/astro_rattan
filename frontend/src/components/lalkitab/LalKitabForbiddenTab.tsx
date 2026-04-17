@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
+import { pickLang } from '@/components/lalkitab/safe-render';
 import { Loader2, AlertTriangle, ShieldAlert, Ban } from 'lucide-react';
 
 interface ForbiddenRule {
@@ -136,8 +137,8 @@ export default function LalKitabForbiddenTab({ kundliId, language }: Props) {
           {/* Rule header */}
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <span className={`w-3 h-3 rounded-full ${PLANET_DOT[rule.planet] || 'bg-gray-400'}`} />
-              <span className="font-bold text-foreground text-sm">{rule.planet}</span>
+              <span className={`w-3 h-3 rounded-full ${PLANET_DOT[typeof rule.planet === 'string' ? rule.planet : pickLang(rule.planet, false)] || 'bg-gray-400'}`} />
+              <span className="font-bold text-foreground text-sm">{typeof rule.planet === 'string' ? rule.planet : pickLang(rule.planet, false)}</span>
               <span className="text-xs text-muted-foreground px-1.5 py-0.5 bg-white/60 rounded">
                 H{rule.house}
               </span>

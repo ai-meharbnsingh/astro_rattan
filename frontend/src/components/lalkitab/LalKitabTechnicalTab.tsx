@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
+import { pickLang } from '@/components/lalkitab/safe-render';
 import { Loader2, ArrowRight, Moon, Zap, Crown, Eye, Swords, Plane, Shield } from 'lucide-react';
 
 interface Props { kundliId?: string; language: string; }
@@ -200,10 +201,10 @@ export default function LalKitabTechnicalTab({ kundliId, language }: Props) {
           {planet_statuses?.filter((p: any) =>
             p.status.sarkari || p.status.bhedi || p.status.zakhmi || p.status.pardesi || p.status.gair_sarkari
           ).map((p: any) => (
-            <div key={p.planet} className="border border-border rounded-lg p-2.5">
+            <div key={typeof p.planet === 'string' ? p.planet : pickLang(p.planet, false)} className="border border-border rounded-lg p-2.5">
               <div className="flex items-center gap-2 mb-1.5">
-                <span className={`w-2.5 h-2.5 rounded-full ${PLANET_DOT[p.planet] || 'bg-gray-400'}`} />
-                <span className="font-semibold text-sm">{p.planet}</span>
+                <span className={`w-2.5 h-2.5 rounded-full ${PLANET_DOT[typeof p.planet === 'string' ? p.planet : pickLang(p.planet, false)] || 'bg-gray-400'}`} />
+                <span className="font-semibold text-sm">{typeof p.planet === 'string' ? p.planet : pickLang(p.planet, false)}</span>
                 <span className="text-xs text-muted-foreground">H{p.house}</span>
                 <div className="flex flex-wrap gap-1 ml-1">
                   {p.status.sarkari && <span className="text-xs px-1.5 py-0.5 bg-yellow-100 text-yellow-700 rounded flex items-center gap-0.5"><Crown className="w-3 h-3" />{hi?'सरकारी':'Sarkari'}</span>}
