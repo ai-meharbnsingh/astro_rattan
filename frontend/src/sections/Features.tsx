@@ -1504,7 +1504,7 @@ export default function Features() {
             </div>
           </div>
 
-          <div className="flex justify-end mt-6">
+          <div className="flex justify-end mt-16">
             <a href="/numerology" className="text-sm text-sacred-gold-dark hover:underline font-medium flex items-center gap-1">
               {l('Explore full numerology analysis', 'पूर्ण अंकशास्त्र विश्लेषण देखें')} →
             </a>
