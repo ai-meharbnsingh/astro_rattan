@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { LayoutGrid, Home, ShieldCheck, ShieldAlert } from 'lucide-react';
+import { LayoutGrid, Home, ShieldCheck, ShieldAlert, Info, AlertTriangle } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
 import type { LalKitabChartData } from './lalkitab-data';
@@ -120,6 +120,76 @@ export default function LalKitabKundliTab({ chartData, apiResult }: Props) {
           <p className="text-3xl font-bold text-red-400">{counts.weak}</p>
         </div>
       </div>
+
+      {/* Calculation Chain — shows only when engine/ayanamsa data is present */}
+      {(apiResult?._engine || apiResult?.ayanamsa_system) && (() => {
+        const engine = apiResult._engine as string | undefined;
+        const ayanamsaSystem = (apiResult.ayanamsa_system as string | undefined) || 'lahiri';
+        const ayanamsaVal = apiResult._debug_ayanamsa as number | undefined;
+        const julianDay = apiResult._debug_julian_day as number | undefined;
+        const isFallback = engine === 'fallback';
+        const engineLabel = isFallback
+          ? (language === 'hi' ? 'फॉलबैक इंजन' : 'Fallback Engine')
+          : 'Swiss Ephemeris';
+        const ayanamsaLabel = ayanamsaSystem.charAt(0).toUpperCase() + ayanamsaSystem.slice(1);
+
+        return (
+          <div className="rounded-xl border border-gray-200 bg-gray-50/60 p-3 space-y-2">
+            {/* Header row */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <Info className="w-3.5 h-3.5 text-gray-400" />
+                <span className="text-xs font-semibold text-gray-500">
+                  {language === 'hi' ? 'गणना श्रृंखला' : 'Calculation Chain'}
+                </span>
+              </div>
+            </div>
+
+            {/* Fallback warning */}
+            {isFallback && (
+              <div className="flex items-center gap-1.5 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1">
+                <AlertTriangle className="w-3 h-3 shrink-0" />
+                <span>
+                  {language === 'hi'
+                    ? 'अनुमानित स्थिति — Swiss Ephemeris उपलब्ध नहीं'
+                    : 'Approximate positions (Swiss Ephemeris not available)'}
+                </span>
+              </div>
+            )}
+
+            {/* Engine + Ayanamsa row */}
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
+              <span>
+                <span className="font-medium text-gray-600">
+                  {language === 'hi' ? 'इंजन:' : 'Engine:'}
+                </span>{' '}
+                {engineLabel}{!isFallback && <span className="text-green-600 ml-0.5">✓</span>}
+              </span>
+              <span className="text-gray-300">|</span>
+              <span>
+                <span className="font-medium text-gray-600">
+                  {language === 'hi' ? 'अयनांश:' : 'Ayanamsa:'}
+                </span>{' '}
+                {ayanamsaLabel}
+              </span>
+            </div>
+
+            {/* Chain line */}
+            {ayanamsaVal !== undefined && (
+              <div className="text-xs text-gray-400 font-mono">
+                Tropical → -{ayanamsaVal.toFixed(4)}° → Sidereal ({ayanamsaLabel})
+              </div>
+            )}
+
+            {/* Julian Day */}
+            {julianDay !== undefined && (
+              <div className="text-xs text-gray-400 font-mono">
+                Julian Day: {julianDay.toFixed(1)}
+              </div>
+            )}
+          </div>
+        );
+      })()}
     </div>
   );
 }

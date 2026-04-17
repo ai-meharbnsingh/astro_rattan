@@ -409,6 +409,27 @@ def init_db():
                     continue
             conn.commit()
         logger.info("[init_db] PostgreSQL schema initialized successfully.")
+        # Seed Lal Kitab reference tables (idempotent — safe on every startup)
+        try:
+            from app.database_seed_lalkitab import seed_lalkitab_tables
+
+            class _DirectConn:
+                """Thin adapter so seed_lalkitab_tables can use the raw psycopg2 conn."""
+                def __init__(self, c):
+                    self._c = c
+                def execute(self, sql, params=None):
+                    import psycopg2.extras
+                    cur = self._c.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+                    cur.execute(sql, params or ())
+                    return cur
+                def commit(self):
+                    self._c.commit()
+                def rollback(self):
+                    self._c.rollback()
+
+            seed_lalkitab_tables(_DirectConn(conn))
+        except Exception as e:
+            logger.warning("[init_db] LK seed skipped: %s", e)
     finally:
         conn.close()
 

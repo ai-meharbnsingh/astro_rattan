@@ -15,6 +15,9 @@ interface Debt {
   indication: string;
   remedy: string;
   active: boolean;
+  activation_status?: 'active' | 'latent' | 'passive';
+  activation_house?: number;
+  activation_urgency?: 'high' | 'medium' | 'low';
 }
 
 const PLANET_HI: Record<string, string> = {
@@ -64,7 +67,7 @@ export default function LalKitabRinTab({ kundliId }: Props) {
     }
     setLoading(true);
     setError('');
-    api.get(`/api/lalkitab/rin/${kundliId}`)
+    api.get(`/api/lalkitab/rin-active/${kundliId}`)
       .then((res: any) => {
         setDebts(Array.isArray(res?.debts) ? res.debts : []);
         setAfflicted(Array.isArray(res?.afflicted_planets) ? res.afflicted_planets : []);
@@ -203,19 +206,41 @@ function DebtCard({ debt, isHi }: { debt: Debt; isHi: boolean }) {
     >
       {/* Title row */}
       <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <h4 className="font-sans font-semibold text-foreground">{debt.debt_type}</h4>
           <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${PLANET_COLOR[debt.planet] ?? 'bg-gray-100 text-gray-600'}`}>
             {isHi ? (PLANET_HI[debt.planet] ?? debt.planet) : debt.planet.charAt(0).toUpperCase() + debt.planet.slice(1)}
           </span>
+          {/* Activation status badge */}
+          {debt.activation_status === 'active' && (
+            <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-500/10 text-red-700 text-xs font-bold border border-red-300/40">
+              {debt.activation_urgency === 'high' && (
+                <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse shrink-0" />
+              )}
+              {isHi ? 'सक्रिय' : 'ACTIVE'}
+            </span>
+          )}
+          {debt.activation_status === 'latent' && (
+            <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-700 text-xs font-bold border border-yellow-300/40">
+              {debt.activation_urgency === 'high' && (
+                <span className="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse shrink-0" />
+              )}
+              {isHi ? 'सुप्त' : 'LATENT'}
+            </span>
+          )}
+          {(!debt.activation_status || debt.activation_status === 'passive') && (
+            <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-400/10 text-gray-500 text-xs font-bold border border-gray-300/40">
+              {isHi ? 'निष्क्रिय' : 'PASSIVE'}
+            </span>
+          )}
         </div>
         {debt.active ? (
-          <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-500/10 text-red-700 text-xs font-semibold border border-red-300/30">
+          <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-500/10 text-red-700 text-xs font-semibold border border-red-300/30 shrink-0">
             <AlertCircle className="w-3 h-3" />
             {t('auto.active')}
           </span>
         ) : (
-          <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-500/10 text-green-700 text-xs font-medium border border-green-300/30">
+          <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-500/10 text-green-700 text-xs font-medium border border-green-300/30 shrink-0">
             <CheckCircle2 className="w-3 h-3" />
             {t('auto.inactive')}
           </span>

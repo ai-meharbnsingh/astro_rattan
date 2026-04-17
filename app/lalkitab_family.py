@@ -5,6 +5,35 @@ Cross-chart planetary harmony analysis for Lal Kitab.
 """
 from typing import List, Dict, Any, Optional
 
+# LK house waking pairs: house N wakes house WAKING_PAIR[N]
+_WAKING_PAIR: Dict[int, int] = {
+    1: 7, 2: 9, 3: 8, 4: 10, 5: 11, 6: 12,
+    7: 1, 8: 3, 9: 2, 10: 4, 11: 5, 12: 6,
+}
+
+_HOUSE_NAME_EN: Dict[int, str] = {
+    1: "self/body", 2: "wealth/family", 3: "courage/siblings",
+    4: "home/mother", 5: "children/intellect", 6: "enemies/debts",
+    7: "partnerships/spouse", 8: "longevity/hidden", 9: "fortune/father",
+    10: "career/karma", 11: "gains/friends", 12: "losses/moksha",
+}
+
+_HOUSE_NAME_HI: Dict[int, str] = {
+    1: "स्वयं/शरीर", 2: "धन/परिवार", 3: "साहस/भाई-बहन",
+    4: "घर/माता", 5: "संतान/बुद्धि", 6: "शत्रु/ऋण",
+    7: "साझेदारी/जीवनसाथी", 8: "आयु/गुप्त", 9: "भाग्य/पिता",
+    10: "कर्म/व्यवसाय", 11: "लाभ/मित्र", 12: "हानि/मोक्ष",
+}
+
+_PLANET_NAME_HI: Dict[str, str] = {
+    "Sun": "सूर्य", "Moon": "चंद्र", "Mars": "मंगल",
+    "Mercury": "बुध", "Jupiter": "गुरु", "Venus": "शुक्र",
+    "Saturn": "शनि", "Rahu": "राहु", "Ketu": "केतु",
+}
+
+_BENEFIC_SET = {"Jupiter", "Venus", "Moon", "Mercury"}
+_MALEFIC_SET = {"Saturn", "Mars", "Rahu", "Ketu", "Sun"}
+
 _PAKKA_GHAR: Dict[str, int] = {
     "Sun": 1, "Moon": 4, "Mars": 3, "Mercury": 7,
     "Jupiter": 2, "Venus": 7, "Saturn": 8, "Rahu": 12, "Ketu": 6,
@@ -39,14 +68,99 @@ def _safe_p_map(positions: List[Dict]) -> Dict[str, int]:
     return {p["planet"]: p["house"] for p in positions if p.get("planet") and isinstance(p.get("house"), int)}
 
 
+def generate_cross_waking_narrative(
+    owner_positions: List[Dict[str, Any]],
+    member_positions: List[Dict[str, Any]],
+    member_name: str,
+    lang: str = "en",
+) -> List[Dict[str, Any]]:
+    """
+    Generate cross-waking narrative between two charts.
+
+    A planet in House N wakes up House N+5 (mod 12, 1-indexed).
+    If that woken house is a Soya (sleeping) house in the owner's chart, note it.
+
+    Returns list of narrative items:
+    {
+        "member_planet", "member_planet_hi", "member_house",
+        "wakes_house", "effect", "text_en", "text_hi"
+    }
+    """
+    o_map = _safe_p_map(owner_positions)
+    m_map = _safe_p_map(member_positions)
+
+    # Determine owner's sleeping (empty) houses
+    occupied_owner = set(o_map.values())
+    sleeping_owner: set = set()
+    for h in range(1, 13):
+        if h not in occupied_owner:
+            # Apply same activation rules as calculate_sleeping_status
+            woken_by_opposite = _WAKING_PAIR.get(h)
+            if woken_by_opposite not in occupied_owner:
+                sleeping_owner.add(h)
+
+    narratives: List[Dict[str, Any]] = []
+
+    for planet, m_house in m_map.items():
+        woken_house = ((m_house - 1 + 5) % 12) + 1
+
+        # Determine effect
+        if planet in _BENEFIC_SET:
+            effect = "positive"
+        elif planet in _MALEFIC_SET:
+            effect = "negative"
+        else:
+            effect = "neutral"
+
+        is_sleeping = woken_house in sleeping_owner
+        sleeping_tag_en = " (currently sleeping in your chart — this activation is significant!)" if is_sleeping else ""
+        sleeping_tag_hi = " (आपकी कुंडली में यह घर सोया हुआ है — यह जागरण महत्वपूर्ण है!)" if is_sleeping else ""
+
+        house_en = _HOUSE_NAME_EN.get(woken_house, f"House {woken_house}")
+        house_hi = _HOUSE_NAME_HI.get(woken_house, f"भाव {woken_house}")
+        planet_hi = _PLANET_NAME_HI.get(planet, planet)
+
+        text_en = (
+            f"{member_name}'s {planet} in House {m_house} activates your "
+            f"House {woken_house} ({house_en}){sleeping_tag_en}."
+        )
+        text_hi = (
+            f"{member_name} का {planet_hi} द्वितीय भाव {m_house} में आपके "
+            f"भाव {woken_house} ({house_hi}) को जगाता है{sleeping_tag_hi}।"
+        )
+
+        narratives.append({
+            "member_planet": planet,
+            "member_planet_hi": planet_hi,
+            "member_house": m_house,
+            "wakes_house": woken_house,
+            "effect": effect,
+            "text_en": text_en,
+            "text_hi": text_hi,
+        })
+
+    # Sort: sleeping activations first, then by effect (negative last within each group)
+    effect_order = {"positive": 0, "neutral": 1, "negative": 2}
+    narratives.sort(
+        key=lambda x: (
+            0 if x["wakes_house"] in sleeping_owner else 1,
+            effect_order.get(x["effect"], 1),
+        )
+    )
+
+    return narratives
+
+
 def calculate_family_harmony(
     owner_positions: List[Dict[str, Any]],
     member_positions: List[Dict[str, Any]],
+    member_name: str = "Member",
 ) -> Dict[str, Any]:
     """
     Cross-chart harmony analysis between two Lal Kitab charts.
 
-    Returns: {harmony_score, shared_planets, support_planets, tension_planets, theme}
+    Returns: {harmony_score, shared_planets, support_planets, tension_planets, theme,
+              cross_waking_narratives}
     """
     o_map = _safe_p_map(owner_positions)
     m_map = _safe_p_map(member_positions)
@@ -120,12 +234,17 @@ def calculate_family_harmony(
     else:
         theme = {"en": "Deeply challenging combination. Lal Kitab remedies essential for both.", "hi": "अत्यंत चुनौतीपूर्ण संयोजन। दोनों के लिए लाल किताब उपाय आवश्यक।"}
 
+    cross_waking = generate_cross_waking_narrative(
+        owner_positions, member_positions, member_name
+    )
+
     return {
         "harmony_score": score,
         "shared_planets": shared_planets,
         "support_planets": list(set(support_planets) - set(tension_planets)),
         "tension_planets": tension_planets,
         "theme": theme,
+        "cross_waking_narratives": cross_waking,
     }
 
 

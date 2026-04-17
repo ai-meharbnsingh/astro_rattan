@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
-import { Loader2, ArrowRight, Moon, Zap, Crown, Eye, Swords, Plane } from 'lucide-react';
+import { Loader2, ArrowRight, Moon, Zap, Crown, Eye, Swords, Plane, Shield } from 'lucide-react';
 
 interface Props { kundliId?: string; language: string; }
 
@@ -29,7 +29,7 @@ export default function LalKitabTechnicalTab({ kundliId, language }: Props) {
   if (loading) return <div className="flex justify-center py-16"><Loader2 className="w-8 h-8 animate-spin text-sacred-gold" /></div>;
   if (!data) return null;
 
-  const { chalti_gaadi, dhur_dhur_aage, soya_ghar, planet_statuses, muththi } = data;
+  const { chalti_gaadi, dhur_dhur_aage, soya_ghar, planet_statuses, muththi, kayam } = data;
 
   const trainStatusColor: Record<string, string> = {
     smooth: 'bg-green-100 text-green-700',
@@ -250,6 +250,42 @@ export default function LalKitabTechnicalTab({ kundliId, language }: Props) {
             <span className="shrink-0">🙏</span>
             {hi ? muththi.recommendation.hi : muththi.recommendation.en}
           </div>
+        )}
+      </div>
+
+      {/* ── 6. KAYAM GRAH ── */}
+      <div className="card-sacred rounded-xl p-4">
+        <h3 className="font-bold text-sacred-gold mb-1 flex items-center gap-2">
+          <Shield className="w-4 h-4" />
+          {hi ? 'कायम ग्रह (स्थापित ग्रह)' : 'Kayam Grah (Established Planets)'}
+        </h3>
+        <p className="text-xs text-muted-foreground mb-3">
+          {hi
+            ? 'ये ग्रह इतने दृढ़ हैं कि शत्रु ग्रह इन्हें कमज़ोर नहीं कर सकते।'
+            : 'These planets are so strongly placed that enemy planets cannot weaken them.'}
+        </p>
+        {kayam && kayam.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {(kayam as string[]).map((planet) => (
+              <div
+                key={planet}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-sacred-gold/40 bg-sacred-gold/10"
+              >
+                <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${PLANET_DOT[planet] ?? 'bg-gray-400'}`} />
+                <span className="text-sm font-semibold text-sacred-gold">
+                  {hi
+                    ? ({ Sun:'सूर्य', Moon:'चंद्र', Mars:'मंगल', Mercury:'बुध', Jupiter:'गुरु', Venus:'शुक्र', Saturn:'शनि', Rahu:'राहु', Ketu:'केतु' } as Record<string,string>)[planet] ?? planet
+                    : planet}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            {hi
+              ? 'इस कुंडली में कोई भी ग्रह पूरी तरह स्थापित नहीं है।'
+              : 'No planets are fully established in this chart.'}
+          </p>
         )}
       </div>
 

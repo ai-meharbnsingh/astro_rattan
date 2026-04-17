@@ -310,14 +310,16 @@ export default function LalKitabVastuTab({ kundliId, language }: Props) {
   const hi = language === 'hi';
   const [data, setData] = useState<VastuData | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
   const [view, setView] = useState<'compass' | 'floorplan' | 'warnings' | 'tips'>('compass');
 
   useEffect(() => {
     if (!kundliId) return;
     setLoading(true);
+    setError(false);
     api.get(`/api/lalkitab/vastu/${kundliId}`)
       .then(setData)
-      .catch(() => {})
+      .catch(() => setError(true))
       .finally(() => setLoading(false));
   }, [kundliId]);
 
@@ -328,8 +330,27 @@ export default function LalKitabVastuTab({ kundliId, language }: Props) {
   );
 
   if (loading) return (
-    <div className="flex justify-center py-16">
-      <Loader2 className="w-8 h-8 animate-spin text-sacred-gold" />
+    <div className="space-y-4 animate-pulse">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <div className="w-9 h-9 rounded-xl bg-muted" />
+          <div className="space-y-1.5">
+            <div className="h-4 w-32 bg-muted rounded" />
+            <div className="h-3 w-48 bg-muted rounded" />
+          </div>
+        </div>
+        <div className="w-16 h-14 bg-muted rounded-xl" />
+      </div>
+      <div className="flex gap-1 bg-muted/30 rounded-xl p-1">
+        {[1, 2, 3, 4].map(n => <div key={n} className="flex-1 h-10 bg-muted rounded-lg" />)}
+      </div>
+      <div className="h-72 bg-muted rounded-2xl" />
+    </div>
+  );
+
+  if (error) return (
+    <div className="text-center py-10 text-sm text-red-500">
+      {hi ? 'वास्तु डेटा लोड नहीं हो सका।' : 'Could not load Vastu data. Please try again.'}
     </div>
   );
 
@@ -383,10 +404,10 @@ export default function LalKitabVastuTab({ kundliId, language }: Props) {
       {/* View switcher */}
       <div className="flex gap-1 bg-muted/30 rounded-xl p-1">
         {([
-          ['compass',  hi ? 'कम्पास' : 'Compass',    Compass],
+          ['compass',   hi ? 'कम्पास' : 'Compass',      Compass],
           ['floorplan', hi ? 'फ्लोर प्लान' : 'Floor Plan', LayoutGrid],
-          ['warnings', hi ? 'चेतावनी' : 'Warnings',   AlertTriangle],
-          ['tips',     hi ? 'सुझाव' : 'Tips',          Wrench],
+          ['warnings',  hi ? 'चेतावनी' : 'Warnings',    AlertTriangle],
+          ['tips',      hi ? 'सुझाव' : 'Tips',            Wrench],
         ] as const).map(([key, label, Icon]) => (
           <button
             key={key}
@@ -517,6 +538,19 @@ export default function LalKitabVastuTab({ kundliId, language }: Props) {
       {/* ── TIPS VIEW ────────────────────────────────────── */}
       {view === 'tips' && (
         <div className="space-y-2">
+          {data.priority_fixes.length > 0 && (
+            <div className="mb-3 p-3 rounded-xl bg-orange-50 border border-orange-100">
+              <p className="text-xs font-semibold text-orange-700 mb-2">
+                {hi ? 'प्राथमिकता उपाय (शीर्ष 3)' : 'Priority fixes (top 3)'}
+              </p>
+              {data.priority_fixes.map((fix, i) => (
+                <div key={i} className="flex gap-2 mb-1.5 last:mb-0">
+                  <span className={`text-xs font-bold shrink-0 ${PLANET_CSS[fix.planet] ?? ''}`}>{fix.planet}</span>
+                  <p className="text-xs text-orange-800">{hi ? fix.fix.hi : fix.fix.en}</p>
+                </div>
+              ))}
+            </div>
+          )}
           {data.general_layout.map(item => (
             <div key={item.house} className="flex gap-3 p-3 rounded-xl border border-border bg-card">
               <div className="w-8 h-8 rounded-lg bg-sacred-gold/10 text-sacred-gold text-xs font-black flex items-center justify-center shrink-0">

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
 import {
   Loader2, Users, UserPlus, Trash2, Link2,
-  TrendingUp, TrendingDown, ChevronDown, X,
+  TrendingUp, TrendingDown, ChevronDown, ChevronUp, X,
 } from 'lucide-react';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -13,6 +13,16 @@ interface SavedKundli {
   birth_date: string;
   birth_time: string;
   birth_place: string;
+}
+
+interface CrossWakingItem {
+  member_planet: string;
+  member_planet_hi: string;
+  member_house: number;
+  wakes_house: number;
+  effect: 'positive' | 'negative' | 'neutral';
+  text_en: string;
+  text_hi: string;
 }
 
 interface FamilyMember {
@@ -26,6 +36,7 @@ interface FamilyMember {
   support_planets: string[];
   tension_planets: string[];
   theme: { en: string; hi: string } | null;
+  cross_waking_narratives: CrossWakingItem[];
 }
 
 interface FamilyData {
@@ -66,6 +77,64 @@ function HarmonyBar({ score }: { score: number }) {
         <div className={`h-1.5 rounded-full transition-all ${color}`} style={{ width: `${score}%` }} />
       </div>
       <span className="text-xs font-semibold tabular-nums w-6 text-right">{score}</span>
+    </div>
+  );
+}
+
+// ─── Cross-Waking Section ─────────────────────────────────────────────────────
+
+function CrossWakingSection({ items, isHi }: { items: CrossWakingItem[]; isHi: boolean }) {
+  const [open, setOpen] = useState(false);
+  if (!items || items.length === 0) return null;
+
+  const borderColor: Record<string, string> = {
+    positive: 'border-l-green-500',
+    negative: 'border-l-red-500',
+    neutral:  'border-l-gray-300',
+  };
+  const bgColor: Record<string, string> = {
+    positive: 'bg-green-50/60',
+    negative: 'bg-red-50/60',
+    neutral:  'bg-gray-50/60',
+  };
+
+  return (
+    <div className="mt-3">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors w-full text-left"
+      >
+        {open
+          ? <ChevronUp className="w-3.5 h-3.5 shrink-0" />
+          : <ChevronDown className="w-3.5 h-3.5 shrink-0" />}
+        {isHi
+          ? `क्रॉस-वेकिंग पैटर्न (${items.length})`
+          : `Cross-Waking Patterns (${items.length})`}
+      </button>
+
+      {open && (
+        <div className="mt-2 space-y-1.5">
+          {items.map((item, idx) => (
+            <div
+              key={idx}
+              className={`border-l-4 rounded-r-lg px-3 py-2 ${borderColor[item.effect] ?? 'border-l-gray-300'} ${bgColor[item.effect] ?? 'bg-gray-50/60'}`}
+            >
+              <div className="flex items-center gap-1.5 mb-0.5">
+                <span className={`w-2 h-2 rounded-full shrink-0 ${PLANET_DOT[item.member_planet] ?? 'bg-gray-400'}`} />
+                <span className="text-xs font-semibold text-foreground">
+                  {isHi ? item.member_planet_hi : item.member_planet}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {isHi ? `भाव ${item.member_house} → भाव ${item.wakes_house}` : `H${item.member_house} → H${item.wakes_house}`}
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                {isHi ? item.text_hi : item.text_en}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -415,6 +484,12 @@ export default function LalKitabFamilyTab({ kundliId, language }: Props) {
                   )}
                 </div>
               )}
+
+              {/* Cross-waking narratives */}
+              <CrossWakingSection
+                items={member.cross_waking_narratives ?? []}
+                isHi={hi}
+              />
             </div>
           ))}
         </div>

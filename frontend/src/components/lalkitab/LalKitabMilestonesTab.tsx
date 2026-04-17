@@ -18,6 +18,24 @@ interface MilestoneData {
   milestones: Milestone[];
 }
 
+interface SevenYearCycle {
+  cycle_start_age: number;
+  cycle_end_age: number;
+  domain_en: string;
+  domain_hi: string;
+  ruler: string;
+  focus_en: string;
+  focus_hi: string;
+  years_into: number;
+  years_remaining: number;
+}
+
+interface SevenYearCycleData {
+  active_cycle: SevenYearCycle | null;
+  previous_cycle: SevenYearCycle | null;
+  next_cycle: SevenYearCycle | null;
+}
+
 interface Props { kundliId?: string; language: string; }
 
 const PLANET_DOT: Record<string, string> = {
@@ -32,6 +50,10 @@ export default function LalKitabMilestonesTab({ kundliId, language }: Props) {
   const [expandedAge, setExpandedAge] = useState<number | null>(null);
   const hi = language === 'hi';
 
+  const [cycleData, setCycleData] = useState<SevenYearCycleData | null>(null);
+  const [cycleLoading, setCycleLoading] = useState(false);
+  const [cycleError, setCycleError] = useState(false);
+
   useEffect(() => {
     if (!kundliId) return;
     setLoading(true);
@@ -40,6 +62,16 @@ export default function LalKitabMilestonesTab({ kundliId, language }: Props) {
       .then(d => { setData(d); if (d.next_milestone) setExpandedAge(d.next_milestone.age); })
       .catch(() => setError(true))
       .finally(() => setLoading(false));
+  }, [kundliId]);
+
+  useEffect(() => {
+    if (!kundliId) return;
+    setCycleLoading(true);
+    setCycleError(false);
+    api.get(`/api/lalkitab/seven-year-cycle/${kundliId}`)
+      .then(d => setCycleData(d))
+      .catch(() => setCycleError(true))
+      .finally(() => setCycleLoading(false));
   }, [kundliId]);
 
   if (!kundliId) return (
@@ -204,6 +236,138 @@ export default function LalKitabMilestonesTab({ kundliId, language }: Props) {
           </div>
         </div>
       </div>
+
+      {/* ── 7-Year Life Cycle Section ── */}
+      <div className="pt-2">
+        <div className="mb-4">
+          <h3 className="text-lg font-sans font-bold text-sacred-gold">
+            {hi ? 'सात वर्षीय जीवन चक्र' : '7-Year Life Cycle'}
+          </h3>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            {hi
+              ? 'लाल किताब के अनुसार जीवन सात-सात वर्षों के चक्रों में बंटा है।'
+              : 'According to Lal Kitab, life unfolds in 7-year cycles, each ruled by a different domain.'}
+          </p>
+        </div>
+
+        {cycleLoading && (
+          <div className="flex justify-center py-8">
+            <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
+          </div>
+        )}
+
+        {cycleError && !cycleLoading && (
+          <div className="text-center py-6 text-sm text-red-500">
+            {hi ? 'चक्र डेटा लोड नहीं हो सका।' : 'Could not load cycle data.'}
+          </div>
+        )}
+
+        {!cycleLoading && !cycleError && cycleData && (
+          <div className="flex flex-col sm:flex-row gap-3 items-stretch">
+
+            {/* Previous cycle — faded */}
+            {cycleData.previous_cycle && (
+              <div className="flex-1 opacity-50 card-sacred rounded-xl border border-border p-4 bg-muted/30">
+                <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">
+                  {hi ? 'पिछला चक्र' : 'Previous Cycle'}
+                </div>
+                <div className="text-sm font-semibold text-foreground mb-0.5">
+                  {hi ? cycleData.previous_cycle.domain_hi : cycleData.previous_cycle.domain_en}
+                </div>
+                <div className="text-xs text-muted-foreground mb-2">
+                  {hi
+                    ? `${cycleData.previous_cycle.cycle_start_age}–${cycleData.previous_cycle.cycle_end_age} वर्ष`
+                    : `Age ${cycleData.previous_cycle.cycle_start_age}–${cycleData.previous_cycle.cycle_end_age}`}
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className={`w-2 h-2 rounded-full shrink-0 ${PLANET_DOT[cycleData.previous_cycle.ruler] || 'bg-gray-400'}`} />
+                  <span className="text-xs text-muted-foreground">{cycleData.previous_cycle.ruler}</span>
+                </div>
+              </div>
+            )}
+
+            {/* Active cycle — prominent centre card */}
+            {cycleData.active_cycle && (
+              <div className="flex-[2] card-sacred rounded-xl border-2 border-sacred-gold bg-gradient-to-b from-sacred-gold/10 to-transparent p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="w-2 h-2 rounded-full bg-sacred-gold animate-pulse" />
+                  <span className="text-[10px] font-bold text-sacred-gold uppercase tracking-widest">
+                    {hi ? 'सक्रिय चक्र' : 'Active Cycle'}
+                  </span>
+                </div>
+
+                <div className="text-xl font-bold text-foreground mb-0.5">
+                  {hi ? cycleData.active_cycle.domain_hi : cycleData.active_cycle.domain_en}
+                </div>
+                <div className="text-xs text-muted-foreground mb-3">
+                  {hi
+                    ? `${cycleData.active_cycle.cycle_start_age}–${cycleData.active_cycle.cycle_end_age} वर्ष`
+                    : `Age ${cycleData.active_cycle.cycle_start_age}–${cycleData.active_cycle.cycle_end_age}`}
+                </div>
+
+                <div className="flex items-center gap-1.5 mb-3">
+                  <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${PLANET_DOT[cycleData.active_cycle.ruler] || 'bg-gray-400'}`} />
+                  <span className="text-sm font-semibold text-foreground">{cycleData.active_cycle.ruler}</span>
+                </div>
+
+                <p className="text-xs text-foreground/70 leading-relaxed mb-4">
+                  {hi ? cycleData.active_cycle.focus_hi : cycleData.active_cycle.focus_en}
+                </p>
+
+                {/* Progress bar */}
+                <div>
+                  <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                    <span>
+                      {hi
+                        ? `${cycleData.active_cycle.years_into} वर्ष बीते`
+                        : `${cycleData.active_cycle.years_into} yr in`}
+                    </span>
+                    <span>
+                      {hi
+                        ? `${cycleData.active_cycle.years_remaining} वर्ष शेष`
+                        : `${cycleData.active_cycle.years_remaining} yr left`}
+                    </span>
+                  </div>
+                  <div className="w-full h-2.5 bg-sacred-gold/15 rounded-full overflow-hidden border border-sacred-gold/20">
+                    <div
+                      className="h-full bg-sacred-gold rounded-full transition-all duration-700"
+                      style={{
+                        width: `${Math.min(100, Math.round(
+                          (cycleData.active_cycle.years_into /
+                            (cycleData.active_cycle.years_into + cycleData.active_cycle.years_remaining)) * 100
+                        ))}%`
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Next cycle — faded */}
+            {cycleData.next_cycle && (
+              <div className="flex-1 opacity-50 card-sacred rounded-xl border border-border p-4 bg-muted/30">
+                <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">
+                  {hi ? 'अगला चक्र' : 'Next Cycle'}
+                </div>
+                <div className="text-sm font-semibold text-foreground mb-0.5">
+                  {hi ? cycleData.next_cycle.domain_hi : cycleData.next_cycle.domain_en}
+                </div>
+                <div className="text-xs text-muted-foreground mb-2">
+                  {hi
+                    ? `${cycleData.next_cycle.cycle_start_age}–${cycleData.next_cycle.cycle_end_age} वर्ष`
+                    : `Age ${cycleData.next_cycle.cycle_start_age}–${cycleData.next_cycle.cycle_end_age}`}
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className={`w-2 h-2 rounded-full shrink-0 ${PLANET_DOT[cycleData.next_cycle.ruler] || 'bg-gray-400'}`} />
+                  <span className="text-xs text-muted-foreground">{cycleData.next_cycle.ruler}</span>
+                </div>
+              </div>
+            )}
+
+          </div>
+        )}
+      </div>
+
     </div>
   );
 }

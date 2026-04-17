@@ -34,6 +34,7 @@ from app.lalkitab_interpretations import (
     get_all_interpretations_for_chart,
     get_lk_validated_remedies,
 )
+from app.lalkitab_translations import PLANET_NAMES_HI
 
 router = APIRouter()
 
@@ -177,9 +178,9 @@ def lalkitab_remedies(payload: dict, user: dict = Depends(get_current_user), db:
                     # For now, we'll return the same text for both or use a simple map if available.
                     remedies_list.append({
                         "planet_en": planet,
-                        "planet_hi": planet, # Will be translated by frontend translatePlanet
+                        "planet_hi": PLANET_NAMES_HI.get(planet, planet),
                         "remedy_en": r_text,
-                        "remedy_hi": r_text, # Same here or use backend translation if possible
+                        "remedy_hi": r_text,  # Will be replaced by house-based remedies (W1-A)
                     })
         return {"remedies": remedies_list}
     except Exception as exc:
@@ -1440,7 +1441,7 @@ def get_technical_analysis(
     user: dict = Depends(get_current_user),
     db: Any = Depends(get_db),
 ):
-    """Return Chalti Gaadi, Dhur-Dhur-Aage, and Soya Ghar analysis."""
+    """Return Chalti Gaadi, Dhur-Dhur-Aage, Soya Ghar, Planet Statuses, Muththi and Kayam Grah analysis."""
     from app.lalkitab_technical import (
         calculate_chalti_gaadi,
         calculate_dhur_dhur_aage,
@@ -1449,12 +1450,14 @@ def get_technical_analysis(
         calculate_muththi,
     )
     positions, _ = _get_lk_positions(kundli_id, user["sub"], db)
+    lk_aspects = calculate_lk_aspects(positions)
     return {
         "chalti_gaadi": calculate_chalti_gaadi(positions),
         "dhur_dhur_aage": calculate_dhur_dhur_aage(positions),
         "soya_ghar": calculate_soya_ghar(positions),
         "planet_statuses": classify_all_planet_statuses(positions),
         "muththi": calculate_muththi(positions),
+        "kayam": calculate_kayam_grah(positions, lk_aspects),
     }
 
 
@@ -1564,7 +1567,7 @@ def get_family_links(
         except Exception:
             member_chart = {}
         member_positions = _positions_from_chart(member_chart)
-        harmony = calculate_family_harmony(owner_positions, member_positions)
+        harmony = calculate_family_harmony(owner_positions, member_positions, member_name=link["person_name"])
         all_scores.append(harmony["harmony_score"])
         all_positions.extend(member_positions)
         linked_members.append({
@@ -1578,6 +1581,7 @@ def get_family_links(
             "support_planets": harmony["support_planets"],
             "tension_planets": harmony["tension_planets"],
             "theme": harmony["theme"],
+            "cross_waking_narratives": harmony["cross_waking_narratives"],
         })
 
     avg_score = round(sum(all_scores) / len(all_scores)) if all_scores else 0
@@ -1870,3 +1874,31 @@ def delete_remedy_tracker(
         raise HTTPException(status_code=404, detail="Tracker not found")
     db.commit()
     return {"status": "deleted"}
+
+
+# ─────────────────────────────────────────────────────────────
+# Lal Kitab Saala Grah — 35-Year Dasha Timeline
+# ─────────────────────────────────────────────────────────────
+from app.lalkitab_dasha import get_dasha_timeline as _get_dasha_timeline
+from datetime import date as _date_today
+
+
+@router.get("/api/lalkitab/dasha/{kundli_id}")
+def get_lk_dasha(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """LK Saala Grah (Year Ruler) Dasha timeline — which planet rules each year of life."""
+    row = db.execute(
+        "SELECT birth_date FROM kundlis WHERE id = %s AND user_id = %s",
+        (kundli_id, user["sub"]),
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Kundli not found")
+
+    result = _get_dasha_timeline(
+        birth_date=str(row["birth_date"]),
+        current_date=_date_today.today().isoformat(),
+    )
+    return result

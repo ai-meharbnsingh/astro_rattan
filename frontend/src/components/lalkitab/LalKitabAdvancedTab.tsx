@@ -16,7 +16,8 @@ import {
   Shield,
   ArrowRight,
   CheckCircle2,
-  XCircle
+  XCircle,
+  Heart
 } from 'lucide-react';
 import { translatePlanet } from '@/lib/backend-translations';
 import LalKitabDiagnosticChart from './LalKitabDiagnosticChart';
@@ -38,6 +39,11 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
   const [analysisData, setAnalysisData] = useState<any>(null);
   const [analysisLoading, setAnalysisLoading] = useState(false);
   const [analysisError, setAnalysisError] = useState('');
+
+  // Relationship engine state (dhoka, achanak_chot)
+  const [relData, setRelData] = useState<any>(null);
+  const [relLoading, setRelLoading] = useState(false);
+  const [relError, setRelError] = useState('');
 
   const planetPositions = useMemo(() => {
     return Object.entries(chartData?.planetPositions || {}).map(([planet, house]) => ({
@@ -64,6 +70,17 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
       .catch(() => setAnalysisError(t('lk.advanced.loadingAnalysis')))
       .finally(() => setAnalysisLoading(false));
   }, [kundliId]);
+
+  // Fetch Relationship Engine (dhoka, achanak_chot)
+  useEffect(() => {
+    if (!kundliId) return;
+    setRelLoading(true);
+    setRelError('');
+    api.get(`/api/lalkitab/relationship-engine/${kundliId}`)
+      .then(setRelData)
+      .catch(() => setRelError(isHi ? 'संबंध पैटर्न लोड नहीं हो सका।' : 'Could not load relationship patterns.'))
+      .finally(() => setRelLoading(false));
+  }, [kundliId, isHi]);
 
   if (loading) {
     return (
@@ -833,6 +850,148 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
           </section>
         </>
       )}
+
+      {/* ── RELATIONSHIP PATTERNS Section ── */}
+      <section>
+        <div className="flex items-center gap-2 mb-2">
+          <Heart className="w-5 h-5 text-rose-600" />
+          <h3 className="text-xl font-sans font-bold text-foreground">
+            {isHi ? 'संबंध पैटर्न' : 'Relationship Patterns'}
+          </h3>
+        </div>
+        <p className="text-sm text-foreground/60 mb-4">
+          {isHi
+            ? 'ग्रहों के बीच धोखे और अचानक चोट के पैटर्न।'
+            : 'Deception and sudden strike patterns between planetary houses.'}
+        </p>
+
+        {relLoading && (
+          <div className="flex justify-center py-8">
+            <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" />
+          </div>
+        )}
+
+        {relError && !relLoading && (
+          <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm text-center">
+            {relError}
+          </div>
+        )}
+
+        {!relLoading && !relError && relData && (
+          <>
+            {/* Empty state */}
+            {(!relData.dhoka || relData.dhoka.length === 0) && (!relData.achanak_chot || relData.achanak_chot.length === 0) && (
+              <div className="py-10 text-center border border-dashed border-green-300 rounded-xl bg-green-500/5">
+                <CheckCircle2 className="w-8 h-8 text-green-500 mx-auto mb-2" />
+                <p className="text-green-700 font-medium text-sm">
+                  {isHi
+                    ? 'कोई सक्रिय धोखे या अचानक चोट के पैटर्न नहीं पाए गए।'
+                    : 'No active deception or sudden strike patterns detected.'}
+                </p>
+              </div>
+            )}
+
+            {/* Dhoka (Deception) */}
+            {relData.dhoka && relData.dhoka.length > 0 && (
+              <div className="mb-6">
+                <h4 className="flex items-center gap-2 text-base font-sans font-bold text-orange-800 mb-3">
+                  <EyeOff className="w-4 h-4 text-orange-600" />
+                  {isHi ? 'धोखा (छल)' : 'Dhoka (Deception)'}
+                </h4>
+                <div className="space-y-3">
+                  {relData.dhoka.map((item: any, i: number) => {
+                    const isHigh = item.severity === 'high';
+                    return (
+                      <div
+                        key={i}
+                        className={`p-4 rounded-xl border ${
+                          isHigh
+                            ? 'border-red-300 bg-red-500/5'
+                            : 'border-orange-200 bg-orange-500/5'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-3 mb-2">
+                          <h5 className={`font-bold text-sm ${isHigh ? 'text-red-800' : 'text-orange-800'}`}>
+                            {item.name}
+                          </h5>
+                          <span className={`shrink-0 px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${
+                            isHigh
+                              ? 'bg-red-200 text-red-800 border-red-300'
+                              : 'bg-orange-100 text-orange-800 border-orange-200'
+                          }`}>
+                            {item.severity}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-xs text-foreground/60 mb-2">
+                          <span className="font-semibold">{isHi ? 'भाव' : 'House'} {item.house_src}</span>
+                          <ArrowRight className="w-3 h-3" />
+                          <span className="font-semibold">{isHi ? 'भाव' : 'House'} {item.house_tgt}</span>
+                          {item.planets_involved && item.planets_involved.length > 0 && (
+                            <span className="ml-1">
+                              ({item.planets_involved.map((p: string) => translatePlanet(p, language)).join(', ')})
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-foreground/70 leading-relaxed">
+                          {isHi ? item.desc_hi : item.desc_en}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Achanak Chot (Sudden Strike) */}
+            {relData.achanak_chot && relData.achanak_chot.length > 0 && (
+              <div>
+                <h4 className="flex items-center gap-2 text-base font-sans font-bold text-red-800 mb-3">
+                  <Zap className="w-4 h-4 text-red-600" />
+                  {isHi ? 'अचानक चोट (अप्रत्याशित प्रहार)' : 'Achanak Chot (Sudden Strike)'}
+                </h4>
+                <div className="space-y-3">
+                  {relData.achanak_chot.map((item: any, i: number) => (
+                    <div
+                      key={i}
+                      className="p-4 rounded-xl border border-red-300 bg-red-500/5"
+                    >
+                      <div className="flex items-start justify-between gap-3 mb-2">
+                        <h5 className="font-bold text-sm text-red-800">{item.name}</h5>
+                        <span className="shrink-0 flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-red-200 text-red-800 border border-red-300">
+                          <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />
+                          {isHi ? 'खतरा' : 'DANGER'}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs text-foreground/60 mb-2">
+                        <span className="font-semibold">{isHi ? 'प्रहारक भाव' : 'Striker H'}{item.striker_house}</span>
+                        <ArrowRight className="w-3 h-3" />
+                        <span className="font-semibold">{isHi ? 'लक्ष्य भाव' : 'Target H'}{item.target_house}</span>
+                        {item.planets_involved && item.planets_involved.length > 0 && (
+                          <span className="ml-1">
+                            ({item.planets_involved.map((p: string) => translatePlanet(p, language)).join(', ')})
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-foreground/70 leading-relaxed mb-2">
+                        {isHi ? item.desc_hi : item.desc_en}
+                      </p>
+                      {(item.warning_en || item.warning_hi) && (
+                        <div className="flex items-start gap-1.5 mt-2 p-2 rounded-lg bg-amber-50 border border-amber-200">
+                          <AlertTriangle className="w-3.5 h-3.5 text-amber-600 mt-0.5 shrink-0" />
+                          <p className="text-xs text-amber-700 font-medium">
+                            {isHi ? item.warning_hi : item.warning_en}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </section>
+
     </div>
   );
 }
