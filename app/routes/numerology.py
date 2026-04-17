@@ -1,7 +1,7 @@
 """Numerology calculation routes."""
 from typing import Optional
 from fastapi import APIRouter, HTTPException, status
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field
 from app.models import NumerologyRequest, MobileNumerologyRequest
 from app.numerology_engine import (
     calculate_numerology,
@@ -13,6 +13,28 @@ from app.numerology_engine import (
 from app.numerology_forecast_engine import calculate_forecast
 
 router = APIRouter()
+
+def _validate_birth_date_or_400(birth_date: str) -> None:
+    from datetime import date, datetime
+    try:
+        bd = datetime.strptime(birth_date, "%Y-%m-%d").date()
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid input — please check your date format (YYYY-MM-DD)",
+        )
+
+    today = date.today()
+    if bd > today:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid input — birth date cannot be in the future",
+        )
+    if (today.year - bd.year) > 120:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid input — birth date is too far in the past",
+        )
 
 
 class NameNumerologyRequest(BaseModel):
@@ -37,21 +59,6 @@ class ForecastRequest(BaseModel):
     name: Optional[str] = Field(default=None, max_length=200)
     target_date: Optional[str] = Field(default=None, max_length=20)
 
-    @field_validator("birth_date")
-    @classmethod
-    def validate_birth_date_range(cls, v: str):
-        from datetime import date, datetime
-        try:
-            bd = datetime.strptime(v, "%Y-%m-%d").date()
-        except Exception:
-            raise ValueError("birth_date must be YYYY-MM-DD format")
-        today = date.today()
-        if bd > today:
-            raise ValueError("birth_date cannot be in the future")
-        if (today.year - bd.year) > 120:
-            raise ValueError("birth_date is too far in the past")
-        return v
-
 
 @router.post("/api/numerology/calculate")
 def numerology_calculate(req: NumerologyRequest):
@@ -59,6 +66,7 @@ def numerology_calculate(req: NumerologyRequest):
     Calculate Pythagorean numerology: life path, expression, soul urge, personality.
     No authentication required.
     """
+    _validate_birth_date_or_400(req.birth_date)
     try:
         result = calculate_numerology(req.name, req.birth_date)
     except ValueError as exc:
@@ -76,6 +84,8 @@ def mobile_numerology(req: MobileNumerologyRequest):
     Calculate mobile number numerology: vibration number, prediction, qualities, challenges.
     No authentication required.
     """
+    if req.birth_date:
+        _validate_birth_date_or_400(req.birth_date)
     try:
         result = calculate_mobile_numerology(
             req.phone_number,
@@ -148,6 +158,7 @@ def numerology_forecast(req: ForecastRequest):
     Personal Year/Month/Day + Universal Year/Month/Day numerology forecast.
     No authentication required.
     """
+    _validate_birth_date_or_400(req.birth_date)
     try:
         result = calculate_forecast(
             birth_date=req.birth_date,

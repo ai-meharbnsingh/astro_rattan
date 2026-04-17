@@ -2803,7 +2803,10 @@ def _hidden_passion(name: str) -> dict:
             n = PYTHAGOREAN_MAP.get(c.upper(), 0)
             if n: counts[n] = counts.get(n, 0) + 1
     if not counts: return {"number": 0, "count": 0}
-    max_num = max(counts, key=counts.get)
+    # Deterministic tie-break: pick the smallest digit among the top counts.
+    max_count = max(counts.values())
+    top_nums = [n for n, c in counts.items() if c == max_count]
+    max_num = min(top_nums)
     return {"number": max_num, "count": counts[max_num], **HIDDEN_PASSION_PREDICTIONS.get(max_num, {})}
 
 HIDDEN_PASSION_PREDICTIONS = {
