@@ -31,6 +31,27 @@ def list_yoga_types():
     return {"yoga_types": YOGA_TYPES, "total": len(YOGA_TYPES)}
 
 
+@router.get("/categories", status_code=status.HTTP_200_OK)
+def list_yoga_categories():
+    """Return available categories from the declarative yoga database."""
+    from app.yoga_rule_engine import list_categories, load_yoga_rules
+    cats = list_categories()
+    data = load_yoga_rules()
+    # Count yogas per category + pick a bilingual label from the first entry
+    category_info = []
+    for c in cats:
+        samples = [y for y in data if y.get("category") == c]
+        label_en = samples[0].get("category_label_en", c.capitalize()) if samples else c
+        label_hi = samples[0].get("category_label_hi", c) if samples else c
+        category_info.append({
+            "key": c,
+            "label_en": label_en,
+            "label_hi": label_hi,
+            "count": len(samples),
+        })
+    return {"categories": category_info}
+
+
 @router.get("", status_code=status.HTTP_200_OK)
 def search_for_yoga(
     yoga: str = Query(..., min_length=2, description="Yoga name to search for (e.g. 'gajakesari', 'Ruchaka Yoga')"),

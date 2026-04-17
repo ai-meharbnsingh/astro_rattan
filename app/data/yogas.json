@@ -1,0 +1,776 @@
+[
+  {
+    "key": "kemadruma",
+    "name_en": "Kemadruma Yoga",
+    "name_hi": "केमद्रुम योग",
+    "category": "moon",
+    "category_label_en": "Moon-Based Yoga",
+    "category_label_hi": "चंद्र आधारित योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "no_planet_in_houses_from_moon", "offsets": [2, 12]},
+      {"type": "no_planet_in_kendra_from_moon"}
+    ]},
+    "effect_en": "Moon stands alone — indicates struggle, loneliness, and financial hardship; the classical 'poverty yoga'.",
+    "effect_hi": "चंद्र एकाकी — संघर्ष, एकाकीपन, आर्थिक कष्ट; शास्त्रीय 'निर्धनता योग'।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 12",
+    "nature": "malefic"
+  },
+  {
+    "key": "sunapha",
+    "name_en": "Sunapha Yoga",
+    "name_hi": "सुनफा योग",
+    "category": "moon",
+    "category_label_en": "Moon-Based Yoga",
+    "category_label_hi": "चंद्र आधारित योग",
+    "rules": {"type": "OR", "conditions": [
+      {"type": "planet_in_house_from_moon", "offset": 2, "exclude": ["Sun", "Moon", "Rahu", "Ketu"]}
+    ]},
+    "effect_en": "Planets in 2nd from Moon — self-made prosperity, good wealth, dignified life.",
+    "effect_hi": "चंद्र से द्वितीय में ग्रह — स्व-निर्मित समृद्धि, धन, प्रतिष्ठित जीवन।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 10",
+    "nature": "benefic"
+  },
+  {
+    "key": "anapha",
+    "name_en": "Anapha Yoga",
+    "name_hi": "अनफा योग",
+    "category": "moon",
+    "category_label_en": "Moon-Based Yoga",
+    "category_label_hi": "चंद्र आधारित योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "planet_in_house_from_moon", "offset": 12, "exclude": ["Sun", "Moon", "Rahu", "Ketu"]}
+    ]},
+    "effect_en": "Planets in 12th from Moon — charming personality, good health, generosity.",
+    "effect_hi": "चंद्र से द्वादश में ग्रह — मनोहर व्यक्तित्व, स्वास्थ्य, उदारता।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 10",
+    "nature": "benefic"
+  },
+  {
+    "key": "durudhara",
+    "name_en": "Durudhara Yoga",
+    "name_hi": "दुरुधरा योग",
+    "category": "moon",
+    "category_label_en": "Moon-Based Yoga",
+    "category_label_hi": "चंद्र आधारित योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "planet_in_house_from_moon", "offset": 2, "exclude": ["Sun", "Moon", "Rahu", "Ketu"]},
+      {"type": "planet_in_house_from_moon", "offset": 12, "exclude": ["Sun", "Moon", "Rahu", "Ketu"]}
+    ]},
+    "effect_en": "Planets in both 2nd and 12th from Moon — abundant wealth, comfort, luxury, respected life.",
+    "effect_hi": "चंद्र से दोनों 2 व 12 में ग्रह — अपार धन, सुख, विलास, प्रतिष्ठित जीवन।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 11",
+    "nature": "benefic"
+  },
+  {
+    "key": "vasumati",
+    "name_en": "Vasumati Yoga",
+    "name_hi": "वसुमति योग",
+    "category": "moon",
+    "category_label_en": "Moon-Based Yoga",
+    "category_label_hi": "चंद्र आधारित योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "count_benefics_in_houses_from_moon", "offsets": [3, 6, 10, 11], "operator": ">=", "count": 2}
+    ]},
+    "effect_en": "Benefics in 3/6/10/11 from Moon — steady income, prosperity from multiple streams.",
+    "effect_hi": "चंद्र से 3/6/10/11 में शुभ ग्रह — स्थायी आय, बहुस्रोत समृद्धि।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 13",
+    "nature": "benefic"
+  },
+  {
+    "key": "subhakartari_lagna",
+    "name_en": "Subhakartari Yoga (Lagna)",
+    "name_hi": "शुभकर्तरी योग (लग्न)",
+    "category": "kendra",
+    "category_label_en": "Kendra Yoga",
+    "category_label_hi": "केंद्र योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "benefic_in_house", "house": 2},
+      {"type": "benefic_in_house", "house": 12}
+    ]},
+    "effect_en": "Lagna flanked by benefics — protection, dignity, favorable environment throughout life.",
+    "effect_hi": "लग्न के दोनों ओर शुभ ग्रह — सुरक्षा, सम्मान, अनुकूल परिस्थितियाँ।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 17",
+    "nature": "benefic"
+  },
+  {
+    "key": "papakartari_lagna",
+    "name_en": "Papakartari Yoga (Lagna)",
+    "name_hi": "पापकर्तरी योग (लग्न)",
+    "category": "kendra",
+    "category_label_en": "Kendra Yoga",
+    "category_label_hi": "केंद्र योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "malefic_in_house", "house": 2},
+      {"type": "malefic_in_house", "house": 12}
+    ]},
+    "effect_en": "Lagna flanked by malefics — obstacles, enemies, unfriendly environment, hard struggles.",
+    "effect_hi": "लग्न के दोनों ओर पाप ग्रह — बाधाएँ, शत्रु, प्रतिकूल परिस्थितियाँ।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 17",
+    "nature": "malefic"
+  },
+  {
+    "key": "lakshmi",
+    "name_en": "Lakshmi Yoga",
+    "name_hi": "लक्ष्मी योग",
+    "category": "dhana",
+    "category_label_en": "Dhana Yoga",
+    "category_label_hi": "धन योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "lord_of_house_in_houses", "lord_of": 9, "in_houses": [1, 5, 9, 10, 11]},
+      {"type": "planet_in_own_or_exaltation", "planet": "Venus"}
+    ]},
+    "effect_en": "Bestows abundant wealth, lovable spouse, fame, and dignity — classical Lakshmi Yoga.",
+    "effect_hi": "अपार धन, प्रिय जीवनसाथी, यश एवं प्रतिष्ठा — शास्त्रीय लक्ष्मी योग।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 35",
+    "nature": "benefic"
+  },
+  {
+    "key": "saraswati",
+    "name_en": "Saraswati Yoga",
+    "name_hi": "सरस्वती योग",
+    "category": "dhana",
+    "category_label_en": "Knowledge & Wealth Yoga",
+    "category_label_hi": "ज्ञान-धन योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "planet_in_houses", "planet": "Mercury", "houses": [1, 2, 4, 5, 7, 9, 10]},
+      {"type": "planet_in_houses", "planet": "Jupiter", "houses": [1, 2, 4, 5, 7, 9, 10]},
+      {"type": "planet_in_houses", "planet": "Venus", "houses": [1, 2, 4, 5, 7, 9, 10]}
+    ]},
+    "effect_en": "Mercury + Jupiter + Venus in Kendra/Trikona/2nd — scholar, artist, wealth through intellect.",
+    "effect_hi": "बुध+गुरु+शुक्र केंद्र/त्रिकोण/द्वितीय में — विद्वान, कलाकार, बुद्धि-आधारित धन।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 37",
+    "nature": "benefic"
+  },
+  {
+    "key": "kahala",
+    "name_en": "Kahala Yoga",
+    "name_hi": "कहल योग",
+    "category": "dhana",
+    "category_label_en": "Dhana Yoga",
+    "category_label_hi": "धन योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "lords_conjunct_or_mutual", "lord_a": 4, "lord_b": 9, "in_houses": [1, 4, 5, 7, 9, 10]}
+    ]},
+    "effect_en": "4th and 9th lords connected in Kendra/Trikona — lands, vehicles, high social rank.",
+    "effect_hi": "चतुर्थेश एवं नवमेश केंद्र/त्रिकोण में संयुक्त — भूमि, वाहन, उच्च प्रतिष्ठा।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 36",
+    "nature": "benefic"
+  },
+  {
+    "key": "parvata",
+    "name_en": "Parvata Yoga",
+    "name_hi": "पर्वत योग",
+    "category": "dhana",
+    "category_label_en": "Dhana Yoga",
+    "category_label_hi": "धन योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "lord_of_house_in_houses", "lord_of": 1, "in_houses": [1, 4, 7, 10]},
+      {"type": "lord_of_house_in_houses", "lord_of": 12, "in_houses": [1, 4, 7, 10]},
+      {"type": "benefic_in_house", "house": 1}
+    ]},
+    "effect_en": "Tall, famous, learned, generous — rises to great heights like a mountain (Parvata).",
+    "effect_hi": "दीर्घकाय, यशस्वी, विद्वान, उदार — पर्वत-सम ऊँचाइयों पर।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 38",
+    "nature": "benefic"
+  },
+  {
+    "key": "chamara",
+    "name_en": "Chamara Yoga",
+    "name_hi": "चमर योग",
+    "category": "dhana",
+    "category_label_en": "Dhana Yoga",
+    "category_label_hi": "धन योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "lord_in_own_or_exaltation_in_houses", "lord_of": 1, "in_houses": [1, 4, 7, 10]},
+      {"type": "planet_aspects_planet", "source": "Jupiter", "target_lord_of": 1}
+    ]},
+    "effect_en": "Lagna lord exalted in Kendra with Jupiter's aspect — commands respect, royal status, long life.",
+    "effect_hi": "लग्नेश उच्च केंद्र में, बृहस्पति की दृष्टि — सम्मान, राज-पद, दीर्घायु।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 39",
+    "nature": "benefic"
+  },
+  {
+    "key": "dhenu",
+    "name_en": "Dhenu Yoga",
+    "name_hi": "धेनु योग",
+    "category": "dhana",
+    "category_label_en": "Dhana Yoga",
+    "category_label_hi": "धन योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "lords_conjunct_or_mutual", "lord_a": 2, "lord_b": 11, "in_houses": [1, 4, 5, 7, 9, 10, 11]}
+    ]},
+    "effect_en": "2nd and 11th lords connected — wealth flows like a cow (Dhenu) yielding plenty.",
+    "effect_hi": "द्वितीयेश+एकादशेश संयुक्त — धेनु-सम भरपूर धन।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 40",
+    "nature": "benefic"
+  },
+  {
+    "key": "bharati",
+    "name_en": "Bharati Yoga",
+    "name_hi": "भारती योग",
+    "category": "dhana",
+    "category_label_en": "Dhana Yoga",
+    "category_label_hi": "धन योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "lord_of_house_in_houses", "lord_of": 2, "in_houses": [1, 4, 5, 7, 9, 10]},
+      {"type": "lord_of_house_in_houses", "lord_of": 5, "in_houses": [1, 4, 5, 7, 9, 10]},
+      {"type": "lord_of_house_in_houses", "lord_of": 11, "in_houses": [1, 4, 5, 7, 9, 10]}
+    ]},
+    "effect_en": "2/5/11 lords in Kendra/Trikona — accumulated wealth, eloquence, respect.",
+    "effect_hi": "द्वितीय/पंचम/एकादशेश केंद्र/त्रिकोण में — संचित धन, वाक्-पटुता, सम्मान।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 41",
+    "nature": "benefic"
+  },
+  {
+    "key": "srikantha",
+    "name_en": "Srikantha Yoga",
+    "name_hi": "श्रीकण्ठ योग",
+    "category": "fame",
+    "category_label_en": "Fame Yoga",
+    "category_label_hi": "यश योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "lord_of_house_in_houses", "lord_of": 1, "in_houses": [1, 4, 5, 7, 9, 10]},
+      {"type": "planet_in_houses", "planet": "Moon", "houses": [1, 4, 5, 7, 9, 10]},
+      {"type": "lord_of_house_in_houses", "lord_of": 5, "in_houses": [1, 4, 5, 7, 9, 10]}
+    ]},
+    "effect_en": "Lagna lord + Moon + 5th lord in Kendra/Trikona — devotion to Shiva, fame, spiritual dignity.",
+    "effect_hi": "लग्नेश+चंद्र+पंचमेश केंद्र/त्रिकोण में — शिव भक्ति, यश, आध्यात्मिक प्रतिष्ठा।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 43",
+    "nature": "benefic"
+  },
+  {
+    "key": "srinatha",
+    "name_en": "Srinatha Yoga",
+    "name_hi": "श्रीनाथ योग",
+    "category": "fame",
+    "category_label_en": "Fame Yoga",
+    "category_label_hi": "यश योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "lords_conjunct_or_mutual", "lord_a": 7, "lord_b": 10, "in_houses": [1, 4, 5, 7, 9, 10]},
+      {"type": "planet_involved", "planet": "Venus", "in_houses": [1, 4, 5, 7, 9, 10]}
+    ]},
+    "effect_en": "7th + 10th lords connected with Venus — devotion to Vishnu, fame, comfortable life.",
+    "effect_hi": "सप्तमेश+दशमेश शुक्र सहित — विष्णु भक्ति, यश, सुखी जीवन।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 44",
+    "nature": "benefic"
+  },
+  {
+    "key": "amala",
+    "name_en": "Amala Yoga",
+    "name_hi": "अमल योग",
+    "category": "fame",
+    "category_label_en": "Fame Yoga",
+    "category_label_hi": "यश योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "benefic_in_house", "house": 10}
+    ]},
+    "effect_en": "Benefic planet in 10th house — spotless reputation, fame for good deeds, lasting legacy.",
+    "effect_hi": "दशम भाव में शुभ ग्रह — निर्मल यश, सद्कर्म से प्रसिद्धि, स्थायी विरासत।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 45",
+    "nature": "benefic"
+  },
+  {
+    "key": "pushkala",
+    "name_en": "Pushkala Yoga",
+    "name_hi": "पुष्कल योग",
+    "category": "fame",
+    "category_label_en": "Fame Yoga",
+    "category_label_hi": "यश योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "lord_of_house_in_houses", "lord_of": 1, "in_houses": [1, 4, 7, 10]},
+      {"type": "moon_in_strong_sign"}
+    ]},
+    "effect_en": "Lagna lord in Kendra with strong Moon — royal patronage, prosperity, respected speech.",
+    "effect_hi": "लग्नेश केंद्र में, चंद्र बलवान — राज-कृपा, समृद्धि, वाणी में प्रतिष्ठा।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 46",
+    "nature": "benefic"
+  },
+  {
+    "key": "vasi",
+    "name_en": "Vasi Yoga",
+    "name_hi": "वासी योग",
+    "category": "sun",
+    "category_label_en": "Sun-Based Yoga",
+    "category_label_hi": "सूर्य आधारित योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "planet_in_house_from_sun", "offset": 12, "exclude": ["Sun", "Moon", "Rahu", "Ketu"]}
+    ]},
+    "effect_en": "Non-luminary in 12th from Sun — noble character, intellectual strength.",
+    "effect_hi": "सूर्य से द्वादश में ग्रह — उत्तम चरित्र, बौद्धिक बल।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 8",
+    "nature": "benefic"
+  },
+  {
+    "key": "vesi",
+    "name_en": "Vesi Yoga",
+    "name_hi": "वेसी योग",
+    "category": "sun",
+    "category_label_en": "Sun-Based Yoga",
+    "category_label_hi": "सूर्य आधारित योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "planet_in_house_from_sun", "offset": 2, "exclude": ["Sun", "Moon", "Rahu", "Ketu"]}
+    ]},
+    "effect_en": "Non-luminary in 2nd from Sun — good speech, truthful, virtuous.",
+    "effect_hi": "सूर्य से द्वितीय में ग्रह — वाक्-सौंदर्य, सत्यनिष्ठ, सदाचारी।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 8",
+    "nature": "benefic"
+  },
+  {
+    "key": "ubhayachari",
+    "name_en": "Ubhayachari Yoga",
+    "name_hi": "उभयचरी योग",
+    "category": "sun",
+    "category_label_en": "Sun-Based Yoga",
+    "category_label_hi": "सूर्य आधारित योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "planet_in_house_from_sun", "offset": 2, "exclude": ["Sun", "Moon", "Rahu", "Ketu"]},
+      {"type": "planet_in_house_from_sun", "offset": 12, "exclude": ["Sun", "Moon", "Rahu", "Ketu"]}
+    ]},
+    "effect_en": "Non-luminaries in both 2nd and 12th from Sun — prosperous, eloquent, respected.",
+    "effect_hi": "सूर्य के दोनों ओर ग्रह — समृद्ध, वाक्-पटु, सम्मानित।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 9",
+    "nature": "benefic"
+  },
+  {
+    "key": "dharma_karmadhipati",
+    "name_en": "Dharma-Karmadhipati Yoga",
+    "name_hi": "धर्म-कर्माधिपति योग",
+    "category": "raja",
+    "category_label_en": "Raja Yoga",
+    "category_label_hi": "राज योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "lords_conjunct_or_mutual", "lord_a": 9, "lord_b": 10, "in_houses": [1, 4, 5, 7, 9, 10]}
+    ]},
+    "effect_en": "9th and 10th lords connected in Kendra/Trikona — dharmic career success, respected leadership.",
+    "effect_hi": "नवमेश+दशमेश केंद्र/त्रिकोण में — धर्म-युक्त कर्म-सफलता, नेतृत्व।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 50",
+    "nature": "benefic"
+  },
+  {
+    "key": "kendra_trikona",
+    "name_en": "Kendra-Trikona Rajayoga",
+    "name_hi": "केंद्र-त्रिकोण राजयोग",
+    "category": "raja",
+    "category_label_en": "Raja Yoga",
+    "category_label_hi": "राज योग",
+    "rules": {"type": "OR", "conditions": [
+      {"type": "lords_conjunct_or_mutual", "lord_a": 1, "lord_b": 5, "in_houses": [1, 4, 5, 7, 9, 10]},
+      {"type": "lords_conjunct_or_mutual", "lord_a": 1, "lord_b": 9, "in_houses": [1, 4, 5, 7, 9, 10]},
+      {"type": "lords_conjunct_or_mutual", "lord_a": 5, "lord_b": 10, "in_houses": [1, 4, 5, 7, 9, 10]},
+      {"type": "lords_conjunct_or_mutual", "lord_a": 4, "lord_b": 5, "in_houses": [1, 4, 5, 7, 9, 10]},
+      {"type": "lords_conjunct_or_mutual", "lord_a": 4, "lord_b": 9, "in_houses": [1, 4, 5, 7, 9, 10]}
+    ]},
+    "effect_en": "Lord of Kendra + lord of Trikona in mutual Kendra/Trikona — classical Raja Yoga for success.",
+    "effect_hi": "केंद्रेश+त्रिकोणेश केंद्र/त्रिकोण में संयुक्त — शास्त्रीय राजयोग।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 49",
+    "nature": "benefic"
+  },
+  {
+    "key": "vipareeta_harsha",
+    "name_en": "Harsha Vipareeta Raja Yoga",
+    "name_hi": "हर्ष विपरीत राजयोग",
+    "category": "raja",
+    "category_label_en": "Vipareeta Raja Yoga",
+    "category_label_hi": "विपरीत राज योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "lord_of_house_in_houses", "lord_of": 6, "in_houses": [6, 8, 12]}
+    ]},
+    "effect_en": "6th lord in 6/8/12 — defeats enemies, recovers from illness, rises through adversity.",
+    "effect_hi": "षष्ठेश 6/8/12 में — शत्रु-नाश, रोग-मुक्ति, प्रतिकूलता से उत्थान।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 52",
+    "nature": "benefic"
+  },
+  {
+    "key": "vipareeta_sarala",
+    "name_en": "Sarala Vipareeta Raja Yoga",
+    "name_hi": "सरल विपरीत राजयोग",
+    "category": "raja",
+    "category_label_en": "Vipareeta Raja Yoga",
+    "category_label_hi": "विपरीत राज योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "lord_of_house_in_houses", "lord_of": 8, "in_houses": [6, 8, 12]}
+    ]},
+    "effect_en": "8th lord in 6/8/12 — long life, unexpected gains, overcoming hidden obstacles.",
+    "effect_hi": "अष्टमेश 6/8/12 में — दीर्घायु, अप्रत्याशित लाभ, गूढ़ बाधाओं पर विजय।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 52",
+    "nature": "benefic"
+  },
+  {
+    "key": "vipareeta_vimala",
+    "name_en": "Vimala Vipareeta Raja Yoga",
+    "name_hi": "विमल विपरीत राजयोग",
+    "category": "raja",
+    "category_label_en": "Vipareeta Raja Yoga",
+    "category_label_hi": "विपरीत राज योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "lord_of_house_in_houses", "lord_of": 12, "in_houses": [6, 8, 12]}
+    ]},
+    "effect_en": "12th lord in 6/8/12 — virtuous character, good expenditure, spiritual liberation.",
+    "effect_hi": "द्वादशेश 6/8/12 में — सदाचार, उत्तम व्यय, मोक्ष-प्रवृत्ति।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 52",
+    "nature": "benefic"
+  },
+  {
+    "key": "sun_raja",
+    "name_en": "Sun-Caused Raja Yoga",
+    "name_hi": "सूर्य-जनित राजयोग",
+    "category": "raja",
+    "category_label_en": "Raja Yoga",
+    "category_label_hi": "राज योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "planet_in_own_or_exaltation", "planet": "Sun"},
+      {"type": "planet_in_houses", "planet": "Sun", "houses": [1, 4, 7, 10]}
+    ]},
+    "effect_en": "Exalted/own-sign Sun in Kendra — royal favor, leadership, fatherly authority.",
+    "effect_hi": "सूर्य स्व/उच्च राशि में केंद्र स्थित — राज-कृपा, नेतृत्व, पितृ-तुल्य सत्ता।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 51",
+    "nature": "benefic"
+  },
+  {
+    "key": "moon_raja",
+    "name_en": "Moon-Caused Raja Yoga",
+    "name_hi": "चंद्र-जनित राजयोग",
+    "category": "raja",
+    "category_label_en": "Raja Yoga",
+    "category_label_hi": "राज योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "planet_in_own_or_exaltation", "planet": "Moon"},
+      {"type": "planet_in_houses", "planet": "Moon", "houses": [1, 4, 7, 10]}
+    ]},
+    "effect_en": "Exalted/own-sign Moon in Kendra — popularity, public love, maternal protection.",
+    "effect_hi": "चंद्र स्व/उच्च राशि में केंद्र स्थित — लोकप्रियता, जनप्रिय, मातृ-रक्षा।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 51",
+    "nature": "benefic"
+  },
+  {
+    "key": "mars_raja",
+    "name_en": "Mars-Caused Raja Yoga",
+    "name_hi": "मंगल-जनित राजयोग",
+    "category": "raja",
+    "category_label_en": "Raja Yoga",
+    "category_label_hi": "राज योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "planet_in_own_or_exaltation", "planet": "Mars"},
+      {"type": "planet_in_houses", "planet": "Mars", "houses": [1, 4, 7, 10]}
+    ]},
+    "effect_en": "Exalted/own-sign Mars in Kendra — bravery, military success, victory over enemies.",
+    "effect_hi": "मंगल स्व/उच्च राशि में केंद्र स्थित — वीरता, युद्ध-विजय, शत्रु-नाश।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 51",
+    "nature": "benefic"
+  },
+  {
+    "key": "nabhasa_rajju",
+    "name_en": "Rajju Yoga",
+    "name_hi": "रज्जु योग",
+    "category": "nabhasa",
+    "category_label_en": "Nabhasa Yoga",
+    "category_label_hi": "नाभस योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "all_planets_in_sign_category", "category": "movable"}
+    ]},
+    "effect_en": "All 7 classical planets in movable (chara) signs — constant travel, restless, commerce.",
+    "effect_hi": "सभी 7 शास्त्रीय ग्रह चर राशियों में — सतत यात्रा, चंचल, वाणिज्य।",
+    "sloka_ref": "Phaladeepika Adh. 7 sloka 1",
+    "nature": "mixed"
+  },
+  {
+    "key": "nabhasa_musala",
+    "name_en": "Musala Yoga",
+    "name_hi": "मुसल योग",
+    "category": "nabhasa",
+    "category_label_en": "Nabhasa Yoga",
+    "category_label_hi": "नाभस योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "all_planets_in_sign_category", "category": "fixed"}
+    ]},
+    "effect_en": "All 7 planets in fixed (sthira) signs — stable, determined, steady wealth accumulation.",
+    "effect_hi": "सभी 7 ग्रह स्थिर राशियों में — स्थिर, दृढ़, धीमा परन्तु निरंतर धन-संचय।",
+    "sloka_ref": "Phaladeepika Adh. 7 sloka 1",
+    "nature": "benefic"
+  },
+  {
+    "key": "nabhasa_nala",
+    "name_en": "Nala Yoga",
+    "name_hi": "नल योग",
+    "category": "nabhasa",
+    "category_label_en": "Nabhasa Yoga",
+    "category_label_hi": "नाभस योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "all_planets_in_sign_category", "category": "dual"}
+    ]},
+    "effect_en": "All 7 planets in dual (dvisvabhava) signs — adaptable, diplomatic, intellectual.",
+    "effect_hi": "सभी 7 ग्रह द्विस्वभाव राशियों में — अनुकूलनीय, कूटनीतिज्ञ, बौद्धिक।",
+    "sloka_ref": "Phaladeepika Adh. 7 sloka 1",
+    "nature": "benefic"
+  },
+  {
+    "key": "nabhasa_mala",
+    "name_en": "Mala Yoga",
+    "name_hi": "माला योग",
+    "category": "nabhasa",
+    "category_label_en": "Nabhasa Yoga",
+    "category_label_hi": "नाभस योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "benefics_only_in_kendras"}
+    ]},
+    "effect_en": "All three benefics occupy the three Kendras (besides Lagna) — garland-like prosperity.",
+    "effect_hi": "तीनों शुभ ग्रह केंद्रों में — माला-सदृश समृद्धि।",
+    "sloka_ref": "Phaladeepika Adh. 7 sloka 3",
+    "nature": "benefic"
+  },
+  {
+    "key": "nabhasa_sarpa",
+    "name_en": "Sarpa Yoga",
+    "name_hi": "सर्प योग",
+    "category": "nabhasa",
+    "category_label_en": "Nabhasa Yoga",
+    "category_label_hi": "नाभस योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "malefics_only_in_kendras"}
+    ]},
+    "effect_en": "All three malefics occupy Kendras — suffering, conflict, poisonous environment.",
+    "effect_hi": "तीनों पाप ग्रह केंद्रों में — कष्ट, विवाद, विषाक्त वातावरण।",
+    "sloka_ref": "Phaladeepika Adh. 7 sloka 3",
+    "nature": "malefic"
+  },
+  {
+    "key": "nabhasa_gada",
+    "name_en": "Gada Yoga",
+    "name_hi": "गदा योग",
+    "category": "nabhasa",
+    "category_label_en": "Nabhasa Yoga",
+    "category_label_hi": "नाभस योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "all_planets_in_two_kendras"}
+    ]},
+    "effect_en": "All 7 planets concentrated in two adjacent Kendras — martial success, wealth, fame.",
+    "effect_hi": "सभी 7 ग्रह दो केंद्रों में केन्द्रित — युद्ध-विजय, धन, यश।",
+    "sloka_ref": "Phaladeepika Adh. 7 sloka 4",
+    "nature": "benefic"
+  },
+  {
+    "key": "nabhasa_shakata",
+    "name_en": "Shakata Yoga (Nabhasa)",
+    "name_hi": "शकट योग (नाभस)",
+    "category": "nabhasa",
+    "category_label_en": "Nabhasa Yoga",
+    "category_label_hi": "नाभस योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "all_planets_in_1_7_only"}
+    ]},
+    "effect_en": "All 7 planets only in 1st and 7th houses — cart-like oscillation of fortunes.",
+    "effect_hi": "सभी ग्रह केवल 1 एवं 7 में — गाड़ी-सदृश उतार-चढ़ाव।",
+    "sloka_ref": "Phaladeepika Adh. 7 sloka 4",
+    "nature": "mixed"
+  },
+  {
+    "key": "nabhasa_vihaga",
+    "name_en": "Vihaga Yoga",
+    "name_hi": "विहग योग",
+    "category": "nabhasa",
+    "category_label_en": "Nabhasa Yoga",
+    "category_label_hi": "नाभस योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "all_planets_in_4_10_only"}
+    ]},
+    "effect_en": "All 7 planets only in 4th and 10th — travel-oriented, messenger-like, restless.",
+    "effect_hi": "सभी ग्रह केवल 4 एवं 10 में — यात्रा-प्रिय, दूत-सदृश, अस्थिर।",
+    "sloka_ref": "Phaladeepika Adh. 7 sloka 5",
+    "nature": "mixed"
+  },
+  {
+    "key": "nabhasa_vajra",
+    "name_en": "Vajra Yoga (Nabhasa)",
+    "name_hi": "वज्र योग (नाभस)",
+    "category": "nabhasa",
+    "category_label_en": "Nabhasa Yoga",
+    "category_label_hi": "नाभस योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "benefics_in_kendras_malefics_in_3_6_9_12"}
+    ]},
+    "effect_en": "Benefics in Kendras + malefics in Upachayas — thunderbolt-like resolve, strong constitution.",
+    "effect_hi": "शुभ केंद्रों में + पाप उपचयों में — वज्र-सम संकल्प, बलिष्ठ देह।",
+    "sloka_ref": "Phaladeepika Adh. 7 sloka 6",
+    "nature": "benefic"
+  },
+  {
+    "key": "nabhasa_yava",
+    "name_en": "Yava Yoga",
+    "name_hi": "यव योग",
+    "category": "nabhasa",
+    "category_label_en": "Nabhasa Yoga",
+    "category_label_hi": "नाभस योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "benefics_in_1_7_malefics_in_4_10"}
+    ]},
+    "effect_en": "Benefics in 1/7, malefics in 4/10 — grain-like storage of virtue, steady life.",
+    "effect_hi": "शुभ 1/7 में, पाप 4/10 में — यव-सम संग्रहशीलता, स्थिर जीवन।",
+    "sloka_ref": "Phaladeepika Adh. 7 sloka 6",
+    "nature": "benefic"
+  },
+  {
+    "key": "nabhasa_kamala",
+    "name_en": "Kamala Yoga (Nabhasa)",
+    "name_hi": "कमल योग (नाभस)",
+    "category": "nabhasa",
+    "category_label_en": "Nabhasa Yoga",
+    "category_label_hi": "नाभस योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "all_planets_in_kendras"}
+    ]},
+    "effect_en": "All 7 planets spread across all four Kendras — lotus-like purity, royal life.",
+    "effect_hi": "सभी ग्रह चारों केंद्रों में — कमल-सम पवित्रता, राज-तुल्य जीवन।",
+    "sloka_ref": "Phaladeepika Adh. 7 sloka 7",
+    "nature": "benefic"
+  },
+  {
+    "key": "nabhasa_vapi",
+    "name_en": "Vapi Yoga",
+    "name_hi": "वापी योग",
+    "category": "nabhasa",
+    "category_label_en": "Nabhasa Yoga",
+    "category_label_hi": "नाभस योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "all_planets_in_panapharas_or_apoklimas"}
+    ]},
+    "effect_en": "All planets in Panaphara (2/5/8/11) or Apoklima (3/6/9/12) — well-like accumulation.",
+    "effect_hi": "सभी ग्रह पणफर (2/5/8/11) या आपोक्लिम (3/6/9/12) में — वापी-सम संग्रह।",
+    "sloka_ref": "Phaladeepika Adh. 7 sloka 7",
+    "nature": "benefic"
+  },
+  {
+    "key": "nabhasa_sringataka",
+    "name_en": "Sringataka Yoga",
+    "name_hi": "शृंगाटक योग",
+    "category": "nabhasa",
+    "category_label_en": "Nabhasa Yoga",
+    "category_label_hi": "नाभस योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "all_planets_in_1_5_9_only"}
+    ]},
+    "effect_en": "All 7 planets only in 1/5/9 — warrior-like, victorious, protected by dharma.",
+    "effect_hi": "सभी ग्रह केवल 1/5/9 में — योद्धा-सम, विजयी, धर्म-रक्षित।",
+    "sloka_ref": "Phaladeepika Adh. 7 sloka 8",
+    "nature": "benefic"
+  },
+  {
+    "key": "nabhasa_hala",
+    "name_en": "Hala Yoga",
+    "name_hi": "हल योग",
+    "category": "nabhasa",
+    "category_label_en": "Nabhasa Yoga",
+    "category_label_hi": "नाभस योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "all_planets_in_2_6_10_or_3_7_11_or_4_8_12"}
+    ]},
+    "effect_en": "All planets in one of the three trine sets (excluding Lagna set) — farmer's plough-like steady toil.",
+    "effect_hi": "सभी ग्रह त्रिकोण-त्रय (2/6/10 अथवा 3/7/11 अथवा 4/8/12) में — हल-सम परिश्रम।",
+    "sloka_ref": "Phaladeepika Adh. 7 sloka 8",
+    "nature": "mixed"
+  },
+  {
+    "key": "nabhasa_yupa",
+    "name_en": "Yupa Yoga",
+    "name_hi": "यूप योग",
+    "category": "nabhasa",
+    "category_label_en": "Nabhasa Yoga",
+    "category_label_hi": "नाभस योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "all_planets_in_contiguous_4_houses_from_lagna"}
+    ]},
+    "effect_en": "All 7 planets in 4 contiguous houses from Lagna — sacrificial-post-like dharma, rituals.",
+    "effect_hi": "सभी ग्रह लग्न से 4 क्रमिक भावों में — यूप-सम धर्म, यज्ञ-निष्ठा।",
+    "sloka_ref": "Phaladeepika Adh. 7 sloka 9",
+    "nature": "benefic"
+  },
+  {
+    "key": "nabhasa_sara",
+    "name_en": "Sara Yoga",
+    "name_hi": "शर योग",
+    "category": "nabhasa",
+    "category_label_en": "Nabhasa Yoga",
+    "category_label_hi": "नाभस योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "all_planets_in_contiguous_4_houses_from_4"}
+    ]},
+    "effect_en": "All 7 planets in 4 contiguous houses starting from 4th — arrow-like sharp intellect, hunting.",
+    "effect_hi": "सभी ग्रह 4 से क्रमिक 4 भावों में — शर-सम तीक्ष्ण बुद्धि।",
+    "sloka_ref": "Phaladeepika Adh. 7 sloka 9",
+    "nature": "mixed"
+  },
+  {
+    "key": "nabhasa_sakti",
+    "name_en": "Sakti Yoga",
+    "name_hi": "शक्ति योग",
+    "category": "nabhasa",
+    "category_label_en": "Nabhasa Yoga",
+    "category_label_hi": "नाभस योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "all_planets_in_contiguous_4_houses_from_7"}
+    ]},
+    "effect_en": "All 7 planets in 4 contiguous houses from 7th — spear-like striking power, military success.",
+    "effect_hi": "सभी ग्रह 7 से क्रमिक 4 भावों में — शक्ति-सम प्रहार-बल।",
+    "sloka_ref": "Phaladeepika Adh. 7 sloka 9",
+    "nature": "benefic"
+  },
+  {
+    "key": "nabhasa_danda",
+    "name_en": "Danda Yoga (Nabhasa)",
+    "name_hi": "दण्ड योग (नाभस)",
+    "category": "nabhasa",
+    "category_label_en": "Nabhasa Yoga",
+    "category_label_hi": "नाभस योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "all_planets_in_contiguous_4_houses_from_10"}
+    ]},
+    "effect_en": "All 7 planets in 4 contiguous houses from 10th — staff-like authority, punitive power.",
+    "effect_hi": "सभी ग्रह 10 से क्रमिक 4 भावों में — दण्ड-सम अधिकार।",
+    "sloka_ref": "Phaladeepika Adh. 7 sloka 9",
+    "nature": "mixed"
+  },
+  {
+    "key": "nabhasa_chakra",
+    "name_en": "Chakra Yoga",
+    "name_hi": "चक्र योग",
+    "category": "nabhasa",
+    "category_label_en": "Nabhasa Yoga",
+    "category_label_hi": "नाभस योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "planets_in_odd_houses_only"}
+    ]},
+    "effect_en": "All 7 planets in odd houses only (1,3,5,7,9,11) — discus-like continuous rise, royal honor.",
+    "effect_hi": "सभी ग्रह विषम भावों में — चक्र-सम निरंतर उत्थान, राज-सम्मान।",
+    "sloka_ref": "Phaladeepika Adh. 7 sloka 10",
+    "nature": "benefic"
+  },
+  {
+    "key": "nabhasa_samudra",
+    "name_en": "Samudra Yoga",
+    "name_hi": "समुद्र योग",
+    "category": "nabhasa",
+    "category_label_en": "Nabhasa Yoga",
+    "category_label_hi": "नाभस योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "planets_in_even_houses_only"}
+    ]},
+    "effect_en": "All 7 planets in even houses only (2,4,6,8,10,12) — ocean-like wealth, deep wisdom.",
+    "effect_hi": "सभी ग्रह सम भावों में — समुद्र-सम अथाह धन, गूढ़ ज्ञान।",
+    "sloka_ref": "Phaladeepika Adh. 7 sloka 10",
+    "nature": "benefic"
+  },
+  {
+    "key": "nabhasa_samputa",
+    "name_en": "Samputa Yoga",
+    "name_hi": "सम्पुट योग",
+    "category": "nabhasa",
+    "category_label_en": "Nabhasa Yoga",
+    "category_label_hi": "नाभस योग",
+    "rules": {"type": "AND", "conditions": [
+      {"type": "planets_in_kendras_and_trikonas_only"}
+    ]},
+    "effect_en": "All 7 planets only in Kendras and Trikonas — protected, blessed, casket-like safety.",
+    "effect_hi": "सभी ग्रह केवल केंद्र एवं त्रिकोण में — सुरक्षित, आशीर्वादित।",
+    "sloka_ref": "Phaladeepika Adh. 7 sloka 11",
+    "nature": "benefic"
+  }
+]
