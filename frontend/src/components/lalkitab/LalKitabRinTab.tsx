@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import { Scale, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
+import { pickLang } from './safe-render';
 
 interface Props {
   kundliId: string;
@@ -212,7 +213,7 @@ function DebtCard({ debt, isHi }: { debt: Debt; isHi: boolean }) {
       {/* Title row */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2 flex-wrap">
-          <h4 className="font-sans font-semibold text-foreground">{debt.debt_type}</h4>
+          <h4 className="font-sans font-semibold text-foreground">{pickLang((debt as any).debt_type ?? (debt as any).type ?? (debt as any).name, isHi)}</h4>
           <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${PLANET_COLOR[planetKey] ?? 'bg-gray-100 text-gray-600'}`}>
             {isHi
               ? (PLANET_HI[planetKey] ?? (debt.planet || ''))
@@ -254,32 +255,56 @@ function DebtCard({ debt, isHi }: { debt: Debt; isHi: boolean }) {
         )}
       </div>
 
-      {/* Description */}
-      <p className="text-sm text-foreground/80 mb-3 leading-relaxed">
-        {isHi ? debt.description : (DEBT_EN[debt.debt_type]?.description ?? debt.description)}
-      </p>
+      {/* Description — backend may return a string (legacy) or {hi,en} (new shape) */}
+      {(() => {
+        const dbtAny = debt as any;
+        const debtTypeKey = typeof dbtAny.debt_type === 'string' ? dbtAny.debt_type : '';
+        const descFallback = DEBT_EN[debtTypeKey]?.description;
+        const descValue = dbtAny.description ?? dbtAny.manifestation;
+        const descText = isHi
+          ? pickLang(descValue, true)
+          : (pickLang(descValue, false) || descFallback || '');
+        return descText ? (
+          <p className="text-sm text-foreground/80 mb-3 leading-relaxed">{descText}</p>
+        ) : null;
+      })()}
 
-      {/* Indication */}
-      {debt.indication && (
-        <div className="mb-3 p-3 rounded-lg bg-sacred-gold/5 border border-sacred-gold/15">
-          <p className="text-xs font-semibold text-sacred-gold mb-1">
-            {t('auto.indication')}
-          </p>
-          <p className="text-xs text-foreground/70 leading-snug">
-            {isHi ? debt.indication : (DEBT_EN[debt.debt_type]?.indication ?? debt.indication)}
-          </p>
-        </div>
-      )}
+      {/* Indication — backend `reason` (bilingual) or legacy `indication` string */}
+      {(() => {
+        const dbtAny = debt as any;
+        const debtTypeKey = typeof dbtAny.debt_type === 'string' ? dbtAny.debt_type : '';
+        const indFallback = DEBT_EN[debtTypeKey]?.indication;
+        const indValue = dbtAny.indication ?? dbtAny.reason;
+        const indText = isHi
+          ? pickLang(indValue, true)
+          : (pickLang(indValue, false) || indFallback || '');
+        return indText ? (
+          <div className="mb-3 p-3 rounded-lg bg-sacred-gold/5 border border-sacred-gold/15">
+            <p className="text-xs font-semibold text-sacred-gold mb-1">
+              {t('auto.indication')}
+            </p>
+            <p className="text-xs text-foreground/70 leading-snug">{indText}</p>
+          </div>
+        ) : null;
+      })()}
 
-      {/* Remedy */}
-      <div className="p-3 rounded-lg bg-green-500/5 border border-green-300/20">
-        <p className="text-xs font-semibold text-green-700 mb-1">
-          {t('auto.remedy')}
-        </p>
-        <p className="text-xs text-foreground/70 leading-snug">
-          {isHi ? debt.remedy : (DEBT_EN[debt.debt_type]?.remedy ?? debt.remedy)}
-        </p>
-      </div>
+      {/* Remedy — backend `remedy` is a {hi,en} object OR a legacy string */}
+      {(() => {
+        const dbtAny = debt as any;
+        const debtTypeKey = typeof dbtAny.debt_type === 'string' ? dbtAny.debt_type : '';
+        const remFallback = DEBT_EN[debtTypeKey]?.remedy;
+        const remText = isHi
+          ? pickLang(dbtAny.remedy, true)
+          : (pickLang(dbtAny.remedy, false) || remFallback || '');
+        return remText ? (
+          <div className="p-3 rounded-lg bg-green-500/5 border border-green-300/20">
+            <p className="text-xs font-semibold text-green-700 mb-1">
+              {t('auto.remedy')}
+            </p>
+            <p className="text-xs text-foreground/70 leading-snug">{remText}</p>
+          </div>
+        ) : null;
+      })()}
     </div>
   );
 }
