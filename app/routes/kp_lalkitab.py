@@ -289,75 +289,11 @@ def get_enriched_remedies(kundli_id: str, user: dict = Depends(get_current_user)
     return {"remedies": enriched}
 
 
-# ─────────────────────────────────────────────────────────────
-# Lal Kitab Remedy Tracker
-# ─────────────────────────────────────────────────────────────
-
-@router.get("/api/lalkitab/tracker/{kundli_id}")
-def get_tracker_state(kundli_id: str, user: dict = Depends(get_current_user), db: Any = Depends(get_db)):
-    """Return all tracker logs for a kundli: {logs: [{date, completed_ids}], journal: [...]}"""
-    user_id = user["sub"]
-    logs = db.execute(
-        "SELECT date, completed_ids FROM lk_tracker_logs WHERE user_id = %s AND kundli_id = %s ORDER BY date",
-        (user_id, kundli_id),
-    ).fetchall()
-    journal = db.execute(
-        "SELECT date, note, created_at FROM lk_journal_entries WHERE user_id = %s AND source = 'tracker' AND kundli_id = %s ORDER BY created_at DESC LIMIT 30",
-        (user_id, kundli_id),
-    ).fetchall()
-    done_map = {row["date"]: json.loads(row["completed_ids"] or "[]") for row in logs}
-    journal_list = [{"date": r["date"], "note": r["note"]} for r in journal]
-    return {"done_map": done_map, "journal": journal_list}
-
-
-@router.post("/api/lalkitab/tracker/{kundli_id}/toggle")
-def toggle_tracker_remedy(kundli_id: str, payload: dict, user: dict = Depends(get_current_user), db: Any = Depends(get_db)):
-    """Toggle a remedy done/undone for today. payload: {date, remedy_id}"""
-    user_id = user["sub"]
-    date = payload.get("date")
-    remedy_id = payload.get("remedy_id")
-    if not date or not remedy_id:
-        raise HTTPException(status_code=400, detail="date and remedy_id required")
-
-    row = db.execute(
-        "SELECT completed_ids FROM lk_tracker_logs WHERE user_id = %s AND kundli_id = %s AND date = %s",
-        (user_id, kundli_id, date),
-    ).fetchone()
-
-    if row:
-        ids = json.loads(row["completed_ids"] or "[]")
-        if remedy_id in ids:
-            ids.remove(remedy_id)
-        else:
-            ids.append(remedy_id)
-        db.execute(
-            "UPDATE lk_tracker_logs SET completed_ids = %s, updated_at = NOW() WHERE user_id = %s AND kundli_id = %s AND date = %s",
-            (json.dumps(ids), user_id, kundli_id, date),
-        )
-    else:
-        ids = [remedy_id]
-        db.execute(
-            "INSERT INTO lk_tracker_logs (user_id, kundli_id, date, completed_ids) VALUES (%s, %s, %s, %s)",
-            (user_id, kundli_id, date, json.dumps(ids)),
-        )
-    db.commit()
-    return {"date": date, "completed_ids": ids}
-
-
-@router.post("/api/lalkitab/tracker/{kundli_id}/journal")
-def add_tracker_journal(kundli_id: str, payload: dict, user: dict = Depends(get_current_user), db: Any = Depends(get_db)):
-    """Add a journal entry for the tracker. payload: {date, note}"""
-    user_id = user["sub"]
-    date = payload.get("date")
-    note = (payload.get("note") or "").strip()
-    if not date or not note:
-        raise HTTPException(status_code=400, detail="date and note required")
-    db.execute(
-        "INSERT INTO lk_journal_entries (user_id, source, kundli_id, date, note) VALUES (%s, 'tracker', %s, %s, %s)",
-        (user_id, kundli_id, date, note),
-    )
-    db.commit()
-    return {"ok": True}
+#
+# NOTE: Legacy endpoints `/api/lalkitab/tracker/*` intentionally removed.
+# The authoritative, actively-used tracker feature is `/api/lalkitab/remedy-tracker/*`
+# (see below) which supports per-remedy schedules, check-ins, and deletions.
+#
 
 
 # ─────────────────────────────────────────────────────────────
@@ -367,6 +303,7 @@ def add_tracker_journal(kundli_id: str, payload: dict, user: dict = Depends(get_
 @router.get("/api/lalkitab/chandra")
 def get_chandra_state(user: dict = Depends(get_current_user), db: Any = Depends(get_db)):
     """Return the user's Chandra protocol state."""
+    from app.lalkitab_chandra_tasks import CHANDRA_CHAALANA_TASKS
     user_id = user["sub"]
     row = db.execute(
         "SELECT start_date, completed_days FROM lk_chandra_protocol WHERE user_id = %s",
@@ -381,8 +318,14 @@ def get_chandra_state(user: dict = Depends(get_current_user), db: Any = Depends(
             "start_date": row["start_date"],
             "completed_days": json.loads(row["completed_days"] or "[]"),
             "journal": [{"date": r["date"], "note": r["note"]} for r in journal],
+            "tasks": CHANDRA_CHAALANA_TASKS,
         }
-    return {"start_date": None, "completed_days": [], "journal": [{"date": r["date"], "note": r["note"]} for r in journal]}
+    return {
+        "start_date": None,
+        "completed_days": [],
+        "journal": [{"date": r["date"], "note": r["note"]} for r in journal],
+        "tasks": CHANDRA_CHAALANA_TASKS,
+    }
 
 
 @router.post("/api/lalkitab/chandra/start")
@@ -1139,6 +1082,7 @@ def get_lalkitab_advanced(
 # Lal Kitab Bunyaad / Takkar / Enemy Presence Analysis
 # ─────────────────────────────────────────────────────────────
 
+@router.post("/api/lalkitab/lk-analysis")
 @router.post("/api/kp-lalkitab/lk-analysis")
 def lk_analysis(
     payload: dict,
@@ -1209,6 +1153,7 @@ def lk_analysis(
 # Lal Kitab House-by-House Planet Interpretations
 # ─────────────────────────────────────────────────────────────
 
+@router.post("/api/lalkitab/lk-interpretations")
 @router.post("/api/kp-lalkitab/lk-interpretations")
 def lk_interpretations(
     payload: dict,
@@ -1268,6 +1213,7 @@ def lk_interpretations(
     return {"interpretations": interpretations}
 
 
+@router.post("/api/lalkitab/lk-validated-remedies")
 @router.post("/api/kp-lalkitab/lk-validated-remedies")
 def lk_validated_remedies(
     payload: dict,
@@ -2108,6 +2054,84 @@ def get_lalkitab_doshas(
         "total": len(doshas),
         "high_severity_count": sum(1 for d in doshas if d["severity"] == "high"),
     }
+
+
+# ─────────────────────────────────────────────────────────────
+# Lal Kitab Relations / Rules / Prediction Studio (Backend)
+# ─────────────────────────────────────────────────────────────
+
+@router.get("/api/lalkitab/relations/{kundli_id}", status_code=status.HTTP_200_OK)
+def get_lalkitab_relations(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Return conjunctions/aspects computed from the saved chart."""
+    positions, _row = _get_lk_positions(kundli_id, user["sub"], db)
+    planet_positions = {p["planet"].capitalize(): int(p["house"]) for p in positions if p.get("house")}
+    from app.lalkitab_relations_engine import build_relations
+    return {"kundli_id": kundli_id, **build_relations(planet_positions)}
+
+
+@router.get("/api/lalkitab/rules/{kundli_id}", status_code=status.HTTP_200_OK)
+def get_lalkitab_rules(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Return mirror-axis + cross-rule triggers computed from the saved chart."""
+    positions, _row = _get_lk_positions(kundli_id, user["sub"], db)
+    planet_positions = {p["planet"].capitalize(): int(p["house"]) for p in positions if p.get("house")}
+    from app.lalkitab_rules_engine import build_rules
+    return {"kundli_id": kundli_id, **build_rules(planet_positions)}
+
+
+@router.get("/api/lalkitab/predictions/studio/{kundli_id}", status_code=status.HTTP_200_OK)
+def get_lalkitab_prediction_studio(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Return the general (multi-area) prediction studio scores computed from chart."""
+    positions, row = _get_lk_positions(kundli_id, user["sub"], db)
+    planet_positions = {p["planet"].capitalize(): int(p["house"]) for p in positions if p.get("house")}
+
+    raw = row["chart_data"]
+    chart_data = json.loads(raw) if isinstance(raw, str) else (raw or {})
+    planets = chart_data.get("planets", {}) if isinstance(chart_data, dict) else {}
+    planet_lons = {}
+    for pname, info in planets.items():
+        if pname in _KNOWN_PLANETS and isinstance(info, dict):
+            lon = info.get("longitude")
+            if lon is not None:
+                try:
+                    planet_lons[pname] = float(lon)
+                except Exception:
+                    pass
+
+    from app.lalkitab_prediction_studio import build_prediction_studio
+    return {"kundli_id": kundli_id, **build_prediction_studio(planet_positions, planet_lons)}
+
+
+@router.get("/api/lalkitab/age-activation/{kundli_id}", status_code=status.HTTP_200_OK)
+def get_lalkitab_age_activation(
+    kundli_id: str,
+    as_of: str = None,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Return the Lal Kitab age activation buckets and current active planet."""
+    row = db.execute(
+        "SELECT birth_date FROM kundlis WHERE id = %s AND user_id = %s",
+        (kundli_id, user["sub"]),
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Kundli not found")
+    birth_date = str(row.get("birth_date") or "").strip()
+    if not birth_date:
+        raise HTTPException(status_code=400, detail="birth_date not available")
+    from app.lalkitab_age_activation import get_age_activation
+    return {"kundli_id": kundli_id, **get_age_activation(birth_date, as_of=as_of)}
 
 
 # ═══════════════════════════════════════════════════════════════════

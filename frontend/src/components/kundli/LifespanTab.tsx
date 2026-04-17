@@ -176,7 +176,7 @@ export default function LifespanTab({ kundliId, language, t }: Props) {
               </p>
               <div className="flex items-baseline gap-3 mt-1">
                 <span className="text-5xl font-bold">{lifespan.final_years.toFixed(1)}</span>
-                <span className="text-lg">{isHi ? 'वर्ष' : 'years'}</span>
+                <span className="text-lg">{t('auto.years')}</span>
               </div>
               <p className="text-sm mt-2">
                 <span className="font-semibold">{t(CATEGORY_KEY_MAP[lifespan.classification])}</span>
@@ -227,7 +227,7 @@ export default function LifespanTab({ kundliId, language, t }: Props) {
                   </div>
                   {isSelected && (
                     <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-sacred-gold-dark text-white">
-                      {isHi ? 'चयनित' : 'Selected'}
+                      {t('auto.selected')}
                     </span>
                   )}
                 </div>
@@ -256,7 +256,7 @@ export default function LifespanTab({ kundliId, language, t }: Props) {
                     className="w-full flex items-center justify-center gap-1 text-xs text-sacred-gold-dark hover:text-sacred-gold pt-2 border-t border-sacred-gold/15"
                   >
                     {expanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                    {isHi ? 'विवरण' : 'Details'}
+                    {t('auto.details')}
                   </button>
                 )}
 

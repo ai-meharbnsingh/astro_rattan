@@ -108,7 +108,7 @@ export default function BhavaPhalaTab({ kundliId, language, t }: Props) {
         </h3>
         {data.planet_placements.length === 0 ? (
           <div className="p-4 rounded-lg bg-gray-50 border border-gray-200 text-gray-600 text-sm">
-            {isHi ? 'कोई ग्रह-स्थापना नहीं मिली।' : 'No planet placements available.'}
+            {t('auto.noPlanetPlacements')}
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -124,13 +124,13 @@ export default function BhavaPhalaTab({ kundliId, language, t }: Props) {
                     <div>
                       <h4 className="text-lg font-bold text-foreground">{planetName}</h4>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
-                        <span>{isHi ? 'भाव' : 'House'} {pp.house}</span>
+                        <span>{t('auto.house')} {pp.house}</span>
                         <span>•</span>
                         <span>{pp.sign}</span>
                       </div>
                     </div>
                     <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-sacred-gold-dark text-white">
-                      {isHi ? 'भाव' : 'H'} {pp.house}
+                      {t('auto.bhavaShort')} {pp.house}
                     </span>
                   </div>
                   <p className="text-sm text-foreground leading-relaxed mb-3">{effect}</p>
@@ -166,7 +166,7 @@ export default function BhavaPhalaTab({ kundliId, language, t }: Props) {
                 <div className="flex items-start justify-between gap-3 mb-2">
                   <div>
                     <div className="text-xs font-semibold text-muted-foreground">
-                      {isHi ? 'भाव' : 'Bhava'} {b.house}
+                      {t('auto.bhava')} {b.house}
                     </div>
                     <h4 className="text-base font-bold text-foreground leading-tight">
                       {localizedBhava || name}

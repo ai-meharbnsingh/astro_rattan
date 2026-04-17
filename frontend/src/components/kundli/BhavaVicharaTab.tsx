@@ -110,13 +110,13 @@ export default function BhavaVicharaTab({ kundliId, language, t }: Props) {
           </div>
           {data.overall_strongest.length === 0 ? (
             <p className="text-xs text-emerald-700 italic">
-              {isHi ? 'कोई भाव वर्तमान में स्पष्ट रूप से प्रबल नहीं।' : 'No house is clearly flourishing.'}
+              {t('auto.noHouseFlourishing')}
             </p>
           ) : (
             <div className="flex flex-wrap gap-2">
               {data.overall_strongest.map((h) => (
                 <span key={h} className="text-xs font-semibold px-2 py-1 rounded bg-emerald-600 text-white">
-                  {isHi ? 'भाव' : 'H'} {h}
+                  {t('auto.bhavaShort')} {h}
                 </span>
               ))}
             </div>
@@ -130,13 +130,13 @@ export default function BhavaVicharaTab({ kundliId, language, t }: Props) {
           </div>
           {data.overall_weakest.length === 0 ? (
             <p className="text-xs text-red-700 italic">
-              {isHi ? 'कोई भाव दबाव में नहीं।' : 'No house is under destruction-pattern pressure.'}
+              {t('auto.noHouseUnderPressure')}
             </p>
           ) : (
             <div className="flex flex-wrap gap-2">
               {data.overall_weakest.map((h) => (
                 <span key={h} className="text-xs font-semibold px-2 py-1 rounded bg-red-600 text-white">
-                  {isHi ? 'भाव' : 'H'} {h}
+                  {t('auto.bhavaShort')} {h}
                 </span>
               ))}
             </div>
@@ -167,7 +167,7 @@ export default function BhavaVicharaTab({ kundliId, language, t }: Props) {
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div>
                     <div className="text-xs font-semibold text-muted-foreground">
-                      {isHi ? 'भाव' : 'Bhava'} {b.house}
+                      {t('auto.house')} {b.house}
                     </div>
                     <h4 className="text-base font-bold text-foreground leading-tight">{name}</h4>
                   </div>
@@ -197,7 +197,7 @@ export default function BhavaVicharaTab({ kundliId, language, t }: Props) {
                       {b.lord ? localizePlanet(b.lord, isHi) : '—'}
                       {b.lord_placement > 0 && (
                         <span className="font-normal text-muted-foreground ml-1">
-                          ({isHi ? 'भाव' : 'H'} {b.lord_placement})
+                          ({t('auto.bhavaShort')} {b.lord_placement})
                         </span>
                       )}
                     </div>

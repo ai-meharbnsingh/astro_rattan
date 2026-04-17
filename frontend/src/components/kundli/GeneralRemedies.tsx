@@ -12,79 +12,7 @@ interface GeneralRemediesProps {
   kundliId?: string;
 }
 
-// General remedies as fallback
-const STATIC_REMEDIES = {
-  hi: [
-    {
-      category: 'मंत्र जाप',
-      items: [
-        'प्रतिदिन सूर्य देवता को जल अर्पित करें',
-        'शनिवार को शनिदेव के मंत्र "ॐ शं शनैश्चराय नमः" का जप करें',
-        'मंगलवार को हनुमान चालीसा का पाठ करें',
-      ]
-    },
-    {
-      category: 'दान',
-      items: [
-        'गुरुवार को पीले वस्त्र या केले का दान करें',
-        'शनिवार को काले तिल, सरसों का तेल या कंबल दान करें',
-        'रविवार को गेहूं और गुड़ का दान करें',
-      ]
-    },
-    {
-      category: 'उपाय',
-      items: [
-        'प्रतिदिन सुबह स्नान के बाद धूप-दीप जलाएं',
-        'मंदिर में नियमित दर्शन करें',
-        'गाय को रोटी और गुड़ खिलाएं',
-        'पीपल के वृक्ष की परिक्रमा करें',
-      ]
-    },
-    {
-      category: 'रत्न धारण',
-      items: [
-        'ज्योतिषी की सलाह से ही रत्न धारण करें',
-        'रत्न शुद्ध करके ही पहनें',
-        'शुक्ल पक्ष के गुरुवार को रत्न धारण करें',
-      ]
-    },
-  ],
-  en: [
-    {
-      category: 'Mantra Recitation',
-      items: [
-        'Offer water to Sun God daily',
-        'Chant Shani mantra "Om Sham Shanishcharaya Namah" on Saturdays',
-        'Read Hanuman Chalisa on Tuesdays',
-      ]
-    },
-    {
-      category: 'Donations',
-      items: [
-        'Donate yellow clothes or bananas on Thursdays',
-        'Donate black sesame, mustard oil or blankets on Saturdays',
-        'Donate wheat and jaggery on Sundays',
-      ]
-    },
-    {
-      category: 'Remedies',
-      items: [
-        'Light incense and lamp after bath daily',
-        'Visit temples regularly',
-        'Feed roti and jaggery to cows',
-        'Circumambulate Peepal tree',
-      ]
-    },
-    {
-      category: 'Gemstones',
-      items: [
-        'Wear gemstones only after astrologer\'s advice',
-        'Purify gemstones before wearing',
-        'Wear gemstones on Thursday of Shukla Paksha',
-      ]
-    },
-  ],
-};
+// No static remedies — all remedies must come from backend chart analysis
 
 export default function GeneralRemedies({ language, t: tProp, title, kundliId }: GeneralRemediesProps) {
   const { t: tContext } = useTranslation();
@@ -114,7 +42,6 @@ export default function GeneralRemedies({ language, t: tProp, title, kundliId }:
     }
   }, [kundliId]);
 
-  const staticRemedies = isHi ? STATIC_REMEDIES.hi : STATIC_REMEDIES.en;
   const defaultTitle = t('auto.astrologicalRemedies');
 
   return (
@@ -148,29 +75,12 @@ export default function GeneralRemedies({ language, t: tProp, title, kundliId }:
         </div>
       )}
 
-      {/* Baseline / General */}
-      <Heading as={5} variant={5} className="text-muted-foreground mb-3 uppercase tracking-wider">
-        {t('auto.generalGuidance')}
-      </Heading>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {staticRemedies.map((category, idx) => (
-          <div key={idx} className="bg-white rounded-lg p-3 border border-border/30">
-            <Heading as={5} variant={5} className="mb-2">{category.category}</Heading>
-            <ul className="space-y-1">
-              {category.items.map((item, itemIdx) => (
-                <li key={itemIdx} className="text-sm text-foreground flex items-start gap-2">
-                  <span className="w-1 h-1 rounded-full bg-primary mt-2 flex-shrink-0" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
-      
-      <p className="text-xs text-foreground mt-4 italic">
-        {t('auto.noteTheseRemediesAre')}
-      </p>
+      {/* No static fallback — only dynamic chart-based remedies */}
+      {(!dynamicRemedies || dynamicRemedies.length === 0) && !loading && (
+        <p className="text-sm text-muted-foreground text-center py-4">
+          {t('auto.noChartSpecificRemedies')}
+        </p>
+      )}
     </div>
   );
 }

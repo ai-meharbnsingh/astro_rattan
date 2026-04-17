@@ -192,7 +192,7 @@ export default function AshtakvargaPhalaTab({ kundliId, language, t }: Props) {
                 <div className="flex items-center justify-between gap-2 mb-1">
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-bold">
-                      {isHi ? `भाव ${h.house}` : `House ${h.house}`}
+                      {t('auto.house')} {h.house}
                     </span>
                     <span className="text-xs text-muted-foreground">
                       {translateSign(h.sign, language)}
@@ -286,7 +286,7 @@ export default function AshtakvargaPhalaTab({ kundliId, language, t }: Props) {
                   </span>
                 </div>
                 <p className="text-xs opacity-80 mb-2">
-                  {isHi ? 'भाव' : 'Houses'}: {c.houses.join(' + ')}
+                  {t('auto.house')}: {c.houses.join(' + ')}
                 </p>
                 <p className="text-xs leading-relaxed mb-2">
                   {isHi ? c.effect_hi : c.effect_en}
@@ -305,7 +305,7 @@ export default function AshtakvargaPhalaTab({ kundliId, language, t }: Props) {
       <section>
         <h3 className="text-lg font-bold text-sacred-gold-dark mb-3 flex items-center gap-2">
           <Info className="w-5 h-5" />
-          {isHi ? 'ग्रहानुसार शुभ/अशुभ गोचर राशि' : 'Best / worst transit rasi per planet'}
+          {t('auto.bestWorstTransitRasi')}
         </h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm border-collapse">
@@ -318,7 +318,7 @@ export default function AshtakvargaPhalaTab({ kundliId, language, t }: Props) {
                 <th className="text-left p-2 font-semibold text-red-700">
                   {t('auto.weakestTransit')}
                 </th>
-                <th className="text-left p-2 font-semibold">{isHi ? 'मार्गदर्शन' : 'Guidance'}</th>
+                <th className="text-left p-2 font-semibold">{t('auto.guidance')}</th>
               </tr>
             </thead>
             <tbody>

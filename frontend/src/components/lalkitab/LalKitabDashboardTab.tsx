@@ -1,171 +1,62 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
-import {
-  LayoutGrid,
-  AlertTriangle,
-  CheckCircle,
-  Sparkles,
-  Clock,
-  Heart,
-  Gift,
-  Home,
-  Zap,
-} from 'lucide-react';
-import type { LalKitabChartData } from './lalkitab-data';
-import { PLANETS, AGE_PLANET_ACTIVATION, REMEDIES } from './lalkitab-data';
+import { useLalKitab } from './LalKitabContext';
+import { LayoutGrid, AlertTriangle, CheckCircle, Sparkles, Clock } from 'lucide-react';
 
-interface Props {
-  chartData: LalKitabChartData;
-  birthDate: string;
-  kundliId?: string;
-  onNavigateTab?: (tab: string) => void;
+interface AgeActivationResponse {
+  age_years: number | null;
+  active: { planet: string; age_start: number; age_end: number } | null;
 }
 
-interface DoshaResult {
-  key: string;
-  nameEn: string;
-  nameHi: string;
-  detected: boolean;
-  severity: 'high' | 'medium' | 'low';
-  descEn: string;
-  descHi: string;
-  remedyEn: string;
-  remedyHi: string;
-}
-
-const severityStyles: Record<DoshaResult['severity'], { badge: string; label: string }> = {
-  high: { badge: 'bg-red-500/20 text-red-500', label: 'High' },
-  medium: { badge: 'bg-orange-500/20 text-orange-500', label: 'Medium' },
-  low: { badge: 'bg-yellow-500/20 text-yellow-600', label: 'Low' },
-};
-
-const typeIcons = {
-  feeding: Heart,
-  donation: Gift,
-  household: Home,
-  action: Zap,
-} as const;
-
-function getPlanetLabel(key: string, language: string): string {
-  const planet = PLANETS.find((p) => p.key === key);
-  if (!planet) return key;
-  return language === 'hi' ? planet.hi : planet.en;
-}
-
-/** Return the planet dot color based on its key. */
-function getPlanetDotColor(key: string): string {
-  const colors: Record<string, string> = {
-    Sun: 'bg-orange-400',
-    Moon: 'bg-blue-300',
-    Mars: 'bg-red-500',
-    Mercury: 'bg-green-400',
-    Jupiter: 'bg-yellow-400',
-    Venus: 'bg-pink-400',
-    Saturn: 'bg-indigo-400',
-    Rahu: 'bg-gray-400',
-    Ketu: 'bg-gray-600',
-  };
-  return colors[key] ?? 'bg-sacred-gold';
-}
-
-function calculateAge(birthDate: string): number {
-  const birth = new Date(birthDate);
-  const today = new Date();
-  let age = today.getFullYear() - birth.getFullYear();
-  const monthDiff = today.getMonth() - birth.getMonth();
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-    age--;
-  }
-  return age;
-}
-
-export default function LalKitabDashboardTab({ chartData, birthDate, kundliId, onNavigateTab }: Props) {
+export default function LalKitabDashboardTab({ onNavigateTab }: { onNavigateTab?: (tab: string) => void }) {
   const { t, language } = useTranslation();
   const isHi = language === 'hi';
-  const [advancedData, setAdvancedData] = useState<any>(null);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const { kundliId, fullData } = useLalKitab();
+  const [ageData, setAgeData] = useState<AgeActivationResponse | null>(null);
 
   useEffect(() => {
-    if (kundliId) {
-      setLoadError(null);
-      api.get(`/api/lalkitab/advanced/${kundliId}`)
-        .then(setAdvancedData)
-        .catch((err) => {
-          console.error('Failed to load advanced data:', err);
-          const msg = err instanceof Error ? err.message : (typeof err === 'string' ? err : 'Unknown error');
-          setLoadError(msg);
-        });
-    }
+    if (!kundliId) { setAgeData(null); return; }
+    api.get(`/api/lalkitab/age-activation/${kundliId}`)
+      .then((res: any) => setAgeData(res as AgeActivationResponse))
+      .catch(() => { /* non-blocking */ });
   }, [kundliId]);
 
-  // House counts
-  const counts = useMemo(() => {
-    let empty = 0;
-    let strong = 0;
-    let weak = 0;
-    let totalPlanets = 0;
-    for (const h of chartData.houses) {
-      if (h.strength === 'empty') empty++;
-      else if (h.strength === 'strong') strong++;
-      else if (h.strength === 'weak') weak++;
-      totalPlanets += h.planets.length;
+  const occupancy = useMemo(() => {
+    const byHouse: Record<number, string[]> = {};
+    for (let h = 1; h <= 12; h++) byHouse[h] = [];
+    for (const p of (fullData?.positions || [])) {
+      const house = Number(p?.house || 0);
+      const planet = (p?.planet || '').toString();
+      if (house >= 1 && house <= 12 && planet) byHouse[house].push(planet);
     }
-    return { empty, strong, weak, totalPlanets };
-  }, [chartData.houses]);
+    const empty = Object.values(byHouse).filter((ps) => ps.length === 0).length;
+    const total = Object.values(byHouse).reduce((a, ps) => a + ps.length, 0);
+    return { empty, total, byHouse };
+  }, [fullData]);
 
-  // Doshas
-  const doshas: DoshaResult[] = useMemo(() => (chartData as any).doshas ?? [], [chartData]);
-  const detectedDoshas = useMemo(
-    () => doshas.filter((d) => d.detected),
-    [doshas],
-  );
+  const doshas = useMemo(() => {
+    const list = Array.isArray(fullData?.doshas) ? fullData.doshas : [];
+    const detected = list.filter((d: any) => d?.detected);
+    return { total: list.length, detected, detectedCount: detected.length, highCount: detected.filter((d: any) => d?.severity === 'high').length };
+  }, [fullData]);
 
-  // Quick remedies — urgent first, then daily, limited to 5
   const quickRemedies = useMemo(() => {
-    const collected: { planet: string; house: number; remedy: any }[] = [];
+    const rows = (fullData?.remedies?.remedies || []).filter((r: any) => r?.has_remedy);
+    const order: Record<string, number> = { high: 0, medium: 1, low: 2 };
+    return rows.slice().sort((a: any, b: any) => (order[a?.urgency] ?? 9) - (order[b?.urgency] ?? 9)).slice(0, 6);
+  }, [fullData]);
 
-    for (const planet of PLANETS) {
-      const houseNumber = chartData.planetPositions[planet.key];
-      if (houseNumber == null) continue;
-      const planetRemedies = REMEDIES[planet.key]?.[houseNumber];
-      if (!planetRemedies) continue;
-
-      for (const r of planetRemedies) {
-        collected.push({ planet: planet.key, house: houseNumber, remedy: r });
-      }
-    }
-
-    // Sort: urgent first, then daily, then rest
-    const priority: Record<string, number> = { urgent: 0, daily: 1, weekly: 2, general: 3 };
-    collected.sort(
-      (a, b) => (priority[a.remedy.category] ?? 9) - (priority[b.remedy.category] ?? 9),
+  if (!kundliId) {
+    return (
+      <div className="text-center py-10 text-muted-foreground text-sm">
+        {isHi ? 'कुंडली चुनें या बनाएं।' : 'Select or generate a Kundli.'}
+      </div>
     );
-
-    return collected.slice(0, 5);
-  }, [chartData]);
-
-  // Timeline
-  const age = useMemo(() => calculateAge(birthDate), [birthDate]);
-
-  const timelinePeriods = useMemo(() => {
-    if (!AGE_PLANET_ACTIVATION || AGE_PLANET_ACTIVATION.length === 0) return [];
-    const sorted = [...AGE_PLANET_ACTIVATION].sort((a, b) => a.ageStart - b.ageStart);
-    return sorted;
-  }, []);
-
-  const currentPeriodIndex = useMemo(() => {
-    return timelinePeriods.findIndex(
-      (p) => age >= p.ageStart && age <= p.ageEnd,
-    );
-  }, [age, timelinePeriods]);
-
-  // House grid for mini chart: rows 1-3, cols 1-4 (3x4 grid = 12 houses)
-  const miniGridHouses = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="text-center space-y-2">
         <h2 className="text-2xl font-sans font-bold text-sacred-gold flex items-center justify-center gap-2">
           <LayoutGrid className="w-6 h-6" />
@@ -174,282 +65,110 @@ export default function LalKitabDashboardTab({ chartData, birthDate, kundliId, o
         <p className="text-sm text-gray-600">{t('lk.dashboard.desc')}</p>
       </div>
 
-      {/* Advanced-data load error banner */}
-      {loadError && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-sm text-red-800">
-          <span className="font-semibold">
-            {isHi ? 'उन्नत विश्लेषण लोड नहीं हो सका' : 'Could not load advanced analysis'}
-          </span>
-          : {loadError}
-        </div>
-      )}
-
-      {/* 2x2 Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* ─── 1. Kundli Overview ─── */}
         <div className="card-sacred rounded-xl p-6 border border-sacred-gold/20">
-          <h3 className="font-sans text-lg font-semibold text-sacred-gold mb-4">
-            {t('lk.dashboard.kundliView')}
-          </h3>
-
-          {/* Quick stats */}
-          <div className="grid grid-cols-2 gap-3 mb-5">
+          <h3 className="font-sans text-lg font-semibold text-sacred-gold mb-4">{t('lk.dashboard.kundliView')}</h3>
+          <div className="grid grid-cols-2 gap-3">
             <div className="text-center p-3 rounded-xl bg-sacred-gold/5 border border-sacred-gold/10">
-              <p className="text-2xl font-sans font-bold text-foreground">
-                {counts.totalPlanets}
-              </p>
-              <p className="text-sm text-gray-500">
-                {isHi ? 'ग्रह' : t('table.planets')}
-              </p>
+              <p className="text-2xl font-sans font-bold text-foreground">{occupancy.total}</p>
+              <p className="text-sm text-gray-500">{isHi ? 'ग्रह' : t('table.planets')}</p>
             </div>
             <div className="text-center p-3 rounded-xl bg-sacred-gold/5 border border-sacred-gold/10">
-              <p className="text-2xl font-sans font-bold text-foreground">
-                {counts.empty}
-              </p>
-              <p className="text-sm text-gray-500">
-                {isHi ? 'खाली भाव' : t('lk.kundli.empty')}
-              </p>
-            </div>
-            <div className="text-center p-3 rounded-xl bg-green-500/5 border border-green-300/10">
-              <p className="text-2xl font-sans font-bold text-green-400">
-                {counts.strong}
-              </p>
-              <p className="text-sm text-gray-500">
-                {isHi ? 'मजबूत' : t('lk.kundli.strong')}
-              </p>
-            </div>
-            <div className="text-center p-3 rounded-xl bg-red-500/5 border border-red-300/10">
-              <p className="text-2xl font-sans font-bold text-red-400">
-                {counts.weak}
-              </p>
-              <p className="text-sm text-gray-500">
-                {isHi ? 'कमजोर' : t('lk.kundli.weak')}
-              </p>
-            </div>
-            <div className="text-center p-3 rounded-xl bg-orange-500/5 border border-orange-300/10">
-              <p className="text-2xl font-sans font-bold text-orange-400">
-                {advancedData?.sleeping?.sleeping_planets?.length ?? '—'}
-              </p>
-              <p className="text-sm text-gray-500">
-                {t('auto.sleeping')}
-              </p>
-            </div>
-            <div className="text-center p-3 rounded-xl bg-sacred-gold/5 border border-sacred-gold/10">
-              <p className="text-2xl font-sans font-bold text-sacred-gold">
-                {advancedData?.kayam?.length ?? '—'}
-              </p>
-              <p className="text-sm text-gray-500">
-                {t('auto.stable')}
-              </p>
+              <p className="text-2xl font-sans font-bold text-foreground">{occupancy.empty}</p>
+              <p className="text-sm text-gray-500">{isHi ? 'खाली भाव' : t('lk.kundli.empty')}</p>
             </div>
           </div>
 
-          {/* Mini 3x4 grid */}
-          <div className="grid grid-cols-4 gap-1.5">
-            {miniGridHouses.map((houseNum) => {
-              const house = chartData.houses.find((h) => h.house === houseNum);
-              const planets = house?.planets ?? [];
-              const planetAbbr: Record<string, string> = { Sun: 'Su', Moon: 'Mo', Mars: 'Ma', Mercury: 'Me', Jupiter: 'Ju', Venus: 'Ve', Saturn: 'Sa', Rahu: 'Ra', Ketu: 'Ke' };
-              return (
-                <div
-                  key={houseNum}
-                  className="relative flex flex-col items-center justify-center rounded-md border border-sacred-gold/15 bg-card/40 p-2 min-h-[52px]"
-                >
-                  <span className="text-sm font-bold text-sacred-gold-dark">
-                    {houseNum}
-                  </span>
-                  {planets.length > 0 && (
-                    <div className="flex flex-wrap gap-0.5 justify-center mt-1">
-                      {planets.map((pKey) => (
-                        <span
-                          key={pKey}
-                          className={`text-sm font-semibold px-1 rounded ${getPlanetDotColor(pKey).replace('bg-', 'text-')}`}
-                        >
-                          {planetAbbr[pKey] || pKey.slice(0, 2)}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* ─── 2. Problem Summary (Doshas) ─── */}
-        <div className="card-sacred rounded-xl p-6 border border-sacred-gold/20">
-          <h3 className="font-sans text-lg font-semibold text-sacred-gold mb-4">
-            {t('lk.dashboard.problems')}
-          </h3>
-
-          {detectedDoshas.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-8 text-center space-y-3">
-              <CheckCircle className="w-10 h-10 text-green-500" />
-              <p className="text-green-400 font-medium">
-                {t('auto.allClearNoDoshasDete')}
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {/* Count summary */}
-              <div className="flex items-center gap-2 mb-3">
-                <AlertTriangle className="w-5 h-5 text-red-500" />
-                <span className="text-sm text-foreground/80">
-                  {detectedDoshas.length}{' '}
-                  {isHi ? 'दोष पाए गए' : detectedDoshas.length === 1 ? 'dosha detected' : 'doshas detected'}
+          {ageData?.active && (
+            <div className="mt-4 p-4 rounded-xl border border-sacred-gold/20 bg-sacred-gold/5">
+              <div className="flex items-center gap-2 text-sm text-sacred-gold">
+                <Clock className="w-4 h-4" />
+                <span className="font-semibold">
+                  {t('auto.activePlanet')}: {ageData.active.planet}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  ({ageData.active.age_start}–{ageData.active.age_end})
                 </span>
               </div>
+              <div className="text-xs text-muted-foreground mt-1">
+                {t('lk.yearly.currentAge')}: {ageData.age_years ?? '--'}
+              </div>
+            </div>
+          )}
+        </div>
 
-              {/* Dosha list */}
-              {detectedDoshas.map((dosha) => (
-                <div
-                  key={dosha.key}
-                  className="flex items-center justify-between p-3 rounded-xl border border-red-300/20 bg-red-500/5"
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
-                    <span className="text-sm text-foreground truncate">
-                      {isHi ? dosha.nameHi : dosha.nameEn}
+        <div className="card-sacred rounded-xl p-6 border border-sacred-gold/20">
+          <h3 className="font-sans text-lg font-semibold text-sacred-gold mb-4">{t('lk.dosha.title')}</h3>
+          <div className="flex items-center justify-between rounded-xl p-4 border border-sacred-gold/10 bg-sacred-gold/5">
+            <div className="text-sm text-foreground">
+              {t('lk.dosha.detected')}: <span className="font-semibold">{doshas.detectedCount}</span>
+              <span className="text-muted-foreground"> / {doshas.total}</span>
+            </div>
+            {doshas.detectedCount > 0 ? (
+              <AlertTriangle className="w-5 h-5 text-red-500" />
+            ) : (
+              <CheckCircle className="w-5 h-5 text-green-500" />
+            )}
+          </div>
+          {doshas.highCount > 0 && (
+            <div className="mt-3 text-xs text-red-600 font-medium">
+              {isHi ? 'उच्च-गंभीरता दोष' : 'High severity'}: {doshas.highCount}
+            </div>
+          )}
+
+          <button
+            onClick={() => onNavigateTab?.('analysis')}
+            className="mt-4 text-xs px-3 py-1.5 rounded-full border border-sacred-gold/30 text-sacred-gold hover:border-sacred-gold/60 transition-all"
+          >
+            {isHi ? 'पूरा विश्लेषण देखें' : 'View full analysis'}
+          </button>
+        </div>
+      </div>
+
+      <div className="card-sacred rounded-xl p-6 border border-sacred-gold/20">
+        <div className="flex items-center gap-2 mb-3">
+          <Sparkles className="w-4 h-4 text-sacred-gold" />
+          <h3 className="font-sans text-lg font-semibold text-sacred-gold">{isHi ? 'त्वरित उपाय' : 'Quick Remedies'}</h3>
+        </div>
+
+        {quickRemedies.length === 0 ? (
+          <div className="text-sm text-muted-foreground">
+            {isHi ? 'कोई तत्काल उपाय नहीं।' : 'No immediate remedies.'}
+          </div>
+        ) : (
+          <div className="grid gap-3 md:grid-cols-2">
+            {quickRemedies.map((r: any) => (
+              <div key={`${r.planet}-${r.lk_house}`} className="rounded-xl border border-border/40 bg-card p-4">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="text-sm font-semibold text-foreground">
+                    {isHi ? (r.planet_hi || r.planet) : r.planet} · {isHi ? `भाव ${r.lk_house}` : `H${r.lk_house}`}
+                  </div>
+                  {r.urgency && (
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full border font-bold ${
+                      r.urgency === 'high' ? 'border-red-200 bg-red-50 text-red-700' :
+                      r.urgency === 'medium' ? 'border-amber-200 bg-amber-50 text-amber-700' :
+                      'border-gray-200 bg-gray-50 text-gray-700'
+                    }`}>
+                      {r.urgency}
                     </span>
-                  </div>
-                  <span
-                    className={`px-2.5 py-0.5 rounded-full text-sm font-semibold shrink-0 ml-2 ${severityStyles[dosha.severity].badge}`}
-                  >
-                    {dosha.severity === 'high'
-                      ? t('lk.dosha.high')
-                      : dosha.severity === 'medium'
-                        ? t('lk.dosha.medium')
-                        : t('lk.dosha.low')}
-                  </span>
+                  )}
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
+                <p className="text-sm text-foreground/80 mt-2 leading-relaxed">
+                  {isHi ? r.remedy_hi : r.remedy_en}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
 
-        {/* ─── 3. Quick Remedies ─── */}
-        <div className="card-sacred rounded-xl p-6 border border-sacred-gold/20">
-          <h3 className="font-sans text-lg font-semibold text-sacred-gold mb-4">
-            {t('lk.dashboard.remediesList')}
-          </h3>
-
-          {quickRemedies.length === 0 ? (
-            <p className="text-sm text-gray-600 italic py-4 text-center">
-              {t('auto.noRemediesAvailable')}
-            </p>
-          ) : (
-            <div className="space-y-3">
-              {quickRemedies.map((item, idx) => {
-                const TypeIcon =
-                  typeIcons[item.remedy.type as keyof typeof typeIcons] ?? Sparkles;
-                const remedyText = isHi ? item.remedy.hi : item.remedy.en;
-
-                return (
-                  <div
-                    key={idx}
-                    className="flex items-start gap-3 p-3 rounded-xl bg-sacred-gold/5 border border-sacred-gold/10"
-                  >
-                    <TypeIcon className="w-4 h-4 text-sacred-gold mt-0.5 shrink-0" />
-                    <p className="text-sm text-foreground/80 leading-snug">
-                      {remedyText}
-                    </p>
-                  </div>
-                );
-              })}
-
-              {/* View all link */}
-              <button
-                type="button"
-                onClick={() => onNavigateTab?.('upay')}
-                className="w-full text-sm text-sacred-gold hover:text-sacred-gold-dark transition-colors text-center pt-2"
-              >
-                {t('auto.viewAllRemedies')}
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* ─── 4. Life Timeline ─── */}
-        <div className="card-sacred rounded-xl p-6 border border-sacred-gold/20">
-          <h3 className="font-sans text-lg font-semibold text-sacred-gold mb-4 flex items-center gap-2">
-            <Clock className="w-5 h-5" />
-            {t('lk.dashboard.timeline')}
-          </h3>
-
-          <p className="text-sm text-gray-500 mb-4">
-            {t('auto.currentAge')}:{' '}
-            <span className="font-semibold text-foreground">{age}</span>
-          </p>
-
-          {timelinePeriods.length === 0 ? (
-            <p className="text-sm text-gray-600 italic py-4 text-center">
-              {t('auto.timelineDataNotAvail')}
-            </p>
-          ) : (
-            <div className="space-y-2">
-              {timelinePeriods.map((period, idx) => {
-                const isCurrent = idx === currentPeriodIndex;
-                const isPrevious = idx === currentPeriodIndex - 1;
-                const isNext = idx === currentPeriodIndex + 1;
-
-                // Only show previous, current, and next periods
-                if (!isCurrent && !isPrevious && !isNext) return null;
-
-                const planetLabel = getPlanetLabel(period.planet, language);
-
-                return (
-                  <div
-                    key={idx}
-                    className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
-                      isCurrent
-                        ? 'bg-sacred-gold/15 border-sacred-gold/40'
-                        : 'bg-gray-50 border-gray-200'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <span
-                        className={`w-2.5 h-2.5 rounded-full ${
-                          isCurrent ? 'bg-sacred-gold animate-pulse' : 'bg-foreground/30'
-                        }`}
-                      />
-                      <div>
-                        <p
-                          className={`text-sm font-medium ${
-                            isCurrent ? 'text-sacred-gold' : 'text-gray-600'
-                          }`}
-                        >
-                          {planetLabel}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          {period.ageStart}–{period.ageEnd}{' '}
-                          {t('auto.years')}
-                        </p>
-                      </div>
-                    </div>
-
-                    {isCurrent && (
-                      <span className="px-2.5 py-0.5 rounded-full text-sm font-semibold bg-sacred-gold/20 text-sacred-gold">
-                        {t('auto.active')}
-                        
-                      </span>
-                    )}
-                    {isPrevious && (
-                      <span className="px-2.5 py-0.5 rounded-full text-sm text-gray-500">
-                        {isHi ? 'पिछला' : t('common.previous')}
-                      </span>
-                    )}
-                    {isNext && (
-                      <span className="px-2.5 py-0.5 rounded-full text-sm text-gray-500">
-                        {isHi ? 'अगला' : t('common.next')}
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+        <button
+          onClick={() => onNavigateTab?.('upay')}
+          className="mt-4 text-xs px-3 py-1.5 rounded-full border border-sacred-gold/30 text-sacred-gold hover:border-sacred-gold/60 transition-all"
+        >
+          {isHi ? 'सभी उपाय देखें' : 'View all remedies'}
+        </button>
       </div>
     </div>
   );
 }
+

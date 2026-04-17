@@ -1,30 +1,33 @@
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useTranslation } from '@/lib/i18n';
-import type { LalKitabChartData } from './lalkitab-data';
-import {
-  PREDICTION_AREAS,
-  computeAreaScore,
-  scoreToConfidence,
-} from './lalkitab-data';
 import { api } from '@/lib/api';
-import {
-  Star,
-  Info,
-  Clock,
-  ThumbsUp,
-  Meh
-} from 'lucide-react';
+import { useLalKitab } from './LalKitabContext';
+import { Star, Info, ThumbsUp, Meh } from 'lucide-react';
 
-interface Props {
-  chartData: LalKitabChartData;
-  kundliId: string;
+interface StudioArea {
+  key: string;
+  title_en: string;
+  title_hi: string;
+  score: number;
+  confidence: 'high' | 'moderate' | 'low' | 'speculative';
+  is_positive: boolean;
+  positive_en: string;
+  positive_hi: string;
+  caution_en: string;
+  caution_hi: string;
+  remedy_en: string;
+  remedy_hi: string;
+  trace: Array<{ planet: string; house: number }>;
+}
+
+interface StudioResponse {
+  kundli_id: string;
+  areas: StudioArea[];
 }
 
 const STORAGE_KEY_PREFIX = 'lk_prediction_feedback_';
-const confidenceConfig: Record<
-  string,
-  { border: string; bg: string; badge: string; bar: string; icon: typeof Star }
-> = {
+
+const confidenceConfig: Record<string, { border: string; bg: string; badge: string; bar: string; icon: typeof Star }> = {
   high: {
     border: 'border-green-300/30',
     bg: 'bg-green-500/5',
@@ -55,42 +58,33 @@ const confidenceConfig: Record<
   },
 };
 
-const areaIcons: Record<string, typeof Star> = {};
-
-const PLANET_LABELS: Record<string, { en: string; hi: string }> = {
-  Sun: { en: 'Sun', hi: 'सूर्य' },
-  Moon: { en: 'Moon', hi: 'चंद्र' },
-  Mars: { en: 'Mars', hi: 'मंगल' },
-  Mercury: { en: 'Mercury', hi: 'बुध' },
-  Jupiter: { en: 'Jupiter', hi: 'गुरु' },
-  Venus: { en: 'Venus', hi: 'शुक्र' },
-  Saturn: { en: 'Saturn', hi: 'शनि' },
-  Rahu: { en: 'Rahu', hi: 'राहु' },
-  Ketu: { en: 'Ketu', hi: 'केतु' },
-};
-
-function getPlanetLabel(key: string, language: string): string {
-  const p = PLANET_LABELS[key];
-  if (!p) return key;
-  return language === 'hi' ? p.hi : p.en;
-}
-
-export default function LalKitabPredictionTab({ chartData, kundliId }: Props) {
+export default function LalKitabPredictionTab() {
   const { t, language } = useTranslation();
   const isHi = language === 'hi';
+  const { kundliId } = useLalKitab();
 
-  const storageKey = `${STORAGE_KEY_PREFIX}${kundliId}`;
+  const [studio, setStudio] = useState<StudioResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const storageKey = `${STORAGE_KEY_PREFIX}${kundliId || ''}`;
   const [feedback, setFeedback] = useState<Record<string, string>>({});
 
-  // Load feedback: API is authoritative; localStorage is the optimistic cache
   useEffect(() => {
     if (!kundliId) return;
-    // Seed from localStorage immediately
+    setError(null);
+    api.get(`/api/lalkitab/predictions/studio/${kundliId}`)
+      .then((res: any) => setStudio(res as StudioResponse))
+      .catch((e: any) => setError(e instanceof Error ? e.message : (isHi ? 'लोड नहीं हो सका' : 'Failed to load')));
+  }, [kundliId]);
+
+  // Load feedback: API is authoritative; localStorage is optimistic cache
+  useEffect(() => {
+    if (!kundliId) return;
     try {
       const cached = localStorage.getItem(storageKey);
       if (cached) setFeedback(JSON.parse(cached));
     } catch { /* ignore */ }
-    // Then fetch from backend and overwrite
+
     api.get(`/api/lalkitab/predictions/feedback/${kundliId}`)
       .then((res: any) => {
         if (res?.feedback && typeof res.feedback === 'object') {
@@ -98,192 +92,151 @@ export default function LalKitabPredictionTab({ chartData, kundliId }: Props) {
           localStorage.setItem(storageKey, JSON.stringify(res.feedback));
         }
       })
-      .catch(() => { /* keep localStorage state */ });
-  }, [kundliId]);
+      .catch(() => { /* keep local */ });
+  }, [kundliId, storageKey]);
 
   const saveFeedback = useCallback((areaKey: string, value: string) => {
+    if (!kundliId) return;
     const next = { ...feedback, [areaKey]: value };
     setFeedback(next);
     localStorage.setItem(storageKey, JSON.stringify(next));
     api.post('/api/lalkitab/predictions/feedback', { kundli_id: kundliId, feedback: next })
-      .catch(() => { /* optimistic — localStorage already updated */ });
+      .catch(() => { /* optimistic */ });
   }, [feedback, kundliId, storageKey]);
 
-  const predictions = useMemo(
-    () =>
-      PREDICTION_AREAS.map((area) => {
-        const score = computeAreaScore(area, chartData.planetPositions, chartData.houses, chartData.planetLongitudes);
-        const confidence = scoreToConfidence(score);
-        const isPositive = score >= 55;
-        return { area, score, confidence, isPositive };
-      }),
-    [chartData],
-  );
+  const areas = useMemo(() => (studio?.areas || []).slice().sort((a, b) => b.score - a.score), [studio]);
+
+  if (!kundliId) {
+    return (
+      <div className="text-center py-10 text-muted-foreground text-sm">
+        {isHi ? 'कुंडली चुनें या बनाएं।' : 'Select or generate a Kundli.'}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div>
-        <h2 className="text-xl font-semibold text-sacred-gold flex items-center gap-2 mb-1">
-          <Star className="w-5 h-5" />
+        <h2 className="text-xl font-sans font-semibold text-sacred-gold flex items-center gap-2 mb-1">
+          <Info className="w-5 h-5" />
           {t('lk.studio.title')}
         </h2>
         <p className="text-sm text-gray-500">{t('lk.studio.desc')}</p>
       </div>
 
-      {/* Formula note */}
-      <div className="flex items-start gap-3 p-4 rounded-xl border border-sacred-gold/20 bg-sacred-gold/5">
-        <Info className="w-4 h-4 text-sacred-gold mt-0.5 shrink-0" />
-        <p className="text-xs text-gray-600">{t('lk.studio.formula')}</p>
-      </div>
+      {error && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-700 text-sm">
+          {error}
+        </div>
+      )}
 
-      {/* Prediction cards grid */}
-      <div className="grid gap-4 md:grid-cols-2">
-        {predictions.map(({ area, score, confidence, isPositive }) => {
-          const cfg = confidenceConfig[confidence] ?? confidenceConfig.speculative;
-          const Icon = areaIcons[area.key] ?? Star;
-          const StatusIcon = cfg.icon;
-          const userRating = feedback[area.key];
+      {areas.map((a) => {
+        const cfg = confidenceConfig[a.confidence] || confidenceConfig.speculative;
+        const Icon = cfg.icon;
+        const userRating = feedback[a.key] || '';
+        const isPositive = !!a.is_positive;
+        const StatusIcon = isPositive ? ThumbsUp : Meh;
+        const trace = a.trace || [];
 
-          // Planets implicated in this area
-          const implicated = area.primaryPlanets.map((pKey) => {
-            const house = chartData.planetPositions[pKey];
-            return { key: pKey, house };
-          });
-
-          return (
-            <div
-              key={area.key}
-              className={`card-sacred rounded-xl border p-5 flex flex-col h-full transition-all ${cfg.border} ${cfg.bg}`}
-            >
-              <div className="flex-1">
-                {/* Card header */}
-                <div className="flex items-start justify-between gap-3 mb-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-9 h-9 rounded-xl bg-sacred-gold/10 flex items-center justify-center shrink-0">
-                      <Icon className="w-4 h-4 text-sacred-gold" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-foreground text-sm">
-                        {isHi ? area.hi : area.en}
-                      </p>
-                      <span
-                        className={`inline-block text-xs px-2 py-0.5 rounded-full border font-medium mt-0.5 ${cfg.badge}`}
-                      >
-                        {t(`lk.studio.${confidence}`)}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <p className="text-xl font-bold text-foreground">{score}</p>
-                    <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">{t('auto.score')}</p>
-                  </div>
-                </div>
-
-                {/* Score bar */}
-                <div className="w-full bg-gray-200/60 rounded-full h-1.5 mb-4">
-                  <div
-                    className={`h-1.5 rounded-full transition-all duration-1000 ${cfg.bar}`}
-                    style={{ width: `${score}%` }}
-                  />
-                </div>
-
-                {/* Tone badge */}
-                <div className={`flex items-start gap-2 mb-4 p-3 rounded-lg ${isPositive ? 'bg-green-500/8' : 'bg-orange-400/8'}`}>
-                  <StatusIcon className={`w-4 h-4 shrink-0 mt-0.5 ${isPositive ? 'text-green-600' : 'text-orange-500'}`} />
-                  <p className="text-xs font-medium text-foreground/80 leading-relaxed">
-                    <span className={`font-bold ${isPositive ? 'text-green-600' : 'text-orange-600'} uppercase tracking-tight`}>
-                      {isPositive ? t('lk.studio.positive') : t('lk.studio.caution')}:{' '}
-                    </span>
-                    {isPositive
-                      ? (isHi ? area.positiveHi : area.positiveEn)
-                      : (isHi ? area.cautionHi : area.cautionEn)}
-                  </p>
-                </div>
-
-                {/* Remedy */}
-                <div className="mb-4">
-                  <p className="text-xs font-bold text-sacred-gold uppercase tracking-widest mb-1.5">
-                    {t('lk.studio.actionLabel')}
-                  </p>
-                  <p className="text-sm text-foreground/70 leading-snug">
-                    {isHi ? area.remedyHi : area.remedyEn}
-                  </p>
-                </div>
-
-                {/* Why — planet trace */}
-                <div className="mb-6">
-                  <p className="text-xs font-bold text-sacred-gold uppercase tracking-widest mb-2">
-                    {t('lk.studio.whyLabel')}
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {implicated.map(({ key, house }) => (
-                      <span
-                        key={key}
-                        className="text-[10px] px-2 py-0.5 rounded bg-sacred-gold/10 text-sacred-gold-dark font-bold"
-                      >
-                        {getPlanetLabel(key, language)} {t('auto.hHouse')}
-                      </span>
-                    ))}
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-gray-100 text-gray-500 font-medium">
-                      {isHi
-                        ? `मुख्य भाव: ${area.primaryHouses.join(', ')}`
-                        : `Key Houses: ${area.primaryHouses.join(', ')}`}
-                    </span>
-                  </div>
+        return (
+          <div key={a.key} className={`rounded-2xl border p-5 ${cfg.border} ${cfg.bg}`}>
+            <div className="flex items-start justify-between gap-4 mb-3">
+              <div>
+                <h3 className="text-lg font-sans font-bold text-sacred-gold">
+                  {isHi ? a.title_hi : a.title_en}
+                </h3>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full border font-bold ${cfg.badge}`}>
+                    {a.confidence.toUpperCase()}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {t('lk.studio.score')}: {a.score}/100
+                  </span>
                 </div>
               </div>
+              <Icon className="w-5 h-5 text-sacred-gold shrink-0" />
+            </div>
 
-              {/* Feedback Section */}
-              <div className="mt-auto pt-4 border-t border-sacred-gold/10">
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
-                  {t('lk.prediction.feedbackTitle')}
-                </p>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => saveFeedback(area.key, 'happened')}
-                    className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[10px] font-bold transition-all border ${
-                      userRating === 'happened'
-                        ? 'bg-green-600 text-white border-green-600 shadow-md'
-                        : 'bg-white/50 text-gray-500 border-gray-200 hover:border-green-300'
-                    }`}
-                  >
-                    <ThumbsUp className="w-3 h-3" />
-                    {t('lk.prediction.happened')}
-                  </button>
-                  <button
-                    onClick={() => saveFeedback(area.key, 'partially')}
-                    className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[10px] font-bold transition-all border ${
-                      userRating === 'partially'
-                        ? 'bg-sacred-gold text-white border-sacred-gold shadow-md'
-                        : 'bg-white/50 text-gray-500 border-gray-200 hover:border-sacred-gold/30'
-                    }`}
-                  >
-                    <Meh className="w-3 h-3" />
-                    {t('lk.prediction.partially')}
-                  </button>
-                  <button
-                    onClick={() => saveFeedback(area.key, 'not_yet')}
-                    className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[10px] font-bold transition-all border ${
-                      userRating === 'not_yet'
-                        ? 'bg-gray-600 text-white border-gray-600 shadow-md'
-                        : 'bg-white/50 text-gray-500 border-gray-200 hover:border-gray-400'
-                    }`}
-                  >
-                    <Clock className="w-3 h-3" />
-                    {t('lk.prediction.notYet')}
-                  </button>
-                </div>
-                {userRating && (
-                  <p className="text-[10px] text-green-600 font-bold mt-2 text-center animate-pulse">
-                    ✓ {t('lk.prediction.ratingSaved')}
-                  </p>
-                )}
+            <div className="h-1.5 rounded-full bg-black/5 overflow-hidden mb-4">
+              <div className={`h-1.5 rounded-full transition-all duration-700 ${cfg.bar}`} style={{ width: `${a.score}%` }} />
+            </div>
+
+            <div className={`flex items-start gap-2 mb-4 p-3 rounded-lg ${isPositive ? 'bg-green-500/8' : 'bg-orange-400/8'}`}>
+              <StatusIcon className={`w-4 h-4 shrink-0 mt-0.5 ${isPositive ? 'text-green-600' : 'text-orange-500'}`} />
+              <p className="text-xs font-medium text-foreground/80 leading-relaxed">
+                <span className={`font-bold ${isPositive ? 'text-green-600' : 'text-orange-600'} uppercase tracking-tight`}>
+                  {isPositive ? t('lk.studio.positive') : t('lk.studio.caution')}:{' '}
+                </span>
+                {isPositive ? (isHi ? a.positive_hi : a.positive_en) : (isHi ? a.caution_hi : a.caution_en)}
+              </p>
+            </div>
+
+            <div className="mb-4">
+              <p className="text-xs font-bold text-sacred-gold uppercase tracking-widest mb-1.5">{t('lk.studio.actionLabel')}</p>
+              <p className="text-sm text-foreground/70 leading-snug">{isHi ? a.remedy_hi : a.remedy_en}</p>
+            </div>
+
+            <div className="mb-6">
+              <p className="text-xs font-bold text-sacred-gold uppercase tracking-widest mb-2">{t('lk.studio.whyLabel')}</p>
+              <div className="flex flex-wrap gap-1.5">
+                {trace.map((tr) => (
+                  <span key={`${tr.planet}-${tr.house}`} className="text-[10px] px-2 py-0.5 rounded bg-sacred-gold/10 text-sacred-gold-dark font-bold">
+                    {tr.planet} {isHi ? `भाव ${tr.house}` : `H${tr.house}`}
+                  </span>
+                ))}
               </div>
             </div>
-          );
-        })}
-      </div>
+
+            <div className="mt-auto pt-4 border-t border-sacred-gold/10">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
+                {t('lk.prediction.feedbackTitle')}
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => saveFeedback(a.key, 'happened')}
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[10px] font-bold transition-all border ${
+                    userRating === 'happened'
+                      ? 'bg-green-600 text-white border-green-600 shadow-md'
+                      : 'bg-white/50 text-gray-500 border-gray-200 hover:border-green-300'
+                  }`}
+                >
+                  <ThumbsUp className="w-3 h-3" />
+                  {t('lk.prediction.happened')}
+                </button>
+                <button
+                  onClick={() => saveFeedback(a.key, 'partially')}
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[10px] font-bold transition-all border ${
+                    userRating === 'partially'
+                      ? 'bg-sacred-gold text-white border-sacred-gold shadow-md'
+                      : 'bg-white/50 text-gray-500 border-gray-200 hover:border-sacred-gold/30'
+                  }`}
+                >
+                  <Star className="w-3 h-3" />
+                  {t('lk.prediction.partially')}
+                </button>
+                <button
+                  onClick={() => saveFeedback(a.key, 'not_happened')}
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[10px] font-bold transition-all border ${
+                    userRating === 'not_happened'
+                      ? 'bg-gray-800 text-white border-gray-800 shadow-md'
+                      : 'bg-white/50 text-gray-500 border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <Meh className="w-3 h-3" />
+                  {t('lk.prediction.notHappened')}
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+
+      {!error && areas.length === 0 && (
+        <div className="text-center py-8 text-sm text-muted-foreground">
+          {isHi ? 'कोई डेटा नहीं।' : 'No data.'}
+        </div>
+      )}
     </div>
   );
 }
+

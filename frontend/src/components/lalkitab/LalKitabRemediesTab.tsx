@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n';
-import type { LalKitabChartData } from './lalkitab-data';
 import { api } from '@/lib/api';
 import { AlertTriangle, HelpCircle, Lightbulb, Sparkles, Loader2, ChevronDown, ChevronUp, Clock, ShieldCheck, BadgeCheck } from 'lucide-react';
 
 interface Props {
-  chartData: LalKitabChartData;
   kundliId: string;
 }
 
@@ -171,7 +169,7 @@ function RemedyCard({ r, isHi }: { r: EnrichedRemedy; isHi: boolean }) {
   );
 }
 
-export default function LalKitabRemediesTab({ chartData, kundliId }: Props) {
+export default function LalKitabRemediesTab({ kundliId }: Props) {
   const { t, language } = useTranslation();
   const isHi = language === 'hi';
 
@@ -182,6 +180,8 @@ export default function LalKitabRemediesTab({ chartData, kundliId }: Props) {
 
   const [validated, setValidated] = useState<ValidatedRemedy[]>([]);
   const [validatedLoading, setValidatedLoading] = useState(false);
+  const [master, setMaster] = useState<any[]>([]);
+  const [masterLoading, setMasterLoading] = useState(false);
 
   useEffect(() => {
     if (!kundliId) return;
@@ -192,15 +192,20 @@ export default function LalKitabRemediesTab({ chartData, kundliId }: Props) {
       .finally(() => setLoading(false));
 
     setValidatedLoading(true);
-    // NOTE: Backend uses /api/kp-lalkitab/ prefix for this endpoint (naming inconsistency).
-    // Do not change to /api/lalkitab/ — the backend route is registered as /api/kp-lalkitab/lk-validated-remedies.
-    api.post('/api/kp-lalkitab/lk-validated-remedies', { kundli_id: kundliId })
+    api.post('/api/lalkitab/lk-validated-remedies', { kundli_id: kundliId })
       .then((res: any) => setValidated(Array.isArray(res?.remedies) ? res.remedies : []))
       .catch((err: any) => {
         console.error('Validated remedies fetch failed:', err);
         setError(isHi ? 'सत्यापित उपाय लोड नहीं हो सके' : 'Could not load validated remedies');
       })
       .finally(() => setValidatedLoading(false));
+
+    // Raw (DB) master remedies list for planet+house matches.
+    setMasterLoading(true);
+    api.get(`/api/lalkitab/remedies/master/${kundliId}`)
+      .then((res: any) => setMaster(Array.isArray(res?.remedies) ? res.remedies : []))
+      .catch(() => { /* non-blocking */ })
+      .finally(() => setMasterLoading(false));
   }, [kundliId]);
 
   const filtered = enriched.filter(r => {
@@ -325,6 +330,60 @@ export default function LalKitabRemediesTab({ chartData, kundliId }: Props) {
                   </div>
                 );
               })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Master Remedies (raw DB) */}
+      {(masterLoading || master.length > 0) && (
+        <div className="pt-4 border-t border-sacred-gold/20">
+          <div className="flex items-center gap-2 mb-3">
+            <BadgeCheck className="w-4 h-4 text-sacred-gold" />
+            <h3 className="font-semibold text-sacred-gold text-sm">
+              {isHi ? 'मास्टर उपाय (डेटाबेस)' : 'Master Remedies (database)'}
+            </h3>
+          </div>
+
+          {masterLoading && (
+            <div className="flex items-center gap-2 py-4">
+              <Loader2 className="w-4 h-4 animate-spin text-sacred-gold" />
+              <span className="text-xs text-muted-foreground">{isHi ? 'लोड हो रहा है...' : 'Loading...'}</span>
+            </div>
+          )}
+
+          {!masterLoading && master.length > 0 && (
+            <div className="space-y-2">
+              {master.slice(0, 80).map((r: any, idx: number) => (
+                <div key={idx} className="rounded-xl border border-border/40 bg-card p-4">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-sm font-semibold text-foreground">
+                      {r.planet} · {isHi ? `भाव ${r.house}` : `H${r.house}`}
+                    </span>
+                    {r.remedy_type && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full border border-border/40 text-muted-foreground">
+                        {r.remedy_type}
+                      </span>
+                    )}
+                    {r.duration_days != null && (
+                      <span className="ml-auto text-[10px] px-2 py-0.5 rounded-full border border-border/40 text-muted-foreground">
+                        {isHi ? 'दिन' : 'Days'}: {r.duration_days}
+                      </span>
+                    )}
+                  </div>
+                  {r.remedy_text && (
+                    <p className="text-sm text-foreground/80 mt-2 leading-relaxed">
+                      {r.remedy_text}
+                    </p>
+                  )}
+                  {(r.instructions || r.caution) && (
+                    <div className="mt-2 text-xs text-muted-foreground space-y-1">
+                      {r.instructions && <div>{isHi ? 'निर्देश' : 'Instructions'}: {r.instructions}</div>}
+                      {r.caution && <div>{isHi ? 'सावधानी' : 'Caution'}: {r.caution}</div>}
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           )}
         </div>

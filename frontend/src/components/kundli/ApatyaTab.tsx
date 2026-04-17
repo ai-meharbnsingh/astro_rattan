@@ -130,7 +130,7 @@ export default function ApatyaTab({ kundliId, language, t }: Props) {
           </p>
           <p className="text-sm mt-0.5">
             {data.yogas_detected.length} {data.yogas_detected.length === 1 ? 'yoga' : 'yogas'}{' '}
-            {isHi ? 'पाए गए' : 'detected'}
+            {t('auto.detected')}
           </p>
         </div>
       </div>
@@ -146,34 +146,34 @@ export default function ApatyaTab({ kundliId, language, t }: Props) {
             <span className="text-muted-foreground">{t('auto.fifthLord')}: </span>
             <span className="font-semibold">
               {fifth.fifth_lord || '—'}{' '}
-              {fifth.fifth_lord_placement > 0 && `(${isHi ? 'भाव' : 'house'} ${fifth.fifth_lord_placement})`}
+              {fifth.fifth_lord_placement > 0 && `(${t('auto.house')} ${fifth.fifth_lord_placement})`}
             </span>
           </div>
           <div>
-            <span className="text-muted-foreground">{isHi ? 'गुरु' : 'Jupiter'}: </span>
+            <span className="text-muted-foreground">{t('auto.jupiter')}: </span>
             <span className="font-semibold">
               {fifth.jupiter_sign || '—'}{' '}
-              {fifth.jupiter_placement > 0 && `(${isHi ? 'भाव' : 'house'} ${fifth.jupiter_placement})`}
+              {fifth.jupiter_placement > 0 && `(${t('auto.house')} ${fifth.jupiter_placement})`}
             </span>
           </div>
           <div>
-            <span className="text-muted-foreground">{isHi ? 'पंचमेश बल' : '5th lord strength'}: </span>
+            <span className="text-muted-foreground">{t('auto.fifthLordStrength')}: </span>
             <span className="font-semibold capitalize">{fifth.fifth_lord_strength}</span>
           </div>
           <div>
-            <span className="text-muted-foreground">{isHi ? 'गुरु बल' : 'Jupiter strength'}: </span>
+            <span className="text-muted-foreground">{t('auto.jupiterStrength')}: </span>
             <span className="font-semibold capitalize">{fifth.jupiter_strength}</span>
           </div>
         </div>
         {fifth.benefics_in_5th.length > 0 && (
           <div className="text-sm mb-1">
-            <span className="text-muted-foreground">{isHi ? 'शुभ ग्रह (5वें में)' : 'Benefics in 5th'}: </span>
+            <span className="text-muted-foreground">{t('auto.beneficsIn5th')}: </span>
             <span className="text-emerald-700 font-medium">{fifth.benefics_in_5th.join(', ')}</span>
           </div>
         )}
         {fifth.malefics_in_5th.length > 0 && (
           <div className="text-sm mb-3">
-            <span className="text-muted-foreground">{isHi ? 'पाप ग्रह (5वें में)' : 'Malefics in 5th'}: </span>
+            <span className="text-muted-foreground">{t('auto.maleficsIn5th')}: </span>
             <span className="text-red-700 font-medium">{fifth.malefics_in_5th.join(', ')}</span>
           </div>
         )}

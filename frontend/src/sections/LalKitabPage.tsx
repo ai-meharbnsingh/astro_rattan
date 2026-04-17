@@ -10,8 +10,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { autoRegisterClient } from '@/components/ClientSelector';
 import NotesWidget from '@/components/NotesWidget';
 import { Button } from '@/components/ui/button';
-import type { LalKitabChartData } from '@/components/lalkitab/lalkitab-data';
-import { generateLalKitabChart } from '@/components/lalkitab/lalkitab-data';
+import type { LalKitabChartLite } from '@/components/lalkitab/lalkitab-core';
+import { buildLalKitabChartLite } from '@/components/lalkitab/lalkitab-core';
 import { LalKitabProvider, useLalKitab } from '@/components/lalkitab/LalKitabContext';
 import LalKitabForm from '@/components/lalkitab/LalKitabForm';
 import type { LalKitabFormData } from '@/components/lalkitab/LalKitabForm';
@@ -66,7 +66,7 @@ function LalKitabPageInner() {
   const location = useLocation();
   const locState = (location.state as { loadKundliId?: string; clientId?: string }) || {};
   const [view, setView] = useState<View>(locState.loadKundliId ? 'generating' : 'form');
-  const [chartData, setChartData] = useState<LalKitabChartData | null>(null);
+  const [chartData, setChartData] = useState<LalKitabChartLite | null>(null);
   const [apiResult, setApiResult] = useState<any>(null);
   const [birthDate, setBirthDate] = useState('');
   const [error, setError] = useState('');
@@ -118,7 +118,7 @@ function LalKitabPageInner() {
     (async () => {
       try {
         const full = await api.get(`/api/kundli/${locState.loadKundliId}`);
-        const lkChart = generateLalKitabChart(full, full?.birth_date);
+        const lkChart = buildLalKitabChartLite(full);
         setChartData(lkChart);
         setApiResult(full);
         setClientId(full.client_id || '');
@@ -160,7 +160,7 @@ function LalKitabPageInner() {
       if (formData.selectedClientId) payload.client_id = formData.selectedClientId;
 
       const result = await api.post('/api/kundli/generate', payload);
-      const lkChart = generateLalKitabChart(result, formData.date);
+      const lkChart = buildLalKitabChartLite(result);
       setChartData(lkChart);
       setApiResult(result);
       setClientId(result.client_id || '');
@@ -337,7 +337,7 @@ function LalKitabPageInner() {
                 <LalKitabDashaTab kundliId={kundliId} language={language} />
                 <LalKitabMilestonesTab kundliId={kundliId} language={language} />
                 <LalKitabYearlyTab chartData={chartData} birthDate={birthDate} />
-                <LalKitabVarshphalTab chartData={chartData} birthDate={birthDate} apiResult={apiResult} />
+                <LalKitabVarshphalTab />
                 <LalKitabGocharTab chartData={chartData} apiResult={apiResult} />
               </TabsContent>
               <TabsContent value="upay" className="space-y-8">
@@ -408,7 +408,7 @@ function LalKitabPageInner() {
                 <LalKitabPalmistryTab kundliId={kundliId} language={language} />
                 <LalKitabFamilyTab kundliId={kundliId} language={language} />
                 <LalKitabAdvancedTab kundliId={kundliId} chartData={chartData} />
-                <LalKitabTevaTab chartData={chartData} apiResult={apiResult} />
+                <LalKitabTevaTab apiResult={apiResult} />
                 <LalKitabRinTab kundliId={kundliId} />
               </TabsContent>
               <TabsContent value="vastu" className="space-y-4">

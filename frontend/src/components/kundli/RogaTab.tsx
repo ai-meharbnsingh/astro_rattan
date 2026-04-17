@@ -161,11 +161,11 @@ export default function RogaTab({ kundliId, language, t }: Props) {
                   </span>
                 </div>
                 <p className="text-xs leading-relaxed mb-2 opacity-90">
-                  <span className="font-semibold">{isHi ? 'ट्रिगर' : 'Trigger'}:</span>{' '}
+                  <span className="font-semibold">{t('auto.trigger')}:</span>{' '}
                   {isHi ? y.trigger_hi : y.trigger_en}
                 </p>
                 <p className="text-xs leading-relaxed mb-2">
-                  <span className="font-semibold">{isHi ? 'उपाय' : 'Remedy'}:</span>{' '}
+                  <span className="font-semibold">{t('auto.remedy')}:</span>{' '}
                   {isHi ? y.remedy_hi : y.remedy_en}
                 </p>
                 <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-current/15 text-[10px] opacity-70">
@@ -186,7 +186,7 @@ export default function RogaTab({ kundliId, language, t }: Props) {
         </h3>
         {data.general_tendencies.length === 0 ? (
           <div className="p-4 rounded-lg bg-gray-50 border border-gray-200 text-gray-700 text-sm">
-            {isHi ? 'कोई मुख्य प्रवृत्ति नहीं' : 'No major tendencies detected'}
+            {t('auto.noMajorTendencies')}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -198,7 +198,7 @@ export default function RogaTab({ kundliId, language, t }: Props) {
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <div>
                     <p className="font-bold">
-                      {g.planet} — {isHi ? 'भाव' : 'House'} {g.house}
+                      {g.planet} — {t('auto.house')} {g.house}
                     </p>
                     <p className="text-[11px] opacity-80">
                       {isHi ? g.body_part_hi : g.body_part_en}

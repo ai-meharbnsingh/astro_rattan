@@ -1,84 +1,73 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from '@/lib/i18n';
-import type { LalKitabChartData } from './lalkitab-data';
-import { HOUSE_MEANINGS, PLANET_EFFECTS_IN_HOUSES } from './lalkitab-data';
-import { ChevronDown, ChevronUp, Home } from 'lucide-react';
+import { useLalKitab } from './LalKitabContext';
+import { ChevronDown, ChevronUp, Home, Sparkles } from 'lucide-react';
 
-interface Props {
-  chartData: LalKitabChartData;
-}
-
-export default function LalKitabHousesTab({ chartData }: Props) {
+export default function LalKitabHousesTab() {
   const { t, language } = useTranslation();
+  const isHi = language === 'hi';
+  const { fullData } = useLalKitab();
   const [expandedHouse, setExpandedHouse] = useState<number | null>(null);
 
-  const toggleHouse = (houseNumber: number) => {
-    setExpandedHouse((prev) => (prev === houseNumber ? null : houseNumber));
-  };
+  const byHouse = useMemo(() => {
+    const map: Record<number, string[]> = {};
+    for (let h = 1; h <= 12; h++) map[h] = [];
+    for (const p of (fullData?.positions || [])) {
+      const house = Number(p?.house || 0);
+      const planet = (p?.planet || '').toString();
+      if (house >= 1 && house <= 12 && planet) map[house].push(planet);
+    }
+    return map;
+  }, [fullData]);
 
-  const getStrengthDot = (strength: 'strong' | 'weak' | 'empty') => {
-    if (strength === 'strong') return 'bg-green-500';
-    if (strength === 'weak') return 'bg-red-500';
-    return 'bg-gray-500';
-  };
+  const remedyByHouse = useMemo(() => {
+    const map: Record<number, any[]> = {};
+    const list = fullData?.remedies?.remedies || [];
+    for (const r of list) {
+      const h = Number(r?.lk_house || 0);
+      if (!h) continue;
+      if (!map[h]) map[h] = [];
+      map[h].push(r);
+    }
+    return map;
+  }, [fullData]);
 
-  const getStrengthLabel = (strength: 'strong' | 'weak' | 'empty') => {
-    if (strength === 'strong') return t('auto.strong');
-    if (strength === 'weak') return t('auto.weak');
-    return t('auto.empty');
-  };
+  const toggle = (house: number) => setExpandedHouse((prev) => (prev === house ? null : house));
 
   return (
-    <div>
-      {/* Header */}
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold text-sacred-gold mb-1">
-          {t('lk.houses.title')}
-        </h2>
-        <p className="text-sm text-gray-500">
-          {t('lk.houses.desc')}
-        </p>
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl font-semibold text-sacred-gold mb-1">{t('lk.houses.title')}</h2>
+        <p className="text-sm text-gray-500">{t('lk.houses.desc')}</p>
       </div>
 
-      {/* House Cards */}
       <div className="grid gap-4">
-        {chartData.houses.map((houseData) => {
-          const houseIndex = houseData.house - 1;
-          const meaning = HOUSE_MEANINGS[houseIndex];
-          const isExpanded = expandedHouse === houseData.house;
-
+        {Array.from({ length: 12 }, (_, i) => i + 1).map((house) => {
+          const planets = byHouse[house] || [];
+          const remedies = (remedyByHouse[house] || []).filter((r) => r?.has_remedy);
+          const urgent = remedies.filter((r) => r?.urgency === 'high');
+          const isExpanded = expandedHouse === house;
           return (
-            <div
-              key={houseData.house}
-              className="card-sacred rounded-xl border border-sacred-gold/20 overflow-hidden transition-all"
-            >
-              {/* Collapsed View */}
+            <div key={house} className="card-sacred rounded-xl border border-sacred-gold/20 overflow-hidden transition-all">
               <button
                 type="button"
-                onClick={() => toggleHouse(houseData.house)}
+                onClick={() => toggle(house)}
                 className="w-full flex items-center justify-between p-4 text-left"
               >
                 <div className="flex items-center gap-4">
-                  {/* House Number */}
                   <div className="flex items-center gap-2">
                     <Home className="w-5 h-5 text-sacred-gold/60" />
-                    <span className="text-2xl font-bold text-sacred-gold">
-                      {houseData.house}
-                    </span>
+                    <span className="text-2xl font-bold text-sacred-gold">{house}</span>
                   </div>
 
-                  {/* General Meaning & Badges */}
                   <div className="flex flex-col gap-1">
                     <span className="text-sm text-foreground">
-                      {language === 'hi' ? meaning.hi : meaning.en}
+                      {planets.length ? (isHi ? 'ग्रह:' : 'Planets:') : (isHi ? 'खाली' : 'Empty')}
                     </span>
                     <div className="flex flex-wrap gap-1">
-                      {meaning.lifeAreas.map((area, idx) => (
-                        <span
-                          key={idx}
-                          className="bg-sacred-gold/10 text-sacred-gold border border-sacred-gold/20 px-2 py-0.5 rounded-full text-sm"
-                        >
-                          {language === 'hi' ? area.hi : area.en}
+                      {planets.map((p) => (
+                        <span key={p} className="bg-sacred-gold/10 text-sacred-gold px-2 py-0.5 rounded-full text-sm font-medium">
+                          {p}
                         </span>
                       ))}
                     </div>
@@ -86,105 +75,53 @@ export default function LalKitabHousesTab({ chartData }: Props) {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  {/* Planets in house */}
-                  {houseData.planets.length > 0 && (
-                    <div className="flex gap-1">
-                      {houseData.planets.map((planet, idx) => (
-                        <span
-                          key={idx}
-                          className="bg-sacred-gold/10 text-sacred-gold px-2 py-0.5 rounded-full text-sm font-medium"
-                        >
-                          {planet}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Strength Indicator */}
-                  <div className="flex items-center gap-1.5">
-                    <span className={`w-2.5 h-2.5 rounded-full ${getStrengthDot(houseData.strength)}`} />
-                    <span className="text-sm text-gray-600">
-                      {getStrengthLabel(houseData.strength)}
+                  {urgent.length > 0 && (
+                    <span className="text-xs px-2 py-0.5 rounded-full border border-red-200 bg-red-50 text-red-700 font-semibold">
+                      {isHi ? 'अत्यावश्यक' : 'Urgent'}: {urgent.length}
                     </span>
-                  </div>
-
-                  {/* Chevron */}
-                  {isExpanded ? (
-                    <ChevronUp className="w-5 h-5 text-sacred-gold/60" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 text-sacred-gold/60" />
                   )}
+                  {isExpanded ? <ChevronUp className="w-5 h-5 text-sacred-gold/60" /> : <ChevronDown className="w-5 h-5 text-sacred-gold/60" />}
                 </div>
               </button>
 
-              {/* Expanded View */}
               {isExpanded && (
                 <div className="px-4 pb-4 space-y-4 border-t border-sacred-gold/10 pt-4">
-                  {/* Meaning */}
-                  <div>
-                    <h4 className="text-sm font-semibold text-sacred-gold mb-1">
-                      {t('lk.houses.meaning')}
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-sacred-gold" />
+                    <h4 className="text-sm font-semibold text-sacred-gold">
+                      {isHi ? 'उपाय (इस भाव के ग्रह)' : 'Remedies (planets in this house)'}
                     </h4>
-                    <p className="text-sm text-foreground/80">
-                      {language === 'hi' ? meaning.hi : meaning.en}
-                    </p>
                   </div>
 
-                  {/* Life Areas */}
-                  <div>
-                    <h4 className="text-sm font-semibold text-sacred-gold mb-2">
-                      {t('lk.houses.lifeAreas')}
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {meaning.lifeAreas.map((area, idx) => (
-                        <span
-                          key={idx}
-                          className="bg-sacred-gold/10 text-sacred-gold border border-sacred-gold/20 px-2 py-0.5 rounded-full text-sm"
-                        >
-                          {language === 'hi' ? area.hi : area.en}
-                        </span>
+                  {remedies.length === 0 ? (
+                    <p className="text-sm text-gray-600 italic">
+                      {isHi ? 'इस भाव के लिए कोई उपाय नहीं मिला।' : 'No remedies found for this house.'}
+                    </p>
+                  ) : (
+                    <div className="space-y-2">
+                      {remedies.slice(0, 8).map((r: any) => (
+                        <div key={`${r.planet}-${r.lk_house}`} className="rounded-xl border border-border/40 bg-card p-4">
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="text-sm font-semibold text-foreground">
+                              {isHi ? (r.planet_hi || r.planet) : r.planet}
+                            </div>
+                            {r.urgency && (
+                              <span className={`text-[10px] px-2 py-0.5 rounded-full border font-bold ${
+                                r.urgency === 'high' ? 'border-red-200 bg-red-50 text-red-700' :
+                                r.urgency === 'medium' ? 'border-amber-200 bg-amber-50 text-amber-700' :
+                                'border-gray-200 bg-gray-50 text-gray-700'
+                              }`}>
+                                {r.urgency}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-foreground/80 mt-2 leading-relaxed">
+                            {isHi ? r.remedy_hi : r.remedy_en}
+                          </p>
+                        </div>
                       ))}
                     </div>
-                  </div>
-
-                  {/* Planet Effects */}
-                  <div>
-                    <h4 className="text-sm font-semibold text-sacred-gold mb-2">
-                      {t('lk.houses.planetEffect')}
-                    </h4>
-
-                    {houseData.planets.length > 0 ? (
-                      <div className="space-y-4">
-                        {houseData.planets.map((planet) => {
-                          const effects = PLANET_EFFECTS_IN_HOUSES[planet]?.[houseData.house];
-
-                          return (
-                            <div key={planet} className="space-y-3">
-                              <h5 className="text-sm font-medium text-foreground">
-                                {planet}
-                              </h5>
-
-                              {effects ? (
-                                <div className="bg-sacred-gold/5 border border-sacred-gold/20 rounded-xl p-4">
-                                  <p className="text-sm text-foreground/80 leading-relaxed">
-                                    {language === 'hi' ? effects.hi : effects.en}
-                                  </p>
-                                </div>
-                              ) : (
-                                <p className="text-sm text-gray-600 italic">
-                                  {t('auto.effectsNotAvailableF')}
-                                </p>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <p className="text-sm text-gray-600 italic">
-                        {t('auto.emptyHouseNoPlanetsP')}
-                      </p>
-                    )}
-                  </div>
+                  )}
                 </div>
               )}
             </div>
@@ -194,3 +131,4 @@ export default function LalKitabHousesTab({ chartData }: Props) {
     </div>
   );
 }
+

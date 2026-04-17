@@ -120,11 +120,7 @@ export default function JanmaPredictionsTab({ kundliId, language, t }: Props) {
           <Sparkles className="w-6 h-6" />
           {t('auto.janmaPredictions')}
         </Heading>
-        <p className="text-sm text-muted-foreground">
-          {isHi
-            ? 'फलदीपिका अध्याय 9 (लग्न फल) एवं अध्याय 10 (चन्द्र-नक्षत्र फल) पर आधारित जन्म-फल।'
-            : 'Janma-phala from Phaladeepika Adhyaya 9 (Lagna profile) + Adhyaya 10 (Moon Nakshatra).'}
-        </p>
+        <p className="text-sm text-muted-foreground">{t('auto.janmaPredictionsDesc')}</p>
       </div>
 
       {/* ── Section 1: Lagna Profile ── */}
@@ -141,7 +137,7 @@ export default function JanmaPredictionsTab({ kundliId, language, t }: Props) {
 
         {!lp.lagna_sign ? (
           <div className="p-4 rounded-lg bg-gray-50 border border-gray-200 text-gray-600 text-sm">
-            {isHi ? 'लग्न उपलब्ध नहीं।' : 'Lagna not available.'}
+            {t('auto.lagnaNotAvailable')}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -212,7 +208,7 @@ export default function JanmaPredictionsTab({ kundliId, language, t }: Props) {
 
         {!mn.nakshatra ? (
           <div className="p-4 rounded-lg bg-gray-50 border border-gray-200 text-gray-600 text-sm">
-            {isHi ? 'चन्द्र का नक्षत्र उपलब्ध नहीं।' : 'Moon nakshatra not available.'}
+            {t('auto.moonNakshatraNotAvailable')}
           </div>
         ) : (
           <div className="space-y-4">
@@ -316,7 +312,7 @@ export default function JanmaPredictionsTab({ kundliId, language, t }: Props) {
         <section className="rounded-xl border-2 border-sacred-gold/40 bg-gradient-to-br from-sacred-gold/10 to-amber-50 p-5">
           <h3 className="text-base font-semibold text-sacred-gold-dark mb-2 flex items-center gap-2">
             <Sparkles className="w-4 h-4" />
-            {isHi ? 'संयुक्त जन्म-फल' : 'Combined Janma Narrative'}
+            {t('auto.combinedJanmaNarrative')}
           </h3>
           <p className="text-sm text-foreground leading-relaxed">
             {isHi ? data.combined_narrative_hi : data.combined_narrative_en}

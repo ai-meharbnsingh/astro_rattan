@@ -170,20 +170,7 @@ const T = {
   gocharChart: (l: string) => l === 'hi' ? 'गोचर चार्ट' : 'Gochar (Transit) Chart',
 };
 
-/* ────────────────────────────── Default fallback countries ────────────────────────────── */
-
-const DEFAULT_COUNTRIES: CountryOption[] = [
-  { code: 'india', name: 'India', name_hi: 'भारत', flag: '\uD83C\uDDEE\uD83C\uDDF3' },
-  { code: 'usa', name: 'United States', name_hi: 'संयुक्त राज्य अमेरिका', flag: '\uD83C\uDDFA\uD83C\uDDF8' },
-  { code: 'uk', name: 'United Kingdom', name_hi: 'यूनाइटेड किंगडम', flag: '\uD83C\uDDEC\uD83C\uDDE7' },
-  { code: 'china', name: 'China', name_hi: 'चीन', flag: '\uD83C\uDDE8\uD83C\uDDF3' },
-  { code: 'russia', name: 'Russia', name_hi: 'रूस', flag: '\uD83C\uDDF7\uD83C\uDDFA' },
-  { code: 'japan', name: 'Japan', name_hi: 'जापान', flag: '\uD83C\uDDEF\uD83C\uDDF5' },
-  { code: 'germany', name: 'Germany', name_hi: 'जर्मनी', flag: '\uD83C\uDDE9\uD83C\uDDEA' },
-  { code: 'france', name: 'France', name_hi: 'फ्रांस', flag: '\uD83C\uDDEB\uD83C\uDDF7' },
-  { code: 'pakistan', name: 'Pakistan', name_hi: 'पाकिस्तान', flag: '\uD83C\uDDF5\uD83C\uDDF0' },
-  { code: 'israel', name: 'Israel', name_hi: 'इज़राइल', flag: '\uD83C\uDDEE\uD83C\uDDF1' },
-];
+/* ────────────────────────────── No hardcoded country fallback ────────────────────────────── */
 
 /* ────────────────────────────── Sub-components ────────────────────────────── */
 
@@ -281,7 +268,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
   const currentYear = new Date().getFullYear();
   const [selectedCountry, setSelectedCountry] = useState('india');
   const [selectedYear, setSelectedYear] = useState(currentYear);
-  const [countries, setCountries] = useState<CountryOption[]>(DEFAULT_COUNTRIES);
+  const [countries, setCountries] = useState<CountryOption[]>([]);
   const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
   const [eclipseData, setEclipseData] = useState<EclipseEntry[] | null>(null);
   const [ingressData, setIngressData] = useState<IngressEntry[] | null>(null);

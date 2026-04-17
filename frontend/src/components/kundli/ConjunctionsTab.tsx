@@ -141,7 +141,7 @@ export default function ConjunctionsTab({ kundliId, language, t }: Props) {
                   <div>
                     <h3 className="text-lg font-bold text-foreground">{name}</h3>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
-                      <span>{isHi ? 'भाव' : 'House'} {c.house}</span>
+                      <span>{t('auto.house')} {c.house}</span>
                       <span>•</span>
                       <span>{c.sign}</span>
                       <span>•</span>

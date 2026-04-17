@@ -699,8 +699,8 @@ def generate_monthly_extras(sign: str, target_date: str = None) -> Dict[str, Any
         except Exception:
             logger.exception("Monthly extras: failed for %s", date_str)
             scores = {"overall": 5}
-            summary_en = "A period of mixed influences. Stay balanced."
-            summary_hi = "\u092e\u093f\u0936\u094d\u0930\u093f\u0924 \u092a\u094d\u0930\u092d\u093e\u0935\u094b\u0902 \u0915\u093e \u0938\u092e\u092f\u0964 \u0938\u0902\u0924\u0941\u0932\u093f\u0924 \u0930\u0939\u0947\u0902\u0964"
+            summary_en = ""
+            summary_hi = ""
 
         en_range, hi_range = phase_ranges[i]
         phases.append({
