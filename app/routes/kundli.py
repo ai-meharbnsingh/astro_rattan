@@ -31,6 +31,7 @@ from app.divisional_charts import (
     DIVISIONAL_CHARTS,
 )
 from app.ashtakvarga_engine import calculate_ashtakvarga
+from app.varga_grading_engine import calculate_varga_strength
 from app.shadbala_engine import calculate_shadbala, calculate_bhav_bala
 from app.avakhada_engine import calculate_avakhada
 from app.transit_engine import calculate_transits, calculate_transit_forecast
@@ -711,6 +712,15 @@ def get_divisional_chart(
         birth_time_uncertainty = body.birth_time_uncertainty_seconds
         d60_analysis = calculate_d60_analysis(planet_longitudes, birth_time_uncertainty)
 
+    # Phaladeepika Adh. 3 (Vargadhyaya) — Saptavarga strength grading.
+    # Always returned (independent of which divisional chart is being viewed)
+    # so the frontend can show the tier table alongside any divisional view.
+    try:
+        varga_strength = calculate_varga_strength(planet_longitudes)
+    except Exception:  # pragma: no cover — defensive guard only
+        logger.exception("Varga-strength grading failed")
+        varga_strength = None
+
     return {
         "kundli_id": kundli_id,
         "person_name": row["person_name"],
@@ -721,6 +731,7 @@ def get_divisional_chart(
         "planet_positions": planet_positions,
         "houses": houses,
         "d60_analysis": d60_analysis,
+        "varga_strength": varga_strength,
     }
 
 
