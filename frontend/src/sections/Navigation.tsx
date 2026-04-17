@@ -56,7 +56,7 @@ export default function Navigation() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-2 shrink-0">
+            <Link to="/about" className="flex items-center gap-2 shrink-0">
               <img src="/logo.png" alt="Astro Rattan" className="h-14 sm:h-16 w-auto" />
             </Link>
 
