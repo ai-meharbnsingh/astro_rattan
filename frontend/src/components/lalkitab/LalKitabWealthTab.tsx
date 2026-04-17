@@ -165,15 +165,18 @@ export default function LalKitabWealthTab({ kundliId }: Props) {
             ].map(({ label, planets }, idx) => (
               <div key={idx} className="card-sacred rounded-xl border border-sacred-gold/20 p-4">
                 <p className="text-xs font-semibold text-sacred-gold mb-2">
-                  {isHi ? label.hi : label.en}
-                </p>
-                {planets.length > 0 ? (
+                {isHi ? label.hi : label.en}
+              </p>
+                {Array.isArray(planets) && planets.filter(Boolean).length > 0 ? (
                   <div className="flex flex-wrap gap-1.5">
-                    {planets.map((p) => (
-                      <span key={p} className="px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold-dark text-xs font-medium">
-                        {isHi ? (PLANET_HI[p] ?? p) : p.charAt(0).toUpperCase() + p.slice(1)}
-                      </span>
-                    ))}
+                    {planets.filter(Boolean).map((raw: any, pi: number) => {
+                      const p = String(raw || '');
+                      return (
+                        <span key={`${p || 'p'}-${pi}`} className="px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold-dark text-xs font-medium">
+                          {isHi ? (PLANET_HI[p] ?? p) : (p.charAt(0).toUpperCase() + p.slice(1))}
+                        </span>
+                      );
+                    })}
                   </div>
                 ) : (
                   <p className="text-xs text-gray-400">{t('auto.noPlanets')}</p>
