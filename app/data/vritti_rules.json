@@ -1,0 +1,164 @@
+{
+  "navamsa_vocations": {
+    "Sun": {
+      "primary_en": "Medicine, government service, metal work, and disciplines involving mantras or incantations",
+      "primary_hi": "चिकित्सा, सरकारी सेवा, धातुकर्म, तथा मन्त्र/तन्त्र से जुड़े कार्य",
+      "secondary_en": "Leadership roles, temple administration, and work with gold or solar materials",
+      "secondary_hi": "नेतृत्व की भूमिकाएँ, मन्दिर प्रबन्धन, स्वर्ण तथा सौर पदार्थों से सम्बन्धित कार्य",
+      "examples_en": ["Physician", "Government officer", "Metallurgist", "Priest / mantra specialist", "Goldsmith"],
+      "examples_hi": ["चिकित्सक", "सरकारी अधिकारी", "धातुविद्", "मन्त्र विशेषज्ञ / पुरोहित", "स्वर्णकार"],
+      "sloka_ref": "Phaladeepika Adh. 5 sloka 1"
+    },
+    "Moon": {
+      "primary_en": "Water-related trade, pearls, cloth, agriculture and livelihood gained through travel or pilgrimage",
+      "primary_hi": "जल सम्बन्धी व्यापार, मोती, वस्त्र, कृषि तथा यात्रा/तीर्थाटन से प्राप्त आजीविका",
+      "secondary_en": "Dairy, fisheries, hospitality, nursing and nurturing professions",
+      "secondary_hi": "डेयरी, मत्स्य-पालन, आतिथ्य, परिचर्या तथा पोषण-सम्बन्धी कार्य",
+      "examples_en": ["Sailor / sea-trader", "Textile merchant", "Farmer", "Pearl dealer", "Pilgrim-guide", "Nurse / midwife"],
+      "examples_hi": ["नाविक / समुद्री व्यापारी", "वस्त्र व्यापारी", "कृषक", "मोती विक्रेता", "तीर्थ-पथ प्रदर्शक", "परिचारिका"],
+      "sloka_ref": "Phaladeepika Adh. 5 sloka 2"
+    },
+    "Mars": {
+      "primary_en": "Fighting, military service, weapons, cooking by fire, and work with metals or gold",
+      "primary_hi": "युद्ध, सैन्य सेवा, शस्त्र, अग्नि-पाक, तथा धातुओं/स्वर्ण का कार्य",
+      "secondary_en": "Surgery, engineering, sports, police and security services",
+      "secondary_hi": "शल्य चिकित्सा, अभियान्त्रिकी, खेल, पुलिस तथा सुरक्षा सेवाएँ",
+      "examples_en": ["Soldier", "Police officer", "Surgeon", "Chef", "Blacksmith", "Athlete", "Engineer"],
+      "examples_hi": ["सैनिक", "पुलिस अधिकारी", "शल्य चिकित्सक", "पाचक / रसोइया", "लुहार", "खिलाड़ी", "अभियन्ता"],
+      "sloka_ref": "Phaladeepika Adh. 5 sloka 3"
+    },
+    "Mercury": {
+      "primary_en": "Poetry, sacred scriptures, scholarship, scribal work, writing and accounting",
+      "primary_hi": "काव्य, शास्त्र, विद्वत्ता, लेखन, लिपि-कर्म तथा गणना",
+      "secondary_en": "Commerce, mathematics, diplomacy, translation and teaching",
+      "secondary_hi": "वाणिज्य, गणित, कूटनीति, अनुवाद तथा अध्यापन",
+      "examples_en": ["Poet", "Scholar", "Accountant", "Writer / editor", "Translator", "Teacher", "Trader"],
+      "examples_hi": ["कवि", "विद्वान्", "लेखाकार", "लेखक / सम्पादक", "अनुवादक", "अध्यापक", "व्यापारी"],
+      "sloka_ref": "Phaladeepika Adh. 5 sloka 4"
+    },
+    "Jupiter": {
+      "primary_en": "Service of Brahmins, study of Shastras and Puranas, priestly duties and teaching of sacred knowledge",
+      "primary_hi": "ब्राह्मण-सेवा, शास्त्र-पुराणों का अध्ययन, पौरोहित्य तथा धर्म-विद्या का उपदेश",
+      "secondary_en": "Law, counselling, philosophy, banking and advisory roles",
+      "secondary_hi": "विधि, परामर्श, दर्शनशास्त्र, बैंकिंग तथा सलाहकार भूमिकाएँ",
+      "examples_en": ["Purohita / priest", "Vedic scholar", "Judge / lawyer", "Counsellor", "Banker", "Philosopher", "Teacher of dharma"],
+      "examples_hi": ["पुरोहित", "वैदिक विद्वान्", "न्यायाधीश / अधिवक्ता", "परामर्शदाता", "बैंकर", "दार्शनिक", "धर्मोपदेशक"],
+      "sloka_ref": "Phaladeepika Adh. 5 sloka 5"
+    },
+    "Venus": {
+      "primary_en": "Music, dance, fine arts, women's ornaments, silk and luxury goods",
+      "primary_hi": "संगीत, नृत्य, ललित कलाएँ, स्त्री-आभूषण, रेशम तथा विलास-सामग्री",
+      "secondary_en": "Beauty, cosmetics, jewellery, entertainment and hospitality",
+      "secondary_hi": "सौन्दर्य, प्रसाधन, आभूषण, मनोरंजन तथा आतिथ्य",
+      "examples_en": ["Musician", "Dancer", "Jeweller", "Silk merchant", "Cosmetician", "Actor", "Event planner"],
+      "examples_hi": ["संगीतकार", "नर्तक", "आभूषण-निर्माता", "रेशम व्यापारी", "प्रसाधनकार", "अभिनेता", "आयोजक"],
+      "sloka_ref": "Phaladeepika Adh. 5 sloka 6"
+    },
+    "Saturn": {
+      "primary_en": "Low-wage labour, servile occupations, work with iron, coal, oil and base materials",
+      "primary_hi": "निम्न-श्रमिक कार्य, दास-वृत्ति, लोहा, कोयला, तैल तथा मलिन पदार्थों का कार्य",
+      "secondary_en": "Mining, waste management, construction, long-term industry and administrative drudgery",
+      "secondary_hi": "खनन, अपशिष्ट-प्रबन्धन, निर्माण, दीर्घ-कालिक उद्योग तथा प्रशासनिक श्रम",
+      "examples_en": ["Miner", "Labourer", "Iron / coal worker", "Oil dealer", "Sanitation worker", "Construction worker", "Low-level clerk"],
+      "examples_hi": ["खनिक", "श्रमिक", "लोहा / कोयला कर्मी", "तेल व्यापारी", "सफाई कर्मी", "निर्माण कर्मी", "निम्न लिपिक"],
+      "sloka_ref": "Phaladeepika Adh. 5 sloka 7"
+    },
+    "Rahu": {
+      "primary_en": "Foreign trade, unconventional careers, technology and livelihood through non-traditional means",
+      "primary_hi": "विदेश-व्यापार, अप्रचलित व्यवसाय, तकनीक तथा अपारम्परिक आजीविका",
+      "secondary_en": "Research in hidden subjects, cyber fields, aviation and electronic media",
+      "secondary_hi": "गुप्त विषयों का अनुसन्धान, साइबर क्षेत्र, विमानन तथा इलेक्ट्रॉनिक मीडिया",
+      "examples_en": ["Foreign trader", "Software engineer", "Data scientist", "Aviator", "Cyber-security expert", "Film / media professional"],
+      "examples_hi": ["विदेश व्यापारी", "सॉफ्टवेयर अभियन्ता", "डेटा वैज्ञानिक", "विमान चालक", "साइबर सुरक्षा विशेषज्ञ", "चलचित्र / मीडिया कर्मी"],
+      "sloka_ref": "Phaladeepika Adh. 5 (Rahu — traditional extension)"
+    },
+    "Ketu": {
+      "primary_en": "Spiritual teaching, occult, healing, research and work requiring detachment",
+      "primary_hi": "आध्यात्मिक शिक्षा, तन्त्र-मन्त्र, चिकित्सा, अनुसन्धान तथा वैराग्य-युक्त कार्य",
+      "secondary_en": "Astrology, meditation, tantric arts and pharmaceutical / herbal research",
+      "secondary_hi": "ज्योतिष, ध्यान, तान्त्रिक कला तथा औषधि / जड़ी-बूटी का अनुसन्धान",
+      "examples_en": ["Astrologer", "Spiritual teacher", "Healer / Ayurveda doctor", "Researcher", "Tantric practitioner", "Monastic / yogi"],
+      "examples_hi": ["ज्योतिषी", "आध्यात्मिक गुरु", "चिकित्सक / आयुर्वेद वैद्य", "शोधकर्ता", "तान्त्रिक", "संन्यासी / योगी"],
+      "sloka_ref": "Phaladeepika Adh. 5 (Ketu — traditional extension)"
+    }
+  },
+  "tenth_lord_placements": {
+    "1st": {
+      "effect_en": "10th lord in Lagna — self-driven career, strong personal identity tied to profession, success through own initiative.",
+      "effect_hi": "दशमेश लग्न में — स्व-प्रेरित व्यवसाय, व्यक्तिगत पहचान व्यवसाय से जुड़ी, स्व-प्रयास से सफलता।",
+      "sloka_ref": "Phaladeepika Adh. 5 sloka 8"
+    },
+    "2nd": {
+      "effect_en": "10th lord in 2nd — livelihood through speech, family business, finance or accumulation of wealth.",
+      "effect_hi": "दशमेश द्वितीय में — वाणी, कुल-व्यवसाय, वित्त अथवा धन-संचय के माध्यम से आजीविका।",
+      "sloka_ref": "Phaladeepika Adh. 5 sloka 9"
+    },
+    "3rd": {
+      "effect_en": "10th lord in 3rd — career through effort, communication, writing, short travel or siblings' support.",
+      "effect_hi": "दशमेश तृतीय में — पराक्रम, सम्प्रेषण, लेखन, लघु-यात्रा अथवा सहोदर-सहयोग से आजीविका।",
+      "sloka_ref": "Phaladeepika Adh. 5 sloka 10"
+    },
+    "4th": {
+      "effect_en": "10th lord in 4th — profession related to land, property, vehicles, education or maternal lineage.",
+      "effect_hi": "दशमेश चतुर्थ में — भूमि, सम्पत्ति, वाहन, शिक्षा अथवा मातृ-पक्ष से सम्बन्धित व्यवसाय।",
+      "sloka_ref": "Phaladeepika Adh. 5 sloka 11"
+    },
+    "5th": {
+      "effect_en": "10th lord in 5th — livelihood through intellect, creativity, teaching, children or speculation.",
+      "effect_hi": "दशमेश पञ्चम में — बुद्धि, सृजन, शिक्षण, सन्तान अथवा सट्टा से आजीविका।",
+      "sloka_ref": "Phaladeepika Adh. 5 sloka 12"
+    },
+    "6th": {
+      "effect_en": "10th lord in 6th — service, medicine, legal work, debt-recovery; success through overcoming opposition.",
+      "effect_hi": "दशमेश षष्ठ में — सेवा, चिकित्सा, विधि-कार्य, ऋण-वसूली; विरोध पर विजय से सफलता।",
+      "sloka_ref": "Phaladeepika Adh. 5 sloka 13"
+    },
+    "7th": {
+      "effect_en": "10th lord in 7th — career through partnerships, trade, public dealings or spouse's domain.",
+      "effect_hi": "दशमेश सप्तम में — साझेदारी, व्यापार, जन-सम्पर्क अथवा जीवन-साथी के क्षेत्र से आजीविका।",
+      "sloka_ref": "Phaladeepika Adh. 5 sloka 14"
+    },
+    "8th": {
+      "effect_en": "10th lord in 8th — occult, research, insurance, inheritance; fluctuating fortune, work with hidden matters.",
+      "effect_hi": "दशमेश अष्टम में — गुप्त विद्या, अनुसन्धान, बीमा, उत्तराधिकार; भाग्य में उतार-चढ़ाव, गुप्त विषयों से कार्य।",
+      "sloka_ref": "Phaladeepika Adh. 5 sloka 15"
+    },
+    "9th": {
+      "effect_en": "10th lord in 9th — Rajayoga; career in dharma, law, teaching, publishing; highly fortunate livelihood.",
+      "effect_hi": "दशमेश नवम में — राजयोग; धर्म, विधि, शिक्षण, प्रकाशन में व्यवसाय; अत्यन्त भाग्यशाली आजीविका।",
+      "sloka_ref": "Phaladeepika Adh. 5 sloka 16"
+    },
+    "10th": {
+      "effect_en": "10th lord in 10th — Digbala, excellent career strength; fame, authority, and status through profession.",
+      "effect_hi": "दशमेश दशम में — दिग्बल, व्यवसाय की उत्तम शक्ति; कीर्ति, अधिकार तथा पद-प्रतिष्ठा।",
+      "sloka_ref": "Phaladeepika Adh. 5 sloka 17"
+    },
+    "11th": {
+      "effect_en": "10th lord in 11th — steady gains, network-driven career, income through multiple sources and friends.",
+      "effect_hi": "दशमेश एकादश में — स्थिर लाभ, सम्पर्क-आधारित व्यवसाय, अनेक स्रोतों तथा मित्रों से आय।",
+      "sloka_ref": "Phaladeepika Adh. 5 sloka 18"
+    },
+    "12th": {
+      "effect_en": "10th lord in 12th — foreign careers, seclusion, expenditure-based profession, charitable or monastic work.",
+      "effect_hi": "दशमेश द्वादश में — विदेश, एकान्त, व्यय-आधारित व्यवसाय, दान अथवा संन्यास-कर्म।",
+      "sloka_ref": "Phaladeepika Adh. 5 sloka 19"
+    }
+  },
+  "strongest_luminary_effects": {
+    "Sun_strongest": {
+      "implication_en": "When the Sun is strongest among Sun/Moon/Lagna, the native pursues a livelihood involving authority, public service, fatherly roles, medicine or government; career carries visible status.",
+      "implication_hi": "जब सूर्य सूर्य/चन्द्र/लग्न में सर्वाधिक बली हो, तो जातक अधिकार, लोक-सेवा, पितृ-तुल्य भूमिका, चिकित्सा अथवा राज्य-सेवा से सम्बन्धित आजीविका अपनाता है; व्यवसाय में स्पष्ट प्रतिष्ठा होती है।",
+      "sloka_ref": "Phaladeepika Adh. 5 sloka 20"
+    },
+    "Moon_strongest": {
+      "implication_en": "When the Moon is strongest, livelihood flows through public contact, fluids, travel, agriculture, food, care-giving or emotional-service professions.",
+      "implication_hi": "जब चन्द्र सर्वाधिक बली हो, आजीविका जन-सम्पर्क, द्रव, यात्रा, कृषि, अन्न, परिचर्या अथवा भाव-सम्बन्धी सेवा-क्षेत्रों से चलती है।",
+      "sloka_ref": "Phaladeepika Adh. 5 sloka 21"
+    },
+    "Lagna_strongest": {
+      "implication_en": "When the Lagna is strongest, the native succeeds primarily through personal effort and the qualities of the Lagna-lord; self-made career path.",
+      "implication_hi": "जब लग्न सर्वाधिक बली हो, तो जातक मुख्यतः स्व-पुरुषार्थ तथा लग्नेश के गुणों के द्वारा सफल होता है; स्व-निर्मित व्यवसाय।",
+      "sloka_ref": "Phaladeepika Adh. 5 sloka 22"
+    }
+  }
+}
