@@ -61,7 +61,6 @@ const ClientProfile   = lazyWithReload(() => import('./sections/ClientProfile'))
 const VastuShastraPage = lazyWithReload(() => import('./sections/VastuShastraPage'));
 const HoroscopePage    = lazyWithReload(() => import('./sections/HoroscopePage'));
 const BlogPage         = lazyWithReload(() => import('./sections/BlogPage'));
-const AboutPage        = lazyWithReload(() => import('./sections/AboutPage'));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -185,7 +184,6 @@ function AppInner() {
         <Routes>
           <Route path="/" element={<SmartHome />} />
           <Route path="/about" element={<HomePage />} />
-          <Route path="/about-us" element={<AboutPage />} />
           <Route path="/dashboard" element={<RequireAuth><ErrorBoundary><Dashboard /></ErrorBoundary></RequireAuth>} />
           <Route path="/client/:clientId" element={<RequireAuth><ClientProfile /></RequireAuth>} />
           <Route path="/kundli" element={<ErrorBoundary><KundliGenerator /></ErrorBoundary>} />
