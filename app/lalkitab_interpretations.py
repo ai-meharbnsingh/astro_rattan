@@ -977,12 +977,13 @@ LK_VALIDATED_REMEDIES: Dict[str, Dict[str, Any]] = {
         "condition": None,
         "procedure_en": (
             "Float a whole coconut in flowing water (river or stream) on Saturday. "
-            "Store water in the southwest corner of your home. Keep fennel (saunf) "
+            "Keep a solid silver square piece in your pocket and fennel (saunf) "
             "under your pillow while sleeping."
         ),
         "procedure_hi": (
-            "शनिवार को बहते पानी (नदी या नाले) में पूरा नारियल प्रवाहित करें। घर के दक्षिण-पश्चिम "
-            "कोने में पानी रखें। सोते समय सौंफ तकिए के नीचे रखें।"
+            "शनिवार को बहते पानी (नदी या नाले) में पूरा नारियल प्रवाहित करें। "
+            "जेब में चांदी का ठोस चौकोर टुकड़ा रखें और सोते समय सौंफ तकिए के "
+            "नीचे रखें।"
         ),
         "validated": True,
     },
