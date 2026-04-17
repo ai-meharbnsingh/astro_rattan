@@ -10,6 +10,11 @@ from typing import List, Dict, Any
 # PALM ZONE DEFINITIONS
 # Each zone maps to a planet and primary LK house
 # ============================================================
+#
+# Coordinates are tuned for the frontend palm SVG whose viewBox is
+# `0 0 220 300`. Mount centres sit on their anatomical locations
+# inside the palm outline (fingers at the top, thumb on the left).
+#
 PALM_ZONES: List[Dict[str, Any]] = [
     # Mounts
     {
@@ -17,7 +22,7 @@ PALM_ZONES: List[Dict[str, Any]] = [
         "name": {"en": "Jupiter Mount", "hi": "गुरु पर्वत"},
         "location": {"en": "Base of index finger", "hi": "तर्जनी के नीचे"},
         "associated_planet": "Jupiter", "lk_house": 2,
-        "svg_cx": 155, "svg_cy": 120,
+        "svg_cx": 80, "svg_cy": 88,
         "keywords": {"en": "Wisdom, authority, prosperity", "hi": "बुद्धि, अधिकार, समृद्धि"},
     },
     {
@@ -25,7 +30,7 @@ PALM_ZONES: List[Dict[str, Any]] = [
         "name": {"en": "Saturn Mount", "hi": "शनि पर्वत"},
         "location": {"en": "Base of middle finger", "hi": "मध्यमा के नीचे"},
         "associated_planet": "Saturn", "lk_house": 10,
-        "svg_cx": 195, "svg_cy": 110,
+        "svg_cx": 115, "svg_cy": 82,
         "keywords": {"en": "Discipline, career, karma", "hi": "अनुशासन, करियर, कर्म"},
     },
     {
@@ -33,7 +38,7 @@ PALM_ZONES: List[Dict[str, Any]] = [
         "name": {"en": "Sun Mount (Apollo)", "hi": "सूर्य पर्वत"},
         "location": {"en": "Base of ring finger", "hi": "अनामिका के नीचे"},
         "associated_planet": "Sun", "lk_house": 1,
-        "svg_cx": 235, "svg_cy": 115,
+        "svg_cx": 150, "svg_cy": 85,
         "keywords": {"en": "Fame, vitality, self", "hi": "प्रसिद्धि, जीवन शक्ति, स्व"},
     },
     {
@@ -41,7 +46,7 @@ PALM_ZONES: List[Dict[str, Any]] = [
         "name": {"en": "Mercury Mount", "hi": "बुध पर्वत"},
         "location": {"en": "Base of little finger", "hi": "कनिष्ठा के नीचे"},
         "associated_planet": "Mercury", "lk_house": 7,
-        "svg_cx": 270, "svg_cy": 125,
+        "svg_cx": 185, "svg_cy": 100,
         "keywords": {"en": "Communication, business, intellect", "hi": "संचार, व्यापार, बुद्धि"},
     },
     {
@@ -49,7 +54,7 @@ PALM_ZONES: List[Dict[str, Any]] = [
         "name": {"en": "Venus Mount", "hi": "शुक्र पर्वत"},
         "location": {"en": "Base of thumb (thumb's fleshy part)", "hi": "अंगूठे का मांसल भाग"},
         "associated_planet": "Venus", "lk_house": 7,
-        "svg_cx": 120, "svg_cy": 200,
+        "svg_cx": 62, "svg_cy": 180,
         "keywords": {"en": "Love, beauty, luxury", "hi": "प्रेम, सुंदरता, विलासिता"},
     },
     {
@@ -57,7 +62,7 @@ PALM_ZONES: List[Dict[str, Any]] = [
         "name": {"en": "Inner Mars (Active)", "hi": "आंतरिक मंगल (सक्रिय)"},
         "location": {"en": "Above thumb, inner palm", "hi": "अंगूठे के ऊपर, आंतरिक हथेली"},
         "associated_planet": "Mars", "lk_house": 3,
-        "svg_cx": 130, "svg_cy": 155,
+        "svg_cx": 78, "svg_cy": 135,
         "keywords": {"en": "Courage, initiative, siblings", "hi": "साहस, पहल, भाई-बहन"},
     },
     {
@@ -65,7 +70,7 @@ PALM_ZONES: List[Dict[str, Any]] = [
         "name": {"en": "Outer Mars (Resistant)", "hi": "बाह्य मंगल (प्रतिरोधी)"},
         "location": {"en": "Opposite thumb, upper palm edge", "hi": "अंगूठे के सामने, ऊपरी किनारा"},
         "associated_planet": "Mars", "lk_house": 6,
-        "svg_cx": 285, "svg_cy": 185,
+        "svg_cx": 188, "svg_cy": 148,
         "keywords": {"en": "Endurance, obstacles, enemies", "hi": "सहनशक्ति, बाधाएं, शत्रु"},
     },
     {
@@ -73,7 +78,7 @@ PALM_ZONES: List[Dict[str, Any]] = [
         "name": {"en": "Moon Mount (Luna)", "hi": "चंद्र पर्वत"},
         "location": {"en": "Base of palm, opposite thumb", "hi": "हथेली का आधार, अंगूठे के सामने"},
         "associated_planet": "Moon", "lk_house": 4,
-        "svg_cx": 280, "svg_cy": 290,
+        "svg_cx": 185, "svg_cy": 215,
         "keywords": {"en": "Emotions, mother, imagination", "hi": "भावनाएं, माता, कल्पना"},
     },
     {
@@ -81,16 +86,16 @@ PALM_ZONES: List[Dict[str, Any]] = [
         "name": {"en": "Rahu / Upper Mars (Plain)", "hi": "राहु / ऊपरी मंगल (मैदान)"},
         "location": {"en": "Center of palm", "hi": "हथेली का केंद्र"},
         "associated_planet": "Rahu", "lk_house": 12,
-        "svg_cx": 200, "svg_cy": 230,
+        "svg_cx": 125, "svg_cy": 170,
         "keywords": {"en": "Desires, foreign, shadow", "hi": "इच्छाएं, विदेश, छाया"},
     },
-    # Lines
+    # Lines — rendered as small markers at characteristic points of each line
     {
         "id": "heart_line", "zone_type": "line",
         "name": {"en": "Heart Line", "hi": "हृदय रेखा"},
         "location": {"en": "Top horizontal line", "hi": "ऊपरी क्षैतिज रेखा"},
         "associated_planet": "Venus", "lk_house": 7,
-        "svg_cx": 200, "svg_cy": 150,
+        "svg_cx": 125, "svg_cy": 112,
         "keywords": {"en": "Love, emotions, relationships", "hi": "प्रेम, भावनाएं, संबंध"},
     },
     {
@@ -98,7 +103,7 @@ PALM_ZONES: List[Dict[str, Any]] = [
         "name": {"en": "Head Line", "hi": "मस्तिष्क रेखा"},
         "location": {"en": "Middle horizontal line", "hi": "मध्य क्षैतिज रेखा"},
         "associated_planet": "Mercury", "lk_house": 3,
-        "svg_cx": 190, "svg_cy": 195,
+        "svg_cx": 115, "svg_cy": 155,
         "keywords": {"en": "Intellect, focus, communication", "hi": "बुद्धि, एकाग्रता, संचार"},
     },
     {
@@ -106,7 +111,7 @@ PALM_ZONES: List[Dict[str, Any]] = [
         "name": {"en": "Life Line", "hi": "जीवन रेखा"},
         "location": {"en": "Curved line around thumb", "hi": "अंगूठे के चारों ओर वक्र रेखा"},
         "associated_planet": "Saturn", "lk_house": 8,
-        "svg_cx": 145, "svg_cy": 220,
+        "svg_cx": 68, "svg_cy": 200,
         "keywords": {"en": "Vitality, health, longevity", "hi": "जीवन शक्ति, स्वास्थ्य, दीर्घायु"},
     },
     {
@@ -114,7 +119,7 @@ PALM_ZONES: List[Dict[str, Any]] = [
         "name": {"en": "Fate / Saturn Line", "hi": "भाग्य रेखा"},
         "location": {"en": "Vertical line from wrist upward", "hi": "कलाई से ऊपर की ओर"},
         "associated_planet": "Jupiter", "lk_house": 10,
-        "svg_cx": 200, "svg_cy": 270,
+        "svg_cx": 125, "svg_cy": 235,
         "keywords": {"en": "Destiny, career, direction", "hi": "भाग्य, करियर, दिशा"},
     },
     {
@@ -122,7 +127,7 @@ PALM_ZONES: List[Dict[str, Any]] = [
         "name": {"en": "Sun / Apollo Line", "hi": "सूर्य रेखा"},
         "location": {"en": "Vertical below ring finger", "hi": "अनामिका के नीचे"},
         "associated_planet": "Sun", "lk_house": 1,
-        "svg_cx": 235, "svg_cy": 175,
+        "svg_cx": 150, "svg_cy": 200,
         "keywords": {"en": "Fame, success, recognition", "hi": "प्रसिद्धि, सफलता, पहचान"},
     },
 ]
@@ -193,7 +198,9 @@ def _get_default_interp(mark_nature: str, planet: str, house: int, lang: str = "
 
 def get_palm_zones() -> List[Dict[str, Any]]:
     """Return all palm zones normalized to frontend-expected shape."""
-    _SVG_R = {"mount": 18, "line": 12}
+    # Tuned for the frontend palm SVG viewBox 0 0 220 300 — mounts sized so
+    # the four finger mounts (Jupiter/Saturn/Sun/Mercury) don't overlap.
+    _SVG_R = {"mount": 15, "line": 9}
     return [
         {
             # canonical frontend fields
