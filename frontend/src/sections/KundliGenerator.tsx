@@ -44,10 +44,15 @@ import BirthRectification from '@/components/kundli/BirthRectification';
 import KPHorary from '@/components/kp/KPHorary';
 import SarvatobhadraChakra from '@/components/sarvatobhadra/SarvatobhadraChakra';
 import PravrajyaTab from '@/components/kundli/PravrajyaTab';
+import ApatyaTab from '@/components/kundli/ApatyaTab';
 import LifespanTab from '@/components/kundli/LifespanTab';
 import ConjunctionsTab from '@/components/kundli/ConjunctionsTab';
 import RogaTab from '@/components/kundli/RogaTab';
 import BhavaPhalaTab from '@/components/kundli/BhavaPhalaTab';
+import VrittiTab from '@/components/kundli/VrittiTab';
+import BhavaVicharaTab from '@/components/kundli/BhavaVicharaTab';
+import LongevityTab from '@/components/kundli/LongevityTab';
+import JanmaPredictionsTab from '@/components/kundli/JanmaPredictionsTab';
 
 // ── Single source of truth for ALL tab definitions ──────────
 interface TabDef {
@@ -89,13 +94,18 @@ const TAB_DEFS: Omit<TabDef, 'onActivate'>[] = [
   { value: 'kp-horary',     labelEn: 'KP Horary',     labelHi: 'केपी प्रश्न',       primary: false, category: 'analysis' },
   { value: 'jaimini',       labelEn: 'Jaimini',        labelHi: 'जैमिनी',           primary: false, category: 'analysis' },
   { value: 'pravrajya',     labelEn: 'Pravrajya Yogas', labelHi: 'प्रव्रज्या योग',   primary: false, category: 'analysis' },
+  { value: 'apatya',        labelEn: 'Progeny (Apatya)',labelHi: 'संतान',             primary: false, category: 'analysis' },
   { value: 'lifespan',      labelEn: 'Lifespan',        labelHi: 'आयुर्दाय',         primary: false, category: 'analysis' },
   { value: 'conjunctions',  labelEn: 'Conjunctions',    labelHi: 'ग्रह युतियाँ',      primary: false, category: 'analysis' },
   { value: 'roga',          labelEn: 'Disease Analysis', labelHi: 'रोग विश्लेषण',     primary: false, category: 'analysis' },
   { value: 'bhava-phala',   labelEn: 'Bhava Phala',    labelHi: 'भाव फल',           primary: false, category: 'analysis' },
+  { value: 'vritti',        labelEn: 'Career (Vritti)', labelHi: 'आजीविका',          primary: false, category: 'analysis' },
+  { value: 'janma-predictions', labelEn: 'Janma Predictions', labelHi: 'जन्म फल',       primary: false, category: 'analysis' },
   { value: 'iogita',        labelEn: 'Iogita',         labelHi: 'आयोगिता',          primary: false, category: 'analysis' },
   { value: 'aspects-matrix',labelEn: 'Aspects Matrix',  labelHi: 'दृष्टि मैट्रिक्स', primary: false, category: 'analysis' },
   // Advanced
+  { value: 'bhava-vichara', labelEn: 'Bhava Analysis', labelHi: 'भाव विचार',        primary: false, category: 'advanced' },
+  { value: 'longevity',     labelEn: 'Longevity Indicators', labelHi: 'आयु संकेतक',  primary: false, category: 'advanced' },
   { value: 'mundane',       labelEn: 'Mundane',        labelHi: 'मुंडन ज्योतिष',    primary: false, category: 'advanced' },
   { value: 'rectification', labelEn: 'Birth Rectification', labelHi: 'जन्म समय शोधन', primary: false, category: 'advanced' },
   { value: 'upagrahas',     labelEn: 'Upagrahas',      labelHi: 'उपग्रह',           primary: false, category: 'advanced' },
@@ -628,6 +638,10 @@ export default function KundliGenerator() {
             <PravrajyaTab kundliId={result?.id || ''} language={language} t={t} />
           </TabsContent>
 
+          <TabsContent value="apatya" className="min-h-[300px]">
+            <ApatyaTab kundliId={result?.id || ''} language={language} t={t} />
+          </TabsContent>
+
           <TabsContent value="lifespan" className="min-h-[300px]">
             <LifespanTab kundliId={result?.id || ''} language={language} t={t} />
           </TabsContent>
@@ -642,6 +656,22 @@ export default function KundliGenerator() {
 
           <TabsContent value="bhava-phala" className="min-h-[300px]">
             <BhavaPhalaTab kundliId={result?.id || ''} language={language} t={t} />
+          </TabsContent>
+
+          <TabsContent value="vritti" className="min-h-[300px]">
+            <VrittiTab kundliId={result?.id || ''} language={language} t={t} />
+          </TabsContent>
+
+          <TabsContent value="bhava-vichara" className="min-h-[300px]">
+            <BhavaVicharaTab kundliId={result?.id || ''} language={language} t={t} />
+          </TabsContent>
+
+          <TabsContent value="longevity" className="min-h-[300px]">
+            <LongevityTab kundliId={result?.id || ''} language={language} t={t} />
+          </TabsContent>
+
+          <TabsContent value="janma-predictions" className="min-h-[300px]">
+            <JanmaPredictionsTab kundliId={result?.id || ''} language={language} t={t} />
           </TabsContent>
 
           <TabsContent value="sadesati" className="min-h-[300px]">

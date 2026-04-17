@@ -1255,6 +1255,22 @@ def get_pravrajya(
     return result
 
 
+@router.get("/{kundli_id}/apatya", status_code=status.HTTP_200_OK)
+def get_apatya(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Apatya (progeny/children) analysis — Phaladeepika Adhyaya 12."""
+    from app.apatya_engine import analyze_apatya
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    result = analyze_apatya(chart)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
 @router.get("/{kundli_id}/ayu-classification", status_code=status.HTTP_200_OK)
 def get_ayu_classification(
     kundli_id: str,
@@ -1339,6 +1355,57 @@ def get_bhava_phala(
     row = _fetch_kundli(db, kundli_id, current_user["sub"])
     chart = _chart_data(row)
     result = analyze_bhava_phala(chart)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
+@router.get("/{kundli_id}/bhava-vichara", status_code=status.HTTP_200_OK)
+def get_bhava_vichara(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Bhava-phala-vichara — flourish/destruction + karaka-as-Lagna (Phaladeepika Adh. 15)."""
+    from app.bhava_vichara_engine import analyze_bhava_vichara
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    result = analyze_bhava_vichara(chart)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
+@router.get("/{kundli_id}/longevity-indicators", status_code=status.HTTP_200_OK)
+def get_longevity_indicators(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Nidhana-phala — longevity indicators + karmic transitions (Phaladeepika Adh. 17).
+
+    Philosophically framed. Does NOT output specific death/age predictions.
+    """
+    from app.nidhana_engine import analyze_longevity_indicators
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    result = analyze_longevity_indicators(chart)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
+@router.get("/{kundli_id}/vritti", status_code=status.HTTP_200_OK)
+def get_vritti(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Classical Vritti (Livelihood / Career) analysis — Phaladeepika Adh. 5."""
+    from app.vritti_engine import analyze_vritti
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    result = analyze_vritti(chart)
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result
