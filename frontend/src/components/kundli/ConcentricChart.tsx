@@ -26,8 +26,8 @@ const SIGN_COLORS = [
 ];
 
 export default function ConcentricChart({ natalPlanets, transitPlanets, lagnaLongitude, size = 400 }: Props) {
-  const { language } = useTranslation();
-  
+  const { t, language } = useTranslation();
+
   const radius = size / 2;
   const outerRing = radius - 15;
   const transitRing = radius - 45;
@@ -166,11 +166,11 @@ export default function ConcentricChart({ natalPlanets, transitPlanets, lagnaLon
       <div className="flex justify-center gap-6 mt-3 border-t border-border/10 pt-3">
         <div className="flex items-center gap-2">
           <div className="w-2.5 h-2.5 rounded-full bg-[#3D2B1F]" />
-          <span className="text-[10px] font-bold text-foreground/60 uppercase">Natal</span>
+          <span className="text-[10px] font-bold text-foreground/60 uppercase">{t('auto.natal')}</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-2.5 h-2.5 rounded-full bg-white border border-border" />
-          <span className="text-[10px] font-bold text-foreground/60 uppercase">Transit</span>
+          <span className="text-[10px] font-bold text-foreground/60 uppercase">{t('auto.transit')}</span>
         </div>
       </div>
     </div>

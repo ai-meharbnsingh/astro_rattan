@@ -1032,7 +1032,7 @@ function FullPanchangPanel({ selectedDay, fullData, language, t, locationName }:
                   </div>
                   <div className="flex justify-between">
                     <span>{l('Ayanamsha', 'अयनांश')}</span>
-                    <span>{p.misc.astronomical.ayanamsha_label} {p.misc.astronomical.ayanamsha.toFixed(4)}{'\u00B0'}</span>
+                    <span>{p.misc.astronomical.ayanamsha_label || ''} {typeof p.misc.astronomical.ayanamsha === 'number' ? p.misc.astronomical.ayanamsha.toFixed(4) : p.misc.astronomical.ayanamsha || ''}{'\u00B0'}</span>
                   </div>
                 </div>
               </>

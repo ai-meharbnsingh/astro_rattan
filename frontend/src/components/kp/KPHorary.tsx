@@ -358,9 +358,9 @@ export default function KPHorary({ language, t }: KPHoraryProps) {
                       <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.sign')}</TableHead>
                       <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.degree')}</TableHead>
                       <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.nakshatra')}</TableHead>
-                      <TableHead className="text-center p-1.5 text-primary font-medium" title="Sign Lord">RL</TableHead>
-                      <TableHead className="text-center p-1.5 text-primary font-medium" title="Star Lord">NL</TableHead>
-                      <TableHead className="text-center p-1.5 text-primary font-medium" title="Sub Lord">SL</TableHead>
+                      <TableHead className="text-center p-1.5 text-primary font-medium" title={t('auto.signLord')}>RL</TableHead>
+                      <TableHead className="text-center p-1.5 text-primary font-medium" title={t('auto.starLord')}>NL</TableHead>
+                      <TableHead className="text-center p-1.5 text-primary font-medium" title={t('auto.subLord')}>SL</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
