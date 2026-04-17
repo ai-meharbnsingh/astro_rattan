@@ -367,7 +367,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                   <span className="text-xs text-purple-600 uppercase font-bold">{t('auto.horaLord')}</span>
                   <p className="text-lg font-bold text-purple-900">{data.karmic_debts_hora_analysis.hora_analysis.hora_lord}</p>
                   <p className="text-xs text-purple-600">
-                    {t('auto.DataKarmicdebtshoraa')}
+                    {data.karmic_debts_hora_analysis.hora_analysis.hours_elapsed_since_sunrise} {t('auto.hrsAfterSunrise')}
                   </p>
                 </div>
               </div>
