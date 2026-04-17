@@ -180,7 +180,9 @@ def main():
     masnui = calculate_masnui_planets(pp)
     mlist = masnui.get("masnui_planets") or []
     if not mlist:
-        P("No masnui planets formed.")
+        empty = masnui.get("empty_interpretation") or {}
+        P(f"EN: {empty.get('en', 'No masnui planets formed.')}")
+        P(f"HI: {empty.get('hi', '')}")
     for m in mlist:
         P(f"\nHouse {m.get('house')}: {' + '.join(m.get('formed_by') or [])} → "
           f"{m.get('masnui_planet')}  quality={m.get('quality')}")
@@ -441,8 +443,12 @@ def main():
     ps = build_prediction_studio(p_map, p_lons)
     for row in (ps.get("areas") or []):
         P(f"\n◆ {row.get('title_en')}  ({row.get('title_hi')})")
-        P(f"  score={row.get('score')}  confidence={row.get('confidence')}  "
-          f"is_positive={row.get('is_positive')}")
+        P(f"  {row.get('label','—'):<16}  (raw score {row.get('score')}/100, "
+          f"confidence={row.get('confidence')})")
+        # 3-part cause structure
+        P(f"  PRIMARY  CAUSE     EN: {pick(row.get('primary_cause'))}")
+        P(f"  SECONDARY MODIFIER EN: {pick(row.get('secondary_modifier'))}")
+        P(f"  SUPPORTING FACTOR  EN: {pick(row.get('supporting_factor'))}")
         P(f"  POSITIVE EN: {row.get('positive_en','')}")
         P(f"  POSITIVE HI: {row.get('positive_hi','')}")
         P(f"  CAUTION  EN: {row.get('caution_en','')}")

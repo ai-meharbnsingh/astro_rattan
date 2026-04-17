@@ -274,7 +274,8 @@ def table_masnui(planet_positions_lk):
     res = calculate_masnui_planets(planet_positions_lk)
     masnui_list = res.get("masnui_planets") or []
     if not masnui_list:
-        print("No masnui planets formed.")
+        empty = (res.get("empty_interpretation") or {}).get("en")
+        print(empty or "No artificial planetary combinations detected — natural chart, favourable in Lal Kitab.")
     else:
         print(f"{'House':<7}{'Formed by':<28}{'→ Masnui':<16}{'Quality':<12}")
         print("-" * 78)

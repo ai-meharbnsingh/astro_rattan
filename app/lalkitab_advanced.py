@@ -291,13 +291,34 @@ def calculate_masnui_planets(planet_positions: List[Dict[str, Any]]) -> Dict[str
     # Calculate overall psychological profile
     psychological_profile = _calculate_masnui_psychological_profile(results)
     
+    # Codex R4-P4: when no artificial planet forms, emit a positive
+    # explanation instead of a bare "no results" signal. This is a
+    # favourable state in Lal Kitab — the chart runs on natural
+    # planetary behaviour, unmodified by artificial influences.
+    empty_interpretation = None
+    if not results:
+        empty_interpretation = {
+            "en": (
+                "No artificial planetary combinations detected. Chart "
+                "operates on natural planetary behavior — results are "
+                "direct and unmodified by artificial influences. This "
+                "is considered favorable in Lal Kitab."
+            ),
+            "hi": (
+                "कोई कृत्रिम ग्रह-संयोग नहीं बना। कुंडली प्राकृतिक "
+                "ग्रहीय व्यवहार पर चलती है — फल प्रत्यक्ष और कृत्रिम "
+                "प्रभावों से अछूते हैं। लाल किताब में यह शुभ माना जाता है।"
+            ),
+        }
+
     return {
         "masnui_planets": results,
         "house_overrides": house_overrides,
         "affected_houses": sorted(list(all_affected_houses)),
         "psychological_profile": psychological_profile,
         "predictive_notes": predictive_notes,
-        "total_masnui": len(results)
+        "total_masnui": len(results),
+        "empty_interpretation": empty_interpretation,
     }
 
 
