@@ -701,13 +701,22 @@ export default function Features() {
     return n;
   };
 
+  const digitSum = (n: number): number => {
+    return [...`${Math.abs(n)}`].reduce((a, c) => a + parseInt(c), 0);
+  };
+
   const universalDayNumber = (() => {
     const today = new Date();
     const y = today.getFullYear();
     const m = today.getMonth() + 1;
     const d = today.getDate();
-    const sum = [...`${y}${m}${d}`].reduce((a, c) => a + parseInt(c), 0);
-    return reduceToSingle(sum);
+    // Match backend logic:
+    // UY = reduce(digitSum(year))
+    // UM = reduce(UY + digitSum(month))
+    // UD = reduce(UM + digitSum(day))
+    const uy = reduceToSingle(digitSum(y));
+    const um = reduceToSingle(uy + digitSum(m));
+    return reduceToSingle(um + digitSum(d));
   })();
 
   const calcLifePath = (dob: string): number => {

@@ -1114,9 +1114,14 @@ def _extract_dob_digits_nonzero(birth_date: str) -> list:
 # ============================================================
 #
 # Standard Lo Shu layout (same as LOSHU_GRID_LAYOUT above):
-#   4 | 9 | 2    <- Mental Plane (top row)
-#   3 | 5 | 7    <- Emotional Plane (middle row)
-#   8 | 1 | 6    <- Practical Plane (bottom row)
+#   4 | 9 | 2
+#   3 | 5 | 7
+#   8 | 1 | 6
+#
+# Note on "planes":
+# Some numerology sources also describe planes as digit triads
+# (Mental: 3/6/9, Emotional: 2/5/8, Practical: 1/4/7). The app uses
+# this triad-based definition to match product requirements.
 
 ARROWS_OF_STRENGTH = {
     "determination": {
@@ -1298,9 +1303,10 @@ DOMINANT_PLANE_INTERPRETATION = {
 def analyze_loshu_planes(dob_digits: list) -> dict:
     """Analyze the three Lo Shu planes from DOB digits.
 
-    Mental Plane (top row): 4, 9, 2
-    Emotional Plane (middle row): 3, 5, 7
-    Practical Plane (bottom row): 8, 1, 6
+    Planes (triad-based):
+      Mental: 3, 6, 9
+      Emotional: 2, 5, 8
+      Practical: 1, 4, 7
 
     Args:
         dob_digits: list of non-zero DOB digits
@@ -1312,9 +1318,9 @@ def analyze_loshu_planes(dob_digits: list) -> dict:
     from collections import Counter
     counts = Counter(dob_digits)
 
-    mental_nums = [4, 9, 2]
-    emotional_nums = [3, 5, 7]
-    practical_nums = [8, 1, 6]
+    mental_nums = [3, 6, 9]
+    emotional_nums = [2, 5, 8]
+    practical_nums = [1, 4, 7]
 
     mental = sum(counts.get(d, 0) for d in mental_nums)
     emotional = sum(counts.get(d, 0) for d in emotional_nums)
@@ -2912,8 +2918,9 @@ def calculate_numerology(name: str, birth_date: str) -> dict:
         "personality": PERSONALITY_PREDICTIONS.get(personality, PERSONALITY_PREDICTIONS[9]),
     }
 
-    # DOB digits for Lo Shu analysis
+    # DOB digits for Lo Shu analysis (non-zero digits only)
     dob_digits = [int(c) for c in birth_date.replace("-", "") if c.isdigit() and c != "0"]
+    loshu_data = _compute_loshu_grid(dob_digits)
 
     birthday = _birthday_number(birth_date)
     maturity = _maturity_number(life_path, destiny)
@@ -2935,6 +2942,9 @@ def calculate_numerology(name: str, birth_date: str) -> dict:
         "hidden_passion": _hidden_passion(name),
         "subconscious_self": _subconscious_self(name),
         "karmic_lessons": _karmic_lessons(name),
+        # Lo Shu grid data (layout + filled values) for UI rendering
+        "loshu_grid": loshu_data["grid"],
+        "loshu_values": loshu_data["values"],
         "loshu_arrows": analyze_loshu_arrows(dob_digits),
         "loshu_planes": analyze_loshu_planes(dob_digits),
         "missing_numbers": analyze_missing_numbers(dob_digits),

@@ -1,7 +1,7 @@
 """Numerology calculation routes."""
 from typing import Optional
 from fastapi import APIRouter, HTTPException, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from app.models import NumerologyRequest, MobileNumerologyRequest
 from app.numerology_engine import (
     calculate_numerology,
@@ -34,7 +34,23 @@ class HouseNumerologyRequest(BaseModel):
 
 class ForecastRequest(BaseModel):
     birth_date: str = Field(min_length=8, max_length=20)
+    name: Optional[str] = Field(default=None, max_length=200)
     target_date: Optional[str] = Field(default=None, max_length=20)
+
+    @field_validator("birth_date")
+    @classmethod
+    def validate_birth_date_range(cls, v: str):
+        from datetime import date, datetime
+        try:
+            bd = datetime.strptime(v, "%Y-%m-%d").date()
+        except Exception:
+            raise ValueError("birth_date must be YYYY-MM-DD format")
+        today = date.today()
+        if bd > today:
+            raise ValueError("birth_date cannot be in the future")
+        if (today.year - bd.year) > 120:
+            raise ValueError("birth_date is too far in the past")
+        return v
 
 
 @router.post("/api/numerology/calculate")
