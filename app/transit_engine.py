@@ -1251,7 +1251,29 @@ def calculate_transits(
             "description": description,
         })
 
+    # Apply Gochara Vedhas + Lattas (Phaladeepika Adh. 26) for classical accuracy
+    try:
+        from app.gochara_vedha_engine import enrich_transits
+        transits = enrich_transits(transits, natal_chart_data)
+
+        # Recompute score with vedha cancellations + latta modifiers
+        favorable_count = 0.0
+        total_planets = 0
+        for t in transits:
+            weight = 3 if t["planet"] in ["Jupiter", "Saturn", "Rahu", "Ketu"] else 1
+            is_fav = t.get("effect_final") == "favorable" or (
+                t.get("effect_final") != "cancelled" and t.get("effect_base") == "favorable"
+            )
+            modifier = t.get("latta_modifier", 1.0)
+            if is_fav:
+                favorable_count += weight * modifier
+            total_planets += weight
+    except Exception:
+        # Never break the live endpoint — enrichment is best-effort
+        pass
+
     score = int((favorable_count / total_planets) * 100) if total_planets > 0 else 50
+    score = max(0, min(100, score))
 
     sade_sati = _check_sade_sati(natal_moon_sign, saturn_current_sign)
 

@@ -318,22 +318,67 @@ export default function TransitsTab(props: TransitsTabProps) {
 
                 {/* Detailed descriptions */}
                 <div className="grid gap-3">
-                  {(transitData.transits || []).map((tr: any, idx: number) => (
-                    <div
-                      key={idx}
-                      className={`rounded-xl p-4 border shadow-sm transition-all hover:shadow-md ${tr.effect === 'favorable' ? 'border-green-300' : 'border-red-300'}`}
-                      style={{ backgroundColor: tr.effect === 'favorable' ? 'rgba(34,197,94,0.03)' : 'rgba(239,68,68,0.03)' }}
-                    >
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-semibold" className="text-foreground">{translatePlanet(tr.planet, language)}</span>
-                        <span className="text-sm" className="text-muted-foreground">{translateSign(tr.current_sign, language)}</span>
-                        <span className={`text-sm px-1.5 py-0.5 rounded-full ${tr.effect === 'favorable' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                          {tr.effect === 'favorable' ? t('common.favorable') : t('common.unfavorable')}
-                        </span>
+                  {(transitData.transits || []).map((tr: any, idx: number) => {
+                    const isCancelled = tr.vedha_active === true || tr.effect_final === 'cancelled';
+                    const borderColor = isCancelled ? 'border-red-400' : (tr.effect === 'favorable' ? 'border-green-300' : 'border-red-300');
+                    const bgColor = isCancelled ? 'rgba(239,68,68,0.06)' : (tr.effect === 'favorable' ? 'rgba(34,197,94,0.03)' : 'rgba(239,68,68,0.03)');
+                    return (
+                      <div
+                        key={idx}
+                        className={`rounded-xl p-4 border shadow-sm transition-all hover:shadow-md ${borderColor}`}
+                        style={{ backgroundColor: bgColor }}
+                      >
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          <span className="font-semibold text-foreground">{translatePlanet(tr.planet, language)}</span>
+                          <span className="text-sm text-muted-foreground">{translateSign(tr.current_sign, language)}</span>
+                          <span className={`text-sm px-1.5 py-0.5 rounded-full ${isCancelled ? 'bg-red-200 text-red-900 line-through' : (tr.effect === 'favorable' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')}`}>
+                            {tr.effect === 'favorable' ? t('common.favorable') : t('common.unfavorable')}
+                          </span>
+                          {/* Vedha badge */}
+                          {isCancelled && (
+                            <span className="text-xs px-1.5 py-0.5 rounded-full bg-red-600 text-white font-semibold">
+                              ⊘ {t('auto.vedhaCancelled')}
+                            </span>
+                          )}
+                          {/* Latta badge */}
+                          {tr.latta_type === 'prishta' && (
+                            <span className="text-xs px-1.5 py-0.5 rounded-full bg-emerald-600 text-white font-semibold">
+                              ↑ {t('auto.prishtaLatta')}
+                            </span>
+                          )}
+                          {tr.latta_type === 'pratyak' && (
+                            <span className="text-xs px-1.5 py-0.5 rounded-full bg-orange-600 text-white font-semibold">
+                              ↓ {t('auto.pratyakLatta')}
+                            </span>
+                          )}
+                        </div>
+                        <p className={`text-sm ${isCancelled ? 'text-muted-foreground line-through' : 'text-muted-foreground'}`}>
+                          {tr.description}
+                        </p>
+                        {/* Vedha detail */}
+                        {isCancelled && tr.vedha_by && (
+                          <p className="text-xs text-red-700 mt-2 italic">
+                            {t('auto.cancelledBy')}: {translatePlanet(tr.vedha_by.planet, language)}
+                            {' '}({language === 'hi' ? tr.vedha_by.description_hi : tr.vedha_by.description_en})
+                          </p>
+                        )}
+                        {/* Latta detail */}
+                        {tr.latta_type && (
+                          <p className={`text-xs mt-1 italic ${tr.latta_type === 'prishta' ? 'text-emerald-700' : 'text-orange-700'}`}>
+                            {language === 'hi' ? tr.latta_description_hi : tr.latta_description_en}
+                          </p>
+                        )}
+                        {tr.sloka_ref && (
+                          <p className="text-[10px] text-muted-foreground/70 mt-2 italic">{tr.sloka_ref}</p>
+                        )}
                       </div>
-                      <p className="text-sm" className="text-muted-foreground">{tr.description}</p>
-                    </div>
-                  ))}
+                    );
+                  })}
+                </div>
+                {/* Legend */}
+                <div className="mt-3 p-3 rounded-lg bg-sacred-gold/5 border border-sacred-gold/20 text-xs text-muted-foreground space-y-1">
+                  <p>{t('auto.vedhaLegend')}</p>
+                  <p>{t('auto.lattaLegend')}</p>
                 </div>
               </div>
             ) : (
