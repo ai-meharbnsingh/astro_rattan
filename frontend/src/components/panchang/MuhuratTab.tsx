@@ -23,8 +23,19 @@ interface EkadashiParana {
 }
 interface PanchakaRahita {
   active?: boolean;
+  type?: string;
+  type_hindi?: string;
+  safe_for_govt?: boolean;
   [key: string]: any;
 }
+
+const PANCHAKA_TYPE_INFO: Record<string, { en: string; hi: string; severity: 'high' | 'medium' | 'low' }> = {
+  Mrityu: { en: 'Death/Accident — most severe. Avoid travel, fire & all auspicious work.', hi: 'मृत्यु पंचक — अत्यंत खतरनाक। यात्रा, अग्नि व शुभ कार्य वर्जित।', severity: 'high' },
+  Agni:   { en: 'Fire — avoid fire-related work, cremation, combustible materials.',        hi: 'अग्नि पंचक — अग्नि संबंधी कार्य, दाह संस्कार वर्जित।', severity: 'high' },
+  Chora:  { en: 'Theft — avoid travel, keep valuables safe, avoid late-night outings.',     hi: 'चोर पंचक — यात्रा, बहुमूल्य वस्तुओं की सुरक्षा, रात्रि भ्रमण वर्जित।', severity: 'medium' },
+  Roga:   { en: 'Disease — avoid new health risks, medical procedures if possible.',        hi: 'रोग पंचक — नई बीमारी, चिकित्सा कार्य में सावधानी।', severity: 'medium' },
+  Raja:   { en: 'Royal/Govt — generally mild. Govt & administrative work may proceed.',     hi: 'राज पंचक — सामान्य। सरकारी व प्रशासनिक कार्य हो सकते हैं।', severity: 'low' },
+};
 interface ExtPanchang extends FullPanchangData {
   special_yogas?: Record<string, SpecialYogaEntry>;
   directions?: DirectionsData;
@@ -145,8 +156,60 @@ export default function MuhuratTab({ panchang: _panchang, language, t }: Props) 
     },
   ].filter(s => s.period && (s.period.start !== '--:--' || s.period.end !== '--:--'));
 
+  // ── Compute prominent yoga banners (Amrit Siddhi, Sarvartha Siddhi) ──
+  const sy = panchang.special_yogas;
+  const prominentBanners: { label: string; color: string; borderColor: string }[] = [];
+  if (sy?.amrit_siddhi?.active)
+    prominentBanners.push({
+      label: language === 'hi' ? (sy.amrit_siddhi.name_hindi || 'अमृत सिद्धि योग') : (sy.amrit_siddhi.name || 'Amrit Siddhi Yoga'),
+      color: 'bg-emerald-500/15 text-emerald-700',
+      borderColor: 'border-emerald-500/40',
+    });
+  if (sy?.sarvartha_siddhi?.active)
+    prominentBanners.push({
+      label: language === 'hi' ? (sy.sarvartha_siddhi.name_hindi || 'सर्वार्थ सिद्धि योग') : (sy.sarvartha_siddhi.name || 'Sarvartha Siddhi Yoga'),
+      color: 'bg-yellow-500/15 text-yellow-700',
+      borderColor: 'border-yellow-500/40',
+    });
+  if (sy?.dwipushkar?.active)
+    prominentBanners.push({
+      label: language === 'hi' ? (sy.dwipushkar.name_hindi || 'द्विपुष्कर योग') : (sy.dwipushkar.name || 'Dwipushkar Yoga'),
+      color: 'bg-amber-500/15 text-amber-700',
+      borderColor: 'border-amber-500/40',
+    });
+  if (sy?.tripushkar?.active)
+    prominentBanners.push({
+      label: language === 'hi' ? (sy.tripushkar.name_hindi || 'त्रिपुष्कर योग') : (sy.tripushkar.name || 'Tripushkar Yoga'),
+      color: 'bg-amber-500/15 text-amber-700',
+      borderColor: 'border-amber-500/40',
+    });
+  if (sy?.ganda_moola?.active)
+    prominentBanners.push({
+      label: language === 'hi' ? (sy.ganda_moola.name_hindi || 'गण्ड मूल') : (sy.ganda_moola.name || 'Ganda Moola'),
+      color: 'bg-red-500/15 text-red-700',
+      borderColor: 'border-red-500/40',
+    });
+
   return (
     <div className="space-y-3">
+      {/* ── Prominent Yoga Banners (Amrit Siddhi / Sarvartha Siddhi etc.) ── */}
+      {prominentBanners.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {prominentBanners.map((b, i) => (
+            <div
+              key={i}
+              className={`flex-1 min-w-[200px] rounded-lg border ${b.borderColor} ${b.color} px-3 py-2 flex items-center gap-2`}
+            >
+              <Sparkles className="h-4 w-4 flex-shrink-0" />
+              <span className="font-semibold text-sm">{b.label}</span>
+              <span className="text-xs ml-auto opacity-70">
+                {language === 'hi' ? 'आज सक्रिय' : 'Active today'}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
         <div className="rounded-lg border border-green-500/30 p-2">
           <h3 className="font-bold text-foreground mb-1 flex items-center gap-1">
@@ -266,54 +329,6 @@ export default function MuhuratTab({ panchang: _panchang, language, t }: Props) 
       </div>
 
       {/* ============================================================ */}
-      {/*  NEW: Special Active Yogas Banner                            */}
-      {/* ============================================================ */}
-      {(() => {
-        const sy = panchang.special_yogas;
-        if (!sy) return null;
-        const badges: { label: string; color: string }[] = [];
-        if (sy.sarvartha_siddhi?.active)
-          badges.push({
-            label: language === 'hi' ? (sy.sarvartha_siddhi.name_hindi || 'सर्वार्थ सिद्धि योग') : (sy.sarvartha_siddhi.name || 'Sarvartha Siddhi Yoga'),
-            color: 'bg-yellow-500/20 text-yellow-700 border-yellow-500/40',
-          });
-        if (sy.amrit_siddhi?.active)
-          badges.push({
-            label: language === 'hi' ? (sy.amrit_siddhi.name_hindi || 'अमृत सिद्धि योग') : (sy.amrit_siddhi.name || 'Amrit Siddhi Yoga'),
-            color: 'bg-yellow-500/20 text-yellow-700 border-yellow-500/40',
-          });
-        if (sy.dwipushkar?.active)
-          badges.push({
-            label: language === 'hi' ? (sy.dwipushkar.name_hindi || 'द्विपुष्कर योग') : (sy.dwipushkar.name || 'Dwipushkar Yoga'),
-            color: 'bg-yellow-500/20 text-yellow-700 border-yellow-500/40',
-          });
-        if (sy.tripushkar?.active)
-          badges.push({
-            label: language === 'hi' ? (sy.tripushkar.name_hindi || 'त्रिपुष्कर योग') : (sy.tripushkar.name || 'Tripushkar Yoga'),
-            color: 'bg-yellow-500/20 text-yellow-700 border-yellow-500/40',
-          });
-        if (sy.ganda_moola?.active)
-          badges.push({
-            label: language === 'hi' ? (sy.ganda_moola.name_hindi || 'गण्ड मूल') : (sy.ganda_moola.name || 'Ganda Moola'),
-            color: 'bg-red-500/20 text-red-700 border-red-500/40',
-          });
-        if (badges.length === 0) return null;
-        return (
-          <div className="flex flex-wrap gap-2">
-            {badges.map((b, i) => (
-              <span
-                key={i}
-                className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-semibold ${b.color}`}
-              >
-                <Sparkles className="h-3 w-3" />
-                {b.label}
-              </span>
-            ))}
-          </div>
-        );
-      })()}
-
-      {/* ============================================================ */}
       {/*  NEW: Anandadi Yoga + Disha Shool + Lucky + Ekadashi Parana  */}
       {/* ============================================================ */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
@@ -417,23 +432,42 @@ export default function MuhuratTab({ panchang: _panchang, language, t }: Props) 
       </div>
 
       {/* ============================================================ */}
-      {/*  NEW: Panchaka Warning Banner                                */}
+      {/*  NEW: Panchaka Warning Banner (with type severity)          */}
       {/* ============================================================ */}
-      {panchang.misc?.panchaka_rahita?.active && (
-        <div className="rounded-lg border border-orange-500/40 bg-orange-500/10 p-3 flex items-start gap-2">
-          <CircleAlert className="h-4 w-4 text-orange-600 mt-0.5 flex-shrink-0" />
-          <div>
-            <p className="text-sm font-semibold text-orange-700">
-              {language === 'hi' ? 'पंचक काल सक्रिय' : 'Panchaka Period Active'}
-            </p>
-            <p className="text-xs text-orange-600/80 mt-0.5">
-              {language === 'hi'
-                ? 'पंचक काल में शुभ कार्य वर्जित माने जाते हैं'
-                : 'Auspicious activities are generally avoided during Panchaka'}
-            </p>
+      {panchang.misc?.panchaka_rahita?.active && (() => {
+        const pr = panchang.misc!.panchaka_rahita!;
+        // Backend returns "Roga Panchaka" / "Mrityu Panchaka" — extract first word as key
+        const typeKey = (pr.type || '').split(' ')[0];
+        const info = PANCHAKA_TYPE_INFO[typeKey];
+        const isHigh = info?.severity === 'high';
+        const borderCol = isHigh ? 'border-red-500/40' : 'border-orange-500/40';
+        const bgCol     = isHigh ? 'bg-red-500/10' : 'bg-orange-500/10';
+        const iconCol   = isHigh ? 'text-red-600' : 'text-orange-600';
+        const titleCol  = isHigh ? 'text-red-700' : 'text-orange-700';
+        const descCol   = isHigh ? 'text-red-600/80' : 'text-orange-600/80';
+        const typeLabel = language === 'hi'
+          ? (pr.type_hindi || typeKey)
+          : typeKey;
+        const desc = info
+          ? (language === 'hi' ? info.hi : info.en)
+          : (language === 'hi' ? 'पंचक काल में शुभ कार्य वर्जित माने जाते हैं' : 'Auspicious activities are generally avoided during Panchaka');
+        return (
+          <div className={`rounded-lg border ${borderCol} ${bgCol} p-3 flex items-start gap-2`}>
+            <CircleAlert className={`h-4 w-4 ${iconCol} mt-0.5 flex-shrink-0`} />
+            <div>
+              <p className={`text-sm font-semibold ${titleCol}`}>
+                {language === 'hi' ? 'पंचक काल सक्रिय' : 'Panchaka Period Active'}
+                {typeLabel && (
+                  <span className="ml-2 text-xs font-normal opacity-80">
+                    ({typeLabel})
+                  </span>
+                )}
+              </p>
+              <p className={`text-xs ${descCol} mt-0.5`}>{desc}</p>
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* ============================================================ */}
       {/*  Tamil Yoga & Status (Jeevanama / Netrama)                   */}

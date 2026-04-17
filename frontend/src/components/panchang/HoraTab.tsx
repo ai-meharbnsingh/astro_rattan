@@ -9,6 +9,17 @@ const PLANET_HI: Record<string, string> = {
   Sun: 'सूर्य', Moon: 'चंद्र', Mars: 'मंगल', Mercury: 'बुध',
   Jupiter: 'गुरु', Venus: 'शुक्र', Saturn: 'शनि', Rahu: 'राहु', Ketu: 'केतु',
 };
+
+// Hora activity guide (Muhurta Chintamani + classical Jyotish)
+const HORA_BEST_FOR: Record<string, { en: string; hi: string }> = {
+  Sun:     { en: 'Govt, authority, medicine, father, gold',    hi: 'सरकार, अधिकार, चिकित्सा, पिता, सोना' },
+  Moon:    { en: 'Travel, liquids, social work, mother',       hi: 'यात्रा, जल कार्य, सामाजिक, माता' },
+  Mars:    { en: 'Courage, surgery, sports, competitive',      hi: 'साहस, शल्य-चिकित्सा, खेल, प्रतिस्पर्धा' },
+  Mercury: { en: 'Commerce, communication, education',         hi: 'व्यापार, संचार, शिक्षा, लेखन' },
+  Jupiter: { en: 'Wisdom, religion, ceremonies, teaching',     hi: 'ज्ञान, धर्म, शुभ संस्कार, अध्यापन' },
+  Venus:   { en: 'Art, music, romance, luxury, beauty',        hi: 'कला, संगीत, प्रेम, विलास, सौन्दर्य' },
+  Saturn:  { en: 'Labour, agriculture, oil, iron, endurance',  hi: 'श्रम, कृषि, तेल, लोहा, धैर्य' },
+};
 const TYPE_HI: Record<string, string> = {
   good: 'शुभ', bad: 'अशुभ', neutral: 'सामान्य',
   day: 'दिन', night: 'रात',
@@ -136,7 +147,14 @@ export default function HoraTab({ panchang, language, t, timezoneOffset, minuteT
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell className="px-2 py-1 text-muted-foreground whitespace-normal break-words">{hi ? hiPlanet(hora.lord) : hora.lord}</TableCell>
+                      <TableCell className="px-2 py-1 whitespace-normal break-words">
+                        <span className="text-muted-foreground">{hi ? hiPlanet(hora.lord) : hora.lord}</span>
+                        {HORA_BEST_FOR[hora.lord] && (
+                          <p className="text-[10px] text-muted-foreground/70 leading-tight mt-0.5">
+                            {hi ? HORA_BEST_FOR[hora.lord].hi : HORA_BEST_FOR[hora.lord].en}
+                          </p>
+                        )}
+                      </TableCell>
                       <TableCell className="px-2 py-1 text-muted-foreground whitespace-normal break-words">{hora.start} - {hora.end}</TableCell>
                       <TableCell className="px-2 py-1 text-center">
                         <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium ${getQualityColor(hora.type)}`}>

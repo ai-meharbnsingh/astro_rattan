@@ -13,6 +13,19 @@ const NAK_CAT_STYLES: Record<string, string> = {
   tikshna: 'bg-orange-100 text-orange-700 border-orange-200',
 };
 
+// Tithi type badge (Muhurta Chintamani — 5 types, cycling every 5 tithis)
+// 1,6,11=Nanda  2,7,12=Bhadra  3,8,13=Jaya  4,9,14=Rikta  5,10,15=Poorna
+const TITHI_TYPES: Record<number, { name: string; nameHi: string; style: string; goodFor: string; goodForHi: string }> = {
+  1: { name: 'Nanda',  nameHi: 'नन्दा',  style: 'bg-green-100 text-green-700 border-green-200',  goodFor: 'Joy, happiness, celebrations',    goodForHi: 'आनन्द, उत्सव, शुभ कार्य' },
+  2: { name: 'Bhadra', nameHi: 'भद्रा',  style: 'bg-blue-100 text-blue-700 border-blue-200',     goodFor: 'Permanent, lasting activities',   goodForHi: 'स्थायी कार्य, घर निर्माण' },
+  3: { name: 'Jaya',   nameHi: 'जया',    style: 'bg-purple-100 text-purple-700 border-purple-200', goodFor: 'Victory, confrontation, battles', goodForHi: 'विजय, प्रतिस्पर्धा, संघर्ष' },
+  4: { name: 'Rikta',  nameHi: 'रिक्ता', style: 'bg-red-100 text-red-700 border-red-200',         goodFor: 'Avoid auspicious new work',       goodForHi: 'शुभ कार्य से बचें' },
+  5: { name: 'Poorna', nameHi: 'पूर्णा', style: 'bg-amber-100 text-amber-700 border-amber-200',   goodFor: 'Completion, fulfilment',          goodForHi: 'पूर्णता, सिद्धि, तीर्थ' },
+};
+
+// Dagdha (burned) Tithi — weekday index (0=Mon…6=Sun) → tithi number to avoid
+const DAGDHA_TITHIS: Record<number, number> = { 0: 7, 1: 12, 2: 3, 3: 11, 4: 6, 5: 9, 6: 2 };
+
 interface Props {
   panchang: FullPanchangData;
   language: string;
@@ -30,13 +43,30 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
   const nakGoodFor: string = isHi ? (nak?.category_good_for_hi || '') : (nak?.category_good_for_en || '');
   const nakBadgeStyle = NAK_CAT_STYLES[nakCatKey] ?? NAK_CAT_STYLES.mishra;
 
+  // Tithi type badge
+  const tithiTypeIdx = ((panchang.tithi.number - 1) % 5) + 1;
+  const tithiType = TITHI_TYPES[tithiTypeIdx];
+  const tithiTypeBadge = tithiType ? (
+    <span
+      title={isHi ? tithiType.goodForHi : tithiType.goodFor}
+      className={`inline-block text-[10px] font-bold px-1.5 py-0.5 rounded border ${tithiType.style} cursor-help`}
+    >
+      {isHi ? tithiType.nameHi : tithiType.name}
+    </span>
+  ) : null;
+
+  // Dagdha Tithi check (burned day — avoid all new auspicious work)
+  const vaarNum = panchang.vaar?.number ?? -1;
+  const dagdhaTithiNum = DAGDHA_TITHIS[vaarNum];
+  const isDagdha = dagdhaTithiNum !== undefined && panchang.tithi.number === dagdhaTithiNum;
+
   const coreRows = [
     {
       metric: isHi ? 'तिथि' : t('panchang.tithi'),
       value: isHi ? panchang.tithi.name_hindi || panchang.tithi.name : panchang.tithi.name,
       details: `${t('auto.no')} ${panchang.tithi.number} • ${isHi ? panchang.tithi.paksha_hindi || panchang.tithi.paksha : panchang.tithi.paksha}`,
       endTime: panchang.tithi.end_time || '--',
-      badge: null as React.ReactNode,
+      badge: tithiTypeBadge,
     },
     {
       metric: isHi ? 'नक्षत्र' : t('panchang.nakshatra'),
@@ -112,6 +142,23 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
   ];
 
   return (
+    <div className="space-y-2">
+    {/* Dagdha Tithi warning */}
+    {isDagdha && (
+      <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 flex items-start gap-2">
+        <span className="text-red-600 font-bold text-sm flex-shrink-0">⚠</span>
+        <div>
+          <p className="text-sm font-semibold text-red-700">
+            {isHi ? 'दग्ध तिथि — जली हुई तिथि' : 'Dagdha Tithi — Burned Day'}
+          </p>
+          <p className="text-xs text-red-600/80 mt-0.5">
+            {isHi
+              ? 'आज दग्ध तिथि है। नए शुभ कार्य प्रारम्भ न करें।'
+              : 'Today is a Dagdha (burned) Tithi. Avoid starting new auspicious work.'}
+          </p>
+        </div>
+      </div>
+    )}
     <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2">
       <div className="rounded-lg border p-2">
         <Table className="w-full table-fixed text-xs sm:text-sm">
@@ -180,6 +227,7 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
           </TableBody>
         </Table>
       </div>
+    </div>
     </div>
   );
 }

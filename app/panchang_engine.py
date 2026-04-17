@@ -1298,8 +1298,9 @@ def calculate_panchang(
 
     # 22. Hora Table (planetary hours — 24 horas, day + night)
     hora_sequence_day = ["Sun", "Venus", "Mercury", "Moon", "Saturn", "Jupiter", "Mars"]
-    # Day lord based on weekday
-    day_lord_idx = [0, 3, 6, 2, 5, 1, 4][weekday]  # Sun=0(Sun), Mon=3(Moon), Tue=6(Mars)...
+    # Day lord based on weekday — dt.weekday() gives 0=Mon..6=Sun
+    # Mon=Moon(3), Tue=Mars(6), Wed=Mercury(2), Thu=Jupiter(5), Fri=Venus(1), Sat=Saturn(4), Sun=Sun(0)
+    day_lord_idx = [3, 6, 2, 5, 1, 4, 0][weekday]
     hora_duration_day = dinamana_mins / 12
     hora_duration_night = ratrimana_mins / 12
     hora_table = []
@@ -1572,14 +1573,17 @@ def _calculate_wave1_extras(
 ):
     """Integrate all new Wave 1 modules into panchang output."""
     result = {}
+    # panchang_yogas and panchang_directions use 0=Sunday convention.
+    # dt.weekday() returns 0=Monday, so convert: Sun=0 → (Mon_idx + 1) % 7
+    weekday_sun = (weekday + 1) % 7
     try:
         from app.panchang_yogas import calculate_all_special_yogas
-        result["special_yogas"] = calculate_all_special_yogas(weekday, tithi_index, nakshatra_name)
+        result["special_yogas"] = calculate_all_special_yogas(weekday_sun, tithi_index, nakshatra_name)
     except Exception:
         result["special_yogas"] = {}
     try:
         from app.panchang_directions import calculate_all_directions
-        result["directions"] = calculate_all_directions(weekday, tithi_index, nakshatra_index)
+        result["directions"] = calculate_all_directions(weekday_sun, tithi_index, nakshatra_index)
     except Exception:
         result["directions"] = {}
     try:
