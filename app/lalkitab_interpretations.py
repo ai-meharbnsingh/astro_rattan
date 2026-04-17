@@ -1099,12 +1099,15 @@ def get_all_interpretations_for_chart(
     Returns:
         List of interpretation dicts for each planet in its house.
     """
+    from app.lalkitab_source_tags import source_of
+    src = source_of("get_all_interpretations_for_chart")  # LK_CANONICAL
     results = []
     for pos in planet_positions:
         planet = pos.get("planet", "")
         house = pos.get("house", 0)
         interp = get_lk_house_interpretation(planet, house)
         if interp:
+            interp.setdefault("source", src)
             results.append(interp)
     return results
 

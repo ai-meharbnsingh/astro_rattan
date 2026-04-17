@@ -377,5 +377,9 @@ def build_prediction_studio(
                 "trace": trace,
             }
         )
-    return {"areas": areas_out}
+    from app.lalkitab_source_tags import source_of
+    src = source_of("build_prediction_studio")  # PRODUCT
+    for area in areas_out:
+        area.setdefault("source", src)
+    return {"areas": areas_out, "source": src}
 

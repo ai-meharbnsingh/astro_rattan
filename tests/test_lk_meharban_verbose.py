@@ -50,19 +50,21 @@ from app.lalkitab_forbidden import get_forbidden_remedies
 from app.lalkitab_milestones import get_seven_year_cycle
 from app.lalkitab_prediction_studio import build_prediction_studio
 from app.lalkitab_interpretations import get_all_interpretations_for_chart
+from app.lalkitab_source_tags import source_of
 
 OUT = []
 def P(s=""):
     OUT.append(s)
     print(s)
 
-def H(title, level=1):
+def H(title, level=1, engine=None):
+    tag = f"  [{source_of(engine)}]" if engine else ""
     if level == 1:
-        P("\n" + "═" * 78); P(f"  {title}"); P("═" * 78)
+        P("\n" + "═" * 78); P(f"  {title}{tag}"); P("═" * 78)
     elif level == 2:
-        P("\n" + "─" * 78); P(f"  {title}"); P("─" * 78)
+        P("\n" + "─" * 78); P(f"  {title}{tag}"); P("─" * 78)
     else:
-        P(f"\n— {title} —")
+        P(f"\n— {title}{tag} —")
 
 def pick(v, hi=False):
     if v is None: return ""
@@ -109,7 +111,7 @@ def main():
         P(f"  H{h:<2}  {SIGN_FOR[h]:<14}{', '.join(planets)}")
 
     # Teva
-    H("3 · TEVA TYPOLOGY (full)")
+    H("3 · TEVA TYPOLOGY (full)", engine="identify_teva_type")
     teva = identify_teva_type(pp)
     for t in ("andha", "ratondha", "dharmi", "nabalig", "khali"):
         flag = "★ ACTIVE" if teva.get(f"is_{t}") else "inactive"
@@ -120,7 +122,7 @@ def main():
         P(f"  HI: {desc_hi}")
 
     # Karmic Rin — FULL
-    H("4 · KARMIC RIN (full text, all detected debts)")
+    H("4 · KARMIC RIN (full text, all detected debts)", engine="calculate_karmic_debts")
     debts = calculate_karmic_debts(pp)
     if not debts:
         P("No karmic debts detected.")
@@ -132,7 +134,7 @@ def main():
         P(f"    (HI remedy)   : {pick(d.get('remedy'), hi=True)}")
 
     # Hora debt
-    H("5 · HORA-BASED 10th DEBT (full)")
+    H("5 · HORA-BASED 10th DEBT (full)", engine="calculate_karmic_debts_with_hora")
     birth_dt = datetime.combine(
         datetime.strptime(MEHARBAN["birth_date"], "%Y-%m-%d").date(),
         datetime.strptime(MEHARBAN["birth_time"], "%H:%M:%S").time())
@@ -160,7 +162,7 @@ def main():
         P(f"  reason: {pick(c.get('reason'))}")
 
     # Active/passive enrichment
-    H("6 · ACTIVE vs PASSIVE RIN (full urgency)")
+    H("6 · ACTIVE vs PASSIVE RIN (full urgency)", engine="enrich_debts_active_passive")
     for d in enrich_debts_active_passive(debts, pp):
         P(f"\n{pick(d.get('name')):<20} status={d.get('activation_status')}  "
           f"house={d.get('activation_house')}")
@@ -169,7 +171,7 @@ def main():
             P(f"  urgency (HI): {pick(d['activation_urgency'], hi=True)}")
 
     # Masnui
-    H("7 · MASNUI GRAH (full)")
+    H("7 · MASNUI GRAH (full)", engine="calculate_masnui_planets")
     masnui = calculate_masnui_planets(pp)
     mlist = masnui.get("masnui_planets") or []
     if not mlist:
@@ -188,7 +190,7 @@ def main():
         P(f"  note: {pick(n.get('note'))}")
 
     # Prohibitions
-    H("8 · PROHIBITIONS (FULL text)")
+    H("8 · PROHIBITIONS (FULL text)", engine="get_prohibitions")
     for p in (get_prohibitions(pp) or []):
         P(f"\n• {p['planet']} in H{p['house']}")
         P(f"    Category      : {pick(p.get('category'))}")
@@ -196,12 +198,12 @@ def main():
         P(f"    Backlash risk : {pick(p.get('backlash_risk'))}")
 
     # Forbidden remedies (separate engine)
-    H("9 · FORBIDDEN REMEDIES (cross-check engine)")
+    H("9 · FORBIDDEN REMEDIES (cross-check engine)", engine="get_forbidden_remedies")
     for fr in (get_forbidden_remedies(pp) or [])[:15]:
         P(f"\n• {fr}")
 
     # Bunyaad full
-    H("10 · BUNYAAD (foundation interpretations)")
+    H("10 · BUNYAAD (foundation interpretations)", engine="calculate_bunyaad")
     b = calculate_bunyaad(pp)
     P(f"Collapsed : {b.get('collapsed_planets') or []}")
     P(f"Strong    : {b.get('strong_foundations') or []}")
@@ -215,7 +217,7 @@ def main():
         P(f"   HI: {info.get('interpretation_hi','')}")
 
     # Takkar full
-    H("11 · TAKKAR (collision, full interpretations)")
+    H("11 · TAKKAR (collision, full interpretations)", engine="calculate_takkar")
     t = calculate_takkar(pp)
     P(f"Destructive={t.get('destructive_count',0)}  Mild={t.get('mild_count',0)}  "
       f"Most attacked={t.get('most_attacked_planet')}  Safe={t.get('safe_planets')}")
@@ -226,7 +228,7 @@ def main():
         P(f"   HI: {c.get('interpretation_hi','')}")
 
     # Enemy siege full
-    H("12 · ENEMY PRESENCE / SIEGE (full interpretations)")
+    H("12 · ENEMY PRESENCE / SIEGE (full interpretations)", engine="calculate_enemy_presence")
     ep = calculate_enemy_presence(pp)
     P(f"Most besieged : {ep.get('most_besieged','—')}")
     P(f"Least besieged: {ep.get('least_besieged','—')}")
@@ -238,7 +240,7 @@ def main():
         P(f"   HI: {info.get('interpretation_hi','')}")
 
     # Dhoka / Achanak
-    H("13 · RELATIONSHIP PATTERNS (Dhoka + Achanak Chot, full)")
+    H("13 · RELATIONSHIP PATTERNS (Dhoka + Achanak Chot, full)", engine="calculate_dhoka")
     H("Dhoka (deception)", 2)
     for d in calculate_dhoka(pp) or []:
         P(f"\n• {d.get('dhoka_name')}  H{d.get('source_house')} → H{d.get('target_house')}")
@@ -254,7 +256,7 @@ def main():
         P(f"   warning     EN: {pick(a.get('warning'))}")
 
     # Sacrifice
-    H("14 · BALI KA BAKRA (sacrifice, full messages)")
+    H("14 · BALI KA BAKRA (sacrifice, full messages)", engine="analyze_sacrifice")
     aspects = calculate_lk_aspects(pp) or {}
     sac = analyze_sacrifice(pp, aspects)
     results = sac.get("results") if isinstance(sac, dict) else sac
@@ -270,7 +272,7 @@ def main():
     # Technical
     H("15 · TECHNICAL (Chalti Gaadi · Dhur-dhur-aage · Soya Ghar · Statuses · Muththi)")
     cg = calculate_chalti_gaadi(pp)
-    H("Chalti Gaadi", 3)
+    H("Chalti Gaadi", 3, engine="calculate_chalti_gaadi")
     P(f"Engine   : {cg.get('engine')}")
     P(f"Passenger: {cg.get('passenger')}")
     P(f"Brakes   : {cg.get('brakes')}")
@@ -280,14 +282,14 @@ def main():
     for rule in cg.get("specific_rules") or []:
         P(f"  • {rule.get('rule')}: {pick(rule.get('note'))}")
 
-    H("Dhur-dhur-aage", 3)
+    H("Dhur-dhur-aage", 3, engine="calculate_dhur_dhur_aage")
     dd = calculate_dhur_dhur_aage(pp)
     P(f"Most pushful: {dd.get('most_pushful_planet')}")
     P(f"Most pushed : {dd.get('most_pushed_planet')}")
     for push in (dd.get("pushes") or []):
         P(f"  {push.get('pusher')} → {push.get('receiver')}  direction={push.get('direction')}")
 
-    H("Soya Ghar (per-house)", 3)
+    H("Soya Ghar (per-house)", 3, engine="calculate_soya_ghar")
     try:
         soya = calculate_soya_ghar(pp)
         P(f"Awake    : {soya.get('awake_houses')}")
@@ -299,7 +301,7 @@ def main():
     except Exception as e:
         P(f"(soya skipped: {e})")
 
-    H("Planet statuses (sarkari / pardesi / zakhmi / bhedi / gair_sarkari)", 3)
+    H("Planet statuses (sarkari / pardesi / zakhmi / bhedi / gair_sarkari)", 3, engine="classify_all_planet_statuses")
     for row in classify_all_planet_statuses(pp):
         flags = [k for k in ("sarkari","gair_sarkari","bhedi","zakhmi","pardesi")
                  if row.get(k)]
@@ -307,11 +309,11 @@ def main():
         for k, v in (row.get("details") or {}).items():
             P(f"   {k}: {v}")
 
-    H("Muththi", 3)
+    H("Muththi", 3, engine="calculate_muththi")
     P(f"{calculate_muththi(pp)}")
 
     # Relations / Rules / Doshas
-    H("16 · DOSHAS (full descriptions & remedies)")
+    H("16 · DOSHAS (full descriptions & remedies)", engine="detect_lalkitab_doshas")
     for d in detect_lalkitab_doshas(pp) or []:
         flag = "★ DETECTED" if d.get("detected") else "  not detected"
         P(f"\n• {d.get('name_en')} ({d.get('name_hi')}) — severity {d.get('severity')}  [{flag}]")
@@ -323,7 +325,7 @@ def main():
             P(f"   affected planets: {d.get('affected_planets')}")
 
     # Vastu
-    H("17 · VASTU (full warnings + fixes)")
+    H("17 · VASTU (full warnings + fixes)", engine="get_vastu_diagnosis")
     v = get_vastu_diagnosis(pp) or {}
     P(f"Critical count: {v.get('critical_count', 0)}")
     for w in (v.get("planet_warnings") or []):
@@ -337,7 +339,7 @@ def main():
         P(f"   fix  HI: {pick(w.get('fix'), hi=True)}")
 
     # Timing
-    H("18 · TIMING (Saala Grah · Dasha · 7-year cycle · Age Activation)")
+    H("18 · TIMING (Saala Grah · Dasha · 7-year cycle · Age Activation)", engine="get_dasha_timeline")
     today = date.today().isoformat()
     age_res = get_age_activation(MEHARBAN["birth_date"], today)
     age_years = age_res.get("age_years", 0) if isinstance(age_res, dict) else 0
@@ -372,7 +374,7 @@ def main():
         P(f"\n age {p.get('age')} ({p.get('year')}): {p.get('planet')} ({p.get('planet_hi')})")
         P(f"   EN: {p.get('en_desc','')}")
 
-    H("7-year cycle", 2)
+    H("7-year cycle", 2, engine="get_seven_year_cycle")
     cyc = get_seven_year_cycle(age_years, pp)
     active_c = cyc.get("active_cycle") or {}
     P(f"\nActive cycle   : #{active_c.get('cycle_number')}  ages {active_c.get('age_range')}  ruler {active_c.get('ruler')} (H{active_c.get('ruler_house')})")
@@ -385,7 +387,7 @@ def main():
     P(f"Next cycle     : {pick(next_c.get('domain'))}  ruler {next_c.get('ruler')}  starts age {next_c.get('starts_at_age')}")
 
     # Prediction Studio FULL
-    H("19 · PREDICTION STUDIO (FULL — every area, positive/caution/remedy)")
+    H("19 · PREDICTION STUDIO (FULL — every area, positive/caution/remedy)", engine="build_prediction_studio")
     p_lons = {n: info["longitude"] for n, info in chart["planets"].items()}
     ps = build_prediction_studio(p_map, p_lons)
     for row in (ps.get("areas") or []):
@@ -401,7 +403,7 @@ def main():
         P(f"  trace: {row.get('trace')}")
 
     # Per-planet remedies
-    H("20 · PER-PLANET REMEDIES (engine-generated, full)")
+    H("20 · PER-PLANET REMEDIES (engine-generated, full)", engine="get_remedies")
     rem_by_planet = get_remedies({p["planet"]: p["sign"] for p in pp}, chart)
     for planet, info in (rem_by_planet or {}).items():
         rem = info.get("remedy") or {}
@@ -416,7 +418,7 @@ def main():
             P(f"  Afflictions: {info.get('afflictions')}")
 
     # Grahfal — FULL per-planet-in-house
-    H("21 · GRAHFAL / BHAVFAL (full LK 1952 interpretations, per planet)")
+    H("21 · GRAHFAL / BHAVFAL (full LK 1952 interpretations, per planet)", engine="get_all_interpretations_for_chart")
     for row in (get_all_interpretations_for_chart(pp) or []):
         P(f"\n◆ {row.get('planet')} in H{row.get('house')}")
         P(f"  EN: {pick(row.get('effect') or row.get('effect_en'))}")

@@ -1076,4 +1076,13 @@ def get_remedies(planet_positions: dict, chart_data: "dict | None" = None) -> di
 
         result[planet] = entry
 
+    # Stamp each planet's entry + the result envelope with the LK_CANONICAL
+    # provenance tag — these per-planet remedies come directly from the
+    # position tables in Lal Kitab 1952.
+    from app.lalkitab_source_tags import source_of
+    src = source_of("get_remedies")
+    for planet_entry in result.values():
+        planet_entry.setdefault("source", src)
+        if isinstance(planet_entry.get("remedy"), dict):
+            planet_entry["remedy"].setdefault("source", src)
     return result

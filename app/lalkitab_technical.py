@@ -133,6 +133,7 @@ def calculate_chalti_gaadi(planet_positions: List[Dict[str, Any]]) -> Dict[str, 
     if passenger and brakes and is_friend(passenger, brakes):
         rules.append({"rule": "friend_passenger_brakes", "applies": True, "note": {"en": "Partnerships survive shocks — brakes are gentle.", "hi": "साझेदारी झटकों से बचती है।"}})
 
+    from app.lalkitab_source_tags import source_of
     return {
         "engine":     {"planet": engine, "house": 1} if engine else None,
         "passenger":  {"planet": passenger, "house": 7} if passenger else None,
@@ -140,6 +141,7 @@ def calculate_chalti_gaadi(planet_positions: List[Dict[str, Any]]) -> Dict[str, 
         "train_status": train_status,
         "interpretation": {"en": interp_en, "hi": interp_hi},
         "specific_rules": rules,
+        "source": source_of("calculate_chalti_gaadi"),  # PRODUCT
     }
 
 

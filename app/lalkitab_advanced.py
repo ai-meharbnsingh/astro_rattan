@@ -496,6 +496,12 @@ def calculate_karmic_debts(planet_positions: List[Dict[str, Any]]) -> List[Dict[
             "remedy": {"hi": "परिजनों से बराबर धन एकत्र कर ४३ दिनों तक १०० कुत्तों को दूध और ब्रेड खिलाएं।", "en": "Collect equal money from family and feed 100 dogs milk and bread for 43 days."}
         })
 
+    # Stamp every detected debt with its provenance tag. Rin triggers
+    # are direct from the LK 1952 text → LK_CANONICAL.
+    from app.lalkitab_source_tags import source_of
+    src = source_of("calculate_karmic_debts")
+    for d in debts:
+        d.setdefault("source", src)
     return debts
 
 def identify_teva_type(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -1292,12 +1298,14 @@ def calculate_takkar(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
     # Safe planets (zero attacks received)
     safe_planets = [name for name, count in attack_count.items() if count == 0]
 
+    from app.lalkitab_source_tags import source_of
     return {
         "collisions": collisions,
         "destructive_count": destructive_count,
         "mild_count": mild_count,
         "most_attacked_planet": most_attacked,
         "safe_planets": safe_planets,
+        "source": source_of("calculate_takkar"),
     }
 
 
