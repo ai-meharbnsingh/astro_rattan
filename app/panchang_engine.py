@@ -249,6 +249,14 @@ _FIXED_KARANAS: List[str] = [
 
 KARANAS: List[str] = _REPEATING_KARANAS + _FIXED_KARANAS
 
+# Yoga quality classification (Muhurta Chintamani — Yoga Dosha list)
+_BAD_YOGA_NUMBERS: set = {1, 8, 17, 24, 27}  # Vishkambha, Shoola(?), Vyatipata, Vajra, Vaidhriti
+
+# Karana quality classification
+_VISHTI_NAMES: set = {"Vishti", "Bhadra"}
+# Chara (moveable) karanas cycle repeatedly; Sthira (fixed) karanas are the 4 fixed ones
+_CHARA_KARANA_NAMES: set = {"Bava", "Balava", "Kaulava", "Taitila", "Garaja", "Vanija", "Vishti"}
+
 
 # ============================================================
 # RAHU KAAL / GULIKA / YAMAGANDA timing by weekday
@@ -1507,6 +1515,8 @@ def calculate_panchang(
             "number": yoga_index + 1,
             "end_time": yoga_end,
             "next": next_yoga_name,
+            "auspicious": (yoga_index + 1) not in _BAD_YOGA_NUMBERS,
+            "quality": "bad" if (yoga_index + 1) in _BAD_YOGA_NUMBERS else "good",
         },
         "karana": {
             "name": karana_name,
@@ -1514,6 +1524,9 @@ def calculate_panchang(
             "end_time": karana_end,
             "second_karana": second_karana_name,
             "second_karana_end_time": second_karana_end,
+            "is_vishti": karana_name in _VISHTI_NAMES,
+            "type": "chara" if karana_name in _CHARA_KARANA_NAMES else "sthira",
+            "auspicious": karana_name not in _VISHTI_NAMES,
         },
         "sunrise": sunrise_str,
         "sunset": sunset_str,
