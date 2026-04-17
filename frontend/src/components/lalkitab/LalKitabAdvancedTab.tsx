@@ -304,7 +304,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
               <div key={i} className="card-sacred p-4 rounded-xl border border-sacred-gold/20 bg-white/40">
                 <div className="flex justify-between items-start mb-2">
                   <span className="text-xs font-bold text-sacred-gold-dark uppercase tracking-wider">{t('lk.kundli.house')} {m.house}</span>
-                  <span className="px-2 py-0.5 rounded bg-sacred-gold/10 text-sacred-gold-dark text-[10px] font-bold">MASNUI</span>
+                  <span className="px-2 py-0.5 rounded bg-sacred-gold/10 text-sacred-gold-dark text-[10px] font-bold">{t('auto.masnui')}</span>
                 </div>
                 <p className="text-sm font-bold text-foreground mb-1">
                   {m.formed_by.map((p: string) => translatePlanet(p, language)).join(' + ')}

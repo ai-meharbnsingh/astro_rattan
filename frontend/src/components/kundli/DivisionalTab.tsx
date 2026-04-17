@@ -106,7 +106,7 @@ export default function DivisionalTab({
             <div className="bg-muted rounded-xl p-5 border border-border shadow-sm animate-in fade-in slide-in-from-bottom-4 space-y-6">
               <div className="flex items-center gap-2 mb-4 border-b border-border/30 pb-3">
                 <Heading as={4} variant={4} className="text-primary">{t('auto.d60ShashtiamsaKarmic')}</Heading>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-muted/10 text-primary border border-border/20 font-bold uppercase tracking-tighter">EXPERT</span>
+                <span className="text-xs px-2 py-0.5 rounded-full bg-muted/10 text-primary border border-border/20 font-bold uppercase tracking-tighter">{t('auto.expert')}</span>
               </div>
 
               {/* Birth Time Sensitivity Warning */}
