@@ -34,7 +34,7 @@ from app.divisional_charts import (
     calculate_d108_analysis,
     DIVISIONAL_CHARTS,
 )
-from app.ashtakvarga_engine import calculate_ashtakvarga
+from app.ashtakvarga_engine import calculate_ashtakvarga, analyze_ashtakvarga_phala
 from app.varga_grading_engine import calculate_varga_strength
 from app.shadbala_engine import calculate_shadbala, calculate_bhav_bala
 from app.avakhada_engine import calculate_avakhada
@@ -782,6 +782,26 @@ def get_ashtakvarga(
         planet_signs["Ascendant"] = ascendant_sign
 
     result = calculate_ashtakvarga(planet_signs)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
+@router.get("/{kundli_id}/ashtakvarga-phala", status_code=status.HTTP_200_OK)
+def get_ashtakvarga_phala(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Phaladeepika Adhyaya 24 — applied Ashtakavarga-phala rules.
+
+    Returns house strengths, planet transit assessments, special
+    combinations (leadership/wealth/fortune/obstacles), transit
+    recommendations and a composite 0-100 overall score.
+    """
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    result = analyze_ashtakvarga_phala(chart)
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result
