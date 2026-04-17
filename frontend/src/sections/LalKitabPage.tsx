@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BookOpen, ArrowLeft, Loader2, ChevronDown, LayoutDashboard, ChartPie, Search, Clock3, Sparkles, ScrollText, Tags, Settings2 } from 'lucide-react';
+import { BookOpen, ArrowLeft, Loader2, ChevronDown, LayoutDashboard, ChartPie, Search, Clock3, Sparkles, ScrollText, Tags, Settings2, Home, CalendarCheck } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
@@ -41,6 +41,8 @@ import LalKitabSacrificeTab from '@/components/lalkitab/LalKitabSacrificeTab';
 import LalKitabForbiddenTab from '@/components/lalkitab/LalKitabForbiddenTab';
 import LalKitabPalmistryTab from '@/components/lalkitab/LalKitabPalmistryTab';
 import LalKitabFamilyTab from '@/components/lalkitab/LalKitabFamilyTab';
+import LalKitabVastuTab from '@/components/lalkitab/LalKitabVastuTab';
+import LalKitabRemedyTrackerTab from '@/components/lalkitab/LalKitabRemedyTrackerTab';
 
 type View = 'form' | 'generating' | 'result';
 
@@ -68,6 +70,8 @@ export default function LalKitabPage() {
     { value: 'predictions', label: t('auto.predictions'), icon: ScrollText },
     { value: 'nishaniyan', label: t('lk.tab.nishaniyan'), icon: Tags },
     { value: 'advanced', label: t('lk.tab.advanced'), icon: Settings2 },
+    { value: 'vastu', label: isHi ? 'मकान' : 'Vastu', icon: Home },
+    { value: 'tracker', label: isHi ? 'ट्रैकर' : 'Tracker', icon: CalendarCheck },
   ];
 
   // Auto-load existing kundli if navigated with loadKundliId
@@ -198,7 +202,7 @@ export default function LalKitabPage() {
 
             <Tabs value={activeTopTab} onValueChange={setActiveTopTab} className="w-full">
               <div className="mb-4">
-                <TabsList className="bg-muted w-full h-auto p-2 gap-1 grid grid-cols-4 md:grid-cols-8
+                <TabsList className="bg-muted w-full h-auto p-2 gap-1 grid grid-cols-5 md:grid-cols-10
                   [&>button]:min-w-0 [&>button]:min-h-[50px] md:[&>button]:min-h-[58px] [&>button]:px-1 [&>button]:py-2 [&>button]:text-[10px] md:[&>button]:text-xs
                   [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:justify-center [&>button]:gap-0.5 md:[&>button]:gap-1 [&>button]:leading-tight
                   [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
@@ -308,6 +312,12 @@ export default function LalKitabPage() {
                 <LalKitabAdvancedTab kundliId={kundliId} chartData={chartData} />
                 <LalKitabTevaTab chartData={chartData} apiResult={apiResult} />
                 <LalKitabRinTab kundliId={kundliId} />
+              </TabsContent>
+              <TabsContent value="vastu" className="space-y-4">
+                <LalKitabVastuTab kundliId={kundliId} language={language} />
+              </TabsContent>
+              <TabsContent value="tracker" className="space-y-4">
+                <LalKitabRemedyTrackerTab kundliId={kundliId} language={language} />
               </TabsContent>
             </Tabs>
             {clientId && <NotesWidget clientId={clientId} chartType="lalkitab" kundliId={kundliId} />}

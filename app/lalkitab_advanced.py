@@ -500,19 +500,20 @@ def calculate_karmic_debts(planet_positions: List[Dict[str, Any]]) -> List[Dict[
 
 def identify_teva_type(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
-    Detects if the chart is an Andha Teva (Blind), Ratondha (Half-Blind), or Dharmi Teva (Religious).
+    Detects Teva (chart typology): Andha, Ratondha, Dharmi, Nabalig, Khali.
     Reference: PDF 2.1.1, 2.1.2
     """
     p_map = {p["planet"]: p["house"] for p in planet_positions}
-    
+    CENTER_HOUSES = {1, 4, 7, 10}   # Kendra
+    BENEFICS = {"Jupiter", "Venus", "Moon", "Mercury"}
+    MALEFICS = {"Saturn", "Mars", "Rahu", "Ketu", "Sun"}
+
     # 1. Andha Teva (Blind Chart)
-    # Trigger: Two or more enemy planets in 10th house
     ENEMY_PAIRS = [
         {"Sun", "Saturn"}, {"Sun", "Venus"}, {"Moon", "Rahu"},
         {"Mars", "Mercury"}, {"Mars", "Rahu"}, {"Jupiter", "Mercury"},
         {"Jupiter", "Venus"}, {"Saturn", "Moon"}
     ]
-    
     planets_in_10 = {p["planet"] for p in planet_positions if p["house"] == 10}
     is_andha = False
     if len(planets_in_10) >= 2:
@@ -521,27 +522,45 @@ def identify_teva_type(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]
                 is_andha = True
                 break
 
-    # 2. Ratondha Teva (Half-Blind Chart)
-    # Trigger: Sun in 4th and Saturn in 7th (Classical example)
+    # 2. Ratondha Teva (Half-Blind) — Sun in 4th + Saturn in 7th
     is_ratondha = (p_map.get("Sun") == 4 and p_map.get("Saturn") == 7)
 
-    # 3. Dharmi Teva (Religious Chart)
+    # 3. Dharmi Teva (Religious / Protected)
     is_dharmi = False
-    # Path A: Jupiter + Saturn mutual association (conjunction or 1/7 aspect)
     if p_map.get("Jupiter") == p_map.get("Saturn") and p_map.get("Jupiter") is not None:
         is_dharmi = True
     elif (p_map.get("Jupiter") == 1 and p_map.get("Saturn") == 7) or (p_map.get("Jupiter") == 7 and p_map.get("Saturn") == 1):
         is_dharmi = True
     elif (p_map.get("Jupiter") == 4 and p_map.get("Saturn") == 10) or (p_map.get("Jupiter") == 10 and p_map.get("Saturn") == 4):
         is_dharmi = True
-    # Path B: Specific auspicious placements
     elif p_map.get("Jupiter") in {6, 9, 11} or p_map.get("Saturn") in {9, 11}:
         is_dharmi = True
 
+    # 4. Nabalig Teva (Underage/Immature Chart)
+    # Trigger: 3 or more empty houses among 1,4,7,10 AND Jupiter/Moon not in kendra
+    occupied_houses = {p["house"] for p in planet_positions}
+    empty_kendra = CENTER_HOUSES - occupied_houses
+    jup_moon_in_kendra = (p_map.get("Jupiter") in CENTER_HOUSES) or (p_map.get("Moon") in CENTER_HOUSES)
+    is_nabalig = len(empty_kendra) >= 3 and not jup_moon_in_kendra
+
+    # 5. Khali Teva (Empty Chart) — all 4 kendra empty
+    is_khali = CENTER_HOUSES.issubset(set(range(1, 13)) - occupied_houses)
+
+    # Active types list
+    active_types = []
+    if is_andha:    active_types.append("andha")
+    if is_ratondha: active_types.append("ratondha")
+    if is_dharmi:   active_types.append("dharmi")
+    if is_nabalig:  active_types.append("nabalig")
+    if is_khali:    active_types.append("khali")
+
     return {
-        "is_andha": is_andha,
+        "is_andha":    is_andha,
         "is_ratondha": is_ratondha,
-        "is_dharmi": is_dharmi,
+        "is_dharmi":   is_dharmi,
+        "is_nabalig":  is_nabalig,
+        "is_khali":    is_khali,
+        "active_types": active_types,
         "description": {
             "andha": {
                 "hi": "करियर और सार्वजनिक छवि में मौलिक बाधा। सफलता के लिए गहन शनिवार के उपायों की आवश्यकता है।" if is_andha else "सामान्य कुंडली दृष्टि।",
@@ -554,7 +573,15 @@ def identify_teva_type(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]
             "dharmi": {
                 "hi": "पूर्व जन्म के पुण्यों से जन्मजात सुरक्षा। यहाँ तक कि पापी ग्रह भी 'धर्मी ग्रह' (सुरक्षात्मक) के रूप में कार्य करते हैं।" if is_dharmi else "मानक कर्मिक प्रतिक्रिया।",
                 "en": "Innate protection from past merit. Even malefic planets act as 'Dharmi Grah' (protective)." if is_dharmi else "Standard karmic responsiveness."
-            }
+            },
+            "nabalig": {
+                "hi": "अपरिपक्व कुंडली — प्रमुख क्षेत्रों (1,4,7,10) में अनुभव और गुरु का मार्गदर्शन आवश्यक। बड़ों का सहयोग सफलता लाएगा।" if is_nabalig else "परिपक्व केंद्र बल।",
+                "en": "Immature chart — guidance from elders and Jupiter's grace needed in core life areas. Avoid solo decisions on major life matters." if is_nabalig else "Mature kendra strength."
+            },
+            "khali": {
+                "hi": "खाली केंद्र — जीवन के मुख्य चार क्षेत्रों (स्वयं, घर, साझेदारी, करियर) में ग्रह बल की कमी। आध्यात्मिक साधना से रिक्तता भरें।" if is_khali else "केंद्र में ग्रह बल उपस्थित।",
+                "en": "Empty chart — the four pillars of life (self, home, partnerships, career) have no direct planetary occupancy. Fill this void through spiritual practice and service." if is_khali else "Kendra has planetary occupancy."
+            },
         }
     }
 
@@ -1483,3 +1510,206 @@ def calculate_karmic_debts_with_hora(
     return result
 
 
+
+
+# ============================================================
+# DHOKA (DECEPTION) — 10th house deceives 4th
+# ============================================================
+
+_MALEFIC_SET = {"Saturn", "Mars", "Rahu", "Ketu", "Sun"}
+_BENEFIC_SET = {"Jupiter", "Venus", "Moon", "Mercury"}
+
+_DHOKA_MATRIX: List[Dict] = [
+    # (source_house, target_house, name, description_en, description_hi)
+    (10, 4,  "Career-Home Dhoka",
+     "10th house Saturn/Rahu casts deception over 4th house domestic peace. Career ambition erodes family stability.",
+     "10वें भाव का ग्रह 4थे भाव में भ्रम फैलाता है — करियर की महत्वाकांक्षा पारिवारिक शांति को नष्ट करती है।"),
+    (7,  1,  "Partnership-Self Dhoka",
+     "7th house malefic deceives the 1st house self — you may give more than you receive in partnerships.",
+     "7वें भाव का ग्रह लग्न को धोखा देता है — साझेदारी में आप देते अधिक हैं, पाते कम हैं।"),
+    (12, 6,  "Loss-Conflict Dhoka",
+     "12th house loss creates illusion of victory in 6th house conflicts. Secret enemies use apparent defeats.",
+     "12वें भाव की हानि 6ठे भाव के संघर्षों में विजय का भ्रम देती है।"),
+    (5,  9,  "Intelligence-Fortune Dhoka",
+     "5th house cleverness can deceive 9th house fortune — overthinking blocks blessings.",
+     "5वें भाव की चालाकी 9वें भाव के भाग्य को धोखा देती है — अति सोच आशीर्वाद रोकती है।"),
+    (8,  2,  "Transformation-Wealth Dhoka",
+     "8th house sudden changes create deception in 2nd house accumulated wealth. Inherited resources may vanish.",
+     "8वें भाव के अचानक परिवर्तन 2रे भाव के संचित धन को छलते हैं।"),
+]
+
+def calculate_dhoka(planet_positions: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Detect Dhoka (Deception) patterns — when malefic planets in source houses
+    cast their shadow over target houses, creating false signals and instability.
+    """
+    p_map: Dict[str, int] = {}
+    for p in planet_positions:
+        name = p.get("planet")
+        house = p.get("house")
+        if name and isinstance(house, int):
+            p_map[name] = house
+
+    # Build house→planet map
+    house_to_planets: Dict[int, List[str]] = {}
+    for planet, house in p_map.items():
+        house_to_planets.setdefault(house, []).append(planet)
+
+    results = []
+    for src_h, tgt_h, dhoka_name, desc_en, desc_hi in _DHOKA_MATRIX:
+        src_planets = house_to_planets.get(src_h, [])
+        tgt_planets = house_to_planets.get(tgt_h, [])
+        malefics_in_src = [p for p in src_planets if p in _MALEFIC_SET]
+        if not malefics_in_src:
+            continue
+        tgt_empty = len(tgt_planets) == 0
+        tgt_vulnerable = tgt_empty or any(p in _MALEFIC_SET for p in tgt_planets)
+        severity = "high" if tgt_vulnerable else "moderate"
+        results.append({
+            "dhoka_name": dhoka_name,
+            "source_house": src_h,
+            "target_house": tgt_h,
+            "malefics_causing": malefics_in_src,
+            "target_planets": tgt_planets,
+            "target_empty": tgt_empty,
+            "severity": severity,
+            "description": {"en": desc_en, "hi": desc_hi},
+            "remedy": {
+                "en": f"Strengthen {'4th' if tgt_h == 4 else str(tgt_h)+'th'} house by daily moon/milk water ritual. Avoid decisions driven by {', '.join(malefics_in_src)} themes.",
+                "hi": f"{tgt_h}वें भाव को मजबूत करें — जल और दूध का दान, {', '.join(malefics_in_src)} से संबंधित निर्णय टालें।"
+            }
+        })
+    return results
+
+
+# ============================================================
+# ACHANAK CHOT (SUDDEN STRIKE)
+# ============================================================
+
+_STRIKE_RULES: List[Dict] = [
+    # 6th house strikes 2nd (service/conflict destroys accumulated wealth)
+    {"striker_house": 6, "victim_house": 2,
+     "name": "Service-Wealth Strike",
+     "en": "6th house enemies/service unexpectedly drains 2nd house savings and family resources. Legal disputes, medical bills.",
+     "hi": "6ठे भाव के शत्रु 2रे भाव के धन को अचानक नष्ट करते हैं — कानूनी विवाद, चिकित्सा खर्च।"},
+    # 3rd house strikes 9th
+    {"striker_house": 3, "victim_house": 9,
+     "name": "Effort-Fortune Strike",
+     "en": "3rd house impulsive actions or sibling conflicts suddenly undermine 9th house fortune and long-term blessings.",
+     "hi": "3रे भाव की आवेगशील कार्रवाइयां 9वें भाव के भाग्य को अचानक नुकसान पहुंचाती हैं।"},
+    # 11th house strikes 5th
+    {"striker_house": 11, "victim_house": 5,
+     "name": "Network-Creativity Strike",
+     "en": "11th house social circle or false friends suddenly disrupts 5th house children/creativity/speculation.",
+     "hi": "11वें भाव के मित्र या नेटवर्क 5वें भाव की रचनात्मकता/संतान को अचानक झटका देते हैं।"},
+    # 12th house strikes 1st
+    {"striker_house": 12, "victim_house": 1,
+     "name": "Loss-Self Strike",
+     "en": "Hidden 12th house enemies or foreign elements suddenly attack personal health and identity.",
+     "hi": "12वें भाव के छिपे दुश्मन व्यक्तित्व और स्वास्थ्य पर अचानक प्रहार करते हैं।"},
+]
+
+def calculate_achanak_chot(planet_positions: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Calculate Achanak Chot (Sudden Strike) — malefics in striker houses
+    targeting victim houses, creating abrupt life disruptions.
+    """
+    house_to_planets: Dict[int, List[str]] = {}
+    for p in planet_positions:
+        name = p.get("planet")
+        house = p.get("house")
+        if name and isinstance(house, int):
+            house_to_planets.setdefault(house, []).append(name)
+
+    results = []
+    for rule in _STRIKE_RULES:
+        striker_h = rule["striker_house"]
+        victim_h = rule["victim_house"]
+        malefics_in_striker = [
+            p for p in house_to_planets.get(striker_h, []) if p in _MALEFIC_SET
+        ]
+        if not malefics_in_striker:
+            continue
+        victim_planets = house_to_planets.get(victim_h, [])
+        is_critical = any(p in _MALEFIC_SET for p in victim_planets) or len(victim_planets) == 0
+        results.append({
+            "strike_name": rule["name"],
+            "striker_house": striker_h,
+            "victim_house": victim_h,
+            "malefics": malefics_in_striker,
+            "victim_planets": victim_planets,
+            "is_critical": is_critical,
+            "description": {"en": rule["en"], "hi": rule["hi"]},
+            "warning": {
+                "en": f"Watch for sudden disruptions when {', '.join(malefics_in_striker)} transits activate house {striker_h}.",
+                "hi": f"सावधान रहें जब {', '.join(malefics_in_striker)} भाव {striker_h} को सक्रिय करें।"
+            }
+        })
+    return results
+
+
+# ============================================================
+# ACTIVE vs PASSIVE RIN (Karmic Debt Activation)
+# ============================================================
+
+# Map each rin type to its "home house" — if a malefic occupies this house, rin is active
+_RIN_ACTIVATION_HOUSE: Dict[str, int] = {
+    "Pitru Rin":    9,   # Father/ancestor house
+    "Matru Rin":    4,   # Mother house
+    "Sva Rin":      1,   # Self house
+    "Bhratri Rin":  3,   # Siblings house
+    "Stri Rin":     7,   # Spouse house
+    "Guru Rin":     9,   # Teacher/fortune house
+    "Dev Rin":      5,   # Piety / past merit house
+    "Rishi Rin":    12,  # Liberation / spirituality house
+    "Nag Rin":      8,   # Hidden/serpent house
+}
+
+def enrich_debts_active_passive(
+    debts: List[Dict[str, Any]],
+    planet_positions: List[Dict[str, Any]],
+) -> List[Dict[str, Any]]:
+    """
+    Takes raw karmic debts and adds 'activation_status': 'active' | 'passive' | 'latent'.
+    Active = house related to debt has a malefic planet in the natal chart.
+    Passive = debt exists but house is occupied by benefic or empty.
+    Latent = debt not triggered yet.
+    """
+    house_to_planets: Dict[int, List[str]] = {}
+    for p in planet_positions:
+        name = p.get("planet")
+        house = p.get("house")
+        if name and isinstance(house, int):
+            house_to_planets.setdefault(house, []).append(name)
+
+    enriched = []
+    for debt in debts:
+        debt_name_en = debt.get("name", {}).get("en", "")
+        activation_house = next(
+            (v for k, v in _RIN_ACTIVATION_HOUSE.items() if k in debt_name_en or debt_name_en in k),
+            None
+        )
+        if activation_house is None:
+            debt["activation_status"] = "latent"
+            debt["activation_house"] = None
+        else:
+            house_planets = house_to_planets.get(activation_house, [])
+            has_malefic = any(p in _MALEFIC_SET for p in house_planets)
+            has_benefic = any(p in _BENEFIC_SET for p in house_planets)
+            if has_malefic:
+                status = "active"
+                urgency_en = "URGENT — this debt is actively manifesting. Remedy immediately."
+                urgency_hi = "तत्काल — यह ऋण सक्रिय रूप से प्रकट हो रहा है। तुरंत उपाय करें।"
+            elif has_benefic or house_planets:
+                status = "passive"
+                urgency_en = "Latent — this debt exists but is not acutely activated. Preventive remedy advised."
+                urgency_hi = "सुप्त — यह ऋण मौजूद है लेकिन तीव्र नहीं। निवारक उपाय करें।"
+            else:
+                status = "passive"
+                urgency_en = "House empty — debt is dormant. May activate during relevant dashas/transits."
+                urgency_hi = "भाव खाली — ऋण सुप्त है। संबंधित दशा/गोचर में सक्रिय हो सकता है।"
+            debt["activation_status"] = status
+            debt["activation_house"] = activation_house
+            debt["activation_urgency"] = {"en": urgency_en, "hi": urgency_hi}
+        enriched.append(debt)
+    return enriched

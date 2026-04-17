@@ -26,6 +26,9 @@ from app.lalkitab_advanced import (
     calculate_bunyaad,
     calculate_takkar,
     calculate_enemy_presence,
+    calculate_dhoka,
+    calculate_achanak_chot,
+    enrich_debts_active_passive,
 )
 from app.lalkitab_interpretations import (
     get_all_interpretations_for_chart,
@@ -1653,3 +1656,217 @@ def remove_family_link(
         raise HTTPException(status_code=404, detail="Link not found")
     db.commit()
     return {"status": "unlinked"}
+
+
+# ═══════════════════════════════════════════════════════════════════
+# VASTU DIRECTIONAL DIAGNOSIS (Makaan)
+# ═══════════════════════════════════════════════════════════════════
+
+@router.get("/api/lalkitab/vastu/{kundli_id}")
+def get_vastu_diagnosis_route(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Vastu home-layout diagnosis from LK planet positions."""
+    from app.lalkitab_vastu import get_vastu_diagnosis
+    positions, _ = _get_lk_positions(kundli_id, user["sub"], db)
+    return get_vastu_diagnosis(positions)
+
+
+# ═══════════════════════════════════════════════════════════════════
+# 7-YEAR SUB-CYCLE
+# ═══════════════════════════════════════════════════════════════════
+
+@router.get("/api/lalkitab/seven-year-cycle/{kundli_id}")
+def get_seven_year_cycle_route(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Return the active 7-year sub-cycle for a kundli."""
+    from app.lalkitab_milestones import get_seven_year_cycle
+    positions, row = _get_lk_positions(kundli_id, user["sub"], db)
+    birth_date_str = row.get("birth_date", "")
+    try:
+        from datetime import date
+        bdate = _date.fromisoformat(birth_date_str)
+        current_age = (date.today() - bdate).days // 365
+    except Exception:
+        current_age = 30
+    return get_seven_year_cycle(current_age, positions)
+
+
+# ═══════════════════════════════════════════════════════════════════
+# DHOKA (DECEPTION) + ACHANAK CHOT (SUDDEN STRIKE)
+# ═══════════════════════════════════════════════════════════════════
+
+@router.get("/api/lalkitab/relationship-engine/{kundli_id}")
+def get_relationship_engine(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Returns Takkar, Dhoka, Achanak Chot, and Bunyaad analysis."""
+    from app.lalkitab_advanced import calculate_takkar, calculate_bunyaad, calculate_dhoka, calculate_achanak_chot
+    positions, _ = _get_lk_positions(kundli_id, user["sub"], db)
+    return {
+        "takkar":      calculate_takkar(positions),
+        "dhoka":       calculate_dhoka(positions),
+        "achanak_chot": calculate_achanak_chot(positions),
+        "bunyaad":     calculate_bunyaad(positions),
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════
+# ACTIVE vs PASSIVE RIN
+# ═══════════════════════════════════════════════════════════════════
+
+@router.get("/api/lalkitab/rin-active/{kundli_id}")
+def get_active_rin(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Returns karmic debts with active/passive activation status."""
+    from app.lalkitab_advanced import calculate_karmic_debts, enrich_debts_active_passive
+    positions, _ = _get_lk_positions(kundli_id, user["sub"], db)
+    debts = calculate_karmic_debts(positions)
+    return {"debts": enrich_debts_active_passive(debts, positions)}
+
+
+# ═══════════════════════════════════════════════════════════════════
+# 43-DAY REMEDY TRACKER
+# ═══════════════════════════════════════════════════════════════════
+
+@router.get("/api/lalkitab/remedy-tracker/{kundli_id}")
+def list_remedy_trackers(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """List all remedy trackers for a kundli."""
+    rows = db.execute(
+        "SELECT * FROM remedy_trackers WHERE user_id = %s AND kundli_id = %s ORDER BY created_at DESC",
+        (user["sub"], kundli_id),
+    ).fetchall()
+    result = []
+    for r in rows:
+        try:
+            check_ins = json.loads(r["check_ins"]) if r["check_ins"] else []
+        except Exception:
+            check_ins = []
+        result.append({
+            "id": r["id"],
+            "remedy_title": r["remedy_title"],
+            "remedy_description": r["remedy_description"],
+            "planet": r["planet"],
+            "started_at": str(r["started_at"]),
+            "target_days": r["target_days"],
+            "completed_days": r["completed_days"],
+            "check_ins": check_ins,
+            "status": r["status"],
+            "progress_pct": round(r["completed_days"] / r["target_days"] * 100) if r["target_days"] > 0 else 0,
+        })
+    return {"trackers": result}
+
+
+@router.post("/api/lalkitab/remedy-tracker/{kundli_id}")
+def create_remedy_tracker(
+    kundli_id: str,
+    payload: dict,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Start a new 43-day remedy tracker."""
+    title = payload.get("remedy_title", "").strip()
+    if not title:
+        raise HTTPException(status_code=400, detail="remedy_title required")
+    # Verify kundli ownership
+    k = db.execute("SELECT id FROM kundlis WHERE id = %s AND user_id = %s", (kundli_id, user["sub"])).fetchone()
+    if not k:
+        raise HTTPException(status_code=404, detail="Kundli not found")
+    from datetime import date as _date_cls
+    started_at = payload.get("started_at") or str(_date_cls.today())
+    row = db.execute(
+        """INSERT INTO remedy_trackers
+           (user_id, kundli_id, remedy_title, remedy_description, planet, started_at, target_days)
+           VALUES (%s, %s, %s, %s, %s, %s, %s)
+           RETURNING id""",
+        (user["sub"], kundli_id, title,
+         payload.get("remedy_description", ""),
+         payload.get("planet"),
+         started_at,
+         int(payload.get("target_days", 43))),
+    ).fetchone()
+    db.commit()
+    return {"tracker_id": row["id"], "status": "created"}
+
+
+@router.post("/api/lalkitab/remedy-tracker/{tracker_id}/checkin")
+def checkin_remedy_tracker(
+    tracker_id: str,
+    payload: dict,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """
+    Mark today as completed for a tracker.
+    If 'missed' is True in payload, status becomes 'broken' and completed_days resets.
+    """
+    from datetime import date as _date_cls
+    today = str(_date_cls.today())
+    row = db.execute(
+        "SELECT * FROM remedy_trackers WHERE id = %s AND user_id = %s",
+        (tracker_id, user["sub"]),
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Tracker not found")
+    if row["status"] not in ("active", "paused"):
+        raise HTTPException(status_code=400, detail=f"Tracker is {row['status']} — cannot check in")
+    try:
+        check_ins = json.loads(row["check_ins"]) if row["check_ins"] else []
+    except Exception:
+        check_ins = []
+    missed = payload.get("missed", False)
+    if missed:
+        # Missed day = reset to broken
+        db.execute(
+            "UPDATE remedy_trackers SET status='broken', completed_days=0, check_ins='[]', updated_at=NOW() WHERE id=%s",
+            (tracker_id,),
+        )
+        db.commit()
+        return {"status": "broken", "message": "Remedy chain broken — reset to day 0. Start again with fresh resolve."}
+    if today not in check_ins:
+        check_ins.append(today)
+    completed = len(check_ins)
+    new_status = "completed" if completed >= row["target_days"] else "active"
+    db.execute(
+        "UPDATE remedy_trackers SET completed_days=%s, check_ins=%s, status=%s, updated_at=NOW() WHERE id=%s",
+        (completed, json.dumps(check_ins), new_status, tracker_id),
+    )
+    db.commit()
+    return {
+        "status": new_status,
+        "completed_days": completed,
+        "target_days": row["target_days"],
+        "progress_pct": round(completed / row["target_days"] * 100),
+        "days_remaining": max(0, row["target_days"] - completed),
+    }
+
+
+@router.delete("/api/lalkitab/remedy-tracker/{tracker_id}")
+def delete_remedy_tracker(
+    tracker_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Delete a remedy tracker."""
+    row = db.execute(
+        "DELETE FROM remedy_trackers WHERE id=%s AND user_id=%s RETURNING id",
+        (tracker_id, user["sub"]),
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Tracker not found")
+    db.commit()
+    return {"status": "deleted"}

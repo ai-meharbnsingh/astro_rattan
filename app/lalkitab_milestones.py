@@ -75,6 +75,15 @@ LK_MILESTONES: List[Dict[str, Any]] = [
         }
     },
     {
+        "age": 34, "theme": "crisis",    "ruler": "Rahu",
+        "theme_en": "Karmic Crisis Point",     "theme_hi": "कर्मिक संकट बिंदु",
+        "icon": "🌑",
+        "description": {
+            "en": "Rahu's shadow falls at age 34 — a pivotal test of ego and ambition. Shortcuts taken before this age now demand payment. Sudden reversals are common. Stay grounded.",
+            "hi": "राहु की छाया 34 वर्ष में पड़ती है — अहंकार और महत्वाकांक्षा की परीक्षा। इससे पहले लिए शॉर्टकट अब भुगतान मांगते हैं। स्थिर रहें।"
+        }
+    },
+    {
         "age": 48, "theme": "property",  "ruler": "Saturn",
         "theme_en": "Property & Legacy",      "theme_hi": "संपत्ति और विरासत",
         "icon": "🏠",
@@ -302,4 +311,99 @@ def calculate_age_milestones(
         "birth_date": birth_date,
         "next_milestone": next_milestone,
         "milestones": milestone_list,
+    }
+
+
+# ============================================================
+# 7-YEAR SUB-CYCLE (Health & Household Changes)
+# ============================================================
+
+# Lal Kitab 7-year sub-cycles: each cycle activates a different life domain
+_SEVEN_YEAR_CYCLE: List[Dict[str, Any]] = [
+    {"cycle": 1, "years": (0, 7),   "domain_en": "Foundation & Identity",    "domain_hi": "नींव और पहचान",    "ruler": "Sun",     "icon": "☀️",
+     "focus_en": "Health resilience, physical foundation, early identity formation.",
+     "focus_hi": "स्वास्थ्य लचीलापन, शारीरिक नींव, प्रारंभिक पहचान निर्माण।"},
+    {"cycle": 2, "years": (7, 14),  "domain_en": "Education & Communication", "domain_hi": "शिक्षा और संचार",  "ruler": "Mercury", "icon": "📚",
+     "focus_en": "Learning, sibling bonds, short travel, mental development.",
+     "focus_hi": "सीखना, भाई-बहन के बंधन, छोटी यात्राएं, मानसिक विकास।"},
+    {"cycle": 3, "years": (14, 21), "domain_en": "Desire & Attraction",       "domain_hi": "इच्छा और आकर्षण", "ruler": "Venus",   "icon": "💕",
+     "focus_en": "Romantic awakening, creative expression, social identity.",
+     "focus_hi": "रोमांटिक जागृति, रचनात्मक अभिव्यक्ति, सामाजिक पहचान।"},
+    {"cycle": 4, "years": (21, 28), "domain_en": "Action & Career Launch",    "domain_hi": "कर्म और करियर",   "ruler": "Mars",    "icon": "⚡",
+     "focus_en": "Career initiation, physical strength peak, ambition and courage tested.",
+     "focus_hi": "करियर की शुरुआत, शारीरिक शक्ति का शिखर, महत्वाकांक्षा और साहस की परीक्षा।"},
+    {"cycle": 5, "years": (28, 35), "domain_en": "Fortune & Expansion",       "domain_hi": "भाग्य और विस्तार", "ruler": "Jupiter", "icon": "🌟",
+     "focus_en": "Wisdom, children, wealth expansion, fortune gate opens.",
+     "focus_hi": "ज्ञान, संतान, धन विस्तार, भाग्य का द्वार खुलता है।"},
+    {"cycle": 6, "years": (35, 42), "domain_en": "Karma & Responsibility",    "domain_hi": "कर्म और जिम्मेदारी","ruler": "Saturn",  "icon": "⚖️",
+     "focus_en": "Karmic debts mature, chronic health issues surface, responsibilities peak.",
+     "focus_hi": "कर्मिक ऋण परिपक्व होते हैं, पुरानी स्वास्थ्य समस्याएं उभरती हैं।"},
+    {"cycle": 7, "years": (42, 49), "domain_en": "Intuition & Legacy",        "domain_hi": "अंतर्ज्ञान और विरासत","ruler": "Moon",   "icon": "🌙",
+     "focus_en": "Emotional maturity, property decisions, ancestral patterns surface.",
+     "focus_hi": "भावनात्मक परिपक्वता, संपत्ति निर्णय, पैतृक पैटर्न उभरते हैं।"},
+    {"cycle": 8, "years": (49, 56), "domain_en": "Hidden Wisdom",             "domain_hi": "छिपा ज्ञान",       "ruler": "Ketu",    "icon": "🔮",
+     "focus_en": "Spiritual evolution, detachment, occult insights, liberation path.",
+     "focus_hi": "आध्यात्मिक विकास, वैराग्य, रहस्यमय अंतर्दृष्टि, मुक्ति का मार्ग।"},
+    {"cycle": 9, "years": (56, 63), "domain_en": "Transformation",            "domain_hi": "रूपांतरण",          "ruler": "Rahu",    "icon": "🌑",
+     "focus_en": "Identity dissolution, sudden reversals, shadow work.",
+     "focus_hi": "पहचान का विघटन, अचानक उलटफेर, छाया कार्य।"},
+    {"cycle": 10, "years": (63, 70), "domain_en": "Mastery & Completion",     "domain_hi": "महारत और पूर्णता",  "ruler": "Sun",    "icon": "🌅",
+     "focus_en": "Final mastery, legacy solidification, reviewing life's purpose.",
+     "focus_hi": "अंतिम महारत, विरासत सुदृढ़ीकरण, जीवन के उद्देश्य की समीक्षा।"},
+]
+
+
+def get_seven_year_cycle(current_age: int, planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    Returns the active 7-year sub-cycle, adjacent cycles, and ruler quality for current age.
+    """
+    p_map = {p["planet"]: p["house"] for p in planet_positions if p.get("planet") and isinstance(p.get("house"), int)}
+
+    active_cycle = None
+    next_cycle = None
+    prev_cycle = None
+
+    for i, cycle in enumerate(_SEVEN_YEAR_CYCLE):
+        start, end = cycle["years"]
+        if start <= current_age < end:
+            active_cycle = cycle
+            if i > 0:
+                prev_cycle = _SEVEN_YEAR_CYCLE[i - 1]
+            if i < len(_SEVEN_YEAR_CYCLE) - 1:
+                next_cycle = _SEVEN_YEAR_CYCLE[i + 1]
+            break
+
+    if not active_cycle:
+        # Beyond known cycles — use modulo
+        cycle_num = (current_age // 7) % len(_SEVEN_YEAR_CYCLE)
+        active_cycle = _SEVEN_YEAR_CYCLE[cycle_num]
+
+    # Ruler quality
+    ruler = active_cycle["ruler"]
+    ruler_house = p_map.get(ruler)
+    years_into_cycle = current_age - active_cycle["years"][0]
+    years_remaining = active_cycle["years"][1] - current_age
+
+    return {
+        "current_age": current_age,
+        "active_cycle": {
+            "cycle_number": active_cycle["cycle"],
+            "age_range": list(active_cycle["years"]),
+            "domain": {"en": active_cycle["domain_en"], "hi": active_cycle["domain_hi"]},
+            "ruler": ruler,
+            "ruler_house": ruler_house,
+            "icon": active_cycle["icon"],
+            "focus": {"en": active_cycle["focus_en"], "hi": active_cycle["focus_hi"]},
+            "years_into_cycle": years_into_cycle,
+            "years_remaining": years_remaining,
+        },
+        "previous_cycle": {
+            "domain": {"en": prev_cycle["domain_en"], "hi": prev_cycle["domain_hi"]},
+            "ruler": prev_cycle["ruler"],
+        } if prev_cycle else None,
+        "next_cycle": {
+            "domain": {"en": next_cycle["domain_en"], "hi": next_cycle["domain_hi"]},
+            "ruler": next_cycle["ruler"],
+            "starts_at_age": next_cycle["years"][0],
+        } if next_cycle else None,
     }

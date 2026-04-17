@@ -117,6 +117,18 @@ CREATE TABLE IF NOT EXISTS kundlis (
 CREATE INDEX IF NOT EXISTS idx_kundlis_user ON kundlis(user_id);
 CREATE INDEX IF NOT EXISTS idx_kundlis_client ON kundlis(client_id);
 
+-- Lal Kitab Family Links (Grah-Gasti)
+CREATE TABLE IF NOT EXISTS lal_kitab_family_links (
+    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+    owner_kundli_id TEXT NOT NULL REFERENCES kundlis(id) ON DELETE CASCADE,
+    member_kundli_id TEXT NOT NULL REFERENCES kundlis(id) ON DELETE CASCADE,
+    relation TEXT NOT NULL,
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE(owner_kundli_id, member_kundli_id)
+);
+CREATE INDEX IF NOT EXISTS idx_lk_family_owner ON lal_kitab_family_links(owner_kundli_id);
+
 -- Horoscopes
 CREATE TABLE IF NOT EXISTS horoscopes (
     id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
@@ -354,6 +366,25 @@ CREATE TABLE IF NOT EXISTS applied_migrations (
     description TEXT NOT NULL,
     applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- Lal Kitab 43-Day Remedy Tracker
+CREATE TABLE IF NOT EXISTS remedy_trackers (
+    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    kundli_id TEXT REFERENCES kundlis(id) ON DELETE SET NULL,
+    remedy_title TEXT NOT NULL,
+    remedy_description TEXT,
+    planet TEXT,
+    started_at DATE NOT NULL,
+    target_days INTEGER NOT NULL DEFAULT 43,
+    completed_days INTEGER NOT NULL DEFAULT 0,
+    check_ins TEXT DEFAULT '[]',
+    status TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active','completed','broken','paused')),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_remedy_trackers_user ON remedy_trackers(user_id);
+CREATE INDEX IF NOT EXISTS idx_remedy_trackers_status ON remedy_trackers(user_id, status);
 """
 
 def init_db():
