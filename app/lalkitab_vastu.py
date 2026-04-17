@@ -118,8 +118,8 @@ _VASTU_PLANET_RULES: Dict[str, Dict[int, Dict[str, str]]] = {
     },
     "Jupiter": {
         10: {
-            "warning_en": "CRITICAL: Jupiter in 10th — do NOT install a temple or shrine inside the home. It will ruin career. External prayer only.",
-            "warning_hi": "महत्वपूर्ण: गुरु 10वें में — घर के अंदर मंदिर या मूर्ति स्थापित न करें। यह करियर नष्ट करेगा। बाहरी पूजा करें।",
+            "warning_en": "CRITICAL: Jupiter in 10th — do NOT install a temple or shrine inside the home. Elevated tendency toward career setbacks when home houses an active shrine. External prayer only.",
+            "warning_hi": "महत्वपूर्ण: गुरु 10वें में — घर के अंदर मंदिर या मूर्ति स्थापित न करें। घर में सक्रिय मंदिर होने से करियर में विघ्न की प्रवृत्ति बढ़ती है। बाहरी पूजा करें।",
             "fix_en": "If you have an indoor temple, move it outside or to a nearby temple. Keep North zone (career) free of religious idols.",
             "fix_hi": "यदि घर में मंदिर है, उसे बाहर या पास के मंदिर में स्थानांतरित करें। उत्तर क्षेत्र (करियर) को धार्मिक मूर्तियों से मुक्त रखें।",
         },

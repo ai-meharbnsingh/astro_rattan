@@ -977,12 +977,13 @@ LK_VALIDATED_REMEDIES: Dict[str, Dict[str, Any]] = {
         "condition": None,
         "procedure_en": (
             "Float a whole coconut in flowing water (river or stream) on Saturday. "
-            "Store water in the southwest corner of your home. Keep fennel (saunf) "
+            "Keep a solid silver square piece in your pocket and fennel (saunf) "
             "under your pillow while sleeping."
         ),
         "procedure_hi": (
-            "शनिवार को बहते पानी (नदी या नाले) में पूरा नारियल प्रवाहित करें। घर के दक्षिण-पश्चिम "
-            "कोने में पानी रखें। सोते समय सौंफ तकिए के नीचे रखें।"
+            "शनिवार को बहते पानी (नदी या नाले) में पूरा नारियल प्रवाहित करें। "
+            "जेब में चांदी का ठोस चौकोर टुकड़ा रखें और सोते समय सौंफ तकिए के "
+            "नीचे रखें।"
         ),
         "validated": True,
     },
@@ -1098,12 +1099,15 @@ def get_all_interpretations_for_chart(
     Returns:
         List of interpretation dicts for each planet in its house.
     """
+    from app.lalkitab_source_tags import source_of
+    src = source_of("get_all_interpretations_for_chart")  # LK_CANONICAL
     results = []
     for pos in planet_positions:
         planet = pos.get("planet", "")
         house = pos.get("house", 0)
         interp = get_lk_house_interpretation(planet, house)
         if interp:
+            interp.setdefault("source", src)
             results.append(interp)
     return results
 

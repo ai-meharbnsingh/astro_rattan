@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
+import { pickLang } from '@/components/lalkitab/safe-render';
 import { useLalKitab } from './LalKitabContext';
 import { LayoutGrid, AlertTriangle, CheckCircle, Sparkles, Clock } from 'lucide-react';
 
@@ -141,7 +142,7 @@ export default function LalKitabDashboardTab({ onNavigateTab }: { onNavigateTab?
               <div key={`${r.planet}-${r.lk_house}`} className="rounded-xl border border-border/40 bg-card p-4">
                 <div className="flex items-center justify-between gap-2">
                   <div className="text-sm font-semibold text-foreground">
-                    {isHi ? (r.planet_hi || r.planet) : r.planet} · {isHi ? `भाव ${r.lk_house}` : `H${r.lk_house}`}
+                    {isHi ? (r.planet_hi || (typeof r.planet === 'string' ? r.planet : pickLang(r.planet, false))) : (typeof r.planet === 'string' ? r.planet : pickLang(r.planet, false))} · {isHi ? `भाव ${r.lk_house}` : `H${r.lk_house}`}
                   </div>
                   {r.urgency && (
                     <span className={`text-[10px] px-2 py-0.5 rounded-full border font-bold ${

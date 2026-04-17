@@ -115,7 +115,9 @@ function getPlanetLabel(p: PlanetData, lang?: string): string {
   const abbrMap = lang === 'hi' ? PLANET_ABBREVIATIONS_HI : PLANET_ABBREVIATIONS;
   const abbr = abbrMap[p.planet] || PLANET_ABBREVIATIONS[p.planet] || p.planet.slice(0, 2);
   let suffix = '';
-  const s = p.status?.toLowerCase() || '';
+  // Safely handle bilingual status objects
+  const statusStr = typeof p.status === 'string' ? p.status : (p.status ? pickLang(p.status, false) : '');
+  const s = statusStr?.toLowerCase() || '';
   if (p.is_retrograde || s.includes('retrograde')) suffix += '*';
   if (p.is_combust || s.includes('combust')) suffix += '^';
   if (p.is_vargottama || s.includes('vargottama')) suffix += '\u25A1';
@@ -124,13 +126,15 @@ function getPlanetLabel(p: PlanetData, lang?: string): string {
   return abbr + suffix;
 }
 
-function getStrength(status: string, t?: (k: string) => string): { label: string; color: string } {
-  const s = status?.toLowerCase() || '';
+function getStrength(status: any, t?: (k: string) => string): { label: string; color: string } {
+  // Safely handle bilingual status objects
+  const statusStr = typeof status === 'string' ? status : (status ? pickLang(status, false) : '');
+  const s = statusStr?.toLowerCase() || '';
   const tr = t || ((k: string) => k);
   if (s.includes('exalted')) return { label: tr('planet.exalted'), color: '#22C55E' };
   if (s.includes('debilitated')) return { label: tr('planet.debilitated'), color: '#EF4444' };
   if (s.includes('own')) return { label: tr('planet.ownSign'), color: '#3B82F6' };
-  return { label: status || tr('planet.transiting'), color: '#6B5B4F' };
+  return { label: statusStr || tr('planet.transiting'), color: '#6B5B4F' };
 }
 
 /*
@@ -734,7 +738,10 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
         <div className="space-y-1.5">
           <div className="font-bold text-sacred-gold text-sm">{t(`planet.${p.planet}`)}</div>
           <div className="text-sm text-foreground">
-            {ZODIAC_NUMBERS[p.sign] || ''} {p.sign} {p.sign_degree?.toFixed(1)}&deg;
+            {(() => {
+              const signStr = typeof p.sign === 'string' ? p.sign : (p.sign ? pickLang(p.sign, false) : '');
+              return `${ZODIAC_NUMBERS[signStr] || ''} ${signStr} ${p.sign_degree?.toFixed(1)}°`;
+            })()}
           </div>
           <div className="text-sm text-foreground">{t('table.nakshatra')}: {typeof p.nakshatra === 'string' ? p.nakshatra : (p.nakshatra ? pickLang(p.nakshatra, false) : '') || t('common.noData')}</div>
           <div className="text-sm text-foreground">{t('table.house')}: {p.house}</div>

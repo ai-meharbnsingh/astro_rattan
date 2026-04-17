@@ -107,10 +107,21 @@ def calculate_chalti_gaadi(planet_positions: List[Dict[str, Any]]) -> Dict[str, 
         interp_hi = f"इंजन {engine} और यात्री {passenger} शत्रु हैं — प्रयास परिणाम नहीं देते। यात्रा अवरुद्ध है।"
         rules.append({"rule": "enemy_engine_passenger", "applies": True, "note": {"en": "Conflicts between initiative and partnership delay progress.", "hi": "पहल और साझेदारी के बीच संघर्ष प्रगति में देरी करता है।"}})
     elif engine and brakes and is_enemy(engine, brakes):
-        train_status = "dangerous"
-        interp_en = f"Engine {engine} is blocked by Brakes {brakes} — enemies in 1st and 8th cause sudden accidents or health crises."
-        interp_hi = f"इंजन {engine} ब्रेक {brakes} से अवरुद्ध है — 1st और 8th में शत्रु अचानक दुर्घटना या स्वास्थ्य संकट का कारण।"
-        rules.append({"rule": "enemy_engine_brakes", "applies": True, "note": {"en": "High accident and health risk. Avoid rash decisions.", "hi": "उच्च दुर्घटना और स्वास्थ्य जोखिम।"}})
+        # Codex R4-P3: "dangerous" is absolute/alarmist — use "unstable"
+        # so the signal is read as a stabilisation need, not a verdict.
+        train_status = "unstable"
+        interp_en = (
+            f"Engine {engine} is blocked by Brakes {brakes} — enemies in 1st and 8th "
+            f"indicate an elevated tendency toward sudden disruption; needs stabilization."
+        )
+        interp_hi = (
+            f"इंजन {engine} ब्रेक {brakes} से अवरुद्ध है — 1st और 8th में शत्रुता से अचानक "
+            f"व्यवधान की प्रवृत्ति बढ़ती है; स्थिरीकरण की आवश्यकता है।"
+        )
+        rules.append({"rule": "enemy_engine_brakes", "applies": True, "note": {
+            "en": "Elevated tendency toward sudden disruption — needs stabilization. Avoid rash decisions.",
+            "hi": "अचानक व्यवधान की प्रवृत्ति — स्थिरीकरण की आवश्यकता। उतावले निर्णयों से बचें।"
+        }})
     elif engine and passenger and is_friend(engine, passenger):
         train_status = "smooth"
         interp_en = f"Engine {engine} and Passenger {passenger} are friends — life progresses naturally, efforts bring results, partnerships are harmonious."
@@ -133,6 +144,7 @@ def calculate_chalti_gaadi(planet_positions: List[Dict[str, Any]]) -> Dict[str, 
     if passenger and brakes and is_friend(passenger, brakes):
         rules.append({"rule": "friend_passenger_brakes", "applies": True, "note": {"en": "Partnerships survive shocks — brakes are gentle.", "hi": "साझेदारी झटकों से बचती है।"}})
 
+    from app.lalkitab_source_tags import source_of
     return {
         "engine":     {"planet": engine, "house": 1} if engine else None,
         "passenger":  {"planet": passenger, "house": 7} if passenger else None,
@@ -140,6 +152,7 @@ def calculate_chalti_gaadi(planet_positions: List[Dict[str, Any]]) -> Dict[str, 
         "train_status": train_status,
         "interpretation": {"en": interp_en, "hi": interp_hi},
         "specific_rules": rules,
+        "source": source_of("calculate_chalti_gaadi"),  # PRODUCT
     }
 
 

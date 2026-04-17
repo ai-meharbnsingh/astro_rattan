@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
+import { pickLang } from '@/components/lalkitab/safe-render';
 import { AlertTriangle, HelpCircle, Lightbulb, Sparkles, Loader2, ChevronDown, ChevronUp, Clock, ShieldCheck, BadgeCheck } from 'lucide-react';
 
 interface Props {
@@ -77,10 +78,10 @@ function RemedyCard({ r, isHi }: { r: EnrichedRemedy; isHi: boolean }) {
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2 mb-0.5">
             <span className="font-semibold text-sm text-foreground">
-              {isHi ? r.planet_hi : r.planet}
+              {isHi ? r.planet_hi : (typeof r.planet === 'string' ? r.planet : pickLang(r.planet, false))}
             </span>
             <span className="text-xs text-muted-foreground">
-              {isHi ? `भाव ${r.lk_house}` : `H${r.lk_house}`} · {r.sign}
+              {isHi ? `भाव ${r.lk_house}` : `H${r.lk_house}`} · {typeof r.sign === 'string' ? r.sign : pickLang(r.sign, false)}
             </span>
             <span className={`ml-auto text-xs px-2 py-0.5 rounded-full border font-medium ${badge}`}>
               {urgencyLabel}

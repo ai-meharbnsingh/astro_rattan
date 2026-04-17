@@ -22,8 +22,15 @@ DUSTHANA_HOUSES = [6, 8, 12]
 KARMIC_DEBT_MIN_MALEFICS = 2
 KARMIC_DEBT_HIGH_MALEFICS = 3
 
-MANGAL_DOSH_HOUSES = [1, 4, 7, 8, 12]
-MANGAL_DOSH_HIGH_HOUSES = [7, 8]
+# ─── Mangal Dosh — LK 1952 vs Vedic variants ────────────────────────
+# Strict Lal Kitab rule: Mars in H1, H7, or H8 only.
+# The Vedic/Parashari overlay additionally flags H2, H4, and H12 but
+# those are NOT part of the LK 1952 canon (per Codex audit).
+MANGAL_DOSH_LK_HOUSES        = [1, 7, 8]          # LK 1952 canon
+MANGAL_DOSH_VEDIC_OVERLAY    = [2, 4, 12]         # flagged but tagged source="vedic_influenced"
+MANGAL_DOSH_HIGH_HOUSES      = [7, 8]
+# Backwards-compat alias (still referenced by older callers/tests).
+MANGAL_DOSH_HOUSES = MANGAL_DOSH_LK_HOUSES + MANGAL_DOSH_VEDIC_OVERLAY
 
 
 def detect_lalkitab_doshas(planet_positions: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -159,16 +166,30 @@ def detect_lalkitab_doshas(planet_positions: List[Dict[str, Any]]) -> List[Dict[
     })
 
     # ── 3. Mangal Dosh ──
-    # Mars in houses 1, 4, 7, 8, or 12
-    mangal_detected = mars_h in MANGAL_DOSH_HOUSES
+    # Strict LK 1952 rule: Mars in H1, H7, or H8. Vedic-influenced
+    # overlay (H2/H4/H12) is still surfaced but tagged so callers can
+    # filter it out of Lal Kitab output. Codex audit: H4 Mars alone is
+    # NOT standard LK Mangal Dosh.
+    is_lk_mangal     = mars_h in MANGAL_DOSH_LK_HOUSES
+    is_vedic_mangal  = mars_h in MANGAL_DOSH_VEDIC_OVERLAY
+    mangal_detected  = is_lk_mangal or is_vedic_mangal
+    mangal_source    = (
+        "LK_CANONICAL"     if is_lk_mangal
+        else "vedic_influenced" if is_vedic_mangal
+        else "none"
+    )
     results.append({
         "key": "mangalDosh",
         "name_en": "Mangal Dosh",
         "name_hi": "\u092e\u0902\u0917\u0932 \u0926\u094b\u0937",
         "detected": mangal_detected,
+        "is_lk_canonical": is_lk_mangal,
+        "is_vedic_influenced": is_vedic_mangal,
+        "source": mangal_source,
         "severity": (
             "high" if mangal_detected and mars_h in MANGAL_DOSH_HIGH_HOUSES
-            else ("medium" if mangal_detected else "low")
+            else ("medium" if is_lk_mangal
+                  else ("low" if is_vedic_mangal else "low"))
         ),
         "description_en": (
             "Mars in a sensitive house creates aggression in relationships, "

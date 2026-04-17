@@ -38,6 +38,13 @@ export default function PalmSVG({ zones, marks, onZoneClick, selectedZone, langu
         d="M 55 45 Q 50 30 42 28 Q 28 26 22 45 Q 16 65 25 85 Q 35 100 50 100"
         fill="#fde8d8" stroke="#d4a896" strokeWidth="1.5"
       />
+      {/* Faint anatomical line guides (heart/head/life/fate) */}
+      <g opacity="0.25" fill="none" stroke="#8b5e3c" strokeWidth="1" strokeLinecap="round">
+        <path d="M 55 108 Q 110 95 195 112" />
+        <path d="M 60 145 Q 110 135 175 160" />
+        <path d="M 85 90 Q 55 150 60 235" />
+        <path d="M 120 265 Q 125 190 122 110" />
+      </g>
 
       {/* Zones */}
       {zones.map((zone) => {
@@ -75,12 +82,13 @@ export default function PalmSVG({ zones, marks, onZoneClick, selectedZone, langu
               className="cursor-pointer transition-all hover:fill-current"
               onClick={() => onZoneClick(zone.zone_id)}
             />
-            <text x={zone.svg_cx} y={zone.svg_cy - 3} textAnchor="middle"
-              fontSize="7" fill={color} fontWeight="bold" className="pointer-events-none">
-              {(zone.planet ?? '').replace('_inner', '').replace('_outer', '').replace('_line', '')}
+            <text x={zone.svg_cx} y={zone.svg_cy + 1} textAnchor="middle"
+              fontSize="6.5" fill={color} fontWeight="700" className="pointer-events-none"
+              style={{ letterSpacing: '-0.2px' }}>
+              {(zone.planet ?? '').replace('_inner', ' In').replace('_outer', ' Out').replace('_line', '')}
             </text>
             {zoneMarks.length > 0 && (
-              <text x={zone.svg_cx} y={zone.svg_cy + 9} textAnchor="middle"
+              <text x={zone.svg_cx} y={zone.svg_cy + 10} textAnchor="middle"
                 fontSize="9" fill={color} fontWeight="bold" className="pointer-events-none">
                 {MARK_SYMBOL[zoneMarks[0].mark_type] || '•'}
               </text>

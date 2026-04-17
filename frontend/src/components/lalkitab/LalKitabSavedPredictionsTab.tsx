@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import { Bookmark, Heart, Briefcase, Activity, Coins, Trash2, Loader2 } from 'lucide-react';
+import { pickLang } from './safe-render';
 
 interface Props {
   kundliId: string;
@@ -178,7 +179,7 @@ export default function LalKitabSavedPredictionsTab({ kundliId }: Props) {
                 {pred.note && (
                   <div className="mt-3 pt-3 border-t border-current/10">
                     <p className="text-xs text-gray-500 mb-1">{t('lk.saved.note')}</p>
-                    <p className="text-sm text-foreground/80 italic">"{pred.note}"</p>
+                    <p className="text-sm text-foreground/80 italic">"{pickLang(pred.note, isHi)}"</p>
                   </div>
                 )}
               </div>

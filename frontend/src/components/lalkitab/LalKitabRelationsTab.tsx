@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
+import { pickLang } from '@/components/lalkitab/safe-render';
 import { useLalKitab } from './LalKitabContext';
 import { Users, Eye, AlertTriangle, CheckCircle } from 'lucide-react';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
@@ -148,8 +149,8 @@ export default function LalKitabRelationsTab() {
             </TableHeader>
             <TableBody>
               {sortedAspects.map((entry) => (
-                <TableRow key={entry.planet} className="border-b border-sacred-gold/10">
-                  <TableCell className="py-2 px-3 font-medium text-foreground">{entry.planet}</TableCell>
+                <TableRow key={typeof entry.planet === 'string' ? entry.planet : pickLang(entry.planet, false)} className="border-b border-sacred-gold/10">
+                  <TableCell className="py-2 px-3 font-medium text-foreground">{typeof entry.planet === 'string' ? entry.planet : pickLang(entry.planet, false)}</TableCell>
                   <TableCell className="py-2 px-3 text-muted-foreground">{isNaN(Number(entry.from_house)) ? 0 : entry.from_house}</TableCell>
                   <TableCell className="py-2 px-3 text-muted-foreground">
                     {(entry.aspect_houses || []).map(h => isNaN(Number(h)) ? 0 : h).join(', ')}

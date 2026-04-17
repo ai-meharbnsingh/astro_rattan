@@ -291,13 +291,34 @@ def calculate_masnui_planets(planet_positions: List[Dict[str, Any]]) -> Dict[str
     # Calculate overall psychological profile
     psychological_profile = _calculate_masnui_psychological_profile(results)
     
+    # Codex R4-P4: when no artificial planet forms, emit a positive
+    # explanation instead of a bare "no results" signal. This is a
+    # favourable state in Lal Kitab — the chart runs on natural
+    # planetary behaviour, unmodified by artificial influences.
+    empty_interpretation = None
+    if not results:
+        empty_interpretation = {
+            "en": (
+                "No artificial planetary combinations detected. Chart "
+                "operates on natural planetary behavior — results are "
+                "direct and unmodified by artificial influences. This "
+                "is considered favorable in Lal Kitab."
+            ),
+            "hi": (
+                "कोई कृत्रिम ग्रह-संयोग नहीं बना। कुंडली प्राकृतिक "
+                "ग्रहीय व्यवहार पर चलती है — फल प्रत्यक्ष और कृत्रिम "
+                "प्रभावों से अछूते हैं। लाल किताब में यह शुभ माना जाता है।"
+            ),
+        }
+
     return {
         "masnui_planets": results,
         "house_overrides": house_overrides,
         "affected_houses": sorted(list(all_affected_houses)),
         "psychological_profile": psychological_profile,
         "predictive_notes": predictive_notes,
-        "total_masnui": len(results)
+        "total_masnui": len(results),
+        "empty_interpretation": empty_interpretation,
     }
 
 
@@ -496,6 +517,12 @@ def calculate_karmic_debts(planet_positions: List[Dict[str, Any]]) -> List[Dict[
             "remedy": {"hi": "परिजनों से बराबर धन एकत्र कर ४३ दिनों तक १०० कुत्तों को दूध और ब्रेड खिलाएं।", "en": "Collect equal money from family and feed 100 dogs milk and bread for 43 days."}
         })
 
+    # Stamp every detected debt with its provenance tag. Rin triggers
+    # are direct from the LK 1952 text → LK_CANONICAL.
+    from app.lalkitab_source_tags import source_of
+    src = source_of("calculate_karmic_debts")
+    for d in debts:
+        d.setdefault("source", src)
     return debts
 
 def identify_teva_type(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -1093,6 +1120,23 @@ LK_ENEMIES = {
     "Ketu": {"Moon", "Mars"},
 }
 
+# Canonical LK friendship table per Codex R2-P5 audit.
+# Used by bunyaad to decide truly-strong foundations (friendly planets
+# present) vs merely-not-hostile (neutrals).
+LK_FRIENDS = {
+    "Sun":     {"Moon", "Mars", "Jupiter"},
+    "Moon":    {"Sun", "Mercury"},
+    "Mars":    {"Sun", "Moon", "Jupiter"},
+    "Mercury": {"Sun", "Venus"},
+    "Jupiter": {"Sun", "Moon", "Mars"},
+    "Venus":   {"Mercury", "Saturn"},
+    "Saturn":  {"Mercury", "Venus", "Rahu"},
+    # Rahu/Ketu are not explicitly classified in Codex's list;
+    # we take the reciprocal of Saturn's entry and leave Ketu empty.
+    "Rahu":    {"Saturn"},
+    "Ketu":    set(),
+}
+
 # Bunyaad house = 9th from pakka ghar (precomputed)
 BUNYAAD_HOUSE = {planet: ((ghar - 1 + 8) % 12) + 1 for planet, ghar in PAKKA_GHAR.items()}
 
@@ -1119,40 +1163,73 @@ def calculate_bunyaad(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
 
     all_planet_names = [p["planet"] for p in planet_positions if p.get("planet") in PAKKA_GHAR]
 
+    neutral_foundations: List[str] = []
+    clear_foundations: List[str] = []
+
     for planet_name in all_planet_names:
         pakka = PAKKA_GHAR[planet_name]
         bunyaad_h = BUNYAAD_HOUSE[planet_name]
-        planets_in_bunyaad = house_map.get(bunyaad_h, [])
+        # A planet standing in its own bunyaad does NOT support itself —
+        # exclude self-presence from the foundation check.
+        planets_in_bunyaad = [
+            p for p in house_map.get(bunyaad_h, []) if p != planet_name
+        ]
         enemies = LK_ENEMIES.get(planet_name, set())
+        friends = LK_FRIENDS.get(planet_name, set())
         enemies_in_bunyaad = [p for p in planets_in_bunyaad if p in enemies]
+        friends_in_bunyaad = [p for p in planets_in_bunyaad if p in friends]
+        neutrals_in_bunyaad = [
+            p for p in planets_in_bunyaad
+            if p not in enemies and p not in friends
+        ]
 
+        # Codex R2-P5 rule:
+        #   enemies present  → afflicted
+        #   friends present  → strong  (truly reinforces the foundation)
+        #   only neutrals    → neutral (workable, not reinforcing)
+        #   empty            → clear   (default safe, no interference)
         if enemies_in_bunyaad:
             bunyaad_status = "afflicted"
             collapsed_planets.append(planet_name)
-            enemy_list_en = ", ".join(enemies_in_bunyaad)
-            enemy_list_hi = ", ".join(enemies_in_bunyaad)
+            en_list = ", ".join(enemies_in_bunyaad)
+            hi_list = ", ".join(enemies_in_bunyaad)
             interpretation_en = (
-                f"{planet_name}'s foundation (House {bunyaad_h}) is afflicted by {enemy_list_en}. "
-                f"Despite its own placement, {planet_name}'s results will collapse under enemy pressure."
+                f"{planet_name}'s foundation (House {bunyaad_h}) is afflicted by {en_list}. "
+                f"Despite its own placement, {planet_name}'s results collapse under enemy pressure."
             )
             interpretation_hi = (
-                f"{planet_name} की बुनियाद (भाव {bunyaad_h}) पर दुश्मन {enemy_list_hi} का कब्ज़ा है। "
+                f"{planet_name} की बुनियाद (भाव {bunyaad_h}) पर दुश्मन {hi_list} का कब्ज़ा है। "
                 f"अपनी जगह अच्छी होने के बावजूद {planet_name} के फल नष्ट होंगे।"
             )
-        elif planets_in_bunyaad:
+        elif friends_in_bunyaad:
             bunyaad_status = "strong"
             strong_foundations.append(planet_name)
+            fr_list = ", ".join(friends_in_bunyaad)
             interpretation_en = (
-                f"{planet_name}'s foundation (House {bunyaad_h}) is occupied by friendly/neutral planets. "
-                f"Foundation is strong — {planet_name}'s results are supported."
+                f"{planet_name}'s foundation (House {bunyaad_h}) is reinforced by friendly "
+                f"planet(s) {fr_list}. Foundation is genuinely strong — {planet_name}'s "
+                f"results are actively supported."
             )
             interpretation_hi = (
-                f"{planet_name} की बुनियाद (भाव {bunyaad_h}) में मित्र/सम ग्रह हैं। "
-                f"बुनियाद मज़बूत है — {planet_name} के फल अच्छे रहेंगे।"
+                f"{planet_name} की बुनियाद (भाव {bunyaad_h}) में मित्र ग्रह {fr_list} हैं। "
+                f"बुनियाद वास्तव में मज़बूत है — {planet_name} के फल सक्रिय रूप से समर्थित।"
+            )
+        elif neutrals_in_bunyaad:
+            bunyaad_status = "neutral"
+            neutral_foundations.append(planet_name)
+            ne_list = ", ".join(neutrals_in_bunyaad)
+            interpretation_en = (
+                f"{planet_name}'s foundation (House {bunyaad_h}) has only neutral planet(s) "
+                f"{ne_list} — no enemy pressure, but no active reinforcement either. "
+                f"Foundation is workable, not uplifting."
+            )
+            interpretation_hi = (
+                f"{planet_name} की बुनियाद (भाव {bunyaad_h}) में केवल तटस्थ ग्रह {ne_list} हैं — "
+                f"शत्रुता नहीं, पर सक्रिय समर्थन भी नहीं। बुनियाद टिकाऊ है, पर उत्थानशील नहीं।"
             )
         else:
-            bunyaad_status = "empty"
-            strong_foundations.append(planet_name)
+            bunyaad_status = "clear"
+            clear_foundations.append(planet_name)
             interpretation_en = (
                 f"{planet_name}'s foundation (House {bunyaad_h}) is empty. "
                 f"No enemy interference — foundation is clear by default."
@@ -1167,7 +1244,9 @@ def calculate_bunyaad(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
             "bunyaad_house": bunyaad_h,
             "bunyaad_status": bunyaad_status,
             "planets_in_bunyaad": planets_in_bunyaad,
+            "friends_in_bunyaad": friends_in_bunyaad,
             "enemies_in_bunyaad": enemies_in_bunyaad,
+            "neutrals_in_bunyaad": neutrals_in_bunyaad,
             "interpretation_en": interpretation_en,
             "interpretation_hi": interpretation_hi,
         }
@@ -1176,25 +1255,53 @@ def calculate_bunyaad(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
         "planets": planets_result,
         "collapsed_planets": collapsed_planets,
         "strong_foundations": strong_foundations,
+        "neutral_foundations": neutral_foundations,
+        "clear_foundations": clear_foundations,
     }
 
 
 # ============================================================
-# TAKKAR (COLLISION) ANALYSIS — 1-8 AND 1-6 AXIS
+# TAKKAR (COLLISION) ANALYSIS — LAL KITAB OPPOSITE-AXIS RULE
 # ============================================================
+#
+# Lal Kitab Takkar is strictly across OPPOSITE (7th-from) houses:
+#   H1 ↔ H7   H2 ↔ H8   H3 ↔ H9
+#   H4 ↔ H10  H5 ↔ H11  H6 ↔ H12
+#
+# A takkar is flagged only when two planets sit on the SAME axis —
+# i.e. when |house_a - house_b| == 6.  The "1-8 / 1-6 axis" rule used
+# previously was Vedic-influenced and produced false positives (e.g.
+# Moon H8 vs Rahu H1, which are on DIFFERENT axes).  Severity is
+# determined by the standard LK enemy matrix:
+#   enemies → destructive   friends/neutrals → mild
 
 def calculate_takkar(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
-    Detect all 1-8 axis collisions and 6-1 obstructions between planets.
+    Detect opposite-axis takkar between planets (LK rule).
 
-    Rules:
-    - If planet A is in house H and planet B is in house (H+7)%12, they are in 1-8 takkar.
-    - The planet in the LATER house (8th position from attacker) receives the collision.
-    - If they are enemies, severity = "destructive"; otherwise "mild".
-    - Also checks 1-6 axis: planet in (H+5)%12 from another creates obstruction.
+    Rule: planet A in house H and planet B in house (H+6 mod 12) are on
+    the same LK axis and form a takkar. Each axis pair is reported once.
 
-    Returns collisions list, counts, most attacked planet, and safe planets.
+    Severity is conditional on both the enemy relationship AND the
+    dignity of each planet (Codex audit R2-P3):
+      - enemies + BOTH afflicted (debilitated / in enemy sign)
+                                         → "destructive"
+      - enemies but AT LEAST ONE strong  → "mild friction"
+                                           (Exalted / Own / Friendly)
+      - not LK enemies                   → "philosophical conflict"
+                                           (axis tension, no harm)
     """
+    from app.lalkitab_engine import _get_dignity_label  # local import to avoid cycle
+
+    # Classify a planet as afflicted / strong from its sign.
+    def _affliction_state(planet: str, sign: str) -> str:
+        dignity = _get_dignity_label(planet, sign) if sign else "Neutral"
+        if dignity in ("Debilitated", "Enemy"):
+            return "afflicted"
+        if dignity in ("Exalted", "Own Sign", "Friendly"):
+            return "strong"
+        return "neutral"
+
     collisions: List[Dict[str, Any]] = []
     attack_count: Dict[str, int] = {}
 
@@ -1204,113 +1311,239 @@ def calculate_takkar(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
     for p in all_planets:
         attack_count[p["planet"]] = 0
 
-    # Check all ordered pairs for 1-8 axis
+    # Check unordered pairs; each pair is emitted once with a symmetric axis label.
     for i, pa in enumerate(all_planets):
-        for j, pb in enumerate(all_planets):
-            if i == j:
-                continue
-            ha = pa["house"]
-            hb = pb["house"]
-            if ha is None or hb is None:
+        for j in range(i + 1, len(all_planets)):
+            pb = all_planets[j]
+            ha, hb = pa.get("house"), pb.get("house")
+            if not isinstance(ha, int) or not isinstance(hb, int):
                 continue
 
-            # Check 1-8 axis: is pb in the 8th house from pa?
-            eighth_from_a = ((ha - 1 + 7) % 12) + 1
-            if hb == eighth_from_a:
-                attacker = pa["planet"]
-                receiver = pb["planet"]
-                are_enemies = receiver in LK_ENEMIES.get(attacker, set()) or attacker in LK_ENEMIES.get(receiver, set())
-                severity = "destructive" if are_enemies else "mild"
+            # Opposite-axis rule: houses exactly 6 positions apart.
+            if abs(ha - hb) != 6:
+                continue
 
-                if severity == "destructive":
-                    interp_en = (
-                        f"{attacker} in House {ha} strikes {receiver} in House {hb} (1-8 takkar). "
-                        f"As enemies, {receiver}'s root is uprooted — its significations suffer severely."
-                    )
-                    interp_hi = (
-                        f"{attacker} भाव {ha} से {receiver} भाव {hb} पर टक्कर (1-8 अक्ष)। "
-                        f"दुश्मनी होने से {receiver} की जड़ उखड़ जाती है — इसके फल नष्ट होते हैं।"
-                    )
-                else:
-                    interp_en = (
-                        f"{attacker} in House {ha} collides with {receiver} in House {hb} (1-8 axis). "
-                        f"Not enemies — mild friction, but no root destruction."
-                    )
-                    interp_hi = (
-                        f"{attacker} भाव {ha} से {receiver} भाव {hb} पर टक्कर (1-8 अक्ष)। "
-                        f"दुश्मनी नहीं — हल्का घर्षण, जड़ सुरक्षित।"
-                    )
+            a_name, b_name = pa["planet"], pb["planet"]
+            are_enemies = (
+                b_name in LK_ENEMIES.get(a_name, set())
+                or a_name in LK_ENEMIES.get(b_name, set())
+            )
 
-                collisions.append({
-                    "attacker": attacker,
-                    "attacker_house": ha,
-                    "receiver": receiver,
-                    "receiver_house": hb,
-                    "axis": "1-8",
-                    "are_enemies": are_enemies,
-                    "severity": severity,
-                    "interpretation_en": interp_en,
-                    "interpretation_hi": interp_hi,
-                })
-                attack_count[receiver] = attack_count.get(receiver, 0) + 1
+            # Dignity-aware severity ladder
+            state_a = _affliction_state(a_name, pa.get("sign", ""))
+            state_b = _affliction_state(b_name, pb.get("sign", ""))
+            both_afflicted = state_a == "afflicted" and state_b == "afflicted"
+            any_strong = state_a == "strong" or state_b == "strong"
 
-            # Check 1-6 axis: is pb in the 6th house from pa?
-            sixth_from_a = ((ha - 1 + 5) % 12) + 1
-            if hb == sixth_from_a:
-                attacker = pa["planet"]
-                receiver = pb["planet"]
-                are_enemies = receiver in LK_ENEMIES.get(attacker, set()) or attacker in LK_ENEMIES.get(receiver, set())
-                severity = "destructive" if are_enemies else "mild"
+            if are_enemies and both_afflicted:
+                severity = "destructive"
+            elif are_enemies and any_strong:
+                severity = "mild friction"
+            elif are_enemies:
+                # enemies + both neutral → between destructive & mild
+                severity = "moderate friction"
+            else:
+                severity = "philosophical conflict"
 
-                if severity == "destructive":
-                    interp_en = (
-                        f"{attacker} in House {ha} obstructs {receiver} in House {hb} (1-6 axis). "
-                        f"Enemy obstruction — {receiver} faces persistent obstacles and delays."
-                    )
-                    interp_hi = (
-                        f"{attacker} भाव {ha} से {receiver} भाव {hb} पर रुकावट (1-6 अक्ष)। "
-                        f"दुश्मन बाधा — {receiver} को लगातार रुकावटें और देरी।"
-                    )
-                else:
-                    interp_en = (
-                        f"{attacker} in House {ha} creates friction with {receiver} in House {hb} (1-6 axis). "
-                        f"Not enemies — minor delays, manageable."
-                    )
-                    interp_hi = (
-                        f"{attacker} भाव {ha} से {receiver} भाव {hb} पर हल्की रुकावट (1-6 अक्ष)। "
-                        f"दुश्मनी नहीं — मामूली देरी, सम्भाल सकते हैं।"
-                    )
+            # Axis label is always the lower-numbered house first.
+            low, high = (ha, hb) if ha < hb else (hb, ha)
+            axis_label = f"{low}-{high}"
 
-                collisions.append({
-                    "attacker": attacker,
-                    "attacker_house": ha,
-                    "receiver": receiver,
-                    "receiver_house": hb,
-                    "axis": "1-6",
-                    "are_enemies": are_enemies,
-                    "severity": severity,
-                    "interpretation_en": interp_en,
-                    "interpretation_hi": interp_hi,
-                })
-                attack_count[receiver] = attack_count.get(receiver, 0) + 1
+            if severity == "destructive":
+                interp_en = (
+                    f"{a_name} (H{ha}, {state_a}) and {b_name} (H{hb}, {state_b}) are on the "
+                    f"{axis_label} axis. Both planets are LK enemies AND afflicted — their "
+                    f"significations will actively undermine each other across this axis."
+                )
+                interp_hi = (
+                    f"{a_name} (भाव {ha}, {state_a}) और {b_name} (भाव {hb}, {state_b}) "
+                    f"{axis_label} अक्ष पर शत्रु हैं और दोनों पीड़ित — एक-दूसरे के फलों को "
+                    f"सक्रिय रूप से कमज़ोर करेंगे।"
+                )
+            elif severity == "mild friction":
+                interp_en = (
+                    f"{a_name} (H{ha}, {state_a}) and {b_name} (H{hb}, {state_b}) are LK "
+                    f"enemies on the {axis_label} axis, but at least one is strong — the "
+                    f"strong side largely contains the damage, expect mild friction only."
+                )
+                interp_hi = (
+                    f"{a_name} (भाव {ha}, {state_a}) और {b_name} (भाव {hb}, {state_b}) "
+                    f"{axis_label} अक्ष पर शत्रु हैं, पर एक बली है — बली पक्ष क्षति को "
+                    f"सीमित करता है, केवल हल्का घर्षण अपेक्षित।"
+                )
+            elif severity == "moderate friction":
+                interp_en = (
+                    f"{a_name} (H{ha}) and {b_name} (H{hb}) are LK enemies on the {axis_label} "
+                    f"axis, both in neutral dignity — workable friction, not destructive."
+                )
+                interp_hi = (
+                    f"{a_name} (भाव {ha}) और {b_name} (भाव {hb}) {axis_label} अक्ष पर "
+                    f"शत्रु हैं, दोनों तटस्थ — प्रबंधनीय घर्षण, विनाशकारी नहीं।"
+                )
+            else:  # philosophical conflict (not LK enemies)
+                interp_en = (
+                    f"{a_name} (H{ha}) and {b_name} (H{hb}) share the {axis_label} axis "
+                    f"but are not LK enemies — a philosophical conflict of themes, not "
+                    f"a harmful clash. The axis is workable."
+                )
+                interp_hi = (
+                    f"{a_name} (भाव {ha}) और {b_name} (भाव {hb}) {axis_label} अक्ष पर हैं "
+                    f"पर शत्रु नहीं — विषयों का दार्शनिक मतभेद, हानिकारक टकराव नहीं। "
+                    f"अक्ष टिकाऊ है।"
+                )
 
+            collisions.append({
+                "planet_a": a_name,
+                "planet_a_house": ha,
+                "planet_b": b_name,
+                "planet_b_house": hb,
+                # Backwards-compatible aliases for the frontend UI
+                # (which read `attacker` / `receiver`). Takkar is mutual,
+                # so either side can be called attacker; we pick the
+                # lower-house planet for stability.
+                "attacker": a_name if ha < hb else b_name,
+                "attacker_house": low,
+                "receiver": b_name if ha < hb else a_name,
+                "receiver_house": high,
+                "axis": axis_label,
+                "are_enemies": are_enemies,
+                "severity": severity,
+                "state_a": state_a,
+                "state_b": state_b,
+                "interpretation_en": interp_en,
+                "interpretation_hi": interp_hi,
+                "source": "LK_CANONICAL",
+            })
+            attack_count[a_name] = attack_count.get(a_name, 0) + 1
+            attack_count[b_name] = attack_count.get(b_name, 0) + 1
+
+    # Severity counts under the new dignity-aware ladder
     destructive_count = sum(1 for c in collisions if c["severity"] == "destructive")
-    mild_count = sum(1 for c in collisions if c["severity"] == "mild")
+    moderate_count    = sum(1 for c in collisions if c["severity"] == "moderate friction")
+    mild_count        = sum(1 for c in collisions if c["severity"] == "mild friction")
+    philosophical_count = sum(1 for c in collisions if c["severity"] == "philosophical conflict")
 
-    # Most attacked planet
-    most_attacked = max(attack_count, key=attack_count.get) if attack_count else None
-    if most_attacked and attack_count[most_attacked] == 0:
-        most_attacked = None
+    # ── WEIGHTED VULNERABILITY SCORE (Codex R2-P4) ────────────────
+    # Pure takkar count under-ranks Moon H8 Debilitated because Moon
+    # has no axis partner — yet LK places H8 Moon as the single most
+    # vulnerable position. Codex weighting:
+    #   base = # takkar attacks
+    #   dusthana house (H6/H8/H12)   +2
+    #   debilitated dignity           +2
+    #   H8 specifically              +1   (H8 is the ultimate dusthana)
+    #
+    # Tie-breaker order (per LK severity intuition):
+    #   1. higher weighted score
+    #   2. planet in H8 > any other dusthana > non-dusthana
+    #   3. debilitated > non-debilitated
+    #   4. alphabetical (deterministic)
+    DUSTHANA = {6, 8, 12}
+    vulnerability: Dict[str, Dict[str, Any]] = {}
+    sign_by_planet = {p["planet"]: p.get("sign", "") for p in planet_positions}
+    for p in all_planets:
+        pname = p["planet"]
+        phouse = p.get("house")
+        sign = sign_by_planet.get(pname, "")
+        dignity = _get_dignity_label(pname, sign) if sign else "Neutral"
+        is_debilitated = dignity == "Debilitated"
+        base = attack_count.get(pname, 0)
+        dust_bonus = 2 if phouse in DUSTHANA else 0
+        debil_bonus = 2 if is_debilitated else 0
+        h8_bonus = 1 if phouse == 8 else 0
+        score = base + dust_bonus + debil_bonus + h8_bonus
 
-    # Safe planets (zero attacks received)
-    safe_planets = [name for name, count in attack_count.items() if count == 0]
+        # Classify WHERE the vulnerability comes from (Codex R3 fix).
+        has_internal = dust_bonus + debil_bonus + h8_bonus > 0
+        has_external = base > 0
+        if has_internal and has_external:
+            reason = "mixed"
+        elif has_internal:
+            reason = "internal"
+        elif has_external:
+            reason = "external"
+        else:
+            reason = "none"
 
+        # Build human-readable explanation of WHY this planet is vulnerable.
+        intrinsic_bits = []
+        if is_debilitated:
+            intrinsic_bits.append(f"debilitated in H{phouse}")
+        elif phouse == 8:
+            intrinsic_bits.append("placed in H8 (ultimate dusthana)")
+        elif phouse in DUSTHANA:
+            intrinsic_bits.append(f"placed in dusthana H{phouse}")
+        external_bit = (
+            f"attacked by {base} axis-enemy planet{'s' if base != 1 else ''}"
+            if base > 0 else ""
+        )
+
+        if reason == "internal":
+            explanation = (
+                f"Internal — weakness is intrinsic ("
+                f"{', '.join(intrinsic_bits)}), not from external enemy attack."
+            )
+        elif reason == "external":
+            explanation = (
+                f"External — {external_bit} across the opposite axis; "
+                f"the planet itself is in a workable sign/house."
+            )
+        elif reason == "mixed":
+            explanation = (
+                f"Both — intrinsic weakness ({', '.join(intrinsic_bits)}) "
+                f"AMPLIFIED by {external_bit}."
+            )
+        else:
+            explanation = "None — no vulnerability factors detected."
+
+        vulnerability[pname] = {
+            "takkar_attacks": base,
+            "in_dusthana": phouse in DUSTHANA,
+            "in_h8": phouse == 8,
+            "debilitated": is_debilitated,
+            "score": score,
+            "breakdown": (
+                f"base({base}) + dusthana({dust_bonus}) + "
+                f"debil({debil_bonus}) + h8({h8_bonus}) = {score}"
+            ),
+            "vulnerability_reason": reason,       # internal | external | mixed | none
+            "vulnerability_explanation": explanation,
+        }
+
+    def _rank_key(item):
+        name, v = item
+        return (
+            -v["score"],                # higher score first
+            0 if v["in_h8"] else 1,     # H8 beats non-H8
+            0 if v["in_dusthana"] else 1,
+            0 if v["debilitated"] else 1,
+            name,                       # alphabetical tie-break
+        )
+    ranked = sorted(vulnerability.items(), key=_rank_key)
+    most_vulnerable = ranked[0][0] if ranked and ranked[0][1]["score"] > 0 else None
+
+    # Keep backwards-compatible alias so the frontend doesn't break
+    # but repoint it to the weighted winner (Codex: "Recalculate
+    # 'most attacked' with this weight").
+    most_attacked = most_vulnerable
+
+    # Safe planets (zero takkar attacks received AND no vulnerability factors)
+    safe_planets = [
+        name for name, v in vulnerability.items() if v["score"] == 0
+    ]
+
+    from app.lalkitab_source_tags import source_of
     return {
         "collisions": collisions,
         "destructive_count": destructive_count,
+        "moderate_count": moderate_count,
         "mild_count": mild_count,
-        "most_attacked_planet": most_attacked,
+        "philosophical_count": philosophical_count,
+        "most_attacked_planet": most_attacked,       # legacy alias, now weighted
+        "most_vulnerable_planet": most_vulnerable,   # new explicit name
+        "vulnerability_scores": vulnerability,
+        "vulnerability_ranking": [name for name, _ in ranked],
         "safe_planets": safe_planets,
+        "source": source_of("calculate_takkar"),
     }
 
 
@@ -1690,11 +1923,190 @@ _RIN_ACTIVATION_HOUSE: Dict[str, int] = {
     "Matru Rin":    4,   # Mother house
     "Sva Rin":      1,   # Self house
     "Bhratri Rin":  3,   # Siblings house
-    "Stri Rin":     7,   # Spouse house
+    "Bhagini Rin":  3,   # Sister house
+    "Stri Rin":     7,   # Spouse house (legacy key)
+    "Stree Rin":    7,   # Spouse house
     "Guru Rin":     9,   # Teacher/fortune house
     "Dev Rin":      5,   # Piety / past merit house
+    "Deva Rin":     5,   # Alternate spelling
     "Rishi Rin":    12,  # Liberation / spirituality house
     "Nag Rin":      8,   # Hidden/serpent house
+    "Nara Rin":     7,   # Humanity/service/partnership house
+    "Prakriti Rin": 10,  # Work/public-service house
+}
+
+# Per-Rin activation triggers (Codex R3 fix): when the debt is
+# expected to SURFACE in life, and what life-area it dominates.
+# Used by enrich_debts_active_passive() to emit:
+#   activates_during: Saturn saala grah (age 41) OR H7 Saturn transit...
+#   life_area:       Career delays, chronic partnership obstacles...
+_RIN_ACTIVATION_TRIGGERS: Dict[str, Dict[str, str]] = {
+    "Pitru Rin": {
+        "planet": "Rahu",
+        "activates_during_en": (
+            "Rahu/Ketu saala grah or dasha, during pitra-paksha (September), "
+            "or when a major father-figure/authority event occurs."
+        ),
+        "activates_during_hi": (
+            "राहु/केतु की साला ग्रह या दशा, पितृ-पक्ष (सितंबर), "
+            "अथवा पिता-तुल्य/अधिकारी घटना के समय।"
+        ),
+        "life_area_en": (
+            "Paternal line issues, authority blocks, 9th-house fortune "
+            "stagnation, ancestral-property disputes."
+        ),
+        "life_area_hi": (
+            "पैतृक पक्ष की समस्याएं, अधिकार में बाधा, 9वें भाव का "
+            "भाग्य रुकावट, पैतृक-संपत्ति विवाद।"
+        ),
+    },
+    "Matru Rin": {
+        "planet": "Moon",
+        "activates_during_en": (
+            "Moon saala grah, Monday pradoshas, or whenever mother/home-life "
+            "crises surface."
+        ),
+        "activates_during_hi": (
+            "चंद्र साला ग्रह, सोमवार प्रदोष, अथवा माता/घर से जुड़े संकट।"
+        ),
+        "life_area_en": (
+            "Mother's health, emotional security, home-property stability, "
+            "sleep disturbances."
+        ),
+        "life_area_hi": (
+            "माता का स्वास्थ्य, भावनात्मक सुरक्षा, घर-संपत्ति स्थिरता, "
+            "नींद में विघ्न।"
+        ),
+    },
+    "Sva Rin": {
+        "planet": "Rahu",
+        "activates_during_en": (
+            "Rahu saala grah, or during periods of ego-conflict / legal "
+            "trouble / 5th-house creative ventures."
+        ),
+        "activates_during_hi": (
+            "राहु साला ग्रह, अथवा अहंकार-विवाद, कानूनी समस्या, 5वें भाव के "
+            "रचनात्मक उपक्रमों के समय।"
+        ),
+        "life_area_en": (
+            "Self-worth, children's welfare, legal penalties despite innocence, "
+            "heart issues, atheistic drift."
+        ),
+        "life_area_hi": (
+            "आत्म-सम्मान, संतान कल्याण, निर्दोष होकर भी कानूनी दंड, "
+            "हृदय रोग, नास्तिकता की ओर झुकाव।"
+        ),
+    },
+    "Bhratri Rin": {
+        "planet": "Mars",
+        "activates_during_en": (
+            "Mars saala grah, during disputes with siblings/friends, or on "
+            "property-partition / blood-injury events."
+        ),
+        "activates_during_hi": (
+            "मंगल साला ग्रह, भाई/मित्र विवाद, या संपत्ति-बंटवारा/रक्त-चोट की घटनाओं पर।"
+        ),
+        "life_area_en": (
+            "Sibling relationships, friendship betrayal, property disputes, "
+            "courage and initiative."
+        ),
+        "life_area_hi": (
+            "भाई-बहन के रिश्ते, मित्रता का विश्वासघात, संपत्ति विवाद, "
+            "साहस और पहल।"
+        ),
+    },
+    "Bhagini Rin": {
+        "planet": "Mercury",
+        "activates_during_en": (
+            "Mercury saala grah or around the birth of a daughter/female "
+            "relative; 3rd/6th house transits."
+        ),
+        "activates_during_hi": (
+            "बुध साला ग्रह, कन्या/महिला संबंधी के जन्म पर, 3रे/6ठे भाव के गोचर में।"
+        ),
+        "life_area_en": (
+            "Welfare of female children and sisters, exploitation patterns, "
+            "inauspicious events at female births."
+        ),
+        "life_area_hi": (
+            "कन्याओं/बहनों का कल्याण, शोषण पैटर्न, स्त्री-जन्म पर अशुभ घटनाएं।"
+        ),
+    },
+    "Deva Rin": {
+        "planet": "Jupiter",
+        "activates_during_en": (
+            "Jupiter saala grah, guru-disrespect events, or periods of "
+            "temple / spiritual-teacher conflict."
+        ),
+        "activates_during_hi": (
+            "गुरु साला ग्रह, गुरु-अनादर की घटनाएं, या मंदिर/आध्यात्मिक-गुरु विवाद के समय।"
+        ),
+        "life_area_en": (
+            "Spiritual progress, guru connection, respect for teachers and "
+            "priests, sacred-place/tree maintenance."
+        ),
+        "life_area_hi": (
+            "आध्यात्मिक प्रगति, गुरु से संबंध, शिक्षकों/पुजारियों का सम्मान, "
+            "पवित्र स्थल/वृक्ष की देखभाल।"
+        ),
+    },
+    "Stree Rin": {
+        "planet": "Venus",
+        "activates_during_en": (
+            "Venus saala grah, marriage-related transits, or when H2/H7 "
+            "houses are activated by Sun/Moon/Rahu."
+        ),
+        "activates_during_hi": (
+            "शुक्र साला ग्रह, विवाह-संबंधी गोचर, अथवा 2रे/7वें भाव पर "
+            "सूर्य/चंद्र/राहु की सक्रियता।"
+        ),
+        "life_area_en": (
+            "Marriage stability, relationship harmony, treatment of women "
+            "in family, female-exploitation patterns."
+        ),
+        "life_area_hi": (
+            "विवाह-स्थिरता, संबंधों में सामंजस्य, परिवार में स्त्रियों का "
+            "व्यवहार, स्त्री-शोषण पैटर्न।"
+        ),
+    },
+    "Nara Rin": {
+        "planet": "Saturn",
+        "activates_during_en": (
+            "Saturn saala grah (any Saturn year) OR any Saturn transit of "
+            "H1/H7/H10 OR when partnership/service/labour disputes arise."
+        ),
+        "activates_during_hi": (
+            "शनि साला ग्रह (शनि का कोई भी वर्ष) अथवा शनि का 1/7/10 भाव में "
+            "गोचर, या साझेदारी/सेवा/मजदूर विवाद के समय।"
+        ),
+        "life_area_en": (
+            "Career delays, chronic obstacles in partnerships and service, "
+            "generalised feeling of being cursed, humanitarian debt."
+        ),
+        "life_area_hi": (
+            "करियर में देरी, साझेदारी और सेवा में पुरानी बाधाएं, "
+            "सामान्य शापित होने की भावना, मानवता का ऋण।"
+        ),
+    },
+    "Prakriti Rin": {
+        "planet": "Mercury",
+        "activates_during_en": (
+            "Mercury saala grah, natural-disaster-prone periods, Rahu/Ketu "
+            "ingress, or when environmental/animal-welfare events trigger."
+        ),
+        "activates_during_hi": (
+            "बुध साला ग्रह, प्राकृतिक आपदा की अवधि, राहु/केतु का प्रवेश, "
+            "या पर्यावरण/पशु-कल्याण की घटनाओं पर।"
+        ),
+        "life_area_en": (
+            "Environmental issues, natural-disaster vulnerability, treatment "
+            "of animals, past-life ecological debts."
+        ),
+        "life_area_hi": (
+            "पर्यावरणीय समस्याएं, प्राकृतिक आपदा की संवेदनशीलता, पशुओं का "
+            "व्यवहार, पूर्व जन्म के पारिस्थितिकीय ऋण।"
+        ),
+    },
 }
 
 def enrich_debts_active_passive(
@@ -1717,10 +2129,16 @@ def enrich_debts_active_passive(
     enriched = []
     for debt in debts:
         debt_name_en = debt.get("name", {}).get("en", "")
-        activation_house = next(
-            (v for k, v in _RIN_ACTIVATION_HOUSE.items() if k in debt_name_en or debt_name_en in k),
+        # Find the matching trigger key (supports variants like Stri / Stree / Dev / Deva).
+        trigger_key = next(
+            (k for k in _RIN_ACTIVATION_HOUSE
+             if k in debt_name_en or debt_name_en in k),
             None
         )
+        activation_house = _RIN_ACTIVATION_HOUSE.get(trigger_key) if trigger_key else None
+        trigger_info = _RIN_ACTIVATION_TRIGGERS.get(trigger_key) if trigger_key else None
+
+        # Resolve activation status ────────────────────────────────
         if activation_house is None:
             debt["activation_status"] = "latent"
             debt["activation_house"] = None
@@ -1743,5 +2161,24 @@ def enrich_debts_active_passive(
             debt["activation_status"] = status
             debt["activation_house"] = activation_house
             debt["activation_urgency"] = {"en": urgency_en, "hi": urgency_hi}
+
+        # ── Per-Rin activation trigger + life-area (Codex R3 fix) ──
+        # Always populate these — even for "latent" Rins we describe
+        # WHEN they would activate and WHICH life area they touch.
+        if trigger_info:
+            debt["activating_planet"] = trigger_info.get("planet")
+            debt["activates_during"] = {
+                "en": trigger_info.get("activates_during_en", ""),
+                "hi": trigger_info.get("activates_during_hi", ""),
+            }
+            debt["life_area"] = {
+                "en": trigger_info.get("life_area_en", ""),
+                "hi": trigger_info.get("life_area_hi", ""),
+            }
+        else:
+            debt["activating_planet"] = None
+            debt["activates_during"] = {"en": "", "hi": ""}
+            debt["life_area"] = {"en": "", "hi": ""}
+
         enriched.append(debt)
     return enriched

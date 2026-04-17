@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { Moon, CheckCircle2, RotateCcw, BookOpen, Play, AlertTriangle } from 'lucide-react';
 import { apiFetch } from '@/lib/api';
+import { pickLang } from './safe-render';
 
 interface JournalEntry {
   date: string;
@@ -380,7 +381,7 @@ export default function LalKitabChandraChaalanaTab() {
             {journalEntries.slice(0, 5).map((entry, idx) => (
               <div key={idx} className="p-3 rounded-xl bg-sacred-gold/5 border border-sacred-gold/10">
                 <p className="text-xs text-gray-400 mb-1">{entry.date}</p>
-                <p className="text-sm text-foreground/80 leading-snug">{entry.note}</p>
+                <p className="text-sm text-foreground/80 leading-snug">{pickLang(entry.note, isHi)}</p>
               </div>
             ))}
           </div>

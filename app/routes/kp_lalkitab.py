@@ -58,20 +58,35 @@ _KNOWN_PLANETS = set(_PLANET_SPEED.keys())
 
 def _derive_lk_house(info: dict) -> int:
     """
-    Consistent LK-house derivation used by every route.
-
-    Prefers explicit chart_data.planets[p]["house"] (authoritative)
-    and falls back to sign-based mapping only when house is missing.
-    Matches the logic inside _get_lk_positions() and _positions_from_chart()
-    so we have ONE rule across the codebase.
+    Lal Kitab uses FIXED houses: Aries=H1, Taurus=H2 ... Pisces=H12
+    regardless of ascendant. Never use chart_data whole-sign houses here.
     """
     if isinstance(info, dict):
-        house_val = info.get("house")
-        if isinstance(house_val, int) and house_val > 0:
-            return house_val
         sign = info.get("sign", "")
         return _SIGN_TO_LK_HOUSE.get(sign, 0)
     return 0
+
+
+# Status tokens that belong to the Vedic/Parashari overlay but are NOT
+# part of Lal Kitab 1952. `_lk_status_string()` filters them out so LK
+# surfaces never display "Combust" / "Sandhi" etc. The raw astro_engine
+# `status` string is preserved on `info` for any future Vedic module.
+_VEDIC_ONLY_TOKENS = {"Combust", "Sandhi"}
+
+
+def _lk_status_string(info: dict) -> str:
+    """
+    Return the planet status string as used in Lal Kitab output.
+
+    Strips Vedic-only tokens (Combust, Sandhi) while keeping LK-relevant
+    tokens (Exalted, Debilitated, Own Sign, Retrograde, Vargottama).
+    """
+    raw = (info or {}).get("status", "") if isinstance(info, dict) else ""
+    if not raw:
+        return ""
+    parts = [p.strip() for p in raw.split(",") if p.strip()]
+    lk_parts = [p for p in parts if p not in _VEDIC_ONLY_TOKENS]
+    return ", ".join(lk_parts)
 
 
 @router.post("/api/kp/cuspal")
