@@ -131,8 +131,8 @@ export default function LalKitabDashaTab({ kundliId, language }: Props) {
         {/* Life phase progress */}
         <div className="mt-4 pt-4 border-t border-current/20">
           <div className="flex justify-between text-xs mb-1.5 opacity-70">
-            <span>{isHi ? `जीवन चरण: ${life_phase.label}` : `Life Phase: ${life_phase.label}`}</span>
-            <span>{years_into_phase}y in / {years_remaining_in_phase}y left</span>
+            <span>{isHi ? `जीवन चरण: ${life_phase?.label || '-'}` : `Life Phase: ${life_phase?.label || '-'}`}</span>
+            <span>{isNaN(Number(years_into_phase)) ? 0 : years_into_phase}y in / {isNaN(Number(years_remaining_in_phase)) ? 0 : years_remaining_in_phase}y left</span>
           </div>
           <div className="h-1.5 rounded-full bg-current/20 overflow-hidden">
             <div className="h-full rounded-full bg-current/60 transition-all" style={{ width: `${phaseProgress}%` }} />
@@ -164,7 +164,7 @@ export default function LalKitabDashaTab({ kundliId, language }: Props) {
               const c = getPlanetColor(p.planet);
               return (
                 <div key={p.age} className={`flex items-center gap-3 rounded-lg border px-3 py-2 text-xs ${c} opacity-60`}>
-                  <span className="font-semibold w-16 shrink-0">{isHi ? `आयु ${p.age}` : `Age ${p.age}`}</span>
+                  <span className="font-semibold w-16 shrink-0">{isHi ? `आयु ${isNaN(Number(p.age)) ? 0 : p.age}` : `Age ${isNaN(Number(p.age)) ? 0 : p.age}`}</span>
                   <span className="font-medium">{isHi ? p.planet_hi : p.planet}</span>
                   <span className="opacity-70 line-clamp-1">{isHi ? p.hi_desc : p.en_desc}</span>
                 </div>
@@ -185,7 +185,7 @@ export default function LalKitabDashaTab({ kundliId, language }: Props) {
               const c = getPlanetColor(p.planet);
               return (
                 <div key={p.age} className={`flex items-center gap-3 rounded-lg border px-3 py-2.5 text-xs ${c}`} style={{ opacity: 1 - i * 0.12 }}>
-                  <span className="font-semibold w-16 shrink-0">{isHi ? `आयु ${p.age}` : `Age ${p.age}`}</span>
+                  <span className="font-semibold w-16 shrink-0">{isHi ? `आयु ${isNaN(Number(p.age)) ? 0 : p.age}` : `Age ${isNaN(Number(p.age)) ? 0 : p.age}`}</span>
                   <span className="font-medium">{isHi ? p.planet_hi : p.planet}</span>
                   <span className="opacity-70 leading-relaxed">{isHi ? p.hi_desc : p.en_desc}</span>
                 </div>

@@ -223,7 +223,10 @@ export default function LalKitabDiagnosticChart({ type, planetPositions, masnuiD
       
       {/* Label Overlay */}
       <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/60 text-[10px] text-white font-bold uppercase tracking-widest backdrop-blur-sm">
-        {type === 'andha' ? 'Blindness Map' : type === 'ratondha' ? 'Night-Blindness Map' : type === 'masnui' ? 'Alchemy Map' : 'Protection Map'}
+        {type === 'andha' ? (language === 'hi' ? 'अंधा टेवा' : 'Blindness Map') 
+          : type === 'ratondha' ? (language === 'hi' ? 'रतौंधी टेवा' : 'Night-Blindness Map') 
+          : type === 'masnui' ? (language === 'hi' ? 'अलकेमी मैप' : 'Alchemy Map') 
+          : (language === 'hi' ? 'सुरक्षा मैप' : 'Protection Map')}
       </div>
     </div>
   );

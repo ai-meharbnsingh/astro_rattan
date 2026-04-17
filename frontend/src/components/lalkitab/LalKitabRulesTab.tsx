@@ -131,11 +131,11 @@ export default function LalKitabRulesTab() {
             >
               <div className="flex items-center gap-3 mb-2 flex-wrap">
                 <span className="px-2.5 py-1 rounded-lg bg-sacred-gold/10 text-sacred-gold text-sm font-sans font-medium">
-                  {t('auto.house')} {rule.from_house}
+                  {t('auto.house')} {isNaN(Number(rule.from_house)) ? 0 : rule.from_house}
                 </span>
                 <span className="text-sacred-gold/40">&#10230;</span>
                 <span className="px-2.5 py-1 rounded-lg bg-sacred-gold/10 text-sacred-gold text-sm font-sans font-medium">
-                  {t('auto.house')} {rule.to_house}
+                  {t('auto.house')} {isNaN(Number(rule.to_house)) ? 0 : rule.to_house}
                 </span>
                 <span className="text-sm text-gray-500">
                   ({t('lk.rules.cross.domain.' + rule.idx)})

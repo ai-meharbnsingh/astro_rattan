@@ -150,7 +150,7 @@ export default function LalKitabPredictionTab() {
                     {a.confidence.toUpperCase()}
                   </span>
                   <span className="text-xs text-muted-foreground">
-                    {t('lk.studio.score')}: {a.score}/100
+                    {t('lk.studio.score')}: {isNaN(a.score) ? 0 : a.score}/100
                   </span>
                 </div>
               </div>

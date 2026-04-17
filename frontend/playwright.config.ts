@@ -39,5 +39,12 @@ export default defineConfig({
         ...(chromePath ? { launchOptions: { executablePath: chromePath } } : {}),
       },
     },
+    {
+      name: 'chrome-beta',
+      use: {
+        ...devices['Desktop Chrome'],
+        channel: 'chrome-beta',
+      },
+    },
   ],
 });

@@ -117,7 +117,7 @@ export default function LalKitabYearlyTab() {
                         {p.planet}
                       </span>
                       <span className={`text-sm px-2 py-0.5 rounded-full ${isActive ? 'bg-sacred-gold/20 text-sacred-gold' : 'bg-card text-gray-600'}`}>
-                        {t('lk.yearly.ageRange')}: {p.age_start}–{p.age_end}
+                        {t('lk.yearly.ageRange')}: {isNaN(Number(p.age_start)) ? 0 : p.age_start}–{isNaN(Number(p.age_end)) ? 0 : p.age_end}
                       </span>
                       {planetHouse[p.planet] ? (
                         <span className="text-xs text-muted-foreground">

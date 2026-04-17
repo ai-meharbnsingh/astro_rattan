@@ -365,7 +365,7 @@ export default function LalKitabRemediesTab({ kundliId }: Props) {
                         {r.remedy_type}
                       </span>
                     )}
-                    {r.duration_days != null && (
+                    {r.duration_days != null && !isNaN(Number(r.duration_days)) && (
                       <span className="ml-auto text-[10px] px-2 py-0.5 rounded-full border border-border/40 text-muted-foreground">
                         {isHi ? 'दिन' : 'Days'}: {r.duration_days}
                       </span>

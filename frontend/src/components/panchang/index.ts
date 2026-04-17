@@ -8,3 +8,5 @@ export { default as GowriTab } from './GowriTab';
 export { default as HinduCalendarTab } from './HinduCalendarTab';
 export { default as TarabalamTab } from './TarabalamTab';
 export { default as MuhuratFinderTab } from './MuhuratFinderTab';
+export { default as PanchangCoreTab } from './PanchangCoreTab';
+export { default as MonthlyCalendarTab } from './MonthlyCalendarTab';

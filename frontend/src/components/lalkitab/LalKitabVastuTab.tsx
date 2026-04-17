@@ -203,10 +203,10 @@ function VastuCompass({ map, warnings, hi }: CompassProps) {
           <div className="absolute bottom-0 left-0 right-0 mx-4 bg-white border border-sacred-gold/30 rounded-xl p-3 shadow-lg text-xs pointer-events-none">
             <div className="flex items-center gap-2 mb-1">
               <span className="font-bold text-sacred-gold">H{entry.house}</span>
-              <span className="text-muted-foreground">{hi ? entry.direction.hi : entry.direction.en}</span>
-              <span className="text-muted-foreground">· {hi ? entry.zone.hi : entry.zone.en}</span>
+              <span className="text-muted-foreground">{hi ? (entry.direction?.hi || '') : (entry.direction?.en || '')}</span>
+              <span className="text-muted-foreground">· {hi ? (entry.zone?.hi || '') : (entry.zone?.en || '')}</span>
             </div>
-            {entry.planets.length > 0
+            {entry.planets?.length > 0
               ? <div className="flex gap-1">{entry.planets.map(p => <span key={p} className={`font-semibold ${PLANET_CSS[p] ?? ''}`}>{p}</span>)}</div>
               : <span className="text-muted-foreground">{hi ? 'खाली' : 'Empty house'}</span>
             }

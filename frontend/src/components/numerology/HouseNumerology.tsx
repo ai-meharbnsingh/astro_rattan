@@ -80,7 +80,7 @@ export default function HouseNumerology({ birthDate }: Props) {
   return (
     <div className="space-y-6">
       {/* Input Card */}
-      <Card className="bg-card border-0 shadow-soft max-w-2xl mx-auto">
+      <Card className="bg-card border-sacred-gold/20 shadow-soft max-w-4xl mx-auto">
         <CardContent className="p-6">
           <h3 className="font-semibold text-foreground mb-4 text-center flex items-center justify-center gap-2">
             <Home className="w-5 h-5 text-sacred-gold" />
