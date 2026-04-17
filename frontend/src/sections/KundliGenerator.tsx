@@ -44,6 +44,7 @@ import SarvatobhadraChakra from '@/components/sarvatobhadra/SarvatobhadraChakra'
 import PravrajyaTab from '@/components/kundli/PravrajyaTab';
 import LifespanTab from '@/components/kundli/LifespanTab';
 import ConjunctionsTab from '@/components/kundli/ConjunctionsTab';
+import RogaTab from '@/components/kundli/RogaTab';
 
 // ── Single source of truth for ALL tab definitions ──────────
 interface TabDef {
@@ -85,6 +86,7 @@ const TAB_DEFS: Omit<TabDef, 'onActivate'>[] = [
   { value: 'pravrajya',     labelEn: 'Pravrajya Yogas', labelHi: 'प्रव्रज्या योग',   primary: false, category: 'analysis' },
   { value: 'lifespan',      labelEn: 'Lifespan',        labelHi: 'आयुर्दाय',         primary: false, category: 'analysis' },
   { value: 'conjunctions',  labelEn: 'Conjunctions',    labelHi: 'ग्रह युतियाँ',      primary: false, category: 'analysis' },
+  { value: 'roga',          labelEn: 'Disease Analysis', labelHi: 'रोग विश्लेषण',     primary: false, category: 'analysis' },
   { value: 'iogita',        labelEn: 'Iogita',         labelHi: 'आयोगिता',          primary: false, category: 'analysis' },
   { value: 'aspects-matrix',labelEn: 'Aspects Matrix',  labelHi: 'दृष्टि मैट्रिक्स', primary: false, category: 'analysis' },
   // Advanced
@@ -610,6 +612,10 @@ export default function KundliGenerator() {
 
           <TabsContent value="conjunctions" className="min-h-[300px]">
             <ConjunctionsTab kundliId={kundliId} language={language} t={t} />
+          </TabsContent>
+
+          <TabsContent value="roga" className="min-h-[300px]">
+            <RogaTab kundliId={kundliId} language={language} t={t} />
           </TabsContent>
 
           <TabsContent value="sadesati" className="min-h-[300px]">

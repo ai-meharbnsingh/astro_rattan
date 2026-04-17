@@ -1,0 +1,133 @@
+{
+  "planet_diseases": {
+    "Sun": {
+      "en": ["Heart ailments", "Bile/pitta imbalance", "Head pain and migraine", "Right eye issues (men)", "Fevers", "Vitamin D deficiency", "Spinal problems"],
+      "hi": ["हृदय रोग", "पित्त असंतुलन", "सिरदर्द एवं माइग्रेन", "दाहिनी आँख की समस्या (पुरुष)", "ज्वर", "विटामिन डी की कमी", "रीढ़ की समस्या"]
+    },
+    "Moon": {
+      "en": ["Blood-related issues", "Phlegm/kapha disorders", "Mental health concerns", "Water-borne diseases", "Mother-related ailments", "Left eye issues (men)", "Lung problems"],
+      "hi": ["रक्त विकार", "कफ रोग", "मानसिक स्वास्थ्य समस्याएं", "जलजन्य रोग", "माता-संबंधी रोग", "बायीं आँख की समस्या (पुरुष)", "फेफड़ों की समस्या"]
+    },
+    "Mars": {
+      "en": ["Wounds and cuts", "Accidents", "Blood pressure (high)", "Pitta excess", "Surgery indications", "Burns", "Muscle injuries", "Inflammations"],
+      "hi": ["घाव एवं चोट", "दुर्घटनाएं", "उच्च रक्तचाप", "पित्त आधिक्य", "शल्यक्रिया के संकेत", "जलने की चोट", "मांसपेशी आघात", "सूजन"]
+    },
+    "Mercury": {
+      "en": ["Skin diseases", "Allergies", "Nervous system disorders", "Speech defects", "Digestive issues", "Asthma"],
+      "hi": ["त्वचा रोग", "एलर्जी", "स्नायु-तंत्र विकार", "वाणी-दोष", "पाचन समस्याएं", "दमा"]
+    },
+    "Jupiter": {
+      "en": ["Liver disorders", "Diabetes (Type 2)", "Obesity", "Ear issues", "Pancreatic issues", "Cholesterol"],
+      "hi": ["यकृत विकार", "मधुमेह (टाइप 2)", "मोटापा", "कान की समस्या", "अग्न्याशय विकार", "कोलेस्ट्रॉल"]
+    },
+    "Venus": {
+      "en": ["Reproductive organ disorders", "Urinary tract infections", "Venereal diseases", "Throat issues", "Diabetes (women)", "Kidney problems"],
+      "hi": ["प्रजनन-अंग विकार", "मूत्रमार्ग संक्रमण", "यौन रोग", "गले की समस्या", "मधुमेह (स्त्रियाँ)", "गुर्दे की समस्या"]
+    },
+    "Saturn": {
+      "en": ["Chronic diseases", "Bone disorders", "Arthritis", "Paralysis risk", "Depression", "Leg problems", "Dental issues", "Rheumatism"],
+      "hi": ["पुराने रोग", "अस्थि-विकार", "गठिया", "पक्षाघात का जोखिम", "अवसाद", "पैरों की समस्या", "दन्त-रोग", "वात-रोग"]
+    },
+    "Rahu": {
+      "en": ["Undiagnosed / mysterious diseases", "Psychological disturbances", "Foreign / imported diseases", "Poisoning risk", "Sudden-onset illness", "Addictions"],
+      "hi": ["निदान-रहित रहस्यमय रोग", "मनोवैज्ञानिक विकार", "विदेशी / आयातित रोग", "विष-जोखिम", "अचानक रोग", "व्यसन"]
+    },
+    "Ketu": {
+      "en": ["Sudden-onset accidents", "Spiritual-cause afflictions", "Undiagnosed fevers", "Parasitic infections", "Viral illnesses", "Nerve disorders"],
+      "hi": ["अचानक दुर्घटनाएं", "आध्यात्मिक-जनित पीड़ा", "निदान-रहित ज्वर", "परजीवी संक्रमण", "विषाणु जनित रोग", "स्नायु विकार"]
+    }
+  },
+  "body_part_by_house": {
+    "1":  {"en": "Head and overall constitution", "hi": "सिर एवं सामान्य शरीर"},
+    "2":  {"en": "Face, right eye, mouth, teeth, tongue",      "hi": "चेहरा, दाहिनी आँख, मुख, दांत, जिह्वा"},
+    "3":  {"en": "Neck, throat, shoulders, arms, ears",         "hi": "गर्दन, गला, कंधे, भुजा, कान"},
+    "4":  {"en": "Chest, heart, lungs",                         "hi": "छाती, हृदय, फेफड़े"},
+    "5":  {"en": "Upper abdomen, stomach, liver",               "hi": "ऊपरी उदर, पेट, यकृत"},
+    "6":  {"en": "Lower abdomen, kidneys, large intestine",     "hi": "निम्न उदर, गुर्दे, बड़ी आँत"},
+    "7":  {"en": "Navel, lower back, reproductive organs",      "hi": "नाभि, कटि, प्रजनन अंग"},
+    "8":  {"en": "Genitals, anus, excretory system",            "hi": "जननांग, गुदा, मल-मूत्र तंत्र"},
+    "9":  {"en": "Thighs, hips, sciatic nerve",                 "hi": "जांघ, कूल्हे, कटिवात तंत्रिका"},
+    "10": {"en": "Knees, bones, joints",                         "hi": "घुटने, अस्थि, जोड़"},
+    "11": {"en": "Calves, ankles, shins, left ear",              "hi": "पिंडलियाँ, टखने, बाईं कान"},
+    "12": {"en": "Feet, left eye, lymphatic system, sleep",      "hi": "पैर, बायीं आँख, लसिका तंत्र, निद्रा"}
+  },
+  "special_yogas": [
+    {
+      "key": "leprosy",
+      "name_en": "Kushta Yoga (Leprosy / severe skin disease)",
+      "name_hi": "कुष्ठ योग",
+      "trigger_en": "Moon + Rahu in Lagna (1st house) without benefic Jupiter aspect",
+      "trigger_hi": "चंद्र + राहु लग्न में हों और बृहस्पति की शुभ दृष्टि न हो",
+      "severity": "severe",
+      "remedy_en": "Worship of Maha Mrityunjaya, donation of white cloth and silver, Chandra-Rahu shanti puja",
+      "remedy_hi": "महामृत्युञ्जय जप, श्वेत वस्त्र एवं चांदी दान, चंद्र-राहु शांति पूजा",
+      "sloka_ref": "Phaladeepika Adh. 14 sloka 11"
+    },
+    {
+      "key": "epilepsy",
+      "name_en": "Apasmara Yoga (Epilepsy)",
+      "name_hi": "अपस्मार योग",
+      "trigger_en": "Saturn + Moon in Lagna, afflicted by malefic aspect",
+      "trigger_hi": "शनि + चंद्र लग्न में पापी दृष्टि से पीड़ित हों",
+      "severity": "severe",
+      "remedy_en": "Chandra puja, donation of black sesame and mustard oil on Saturdays, mantra Japa",
+      "remedy_hi": "चंद्र पूजा, शनिवार को काले तिल एवं सरसों तेल दान, मंत्र जप",
+      "sloka_ref": "Phaladeepika Adh. 14 sloka 11"
+    },
+    {
+      "key": "diabetes",
+      "name_en": "Madhumeha Yoga (Diabetes)",
+      "name_hi": "मधुमेह योग",
+      "trigger_en": "Jupiter in 6th house OR Venus + Saturn conjunction in 6th house",
+      "trigger_hi": "बृहस्पति षष्ठ में हो अथवा शुक्र + शनि की युति षष्ठ में हो",
+      "severity": "moderate",
+      "remedy_en": "Pitambara (yellow cloth) donation, Guru puja, dietary discipline, haridra (turmeric) intake",
+      "remedy_hi": "पीत वस्त्र दान, गुरु पूजा, आहार-संयम, हल्दी सेवन",
+      "sloka_ref": "Phaladeepika Adh. 14 sloka 12"
+    },
+    {
+      "key": "jaundice",
+      "name_en": "Kamala Yoga (Jaundice / liver disease)",
+      "name_hi": "कामला योग",
+      "trigger_en": "Sun + Mars together in 6th house",
+      "trigger_hi": "सूर्य + मंगल की युति षष्ठ भाव में हो",
+      "severity": "moderate",
+      "remedy_en": "Sun worship at sunrise, Aditya Hridaya Stotra, avoid oily/spicy food",
+      "remedy_hi": "सूर्योदय में सूर्य-पूजन, आदित्य हृदय स्तोत्र, तैलीय/तीव्र भोजन से बचाव",
+      "sloka_ref": "Phaladeepika Adh. 14 sloka 12"
+    },
+    {
+      "key": "tuberculosis",
+      "name_en": "Kshaya Yoga (Tuberculosis / wasting)",
+      "name_hi": "क्षय योग",
+      "trigger_en": "Moon in 8th house afflicted by malefic, with weak Lagna lord",
+      "trigger_hi": "चंद्र अष्टम में पापी-पीड़ित, लग्नेश कमजोर हो",
+      "severity": "severe",
+      "remedy_en": "Rudrabhishek, silver and white food donation, regular pranayama",
+      "remedy_hi": "रुद्राभिषेक, चांदी एवं श्वेत भोजन दान, नियमित प्राणायाम",
+      "sloka_ref": "Phaladeepika Adh. 14 sloka 12"
+    },
+    {
+      "key": "insanity",
+      "name_en": "Unmada Yoga (Mental instability)",
+      "name_hi": "उन्माद योग",
+      "trigger_en": "Moon + Saturn + Rahu conjunct in Dusthana (6/8/12)",
+      "trigger_hi": "चंद्र + शनि + राहु की युति दुःस्थान (6/8/12) में हो",
+      "severity": "severe",
+      "remedy_en": "Mahamrityunjaya Jap, Hanuman worship, Chandra puja on Mondays, meditation",
+      "remedy_hi": "महामृत्युञ्जय जप, हनुमान पूजन, सोमवार को चंद्र पूजा, ध्यान",
+      "sloka_ref": "Phaladeepika Adh. 14 sloka 12"
+    },
+    {
+      "key": "blindness",
+      "name_en": "Andha Yoga (Severe vision impairment)",
+      "name_hi": "अंध योग",
+      "trigger_en": "Sun AND Moon both debilitated with no benefic aspect",
+      "trigger_hi": "सूर्य एवं चंद्र दोनों नीच हों एवं कोई शुभ दृष्टि न हो",
+      "severity": "severe",
+      "remedy_en": "Surya puja, Chandra puja, donation of ghee lamp and silver, eye-care routines",
+      "remedy_hi": "सूर्य-चंद्र पूजा, घी-दीप एवं चांदी दान, नेत्र-देखभाल",
+      "sloka_ref": "Phaladeepika Adh. 14 sloka 11"
+    }
+  ]
+}
