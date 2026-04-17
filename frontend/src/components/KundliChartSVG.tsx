@@ -125,6 +125,17 @@ function ascMarkerPos(degInSign: number): { x: number; y: number } {
 // Zodiac order (index 0=Aries, ..., 11=Pisces)
 const SIGNS_ORDER = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
 
+function normalizeSignName(raw: string | null | undefined): string | null {
+  if (!raw) return null;
+  const s = String(raw).trim().toLowerCase();
+  if (!s) return null;
+  // Common casing/spacing issues handled here; keep it conservative.
+  for (const canon of SIGNS_ORDER) {
+    if (canon.toLowerCase() === s) return canon;
+  }
+  return null;
+}
+
 export default function KundliChartSVG({ planets, ascendantSign, ascendantDegree, className, language = 'en' }: KundliChartSVGProps) {
   const isHi = language === 'hi';
   const [tick, setTick] = useState(0);
@@ -138,7 +149,8 @@ export default function KundliChartSVG({ planets, ascendantSign, ascendantDegree
   const marker = ascMarkerPos(liveDeg % 30);
 
   // Lagna sign index (0=Aries, 1=Taurus, ..., 11=Pisces). -1 if unknown.
-  const lagnaSignIdx = SIGNS_ORDER.indexOf(ascendantSign);
+  const ascCanon = normalizeSignName(ascendantSign);
+  const lagnaSignIdx = ascCanon ? SIGNS_ORDER.indexOf(ascCanon) : -1;
 
   // Group planets by HOUSE POSITION (0-11) so we render a true North-Indian
   // chart: house positions are fixed; signs rotate based on ascendantSign.
@@ -146,7 +158,8 @@ export default function KundliChartSVG({ planets, ascendantSign, ascendantDegree
   for (const pl of planets) {
     let houseNum = Number(pl.house || 0);
     if (!(houseNum >= 1 && houseNum <= 12)) {
-      const signIdx = SIGNS_ORDER.indexOf(pl.sign);
+      const plSignCanon = normalizeSignName(pl.sign);
+      const signIdx = plSignCanon ? SIGNS_ORDER.indexOf(plSignCanon) : -1;
       if (signIdx < 0 || lagnaSignIdx < 0) continue;
       houseNum = ((signIdx - lagnaSignIdx + 12) % 12) + 1;
     }
