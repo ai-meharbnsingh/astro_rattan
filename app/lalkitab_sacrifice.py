@@ -63,11 +63,8 @@ SACRIFICE_RULES: List[Dict[str, Any]] = [
         "rule_id": "LK_SAC_003_JUP_3RD_NO_SUPPORT_SAC_MERCURY",
         "sacrificer": "Jupiter",
         "victim": "Mercury",
-        "condition": "Jupiter in 3rd house without benefic support",
-        "check": lambda p_map, aspects: (
-            p_map.get("Jupiter") == 3 and
-            not any(p in {2: "Moon", 1: "Venus"}.values() for p in [])  # simplified: Jupiter in 3 = no support by default
-        ),
+        "condition": "Jupiter in 3rd house",
+        "check": lambda p_map, aspects: p_map.get("Jupiter") == 3,
         "message": {
             "en": "Your Jupiter is sacrificing Mercury. Your wisdom and spiritual growth expand at the cost of your speech, trade relationships, and 2nd house wealth.",
             "hi": "आपका गुरु बुध की बलि दे रहा है। आपकी बुद्धि और आध्यात्मिक विकास वाणी, व्यापारिक संबंधों और दूसरे घर के धन की कीमत पर बढ़ता है।"
@@ -167,7 +164,7 @@ def analyze_sacrifice(
 
     Returns list of sacrifice results.
     """
-    p_map = {p["planet"]: p["house"] for p in planet_positions}
+    p_map = {p.get("planet", ""): p.get("house", 0) for p in planet_positions if p.get("planet")}
     asp = aspects or {}
 
     results = []
@@ -176,7 +173,7 @@ def analyze_sacrifice(
             if rule["check"](p_map, asp):
                 sacrificer = rule["sacrificer"]
                 victim = rule["victim"]
-                growth_areas = PLANET_LIFE_AREAS.get(rule["growth_area"], {"en": "", "hi": ""})
+                growth_areas = PLANET_LIFE_AREAS.get(rule["growth_area"], {"en": rule["growth_area"], "hi": rule["growth_area"]})
                 cost_areas = PLANET_LIFE_AREAS.get(rule["cost_area"], {"en": rule["cost_area"], "hi": rule["cost_area"]})
 
                 results.append({
@@ -190,7 +187,9 @@ def analyze_sacrifice(
                     "cost_area": {"planet": rule["cost_area"], "areas": cost_areas},
                     "remedy": rule["remedy"],
                 })
-        except Exception:
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).warning("Sacrifice rule %s failed: %s", rule.get("rule_id"), e)
             continue
 
     return results

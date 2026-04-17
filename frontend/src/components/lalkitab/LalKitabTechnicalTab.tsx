@@ -87,7 +87,7 @@ export default function LalKitabTechnicalTab({ chartData, kundliId, language }: 
           </div>
         </div>
         <div className={`inline-flex px-3 py-1 rounded-full text-sm font-semibold mb-2 ${trainStatusColor[chalti_gaadi.train_status] || 'bg-gray-100 text-gray-600'}`}>
-          {chalti_gaadi.train_status.toUpperCase()}
+          {(chalti_gaadi.train_status ?? 'unknown').toUpperCase()}
         </div>
         <p className="text-sm text-muted-foreground leading-relaxed">
           {hi ? chalti_gaadi.interpretation?.hi : chalti_gaadi.interpretation?.en}

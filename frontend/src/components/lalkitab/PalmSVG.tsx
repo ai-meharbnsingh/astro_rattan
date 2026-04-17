@@ -43,7 +43,7 @@ export default function PalmSVG({ zones, marks, onZoneClick, selectedZone, langu
       {zones.map((zone) => {
         const zoneMarks = getZoneMarks(zone.zone_id);
         const isSelected = selectedZone === zone.zone_id;
-        const color = PLANET_COLOR[zone.planet] || PLANET_COLOR[zone.name] || '#94a3b8';
+        const color = PLANET_COLOR[zone.planet ?? ''] || PLANET_COLOR[zone.name ?? ''] || '#94a3b8';
 
         if (zone.zone_type === 'line') {
           return (
@@ -77,7 +77,7 @@ export default function PalmSVG({ zones, marks, onZoneClick, selectedZone, langu
             />
             <text x={zone.svg_cx} y={zone.svg_cy - 3} textAnchor="middle"
               fontSize="7" fill={color} fontWeight="bold" className="pointer-events-none">
-              {zone.planet.replace('_inner', '').replace('_outer', '').replace('_line', '')}
+              {(zone.planet ?? '').replace('_inner', '').replace('_outer', '').replace('_line', '')}
             </text>
             {zoneMarks.length > 0 && (
               <text x={zone.svg_cx} y={zone.svg_cy + 9} textAnchor="middle"

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
-import { Loader2, Users, Link2, AlertTriangle, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Loader2, Users, Link2, AlertTriangle, TrendingUp, TrendingDown } from 'lucide-react';
 
 interface FamilyMember {
   kundli_id: string; name: string; relation: string;
@@ -41,7 +41,6 @@ function HarmonyBar({ score }: { score: number }) {
 export default function LalKitabFamilyTab({ kundliId, language }: Props) {
   const [data, setData] = useState<FamilyData | null>(null);
   const [loading, setLoading] = useState(false);
-  const [linking, setLinking] = useState(false);
   const hi = language === 'hi';
 
   useEffect(() => {

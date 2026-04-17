@@ -218,7 +218,7 @@ def calculate_age_milestones(
     # Current age in years
     current_age = today.year - bdate.year - ((today.month, today.day) < (bdate.month, bdate.day))
 
-    p_map = {p["planet"]: p["house"] for p in planet_positions}
+    p_map = {p.get("planet", ""): p.get("house", 0) for p in planet_positions if p.get("planet")}
 
     milestone_list = []
     next_milestone = None
@@ -253,7 +253,11 @@ def calculate_age_milestones(
         countdown = None
         if is_next_flag:
             trigger_year = bdate.year + m["age"]
-            trigger_date = bdate.replace(year=trigger_year)
+            try:
+                trigger_date = bdate.replace(year=trigger_year)
+            except ValueError:
+                # Feb 29 in non-leap year → use Feb 28
+                trigger_date = bdate.replace(year=trigger_year, day=28)
             delta = trigger_date - today
             if delta.days > 0:
                 countdown = {
@@ -290,8 +294,8 @@ def calculate_age_milestones(
 
         milestone_list.append(entry)
 
-    if not next_milestone and milestone_list:
-        next_milestone = milestone_list[-1]  # all past — show last
+    if not next_milestone:
+        next_milestone = None  # all milestones are past — no "next" to show
 
     return {
         "current_age": current_age,

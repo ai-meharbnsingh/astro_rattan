@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
-import { Loader2, ArrowRight, AlertTriangle, Sparkles } from 'lucide-react';
+import { Loader2, ArrowRight, Sparkles } from 'lucide-react';
 
 interface SacrificeResult {
   rule_id: string; sacrificer: string; victim: string;

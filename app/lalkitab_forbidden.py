@@ -182,30 +182,45 @@ FORBIDDEN_RULES: Dict[Tuple[str, int], List[Dict[str, str]]] = {
 }
 
 
+_CATEGORY_SEVERITY: Dict[str, str] = {
+    "construction": "critical",
+    "charity": "high",
+    "household": "high",
+    "spiritual": "moderate",
+    "property": "critical",
+    "remedies": "high",
+    "behavior": "moderate",
+    "timing": "moderate",
+    "gifts": "moderate",
+    "general": "moderate",
+}
+
+_CATEGORY_ORDER = {"construction": 0, "property": 1, "charity": 2, "household": 3, "remedies": 4, "spiritual": 5, "behavior": 6, "timing": 7, "gifts": 8, "general": 9}
+
+
 def get_forbidden_remedies(planet_positions: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
     Returns forbidden actions specific to this chart's planet placements.
 
     planet_positions: [{"planet": "Jupiter", "house": 7}, ...]
     """
-    p_map = {p["planet"]: p["house"] for p in planet_positions}
+    p_map = {p.get("planet", ""): p.get("house", 0) for p in planet_positions if p.get("planet")}
     results = []
 
     for planet, house in p_map.items():
         key = (planet, house)
         if key in FORBIDDEN_RULES:
             for rule in FORBIDDEN_RULES[key]:
+                category = rule.get("category", "general")
                 results.append({
                     "planet": planet,
                     "house": house,
+                    "severity": _CATEGORY_SEVERITY.get(category, "moderate"),
                     "action": rule["action"],
                     "reason": rule["reason"],
                     "consequence": rule["consequence"],
-                    "category": rule.get("category", "general"),
+                    "category": category,
                 })
 
-    # Sort by severity: construction > charity > household > spiritual > others
-    category_order = {"construction": 0, "charity": 1, "household": 2, "spiritual": 3, "property": 4, "remedies": 5, "behavior": 6, "timing": 7, "gifts": 8, "general": 9}
-    results.sort(key=lambda r: category_order.get(r["category"], 99))
-
+    results.sort(key=lambda r: _CATEGORY_ORDER.get(r["category"], 99))
     return results

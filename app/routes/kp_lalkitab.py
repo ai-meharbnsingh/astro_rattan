@@ -1347,14 +1347,25 @@ def _get_lk_positions(kundli_id: str, user_sub: str, db: Any):
     ).fetchone()
     if not row:
         raise HTTPException(status_code=404, detail="Kundli not found")
-    chart_data = json.loads(row["chart_data"])
+    try:
+        raw = row["chart_data"]
+        chart_data = json.loads(raw) if isinstance(raw, str) else (raw or {})
+    except (json.JSONDecodeError, TypeError):
+        raise HTTPException(status_code=500, detail="Corrupt chart data")
     positions = []
     for planet_name, info in chart_data.get("planets", {}).items():
         if planet_name not in _KNOWN_PLANETS:
             continue
-        sign = info.get("sign", "Aries")
-        house = _SIGN_TO_LK_HOUSE.get(sign, 1)
-        positions.append({"planet": planet_name, "house": house})
+        if not isinstance(info, dict):
+            continue
+        # Prefer explicit house number if present, else derive from sign
+        if "house" in info and isinstance(info["house"], int):
+            house = info["house"]
+        else:
+            sign = info.get("sign", "")
+            house = _SIGN_TO_LK_HOUSE.get(sign, 0)
+        if house > 0:
+            positions.append({"planet": planet_name, "house": house})
     return positions, row
 
 
@@ -1376,14 +1387,16 @@ def correlate_palm_marks(
     db: Any = Depends(get_db),
 ):
     """
-    payload: {kundli_id, marks: [{zone_id, mark_type}]}
+    payload: {kundli_id, palm_marks: [{zone_id, mark_type}]}
     Returns palm-to-chart correlations with interpretations and remedies.
     """
     from app.lalkitab_palmistry import calculate_palm_correlations
     kundli_id = payload.get("kundli_id")
-    marks = payload.get("marks", [])
+    marks = payload.get("palm_marks", payload.get("marks", []))  # accept both keys
     if not kundli_id:
         raise HTTPException(status_code=400, detail="kundli_id required")
+    if not isinstance(marks, list):
+        raise HTTPException(status_code=400, detail="palm_marks must be a list")
     positions, _ = _get_lk_positions(kundli_id, user["sub"], db)
     return calculate_palm_correlations(positions, marks)
 
@@ -1401,12 +1414,17 @@ def get_age_milestones(
     """Return Safar-e-Zindagi age milestone analysis with countdown to next trigger."""
     from app.lalkitab_milestones import calculate_age_milestones
     positions, row = _get_lk_positions(kundli_id, user["sub"], db)
-    birth_date = row.get("birth_date") or row.get("dob") or ""
+    birth_date = str(row.get("birth_date") or row.get("dob") or "").strip()
     if not birth_date:
-        # Try parsing from chart_data
-        chart_data = json.loads(row["chart_data"])
-        birth_date = chart_data.get("birth_date", "1990-01-01")
-    return calculate_age_milestones(str(birth_date), positions)
+        try:
+            raw = row["chart_data"]
+            cd = json.loads(raw) if isinstance(raw, str) else (raw or {})
+            birth_date = cd.get("birth_date", "")
+        except Exception:
+            birth_date = ""
+    if not birth_date:
+        raise HTTPException(status_code=422, detail="birth_date not found in kundli")
+    return calculate_age_milestones(birth_date, positions)
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -1475,6 +1493,6 @@ def get_forbidden_list(
     results = get_forbidden_remedies(positions)
     return {
         "kundli_id": kundli_id,
-        "count": len(results),
-        "forbidden_list": results,
+        "forbidden_count": len(results),
+        "rules": results,
     }

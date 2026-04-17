@@ -192,21 +192,23 @@ def _get_default_interp(mark_nature: str, planet: str, house: int, lang: str = "
 
 
 def get_palm_zones() -> List[Dict[str, Any]]:
-    """Return all palm zones with metadata."""
+    """Return all palm zones normalized to frontend-expected shape."""
+    _SVG_R = {"mount": 18, "line": 12}
     return [
         {
-            "id": z["id"],
+            # canonical frontend fields
+            "zone_id": z["id"],
+            "planet": z["associated_planet"],
+            "name": z["name"]["en"] if isinstance(z.get("name"), dict) else z.get("name", z["id"]),
+            "name_hi": z["name"]["hi"] if isinstance(z.get("name"), dict) else "",
             "zone_type": z["zone_type"],
-            "name_en": z["name"]["en"],
-            "name_hi": z["name"]["hi"],
-            "location_en": z["location"]["en"],
-            "location_hi": z["location"]["hi"],
-            "associated_planet": z["associated_planet"],
-            "lk_house": z["lk_house"],
-            "keywords_en": z["keywords"]["en"],
-            "keywords_hi": z["keywords"]["hi"],
             "svg_cx": z["svg_cx"],
             "svg_cy": z["svg_cy"],
+            "svg_r": _SVG_R.get(z["zone_type"], 15),
+            # extras
+            "lk_house": z["lk_house"],
+            "location_en": z["location"]["en"] if isinstance(z.get("location"), dict) else "",
+            "keywords_en": z["keywords"]["en"] if isinstance(z.get("keywords"), dict) else "",
         }
         for z in PALM_ZONES
     ]
@@ -224,9 +226,9 @@ def calculate_palm_correlations(
 
     Returns: {correlations, overall_samudrik_score, summary}
     """
-    p_map = {p["planet"]: p["house"] for p in planet_positions}
+    p_map = {p.get("planet", ""): p.get("house", 0) for p in planet_positions if p.get("planet")}
 
-    from app.lalkitab_advanced import PAKKA_GHAR, LK_ENEMIES
+    from app.lalkitab_advanced import PAKKA_GHAR
 
     correlations = []
     benefic_count = 0
@@ -286,13 +288,14 @@ def calculate_palm_correlations(
             benefic_count += 1
         elif mark_nature == "malefic":
             malefic_count += 1
+        # "mixed" nature counts as neither — no impact on score
 
         correlations.append({
             "zone_id": zone_id,
-            "zone_name": zone["name"],
+            "zone_name": zone["name"]["en"] if isinstance(zone.get("name"), dict) else zone.get("name", zone_id),
+            "planet": planet,
             "mark_type": mark_type,
-            "mark_info": mark_info,
-            "associated_planet": planet,
+            "nature": mark_nature,
             "planet_house": planet_house,
             "is_in_pakka_ghar": is_in_pakka,
             "interpretation": {"en": interp_en, "hi": interp_hi},
