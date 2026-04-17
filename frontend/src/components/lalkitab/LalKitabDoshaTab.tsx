@@ -1,5 +1,8 @@
+import { useState, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import type { LalKitabChartData } from './lalkitab-data';
+import { useLalKitab } from './LalKitabContext';
+import { apiFetch } from '@/lib/api';
 import { AlertTriangle, CheckCircle, Shield } from 'lucide-react';
 
 interface DoshaResult {
@@ -24,11 +27,54 @@ const severityStyles: Record<DoshaResult['severity'], string> = {
   low: 'bg-yellow-500/20 text-yellow-700',
 };
 
+/**
+ * Map backend dosha format (snake_case) to frontend DoshaResult (camelCase).
+ * Backend returns: name_en, name_hi, description_en, description_hi, remedy_hint_en, remedy_hint_hi
+ * Frontend expects: nameEn, nameHi, descEn, descHi, remedyEn, remedyHi
+ */
+function mapBackendDosha(d: any): DoshaResult {
+  return {
+    key: d.key ?? '',
+    nameEn: d.name_en ?? d.nameEn ?? '',
+    nameHi: d.name_hi ?? d.nameHi ?? '',
+    detected: d.detected ?? false,
+    severity: d.severity ?? 'low',
+    descEn: d.description_en ?? d.descEn ?? '',
+    descHi: d.description_hi ?? d.descHi ?? '',
+    remedyEn: d.remedy_hint_en ?? d.remedyEn ?? '',
+    remedyHi: d.remedy_hint_hi ?? d.remedyHi ?? '',
+  };
+}
+
 export default function LalKitabDoshaTab({ chartData }: Props) {
   const { t, language } = useTranslation();
   const isHi = language === 'hi';
+  const { fullData, kundliId } = useLalKitab();
+  const [backendDoshas, setBackendDoshas] = useState<DoshaResult[] | null>(null);
 
-  const doshas: DoshaResult[] = chartData.doshas ?? [];
+  useEffect(() => {
+    // Priority 1: Use doshas from consolidated /api/lalkitab/full/{id} response
+    if (fullData?.doshas && !fullData?._errors?.doshas) {
+      setBackendDoshas(fullData.doshas.map(mapBackendDosha));
+      return;
+    }
+
+    // Priority 2: Fetch from dedicated dosha endpoint
+    if (kundliId) {
+      apiFetch(`/api/lalkitab/doshas/${kundliId}`)
+        .then((res: any) => {
+          if (res?.doshas && Array.isArray(res.doshas)) {
+            setBackendDoshas(res.doshas.map(mapBackendDosha));
+          }
+        })
+        .catch(() => {
+          // Fall through to local detection (Priority 3)
+        });
+    }
+  }, [kundliId, fullData]);
+
+  // Priority 3: Fall back to frontend-generated doshas from chartData
+  const doshas: DoshaResult[] = backendDoshas ?? (chartData.doshas ?? []);
   const detectedDoshas = doshas.filter((d) => d.detected);
   const cleanDoshas = doshas.filter((d) => !d.detected);
   const sortedDoshas = [...detectedDoshas, ...cleanDoshas];
