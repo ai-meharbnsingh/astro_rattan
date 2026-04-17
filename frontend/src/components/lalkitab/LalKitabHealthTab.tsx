@@ -154,7 +154,7 @@ export default function LalKitabHealthTab({ kundliId }: Props) {
                   <div key={i} className="p-3 rounded-xl bg-red-500/5 border border-red-300/20">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold-dark text-xs font-semibold">
-                        {isHi ? (PLANET_HI[area.planet] ?? area.planet) : area.planet.charAt(0).toUpperCase() + area.planet.slice(1)}
+                        {isHi ? (PLANET_HI[area.planet] ?? area.planet) : (area.planet || "").charAt(0).toUpperCase() + area.planet.slice(1)}
                       </span>
                       <span className="text-xs text-gray-500">
                         {t('auto.houseAreaHouse')}
@@ -227,7 +227,7 @@ export default function LalKitabHealthTab({ kundliId }: Props) {
                   <div key={key} className={`text-center p-3 rounded-xl border ${
                     isInBadHouse ? 'bg-red-500/5 border-red-300/20' : 'bg-sacred-gold/5 border-sacred-gold/15'
                   }`}>
-                    <p className="text-xs text-gray-500 mb-1">{isHi ? hi : key.charAt(0).toUpperCase() + key.slice(1)}</p>
+                    <p className="text-xs text-gray-500 mb-1">{isHi ? hi : (key || "").charAt(0).toUpperCase() + key.slice(1)}</p>
                     <p className={`text-xl font-bold ${isInBadHouse ? 'text-red-600' : 'text-sacred-gold'}`}>{house}</p>
                     <p className="text-xs text-gray-400">{t('auto.house')}</p>
                   </div>

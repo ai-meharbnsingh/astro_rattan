@@ -1,6 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n';
-import { CHANDRA_CHAALANA_TASKS } from './lalkitab-data';
 import { Moon, CheckCircle2, RotateCcw, BookOpen, Play, AlertTriangle } from 'lucide-react';
 import { apiFetch } from '@/lib/api';
 
@@ -8,9 +7,6 @@ interface JournalEntry {
   date: string;
   note: string;
 }
-
-const STORAGE_KEY = 'lk_chandra_v1';
-const JOURNAL_KEY = 'lk_chandra_journal_v1';
 
 function todayStr(): string {
   const now = new Date();
@@ -25,28 +21,11 @@ interface ProtocolState {
   completedDays: string[]; // list of ISO dates marked complete
 }
 
-function loadState(): ProtocolState {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || { startDate: null, completedDays: [] };
-  } catch {
-    return { startDate: null, completedDays: [] };
-  }
-}
-
-function saveState(s: ProtocolState) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
-}
-
-function loadJournal(): JournalEntry[] {
-  try {
-    return JSON.parse(localStorage.getItem(JOURNAL_KEY) || '[]');
-  } catch {
-    return [];
-  }
-}
-
-function saveJournal(j: JournalEntry[]) {
-  localStorage.setItem(JOURNAL_KEY, JSON.stringify(j));
+interface ChandraTask {
+  day: number;
+  en: string;
+  hi: string;
+  category: 'action' | 'donation' | 'meditation' | 'fasting' | 'mantra';
 }
 
 const categoryColors: Record<string, string> = {
@@ -61,8 +40,9 @@ export default function LalKitabChandraChaalanaTab() {
   const { t, language } = useTranslation();
   const isHi = language === 'hi';
 
-  const [state, setState] = useState<ProtocolState>(loadState);
-  const [journalEntries, setJournalEntries] = useState<JournalEntry[]>(loadJournal);
+  const [state, setState] = useState<ProtocolState>({ startDate: null, completedDays: [] });
+  const [tasks, setTasks] = useState<ChandraTask[]>([]);
+  const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [journalNote, setJournalNote] = useState('');
   const [syncError, setSyncError] = useState(false);
 
@@ -71,24 +51,18 @@ export default function LalKitabChandraChaalanaTab() {
   // Load from API on mount — API wins for cross-device sync
   useEffect(() => {
     apiFetch('/api/lalkitab/chandra')
-      .then((res) => res.json())
-      .then((data: { start_date: string | null; completed_days: string[]; journal: JournalEntry[] }) => {
-        if (data.start_date !== undefined) {
-          const apiState: ProtocolState = {
-            startDate: data.start_date,
-            completedDays: data.completed_days || [],
-          };
-          setState(apiState);
-          saveState(apiState);
-        }
-        if (data.journal?.length) {
-          setJournalEntries(data.journal);
-          saveJournal(data.journal);
-        }
+      .then((data: any) => {
+        const apiState: ProtocolState = {
+          startDate: data?.start_date ?? null,
+          completedDays: Array.isArray(data?.completed_days) ? data.completed_days : [],
+        };
+        setState(apiState);
+        setTasks(Array.isArray(data?.tasks) ? data.tasks : []);
+        setJournalEntries(Array.isArray(data?.journal) ? data.journal : []);
         setSyncError(false);
       })
       .catch((err) => {
-        console.error('Chandra Chaalana sync failed — using local storage:', err);
+        console.error('Chandra Chaalana sync failed:', err);
         setSyncError(true);
       });
   }, []);
@@ -105,78 +79,75 @@ export default function LalKitabChandraChaalanaTab() {
     return { currentDay: Math.min(currentDay, 43), isMissed, isComplete };
   }, [state, today]);
 
-  const todayTask = CHANDRA_CHAALANA_TASKS.find((t) => t.day === currentDay);
+  const todayTask = tasks.find((x) => x.day === currentDay);
   const isTodayDone = state.completedDays.includes(today);
 
+  const reload = () => {
+    apiFetch('/api/lalkitab/chandra')
+      .then((data: any) => {
+        setState({
+          startDate: data?.start_date ?? null,
+          completedDays: Array.isArray(data?.completed_days) ? data.completed_days : [],
+        });
+        setTasks(Array.isArray(data?.tasks) ? data.tasks : []);
+        setJournalEntries(Array.isArray(data?.journal) ? data.journal : []);
+        setSyncError(false);
+      })
+      .catch((err) => {
+        console.error('Chandra Chaalana reload failed:', err);
+        setSyncError(true);
+      });
+  };
+
   const startProtocol = () => {
-    const s: ProtocolState = { startDate: today, completedDays: [] };
-    saveState(s);
-    setState(s);
     apiFetch('/api/lalkitab/chandra/start', {
       method: 'POST',
       body: JSON.stringify({ start_date: today }),
-    }).catch((err) => {
-      console.error('Chandra Chaalana start sync failed — using local storage:', err);
-      setSyncError(true);
-    });
+    }).then(() => reload());
   };
 
   const restartProtocol = () => {
-    const s: ProtocolState = { startDate: today, completedDays: [] };
-    saveState(s);
-    setState(s);
     apiFetch('/api/lalkitab/chandra/start', {
       method: 'POST',
       body: JSON.stringify({ start_date: today }),
-    }).catch((err) => {
-      console.error('Chandra Chaalana start sync failed — using local storage:', err);
-      setSyncError(true);
-    });
+    }).then(() => reload())
+      .catch((err) => {
+        console.error('Chandra Chaalana restart sync failed:', err);
+        setSyncError(true);
+      });
   };
 
   const markDayDone = () => {
     if (isTodayDone) return;
-    // Optimistic update
-    const updated: ProtocolState = {
-      ...state,
-      completedDays: [...state.completedDays, today],
-    };
-    saveState(updated);
-    setState(updated);
-
-    // Sync to API — API reconciles and returns authoritative list
     apiFetch('/api/lalkitab/chandra/mark-done', {
       method: 'POST',
       body: JSON.stringify({ date: today }),
     })
-      .then((res) => res.json())
-      .then((data: { completed_days: string[] }) => {
-        const reconciled: ProtocolState = { ...updated, completedDays: data.completed_days };
-        saveState(reconciled);
+      .then((data: any) => {
+        const reconciled: ProtocolState = {
+          ...state,
+          completedDays: Array.isArray(data?.completed_days) ? data.completed_days : state.completedDays,
+        };
         setState(reconciled);
         setSyncError(false);
       })
       .catch((err) => {
-        console.error('Chandra Chaalana mark-done sync failed — keeping optimistic state:', err);
+        console.error('Chandra Chaalana mark-done sync failed:', err);
         setSyncError(true);
       });
   };
 
   const saveEntry = () => {
     if (!journalNote.trim()) return;
-    const entry: JournalEntry = { date: today, note: journalNote.trim() };
-    const updated = [entry, ...journalEntries].slice(0, 60);
-    setJournalEntries(updated);
-    saveJournal(updated);
-    setJournalNote('');
-
     apiFetch('/api/lalkitab/chandra/journal', {
       method: 'POST',
-      body: JSON.stringify({ date: today, note: entry.note }),
-    }).catch((err) => {
-      console.error('Chandra Chaalana journal sync failed — using local storage:', err);
-      setSyncError(true);
-    });
+      body: JSON.stringify({ date: today, note: journalNote.trim() }),
+    })
+      .then(() => { setJournalNote(''); reload(); })
+      .catch((err) => {
+        console.error('Chandra Chaalana journal sync failed:', err);
+        setSyncError(true);
+      });
   };
 
   const progressPct = state.startDate ? Math.min(100, Math.round((state.completedDays.length / 43) * 100)) : 0;
@@ -192,7 +163,7 @@ export default function LalKitabChandraChaalanaTab() {
       <div className="space-y-6">
         {syncError && (
           <div className="p-2 mb-2 bg-amber-50 border border-amber-200 rounded text-xs text-amber-800">
-            {isHi ? 'सर्वर से सिंक नहीं हो सका — स्थानीय डेटा उपयोग में' : 'Could not sync with server — using local data'}
+            {isHi ? 'सर्वर से सिंक नहीं हो सका' : 'Could not sync with server'}
           </div>
         )}
         <div>
@@ -228,24 +199,26 @@ export default function LalKitabChandraChaalanaTab() {
           </button>
         </div>
 
-        {/* Preview first 7 days */}
-        <div className="card-sacred rounded-xl p-5 border border-sacred-gold/20">
-          <h3 className="font-sans font-semibold text-sacred-gold mb-4">
-            {t('auto.previewFirst7Days')}
-          </h3>
-          <div className="space-y-2">
-            {CHANDRA_CHAALANA_TASKS.slice(0, 7).map((task) => (
-              <div key={task.day} className="flex items-start gap-3 p-3 rounded-xl bg-sacred-gold/5">
-                <span className="text-xs font-bold text-sacred-gold min-w-[40px]">
-                  {t('auto.dayTaskDay')}
-                </span>
-                <p className="text-xs text-foreground/80 leading-snug">
-                  {isHi ? task.hi : task.en}
-                </p>
-              </div>
-            ))}
+        {/* Preview first 7 days (from backend tasks) */}
+        {tasks.length > 0 && (
+          <div className="card-sacred rounded-xl p-5 border border-sacred-gold/20">
+            <h3 className="font-sans font-semibold text-sacred-gold mb-4">
+              {t('auto.previewFirst7Days')}
+            </h3>
+            <div className="space-y-2">
+              {tasks.slice(0, 7).map((task) => (
+                <div key={task.day} className="flex items-start gap-3 p-3 rounded-xl bg-sacred-gold/5">
+                  <span className="text-xs font-bold text-sacred-gold min-w-[40px]">
+                    {isHi ? `दिन ${task.day}` : `Day ${task.day}`}
+                  </span>
+                  <p className="text-xs text-foreground/80 leading-snug">
+                    {isHi ? task.hi : task.en}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     );
   }
@@ -355,7 +328,7 @@ export default function LalKitabChandraChaalanaTab() {
               {t('lk.chandra.todayTask')}
             </h3>
             <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${categoryColors[todayTask.category] || ''}`}>
-              {t(`lk.chandra.category${todayTask.category.charAt(0).toUpperCase() + todayTask.category.slice(1)}`)}
+              {t(`lk.chandra.category${(todayTask.category || 'general').charAt(0).toUpperCase() + (todayTask.category || 'general').slice(1)}`)}
             </span>
           </div>
           <p className="text-sm text-foreground leading-relaxed mb-4">

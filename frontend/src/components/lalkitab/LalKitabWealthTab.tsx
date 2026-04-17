@@ -152,7 +152,7 @@ export default function LalKitabWealthTab({ kundliId }: Props) {
               <div key={key} className="card-sacred rounded-xl border border-sacred-gold/20 p-4 text-center">
                 <p className="text-xs text-gray-500 mb-1">{isHi ? label.hi : label.en}</p>
                 <p className="text-3xl font-bold text-sacred-gold">{house}</p>
-                <p className="text-xs text-gray-400 mt-0.5">{isHi ? hi : key.charAt(0).toUpperCase() + key.slice(1)}</p>
+                <p className="text-xs text-gray-400 mt-0.5">{isHi ? hi : (key || "").charAt(0).toUpperCase() + key.slice(1)}</p>
               </div>
             ))}
           </div>
