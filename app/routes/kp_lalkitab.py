@@ -26,11 +26,15 @@ from app.lalkitab_advanced import (
     calculate_bunyaad,
     calculate_takkar,
     calculate_enemy_presence,
+    calculate_dhoka,
+    calculate_achanak_chot,
+    enrich_debts_active_passive,
 )
 from app.lalkitab_interpretations import (
     get_all_interpretations_for_chart,
     get_lk_validated_remedies,
 )
+from app.lalkitab_translations import PLANET_NAMES_HI
 
 router = APIRouter()
 
@@ -174,9 +178,9 @@ def lalkitab_remedies(payload: dict, user: dict = Depends(get_current_user), db:
                     # For now, we'll return the same text for both or use a simple map if available.
                     remedies_list.append({
                         "planet_en": planet,
-                        "planet_hi": planet, # Will be translated by frontend translatePlanet
+                        "planet_hi": PLANET_NAMES_HI.get(planet, planet),
                         "remedy_en": r_text,
-                        "remedy_hi": r_text, # Same here or use backend translation if possible
+                        "remedy_hi": r_text,  # Will be replaced by house-based remedies (W1-A)
                     })
         return {"remedies": remedies_list}
     except Exception as exc:
@@ -184,6 +188,56 @@ def lalkitab_remedies(payload: dict, user: dict = Depends(get_current_user), db:
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Calculation error — please try again",
         )
+
+
+@router.get("/api/lalkitab/remedies/enriched/{kundli_id}")
+def get_enriched_remedies(kundli_id: str, user: dict = Depends(get_current_user), db: Any = Depends(get_db)):
+    """
+    Return enriched remedies for ALL 9 planets: problem / reason / remedy / how_it_works.
+    Always returns all planets (not just weak ones) so the UI can show education for every house.
+    """
+    row = db.execute(
+        "SELECT chart_data, birth_date FROM kundlis WHERE id = %s AND user_id = %s",
+        (kundli_id, user["sub"]),
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Kundli not found")
+
+    chart_data = json.loads(row["chart_data"])
+    planet_positions = {p: info.get("sign", "Aries") for p, info in chart_data.get("planets", {}).items()}
+    if not planet_positions:
+        raise HTTPException(status_code=400, detail="No planet positions in chart")
+
+    res = get_remedies(planet_positions)
+    enriched = []
+    for planet, info in res.items():
+        r = info["remedy"]
+        enriched.append({
+            "planet": planet,
+            "planet_hi": PLANET_NAMES_HI.get(planet, planet),
+            "sign": info["sign"],
+            "lk_house": info["lk_house"],
+            "dignity": info["dignity"],
+            "strength": info["strength"],
+            "has_remedy": info["has_remedy"],
+            "urgency": r.get("urgency", "low"),
+            "material": r.get("material", ""),
+            "day": r.get("day", ""),
+            # Remedy action
+            "remedy_en": r.get("en", ""),
+            "remedy_hi": r.get("hi", ""),
+            # Education fields
+            "problem_en": r.get("problem_en", ""),
+            "problem_hi": r.get("problem_hi", ""),
+            "reason_en": r.get("reason_en", ""),
+            "reason_hi": r.get("reason_hi", ""),
+            "how_en": r.get("how_en", ""),
+            "how_hi": r.get("how_hi", ""),
+        })
+    # Sort: weak/high urgency first, then by house number
+    urgency_order = {"high": 0, "medium": 1, "low": 2}
+    enriched.sort(key=lambda x: (0 if x["has_remedy"] else 1, urgency_order.get(x["urgency"], 2), x["lk_house"]))
+    return {"remedies": enriched}
 
 
 # ─────────────────────────────────────────────────────────────
@@ -1332,4 +1386,569 @@ def kp_horary_predict(
             detail="Calculation error — please try again",
         )
 
+    return result
+
+
+# ═══════════════════════════════════════════════════════════════════
+# HELPER — extract LK planet positions from kundli_id
+# ═══════════════════════════════════════════════════════════════════
+
+def _get_lk_positions(kundli_id: str, user_sub: str, db: Any):
+    """Load kundli from DB, convert to LK planet-position list."""
+    row = db.execute(
+        "SELECT * FROM kundlis WHERE id = %s AND user_id = %s",
+        (kundli_id, user_sub),
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Kundli not found")
+    try:
+        raw = row["chart_data"]
+        chart_data = json.loads(raw) if isinstance(raw, str) else (raw or {})
+    except (json.JSONDecodeError, TypeError):
+        raise HTTPException(status_code=500, detail="Corrupt chart data")
+    positions = []
+    for planet_name, info in chart_data.get("planets", {}).items():
+        if planet_name not in _KNOWN_PLANETS:
+            continue
+        if not isinstance(info, dict):
+            continue
+        # Prefer explicit house number if present, else derive from sign
+        if "house" in info and isinstance(info["house"], int):
+            house = info["house"]
+        else:
+            sign = info.get("sign", "")
+            house = _SIGN_TO_LK_HOUSE.get(sign, 0)
+        if house > 0:
+            positions.append({"planet": planet_name, "house": house})
+    return positions, row
+
+
+# ═══════════════════════════════════════════════════════════════════
+# PALMISTRY (Samudrik Shastra)
+# ═══════════════════════════════════════════════════════════════════
+
+@router.get("/api/lalkitab/palm/zones")
+def get_palm_zones():
+    """Return all palm zones (mounts + lines) with planet/house mappings. No auth required."""
+    from app.lalkitab_palmistry import get_palm_zones as _zones, MARK_TYPES
+    return {"zones": _zones(), "mark_types": MARK_TYPES}
+
+
+@router.post("/api/lalkitab/palm/correlate")
+def correlate_palm_marks(
+    payload: dict,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """
+    payload: {kundli_id, palm_marks: [{zone_id, mark_type}]}
+    Returns palm-to-chart correlations with interpretations and remedies.
+    """
+    from app.lalkitab_palmistry import calculate_palm_correlations
+    kundli_id = payload.get("kundli_id")
+    marks = payload.get("palm_marks", payload.get("marks", []))  # accept both keys
+    if not kundli_id:
+        raise HTTPException(status_code=400, detail="kundli_id required")
+    if not isinstance(marks, list):
+        raise HTTPException(status_code=400, detail="palm_marks must be a list")
+    positions, _ = _get_lk_positions(kundli_id, user["sub"], db)
+    return calculate_palm_correlations(positions, marks)
+
+
+# ═══════════════════════════════════════════════════════════════════
+# AGE MILESTONE TRIGGERS (Safar-e-Zindagi)
+# ═══════════════════════════════════════════════════════════════════
+
+@router.get("/api/lalkitab/milestones/{kundli_id}")
+def get_age_milestones(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Return Safar-e-Zindagi age milestone analysis with countdown to next trigger."""
+    from app.lalkitab_milestones import calculate_age_milestones
+    positions, row = _get_lk_positions(kundli_id, user["sub"], db)
+    birth_date = str(row.get("birth_date") or row.get("dob") or "").strip()
+    if not birth_date:
+        try:
+            raw = row["chart_data"]
+            cd = json.loads(raw) if isinstance(raw, str) else (raw or {})
+            birth_date = cd.get("birth_date", "")
+        except Exception:
+            birth_date = ""
+    if not birth_date:
+        raise HTTPException(status_code=422, detail="birth_date not found in kundli")
+    return calculate_age_milestones(birth_date, positions)
+
+
+# ═══════════════════════════════════════════════════════════════════
+# TECHNICAL LOGIC (Chalti Gaadi, Dhur-Dhur-Aage, Soya Ghar)
+# ═══════════════════════════════════════════════════════════════════
+
+@router.get("/api/lalkitab/technical/{kundli_id}")
+def get_technical_analysis(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Return Chalti Gaadi, Dhur-Dhur-Aage, Soya Ghar, Planet Statuses, Muththi and Kayam Grah analysis."""
+    from app.lalkitab_technical import (
+        calculate_chalti_gaadi,
+        calculate_dhur_dhur_aage,
+        calculate_soya_ghar,
+        classify_all_planet_statuses,
+        calculate_muththi,
+    )
+    positions, _ = _get_lk_positions(kundli_id, user["sub"], db)
+    lk_aspects = calculate_lk_aspects(positions)
+    return {
+        "chalti_gaadi": calculate_chalti_gaadi(positions),
+        "dhur_dhur_aage": calculate_dhur_dhur_aage(positions),
+        "soya_ghar": calculate_soya_ghar(positions),
+        "planet_statuses": classify_all_planet_statuses(positions),
+        "muththi": calculate_muththi(positions),
+        "kayam": calculate_kayam_grah(positions, lk_aspects),
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════
+# BALI KA BAKRA (Sacrifice Analysis)
+# ═══════════════════════════════════════════════════════════════════
+
+@router.get("/api/lalkitab/sacrifice/{kundli_id}")
+def get_sacrifice_analysis(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Return Bali Ka Bakra sacrifice chain analysis for this chart."""
+    from app.lalkitab_sacrifice import analyze_sacrifice
+    positions, _ = _get_lk_positions(kundli_id, user["sub"], db)
+    results = analyze_sacrifice(positions)
+    return {
+        "kundli_id": kundli_id,
+        "sacrifice_count": len(results),
+        "has_sacrifices": len(results) > 0,
+        "results": results,
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════
+# FORBIDDEN REMEDIES
+# ═══════════════════════════════════════════════════════════════════
+
+@router.get("/api/lalkitab/forbidden/{kundli_id}")
+def get_forbidden_list(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Return dynamic forbidden actions list based on this chart's planet placements."""
+    from app.lalkitab_forbidden import get_forbidden_remedies
+    positions, _ = _get_lk_positions(kundli_id, user["sub"], db)
+    results = get_forbidden_remedies(positions)
+    return {
+        "kundli_id": kundli_id,
+        "forbidden_count": len(results),
+        "rules": results,
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════
+# FAMILY CHART LINKING (Grah-Gasti)
+# ═══════════════════════════════════════════════════════════════════
+
+def _positions_from_chart(chart_data: dict) -> list:
+    """Parse planet positions from a chart_data dict (no DB lookup)."""
+    positions = []
+    for planet_name, info in (chart_data or {}).get("planets", {}).items():
+        if planet_name not in _KNOWN_PLANETS or not isinstance(info, dict):
+            continue
+        if "house" in info and isinstance(info["house"], int):
+            house = info["house"]
+        else:
+            house = _SIGN_TO_LK_HOUSE.get(info.get("sign", ""), 0)
+        if house > 0:
+            positions.append({"planet": planet_name, "house": house})
+    return positions
+
+
+@router.get("/api/lalkitab/family/{kundli_id}")
+def get_family_links(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Return family chart links with per-member harmony analysis."""
+    from app.lalkitab_family import calculate_family_harmony, get_family_dominant_planet, get_family_theme
+
+    owner_row = db.execute(
+        "SELECT id, chart_data FROM kundlis WHERE id = %s AND user_id = %s",
+        (kundli_id, user["sub"]),
+    ).fetchone()
+    if not owner_row:
+        raise HTTPException(status_code=404, detail="Kundli not found")
+
+    try:
+        raw = owner_row["chart_data"]
+        owner_chart = json.loads(raw) if isinstance(raw, str) else (raw or {})
+    except Exception:
+        owner_chart = {}
+    owner_positions = _positions_from_chart(owner_chart)
+
+    links = db.execute(
+        """SELECT lf.id AS link_id, lf.member_kundli_id, lf.relation,
+                  k.person_name, k.birth_date, k.chart_data
+           FROM lal_kitab_family_links lf
+           JOIN kundlis k ON k.id = lf.member_kundli_id
+           WHERE lf.owner_kundli_id = %s AND lf.user_id = %s
+           ORDER BY lf.created_at""",
+        (kundli_id, user["sub"]),
+    ).fetchall()
+
+    linked_members = []
+    all_scores = []
+    all_positions = list(owner_positions)
+
+    for link in links:
+        try:
+            raw_m = link["chart_data"]
+            member_chart = json.loads(raw_m) if isinstance(raw_m, str) else (raw_m or {})
+        except Exception:
+            member_chart = {}
+        member_positions = _positions_from_chart(member_chart)
+        harmony = calculate_family_harmony(owner_positions, member_positions, member_name=link["person_name"])
+        all_scores.append(harmony["harmony_score"])
+        all_positions.extend(member_positions)
+        linked_members.append({
+            "link_id": link["link_id"],
+            "kundli_id": link["member_kundli_id"],
+            "name": link["person_name"],
+            "relation": link["relation"],
+            "birth_date": link["birth_date"],
+            "harmony_score": harmony["harmony_score"],
+            "shared_planets": harmony["shared_planets"],
+            "support_planets": harmony["support_planets"],
+            "tension_planets": harmony["tension_planets"],
+            "theme": harmony["theme"],
+            "cross_waking_narratives": harmony["cross_waking_narratives"],
+        })
+
+    avg_score = round(sum(all_scores) / len(all_scores)) if all_scores else 0
+    dominant_planet = get_family_dominant_planet(all_positions) if all_positions else None
+    family_theme = get_family_theme(avg_score) if all_scores else None
+
+    return {
+        "kundli_id": kundli_id,
+        "linked_members": linked_members,
+        "family_harmony": avg_score,
+        "dominant_planet": dominant_planet,
+        "family_theme": family_theme,
+    }
+
+
+@router.post("/api/lalkitab/family/{kundli_id}/link")
+def add_family_link(
+    kundli_id: str,
+    payload: dict,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Link a family member kundli to the owner kundli. payload: {member_kundli_id, relation}"""
+    member_kundli_id = payload.get("member_kundli_id", "").strip()
+    relation = payload.get("relation", "family").strip()
+    if not member_kundli_id:
+        raise HTTPException(status_code=400, detail="member_kundli_id required")
+    if member_kundli_id == kundli_id:
+        raise HTTPException(status_code=400, detail="Cannot link kundli to itself")
+
+    owner = db.execute(
+        "SELECT id FROM kundlis WHERE id = %s AND user_id = %s",
+        (kundli_id, user["sub"]),
+    ).fetchone()
+    if not owner:
+        raise HTTPException(status_code=404, detail="Owner kundli not found")
+
+    member = db.execute(
+        "SELECT id FROM kundlis WHERE id = %s AND user_id = %s",
+        (member_kundli_id, user["sub"]),
+    ).fetchone()
+    if not member:
+        raise HTTPException(status_code=404, detail="Member kundli not found or not yours")
+
+    try:
+        row = db.execute(
+            """INSERT INTO lal_kitab_family_links (owner_kundli_id, member_kundli_id, relation, user_id)
+               VALUES (%s, %s, %s, %s)
+               ON CONFLICT (owner_kundli_id, member_kundli_id) DO UPDATE SET relation = EXCLUDED.relation
+               RETURNING id""",
+            (kundli_id, member_kundli_id, relation, user["sub"]),
+        ).fetchone()
+        db.commit()
+    except Exception as e:
+        logger.warning("[family_link] insert error: %s", e)
+        raise HTTPException(status_code=500, detail="Failed to create link")
+
+    return {"link_id": row["id"], "status": "linked"}
+
+
+@router.delete("/api/lalkitab/family/{kundli_id}/link/{link_id}")
+def remove_family_link(
+    kundli_id: str,
+    link_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Remove a family member link."""
+    row = db.execute(
+        """DELETE FROM lal_kitab_family_links
+           WHERE id = %s AND owner_kundli_id = %s AND user_id = %s
+           RETURNING id""",
+        (link_id, kundli_id, user["sub"]),
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Link not found")
+    db.commit()
+    return {"status": "unlinked"}
+
+
+# ═══════════════════════════════════════════════════════════════════
+# VASTU DIRECTIONAL DIAGNOSIS (Makaan)
+# ═══════════════════════════════════════════════════════════════════
+
+@router.get("/api/lalkitab/vastu/{kundli_id}")
+def get_vastu_diagnosis_route(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Vastu home-layout diagnosis from LK planet positions."""
+    from app.lalkitab_vastu import get_vastu_diagnosis
+    positions, _ = _get_lk_positions(kundli_id, user["sub"], db)
+    return get_vastu_diagnosis(positions)
+
+
+# ═══════════════════════════════════════════════════════════════════
+# 7-YEAR SUB-CYCLE
+# ═══════════════════════════════════════════════════════════════════
+
+@router.get("/api/lalkitab/seven-year-cycle/{kundli_id}")
+def get_seven_year_cycle_route(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Return the active 7-year sub-cycle for a kundli."""
+    from app.lalkitab_milestones import get_seven_year_cycle
+    positions, row = _get_lk_positions(kundli_id, user["sub"], db)
+    birth_date_str = row.get("birth_date", "")
+    try:
+        from datetime import date
+        bdate = _date.fromisoformat(birth_date_str)
+        current_age = (date.today() - bdate).days // 365
+    except Exception:
+        current_age = 30
+    return get_seven_year_cycle(current_age, positions)
+
+
+# ═══════════════════════════════════════════════════════════════════
+# DHOKA (DECEPTION) + ACHANAK CHOT (SUDDEN STRIKE)
+# ═══════════════════════════════════════════════════════════════════
+
+@router.get("/api/lalkitab/relationship-engine/{kundli_id}")
+def get_relationship_engine(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Returns Takkar, Dhoka, Achanak Chot, and Bunyaad analysis."""
+    from app.lalkitab_advanced import calculate_takkar, calculate_bunyaad, calculate_dhoka, calculate_achanak_chot
+    positions, _ = _get_lk_positions(kundli_id, user["sub"], db)
+    return {
+        "takkar":      calculate_takkar(positions),
+        "dhoka":       calculate_dhoka(positions),
+        "achanak_chot": calculate_achanak_chot(positions),
+        "bunyaad":     calculate_bunyaad(positions),
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════
+# ACTIVE vs PASSIVE RIN
+# ═══════════════════════════════════════════════════════════════════
+
+@router.get("/api/lalkitab/rin-active/{kundli_id}")
+def get_active_rin(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Returns karmic debts with active/passive activation status."""
+    from app.lalkitab_advanced import calculate_karmic_debts, enrich_debts_active_passive
+    positions, _ = _get_lk_positions(kundli_id, user["sub"], db)
+    debts = calculate_karmic_debts(positions)
+    return {"debts": enrich_debts_active_passive(debts, positions)}
+
+
+# ═══════════════════════════════════════════════════════════════════
+# 43-DAY REMEDY TRACKER
+# ═══════════════════════════════════════════════════════════════════
+
+@router.get("/api/lalkitab/remedy-tracker/{kundli_id}")
+def list_remedy_trackers(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """List all remedy trackers for a kundli."""
+    rows = db.execute(
+        "SELECT * FROM remedy_trackers WHERE user_id = %s AND kundli_id = %s ORDER BY created_at DESC",
+        (user["sub"], kundli_id),
+    ).fetchall()
+    result = []
+    for r in rows:
+        try:
+            check_ins = json.loads(r["check_ins"]) if r["check_ins"] else []
+        except Exception:
+            check_ins = []
+        result.append({
+            "id": r["id"],
+            "remedy_title": r["remedy_title"],
+            "remedy_description": r["remedy_description"],
+            "planet": r["planet"],
+            "started_at": str(r["started_at"]),
+            "target_days": r["target_days"],
+            "completed_days": r["completed_days"],
+            "check_ins": check_ins,
+            "status": r["status"],
+            "progress_pct": round(r["completed_days"] / r["target_days"] * 100) if r["target_days"] > 0 else 0,
+        })
+    return {"trackers": result}
+
+
+@router.post("/api/lalkitab/remedy-tracker/{kundli_id}")
+def create_remedy_tracker(
+    kundli_id: str,
+    payload: dict,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Start a new 43-day remedy tracker."""
+    title = payload.get("remedy_title", "").strip()
+    if not title:
+        raise HTTPException(status_code=400, detail="remedy_title required")
+    # Verify kundli ownership
+    k = db.execute("SELECT id FROM kundlis WHERE id = %s AND user_id = %s", (kundli_id, user["sub"])).fetchone()
+    if not k:
+        raise HTTPException(status_code=404, detail="Kundli not found")
+    from datetime import date as _date_cls
+    started_at = payload.get("started_at") or str(_date_cls.today())
+    row = db.execute(
+        """INSERT INTO remedy_trackers
+           (user_id, kundli_id, remedy_title, remedy_description, planet, started_at, target_days)
+           VALUES (%s, %s, %s, %s, %s, %s, %s)
+           RETURNING id""",
+        (user["sub"], kundli_id, title,
+         payload.get("remedy_description", ""),
+         payload.get("planet"),
+         started_at,
+         int(payload.get("target_days", 43))),
+    ).fetchone()
+    db.commit()
+    return {"tracker_id": row["id"], "status": "created"}
+
+
+@router.post("/api/lalkitab/remedy-tracker/{tracker_id}/checkin")
+def checkin_remedy_tracker(
+    tracker_id: str,
+    payload: dict,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """
+    Mark today as completed for a tracker.
+    If 'missed' is True in payload, status becomes 'broken' and completed_days resets.
+    """
+    from datetime import date as _date_cls
+    today = str(_date_cls.today())
+    row = db.execute(
+        "SELECT * FROM remedy_trackers WHERE id = %s AND user_id = %s",
+        (tracker_id, user["sub"]),
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Tracker not found")
+    if row["status"] not in ("active", "paused"):
+        raise HTTPException(status_code=400, detail=f"Tracker is {row['status']} — cannot check in")
+    try:
+        check_ins = json.loads(row["check_ins"]) if row["check_ins"] else []
+    except Exception:
+        check_ins = []
+    missed = payload.get("missed", False)
+    if missed:
+        # Missed day = reset to broken
+        db.execute(
+            "UPDATE remedy_trackers SET status='broken', completed_days=0, check_ins='[]', updated_at=NOW() WHERE id=%s",
+            (tracker_id,),
+        )
+        db.commit()
+        return {"status": "broken", "message": "Remedy chain broken — reset to day 0. Start again with fresh resolve."}
+    if today not in check_ins:
+        check_ins.append(today)
+    completed = len(check_ins)
+    new_status = "completed" if completed >= row["target_days"] else "active"
+    db.execute(
+        "UPDATE remedy_trackers SET completed_days=%s, check_ins=%s, status=%s, updated_at=NOW() WHERE id=%s",
+        (completed, json.dumps(check_ins), new_status, tracker_id),
+    )
+    db.commit()
+    return {
+        "status": new_status,
+        "completed_days": completed,
+        "target_days": row["target_days"],
+        "progress_pct": round(completed / row["target_days"] * 100),
+        "days_remaining": max(0, row["target_days"] - completed),
+    }
+
+
+@router.delete("/api/lalkitab/remedy-tracker/{tracker_id}")
+def delete_remedy_tracker(
+    tracker_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Delete a remedy tracker."""
+    row = db.execute(
+        "DELETE FROM remedy_trackers WHERE id=%s AND user_id=%s RETURNING id",
+        (tracker_id, user["sub"]),
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Tracker not found")
+    db.commit()
+    return {"status": "deleted"}
+
+
+# ─────────────────────────────────────────────────────────────
+# Lal Kitab Saala Grah — 35-Year Dasha Timeline
+# ─────────────────────────────────────────────────────────────
+from app.lalkitab_dasha import get_dasha_timeline as _get_dasha_timeline
+from datetime import date as _date_today
+
+
+@router.get("/api/lalkitab/dasha/{kundli_id}")
+def get_lk_dasha(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """LK Saala Grah (Year Ruler) Dasha timeline — which planet rules each year of life."""
+    row = db.execute(
+        "SELECT birth_date FROM kundlis WHERE id = %s AND user_id = %s",
+        (kundli_id, user["sub"]),
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Kundli not found")
+
+    result = _get_dasha_timeline(
+        birth_date=str(row["birth_date"]),
+        current_date=_date_today.today().isoformat(),
+    )
     return result

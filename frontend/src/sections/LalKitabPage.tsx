@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BookOpen, ArrowLeft, Loader2, ChevronDown, LayoutDashboard, ChartPie, Search, Clock3, Sparkles, ScrollText, Tags, Settings2 } from 'lucide-react';
+import { BookOpen, ArrowLeft, Loader2, ChevronDown, LayoutDashboard, ChartPie, Search, Clock3, Sparkles, ScrollText, Tags, Settings2, Home, CalendarCheck } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
@@ -25,7 +25,7 @@ import LalKitabRulesTab from '@/components/lalkitab/LalKitabRulesTab';
 import LalKitabNishaniyaTab from '@/components/lalkitab/LalKitabNishaniyaTab';
 import LalKitabGocharTab from '@/components/lalkitab/LalKitabGocharTab';
 import LalKitabPredictionTab from '@/components/lalkitab/LalKitabPredictionTab';
-import LalKitabRemediesTrackerTab from '@/components/lalkitab/LalKitabRemediesTrackerTab';
+import LalKitabDashaTab from '@/components/lalkitab/LalKitabDashaTab';
 import LalKitabChandraChaalanaTab from '@/components/lalkitab/LalKitabChandraChaalanaTab';
 import LalKitabRinTab from '@/components/lalkitab/LalKitabRinTab';
 import LalKitabMarriageTab from '@/components/lalkitab/LalKitabMarriageTab';
@@ -35,6 +35,14 @@ import LalKitabWealthTab from '@/components/lalkitab/LalKitabWealthTab';
 import LalKitabSavedPredictionsTab from '@/components/lalkitab/LalKitabSavedPredictionsTab';
 import LalKitabTevaTab from '@/components/lalkitab/LalKitabTevaTab';
 import LalKitabAdvancedTab from '@/components/lalkitab/LalKitabAdvancedTab';
+import LalKitabMilestonesTab from '@/components/lalkitab/LalKitabMilestonesTab';
+import LalKitabTechnicalTab from '@/components/lalkitab/LalKitabTechnicalTab';
+import LalKitabSacrificeTab from '@/components/lalkitab/LalKitabSacrificeTab';
+import LalKitabForbiddenTab from '@/components/lalkitab/LalKitabForbiddenTab';
+import LalKitabPalmistryTab from '@/components/lalkitab/LalKitabPalmistryTab';
+import LalKitabFamilyTab from '@/components/lalkitab/LalKitabFamilyTab';
+import LalKitabVastuTab from '@/components/lalkitab/LalKitabVastuTab';
+import LalKitabRemedyTrackerTab from '@/components/lalkitab/LalKitabRemedyTrackerTab';
 
 type View = 'form' | 'generating' | 'result';
 
@@ -53,6 +61,8 @@ export default function LalKitabPage() {
   const [clientId, setClientId] = useState(locState.clientId || '');
   const [kundliId, setKundliId] = useState(locState.loadKundliId || '');
   const [activeTopTab, setActiveTopTab] = useState('dashboard');
+  const [edition, setEdition] = useState<'1939' | '1941' | '1942' | '1952'>('1952');
+  const EDITIONS = ['1939', '1941', '1942', '1952'] as const;
   const topTabs = [
     { value: 'dashboard', label: t('lk.tab.dashboard'), icon: LayoutDashboard },
     { value: 'chart', label: t('auto.chart'), icon: ChartPie },
@@ -62,6 +72,8 @@ export default function LalKitabPage() {
     { value: 'predictions', label: t('auto.predictions'), icon: ScrollText },
     { value: 'nishaniyan', label: t('lk.tab.nishaniyan'), icon: Tags },
     { value: 'advanced', label: t('lk.tab.advanced'), icon: Settings2 },
+    { value: 'vastu', label: isHi ? 'मकान' : 'Vastu', icon: Home },
+    { value: 'tracker', label: isHi ? 'ट्रैकर' : 'Tracker', icon: CalendarCheck },
   ];
 
   // Auto-load existing kundli if navigated with loadKundliId
@@ -150,6 +162,28 @@ export default function LalKitabPage() {
             <p className="text-foreground max-w-lg mx-auto">
               {t('lk.subtitle')}
             </p>
+            {/* Edition Selector */}
+            <div className="flex items-center justify-center gap-1.5 mt-4 flex-wrap">
+              <span className="text-xs text-muted-foreground mr-1">{isHi ? 'संस्करण:' : 'Edition:'}</span>
+              {EDITIONS.map((ed) => (
+                <button
+                  key={ed}
+                  onClick={() => setEdition(ed)}
+                  className={`text-xs px-3 py-1 rounded-full border transition-all ${
+                    edition === ed
+                      ? 'bg-sacred-gold text-white border-sacred-gold font-semibold'
+                      : 'border-sacred-gold/30 text-muted-foreground hover:border-sacred-gold/60'
+                  }`}
+                >
+                  {ed}
+                </button>
+              ))}
+              {edition !== '1952' && (
+                <span className="text-xs text-amber-600 ml-2">
+                  {isHi ? `${edition} संस्करण: कुछ उपाय भिन्न हो सकते हैं` : `${edition} ed: some remedies may vary`}
+                </span>
+              )}
+            </div>
           </div>
         )}
 
@@ -192,7 +226,7 @@ export default function LalKitabPage() {
 
             <Tabs value={activeTopTab} onValueChange={setActiveTopTab} className="w-full">
               <div className="mb-4">
-                <TabsList className="bg-muted w-full h-auto p-2 gap-1 grid grid-cols-4 md:grid-cols-8
+                <TabsList className="bg-muted w-full h-auto p-2 gap-1 grid grid-cols-5 md:grid-cols-10
                   [&>button]:min-w-0 [&>button]:min-h-[50px] md:[&>button]:min-h-[58px] [&>button]:px-1 [&>button]:py-2 [&>button]:text-[10px] md:[&>button]:text-xs
                   [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:justify-center [&>button]:gap-0.5 md:[&>button]:gap-1 [&>button]:leading-tight
                   [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
@@ -222,15 +256,19 @@ export default function LalKitabPage() {
                 <LalKitabDoshaTab chartData={chartData} />
                 <LalKitabRelationsTab chartData={chartData} />
                 <LalKitabRulesTab chartData={chartData} />
+                <LalKitabSacrificeTab kundliId={kundliId} language={language} />
+                <LalKitabTechnicalTab kundliId={kundliId} language={language} />
               </TabsContent>
               <TabsContent value="timing" className="space-y-8">
+                <LalKitabDashaTab kundliId={kundliId} language={language} />
+                <LalKitabMilestonesTab kundliId={kundliId} language={language} />
                 <LalKitabYearlyTab chartData={chartData} birthDate={birthDate} />
                 <LalKitabVarshphalTab chartData={chartData} birthDate={birthDate} apiResult={apiResult} />
                 <LalKitabGocharTab chartData={chartData} apiResult={apiResult} />
               </TabsContent>
               <TabsContent value="upay" className="space-y-8">
+                <LalKitabForbiddenTab kundliId={kundliId} language={language} />
                 <LalKitabRemediesTab chartData={chartData} kundliId={kundliId} />
-                <LalKitabRemediesTrackerTab chartData={chartData} kundliId={kundliId} />
                 <LalKitabChandraChaalanaTab />
               </TabsContent>
               <TabsContent value="predictions" className="space-y-4">
@@ -293,9 +331,17 @@ export default function LalKitabPage() {
                 <LalKitabNishaniyaTab kundliId={kundliId} />
               </TabsContent>
               <TabsContent value="advanced" className="space-y-8">
+                <LalKitabPalmistryTab kundliId={kundliId} language={language} />
+                <LalKitabFamilyTab kundliId={kundliId} language={language} />
                 <LalKitabAdvancedTab kundliId={kundliId} chartData={chartData} />
                 <LalKitabTevaTab chartData={chartData} apiResult={apiResult} />
                 <LalKitabRinTab kundliId={kundliId} />
+              </TabsContent>
+              <TabsContent value="vastu" className="space-y-4">
+                <LalKitabVastuTab kundliId={kundliId} language={language} />
+              </TabsContent>
+              <TabsContent value="tracker" className="space-y-4">
+                <LalKitabRemedyTrackerTab kundliId={kundliId} language={language} />
               </TabsContent>
             </Tabs>
             {clientId && <NotesWidget clientId={clientId} chartType="lalkitab" kundliId={kundliId} />}
