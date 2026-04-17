@@ -278,11 +278,11 @@ export default function NumerologyTabs() {
             </CardContent>
           </Card>
 
-          {numResult && (
-            <Card className="bg-card border-0 shadow-soft-lg">
-              <CardContent className="p-6">
-                <Heading as={4} variant={4}>{t('numerology.report')}</Heading>
-                <div className="grid grid-cols-2 gap-4 mb-4">
+	          {numResult && (
+	            <Card className="bg-card border-0 shadow-soft-lg">
+	              <CardContent className="p-6 space-y-6">
+	                <Heading as={4} variant={4}>{t('numerology.report')}</Heading>
+	                <div className="grid grid-cols-2 gap-4 mb-4">
                   {[
                     { label: t('numerology.lifePath'), value: numResult.life_path, color: 'bg-purple-100 text-purple-700' },
                     { label: t('numerology.destiny'), value: numResult.destiny ?? numResult.expression, color: 'bg-blue-100 text-blue-700' },
@@ -296,7 +296,7 @@ export default function NumerologyTabs() {
                   ))}
                 </div>
                 {numResult.summary && <p className="text-sm text-muted-foreground text-center">{numResult.summary}</p>}
-                {numResult.predictions && (
+	                {numResult.predictions && (
                   Array.isArray(numResult.predictions) ? (
                     numResult.predictions.length > 0 && (
                       <div className="mt-4">
@@ -335,10 +335,387 @@ export default function NumerologyTabs() {
                       })}
                     </div>
                   )
+	                )}
+
+                {/* New Core Numbers */}
+                {(numResult.birthday_number != null || numResult.maturity_number != null) && (
+                  <div className="space-y-3">
+                    <Heading as={5} variant={5}>{t('numerology.coreNumbers')}</Heading>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {numResult.birthday_number != null && (
+                        <div className="rounded-xl border border-sacred-gold/25 bg-sacred-gold/5 p-4">
+                          <p className="text-sm font-medium text-foreground">{t('numerology.birthdayNumber')}</p>
+                          <div className="flex items-center justify-between mt-2">
+                            <Badge className="text-lg bg-sacred-gold text-background">{numResult.birthday_number}</Badge>
+                            {numResult.birthday_prediction?.title && (
+                              <span className="text-xs text-muted-foreground">
+                                {isHi ? numResult.birthday_prediction.title_hi : numResult.birthday_prediction.title}
+                              </span>
+                            )}
+                          </div>
+                          {numResult.birthday_prediction?.talent && (
+                            <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
+                              {isHi ? numResult.birthday_prediction.talent_hi : numResult.birthday_prediction.talent}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                      {numResult.maturity_number != null && (
+                        <div className="rounded-xl border border-sacred-gold/25 bg-sacred-gold/5 p-4">
+                          <p className="text-sm font-medium text-foreground">{t('numerology.maturityNumber')}</p>
+                          <div className="flex items-center justify-between mt-2">
+                            <Badge className="text-lg bg-sacred-gold-dark text-white">{numResult.maturity_number}</Badge>
+                            {numResult.maturity_prediction?.title && (
+                              <span className="text-xs text-muted-foreground">
+                                {isHi ? numResult.maturity_prediction.title_hi : numResult.maturity_prediction.title}
+                              </span>
+                            )}
+                          </div>
+                          {numResult.maturity_prediction?.theme && (
+                            <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
+                              {isHi ? numResult.maturity_prediction.theme_hi : numResult.maturity_prediction.theme}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 )}
-              </CardContent>
-            </Card>
-          )}
+
+                {/* Karmic Debts (only show when present) */}
+                {!!numResult.karmic_debts?.length && (
+                  <div className="space-y-3">
+                    <Heading as={5} variant={5}>{t('numerology.karmicDebts')}</Heading>
+                    <div className="space-y-2">
+                      {numResult.karmic_debts.map((d: any, i: number) => (
+                        <div key={i} className="rounded-xl border border-red-200 bg-red-50 p-4">
+                          <div className="flex items-center justify-between">
+                            <p className="text-sm font-semibold text-red-800">
+                              {t('numerology.number')} {d.number}
+                            </p>
+                            {d.source && (
+                              <span className="text-xs text-red-700">
+                                {t('numerology.source')}: {isHi ? (d.source_hi || d.source) : d.source}
+                              </span>
+                            )}
+                          </div>
+                          {(d.title || d.meaning) && (
+                            <p className="text-xs text-red-700 mt-2 leading-relaxed">
+                              <span className="font-medium">{isHi ? (d.title_hi || d.title) : d.title}</span>
+                              {d.meaning ? `: ${isHi ? (d.meaning_hi || d.meaning) : d.meaning}` : ''}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Hidden Passion + Subconscious Self */}
+                {(numResult.hidden_passion || numResult.subconscious_self) && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {numResult.hidden_passion && (
+                      <div className="rounded-xl border border-sacred-gold/25 bg-white p-4">
+                        <p className="text-sm font-medium text-foreground">{t('numerology.hiddenPassion')}</p>
+                        <div className="flex items-center justify-between mt-2">
+                          <Badge className="text-lg bg-amber-100 text-amber-800">{numResult.hidden_passion.number}</Badge>
+                          {numResult.hidden_passion.title && (
+                            <span className="text-xs text-muted-foreground">
+                              {isHi ? (numResult.hidden_passion.title_hi || numResult.hidden_passion.title) : numResult.hidden_passion.title}
+                            </span>
+                          )}
+                        </div>
+                        {numResult.hidden_passion.meaning && (
+                          <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
+                            {isHi ? (numResult.hidden_passion.meaning_hi || numResult.hidden_passion.meaning) : numResult.hidden_passion.meaning}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                    {numResult.subconscious_self && (
+                      <div className="rounded-xl border border-sacred-gold/25 bg-white p-4">
+                        <p className="text-sm font-medium text-foreground">{t('numerology.subconsciousSelf')}</p>
+                        <div className="flex items-center justify-between mt-2">
+                          <Badge className="text-lg bg-indigo-100 text-indigo-800">{numResult.subconscious_self.number}</Badge>
+                          {numResult.subconscious_self.title && (
+                            <span className="text-xs text-muted-foreground">
+                              {isHi ? (numResult.subconscious_self.title_hi || numResult.subconscious_self.title) : numResult.subconscious_self.title}
+                            </span>
+                          )}
+                        </div>
+                        {numResult.subconscious_self.meaning && (
+                          <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
+                            {isHi ? (numResult.subconscious_self.meaning_hi || numResult.subconscious_self.meaning) : numResult.subconscious_self.meaning}
+                          </p>
+                        )}
+                        {!!numResult.subconscious_self.missing_numbers?.length && (
+                          <p className="text-xs text-muted-foreground mt-2">
+                            {t('numerology.missingNumbers')}: {numResult.subconscious_self.missing_numbers.join(', ')}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Karmic Lessons */}
+                {!!numResult.karmic_lessons?.length && (
+                  <div className="space-y-3">
+                    <Heading as={5} variant={5}>{t('numerology.karmicLessons')}</Heading>
+                    <div className="space-y-2">
+                      {numResult.karmic_lessons.map((l: any, i: number) => (
+                        <div key={i} className="rounded-xl border border-sacred-gold/25 bg-sacred-gold/5 p-4">
+                          <p className="text-sm font-semibold text-foreground">
+                            {t('numerology.number')} {l.number}
+                          </p>
+                          {l.lesson && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {isHi ? (l.lesson_hi || l.lesson) : l.lesson}
+                            </p>
+                          )}
+                          {l.remedy && (
+                            <p className="text-xs text-muted-foreground mt-2">
+                              <span className="font-medium">{t('numerology.remedy')}:</span> {isHi ? (l.remedy_hi || l.remedy) : l.remedy}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Forecast (Personal + Universal) */}
+                {forecastResult && (
+                  <div className="space-y-3">
+                    <Heading as={5} variant={5}>{t('numerology.forecast')}</Heading>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div className="rounded-xl border border-sacred-gold/25 bg-white p-4">
+                        <p className="text-sm font-medium text-foreground">{t('numerology.personalForecast')}</p>
+                        <p className="text-xs text-muted-foreground mt-2">
+                          {t('numerology.personalYear')}: <span className="font-semibold text-foreground">{forecastResult.personal_year}</span>
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {t('numerology.personalMonth')}: <span className="font-semibold text-foreground">{forecastResult.personal_month}</span>
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {t('numerology.personalDay')}: <span className="font-semibold text-foreground">{forecastResult.personal_day}</span>
+                        </p>
+                        {forecastResult.predictions?.personal_day?.description && (
+                          <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
+                            {pick(forecastResult.predictions.personal_day, 'description')}
+                          </p>
+                        )}
+                      </div>
+                      <div className="rounded-xl border border-sacred-gold/25 bg-white p-4">
+                        <p className="text-sm font-medium text-foreground">{t('numerology.universalForecast')}</p>
+                        <p className="text-xs text-muted-foreground mt-2">
+                          {t('numerology.universalYear')}: <span className="font-semibold text-foreground">{forecastResult.universal_year}</span>
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {t('numerology.universalMonth')}: <span className="font-semibold text-foreground">{forecastResult.universal_month}</span>
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {t('numerology.universalDay')}: <span className="font-semibold text-foreground">{forecastResult.universal_day}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Pinnacles / Challenges / Life Cycles */}
+                {(numResult.pinnacles?.pinnacles || numResult.challenges?.challenges || numResult.life_cycles?.cycles) && (
+                  <div className="space-y-4">
+                    {!!numResult.pinnacles?.pinnacles?.length && (
+                      <div className="space-y-2">
+                        <Heading as={5} variant={5}>{t('numerology.pinnacles')}</Heading>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {numResult.pinnacles.pinnacles.map((p: any, i: number) => (
+                            <div key={i} className="rounded-xl border border-sacred-gold/25 bg-white p-4">
+                              <p className="text-sm font-semibold text-foreground">{t('numerology.pinnacle')} {i + 1}</p>
+                              <p className="text-xs text-muted-foreground mt-1">{t('numerology.period')}: {p.period}</p>
+                              <Badge className="mt-2 bg-purple-100 text-purple-800">{p.number}</Badge>
+                              {p.prediction?.title && (
+                                <p className="text-xs text-muted-foreground mt-2">
+                                  {isHi ? (p.prediction.title_hi || p.prediction.title) : p.prediction.title}
+                                </p>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {!!numResult.challenges?.challenges?.length && (
+                      <div className="space-y-2">
+                        <Heading as={5} variant={5}>{t('numerology.challengesTitle')}</Heading>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {numResult.challenges.challenges.map((c: any, i: number) => (
+                            <div key={i} className="rounded-xl border border-sacred-gold/25 bg-white p-4">
+                              <p className="text-sm font-semibold text-foreground">{t('numerology.challenge')} {i + 1}</p>
+                              <p className="text-xs text-muted-foreground mt-1">{t('numerology.period')}: {c.period}</p>
+                              <Badge className="mt-2 bg-blue-100 text-blue-800">{c.number}</Badge>
+                              {c.prediction?.title && (
+                                <p className="text-xs text-muted-foreground mt-2">
+                                  {isHi ? (c.prediction.title_hi || c.prediction.title) : c.prediction.title}
+                                </p>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {!!numResult.life_cycles?.cycles?.length && (
+                      <div className="space-y-2">
+                        <Heading as={5} variant={5}>{t('numerology.lifeCyclesTitle')}</Heading>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          {numResult.life_cycles.cycles.map((c: any, i: number) => (
+                            <div key={i} className="rounded-xl border border-sacred-gold/25 bg-white p-4">
+                              <p className="text-sm font-semibold text-foreground">{t('numerology.lifeCycle')} {i + 1}</p>
+                              <p className="text-xs text-muted-foreground mt-1">{c.period}</p>
+                              <Badge className="mt-2 bg-green-100 text-green-800">{c.number}</Badge>
+                              {c.prediction?.title && (
+                                <p className="text-xs text-muted-foreground mt-2">
+                                  {isHi ? (c.prediction.title_hi || c.prediction.title) : c.prediction.title}
+                                </p>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Lo Shu Grid + Arrows + Planes */}
+                {(numResult.loshu_grid && numResult.loshu_values) && (
+                  <div className="space-y-4">
+                    <Heading as={5} variant={5}>{t('numerology.loshuGrid')}</Heading>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                      <div className="rounded-xl border border-sacred-gold/25 bg-white p-4">
+                        <div className="grid grid-cols-3 gap-2">
+                          {numResult.loshu_grid.flat().map((cell: number, idx: number) => {
+                            const v = numResult.loshu_values?.[cell] || '';
+                            const strengthNums = new Set<number>((numResult.loshu_arrows?.arrows_of_strength || []).flatMap((a: any) => a.numbers || []));
+                            const weaknessNums = new Set<number>((numResult.loshu_arrows?.arrows_of_weakness || []).flatMap((a: any) => a.numbers || []));
+                            const isStrength = strengthNums.has(cell);
+                            const isWeakness = weaknessNums.has(cell);
+                            const isMissing = !v;
+                            const boxClass = isStrength
+                              ? 'border-green-300 bg-green-50'
+                              : isWeakness
+                                ? 'border-red-300 bg-red-50'
+                                : 'border-sacred-gold/25 bg-card';
+                            return (
+                              <div key={idx} className={`rounded-lg border ${boxClass} p-2 text-center`}>
+                                <p className="text-[10px] text-muted-foreground">{cell}</p>
+                                <p className={`text-sm font-semibold ${isMissing ? 'text-muted-foreground' : 'text-foreground'}`}>
+                                  {v || t('report.notAvailable')}
+                                </p>
+                              </div>
+                            );
+                          })}
+                        </div>
+                        <p className="text-[11px] text-muted-foreground mt-3">
+                          {t('numerology.loshuLegend')}
+                        </p>
+                      </div>
+
+                      <div className="space-y-3">
+                        {!!numResult.loshu_arrows?.arrows_of_strength?.length && (
+                          <div className="rounded-xl border border-green-200 bg-green-50 p-4">
+                            <p className="text-sm font-semibold text-green-800">{t('numerology.arrowsOfStrength')}</p>
+                            <div className="mt-2 space-y-2">
+                              {numResult.loshu_arrows.arrows_of_strength.map((a: any) => (
+                                <div key={a.key} className="text-xs text-green-800">
+                                  <span className="font-medium">{isHi ? (a.name_hi || a.name) : a.name}</span>
+                                  {a.meaning ? `: ${isHi ? (a.meaning_hi || a.meaning) : a.meaning}` : ''}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {!!numResult.loshu_arrows?.arrows_of_weakness?.length && (
+                          <div className="rounded-xl border border-red-200 bg-red-50 p-4">
+                            <p className="text-sm font-semibold text-red-800">{t('numerology.arrowsOfWeakness')}</p>
+                            <div className="mt-2 space-y-2">
+                              {numResult.loshu_arrows.arrows_of_weakness.map((a: any) => (
+                                <div key={a.key} className="text-xs text-red-800">
+                                  <span className="font-medium">{isHi ? (a.name_hi || a.name) : a.name}</span>
+                                  {a.missing_meaning ? `: ${isHi ? (a.missing_meaning_hi || a.missing_meaning) : a.missing_meaning}` : ''}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {numResult.loshu_planes && (
+                          <div className="rounded-xl border border-sacred-gold/25 bg-white p-4">
+                            <p className="text-sm font-semibold text-foreground">{t('numerology.planes')}</p>
+                            <div className="mt-2 grid grid-cols-3 gap-2">
+                              {(['mental', 'emotional', 'practical'] as const).map((k) => (
+                                <div key={k} className="rounded-lg border border-sacred-gold/20 bg-sacred-gold/5 p-2 text-center">
+                                  <p className="text-[10px] text-muted-foreground">
+                                    {isHi ? (numResult.loshu_planes[k]?.name_hi || numResult.loshu_planes[k]?.name) : numResult.loshu_planes[k]?.name}
+                                  </p>
+                                  <p className="text-sm font-semibold text-foreground">
+                                    {numResult.loshu_planes[k]?.score} ({numResult.loshu_planes[k]?.percentage}%)
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
+                            {(numResult.loshu_planes.interpretation || numResult.loshu_planes.interpretation_hi) && (
+                              <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
+                                {pick(numResult.loshu_planes, 'interpretation')}
+                              </p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Missing Numbers Remedies (DOB) */}
+                {!!numResult.missing_numbers?.length && (
+                  <div className="space-y-3">
+                    <Heading as={5} variant={5}>{t('numerology.missingNumbers')}</Heading>
+                    <div className="space-y-2">
+                      {numResult.missing_numbers.map((m: any) => (
+                        <div key={m.number} className="rounded-xl border border-sacred-gold/25 bg-sacred-gold/5 p-4">
+                          <p className="text-sm font-semibold text-foreground">{t('numerology.number')} {m.number}</p>
+                          {m.meaning && <p className="text-xs text-muted-foreground mt-1">{pick(m, 'meaning')}</p>}
+                          {m.remedy && (
+                            <p className="text-xs text-muted-foreground mt-2">
+                              <span className="font-medium">{t('numerology.remedy')}:</span> {pick(m, 'remedy')}
+                            </p>
+                          )}
+                          <div className="mt-2 grid grid-cols-2 gap-2 text-[11px] text-muted-foreground">
+                            {m.color && <div>{t('numerology.color')}: {pick(m, 'color')}</div>}
+                            {m.gemstone && <div>{t('numerology.gemstone')}: {pick(m, 'gemstone')}</div>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Repeated Numbers */}
+                {!!numResult.repeated_numbers?.length && (
+                  <div className="space-y-3">
+                    <Heading as={5} variant={5}>{t('numerology.repeatedNumbers')}</Heading>
+                    <div className="space-y-2">
+                      {numResult.repeated_numbers.map((r: any) => (
+                        <div key={r.number} className="rounded-xl border border-sacred-gold/25 bg-white p-4">
+                          <p className="text-sm font-semibold text-foreground">{t('numerology.number')} {r.number}</p>
+                          <p className="text-xs text-muted-foreground mt-1">{t('numerology.count')}: {r.count}</p>
+                          {r.meaning && <p className="text-xs text-muted-foreground mt-1">{pick(r, 'meaning')}</p>}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+	              </CardContent>
+	            </Card>
+	          )}
       </TabsContent>
 
       {/* Mobile Tab */}

@@ -124,40 +124,31 @@ class TestArrowsOfWeakness:
 # ---------------------------------------------------------------------------
 
 class TestPlanesAnalysis:
-    """Mental (4,9,2), Emotional (3,5,7), Practical (8,1,6) plane scoring."""
+    """Mental (3,6,9), Emotional (2,5,8), Practical (1,4,7) plane scoring."""
 
     def test_mental_dominant(self):
-        """DOB heavy on 4, 9, 2 -> mental plane dominant."""
+        """DOB heavy on 3, 6, 9 -> mental plane dominant."""
         from app.numerology_engine import analyze_loshu_planes
-        # 1992-04-24 -> digits [1,9,9,2,4,2,4] -> mental(4,9,2)=2+2+2=6, emo(3,5,7)=0, prac(8,1,6)=1
-        dob_digits = [1, 9, 9, 2, 4, 2, 4]
+        # Heavy on 3/6/9
+        dob_digits = [9, 9, 6, 6, 3, 3, 1]
         result = analyze_loshu_planes(dob_digits)
         assert result["dominant_plane"] == "mental"
         assert result["mental"]["score"] > result["emotional"]["score"]
         assert result["mental"]["score"] > result["practical"]["score"]
 
     def test_emotional_dominant(self):
-        """DOB heavy on 3, 5, 7 -> emotional plane dominant."""
+        """DOB heavy on 2, 5, 8 -> emotional plane dominant."""
         from app.numerology_engine import analyze_loshu_planes
-        # 1975-03-07 -> digits [1,9,7,5,3,7] -> mental(4,9,2): 9=1, emo(3,5,7)=3+1+2=6-wait
-        # Let's be precise: digits are [1,9,7,5,3,7]
-        # counts: 1->1, 9->1, 7->2, 5->1, 3->1
-        # mental (4,9,2): count(4)=0 + count(9)=1 + count(2)=0 = 1
-        # emotional (3,5,7): count(3)=1 + count(5)=1 + count(7)=2 = 4
-        # practical (8,1,6): count(8)=0 + count(1)=1 + count(6)=0 = 1
-        dob_digits = [1, 9, 7, 5, 3, 7]
+        # Heavy on 2/5/8
+        dob_digits = [2, 2, 5, 5, 8, 8, 1]
         result = analyze_loshu_planes(dob_digits)
         assert result["dominant_plane"] == "emotional"
 
     def test_practical_dominant(self):
-        """DOB heavy on 8, 1, 6 -> practical plane dominant."""
+        """DOB heavy on 1, 4, 7 -> practical plane dominant."""
         from app.numerology_engine import analyze_loshu_planes
-        # 1986-08-16 -> digits [1,9,8,6,8,1,6] ->
-        # counts: 1->2, 9->1, 8->2, 6->2
-        # mental(4,9,2): 0+1+0=1
-        # emotional(3,5,7): 0+0+0=0
-        # practical(8,1,6): 2+2+2=6
-        dob_digits = [1, 9, 8, 6, 8, 1, 6]
+        # Heavy on 1/4/7
+        dob_digits = [1, 1, 4, 4, 7, 7, 9]
         result = analyze_loshu_planes(dob_digits)
         assert result["dominant_plane"] == "practical"
 
@@ -191,9 +182,9 @@ class TestPlanesAnalysis:
         from app.numerology_engine import analyze_loshu_planes
         dob_digits = [1, 5, 9]
         result = analyze_loshu_planes(dob_digits)
-        assert result["mental"]["numbers"] == [4, 9, 2]
-        assert result["emotional"]["numbers"] == [3, 5, 7]
-        assert result["practical"]["numbers"] == [8, 1, 6]
+        assert result["mental"]["numbers"] == [3, 6, 9]
+        assert result["emotional"]["numbers"] == [2, 5, 8]
+        assert result["practical"]["numbers"] == [1, 4, 7]
 
 
 # ---------------------------------------------------------------------------
