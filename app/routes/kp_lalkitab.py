@@ -1496,3 +1496,30 @@ def get_forbidden_list(
         "forbidden_count": len(results),
         "rules": results,
     }
+
+
+# ═══════════════════════════════════════════════════════════════════
+# FAMILY CHART LINKING (Grah-Gasti) — stub, full feature TBD
+# ═══════════════════════════════════════════════════════════════════
+
+@router.get("/api/lalkitab/family/{kundli_id}")
+def get_family_links(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Return family chart links for this kundli. Currently returns empty list (feature in development)."""
+    # Verify kundli belongs to user (auth check) without crashing
+    row = db.execute(
+        "SELECT id FROM kundlis WHERE id = %s AND user_id = %s",
+        (kundli_id, user["sub"]),
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Kundli not found")
+    return {
+        "kundli_id": kundli_id,
+        "linked_members": [],
+        "family_harmony": 0,
+        "dominant_planet": None,
+        "family_theme": None,
+    }

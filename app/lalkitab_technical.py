@@ -57,8 +57,13 @@ _SARKARI_HOUSES = {1, 5, 9, 10, 11}
 # 1. CHALTI GAADI (Moving Train)
 # ============================================================
 
+def _safe_positions(planet_positions: List[Dict]) -> List[Dict]:
+    """Filter out malformed entries missing planet or house."""
+    return [p for p in planet_positions if p.get("planet") and isinstance(p.get("house"), int)]
+
+
 def _get_strongest_planet(planet_positions: List[Dict], house: int) -> Optional[str]:
-    planets_in = [p["planet"] for p in planet_positions if p["house"] == house]
+    planets_in = [p["planet"] for p in _safe_positions(planet_positions) if p["house"] == house]
     if not planets_in:
         return None
     # Priority: Pakka Ghar > non-dusthana > anything
@@ -148,7 +153,7 @@ def calculate_dhur_dhur_aage(planet_positions: List[Dict[str, Any]]) -> Dict[str
     House 12 pushes house 1 (circular).
     """
     h_map: Dict[int, List[str]] = {}
-    for p in planet_positions:
+    for p in _safe_positions(planet_positions):
         h_map.setdefault(p["house"], []).append(p["planet"])
 
     pushes = []
@@ -258,12 +263,12 @@ def calculate_soya_ghar(
     Enhanced sleeping house calculation with aspect-based awakening.
     """
     h_map: Dict[int, List[str]] = {}
-    for p in planet_positions:
+    for p in _safe_positions(planet_positions):
         h_map.setdefault(p["house"], []).append(p["planet"])
 
     # Determine waking planets
     waking_planets = []
-    for p in planet_positions:
+    for p in _safe_positions(planet_positions):
         planet = p["planet"]
         house = p["house"]
         pakka = _PAKKA.get(planet, 0)
@@ -275,7 +280,7 @@ def calculate_soya_ghar(
 
     # Build aspect map: which houses does each waking planet aspect?
     house_waking_aspects: Dict[int, List[Dict]] = {h: [] for h in range(1, 13)}
-    for p in planet_positions:
+    for p in _safe_positions(planet_positions):
         if p["planet"] not in waking_planets:
             continue
         from_house = p["house"]
@@ -306,7 +311,7 @@ def calculate_soya_ghar(
         "awake_houses": awake_houses,
         "sleeping_houses": sleeping_houses,
         "waking_planets": waking_planets,
-        "house_waking_aspects": {str(k): v for k, v in house_waking_aspects.items()},
+        "house_waking_aspects": house_waking_aspects,
         "sleeping_house_effects": sleeping_house_effects,
         "summary": {
             "en": f"{len(awake_houses)} awake houses, {len(sleeping_houses)} sleeping. Waking planets: {', '.join(waking_planets) or 'None'}.",
@@ -324,9 +329,13 @@ def classify_all_planet_statuses(planet_positions: List[Dict[str, Any]]) -> List
     Classifies each planet with 4 advanced LK status flags.
     Returns list of planet dicts with status info.
     """
-    p_map = {p["planet"]: p["house"] for p in planet_positions}
+    safe = _safe_positions(planet_positions)
+    # Use last occurrence for any duplicate planet (chart data integrity issue — caller should deduplicate)
+    p_map: Dict[str, int] = {}
+    for p in safe:
+        p_map[p["planet"]] = p["house"]
     house_planets: Dict[int, List[str]] = {}
-    for p in planet_positions:
+    for p in safe:
         house_planets.setdefault(p["house"], []).append(p["planet"])
 
     results = []
@@ -356,7 +365,11 @@ def classify_all_planet_statuses(planet_positions: List[Dict[str, Any]]) -> List
         takkar_house = ((house - 1 + 6) % 12) + 1  # 7th from current
         zakhmi = False
         zakhmi_detail = ""
-        attackers = [p for p in house_planets.get(takkar_house, []) if p in LK_ENEMIES.get(planet, set())]
+        # Bidirectional: attacker considers PLANET an enemy OR planet considers attacker an enemy
+        attackers = [
+            p for p in house_planets.get(takkar_house, [])
+            if p in LK_ENEMIES.get(planet, set()) or planet in LK_ENEMIES.get(p, set())
+        ]
         if attackers:
             zakhmi = True
             zakhmi_detail = f"{planet} is wounded by {', '.join(attackers)} attacking from house {takkar_house} (Takkar). Results are permanently scarred."
@@ -401,10 +414,11 @@ def calculate_muththi(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
     Houses 1-6 = 'in hand' (self-made destiny)
     Houses 7-12 = 'outside hand' (ancestral karma)
     """
-    in_hand = [p["planet"] for p in planet_positions if 1 <= p["house"] <= 6]
-    out_hand = [p["planet"] for p in planet_positions if 7 <= p["house"] <= 12]
+    safe = _safe_positions(planet_positions)
+    in_hand = [p["planet"] for p in safe if 1 <= p["house"] <= 6]
+    out_hand = [p["planet"] for p in safe if 7 <= p["house"] <= 12]
     score = len(in_hand)
-    total = len(planet_positions)
+    total = len(safe)
 
     if score >= 6:
         verdict_en = "Strong self-determination. Your destiny is decisively in your own hands. You are the architect of your life."

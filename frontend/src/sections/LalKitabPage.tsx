@@ -229,10 +229,10 @@ export default function LalKitabPage() {
                 <LalKitabRelationsTab chartData={chartData} />
                 <LalKitabRulesTab chartData={chartData} />
                 <LalKitabSacrificeTab kundliId={kundliId} language={language} />
-                <LalKitabTechnicalTab chartData={chartData} kundliId={kundliId} language={language} />
+                <LalKitabTechnicalTab kundliId={kundliId} language={language} />
               </TabsContent>
               <TabsContent value="timing" className="space-y-8">
-                <LalKitabMilestonesTab kundliId={kundliId} birthDate={birthDate} language={language} />
+                <LalKitabMilestonesTab kundliId={kundliId} language={language} />
                 <LalKitabYearlyTab chartData={chartData} birthDate={birthDate} />
                 <LalKitabVarshphalTab chartData={chartData} birthDate={birthDate} apiResult={apiResult} />
                 <LalKitabGocharTab chartData={chartData} apiResult={apiResult} />

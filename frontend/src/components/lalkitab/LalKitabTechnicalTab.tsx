@@ -1,16 +1,15 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import { Loader2, ArrowRight, Moon, Zap, Crown, Eye, Swords, Plane } from 'lucide-react';
-import type { LalKitabChartData } from '@/components/lalkitab/lalkitab-data';
 
-interface Props { chartData: LalKitabChartData; kundliId?: string; language: string; }
+interface Props { kundliId?: string; language: string; }
 
 const PLANET_DOT: Record<string, string> = {
   Sun:'bg-orange-500', Moon:'bg-blue-300', Mars:'bg-red-500', Mercury:'bg-green-500',
   Jupiter:'bg-yellow-500', Venus:'bg-pink-400', Saturn:'bg-gray-500', Rahu:'bg-purple-600', Ketu:'bg-amber-700',
 };
 
-export default function LalKitabTechnicalTab({ chartData, kundliId, language }: Props) {
+export default function LalKitabTechnicalTab({ kundliId, language }: Props) {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const hi = language === 'hi';

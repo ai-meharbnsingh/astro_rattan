@@ -18,25 +18,27 @@ interface MilestoneData {
   milestones: Milestone[];
 }
 
-interface Props { kundliId?: string; birthDate?: string; language: string; }
+interface Props { kundliId?: string; language: string; }
 
 const PLANET_DOT: Record<string, string> = {
   Sun:'bg-orange-500', Moon:'bg-blue-300', Mars:'bg-red-500', Mercury:'bg-green-500',
   Jupiter:'bg-yellow-500', Venus:'bg-pink-400', Saturn:'bg-gray-500', Rahu:'bg-purple-600', Ketu:'bg-amber-700',
 };
 
-export default function LalKitabMilestonesTab({ kundliId, birthDate, language }: Props) {
+export default function LalKitabMilestonesTab({ kundliId, language }: Props) {
   const [data, setData] = useState<MilestoneData | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
   const [expandedAge, setExpandedAge] = useState<number | null>(null);
   const hi = language === 'hi';
 
   useEffect(() => {
     if (!kundliId) return;
     setLoading(true);
+    setError(false);
     api.get(`/api/lalkitab/milestones/${kundliId}`)
       .then(d => { setData(d); if (d.next_milestone) setExpandedAge(d.next_milestone.age); })
-      .catch(() => {})
+      .catch(() => setError(true))
       .finally(() => setLoading(false));
   }, [kundliId]);
 
@@ -49,6 +51,12 @@ export default function LalKitabMilestonesTab({ kundliId, birthDate, language }:
   if (loading) return (
     <div className="flex justify-center py-16">
       <Loader2 className="w-8 h-8 animate-spin text-sacred-gold" />
+    </div>
+  );
+
+  if (error) return (
+    <div className="text-center py-10 text-sm text-red-500">
+      {hi ? 'मील का पत्थर लोड नहीं हो सका।' : 'Could not load milestone data. Please try again.'}
     </div>
   );
 
