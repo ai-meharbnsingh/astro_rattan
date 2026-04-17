@@ -141,10 +141,10 @@ export default function LalKitabTechnicalTab({ kundliId, language }: Props) {
               {dhur_dhur_aage.pushes?.map((push: any, i: number) => (
                 <div key={i} className="flex items-center gap-2 text-sm border border-border rounded-lg p-2.5">
                   <span className="font-semibold text-foreground">{push.pusher}</span>
-                  <span className="text-xs text-muted-foreground">H{push.pusher_house}</span>
+                  <span className="text-xs text-muted-foreground">H{isNaN(Number(push.pusher_house)) ? 0 : push.pusher_house}</span>
                   <ArrowRight className="w-3.5 h-3.5 text-muted-foreground" />
                   <span className="font-semibold text-foreground">{push.receiver}</span>
-                  <span className="text-xs text-muted-foreground">H{push.receiver_house}</span>
+                  <span className="text-xs text-muted-foreground">H{isNaN(Number(push.receiver_house)) ? 0 : push.receiver_house}</span>
                   <span className={`ml-auto text-xs px-2 py-0.5 rounded-full ${directionColor[push.direction] || ''}`}>
                     {push.direction}
                   </span>

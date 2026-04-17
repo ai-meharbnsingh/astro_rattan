@@ -82,7 +82,7 @@ export default function LalKitabSacrificeTab({ kundliId, language }: Props) {
       <div className={`rounded-xl p-4 text-center ${data.has_sacrifices ? 'bg-red-50 border border-red-200' : 'bg-green-50 border border-green-200'}`}>
         {data.has_sacrifices ? (
           <>
-            <div className="text-2xl font-bold text-red-700">{data.sacrifice_count}</div>
+            <div className="text-2xl font-bold text-red-700">{isNaN(Number(data.sacrifice_count)) ? 0 : data.sacrifice_count}</div>
             <div className="text-sm text-red-600">
               {hi ? `${data.sacrifice_count} बलिदान पैटर्न मिले` : `${data.sacrifice_count} sacrifice pattern(s) detected`}
             </div>
@@ -113,7 +113,9 @@ export default function LalKitabSacrificeTab({ kundliId, language }: Props) {
             <ArrowRight className="w-4 h-4 text-red-500" />
             <div className="flex items-center gap-2">
               <span className={`w-3 h-3 rounded-full ${PLANET_DOT[result.victim] || 'bg-gray-400'}`} />
-              <span className="font-bold text-foreground">{result.victim === 'siblings' ? (hi?'भाई-बहन':'Siblings') : result.victim}</span>
+              <span className="font-bold text-foreground">
+                {result.victim === 'siblings' ? (hi ? 'भाई-बहन' : 'Siblings') : (result.victim || (hi ? 'अज्ञात' : 'Unknown'))}
+              </span>
             </div>
             <span className={`ml-auto text-xs px-2 py-0.5 rounded-full font-semibold ${SEVERITY_STYLE[result.severity]}`}>
               {result.severity.toUpperCase()}

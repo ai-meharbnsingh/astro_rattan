@@ -291,8 +291,8 @@ export default function NumerologyTabs() {
 
         {/* Life Path Tab */}
         <TabsContent value="life_path" className="space-y-6">
-          <div className="max-w-xl mx-auto">
-          <Card className="bg-card border-0 shadow-soft">
+          <div className="max-w-4xl mx-auto">
+          <Card className="bg-card border-sacred-gold/20 shadow-soft">
             <CardContent className="p-6">
               <Heading as={3} variant={3}>{t('numerology.calculateNumbers')}</Heading>
               {isAstrologer && (
@@ -314,10 +314,10 @@ export default function NumerologyTabs() {
         </div>
 
 	          {numResult && (
-	            <Card className="bg-card border-0 shadow-soft-lg">
-	              <CardContent className="p-6 space-y-6">
-	                <Heading as={4} variant={4}>{t('numerology.report')}</Heading>
-	                <div className="grid grid-cols-2 gap-4 mb-4">
+	            <Card className="bg-card border-sacred-gold/10 shadow-soft-lg">
+	              <CardContent className="p-6 space-y-8">
+	                <Heading as={4} variant={4} className="text-center">{t('numerology.report')}</Heading>
+	                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                   {[
                     { label: t('numerology.lifePath'), value: numResult.life_path, color: 'bg-purple-100 text-purple-700' },
                     { label: t('numerology.destiny'), value: numResult.destiny ?? numResult.expression, color: 'bg-blue-100 text-blue-700' },
@@ -764,10 +764,10 @@ export default function NumerologyTabs() {
 
       {/* Mobile Tab */}
       <TabsContent value="mobile" className="space-y-6">
-          <div className="max-w-2xl mx-auto">
-          <Card className="bg-card border-0 shadow-soft">
+          <div className="max-w-4xl mx-auto">
+          <Card className="bg-card border-sacred-gold/20 shadow-soft">
             <CardContent className="p-6">
-              <Heading as={3} variant={3}>{t('numerology.mobileAnalyzeHeading')}</Heading>
+              <Heading as={3} variant={3} className="mb-6">{t('numerology.mobileAnalyzeHeading')}</Heading>
               {isAstrologer && (
                 <ClientSelector
                   onSelectClient={handleMobileClientSelect}

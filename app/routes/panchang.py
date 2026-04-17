@@ -169,6 +169,13 @@ def get_panchang(
     # Serve from cache only if it has extended data (new engine format)
     raw_ext_check = cached.get("choghadiya", "") if cached else ""
     cache_has_extended = cached and raw_ext_check and raw_ext_check not in ("", "[]", "{}")
+    # Also verify cache has the newer misc data; otherwise treat as stale
+    if cache_has_extended:
+        try:
+            ext_parsed = json.loads(raw_ext_check) if isinstance(raw_ext_check, str) else raw_ext_check
+            cache_has_extended = isinstance(ext_parsed, dict) and "misc" in ext_parsed
+        except (json.JSONDecodeError, TypeError):
+            cache_has_extended = False
 
     if cache_has_extended:
         tithi = cached["tithi"]

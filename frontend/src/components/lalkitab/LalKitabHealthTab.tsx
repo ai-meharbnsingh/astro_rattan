@@ -231,7 +231,7 @@ export default function LalKitabHealthTab({ kundliId }: Props) {
                     isInBadHouse ? 'bg-red-500/5 border-red-300/20' : 'bg-sacred-gold/5 border-sacred-gold/15'
                   }`}>
                     <p className="text-xs text-gray-500 mb-1">{isHi ? hi : (key || "").charAt(0).toUpperCase() + key.slice(1)}</p>
-                    <p className={`text-xl font-bold ${isInBadHouse ? 'text-red-600' : 'text-sacred-gold'}`}>{house}</p>
+                    <p className={`text-xl font-bold ${isInBadHouse ? 'text-red-600' : 'text-sacred-gold'}`}>{isNaN(Number(house)) ? 0 : house}</p>
                     <p className="text-xs text-gray-400">{t('auto.house')}</p>
                   </div>
                 );

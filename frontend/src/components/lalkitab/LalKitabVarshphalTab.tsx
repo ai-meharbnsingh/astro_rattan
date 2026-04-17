@@ -142,13 +142,13 @@ export default function LalKitabVarshphalTab() {
             <div className="rounded-xl border border-sacred-gold/20 bg-sacred-gold/5 p-4">
               <div className="text-xs text-muted-foreground">{isHi ? 'सोलर रिटर्न' : 'Solar Return'}</div>
               <div className="text-sm font-semibold text-foreground mt-1">
-                {data?.solar_return?.date} {data?.solar_return?.time}
+                    {data?.solar_return?.date || (isHi ? 'उपलब्ध नहीं' : 'Not Available')} {data?.solar_return?.time || ''}
               </div>
             </div>
             <div className="rounded-xl border border-sacred-gold/20 bg-sacred-gold/5 p-4">
               <div className="text-xs text-muted-foreground">{isHi ? 'मुनथा' : 'Muntha'}</div>
               <div className="text-sm font-semibold text-foreground mt-1">
-                {isHi ? 'भाव' : 'House'} {data?.muntha?.house}
+                {isHi ? 'भाव' : 'House'} {isNaN(Number(data?.muntha?.house)) ? 0 : data?.muntha?.house}
                 {data?.muntha?.favorable ? (isHi ? ' (अनुकूल)' : ' (favorable)') : (isHi ? ' (सावधानी)' : ' (caution)')}
               </div>
             </div>

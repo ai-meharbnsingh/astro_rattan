@@ -94,7 +94,7 @@ export default function LalKitabRelationsTab() {
                 >
                   <div className="flex items-center justify-between mb-3">
                     <div>
-                      <span className="text-sm text-gray-600">{t('auto.house')} {conj.house}</span>
+                      <span className="text-sm text-gray-600">{t('auto.house')} {isNaN(Number(conj.house)) ? 0 : conj.house}</span>
                       <div className="flex items-center gap-2 mt-1 flex-wrap">
                         {conj.planets.map((planet) => (
                           <span
@@ -150,9 +150,9 @@ export default function LalKitabRelationsTab() {
               {sortedAspects.map((entry) => (
                 <TableRow key={entry.planet} className="border-b border-sacred-gold/10">
                   <TableCell className="py-2 px-3 font-medium text-foreground">{entry.planet}</TableCell>
-                  <TableCell className="py-2 px-3 text-muted-foreground">{entry.from_house}</TableCell>
+                  <TableCell className="py-2 px-3 text-muted-foreground">{isNaN(Number(entry.from_house)) ? 0 : entry.from_house}</TableCell>
                   <TableCell className="py-2 px-3 text-muted-foreground">
-                    {(entry.aspect_houses || []).join(', ')}
+                    {(entry.aspect_houses || []).map(h => isNaN(Number(h)) ? 0 : h).join(', ')}
                   </TableCell>
                 </TableRow>
               ))}

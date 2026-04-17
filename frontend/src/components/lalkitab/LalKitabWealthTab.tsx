@@ -129,14 +129,14 @@ export default function LalKitabWealthTab({ kundliId }: Props) {
                     </span>
                   </div>
                   <div className="text-right">
-                    <p className={`text-4xl font-bold ${clr.text}`}>{data.wealth_score}</p>
+                    <p className={`text-4xl font-bold ${clr.text}`}>{isNaN(Number(data.wealth_score)) ? 0 : data.wealth_score}</p>
                     <p className="text-xs text-gray-400">/100</p>
                   </div>
                 </div>
                 <div className="w-full bg-gray-200/60 rounded-full h-3">
                   <div
                     className={`h-3 rounded-full transition-all ${clr.bar}`}
-                    style={{ width: `${data.wealth_score}%` }}
+                    style={{ width: `${isNaN(Number(data.wealth_score)) ? 0 : data.wealth_score}%` }}
                   />
                 </div>
               </div>
@@ -151,7 +151,7 @@ export default function LalKitabWealthTab({ kundliId }: Props) {
             ].map(({ key, hi, house, label }) => (
               <div key={key} className="card-sacred rounded-xl border border-sacred-gold/20 p-4 text-center">
                 <p className="text-xs text-gray-500 mb-1">{isHi ? label.hi : label.en}</p>
-                <p className="text-3xl font-bold text-sacred-gold">{house}</p>
+                <p className="text-3xl font-bold text-sacred-gold">{isNaN(Number(house)) ? 0 : house}</p>
                 <p className="text-xs text-gray-400 mt-0.5">{isHi ? hi : (key || "").charAt(0).toUpperCase() + key.slice(1)}</p>
               </div>
             ))}

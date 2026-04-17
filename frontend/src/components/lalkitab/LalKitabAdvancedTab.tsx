@@ -343,7 +343,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
             {masnuiList.map((m: any, i: number) => (
               <div key={i} className="card-sacred p-4 rounded-xl border border-sacred-gold/20 bg-white/40">
                 <div className="flex justify-between items-start mb-2">
-                  <span className="text-xs font-bold text-sacred-gold-dark uppercase tracking-wider">{t('lk.kundli.house')} {m.house}</span>
+                  <span className="text-xs font-bold text-sacred-gold-dark uppercase tracking-wider">{t('lk.kundli.house')} {isNaN(Number(m.house)) ? 0 : m.house}</span>
                   <span className="px-2 py-0.5 rounded bg-sacred-gold/10 text-sacred-gold-dark text-[10px] font-bold">{t('auto.masnui')}</span>
                 </div>
                 <p className="text-sm font-bold text-foreground mb-1">
@@ -685,7 +685,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                       </div>
                       <div>
                         <span className="text-foreground/50 font-semibold">{t('lk.advanced.bunyaadHouse')}</span>
-                        <p className="font-bold text-foreground">{info.bunyaad_house}</p>
+                        <p className="font-bold text-foreground">{isNaN(Number(info.bunyaad_house)) ? 0 : info.bunyaad_house}</p>
                       </div>
                     </div>
                     {info.enemies_in_bunyaad && info.enemies_in_bunyaad.length > 0 && (
@@ -789,7 +789,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                       </div>
                       {c.axis && (
                         <p className="text-xs text-foreground/60 mb-1">
-                          <span className="font-semibold">{t('lk.advanced.takkar.axis')}:</span> {c.axis}
+                          <span className="font-semibold">{t('lk.advanced.takkar.axis')}:</span> {isNaN(Number(c.axis)) ? (c.axis || '0') : c.axis}
                         </p>
                       )}
                       <p className="text-xs text-foreground/70 italic">

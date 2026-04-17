@@ -111,7 +111,7 @@ export default function LalKitabMilestonesTab({ kundliId, language }: Props) {
             {hi ? 'अगला जीवन मील का पत्थर' : 'Next Life Milestone'}
           </div>
           <div className="text-6xl font-bold text-sacred-gold mb-1">
-            {next.age}
+            {isNaN(Number(next.age)) ? 0 : next.age}
           </div>
           <div className="text-lg font-semibold text-foreground mb-1">
             {hi ? next.theme_hi : next.theme_en}
@@ -276,8 +276,8 @@ export default function LalKitabMilestonesTab({ kundliId, language }: Props) {
                 </div>
                 <div className="text-xs text-muted-foreground mb-2">
                   {hi
-                    ? `${cycleData.previous_cycle.cycle_start_age}–${cycleData.previous_cycle.cycle_end_age} वर्ष`
-                    : `Age ${cycleData.previous_cycle.cycle_start_age}–${cycleData.previous_cycle.cycle_end_age}`}
+                    ? `${isNaN(Number(cycleData.previous_cycle.cycle_start_age)) ? 0 : cycleData.previous_cycle.cycle_start_age}–${isNaN(Number(cycleData.previous_cycle.cycle_end_age)) ? 0 : cycleData.previous_cycle.cycle_end_age} वर्ष`
+                    : `Age ${isNaN(Number(cycleData.previous_cycle.cycle_start_age)) ? 0 : cycleData.previous_cycle.cycle_start_age}–${isNaN(Number(cycleData.previous_cycle.cycle_end_age)) ? 0 : cycleData.previous_cycle.cycle_end_age}`}
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className={`w-2 h-2 rounded-full shrink-0 ${PLANET_DOT[cycleData.previous_cycle.ruler] || 'bg-gray-400'}`} />
@@ -301,8 +301,8 @@ export default function LalKitabMilestonesTab({ kundliId, language }: Props) {
                 </div>
                 <div className="text-xs text-muted-foreground mb-3">
                   {hi
-                    ? `${cycleData.active_cycle.cycle_start_age}–${cycleData.active_cycle.cycle_end_age} वर्ष`
-                    : `Age ${cycleData.active_cycle.cycle_start_age}–${cycleData.active_cycle.cycle_end_age}`}
+                    ? `${isNaN(Number(cycleData.active_cycle.cycle_start_age)) ? 0 : cycleData.active_cycle.cycle_start_age}–${isNaN(Number(cycleData.active_cycle.cycle_end_age)) ? 0 : cycleData.active_cycle.cycle_end_age} वर्ष`
+                    : `Age ${isNaN(Number(cycleData.active_cycle.cycle_start_age)) ? 0 : cycleData.active_cycle.cycle_start_age}–${isNaN(Number(cycleData.active_cycle.cycle_end_age)) ? 0 : cycleData.active_cycle.cycle_end_age}`}
                 </div>
 
                 <div className="flex items-center gap-1.5 mb-3">
@@ -319,13 +319,13 @@ export default function LalKitabMilestonesTab({ kundliId, language }: Props) {
                   <div className="flex justify-between text-xs text-muted-foreground mb-1">
                     <span>
                       {hi
-                        ? `${cycleData.active_cycle.years_into} वर्ष बीते`
-                        : `${cycleData.active_cycle.years_into} yr in`}
+                        ? `${isNaN(Number(cycleData.active_cycle.years_into)) ? 0 : cycleData.active_cycle.years_into} वर्ष बीते`
+                        : `${isNaN(Number(cycleData.active_cycle.years_into)) ? 0 : cycleData.active_cycle.years_into} yr in`}
                     </span>
                     <span>
                       {hi
-                        ? `${cycleData.active_cycle.years_remaining} वर्ष शेष`
-                        : `${cycleData.active_cycle.years_remaining} yr left`}
+                        ? `${isNaN(Number(cycleData.active_cycle.years_remaining)) ? 0 : cycleData.active_cycle.years_remaining} वर्ष शेष`
+                        : `${isNaN(Number(cycleData.active_cycle.years_remaining)) ? 0 : cycleData.active_cycle.years_remaining} yr left`}
                     </span>
                   </div>
                   <div className="w-full h-2.5 bg-sacred-gold/15 rounded-full overflow-hidden border border-sacred-gold/20">
@@ -354,8 +354,8 @@ export default function LalKitabMilestonesTab({ kundliId, language }: Props) {
                 </div>
                 <div className="text-xs text-muted-foreground mb-2">
                   {hi
-                    ? `${cycleData.next_cycle.cycle_start_age}–${cycleData.next_cycle.cycle_end_age} वर्ष`
-                    : `Age ${cycleData.next_cycle.cycle_start_age}–${cycleData.next_cycle.cycle_end_age}`}
+                    ? `${isNaN(Number(cycleData.next_cycle.cycle_start_age)) ? 0 : cycleData.next_cycle.cycle_start_age}–${isNaN(Number(cycleData.next_cycle.cycle_end_age)) ? 0 : cycleData.next_cycle.cycle_end_age} वर्ष`
+                    : `Age ${isNaN(Number(cycleData.next_cycle.cycle_start_age)) ? 0 : cycleData.next_cycle.cycle_start_age}–${isNaN(Number(cycleData.next_cycle.cycle_end_age)) ? 0 : cycleData.next_cycle.cycle_end_age}`}
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className={`w-2 h-2 rounded-full shrink-0 ${PLANET_DOT[cycleData.next_cycle.ruler] || 'bg-gray-400'}`} />
