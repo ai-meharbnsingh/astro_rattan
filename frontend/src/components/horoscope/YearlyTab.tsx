@@ -47,6 +47,12 @@ const SECTION_CONFIG = [
   { key: 'finance', icon: Wallet, color: 'text-purple-600', bg: 'bg-purple-50', border: 'border-purple-200' },
 ];
 
+function txt(v: unknown, lang: string): string {
+  if (typeof v === 'string') return v;
+  if (v && typeof v === 'object' && 'en' in v) return (lang === 'hi' ? (v as any).hi : (v as any).en) || '';
+  return String(v ?? '');
+}
+
 export default function YearlyTab({ data, loading, language, t }: Props) {
   if (loading) {
     return (
@@ -154,7 +160,7 @@ export default function YearlyTab({ data, loading, language, t }: Props) {
                   {t('horoscope.section.' + sectionKey)}
                 </h4>
               </div>
-              <p className="text-sm text-foreground leading-relaxed">{text}</p>
+              <p className="text-sm text-foreground leading-relaxed">{txt(text, language)}</p>
             </div>
           );
         })}

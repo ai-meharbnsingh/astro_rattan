@@ -33,6 +33,12 @@ const ELEMENT_COLORS: Record<string, string> = {
   water: 'bg-blue-100 text-blue-700 border-blue-200',
 };
 
+function txt(v: unknown, lang: string): string {
+  if (typeof v === 'string') return v;
+  if (v && typeof v === 'object' && 'en' in v) return (lang === 'hi' ? (v as any).hi : (v as any).en) || '';
+  return String(v ?? '');
+}
+
 export default function AllSignsTab({ data, loading, language, t, onSelectSign }: Props) {
   if (loading) {
     return (
@@ -81,7 +87,7 @@ export default function AllSignsTab({ data, loading, language, t, onSelectSign }
               </span>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">
-              {entry.summary || (entry.sections?.general || '').slice(0, 160)}
+              {txt(entry.summary, language) || txt(entry.sections?.general, language).slice(0, 160)}
             </p>
             <div className="mt-2 text-[10px] text-sacred-gold-dark font-medium group-hover:underline">
               {t('auto.readFullHoroscope')}

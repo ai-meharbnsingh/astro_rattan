@@ -47,6 +47,12 @@ function formatDate(dateStr: string, _lang: string): string {
   return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
 }
 
+function txt(v: unknown, lang: string): string {
+  if (typeof v === 'string') return v;
+  if (v && typeof v === 'object' && 'en' in v) return (lang === 'hi' ? (v as any).hi : (v as any).en) || '';
+  return String(v ?? '');
+}
+
 export default function WeeklyTab({ data, loading, language, t }: Props) {
   if (loading) {
     return (
@@ -141,7 +147,7 @@ export default function WeeklyTab({ data, loading, language, t }: Props) {
                   {t('horoscope.section.' + sectionKey)}
                 </h4>
               </div>
-              <p className="text-sm text-foreground leading-relaxed">{text}</p>
+              <p className="text-sm text-foreground leading-relaxed">{txt(text, language)}</p>
             </div>
           );
         })}
