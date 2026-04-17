@@ -12,14 +12,14 @@ interface Props {
   minuteTick: number;
 }
 
-const CHOGHADIYA_QUALITY: Record<string, { label: string; labelHi: string; color: string; bg: string; border: string }> = {
-  'Amrit':  { label: 'Best',          labelHi: 'सर्वश्रेष्ठ',     color: 'text-green-600',  bg: 'bg-green-500/15',  border: 'border-green-500/30' },
-  'Shubh':  { label: 'Good',          labelHi: 'अच्छा',           color: 'text-green-500',  bg: 'bg-green-500/10',  border: 'border-green-500/20' },
-  'Labh':   { label: 'Gain',          labelHi: 'लाभदायक',         color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
-  'Char':   { label: 'Neutral',       labelHi: 'सामान्य',          color: 'text-blue-500',   bg: 'bg-blue-500/10',   border: 'border-blue-500/20' },
-  'Udveg':  { label: 'Inauspicious',  labelHi: 'अशुभ',            color: 'text-orange-500', bg: 'bg-orange-500/10', border: 'border-orange-500/20' },
-  'Kaal':   { label: 'Inauspicious',  labelHi: 'अशुभ',            color: 'text-red-600',    bg: 'bg-red-500/10',    border: 'border-red-500/20' },
-  'Rog':    { label: 'Inauspicious',  labelHi: 'अशुभ',            color: 'text-red-500',    bg: 'bg-red-500/10',    border: 'border-red-500/20' },
+const CHOGHADIYA_QUALITY: Record<string, { label: string; labelHi: string; color: string; bg: string; border: string; bestFor: string; bestForHi: string }> = {
+  'Amrit': { label: 'Best',         labelHi: 'सर्वश्रेष्ठ', color: 'text-green-600',   bg: 'bg-green-500/15',   border: 'border-green-500/30',  bestFor: 'All auspicious activities',           bestForHi: 'सभी शुभ कार्य' },
+  'Shubh': { label: 'Good',         labelHi: 'अच्छा',       color: 'text-green-500',   bg: 'bg-green-500/10',   border: 'border-green-500/20',  bestFor: 'Marriage, travel, auspicious work',   bestForHi: 'विवाह, यात्रा, शुभ कार्य' },
+  'Labh':  { label: 'Gain',         labelHi: 'लाभदायक',     color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', bestFor: 'Business, trade, financial gains',    bestForHi: 'व्यापार, लाभ, क्रय-विक्रय' },
+  'Char':  { label: 'Neutral',      labelHi: 'सामान्य',     color: 'text-blue-500',    bg: 'bg-blue-500/10',    border: 'border-blue-500/20',   bestFor: 'Travel, movement, vehicle purchase',  bestForHi: 'यात्रा, वाहन, गमन' },
+  'Udveg': { label: 'Inauspicious', labelHi: 'अशुभ',        color: 'text-orange-500',  bg: 'bg-orange-500/10',  border: 'border-orange-500/20', bestFor: 'Government work only',                bestForHi: 'केवल सरकारी कार्य' },
+  'Kaal':  { label: 'Inauspicious', labelHi: 'अशुभ',        color: 'text-red-600',     bg: 'bg-red-500/10',     border: 'border-red-500/20',    bestFor: 'Avoid all new work',                  bestForHi: 'नया कार्य वर्जित' },
+  'Rog':   { label: 'Inauspicious', labelHi: 'अशुभ',        color: 'text-red-500',     bg: 'bg-red-500/10',     border: 'border-red-500/20',    bestFor: 'Medical treatment only',              bestForHi: 'केवल चिकित्सा कार्य' },
 };
 
 const CHOGHADIYA_HINDI: Record<string, string> = {
@@ -156,6 +156,11 @@ export default function ChoghadiyaTab({ panchang, language, t, timezoneOffset, m
               </span>
               <span className="mx-2 text-sacred-gold">{current.start} - {current.end}</span>
               {q && <span className={`text-xs font-medium ${q.color}`}>({language === 'hi' ? q.labelHi : q.label})</span>}
+              {q && (
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  {language === 'hi' ? q.bestForHi : q.bestFor}
+                </p>
+              )}
             </div>
           </div>
         );
@@ -182,35 +187,21 @@ export default function ChoghadiyaTab({ panchang, language, t, timezoneOffset, m
         <Heading as={4} variant={4}>
           {t('auto.choghadiyaMeanings')}
         </Heading>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 text-xs">
-          <div className="flex items-center gap-1 px-1.5 py-1 rounded bg-green-500/10">
-            <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
-            <span className="text-foreground font-medium">
-              {t('auto.amritShubhLabh')}
-            </span>
-            <span className="text-muted-foreground ml-auto">{t('auto.good')}</span>
-          </div>
-          <div className="flex items-center gap-1 px-1.5 py-1 rounded bg-blue-500/10">
-            <span className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0" />
-            <span className="text-foreground font-medium">
-              {t('auto.char')}
-            </span>
-            <span className="text-muted-foreground ml-auto">{t('auto.travel')}</span>
-          </div>
-          <div className="flex items-center gap-1 px-1.5 py-1 rounded bg-orange-500/10">
-            <span className="w-2 h-2 rounded-full bg-orange-500 flex-shrink-0" />
-            <span className="text-foreground font-medium">
-              {t('auto.rogUdveg')}
-            </span>
-            <span className="text-muted-foreground ml-auto">{t('auto.caution')}</span>
-          </div>
-          <div className="flex items-center gap-1 px-1.5 py-1 rounded bg-red-500/10">
-            <span className="w-2 h-2 rounded-full bg-red-600 flex-shrink-0" />
-            <span className="text-foreground font-medium">
-              {t('auto.kaal')}
-            </span>
-            <span className="text-muted-foreground ml-auto">{t('auto.avoid')}</span>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-xs">
+          {Object.entries(CHOGHADIYA_QUALITY).map(([name, q]) => (
+            <div key={name} className={`flex items-start gap-2 px-2 py-1.5 rounded ${q.bg}`}>
+              <span className={`w-2 h-2 rounded-full flex-shrink-0 mt-1 ${q.color.replace('text-', 'bg-')}`} />
+              <div className="min-w-0">
+                <span className={`font-semibold ${q.color}`}>{name}</span>
+                <span className="text-muted-foreground ml-1.5">
+                  {language === 'hi' ? CHOGHADIYA_HINDI[name] || name : ''}
+                </span>
+                <p className="text-muted-foreground/80 leading-tight">
+                  {language === 'hi' ? q.bestForHi : q.bestFor}
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
         {/* Vaar Vela / Kaal Vela / Kaal Ratri legend */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 text-xs mt-2">
