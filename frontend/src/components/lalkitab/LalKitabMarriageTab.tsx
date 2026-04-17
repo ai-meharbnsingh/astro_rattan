@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
+import { pickLang } from '@/components/lalkitab/safe-render';
 import { Heart, AlertTriangle, CheckCircle2, Loader2, Flame, Bookmark, BookmarkCheck } from 'lucide-react';
 
 interface Props {
@@ -185,7 +186,7 @@ export default function LalKitabMarriageTab({ kundliId }: Props) {
                     <span className="w-5 h-5 rounded-full bg-orange-400/15 text-orange-700 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
                       {i + 1}
                     </span>
-                    {remedy}
+                    {typeof remedy === 'string' ? remedy : (remedy ? pickLang(remedy, isHi) : '')}
                   </li>
                 ))}
               </ul>
