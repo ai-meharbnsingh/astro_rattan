@@ -577,6 +577,17 @@ CREATE TABLE IF NOT EXISTS guest_kundlis (
 CREATE INDEX IF NOT EXISTS idx_guest_email ON guest_kundlis(email);
 CREATE INDEX IF NOT EXISTS idx_guest_phone ON guest_kundlis(phone);
     """),
+    (18, "lk_prediction_feedback table — per-kundli prediction ratings", """
+CREATE TABLE IF NOT EXISTS lk_prediction_feedback (
+    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    kundli_id TEXT NOT NULL REFERENCES kundlis(id) ON DELETE CASCADE,
+    feedback JSONB NOT NULL DEFAULT '{}',
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE(user_id, kundli_id)
+);
+CREATE INDEX IF NOT EXISTS idx_lk_pred_feedback_user_kundli ON lk_prediction_feedback(user_id, kundli_id);
+    """),
 ]
 
 

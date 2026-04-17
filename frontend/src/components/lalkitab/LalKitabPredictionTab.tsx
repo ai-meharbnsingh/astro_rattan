@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import type { LalKitabChartData } from './lalkitab-data';
 import {
@@ -6,6 +6,7 @@ import {
   computeAreaScore,
   scoreToConfidence,
 } from './lalkitab-data';
+import { api } from '@/lib/api';
 import {
   Star,
   Info,
@@ -16,6 +17,7 @@ import {
 
 interface Props {
   chartData: LalKitabChartData;
+  kundliId: string;
 }
 
 const STORAGE_KEY_PREFIX = 'lk_prediction_feedback_';
@@ -73,29 +75,39 @@ function getPlanetLabel(key: string, language: string): string {
   return language === 'hi' ? p.hi : p.en;
 }
 
-export default function LalKitabPredictionTab({ chartData }: Props) {
+export default function LalKitabPredictionTab({ chartData, kundliId }: Props) {
   const { t, language } = useTranslation();
   const isHi = language === 'hi';
 
+  const storageKey = `${STORAGE_KEY_PREFIX}${kundliId}`;
   const [feedback, setFeedback] = useState<Record<string, string>>({});
 
-  // Load feedback from localStorage
+  // Load feedback: API is authoritative; localStorage is the optimistic cache
   useEffect(() => {
-    const stored = localStorage.getItem(`${STORAGE_KEY_PREFIX}`);
-    if (stored) {
-      try {
-        setFeedback(JSON.parse(stored));
-      } catch (e) {
-        /* ignored — corrupt localStorage entry */
-      }
-    }
-  }, []);
+    if (!kundliId) return;
+    // Seed from localStorage immediately
+    try {
+      const cached = localStorage.getItem(storageKey);
+      if (cached) setFeedback(JSON.parse(cached));
+    } catch { /* ignore */ }
+    // Then fetch from backend and overwrite
+    api.get(`/api/lalkitab/predictions/feedback/${kundliId}`)
+      .then((res: any) => {
+        if (res?.feedback && typeof res.feedback === 'object') {
+          setFeedback(res.feedback);
+          localStorage.setItem(storageKey, JSON.stringify(res.feedback));
+        }
+      })
+      .catch(() => { /* keep localStorage state */ });
+  }, [kundliId]);
 
-  const saveFeedback = (areaKey: string, value: string) => {
+  const saveFeedback = useCallback((areaKey: string, value: string) => {
     const next = { ...feedback, [areaKey]: value };
     setFeedback(next);
-    localStorage.setItem(`${STORAGE_KEY_PREFIX}`, JSON.stringify(next));
-  };
+    localStorage.setItem(storageKey, JSON.stringify(next));
+    api.post('/api/lalkitab/predictions/feedback', { kundli_id: kundliId, feedback: next })
+      .catch(() => { /* optimistic — localStorage already updated */ });
+  }, [feedback, kundliId, storageKey]);
 
   const predictions = useMemo(
     () =>
