@@ -633,28 +633,31 @@ export default function NumerologyTabs() {
                         <div className="grid grid-cols-3 gap-2">
                           {numResult.loshu_grid.flat().map((cell: number, idx: number) => {
                             const v = numResult.loshu_values?.[cell] || '';
+                            const count = v ? v.length : 0;
                             const strengthNums = new Set<number>((numResult.loshu_arrows?.arrows_of_strength || []).flatMap((a: any) => a.numbers || []));
                             const weaknessNums = new Set<number>((numResult.loshu_arrows?.arrows_of_weakness || []).flatMap((a: any) => a.numbers || []));
                             const isStrength = strengthNums.has(cell);
                             const isWeakness = weaknessNums.has(cell);
-                            const isMissing = !v;
+                            const isPresent = count > 0;
                             const boxClass = isStrength
-                              ? 'border-green-300 bg-green-50'
+                              ? 'border-green-400 bg-green-50'
                               : isWeakness
                                 ? 'border-red-300 bg-red-50'
-                                : 'border-sacred-gold/25 bg-card';
+                                : isPresent
+                                  ? 'border-sacred-gold/40 bg-sacred-gold/5'
+                                  : 'border-gray-200 bg-gray-50';
                             return (
-                              <div key={idx} className={`rounded-lg border ${boxClass} p-2 text-center`}>
-                                <p className="text-[10px] text-muted-foreground">{cell}</p>
-                                <p className={`text-sm font-semibold ${isMissing ? 'text-muted-foreground' : 'text-foreground'}`}>
-                                  {v || t('report.notAvailable')}
-                                </p>
+                              <div key={idx} className={`rounded-lg border-2 ${boxClass} p-3 text-center`}>
+                                <p className={`text-lg font-bold ${isPresent ? 'text-foreground' : 'text-gray-300'}`}>{cell}</p>
+                                {count > 1 && <p className="text-[10px] text-sacred-gold-dark font-medium">×{count}</p>}
                               </div>
                             );
                           })}
                         </div>
-                        <p className="text-[11px] text-muted-foreground mt-3">
-                          {t('numerology.loshuLegend')}
+                        <p className="text-[10px] text-muted-foreground mt-3 flex gap-3 justify-center">
+                          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-green-400 inline-block" /> {isHi ? 'शक्ति' : 'Strength'}</span>
+                          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-red-300 inline-block" /> {isHi ? 'कमज़ोरी' : 'Weakness'}</span>
+                          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-gray-200 inline-block" /> {isHi ? 'अनुपस्थित' : 'Absent'}</span>
                         </p>
                       </div>
 
@@ -1095,27 +1098,32 @@ export default function NumerologyTabs() {
                       <div className="grid grid-cols-3 gap-2">
                         {mobileResult.loshu_grid.flat().map((cell: number, idx: number) => {
                           const v = mobileResult.loshu_values?.[cell] || '';
+                          const count = v ? v.length : 0; // "99" = 2 occurrences, "9" = 1
                           const strengthNums = new Set<number>((mobileResult.loshu_arrows?.arrows_of_strength || []).flatMap((a: any) => a.numbers || []));
                           const weaknessNums = new Set<number>((mobileResult.loshu_arrows?.arrows_of_weakness || []).flatMap((a: any) => a.numbers || []));
                           const isStrength = strengthNums.has(cell);
                           const isWeakness = weaknessNums.has(cell);
-                          const isMissing = !v;
+                          const isPresent = count > 0;
                           const boxClass = isStrength
-                            ? 'border-green-300 bg-green-50'
+                            ? 'border-green-400 bg-green-50'
                             : isWeakness
                               ? 'border-red-300 bg-red-50'
-                              : 'border-sacred-gold/25 bg-card';
+                              : isPresent
+                                ? 'border-sacred-gold/40 bg-sacred-gold/5'
+                                : 'border-gray-200 bg-gray-50';
                           return (
-                            <div key={idx} className={`rounded-lg border ${boxClass} p-2 text-center`}>
-                              <p className="text-[10px] text-muted-foreground">{cell}</p>
-                              <p className={`text-sm font-semibold ${isMissing ? 'text-muted-foreground' : 'text-foreground'}`}>
-                                {v || '-'}
-                              </p>
+                            <div key={idx} className={`rounded-lg border-2 ${boxClass} p-3 text-center`}>
+                              <p className={`text-lg font-bold ${isPresent ? 'text-foreground' : 'text-gray-300'}`}>{cell}</p>
+                              {count > 1 && <p className="text-[10px] text-sacred-gold-dark font-medium">×{count}</p>}
                             </div>
                           );
                         })}
                       </div>
-                      <p className="text-[11px] text-muted-foreground mt-3">{t('numerology.loshuLegend')}</p>
+                      <p className="text-[10px] text-muted-foreground mt-3 flex gap-3 justify-center">
+                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-green-400 inline-block" /> {isHi ? 'शक्ति' : 'Strength'}</span>
+                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-red-300 inline-block" /> {isHi ? 'कमज़ोरी' : 'Weakness'}</span>
+                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-gray-200 inline-block" /> {isHi ? 'अनुपस्थित' : 'Absent'}</span>
+                      </p>
                     </div>
 
                     {/* Arrows + Planes */}
