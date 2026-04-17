@@ -60,7 +60,7 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
     <div className="space-y-6">
       <div className="bg-muted rounded-xl p-5 border border-border">
         <Heading as={4} variant={4} className="mb-4">{t('section.shadbalaStrength')}</Heading>
-        <div className="flex items-end justify-around gap-2" className="h-[280px]">
+        <div className="flex items-end justify-around gap-2 h-[280px]">
           {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
             const data = shadbalaData.planets[planet];
             if (!data) return null;
@@ -76,7 +76,7 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
                 <span className={`text-sm font-bold ${isStrong ? 'text-foreground' : 'text-foreground'}`}>
                   {total.toFixed(1)}
                 </span>
-                <div className="relative w-full flex justify-center bg-muted/20 rounded-t-lg" className="h-[200px]">
+                <div className="relative w-full flex justify-center bg-muted/20 rounded-t-lg h-[200px]">
                   {/* Required line */}
                   <div
                     className="absolute w-full border-t-2 border-dashed border-red-500 z-10"
@@ -140,7 +140,7 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
                 return (
                   <div key={house} className="flex flex-col items-center gap-1 flex-1">
                     <span className="text-xs font-bold" style={{ color: barColor }}>{data.total.toFixed(1)}</span>
-                    <div className="relative w-full flex justify-center bg-muted/20 rounded-t-lg" className="h-[160px]">
+                    <div className="relative w-full flex justify-center bg-muted/20 rounded-t-lg h-[160px]">
                       <div
                         className="w-6 rounded-t-lg transition-all duration-500"
                         style={{ height: `${barHeight}%`, backgroundColor: barColor, alignSelf: 'flex-end' }}
