@@ -625,23 +625,23 @@ export default function KundliGenerator() {
           </TabsContent>
 
           <TabsContent value="pravrajya" className="min-h-[300px]">
-            <PravrajyaTab kundliId={kundliId} language={language} t={t} />
+            <PravrajyaTab kundliId={result?.id || ''} language={language} t={t} />
           </TabsContent>
 
           <TabsContent value="lifespan" className="min-h-[300px]">
-            <LifespanTab kundliId={kundliId} language={language} t={t} />
+            <LifespanTab kundliId={result?.id || ''} language={language} t={t} />
           </TabsContent>
 
           <TabsContent value="conjunctions" className="min-h-[300px]">
-            <ConjunctionsTab kundliId={kundliId} language={language} t={t} />
+            <ConjunctionsTab kundliId={result?.id || ''} language={language} t={t} />
           </TabsContent>
 
           <TabsContent value="roga" className="min-h-[300px]">
-            <RogaTab kundliId={kundliId} language={language} t={t} />
+            <RogaTab kundliId={result?.id || ''} language={language} t={t} />
           </TabsContent>
 
           <TabsContent value="bhava-phala" className="min-h-[300px]">
-            <BhavaPhalaTab kundliId={kundliId} language={language} t={t} />
+            <BhavaPhalaTab kundliId={result?.id || ''} language={language} t={t} />
           </TabsContent>
 
           <TabsContent value="sadesati" className="min-h-[300px]">
