@@ -543,5 +543,6 @@ function normalizePanchang(data: Record<string, unknown>): FullPanchangData {
     gowri_panchang: d.gowri_panchang || null,
     do_ghati_muhurta: d.do_ghati_muhurta || null,
     panchaka: d.panchaka || null,
+    misc: d.misc || null,
   };
 }

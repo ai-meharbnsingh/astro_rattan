@@ -1,4 +1,4 @@
-import { Shield, Microscope, Clock, Table, BadgeCheck } from 'lucide-react';
+import { Shield, Microscope, Clock, BadgeCheck, Sparkles } from 'lucide-react';
 import type { FullPanchangData } from '@/sections/Panchang';
 import { Card, CardContent } from '@/components/ui/card';
 import { Heading } from '@/components/ui/heading';
@@ -93,7 +93,7 @@ export default function AdvancedTab({ panchang, language, t }: Props) {
                     </span>
                     <BadgeCheck className={`h-3.5 w-3.5 ${isAuspicious ? 'text-green-500' : 'text-muted-foreground/30'}`} />
                   </div>
-                  <Heading as={4} variant={4} className="!text-sm mb-1">
+                  <Heading as={4} variant={6} className="mb-1">
                     {m.name}
                   </Heading>
                   <div className="flex items-center justify-between text-xs">
