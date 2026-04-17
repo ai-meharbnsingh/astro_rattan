@@ -1180,20 +1180,30 @@ def calculate_bunyaad(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
 
 
 # ============================================================
-# TAKKAR (COLLISION) ANALYSIS — 1-8 AND 1-6 AXIS
+# TAKKAR (COLLISION) ANALYSIS — LAL KITAB OPPOSITE-AXIS RULE
 # ============================================================
+#
+# Lal Kitab Takkar is strictly across OPPOSITE (7th-from) houses:
+#   H1 ↔ H7   H2 ↔ H8   H3 ↔ H9
+#   H4 ↔ H10  H5 ↔ H11  H6 ↔ H12
+#
+# A takkar is flagged only when two planets sit on the SAME axis —
+# i.e. when |house_a - house_b| == 6.  The "1-8 / 1-6 axis" rule used
+# previously was Vedic-influenced and produced false positives (e.g.
+# Moon H8 vs Rahu H1, which are on DIFFERENT axes).  Severity is
+# determined by the standard LK enemy matrix:
+#   enemies → destructive   friends/neutrals → mild
 
 def calculate_takkar(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
-    Detect all 1-8 axis collisions and 6-1 obstructions between planets.
+    Detect opposite-axis takkar between planets (LK rule).
 
-    Rules:
-    - If planet A is in house H and planet B is in house (H+7)%12, they are in 1-8 takkar.
-    - The planet in the LATER house (8th position from attacker) receives the collision.
-    - If they are enemies, severity = "destructive"; otherwise "mild".
-    - Also checks 1-6 axis: planet in (H+5)%12 from another creates obstruction.
-
-    Returns collisions list, counts, most attacked planet, and safe planets.
+    Rule: planet A in house H and planet B in house (H+6 mod 12) are on
+    the same LK axis and form a takkar. Each axis pair is reported once.
+    Both planets receive the collision (it is mutual across the axis),
+    but the LK-enemy relation decides severity:
+      - enemies      → destructive (root is uprooted)
+      - friends/neutral → mild     (minor friction)
     """
     collisions: List[Dict[str, Any]] = []
     attack_count: Dict[str, int] = {}
@@ -1204,95 +1214,72 @@ def calculate_takkar(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
     for p in all_planets:
         attack_count[p["planet"]] = 0
 
-    # Check all ordered pairs for 1-8 axis
+    # Check unordered pairs; each pair is emitted once with a symmetric axis label.
     for i, pa in enumerate(all_planets):
-        for j, pb in enumerate(all_planets):
-            if i == j:
-                continue
-            ha = pa["house"]
-            hb = pb["house"]
-            if ha is None or hb is None:
+        for j in range(i + 1, len(all_planets)):
+            pb = all_planets[j]
+            ha, hb = pa.get("house"), pb.get("house")
+            if not isinstance(ha, int) or not isinstance(hb, int):
                 continue
 
-            # Check 1-8 axis: is pb in the 8th house from pa?
-            eighth_from_a = ((ha - 1 + 7) % 12) + 1
-            if hb == eighth_from_a:
-                attacker = pa["planet"]
-                receiver = pb["planet"]
-                are_enemies = receiver in LK_ENEMIES.get(attacker, set()) or attacker in LK_ENEMIES.get(receiver, set())
-                severity = "destructive" if are_enemies else "mild"
+            # Opposite-axis rule: houses exactly 6 positions apart.
+            if abs(ha - hb) != 6:
+                continue
 
-                if severity == "destructive":
-                    interp_en = (
-                        f"{attacker} in House {ha} strikes {receiver} in House {hb} (1-8 takkar). "
-                        f"As enemies, {receiver}'s root is uprooted — its significations suffer severely."
-                    )
-                    interp_hi = (
-                        f"{attacker} भाव {ha} से {receiver} भाव {hb} पर टक्कर (1-8 अक्ष)। "
-                        f"दुश्मनी होने से {receiver} की जड़ उखड़ जाती है — इसके फल नष्ट होते हैं।"
-                    )
-                else:
-                    interp_en = (
-                        f"{attacker} in House {ha} collides with {receiver} in House {hb} (1-8 axis). "
-                        f"Not enemies — mild friction, but no root destruction."
-                    )
-                    interp_hi = (
-                        f"{attacker} भाव {ha} से {receiver} भाव {hb} पर टक्कर (1-8 अक्ष)। "
-                        f"दुश्मनी नहीं — हल्का घर्षण, जड़ सुरक्षित।"
-                    )
+            a_name, b_name = pa["planet"], pb["planet"]
+            are_enemies = (
+                b_name in LK_ENEMIES.get(a_name, set())
+                or a_name in LK_ENEMIES.get(b_name, set())
+            )
+            severity = "destructive" if are_enemies else "mild"
 
-                collisions.append({
-                    "attacker": attacker,
-                    "attacker_house": ha,
-                    "receiver": receiver,
-                    "receiver_house": hb,
-                    "axis": "1-8",
-                    "are_enemies": are_enemies,
-                    "severity": severity,
-                    "interpretation_en": interp_en,
-                    "interpretation_hi": interp_hi,
-                })
-                attack_count[receiver] = attack_count.get(receiver, 0) + 1
+            # Axis label is always the lower-numbered house first.
+            low, high = (ha, hb) if ha < hb else (hb, ha)
+            axis_label = f"{low}-{high}"
 
-            # Check 1-6 axis: is pb in the 6th house from pa?
-            sixth_from_a = ((ha - 1 + 5) % 12) + 1
-            if hb == sixth_from_a:
-                attacker = pa["planet"]
-                receiver = pb["planet"]
-                are_enemies = receiver in LK_ENEMIES.get(attacker, set()) or attacker in LK_ENEMIES.get(receiver, set())
-                severity = "destructive" if are_enemies else "mild"
+            if severity == "destructive":
+                interp_en = (
+                    f"{a_name} (H{ha}) and {b_name} (H{hb}) are on the {axis_label} axis. "
+                    f"As LK enemies, both planets destroy each other's significations "
+                    f"across this opposite-house pair."
+                )
+                interp_hi = (
+                    f"{a_name} (भाव {ha}) और {b_name} (भाव {hb}) {axis_label} अक्ष पर "
+                    f"आमने-सामने हैं। लाल किताब में शत्रु होने से दोनों एक-दूसरे के "
+                    f"फलों को नष्ट करते हैं।"
+                )
+            else:
+                interp_en = (
+                    f"{a_name} (H{ha}) and {b_name} (H{hb}) share the {axis_label} axis "
+                    f"but are not LK enemies — mild friction only, the axis is workable."
+                )
+                interp_hi = (
+                    f"{a_name} (भाव {ha}) और {b_name} (भाव {hb}) {axis_label} अक्ष पर हैं "
+                    f"पर शत्रु नहीं — हल्का घर्षण, अक्ष टिकाऊ है।"
+                )
 
-                if severity == "destructive":
-                    interp_en = (
-                        f"{attacker} in House {ha} obstructs {receiver} in House {hb} (1-6 axis). "
-                        f"Enemy obstruction — {receiver} faces persistent obstacles and delays."
-                    )
-                    interp_hi = (
-                        f"{attacker} भाव {ha} से {receiver} भाव {hb} पर रुकावट (1-6 अक्ष)। "
-                        f"दुश्मन बाधा — {receiver} को लगातार रुकावटें और देरी।"
-                    )
-                else:
-                    interp_en = (
-                        f"{attacker} in House {ha} creates friction with {receiver} in House {hb} (1-6 axis). "
-                        f"Not enemies — minor delays, manageable."
-                    )
-                    interp_hi = (
-                        f"{attacker} भाव {ha} से {receiver} भाव {hb} पर हल्की रुकावट (1-6 अक्ष)। "
-                        f"दुश्मनी नहीं — मामूली देरी, सम्भाल सकते हैं।"
-                    )
-
-                collisions.append({
-                    "attacker": attacker,
-                    "attacker_house": ha,
-                    "receiver": receiver,
-                    "receiver_house": hb,
-                    "axis": "1-6",
-                    "are_enemies": are_enemies,
-                    "severity": severity,
-                    "interpretation_en": interp_en,
-                    "interpretation_hi": interp_hi,
-                })
-                attack_count[receiver] = attack_count.get(receiver, 0) + 1
+            collisions.append({
+                "planet_a": a_name,
+                "planet_a_house": ha,
+                "planet_b": b_name,
+                "planet_b_house": hb,
+                # Backwards-compatible aliases for the frontend UI
+                # (which read `attacker` / `receiver`). Takkar is mutual,
+                # so either side can be called attacker; we pick the
+                # lower-house planet for stability.
+                "attacker": a_name if ha < hb else b_name,
+                "attacker_house": low,
+                "receiver": b_name if ha < hb else a_name,
+                "receiver_house": high,
+                "axis": axis_label,
+                "are_enemies": are_enemies,
+                "severity": severity,
+                "interpretation_en": interp_en,
+                "interpretation_hi": interp_hi,
+                "source": "LK_CANONICAL",
+            })
+            attack_count[a_name] = attack_count.get(a_name, 0) + 1
+            attack_count[b_name] = attack_count.get(b_name, 0) + 1
 
     destructive_count = sum(1 for c in collisions if c["severity"] == "destructive")
     mild_count = sum(1 for c in collisions if c["severity"] == "mild")
