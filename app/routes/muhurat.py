@@ -112,6 +112,9 @@ def muhurat_finder(
     Uses traditional Vedic rules: favorable tithis, nakshatras, weekdays,
     lagnas, and avoids Rahu Kaal, Bhadra, Panchaka, Ganda Moola, etc.
     """
+    from fastapi import HTTPException
+    if not (-90.0 <= latitude <= 90.0) or not (-180.0 <= longitude <= 180.0):
+        raise HTTPException(status_code=400, detail="Invalid latitude/longitude range")
     today = date.today()
     target_month = month or today.month
     target_year = year or today.year
