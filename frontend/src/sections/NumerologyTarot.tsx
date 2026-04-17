@@ -7,7 +7,7 @@ export default function NumerologyTarot() {
   const { t } = useTranslation();
 
   return (
-    <section className="max-w-4xl mx-auto py-24 px-4">
+    <section className="max-w-7xl mx-auto py-24 px-4">
       <div className="text-center mb-10">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sacred-gold-dark text-white text-sm font-medium mb-4">
           <Sparkles className="w-4 h-4" />{t('numerology.badge')}

@@ -290,7 +290,8 @@ export default function NumerologyTabs() {
         </TabsList>
 
         {/* Life Path Tab */}
-        <TabsContent value="life_path" className="max-w-xl mx-auto space-y-6">
+        <TabsContent value="life_path" className="space-y-6">
+          <div className="max-w-xl mx-auto">
           <Card className="bg-card border-0 shadow-soft">
             <CardContent className="p-6">
               <Heading as={3} variant={3}>{t('numerology.calculateNumbers')}</Heading>
@@ -310,6 +311,7 @@ export default function NumerologyTabs() {
               </div>
             </CardContent>
           </Card>
+        </div>
 
 	          {numResult && (
 	            <Card className="bg-card border-0 shadow-soft-lg">
@@ -761,7 +763,8 @@ export default function NumerologyTabs() {
       </TabsContent>
 
       {/* Mobile Tab */}
-      <TabsContent value="mobile" className="max-w-2xl mx-auto space-y-6">
+      <TabsContent value="mobile" className="space-y-6">
+          <div className="max-w-2xl mx-auto">
           <Card className="bg-card border-0 shadow-soft">
             <CardContent className="p-6">
               <Heading as={3} variant={3}>{t('numerology.mobileAnalyzeHeading')}</Heading>
@@ -787,6 +790,8 @@ export default function NumerologyTabs() {
                     <Input placeholder={t('numerology.lastName')} value={lastName} onChange={(e) => setLastName(e.target.value)} className="bg-card border-sacred-gold" />
                   </div>
                 </div>
+
+                <div>
 
                 <div>
                   <label className="block text-sm text-muted-foreground mb-1">{t('numerology.mobileNumber')} <span className="text-red-600">*</span></label>
@@ -846,6 +851,7 @@ export default function NumerologyTabs() {
               </div>
             </CardContent>
           </Card>
+        </div>
 
           {/* Mobile Results */}
           {mobileResult && (
