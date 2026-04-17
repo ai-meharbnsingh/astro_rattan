@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from '@/lib/i18n';
+import { pickLang } from '@/components/lalkitab/safe-render';
 
 // --- Data types ---
 export interface PlanetData {
@@ -735,7 +736,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
           <div className="text-sm text-foreground">
             {ZODIAC_NUMBERS[p.sign] || ''} {p.sign} {p.sign_degree?.toFixed(1)}&deg;
           </div>
-          <div className="text-sm text-foreground">{t('table.nakshatra')}: {p.nakshatra || t('common.noData')}</div>
+          <div className="text-sm text-foreground">{t('table.nakshatra')}: {typeof p.nakshatra === 'string' ? p.nakshatra : (p.nakshatra ? pickLang(p.nakshatra, false) : '') || t('common.noData')}</div>
           <div className="text-sm text-foreground">{t('table.house')}: {p.house}</div>
           <div className="text-sm" style={{ color: strength.color }}>{strength.label}</div>
           <div className="text-sm text-foreground">{t('table.aspects')}: {aspects.join(', ')}</div>
