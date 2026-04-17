@@ -1378,6 +1378,22 @@ def get_bhava_phala(
     return result
 
 
+@router.get("/{kundli_id}/janma-predictions", status_code=status.HTTP_200_OK)
+def get_janma_predictions(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Lagna profile (Adh. 9) + Moon Nakshatra (Adh. 10) — Phaladeepika."""
+    from app.lagna_nakshatra_engine import analyze_janma_predictions
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    result = analyze_janma_predictions(chart)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
 @router.get("/{kundli_id}/bhava-vichara", status_code=status.HTTP_200_OK)
 def get_bhava_vichara(
     kundli_id: str,

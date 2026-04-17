@@ -53,8 +53,7 @@ import BhavaPhalaTab from '@/components/kundli/BhavaPhalaTab';
 import VrittiTab from '@/components/kundli/VrittiTab';
 import BhavaVicharaTab from '@/components/kundli/BhavaVicharaTab';
 import LongevityTab from '@/components/kundli/LongevityTab';
-// TODO: uncomment when JanmaPredictionsTab.tsx lands (Adh. 9-10 agent in progress)
-// import JanmaPredictionsTab from '@/components/kundli/JanmaPredictionsTab';
+import JanmaPredictionsTab from '@/components/kundli/JanmaPredictionsTab';
 
 // ── Single source of truth for ALL tab definitions ──────────
 interface TabDef {
@@ -677,10 +676,9 @@ export default function KundliGenerator() {
             <LongevityTab kundliId={result?.id || ''} language={language} t={t} />
           </TabsContent>
 
-          {/* TODO: uncomment when JanmaPredictionsTab.tsx lands (Adh. 9-10 agent in progress) */}
-          {/* <TabsContent value="janma-predictions" className="min-h-[300px]">
+          <TabsContent value="janma-predictions" className="min-h-[300px]">
             <JanmaPredictionsTab kundliId={result?.id || ''} language={language} t={t} />
-          </TabsContent> */}
+          </TabsContent>
 
           <TabsContent value="sadesati" className="min-h-[300px]">
             <SadesatiTab sadesatiData={sadesatiData} loadingSadesati={loadingSadesati} doshaData={doshaData} language={language} t={t} />
