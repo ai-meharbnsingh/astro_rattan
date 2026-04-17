@@ -35,6 +35,12 @@ import LalKitabWealthTab from '@/components/lalkitab/LalKitabWealthTab';
 import LalKitabSavedPredictionsTab from '@/components/lalkitab/LalKitabSavedPredictionsTab';
 import LalKitabTevaTab from '@/components/lalkitab/LalKitabTevaTab';
 import LalKitabAdvancedTab from '@/components/lalkitab/LalKitabAdvancedTab';
+import LalKitabMilestonesTab from '@/components/lalkitab/LalKitabMilestonesTab';
+import LalKitabTechnicalTab from '@/components/lalkitab/LalKitabTechnicalTab';
+import LalKitabSacrificeTab from '@/components/lalkitab/LalKitabSacrificeTab';
+import LalKitabForbiddenTab from '@/components/lalkitab/LalKitabForbiddenTab';
+import LalKitabPalmistryTab from '@/components/lalkitab/LalKitabPalmistryTab';
+import LalKitabFamilyTab from '@/components/lalkitab/LalKitabFamilyTab';
 
 type View = 'form' | 'generating' | 'result';
 
@@ -222,13 +228,17 @@ export default function LalKitabPage() {
                 <LalKitabDoshaTab chartData={chartData} />
                 <LalKitabRelationsTab chartData={chartData} />
                 <LalKitabRulesTab chartData={chartData} />
+                <LalKitabSacrificeTab kundliId={kundliId} language={language} />
+                <LalKitabTechnicalTab chartData={chartData} kundliId={kundliId} language={language} />
               </TabsContent>
               <TabsContent value="timing" className="space-y-8">
+                <LalKitabMilestonesTab kundliId={kundliId} birthDate={birthDate} language={language} />
                 <LalKitabYearlyTab chartData={chartData} birthDate={birthDate} />
                 <LalKitabVarshphalTab chartData={chartData} birthDate={birthDate} apiResult={apiResult} />
                 <LalKitabGocharTab chartData={chartData} apiResult={apiResult} />
               </TabsContent>
               <TabsContent value="upay" className="space-y-8">
+                <LalKitabForbiddenTab kundliId={kundliId} language={language} />
                 <LalKitabRemediesTab chartData={chartData} kundliId={kundliId} />
                 <LalKitabRemediesTrackerTab chartData={chartData} kundliId={kundliId} />
                 <LalKitabChandraChaalanaTab />
@@ -293,6 +303,8 @@ export default function LalKitabPage() {
                 <LalKitabNishaniyaTab kundliId={kundliId} />
               </TabsContent>
               <TabsContent value="advanced" className="space-y-8">
+                <LalKitabPalmistryTab kundliId={kundliId} language={language} />
+                <LalKitabFamilyTab kundliId={kundliId} language={language} />
                 <LalKitabAdvancedTab kundliId={kundliId} chartData={chartData} />
                 <LalKitabTevaTab chartData={chartData} apiResult={apiResult} />
                 <LalKitabRinTab kundliId={kundliId} />

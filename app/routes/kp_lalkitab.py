@@ -1333,3 +1333,148 @@ def kp_horary_predict(
         )
 
     return result
+
+
+# ═══════════════════════════════════════════════════════════════════
+# HELPER — extract LK planet positions from kundli_id
+# ═══════════════════════════════════════════════════════════════════
+
+def _get_lk_positions(kundli_id: str, user_sub: str, db: Any):
+    """Load kundli from DB, convert to LK planet-position list."""
+    row = db.execute(
+        "SELECT * FROM kundlis WHERE id = %s AND user_id = %s",
+        (kundli_id, user_sub),
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Kundli not found")
+    chart_data = json.loads(row["chart_data"])
+    positions = []
+    for planet_name, info in chart_data.get("planets", {}).items():
+        if planet_name not in _KNOWN_PLANETS:
+            continue
+        sign = info.get("sign", "Aries")
+        house = _SIGN_TO_LK_HOUSE.get(sign, 1)
+        positions.append({"planet": planet_name, "house": house})
+    return positions, row
+
+
+# ═══════════════════════════════════════════════════════════════════
+# PALMISTRY (Samudrik Shastra)
+# ═══════════════════════════════════════════════════════════════════
+
+@router.get("/api/lalkitab/palm/zones")
+def get_palm_zones(user: dict = Depends(get_current_user)):
+    """Return all palm zones (mounts + lines) with planet/house mappings."""
+    from app.lalkitab_palmistry import get_palm_zones as _zones, MARK_TYPES
+    return {"zones": _zones(), "mark_types": MARK_TYPES}
+
+
+@router.post("/api/lalkitab/palm/correlate")
+def correlate_palm_marks(
+    payload: dict,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """
+    payload: {kundli_id, marks: [{zone_id, mark_type}]}
+    Returns palm-to-chart correlations with interpretations and remedies.
+    """
+    from app.lalkitab_palmistry import calculate_palm_correlations
+    kundli_id = payload.get("kundli_id")
+    marks = payload.get("marks", [])
+    if not kundli_id:
+        raise HTTPException(status_code=400, detail="kundli_id required")
+    positions, _ = _get_lk_positions(kundli_id, user["sub"], db)
+    return calculate_palm_correlations(positions, marks)
+
+
+# ═══════════════════════════════════════════════════════════════════
+# AGE MILESTONE TRIGGERS (Safar-e-Zindagi)
+# ═══════════════════════════════════════════════════════════════════
+
+@router.get("/api/lalkitab/milestones/{kundli_id}")
+def get_age_milestones(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Return Safar-e-Zindagi age milestone analysis with countdown to next trigger."""
+    from app.lalkitab_milestones import calculate_age_milestones
+    positions, row = _get_lk_positions(kundli_id, user["sub"], db)
+    birth_date = row.get("birth_date") or row.get("dob") or ""
+    if not birth_date:
+        # Try parsing from chart_data
+        chart_data = json.loads(row["chart_data"])
+        birth_date = chart_data.get("birth_date", "1990-01-01")
+    return calculate_age_milestones(str(birth_date), positions)
+
+
+# ═══════════════════════════════════════════════════════════════════
+# TECHNICAL LOGIC (Chalti Gaadi, Dhur-Dhur-Aage, Soya Ghar)
+# ═══════════════════════════════════════════════════════════════════
+
+@router.get("/api/lalkitab/technical/{kundli_id}")
+def get_technical_analysis(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Return Chalti Gaadi, Dhur-Dhur-Aage, and Soya Ghar analysis."""
+    from app.lalkitab_technical import (
+        calculate_chalti_gaadi,
+        calculate_dhur_dhur_aage,
+        calculate_soya_ghar,
+        classify_all_planet_statuses,
+        calculate_muththi,
+    )
+    positions, _ = _get_lk_positions(kundli_id, user["sub"], db)
+    return {
+        "chalti_gaadi": calculate_chalti_gaadi(positions),
+        "dhur_dhur_aage": calculate_dhur_dhur_aage(positions),
+        "soya_ghar": calculate_soya_ghar(positions),
+        "planet_statuses": classify_all_planet_statuses(positions),
+        "muththi": calculate_muththi(positions),
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════
+# BALI KA BAKRA (Sacrifice Analysis)
+# ═══════════════════════════════════════════════════════════════════
+
+@router.get("/api/lalkitab/sacrifice/{kundli_id}")
+def get_sacrifice_analysis(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Return Bali Ka Bakra sacrifice chain analysis for this chart."""
+    from app.lalkitab_sacrifice import analyze_sacrifice
+    positions, _ = _get_lk_positions(kundli_id, user["sub"], db)
+    results = analyze_sacrifice(positions)
+    return {
+        "kundli_id": kundli_id,
+        "sacrifice_count": len(results),
+        "has_sacrifices": len(results) > 0,
+        "results": results,
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════
+# FORBIDDEN REMEDIES
+# ═══════════════════════════════════════════════════════════════════
+
+@router.get("/api/lalkitab/forbidden/{kundli_id}")
+def get_forbidden_list(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Return dynamic forbidden actions list based on this chart's planet placements."""
+    from app.lalkitab_forbidden import get_forbidden_remedies
+    positions, _ = _get_lk_positions(kundli_id, user["sub"], db)
+    results = get_forbidden_remedies(positions)
+    return {
+        "kundli_id": kundli_id,
+        "count": len(results),
+        "forbidden_list": results,
+    }
