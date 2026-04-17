@@ -28,24 +28,23 @@ const TEVA_CONFIG: Record<TevaType, { color: string; bgColor: string; borderColo
   normal:  { color: 'text-sacred-gold-dark', bgColor: 'bg-sacred-gold/8',      borderColor: 'border-sacred-gold/30' },
 };
 
-/** Compute Lal Kitab Teva type from chart planet positions. */
-function computeTevaType(positions: Record<string, number>): TevaType {
-  const saturn = positions['Saturn'] ?? 0;
-  const rahu   = positions['Rahu']   ?? 0;
-  const jupiter = positions['Jupiter'] ?? 0;
-  const moon   = positions['Moon']   ?? 0;
-  const mercury = positions['Mercury'] ?? 0;
-
-  // Ratandh: Saturn or Rahu in H1, OR 3+ planets in H6/8/12
-  const afflictionCount = Object.values(positions).filter((h) => h === 6 || h === 8 || h === 12).length;
-  if (saturn === 1 || rahu === 1 || afflictionCount >= 3) return 'ratandh';
-
-  // Dharmi: Jupiter in H1/4/5/9/12 (own signs: H9 Sagittarius, H12 Pisces; exalted: H4 Cancer)
-  if (jupiter === 1 || jupiter === 4 || jupiter === 5 || jupiter === 9 || jupiter === 12) return 'dharmi';
-
-  // Nabalik: Moon in H8/12 or Mercury in H12
-  if (moon === 8 || moon === 12 || mercury === 12) return 'nabalik';
-
+/**
+ * Derive TevaType from authoritative backend `/advanced` endpoint response.
+ * Prefers apiResult.teva_type flags; falls back to 'normal' if missing.
+ */
+function deriveTevaTypeFromApi(apiResult: any): TevaType {
+  const tt = apiResult?.teva_type;
+  if (!tt) return 'normal';
+  // Explicit type string wins if recognised
+  const explicit = (tt.type || '').toString().toLowerCase();
+  if (explicit === 'ratandh' || explicit === 'ratondha') return 'ratandh';
+  if (explicit === 'dharmi') return 'dharmi';
+  if (explicit === 'nabalik') return 'nabalik';
+  if (explicit === 'normal') return 'normal';
+  // Fallback to boolean flags (backend exposes is_ratondha / is_dharmi / is_nabalik / is_andha)
+  if (tt.is_ratondha || tt.is_ratandh || tt.is_andha) return 'ratandh';
+  if (tt.is_dharmi) return 'dharmi';
+  if (tt.is_nabalik) return 'nabalik';
   return 'normal';
 }
 
@@ -98,7 +97,7 @@ export default function LalKitabTevaTab({ chartData, apiResult }: Props) {
   const isHi = language === 'hi';
   const positions = chartData.planetPositions;
 
-  const tevaType = computeTevaType(positions);
+  const tevaType = deriveTevaTypeFromApi(apiResult);
   const blindPlanets = getBlindPlanets(positions);
   const righteousPlanets = getRighteousPlanets(positions);
   const underagePlanets = getUnderagePlanets(positions);

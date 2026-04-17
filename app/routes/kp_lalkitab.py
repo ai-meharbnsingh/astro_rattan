@@ -12,7 +12,7 @@ from app.auth import get_current_user
 from app.astro_engine import calculate_planet_positions
 from app.database import get_db
 from app.kp_engine import calculate_kp_cuspal, calculate_kp_horary, get_horary_prediction
-from app.lalkitab_engine import get_remedies
+from app.lalkitab_engine import get_remedies, REMEDIES_BY_HOUSE
 from app.models import KPHoraryRequest, KPHoraryPredictRequest
 from app.lalkitab_advanced import (
     calculate_masnui_planets,
@@ -169,19 +169,35 @@ def lalkitab_remedies(payload: dict, user: dict = Depends(get_current_user), db:
 
     try:
         res = get_remedies(planet_positions)
-        # Transform into flat list for frontend with translations
+        # Transform into flat list for frontend with translations.
+        # Look up the authentic Hindi (Devanagari) version from REMEDIES_BY_HOUSE
+        # using the planet + lk_house. If no match is found we emit remedy_hi=None
+        # rather than duplicating English — duplication would be a fraud pattern.
         remedies_list = []
         for planet, info in res.items():
-            if info.get("remedies"):
-                for r_text in info["remedies"]:
-                    # In a real app, we'd have a translation table for remedies too.
-                    # For now, we'll return the same text for both or use a simple map if available.
-                    remedies_list.append({
-                        "planet_en": planet,
-                        "planet_hi": PLANET_NAMES_HI.get(planet, planet),
-                        "remedy_en": r_text,
-                        "remedy_hi": r_text,  # Will be replaced by house-based remedies (W1-A)
-                    })
+            if not info.get("remedies"):
+                continue
+            lk_house = info.get("lk_house", 0)
+            house_remedy = REMEDIES_BY_HOUSE.get(planet, {}).get(lk_house, {})
+            en_from_house = house_remedy.get("en")
+            hi_from_house = house_remedy.get("hi")
+            for r_text in info["remedies"]:
+                # Match the backward-compat English string against the house remedy.
+                # get_remedies() builds compat_remedies from house_remedy["en"],
+                # so these should be equal — but fall back safely.
+                if en_from_house and r_text == en_from_house and hi_from_house:
+                    remedy_hi_val = hi_from_house
+                elif hi_from_house:
+                    remedy_hi_val = hi_from_house
+                else:
+                    # No authentic Hindi available — do NOT duplicate English.
+                    remedy_hi_val = None
+                remedies_list.append({
+                    "planet_en": planet,
+                    "planet_hi": PLANET_NAMES_HI.get(planet, planet),
+                    "remedy_en": r_text,
+                    "remedy_hi": remedy_hi_val,
+                })
         return {"remedies": remedies_list}
     except Exception as exc:
         raise HTTPException(
@@ -541,6 +557,9 @@ def get_rin(
             continue
         sign = info.get("sign", "Aries")
         house = _SIGN_TO_LK_HOUSE.get(sign, 0)
+        # NOTE: Simplified affliction model — checks only houses 6/8/12 (Dusthana).
+        # Does not include lordship afflictions or Pakka Ghar deviations. Full
+        # affliction model lives in lalkitab_advanced.analyze_full_affliction().
         if house in _AFFLICTION_HOUSES:
             afflicted_planets.add(planet_name.lower())
 
@@ -995,32 +1014,16 @@ def get_lalkitab_advanced(
     db: Any = Depends(get_db),
 ):
     """Return advanced Lal Kitab analysis: Masnui Grah, Karmic Debts (with Hora), Teva type, and Prohibitions."""
-    # Fetch full kundli data including birth datetime for Hora calculation
-    row = db.execute(
-        "SELECT chart_data, birth_date, birth_time FROM kundlis WHERE id = %s AND user_id = %s",
-        (kundli_id, user["sub"]),
-    ).fetchone()
-    
-    if not row:
-        raise HTTPException(status_code=404, detail="Kundli not found")
-    
-    # Get planet positions
-    chart_data = json.loads(row["chart_data"])
-    positions_map = {}
-    for planet_name, info in chart_data.get("planets", {}).items():
-        if planet_name not in _KNOWN_PLANETS:
-            continue
-        sign = info.get("sign", "Aries")
-        house = _SIGN_TO_LK_HOUSE.get(sign, 0)
-        positions_map[planet_name.lower()] = house
+    # Use the shared helper so we get the authoritative house derivation
+    # (prefers explicit chart_data.planets[p]["house"], falls back to sign).
+    # This eliminates the earlier sign-only bug that contradicted _get_lk_positions.
+    positions, row = _get_lk_positions(kundli_id, user["sub"], db)
 
-    # Format positions for advanced engine (List[Dict])
-    formatted_positions = []
-    for p_name, h in positions_map.items():
-        formatted_positions.append({
-            "planet": p_name.capitalize(),
-            "house": h
-        })
+    # formatted_positions: list of {"planet": "Sun", "house": N} — already correct shape.
+    formatted_positions = [
+        {"planet": p["planet"].capitalize(), "house": p["house"]}
+        for p in positions
+    ]
 
     # Calculate Hora-based karmic debts if birth datetime available
     hora_debt_analysis = None
@@ -1747,7 +1750,10 @@ def get_seven_year_cycle_route(
         bdate = _date.fromisoformat(birth_date_str)
         current_age = (date.today() - bdate).days // 365
     except Exception:
-        current_age = 30
+        raise HTTPException(
+            status_code=400,
+            detail="birth_date missing or invalid — cannot compute seven-year cycle",
+        )
     return get_seven_year_cycle(current_age, positions)
 
 

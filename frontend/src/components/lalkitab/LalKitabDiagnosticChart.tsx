@@ -15,7 +15,7 @@ interface MasnuiPlanet {
 }
 
 interface Props {
-  type: 'andha' | 'masnui' | 'dharmi';
+  type: 'andha' | 'masnui' | 'dharmi' | 'ratondha';
   planetPositions: PlanetPos[];
   masnuiData?: MasnuiPlanet[];
   dharmiData?: { is_dharmi: boolean };
@@ -116,6 +116,14 @@ export default function LalKitabDiagnosticChart({ type, planetPositions, masnuiD
         {type === 'andha' && (
           <polygon points={HOUSE_POLYGONS[10]} fill="url(#fog-grad)" className="animate-pulse" />
         )}
+        {type === 'ratondha' && (
+          // Ratondha (night-blindness): shade the malefic houses 6, 8, 12
+          <>
+            <polygon points={HOUSE_POLYGONS[6]} fill="url(#fog-grad)" className="animate-pulse" />
+            <polygon points={HOUSE_POLYGONS[8]} fill="url(#fog-grad)" className="animate-pulse" />
+            <polygon points={HOUSE_POLYGONS[12]} fill="url(#fog-grad)" className="animate-pulse" />
+          </>
+        )}
 
         {/* Grid Lines */}
         <line x1={TL.x} y1={TL.y} x2={BR.x} y2={BR.y} stroke="#3D2B1F" strokeWidth="1.5" />
@@ -215,7 +223,7 @@ export default function LalKitabDiagnosticChart({ type, planetPositions, masnuiD
       
       {/* Label Overlay */}
       <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/60 text-[10px] text-white font-bold uppercase tracking-widest backdrop-blur-sm">
-        {type === 'andha' ? 'Blindness Map' : type === 'masnui' ? 'Alchemy Map' : 'Protection Map'}
+        {type === 'andha' ? 'Blindness Map' : type === 'ratondha' ? 'Night-Blindness Map' : type === 'masnui' ? 'Alchemy Map' : 'Protection Map'}
       </div>
     </div>
   );

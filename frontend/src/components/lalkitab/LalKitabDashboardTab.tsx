@@ -84,12 +84,18 @@ export default function LalKitabDashboardTab({ chartData, birthDate, kundliId, o
   const { t, language } = useTranslation();
   const isHi = language === 'hi';
   const [advancedData, setAdvancedData] = useState<any>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     if (kundliId) {
+      setLoadError(null);
       api.get(`/api/lalkitab/advanced/${kundliId}`)
         .then(setAdvancedData)
-        .catch(() => {});
+        .catch((err) => {
+          console.error('Failed to load advanced data:', err);
+          const msg = err instanceof Error ? err.message : (typeof err === 'string' ? err : 'Unknown error');
+          setLoadError(msg);
+        });
     }
   }, [kundliId]);
 
@@ -167,6 +173,16 @@ export default function LalKitabDashboardTab({ chartData, birthDate, kundliId, o
         </h2>
         <p className="text-sm text-gray-600">{t('lk.dashboard.desc')}</p>
       </div>
+
+      {/* Advanced-data load error banner */}
+      {loadError && (
+        <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-sm text-red-800">
+          <span className="font-semibold">
+            {isHi ? 'उन्नत विश्लेषण लोड नहीं हो सका' : 'Could not load advanced analysis'}
+          </span>
+          : {loadError}
+        </div>
+      )}
 
       {/* 2x2 Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

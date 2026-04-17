@@ -12,6 +12,8 @@ export interface LalKitabChartData {
   planetLongitudes: Record<string, number>;
   doshas: DoshaResult[];
   activePlanet: { planet: string; ageStart: number; ageEnd: number } | null;
+  isIncomplete: boolean;
+  missingPlanets: string[];
 }
 
 export const PLANETS = [
@@ -431,10 +433,26 @@ function getHouseStrength(house: number, planetsInHouse: string[]): 'strong' | '
   return 'strong'; // mixed = strong as benefic mitigates
 }
 
+// Compute which Lal Kitab age-planet is currently "active" for a given birth date.
+// Real behavior: find the age-bucket that contains the person's current age.
+// Falls back to first planet (Sun, age 1-6) if no birth date is available — because
+// without a birth date we cannot know the age, and the caller must treat this as unknown.
+function getActivePlanetForAge(birthDate: string | Date | undefined): typeof AGE_PLANET_ACTIVATION[number] {
+  if (!birthDate) return AGE_PLANET_ACTIVATION[0];  // no birth date known
+  const bd = typeof birthDate === 'string' ? new Date(birthDate) : birthDate;
+  if (isNaN(bd.getTime())) return AGE_PLANET_ACTIVATION[0];
+  const now = new Date();
+  const ageMs = now.getTime() - bd.getTime();
+  const ageYears = Math.floor(ageMs / (365.25 * 24 * 60 * 60 * 1000));
+  const match = AGE_PLANET_ACTIVATION.find(p => ageYears >= p.ageStart && ageYears <= p.ageEnd);
+  return match || AGE_PLANET_ACTIVATION[AGE_PLANET_ACTIVATION.length - 1];  // beyond 84 = last one
+}
+
 // Generate Lal Kitab chart from API data
-export function generateLalKitabChart(apiData: any): LalKitabChartData {
+export function generateLalKitabChart(apiData: any, birthDate?: string | Date): LalKitabChartData {
   const planetPositions: Record<string, number> = {};
   const planetLongitudes: Record<string, number> = {};
+  const missingPlanets: string[] = [];
   const chartPlanets = apiData?.chart_data?.planets || apiData?.planets || {};
 
   // Map API planet data to house positions and longitudes
@@ -446,9 +464,10 @@ export function generateLalKitabChart(apiData: any): LalKitabChartData {
       const rawLon = pData.longitude || pData.degree || 0;
       planetLongitudes[pObj.key] = typeof rawLon === 'number' ? rawLon : parseFloat(rawLon) || 0;
     } else {
-      // Fallback: distribute planets across houses
-      planetPositions[pObj.key] = (PLANETS.indexOf(pObj) % 12) + 1;
-      planetLongitudes[pObj.key] = 0;
+      // Planet missing from API — mark incomplete. Do NOT fabricate position.
+      missingPlanets.push(pObj.key);
+      planetPositions[pObj.key] = 0;  // 0 = unknown house (downstream code should check)
+      planetLongitudes[pObj.key] = NaN;
     }
   }
 
@@ -467,8 +486,8 @@ export function generateLalKitabChart(apiData: any): LalKitabChartData {
 
   const doshas = detectDoshas(planetPositions);
 
-  // Find currently active planet (placeholder — actual age would be calculated in component)
-  const activePlanet = AGE_PLANET_ACTIVATION[0];
+  // Find currently active planet from the native's age, using birthDate when supplied.
+  const activePlanet = getActivePlanetForAge(birthDate);
 
   return {
     houses,
@@ -476,6 +495,8 @@ export function generateLalKitabChart(apiData: any): LalKitabChartData {
     planetLongitudes,
     doshas,
     activePlanet: activePlanet || null,
+    isIncomplete: missingPlanets.length > 0,
+    missingPlanets,
   };
 }
 

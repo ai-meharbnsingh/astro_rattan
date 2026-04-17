@@ -221,8 +221,10 @@ def calculate_age_milestones(
     today = date.today()
     try:
         bdate = date.fromisoformat(birth_date)
-    except Exception:
-        bdate = today.replace(year=today.year - 30)
+    except Exception as e:
+        raise ValueError(
+            f"Invalid birth_date '{birth_date}' — milestones require a valid ISO date (YYYY-MM-DD)"
+        )
 
     # Current age in years
     current_age = today.year - bdate.year - ((today.month, today.day) < (bdate.month, bdate.day))
