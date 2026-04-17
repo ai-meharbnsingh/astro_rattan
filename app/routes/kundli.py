@@ -1281,6 +1281,22 @@ def get_roga_analysis(
     return result
 
 
+@router.get("/{kundli_id}/bhava-phala", status_code=status.HTTP_200_OK)
+def get_bhava_phala(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Classical Bhava Phala (Adh. 8) + Bhava-misra-phala (Adh. 16) — Phaladeepika."""
+    from app.bhava_phala_engine import analyze_bhava_phala
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    result = analyze_bhava_phala(chart)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
 # ── PDF Download ────────────────────────────────────────────
 
 # Sign → Lord mapping used for house lordships table

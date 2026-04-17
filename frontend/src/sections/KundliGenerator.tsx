@@ -23,6 +23,7 @@ import IogitaTab from '@/components/kundli/IogitaTab';
 import DashaTab from '@/components/kundli/DashaTab';
 import DivisionalTab from '@/components/kundli/DivisionalTab';
 import AshtakvargaTab from '@/components/kundli/AshtakvargaTab';
+import AshtakvargaPhalaTab from '@/components/kundli/AshtakvargaPhalaTab';
 import ShadbalaTab from '@/components/kundli/ShadbalaTab';
 import AvakhadaTab from '@/components/kundli/AvakhadaTab';
 import YogaDoshaTab from '@/components/kundli/YogaDoshaTab';
@@ -45,6 +46,7 @@ import PravrajyaTab from '@/components/kundli/PravrajyaTab';
 import LifespanTab from '@/components/kundli/LifespanTab';
 import ConjunctionsTab from '@/components/kundli/ConjunctionsTab';
 import RogaTab from '@/components/kundli/RogaTab';
+import BhavaPhalaTab from '@/components/kundli/BhavaPhalaTab';
 
 // ── Single source of truth for ALL tab definitions ──────────
 interface TabDef {
@@ -87,6 +89,7 @@ const TAB_DEFS: Omit<TabDef, 'onActivate'>[] = [
   { value: 'lifespan',      labelEn: 'Lifespan',        labelHi: 'आयुर्दाय',         primary: false, category: 'analysis' },
   { value: 'conjunctions',  labelEn: 'Conjunctions',    labelHi: 'ग्रह युतियाँ',      primary: false, category: 'analysis' },
   { value: 'roga',          labelEn: 'Disease Analysis', labelHi: 'रोग विश्लेषण',     primary: false, category: 'analysis' },
+  { value: 'bhava-phala',   labelEn: 'Bhava Phala',    labelHi: 'भाव फल',           primary: false, category: 'analysis' },
   { value: 'iogita',        labelEn: 'Iogita',         labelHi: 'आयोगिता',          primary: false, category: 'analysis' },
   { value: 'aspects-matrix',labelEn: 'Aspects Matrix',  labelHi: 'दृष्टि मैट्रिक्स', primary: false, category: 'analysis' },
   // Advanced
@@ -616,6 +619,10 @@ export default function KundliGenerator() {
 
           <TabsContent value="roga" className="min-h-[300px]">
             <RogaTab kundliId={kundliId} language={language} t={t} />
+          </TabsContent>
+
+          <TabsContent value="bhava-phala" className="min-h-[300px]">
+            <BhavaPhalaTab kundliId={kundliId} language={language} t={t} />
           </TabsContent>
 
           <TabsContent value="sadesati" className="min-h-[300px]">
