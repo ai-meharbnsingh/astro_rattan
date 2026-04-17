@@ -1,5 +1,17 @@
+import React from 'react';
 import type { FullPanchangData } from '@/sections/Panchang';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+
+// Nakshatra category badge colours (Muhurta Chintamani, Ch. 2)
+const NAK_CAT_STYLES: Record<string, string> = {
+  sthira:  'bg-blue-100 text-blue-700 border-blue-200',
+  chara:   'bg-green-100 text-green-700 border-green-200',
+  ugra:    'bg-red-100 text-red-700 border-red-200',
+  mishra:  'bg-purple-100 text-purple-700 border-purple-200',
+  laghu:   'bg-teal-100 text-teal-700 border-teal-200',
+  mridu:   'bg-pink-100 text-pink-700 border-pink-200',
+  tikshna: 'bg-orange-100 text-orange-700 border-orange-200',
+};
 
 interface Props {
   panchang: FullPanchangData;
@@ -9,30 +21,47 @@ interface Props {
 
 export default function PanchangCoreTab({ panchang, language, t }: Props) {
   const l = (en: string, hi: string) => language === 'hi' ? hi : en;
+  const isHi = language === 'hi';
+
+  // Nakshatra category badge
+  const nak = panchang.nakshatra as any;
+  const nakCatKey: string = nak?.category || 'mishra';
+  const nakCatLabel: string = isHi ? (nak?.category_hi || nakCatKey) : (nak?.category_en || nakCatKey);
+  const nakGoodFor: string = isHi ? (nak?.category_good_for_hi || '') : (nak?.category_good_for_en || '');
+  const nakBadgeStyle = NAK_CAT_STYLES[nakCatKey] ?? NAK_CAT_STYLES.mishra;
+
   const coreRows = [
     {
-      metric: language === 'hi' ? 'तिथि' : t('panchang.tithi'),
-      value: language === 'hi' ? panchang.tithi.name_hindi || panchang.tithi.name : panchang.tithi.name,
-      details: `${t('auto.no')} ${panchang.tithi.number} • ${language === 'hi' ? panchang.tithi.paksha_hindi || panchang.tithi.paksha : panchang.tithi.paksha}`,
+      metric: isHi ? 'तिथि' : t('panchang.tithi'),
+      value: isHi ? panchang.tithi.name_hindi || panchang.tithi.name : panchang.tithi.name,
+      details: `${t('auto.no')} ${panchang.tithi.number} • ${isHi ? panchang.tithi.paksha_hindi || panchang.tithi.paksha : panchang.tithi.paksha}`,
       endTime: panchang.tithi.end_time || '--',
+      badge: null as React.ReactNode,
     },
     {
-      metric: language === 'hi' ? 'नक्षत्र' : t('panchang.nakshatra'),
-      value: language === 'hi' ? panchang.nakshatra.name_hindi || panchang.nakshatra.name : panchang.nakshatra.name,
-      details: `${t('auto.pada')} ${panchang.nakshatra.pada} • ${t('auto.lord')} ${language === 'hi' ? panchang.nakshatra.lord_hindi || panchang.nakshatra.lord : panchang.nakshatra.lord}`,
+      metric: isHi ? 'नक्षत्र' : t('panchang.nakshatra'),
+      value: isHi ? panchang.nakshatra.name_hindi || panchang.nakshatra.name : panchang.nakshatra.name,
+      details: `${t('auto.pada')} ${panchang.nakshatra.pada} • ${t('auto.lord')} ${isHi ? panchang.nakshatra.lord_hindi || panchang.nakshatra.lord : panchang.nakshatra.lord}`,
       endTime: panchang.nakshatra.end_time || '--',
+      badge: (
+        <span title={nakGoodFor} className={`inline-block text-[10px] font-bold px-1.5 py-0.5 rounded border ${nakBadgeStyle} cursor-help`}>
+          {nakCatLabel}
+        </span>
+      ),
     },
     {
-      metric: language === 'hi' ? 'योग' : t('panchang.yoga'),
-      value: language === 'hi' ? panchang.yoga.name_hindi || panchang.yoga.name : panchang.yoga.name,
+      metric: isHi ? 'योग' : t('panchang.yoga'),
+      value: isHi ? panchang.yoga.name_hindi || panchang.yoga.name : panchang.yoga.name,
       details: `${t('auto.no')} ${panchang.yoga.number}`,
       endTime: panchang.yoga.end_time || '--',
+      badge: null as React.ReactNode,
     },
     {
-      metric: language === 'hi' ? 'करण' : t('panchang.karana'),
-      value: language === 'hi' ? panchang.karana.name_hindi || panchang.karana.name : panchang.karana.name,
+      metric: isHi ? 'करण' : t('panchang.karana'),
+      value: isHi ? panchang.karana.name_hindi || panchang.karana.name : panchang.karana.name,
       details: `${t('auto.no')} ${panchang.karana.number}`,
       endTime: panchang.karana.end_time || '--',
+      badge: null as React.ReactNode,
     },
   ];
 
@@ -99,7 +128,10 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
               <TableRow key={row.metric} className="border-b border/50 last:border-0 align-top">
                 <TableCell className="px-2 py-1 font-medium text-foreground whitespace-normal break-words">{row.metric}</TableCell>
                 <TableCell className="px-2 py-1 text-foreground whitespace-normal break-words">{row.value}</TableCell>
-                <TableCell className="px-2 py-1 text-muted-foreground whitespace-normal break-words">{row.details}</TableCell>
+                <TableCell className="px-2 py-1 text-muted-foreground whitespace-normal break-words">
+                  <span>{row.details}</span>
+                  {row.badge && <span className="ml-1.5 align-middle">{row.badge}</span>}
+                </TableCell>
                 <TableCell className="px-2 py-1 text-sacred-gold whitespace-normal break-words">{row.endTime}</TableCell>
               </TableRow>
             ))}

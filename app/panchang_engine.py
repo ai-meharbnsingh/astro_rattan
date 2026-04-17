@@ -73,6 +73,77 @@ NAKSHATRA_HINDI: Dict[str, str] = {
     "Revati": "रेवती",
 }
 
+# ============================================================
+# NAKSHATRA CATEGORY (Muhurta Chintamani, Ch. 2)
+# 7 types: Sthira, Chara, Ugra, Mishra, Laghu, Mridu, Tikshna
+# ============================================================
+NAKSHATRA_CATEGORY: Dict[str, str] = {
+    # Sthira (Fixed) — permanent works, building, marriage, planting
+    "Rohini": "sthira", "Uttara Phalguni": "sthira",
+    "Uttara Ashadha": "sthira", "Uttara Bhadrapada": "sthira",
+    # Chara (Movable) — travel, journeys, vehicles
+    "Punarvasu": "chara", "Swati": "chara",
+    "Shravana": "chara", "Dhanishta": "chara", "Shatabhisha": "chara",
+    # Ugra (Fierce) — legal battles, aggressive acts, warfare
+    "Bharani": "ugra", "Magha": "ugra",
+    "Purva Phalguni": "ugra", "Purva Ashadha": "ugra", "Purva Bhadrapada": "ugra",
+    # Mishra (Mixed) — moderate activities, mixed outcomes
+    "Krittika": "mishra", "Vishakha": "mishra",
+    # Laghu (Light/Swift) — medicine, crafts, quick tasks, commerce
+    "Ashwini": "laghu", "Pushya": "laghu", "Hasta": "laghu",
+    # Mridu (Soft/Tender) — arts, music, romance, friendship
+    "Mrigashira": "mridu", "Chitra": "mridu",
+    "Anuradha": "mridu", "Revati": "mridu",
+    # Tikshna (Sharp/Fierce) — surgery, separation, enemies
+    "Ardra": "tikshna", "Ashlesha": "tikshna",
+    "Jyeshtha": "tikshna", "Mula": "tikshna",
+}
+
+NAKSHATRA_CATEGORY_DATA: Dict[str, Dict[str, str]] = {
+    "sthira": {
+        "en": "Sthira", "hi": "स्थिर",
+        "good_for_en": "Building, marriage, permanent works",
+        "good_for_hi": "निर्माण, विवाह, स्थायी कार्य",
+        "color": "blue",
+    },
+    "chara": {
+        "en": "Chara", "hi": "चर",
+        "good_for_en": "Travel, vehicles, journeys",
+        "good_for_hi": "यात्रा, वाहन, प्रवास",
+        "color": "green",
+    },
+    "ugra": {
+        "en": "Ugra", "hi": "उग्र",
+        "good_for_en": "Legal, warfare, aggressive acts",
+        "good_for_hi": "विवाद, युद्ध, उग्र कार्य",
+        "color": "red",
+    },
+    "mishra": {
+        "en": "Mishra", "hi": "मिश्र",
+        "good_for_en": "Moderate activities, mixed outcomes",
+        "good_for_hi": "सामान्य कार्य, मिश्रित फल",
+        "color": "purple",
+    },
+    "laghu": {
+        "en": "Laghu", "hi": "लघु",
+        "good_for_en": "Medicine, crafts, commerce, quick tasks",
+        "good_for_hi": "चिकित्सा, शिल्प, व्यापार, शीघ्र कार्य",
+        "color": "teal",
+    },
+    "mridu": {
+        "en": "Mridu", "hi": "मृदु",
+        "good_for_en": "Arts, music, romance, friendship",
+        "good_for_hi": "कला, संगीत, प्रेम, मित्रता",
+        "color": "pink",
+    },
+    "tikshna": {
+        "en": "Tikshna", "hi": "तीक्ष्ण",
+        "good_for_en": "Surgery, separation, enemy work",
+        "good_for_hi": "शल्य, विच्छेद, शत्रु कार्य",
+        "color": "orange",
+    },
+}
+
 RASHI_HINDI: Dict[str, str] = {
     "Aries": "मेष",
     "Taurus": "वृषभ",
@@ -1052,6 +1123,24 @@ def _minutes_to_time(minutes: float) -> str:
 
 
 # ============================================================
+# ============================================================
+# NAKSHATRA CATEGORY HELPER
+# ============================================================
+
+def _nakshatra_category_fields(nak_name: str) -> Dict[str, str]:
+    """Return category fields for a nakshatra name."""
+    cat_key = NAKSHATRA_CATEGORY.get(nak_name, "mishra")
+    cat = NAKSHATRA_CATEGORY_DATA.get(cat_key, NAKSHATRA_CATEGORY_DATA["mishra"])
+    return {
+        "category": cat_key,
+        "category_en": cat["en"],
+        "category_hi": cat["hi"],
+        "category_good_for_en": cat["good_for_en"],
+        "category_good_for_hi": cat["good_for_hi"],
+        "category_color": cat["color"],
+    }
+
+
 # PUBLIC: calculate_panchang (ENHANCED)
 # ============================================================
 
@@ -1407,8 +1496,10 @@ def calculate_panchang(
         },
         "nakshatra": {
             **nakshatra,
+            "name_hindi": NAKSHATRA_HINDI.get(nakshatra.get("name", ""), nakshatra.get("name", "")),
             "end_time": nakshatra_end,
             "next": next_nak_name,
+            **_nakshatra_category_fields(nakshatra.get("name", "")),
         },
         "yoga": {
             "name": yoga_name,
