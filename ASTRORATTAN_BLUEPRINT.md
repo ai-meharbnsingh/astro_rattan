@@ -601,31 +601,6 @@ Natal & transit planets displayed in respective cells. Vedha lines (mutual affli
 
 ---
 
-### 1.28 Kundli — Backend-Only (Not Yet in Frontend)
-
-All 16 previously unconnected engines are now fully wired:
-
-| Engine | Tab | How Wired |
-|---|---|---|
-| `kalachakra_engine.py` | ✅ KalachakraTab | New tab — `kalachakra-dasha` endpoint |
-| `gochara_vedha_engine.py` | ✅ GochaVedhaTab | New tab — `gochara-vedha` endpoint |
-| `transit_interpretations.py` | ✅ TransitInterpretationsTab | New tab — `transit-interpretations` endpoint |
-| `transit_lucky.py` | ✅ TransitLuckyTab | New tab — `transit-lucky` endpoint |
-| `navamsha_profession_engine.py` | ✅ NavamshaCareerTab | New tab — `navamsha-profession` endpoint |
-| `graha_sambandha_engine.py` | ✅ GrahaSambandhaTab | New tab — `graha-sambandha` endpoint |
-| `panchadha_maitri_engine.py` | ✅ PanchadhaMaitriTab | New tab — `panchadha-maitri` endpoint |
-| `nadi_engine.py` | ✅ NadiAnalysisTab | New tab — `nadi-analysis` endpoint |
-| `family_demise_engine.py` | ✅ FamilyDemiseTab | New tab — `family-demise-timing` endpoint |
-| `astro_mapping_engine.py` | ✅ AstroMapTab | New tab — `POST /api/astro-map` |
-| `moola_dasha_engine.py` | ✅ DashaSelector | Already wired via dasha selector inside DashaTab |
-| `tara_dasha_engine.py` | ✅ DashaSelector | Already wired via dasha selector inside DashaTab |
-| `ashtottari_dasha_engine.py` | ✅ DashaSelector | Already wired via dasha selector inside DashaTab |
-| `vritti_engine.py` | ✅ VrittiTab | Already had route + tab — confirmed present |
-| `nidhana_engine.py` | ✅ LifespanTab | Already had route + tab — confirmed present |
-| `lagna_nakshatra_engine.py` | ✅ JanmaPredictionsTab | Already had route + tab — confirmed present |
-
-**No backend-only Kundli engines remain.**
-
 ---
 
 ## 2. LAL KITAAB — Red Book System
@@ -976,19 +951,6 @@ Per tracked remedy:
 
 ---
 
-### 2.20 Lal Kitaab — Backend-Only (Not Yet in Frontend)
-
-All previously unrendered modules in the Advanced tab are now fully wired (92 tests passing, 0 failed):
-
-| Module | Status | Notes |
-|---|---|---|
-| `lalkitab_chakar.py` | ✅ Wired | Chakar Cycle section added to `LalKitabAdvancedTab.tsx` |
-| `lalkitab_rahu_ketu_axis.py` | ✅ Wired | Was already rendered; confirmed present |
-| `lalkitab_andhe_grah.py` | ✅ Wired | Andhe Grah section added to `LalKitabAdvancedTab.tsx` |
-| `lalkitab_time_planet.py` | ✅ Wired | Was already rendered; confirmed present |
-
-**No backend-only Lal Kitaab modules remain.** All 4 modules are served via `GET /api/lalkitab/advanced/{kundli_id}` and rendered in `LalKitabAdvancedTab.tsx`.
-
 ---
 
 ## 3. NUMEROLOGY — Numbers System
@@ -1210,20 +1172,6 @@ Per plane: score (0–3) · percentage · interpretation (EN/HI)
 **Remedies & Enhancement:** 3–5 remedies + 3–5 enhancement tips (bilingual)
 
 ---
-
-### 3.8 Numerology — Backend-Only
-
-All 5 previously unrendered gaps are now fully wired (16/16 tests passing, 0 regressions):
-
-| Feature | Status | What Changed |
-|---|---|---|
-| Birthday Predictions (1–31) | ✅ Wired | `BIRTHDAY_PREDICTIONS` expanded from 12 → 31 unique entries; each compound day (10–31) has distinct title/talent + Hindi; `birthday_reduced` fallback added |
-| Maturity Number Predictions | ✅ Wired | All 12 entries gained `description` / `description_hi` + `advice` / `advice_hi` fields |
-| Pinnacle/Challenge/Life Cycle narratives | ✅ Wired | Each card now renders green opportunity row (✦) + amber lesson row in `NumerologyTabs.tsx` |
-| Forecast Lucky Months | ✅ Wired | Personal year card renders `lucky_months` as month-name chips |
-| Vehicle & House Bilingual | ✅ Wired | `pick()` helper added to `VehicleNumerology.tsx` + `HouseNumerology.tsx`; all prediction fields switch EN↔HI; 7 new Hindi fields in `VEHICLE_PREDICTIONS` |
-
-**No backend-only Numerology gaps remain.**
 
 ---
 
@@ -1476,15 +1424,6 @@ Five result tabs:
 | `POST /api/vastu/auto-detect` | ✓ | AI room detection (OCR/YOLOv8/OpenCV) |
 
 ---
-
-### 4.9 Vastu — Backend-Only (Not Yet Fully Exposed in Frontend)
-
-| Feature | Status |
-|---|---|
-| Degree-based precision entrada (`entrance_degrees` param) | Backend accepts; frontend rarely sends exact degrees |
-| Direction Summary (`direction_summary` dict) | Computed in `analyze_home_layout()`; not yet rendered in any tab |
-| Building-type-specific mandala differences | Temple (9×9) vs. residential (8×8) dropdown exists; analysis currently uniform |
-| Duplicate Room Warnings | Computed and in report; not surfaced as standalone alert |
 
 ---
 
