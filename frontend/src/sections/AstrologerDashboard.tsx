@@ -275,7 +275,13 @@ export default function AstrologerDashboard() {
 
       {/* ── Overview ── */}
       {activeTab === 'overview' && overview && (
-        <OverviewPanel overview={overview} isHi={isHi} onOpenClient={(id) => setQuickViewClientId(id)} />
+        <OverviewPanel
+          overview={overview}
+          isHi={isHi}
+          onOpenClient={(id) => setQuickViewClientId(id)}
+          upcomingList={consultations.filter((c) => c.scheduled_at && new Date(c.scheduled_at) >= new Date() && ['scheduled', 'confirmed', 'active'].includes(c.status))}
+          clientList={clients}
+        />
       )}
 
       {/* ── Clients ── */}
@@ -374,108 +380,252 @@ function FeedbackPanel({ isHi, onOpenFeedback }: { isHi: boolean; onOpenFeedback
 // Overview sub-panel
 // ─────────────────────────────────────────────────────────────
 
-function OverviewPanel({ overview, isHi, onOpenClient }: {
-  overview: Overview; isHi: boolean; onOpenClient: (id: string) => void;
+function OverviewPanel({ overview, isHi, onOpenClient, upcomingList, clientList }: {
+  overview: Overview;
+  isHi: boolean;
+  onOpenClient: (id: string) => void;
+  upcomingList?: Consultation[];
+  clientList?: ClientRow[];
 }) {
   const m = overview.metrics;
+  const consultationsTotal = Object.values(m.consultations_by_status ?? {}).reduce((a, b) => a + (b || 0), 0);
+  const kundlisDelta = m.total_kundlis > 0 ? Math.round((m.new_clients_7d / Math.max(m.total_clients, 1)) * 100) : 0;
+
+  // Nexlio-style metric cards with +% deltas
   const cards = [
-    { label_en: 'Total Clients', label_hi: 'कुल ग्राहक', value: m.total_clients, icon: Users, delta: m.new_clients_7d, delta_label_en: 'new this week', delta_label_hi: 'इस सप्ताह' },
-    { label_en: 'Kundlis', label_hi: 'कुंडलियाँ', value: m.total_kundlis, icon: BookOpen },
-    { label_en: 'Notes', label_hi: 'नोट्स', value: m.total_notes, icon: NotebookPen },
-    { label_en: 'Upcoming', label_hi: 'आगामी', value: m.upcoming_consultations, icon: CalIcon },
+    {
+      label_en: 'Total Clients', label_hi: 'कुल ग्राहक',
+      value: m.total_clients,
+      delta: m.new_clients_7d > 0 ? `+${m.new_clients_7d}` : null,
+      deltaColor: 'emerald',
+      icon: Users,
+      iconBg: 'bg-sacred-gold/15 text-sacred-gold-dark',
+    },
+    {
+      label_en: 'Consultations', label_hi: 'परामर्श',
+      value: consultationsTotal,
+      delta: m.upcoming_consultations > 0 ? `${m.upcoming_consultations} ${isHi ? 'आगामी' : 'upcoming'}` : null,
+      deltaColor: 'blue',
+      icon: CalIcon,
+      iconBg: 'bg-blue-100 text-blue-700',
+    },
+    {
+      label_en: 'Upcoming Today', label_hi: 'आज आगामी',
+      value: m.upcoming_consultations,
+      delta: null,
+      deltaColor: 'orange',
+      icon: Clock,
+      iconBg: 'bg-orange-100 text-orange-700',
+    },
+    {
+      label_en: 'Total Kundlis', label_hi: 'कुल कुंडलियाँ',
+      value: m.total_kundlis,
+      delta: kundlisDelta > 0 ? `+${kundlisDelta}%` : null,
+      deltaColor: 'emerald',
+      icon: BookOpen,
+      iconBg: 'bg-violet-100 text-violet-700',
+    },
   ];
+
+  // Simple activity chart — bucket chart_types as monthly bars (reuse
+  // available data without a new endpoint). If we have less than 2
+  // buckets, hide the chart gracefully.
+  const chartMax = Math.max(1, ...overview.chart_types.map((c) => c.count));
+
   return (
-    <div className="space-y-6">
-      {/* Metric cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+    <div className="space-y-5">
+      {/* Nexlio-style metric cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {cards.map((c) => {
           const Icon = c.icon;
+          const deltaTone =
+            c.deltaColor === 'emerald' ? 'text-emerald-700 bg-emerald-50' :
+            c.deltaColor === 'blue' ? 'text-blue-700 bg-blue-50' :
+            c.deltaColor === 'orange' ? 'text-orange-700 bg-orange-50' :
+            'text-sacred-gold-dark bg-sacred-gold/10';
           return (
-            <div key={c.label_en} className="rounded-xl border border-sacred-gold/20 bg-card p-4 hover:border-sacred-gold/50 transition-colors">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                  {isHi ? c.label_hi : c.label_en}
-                </span>
-                <Icon className="w-4 h-4 text-sacred-gold" />
+            <div key={c.label_en} className="rounded-xl border border-sacred-gold/20 bg-card p-4 hover:shadow-md hover:border-sacred-gold/50 transition-all">
+              <div className="flex items-center justify-between mb-3">
+                <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${c.iconBg}`}>
+                  <Icon className="w-4 h-4" />
+                </div>
+                {c.delta && (
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${deltaTone}`}>
+                    {c.delta}
+                  </span>
+                )}
               </div>
-              <p className="text-3xl font-bold text-foreground">{c.value}</p>
-              {c.delta !== undefined && c.delta > 0 && (
-                <p className="text-[11px] text-emerald-700 mt-1 font-medium">
-                  +{c.delta} {isHi ? c.delta_label_hi : c.delta_label_en}
-                </p>
-              )}
+              <p className="text-3xl font-bold text-foreground leading-tight">{c.value}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {isHi ? c.label_hi : c.label_en}
+              </p>
             </div>
           );
         })}
       </div>
 
-      {/* Chart-type mix */}
-      {overview.chart_types.length > 0 && (
-        <div className="rounded-xl border border-sacred-gold/20 bg-card p-5">
-          <h3 className="text-sm font-semibold text-sacred-gold mb-3 flex items-center gap-2">
-            <Filter className="w-4 h-4" />
-            {isHi ? 'चार्ट प्रकार वितरण' : 'Chart Type Distribution'}
-          </h3>
-          <div className="space-y-2">
-            {overview.chart_types.map((c) => {
-              const total = overview.chart_types.reduce((s, x) => s + x.count, 0) || 1;
-              const pct = Math.round((c.count / total) * 100);
-              return (
-                <div key={c.chart_type}>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="font-semibold text-foreground uppercase tracking-wide">{c.chart_type}</span>
-                    <span className="text-muted-foreground">{c.count} · {pct}%</span>
-                  </div>
-                  <div className="h-2 bg-sacred-gold/10 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-sacred-gold to-amber-500 rounded-full transition-all"
-                      style={{ width: `${pct}%` }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
+      {/* 2-col layout: chart (2/3) + upcoming meetings (1/3) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* LEFT — activity chart (chart-type mix rendered as bars) */}
+        <div className="lg:col-span-2 rounded-xl border border-sacred-gold/20 bg-card p-5">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-sm font-bold text-sacred-gold-dark uppercase tracking-wider flex items-center gap-2">
+                <TrendingUp className="w-4 h-4" />
+                {isHi ? 'गतिविधि अवलोकन' : 'Activity Overview'}
+              </h3>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                {isHi ? 'चार्ट प्रकार के अनुसार कुंडली वितरण' : 'Kundli distribution by chart type'}
+              </p>
+            </div>
           </div>
+          {overview.chart_types.length === 0 ? (
+            <div className="py-12 text-center text-sm text-muted-foreground">
+              {isHi ? 'अभी तक कोई डेटा नहीं' : 'No data yet — generate your first chart'}
+            </div>
+          ) : (
+            <div className="flex items-end justify-around gap-4 h-48 px-4 pt-2">
+              {overview.chart_types.map((c) => {
+                const h = Math.max(4, (c.count / chartMax) * 100);
+                return (
+                  <div key={c.chart_type} className="flex-1 flex flex-col items-center gap-2 group">
+                    <div className="relative w-full max-w-[80px] flex-1 flex items-end">
+                      <div
+                        className="w-full rounded-t-md bg-gradient-to-t from-sacred-gold to-amber-400 hover:from-sacred-gold-dark hover:to-sacred-gold transition-colors"
+                        style={{ height: `${h}%` }}
+                      />
+                      <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-sacred-gold-dark opacity-0 group-hover:opacity-100 transition-opacity">
+                        {c.count}
+                      </span>
+                    </div>
+                    <span className="text-[11px] font-semibold text-foreground uppercase tracking-wide">
+                      {c.chart_type}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">{c.count}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
-      )}
 
-      {/* Top clients */}
-      {overview.top_clients.length > 0 && (
+        {/* RIGHT — upcoming meetings list */}
         <div className="rounded-xl border border-sacred-gold/20 bg-card p-5">
-          <h3 className="text-sm font-semibold text-sacred-gold mb-3 flex items-center gap-2">
-            <TrendingUp className="w-4 h-4" />
-            {isHi ? 'शीर्ष सक्रिय ग्राहक' : 'Most Active Clients'}
+          <h3 className="text-sm font-bold text-sacred-gold-dark uppercase tracking-wider flex items-center gap-2 mb-3">
+            <CalIcon className="w-4 h-4" />
+            {isHi ? 'आगामी परामर्श' : 'Upcoming Meetings'}
           </h3>
-          <div className="space-y-2">
-            {overview.top_clients.map((c, i) => (
-              <button
-                key={c.id}
-                onClick={() => onOpenClient(c.id)}
-                className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-sacred-gold/10 transition-colors text-left border border-transparent hover:border-sacred-gold/30"
-              >
-                <div className="w-8 h-8 rounded-full bg-sacred-gold-dark text-white flex items-center justify-center text-sm font-bold shrink-0">
-                  {i + 1}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-foreground truncate">{c.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {c.kundli_count} {isHi ? 'कुंडली' : 'kundlis'} · {c.note_count} {isHi ? 'नोट' : 'notes'}
-                    {c.phone ? ` · ${c.phone}` : ''}
-                  </p>
-                </div>
-                {c.last_activity && (
-                  <span className="text-[11px] text-muted-foreground shrink-0">
-                    {new Date(c.last_activity).toLocaleDateString(isHi ? 'hi-IN' : 'en-IN', { month: 'short', day: 'numeric' })}
-                  </span>
-                )}
-                <ChevronRight className="w-4 h-4 text-sacred-gold shrink-0" />
-              </button>
-            ))}
-          </div>
+          {!upcomingList || upcomingList.length === 0 ? (
+            <div className="py-8 text-center text-xs text-muted-foreground">
+              {isHi ? 'कोई निर्धारित परामर्श नहीं।' : 'No upcoming consultations.'}
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {upcomingList.slice(0, 5).map((c) => {
+                const when = c.scheduled_at ? new Date(c.scheduled_at) : null;
+                const relative = when ? formatRelativeDay(when, isHi) : '';
+                return (
+                  <button
+                    key={c.id}
+                    onClick={() => c.client_id && onOpenClient(c.client_id)}
+                    className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-sacred-gold/10 transition-colors text-left border border-transparent hover:border-sacred-gold/30"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-sacred-gold-dark text-white flex items-center justify-center text-xs font-bold shrink-0">
+                      {(c.client_name ?? '?').slice(0, 1).toUpperCase()}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold text-foreground truncate">
+                        {c.client_name ?? (isHi ? 'अज्ञात' : 'Unknown')}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">
+                        {when ? when.toLocaleTimeString(isHi ? 'hi-IN' : 'en-IN', { hour: '2-digit', minute: '2-digit' }) : '—'} · {relative} · {c.type}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
-      )}
+      </div>
+
+      {/* Client List table (compact Nexlio "Lead List" style) */}
+      <div className="rounded-xl border border-sacred-gold/20 bg-card">
+        <div className="p-4 border-b border-sacred-gold/20 flex items-center justify-between">
+          <h3 className="text-sm font-bold text-sacred-gold-dark uppercase tracking-wider flex items-center gap-2">
+            <Users className="w-4 h-4" />
+            {isHi ? 'ग्राहक सूची' : 'Client List'}
+          </h3>
+          <span className="text-xs text-muted-foreground">
+            {(clientList?.length ?? 0)} {isHi ? 'कुल' : 'total'}
+          </span>
+        </div>
+        {!clientList || clientList.length === 0 ? (
+          <div className="py-10 text-center text-sm text-muted-foreground">
+            {isHi ? 'कोई ग्राहक नहीं — "नया ग्राहक" पर क्लिक करें' : 'No clients yet — click "Add Client" to start'}
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-sacred-gold/5 border-b border-sacred-gold/20">
+                <tr className="text-left text-[10px] uppercase tracking-wider text-muted-foreground">
+                  <th className="px-4 py-2 font-semibold">{isHi ? 'नाम' : 'Name'}</th>
+                  <th className="px-4 py-2 font-semibold hidden sm:table-cell">{isHi ? 'फ़ोन' : 'Phone'}</th>
+                  <th className="px-4 py-2 font-semibold hidden md:table-cell">{isHi ? 'जन्म' : 'Birth'}</th>
+                  <th className="px-4 py-2 font-semibold text-right">{isHi ? 'कुंडलियाँ' : 'Charts'}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-sacred-gold/10">
+                {clientList.slice(0, 8).map((c) => (
+                  <tr
+                    key={c.id}
+                    onClick={() => onOpenClient(c.id)}
+                    className="hover:bg-sacred-gold/5 cursor-pointer transition-colors"
+                  >
+                    <td className="px-4 py-2.5">
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-full bg-sacred-gold-dark text-white flex items-center justify-center text-xs font-bold">
+                          {c.name.slice(0, 1).toUpperCase()}
+                        </div>
+                        <span className="font-medium text-foreground">{c.name}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-2.5 text-xs text-muted-foreground hidden sm:table-cell">{c.phone ?? '—'}</td>
+                    <td className="px-4 py-2.5 text-xs text-muted-foreground hidden md:table-cell">{c.birth_date ?? '—'}</td>
+                    <td className="px-4 py-2.5 text-right">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-sacred-gold/15 text-sacred-gold-dark font-semibold text-xs">
+                        {c.kundli_count}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {clientList.length > 8 && (
+              <div className="p-3 border-t border-sacred-gold/10 text-center">
+                <p className="text-xs text-muted-foreground">
+                  {isHi
+                    ? `${clientList.length - 8} और ग्राहक — "Clients" टैब देखें`
+                    : `${clientList.length - 8} more — see "Clients" tab`}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
+}
+
+function formatRelativeDay(d: Date, isHi: boolean): string {
+  const now = new Date();
+  const diffMs = d.getTime() - now.getTime();
+  const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+  if (diffDays === 0) return isHi ? 'आज' : 'Today';
+  if (diffDays === 1) return isHi ? 'कल' : 'Tomorrow';
+  if (diffDays === -1) return isHi ? 'कल (बीता)' : 'Yesterday';
+  if (diffDays < 7 && diffDays > 0) return isHi ? `${diffDays} दिन में` : `in ${diffDays} days`;
+  return d.toLocaleDateString(isHi ? 'hi-IN' : 'en-IN', { month: 'short', day: 'numeric' });
 }
 
 // ─────────────────────────────────────────────────────────────
