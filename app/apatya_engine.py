@@ -496,6 +496,406 @@ DETECTORS = (
 
 
 # ───────────────────────────────────────────────────────────────
+# Sprint F — 6 advanced children analysis features (Adh. 12)
+# ───────────────────────────────────────────────────────────────
+
+def _detect_adoption_indicators(chart: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Feature 1: Adopted Children Yogas (Phaladeepika Adh. 12).
+
+    Conditions:
+      A) 5th lord in 12th house WITH Jupiter in Dusthana → possibility of adoption
+      B) Rahu in 5th AND Jupiter is weak (debilitated or enemy sign) → likely to adopt
+      C) Sun in 5th WITH Saturn aspect AND no benefic aspect on 5th → biological difficult, adoption indicated
+
+    Returns adoption_indicators: {indicated, strength, reasons, sloka_ref}
+    """
+    planets = chart.get("planets", {}) or {}
+    info5 = _fifth_lord_info(chart)
+    jup = _jupiter_info(chart)
+
+    reasons: List[Dict[str, str]] = []
+    strength_score = 0
+
+    # Condition A: 5th lord in 12th + Jupiter in dusthana
+    if info5["placement"] == 12 and jup["placement"] in DUSTHANAS:
+        reasons.append({
+            "reason_en": f"5th lord ({info5['lord']}) placed in the 12th house (house of loss/liberation) while Jupiter is in a Dusthana (house {jup['placement']}) — classical adoption indicator.",
+            "reason_hi": f"पंचमेश ({info5['lord']}) द्वादश भाव (व्यय/मोक्ष भाव) में स्थित है और गुरु दुःस्थान (भाव {jup['placement']}) में हैं — दत्तक संतान का शास्त्रीय संकेत।",
+        })
+        strength_score += 2
+
+    # Condition B: Rahu in 5th + Jupiter weak/debilitated
+    occupants_5 = _planets_in_house(planets, 5)
+    jup_weak = (
+        jup["strength"] == "weak"
+        or (jup["sign"] and _is_debilitated("Jupiter", jup["sign"]))
+    )
+    if "Rahu" in occupants_5 and jup_weak:
+        reasons.append({
+            "reason_en": f"Rahu occupies the 5th house and Jupiter is weak/debilitated (house {jup['placement']}, {jup['sign']}) — strongly suggests adoption yoga.",
+            "reason_hi": f"राहु पंचम भाव में स्थित है और गुरु दुर्बल/नीच हैं (भाव {jup['placement']}, {jup['sign']}) — दत्तक ग्रहण का प्रबल संकेत।",
+        })
+        strength_score += 2
+
+    # Condition C: Sun in 5th + Saturn aspects 5th + no benefic aspect on 5th
+    sun_in_5 = "Sun" in occupants_5
+    sat_aspects_5 = _aspects_house("Saturn", 5, planets)
+    benefic_aspect_on_5 = any(_aspects_house(b, 5, planets) for b in BENEFICS if b in planets)
+    if sun_in_5 and sat_aspects_5 and not benefic_aspect_on_5:
+        reasons.append({
+            "reason_en": "Sun in 5th house is aspected by Saturn with no benefic aspect on the 5th — biological progeny faces obstacles; adoption indicated.",
+            "reason_hi": "सूर्य पंचम भाव में है, शनि की दृष्टि पड़ रही है और कोई शुभ-ग्रह दृष्टि नहीं — जैविक संतान में बाधा; दत्तक ग्रहण संभव।",
+        })
+        strength_score += 1
+
+    indicated = len(reasons) > 0
+    if strength_score >= 3:
+        strength = "strong"
+    elif strength_score >= 1:
+        strength = "moderate"
+    else:
+        strength = "none"
+
+    return {
+        "indicated": indicated,
+        "strength": strength,
+        "reasons": reasons,
+        "sloka_ref": "Phaladeepika Adh. 12 sloka 8–10",
+    }
+
+
+def _detect_female_child_yogas(chart: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Feature 2: Female-Only Children Yogas (Phaladeepika Adh. 12).
+
+    Conditions:
+      A) Moon in 5th (especially in even/female signs)
+      B) Venus as 5th lord in female (even) sign
+      C) 5th house in even sign + occupied/aspected by female planets (Moon/Venus)
+
+    Returns female_child_yogas: {indicated, reasons, sloka_ref}
+    """
+    planets = chart.get("planets", {}) or {}
+    info5 = _fifth_lord_info(chart)
+
+    reasons: List[Dict[str, str]] = []
+    occupants_5 = _planets_in_house(planets, 5)
+    fifth_sign = info5["fifth_sign"]
+    fifth_is_female = _is_female_sign(fifth_sign)
+
+    # Condition A: Moon in 5th
+    if "Moon" in occupants_5:
+        moon_sign = _sign_of_planet("Moon", planets)
+        if moon_sign in FEMALE_SIGNS:
+            reasons.append({
+                "reason_en": f"Moon in 5th house in the female sign {moon_sign} — strongly favours female children.",
+                "reason_hi": f"चन्द्रमा पंचम भाव में स्त्री राशि {moon_sign} में — कन्या संतान का प्रबल योग।",
+            })
+        else:
+            reasons.append({
+                "reason_en": f"Moon in 5th house (in {moon_sign}) — inclines toward female children.",
+                "reason_hi": f"चन्द्रमा पंचम भाव में ({moon_sign} राशि में) — कन्या संतान का संकेत।",
+            })
+
+    # Condition B: Venus as 5th lord in female sign
+    if info5["lord"] == "Venus" and info5["sign"] in FEMALE_SIGNS:
+        reasons.append({
+            "reason_en": f"Venus is the 5th lord placed in female sign {info5['sign']} — female children predominate.",
+            "reason_hi": f"शुक्र पंचमेश है और स्त्री राशि {info5['sign']} में स्थित है — कन्या संतान की प्रधानता।",
+        })
+
+    # Condition C: 5th sign female + female planets in or aspecting 5th
+    if fifth_is_female:
+        female_in_5 = [p for p in occupants_5 if p in {"Moon", "Venus"}]
+        female_aspect_5 = [p for p in {"Moon", "Venus"} if p in planets and _aspects_house(p, 5, planets)]
+        if female_in_5 or female_aspect_5:
+            active = female_in_5 + female_aspect_5
+            reasons.append({
+                "reason_en": f"5th house is a female sign ({fifth_sign}) and is occupied/aspected by female planets ({', '.join(active)}) — predominantly female progeny.",
+                "reason_hi": f"पंचम भाव स्त्री राशि ({fifth_sign}) में है और स्त्री ग्रहों ({', '.join(active)}) से युक्त/दृष्ट है — कन्या संतान की अधिकता।",
+            })
+
+    return {
+        "indicated": len(reasons) > 0,
+        "reasons": reasons,
+        "sloka_ref": "Phaladeepika Adh. 12 sloka 11–12",
+    }
+
+
+def _detect_male_child_yogas(chart: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Feature 3: All-Male Children Yogas (Phaladeepika Adh. 12).
+
+    Conditions:
+      A) 5th lord in odd sign + aspected by Jupiter → male children
+      B) Sun in 5th with Mars aspect → male children
+      C) Jupiter in 5th in odd sign → predominantly male
+
+    Returns male_child_yogas: {indicated, reasons, sloka_ref}
+    """
+    planets = chart.get("planets", {}) or {}
+    info5 = _fifth_lord_info(chart)
+    occupants_5 = _planets_in_house(planets, 5)
+
+    reasons: List[Dict[str, str]] = []
+
+    # Condition A: 5th lord in odd (male) sign + Jupiter aspects 5th lord house
+    if info5["sign"] in MALE_SIGNS:
+        lord_house = info5["placement"]
+        jup_aspects_lord = lord_house > 0 and _aspects_house("Jupiter", lord_house, planets)
+        if jup_aspects_lord:
+            reasons.append({
+                "reason_en": f"5th lord ({info5['lord']}) in male sign ({info5['sign']}) and aspected by Jupiter — strong indicator of male children.",
+                "reason_hi": f"पंचमेश ({info5['lord']}) पुरुष राशि ({info5['sign']}) में है और गुरु की दृष्टि से युक्त है — पुत्र संतान का प्रबल संकेत।",
+            })
+        else:
+            reasons.append({
+                "reason_en": f"5th lord ({info5['lord']}) in male sign ({info5['sign']}) — inclines toward male children.",
+                "reason_hi": f"पंचमेश ({info5['lord']}) पुरुष राशि ({info5['sign']}) में — पुत्र संतान का संकेत।",
+            })
+
+    # Condition B: Sun in 5th + Mars aspects 5th
+    if "Sun" in occupants_5 and _aspects_house("Mars", 5, planets):
+        reasons.append({
+            "reason_en": "Sun in 5th house with Mars aspect — classical yoga for male children.",
+            "reason_hi": "सूर्य पंचम भाव में और मंगल की दृष्टि — पुत्र संतान का शास्त्रीय योग।",
+        })
+
+    # Condition C: Jupiter in 5th in odd sign
+    if "Jupiter" in occupants_5:
+        jup_sign = _sign_of_planet("Jupiter", planets)
+        if jup_sign in MALE_SIGNS:
+            reasons.append({
+                "reason_en": f"Jupiter in 5th house in male sign ({jup_sign}) — predominantly male progeny indicated.",
+                "reason_hi": f"गुरु पंचम भाव में पुरुष राशि ({jup_sign}) में — पुत्र संतान की प्रधानता।",
+            })
+        else:
+            reasons.append({
+                "reason_en": f"Jupiter in 5th house (in {jup_sign}) — karaka for progeny strongly placed, children blessed.",
+                "reason_hi": f"गुरु पंचम भाव में ({jup_sign} राशि में) — संतान कारक बलवान, संतान-सुख प्राप्त।",
+            })
+
+    return {
+        "indicated": len(reasons) > 0,
+        "reasons": reasons,
+        "sloka_ref": "Phaladeepika Adh. 12 sloka 9–10",
+    }
+
+
+def _get_conception_timing(chart: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Feature 4: Conception Timing Indicators (Phaladeepika Adh. 12 + Gochara).
+
+    Favorable periods:
+      - Jupiter transiting 1st, 4th, 5th, 7th, or 9th from natal Moon
+      - Jupiter dasha or 5th lord dasha = peak conception window
+      - Key Jupiter transit signs to watch
+
+    Returns conception_timing: {favorable_windows, current_favorable, note_en, note_hi, sloka_ref}
+    """
+    planets = chart.get("planets", {}) or {}
+    info5 = _fifth_lord_info(chart)
+    asc_sign = (chart.get("ascendant") or {}).get("sign", "")
+
+    moon_sign = _sign_of_planet("Moon", planets)
+    fifth_lord = info5.get("lord", "")
+    fifth_sign = info5.get("fifth_sign", "")
+
+    favorable_windows: List[Dict[str, str]] = []
+
+    # Jupiter favorable transit houses from natal Moon: 1, 4, 5, 7, 9
+    FAVORABLE_FROM_MOON = [1, 4, 5, 7, 9]
+    if moon_sign and moon_sign in ZODIAC:
+        moon_idx = ZODIAC.index(moon_sign)
+        for offset in FAVORABLE_FROM_MOON:
+            watch_sign = ZODIAC[(moon_idx + offset - 1) % 12]
+            house_label = {1: "1st (Lagna from Moon)", 4: "4th", 5: "5th (Putra from Moon)", 7: "7th", 9: "9th (Dharma)"}[offset]
+            favorable_windows.append({
+                "period_en": f"When Jupiter transits {watch_sign} ({house_label} from natal Moon in {moon_sign})",
+                "period_hi": f"जब गुरु {watch_sign} में गोचर करे (जन्मकालीन चन्द्र राशि {moon_sign} से {offset}वाँ भाव)",
+                "jupiter_position": watch_sign,
+                "type": "transit",
+            })
+
+    # Jupiter dasha / 5th lord dasha windows
+    if fifth_lord:
+        favorable_windows.append({
+            "period_en": f"Jupiter Mahadasha or Antardasha (primary karaka for progeny)",
+            "period_hi": "गुरु की महादशा अथवा अंतर्दशा (संतान का प्राथमिक कारक)",
+            "jupiter_position": "Mahadasha/Antardasha",
+            "type": "dasha",
+        })
+        favorable_windows.append({
+            "period_en": f"{fifth_lord} Mahadasha or Antardasha (5th lord — Putra Bhava ruler)",
+            "period_hi": f"{fifth_lord} की महादशा अथवा अंतर्दशा (पंचमेश — पुत्र भाव स्वामी)",
+            "jupiter_position": f"{fifth_lord} period",
+            "type": "dasha",
+        })
+
+    # Also note the most critical transit: Jupiter over 5th house sign
+    if fifth_sign and fifth_sign in ZODIAC:
+        favorable_windows.insert(0, {
+            "period_en": f"Jupiter transiting {fifth_sign} (natal 5th house — Putra Bhava) — MOST FAVORABLE",
+            "period_hi": f"गुरु का {fifth_sign} में गोचर (जन्मकालीन पंचम भाव) — सर्वाधिक अनुकूल",
+            "jupiter_position": fifth_sign,
+            "type": "transit",
+        })
+
+    return {
+        "favorable_windows": favorable_windows,
+        "current_favorable": False,  # Requires live transit data — not available in static chart
+        "note_en": (
+            "Conception is most likely when Jupiter transits the 5th house sign from the ascendant "
+            "AND the concurrent dasha belongs to Jupiter or the 5th lord. "
+            "Favorable Jupiter transits from the natal Moon (1st, 4th, 5th, 7th, 9th) further strengthen the window."
+        ),
+        "note_hi": (
+            "गर्भधारण की सर्वाधिक संभावना तब होती है जब गुरु लग्न के पंचम भाव की राशि में गोचर करे "
+            "और समवर्ती दशा गुरु या पंचमेश की हो। "
+            "जन्मकालीन चन्द्र राशि से गुरु का 1, 4, 5, 7 या 9वें भाव में गोचर भी इस खिड़की को प्रबल बनाता है।"
+        ),
+        "sloka_ref": "Phaladeepika Adh. 12 + Adh. 26 (Gochara)",
+    }
+
+
+def _get_delivery_indicators() -> Dict[str, Any]:
+    """
+    Feature 5: Delivery Date Estimation (classical method).
+
+    Classical Vedic method: count from 5th house sign.
+    General estimate from conception month.
+    Returns delivery_indicators with method description.
+    """
+    return {
+        "method_en": (
+            "Classical Vedic texts estimate delivery by counting from the sign of conception. "
+            "The 5th house sign and its lord indicate the gestational sign-count. "
+            "Standard Ayurvedic + astrological consensus: full-term delivery occurs in the "
+            "9th or 10th month from conception (Garbha period: Phaladeepika Adh. 12)."
+        ),
+        "method_hi": (
+            "शास्त्रीय वैदिक ग्रंथों में गर्भाधान राशि से गणना करके प्रसव का अनुमान लगाया जाता है। "
+            "पंचम भाव की राशि एवं उसका स्वामी गर्भावधि के राशि-गणना का संकेत देते हैं। "
+            "आयुर्वेद एवं ज्योतिष की सम्मिलित मान्यता: पूर्ण-प्रसव गर्भाधान के 9वें अथवा 10वें मास में होता है।"
+        ),
+        "estimated_months_range": "9-10",
+        "note_en": (
+            "This is a general classical estimate based on Phaladeepika tradition. "
+            "The 5th house lord's strength and sign influence the exact timing within this range. "
+            "A strong 5th lord in a fixed sign suggests closer to 10 months; a movable sign nearer to 9. "
+            "Always consult a qualified physician for medical guidance."
+        ),
+        "note_hi": (
+            "यह फलदीपिका परम्परा पर आधारित एक सामान्य शास्त्रीय अनुमान है। "
+            "पंचमेश की बल एवं राशि इस सीमा के भीतर सटीक समय को प्रभावित करती है। "
+            "स्थिर राशि में बलवान पंचमेश 10 माह के निकट और चर राशि में 9 माह के निकट संकेत देता है। "
+            "चिकित्सा मार्गदर्शन के लिए सदैव योग्य चिकित्सक से परामर्श लें।"
+        ),
+        "sloka_ref": "Phaladeepika Adh. 12 (Garbha Adhyaya) + Ayurvedic Garbha-Sharira",
+    }
+
+
+def _detect_child_loss_yogas_complete(chart: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Feature 6: Complete Child Loss Yogas (upgrade from partial Putra-Hani Yoga).
+
+    Conditions with severity levels:
+      A) 5th lord debilitated in 8th or 12th → child loss risk (HIGH)
+      B) Mars in 5th + Saturn aspect → surgical delivery risk, child risk (HIGH)
+      C) Rahu in 5th + no benefic aspect → child loss yoga (MODERATE-HIGH)
+      D) 5th lord in dusthana aspected by Mars → loss/grief (existing, MODERATE)
+      E) Saturn + Rahu both in 5th → combined affliction (HIGH)
+
+    Returns child_loss_yogas: {present, overall_risk, yogas, sloka_ref}
+    """
+    planets = chart.get("planets", {}) or {}
+    info5 = _fifth_lord_info(chart)
+    occupants_5 = _planets_in_house(planets, 5)
+
+    yogas: List[Dict[str, str]] = []
+
+    # A) 5th lord debilitated in 8th or 12th
+    if (info5["lord"] and info5["placement"] in {8, 12}
+            and info5["sign"] and _is_debilitated(info5["lord"], info5["sign"])):
+        yogas.append({
+            "key": "lord_debilitated_in_dusthana",
+            "name_en": "5th Lord Debilitated in 8th/12th",
+            "name_hi": "पंचमेश की नीच स्थिति 8/12 में",
+            "description_en": f"5th lord {info5['lord']} is debilitated in {info5['sign']} placed in house {info5['placement']} — serious child loss risk per Phaladeepika.",
+            "description_hi": f"पंचमेश {info5['lord']} नीच स्थिति में {info5['sign']} में, भाव {info5['placement']} में — फलदीपिका अनुसार संतान-हानि का गंभीर खतरा।",
+            "severity": "high",
+        })
+
+    # B) Mars in 5th + Saturn aspects 5th
+    if "Mars" in occupants_5 and _aspects_house("Saturn", 5, planets):
+        yogas.append({
+            "key": "mars_5th_saturn_aspect",
+            "name_en": "Mars in 5th with Saturn Aspect",
+            "name_hi": "पंचम में मंगल, शनि की दृष्टि",
+            "description_en": "Mars in 5th house with Saturn's aspect — indicates risk of surgical delivery complications or child loss.",
+            "description_hi": "पंचम भाव में मंगल और शनि की दृष्टि — शल्य-प्रसव संबंधी जटिलता या संतान-हानि का खतरा।",
+            "severity": "high",
+        })
+
+    # C) Rahu in 5th + no benefic aspect on 5th
+    benefic_aspect_on_5 = any(_aspects_house(b, 5, planets) for b in BENEFICS if b in planets)
+    if "Rahu" in occupants_5 and not benefic_aspect_on_5:
+        yogas.append({
+            "key": "rahu_5th_no_benefic",
+            "name_en": "Rahu in 5th — No Benefic Protection",
+            "name_hi": "पंचम में राहु, शुभ-ग्रह दृष्टि का अभाव",
+            "description_en": "Rahu occupies the 5th house without any benefic aspect — child loss yoga present. Remedies strongly advised.",
+            "description_hi": "राहु पंचम भाव में है, कोई शुभ-ग्रह दृष्टि नहीं — संतान-हानि योग। उपाय अत्यावश्यक।",
+            "severity": "moderate_high",
+        })
+
+    # D) 5th lord in dusthana aspected by Mars
+    if info5["placement"] in DUSTHANAS and info5["lord"] and _aspects_house("Mars", info5["placement"], planets):
+        yogas.append({
+            "key": "lord_dusthana_mars_aspect",
+            "name_en": "5th Lord in Dusthana with Mars Aspect",
+            "name_hi": "पंचमेश दुःस्थान में, मंगल की दृष्टि",
+            "description_en": f"5th lord ({info5['lord']}) in Dusthana (house {info5['placement']}) with Mars aspect — grief or loss related to children.",
+            "description_hi": f"पंचमेश ({info5['lord']}) दुःस्थान (भाव {info5['placement']}) में, मंगल की दृष्टि — संतान संबंधी पीड़ा या हानि।",
+            "severity": "moderate",
+        })
+
+    # E) Saturn + Rahu both in 5th (combined affliction)
+    if "Saturn" in occupants_5 and "Rahu" in occupants_5:
+        yogas.append({
+            "key": "saturn_rahu_5th",
+            "name_en": "Saturn + Rahu in 5th (Combined Affliction)",
+            "name_hi": "पंचम में शनि + राहु (संयुक्त पीड़ा)",
+            "description_en": "Saturn and Rahu together in the 5th house — Putra-Hani yoga. Severe affliction of the 5th house. Remedies essential.",
+            "description_hi": "शनि और राहु दोनों पंचम भाव में — पुत्र-हानि योग। पंचम भाव की गंभीर पीड़ा। उपाय अनिवार्य।",
+            "severity": "high",
+        })
+
+    # Overall risk assessment
+    high_count = sum(1 for y in yogas if y.get("severity") == "high")
+    mod_high_count = sum(1 for y in yogas if y.get("severity") == "moderate_high")
+
+    if high_count >= 2:
+        overall_risk = "very_high"
+    elif high_count == 1 or (high_count == 0 and mod_high_count >= 1):
+        overall_risk = "high"
+    elif yogas:
+        overall_risk = "moderate"
+    else:
+        overall_risk = "none"
+
+    return {
+        "present": len(yogas) > 0,
+        "overall_risk": overall_risk,
+        "yogas": yogas,
+        "note_en": "Presence of child loss yogas indicates risk, not certainty. Remedial measures (Putrakameshti Yagna, Santan Gopal mantra, Rahu pacification) can mitigate these yogas." if yogas else "",
+        "note_hi": "संतान-हानि योगों की उपस्थिति खतरे का संकेत है, निश्चितता नहीं। पुत्रकामेष्टि यज्ञ, संतान गोपाल मंत्र और राहु-शांति उपाय इन योगों को शमन कर सकते हैं।" if yogas else "",
+        "sloka_ref": "Phaladeepika Adh. 12 sloka 13–16",
+    }
+
+
+# ───────────────────────────────────────────────────────────────
 # Main analyzer
 # ───────────────────────────────────────────────────────────────
 
@@ -1208,6 +1608,32 @@ def analyze_apatya(chart_data: Dict[str, Any]) -> Dict[str, Any]:
     except Exception:
         fecundity = None
 
+    # Sprint F — advanced children analysis (Adh. 12 complete coverage)
+    try:
+        adoption_indicators = _detect_adoption_indicators(chart_data)
+    except Exception:
+        adoption_indicators = None
+    try:
+        female_child_yogas = _detect_female_child_yogas(chart_data)
+    except Exception:
+        female_child_yogas = None
+    try:
+        male_child_yogas = _detect_male_child_yogas(chart_data)
+    except Exception:
+        male_child_yogas = None
+    try:
+        conception_timing = _get_conception_timing(chart_data)
+    except Exception:
+        conception_timing = None
+    try:
+        delivery_indicators = _get_delivery_indicators()
+    except Exception:
+        delivery_indicators = None
+    try:
+        child_loss_yogas = _detect_child_loss_yogas_complete(chart_data)
+    except Exception:
+        child_loss_yogas = None
+
     return {
         "fifth_house_analysis": fifth,
         "yogas_detected": yogas,
@@ -1217,6 +1643,13 @@ def analyze_apatya(chart_data: Dict[str, Any]) -> Dict[str, Any]:
         "child_count_estimate": child_count,
         "gender_analysis": gender_analysis,
         "fecundity_score": fecundity,
+        # Sprint F additions:
+        "adoption_indicators": adoption_indicators,
+        "female_child_yogas": female_child_yogas,
+        "male_child_yogas": male_child_yogas,
+        "conception_timing": conception_timing,
+        "delivery_indicators": delivery_indicators,
+        "child_loss_yogas": child_loss_yogas,
         "recommendations_en": recs["en"],
         "recommendations_hi": recs["hi"],
         "remedies_en": rems["en"],
