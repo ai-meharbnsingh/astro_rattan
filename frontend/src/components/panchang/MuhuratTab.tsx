@@ -44,7 +44,7 @@ interface ExtPanchang extends FullPanchangData {
   misc?: { panchaka_rahita?: PanchakaRahita | null; astronomical?: Record<string, any> };
   chaturmasa?: { active?: boolean; warning?: string; warning_hindi?: string };
   dagdha_nakshatra?: { active?: boolean; name?: string; name_hindi?: string; dagdha_list?: string[] };
-  nivas?:
+  nivas?: {
     chandra_vasa?: { direction: string; direction_hindi: string; name: string; name_hindi: string };
     agnivasa?: { location: string; location_hindi: string; name: string; name_hindi: string };
     rahu_vasa?: { direction: string; direction_hindi: string; name: string; name_hindi: string };
