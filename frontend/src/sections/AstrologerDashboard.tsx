@@ -24,7 +24,12 @@ import {
   Users, Calendar as CalIcon, BookOpen, NotebookPen, Activity,
   ChevronRight, Search, Plus, Loader2, Clock, CheckCircle2, XCircle,
   Phone, MapPin, Filter, RefreshCw, Sparkles, TrendingUp, User as UserIcon,
+  Settings as SettingsIcon, MessageCircle as MessageCircleIcon,
 } from 'lucide-react';
+// Sprint I — client modals + settings panel
+import NewClientModal from '@/components/astrologer/NewClientModal';
+import ClientQuickViewModal from '@/components/astrologer/ClientQuickViewModal';
+import AstrologerSettingsPanel from '@/components/astrologer/AstrologerSettingsPanel';
 
 // ─────────────────────────────────────────────────────────────
 // Types
