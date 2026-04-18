@@ -1143,6 +1143,19 @@ def get_lalkitab_advanced(
     from app.lalkitab_andhe_grah import detect_andhe_grah
     andhe_info = detect_andhe_grah(formatted_positions, chart_data=chart_data)
 
+    # P1.5 — Rahu-Ketu 1-7 axis (shadow axis) canonical combined effect.
+    # LK 1952 §2.17: Rahu and Ketu always sit 180° apart, so they are
+    # always in a 1-7 relationship. LK prescribes specific combined
+    # effects on BOTH endpoint houses for each of the 6 unique axis
+    # configurations. Non-fatal — detector returns None if either node
+    # is missing or the data is not a clean 1-7 pair.
+    try:
+        from app.lalkitab_rahu_ketu_axis import detect_rahu_ketu_axis
+        rahu_ketu_axis = detect_rahu_ketu_axis(formatted_positions)
+    except Exception as e:
+        logger.warning("Rahu-Ketu axis detection failed: %s", e)
+        rahu_ketu_axis = None
+
     return {
         "masnui_planets": calculate_masnui_planets(formatted_positions),
         "karmic_debts": hora_debt_analysis["final_debts"] if hora_debt_analysis else calculate_karmic_debts(formatted_positions),
@@ -1156,6 +1169,8 @@ def get_lalkitab_advanced(
         "kayam": kayam_planets,
         # P1.1 — per-planet blind-planet state for Analytical Tewa colour coding
         "andhe": andhe_info,
+        # P1.5 — canonical Rahu-Ketu 1-7 axis combined effect (LK 2.17)
+        "rahu_ketu_axis": rahu_ketu_axis,
     }
 
 

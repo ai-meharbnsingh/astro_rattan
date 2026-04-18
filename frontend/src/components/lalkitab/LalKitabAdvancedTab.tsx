@@ -18,7 +18,8 @@ import {
   ArrowRight,
   CheckCircle2,
   XCircle,
-  Heart
+  Heart,
+  BookOpen
 } from 'lucide-react';
 import { translatePlanet } from '@/lib/backend-translations';
 import SourceBadge from './SourceBadge';
@@ -1215,6 +1216,104 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
           </>
         )}
       </section>
+
+      {/* P1.5 — Rahu-Ketu 1-7 Axis (Shadow Axis) — LK 1952 §2.17 */}
+      {data.rahu_ketu_axis && (
+        <section>
+          <div className="flex items-center gap-2 mb-4">
+            <BookOpen className="w-5 h-5 text-indigo-600" />
+            <h3 className="text-xl font-sans font-bold text-foreground">
+              {isHi ? 'राहु–केतु अक्ष' : 'Rahu–Ketu Axis'}
+            </h3>
+            <SourceBadge source="LK_CANONICAL" size="xs" lkRef="2.17" />
+          </div>
+
+          <div className="p-5 rounded-xl border border-indigo-300 bg-indigo-50 space-y-4">
+            {/* Axis name with endpoint houses */}
+            <div className="flex flex-wrap items-center gap-2">
+              <h4 className="text-lg font-bold text-indigo-800">
+                {isHi ? data.rahu_ketu_axis.axis_hi : data.rahu_ketu_axis.axis_en}
+              </h4>
+              <span className="text-sm font-semibold text-indigo-700 bg-white/70 border border-indigo-200 px-2 py-0.5 rounded">
+                H{data.rahu_ketu_axis.rahu_house}
+                <span className="mx-1 text-indigo-500">↔</span>
+                H{data.rahu_ketu_axis.ketu_house}
+              </span>
+              <span className="text-[10px] font-bold text-indigo-700 bg-indigo-200/60 px-2 py-0.5 rounded uppercase tracking-widest">
+                {isHi ? 'छाया अक्ष' : 'Shadow Axis'}
+              </span>
+            </div>
+
+            {/* Node positions (clarify which node sits where) */}
+            <div className="flex flex-wrap gap-3 text-xs text-indigo-900/80">
+              <span>
+                <span className="font-semibold">
+                  {translatePlanet('Rahu', language)}:
+                </span>{' '}
+                {isHi ? 'भाव' : 'House'} {data.rahu_ketu_axis.rahu_house}
+              </span>
+              <span>
+                <span className="font-semibold">
+                  {translatePlanet('Ketu', language)}:
+                </span>{' '}
+                {isHi ? 'भाव' : 'House'} {data.rahu_ketu_axis.ketu_house}
+              </span>
+            </div>
+
+            {/* Effect paragraph */}
+            <div>
+              <p className="text-[10px] font-bold text-indigo-700 uppercase tracking-widest mb-1">
+                {isHi ? 'प्रभाव' : 'Effect'}
+              </p>
+              <p className="text-sm text-foreground/80 leading-relaxed">
+                {isHi ? data.rahu_ketu_axis.effect_hi : data.rahu_ketu_axis.effect_en}
+              </p>
+            </div>
+
+            {/* Remedy paragraph */}
+            <div>
+              <p className="text-[10px] font-bold text-indigo-700 uppercase tracking-widest mb-1">
+                {isHi ? 'उपाय' : 'Remedy'}
+              </p>
+              <p className="text-sm text-foreground/80 leading-relaxed">
+                {isHi ? data.rahu_ketu_axis.remedy_hi : data.rahu_ketu_axis.remedy_en}
+              </p>
+            </div>
+
+            {/* Caution card (red) — shown only when non-empty */}
+            {((isHi ? data.rahu_ketu_axis.caution_hi : data.rahu_ketu_axis.caution_en) || '').trim() && (
+              <div className="flex items-start gap-2 p-3 rounded-lg bg-red-50 border border-red-300">
+                <AlertTriangle className="w-4 h-4 text-red-600 mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-[10px] font-bold text-red-700 uppercase tracking-widest mb-1">
+                    {isHi ? 'सावधानी' : 'Caution'}
+                  </p>
+                  <p className="text-sm text-red-800 leading-relaxed">
+                    {isHi ? data.rahu_ketu_axis.caution_hi : data.rahu_ketu_axis.caution_en}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Life-area keywords */}
+            {Array.isArray(data.rahu_ketu_axis.life_areas) && data.rahu_ketu_axis.life_areas.length > 0 && (
+              <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                <span className="text-[10px] font-semibold text-indigo-700 uppercase tracking-widest">
+                  {isHi ? 'जीवन क्षेत्र' : 'Life Areas'}:
+                </span>
+                {data.rahu_ketu_axis.life_areas.map((area: string) => (
+                  <span
+                    key={area}
+                    className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-800 border border-indigo-200"
+                  >
+                    {area}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
     </div>
   );
