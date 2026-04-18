@@ -1111,7 +1111,7 @@ export default function Features() {
         )}
 
         {/* ── Prashna Kundli ── */}
-        <div id="prashna-section" className="animate-section mb-16">
+        <div id="prashna-section" className="features-title mb-16">
           <div className="text-center mb-8">
             <Heading as={2} variant={2} className="text-sacred-gold-dark mb-2 leading-[1.1]">
               {l('Prashna Kundli', 'प्रश्न कुंडली')}
@@ -1183,7 +1183,7 @@ export default function Features() {
         </div>
 
         {/* ── Don't Know Birth Time? ── */}
-        <div id="unknown-birth-time-section" className="animate-section mb-16">
+        <div id="unknown-birth-time-section" className="features-title mb-16">
           <div className="rounded-2xl overflow-hidden border border-sacred-gold/25 shadow-sm bg-gradient-to-br from-amber-50/60 to-white">
             {/* Header */}
             <div className="p-6 text-center border-b border-sacred-gold/15 bg-gradient-to-r from-amber-50 to-orange-50/40">
