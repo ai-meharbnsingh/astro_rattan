@@ -1,7 +1,5 @@
-import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Calendar, Sparkles, Info, Flame, Leaf, Moon } from 'lucide-react';
-import { api } from '@/lib/api';
+import { Calendar, Info, Flame, Leaf, Moon } from 'lucide-react';
 import type { FullPanchangData } from '@/sections/Panchang';
 import { Heading } from "@/components/ui/heading";
 
@@ -9,32 +7,10 @@ interface Props {
   panchang: FullPanchangData;
   language: string;
   t: (key: string) => string;
-  selectedDate: string;
 }
 
-export default function FestivalsTab({ panchang, language, t, selectedDate }: Props) {
-  const [monthlyFestivals, setMonthlyFestivals] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-  
+export default function FestivalsTab({ panchang, language, t }: Props) {
   const todayFestivals = panchang.festivals || [];
-
-  // Fetch monthly festivals
-  useEffect(() => {
-    const fetchMonthly = async () => {
-      setLoading(true);
-      try {
-        const date = new Date(selectedDate);
-        const year = date.getFullYear();
-        const month = date.getMonth() + 1;
-        const res = await api.get(`/api/festivals?year=${year}&month=${month}&lang=${language}`);
-        setMonthlyFestivals(res.data?.festivals || []);
-      } catch (e) {
-        setMonthlyFestivals([]);
-      }
-      setLoading(false);
-    };
-    fetchMonthly();
-  }, [selectedDate]);
 
   const getFestivalIcon = (type: string) => {
     const type_lower = type.toLowerCase();
@@ -108,50 +84,6 @@ export default function FestivalsTab({ panchang, language, t, selectedDate }: Pr
                 {t('auto.noSpecialFestivalsTo')}
               </p>
             </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Monthly Festivals */}
-      <Card className="card-sacred">
-        <CardContent className="p-4">
-          <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-purple-500" />
-            {t('auto.thisMonthsFestivals')}
-          </h3>
-          
-          {loading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin h-8 w-8 border-2 border-sacred-gold border-t-transparent rounded-full mx-auto" />
-            </div>
-          ) : monthlyFestivals.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {monthlyFestivals.slice(0, 10).map((festival, index) => {
-                const Icon = getFestivalIcon(festival.type);
-                const colorClass = getFestivalColor(festival.type);
-                
-                return (
-                  <div 
-                    key={index}
-                    className="p-3 rounded-xl bg-card/30 border border-transparent hover:border transition-all"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Icon className={`h-4 w-4 ${colorClass.split(' ')[0]}`} />
-                      <span className="font-medium text-foreground text-sm">
-                        {language === 'hi' && festival.name_hindi ? festival.name_hindi : festival.name}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {festival.date} • {language === 'hi' ? festival.type_hindi || festival.type : festival.type}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <p className="text-center text-muted-foreground py-4">
-              {t('auto.noDataAvailable')}
-            </p>
           )}
         </CardContent>
       </Card>
