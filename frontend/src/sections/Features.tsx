@@ -8,6 +8,7 @@ import { useTranslation } from '@/lib/i18n';
 import { AlertTriangle, Calendar, ChevronDown, ChevronUp, Info, Loader2, MapPin, Sparkles, Star, Sun, X } from 'lucide-react';
 import { Heading } from '@/components/ui/heading';
 import KundliChartSVG from '@/components/KundliChartSVG';
+import TodaysKeyInsights from '@/components/sections/TodaysKeyInsights';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -1135,6 +1136,13 @@ export default function Features() {
 
             <p><strong className="text-sacred-gold-dark">{l('Astro Rattan computes Tithi, Nakshatra, Yoga, Karana end times using Swiss Ephemeris for YOUR exact coordinates', 'Astro Rattan आपके सटीक निर्देशांकों के लिए स्विस एफेमेरिस का उपयोग करके तिथि, नक्षत्र, योग, करण के अंत समय की गणना करता है')}</strong>{l(' — with 12+ Muhurat windows, Hora table, Choghadiya, and Hindu calendar.', ' — 12+ मुहूर्त, होरा तालिका, चौघड़िया और हिंदू कैलेंडर के साथ।')}</p>
           </div>
+
+          {/* Today's Key Insights */}
+          {panchangData && (
+            <div className="mb-6">
+              <TodaysKeyInsights panchang={panchangData} language={language} t={t} currentTime={new Date()} />
+            </div>
+          )}
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:h-[620px]">
             <div className="w-full max-w-none h-full rounded-xl border border-sacred-gold/20 bg-transparent backdrop-blur-[1px] shadow-sm overflow-hidden flex flex-col">
