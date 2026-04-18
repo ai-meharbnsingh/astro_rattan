@@ -1,11 +1,11 @@
 # Graph Report - .  (2026-04-18)
 
 ## Corpus Check
-- 507 files · ~5,171,977 words
+- 507 files · ~5,172,025 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 7776 nodes · 13498 edges · 266 communities detected
+- 7780 nodes · 13502 edges · 266 communities detected
 - Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 777 edges (avg confidence: 0.5)
 - Token cost: 0 input · 0 output
 
@@ -444,12 +444,12 @@ Cohesion: 0.13
 Nodes (9): backendToDrikNum(), enrichDayFestivals(), fetchMonthly(), generateObservances(), getLocalDateString(), getTithiNumber(), normalizeFestivalDetail(), normalizeFestivalName() (+1 more)
 
 ### Community 102 - "Community 102"
-Cohesion: 0.17
-Nodes (18): analyze_family_timing(), _build_indicator(), _house_lord(), _house_sign(), _house_sign_hi(), _make_summary(), _natal_sign(), family_timing_engine.py — Cross-Chart Family Timing Analysis =================== (+10 more)
-
-### Community 103 - "Community 103"
 Cohesion: 0.13
 Nodes (15): BaseHTTPMiddleware, _extract_user_id(), get_traffic_snapshot(), H-01: Structured Logging Middleware — logs every request with method, path, stat, Extract user_id from JWT Bearer token if present., Middleware that logs every HTTP request and records to the live traffic buffer., Return a snapshot of recent traffic for the live admin dashboard.     Thread-saf, RequestLoggingMiddleware (+7 more)
+
+### Community 103 - "Community 103"
+Cohesion: 0.17
+Nodes (18): analyze_family_timing(), _build_indicator(), _house_lord(), _house_sign(), _house_sign_hi(), _make_summary(), _natal_sign(), family_timing_engine.py — Cross-Chart Family Timing Analysis =================== (+10 more)
 
 ### Community 104 - "Community 104"
 Cohesion: 0.11
@@ -468,80 +468,80 @@ Cohesion: 0.15
 Nodes (17): calculate_all_misc(), calculate_astronomical_data(), calculate_chaturmasa(), calculate_mantri_mandala(), calculate_panchaka_rahita(), _minutes_to_time(), panchang_misc.py -- Miscellaneous Panchang Calculations ========================, Compute astronomical epoch values for a Gregorian date string (YYYY-MM-DD). (+9 more)
 
 ### Community 108 - "Community 108"
+Cohesion: 0.13
+Nodes (17): _is_auspicious_day(), list_activities(), _monthly_days(), muhurat_find(), muhurat_finder(), muhurat_monthly(), Muhurat Finder API — activity-specific auspicious date finder + compatibility ro, List all available muhurat activity types with localization. (+9 more)
+
+### Community 109 - "Community 109"
 Cohesion: 0.16
 Nodes (17): cleanup_old_uploads(), ensure_upload_dir(), map_room_placements(), _optimize_image(), pixel_to_direction(), vastu/floorplan.py — Floor Plan Upload & Pixel-to-Direction Mapper =============, Resize large images and compress to JPEG for storage efficiency.     Returns opt, Validate, optimize, and save uploaded floor plan image.      Returns:         di (+9 more)
 
-### Community 109 - "Community 109"
+### Community 110 - "Community 110"
 Cohesion: 0.11
 Nodes (17): farmaan_annotate(), farmaan_detail(), farmaan_search(), Lal Kitab Farmaan routes — P2.1 + P2.7 + P2.8 (MVP).  Implements the thin API la, Contribute a transliteration / translation / commentary / dispute., List every edition present in the corpus with row counts., P2 edition comparison: return all editions' versions of the same section., Search the raw source library across editions / languages / rights bands. (+9 more)
 
-### Community 110 - "Community 110"
+### Community 111 - "Community 111"
 Cohesion: 0.11
 Nodes (17): Tests for numerology_engine.py — Pythagorean numerology calculations., Verify master number 11 is preserved (not reduced to 2)., Destiny number (formerly expression) uses all letters of the name., Soul urge uses only vowels (A, E, I, O, U)., Personality uses only consonants., Verify all required keys are present in the output dict., Life path for 1990-01-15: 1+9+9+0=19->10->1 + 0+1=1 + 1+5=6 => 1+1+6=8., Master numbers 11, 22, 33 should not be reduced further. (+9 more)
 
-### Community 111 - "Community 111"
+### Community 112 - "Community 112"
 Cohesion: 0.17
 Nodes (15): detect_yogas_in_chart(), get_kundli_yoga_profile(), get_yoga_statistics(), _normalise_query(), yoga_search_engine.py — Yoga Search Across Kundli Database =====================, Run full yoga detection on a parsed chart_data dict.      Merges legacy dosha_en, Given chart_data (planets dict from DB), detect which yogas are present.     Use, Search all kundlis owned by *user_id* for a specific yoga.      Args:         db (+7 more)
 
-### Community 112 - "Community 112"
+### Community 113 - "Community 113"
 Cohesion: 0.17
 Nodes (15): calculate_agnivasa(), calculate_all_nivas(), calculate_chandra_vasa(), calculate_homahuti(), calculate_kumbha_chakra(), calculate_rahu_vasa(), calculate_shivavasa(), panchang_nivas.py -- Nivas, Shool, Homahuti & Kumbha Chakra Calculations ======= (+7 more)
 
-### Community 113 - "Community 113"
+### Community 114 - "Community 114"
 Cohesion: 0.17
 Nodes (15): calculate_mudda_dasha(), calculate_muntha(), calculate_varshphal(), calculate_year_lord(), find_solar_return_jd(), _jd_to_datetime(), varshphal_engine.py — Vedic Varshphal (Solar Return / Tajaka) Engine ===========, Muntha advances one sign per year from natal ascendant.     Returns: {sign, sign (+7 more)
 
-### Community 114 - "Community 114"
+### Community 115 - "Community 115"
 Cohesion: 0.2
 Nodes (15): analyze_bhava_phala(), _house(), _house_strength(), _is_strong_planet(), _is_weak_planet(), load_bhava_phala_data(), _planet_aspects_house(), bhava_phala_engine.py — Classical Bhava Phala + Bhava-misra-phala ============== (+7 more)
 
-### Community 115 - "Community 115"
+### Community 116 - "Community 116"
 Cohesion: 0.19
 Nodes (15): _build_sub_periods(), calculate_moola_dasha(), _get_dasha_sign_sequence(), _get_effective_years(), _is_odd_sign(), _parse_date(), moola_dasha_engine.py — Moola (Jaimini) Dasha Calculation Engine ===============, Get the 12-sign sequence for Moola Dasha starting from the given sign.      For (+7 more)
 
-### Community 116 - "Community 116"
+### Community 117 - "Community 117"
 Cohesion: 0.13
 Nodes (13): _bootstrap_db(), client(), _create_kundli(), db(), _make_admin(), _make_astrologer(), Shared test fixtures — temp DB, TestClient, auth helpers.  Every test module get, Insert a minimal kundli record and return its id. (+5 more)
 
-### Community 117 - "Community 117"
+### Community 118 - "Community 118"
 Cohesion: 0.21
 Nodes (12): _p(), Tests for Balarishta & Ayu classification — Phaladeepika Adh. 13., test_alpayu_malefic_lagna_no_benefic(), test_ayu_return_contract(), test_balarishta_cancelled_by_strong_jupiter(), test_balarishta_moon_in_dusthana_aspected_by_mars(), test_balarishta_return_contract(), test_balarishta_sun_in_8th_moon_in_6th() (+4 more)
 
-### Community 118 - "Community 118"
+### Community 119 - "Community 119"
 Cohesion: 0.2
 Nodes (14): _add_lagna_warnings(), find_muhurat_dates(), _find_sankranti_times(), find_travel_muhurat(), _is_sankranti_restricted(), _normalize_direction(), Muhurat Finder Engine — finds auspicious dates for specific activities.  Classic, Find auspicious dates for an activity in a given month.      Optional birth_moon (+6 more)
 
-### Community 119 - "Community 119"
+### Community 120 - "Community 120"
 Cohesion: 0.19
 Nodes (14): calculate_chalti_gaadi(), calculate_dhur_dhur_aage(), calculate_muththi(), calculate_soya_ghar(), classify_all_planet_statuses(), _get_strongest_planet(), lalkitab_technical.py — Advanced Lal Kitab Technical Logic =====================, Planet in house N-1 pushes planet in house N.     House 12 pushes house 1 (circu (+6 more)
 
-### Community 120 - "Community 120"
+### Community 121 - "Community 121"
 Cohesion: 0.29
 Nodes (11): aa(), c(), d(), ea(), h(), J(), L(), Q() (+3 more)
 
-### Community 121 - "Community 121"
+### Community 122 - "Community 122"
 Cohesion: 0.13
 Nodes (3): TDD tests for LK Saala Grah Dasha engine., TestDashaTimeline, TestSaalaGrah
 
-### Community 122 - "Community 122"
+### Community 123 - "Community 123"
 Cohesion: 0.21
 Nodes (13): _build_antardasha_periods(), _build_pratyantar_periods(), calculate_ashtottari_dasha(), _calculate_balance(), _get_dasha_sequence(), _parse_date(), ashtottari_dasha_engine.py — Ashtottari Dasha Calculation Engine ===============, Return the 8-planet dasha sequence starting from a given lord. (+5 more)
 
-### Community 123 - "Community 123"
+### Community 124 - "Community 124"
 Cohesion: 0.22
 Nodes (13): analyze_navamsha_profession(), _d9_sign_for_all(), _d9_tenth_house(), _find_planet_in_d9(), _navamsha_sign_for_longitude(), navamsha_profession_engine.py — Profession from 10th Navamsha Lord =============, Return 0-indexed sign position, -1 if unknown., Compute the Navamsha (D9) sign for a planet's sidereal longitude.      Partition (+5 more)
 
-### Community 124 - "Community 124"
+### Community 125 - "Community 125"
 Cohesion: 0.21
 Nodes (13): analyze_panchadha_maitri(), _build_effect(), _house_distance(), _natural_relation(), _panchadha(), panchadha_maitri_engine.py — Panchadha Maitri (5-fold Planetary Friendship) ====, Return (panchadha_en, panchadha_hi) for a given natural+temporary pair., Build English and Hindi effect strings for the pair. (+5 more)
 
-### Community 125 - "Community 125"
+### Community 126 - "Community 126"
 Cohesion: 0.2
 Nodes (13): calculate_all_samvat(), check_lagna_pushkara(), get_brihaspati_samvatsara(), get_gujarati_samvat(), get_month_systems(), is_pushkara_navamsha(), panchang_samvat.py -- Samvat Systems & Pushkara Navamsha =======================, Return both Purnimant and Amant month names for the given lunar month and paksha (+5 more)
-
-### Community 126 - "Community 126"
-Cohesion: 0.18
-Nodes (13): _is_auspicious_day(), list_activities(), _monthly_days(), muhurat_find(), muhurat_finder(), muhurat_monthly(), Muhurat Finder API — activity-specific auspicious date finder + compatibility ro, Find auspicious dates for a specific activity in a given month.      Uses tradit (+5 more)
 
 ### Community 127 - "Community 127"
 Cohesion: 0.21
@@ -1100,7 +1100,7 @@ Cohesion: 1.0
 Nodes (0): 
 
 ## Knowledge Gaps
-- **1874 isolated node(s):** `Lal Kitab remedy context — Sun, Moon, Mars (36 entries)`, `Tests for enhanced Choghadiya — Vaar Vela, Kaal Vela, Kaal Ratri flags.`, `Exactly ONE day period must have vaar_vela=True for each weekday.`, `Exactly ONE day period must have kaal_vela=True for each weekday.`, `Exactly ONE night period must have kaal_ratri=True for each weekday.` (+1869 more)
+- **1878 isolated node(s):** `Lal Kitab remedy context — Sun, Moon, Mars (36 entries)`, `Tests for enhanced Choghadiya — Vaar Vela, Kaal Vela, Kaal Ratri flags.`, `Exactly ONE day period must have vaar_vela=True for each weekday.`, `Exactly ONE day period must have kaal_vela=True for each weekday.`, `Exactly ONE night period must have kaal_ratri=True for each weekday.` (+1873 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **Thin community `Community 198`** (2 nodes): `lk_ctx_a.py`, `Lal Kitab remedy context — Sun, Moon, Mars (36 entries)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
