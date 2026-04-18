@@ -123,6 +123,21 @@ function computeDailyInsights(planets: any[], language: string): string[] {
   return insights.slice(0, 5);
 }
 
+function computeDayEnergy(insights: string[]): { en: string; hi: string } {
+  const text = insights.join(' ').toLowerCase();
+  const avoidCount = (text.match(/avoid/g) || []).length + (text.match(/बचें/g) || []).length;
+  const hasRetro = text.includes('retrograde') || text.includes('वक्री');
+  const hasAction = text.includes('action-oriented') || text.includes('सक्रिय');
+  const hasEmotional = text.includes('emotional') || text.includes('भावनात्मक');
+  if (hasRetro && avoidCount >= 2) return { en: '🔄 Reflective', hi: '🔄 चिंतनशील' };
+  if (avoidCount >= 2) return { en: '⚠ Cautious', hi: '⚠ सावधानी' };
+  if (hasAction && !hasEmotional) return { en: '⚡ Action Day', hi: '⚡ सक्रिय दिन' };
+  if (hasEmotional && avoidCount >= 1) return { en: '🌊 Mixed Energy', hi: '🌊 मिश्रित ऊर्जा' };
+  if (hasEmotional) return { en: '🌊 Emotional', hi: '🌊 भावनात्मक' };
+  if (hasRetro) return { en: '🔄 Reflective', hi: '🔄 चिंतनशील' };
+  return { en: '🌟 Steady', hi: '🌟 सामान्य' };
+}
+
 type HoroscopeSections = {
   general?: string;
   love?: string;
@@ -1390,8 +1405,26 @@ export default function Features() {
               : l('Good for Regular Work', 'सामान्य कार्यों के लिए अच्छा');
             const insights = computeDailyInsights(currentSky?.planets || [], language);
             if (!bestTime && !rahuKaal && insights.length === 0) return null;
+            const energy = computeDayEnergy(insights);
+            const todayLabel = new Date().toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
+            const tithiLabel = panchangData?.tithi?.name;
+            const nakshatraLabel = panchangData?.nakshatra?.name;
             return (
               <div className="mb-6 rounded-xl border border-sacred-gold/20 bg-sacred-gold/[0.02] p-4">
+                {/* Context header */}
+                <div className="flex items-center justify-between mb-3 pb-2.5 border-b border-sacred-gold/15">
+                  <div className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+                    <Calendar className="w-3.5 h-3.5 text-sacred-gold-dark shrink-0" />
+                    <span className="font-semibold text-foreground">{hi ? 'आज का सारांश' : "Today's Snapshot"}</span>
+                    <span>·</span>
+                    <span>{todayLabel}</span>
+                    {tithiLabel && <><span>·</span><span>{tithiLabel}</span></>}
+                    {nakshatraLabel && <><span>·</span><span>{nakshatraLabel}</span></>}
+                  </div>
+                  <span className="shrink-0 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold-dark">
+                    {hi ? energy.hi : energy.en}
+                  </span>
+                </div>
                 <div className="flex flex-wrap gap-2 mb-3">
                   {bestTime && (bestTime.start !== '--:--') && (
                     <div className="flex items-center gap-1.5 bg-green-50 border border-green-200 rounded-lg px-3 py-1.5 text-sm">
