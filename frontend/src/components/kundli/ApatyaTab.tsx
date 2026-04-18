@@ -57,11 +57,55 @@ interface ChildrenTiming {
   sloka_ref: string;
 }
 
+interface ChildCountEstimate {
+  point_estimate: number;
+  count_low: number;
+  count_high: number;
+  label_en: string;
+  label_hi: string;
+  method_en: string;
+  method_hi: string;
+  supporting_factors: string[];
+  sloka_ref: string;
+}
+
+interface GenderYoga {
+  key: string;
+  name_en: string;
+  name_hi: string;
+  effect_en: string;
+  effect_hi: string;
+  severity: string;
+  sloka_ref: string;
+}
+
+interface GenderAnalysis {
+  dominant_gender: string;
+  male_score: number;
+  female_score: number;
+  yogas: GenderYoga[];
+  rationale_en: string;
+  rationale_hi: string;
+  sloka_ref: string;
+}
+
+interface FecundityScore {
+  score: number;
+  band: string;
+  band_hi: string;
+  components: Record<string, number>;
+  max_score: number;
+  sloka_ref: string;
+}
+
 interface ApatyaData {
   fifth_house_analysis: FifthHouseAnalysis;
   yogas_detected: ApatyaYoga[];
   progeny_prospect: 'favorable' | 'challenging' | 'mixed';
   children_timing?: ChildrenTiming;
+  child_count_estimate?: ChildCountEstimate | null;
+  gender_analysis?: GenderAnalysis | null;
+  fecundity_score?: FecundityScore | null;
   recommendations_en: string[];
   recommendations_hi: string[];
   remedies_en: string[];
@@ -324,6 +368,98 @@ export default function ApatyaTab({ kundliId, language, t }: Props) {
           <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-violet-200 text-[10px] text-violet-600">
             <BookOpen className="w-3 h-3" />
             <span className="italic">{data.children_timing.sloka_ref}</span>
+          </div>
+        </section>
+      )}
+
+      {/* Sprint E — Child Count Estimate */}
+      {data.child_count_estimate && (
+        <section className="rounded-xl border border-blue-200 bg-blue-50 p-5">
+          <h3 className="text-base font-semibold text-blue-900 mb-2 flex items-center gap-2">
+            <Baby className="w-4 h-4" />
+            {isHi ? 'संतान संख्या अनुमान' : 'Child Count Estimate'}
+          </h3>
+          <p className="text-xl font-bold text-blue-800 mb-1">
+            {isHi ? data.child_count_estimate.label_hi : data.child_count_estimate.label_en}
+          </p>
+          <p className="text-xs text-blue-700 leading-relaxed mb-3">
+            {isHi ? data.child_count_estimate.method_hi : data.child_count_estimate.method_en}
+          </p>
+          {data.child_count_estimate.supporting_factors.length > 0 && (
+            <ul className="space-y-1 mb-3">
+              {data.child_count_estimate.supporting_factors.map((f, i) => (
+                <li key={i} className="text-xs text-foreground/80 flex items-start gap-1.5">
+                  <span className="text-blue-500 mt-0.5">•</span>
+                  <span>{f}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+          <div className="flex items-center gap-1.5 pt-2 border-t border-blue-200 text-[10px] text-blue-600">
+            <BookOpen className="w-3 h-3" />
+            <span className="italic">{data.child_count_estimate.sloka_ref}</span>
+          </div>
+        </section>
+      )}
+
+      {/* Sprint E — Gender Analysis */}
+      {data.gender_analysis && (
+        <section className="rounded-xl border border-purple-200 bg-purple-50 p-5">
+          <h3 className="text-base font-semibold text-purple-900 mb-2 flex items-center gap-2">
+            <Sparkles className="w-4 h-4" />
+            {isHi ? 'संतान लिंग विश्लेषण' : 'Gender Tendency Analysis'}
+          </h3>
+          {data.gender_analysis.yogas.map((yoga, i) => (
+            <div key={i} className="mb-2">
+              <p className="font-semibold text-sm text-purple-800">
+                {isHi ? yoga.name_hi : yoga.name_en}
+              </p>
+              <p className="text-sm text-foreground/80 leading-relaxed">
+                {isHi ? yoga.effect_hi : yoga.effect_en}
+              </p>
+            </div>
+          ))}
+          <p className="text-xs text-purple-700 italic mt-2 leading-relaxed">
+            {isHi ? data.gender_analysis.rationale_hi : data.gender_analysis.rationale_en}
+          </p>
+          <div className="flex items-center gap-1.5 pt-2 border-t border-purple-200 text-[10px] text-purple-600 mt-3">
+            <BookOpen className="w-3 h-3" />
+            <span className="italic">{data.gender_analysis.sloka_ref}</span>
+          </div>
+        </section>
+      )}
+
+      {/* Sprint E — Fecundity Score */}
+      {data.fecundity_score && (
+        <section className="rounded-xl border border-emerald-200 bg-emerald-50 p-5">
+          <h3 className="text-base font-semibold text-emerald-900 mb-3 flex items-center gap-2">
+            <Heart className="w-4 h-4" />
+            {isHi ? 'प्रजनन शक्ति स्कोर' : 'Fecundity Score'}
+          </h3>
+          <div className="flex items-end gap-3 mb-2">
+            <span className="text-4xl font-bold text-emerald-700">{data.fecundity_score.score}</span>
+            <span className="text-sm text-muted-foreground mb-1">/ {data.fecundity_score.max_score}</span>
+            <span className="mb-1 text-sm font-semibold text-emerald-800 capitalize">
+              {isHi ? data.fecundity_score.band_hi : data.fecundity_score.band.replace(/_/g, ' ')}
+            </span>
+          </div>
+          <div className="w-full bg-emerald-100 rounded-full h-2 mb-4">
+            <div
+              className="bg-emerald-500 h-2 rounded-full transition-all"
+              style={{ width: `${data.fecundity_score.score}%` }}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-foreground/70 mb-3">
+            {Object.entries(data.fecundity_score.components).map(([k, v]) => (
+              <div key={k} className="flex justify-between">
+                <span className="capitalize">{k.replace(/_/g, ' ')}</span>
+                <span className="font-semibold text-emerald-700">{v}</span>
+              </div>
+            ))}
+          </div>
+          <div className="flex items-center gap-1.5 pt-2 border-t border-emerald-200 text-[10px] text-emerald-600">
+            <BookOpen className="w-3 h-3" />
+            <span className="italic">{data.fecundity_score.sloka_ref}</span>
           </div>
         </section>
       )}
