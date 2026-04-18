@@ -89,6 +89,22 @@ export default function Navigation() {
                 <LanguageSwitcher />
               </div>
 
+              {/* Persistent Dashboard link for astrologers/admins — always
+                  visible so they can return to /astrologer from anywhere
+                  without hunting in the profile dropdown. */}
+              {isAuthenticated && (user?.role === 'astrologer' || user?.role === 'admin') && (
+                <Link
+                  to="/astrologer"
+                  className="hidden sm:inline-flex items-center gap-1.5 ml-2 px-3 py-2 rounded-lg bg-sacred-gold-dark text-white hover:bg-sacred-gold transition-colors text-sm font-semibold"
+                  title={language === 'hi' ? 'पेशेवर डैशबोर्ड' : 'Professional Dashboard'}
+                >
+                  <Briefcase className="w-4 h-4" />
+                  <span className="hidden md:inline">
+                    {language === 'hi' ? 'डैशबोर्ड' : 'Dashboard'}
+                  </span>
+                </Link>
+              )}
+
               {isAuthenticated ? (
                 <div ref={profileMenuRef} className="relative hidden sm:block">
                   <button
@@ -151,6 +167,17 @@ export default function Navigation() {
                 </Link>
               )}
 
+              {/* Mobile shortcut: Professional Dashboard for astrologers/admins */}
+              {isAuthenticated && (user?.role === 'astrologer' || user?.role === 'admin') && (
+                <Link
+                  to="/astrologer"
+                  className="p-2.5 text-sacred-gold-dark hover:text-sacred-gold transition-colors sm:hidden"
+                  title={language === 'hi' ? 'पेशेवर डैशबोर्ड' : 'Professional Dashboard'}
+                >
+                  <Briefcase className="w-5 h-5" />
+                </Link>
+              )}
+
               {isAuthenticated && user?.role === 'admin' && (
                 <Link to="/admin" className="p-2.5 text-foreground hover:text-sacred-gold-dark transition-colors sm:hidden" title={t('nav.admin')}>
                   <Shield className="w-5 h-5" />
@@ -201,6 +228,16 @@ export default function Navigation() {
               <LanguageSwitcher />
               {isAuthenticated ? (
                 <div className="space-y-2">
+                  {(user?.role === 'astrologer' || user?.role === 'admin') && (
+                    <Link
+                      to="/astrologer"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center gap-2 w-full px-4 py-3 bg-sacred-gold-dark text-white font-semibold justify-center hover:bg-sacred-gold transition-colors rounded-lg"
+                    >
+                      <Briefcase className="w-4 h-4" />
+                      {language === 'hi' ? 'पेशेवर डैशबोर्ड' : 'Professional Dashboard'}
+                    </Link>
+                  )}
                   <Link
                     to="/dashboard"
                     onClick={() => setIsMobileMenuOpen(false)}
