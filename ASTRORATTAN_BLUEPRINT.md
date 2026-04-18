@@ -1461,5 +1461,316 @@ All four features deliver content in **English and Hindi** via:
 
 ---
 
+## 6. PANCHANG (Hindu Almanac)
+
+**File:** `frontend/src/sections/Panchang.tsx` (main section, tab navigation, GSAP animations, location + date selectors)  
+**Backend routes:** `app/routes/panchang.py`, `app/routes/muhurat.py`  
+**Backend engines:** 13 specialized Python modules (see §6.3)
+
+### 6.1 Daily Panchang Core (PanchangCoreTab)
+**API:** `GET /api/panchang?date&latitude&longitude&lang`  
+**File:** `frontend/src/components/panchang/PanchangCoreTab.tsx`
+
+| Output | Detail |
+|--------|--------|
+| **Tithi** | Name, Number (1-30), Paksha (Shukla/Krishna), End Time, Type badge (Nanda/Bhadra/Jaya/Rikta/Poorna), Lord, Phala |
+| **Nakshatra** | Name, Pada (1-4), Lord, End Time, Category badge (Sthira/Chara/Ugra/Mishra/Laghu/Mridu/Tikshna), Deity |
+| **Yoga** | Name, Number (1-27), End Time, Quality badge (Shubha / Yoga Dosha) |
+| **Karana** | Name, Number (1-60), End Time, Type badge (Sthira/Chara/Vishti) |
+| **Sun & Moon** | Sunrise, Sunset, Moonrise, Moonset |
+| **Day/Night duration** | Dinamana, Ratrimana, Madhyahna (mid-day) |
+| **Weekday** | Vaar name, Graha Swami (planet lord) |
+| **Special banners** | Dagdha Tithi warning, Kula Yoga indicator, Best Hora for Travel |
+| **Panchanga Shuddhi Score** | Percentage + Grade (Shubha / Madhyama / Ashubha) |
+
+### 6.2 Muhurat Tab (MuhuratTab)
+**File:** `frontend/src/components/panchang/MuhuratTab.tsx`
+
+| Output | Detail |
+|--------|--------|
+| **Hard block banners** | Vyatipata / Vaidhriti Yoga (all-activity-blocked), Chaturmasa warning |
+| **Prominent Yoga banners** | Amrit Siddhi, Sarvartha Siddhi, Dwipushkar, Tripushkar, Ganda Moola active status |
+| **Auspicious periods** | Brahma Muhurat, Abhijit Muhurat, Vijaya Muhurta, Godhuli Muhurta, Nishita Muhurta |
+| **Inauspicious periods** | Rahu Kaal (live "Active Now" + minutes remaining), Gulika Kaal, Yamaganda, Dur Muhurtam, Varjyam |
+| **Special Yogas** | Ravi Yoga, Amrit Siddhi, Sarvartha Siddhi, Tripushkar, Dwipushkar |
+| **Sandhya Times** | Pratah Sandhya, Sayahna Sandhya (for Gayatri recitation) |
+| **4-column grid** | Anandadi Yoga, Disha Shool + travel warning, Lucky Color/Number/Direction, Ekadashi Parana window |
+| **Panchaka Rahita** | Type (Mrityu/Agni/Chora/Roga/Raja), severity, safe/unsafe windows |
+| **Tamil Yoga** | Tamil Yoga name + auspicious flag, Jeevanama, Netrama |
+| **Nivas & Vasa** | Chandra Vasa, Rahu Vasa + caution, Shivavasa, Agnivasa, Homahuti, Kumbha Chakra |
+| **Vrats & Fasting** | Filtered list with type, name, description |
+| **Festivals Today** | Non-fasting festival tags with icons |
+
+### 6.3 Muhurat Finder (MuhuratFinderTab)
+**API:** `GET /api/muhurat/activities`, `GET /api/muhurat/finder`, `GET /api/muhurat/travel`  
+**File:** `frontend/src/components/panchang/MuhuratFinderTab.tsx`
+
+- **20+ activities:** Marriage, Griha Pravesh, Vehicle Purchase, Business Start, Shop Opening, Thread Ceremony, Naming Ceremony, Education Start, etc.
+- **Month picker** with previous/next navigation
+- **Personal Muhurat** collapsible toggle: birth nakshatra (27 options) + birth moon rashi (12 options) for Chandra Balam / Tara Balam scoring
+- **Per-date output:** Muhurat Score (0-100), Tithi/Nakshatra/Paksha tags, Sunrise/Sunset/Rahu Kaal, Lagna Windows (sign, time, Ganda/Sandhi warnings, safe sub-window), Chandra Balam (house + favorable), Tara Balam (tara name + favorable), Reasons good/bad (bulleted)
+- **Marriage-specific:** Best Lagna + Lord, Lagna Quality Score, Vivaha Quality (0-100), Marriage Season Calendar (allowed months green / forbidden months red)
+- **Business-specific:** Recommended Hora Windows (planet lord + time range)
+- **Activity rules:** Tithi, Nakshatra, Weekday, Lagna preferences; avoidance of Rahu Kaal, Bhadra, Panchaka, Ganda Moola, Sankranti, Guru/Shukra Asta, Dagdha Tithi
+
+### 6.4 Sankranti Tab (SankrantiTab)
+**API:** `GET /api/panchang/sankranti?year&latitude&longitude`  
+**File:** `frontend/src/components/panchang/SankrantiTab.tsx`  
+**Engine:** `app/sankranti_engine.py:build_sankranti_payload()`
+
+- **Annual Sun Ingress Calendar:** 12 rashi ingress times (local + UTC), restriction window (±16 hours), Amritkaal window (minutes), Ayana (Uttarayana/Dakshinayana), Makar special (Magha Mela context), sign effects interpretation
+- **Year navigation:** 1900–2100 range
+
+### 6.5 Planetary Positions Tab (PlanetaryPositionsTab)
+**File:** `frontend/src/components/panchang/PlanetaryPositionsTab.tsx`
+
+- 9-planet table: Sign (Rashi) + Hindi, Nakshatra + Pada, Degree, Longitude, Retrograde flag (R in red), Combusted flag (🔥)
+- Row tinting: retrograde = red-tinted, combusted = orange-tinted
+
+### 6.6 Hora Tab (HoraTab)
+**File:** `frontend/src/components/panchang/HoraTab.tsx`
+
+- Current Hora banner (planet lord, time window, quality badge)
+- Day/Night Hora tables (24 periods): planet ruler, best-for guidance, time window, result quality
+- Live status: current hora highlighted
+
+### 6.7 Lagna Tab (LagnaTab)
+**File:** `frontend/src/components/panchang/LagnaTab.tsx`
+
+- 24-hour lagna cycle table: rising sign, degree, start/end time, Ganda/Sandhi badges
+- Current lagna highlight card: Pushkara Navamsha badge if applicable
+- Ganda/Sandhi warning banner if present
+
+### 6.8 Choghadiya Tab (ChoghadiyaTab)
+**File:** `frontend/src/components/panchang/ChoghadiyaTab.tsx`
+
+- Day + Night tables: 7 period types (Amrit/Shubh/Labh/Char/Udveg/Kaal/Rog), quality color-coding, time windows
+- Vaar Vela / Kaal Vela / Kaal Ratri sub-period indicators
+- Color-coded legend + Vela legends
+
+### 6.9 Tara & Chandra Balam Tab (TarabalamTab)
+**File:** `frontend/src/components/panchang/TarabalamTab.tsx`
+
+- **Tarabalam table:** Nakshatra, Tara number, interpretation, Good/Bad badge
+- **Chandrabalam table:** Rashi, Ashtama house warning badge, strength indicator, Good/Bad badge
+
+### 6.10 Hindu Calendar Tab (CalendarTab + HinduCalendarTab)
+**API:** `GET /api/panchang/month`, `GET /api/festivals`  
+**Files:** `CalendarTab.tsx` (overview cards), `HinduCalendarTab.tsx` (full monthly grid)
+
+- **Overview cards:** Vikram Samvat, Shaka Samvat, Maas (month + deity), Paksha, Ritu (season), Ayana
+- **Full monthly calendar (Drik Panchang style):**
+  - 7-column weekday grid, cells 130–150px
+  - Per-cell: Tithi + Paksha, moon phase emoji, date number, sunrise/sunset, moonrise/moonset, festival name (red), vrat name (purple), nakshatra
+  - Left detail panel: all panchang elements, inauspicious/auspicious periods, special yogas, lucky indicators
+  - Click lightbox: expandable sections for Sun/Moon, Hindu Calendar, Panchang Elements, Signs, Muhurat, Festivals
+- **Festivals grid:** 3-column with date, festival name, weekday
+
+### 6.11 Gowri Panchang Tab (GowriTab)
+**File:** `frontend/src/components/panchang/GowriTab.tsx`
+
+- Day + Night tables: 8 period types (Amruta/Labha/Shubha/Kaal/Udvega/Chara/Dhanada), quality badges, time windows
+- Current Gowri banner with live status
+
+### 6.12 Advanced Tab (AdvancedTab)
+**File:** `frontend/src/components/panchang/AdvancedTab.tsx`
+
+- **Mantri Mandala:** 9 planetary cabinet roles (PM/Minister/General/Treasurer/etc.) with significance
+- **Astronomical epoch data:** Kaliyuga year, Kali Ahargana, Julian Day, Modified Julian Day, Rata Die, Ayanamsha (Lahiri °)
+- **Do-Ghati Muhurtas:** 30 daily muhurtas (3-column grid): name, time window, quality badge
+
+### 6.13 Festivals Tab (FestivalsTab)
+**File:** `frontend/src/components/panchang/FestivalsTab.tsx`
+
+- Today's festivals/vrats with icon (🔥 fast, 🪔 festival, 🪴 observance), type badge, description, rituals
+- Panchak status (Active/Inactive) + Ganda Moola status cards
+
+### 6.14 Today's Insights Component (TodaysInsights)
+**File:** `frontend/src/components/panchang/TodaysInsights.tsx`
+
+- Insight cards: Festival 🎊, Auspicious Muhurat ✨, Time to Avoid ⚠️, Special Yoga 🔥, Ganda Moola alert ⚡
+- Transitions timeline: Next Tithi/Nakshatra/Yoga end with countdown
+- CTA to kundli/prediction integration
+
+### 6.15 Backend Engines
+
+| Engine | File | Key Functions |
+|--------|------|--------------|
+| **Core Panchang** | `panchang_engine.py` | `calculate_panchang()` — tithi, nakshatra, yoga, karana, sunrise/sunset, rahu kaal, abhijit, brahma muhurat, planetary positions, choghadiya |
+| **Muhurat Rules** | `muhurat_rules.py` | `get_all_activities()` — 20+ activity definitions with favorable/unfavorable rule sets |
+| **Muhurat Finder** | `muhurat_finder.py` | `find_muhurat_dates()`, `find_travel_muhurat()` — date ranking by Chandra/Tara Balam, lagna windows |
+| **Sankranti** | `sankranti_engine.py` | `build_sankranti_payload()` — 12 sun ingress times + restriction windows + amritkaal |
+| **Festival** | `festival_engine.py` | `detect_festivals()` — tithi-based, nakshatra-based, maas-based, Gregorian fixed |
+| **Special Yogas** | `panchang_yogas.py` | Sarvartha Siddhi, Amrit Siddhi, Dwipushkar/Tripushkar, Ganda Moola, Kula Yoga |
+| **Directions** | `panchang_directions.py` | Disha Shool, Anandadi Yoga, Lucky Color/Number/Direction |
+| **Ekadashi** | `panchang_ekadashi.py` | Ekadashi Parana window + fasting end time |
+| **Nivas** | `panchang_nivas.py` | Chandra Vasa, Rahu Vasa, Shivavasa, Agnivasa, Homahuti, Kumbha Chakra |
+| **Tamil Yoga** | `panchang_tamil.py` | Tamil Yoga, Jeevanama, Netrama |
+| **Samvat** | `panchang_samvat.py` | Vikram/Shaka/Brihaspati/Gujarati Samvat, Purnimant/Amant, Pushkara Navamsha |
+| **Miscellaneous** | `panchang_misc.py` | Mantri Mandala, astronomical epochs, Panchaka Rahita, Chaturmasa, Dagdha Nakshatra |
+
+### 6.16 API Endpoints
+
+| Endpoint | Method | Key Params | Purpose |
+|----------|--------|-----------|---------|
+| `/api/panchang` | GET | `date`, `latitude`, `longitude`, `lang` | Full daily panchang calculation |
+| `/api/panchang/sankranti` | GET | `year`, `latitude`, `longitude` | Annual sun ingress calendar |
+| `/api/panchang/month` | GET | `month`, `year`, `latitude`, `longitude`, `lang` | Monthly panchang summaries for calendar grid |
+| `/api/festivals` | GET | `year`, `month`, `lang` | Festival list for calendar enrichment |
+| `/api/muhurat/activities` | GET | `lang` | Activity list for muhurat finder |
+| `/api/muhurat/finder` | GET | `activity`, `month`, `year`, `latitude`, `longitude`, `limit`, `birth_moon_rashi`, `birth_nakshatra` | Ranked auspicious dates for activity |
+| `/api/muhurat/travel` | GET | `direction`, `month`, `year`, `latitude`, `longitude`, `limit` | Travel-specific muhurat dates |
+
+### 6.17 Real-Time Features
+- Rahu Kaal live status ("Active Now" + minutes remaining)
+- Current Hora / Lagna / Choghadiya / Gowri period highlighted dynamically (per-minute tick)
+- Tithi/Nakshatra/Yoga transition countdown timers
+
+---
+
+## 7. HOROSCOPE (Sun-Sign Predictions)
+
+**File:** `frontend/src/sections/HoroscopePage.tsx` (main page, tab orchestration, sign selector, date picker, live clock)  
+**Backend routes:** `app/routes/horoscope.py` (6 endpoints)  
+**Backend engines:** `app/transit_engine.py`, `app/transit_lucky.py`, `app/transit_interpretations.py`, `app/horoscope_generator.py`
+
+### 7.1 Tabs & Time Horizons
+
+| Tab | Component | API | Extra Sections |
+|-----|-----------|-----|---------------|
+| **Daily** | `DailyTab.tsx` | `GET /api/horoscope/daily?sign&date&lang` | — |
+| **Weekly** | `WeeklyTab.tsx` | `GET /api/horoscope/weekly?sign&lang` | Week date range |
+| **Monthly** | `MonthlyTab.tsx` | `GET /api/horoscope/monthly?sign&lang` | Phase Breakdown (3 cards) + Key Dates (sign changes) |
+| **Yearly** | `YearlyTab.tsx` | `GET /api/horoscope/yearly?sign&lang` | Annual Theme banner + Quarter Breakdown (4 cards) + Best Months grid |
+| **All Signs** | `AllSignsTab.tsx` | `GET /api/horoscope/all?period&date` | 12-sign summary grid |
+| **Transit Insights** | `TransitInsightsTab.tsx` | `GET /api/horoscope/transits` | Planet positions + sign-wise dignity table |
+
+### 7.2 Per-Prediction Output (Daily/Weekly/Monthly/Yearly)
+
+| Section | Detail |
+|---------|--------|
+| **Sign Metadata Card** | Sign name (EN + HI), emoji, date range, ruling planet, element |
+| **Score Card** | 5 horizontal bars (1-10): Overall, Love, Career, Finance, Health |
+| **Mood Indicator** | Bilingual (Challenging / Balanced / Optimistic) |
+| **Lucky Metadata** | Lucky Number, Color, Time, Compatible Sign, Gemstone (metal/finger/day), Mantra |
+| **5 Prediction Sections** | General Outlook, Love, Career, Finance, Health — grid layout, bilingual text |
+| **Dos & Don'ts** | 2-column panel: green Dos list + red Don'ts list (2-5 items each) |
+
+**Monthly extras:** Phase Breakdown (1st–10th, 11th–20th, 21st–end with scores), Key Dates (planet sign-change events with date + bilingual description)  
+**Yearly extras:** Annual Theme banner, Quarter Breakdown (Q1–Q4 with theme, best_area, score), Best Months grid (Love/Career/Finance/Health × 2 months)
+
+### 7.3 All Signs Tab (AllSignsTab)
+- 12-sign clickable card grid (3 cols mobile → 12 cols desktop)
+- Per card: zodiac image, sign name (EN+HI), date range, element badge (Fire/Earth/Air/Water), 160-char general preview
+- On click: switches to Daily tab for full reading
+
+### 7.4 Transit Insights Tab (TransitInsightsTab)
+**API:** `GET /api/horoscope/transits`
+
+- **Left panel:** 9-planet current positions table (Planet → Current Sign, bilingual)
+- **Right panel:** 12-sign effects table (Sign, Ruler, Ruler In, Dignity, Strength badge: very_strong/strong/moderate/weak)
+
+### 7.5 Shared UI Components
+
+| Component | File | Purpose |
+|-----------|------|---------|
+| `ScoreBar` | `ScoreBar.tsx` | Label + filled progress bar (0-100%) + "N/10" text |
+| `LuckyMetadataCard` | `LuckyMetadataCard.tsx` | 6-item icon grid: number/color/time/compatible/gemstone/mantra |
+| `DosAndDonts` | `DosAndDonts.tsx` | Two-column green/red cards with check/X icons |
+
+### 7.6 Zodiac Sign Support (All 12)
+
+| Sign | Hindi | Dates | Ruling Planet | Element |
+|------|-------|-------|---------------|---------|
+| Aries ♈ | मेष | Mar 21–Apr 19 | Mars | Fire |
+| Taurus ♉ | वृषभ | Apr 20–May 20 | Venus | Earth |
+| Gemini ♊ | मिथुन | May 21–Jun 20 | Mercury | Air |
+| Cancer ♋ | कर्क | Jun 21–Jul 22 | Moon | Water |
+| Leo ♌ | सिंह | Jul 23–Aug 22 | Sun | Fire |
+| Virgo ♍ | कन्या | Aug 23–Sep 22 | Mercury | Earth |
+| Libra ♎ | तुला | Sep 23–Oct 22 | Venus | Air |
+| Scorpio ♏ | वृश्चिक | Oct 23–Nov 21 | Mars | Water |
+| Sagittarius ♐ | धनु | Nov 22–Dec 21 | Jupiter | Fire |
+| Capricorn ♑ | मकर | Dec 22–Jan 19 | Saturn | Earth |
+| Aquarius ♒ | कुंभ | Jan 20–Feb 18 | Saturn | Air |
+| Pisces ♓ | मीन | Feb 19–Mar 20 | Jupiter | Water |
+
+### 7.7 Backend Engines
+
+#### Transit Engine (`app/transit_engine.py` — 1394 lines)
+Primary horoscope generator using real Swiss Ephemeris data.
+
+| Function | Purpose |
+|----------|---------|
+| `get_full_transits(date)` | Planetary positions at Delhi 12:00 IST via ephemeris |
+| `calculate_transit_houses(sign, planet_data)` | Maps 9 planets to houses 1-12 from native sign |
+| `get_planet_dignity(planet, info)` | Classifies: exalted / debilitated / own_sign / retrograde / combust / neutral |
+| `assemble_section(sign, area, houses, data, period, lang)` | Combines fragments from TRANSIT_FRAGMENTS matrix into bilingual text |
+| `compute_scores(sign, houses, data)` | Generates 1-10 scores for overall + 4 areas (weighted house + dignity + planet nature) |
+| `generate_transit_horoscope(sign, period, date)` | **Master function** — orchestrates full horoscope dict |
+| `generate_monthly_extras(sign, date)` | 3-phase breakdown + key planet sign-change dates |
+| `generate_yearly_extras(sign, year)` | Quarters + best months + annual theme via quarterly sampling |
+
+**Key constants:** `EXALTED_SIGNS`, `DEBILITATED_SIGNS`, `OWN_SIGNS`, `PERIOD_WEIGHTS` (Moon 5× for daily), `FRAGMENT_COUNTS` (Daily=3, Weekly=3, Monthly=4, Yearly=5)
+
+**Scoring algorithm:**
+1. Per planet: `house_score` (benefic 1/5/9/10/11 = +2/+3/+3/+2/+3; malefic 6/8/12 = -1/-2/-2) + `planet_nature` (Jupiter=+1.5 … Saturn=-1.0, Rahu/Ketu=-0.7) + `dignity_bonus` (exalted=+2, own=+1, debil=-2, combust=-1)
+2. Sum across 9 planets → normalize to 1-10 scale
+
+#### Lucky Metadata Module (`app/transit_lucky.py`)
+
+| Derivation | Source |
+|-----------|--------|
+| Lucky Number | Moon nakshatra index mod 9 |
+| Lucky Color | Sign element + moon pada (4-color palette per element) |
+| Lucky Time | 12-slot cycle keyed to sign index |
+| Compatible Sign | Trine (same element) or strongest dignified planet's sign |
+| Gemstone | Ruling planet lookup (Ruby/Pearl/Red Coral/Emerald/Yellow Sapphire/Diamond/Blue Sapphire/Hessonite/Cat's Eye) |
+| Mantra | Sanskrit planetary mantra per ruling planet |
+| Mood | Overall score: 1-3=Challenging, 4-6=Balanced, 7-10=Optimistic |
+| Dos | Benefic houses (1,5,9,10,11) + strong planet guidance |
+| Don'ts | Malefic houses (6,8,12) + weak planet cautions |
+
+#### Interpretation Matrix (`app/transit_interpretations.py` — >500KB)
+`TRANSIT_FRAGMENTS[planet][house][area][language]` + `DIGNITY_MODIFIERS[dignity]` — fragment library consumed by `assemble_section()`.
+
+#### Horoscope Generator / Fallback (`app/horoscope_generator.py`)
+- `generate_ai_horoscope()`: tries transit_engine → falls back to DB → falls back to template pools
+- `generate_daily_horoscopes()`: batch cron for all 12 signs
+- `seed_weekly_horoscopes()`: seeded at application startup
+- Template pools: `_CAREER`, `_LOVE`, `_HEALTH`, `_SPIRITUAL`, `_CHALLENGES` (6 templates each)
+
+### 7.8 API Endpoints
+
+| Endpoint | Method | Key Params | Returns |
+|----------|--------|-----------|---------|
+| `/api/horoscope/daily` | GET | `sign*`, `date`, `lang` | sections, scores, mood, lucky, dos/donts |
+| `/api/horoscope/weekly` | GET | `sign*`, `lang` | + week_start, week_end |
+| `/api/horoscope/monthly` | GET | `sign*`, `lang` | + phases[], key_dates[] |
+| `/api/horoscope/yearly` | GET | `sign*`, `lang` | + quarters[], best_months{}, annual_theme{} |
+| `/api/horoscope/all` | GET | `period*`, `date` | 12-sign summary list |
+| `/api/horoscope/transits` | GET | — | transits[] (9 planets) + sign_effects[] (12 signs) |
+
+### 7.9 Data Flow
+```
+HoroscopePage → /api/horoscope/{period}?sign=...
+  → transit_engine.generate_transit_horoscope()
+      → get_full_transits() [Swiss Ephemeris @ Delhi]
+      → calculate_transit_houses()
+      → assemble_section() × 5 [TRANSIT_FRAGMENTS]
+      → compute_scores()
+      → get_all_lucky_metadata() [transit_lucky.py]
+  → fallback: horoscopes DB table
+  → fallback: horoscope_generator.generate_ai_horoscope() [templates]
+```
+
+### 7.10 Bilingual Support
+- All section text stored as `{"en": "...", "hi": "..."}` — assembled by transit engine
+- All metadata fields (color, time, compatible sign, gemstone, mood) have EN + HI variants
+- Frontend: `useTranslation()` hook + `txt()` helper for language switching per tab
+- Backend: `lang` query param (defaults to `"en"`)
+
+---
+
 *Blueprint generated from codebase implementation — April 19, 2026.*  
 *Every feature listed exists in production code at `project_28_astro_app/`.*
