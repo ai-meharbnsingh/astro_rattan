@@ -61,6 +61,12 @@ interface Props {
 export default function VehicleNumerology({ birthDate }: Props) {
   const { t, language } = useTranslation();
   const isHi = language === 'hi';
+  const pick = (obj: any, key: string): string => {
+    if (!obj) return '';
+    const hi = obj[`${key}_hi`];
+    const en = obj[key];
+    return (isHi ? (hi ?? en) : (en ?? hi)) ?? '';
+  };
   const [vehicleNumber, setVehicleNumber] = useState('');
   const [ownerName, setOwnerName] = useState('');
   const [dob, setDob] = useState(birthDate || '');
@@ -209,7 +215,7 @@ export default function VehicleNumerology({ birthDate }: Props) {
               <CardContent className="p-4 text-center">
                 <p className="text-xs text-muted-foreground mb-1">{t('numerology.vehicleVibration')}</p>
                 <Badge className="text-2xl px-4 py-2 bg-sacred-gold text-background">{result.vibration.number}</Badge>
-                <p className="text-xs text-muted-foreground mt-2">{isHi ? result.prediction.energy_hi || result.prediction.energy : result.prediction.energy}</p>
+                <p className="text-xs text-muted-foreground mt-2">{pick(result.prediction, 'energy')}</p>
               </CardContent>
             </Card>
             <Card className="bg-card border-0 shadow-soft">
@@ -237,12 +243,12 @@ export default function VehicleNumerology({ birthDate }: Props) {
                   {t('numerology.vehicleEnergy')}
                 </Heading>
                 <Badge className="ml-auto bg-sacred-gold/20 text-sacred-gold border-sacred-gold">
-                  {isHi ? result.prediction.energy_hi || result.prediction.energy : result.prediction.energy}
+                  {pick(result.prediction, 'energy')}
                 </Badge>
               </div>
 
               <p className="text-sm text-muted-foreground leading-relaxed">
-                {isHi ? result.prediction.prediction_hi || result.prediction.prediction : result.prediction.prediction}
+                {pick(result.prediction, 'prediction')}
               </p>
 
               <div className="grid md:grid-cols-2 gap-4 pt-3 border-t border-sacred-gold/20">
@@ -250,21 +256,21 @@ export default function VehicleNumerology({ birthDate }: Props) {
                   <Navigation className="w-5 h-5 text-sacred-gold shrink-0 mt-0.5" />
                   <div>
                     <p className="text-sm font-medium text-foreground">{t('numerology.drivingStyle')}</p>
-                    <p className="text-sm text-muted-foreground">{isHi ? result.prediction.driving_style_hi || result.prediction.driving_style : result.prediction.driving_style}</p>
+                    <p className="text-sm text-muted-foreground">{pick(result.prediction, 'driving_style')}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <Shield className="w-5 h-5 text-sacred-gold shrink-0 mt-0.5" />
                   <div>
                     <p className="text-sm font-medium text-foreground">{t('numerology.caution')}</p>
-                    <p className="text-sm text-muted-foreground">{isHi ? result.prediction.caution_hi || result.prediction.caution : result.prediction.caution}</p>
+                    <p className="text-sm text-muted-foreground">{pick(result.prediction, 'caution')}</p>
                   </div>
                 </div>
               </div>
 
               <div className="pt-3 border-t border-sacred-gold/20">
                 <p className="text-sm font-medium text-foreground mb-1">{t('numerology.bestSuitedFor')}</p>
-                <p className="text-sm text-muted-foreground">{isHi ? result.prediction.best_for_hi || result.prediction.best_for : result.prediction.best_for}</p>
+                <p className="text-sm text-muted-foreground">{pick(result.prediction, 'best_for')}</p>
               </div>
             </CardContent>
           </Card>
@@ -293,7 +299,7 @@ export default function VehicleNumerology({ birthDate }: Props) {
                   <p className="text-sm font-medium text-foreground">{t('numerology.luckyDirections')}</p>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {(isHi ? result.prediction.lucky_directions_hi || result.prediction.lucky_directions : result.prediction.lucky_directions).map((dir, i) => (
+                  {(isHi ? (result.prediction.lucky_directions_hi ?? result.prediction.lucky_directions) : result.prediction.lucky_directions).map((dir, i) => (
                     <Badge key={i} variant="outline" className="border-sacred-gold text-sacred-gold">
                       {dir}
                     </Badge>

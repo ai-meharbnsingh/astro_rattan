@@ -65,6 +65,12 @@ interface Props {
 export default function HouseNumerology({ birthDate }: Props) {
   const { t, language } = useTranslation();
   const isHi = language === 'hi';
+  const pick = (obj: any, key: string): string => {
+    if (!obj) return '';
+    const hi = obj[`${key}_hi`];
+    const en = obj[key];
+    return (isHi ? (hi ?? en) : (en ?? hi)) ?? '';
+  };
   const [address, setAddress] = useState('');
   const [dob, setDob] = useState(birthDate || '');
   const [loading, setLoading] = useState(false);
@@ -173,7 +179,7 @@ export default function HouseNumerology({ birthDate }: Props) {
           {/* Energy Badge */}
           <div className="flex justify-center">
             <Badge className="text-lg px-6 py-2 bg-sacred-gold/20 text-sacred-gold border-sacred-gold">
-              {isHi ? result.prediction.energy_hi || result.prediction.energy : result.prediction.energy}
+              {pick(result.prediction, 'energy')}
             </Badge>
           </div>
 
@@ -188,12 +194,12 @@ export default function HouseNumerology({ birthDate }: Props) {
               </div>
 
               <p className="text-sm text-muted-foreground leading-relaxed">
-                {isHi ? result.prediction.prediction_hi || result.prediction.prediction : result.prediction.prediction}
+                {pick(result.prediction, 'prediction')}
               </p>
 
               <div className="pt-3 border-t border-sacred-gold/20">
                 <p className="text-sm font-medium text-foreground mb-1">{t('numerology.bestSuitedFor')}</p>
-                <p className="text-sm text-muted-foreground">{isHi ? result.prediction.best_for_hi || result.prediction.best_for : result.prediction.best_for}</p>
+                <p className="text-sm text-muted-foreground">{pick(result.prediction, 'best_for')}</p>
               </div>
             </CardContent>
           </Card>
@@ -206,7 +212,7 @@ export default function HouseNumerology({ birthDate }: Props) {
                   <Users className="w-4 h-4 text-sacred-gold" />
                   <p className="text-sm font-medium text-foreground">{t('numerology.familyLife')}</p>
                 </div>
-                <p className="text-sm text-muted-foreground">{isHi ? result.prediction.family_life_hi || result.prediction.family_life : result.prediction.family_life}</p>
+                <p className="text-sm text-muted-foreground">{pick(result.prediction, 'family_life')}</p>
               </CardContent>
             </Card>
             <Card className="bg-card border-0 shadow-soft">
@@ -215,7 +221,7 @@ export default function HouseNumerology({ birthDate }: Props) {
                   <Briefcase className="w-4 h-4 text-sacred-gold" />
                   <p className="text-sm font-medium text-foreground">{t('numerology.careerImpact')}</p>
                 </div>
-                <p className="text-sm text-muted-foreground">{isHi ? result.prediction.career_impact_hi || result.prediction.career_impact : result.prediction.career_impact}</p>
+                <p className="text-sm text-muted-foreground">{pick(result.prediction, 'career_impact')}</p>
               </CardContent>
             </Card>
             <Card className="bg-card border-0 shadow-soft">
@@ -224,7 +230,7 @@ export default function HouseNumerology({ birthDate }: Props) {
                   <Heart className="w-4 h-4 text-sacred-gold" />
                   <p className="text-sm font-medium text-foreground">{t('numerology.relationships')}</p>
                 </div>
-                <p className="text-sm text-muted-foreground">{isHi ? result.prediction.relationships_hi || result.prediction.relationships : result.prediction.relationships}</p>
+                <p className="text-sm text-muted-foreground">{pick(result.prediction, 'relationships')}</p>
               </CardContent>
             </Card>
             <Card className="bg-card border-0 shadow-soft">
@@ -233,7 +239,7 @@ export default function HouseNumerology({ birthDate }: Props) {
                   <HeartPulse className="w-4 h-4 text-sacred-gold" />
                   <p className="text-sm font-medium text-foreground">{t('numerology.health')}</p>
                 </div>
-                <p className="text-sm text-muted-foreground">{isHi ? result.prediction.health_hi || result.prediction.health : result.prediction.health}</p>
+                <p className="text-sm text-muted-foreground">{pick(result.prediction, 'health')}</p>
               </CardContent>
             </Card>
           </div>
@@ -245,7 +251,7 @@ export default function HouseNumerology({ birthDate }: Props) {
                 <Compass className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-amber-800 mb-1">{t('numerology.vastuTip')}</p>
-                  <p className="text-sm text-amber-700">{isHi ? result.prediction.vastu_tip_hi || result.prediction.vastu_tip : result.prediction.vastu_tip}</p>
+                  <p className="text-sm text-amber-700">{pick(result.prediction, 'vastu_tip')}</p>
                 </div>
               </div>
             </CardContent>
@@ -256,7 +262,7 @@ export default function HouseNumerology({ birthDate }: Props) {
             <CardContent className="p-4">
               <p className="text-sm font-medium text-foreground mb-3">{t('numerology.luckyColors')}</p>
               <div className="flex flex-wrap gap-2">
-                {(isHi ? result.prediction.lucky_colors_hi || result.prediction.lucky_colors : result.prediction.lucky_colors).map((color, i) => (
+                {(isHi ? (result.prediction.lucky_colors_hi ?? result.prediction.lucky_colors) : result.prediction.lucky_colors).map((color, i) => (
                   <Badge key={i} className="bg-sacred-gold/20 text-sacred-gold-dark border-sacred-gold px-3 py-1">
                     {color}
                   </Badge>
@@ -327,7 +333,7 @@ export default function HouseNumerology({ birthDate }: Props) {
               <CardContent className="p-4">
                 <p className="text-sm font-medium text-foreground mb-3">{t('numerology.remedies')}</p>
                 <ul className="space-y-2">
-                  {result.remedies.map((remedy, i) => (
+                  {(isHi ? (result.prediction.remedies_hi ?? result.remedies) : result.remedies).map((remedy, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                       <Sparkles className="w-4 h-4 text-sacred-gold shrink-0 mt-0.5" />
                       {remedy}
