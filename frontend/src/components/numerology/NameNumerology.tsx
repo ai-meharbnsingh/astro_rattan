@@ -37,15 +37,15 @@ interface NameNumerologyResult {
   };
   predictions: {
     primary: {
-      title: string;
-      ruling_planet: string;
-      traits: string[];
-      career: string;
-      relationships: string;
-      health: string;
-      lucky_colors: string[];
-      lucky_days: string[];
-      advice: string;
+      title: string; title_hi?: string;
+      ruling_planet: string; ruling_planet_hi?: string;
+      traits: string[]; traits_hi?: string[];
+      career: string; career_hi?: string;
+      relationships: string; relationships_hi?: string;
+      health: string; health_hi?: string;
+      lucky_colors: string[]; lucky_colors_hi?: string[];
+      lucky_days: string[]; lucky_days_hi?: string[];
+      advice: string; advice_hi?: string;
     };
     soul_urge: string;
     personality: string;
@@ -69,7 +69,8 @@ interface Props {
 }
 
 export default function NameNumerology({ birthDate }: Props) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const isHi = language === 'hi';
   const [fullName, setFullName] = useState('');
   const [nameType, setNameType] = useState('full_name');
   const [dob, setDob] = useState(birthDate || '');
@@ -239,10 +240,10 @@ export default function NameNumerology({ birthDate }: Props) {
               <div className="flex items-center gap-2 pb-3 border-b border-sacred-gold/20">
                 <Sparkles className="w-5 h-5 text-sacred-gold" />
                 <Heading as={4} variant={4}>
-                  {result.predictions.primary.title} {t('numerology.energy')}
+                  {isHi ? (result.predictions.primary.title_hi || result.predictions.primary.title) : result.predictions.primary.title} {t('numerology.energy')}
                 </Heading>
                 <Badge className="ml-auto bg-sacred-gold/20 text-sacred-gold border-sacred-gold">
-                  {t('numerology.rulingPlanet')}: {result.predictions.primary.ruling_planet}
+                  {t('numerology.rulingPlanet')}: {isHi ? (result.predictions.primary.ruling_planet_hi || result.predictions.primary.ruling_planet) : result.predictions.primary.ruling_planet}
                 </Badge>
               </div>
 
@@ -250,7 +251,7 @@ export default function NameNumerology({ birthDate }: Props) {
                 <div>
                   <p className="text-sm font-medium text-foreground mb-2">{t('numerology.keyTraits')}</p>
                   <div className="flex flex-wrap gap-2">
-                    {result.predictions.primary.traits.map((trait, i) => (
+                    {(isHi ? (result.predictions.primary.traits_hi || result.predictions.primary.traits) : result.predictions.primary.traits).map((trait, i) => (
                       <Badge key={i} variant="outline" className="border-sacred-gold/30 text-muted-foreground">
                         {trait}
                       </Badge>
@@ -261,10 +262,10 @@ export default function NameNumerology({ birthDate }: Props) {
                   <p className="text-sm font-medium text-foreground mb-2">{t('numerology.luckyElements')}</p>
                   <div className="space-y-1 text-sm">
                     <p className="text-muted-foreground">
-                      <span className="text-sacred-gold">{t('numerology.luckyColors')}:</span> {result.predictions.primary.lucky_colors.join(', ')}
+                      <span className="text-sacred-gold">{t('numerology.luckyColors')}:</span> {(isHi ? (result.predictions.primary.lucky_colors_hi || result.predictions.primary.lucky_colors) : result.predictions.primary.lucky_colors).join(', ')}
                     </p>
                     <p className="text-muted-foreground">
-                      <span className="text-sacred-gold">{t('numerology.luckyDays')}:</span> {result.predictions.primary.lucky_days.join(', ')}
+                      <span className="text-sacred-gold">{t('numerology.luckyDays')}:</span> {(isHi ? (result.predictions.primary.lucky_days_hi || result.predictions.primary.lucky_days) : result.predictions.primary.lucky_days).join(', ')}
                     </p>
                   </div>
                 </div>
@@ -273,21 +274,21 @@ export default function NameNumerology({ birthDate }: Props) {
               <div className="space-y-3 pt-3 border-t border-sacred-gold/20">
                 <div>
                   <p className="text-sm font-medium text-foreground mb-1">{t('numerology.careerGuidance')}</p>
-                  <p className="text-sm text-muted-foreground">{result.predictions.primary.career}</p>
+                  <p className="text-sm text-muted-foreground">{isHi ? (result.predictions.primary.career_hi || result.predictions.primary.career) : result.predictions.primary.career}</p>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-foreground mb-1">{t('numerology.relationshipInsights')}</p>
-                  <p className="text-sm text-muted-foreground">{result.predictions.primary.relationships}</p>
+                  <p className="text-sm text-muted-foreground">{isHi ? (result.predictions.primary.relationships_hi || result.predictions.primary.relationships) : result.predictions.primary.relationships}</p>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-foreground mb-1">{t('numerology.healthNotes')}</p>
-                  <p className="text-sm text-muted-foreground">{result.predictions.primary.health}</p>
+                  <p className="text-sm text-muted-foreground">{isHi ? (result.predictions.primary.health_hi || result.predictions.primary.health) : result.predictions.primary.health}</p>
                 </div>
               </div>
 
               <div className="bg-sacred-gold/10 rounded-lg p-4 border border-sacred-gold/20">
                 <p className="text-sm font-medium text-sacred-gold-dark mb-1">{t('numerology.spiritualAdvice')}</p>
-                <p className="text-sm text-muted-foreground italic">{result.predictions.primary.advice}</p>
+                <p className="text-sm text-muted-foreground italic">{isHi ? (result.predictions.primary.advice_hi || result.predictions.primary.advice) : result.predictions.primary.advice}</p>
               </div>
             </CardContent>
           </Card>
