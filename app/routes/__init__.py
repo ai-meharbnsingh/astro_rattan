@@ -17,6 +17,7 @@ from app.routes.yoga_search import router as yoga_search_router
 from app.routes.astro_map import router as astro_map_router
 from app.routes.dasha import router as dasha_router
 from app.routes.interpretations import router as interpretations_router
+from app.routes.lalkitab_farmaan import router as lalkitab_farmaan_router
 
 all_routers = [
     auth_router,
@@ -37,4 +38,5 @@ all_routers = [
     astro_map_router,
     dasha_router,
     interpretations_router,
+    lalkitab_farmaan_router,
 ]

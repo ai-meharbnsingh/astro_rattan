@@ -24,6 +24,8 @@ import LalKitabRemediesTab from '@/components/lalkitab/LalKitabRemediesTab';
 import LalKitabHousesTab from '@/components/lalkitab/LalKitabHousesTab';
 import LalKitabYearlyTab from '@/components/lalkitab/LalKitabYearlyTab';
 import LalKitabVarshphalTab from '@/components/lalkitab/LalKitabVarshphalTab';
+import LalKitabDualViewTab from '@/components/lalkitab/LalKitabDualViewTab';
+import LalKitabFullReport from '@/components/lalkitab/LalKitabFullReport';
 import LalKitabRelationsTab from '@/components/lalkitab/LalKitabRelationsTab';
 import LalKitabRulesTab from '@/components/lalkitab/LalKitabRulesTab';
 import LalKitabNishaniyaTab from '@/components/lalkitab/LalKitabNishaniyaTab';
@@ -48,6 +50,8 @@ import LalKitabFamilyTab from '@/components/lalkitab/LalKitabFamilyTab';
 import LalKitabVastuTab from '@/components/lalkitab/LalKitabVastuTab';
 import LalKitabRemedyTrackerTab from '@/components/lalkitab/LalKitabRemedyTrackerTab';
 import LalKitabChandraKundaliTab from '@/components/lalkitab/LalKitabChandraKundaliTab';
+// P2.1 / P2.7 / P2.8 — Farmaan corpus + rights provenance
+import LalKitabFarmaanTab from '@/components/lalkitab/LalKitabFarmaanTab';
 
 type View = 'form' | 'generating' | 'result';
 
@@ -80,6 +84,8 @@ function LalKitabPageInner() {
   const [timezoneAutoDetected, setTimezoneAutoDetected] = useState(false);
   const [edition, setEdition] = useState<'1939' | '1941' | '1942' | '1952'>('1952');
   const EDITIONS = ['1939', '1941', '1942', '1952'] as const;
+  // P2.6 — Full Report modal state.
+  const [showFullReport, setShowFullReport] = useState(false);
 
   // Sync local state to LalKitabContext so child tabs can access via useLalKitab()
   useEffect(() => { ctx.setChartData(chartData); }, [chartData]);
@@ -114,6 +120,7 @@ function LalKitabPageInner() {
     { value: 'advanced', label: t('lk.tab.advanced'), icon: Settings2 },
     { value: 'vastu', label: isHi ? 'मकान' : 'Vastu', icon: Home },
     { value: 'tracker', label: isHi ? 'ट्रैकर' : 'Tracker', icon: CalendarCheck },
+    { value: 'farmaan', label: isHi ? 'फ़रमान' : 'Farmaan', icon: BookOpen },
   ];
 
   // Auto-load existing kundli if navigated with loadKundliId
@@ -208,6 +215,18 @@ function LalKitabPageInner() {
             <p className="text-foreground max-w-lg mx-auto">
               {t('lk.subtitle')}
             </p>
+            {/* P2.6 — Full Report button (opens printable 10-15 page report modal). */}
+            {kundliId && (
+              <div className="mt-4 flex justify-center">
+                <button
+                  onClick={() => setShowFullReport(true)}
+                  className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-sacred-gold text-white font-semibold text-sm shadow-sm hover:bg-sacred-gold-dark transition-colors"
+                >
+                  <span aria-hidden="true">📄</span>
+                  {isHi ? 'पूर्ण रिपोर्ट' : 'Full Report'}
+                </button>
+              </div>
+            )}
             {/* Edition Selector */}
             <div className="flex items-center justify-center gap-1.5 mt-4 flex-wrap">
               <span className="text-xs text-muted-foreground mr-1">{isHi ? 'संस्करण:' : 'Edition:'}</span>
@@ -342,6 +361,10 @@ function LalKitabPageInner() {
                 <LalKitabDashaTab kundliId={kundliId} language={language} />
                 <LalKitabMilestonesTab kundliId={kundliId} language={language} />
                 <LalKitabYearlyTab chartData={chartData} birthDate={birthDate} />
+                {/* P2.5 — Comparative Dual-View (Tewa + Varshphal synchronised).
+                    Placed between Tewa-driven Yearly and the Varshphal tab so
+                    astrologers can compare natal vs current-year at a glance. */}
+                <LalKitabDualViewTab apiResult={apiResult} />
                 <LalKitabVarshphalTab />
                 <LalKitabGocharTab chartData={chartData} apiResult={apiResult} />
               </TabsContent>
@@ -422,11 +445,23 @@ function LalKitabPageInner() {
               <TabsContent value="tracker" className="space-y-4">
                 <LalKitabRemedyTrackerTab kundliId={kundliId} language={language} />
               </TabsContent>
+              <TabsContent value="farmaan" className="space-y-4">
+                <LalKitabFarmaanTab />
+              </TabsContent>
             </Tabs>
             {clientId && <NotesWidget clientId={clientId} chartType="lalkitab" kundliId={kundliId} />}
           </div>
         )}
       </div>
+
+      {/* P2.6 — Full Report modal (portal-style overlay).
+          Mounted at page root so it sits above tabs + navigation. */}
+      {showFullReport && kundliId && (
+        <LalKitabFullReport
+          kundliId={kundliId}
+          onClose={() => setShowFullReport(false)}
+        />
+      )}
     </div>
   );
 }
