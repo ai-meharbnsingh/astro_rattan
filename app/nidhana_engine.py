@@ -659,6 +659,135 @@ def _life_chapters(overall: str) -> Dict[str, List[str]]:
     return {"life_chapters_en": en, "life_chapters_hi": hi}
 
 
+def _region_after_death(chart_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Phaladeepika Adhyaya 14 — region/loka after death.
+
+    Classical indicators:
+      * 8th lord exalted in Kendra/Trikona + benefic aspect → Higher realms (Deva-loka)
+      * 8th lord debilitated or in dusthana + malefic aspect → Lower planes
+      * Saturn strong in 8th with Jupiter aspect → Spiritual liberation path
+      * Saturn afflicted in 8th → Earth-bound / karmic retry
+    """
+    eighth_lord = _lord_of(8, chart_data)
+    eighth_lord_sign = _planet_sign(eighth_lord, chart_data) if eighth_lord else ""
+    eighth_lord_house = _planet_house(eighth_lord, chart_data) if eighth_lord else 0
+
+    saturn_house = _planet_house("Saturn", chart_data)
+    saturn_sign = _planet_sign("Saturn", chart_data)
+    saturn_strength = _planet_strength("Saturn", chart_data)
+
+    jupiter_house = _planet_house("Jupiter", chart_data)
+
+    # Benefic aspect proxy: Jupiter in Kendra/Trikona or same house as 8th lord
+    jupiter_benefic = jupiter_house in (KENDRAS | TRIKONAS) or jupiter_house == eighth_lord_house
+
+    # Malefic aspect proxy: Saturn, Mars, Rahu, or Ketu with 8th lord or in 8th
+    malefics = ["Saturn", "Mars", "Rahu", "Ketu"]
+    malefic_with_8th_lord = any(_planet_house(p, chart_data) == eighth_lord_house for p in malefics)
+    malefic_in_8th = any(_planet_house(p, chart_data) == 8 for p in malefics)
+    malefic_aspect = malefic_with_8th_lord or malefic_in_8th
+
+    saturn_in_8th = saturn_house == 8
+    saturn_strong_8th_jupiter = saturn_in_8th and saturn_strength == "strong" and jupiter_benefic
+    saturn_afflicted_8th = saturn_in_8th and saturn_strength == "weak"
+    eighth_lord_exalted_kendra_trikona = (
+        bool(eighth_lord) and _is_exalted(eighth_lord, eighth_lord_sign)
+        and eighth_lord_house in (KENDRAS | TRIKONAS)
+    )
+    eighth_lord_debilitated_dusthana = (
+        bool(eighth_lord) and (
+            _is_debilitated(eighth_lord, eighth_lord_sign) or eighth_lord_house in DUSTHANAS
+        )
+    )
+
+    indicators: List[str] = []
+    if eighth_lord:
+        indicators.append(f"8th lord {eighth_lord} in house {eighth_lord_house} ({eighth_lord_sign})")
+    if saturn_house > 0:
+        indicators.append(f"Saturn in house {saturn_house} ({saturn_sign}) — {saturn_strength}")
+
+    if saturn_strong_8th_jupiter:
+        region_en = "Spiritual liberation path (Moksha-marga)"
+        region_hi = "आध्यात्मिक मोक्ष-मार्ग"
+        indicators.append("Saturn strong in 8th with Jupiter's benefic influence")
+        narrative_en = (
+            "Saturn — the karaka of karma and endurance — is strong in the 8th house and receives Jupiter's grace. "
+            "Phaladeepika Adh. 14: this configuration points toward the path of spiritual liberation (Moksha). "
+            "The soul is indicated to traverse beyond cyclic rebirth toward higher awareness."
+        )
+        narrative_hi = (
+            "कर्म एवं धैर्य के कारक शनि अष्टम भाव में बलवान हैं तथा बृहस्पति के अनुग्रह को प्राप्त हैं। "
+            "फलदीपिका अ. 14: यह संयोग आध्यात्मिक मोक्ष-मार्ग की ओर इशारा करता है। "
+            "आत्मा चक्रीय पुनर्जन्म से परे उच्च जागरण की ओर प्रस्थान करती है।"
+        )
+    elif eighth_lord_exalted_kendra_trikona and jupiter_benefic:
+        region_en = "Higher spiritual realms (Deva-loka)"
+        region_hi = "उच्च आध्यात्मिक लोक (देव-लोक)"
+        indicators.append("8th lord exalted in Kendra/Trikona with benefic aspect")
+        narrative_en = (
+            "The 8th lord is exalted in an angular or trinal house and receives benefic influence. "
+            "Phaladeepika Adh. 14: the soul is drawn toward higher spiritual realms (Deva-loka), "
+            "where divine wisdom and merit are refined."
+        )
+        narrative_hi = (
+            "अष्टमेश केंद्र/त्रिकोण में उच्च है एवं शुभ दृष्टि प्राप्त है। "
+            "फलदीपिका अ. 14: आत्मा उच्च आध्यात्मिक लोकों (देव-लोक) की ओर अग्रसर होती है, "
+            "जहाँ दिव्य ज्ञान एवं पुण्य का परिष्कार होता है।"
+        )
+    elif saturn_afflicted_8th:
+        region_en = "Earth-bound intermediate state (Pitr-yoni / karmic retry)"
+        region_hi = "भू-बद्ध मध्यवर्ती अवस्था (पितृ-योनि / कर्म-पुनर्प्रयास)"
+        indicators.append("Saturn afflicted in 8th house")
+        narrative_en = (
+            "Saturn is afflicted in the 8th house — the house of transformations. "
+            "Phaladeepika Adh. 14: this indicates an earth-bound or intermediate karmic state, "
+            "where unfinished lessons call the soul back for further refinement."
+        )
+        narrative_hi = (
+            "शनि अष्टम भाव में पीड़ित हैं — रूपांतरण का भाव। "
+            "फलदीपिका अ. 14: यह भू-बद्ध या मध्यवर्ती कर्म-अवस्था को दर्शाता है, "
+            "जहाँ अधूरी शिक्षाएँ आत्मा को पुनः परिष्कार के लिए बुलाती हैं।"
+        )
+    elif eighth_lord_debilitated_dusthana and malefic_aspect:
+        region_en = "Lower karmic planes"
+        region_hi = "निम्न कर्म-तल"
+        indicators.append("8th lord debilitated or in dusthana with malefic influence")
+        narrative_en = (
+            "The 8th lord is debilitated or placed in a dusthana and receives malefic influence. "
+            "Phaladeepika Adh. 14: this configuration indicates lower karmic planes, "
+            "where the soul must work through denser patterns before ascending."
+        )
+        narrative_hi = (
+            "अष्टमेश नीच अथवा दुःस्थान में है एवं पाप दृष्टि प्राप्त है। "
+            "फलदीपिका अ. 14: यह संयोग निम्न कर्म-तलों की ओर संकेत करता है, "
+            "जहाँ आत्मा को ऊर्ध्वगमन से पूर्व घनीय पैटर्नों से गुजरना पड़ता है।"
+        )
+    else:
+        region_en = "Earth-bound intermediate state (Pitr-yoni / karmic retry)"
+        region_hi = "भू-बद्ध मध्यवर्ती अवस्था (पितृ-योनि / कर्म-पुनर्प्रयास)"
+        indicators.append("Mixed indicators — neutral karmic trajectory")
+        narrative_en = (
+            "The 8th house and Saturn indicators show a balanced or mixed pattern. "
+            "Phaladeepika Adh. 14: the soul is likely to enter an intermediate realm "
+            "for further karmic processing before its next journey."
+        )
+        narrative_hi = (
+            "अष्टम भाव एवं शनि के संकेत संतुलित या मिश्रित पैटर्न दर्शाते हैं। "
+            "फलदीपिका अ. 14: आत्मा की अगली यात्रा से पूर्व मध्यवर्ती क्षेत्र में "
+            "कर्म-प्रक्रिया की सम्भावना प्रबल है।"
+        )
+
+    return {
+        "region_en": region_en,
+        "region_hi": region_hi,
+        "indicators": indicators,
+        "sloka_ref": "Phaladeepika Adh. 14",
+        "narrative_en": narrative_en,
+        "narrative_hi": narrative_hi,
+    }
+
+
 # ───────────────────────────────────────────────────────────────
 # Dasha–Gochara multi-signal timing
 # ───────────────────────────────────────────────────────────────
@@ -1672,12 +1801,13 @@ def analyze_longevity_indicators(
     dasha_timing = _dasha_gochara_timing(chart_data, mahadasha_lord, antardasha_lord)
     demise_month_lagna = _demise_month_lagna_indicators(chart_data)
 
-    # New Features (Adhyaya 13 + 17)
+    # New Features (Adhyaya 13 + 14 + 17)
     saturn_transit_death = _saturn_transit_death_indicator(chart_data)
     moon_death_transit = _moon_death_transit(chart_data)
     demise_timing_classical = _demise_timing_classical(chart_data)
     dasha_gochara_score = _dasha_gochara_lagna_score(chart_data, mahadasha_lord, antardasha_lord)
     lucky_time = _calculate_lucky_periods(chart_data, mahadasha_lord)
+    region_after_death = _region_after_death(chart_data)
 
     return {
         "overall_longevity_strength": overall,
@@ -1697,5 +1827,6 @@ def analyze_longevity_indicators(
         "demise_timing_classical": demise_timing_classical,
         "dasha_gochara_lagna_score": dasha_gochara_score,
         "lucky_time_estimate": lucky_time,
+        "region_after_death": region_after_death,
         "sloka_ref": "Phaladeepika Adh. 17",
     }

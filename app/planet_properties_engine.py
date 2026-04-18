@@ -141,6 +141,34 @@ _PLANET_MATERIALS: Dict[str, Dict[str, str]] = {
     },
 }
 
+# ── Sign Triads — Classical Nature Classification (Phaladeepika Adh. 1) ─
+# Deva (divine, Jupiter/Moon/Sun lords) = Sagittarius, Pisces, Cancer, Leo
+# Manava (human, Mercury/Venus lords) = Gemini, Virgo, Taurus, Libra
+# Rakshasa (demonic, Mars/Saturn lords) = Aries, Scorpio, Capricorn, Aquarius
+# Aries has dual classification (Mars = Rakshasa, but inherently dynamic)
+_SIGN_TRIAD: Dict[str, Dict[str, str]] = {
+    "Aries":       {"triad": "Rakshasa", "triad_hi": "राक्षस",  "triad_nature_en": "Demonic/Fierce — Mars-ruled, dynamic and assertive",           "triad_nature_hi": "राक्षस — मंगल-शासित, गतिशील एवं प्रखर"},
+    "Taurus":      {"triad": "Manava",   "triad_hi": "मानव",    "triad_nature_en": "Human/Balanced — Venus-ruled, comfort-seeking and practical",   "triad_nature_hi": "मानव — शुक्र-शासित, आराम-प्रिय एवं व्यावहारिक"},
+    "Gemini":      {"triad": "Manava",   "triad_hi": "मानव",    "triad_nature_en": "Human/Balanced — Mercury-ruled, intellectual and communicative", "triad_nature_hi": "मानव — बुध-शासित, बौद्धिक एवं संवादशील"},
+    "Cancer":      {"triad": "Deva",     "triad_hi": "देव",     "triad_nature_en": "Divine/Nurturing — Moon-ruled, intuitive and protective",       "triad_nature_hi": "देव — चन्द्र-शासित, सहज-ज्ञानी एवं रक्षक"},
+    "Leo":         {"triad": "Deva",     "triad_hi": "देव",     "triad_nature_en": "Divine/Authoritative — Sun-ruled, noble and commanding",        "triad_nature_hi": "देव — सूर्य-शासित, कुलीन एवं प्रभावशाली"},
+    "Virgo":       {"triad": "Manava",   "triad_hi": "मानव",    "triad_nature_en": "Human/Analytical — Mercury-ruled, precise and service-oriented","triad_nature_hi": "मानव — बुध-शासित, सटीक एवं सेवाभावी"},
+    "Libra":       {"triad": "Manava",   "triad_hi": "मानव",    "triad_nature_en": "Human/Harmonious — Venus-ruled, balanced and aesthetic",        "triad_nature_hi": "मानव — शुक्र-शासित, संतुलित एवं सौन्दर्यप्रिय"},
+    "Scorpio":     {"triad": "Rakshasa", "triad_hi": "राक्षस",  "triad_nature_en": "Demonic/Intense — Mars-ruled, transformative and secretive",    "triad_nature_hi": "राक्षस — मंगल-शासित, परिवर्तनकारी एवं रहस्यमय"},
+    "Sagittarius": {"triad": "Deva",     "triad_hi": "देव",     "triad_nature_en": "Divine/Philosophical — Jupiter-ruled, expansive and dharmic",   "triad_nature_hi": "देव — बृहस्पति-शासित, विस्तारशील एवं धर्मनिष्ठ"},
+    "Capricorn":   {"triad": "Rakshasa", "triad_hi": "राक्षस",  "triad_nature_en": "Demonic/Disciplined — Saturn-ruled, structured and karmic",     "triad_nature_hi": "राक्षस — शनि-शासित, सुव्यवस्थित एवं कर्मयोगी"},
+    "Aquarius":    {"triad": "Rakshasa", "triad_hi": "राक्षस",  "triad_nature_en": "Demonic/Humanitarian — Saturn-ruled, detached and reformist",   "triad_nature_hi": "राक्षस — शनि-शासित, विरक्त एवं सुधारवादी"},
+    "Pisces":      {"triad": "Deva",     "triad_hi": "देव",     "triad_nature_en": "Divine/Spiritual — Jupiter-ruled, compassionate and moksha-oriented","triad_nature_hi": "देव — बृहस्पति-शासित, करुणामय एवं मोक्षाभिमुख"},
+}
+
+
+def _get_sign_triad(sign: str) -> Dict[str, str]:
+    return _SIGN_TRIAD.get(sign, {
+        "triad": "Unknown", "triad_hi": "अज्ञात",
+        "triad_nature_en": "", "triad_nature_hi": "",
+    })
+
+
 # ── Feature 22 — Day/Night Chart (Phaladeepika Adh. 2) ───────────────
 # Sun in houses 7-12 = Day chart; houses 1-6 = Night chart
 _DAY_CHART_HOUSES = {7, 8, 9, 10, 11, 12}
@@ -513,6 +541,7 @@ def get_planet_properties(chart_data: Dict[str, Any]) -> Dict[str, Any]:
             "baladi_avastha": baladi,
             "sign_degree": sign_degree,
             "sign": sign,
+            "sign_triad": _get_sign_triad(sign),
         }
         entry.update(materials)  # adds metal_en/hi, grain_en/hi, tree_en/hi
         planets_out[planet_name] = entry
@@ -528,16 +557,28 @@ def get_planet_properties(chart_data: Dict[str, Any]) -> Dict[str, Any]:
     if mercury_note and "Mercury" in planets_out:
         planets_out["Mercury"]["hermaphrodite_note"] = mercury_note
 
+    # --- Lagna Sign Triad ---
+    ascendant = chart_data.get("ascendant", {})
+    lagna_sign = ascendant.get("sign", "") if isinstance(ascendant, dict) else ""
+    lagna_triad = _get_sign_triad(lagna_sign) if lagna_sign else {}
+
     return {
         "planets": planets_out,
         "day_night_indicator": day_night_indicator,
         "mercury_gender_state": mercury_gender_state,
+        "lagna_triad": lagna_triad,
+        "sign_triads_legend": {
+            "Deva":     {"en": "Divine — ruled by luminaries (Sun, Moon) and Jupiter: noble, spiritual, dharmic", "hi": "देव — सूर्य, चन्द्र एवं बृहस्पति शासित: कुलीन, आध्यात्मिक, धर्मनिष्ठ"},
+            "Manava":   {"en": "Human — ruled by Mercury and Venus: intellectual, balanced, worldly", "hi": "मानव — बुध एवं शुक्र शासित: बौद्धिक, संतुलित, सांसारिक"},
+            "Rakshasa": {"en": "Demonic — ruled by Mars and Saturn: forceful, karmic, transformative", "hi": "राक्षस — मंगल एवं शनि शासित: प्रबल, कर्मयोगी, परिवर्तनकारी"},
+        },
         "sloka_ref": (
             data["sloka_refs"]["stage_of_life"]
             + " | "
             + data["sloka_refs"]["gunas"]
             + " | "
             + data["sloka_refs"]["baladi_avastha"]
+            + " | Phaladeepika Adh. 1 (Sign Triads)"
         ),
     }
 

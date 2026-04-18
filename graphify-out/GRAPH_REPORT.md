@@ -1,11 +1,11 @@
 # Graph Report - .  (2026-04-19)
 
 ## Corpus Check
-- 522 files · ~5,293,787 words
+- 522 files · ~5,294,577 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 8056 nodes · 14219 edges · 273 communities detected
+- 8056 nodes · 14220 edges · 273 communities detected
 - Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 881 edges (avg confidence: 0.5)
 - Token cost: 0 input · 0 output
 
@@ -36,7 +36,7 @@
 ## Communities
 
 ### Community 0 - "Community 0"
-Cohesion: 0.0
+Cohesion: 0.01
 Nodes (119): apiFetch(), fetchWithRetry(), friendlyError(), tryRefreshToken(), rotateByLagna(), SAVKundliChart(), handleOtpKeyDown(), handleResendOtp() (+111 more)
 
 ### Community 1 - "Community 1"
@@ -44,12 +44,12 @@ Cohesion: 0.01
 Nodes (491): a(), aA(), Ab(), ac(), ad(), ag(), ah(), ai() (+483 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.02
-Nodes (176): get_live_dashboard(), get_stats(), get_user_detail(), list_all_kundlis(), list_users(), Admin routes — user management, stats, kundli overview, live traffic panel., Change a user's role (user/astrologer/admin)., Activate or deactivate a user account. (+168 more)
+Cohesion: 0.01
+Nodes (58): bs(), Qe(), D(), N(), O(), R(), w(), x() (+50 more)
 
 ### Community 3 - "Community 3"
-Cohesion: 0.01
-Nodes (57): bs(), Qe(), D(), N(), O(), R(), w(), x() (+49 more)
+Cohesion: 0.02
+Nodes (176): get_live_dashboard(), get_stats(), get_user_detail(), list_all_kundlis(), list_users(), Admin routes — user management, stats, kundli overview, live traffic panel., Change a user's role (user/astrologer/admin)., Activate or deactivate a user account. (+168 more)
 
 ### Community 4 - "Community 4"
 Cohesion: 0.05
@@ -180,224 +180,224 @@ Cohesion: 0.04
 Nodes (8): Tests for app.panchang_misc -- Miscellaneous Panchang Calculations =============, Year not in SAMVAT_RAJA should still return 10 roles., Planets should follow GRAHA_ORDER starting from the Raja planet., TestAstronomicalData, TestCalculateAllMisc, TestHelpers, TestMantriMandala, TestPanchakaRahita
 
 ### Community 36 - "Community 36"
-Cohesion: 0.05
-Nodes (13): ba(), fa(), Ht(), Ia(), ja(), Ke(), Mt(), Oa() (+5 more)
-
-### Community 37 - "Community 37"
 Cohesion: 0.04
 Nodes (18): Tests for Ashtottari Dasha Engine, Test the main calculation function., Ardra is ruled by Sun in Ashtottari. First dasha should be Sun., Shatabhisha is ruled by Rahu in Ashtottari., Revati is ruled by Venus in Ashtottari., Each period's end should be the next period's start., First 8 periods should cover the first cycle., With no balance offset (moon_longitude=None), first 8 periods ~ 108 years. (+10 more)
 
-### Community 38 - "Community 38"
+### Community 37 - "Community 37"
 Cohesion: 0.05
 Nodes (49): _assess_remedy_accessibility(), _calculate_d10(), _calculate_d108(), calculate_d108_analysis(), _calculate_d12(), _calculate_d2(), _calculate_d3(), _calculate_d30() (+41 more)
 
-### Community 39 - "Community 39"
+### Community 38 - "Community 38"
 Cohesion: 0.1
 Nodes (49): amsayu(), apply_haranas(), _aspects_house(), _aspects_planet(), _build_lifespan_resolution(), calculate_lifespan(), check_balarishta(), classify_ayu() (+41 more)
 
-### Community 40 - "Community 40"
+### Community 39 - "Community 39"
 Cohesion: 0.07
 Nodes (49): analyze_all_dasha_timing(), analyze_antardasha_phala(), analyze_dasha_half_rule(), analyze_mahadasha_phala(), _assess_planet_strength(), _build_antardasha_periods(), _build_prana_periods(), _build_pratyantar_periods() (+41 more)
 
-### Community 41 - "Community 41"
+### Community 40 - "Community 40"
 Cohesion: 0.11
 Nodes (47): analyze_longevity_indicators(), _asc_sign(), _calculate_lucky_periods(), _compute_triple_confluence(), _dasha_gochara_lagna_score(), _dasha_gochara_timing(), _demise_month_lagna_indicators(), _demise_timing_classical() (+39 more)
 
-### Community 42 - "Community 42"
+### Community 41 - "Community 41"
 Cohesion: 0.04
 Nodes (13): Tests for Tara Dasha Engine, Test balance calculation., Test the main calculation function., With no balance offset, first 9 periods should total ~120 years., Verify Tara Dasha constants are correct., Test various nakshatras for robustness., Revati (last nakshatra) should wrap groups correctly., Test Tara group construction from birth nakshatra. (+5 more)
 
-### Community 43 - "Community 43"
+### Community 42 - "Community 42"
 Cohesion: 0.06
 Nodes (9): Tests for Phaladeepika Adhyaya 20 (Mahadasha-phala) + Adhyaya 21 (Antardashadhya, analyze_antardasha_phala severity and content., End-to-end: get MD + AD narrative for a real birth date., Verify dasha_phala.json is well-formed and complete., analyze_mahadasha_phala strength rules., TestAntardashaPhala, TestDataIntegrity, TestGetCurrentDashaPhala (+1 more)
 
-### Community 44 - "Community 44"
+### Community 43 - "Community 43"
 Cohesion: 0.04
 Nodes (13): Tests for Moola (Jaimini) Dasha Engine, Test sign strength calculation., Test the main calculation function., Each period should use the correct base years for its sign., Test with various lagna signs to ensure robustness., Verify Moola Dasha constants are correct., Test odd/even sign classification., Test sign sequence generation. (+5 more)
 
-### Community 45 - "Community 45"
+### Community 44 - "Community 44"
 Cohesion: 0.06
 Nodes (26): _chart_full(), Tests for Ashtakavarga-phala — Phaladeepika Adhyaya 24.  Covers applied predicti, achieved flag must agree with total_bindus vs threshold., Sanity — Cancer-lagna chart yields a different score than Aries., A complete 7-classical-planet chart with Ascendant., Planet strength must use the planet's own BAV bindus in its transit sign., test_analyze_has_12_house_entries(), test_analyze_has_7_classical_planets_no_rahu_ketu() (+18 more)
 
-### Community 46 - "Community 46"
+### Community 45 - "Community 45"
 Cohesion: 0.06
 Nodes (38): build_full_report(), _build_planets_in_houses(), _compound_relation(), _display(), _draw_north_indian_chart(), _find_hindi_font(), _fmt_date(), _fmt_num() (+30 more)
 
-### Community 47 - "Community 47"
+### Community 46 - "Community 46"
 Cohesion: 0.05
 Nodes (15): _has_devanagari(), Tests for LK DB seeding — validates data integrity of seed constants.  RED → imp, Each row must be a 6-tuple: (planet, house, nishani_hi, nishani_en, category, se, First 10 rows must have Devanagari in nishani_text., All rows must have Devanagari in nishani_text., nishani_text (Hindi) must not equal nishani_text_en (English)., Return True if text contains at least one Devanagari character (U+0900–U+097F)., interpretation_hi must contain Devanagari characters. (+7 more)
 
-### Community 48 - "Community 48"
+### Community 47 - "Community 47"
 Cohesion: 0.13
 Nodes (42): analyze_stri_jataka(), _ascendant_sign(), _aspects_house(), _aspects_planet(), _detect_bhartri_sukha(), _detect_pativrata(), _detect_punarbhu(), _detect_putravati() (+34 more)
 
-### Community 49 - "Community 49"
+### Community 48 - "Community 48"
 Cohesion: 0.05
 Nodes (15): Tests for app.panchang_engine -- Vedic Panchang Calculator., Test Rahu Kaal calculation., Monday Rahu Kaal: slot 2 of 8 (equal day)., Validate TITHIS constant data., Sunday Rahu Kaal: slot 8 of 8., Rahu Kaal must be between sunrise and sunset., Test Choghadiya calculation., First period starts at sunrise, last ends at sunset. (+7 more)
 
-### Community 50 - "Community 50"
+### Community 49 - "Community 49"
 Cohesion: 0.05
 Nodes (18): Tests for Birth Time Rectification Engine.  Covers:   - Event signature lookup, Completely mismatched dasha/transit should score near zero., Score should never exceed 100 or go below 0., Only mahadasha lord matches, nothing else., Mars MD + Rahu AD for accident should score well., Tests for _get_event_signatures()., Integration tests for the main rectification function., Midnight-crossing windows (e.g. 23:00→01:00) should now work         by wrapping (+10 more)
 
-### Community 51 - "Community 51"
+### Community 50 - "Community 50"
 Cohesion: 0.05
 Nodes (15): Tests for Pinnacle Numbers, Challenge Numbers, and Life Cycles in numerology_eng, When month and day reduce to same digit, c1 = 0., Pinnacle number calculation for DOB 1990-05-15.      month = reduce(5)  = 5, Life cycles for DOB 1990-05-15.      month_cycle = reduce(5)  = 5  (Early Life), Age ~36 in 2026 → Middle Life cycle., Each pinnacle in the result should have its prediction attached., For DOB 1990-05-15, in 2026 age ~35/36 → second pinnacle (33-42)., Pinnacle 1 for 1990-05-15 should be 11 (not reduced to 2). (+7 more)
 
-### Community 52 - "Community 52"
+### Community 51 - "Community 51"
 Cohesion: 0.05
 Nodes (11): Smoke tests for critical engine modules: varshphal, transit, astro_iogita, dasha, Smoke tests for transit_engine.py., Smoke tests for astro_iogita_engine.py., Smoke tests for dasha_engine.py., Design change: dasha now covers 2 full 120-year cycles = 240 years total., When moon_longitude is given, first dasha balance is partial.          Design ch, Smoke tests for varshphal_engine.py., TestAstroIogitaEngine (+3 more)
 
-### Community 53 - "Community 53"
+### Community 52 - "Community 52"
 Cohesion: 0.07
 Nodes (22): calcLifePath(), calcPersonalDay(), compactLine(), extractStr(), formatTime12(), formatTime24(), generateObservancesFromDay(), getLocalDateString() (+14 more)
 
-### Community 54 - "Community 54"
+### Community 53 - "Community 53"
 Cohesion: 0.08
 Nodes (32): _p(), Tests for expanded yoga library — Phaladeepika Adh. 6-7.  Covers declarative rul, detect_yogas_in_chart should merge legacy + declarative detections., Combined legacy + declarative yoga names should exceed 60., Search engine should have resolved all declarative yoga names., test_amala_benefic_in_10(), test_category_filter(), test_existing_yoga_detection_still_works() (+24 more)
 
-### Community 55 - "Community 55"
+### Community 54 - "Community 54"
 Cohesion: 0.05
 Nodes (9): Tests for Lagna profile + Moon-Nakshatra predictions — Phaladeepika Adh. 9 + 10., Within Ashwini (0..13.333°), padas 1→4 step every 3.333°., When only sign + sign_degree are present, reconstruct longitude., EN and HI must both be non-empty and differ (basic bilingual check)., EN/HI list lengths must match for lists; strengths/vulns/career non-empty., test_analyze_moon_nakshatra_pada_progression(), test_analyze_moon_nakshatra_reconstruct_from_sign_and_sign_degree(), test_every_lagna_entry_is_bilingual() (+1 more)
 
-### Community 56 - "Community 56"
+### Community 55 - "Community 55"
 Cohesion: 0.09
 Nodes (37): _aspects_house(), _aspects_planet(), _detect_bhrugukachcha(), _detect_charaka(), _detect_paramahamsa(), detect_pravrajya(), _detect_sannyasi(), _detect_tridandi() (+29 more)
 
-### Community 57 - "Community 57"
+### Community 56 - "Community 56"
 Cohesion: 0.08
 Nodes (37): analyze_ashtakvarga_phala(), analyze_horasara_phala(), _apply_ekadhipatya_shodhana(), _apply_trikona_shodhana(), _bav_bindu_level(), calculate_ashtakvarga(), _calculate_shodhya_pinda(), _combo_effect() (+29 more)
 
-### Community 58 - "Community 58"
+### Community 57 - "Community 57"
 Cohesion: 0.08
 Nodes (37): _analyze_houses(), _angular_distance(), _build_summary(), calculate_eclipses(), calculate_ingress(), calculate_mundane_analysis(), _conflict_indicators(), _current_transits_in_country_chart() (+29 more)
 
-### Community 59 - "Community 59"
+### Community 58 - "Community 58"
 Cohesion: 0.09
 Nodes (37): _approx_ascendant(), _approx_ayanamsa(), _approx_moon_longitude(), _approx_planet_longitude(), _approx_rahu_longitude(), _approx_sun_longitude(), _build_status(), _calculate_fallback() (+29 more)
 
-### Community 60 - "Community 60"
+### Community 59 - "Community 59"
 Cohesion: 0.09
 Nodes (28): _natal(), Tests for Gochara Vedhas + Lattas — Phaladeepika Adh. 26., For each (planet, good_house, vedha_house) entry, verify cancellation fires., Sun and Moon don't vedha each other (Adh. 26 sloka 33)., Moon and Saturn don't vedha each other., If transit is not in a good house, vedha doesn't apply (no cancellation)., Multiple planets in the vedha house — still just one cancellation (first found)., Sun's prishta distance = 12. If natal Moon in Ashwini (1st nak) and Sun transits (+20 more)
 
-### Community 61 - "Community 61"
+### Community 60 - "Community 60"
 Cohesion: 0.06
 Nodes (36): calculate_achanak_chot(), calculate_bunyaad(), calculate_dhoka(), calculate_enemy_presence(), calculate_hora_lord(), calculate_karmic_debts(), calculate_karmic_debts_with_hora(), calculate_kayam_grah() (+28 more)
 
-### Community 62 - "Community 62"
+### Community 61 - "Community 61"
 Cohesion: 0.05
 Nodes (16): Tests for app.kp_engine -- Krishnamurti Paddhati Engine., Validate Vimshottari Dasha constants., Validate the pre-built KP sub-lord table., Must have 27 nakshatras * 9 subs = 243 entries., First entry starts at 0, last entry ends at ~360., Each entry's end should equal the next entry's start., First nakshatra (Ashwini) lord is Ketu., Ashwini's first sub = its own lord (Ketu). (+8 more)
 
-### Community 63 - "Community 63"
+### Community 62 - "Community 62"
 Cohesion: 0.1
 Nodes (27): get_db(), _get_pool(), _get_valid_conn(), init_db(), PgConnection, Database initialization and connection management for PostgreSQL., Wrapper around psycopg2 connection to provide sqlite3-like execute API., Initialize PostgreSQL database with schema. Creates all tables. (+19 more)
 
-### Community 64 - "Community 64"
+### Community 63 - "Community 63"
 Cohesion: 0.09
 Nodes (35): analyze_entrance(), analyze_home_layout(), _build_entrance_result(), _build_room_remedies(), calculate_mandala(), _calculate_vastu_score(), _degrees_to_direction(), _direction_to_pada_index() (+27 more)
 
-### Community 65 - "Community 65"
+### Community 64 - "Community 64"
 Cohesion: 0.07
 Nodes (19): _p(), Tests for Vritti (Livelihood / Career) — Phaladeepika Adhyaya 5., Aries ascendant → 10th sign = Capricorn → lord Saturn., Leo ascendant → 10th sign = Taurus → lord Venus., Sun exalted in Aries (1st), Moon debilitated in Scorpio (8th)., Aries ascendant → 10th sign Capricorn → 10th lord Saturn.     Put Saturn at a lo, Leo ascendant → 10th sign Taurus → 10th lord Venus.     Place Venus in the 9th h, test_all_primary_vocation_fields_present() (+11 more)
 
-### Community 66 - "Community 66"
+### Community 65 - "Community 65"
 Cohesion: 0.12
 Nodes (34): analyze_bhava_vichara(), _analyze_karaka_as_lagna(), _asc_sign(), _aspects_on_house(), _assess_bhava(), _bhava_karakas(), _house_lord(), _house_sign() (+26 more)
 
-### Community 67 - "Community 67"
+### Community 66 - "Community 66"
 Cohesion: 0.18
 Nodes (34): analyze_maha_yogas(), _check_ardha_chandra(), _check_chakra(), _check_chapa(), _check_chatra(), _check_danda(), _check_gada(), _check_hala() (+26 more)
 
-### Community 68 - "Community 68"
+### Community 67 - "Community 67"
 Cohesion: 0.08
 Nodes (33): _approximate_placidus_cusps(), _build_kp_horary_table(), _build_kp_sub_lords(), calculate_kp_cuspal(), calculate_kp_horary(), _degree_to_dms(), _find_house_for_planet(), _find_vimshottari_index() (+25 more)
 
-### Community 69 - "Community 69"
+### Community 68 - "Community 68"
 Cohesion: 0.07
 Nodes (13): _planet_by_name(), planets(), test_planetary_enhanced.py -- Tests for enhanced planetary position fields =====, Ensure the enhancement did not break existing fields., Calculate planetary positions once for all tests., Get a planet dict by name., TestAllPlanetsPresent, TestCombustion (+5 more)
 
-### Community 70 - "Community 70"
+### Community 69 - "Community 69"
 Cohesion: 0.08
 Nodes (19): _handcrafted_chart(), _p(), Tests for Bhava Phala + Bhava-misra-phala — Phaladeepika Adh. 8 + 16., Aries Lagna; Jupiter in 5th (Leo) aspects Lagna (9th aspect); Lagna lord     Mar, 4th house weak: Saturn (malefic) in 4th, Moon (Lagna-lord-ish context)     with, Empty 11th house, Jupiter (Aquarius→lord Saturn) in neutral position., Tanu, Dhana, Sahaja, Sukha, Putra, Ari, Yuvati, Randhra, Bhagya, Karma, Labha, V, A full chart for testing: Aries ascendant, standard planet placements. (+11 more)
 
-### Community 71 - "Community 71"
+### Community 70 - "Community 70"
 Cohesion: 0.11
 Nodes (25): _aries_chart(), _p(), Tests for Bhava-phala-vichara — Phaladeepika Adhyaya 15., Aries Lagna: 4th=Cancer → Moon. Place Moon in 6th → lord in dusthana → destructi, Malefics Sun + Saturn + Mars aspecting the same house with no benefic support., Karaka of 9th = Jupiter. Place Jupiter combust (within 10° of Sun) AND afflicted, Aries Lagna; lord Mars exalted (Capricorn) in 10th (Kendra) → Lagna flourishes., Jupiter in 5th (own-ish territory); 5th lord absent. Benefic occupant → flourish (+17 more)
 
-### Community 72 - "Community 72"
+### Community 71 - "Community 71"
 Cohesion: 0.13
 Nodes (29): _all_narrative_text(), _aries_chart(), _p(), Tests for Nidhana-phala — Phaladeepika Adhyaya 17.  Important: Adh. 17 is about, Ensures narrative uses philosophical language and disclaimers., Empty chart with no ascendant → neither strong nor weak indicators., test_disclaimer_phrase_in_hi_narrative(), test_eighth_house_analysis_fields() (+21 more)
 
-### Community 73 - "Community 73"
+### Community 72 - "Community 72"
 Cohesion: 0.09
 Nodes (31): calculate_ascendant_for_location(), calculate_astro_map(), calculate_houses_for_location(), _degree_in_sign(), _detect_planetary_lines(), _dusthana_label(), get_planet_house(), _gmst_hours() (+23 more)
 
-### Community 74 - "Community 74"
+### Community 73 - "Community 73"
 Cohesion: 0.2
 Nodes (31): hr(), main(), pick(), Full Lal Kitab verification tables for a given chart.  This file is a READ-ONLY, Safe-render for bilingual {en, hi} objects., sub(), table_active_passive_rin(), table_aspects() (+23 more)
 
-### Community 75 - "Community 75"
+### Community 74 - "Community 74"
 Cohesion: 0.13
 Nodes (30): calculate_argala(), calculate_chara_dasha(), calculate_chara_karakas(), calculate_indu_lagna(), calculate_jaimini(), calculate_jaimini_drishti(), calculate_jaimini_yogas(), calculate_longevity() (+22 more)
 
-### Community 76 - "Community 76"
+### Community 75 - "Community 75"
 Cohesion: 0.11
 Nodes (30): analyze_vritti(), _ascendant_sign(), _build_geographic_affinities(), _dignity_score(), _empty_result(), _house_score(), load_vritti_data(), _lord_of_tenth() (+22 more)
 
-### Community 77 - "Community 77"
+### Community 76 - "Community 76"
 Cohesion: 0.11
 Nodes (24): _mkplanet(), Tests for Stri-Jataka (women's horoscope) analysis — Phaladeepika Adh. 11., test_bhartri_sukha_detected(), test_gender_male_returns_not_applicable(), test_minimal_chart_no_crash(), test_pativrata_detected(), test_pativrata_rejected_malefic_in_7th(), test_prospect_favorable_with_positive_yogas() (+16 more)
 
-### Community 78 - "Community 78"
+### Community 77 - "Community 77"
 Cohesion: 0.09
 Nodes (29): _build_cell_lookup(), _build_sbc_grid(), _build_summary(), calculate_sarvatobhadra(), get_empty_grid(), get_nakshatra_positions(), get_sign_positions(), get_vedha_targets() (+21 more)
 
-### Community 79 - "Community 79"
+### Community 78 - "Community 78"
 Cohesion: 0.07
 Nodes (11): Tests for Lal Kitab house-based remedies engine., Old code expects 'remedies' key (list) — must still work., Strong planet: remedies list empty (backward compat), has_remedy False., Sun in H1 (Aries) vs Sun in H7 (Libra) should have different en remedies., Verify Aries=H1, Cancer=H4, Libra=H7, Capricorn=H10., Hindi text must contain Devanagari characters (U+0900-U+097F)., Must have at least 9 planets × 12 houses = 108 entries., Each returned planet entry must have lk_house, remedy dict, has_remedy. (+3 more)
 
-### Community 80 - "Community 80"
+### Community 79 - "Community 79"
 Cohesion: 0.11
 Nodes (19): _p(), Tests for 45 two-planet conjunctions — Phaladeepika Adh. 18., 9 base planets + Lagna → C(9,2)=36 planet-planet + 9 planet-Lagna = 45., test_all_major_pairs_recognizable(), test_conjunct_planets_within_orb(), test_conjunction_picks_up_budhaditya_special_yoga(), test_custom_orb(), test_data_includes_all_planet_planet_pairs() (+11 more)
 
-### Community 81 - "Community 81"
+### Community 80 - "Community 80"
 Cohesion: 0.07
 Nodes (11): Tests for P0 safety blocks in muhurat_finder.  P0 items tested:   1. Vyatipata Y, P0-3 / P0-4: Mrityu Yoga and Visha Yoga blocks., P0-6: Ganda Lagna / Sandhi Lagna warning., Integration tests for the full finder with P0 blocks active., P0-5: Sankranti 16-hour restriction., P0-1 / P0-2: Vyatipata (#17) and Vaidhriti (#27) hard blocks., TestMuhuratFinderIntegration, TestP0LagnaWarnings (+3 more)
 
-### Community 82 - "Community 82"
+### Community 81 - "Community 81"
 Cohesion: 0.24
 Nodes (26): _aspects_lagna(), check_bheri_yoga(), check_chamara_yoga(), check_dharma_karmaadhipati_yoga(), check_kahala_yoga(), check_kalanidhi_yoga(), check_koorma_yoga(), check_matsya_yoga() (+18 more)
 
-### Community 83 - "Community 83"
+### Community 82 - "Community 82"
 Cohesion: 0.14
 Nodes (26): add_fruition_timing(), _all_in(), _asc_sign(), detect_all_yogas(), detect_yogas_with_timing(), evaluate_rule(), _extract_yoga_planets(), _house_of() (+18 more)
 
-### Community 84 - "Community 84"
+### Community 83 - "Community 83"
 Cohesion: 0.07
 Nodes (6): Tests for muhurat_rules.py, TestActivityMetadata, TestCheckDayFavorable, TestHelpers, TestNormalizeTithi, TestRules
 
-### Community 85 - "Community 85"
+### Community 84 - "Community 84"
 Cohesion: 0.13
 Nodes (19): _mkplanet(), Tests for Apatya (progeny) analysis — Phaladeepika Adhyaya 12., test_aputra_yoga_detected(), test_bahu_putra_yoga_detected(), test_bilingual_fields_present(), test_dattaka_yoga_detected(), test_delayed_progeny_yoga_lord_in_saturn_sign(), test_delayed_progeny_yoga_saturn_in_5() (+11 more)
 
-### Community 86 - "Community 86"
+### Community 85 - "Community 85"
 Cohesion: 0.14
 Nodes (19): _p(), Tests for Classical Roga (disease) Phalam — Phaladeepika Adh. 14., test_blindness_cancelled_by_jupiter(), test_blindness_detected(), test_body_parts_populated(), test_diabetes_jupiter_in_6(), test_diabetes_venus_saturn_in_6(), test_epilepsy_detected() (+11 more)
 
-### Community 87 - "Community 87"
+### Community 86 - "Community 86"
 Cohesion: 0.13
 Nodes (18): _p(), Tests for 3-method Ayurdaya — Phaladeepika Adh. 22., test_amsayu_returns_contract(), test_apply_haranas_no_reduction_when_clean(), test_astangata_harana_for_combust(), test_calculate_lifespan_full_chart(), test_calculate_lifespan_gandhi_range(), test_haranas_floor_at_zero() (+10 more)
 
-### Community 88 - "Community 88"
+### Community 87 - "Community 87"
 Cohesion: 0.12
 Nodes (23): _add_years(), _assign_deha_jeeva(), _build_sign_sequence(), _calculate_balance(), calculate_kalachakra_dasha(), _enrich_period(), _find_deha_jeeva_rashis(), _is_savya() (+15 more)
 
-### Community 89 - "Community 89"
+### Community 88 - "Community 88"
 Cohesion: 0.13
 Nodes (23): calculate_all_special_yogas(), calculate_amrit_siddhi(), calculate_dagdha_nakshatra(), calculate_dwipushkar(), calculate_ganda_moola(), calculate_ravi_yoga(), calculate_sarvartha_siddhi(), calculate_siddhi_yoga() (+15 more)
 
-### Community 90 - "Community 90"
+### Community 89 - "Community 89"
 Cohesion: 0.12
 Nodes (23): _classify_house(), derive_compatible_sign(), derive_donts(), derive_dos(), derive_gemstone(), derive_lucky_color(), derive_lucky_number(), derive_lucky_time() (+15 more)
+
+### Community 90 - "Community 90"
+Cohesion: 0.12
+Nodes (12): be(), da(), E(), ie(), ma(), oa(), oe(), pe() (+4 more)
 
 ### Community 91 - "Community 91"
 Cohesion: 0.09
@@ -508,32 +508,32 @@ Cohesion: 0.11
 Nodes (17): Tests for numerology_engine.py — Pythagorean numerology calculations., Verify master number 11 is preserved (not reduced to 2)., Destiny number (formerly expression) uses all letters of the name., Soul urge uses only vowels (A, E, I, O, U)., Personality uses only consonants., Verify all required keys are present in the output dict., Life path for 1990-01-15: 1+9+9+0=19->10->1 + 0+1=1 + 1+5=6 => 1+1+6=8., Master numbers 11, 22, 33 should not be reduced further. (+9 more)
 
 ### Community 118 - "Community 118"
-Cohesion: 0.17
-Nodes (15): detect_yogas_in_chart(), get_kundli_yoga_profile(), get_yoga_statistics(), _normalise_query(), yoga_search_engine.py — Yoga Search Across Kundli Database =====================, Run full yoga detection on a parsed chart_data dict.      Merges legacy dosha_en, Given chart_data (planets dict from DB), detect which yogas are present.     Use, Search all kundlis owned by *user_id* for a specific yoga.      Args:         db (+7 more)
+Cohesion: 0.18
+Nodes (15): _compute_baladi_avastha(), _get_day_night_indicator(), get_lagna_rising_analysis(), _get_mercury_gender_state(), _get_mercury_hermaphrodite_note(), get_planet_properties(), _get_sign_triad(), _load_data() (+7 more)
 
 ### Community 119 - "Community 119"
 Cohesion: 0.17
-Nodes (15): calculate_agnivasa(), calculate_all_nivas(), calculate_chandra_vasa(), calculate_homahuti(), calculate_kumbha_chakra(), calculate_rahu_vasa(), calculate_shivavasa(), panchang_nivas.py -- Nivas, Shool, Homahuti & Kumbha Chakra Calculations ======= (+7 more)
+Nodes (15): detect_yogas_in_chart(), get_kundli_yoga_profile(), get_yoga_statistics(), _normalise_query(), yoga_search_engine.py — Yoga Search Across Kundli Database =====================, Run full yoga detection on a parsed chart_data dict.      Merges legacy dosha_en, Given chart_data (planets dict from DB), detect which yogas are present.     Use, Search all kundlis owned by *user_id* for a specific yoga.      Args:         db (+7 more)
 
 ### Community 120 - "Community 120"
 Cohesion: 0.17
-Nodes (15): calculate_mudda_dasha(), calculate_muntha(), calculate_varshphal(), calculate_year_lord(), find_solar_return_jd(), _jd_to_datetime(), varshphal_engine.py — Vedic Varshphal (Solar Return / Tajaka) Engine ===========, Muntha advances one sign per year from natal ascendant.     Returns: {sign, sign (+7 more)
+Nodes (15): calculate_agnivasa(), calculate_all_nivas(), calculate_chandra_vasa(), calculate_homahuti(), calculate_kumbha_chakra(), calculate_rahu_vasa(), calculate_shivavasa(), panchang_nivas.py -- Nivas, Shool, Homahuti & Kumbha Chakra Calculations ======= (+7 more)
 
 ### Community 121 - "Community 121"
+Cohesion: 0.17
+Nodes (15): calculate_mudda_dasha(), calculate_muntha(), calculate_varshphal(), calculate_year_lord(), find_solar_return_jd(), _jd_to_datetime(), varshphal_engine.py — Vedic Varshphal (Solar Return / Tajaka) Engine ===========, Muntha advances one sign per year from natal ascendant.     Returns: {sign, sign (+7 more)
+
+### Community 122 - "Community 122"
 Cohesion: 0.19
 Nodes (15): _build_sub_periods(), calculate_moola_dasha(), _get_dasha_sign_sequence(), _get_effective_years(), _is_odd_sign(), _parse_date(), moola_dasha_engine.py — Moola (Jaimini) Dasha Calculation Engine ===============, Get the 12-sign sequence for Moola Dasha starting from the given sign.      For (+7 more)
 
-### Community 122 - "Community 122"
+### Community 123 - "Community 123"
 Cohesion: 0.13
 Nodes (13): _bootstrap_db(), client(), _create_kundli(), db(), _make_admin(), _make_astrologer(), Shared test fixtures — temp DB, TestClient, auth helpers.  Every test module get, Insert a minimal kundli record and return its id. (+5 more)
 
-### Community 123 - "Community 123"
+### Community 124 - "Community 124"
 Cohesion: 0.21
 Nodes (12): _p(), Tests for Balarishta & Ayu classification — Phaladeepika Adh. 13., test_alpayu_malefic_lagna_no_benefic(), test_ayu_return_contract(), test_balarishta_cancelled_by_strong_jupiter(), test_balarishta_moon_in_dusthana_aspected_by_mars(), test_balarishta_return_contract(), test_balarishta_sun_in_8th_moon_in_6th() (+4 more)
-
-### Community 124 - "Community 124"
-Cohesion: 0.19
-Nodes (14): _compute_baladi_avastha(), _get_day_night_indicator(), get_lagna_rising_analysis(), _get_mercury_gender_state(), _get_mercury_hermaphrodite_note(), get_planet_properties(), _load_data(), planet_properties_engine.py — Phaladeepika Adh. 1–2 Planet Properties ========== (+6 more)
 
 ### Community 125 - "Community 125"
 Cohesion: 0.19
@@ -873,23 +873,23 @@ Nodes (0):
 
 ### Community 209 - "Community 209"
 Cohesion: 1.0
-Nodes (1): lalkitab_translations.py — Lal Kitab bilingual constants =======================
+Nodes (1): Route registry — import all routers for inclusion in the FastAPI app.
 
 ### Community 210 - "Community 210"
 Cohesion: 1.0
-Nodes (1): Chandra Chalana 43-day protocol tasks (backend).  The protocol itself is tracked
+Nodes (1): lalkitab_translations.py — Lal Kitab bilingual constants =======================
 
 ### Community 211 - "Community 211"
 Cohesion: 1.0
-Nodes (1): Lal Kitab 1952 — Remedy Context: problem / reason / how_it_works Source: Pt. Roo
+Nodes (1): Chandra Chalana 43-day protocol tasks (backend).  The protocol itself is tracked
 
 ### Community 212 - "Community 212"
 Cohesion: 1.0
-Nodes (1): Transit interpretation fragments — 9 planets x 12 houses x 5 areas, bilingual.
+Nodes (1): Lal Kitab 1952 — Remedy Context: problem / reason / how_it_works Source: Pt. Roo
 
 ### Community 213 - "Community 213"
 Cohesion: 1.0
-Nodes (1): Route registry — import all routers for inclusion in the FastAPI app.
+Nodes (1): Transit interpretation fragments — 9 planets x 12 houses x 5 areas, bilingual.
 
 ### Community 214 - "Community 214"
 Cohesion: 1.0
@@ -1144,15 +1144,15 @@ Nodes (0):
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 208`** (2 nodes): `test_flags.py`, `test_sunrise_flags()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 209`** (2 nodes): `lalkitab_translations.py`, `lalkitab_translations.py — Lal Kitab bilingual constants =======================`
+- **Thin community `Community 209`** (2 nodes): `__init__.py`, `Route registry — import all routers for inclusion in the FastAPI app.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 210`** (2 nodes): `lalkitab_chandra_tasks.py`, `Chandra Chalana 43-day protocol tasks (backend).  The protocol itself is tracked`
+- **Thin community `Community 210`** (2 nodes): `lalkitab_translations.py`, `lalkitab_translations.py — Lal Kitab bilingual constants =======================`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 211`** (2 nodes): `lalkitab_remedy_context.py`, `Lal Kitab 1952 — Remedy Context: problem / reason / how_it_works Source: Pt. Roo`
+- **Thin community `Community 211`** (2 nodes): `lalkitab_chandra_tasks.py`, `Chandra Chalana 43-day protocol tasks (backend).  The protocol itself is tracked`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 212`** (2 nodes): `transit_interpretations.py`, `Transit interpretation fragments — 9 planets x 12 houses x 5 areas, bilingual.`
+- **Thin community `Community 212`** (2 nodes): `lalkitab_remedy_context.py`, `Lal Kitab 1952 — Remedy Context: problem / reason / how_it_works Source: Pt. Roo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 213`** (2 nodes): `__init__.py`, `Route registry — import all routers for inclusion in the FastAPI app.`
+- **Thin community `Community 213`** (2 nodes): `transit_interpretations.py`, `Transit interpretation fragments — 9 planets x 12 houses x 5 areas, bilingual.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 214`** (2 nodes): `data.py`, `vastu/data.py — Complete Vastu Shastra Reference Data ==========================`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -1276,11 +1276,11 @@ Nodes (0):
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `js()` connect `Community 3` to `Community 36`, `Community 13`, `Community 6`?**
+- **Why does `js()` connect `Community 2` to `Community 90`, `Community 13`, `Community 6`?**
   _High betweenness centrality (0.003) - this node is a cross-community bridge._
-- **Why does `KPHoraryRequest` connect `Community 8` to `Community 2`?**
+- **Why does `KPHoraryRequest` connect `Community 8` to `Community 3`?**
   _High betweenness centrality (0.001) - this node is a cross-community bridge._
-- **Why does `KPHoraryPredictRequest` connect `Community 8` to `Community 2`?**
+- **Why does `KPHoraryPredictRequest` connect `Community 8` to `Community 3`?**
   _High betweenness centrality (0.001) - this node is a cross-community bridge._
 - **Are the 78 inferred relationships involving `KundliRequest` (e.g. with `FreePreviewRequest` and `Kundli routes — generate, retrieve, list, iogita analysis, match, dosha, dasha,`) actually correct?**
   _`KundliRequest` has 78 INFERRED edges - model-reasoned connections that need verification._

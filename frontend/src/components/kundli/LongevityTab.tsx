@@ -162,6 +162,14 @@ interface ApiResponse {
   demise_timing_classical?: DemiseTimingClassical;
   dasha_gochara_lagna_score?: DashaGochaLagnaScore;
   lucky_time_estimate?: LuckyTimeEstimate;
+  region_after_death?: {
+    region_en: string;
+    region_hi: string;
+    narrative_en: string;
+    narrative_hi: string;
+    indicators: string[];
+    sloka_ref: string;
+  };
   sloka_ref: string;
 }
 
@@ -725,6 +733,35 @@ export default function LongevityTab({ kundliId, language, t }: Props) {
           <div className="flex items-center gap-1.5 mt-3 text-[10px] text-muted-foreground italic">
             <BookOpen className="w-3 h-3" />
             <span>{data.lucky_time_estimate.sloka_ref}</span>
+          </div>
+        </section>
+      )}
+
+      {/* Region after death */}
+      {data.region_after_death && (
+        <section className="rounded-xl border-2 border-indigo-200 bg-indigo-50 p-5">
+          <h3 className="font-semibold text-indigo-900 mb-1 flex items-center gap-2">
+            <Star className="w-5 h-5" />
+            {isHi ? 'मृत्यु पश्चात् क्षेत्र' : 'Region After Death'}
+          </h3>
+          <div className="inline-block text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-600 text-white mb-3">
+            {isHi ? data.region_after_death.region_hi : data.region_after_death.region_en}
+          </div>
+          <p className="text-sm text-indigo-900/90 leading-relaxed italic mb-3">
+            {isHi ? data.region_after_death.narrative_hi : data.region_after_death.narrative_en}
+          </p>
+          {data.region_after_death.indicators.length > 0 && (
+            <ul className="text-xs text-indigo-700 space-y-1 mb-3">
+              {data.region_after_death.indicators.map((ind, i) => (
+                <li key={i} className="flex items-start gap-1.5">
+                  <span className="mt-0.5 shrink-0">•</span>{ind}
+                </li>
+              ))}
+            </ul>
+          )}
+          <div className="flex items-center gap-1.5 text-[10px] text-indigo-500 italic">
+            <BookOpen className="w-3 h-3" />
+            <span>{data.region_after_death.sloka_ref}</span>
           </div>
         </section>
       )}

@@ -99,6 +99,63 @@ function PlanetPropertiesSection({ kundliId, language }: { kundliId: string; lan
         </div>
       )}
 
+      {/* ── Sign Triads — Deva / Manava / Rakshasa (Phaladeepika Adh. 1) ── */}
+      {data.lagna_triad?.triad && (
+        <div className="rounded-xl border border-border overflow-hidden">
+          <div className="px-4 py-2 bg-muted border-b border-border flex items-center gap-2">
+            <span className="text-xs font-semibold text-primary uppercase tracking-wide">
+              {hi ? 'राशि त्रिगुण वर्गीकरण' : 'Sign Triads — Deva / Manava / Rakshasa'}
+            </span>
+          </div>
+          <div className="p-3 space-y-2">
+            {/* Lagna triad badge */}
+            <div className="flex items-start gap-2 text-xs">
+              <span className="text-foreground/60 shrink-0">{hi ? 'लग्न राशि:' : 'Lagna sign:'}</span>
+              <span className={`font-bold px-2 py-0.5 rounded ${
+                data.lagna_triad.triad === 'Deva' ? 'bg-amber-100 text-amber-800'
+                : data.lagna_triad.triad === 'Manava' ? 'bg-blue-100 text-blue-800'
+                : 'bg-red-100 text-red-800'
+              }`}>
+                {hi ? data.lagna_triad.triad_hi : data.lagna_triad.triad}
+              </span>
+              <span className="text-foreground/70 leading-snug">
+                {hi ? data.lagna_triad.triad_nature_hi : data.lagna_triad.triad_nature_en}
+              </span>
+            </div>
+            {/* Per-planet triads (compact inline) */}
+            <div className="flex flex-wrap gap-1.5">
+              {Object.entries(data.planets as Record<string, any>).map(([pname, p]: [string, any]) =>
+                p.sign_triad?.triad ? (
+                  <span key={pname} className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${
+                    p.sign_triad.triad === 'Deva' ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                    : p.sign_triad.triad === 'Manava' ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                    : 'bg-red-50 text-red-700 border border-red-200'
+                  }`} title={hi ? p.sign_triad.triad_nature_hi : p.sign_triad.triad_nature_en}>
+                    {translatePlanet(pname, language)} — {hi ? p.sign_triad.triad_hi : p.sign_triad.triad}
+                  </span>
+                ) : null
+              )}
+            </div>
+            {/* Legend */}
+            {data.sign_triads_legend && (
+              <div className="grid grid-cols-3 gap-2 mt-1">
+                {Object.entries(data.sign_triads_legend as Record<string, { en: string; hi: string }>).map(([key, val]) => (
+                  <div key={key} className={`rounded p-1.5 text-[10px] ${
+                    key === 'Deva' ? 'bg-amber-50 border border-amber-200 text-amber-800'
+                    : key === 'Manava' ? 'bg-blue-50 border border-blue-200 text-blue-800'
+                    : 'bg-red-50 border border-red-200 text-red-800'
+                  }`}>
+                    <span className="font-bold block">{key}</span>
+                    <span className="leading-snug">{hi ? val.hi : val.en}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <p className="px-3 pb-2 text-[10px] text-foreground/40 italic">Phaladeepika Adh. 1</p>
+        </div>
+      )}
+
       {/* ── Planet Properties Table (Stage / Guna / Baladi / Metal / Grain / Tree) ── */}
       <div className="rounded-xl border border-border overflow-x-auto">
         <div className="px-4 py-2 bg-muted border-b border-border">
