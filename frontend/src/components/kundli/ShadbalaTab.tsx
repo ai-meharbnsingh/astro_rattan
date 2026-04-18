@@ -105,6 +105,9 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
                 <span className={`text-xs ${isStrong ? 'text-green-600 font-semibold' : 'text-red-500'}`}>
                   {isStrong ? '✓' : '✗'}
                 </span>
+                <span className="text-[10px] text-muted-foreground leading-none">
+                  Req: {required.toFixed(1)}
+                </span>
               </div>
             );
           })}
@@ -205,7 +208,24 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
                       <TableCell className="text-center p-2 text-foreground text-xs">{d.naisargika?.toFixed ? d.naisargika.toFixed(2) : d.naisargika}</TableCell>
                       <TableCell className="text-center p-2 text-foreground text-xs">{d.drik?.toFixed ? d.drik.toFixed(2) : d.drik}</TableCell>
                       <TableCell className={`text-center p-2 font-semibold text-xs ${d.is_strong ? 'text-green-600' : 'text-red-600'}`}>{d.total?.toFixed ? d.total.toFixed(2) : d.total}</TableCell>
-                      <TableCell className={`text-center p-2 font-medium text-xs ${d.ratio >= 1 ? 'text-green-600' : 'text-red-600'}`}>{d.ratio?.toFixed ? d.ratio.toFixed(2) : d.ratio}x</TableCell>
+                      <TableCell className="text-center p-2 text-xs">
+                        <div className="flex flex-col items-center gap-0.5">
+                          <span className={`font-medium ${d.ratio >= 1 ? 'text-green-600' : 'text-red-600'}`}>
+                            {d.ratio?.toFixed ? d.ratio.toFixed(2) : d.ratio}x
+                          </span>
+                          <span className={`text-[9px] font-semibold px-1 rounded ${
+                            d.ratio >= 1.5 ? 'bg-emerald-100 text-emerald-800' :
+                            d.ratio >= 1.0 ? 'bg-blue-100 text-blue-800' :
+                            d.ratio >= 0.7 ? 'bg-amber-100 text-amber-800' :
+                            'bg-red-100 text-red-800'
+                          }`}>
+                            {d.ratio >= 1.5 ? (language === 'hi' ? 'बलवान' : 'Strong') :
+                             d.ratio >= 1.0 ? (language === 'hi' ? 'पर्याप्त' : 'Adequate') :
+                             d.ratio >= 0.7 ? (language === 'hi' ? 'दुर्बल' : 'Weak') :
+                             (language === 'hi' ? 'अतिदुर्बल' : 'V.Weak')}
+                          </span>
+                        </div>
+                      </TableCell>
                     </TableRow>
                     {isExpanded && d.sthana_detail && (
                       <TableRow className="bg-muted">
@@ -245,6 +265,11 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
             </TableBody>
           </Table>
         </div>
+        <p className="text-[10px] text-muted-foreground text-right mt-2 italic">
+          {language === 'hi'
+            ? 'न्यूनतम षड्बल (फलदीपिका अध्याय 4) — सूर्य 390, चन्द्र 360, मंगल 300, बुध 420, बृहस्पति 390, शुक्र 330, शनि 300 (रूप)'
+            : 'Minimum Shadbala per Phaladeepika Adh. 4 — Sun 390, Moon 360, Mars 300, Mercury 420, Jupiter 390, Venus 330, Saturn 300 (Rupas)'}
+        </p>
       </div>
     </div>
   );

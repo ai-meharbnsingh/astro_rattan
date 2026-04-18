@@ -174,10 +174,17 @@ export default function BhavaVicharaTab({ kundliId, language, t }: Props) {
                   </div>
                   <div className="flex flex-col items-end gap-1">
                     {b.flourishing && (
-                      <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded inline-flex items-center gap-1 bg-emerald-600 text-white">
-                        <Shield className="w-3 h-3" />
-                        {t('auto.bhavaFlourishing')}
-                      </span>
+                      <div className="flex flex-col items-end gap-0.5">
+                        <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded inline-flex items-center gap-1 bg-emerald-600 text-white">
+                          <Shield className="w-3 h-3" />
+                          {t('auto.bhavaFlourishing')}
+                        </span>
+                        <span className="text-[9px] text-emerald-700 italic text-right leading-tight">
+                          {language === 'hi'
+                            ? 'भावेश बली + शुभ दृष्टि (फलदीपिका अध्याय 15)'
+                            : 'Lord strong + benefic aspect (Phaladeepika Adh. 15)'}
+                        </span>
+                      </div>
                     )}
                     {b.destruction_risk && (
                       <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded inline-flex items-center gap-1 bg-red-600 text-white">
