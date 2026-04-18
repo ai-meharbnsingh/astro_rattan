@@ -102,14 +102,9 @@ Verified by running all 2041 tests twice and confirming hash-identical results.
 | 27 | Age Activation | ✅ OK | 8/10 | 8/10 | Full period list with active flag |
 | 28 | Chalti Gaadi | ✅ OK | 8/10 | 8/10 | Engine/passenger/brakes classification |
 | 29 | Chandra Kundali | ✅ OK | 8/10 | 7/10 | Moon-lagna shifted chart |
-
-**Feature areas with API errors (3):**
-
-| Feature | Error |
-|---------|-------|
-| Cross Waking Narrative | ❌ API ERROR — missing positional argument |
-| Chandra Lagna Conflicts | ❌ API ERROR — unexpected keyword argument |
-| Time Planet Detection | ❌ API ERROR — missing positional argument |
+| 30 | Cross Waking Narrative | ✅ OK | 8/10 | 8/10 | 9 items; H4 cluster wakes sleeping H9 — significant |
+| 31 | Chandra Lagna Conflicts | ✅ OK | 7/10 | 8/10 | 2 conflicts: Moon + Ketu (manda), no Chandra reversal |
+| 32 | Time Planet (LK 2.16) | ✅ OK | 9/10 | 9/10 | Venus day-lord + Saturn hora-lord → both banned for remedy |
 
 ---
 
@@ -1822,7 +1817,16 @@ are computed on-demand at the API layer, not pre-computed.
 
 ### 20.4 Chandra Lagna Conflicts (from detect_chandra_lagna_conflicts)
 
-> **STATUS: API ERROR** — detect_chandra_lagna_conflicts() got an unexpected keyword argument 'moon_house'
+> **STATUS: ✅ PASS** — Fixed call-site (pass `chandra_readings` + `lagna_interpretations` lists, not `moon_house` kwarg)
+
+**2 Lagna vs Chandra conflicts detected:**
+
+| Planet | LK House | Lagna Nature | Chandra Favourable | Conflict |
+|--------|----------|-------------|-------------------|---------|
+| Moon | H8 | manda (inauspicious) | None (no Chandra sentiment) | Noted |
+| Ketu | H7 | manda (inauspicious) | None (no Chandra sentiment) | Noted |
+
+**Interpretation:** Moon and Ketu are flagged `manda` in the natal Lagna chart (Moon debilitated in Scorpio H8; Ketu opposing Rahu in H7). The Chandra framework returns `is_favourable=None` for these two — no positive Chandra reading could override the Lagna verdict. No planet shows a genuine Lagna-vs-Chandra reversal (where Lagna says bad and Chandra says good), confirming the chart is internally consistent.
 
 ### 20.5 Chandra Readings per Planet (chandra_r_*)
 
@@ -2128,7 +2132,7 @@ concern, not a pure computation engine feature.
 | `lalkitab_chakar.py` | `chakar` | WIRED | Rich |
 | `lalkitab_rahu_ketu_axis.py` | `rk_axis` | WIRED | Rich |
 | `lalkitab_andhe_grah.py` | `andhe` | WIRED | Rich |
-| `lalkitab_time_planet.py` | `time_planet` | ERROR | Empty/Error |
+| `lalkitab_time_planet.py` | `time_planet` | WIRED | Rich |
 | `lalkitab_dasha.py` | `dasha` | WIRED | Rich |
 | `lalkitab_doshas.py` | `doshas` | WIRED | Rich |
 | `lalkitab_masnui.py` | `masnui` | WIRED | Rich |
@@ -2151,16 +2155,27 @@ concern, not a pure computation engine feature.
 | `lalkitab_compound.py` | `compound` | WIRED | Rich |
 | `lalkitab_rules.py` | `rules` | WIRED | Rich |
 
-**Modules with API Errors (call-site bugs, not engine logic failures)**:
+**All call-site bugs fixed — full results now in report:**
 
-| Module | Error |
-|--------|-------|
-| cross_wake | generate_cross_waking_narrative() missing 1 required positional argument: 'member_name' |
-| chandra_c | detect_chandra_lagna_conflicts() got an unexpected keyword argument 'moon_house' |
-| time_planet | detect_time_planet() missing 1 required positional argument: 'birth_time_hms' |
+| Module | Fix Applied | Result |
+|--------|-------------|--------|
+| `cross_wake` | Added `member_name="Self"` as 3rd positional arg | 9 narrative items |
+| `chandra_c` | Pass `(chandra_readings, lagna_interpretations)` lists, not `moon_house` kwarg | 2 conflicts detected |
+| `time_planet` | Added `birth_time_hms="23:15:00"` as 2nd positional arg | day_lord=Venus, hora_lord=Saturn |
 
-These errors are **call-site bugs** (missing arguments in the test harness), not
-failures of the engine logic itself. The engines exist and pass their unit tests.
+**Time Planet result (lalkitab_time_planet.py):**
+
+| Field | Value |
+|-------|-------|
+| Weekday | Friday |
+| Day Lord | Venus (शुक्र) |
+| Hora Lord | Saturn (शनि) |
+| Time Planet | **Saturn** (dominant) |
+| Dual Time Planet | Yes — both Venus and Saturn |
+| Is Remediable | **No** |
+| LK Reference | 2.16 |
+
+> ⚠️ **Warning (LK 2.16):** Day-Lord Venus and Hora-Lord Saturn both function as Time Planets. They encode the clock of your birth — remedies targeted at **either Venus or Saturn are permanently banned**. These planets cannot be corrected through upay; attempting to do so risks intercepting the remedy energy and misdirecting it.
 
 ---
 
@@ -2263,16 +2278,16 @@ This section honestly classifies the nature of each engine output.
 | Wizard Finance/Marriage/Career/Health | wizard_* | REAL — intent routing | Focus planets + ranked recommendations |
 | Remedy Matrix | rem_matrix_* | REAL — LK reference | Raw LK table values |
 | Chandra Readings | chandra_r_* | REAL — Moon-lagna based | Favourable/unfavourable per planet |
-| cross_wake | cross_wake | API ERROR | Call-site bug — not engine failure |
-| chandra_c | chandra_c | API ERROR | Call-site bug — unexpected kwarg |
-| time_planet | time_planet | API ERROR | Call-site bug — missing argument |
+| cross_wake | cross_wake | REAL — rule-based | 9 narrative items; H4 cluster wakes H9 (sleeping) — significant activation |
+| chandra_c | chandra_c | REAL — flag comparison | 2 conflicts: Moon + Ketu both manda in Lagna, no Chandra reversal |
+| time_planet | time_planet | REAL — calendar + hora | Friday birth, Venus day-lord, Saturn hora-lord → dual Time Planet, no remedy allowed |
 | Gochar | N/A | REQUIRES LIVE EPHEMERIS | Not collected in this batch |
 | Remedy Tracker | N/A | REQUIRES DATABASE | Persistence layer feature |
 | Chandra Chaalana | N/A | NOT WIRED | Not in data collection scope |
 
 **Summary verdict**: 26 of 29 features return real, algorithmically-derived data.
-3 return API errors (call-site bugs). 3 features are correctly marked as requiring
-live data or persistence (Gochar, Tracker, Chaalana). **Zero mock or templated results.**
+All previously-erroring call-site bugs are now fixed. 3 features are correctly marked as requiring
+live data or persistence (Gochar, Tracker, Chaalana). **Zero mock or templated results. Zero API errors.**
 
 ---
 
@@ -2280,7 +2295,7 @@ live data or persistence (Gochar, Tracker, Chaalana). **Zero mock or templated r
 
 ## 28.1 Is the LK Engine Substantively Real?
 
-> **VERDICT: YES — Substantially Real with 3 Call-Site Bugs**
+> **VERDICT: YES — Substantially Real. All 3 previously-reported call-site bugs are now fixed.**
 
 The Lal Kitaab engine for astrorattan.com is a genuine, algorithmically-driven
 computation system. Evidence:
@@ -2307,14 +2322,14 @@ computation system. Evidence:
 | Prediction Studio | Evidence-traced scoring with counterfactuals — highest transparency |
 | Saala Grah Timeline | Full past/current/upcoming with life phase computation |
 | Rahu-Ketu Axis | H1-H7 axis with LK narrative, effect, and remedy |
+| Time Planet (LK 2.16) | Friday birth → Venus day-lord + Saturn hora-lord → dual Time Planet; both Venus and Saturn remedies permanently banned per LK canon |
+| Cross Waking Narrative | H4 triple-cluster (Mars/Mercury/Venus) all wake H9 (sleeping) — high-significance activation correctly identified |
+| Chandra Lagna Conflicts | 2 conflicts (Moon + Ketu) correctly identified; no spurious reversals |
 
 ## 28.3 Weakest Sections
 
 | Section | Why It's Weak |
 |---------|--------------|
-| Cross Waking Narrative | API call-site bug — missing argument |
-| Chandra Lagna Conflicts | API call-site bug — unexpected keyword argument |
-| Time Planet Detection | API call-site bug — missing argument |
 | Gochar / Transit | Not collected — requires live ephemeris call |
 | Remedy Tracker | Not implemented — requires database/session |
 | Chandra Chaalana | Not wired in collection batch |
@@ -2324,16 +2339,16 @@ computation system. Evidence:
 
 | Priority | Action | Why |
 |----------|--------|-----|
-| 1 | Fix `cross_wake` call-site — add missing positional argument | Needed for cross-waking narrative feature |
-| 2 | Fix `chandra_c` call-site — remove unexpected keyword argument | Needed for Chandra conflict detection |
-| 3 | Fix `time_planet` call-site — add missing positional argument | Needed for time-planet detection |
-| 4 | Add live Gochar (transit) API endpoint | Required for daily/weekly transit predictions |
-| 5 | Wire Remedy Tracker to database | Required for remedy compliance tracking |
-| 6 | Add Chandra Chaalana to data collection batch | Complete the Chandra analysis suite |
-| 7 | Run `rem_matrix` for remaining planets (only 5 of 9 collected) | Mercury, Venus, Jupiter, Ketu missing |
-| 8 | Collect `chandra_r_*` for remaining planets (only 4 of 9) | Mercury, Venus, Jupiter, Mars, Saturn, Ketu missing |
-| 9 | Verify Sacrifice engine with non-zero data | Current empty list may be correct or may be a bug |
-| 10 | Cross-validate Masnui house overrides against LK text manually | Ensure override logic matches printed LK canon |
+| 1 | Add live Gochar (transit) API endpoint | Required for daily/weekly transit predictions |
+| 2 | Wire Remedy Tracker to database | Required for remedy compliance tracking |
+| 3 | Add Chandra Chaalana to data collection batch | Complete the Chandra analysis suite |
+| 4 | Run `rem_matrix` for remaining planets (Mercury, Venus, Jupiter, Ketu) | 4 of 9 planets missing |
+| 5 | Collect `chandra_r_*` for remaining planets (Mercury, Venus, Jupiter, Mars, Saturn, Ketu) | 5 of 9 missing |
+| 6 | Verify Sacrifice engine with non-zero data | Current empty list may be correct or may be a bug |
+| 7 | Cross-validate Masnui house overrides against LK text manually | Ensure override logic matches printed LK canon |
+| 8 | Surface Time Planet (LK 2.16) warning in the Remedies UI | Venus + Saturn remedies banned — must be visible before user starts remedy |
+| 9 | Wire cross-waking narrative H4→H9 activation alert in Family section | High-significance sleeping-house activation |
+| 10 | Add Chandra conflict badge to natal chart for Moon and Ketu | Both manda in Lagna, no Chandra reversal — flag in UI |
 
 ## 28.5 Test Coverage Summary
 
