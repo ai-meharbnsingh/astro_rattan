@@ -1,11 +1,11 @@
 # Graph Report - .  (2026-04-18)
 
 ## Corpus Check
-- 507 files · ~5,172,183 words
+- 507 files · ~5,172,644 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 7780 nodes · 13502 edges · 266 communities detected
+- 7783 nodes · 13506 edges · 266 communities detected
 - Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 777 edges (avg confidence: 0.5)
 - Token cost: 0 input · 0 output
 
@@ -45,7 +45,7 @@ Nodes (491): a(), aA(), Ab(), ac(), ad(), ag(), ah(), ai() (+483 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.02
-Nodes (168): get_live_dashboard(), get_stats(), get_user_detail(), list_all_kundlis(), list_users(), Admin routes — user management, stats, kundli overview, live traffic panel., Change a user's role (user/astrologer/admin)., Activate or deactivate a user account. (+160 more)
+Nodes (171): get_live_dashboard(), get_stats(), get_user_detail(), list_all_kundlis(), list_users(), Admin routes — user management, stats, kundli overview, live traffic panel., Change a user's role (user/astrologer/admin)., Activate or deactivate a user account. (+163 more)
 
 ### Community 3 - "Community 3"
 Cohesion: 0.01
@@ -444,12 +444,12 @@ Cohesion: 0.13
 Nodes (9): backendToDrikNum(), enrichDayFestivals(), fetchMonthly(), generateObservances(), getLocalDateString(), getTithiNumber(), normalizeFestivalDetail(), normalizeFestivalName() (+1 more)
 
 ### Community 102 - "Community 102"
-Cohesion: 0.13
-Nodes (15): BaseHTTPMiddleware, _extract_user_id(), get_traffic_snapshot(), H-01: Structured Logging Middleware — logs every request with method, path, stat, Extract user_id from JWT Bearer token if present., Middleware that logs every HTTP request and records to the live traffic buffer., Return a snapshot of recent traffic for the live admin dashboard.     Thread-saf, RequestLoggingMiddleware (+7 more)
-
-### Community 103 - "Community 103"
 Cohesion: 0.17
 Nodes (18): analyze_family_timing(), _build_indicator(), _house_lord(), _house_sign(), _house_sign_hi(), _make_summary(), _natal_sign(), family_timing_engine.py — Cross-Chart Family Timing Analysis =================== (+10 more)
+
+### Community 103 - "Community 103"
+Cohesion: 0.13
+Nodes (15): BaseHTTPMiddleware, _extract_user_id(), get_traffic_snapshot(), H-01: Structured Logging Middleware — logs every request with method, path, stat, Extract user_id from JWT Bearer token if present., Middleware that logs every HTTP request and records to the live traffic buffer., Return a snapshot of recent traffic for the live admin dashboard.     Thread-saf, RequestLoggingMiddleware (+7 more)
 
 ### Community 104 - "Community 104"
 Cohesion: 0.11
@@ -1100,7 +1100,7 @@ Cohesion: 1.0
 Nodes (0): 
 
 ## Knowledge Gaps
-- **1878 isolated node(s):** `Lal Kitab remedy context — Sun, Moon, Mars (36 entries)`, `Tests for enhanced Choghadiya — Vaar Vela, Kaal Vela, Kaal Ratri flags.`, `Exactly ONE day period must have vaar_vela=True for each weekday.`, `Exactly ONE day period must have kaal_vela=True for each weekday.`, `Exactly ONE night period must have kaal_ratri=True for each weekday.` (+1873 more)
+- **1879 isolated node(s):** `Lal Kitab remedy context — Sun, Moon, Mars (36 entries)`, `Tests for enhanced Choghadiya — Vaar Vela, Kaal Vela, Kaal Ratri flags.`, `Exactly ONE day period must have vaar_vela=True for each weekday.`, `Exactly ONE day period must have kaal_vela=True for each weekday.`, `Exactly ONE night period must have kaal_ratri=True for each weekday.` (+1874 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **Thin community `Community 198`** (2 nodes): `lk_ctx_a.py`, `Lal Kitab remedy context — Sun, Moon, Mars (36 entries)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
