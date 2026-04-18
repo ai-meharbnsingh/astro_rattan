@@ -190,7 +190,7 @@ export default function AstrologerDashboard() {
   // ── Guard rendering ──
   if (!isAllowed) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
+      <div className="min-h-[60vh] flex items-center justify-center pt-28 pb-12 px-4">
         <div className="text-center max-w-md">
           <Sparkles className="w-12 h-12 text-sacred-gold mx-auto mb-3" />
           <h2 className="text-xl font-sans font-semibold text-sacred-gold mb-2">
@@ -207,7 +207,7 @@ export default function AstrologerDashboard() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-12 space-y-6">
       {/* ── Page header ── */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>

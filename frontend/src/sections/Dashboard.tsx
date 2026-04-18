@@ -1,63 +1,59 @@
+/**
+ * Dashboard — personal home for role == 'user'.
+ *
+ * After the P3.5 role-split, this surface has ONE job: show a regular
+ * user their saved kundlis + profile panel + "New Kundli" CTA. No CRM.
+ *
+ * Role-aware redirects:
+ *   astrologer → /astrologer (richer CRM)
+ *   admin      → /admin      (platform management)
+ *   user       → stays here
+ */
 import { useTranslation } from '@/lib/i18n';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, Plus, Search, BookOpen, ChevronRight, User, Star, BarChart3 } from 'lucide-react';
+import { Plus, BookOpen, ChevronRight, User, Star, Calendar, MapPin } from 'lucide-react';
 import ProfileEditPanel from '@/components/ProfileEditPanel';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { api } from '@/lib/api';
+import { api, formatDate } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import { Heading } from '@/components/ui/heading';
 
-interface Client {
+interface KundliSummary {
   id: string;
-  name: string;
-  phone: string | null;
-  birth_date: string | null;
-  birth_place: string | null;
-  kundli_count: number;
-}
-
-interface AdminStats {
-  counts: { users: number; astrologers: number; clients: number; kundlis: number };
-  astrologers: Array<{ id: string; name: string; email: string; role: string; client_count: number; kundli_count: number; created_at: string }>;
+  person_name: string;
+  birth_date: string;
+  birth_time: string;
+  birth_place: string;
+  created_at: string;
 }
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
   const { t } = useTranslation();
-  const isAdmin = user?.role === 'admin';
-  const isAstrologer = user?.role === 'astrologer';
 
-  // P3.5 consolidation — astrologers now have a dedicated professional
-  // CRM at /astrologer (overview + activity + clients + consultations).
-  // The legacy astrologer view in this Dashboard duplicated the client
-  // list. Auto-redirect so astrologers land on the richer surface.
+  // ── Role-aware redirects ──
+  // astrologer → /astrologer; admin → /admin; user → stays here.
+  // Admin takes precedence over astrologer when a user happens to hold
+  // both flags (super-admin using the astrologer CRM is less common than
+  // an admin needing platform tools).
   useEffect(() => {
-    if (isAuthenticated && isAstrologer && !isAdmin) {
-      navigate('/astrologer', { replace: true });
-    }
-  }, [isAuthenticated, isAstrologer, isAdmin, navigate]);
+    if (!isAuthenticated) { navigate('/login'); return; }
+    if (user?.role === 'admin') { navigate('/admin', { replace: true }); return; }
+    if (user?.role === 'astrologer') { navigate('/astrologer', { replace: true }); return; }
+  }, [isAuthenticated, user?.role, navigate]);
 
-  // Astrologer state
-  const [clients, setClients] = useState<Client[]>([]);
-  const [search, setSearch] = useState('');
+  const [kundlis, setKundlis] = useState<KundliSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
-  // Admin state
-  const [adminStats, setAdminStats] = useState<AdminStats | null>(null);
-
-  // Debounce ref for search
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
-
-  const fetchClients = useCallback(async (q = '') => {
+  const fetchKundlis = useCallback(async () => {
     setLoading(true);
     setFetchError(null);
     try {
-      const data = await api.get(`/api/clients?search=${encodeURIComponent(q)}`);
-      setClients(data);
+      const data = await api.get('/api/kundli');
+      setKundlis(Array.isArray(data) ? data : []);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : '';
       setFetchError(msg === 'Not authenticated' ? t('dashboard.sessionExpired') : t('dashboard.loadFailed'));
@@ -65,204 +61,139 @@ export default function Dashboard() {
     setLoading(false);
   }, [t]);
 
-  const fetchAdminStats = useCallback(async () => {
-    try {
-      const data = await api.get('/api/admin/stats');
-      setAdminStats(data);
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : '';
-      setFetchError(msg || t('dashboard.adminStatsLoadFailed'));
-    }
-  }, [t]);
-
   useEffect(() => {
-    if (!isAuthenticated) { navigate('/login'); return; }
-    if (isAdmin) {
-      fetchAdminStats();
+    // Only fetch if this is a regular user — admins/astrologers will have
+    // already been redirected away, so avoid an unnecessary API call.
+    if (isAuthenticated && user?.role !== 'admin' && user?.role !== 'astrologer') {
+      fetchKundlis();
     }
-    fetchClients();
-  }, [isAuthenticated, isAdmin, navigate, fetchAdminStats, fetchClients]);
+  }, [isAuthenticated, user?.role, fetchKundlis]);
 
-  const handleSearch = (val: string) => {
-    setSearch(val);
-    clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => fetchClients(val), 300);
-  };
-
-  // ─── ADMIN DASHBOARD ─────────────────────────────────────
-  if (isAdmin && adminStats) {
-    return (
-      <div className="min-h-screen pt-28 pb-16 px-4 max-w-6xl mx-auto">
-        <div className="flex items-center justify-end mb-8">
-          <div className="flex gap-2">
-            <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-background hover:bg-gray-50 text-sm uppercase tracking-wider px-4 py-2 rounded-lg">
-              <Plus className="w-4 h-4 mr-1" /> {t('dashboard.newKundli')}
-            </Button>
-            <Button onClick={() => navigate('/admin')} variant="outline" className="border-sacred-gold text-sacred-gold-dark text-sm uppercase tracking-wider px-4 py-2 rounded-lg">
-              <BarChart3 className="w-4 h-4 mr-1" /> {t('dashboard.fullAdmin')}
-            </Button>
-          </div>
-        </div>
-
-        {/* Summary Boxes */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {[
-            { label: t('dashboard.stats.astrologers'), value: adminStats.counts.astrologers, icon: Star, color: 'text-amber-500' },
-            { label: t('dashboard.stats.clientsAdded'), value: adminStats.counts.clients, icon: Users, color: 'text-blue-500' },
-            { label: t('dashboard.stats.totalKundlis'), value: adminStats.counts.kundlis, icon: BarChart3, color: 'text-green-500' },
-            { label: t('dashboard.stats.registeredUsers'), value: adminStats.counts.users, icon: User, color: 'text-purple-500' },
-          ].map(s => (
-            <div key={s.label} className="border border-sacred-gold p-5 bg-background">
-              <s.icon className={`w-5 h-5 ${s.color} mb-2`} />
-              <p className="text-3xl text-foreground font-bold">{s.value}</p>
-              <p className="text-sm text-foreground uppercase tracking-wider mt-1">{s.label}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Astrologers List */}
-        <Heading as={2} variant={6} className="uppercase tracking-wider mb-4">{t('dashboard.astrologersAndTheirClients')}</Heading>
-        <div className="space-y-3 mb-10">
-          {adminStats.astrologers.map(astro => (
-            <div key={astro.id} className="border border-sacred-gold p-4 bg-background">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-sacred-gold-dark border border-sacred-gold flex items-center justify-center">
-                    <Star className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-foreground">{astro.name}</p>
-                    <p className="text-sm text-foreground">{astro.email}</p>
-                  </div>
-                </div>
-                <div className="flex gap-6 text-right">
-                  <div>
-                    <p className="text-lg text-foreground font-bold">{astro.client_count}</p>
-                    <p className="text-sm text-foreground">{t('dashboard.clients')}</p>
-                  </div>
-                  <div>
-                    <p className="text-lg text-foreground font-bold">{astro.kundli_count}</p>
-                    <p className="text-sm text-foreground">{t('dashboard.kundlis')}</p>
-                  </div>
-                  <span className={`self-center text-sm px-2 py-0.5 border ${astro.role === 'admin' ? 'border-red-300 text-red-500' : 'border-purple-500 text-purple-500'}`}>
-                    {astro.role}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Admin's own clients below */}
-        <Heading as={2} variant={6} className="uppercase tracking-wider mb-4">{t('dashboard.myClients')}</Heading>
-        <div className="relative mb-4">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground" />
-          <Input type="text" value={search} onChange={e => handleSearch(e.target.value)}
-            placeholder={t('dashboard.searchPlaceholder')} className="pl-10 bg-background border-sacred-gold text-foreground rounded-lg" />
-        </div>
-        {renderClientList()}
-      </div>
-    );
-  }
-
-  // ─── ASTROLOGER DASHBOARD ────────────────────────────────
-  function renderClientList() {
-    if (loading) {
-      return (
-        <div className="space-y-3 py-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="flex items-center gap-4 p-4 border border-sacred-gold">
-              <div className="w-10 h-10 animate-pulse bg-sacred-gold/15 rounded" />
-              <div className="flex-1 space-y-2">
-                <div className="h-4 w-32 animate-pulse bg-sacred-gold/15 rounded" />
-                <div className="h-3 w-48 animate-pulse bg-sacred-gold/15 rounded" />
-              </div>
-              <div className="h-4 w-16 animate-pulse bg-sacred-gold/15 rounded" />
-            </div>
-          ))}
-        </div>
-      );
-    }
-    if (fetchError) {
-      return (
-        <div className="text-center py-12">
-          <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-3"><span className="text-2xl">!</span></div>
-          <p className="text-red-700 mb-2">{fetchError}</p>
-          <button onClick={() => fetchClients(search)} className="px-4 py-2 bg-sacred-gold-dark text-white rounded-lg text-sm hover:opacity-90">{t('common.retry')}</button>
-        </div>
-      );
-    }
-    if (clients.length === 0) {
-      return (
-        <div className="text-center py-16 border border-dashed border-sacred-gold">
-          <User className="w-12 h-12 text-foreground mx-auto mb-4" />
-          <p className="text-foreground mb-2">{t('dashboard.noClients')}</p>
-          <p className="text-sm text-foreground mb-6">{t('dashboard.createPrompt')}</p>
-          <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-background hover:bg-gray-50 text-sm uppercase tracking-wider rounded-lg">
-            <Plus className="w-4 h-4 mr-1" /> {t('dashboard.createFirst')}
-          </Button>
-        </div>
-      );
-    }
-    return (
-      <div className="space-y-2">
-        {clients.map(client => (
-          <div key={client.id}
-            className="flex items-center justify-between p-4 border border-sacred-gold hover:border-sacred-gold-dark transition-colors bg-background cursor-pointer group"
-            onClick={() => navigate(`/client/${client.id}`)}>
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-sacred-gold-dark border border-sacred-gold flex items-center justify-center shrink-0">
-                <User className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-foreground">{client.name}</p>
-                <p className="text-sm text-foreground">
-                  {client.birth_date || t('common.noData')} {client.birth_place ? ` · ${client.birth_place}` : ''}
-                  {client.phone ? ` · ${client.phone}` : ''}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-foreground">{client.kundli_count} {client.kundli_count !== 1 ? t('dashboard.charts') : t('dashboard.chart')}</span>
-              <ChevronRight className="w-4 h-4 text-foreground group-hover:text-sacred-gold-dark transition-colors" />
-            </div>
-          </div>
-        ))}
-      </div>
-    );
+  // While redirect is in flight, show nothing (prevents a flash of the
+  // user view for astrologers/admins).
+  if (user?.role === 'admin' || user?.role === 'astrologer') {
+    return null;
   }
 
   return (
-    <div className="min-h-screen pt-28 pb-16 px-4 max-w-6xl mx-auto">
+    <div className="min-h-screen pt-28 pb-16 px-4 max-w-5xl mx-auto">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
         <div>
           <Heading as={1} variant={1}>
             {user?.name ? `${t('dashboard.welcome')}, ${user.name}` : t('nav.dashboard')}
           </Heading>
-          <p className="text-sm text-foreground mt-1">{clients.length} {t('dashboard.clientsRegistered')}</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            {kundlis.length} {kundlis.length === 1
+              ? (t('dashboard.chart') || 'chart')
+              : (t('dashboard.charts') || 'charts')} {t('dashboard.saved') || 'saved'}
+          </p>
         </div>
         <div className="flex gap-2">
-          <Button onClick={() => navigate('/kundli')} className="bg-sacred-gold-dark text-background hover:bg-gray-50 text-sm uppercase tracking-wider px-4 py-2 rounded-lg whitespace-nowrap">
+          <Button
+            onClick={() => navigate('/kundli')}
+            className="bg-sacred-gold-dark text-background hover:bg-sacred-gold text-sm uppercase tracking-wider px-4 py-2 rounded-lg"
+          >
             <Plus className="w-4 h-4 mr-1" /> {t('dashboard.newKundli')}
           </Button>
-          <Button onClick={() => navigate('/lal-kitab')} variant="outline" className="border-sacred-gold text-sacred-gold-dark text-sm uppercase tracking-wider px-4 py-2 rounded-lg whitespace-nowrap">
+          <Button
+            onClick={() => navigate('/lal-kitab')}
+            variant="outline"
+            className="border-sacred-gold text-sacred-gold-dark text-sm uppercase tracking-wider px-4 py-2 rounded-lg"
+          >
             <BookOpen className="w-4 h-4 mr-1" /> {t('nav.lalKitab')}
           </Button>
         </div>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-6">
-        {/* LEFT — Client list */}
+        {/* LEFT — Saved kundlis */}
         <div className="flex-1 min-w-0">
-          <div className="relative mb-6">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground" />
-            <Input type="text" value={search} onChange={e => handleSearch(e.target.value)}
-              placeholder={t('dashboard.searchPlaceholder')} className="pl-10 bg-background border-sacred-gold text-foreground rounded-lg" />
-          </div>
-          {renderClientList()}
+          <Heading as={2} variant={6} className="uppercase tracking-wider mb-4">
+            {t('dashboard.myCharts') || 'My Charts'}
+          </Heading>
+
+          {loading && (
+            <div className="space-y-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-4 p-4 border border-sacred-gold rounded-lg">
+                  <div className="w-10 h-10 animate-pulse bg-sacred-gold/15 rounded" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 w-32 animate-pulse bg-sacred-gold/15 rounded" />
+                    <div className="h-3 w-48 animate-pulse bg-sacred-gold/15 rounded" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {!loading && fetchError && (
+            <div className="text-center py-12 rounded-lg border border-red-200 bg-red-50">
+              <p className="text-red-700 mb-2">{fetchError}</p>
+              <button
+                onClick={fetchKundlis}
+                className="px-4 py-2 bg-sacred-gold-dark text-white rounded-lg text-sm hover:bg-sacred-gold"
+              >
+                {t('common.retry')}
+              </button>
+            </div>
+          )}
+
+          {!loading && !fetchError && kundlis.length === 0 && (
+            <div className="text-center py-16 border border-dashed border-sacred-gold rounded-lg">
+              <Star className="w-12 h-12 text-sacred-gold mx-auto mb-4" />
+              <p className="text-foreground mb-2 font-semibold">
+                {t('dashboard.noCharts') || 'No saved charts yet'}
+              </p>
+              <p className="text-sm text-muted-foreground mb-6">
+                {t('dashboard.createPrompt') || 'Start by generating your first kundli.'}
+              </p>
+              <Button
+                onClick={() => navigate('/kundli')}
+                className="bg-sacred-gold-dark text-background hover:bg-sacred-gold text-sm uppercase tracking-wider rounded-lg"
+              >
+                <Plus className="w-4 h-4 mr-1" /> {t('dashboard.createFirst') || 'Generate First Kundli'}
+              </Button>
+            </div>
+          )}
+
+          {!loading && !fetchError && kundlis.length > 0 && (
+            <div className="space-y-2">
+              {kundlis.map((k) => (
+                <div
+                  key={k.id}
+                  onClick={() => navigate('/kundli', { state: { loadKundliId: k.id } })}
+                  className="flex items-center justify-between p-4 border border-sacred-gold hover:border-sacred-gold-dark hover:bg-sacred-gold/5 transition-colors bg-background rounded-lg cursor-pointer group"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-sacred-gold-dark border border-sacred-gold rounded-full flex items-center justify-center shrink-0">
+                      <User className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-foreground truncate">{k.person_name}</p>
+                      <p className="text-xs text-muted-foreground flex items-center gap-2 flex-wrap">
+                        {k.birth_date && (
+                          <span className="inline-flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            {formatDate(k.birth_date)} {k.birth_time}
+                          </span>
+                        )}
+                        {k.birth_place && (
+                          <span className="inline-flex items-center gap-1">
+                            <MapPin className="w-3 h-3" />
+                            {k.birth_place}
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-sacred-gold group-hover:translate-x-0.5 transition-transform shrink-0" />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* RIGHT — Profile edit panel */}
+        {/* RIGHT — Profile edit */}
         <div className="w-full lg:w-80 shrink-0">
           <ProfileEditPanel />
         </div>
