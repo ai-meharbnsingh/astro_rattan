@@ -440,6 +440,67 @@ export default function LalKitabRemediesTab({ kundliId }: Props) {
 
   const urgentCount = enriched.filter(r => r.urgency === 'high' && r.has_remedy).length;
 
+  // LK 4.12 — Remedy Conflict Detection
+  const detectConflicts = () => {
+    const conflicts: Array<{ planets: string[]; reason_en: string; reason_hi: string; severity: 'high' | 'medium' }> = [];
+    const activeRemedies = enriched.filter(r => r.has_remedy);
+
+    // Check for same-day conflicts (multiple remedies on the same day might be hard to execute)
+    const dayCount: Record<string, EnrichedRemedy[]> = {};
+    activeRemedies.forEach(r => {
+      if (r.day && r.day !== '') {
+        if (!dayCount[r.day]) dayCount[r.day] = [];
+        dayCount[r.day].push(r);
+      }
+    });
+
+    Object.entries(dayCount).forEach(([day, planets]) => {
+      if (planets.length > 2) {
+        conflicts.push({
+          planets: planets.map(p => p.planet),
+          reason_en: `${planets.length} remedies scheduled for ${day} — may be difficult to execute together. Consider spacing them out.`,
+          reason_hi: `${day} के लिए ${planets.length} उपाय — एक साथ करना मुश्किल हो सकता है। उन्हें अलग-अलग समय पर करने पर विचार करें।`,
+          severity: 'medium',
+        });
+      }
+    });
+
+    // Check for opposite material/action keywords (feed vs avoid, speak vs silence, etc.)
+    const opposites: Record<string, string[]> = {
+      'feed': ['avoid feeding', 'do not feed', 'refrain from feeding'],
+      'speak': ['avoid speaking', 'do not speak', 'silence'],
+      'donate': ['refuse donation', 'avoid donating'],
+      'wear': ['remove', 'not wear', 'avoid wearing'],
+    };
+
+    for (const [keyword, oppositeList] of Object.entries(opposites)) {
+      const withKeyword = activeRemedies.filter(r =>
+        r.remedy_en.toLowerCase().includes(keyword) ||
+        r.remedy_hi?.toLowerCase().includes(keyword.replace(/[a-z]/g, '') || '')
+      );
+      const withOpposite = activeRemedies.filter(r =>
+        oppositeList.some(opp => r.remedy_en.toLowerCase().includes(opp.toLowerCase()))
+      );
+
+      const conflictingPairs = withKeyword.filter(k =>
+        withOpposite.some(o => o.planet !== k.planet)
+      );
+
+      if (conflictingPairs.length > 0 && withOpposite.length > 0) {
+        conflicts.push({
+          planets: [...new Set([...withKeyword.map(p => p.planet), ...withOpposite.map(p => p.planet)])],
+          reason_en: `Conflicting action instructions: some remedies ask to "${keyword}" while others ask to avoid it.`,
+          reason_hi: `विरोधाभासी निर्देश: कुछ उपाय "${keyword}" करने को कहते हैं जबकि अन्य इससे बचने को कहते हैं।`,
+          severity: 'high',
+        });
+      }
+    }
+
+    return conflicts;
+  };
+
+  const conflicts = detectConflicts();
+
   return (
     <div className="space-y-6">
       {/* P2.4 — Remedy Wizard CTA: "Don't know where to start?" */}
@@ -491,6 +552,55 @@ export default function LalKitabRemediesTab({ kundliId }: Props) {
           </div>
         )}
       </div>
+
+      {/* LK 4.12 — Remedy Conflict Detection */}
+      {conflicts.length > 0 && (
+        <div className="rounded-xl border-2 border-orange-300 bg-orange-50/80 p-4 space-y-3">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-orange-700 shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <h4 className="font-semibold text-orange-800 text-sm flex items-center gap-2 mb-2">
+                {isHi ? '⚠ उपायों में टकराव' : '⚠ Remedy Conflicts Detected'}
+                <span className="text-xs px-2 py-0.5 rounded-full bg-orange-100 border border-orange-300 text-orange-700 font-medium">
+                  {conflicts.length} {isHi ? 'मुद्दे' : 'issues'}
+                </span>
+              </h4>
+              <div className="space-y-2">
+                {conflicts.map((conflict, idx) => {
+                  const isHighSeverity = conflict.severity === 'high';
+                  return (
+                    <div
+                      key={idx}
+                      className={`rounded-lg border p-3 ${
+                        isHighSeverity
+                          ? 'border-red-300/60 bg-red-50/60'
+                          : 'border-amber-200/60 bg-amber-50/40'
+                      }`}
+                    >
+                      <div className="flex items-start gap-2 mb-1.5">
+                        <span className={`text-xs font-bold uppercase ${isHighSeverity ? 'text-red-700' : 'text-amber-700'}`}>
+                          {isHighSeverity ? '🔴 Critical' : '🟡 Warning'}
+                        </span>
+                        <span className="text-xs text-foreground/60">
+                          {conflict.planets.join(', ')}
+                        </span>
+                      </div>
+                      <p className={`text-sm leading-relaxed ${isHighSeverity ? 'text-red-900' : 'text-amber-900'}`}>
+                        {isHi ? conflict.reason_hi : conflict.reason_en}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+              <p className="text-xs text-orange-700/80 mt-3 italic">
+                {isHi
+                  ? 'सुझाव: आप उपायों को अलग-अलग समय पर करने पर विचार कर सकते हैं या किसी पारंपरिक ज्योतिषी से सलाह ले सकते हैं।'
+                  : 'Suggestion: Consider spacing out the remedies or consult a traditional astrologer for guidance.'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Filter pills */}
       <div className="flex gap-2 flex-wrap">
