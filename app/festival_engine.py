@@ -21,17 +21,24 @@ from typing import Any, Dict, List, Optional
 
 TITHI_FESTIVALS: List[Dict[str, Any]] = [
     # ── Chaitra ──────────────────────────────────────────────
+    {"maas": "Chaitra", "paksha": "Shukla", "tithi": "Pratipada", "name": "Anvadhan", "name_hindi": "अन्वधान", "type": "festival", "description": "Chaitra month begins", "description_hindi": "चैत्र मास की शुरुआत"},
     {"maas": "Chaitra", "paksha": "Shukla", "tithi": "Pratipada", "name": "Hindu Nav Varsh", "name_hindi": "हिन्दू नव वर्ष", "type": "major", "description": "Hindu New Year - start of Chaitra Navratri", "description_hindi": "हिंदू नव वर्ष - चैत्र नवरात्रि का प्रारंभ"},
     {"maas": "Chaitra", "paksha": "Shukla", "tithi": "Pratipada", "name": "Chaitra Navratri Begins", "name_hindi": "चैत्र नवरात्रि आरम्भ", "type": "major", "description": "Nine nights of Goddess Durga worship begin", "description_hindi": "मां दुर्गा की नौ रात्रियों की पूजा शुरू"},
     {"maas": "Chaitra", "paksha": "Shukla", "tithi": "Navami", "name": "Ram Navami", "name_hindi": "राम नवमी", "type": "major", "description": "Birthday of Lord Rama", "description_hindi": "भगवान श्री राम का जन्म दिवस"},
     {"maas": "Chaitra", "paksha": "Shukla", "tithi": "Purnima", "name": "Hanuman Jayanti", "name_hindi": "हनुमान जयंती", "type": "major", "description": "Birthday of Lord Hanuman", "description_hindi": "भगवान हनुमान का जन्म दिवस"},
+    {"maas": "Chaitra", "paksha": "Shukla", "tithi": "Purnima", "name": "Hanuman Janmotsava", "name_hindi": "हनुमान जन्मोत्सव", "type": "major", "description": "Birth celebration of Hanuman", "description_hindi": "हनुमान का जन्मोत्सव"},
     {"maas": "Chaitra", "paksha": "Shukla", "tithi": "Purnima", "name": "Chaitra Purnima", "name_hindi": "चैत्र पूर्णिमा", "type": "major", "description": "Full moon of Chaitra month", "description_hindi": "चैत्र मास की पूर्णिमा"},
+    {"maas": "Chaitra", "paksha": "Krishna", "tithi": "Amavasya", "name": "Darsha Amvasaya", "name_hindi": "दर्श अमावस्या", "type": "festival", "description": "New moon day - moon sighting festival", "description_hindi": "नई चाँद देखने का त्योहार"},
 
     # ── Vaishakha ────────────────────────────────────────────
+    {"maas": "Vaishakha", "paksha": "Shukla", "tithi": "Saptami", "name": "Ganga Saptami", "name_hindi": "गंगा सप्तमी", "type": "festival", "description": "Worship of Goddess Ganga"},
+    {"maas": "Vaishakha", "paksha": "Krishna", "tithi": "Chaturthi", "name": "Vikata Sankashti Chaturthi", "name_hindi": "विकट संकष्टी चतुर्थी", "type": "fasting", "description": "Ganesha worship on inauspicious Chaturthi"},
     {"maas": "Vaishakha", "paksha": "Shukla", "tithi": "Tritiya", "name": "Akshaya Tritiya", "name_hindi": "अक्षय तृतीया", "type": "major", "description": "Most auspicious day for new beginnings, gold purchase"},
     {"maas": "Vaishakha", "paksha": "Shukla", "tithi": "Tritiya", "name": "Parashurama Jayanti", "name_hindi": "परशुराम जयंती", "type": "major", "description": "Birthday of Lord Parashurama"},
     {"maas": "Vaishakha", "paksha": "Shukla", "tithi": "Navami", "name": "Sita Navami", "name_hindi": "सीता नवमी", "type": "festival", "description": "Birthday of Goddess Sita"},
     {"maas": "Vaishakha", "paksha": "Shukla", "tithi": "Purnima", "name": "Buddha Purnima", "name_hindi": "बुद्ध पूर्णिमा", "type": "major", "description": "Birthday of Lord Buddha"},
+    {"maas": "Vaishakha", "paksha": "Krishna", "tithi": "Chaturdashi", "name": "Narasimha Jayanti", "name_hindi": "नरसिंह जयंती", "type": "major", "description": "Birthday of Lord Narasimha"},
+    {"maas": "Vaishakha", "paksha": "Krishna", "tithi": "Trayodashi", "name": "Budha Pradosh Vrat", "name_hindi": "बुध प्रदोष व्रत", "type": "fasting", "description": "Shiva worship on Mercury's day during twilight"},
     {"maas": "Vaishakha", "paksha": "Krishna", "tithi": "Ekadashi", "name": "Varuthini Ekadashi", "name_hindi": "वरूथिनी एकादशी", "type": "fasting", "description": "Sacred Ekadashi fasting day"},
     {"maas": "Vaishakha", "paksha": "Shukla", "tithi": "Ekadashi", "name": "Mohini Ekadashi", "name_hindi": "मोहिनी एकादशी", "type": "fasting", "description": "Sacred Ekadashi fasting day"},
 
