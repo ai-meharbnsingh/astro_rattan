@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { AlertTriangle, CheckCircle2, Sparkles, Sunrise, Compass, Clover, CircleAlert, Clock } from 'lucide-react';
 import type { FullPanchangData } from '@/sections/Panchang';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import MuhuratSummary from './MuhuratSummary';
 
 /* ------------------------------------------------------------------ */
 /*  Extended API types (new fields not yet in FullPanchangData)        */
@@ -63,9 +64,10 @@ interface Props {
   panchang: FullPanchangData;
   language: string;
   t: (key: string) => string;
+  currentTime?: Date;
 }
 
-export default function MuhuratTab({ panchang: _panchang, language, t }: Props) {
+export default function MuhuratTab({ panchang: _panchang, language, t, currentTime = new Date() }: Props) {
   const panchang = _panchang as ExtPanchang;
 
   // ── Feature 7: Rahu Kaal live status (local browser time) ──
@@ -241,6 +243,9 @@ export default function MuhuratTab({ panchang: _panchang, language, t }: Props) 
 
   return (
     <div className="space-y-3">
+      {/* ── MUHURAT SUMMARY (Today's highlights) ── */}
+      <MuhuratSummary panchang={panchang} language={language} t={t} currentTime={currentTime} />
+
       {/* ── HARD BLOCK BANNERS (P0 safety) ── */}
       {hardBlockBanners.length > 0 && (
         <div className="space-y-1">
