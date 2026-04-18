@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, Sparkles, LogOut, Shield, User, ChevronDown } from 'lucide-react';
+import { Menu, X, Sparkles, LogOut, Shield, User, ChevronDown, Briefcase } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/lib/i18n';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
@@ -23,7 +23,7 @@ const authRequiredRoutes = new Set(['/kundli']);
 
 export default function Navigation() {
   const { user, isAuthenticated, logout } = useAuth();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -110,6 +110,17 @@ export default function Navigation() {
                         <User className="w-4 h-4" />
                         {t('nav.profile')}
                       </Link>
+                      {/* P3.5 — Professional dashboard (astrologers + admins) */}
+                      {(user?.role === 'astrologer' || user?.role === 'admin') && (
+                        <Link
+                          to="/astrologer"
+                          onClick={() => setIsProfileMenuOpen(false)}
+                          className="flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-gray-50 hover:text-sacred-gold-dark transition-colors"
+                        >
+                          <Briefcase className="w-4 h-4" />
+                          {language === 'hi' ? 'पेशेवर डैशबोर्ड' : 'Professional'}
+                        </Link>
+                      )}
                       {user?.role === 'admin' && (
                         <Link
                           to="/admin"
