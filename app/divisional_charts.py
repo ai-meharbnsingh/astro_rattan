@@ -736,6 +736,112 @@ def _sign_index(sign_name: str) -> int:
 
 
 # ============================================================
+# D2/D3/D30 Lord Significance Helpers (Phaladeepika Adh. 3)
+# ============================================================
+
+# Sign lord lookup
+_SIGN_LORD: Dict[str, str] = {
+    "Aries": "Mars", "Taurus": "Venus", "Gemini": "Mercury",
+    "Cancer": "Moon", "Leo": "Sun", "Virgo": "Mercury",
+    "Libra": "Venus", "Scorpio": "Mars", "Sagittarius": "Jupiter",
+    "Capricorn": "Saturn", "Aquarius": "Saturn", "Pisces": "Jupiter",
+}
+
+# Trimsamsha lord lookup: returns lord planet name given odd/even sign & degree
+# Odd signs: Mars 0-5, Saturn 5-10, Jupiter 10-18, Mercury 18-25, Venus 25-30
+# Even signs: Venus 0-5, Mercury 5-12, Jupiter 12-20, Saturn 20-25, Mars 25-30
+_TRIMSAMSHA_ODD: List[tuple] = [(5, "Mars"), (10, "Saturn"), (18, "Jupiter"), (25, "Mercury"), (30, "Venus")]
+_TRIMSAMSHA_EVEN: List[tuple] = [(5, "Venus"), (12, "Mercury"), (20, "Jupiter"), (25, "Saturn"), (30, "Mars")]
+
+# Drekkana type by (sign_element, decanate_part)
+# Reference: Phaladeepika Drekkana types
+# Elements: Fire(0), Earth(1), Air(2), Water(3)  (sign_index % 4 in sequence: 0,1,2,3)
+# But sign element: Aries=Fire=0, Taurus=Earth=1, Gemini=Air=2, Cancer=Water=3 ...
+_DREKKANA_TYPES: Dict[tuple, Dict[str, str]] = {
+    # Fire signs (Aries=0, Leo=4, Sagittarius=8): 1st=Ayudha, 2nd=Pasa, 3rd=Nagala
+    (0, 0): {"type": "Sarpa", "meaning_en": "Serpentine — hidden enemies, transformation", "meaning_hi": "सर्प — छिपे शत्रु, परिवर्तन"},
+    (0, 1): {"type": "Ayudha", "meaning_en": "Weapon — courage, conflict, military prowess", "meaning_hi": "आयुध — साहस, संघर्ष, सैन्य पराक्रम"},
+    (0, 2): {"type": "Pasa", "meaning_en": "Noose — bondage, legal issues, restrictions", "meaning_hi": "पाश — बंधन, कानूनी मामले, प्रतिबंध"},
+    # Earth signs (Taurus=1, Virgo=5, Capricorn=9)
+    (1, 0): {"type": "Pasa", "meaning_en": "Noose — bondage, legal issues, restrictions", "meaning_hi": "पाश — बंधन, कानूनी मामले, प्रतिबंध"},
+    (1, 1): {"type": "Nagala", "meaning_en": "Chain — karma, imprisonment risk", "meaning_hi": "नागल — कर्म, कारावास का जोखिम"},
+    (1, 2): {"type": "Ayudha", "meaning_en": "Weapon — courage, conflict, military prowess", "meaning_hi": "आयुध — साहस, संघर्ष, सैन्य पराक्रम"},
+    # Air signs (Gemini=2, Libra=6, Aquarius=10)
+    (2, 0): {"type": "Nagala", "meaning_en": "Chain — karma, imprisonment risk", "meaning_hi": "नागल — कर्म, कारावास का जोखिम"},
+    (2, 1): {"type": "Sarpa", "meaning_en": "Serpentine — hidden enemies, transformation", "meaning_hi": "सर्प — छिपे शत्रु, परिवर्तन"},
+    (2, 2): {"type": "Pasa", "meaning_en": "Noose — bondage, legal issues, restrictions", "meaning_hi": "पाश — बंधन, कानूनी मामले, प्रतिबंध"},
+    # Water signs (Cancer=3, Scorpio=7, Pisces=11)
+    (3, 0): {"type": "Ayudha", "meaning_en": "Weapon — courage, conflict, military prowess", "meaning_hi": "आयुध — साहस, संघर्ष, सैन्य पराक्रम"},
+    (3, 1): {"type": "Pasa", "meaning_en": "Noose — bondage, legal issues, restrictions", "meaning_hi": "पाश — बंधन, कानूनी मामले, प्रतिबंध"},
+    (3, 2): {"type": "Nagala", "meaning_en": "Chain — karma, imprisonment risk", "meaning_hi": "नागल — कर्म, कारावास का जोखिम"},
+}
+
+
+def _hora_lord_info(part: int) -> Dict[str, str]:
+    """Return hora lord significance dict for D2. part=0→Sun, part=1→Moon."""
+    if part == 0:
+        return {
+            "planet": "Sun",
+            "sign": "Leo",
+            "meaning_en": "Wealth through own efforts, father's lineage, leadership and authority.",
+            "meaning_hi": "स्वयं के प्रयासों से धन, पितृ वंश, नेतृत्व और अधिकार।",
+        }
+    return {
+        "planet": "Moon",
+        "sign": "Cancer",
+        "meaning_en": "Wealth through mother/family, passive income, emotional security.",
+        "meaning_hi": "माता/परिवार से धन, निष्क्रिय आय, भावनात्मक सुरक्षा।",
+    }
+
+
+def _drekkana_lord_info(rasi_index: int, part: int) -> Dict[str, Any]:
+    """Return drekkana lord and decanate type for D3."""
+    decanate_names = ["1st", "2nd", "3rd"]
+    offsets = [0, 4, 8]
+    lord_sign_index = (rasi_index + offsets[part]) % 12
+    lord_sign = _SIGN_NAMES[lord_sign_index]
+    lord = _SIGN_LORD.get(lord_sign, "")
+    element = rasi_index % 4  # 0=Fire,1=Earth,2=Air,3=Water
+    dtype = _DREKKANA_TYPES.get((element, part), {
+        "type": "Mixed",
+        "meaning_en": "Indicates mixed results based on chart context.",
+        "meaning_hi": "कुंडली के संदर्भ के अनुसार मिश्रित फल।",
+    })
+    return {
+        "lord": lord,
+        "decanate": decanate_names[part],
+        "type": dtype["type"],
+        "meaning_en": dtype["meaning_en"],
+        "meaning_hi": dtype["meaning_hi"],
+    }
+
+
+def _trimsamsha_lord_info(rasi_index: int, degree_in_sign: float) -> Dict[str, str]:
+    """Return trimsamsha lord for D30."""
+    sign_number = rasi_index + 1
+    ranges = _TRIMSAMSHA_ODD if sign_number % 2 == 1 else _TRIMSAMSHA_EVEN
+    lord = ranges[-1][1]  # default last
+    for end, planet in ranges:
+        if degree_in_sign < end:
+            lord = planet
+            break
+
+    _MEANINGS: Dict[str, Dict[str, str]] = {
+        "Mars":    {"en": "Energy, courage, conflicts, surgery risk; indicates pitta-type ailments.", "hi": "ऊर्जा, साहस, संघर्ष, शल्य जोखिम; पित्त प्रकार की बीमारियां।"},
+        "Saturn":  {"en": "Chronic issues, delays, karma, discipline; indicates vata-type ailments.", "hi": "दीर्घकालिक समस्याएं, देरी, कर्म, अनुशासन; वात प्रकार की बीमारियां।"},
+        "Jupiter": {"en": "Wisdom, expansion, liver/fat issues; generally protective if well-placed.", "hi": "बुद्धि, विस्तार, यकृत/वसा समस्याएं; अच्छी स्थिति में सामान्यतः सुरक्षात्मक।"},
+        "Mercury": {"en": "Nervous disorders, skin, speech; intelligence and communication challenges.", "hi": "तंत्रिका विकार, त्वचा, वाणी; बुद्धि और संचार चुनौतियां।"},
+        "Venus":   {"en": "Reproductive/kidney issues, luxury, hormonal imbalance; sensual excess.", "hi": "प्रजनन/गुर्दे की समस्याएं, विलासिता, हार्मोनल असंतुलन; विषय-भोग की अधिकता।"},
+    }
+    meaning = _MEANINGS.get(lord, {"en": "", "hi": ""})
+    return {
+        "lord": lord,
+        "meaning_en": meaning["en"],
+        "meaning_hi": meaning["hi"],
+    }
+
+
+# ============================================================
 # D2 -- Hora
 # ============================================================
 
@@ -754,13 +860,16 @@ def _calculate_d2(planet_longitudes: Dict[str, float]) -> Dict[str, Dict[str, An
         sign_number = rasi_index + 1  # 1-indexed
         if sign_number % 2 == 1:  # Odd sign
             div_sign_index = 4 if part == 0 else 3  # Leo or Cancer
+            hora_part = 0 if part == 0 else 1  # Sun or Moon
         else:  # Even sign
             div_sign_index = 3 if part == 0 else 4  # Cancer or Leo
+            hora_part = 1 if part == 0 else 0  # Moon or Sun
         degree_within = (degree_in_sign % 15.0) * 2.0  # Scale to 0-30
         result[planet] = {
             "sign": _SIGN_NAMES[div_sign_index],
             "sign_index": div_sign_index,
             "degree": round(degree_within, 4),
+            "hora_lord": _hora_lord_info(hora_part),
         }
     return result
 
@@ -787,6 +896,7 @@ def _calculate_d3(planet_longitudes: Dict[str, float]) -> Dict[str, Dict[str, An
             "sign": _SIGN_NAMES[div_sign_index],
             "sign_index": div_sign_index,
             "degree": round(degree_within, 4),
+            "drekkana_lord": _drekkana_lord_info(rasi_index, part),
         }
     return result
 
@@ -982,6 +1092,7 @@ def _calculate_d30(planet_longitudes: Dict[str, float]) -> Dict[str, Dict[str, A
             "sign": _SIGN_NAMES[div_sign_index],
             "sign_index": div_sign_index,
             "degree": round(degree_within, 4),
+            "trimsamsha_lord": _trimsamsha_lord_info(rasi_index, degree_in_sign),
         }
     return result
 

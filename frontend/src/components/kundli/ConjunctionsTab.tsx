@@ -1,7 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Loader2, Link2, Sparkles, TrendingUp, TrendingDown, BookOpen } from 'lucide-react';
+import { Loader2, Link2, Sparkles, TrendingUp, TrendingDown, BookOpen, Zap } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Heading } from '@/components/ui/heading';
+
+const EFFECT_STRENGTH_BADGE: Record<string, string> = {
+  full:     'bg-green-600 text-white',
+  partial:  'bg-amber-500 text-white',
+  reversed: 'bg-red-700 text-white',
+};
+const EFFECT_STRENGTH_LABEL: Record<string, { en: string; hi: string }> = {
+  full:     { en: 'Full Effect', hi: 'पूर्ण फल' },
+  partial:  { en: 'Partial Effect', hi: 'आंशिक फल' },
+  reversed: { en: 'Reversed Effect', hi: 'विपरीत फल' },
+};
 
 interface Conjunction {
   key: string;
@@ -22,6 +33,12 @@ interface Conjunction {
   weakened_hi?: string | null;
   special_yoga?: string | null;
   sloka_ref: string;
+  effect_strength?: 'full' | 'partial' | 'reversed';
+  effect_strength_reason_en?: string;
+  effect_strength_reason_hi?: string;
+  d12_also_conjunct?: boolean;
+  d12_amplified_en?: string | null;
+  d12_amplified_hi?: string | null;
 }
 
 interface ApiResponse {
@@ -131,6 +148,10 @@ export default function ConjunctionsTab({ kundliId, language, t }: Props) {
             const enhanced = isHi ? c.enhanced_hi : c.enhanced_en;
             const weakened = isHi ? c.weakened_hi : c.weakened_en;
 
+            const strengthLabel = c.effect_strength ? EFFECT_STRENGTH_LABEL[c.effect_strength] : null;
+            const strengthReason = isHi ? c.effect_strength_reason_hi : c.effect_strength_reason_en;
+            const d12Amp = isHi ? c.d12_amplified_hi : c.d12_amplified_en;
+
             return (
               <div
                 key={`${c.key}-${i}`}
@@ -152,6 +173,11 @@ export default function ConjunctionsTab({ kundliId, language, t }: Props) {
                     <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded ${NATURE_BADGE[c.nature] || NATURE_BADGE.mixed}`}>
                       {t(NATURE_KEY[c.nature] || 'auto.natureMixed')}
                     </span>
+                    {c.effect_strength && strengthLabel && (
+                      <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded ${EFFECT_STRENGTH_BADGE[c.effect_strength]}`}>
+                        {isHi ? strengthLabel.hi : strengthLabel.en}
+                      </span>
+                    )}
                     {c.special_yoga && (
                       <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-violet-600 text-white flex items-center gap-1">
                         <Sparkles className="w-3 h-3" />
@@ -160,6 +186,18 @@ export default function ConjunctionsTab({ kundliId, language, t }: Props) {
                     )}
                   </div>
                 </div>
+
+                {/* Effect strength reason */}
+                {strengthReason && (
+                  <div className={`mb-2 px-3 py-1.5 rounded text-xs flex items-start gap-1.5 ${
+                    c.effect_strength === 'full' ? 'bg-green-50 text-green-800 border border-green-200' :
+                    c.effect_strength === 'reversed' ? 'bg-red-50 text-red-800 border border-red-200' :
+                    'bg-amber-50 text-amber-800 border border-amber-200'
+                  }`}>
+                    <span className="font-semibold shrink-0">{isHi ? 'कारण:' : 'Reason:'}</span>
+                    <span>{strengthReason}</span>
+                  </div>
+                )}
 
                 {/* Effect */}
                 <p className="text-sm text-foreground leading-relaxed mb-3">{effect}</p>
@@ -182,6 +220,17 @@ export default function ConjunctionsTab({ kundliId, language, t }: Props) {
                     <div>
                       <p className="font-semibold text-blue-800">{t('auto.weakenedByBenefic')}</p>
                       <p className="text-blue-900/80">{weakened}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* D12 amplification */}
+                {c.d12_also_conjunct && d12Amp && (
+                  <div className="mt-2 p-2 rounded bg-violet-50 border border-violet-200 text-xs flex items-start gap-1.5">
+                    <Zap className="w-3.5 h-3.5 text-violet-700 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-violet-800">{isHi ? 'D12 में भी युत — प्रभाव प्रबल' : 'Also conjunct in D12 — Amplified'}</p>
+                      <p className="text-violet-900/80">{d12Amp}</p>
                     </div>
                   </div>
                 )}

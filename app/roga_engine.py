@@ -348,6 +348,239 @@ _SPECIAL_DETECTORS = {
 
 
 # ───────────────────────────────────────────────────────────────
+# 9-Planet Disease Matrix (Adhyaya 14)
+# ───────────────────────────────────────────────────────────────
+
+_PLANET_DISEASE_MATRIX: Dict[str, Dict[str, Any]] = {
+    "Sun": {
+        "diseases_en": ["heart disease", "eye problems", "fever", "bone issues", "vitality disorders"],
+        "diseases_hi": ["हृदय रोग", "नेत्र समस्याएं", "ज्वर", "हड्डी की समस्याएं", "जीवन-शक्ति विकार"],
+    },
+    "Moon": {
+        "diseases_en": ["mental illness", "chest/lung problems", "cold/phlegm disorders", "blood disorders", "fluid imbalances"],
+        "diseases_hi": ["मानसिक रोग", "छाती/फेफड़े की समस्याएं", "सर्दी/कफ विकार", "रक्त विकार", "द्रव असंतुलन"],
+    },
+    "Mars": {
+        "diseases_en": ["blood disorders", "accidents", "inflammation", "fever", "surgery risk", "injuries"],
+        "diseases_hi": ["रक्त विकार", "दुर्घटनाएं", "सूजन", "ज्वर", "शल्य जोखिम", "चोटें"],
+    },
+    "Mercury": {
+        "diseases_en": ["nervous disorders", "skin disease", "speech problems", "anxiety", "respiratory issues"],
+        "diseases_hi": ["तंत्रिका विकार", "त्वचा रोग", "वाणी समस्याएं", "चिंता", "श्वसन समस्याएं"],
+    },
+    "Jupiter": {
+        "diseases_en": ["liver disease", "obesity", "diabetes", "fatty liver", "blood sugar issues"],
+        "diseases_hi": ["यकृत रोग", "मोटापा", "मधुमेह", "फैटी लीवर", "रक्त शर्करा की समस्याएं"],
+    },
+    "Venus": {
+        "diseases_en": ["kidney/reproductive disease", "venereal disease", "diabetes", "hormonal imbalance", "urinary issues"],
+        "diseases_hi": ["गुर्दे/प्रजनन रोग", "यौन रोग", "मधुमेह", "हार्मोनल असंतुलन", "मूत्र संबंधी समस्याएं"],
+    },
+    "Saturn": {
+        "diseases_en": ["chronic disease", "paralysis", "joint pain", "dental problems", "arthritis", "delayed healing"],
+        "diseases_hi": ["दीर्घकालिक रोग", "पक्षाघात", "जोड़ों का दर्द", "दंत समस्याएं", "गठिया", "उपचार में देरी"],
+    },
+    "Rahu": {
+        "diseases_en": ["mysterious disease", "phobias", "poisoning", "cancer risk", "hidden ailments", "addiction"],
+        "diseases_hi": ["रहस्यमय रोग", "भय विकार", "विषाक्तता", "कैंसर जोखिम", "छिपी बीमारियां", "नशे की लत"],
+    },
+    "Ketu": {
+        "diseases_en": ["surgery needed", "occult disease", "worms/parasites", "viral infections", "mysterious symptoms"],
+        "diseases_hi": ["शल्य-चिकित्सा की आवश्यकता", "गुप्त रोग", "कृमि/परजीवी", "वायरल संक्रमण", "रहस्यमय लक्षण"],
+    },
+}
+
+
+def _is_combust(planet: str, planets: Dict[str, Dict[str, Any]]) -> bool:
+    """Check if a planet is combust (within 8° of Sun)."""
+    if planet == "Sun":
+        return False
+    sun_h = _house_of("Sun", planets)
+    p_h = _house_of(planet, planets)
+    if sun_h != p_h:
+        return False
+    # Rough combust check by sign — same sign + close degree
+    sun_data = planets.get("Sun", {})
+    p_data = planets.get(planet, {})
+    try:
+        sun_lon = float(sun_data.get("longitude", sun_data.get("sign_degree", 0)))
+        p_lon = float(p_data.get("longitude", p_data.get("sign_degree", 0)))
+    except (TypeError, ValueError):
+        return False
+    diff = abs(sun_lon - p_lon) % 360
+    return min(diff, 360 - diff) <= 8.0
+
+
+def _nine_planet_disease_matrix(
+    planets: Dict[str, Dict[str, Any]],
+    chart_data: Dict[str, Any],
+) -> List[Dict[str, Any]]:
+    """
+    For each of 9 planets, check if afflicted (debilitated, combust, or
+    aspected by malefic in dusthana) and return disease list with severity.
+    """
+    results: List[Dict[str, Any]] = []
+
+    for planet, matrix in _PLANET_DISEASE_MATRIX.items():
+        if planet not in planets:
+            continue
+        p_sign = _sign_of(planet, planets)
+        p_house = _house_of(planet, planets)
+
+        afflictions: List[str] = []
+
+        # Check debilitation
+        if _is_debilitated(planet, p_sign):
+            afflictions.append("debilitated")
+
+        # Check combust
+        if _is_combust(planet, planets):
+            afflictions.append("combust")
+
+        # Check aspected by malefic (Sun, Mars, Saturn, Rahu, Ketu) in dusthana
+        for malefic in ("Sun", "Mars", "Saturn", "Rahu", "Ketu"):
+            if malefic == planet or malefic not in planets:
+                continue
+            m_house = _house_of(malefic, planets)
+            if m_house in DUSTHANAS and _aspects_planet(malefic, planet, planets):
+                afflictions.append("aspected_by_malefic")
+                break
+
+        if not afflictions:
+            continue
+
+        # Determine severity
+        affliction_type = afflictions[0]  # primary affliction label
+        if "debilitated" in afflictions and len(afflictions) >= 2:
+            severity = "high"
+        elif "debilitated" in afflictions:
+            severity = "moderate"
+        elif "combust" in afflictions:
+            severity = "moderate"
+        else:
+            severity = "low"
+
+        # Planet in dusthana raises severity
+        if p_house in DUSTHANAS:
+            if severity == "low":
+                severity = "moderate"
+            elif severity == "moderate":
+                severity = "high"
+
+        results.append({
+            "planet": planet,
+            "affliction_type": affliction_type,
+            "diseases_en": matrix["diseases_en"],
+            "diseases_hi": matrix["diseases_hi"],
+            "severity": severity,
+        })
+
+    return results
+
+
+# ───────────────────────────────────────────────────────────────
+# 6th House Disease Profile
+# ───────────────────────────────────────────────────────────────
+
+_SIXTH_HOUSE_PROFILES: Dict[str, Dict[str, Any]] = {
+    "Aries": {
+        "prone_areas_en": ["head injuries", "fevers", "accidents", "inflammatory conditions"],
+        "prone_areas_hi": ["सिर की चोट", "ज्वर", "दुर्घटनाएं", "सूजन संबंधी स्थितियां"],
+        "note_en": "Aries 6th house indicates accident-proneness and acute febrile conditions.",
+        "note_hi": "मेष राशि का षष्ठ भाव दुर्घटना-प्रवणता और तीव्र ज्वर स्थितियों को दर्शाता है।",
+    },
+    "Taurus": {
+        "prone_areas_en": ["throat problems", "thyroid disorders", "dental issues", "neck stiffness"],
+        "prone_areas_hi": ["गले की समस्याएं", "थायराइड विकार", "दंत समस्याएं", "गर्दन की अकड़न"],
+        "note_en": "Taurus 6th house indicates throat, thyroid and dental vulnerabilities.",
+        "note_hi": "वृषभ राशि का षष्ठ भाव गले, थायराइड और दंत कमजोरियों को दर्शाता है।",
+    },
+    "Gemini": {
+        "prone_areas_en": ["respiratory disorders", "nervous system issues", "shoulder/arm problems", "anxiety"],
+        "prone_areas_hi": ["श्वसन विकार", "तंत्रिका तंत्र की समस्याएं", "कंधे/बाहु की समस्याएं", "चिंता"],
+        "note_en": "Gemini 6th house indicates respiratory and nervous system vulnerabilities.",
+        "note_hi": "मिथुन राशि का षष्ठ भाव श्वसन और तंत्रिका तंत्र की कमजोरियों को दर्शाता है।",
+    },
+    "Cancer": {
+        "prone_areas_en": ["digestive disorders", "stomach problems", "emotional illness", "fluid retention"],
+        "prone_areas_hi": ["पाचन विकार", "पेट की समस्याएं", "भावनात्मक रोग", "द्रव संचय"],
+        "note_en": "Cancer 6th house indicates digestive and emotional health vulnerabilities.",
+        "note_hi": "कर्क राशि का षष्ठ भाव पाचन और भावनात्मक स्वास्थ्य की कमजोरियों को दर्शाता है।",
+    },
+    "Leo": {
+        "prone_areas_en": ["heart conditions", "spine problems", "eye disorders", "hypertension"],
+        "prone_areas_hi": ["हृदय समस्याएं", "रीढ़ की हड्डी की समस्याएं", "नेत्र विकार", "उच्च रक्तचाप"],
+        "note_en": "Leo 6th house indicates heart, spine and eye vulnerabilities.",
+        "note_hi": "सिंह राशि का षष्ठ भाव हृदय, रीढ़ और नेत्र की कमजोरियों को दर्शाता है।",
+    },
+    "Virgo": {
+        "prone_areas_en": ["intestinal disorders", "digestive enzyme issues", "malabsorption", "food sensitivity"],
+        "prone_areas_hi": ["आंतों के विकार", "पाचक एंजाइम की समस्याएं", "कुअवशोषण", "भोजन संवेदनशीलता"],
+        "note_en": "Virgo 6th house indicates intestinal and digestive absorption vulnerabilities.",
+        "note_hi": "कन्या राशि का षष्ठ भाव आंत और पाचन अवशोषण की कमजोरियों को दर्शाता है।",
+    },
+    "Libra": {
+        "prone_areas_en": ["kidney disorders", "lower back pain", "diabetes risk", "hormonal imbalance"],
+        "prone_areas_hi": ["गुर्दे के विकार", "पीठ के निचले हिस्से में दर्द", "मधुमेह जोखिम", "हार्मोनल असंतुलन"],
+        "note_en": "Libra 6th house indicates kidney, lower back and metabolic vulnerabilities.",
+        "note_hi": "तुला राशि का षष्ठ भाव गुर्दे, पीठ के निचले हिस्से और चयापचय की कमजोरियों को दर्शाता है।",
+    },
+    "Scorpio": {
+        "prone_areas_en": ["reproductive system disorders", "urinary tract issues", "infections", "hidden diseases"],
+        "prone_areas_hi": ["प्रजनन तंत्र विकार", "मूत्र मार्ग की समस्याएं", "संक्रमण", "छिपी बीमारियां"],
+        "note_en": "Scorpio 6th house indicates reproductive, urinary and infectious disease vulnerabilities.",
+        "note_hi": "वृश्चिक राशि का षष्ठ भाव प्रजनन, मूत्र और संक्रामक रोग की कमजोरियों को दर्शाता है।",
+    },
+    "Sagittarius": {
+        "prone_areas_en": ["liver disorders", "thigh/hip problems", "arterial conditions", "excess weight"],
+        "prone_areas_hi": ["यकृत विकार", "जांघ/कूल्हे की समस्याएं", "धमनी की स्थितियां", "अधिक वजन"],
+        "note_en": "Sagittarius 6th house indicates liver, thigh and arterial vulnerabilities.",
+        "note_hi": "धनु राशि का षष्ठ भाव यकृत, जांघ और धमनी की कमजोरियों को दर्शाता है।",
+    },
+    "Capricorn": {
+        "prone_areas_en": ["bone disorders", "joint pain", "skin diseases", "chronic illnesses", "dental problems"],
+        "prone_areas_hi": ["हड्डी के विकार", "जोड़ों का दर्द", "त्वचा रोग", "दीर्घकालिक रोग", "दंत समस्याएं"],
+        "note_en": "Capricorn 6th house indicates chronic, bone and joint disease vulnerabilities.",
+        "note_hi": "मकर राशि का षष्ठ भाव दीर्घकालिक, हड्डी और जोड़ रोग की कमजोरियों को दर्शाता है।",
+    },
+    "Aquarius": {
+        "prone_areas_en": ["circulatory disorders", "ankle problems", "nervous system conditions", "varicose veins"],
+        "prone_areas_hi": ["संचार विकार", "टखने की समस्याएं", "तंत्रिका तंत्र की स्थितियां", "वैरिकोज नसें"],
+        "note_en": "Aquarius 6th house indicates circulatory and nervous system vulnerabilities.",
+        "note_hi": "कुंभ राशि का षष्ठ भाव संचार और तंत्रिका तंत्र की कमजोरियों को दर्शाता है।",
+    },
+    "Pisces": {
+        "prone_areas_en": ["feet/lymphatic problems", "addiction risk", "immune disorders", "psychosomatic illness"],
+        "prone_areas_hi": ["पैर/लसीका समस्याएं", "नशे की लत जोखिम", "प्रतिरक्षा विकार", "मनोदैहिक बीमारी"],
+        "note_en": "Pisces 6th house indicates feet, lymphatic and addiction vulnerabilities.",
+        "note_hi": "मीन राशि का षष्ठ भाव पैर, लसीका और नशे की लत की कमजोरियों को दर्शाता है।",
+    },
+}
+
+
+def _sixth_house_profile(
+    planets: Dict[str, Dict[str, Any]],
+    chart_data: Dict[str, Any],
+) -> Optional[Dict[str, Any]]:
+    """Return disease profile based on the 6th house sign."""
+    asc_sign = (chart_data.get("ascendant") or {}).get("sign", "")
+    if asc_sign not in ZODIAC:
+        return None
+    asc_idx = ZODIAC.index(asc_sign)
+    sixth_sign = ZODIAC[(asc_idx + 5) % 12]  # 6th house sign
+    profile = _SIXTH_HOUSE_PROFILES.get(sixth_sign)
+    if not profile:
+        return None
+    return {
+        "sign": sixth_sign,
+        "prone_areas_en": profile["prone_areas_en"],
+        "prone_areas_hi": profile["prone_areas_hi"],
+        "note_en": profile["note_en"],
+        "note_hi": profile["note_hi"],
+    }
+
+
+# ───────────────────────────────────────────────────────────────
 # Main entry
 # ───────────────────────────────────────────────────────────────
 
@@ -371,6 +604,8 @@ def analyze_diseases(chart_data: Dict[str, Any]) -> Dict[str, Any]:
         "timing_indicators": [],
         "body_parts_affected": [],
         "remedy_suggestions": [],
+        "afflicted_planet_diseases": [],
+        "sixth_house_disease_profile": None,
         "sloka_ref": "Phaladeepika Adh. 14",
     }
 
@@ -475,5 +710,17 @@ def analyze_diseases(chart_data: Dict[str, Any]) -> Dict[str, Any]:
             "en": "Monitor during Saturn transit over natal Moon (Sade Sati phases)",
             "hi": "शनि का जन्म-चंद्र पर गोचर (साढ़े साती) में ध्यान रखें",
         })
+
+    # ── 4. 9-Planet Disease Matrix ──
+    try:
+        result["afflicted_planet_diseases"] = _nine_planet_disease_matrix(planets, chart_data)
+    except Exception:
+        result["afflicted_planet_diseases"] = []
+
+    # ── 5. 6th House Disease Profile ──
+    try:
+        result["sixth_house_disease_profile"] = _sixth_house_profile(planets, chart_data)
+    except Exception:
+        result["sixth_house_disease_profile"] = None
 
     return result
