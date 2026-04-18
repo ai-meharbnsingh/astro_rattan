@@ -1,7 +1,7 @@
 import { useTranslation } from '@/lib/i18n';
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Star, BookOpen, Hash, User, Calendar, MapPin, Phone, Plus, StickyNote, Pencil, Save, Loader2, Check, X, Clock, Activity as ActivityIcon, CheckCircle2, XCircle } from 'lucide-react';
+import { ArrowLeft, Star, BookOpen, Hash, User, Calendar, MapPin, Phone, Plus, StickyNote, Pencil, Save, Loader2, Check, X, Clock, Activity as ActivityIcon, CheckCircle2, XCircle, ChevronRight } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { api, formatDate, formatDateTime } from '@/lib/api';
@@ -292,100 +292,20 @@ export default function ClientProfile() {
         </div>
       )}
 
-      {/* Chart access — astrologers get direct-load buttons when a kundli
-          of that type already exists, instead of a form (per Sprint I).
-          Falls through to the form route only when no chart exists yet. */}
-      {(() => {
-        const vedicK = kundlis.find((k) => !k.chart_type || k.chart_type === 'vedic');
-        const lkK = kundlis.find((k) => k.chart_type === 'lalkitab');
-        const numK = kundlis.find((k) => k.chart_type === 'numerology');
-        const ChartBtn = ({ exists, label, icon: Icon, onOpen, onGenerate }: {
-          exists: boolean; label: string; icon: any; onOpen: () => void; onGenerate: () => void;
-        }) => (
-          <Button
-            onClick={exists ? onOpen : onGenerate}
-            variant={exists ? 'default' : 'outline'}
-            className={`h-14 rounded-lg uppercase tracking-wider text-sm ${
-              exists
-                ? 'bg-sacred-gold-dark text-background hover:bg-sacred-gold'
-                : 'border-sacred-gold text-sacred-gold-dark hover:bg-sacred-gold/10'
-            }`}
-          >
-            <Icon className="w-4 h-4 mr-2" />
-            {exists ? `${t('common.view') || 'View'} ${label}` : `${t('common.generate') || 'Generate'} ${label}`}
-          </Button>
-        );
-        return (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
-            <ChartBtn
-              exists={!!vedicK}
-              label={isAstrologer ? 'Vedic Kundli' : t('client.newKundli')}
-              icon={Star}
-              onOpen={() => vedicK && navigate('/kundli', { state: { loadKundliId: vedicK.id } })}
-              onGenerate={() => navigate('/kundli', { state: { ...birthState, chartType: 'vedic' } })}
-            />
-            <ChartBtn
-              exists={!!lkK}
-              label="Lal Kitab"
-              icon={BookOpen}
-              onOpen={() => lkK && navigate('/lal-kitab', { state: { ...birthState, loadKundliId: lkK.id } })}
-              onGenerate={() => navigate('/lal-kitab', { state: birthState })}
-            />
-            <ChartBtn
-              exists={!!numK}
-              label="Numerology"
-              icon={Hash}
-              onOpen={() => numK && navigate('/numerology', { state: { clientName: client.name, birthDate: client.birth_date, loadKundliId: numK.id } })}
-              onGenerate={() => navigate('/numerology', { state: { clientName: client.name, birthDate: client.birth_date } })}
-            />
-          </div>
-        );
-      })()}
-
-      {/* Charts */}
-      <div className="mb-4 flex items-center justify-between">
-        <Heading as={2} variant={6} className="uppercase tracking-wider">{t('client.charts')} ({kundlis.length})</Heading>
-      </div>
-
-      {kundlis.length === 0 ? (
-        <div className="text-center py-12 border border-dashed border-sacred-gold">
-          <p className="text-foreground mb-4">{t('client.noCharts')}</p>
-          <Button onClick={() => navigate('/kundli', { state: { ...birthState, chartType: 'vedic' } })}
-            className="bg-sacred-gold-dark text-background hover:bg-gray-50 text-sm uppercase rounded-lg">
-            <Plus className="w-4 h-4 mr-1" /> {t('client.generateFirst')}
-          </Button>
-        </div>
-      ) : (
-        <div className="space-y-2">
-          {kundlis.map(k => (
-            <div key={k.id}
-              onClick={() => {
-                if (k.chart_type === 'lalkitab') {
-                  navigate('/lal-kitab', { state: { ...birthState, loadKundliId: k.id } });
-                } else {
-                  navigate('/kundli', { state: { loadKundliId: k.id } });
-                }
-              }}
-              className="flex items-center justify-between p-4 border border-sacred-gold hover:border-sacred-gold transition-colors cursor-pointer">
-              <div className="flex items-center gap-3">
-                {k.chart_type === 'lalkitab' ? (
-                  <BookOpen className="w-4 h-4 text-orange-400" />
-                ) : (
-                  <Star className="w-4 h-4 text-amber-500" />
-                )}
-                <div>
-                  <p className="text-sm text-foreground">{k.person_name}</p>
-                  <p className="text-sm text-foreground">{formatDate(k.birth_date)} {k.birth_time} · {k.birth_place}</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <span className="text-sm text-foreground uppercase">{k.chart_type || 'vedic'}</span>
-                <p className="text-sm text-foreground">{formatDate(k.created_at)}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      {/* 4-tab bar — Kundli / Lal Kitab / Numerology / Vastu.
+          Tab shows green dot when client has data for that system. */}
+      <ClientChartTabs
+        client={client}
+        kundlis={kundlis}
+        birthState={birthState}
+        navigate={navigate}
+        onRefresh={async () => {
+          try {
+            const data: any = await api.get(`/api/clients/${clientId}`);
+            setKundlis(data.kundlis ?? []);
+          } catch { /* ignore */ }
+        }}
+      />
 
       {/* P3.5 — Consultations (astrologer surface) */}
       {isAstrologer && (
@@ -651,6 +571,9 @@ export default function ClientProfile() {
           );
         })()}
       </div>
+
+      {/* Sprint I — Payments ledger (astrologer-only) */}
+      {isAstrologer && <ClientPaymentsSection clientId={clientId!} />}
     </div>
   );
 }
@@ -662,6 +585,369 @@ export default function ClientProfile() {
  * /api/clients/{id} endpoint — no separate upload service needed.
  * 2MB limit per image enforced.
  */
+/**
+ * ClientChartTabs — Sprint I profile redesign.
+ *
+ * Compact 4-tab bar (Kundli / Lal Kitab / Numerology / Vastu) with:
+ *   - Green filled indicator when this client has data in that system
+ *   - Selected-tab body with either:
+ *       has data → 2–3 key facts preview + "Open Full Analysis →"
+ *       no data  → "Generate" button
+ *
+ * Vastu does not currently persist per-client data, so the Vastu tab
+ * deep-links to the standalone /vastu page with birth context.
+ */
+function ClientChartTabs({ client, kundlis, birthState, navigate, onRefresh }: {
+  client: Client;
+  kundlis: KundliSummary[];
+  birthState: any;
+  navigate: (to: string, opts?: any) => void;
+  onRefresh: () => void | Promise<void>;
+}) {
+  const vedicK = kundlis.find((k) => !k.chart_type || k.chart_type === 'vedic');
+  const lkK = kundlis.find((k) => k.chart_type === 'lalkitab');
+  const numK = kundlis.find((k) => k.chart_type === 'numerology');
+
+  type TabKey = 'kundli' | 'lalkitab' | 'numerology' | 'vastu';
+  // Start on the first tab that has data (if any); else kundli.
+  const initial: TabKey = vedicK ? 'kundli' : lkK ? 'lalkitab' : numK ? 'numerology' : 'kundli';
+  const [tab, setTab] = useState<TabKey>(initial);
+  const [generating, setGenerating] = useState<TabKey | null>(null);
+
+  const tabs: { key: TabKey; label: string; icon: any; hasData: boolean }[] = [
+    { key: 'kundli', label: 'Kundli', icon: Star, hasData: !!vedicK },
+    { key: 'lalkitab', label: 'Lal Kitab', icon: BookOpen, hasData: !!lkK },
+    { key: 'numerology', label: 'Numerology', icon: Hash, hasData: !!numK },
+    { key: 'vastu', label: 'Vastu', icon: User, hasData: false }, // not client-scoped yet
+  ];
+
+  const generateChart = async (chart_type: string) => {
+    if (!client.birth_date || !client.birth_time || client.latitude == null || client.longitude == null) {
+      alert('Birth date, time, latitude and longitude required on client profile before generating.');
+      return;
+    }
+    setGenerating(tab);
+    try {
+      await api.post('/api/clients/generate-all', {
+        name: client.name,
+        phone: client.phone || null,
+        birth_date: client.birth_date,
+        birth_time: client.birth_time,
+        birth_place: client.birth_place || '',
+        latitude: client.latitude,
+        longitude: client.longitude,
+        timezone_offset: client.timezone_offset ?? 5.5,
+        gender: client.gender || 'male',
+        generate_vedic: chart_type === 'vedic',
+        generate_lalkitab: chart_type === 'lalkitab',
+        generate_numerology: chart_type === 'numerology',
+      });
+      await onRefresh();
+    } catch (e) {
+      console.error('Generate failed', e);
+    }
+    setGenerating(null);
+  };
+
+  return (
+    <div className="mb-8 rounded-xl border border-sacred-gold/30 bg-card overflow-hidden">
+      {/* Tab bar */}
+      <div className="flex border-b border-sacred-gold/20 bg-sacred-gold/5 overflow-x-auto">
+        {tabs.map((tb) => {
+          const Icon = tb.icon;
+          const isActive = tab === tb.key;
+          return (
+            <button
+              key={tb.key}
+              onClick={() => setTab(tb.key)}
+              className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold transition-colors border-b-2 shrink-0 ${
+                isActive
+                  ? 'border-sacred-gold text-sacred-gold-dark bg-white'
+                  : 'border-transparent text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <Icon className="w-4 h-4" />
+              {tb.label}
+              <span
+                className={`w-2 h-2 rounded-full ${tb.hasData ? 'bg-emerald-500' : 'bg-gray-300'}`}
+                aria-label={tb.hasData ? 'has data' : 'no data'}
+              />
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Tab body */}
+      <div className="p-5">
+        {tab === 'kundli' && (
+          <ChartTabBody
+            icon={Star}
+            title="Vedic Kundli"
+            exists={!!vedicK}
+            lastUpdated={vedicK?.created_at}
+            onOpen={() => vedicK && navigate('/kundli', { state: { loadKundliId: vedicK.id } })}
+            onGenerate={() => generateChart('vedic')}
+            generating={generating === 'kundli'}
+            emptyText="No Vedic kundli for this client yet. Generate one to get planet positions, dasha, yogas, and the full analysis suite."
+          />
+        )}
+        {tab === 'lalkitab' && (
+          <ChartTabBody
+            icon={BookOpen}
+            title="Lal Kitab"
+            exists={!!lkK}
+            lastUpdated={lkK?.created_at}
+            onOpen={() => lkK && navigate('/lal-kitab', { state: { ...birthState, loadKundliId: lkK.id } })}
+            onGenerate={() => generateChart('lalkitab')}
+            generating={generating === 'lalkitab'}
+            emptyText="No Lal Kitab chart yet. Generate to access Tewa, Doshas, Karmic Debts (Rin), safety layer and remedies."
+          />
+        )}
+        {tab === 'numerology' && (
+          <ChartTabBody
+            icon={Hash}
+            title="Numerology"
+            exists={!!numK}
+            lastUpdated={numK?.created_at}
+            onOpen={() => numK && navigate('/numerology', { state: { clientName: client.name, birthDate: client.birth_date, loadKundliId: numK.id } })}
+            onGenerate={() => generateChart('numerology')}
+            generating={generating === 'numerology'}
+            emptyText="No numerology profile yet. Generate to see life path, destiny, expression numbers and lucky-number guidance."
+          />
+        )}
+        {tab === 'vastu' && (
+          <ChartTabBody
+            icon={User}
+            title="Vastu"
+            exists={false}
+            lastUpdated={undefined}
+            onOpen={() => navigate('/vastu', { state: birthState })}
+            onGenerate={() => navigate('/vastu', { state: birthState })}
+            generating={false}
+            emptyText="Vastu consultations open in the standalone Vastu page (not persisted per-client yet). Opens with this client's birth context pre-filled."
+            generateLabel="Open Vastu"
+            openLabel="Open Vastu"
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ChartTabBody({ icon: Icon, title, exists, lastUpdated, onOpen, onGenerate, generating, emptyText, generateLabel, openLabel }: {
+  icon: any; title: string; exists: boolean; lastUpdated?: string;
+  onOpen: () => void; onGenerate: () => void; generating: boolean;
+  emptyText: string; generateLabel?: string; openLabel?: string;
+}) {
+  return (
+    <div className="flex items-center gap-5 flex-wrap">
+      <div className={`w-16 h-16 rounded-full flex items-center justify-center shrink-0 ${
+        exists ? 'bg-sacred-gold/15 text-sacred-gold-dark' : 'bg-gray-100 text-gray-400'
+      }`}>
+        <Icon className="w-8 h-8" />
+      </div>
+      <div className="flex-1 min-w-[200px]">
+        <div className="flex items-center gap-2 flex-wrap">
+          <h3 className="text-lg font-semibold text-foreground">{title}</h3>
+          {exists ? (
+            <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-semibold">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Generated
+            </span>
+          ) : (
+            <span className="text-[11px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 font-semibold">
+              Not yet
+            </span>
+          )}
+        </div>
+        {exists && lastUpdated && (
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Last updated {formatDate(lastUpdated)}
+          </p>
+        )}
+        {!exists && (
+          <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+            {emptyText}
+          </p>
+        )}
+      </div>
+      <div className="flex gap-2 shrink-0">
+        {exists ? (
+          <Button
+            onClick={onOpen}
+            className="bg-sacred-gold-dark text-white hover:bg-sacred-gold"
+          >
+            <ChevronRight className="w-4 h-4 mr-1" />
+            {openLabel || `Open ${title} →`}
+          </Button>
+        ) : (
+          <Button
+            onClick={onGenerate}
+            disabled={generating}
+            className="bg-sacred-gold-dark text-white hover:bg-sacred-gold disabled:opacity-50"
+          >
+            {generating ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Plus className="w-4 h-4 mr-1" />}
+            {generating ? 'Generating…' : (generateLabel || `Generate ${title}`)}
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * ClientPaymentsSection — Sprint I.
+ *
+ * Simple ledger view for past payments received from this client.
+ * Empty state when nothing recorded yet. Inline "+ Add payment" form.
+ */
+function ClientPaymentsSection({ clientId }: { clientId: string }) {
+  const [payments, setPayments] = useState<any[]>([]);
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [formOpen, setFormOpen] = useState(false);
+  const [form, setForm] = useState({ amount: '', currency: 'INR', method: '', purpose: '', paid_at: '', notes: '' });
+  const [saving, setSaving] = useState(false);
+
+  const load = async () => {
+    setLoading(true);
+    try {
+      const res: any = await api.get(`/api/clients/${clientId}/payments`);
+      setPayments(Array.isArray(res?.payments) ? res.payments : []);
+      setTotalAmount(res?.total_amount || 0);
+    } catch { setPayments([]); }
+    setLoading(false);
+  };
+  useEffect(() => { load(); }, [clientId]);
+
+  const submit = async () => {
+    if (!form.amount || parseFloat(form.amount) <= 0) return;
+    setSaving(true);
+    try {
+      await api.post(`/api/clients/${clientId}/payments`, {
+        amount: parseFloat(form.amount),
+        currency: form.currency || 'INR',
+        method: form.method || null,
+        purpose: form.purpose || null,
+        paid_at: form.paid_at || null,
+        notes: form.notes || null,
+        status: 'completed',
+      });
+      setForm({ amount: '', currency: 'INR', method: '', purpose: '', paid_at: '', notes: '' });
+      setFormOpen(false);
+      load();
+    } catch (e) { console.error(e); }
+    setSaving(false);
+  };
+
+  return (
+    <div className="mt-8">
+      <div className="mb-4 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Hash className="w-4 h-4 text-sacred-gold-dark" />
+          <Heading as={2} variant={6} className="uppercase tracking-wider">
+            Payments ({payments.length})
+          </Heading>
+          {totalAmount > 0 && (
+            <span className="text-sm font-bold text-sacred-gold-dark ml-2">
+              Total: ₹{totalAmount.toLocaleString('en-IN')}
+            </span>
+          )}
+        </div>
+        <button
+          onClick={() => setFormOpen((v) => !v)}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-sacred-gold-dark text-white rounded-lg hover:bg-sacred-gold transition-colors"
+        >
+          <Plus className="w-3.5 h-3.5" />
+          {formOpen ? 'Close' : 'Record Payment'}
+        </button>
+      </div>
+
+      {formOpen && (
+        <div className="mb-4 rounded-xl border border-sacred-gold/40 bg-sacred-gold/5 p-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <input
+            type="number" step="0.01" min="0" placeholder="Amount *"
+            value={form.amount}
+            onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
+            className="px-3 py-2 rounded-lg border border-sacred-gold/30 bg-white text-sm"
+          />
+          <input
+            placeholder="Method (UPI / Cash / Card)"
+            value={form.method}
+            onChange={(e) => setForm((f) => ({ ...f, method: e.target.value }))}
+            className="px-3 py-2 rounded-lg border border-sacred-gold/30 bg-white text-sm"
+          />
+          <input
+            placeholder="Purpose (Consultation / Report…)"
+            value={form.purpose}
+            onChange={(e) => setForm((f) => ({ ...f, purpose: e.target.value }))}
+            className="px-3 py-2 rounded-lg border border-sacred-gold/30 bg-white text-sm"
+          />
+          <input
+            type="datetime-local"
+            value={form.paid_at}
+            onChange={(e) => setForm((f) => ({ ...f, paid_at: e.target.value }))}
+            className="px-3 py-2 rounded-lg border border-sacred-gold/30 bg-white text-sm"
+          />
+          <input
+            placeholder="Notes (optional)"
+            value={form.notes}
+            onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
+            className="px-3 py-2 rounded-lg border border-sacred-gold/30 bg-white text-sm sm:col-span-2"
+          />
+          <div className="sm:col-span-3 flex justify-end gap-2">
+            <button onClick={() => setFormOpen(false)} className="px-4 py-1.5 text-sm border border-sacred-gold/30 rounded-lg">Cancel</button>
+            <button
+              onClick={submit}
+              disabled={saving || !form.amount}
+              className="px-4 py-1.5 text-sm bg-sacred-gold-dark text-white rounded-lg hover:bg-sacred-gold disabled:opacity-50 inline-flex items-center gap-1.5"
+            >
+              {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+              Record
+            </button>
+          </div>
+        </div>
+      )}
+
+      {loading ? (
+        <div className="text-sm text-muted-foreground">Loading…</div>
+      ) : payments.length === 0 ? (
+        <div className="text-center py-10 border border-dashed border-sacred-gold/30 rounded-lg">
+          <p className="text-sm text-muted-foreground">No payments recorded yet.</p>
+        </div>
+      ) : (
+        <div className="rounded-xl border border-sacred-gold/20 bg-card overflow-hidden">
+          <table className="w-full">
+            <thead className="bg-sacred-gold/5 border-b border-sacred-gold/20">
+              <tr className="text-left text-[10px] uppercase tracking-wider text-muted-foreground">
+                <th className="px-4 py-2 font-semibold">Date</th>
+                <th className="px-4 py-2 font-semibold">Amount</th>
+                <th className="px-4 py-2 font-semibold">Method</th>
+                <th className="px-4 py-2 font-semibold">Purpose</th>
+                <th className="px-4 py-2 font-semibold">Notes</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-sacred-gold/10">
+              {payments.map((p: any) => (
+                <tr key={p.id} className="hover:bg-sacred-gold/5">
+                  <td className="px-4 py-2 text-sm text-foreground">
+                    {p.paid_at ? formatDate(p.paid_at) : formatDate(p.created_at)}
+                  </td>
+                  <td className="px-4 py-2 text-sm font-semibold text-sacred-gold-dark">
+                    {p.currency === 'INR' ? '₹' : p.currency + ' '}{Number(p.amount).toLocaleString('en-IN')}
+                  </td>
+                  <td className="px-4 py-2 text-xs text-muted-foreground">{p.method ?? '—'}</td>
+                  <td className="px-4 py-2 text-xs text-muted-foreground">{p.purpose ?? '—'}</td>
+                  <td className="px-4 py-2 text-xs text-muted-foreground truncate max-w-[200px]">{p.notes ?? '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ClientPhotoSlot({ clientId, field, label, value, onUpdate }: {
   clientId: string;
   field: 'profile_photo_url' | 'left_hand_photo_url' | 'right_hand_photo_url';

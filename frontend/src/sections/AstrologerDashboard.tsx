@@ -287,7 +287,7 @@ export default function AstrologerDashboard() {
         <OverviewPanel
           overview={overview}
           isHi={isHi}
-          onOpenClient={(id) => setQuickViewClientId(id)}
+          onOpenClient={(id) => navigate(`/client/${id}`)}
           upcomingList={consultations.filter((c) => c.scheduled_at && new Date(c.scheduled_at) >= new Date() && ['scheduled', 'confirmed', 'active'].includes(c.status))}
           clientList={clients}
         />
@@ -300,13 +300,13 @@ export default function AstrologerDashboard() {
           search={clientSearch}
           onSearchChange={setClientSearch}
           isHi={isHi}
-          onOpenClient={(id) => setQuickViewClientId(id)}
+          onOpenClient={(id) => navigate(`/client/${id}`)}
         />
       )}
 
       {/* ── Activity ── */}
       {activeTab === 'activity' && (
-        <ActivityPanel events={activity} isHi={isHi} onOpenClient={(id) => setQuickViewClientId(id)} />
+        <ActivityPanel events={activity} isHi={isHi} onOpenClient={(id) => navigate(`/client/${id}`)} />
       )}
 
       {/* ── Consultations ── */}

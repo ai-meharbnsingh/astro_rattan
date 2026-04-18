@@ -281,6 +281,111 @@ def create_client_and_generate(
     }
 
 
+# ── Payments (read-only MVP) ─────────────────────────────────
+
+class PaymentCreate(BaseModel):
+    amount: float = Field(ge=0)
+    currency: str = "INR"
+    method: Optional[str] = None
+    purpose: Optional[str] = None
+    reference_id: Optional[str] = None
+    status: str = "completed"
+    paid_at: Optional[str] = None
+    notes: Optional[str] = None
+
+
+@router.get("/{client_id}/payments")
+def list_client_payments(
+    client_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Return every recorded payment for this client, newest first.
+
+    Empty list if the ledger is untouched (table exists but no rows).
+    Also returns `[]` gracefully if the table hasn't been migrated yet,
+    so the UI renders an empty-state instead of a 500.
+    """
+    # Verify ownership
+    owner = db.execute(
+        "SELECT id FROM clients WHERE id = %s AND astrologer_id = %s",
+        (client_id, current_user["sub"]),
+    ).fetchone()
+    if not owner:
+        raise HTTPException(status_code=404, detail="Client not found")
+
+    try:
+        rows = db.execute(
+            """SELECT id, amount, currency, method, purpose, reference_id,
+                      status, paid_at, notes, created_at
+               FROM client_payments
+               WHERE client_id = %s AND astrologer_id = %s
+               ORDER BY paid_at DESC, created_at DESC""",
+            (client_id, current_user["sub"]),
+        ).fetchall()
+    except Exception:
+        rows = []
+
+    total = 0.0
+    for r in (rows or []):
+        try:
+            total += float(r.get("amount") or 0)
+        except (TypeError, ValueError):
+            pass
+
+    return {
+        "payments": [
+            {
+                **dict(r),
+                "amount": float(r["amount"]) if r.get("amount") is not None else 0.0,
+                "paid_at": r["paid_at"].isoformat() if hasattr(r.get("paid_at"), "isoformat") else r.get("paid_at"),
+                "created_at": r["created_at"].isoformat() if hasattr(r.get("created_at"), "isoformat") else r.get("created_at"),
+            }
+            for r in (rows or [])
+        ],
+        "total_amount": round(total, 2),
+        "count": len(rows or []),
+    }
+
+
+@router.post("/{client_id}/payments", status_code=status.HTTP_201_CREATED)
+def add_client_payment(
+    client_id: str,
+    body: PaymentCreate,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Record a payment received from this client."""
+    owner = db.execute(
+        "SELECT id FROM clients WHERE id = %s AND astrologer_id = %s",
+        (client_id, current_user["sub"]),
+    ).fetchone()
+    if not owner:
+        raise HTTPException(status_code=404, detail="Client not found")
+
+    try:
+        row = db.execute(
+            """INSERT INTO client_payments
+               (client_id, astrologer_id, amount, currency, method, purpose,
+                reference_id, status, paid_at, notes)
+               VALUES (%s, %s, %s, %s, %s, %s, %s, %s,
+                       COALESCE(%s::timestamptz, NOW()), %s)
+               RETURNING id, paid_at""",
+            (
+                client_id, current_user["sub"], body.amount, body.currency,
+                body.method, body.purpose, body.reference_id, body.status,
+                body.paid_at, body.notes,
+            ),
+        ).fetchone()
+        db.commit()
+        return {
+            "id": row["id"],
+            "paid_at": row["paid_at"].isoformat() if hasattr(row.get("paid_at"), "isoformat") else row.get("paid_at"),
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to record payment: {type(e).__name__}")
+
+
 # ── Notes ────────────────────────────────────────────────────
 
 class NoteCreate(BaseModel):

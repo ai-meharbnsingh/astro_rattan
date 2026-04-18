@@ -735,6 +735,25 @@ UPDATE kundlis SET chart_type = 'vedic' WHERE chart_type IS NULL OR chart_type =
 DELETE FROM kundlis WHERE client_id IS NOT NULL AND id NOT IN (SELECT DISTINCT ON (client_id, chart_type) id FROM kundlis WHERE client_id IS NOT NULL ORDER BY client_id, chart_type, created_at DESC);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_kundlis_client_chart_unique ON kundlis (client_id, chart_type) WHERE client_id IS NOT NULL;
     """),
+    (25, "Client payments ledger (simple MVP schema)", """
+CREATE TABLE IF NOT EXISTS client_payments (
+    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+    client_id TEXT NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+    astrologer_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    amount NUMERIC(10, 2) NOT NULL DEFAULT 0,
+    currency TEXT NOT NULL DEFAULT 'INR',
+    method TEXT,
+    purpose TEXT,
+    reference_id TEXT,
+    status TEXT NOT NULL DEFAULT 'completed',
+    paid_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    notes TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_client_payments_client ON client_payments(client_id);
+CREATE INDEX IF NOT EXISTS idx_client_payments_astrologer ON client_payments(astrologer_id);
+CREATE INDEX IF NOT EXISTS idx_client_payments_paid_at ON client_payments(paid_at DESC);
+    """),
 ]
 
 
