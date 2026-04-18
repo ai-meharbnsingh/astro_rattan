@@ -10,6 +10,21 @@ interface SodashvargaTabProps {
   t: (key: string) => string;
 }
 
+const TIER_COLORS: Record<string, string> = {
+  Bhedaka:      'bg-red-100 text-red-800',
+  Parijatamsa:  'bg-orange-100 text-orange-800',
+  Uttamamsa:    'bg-amber-100 text-amber-800',
+  Gopuramsa:    'bg-blue-100 text-blue-800',
+  Simhasanamsa: 'bg-emerald-100 text-emerald-800',
+  Parvatamsa:   'bg-green-100 text-green-800',
+};
+
+const METER_COLORS: Record<string, string> = {
+  Strong: 'bg-green-500',
+  Medium: 'bg-amber-400',
+  Weak:   'bg-red-500',
+};
+
 export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, language, t }: SodashvargaTabProps) {
   const signShort = (sign: string) => {
     const translated = translateSign(sign || '', language) || sign || '';
@@ -55,7 +70,6 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
   };
   const normalizePercent = (value: number): number => {
     if (!Number.isFinite(value)) return 0;
-    // Backend may return either 0..1 fraction or 0..100 percentage.
     const scaled = value > 0 && value <= 1 ? value * 100 : value;
     return Math.max(0, Math.min(100, scaled));
   };
@@ -105,7 +119,6 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
               </Table>
             );
           }
-          // Fallback: by_sign is a dict
           if (sodashvargaData.by_sign && typeof sodashvargaData.by_sign === 'object') {
             return (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
@@ -154,19 +167,36 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
                   const showPercent = v?.percentage !== null && v?.percentage !== undefined && v?.percentage !== '';
                   const displayPercent = Number.isInteger(resolvedPercent) ? String(resolvedPercent) : resolvedPercent.toFixed(1);
 
+                  // Saptavarga classical tier from varga_strength (if available)
+                  const vs = sodashvargaData.varga_strength?.planets?.[v.planet];
+                  const tierName: string | undefined = vs?.tier?.name;
+                  const tierNameHi: string | undefined = vs?.tier?.name_hi;
+                  const tierDesc: string | undefined = vs?.tier?.description;
+                  const tierDescHi: string | undefined = vs?.tier?.description_hi;
+                  const tierLabel = language === 'hi' ? (tierNameHi || tierName) : tierName;
+                  const tierTooltip = language === 'hi' ? (tierDescHi || tierDesc) : tierDesc;
+
+                  const meterColor = METER_COLORS[v.strength] || 'bg-primary';
+                  const tierColor = tierName ? (TIER_COLORS[tierName] || 'bg-slate-100 text-slate-700') : '';
+
                   return (
                     <div key={v.planet} className="space-y-1">
                       <div className="flex items-center gap-3 text-sm">
                         <span className="w-12 text-foreground font-medium">{(translatePlanet(v.planet || '', language) || v.planet || '').slice(0, language === 'hi' ? 3 : 4)}</span>
                         <div className="flex-1 bg-muted/30 rounded-full h-4 overflow-hidden">
-                          <div className="bg-primary rounded-full h-4 transition-all" style={{ width: `${resolvedPercent}%` }} />
+                          <div className={`${meterColor} rounded-full h-4 transition-all`} style={{ width: `${resolvedPercent}%` }} />
                         </div>
                         <span className="w-16 text-right text-foreground text-sm">{score != null ? score.toFixed(1) : '?'} / 20</span>
                         {showPercent && (
                           <span className="w-12 text-right text-foreground font-semibold text-sm">{displayPercent}%</span>
                         )}
                         {v.strength && (
-                          <span className={`px-1.5 py-0.5 rounded text-label font-semibold ${strengthColors[v.strength] || 'text-muted-foreground bg-gray-500'}`}>{strLabel(v.strength)}</span>
+                          <span className={`px-1.5 py-0.5 rounded text-xs font-semibold ${strengthColors[v.strength] || 'text-muted-foreground bg-gray-500'}`}>{strLabel(v.strength)}</span>
+                        )}
+                        {tierLabel && (
+                          <span className={`px-1.5 py-0.5 rounded text-xs font-semibold ${tierColor}`} title={tierTooltip}>
+                            {tierLabel}
+                          </span>
                         )}
                       </div>
                       {v.dignities && typeof v.dignities === 'object' && (
@@ -176,7 +206,7 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
                             .map(([dignity, count]) => {
                               const info = dignityLabels[dignity] || { label: dignity.slice(0, 3), hiLabel: dignity.slice(0, 3), color: 'text-muted-foreground bg-gray-500' };
                               return (
-                                <span key={dignity} className={`px-1.5 py-0.5 rounded text-label font-medium ${info.color}`}>
+                                <span key={dignity} className={`px-1.5 py-0.5 rounded text-xs font-medium ${info.color}`}>
                                   {language === 'hi' ? info.hiLabel : info.label}:{count as number}
                                 </span>
                               );
@@ -189,6 +219,29 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
               ));
             })()}
           </div>
+
+          {/* Saptavarga tier legend */}
+          {sodashvargaData.varga_strength && (
+            <div className="mt-4 pt-3 border-t border-border/40">
+              <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wide mb-2">
+                {language === 'hi' ? 'सप्तवर्ग बल — शास्त्रीय श्रेणी' : 'Saptavarga Tier (Phaladeepika Adh. 3)'}
+              </p>
+              <div className="flex flex-wrap gap-1.5 text-xs">
+                {[
+                  ['Bhedaka', language === 'hi' ? 'भेदक' : 'Bhedaka', '0-1'],
+                  ['Parijatamsa', language === 'hi' ? 'पारिजातांश' : 'Parijatamsa', '2'],
+                  ['Uttamamsa', language === 'hi' ? 'उत्तमांश' : 'Uttamamsa', '3'],
+                  ['Gopuramsa', language === 'hi' ? 'गोपुरांश' : 'Gopuramsa', '4-5'],
+                  ['Simhasanamsa', language === 'hi' ? 'सिंहासनांश' : 'Simhasanamsa', '6'],
+                  ['Parvatamsa', language === 'hi' ? 'पर्वतांश' : 'Parvatamsa', '7'],
+                ].map(([key, label, holds]) => (
+                  <span key={key} className={`px-2 py-0.5 rounded font-medium ${TIER_COLORS[key] || 'bg-slate-100 text-slate-700'}`}>
+                    {label} <span className="opacity-60">({holds})</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

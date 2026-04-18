@@ -12,6 +12,7 @@ interface BhavaAssessment {
   karaka: string;
   flourishing: boolean;
   destruction_risk: boolean;
+  malefic_in_dusthana_strengthens?: boolean;
   reasons_en: string[];
   reasons_hi: string[];
   karaka_as_lagna_analysis_en: string;
@@ -211,6 +212,20 @@ export default function BhavaVicharaTab({ kundliId, language, t }: Props) {
                     </div>
                   </div>
                 </div>
+
+                {/* Dusthana-strengthened callout */}
+                {b.malefic_in_dusthana_strengthens && (
+                  <div className="mb-3 rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-2 flex items-start gap-2 text-xs text-emerald-800">
+                    <Sparkles className="w-3.5 h-3.5 shrink-0 mt-0.5 text-emerald-600" />
+                    <span>
+                      <strong>{isHi ? 'दुःस्थान में पापग्रह — भाव बलवान' : 'Malefic in Dusthana — Bhava Strengthened'}:</strong>
+                      {' '}
+                      {isHi
+                        ? 'फलदीपिका के अनुसार, दुःस्थान (6/8/12) में प्राकृतिक पापग्रह उस भाव के विशिष्ट फल को बलवान बनाता है।'
+                        : 'Per Phaladeepika Adh. 15 — a natural malefic in a dusthana (6/8/12) energises that house\'s core significations.'}
+                    </span>
+                  </div>
+                )}
 
                 {/* Reasons */}
                 {reasons.length > 0 && (

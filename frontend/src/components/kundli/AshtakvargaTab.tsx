@@ -137,7 +137,12 @@ function HorasaraPhalaSection({ kundliId, language, t }: { kundliId: string; lan
                 <TableRow key={i} className="border-t border-border hover:bg-muted/5">
                   <TableCell className="p-2 font-medium text-foreground">{translatePlanet(row.planet, language)}</TableCell>
                   <TableCell className="p-2 text-center text-foreground">{row.house}</TableCell>
-                  <TableCell className="p-2 text-center text-foreground font-semibold">{row.bindus}</TableCell>
+                  <TableCell className="p-2 text-center">
+                    <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold ${row.bindus >= 28 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                      {row.bindus}
+                      <span className="ml-1 font-normal opacity-70">{row.bindus >= 28 ? '▲' : '▼'}</span>
+                    </span>
+                  </TableCell>
                   <TableCell className="p-2 text-muted-foreground text-xs">
                     {language === 'hi' ? (row.reading_hi || row.reading_en) : row.reading_en}
                   </TableCell>

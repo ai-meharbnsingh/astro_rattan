@@ -28,6 +28,17 @@ export default function Dashboard() {
   const { user, isAuthenticated } = useAuth();
   const { t } = useTranslation();
   const isAdmin = user?.role === 'admin';
+  const isAstrologer = user?.role === 'astrologer';
+
+  // P3.5 consolidation — astrologers now have a dedicated professional
+  // CRM at /astrologer (overview + activity + clients + consultations).
+  // The legacy astrologer view in this Dashboard duplicated the client
+  // list. Auto-redirect so astrologers land on the richer surface.
+  useEffect(() => {
+    if (isAuthenticated && isAstrologer && !isAdmin) {
+      navigate('/astrologer', { replace: true });
+    }
+  }, [isAuthenticated, isAstrologer, isAdmin, navigate]);
 
   // Astrologer state
   const [clients, setClients] = useState<Client[]>([]);
