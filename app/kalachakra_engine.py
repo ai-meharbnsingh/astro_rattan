@@ -518,7 +518,7 @@ def calculate_kalachakra_dasha(
                 "start": p_start_dt.strftime("%Y-%m-%d"),
                 "end": p_end_dt.strftime("%Y-%m-%d"),
                 "type": half_types[i],
-                "is_current": p_start_dt <= now <= p_end_dt,
+                "is_current": p_start_dt.date() <= now.date() <= p_end_dt.date(),
             }))
 
             current_start = end_dt
@@ -531,7 +531,7 @@ def calculate_kalachakra_dasha(
     for period in mahadasha_periods:
         p_start = _parse_date(period["start"])
         p_end = _parse_date(period["end"])
-        if p_start <= now <= p_end:
+        if p_start.date() <= now.date() <= p_end.date():
             current_dasha = _enrich_period({
                 "sign": period["sign"],
                 "type": period["type"],

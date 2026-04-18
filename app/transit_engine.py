@@ -199,6 +199,18 @@ AREA_WEIGHTS: Dict[str, Dict[str, float]] = {
     "health": {"Sun": 3, "Mars": 2, "Saturn": 1.5, "Moon": 1},
 }
 
+# -- Simplified Sarvashtakavarga: natural benefic houses from lagna for each planet --
+# Source: Phaladeepika Ch.8 / BPHS Ch.67 (houses counted from the lagna sign)
+_ASHTAK_BENEFIC_HOUSES: Dict[str, List[int]] = {
+    "Sun":     [1, 2, 4, 7, 8, 9, 10, 11],
+    "Moon":    [1, 3, 6, 7, 10, 11],
+    "Mars":    [3, 5, 6, 10, 11],
+    "Mercury": [1, 3, 5, 6, 9, 10, 11, 12],
+    "Jupiter": [1, 2, 3, 4, 7, 8, 10, 11],
+    "Venus":   [1, 2, 3, 4, 5, 8, 9, 11, 12],
+    "Saturn":  [3, 5, 6, 11],
+}
+
 # -- Lucky time slots (cycled per sign index) --
 
 _LUCKY_TIMES: List[Dict[str, str]] = [
@@ -496,6 +508,33 @@ def assemble_section(
 # 5. compute_scores
 # ===================================================================
 
+def _compute_ashtak_adjustment(planet_houses: Dict[str, int]) -> float:
+    """
+    Compute a simplified Sarvashtakavarga score adjustment (-1.0 to +1.0).
+
+    For each of the 7 classic planets (Sun–Saturn), checks whether its current
+    house position from lagna falls in its natural benefic houses per
+    _ASHTAK_BENEFIC_HOUSES. Each planet in a benefic house contributes 1 bindu.
+
+    Bindus 6-7 → +1.0 adjustment
+    Bindus 4-5 → +0.0 (neutral)
+    Bindus 2-3 → -0.5 adjustment
+    Bindus 0-1 → -1.0 adjustment
+    """
+    classic_planets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
+    bindus = sum(
+        1 for p in classic_planets
+        if planet_houses.get(p, 0) in _ASHTAK_BENEFIC_HOUSES.get(p, [])
+    )
+    if bindus >= 6:
+        return 1.0
+    if bindus >= 4:
+        return 0.0
+    if bindus >= 2:
+        return -0.5
+    return -1.0
+
+
 def compute_scores(
     sign: str,
     planet_houses: Dict[str, int],
@@ -508,6 +547,7 @@ def compute_scores(
       - Overall: sum(house_score + planet_nature + dignity_bonus) for all 7 planets,
         then normalize to 1-10.
       - Area scores: use AREA_WEIGHTS to compute weighted sub-scores.
+      - Sarvashtakavarga adjustment applied as a final ±1 shift.
 
     Returns:
         {"overall": 7, "love": 8, "career": 6, "finance": 7, "health": 5}
@@ -527,7 +567,11 @@ def compute_scores(
 
     # Theoretical range: 7 planets * (worst: -5) to (best: +6.5) = -35 to +45.5
     # Real-world range clusters around -5 to +15. Use tighter bounds for better spread.
-    overall = _normalize_score(raw_total, min_val=-8.0, max_val=18.0)
+    overall_raw = _normalize_score(raw_total, min_val=-8.0, max_val=18.0)
+
+    # Ashtakavarga adjustment (±1 or 0)
+    ashtak_adj = _compute_ashtak_adjustment(planet_houses)
+    overall = max(1, min(10, round(overall_raw + ashtak_adj)))
 
     # -- Area scores --
     area_scores: Dict[str, int] = {}
@@ -547,13 +591,14 @@ def compute_scores(
             raw_area += planet_score * weight
             total_weight += weight
 
-        # Weighted average, then normalize
+        # Weighted average, then normalize, then apply ashtak adjustment
         if total_weight > 0:
             avg = raw_area / total_weight
         else:
             avg = 0.0
         # Per-planet weighted avg typically ranges -3 to +5. Tighter bounds for better spread.
-        area_scores[area] = _normalize_score(avg, min_val=-3.0, max_val=5.0)
+        area_raw = _normalize_score(avg, min_val=-3.0, max_val=5.0)
+        area_scores[area] = max(1, min(10, round(area_raw + ashtak_adj)))
 
     return {
         "overall": overall,
@@ -662,7 +707,35 @@ def generate_transit_horoscope(
 # 7. generate_monthly_extras
 # ===================================================================
 
-def generate_monthly_extras(sign: str, target_date: str = None) -> Dict[str, Any]:
+def _get_month_eclipse_alert(year: int, month: int) -> Optional[Dict[str, Any]]:
+    """
+    Return the first eclipse occurring in the given year/month, or None.
+    Uses the hardcoded eclipse table from mundane_engine.
+    """
+    try:
+        from app.mundane_engine import _KNOWN_ECLIPSES
+    except ImportError:
+        return None
+
+    prefix = f"{year}-{month:02d}"
+    _ECLIPSE_KIND_HI = {
+        "total": "पूर्ण", "partial": "आंशिक",
+        "annular": "वलयाकार", "penumbral": "उपछाया",
+    }
+    _ECLIPSE_TYPE_HI = {"solar": "सूर्य ग्रहण", "lunar": "चंद्र ग्रहण"}
+
+    for e in _KNOWN_ECLIPSES:
+        if e["date"].startswith(prefix):
+            return {
+                "date": e["date"],
+                "type": {"en": e["type"].title() + " Eclipse", "hi": _ECLIPSE_TYPE_HI.get(e["type"], e["type"])},
+                "kind": {"en": e["kind"].title(), "hi": _ECLIPSE_KIND_HI.get(e["kind"], e["kind"])},
+                "visibility": e.get("visibility", {"en": "Global", "hi": "वैश्विक"}),
+            }
+    return None
+
+
+def generate_monthly_extras(sign: str, target_date: str = None, native_lagna: str = None) -> Dict[str, Any]:
     """
     Compute transit engine data at 3 dates (5th, 15th, 25th of the month) to
     produce monthly phases and detect key dates when planets change signs.
@@ -670,11 +743,14 @@ def generate_monthly_extras(sign: str, target_date: str = None) -> Dict[str, Any
     Args:
         sign: Zodiac sign (lowercase).
         target_date: ISO date string within the target month. Defaults to today.
+        native_lagna: Optional natal ascendant sign. Uses Janma Lagna for house
+            calculation when provided, otherwise falls back to Moon sign.
 
     Returns:
         Dict with "phases" (3 ten-day ranges) and "key_dates" (sign-change events).
     """
     sign_lower = sign.lower()
+    lagna_sign = native_lagna.lower() if native_lagna and native_lagna.lower() in SIGN_INDEX else sign_lower
 
     if target_date:
         year, month, _ = _parse_date_parts(target_date)
@@ -697,12 +773,12 @@ def generate_monthly_extras(sign: str, target_date: str = None) -> Dict[str, Any
         date_str = f"{year}-{month:02d}-{min(day, last_day):02d}"
         try:
             planet_data = get_full_transits(date_str)
-            planet_houses = calculate_transit_houses(sign_lower, planet_data)
-            scores = compute_scores(sign_lower, planet_houses, planet_data)
+            planet_houses = calculate_transit_houses(lagna_sign, planet_data)
+            scores = compute_scores(lagna_sign, planet_houses, planet_data)
 
             # Use phase index as fragment_offset so each phase leads with a different planet's fragment
-            summary_en = assemble_section(sign_lower, "general", planet_houses, planet_data, "monthly", "en", fragment_offset=i)
-            summary_hi = assemble_section(sign_lower, "general", planet_houses, planet_data, "monthly", "hi", fragment_offset=i)
+            summary_en = assemble_section(lagna_sign, "general", planet_houses, planet_data, "monthly", "en", fragment_offset=i)
+            summary_hi = assemble_section(lagna_sign, "general", planet_houses, planet_data, "monthly", "hi", fragment_offset=i)
         except Exception:
             logger.exception("Monthly extras: failed for %s", date_str)
             scores = {"overall": 5}
@@ -719,9 +795,13 @@ def generate_monthly_extras(sign: str, target_date: str = None) -> Dict[str, Any
     # Key dates: detect sign changes between 1st and last day
     key_dates = _detect_sign_changes(year, month, last_day)
 
+    # Eclipse alert: first eclipse in this month (if any)
+    eclipse_alert = _get_month_eclipse_alert(year, month)
+
     return {
         "phases": phases,
         "key_dates": key_dates,
+        "eclipse_alert": eclipse_alert,
     }
 
 
@@ -729,7 +809,7 @@ def generate_monthly_extras(sign: str, target_date: str = None) -> Dict[str, Any
 # 8. generate_yearly_extras
 # ===================================================================
 
-def generate_yearly_extras(sign: str, year: int = None) -> Dict[str, Any]:
+def generate_yearly_extras(sign: str, year: int = None, native_lagna: str = None) -> Dict[str, Any]:
     """
     Compute transit engine at quarterly and monthly mid-points to produce
     yearly overview data including quarter themes, best months, and annual theme.
@@ -737,11 +817,15 @@ def generate_yearly_extras(sign: str, year: int = None) -> Dict[str, Any]:
     Args:
         sign: Zodiac sign (lowercase).
         year: Target year. Defaults to current year.
+        native_lagna: Optional natal ascendant sign. Uses Janma Lagna for house
+            calculation when provided, otherwise falls back to Moon sign.
 
     Returns:
         Dict with "quarters", "best_months", and "annual_theme".
     """
     sign_lower = sign.lower()
+    lagna_sign = native_lagna.lower() if native_lagna and native_lagna.lower() in SIGN_INDEX else sign_lower
+
     if year is None:
         year = datetime.now(timezone.utc).year
 
@@ -757,10 +841,10 @@ def generate_yearly_extras(sign: str, year: int = None) -> Dict[str, Any]:
     for q_idx, q_date in enumerate(quarter_dates):
         try:
             planet_data = get_full_transits(q_date)
-            planet_houses = calculate_transit_houses(sign_lower, planet_data)
-            scores = compute_scores(sign_lower, planet_houses, planet_data)
-            theme_en = assemble_section(sign_lower, "general", planet_houses, planet_data, "yearly", "en")
-            theme_hi = assemble_section(sign_lower, "general", planet_houses, planet_data, "yearly", "hi")
+            planet_houses = calculate_transit_houses(lagna_sign, planet_data)
+            scores = compute_scores(lagna_sign, planet_houses, planet_data)
+            theme_en = assemble_section(lagna_sign, "general", planet_houses, planet_data, "yearly", "en")
+            theme_hi = assemble_section(lagna_sign, "general", planet_houses, planet_data, "yearly", "hi")
 
             # Find the best area for this quarter
             area_scores = {a: scores.get(a, 5) for a in ["love", "career", "finance", "health"]}
@@ -785,8 +869,8 @@ def generate_yearly_extras(sign: str, year: int = None) -> Dict[str, Any]:
         date_str = f"{year}-{m:02d}-15"
         try:
             planet_data = get_full_transits(date_str)
-            planet_houses = calculate_transit_houses(sign_lower, planet_data)
-            scores = compute_scores(sign_lower, planet_houses, planet_data)
+            planet_houses = calculate_transit_houses(lagna_sign, planet_data)
+            scores = compute_scores(lagna_sign, planet_houses, planet_data)
             monthly_scores[m] = scores
         except Exception:
             logger.exception("Yearly extras: failed month %d", m)
@@ -807,9 +891,9 @@ def generate_yearly_extras(sign: str, year: int = None) -> Dict[str, Any]:
     # Annual theme: general section from mid-year (July 15)
     try:
         mid_year_data = get_full_transits(f"{year}-07-15")
-        mid_houses = calculate_transit_houses(sign_lower, mid_year_data)
-        annual_en = assemble_section(sign_lower, "general", mid_houses, mid_year_data, "yearly", "en")
-        annual_hi = assemble_section(sign_lower, "general", mid_houses, mid_year_data, "yearly", "hi")
+        mid_houses = calculate_transit_houses(lagna_sign, mid_year_data)
+        annual_en = assemble_section(lagna_sign, "general", mid_houses, mid_year_data, "yearly", "en")
+        annual_hi = assemble_section(lagna_sign, "general", mid_houses, mid_year_data, "yearly", "hi")
     except Exception:
         logger.exception("Yearly extras: failed annual theme")
         annual_en = "A year of transformation and growth awaits you."

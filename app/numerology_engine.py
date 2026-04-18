@@ -508,6 +508,55 @@ VEHICLE_PREDICTIONS = {
         "vehicle_color": ["Red", "Coral", "Pink", "Maroon"],
         "vehicle_color_hi": ["लाल", "मूंगा", "गुलाबी", "मैरून"],
     },
+    # Master Numbers — not reduced, carry amplified vibration
+    11: {
+        "energy": "Intuition & Illumination (Master 11)",
+        "energy_hi": "अंतर्ज्ञान और प्रकाश (मास्टर 11)",
+        "prediction": "Your vehicle carries the rare Master 11 vibration — the number of the spiritual messenger. This is not an ordinary car; it amplifies intuition and attracts synchronistic events during travel. The owner often receives sudden insights or important news while in this vehicle.",
+        "prediction_hi": "आपके वाहन में दुर्लभ मास्टर 11 कंपन है — आध्यात्मिक संदेशवाहक की संख्या। यह एक साधारण कार नहीं है; यह अंतर्ज्ञान को बढ़ाती है और यात्रा के दौरान समकालिक घटनाओं को आकर्षित करती है। मालिक को अक्सर इस वाहन में अचानक अंतर्दृष्टि या महत्वपूर्ण समाचार मिलते हैं।",
+        "driving_style": "Highly alert and intuitive. You sense road conditions before they appear.",
+        "driving_style_hi": "अत्यंत सतर्क और सहज। आप सड़क की स्थिति प्रकट होने से पहले ही भांप लेते हैं।",
+        "best_for": "Spiritual leaders, counselors, healers, teachers, visionaries",
+        "best_for_hi": "आध्यात्मिक नेता, परामर्शदाता, उपचारक, शिक्षक, दूरदर्शी",
+        "caution": "Master 11 brings high nervous energy. Avoid driving when emotionally overwhelmed.",
+        "caution_hi": "मास्टर 11 उच्च तंत्रिका ऊर्जा लाता है। भावनात्मक रूप से अभिभूत होने पर गाड़ी चलाने से बचें।",
+        "lucky_directions": ["North", "North-East"],
+        "lucky_directions_hi": ["उत्तर", "उत्तर-पूर्व"],
+        "vehicle_color": ["Silver", "White", "Cream", "Light Purple"],
+        "vehicle_color_hi": ["चांदी", "सफेद", "क्रीम", "हल्का बैंगनी"],
+    },
+    22: {
+        "energy": "Master Builder & Vision (Master 22)",
+        "energy_hi": "मास्टर निर्माता और दृष्टि (मास्टर 22)",
+        "prediction": "The most powerful vehicle vibration in numerology — Master 22 is the Master Builder. This vehicle is suited for those executing large-scale plans. It brings stability, discipline, and the capacity to turn dreams into reality on every journey.",
+        "prediction_hi": "अंकशास्त्र में सबसे शक्तिशाली वाहन कंपन — मास्टर 22 है मास्टर बिल्डर। यह वाहन बड़े पैमाने पर योजनाएं क्रियान्वित करने वालों के लिए उपयुक्त है। यह प्रत्येक यात्रा में स्थिरता, अनुशासन और सपनों को वास्तविकता में बदलने की क्षमता लाता है।",
+        "driving_style": "Precise, disciplined, and strategic. You plan routes well in advance.",
+        "driving_style_hi": "सटीक, अनुशासित और रणनीतिक। आप मार्गों की बहुत पहले से योजना बनाते हैं।",
+        "best_for": "Architects, engineers, entrepreneurs, government officials, project leaders",
+        "best_for_hi": "वास्तुकार, इंजीनियर, उद्यमी, सरकारी अधिकारी, परियोजना नेता",
+        "caution": "Perfectionism may cause stress. Accept that roads are unpredictable.",
+        "caution_hi": "पूर्णतावाद तनाव का कारण बन सकता है। स्वीकार करें कि सड़कें अप्रत्याशित होती हैं।",
+        "lucky_directions": ["South", "South-West"],
+        "lucky_directions_hi": ["दक्षिण", "दक्षिण-पश्चिम"],
+        "vehicle_color": ["Dark Blue", "Charcoal", "Forest Green", "Navy"],
+        "vehicle_color_hi": ["गहरा नीला", "चारकोल", "गहरा हरा", "नेवी"],
+    },
+    33: {
+        "energy": "Master Teacher & Universal Love (Master 33)",
+        "energy_hi": "मास्टर शिक्षक और सार्वभौमिक प्रेम (मास्टर 33)",
+        "prediction": "The rarest vehicle vibration — Master 33, the Master Teacher. This vehicle radiates compassion and healing energy wherever it travels. It is often used in service of others — transporting the ill, elderly, or those in need. The vehicle itself seems to offer comfort and calm.",
+        "prediction_hi": "सबसे दुर्लभ वाहन कंपन — मास्टर 33, मास्टर शिक्षक। यह वाहन जहाँ भी जाता है करुणा और उपचार ऊर्जा विकीर्ण करता है। इसे अक्सर दूसरों की सेवा में उपयोग किया जाता है — बीमारों, बुजुर्गों या जरूरतमंदों को ले जाने के लिए। वाहन स्वयं आराम और शांति प्रदान करता प्रतीत होता है।",
+        "driving_style": "Nurturing and protective. You prioritize passengers' comfort above all.",
+        "driving_style_hi": "पोषणकारी और सुरक्षात्मक। आप सबसे ऊपर यात्रियों के आराम को प्राथमिकता देते हैं।",
+        "best_for": "Doctors, social workers, spiritual teachers, humanitarian workers, healers",
+        "best_for_hi": "डॉक्टर, समाज सेवक, आध्यात्मिक शिक्षक, मानवतावादी कार्यकर्ता, उपचारक",
+        "caution": "You may neglect your own needs for others. Remember self-care applies to the driver too.",
+        "caution_hi": "आप दूसरों के लिए अपनी जरूरतों की उपेक्षा कर सकते हैं। याद रखें, स्व-देखभाल चालक पर भी लागू होती है।",
+        "lucky_directions": ["All directions — Master 33 is universally auspicious"],
+        "lucky_directions_hi": ["सभी दिशाएं — मास्टर 33 सार्वभौमिक रूप से शुभ है"],
+        "vehicle_color": ["Gold", "Purple", "Royal Blue", "White"],
+        "vehicle_color_hi": ["सोना", "बैंगनी", "रॉयल ब्लू", "सफेद"],
+    },
 }
 
 
@@ -2334,6 +2383,20 @@ def _name_to_number(name: str) -> int:
     return _reduce_to_single(total)
 
 
+def _name_letter_breakdown(name: str) -> list:
+    """Per-letter Pythagorean + Chaldean values with vowel/consonant classification."""
+    result = []
+    for ch in name.upper():
+        if ch.isalpha():
+            result.append({
+                "letter": ch,
+                "pythagorean": PYTHAGOREAN_MAP.get(ch, 0),
+                "chaldean": CHALDEAN_MAP.get(ch, 0),
+                "is_vowel": ch in VOWELS,
+            })
+    return result
+
+
 def _vowels_number(name: str) -> int:
     """Sum vowel letter values in name (Soul Urge), then reduce."""
     total = 0
@@ -3117,12 +3180,19 @@ def _hidden_passion(name: str) -> dict:
         if c.isalpha():
             n = PYTHAGOREAN_MAP.get(c.upper(), 0)
             if n: counts[n] = counts.get(n, 0) + 1
-    if not counts: return {"number": 0, "count": 0}
+    if not counts: return {"number": 0, "count": 0, "tie_detected": False, "tied_numbers": []}
     # Deterministic tie-break: pick the smallest digit among the top counts.
     max_count = max(counts.values())
-    top_nums = [n for n, c in counts.items() if c == max_count]
-    max_num = min(top_nums)
-    return {"number": max_num, "count": counts[max_num], **HIDDEN_PASSION_PREDICTIONS.get(max_num, {})}
+    top_nums = sorted(n for n, c in counts.items() if c == max_count)
+    tie_detected = len(top_nums) > 1
+    max_num = top_nums[0]
+    return {
+        "number": max_num,
+        "count": counts[max_num],
+        "tie_detected": tie_detected,
+        "tied_numbers": top_nums if tie_detected else [],
+        **HIDDEN_PASSION_PREDICTIONS.get(max_num, {}),
+    }
 
 HIDDEN_PASSION_PREDICTIONS = {
     1: {"title": "Leadership Drive", "title_hi": "नेतृत्व क्षमता", "meaning": "Passionate about independence and leading.", "meaning_hi": "स्वतंत्रता और नेतृत्व के प्रति जुनूनी।"},
@@ -3167,7 +3237,12 @@ def _karmic_lessons(name: str) -> list:
     lessons = []
     for n in range(1, 10):
         if n not in present:
-            lessons.append({"number": n, **KARMIC_LESSON_INTERPRETATIONS.get(n, {})})
+            entry = {"number": n, **KARMIC_LESSON_INTERPRETATIONS.get(n, {})}
+            remedy = MISSING_NUMBER_REMEDIES.get(n, {})
+            entry["gemstone"] = remedy.get("gemstone", "")
+            entry["gemstone_hi"] = remedy.get("gemstone_hi", "")
+            entry["planet"] = remedy.get("planet", "")
+            lessons.append(entry)
     return lessons
 
 KARMIC_LESSON_INTERPRETATIONS = {
@@ -3369,6 +3444,7 @@ def calculate_numerology(name: str, birth_date: str) -> dict:
         "hidden_passion": _hidden_passion(name),
         "subconscious_self": _subconscious_self(name),
         "karmic_lessons": _karmic_lessons(name),
+        "name_letter_breakdown": _name_letter_breakdown(name),
         # Lo Shu grid data (layout + filled values) for UI rendering
         "loshu_grid": loshu_data["grid"],
         "loshu_values": loshu_data["values"],

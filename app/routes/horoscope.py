@@ -356,9 +356,10 @@ def get_monthly_horoscope(
             # Monthly extras: phases and key_dates
             try:
                 from app.transit_engine import generate_monthly_extras
-                extras = generate_monthly_extras(sign=sign, target_date=month_start)
+                extras = generate_monthly_extras(sign=sign, target_date=month_start, native_lagna=native_lagna)
                 response["phases"] = extras.get("phases", [])
                 response["key_dates"] = extras.get("key_dates", [])
+                response["eclipse_alert"] = extras.get("eclipse_alert")
             except Exception:
                 logger.exception("Monthly extras failed for %s", sign)
                 response["phases"] = []
@@ -446,7 +447,7 @@ def get_yearly_horoscope(
             # Yearly extras: quarters, best_months, annual_theme
             try:
                 from app.transit_engine import generate_yearly_extras
-                extras = generate_yearly_extras(sign=sign)
+                extras = generate_yearly_extras(sign=sign, native_lagna=native_lagna)
                 response["quarters"] = extras.get("quarters", [])
                 response["best_months"] = extras.get("best_months", {})
                 response["annual_theme"] = extras.get("annual_theme", {})
@@ -463,7 +464,7 @@ def get_yearly_horoscope(
                     from app.dasha_engine import calculate_dasha
                     tz = birth_tz if birth_tz is not None else (round(birth_lon / 15.0, 1) if birth_lon else 5.5)
                     bt = birth_time or "12:00:00"
-                    natal = calculate_planet_positions(birth_date, bt, birth_lat or 28.6, birth_lon or 77.2, tz)
+                    natal = calculate_planet_positions(birth_date, bt, birth_lat if birth_lat is not None else 28.6, birth_lon if birth_lon is not None else 77.2, tz)
                     moon_info = natal.get("planets", {}).get("Moon", {})
                     moon_nak = moon_info.get("nakshatra", "Ashwini")
                     moon_lon = moon_info.get("longitude", None)

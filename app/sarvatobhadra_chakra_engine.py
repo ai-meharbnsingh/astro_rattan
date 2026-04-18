@@ -376,15 +376,36 @@ def calculate_sarvatobhadra(
 # Internal helpers
 # ---------------------------------------------------------------------------
 
+_KNOWN_PLANETS = frozenset({
+    "Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu",
+    "ascendant", "Ascendant",
+})
+
+
 def _normalize_positions(positions: Dict[str, Any]) -> Dict[str, float]:
     """
     Normalize planet positions to {planet_name: longitude} format.
-    Accepts either {name: float} or {name: {"longitude": float, ...}}.
+    Accepts:
+      - {name: float}               — direct longitude dict
+      - {name: {"longitude": float}} — planet detail dict
+      - full chart dict (with "planets" key) — extracts planets sub-dict
     """
     result: Dict[str, float] = {}
     if not positions:
         return result
+
+    # If passed a full chart dict, extract the planets sub-dict
+    if "planets" in positions and isinstance(positions["planets"], dict):
+        src = dict(positions["planets"])
+        if "ascendant" in positions and isinstance(positions["ascendant"], dict):
+            src["ascendant"] = positions["ascendant"]
+        return _normalize_positions(src)
+
     for name, val in positions.items():
+        # Skip non-planet metadata keys
+        if name.startswith("_") or name in ("ayanamsa_value", "ayanamsa_system",
+                                             "houses", "placidus_cusps"):
+            continue
         if isinstance(val, (int, float)):
             result[name] = float(val)
         elif isinstance(val, dict):

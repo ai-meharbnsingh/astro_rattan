@@ -81,7 +81,10 @@ def calculate_chara_karakas(planets: Dict) -> List[Dict]:
     """
     Sort 7 planets (Sun through Saturn) by sign_degree descending.
     Highest degree = Atmakaraka, lowest = Darakaraka.
+    Accepts either a planets sub-dict or a full chart dict (auto-detects via 'planets' key).
     """
+    if "planets" in planets and isinstance(planets["planets"], dict):
+        planets = planets["planets"]
     karaka_planets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
     entries = []
     for name in karaka_planets:

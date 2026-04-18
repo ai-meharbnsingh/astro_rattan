@@ -1,5 +1,4 @@
 """H-09: Horoscope Content Generation Pipeline — seeds daily & weekly horoscopes."""
-import json
 import logging
 import random
 import psycopg2
@@ -187,9 +186,6 @@ def _generate_template_horoscope(sign: str, transits: Optional[Dict[str, str]] =
     return f"{intro} {career} {love} {health} {spiritual}{challenge}"
 
 
-def _try_ai_horoscope(sign: str, period_date: str) -> str:
-    """Attempt to generate a horoscope using AI. Returns empty string — AI engine removed."""
-    return ""
 
 
 def generate_daily_horoscopes(db_path: str = None):
@@ -221,10 +217,7 @@ def generate_daily_horoscopes(db_path: str = None):
         if row:
             continue
 
-        # Try AI first, fall back to templates
-        content = _try_ai_horoscope(sign, today)
-        if not content:
-            content = _generate_template_horoscope(sign, transits)
+        content = _generate_template_horoscope(sign, transits)
 
         with conn.cursor() as cur:
             cur.execute(
@@ -290,87 +283,6 @@ def seed_weekly_horoscopes(db_path: str = None):
     logger.info("[horoscope] Seeded weekly horoscopes for week of %s", week_date)
 
 
-# ---------------------------------------------------------------------------
-# AI-personalized horoscope generation
-# ---------------------------------------------------------------------------
-
-_SECTIONS = ("general", "love", "career", "finance", "health")
-
-
-def _build_ai_horoscope_prompt(
-    sign: str,
-    period: str,
-    birth_data: Optional[Dict] = None,
-) -> tuple:
-    """Return (system_prompt, user_prompt) for AI-personalized horoscope."""
-    ruler = _RULERS[sign]
-    element = _ELEMENTS[sign]
-
-    system_prompt = (
-        "You are an expert Vedic astrologer (Jyotishi) who writes personalized horoscopes. "
-        "Generate a horoscope with EXACTLY these five sections: General, Love, Career, Finance, Health. "
-        "Format your response as valid JSON with keys: general, love, career, finance, health. "
-        "Each value should be a string of 2-4 sentences. "
-        "Use Vedic astrology concepts (transits, nakshatras, planetary influences). "
-        "Be warm, encouraging, and specific. Do not include markdown formatting."
-    )
-
-    birth_context = ""
-    if birth_data:
-        parts = []
-        if birth_data.get("birth_date"):
-            parts.append(f"born on {birth_data['birth_date']}")
-        if birth_data.get("birth_time"):
-            parts.append(f"at {birth_data['birth_time']}")
-        if birth_data.get("birth_place"):
-            parts.append(f"in {birth_data['birth_place']}")
-        if parts:
-            birth_context = (
-                f" The native was {', '.join(parts)}. "
-                "Personalize the reading based on this birth information."
-            )
-
-    user_prompt = (
-        f"Generate a {period} horoscope for {sign.title()} "
-        f"(a {element} sign ruled by {ruler}). "
-        f"Consider current planetary transits and {ruler}'s influence on this sign.{birth_context} "
-        f"Respond ONLY with a JSON object having keys: general, love, career, finance, health."
-    )
-
-    return system_prompt, user_prompt
-
-
-def _parse_ai_sections(response: str) -> Optional[Dict[str, str]]:
-    """Try to extract the five horoscope sections from AI response JSON."""
-    try:
-        # Strip potential markdown code fences
-        text = response.strip()
-        if text.startswith("```"):
-            text = text.split("\n", 1)[1] if "\n" in text else text[3:]
-            if text.endswith("```"):
-                text = text[:-3]
-            text = text.strip()
-            if text.startswith("json"):
-                text = text[4:].strip()
-
-        data = json.loads(text)
-        if isinstance(data, dict) and all(k in data for k in _SECTIONS):
-            return {k: str(data[k]) for k in _SECTIONS}
-    except (json.JSONDecodeError, TypeError, KeyError):
-        pass
-
-    # Fallback: try to find a JSON object within the response
-    try:
-        start = response.find("{")
-        end = response.rfind("}") + 1
-        if start >= 0 and end > start:
-            data = json.loads(response[start:end])
-            if isinstance(data, dict) and all(k in data for k in _SECTIONS):
-                return {k: str(data[k]) for k in _SECTIONS}
-    except (json.JSONDecodeError, TypeError, KeyError):
-        pass
-
-    return None
 
 
 def _template_fallback_sections(sign: str, period: str = "daily") -> Dict[str, str]:

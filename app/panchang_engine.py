@@ -427,12 +427,41 @@ _FIXED_KARANAS: List[str] = [
 KARANAS: List[str] = _REPEATING_KARANAS + _FIXED_KARANAS
 
 # Yoga quality classification (Muhurta Chintamani — Yoga Dosha list)
-_BAD_YOGA_NUMBERS: set = {1, 8, 17, 24, 27}  # Vishkambha, Shoola(?), Vyatipata, Vajra, Vaidhriti
+# 1=Vishkambha, 6=Atiganda, 9=Shoola, 10=Ganda, 13=Vyaghata, 17=Vyatipata, 19=Parigha, 27=Vaidhriti
+_BAD_YOGA_NUMBERS: set = {1, 6, 9, 10, 13, 17, 19, 27}
 
 # Karana quality classification
 _VISHTI_NAMES: set = {"Vishti", "Bhadra"}
 # Chara (moveable) karanas cycle repeatedly; Sthira (fixed) karanas are the 4 fixed ones
 _CHARA_KARANA_NAMES: set = {"Bava", "Balava", "Kaulava", "Taitila", "Garaja", "Vanija", "Vishti"}
+
+# Classical ruling planets for each of the 11 karana types (Muhurta Chintamani)
+_KARANA_LORD: Dict[str, str] = {
+    "Bava":        "Sun",
+    "Balava":      "Moon",
+    "Kaulava":     "Mars",
+    "Taitila":     "Mercury",
+    "Garaja":      "Jupiter",
+    "Vanija":      "Venus",
+    "Vishti":      "Saturn",
+    "Shakuni":     "Saturn",
+    "Chatushpada": "Jupiter",
+    "Naga":        "Mercury",
+    "Kimstughna":  "Sun",
+}
+_KARANA_LORD_HI: Dict[str, str] = {
+    "Bava":        "सूर्य",
+    "Balava":      "चन्द्र",
+    "Kaulava":     "मंगल",
+    "Taitila":     "बुध",
+    "Garaja":      "गुरु",
+    "Vanija":      "शुक्र",
+    "Vishti":      "शनि",
+    "Shakuni":     "शनि",
+    "Chatushpada": "गुरु",
+    "Naga":        "बुध",
+    "Kimstughna":  "सूर्य",
+}
 
 # ============================================================
 # KARANA INTERPRETATION TEXT
@@ -1106,11 +1135,14 @@ def calculate_yamaganda(weekday: int, sunrise: str, sunset: str) -> Dict[str, st
 # AUSPICIOUS TIMINGS
 # ============================================================
 
-def calculate_abhijit_muhurat(sunrise: str, sunset: str) -> Dict[str, str]:
+def calculate_abhijit_muhurat(sunrise: str, sunset: str, weekday: int = -1) -> Dict[str, str]:
     """
     Abhijit Muhurat: the 8th muhurat of the day (midday window).
     Divide daytime into 15 muhurats; the 8th is Abhijit.
+    Classical rule: Abhijit is NOT observed on Wednesday (Budhawar).
     """
+    if weekday == 2:  # Wednesday — Abhijit is classically skipped
+        return {"start": "", "end": "", "active": False, "skipped": True, "reason": "Not observed on Wednesday"}
     sr_min = _time_to_minutes(sunrise)
     ss_min = _time_to_minutes(sunset)
     day_duration = ss_min - sr_min
@@ -1549,7 +1581,7 @@ def calculate_panchang(
     yamaganda = calculate_yamaganda(weekday, sunrise_str, sunset_str)
 
     # 11. Auspicious timings
-    abhijit = calculate_abhijit_muhurat(sunrise_str, sunset_str)
+    abhijit = calculate_abhijit_muhurat(sunrise_str, sunset_str, weekday=weekday)
     _sr_m = _time_to_minutes(sunrise_str)
     _ss_m = _time_to_minutes(sunset_str)
     ratrimana_mins = 1440 - (_ss_m - _sr_m)
@@ -1794,7 +1826,7 @@ def calculate_panchang(
         mid_offset = (start_offset + end_offset) / 2
         mid_jd = jd_sunrise + (mid_offset / 1440.0)
         try:
-            mid_asc = _compute_ascendant(mid_jd, latitude, longitude)
+            mid_asc = _calculate_ascendant(mid_jd, latitude, longitude)
             mid_degree = round(mid_asc.get("longitude", 0) % 30, 1)
         except Exception:
             mid_degree = 15.0  # fallback: middle of sign
@@ -1977,9 +2009,13 @@ def calculate_panchang(
         "karana": {
             "name": karana_name,
             "number": karana_index + 1,
+            "lord": _KARANA_LORD.get(karana_name, ""),
+            "lord_hi": _KARANA_LORD_HI.get(karana_name, ""),
             "end_time": karana_end,
             "second_karana": second_karana_name,
             "second_karana_end_time": second_karana_end,
+            "second_karana_lord": _KARANA_LORD.get(second_karana_name, ""),
+            "second_karana_lord_hi": _KARANA_LORD_HI.get(second_karana_name, ""),
             "is_vishti": karana_name in _VISHTI_NAMES,
             "type": "chara" if karana_name in _CHARA_KARANA_NAMES else "sthira",
             "auspicious": karana_name not in _VISHTI_NAMES,

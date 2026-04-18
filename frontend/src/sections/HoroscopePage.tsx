@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, CalendarDays, Loader2, Sun, Moon, Star, Sparkles, Users, Orbit } from 'lucide-react';
+import { Calendar, CalendarDays, Sun, Star, Users, Orbit, ChevronDown } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
+import { useAuth } from '@/hooks/useAuth';
 import DailyTab from '@/components/horoscope/DailyTab';
 import WeeklyTab from '@/components/horoscope/WeeklyTab';
 import MonthlyTab from '@/components/horoscope/MonthlyTab';
@@ -34,13 +35,38 @@ const getLocalDateString = () => {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 };
 
+const BIRTH_PARAMS_KEY = 'astrorattan_birth_params';
+
+interface BirthParams {
+  birth_date: string;
+  birth_time: string;
+  birth_lat: string;
+  birth_lon: string;
+}
+
+function loadBirthParams(): BirthParams | null {
+  try {
+    const raw = localStorage.getItem(BIRTH_PARAMS_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function HoroscopePage() {
   const { t, language } = useTranslation();
+  const { user } = useAuth();
   const sectionRef = useRef<HTMLDivElement>(null);
 
   const [selectedDate, setSelectedDate] = useState(() => getLocalDateString());
   const [selectedSign, setSelectedSign] = useState('aries');
   const [activeTab, setActiveTab] = useState('daily');
+  const [showPersonalize, setShowPersonalize] = useState(false);
+  const [birthParams, setBirthParams] = useState<BirthParams>(() => {
+    const saved = loadBirthParams();
+    if (saved) return saved;
+    return { birth_date: user?.date_of_birth || '', birth_time: '', birth_lat: '', birth_lon: '' };
+  });
 
   // Data states
   const [dailyData, setDailyData] = useState<any>(null);
@@ -60,71 +86,88 @@ export default function HoroscopePage() {
 
   const [currentTime, setCurrentTime] = useState(new Date());
 
+  // Persist birth params to localStorage
+  const saveBirthParams = (params: BirthParams) => {
+    setBirthParams(params);
+    localStorage.setItem(BIRTH_PARAMS_KEY, JSON.stringify(params));
+  };
+
+  // Build birth query string (only when all required fields are filled)
+  const birthQuery = (() => {
+    const { birth_date, birth_time, birth_lat, birth_lon } = birthParams;
+    if (!birth_date || !birth_lat || !birth_lon) return '';
+    const params = new URLSearchParams({ birth_date });
+    if (birth_time) params.append('birth_time', birth_time.length === 5 ? birth_time + ':00' : birth_time);
+    params.append('birth_lat', birth_lat);
+    params.append('birth_lon', birth_lon);
+    return '&' + params.toString();
+  })();
+
   // Live clock
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  // Fetch daily horoscope when sign or date changes
+  // Fetch daily horoscope when sign, date, or birth params change
   useEffect(() => {
     let cancelled = false;
     const fetchDaily = async () => {
       setDailyLoading(true);
       try {
-        const data = await api.get(`/api/horoscope/daily?sign=${selectedSign}&date=${selectedDate}`);
+        const data = await api.get(`/api/horoscope/daily?sign=${selectedSign}&date=${selectedDate}${birthQuery}`);
         if (!cancelled && data) setDailyData(data);
       } catch { /* keep previous */ }
       finally { if (!cancelled) setDailyLoading(false); }
     };
     fetchDaily();
     return () => { cancelled = true; };
-  }, [selectedSign, selectedDate]);
+  }, [selectedSign, selectedDate, birthQuery]);
 
-  // Fetch weekly when sign changes
+  // Fetch weekly when sign or birth params change
   useEffect(() => {
     let cancelled = false;
     const fetchWeekly = async () => {
       setWeeklyLoading(true);
       try {
-        const data = await api.get(`/api/horoscope/weekly?sign=${selectedSign}`);
+        const data = await api.get(`/api/horoscope/weekly?sign=${selectedSign}${birthQuery}`);
         if (!cancelled && data) setWeeklyData(data);
       } catch { /* keep previous */ }
       finally { if (!cancelled) setWeeklyLoading(false); }
     };
     fetchWeekly();
     return () => { cancelled = true; };
-  }, [selectedSign]);
+  }, [selectedSign, birthQuery]);
 
-  // Fetch monthly when sign changes
+  // Fetch monthly when sign or birth params change
   useEffect(() => {
     let cancelled = false;
     const fetchMonthly = async () => {
       setMonthlyLoading(true);
       try {
-        const data = await api.get(`/api/horoscope/monthly?sign=${selectedSign}`);
+        const data = await api.get(`/api/horoscope/monthly?sign=${selectedSign}${birthQuery}`);
         if (!cancelled && data) setMonthlyData(data);
       } catch { /* keep previous */ }
       finally { if (!cancelled) setMonthlyLoading(false); }
     };
     fetchMonthly();
     return () => { cancelled = true; };
-  }, [selectedSign]);
+  }, [selectedSign, birthQuery]);
 
-  // Fetch yearly when sign changes
+  // Fetch yearly when sign or birth params change
   useEffect(() => {
     let cancelled = false;
     const fetchYearly = async () => {
       setYearlyLoading(true);
       try {
-        const data = await api.get(`/api/horoscope/yearly?sign=${selectedSign}`);
+        const data = await api.get(`/api/horoscope/yearly?sign=${selectedSign}${birthQuery}`);
         if (!cancelled && data) setYearlyData(data);
       } catch { /* keep previous */ }
       finally { if (!cancelled) setYearlyLoading(false); }
     };
     fetchYearly();
     return () => { cancelled = true; };
-  }, [selectedSign]);
+  }, [selectedSign, birthQuery]);
 
   // Fetch all signs on mount and date change
   useEffect(() => {
@@ -183,6 +226,74 @@ export default function HoroscopePage() {
             onChange={(e) => setSelectedDate(e.target.value)}
             className="w-full px-2 py-1.5 rounded-lg bg-white border border-border text-foreground text-sm focus:border-sacred-gold focus:outline-none"
           />
+        </div>
+
+        {/* Personalize with birth data */}
+        <div className="rounded-xl border border-border bg-card mb-4 overflow-hidden">
+          <button
+            onClick={() => setShowPersonalize(v => !v)}
+            className="w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <span className="flex items-center gap-2">
+              <Star className="w-4 h-4 text-sacred-gold" />
+              {birthQuery ? (language === 'hi' ? 'व्यक्तिगत राशिफल (जन्म डेटा सक्रिय)' : 'Personalized Reading (birth data active)') : (language === 'hi' ? 'व्यक्तिगत राशिफल जोड़ें' : 'Personalize with Birth Data')}
+            </span>
+            <ChevronDown className={`w-4 h-4 transition-transform ${showPersonalize ? 'rotate-180' : ''}`} />
+          </button>
+          {showPersonalize && (
+            <div className="px-4 pb-4 grid grid-cols-2 sm:grid-cols-4 gap-3 border-t border-border pt-3">
+              <div>
+                <label className="block text-xs text-muted-foreground mb-1">{language === 'hi' ? 'जन्म तिथि' : 'Birth Date'}</label>
+                <input
+                  type="date"
+                  value={birthParams.birth_date}
+                  onChange={e => saveBirthParams({ ...birthParams, birth_date: e.target.value })}
+                  className="w-full px-2 py-1.5 text-sm rounded-lg border border-border bg-white text-foreground focus:border-sacred-gold focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-muted-foreground mb-1">{language === 'hi' ? 'जन्म समय' : 'Birth Time'}</label>
+                <input
+                  type="time"
+                  value={birthParams.birth_time}
+                  onChange={e => saveBirthParams({ ...birthParams, birth_time: e.target.value })}
+                  className="w-full px-2 py-1.5 text-sm rounded-lg border border-border bg-white text-foreground focus:border-sacred-gold focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-muted-foreground mb-1">{language === 'hi' ? 'अक्षांश' : 'Latitude'}</label>
+                <input
+                  type="number"
+                  step="0.0001"
+                  placeholder="28.6139"
+                  value={birthParams.birth_lat}
+                  onChange={e => saveBirthParams({ ...birthParams, birth_lat: e.target.value })}
+                  className="w-full px-2 py-1.5 text-sm rounded-lg border border-border bg-white text-foreground focus:border-sacred-gold focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-muted-foreground mb-1">{language === 'hi' ? 'देशांतर' : 'Longitude'}</label>
+                <input
+                  type="number"
+                  step="0.0001"
+                  placeholder="77.2090"
+                  value={birthParams.birth_lon}
+                  onChange={e => saveBirthParams({ ...birthParams, birth_lon: e.target.value })}
+                  className="w-full px-2 py-1.5 text-sm rounded-lg border border-border bg-white text-foreground focus:border-sacred-gold focus:outline-none"
+                />
+              </div>
+              {birthQuery && (
+                <div className="col-span-2 sm:col-span-4">
+                  <button
+                    onClick={() => saveBirthParams({ birth_date: '', birth_time: '', birth_lat: '', birth_lon: '' })}
+                    className="text-xs text-muted-foreground hover:text-destructive transition-colors"
+                  >
+                    {language === 'hi' ? 'साफ़ करें' : 'Clear personalization'}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Sign Tabs — equally spaced grid of 12 */}
