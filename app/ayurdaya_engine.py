@@ -15,6 +15,7 @@ Ayu categories (classical year ranges):
   - Purnayu   100+ years (special case of Dirghayu with extra qualifiers)
 """
 from __future__ import annotations
+from collections import Counter
 from typing import Any, Dict, List
 
 ZODIAC = [
@@ -910,6 +911,211 @@ def _strongest_of_sun_moon_lagna(chart_data: Dict[str, Any]) -> str:
     return "sun"
 
 
+def _classify_years(years: float) -> str:
+    """Map a year value to Ayu class string."""
+    if years <= 32:
+        return "Alpayu"
+    elif years <= 64:
+        return "Madhyayu"
+    elif years < 100:
+        return "Dirghayu"
+    return "Purnayu"
+
+
+def resolve_ayu_conflict(
+    pindayu_years: float,
+    nisargayu_years: float,
+    amsayu_years: float,
+    selected_method: str,
+    selected_years: float,
+    chart_data: dict,
+) -> Dict[str, Any]:
+    """
+    Resolve conflict when the three Ayurdaya methods give different Ayu classes.
+
+    Per Phaladeepika Adhyaya 13:
+    1. If 2 or more methods agree -> trust the majority.
+    2. If all 3 disagree -> apply the conservative principle:
+       - Majority wins if 2 agree
+       - If all differ: Alpayu dominates (short life wins over medium/long in uncertainty)
+       - UNLESS lagna lord is very strong (exalted/own) -> trust Dirghayu
+       - UNLESS lagna lord is debilitated -> trust Alpayu
+       - Otherwise: take the median (middle) years value
+    3. The selected method (strongest luminary) overrides when it agrees with majority.
+
+    Returns:
+    {
+      "pi_class": str, "ni_class": str, "am_class": str,
+      "conflict_type": "none" | "majority" | "full_conflict",
+      "resolved_class": str,
+      "resolved_years": float,
+      "resolution_method": str,
+      "resolution_en": str,
+      "resolution_hi": str,
+      "sloka_ref": "Phaladeepika Adh. 13"
+    }
+    """
+    pi_class = _classify_years(pindayu_years)
+    ni_class = _classify_years(nisargayu_years)
+    am_class = _classify_years(amsayu_years)
+
+    classes = [pi_class, ni_class, am_class]
+    years_list = [pindayu_years, nisargayu_years, amsayu_years]
+
+    counts = Counter(classes)
+    majority_class, majority_count = counts.most_common(1)[0]
+
+    # No conflict — all agree
+    if majority_count == 3:
+        return {
+            "pi_class": pi_class, "ni_class": ni_class, "am_class": am_class,
+            "conflict_type": "none",
+            "resolved_class": majority_class,
+            "resolved_years": selected_years,
+            "resolution_method": f"All 3 methods agree: {majority_class}",
+            "resolution_en": (
+                f"All three Ayurdaya methods agree: {majority_class}. "
+                f"No conflict. Selected method ({selected_method}) gives {selected_years:.1f} years. "
+                f"Phaladeepika Adh. 13: unanimous agreement is highly reliable."
+            ),
+            "resolution_hi": (
+                f"तीनों आयुर्दाय विधियाँ सहमत हैं: {majority_class}। "
+                f"कोई विरोधाभास नहीं। चुनी गई विधि ({selected_method}) {selected_years:.1f} वर्ष देती है। "
+                f"फलदीपिका अ. 13: सर्वसम्मति अत्यंत विश्वसनीय है।"
+            ),
+            "sloka_ref": "Phaladeepika Adh. 13",
+        }
+
+    # Majority (2 of 3 agree)
+    if majority_count == 2:
+        agree_methods = [["Pindayu", "Nisargayu", "Amsayu"][i] for i, c in enumerate(classes) if c == majority_class]
+        disagree_idx = [i for i, c in enumerate(classes) if c != majority_class][0]
+        disagree_method = ["Pindayu", "Nisargayu", "Amsayu"][disagree_idx]
+        disagree_class = classes[disagree_idx]
+
+        agree_years = [years_list[i] for i, c in enumerate(classes) if c == majority_class]
+        resolved_years = sum(agree_years) / len(agree_years)
+
+        return {
+            "pi_class": pi_class, "ni_class": ni_class, "am_class": am_class,
+            "conflict_type": "majority",
+            "resolved_class": majority_class,
+            "resolved_years": round(resolved_years, 1),
+            "resolution_method": f"Majority (2 of 3): {', '.join(agree_methods)} agree on {majority_class}",
+            "resolution_en": (
+                f"2 of 3 methods agree on {majority_class} "
+                f"({', '.join(agree_methods)}; {disagree_method} says {disagree_class}). "
+                f"Phaladeepika Adh. 13: majority wins — trust {majority_class}. "
+                f"Resolved years: ~{resolved_years:.1f} (average of agreeing methods)."
+            ),
+            "resolution_hi": (
+                f"3 में से 2 विधियाँ {majority_class} पर सहमत हैं "
+                f"({', '.join(agree_methods)}; {disagree_method} {disagree_class} कहती है)। "
+                f"फलदीपिका अ. 13: बहुमत विजयी — {majority_class} पर भरोसा करें। "
+                f"निर्धारित वर्ष: ~{resolved_years:.1f} (सहमत विधियों का औसत)।"
+            ),
+            "sloka_ref": "Phaladeepika Adh. 13",
+        }
+
+    # Full conflict — all 3 disagree
+    # Check lagna lord strength
+    lagna_lord_strong = False
+    lagna_lord_debilitated = False
+    if isinstance(chart_data, dict):
+        asc_raw = chart_data.get("ascendant") or {}
+        asc_sign = str(asc_raw.get("sign", "") or "")
+        _SL = {
+            "Aries": "Mars", "Taurus": "Venus", "Gemini": "Mercury", "Cancer": "Moon",
+            "Leo": "Sun", "Virgo": "Mercury", "Libra": "Venus", "Scorpio": "Mars",
+            "Sagittarius": "Jupiter", "Capricorn": "Saturn", "Aquarius": "Saturn", "Pisces": "Jupiter",
+        }
+        _EXALT = {
+            "Sun": "Aries", "Moon": "Taurus", "Mars": "Capricorn", "Mercury": "Virgo",
+            "Jupiter": "Cancer", "Venus": "Pisces", "Saturn": "Libra",
+        }
+        _DEBIL = {
+            "Sun": "Libra", "Moon": "Scorpio", "Mars": "Cancer", "Mercury": "Pisces",
+            "Jupiter": "Capricorn", "Venus": "Virgo", "Saturn": "Aries",
+        }
+        _OWN = {
+            "Sun": {"Leo"}, "Moon": {"Cancer"}, "Mars": {"Aries", "Scorpio"},
+            "Mercury": {"Gemini", "Virgo"}, "Jupiter": {"Sagittarius", "Pisces"},
+            "Venus": {"Taurus", "Libra"}, "Saturn": {"Capricorn", "Aquarius"},
+        }
+        ll = _SL.get(asc_sign, "")
+        if ll:
+            planets_raw = chart_data.get("planets") or {}
+            ll_data = planets_raw.get(ll) or {}
+            ll_sign = str(ll_data.get("sign", "") or "")
+            if _EXALT.get(ll) == ll_sign or ll_sign in _OWN.get(ll, set()):
+                lagna_lord_strong = True
+            if _DEBIL.get(ll) == ll_sign:
+                lagna_lord_debilitated = True
+
+    sorted_years = sorted(years_list)
+    median_years = sorted_years[1]
+
+    if lagna_lord_debilitated:
+        resolved_class = "Alpayu"
+        resolved_years = min(years_list)
+        resolution_method = "Full conflict: Lagna lord debilitated -> Alpayu wins (Adh. 13)"
+        resolution_en = (
+            f"All 3 methods disagree (Pindayu:{pi_class}, Nisargayu:{ni_class}, Amsayu:{am_class}). "
+            f"Phaladeepika Adh. 13 full-conflict resolution: Lagna lord is debilitated, "
+            f"which strengthens the Alpayu (short life) indication. "
+            f"Resolved: {resolved_class}, ~{resolved_years:.1f} years."
+        )
+        resolution_hi = (
+            f"तीनों विधियाँ असहमत हैं (Pindayu:{pi_class}, Nisargayu:{ni_class}, Amsayu:{am_class})। "
+            f"फलदीपिका अ. 13: लग्नेश नीच राशि में — अल्पायु संकेत प्रबल। "
+            f"निर्धारण: {resolved_class}, ~{resolved_years:.1f} वर्ष।"
+        )
+    elif lagna_lord_strong:
+        resolved_class = "Dirghayu"
+        resolved_years = max(years_list)
+        resolution_method = "Full conflict: Lagna lord strong -> Dirghayu wins (Adh. 13)"
+        resolution_en = (
+            f"All 3 methods disagree (Pindayu:{pi_class}, Nisargayu:{ni_class}, Amsayu:{am_class}). "
+            f"Phaladeepika Adh. 13 full-conflict resolution: Lagna lord is strong (exalted/own sign), "
+            f"which favors the Dirghayu (long life) indication. "
+            f"Resolved: {resolved_class}, ~{resolved_years:.1f} years."
+        )
+        resolution_hi = (
+            f"तीनों विधियाँ असहमत हैं (Pindayu:{pi_class}, Nisargayu:{ni_class}, Amsayu:{am_class})। "
+            f"फलदीपिका अ. 13: लग्नेश उच्च/स्वराशि में — दीर्घायु संकेत प्रबल। "
+            f"निर्धारण: {resolved_class}, ~{resolved_years:.1f} वर्ष।"
+        )
+    else:
+        resolved_class = _classify_years(median_years)
+        resolved_years = median_years
+        resolution_method = "Full conflict: neutral lagna -> median years (Adh. 13)"
+        resolution_en = (
+            f"All 3 methods fully disagree (Pindayu:{pi_class}, Nisargayu:{ni_class}, Amsayu:{am_class}). "
+            f"Phaladeepika Adh. 13: when all 3 methods differ and lagna lord is neutral, "
+            f"take the middle (median) estimate. "
+            f"Resolved: {resolved_class}, ~{median_years:.1f} years. "
+            f"Use this estimate with caution — full conflict indicates a complex chart."
+        )
+        resolution_hi = (
+            f"तीनों विधियाँ पूर्णतः असहमत हैं (Pindayu:{pi_class}, Nisargayu:{ni_class}, Amsayu:{am_class})। "
+            f"फलदीपिका अ. 13: जब तीनों भिन्न हों और लग्नेश तटस्थ हो — "
+            f"मध्यमान (median) वर्ष लें। "
+            f"निर्धारण: {resolved_class}, ~{median_years:.1f} वर्ष। "
+            f"इस अनुमान का सावधानी से उपयोग करें — पूर्ण असहमति जटिल कुंडली की ओर संकेत करती है।"
+        )
+
+    return {
+        "pi_class": pi_class, "ni_class": ni_class, "am_class": am_class,
+        "conflict_type": "full_conflict",
+        "resolved_class": resolved_class,
+        "resolved_years": round(resolved_years, 1),
+        "resolution_method": resolution_method,
+        "resolution_en": resolution_en,
+        "resolution_hi": resolution_hi,
+        "sloka_ref": "Phaladeepika Adh. 13",
+    }
+
+
 def calculate_lifespan(chart_data: Dict[str, Any]) -> Dict[str, Any]:
     """
     Full three-method Ayurdaya with selector.
@@ -949,6 +1155,16 @@ def calculate_lifespan(chart_data: Dict[str, Any]) -> Dict[str, Any]:
     else:
         classification = "Purnayu"
 
+    # Ayu conflict resolution (Phaladeepika Adh. 13)
+    ayu_conflict = resolve_ayu_conflict(
+        pindayu_years=pi["after_haranas"],
+        nisargayu_years=ni["after_haranas"],
+        amsayu_years=am["after_haranas"],
+        selected_method=method_key,
+        selected_years=final,
+        chart_data=chart_data,
+    )
+
     return {
         "pindayu": pi,
         "nisargayu": ni,
@@ -958,5 +1174,6 @@ def calculate_lifespan(chart_data: Dict[str, Any]) -> Dict[str, Any]:
         "selection_reason_hi": selection_hi,
         "final_years": final,
         "classification": classification,
+        "ayu_conflict_resolution": ayu_conflict,
         "sloka_ref": "Phaladeepika Adh. 22 sloka 27",
     }
