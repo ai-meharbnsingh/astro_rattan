@@ -20,7 +20,7 @@ interface SignMeta {
 interface YearlyData extends SignMeta {
   period: string;
   year: number;
-  sections: Record<string, string>;
+  sections: Record<string, string | { en: string; hi: string }>;
   source: string;
   scores?: { overall: number; love: number; career: number; finance: number; health: number };
   mood?: { en: string; hi: string };

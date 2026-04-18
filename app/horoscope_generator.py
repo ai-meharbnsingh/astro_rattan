@@ -535,16 +535,7 @@ def generate_ai_horoscope(
         from app.transit_engine import generate_transit_horoscope
         result = generate_transit_horoscope(sign=sign, period=period, target_date=None)
         if result and result.get("sections"):
-            # Flatten bilingual {en, hi} section values to plain strings
-            # so callers that render sections directly don't hit React error #31
-            sections_raw = result.get("sections", {})
-            sections_flat = {}
-            for k, v in sections_raw.items():
-                if isinstance(v, dict) and "en" in v:
-                    sections_flat[k] = v.get("en", "")
-                else:
-                    sections_flat[k] = v
-            result["sections"] = sections_flat
+            # Keep bilingual {en, hi} section values — frontend txt() helper handles them
             return result
     except Exception:
         pass
