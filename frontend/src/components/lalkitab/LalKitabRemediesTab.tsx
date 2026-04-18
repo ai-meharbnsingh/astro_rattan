@@ -398,6 +398,7 @@ export default function LalKitabRemediesTab({ kundliId }: Props) {
   const [validatedLoading, setValidatedLoading] = useState(false);
   const [master, setMaster] = useState<any[]>([]);
   const [masterLoading, setMasterLoading] = useState(false);
+  const [abhimantritItems, setAbhimantritItems] = useState<Record<string, any> | null>(null);
   // P2.4 — Remedy Wizard modal
   const [wizardOpen, setWizardOpen] = useState(false);
 
@@ -424,6 +425,11 @@ export default function LalKitabRemediesTab({ kundliId }: Props) {
       .then((res: any) => setMaster(Array.isArray(res?.remedies) ? res.remedies : []))
       .catch(() => { /* non-blocking */ })
       .finally(() => setMasterLoading(false));
+
+    // LK 4.20 — Abhimantrit specialty items catalogue
+    api.get(`/api/lalkitab/remedies/abhimantrit?kundli_id=${kundliId}`)
+      .then((res: any) => setAbhimantritItems(res?.items ?? null))
+      .catch(() => { /* non-blocking */ });
   }, [kundliId]);
 
   const filtered = enriched.filter(r => {
@@ -633,6 +639,48 @@ export default function LalKitabRemediesTab({ kundliId }: Props) {
                   )}
                 </div>
               ))}
+            </div>
+          )}
+
+          {/* LK 4.20 — Abhimantrit Items */}
+          {abhimantritItems && Object.keys(abhimantritItems).length > 0 && (
+            <div className="mt-4 pt-4 border-t border-border space-y-3">
+              <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <Gem className="w-4 h-4 text-sacred-gold-dark shrink-0" />
+                {isHi ? 'अभिमंत्रित वस्तुएं' : 'Abhimantrit Items'}
+                <span className="text-[10px] px-2 py-0.5 rounded-full border border-sacred-gold/40 bg-sacred-gold/10 text-sacred-gold-dark font-medium ml-1">
+                  {isHi ? 'प्रीमियम' : 'Specialty'}
+                </span>
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {Object.entries(abhimantritItems).map(([key, item]: [string, any]) => (
+                  <div key={key} className="rounded-lg border border-sacred-gold/30 bg-sacred-gold/5 p-3 space-y-1.5">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="font-semibold text-sm text-foreground">
+                        {isHi ? item.name_hi : item.name_en}
+                      </p>
+                      {item.cost_tier && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded border border-border/50 text-muted-foreground shrink-0">
+                          {item.cost_tier}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground">{item.material}</p>
+                    {item.wear_method && (
+                      <p className="text-xs text-foreground/70">{isHi ? 'धारण विधि' : 'Wear'}: {item.wear_method}</p>
+                    )}
+                    {item.planet_association && (
+                      <p className="text-xs text-foreground/70">{isHi ? 'ग्रह' : 'Planet'}: {item.planet_association}</p>
+                    )}
+                    {item.ritual_required && (
+                      <p className="text-xs text-amber-700 font-medium">{isHi ? '⚑ अभिमंत्रण आवश्यक' : '⚑ Ritual required'}</p>
+                    )}
+                    {Array.isArray(item.benefits) && item.benefits.length > 0 && (
+                      <p className="text-xs text-muted-foreground">{item.benefits.join(' · ')}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

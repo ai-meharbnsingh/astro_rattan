@@ -138,6 +138,54 @@ PLANET_MATERIALS: Dict[str, Dict[str, Any]] = {
 }
 
 
+ABHIMANTRIT_ITEMS: Dict[str, Dict[str, Any]] = {
+    "sphatik_mala": {
+        "name_en": "Sphatik Mala",
+        "name_hi": "स्फटिक माला",
+        "material": "Crystal Quartz",
+        "planet_association": "Venus",
+        "wear_method": "Mala (108 beads)",
+        "ritual_required": True,
+        "mantras": ["Om Shukraya Namaha"],
+        "benefits": ["Clarity", "Purity", "Spiritual elevation"],
+        "cost_tier": "premium",
+    },
+    "gomati_chakra": {
+        "name_en": "Gomati Chakra",
+        "name_hi": "गोमती चक्र",
+        "material": "River shell",
+        "planet_association": "Moon",
+        "wear_method": "Pouch or pendant",
+        "ritual_required": True,
+        "mantras": ["Om Chandaya Namaha"],
+        "benefits": ["Protection", "Prosperity", "Mental peace"],
+        "cost_tier": "premium",
+    },
+    "rudraksha_beads": {
+        "name_en": "Rudraksha Beads",
+        "name_hi": "रुद्राक्ष",
+        "material": "Rudraksha tree seeds",
+        "planet_association": "Saturn",
+        "wear_method": "Mala (108 beads)",
+        "ritual_required": True,
+        "mantras": ["Om Namah Shivaya"],
+        "benefits": ["Discipline", "Longevity", "Spiritual power"],
+        "cost_tier": "premium",
+    },
+    "tulsi_mala": {
+        "name_en": "Tulsi Mala",
+        "name_hi": "तुलसी माला",
+        "material": "Holy basil wood",
+        "planet_association": "Mercury",
+        "wear_method": "Mala (108 beads)",
+        "ritual_required": False,
+        "mantras": ["Om Krishna"],
+        "benefits": ["Purity", "Devotion", "Mental clarity"],
+        "cost_tier": "moderate",
+    },
+}
+
+
 def get_remedy_matrix(planet: str) -> Dict[str, Any]:
     """
     Return the frozen direction/colour/material matrix for a planet.

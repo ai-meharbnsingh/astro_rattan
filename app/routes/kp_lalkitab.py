@@ -15,6 +15,7 @@ from app.astro_engine import calculate_planet_positions
 from app.database import get_db
 from app.kp_engine import calculate_kp_cuspal, calculate_kp_horary, get_horary_prediction
 from app.lalkitab_engine import get_remedies, REMEDIES_BY_HOUSE
+from app.lalkitab_remedy_matrix import ABHIMANTRIT_ITEMS
 from app.models import KPHoraryRequest, KPHoraryPredictRequest, PrashnaQuickRequest
 from app.lalkitab_advanced import (
     calculate_masnui_planets,
@@ -3493,3 +3494,12 @@ def get_calculation_details(
         "source_references": source_references,
         "source": LK_DERIVED,
     }
+
+
+@router.get("/api/lalkitab/remedies/abhimantrit")
+def get_abhimantrit_items(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+):
+    """Return the static Abhimantrit specialty items catalogue (LK 4.20)."""
+    return {"kundli_id": kundli_id, "items": ABHIMANTRIT_ITEMS, "source": "LK_ABHIMANTRIT"}
