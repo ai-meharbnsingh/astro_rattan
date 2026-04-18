@@ -22,8 +22,8 @@ def test_payload_has_windows():
     payload = build_sankranti_payload(2025, longitude=77.2090)
     first = payload["sankrantis"][0]
     assert "restriction_window" in first
-    assert "punyakaal" in first
+    assert "amritkaal" in first
     assert first["restriction_window"]["hours_before"] == 16
     assert first["restriction_window"]["hours_after"] == 16
-    assert first["punyakaal"]["heuristic"] is True
+    assert first["amritkaal"]["is_classical"] is True
 

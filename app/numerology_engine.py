@@ -3007,8 +3007,8 @@ def _get_house_enhancement_tips(house_num: int) -> list:
 # ============================================================
 
 def _birthday_number(birth_date: str) -> int:
-    """Birthday Number — the raw birth day (1–31), NOT reduced."""
-    return int(birth_date[8:10])
+    """Birthday Number — birth day reduced to single digit or master number."""
+    return _reduce_to_single(int(birth_date[8:10]))
 
 def _maturity_number(life_path: int, expression: int) -> int:
     """Maturity Number — Life Path + Expression, reduced."""
@@ -3216,6 +3216,8 @@ BIRTHDAY_PREDICTIONS = {
     29: {"title": "The Master Intuitive", "title_hi": "मास्टर अंतर्बोधी", "talent": "Spiritual sensitivity and deep intuition carrying the amplified energy of 11.", "talent_hi": "आध्यात्मिक संवेदनशीलता और गहरा अंतर्ज्ञान जो 11 की प्रवर्धित ऊर्जा धारण करता है।"},
     30: {"title": "The Joyful Expresser", "title_hi": "आनंदमय अभिव्यक्तिकार", "talent": "Boundless creativity and optimism; uplifts others through joyful expression.", "talent_hi": "असीम रचनात्मकता और आशावाद; आनंदमय अभिव्यक्ति से दूसरों का उत्थान।"},
     31: {"title": "The Disciplined Creator", "title_hi": "अनुशासित सृजक", "talent": "Structured creativity that turns disciplined effort into enduring artistic legacy.", "talent_hi": "संरचित रचनात्मकता जो अनुशासित प्रयास को स्थायी कलात्मक विरासत में बदलती है।"},
+    # Master number 33 — for lookup when birthday reduces to the master healer vibration
+    33: {"title": "The Master Healer", "title_hi": "मास्टर उपचारक", "talent": "Selfless compassion and creative healing; born to uplift humanity through unconditional love.", "talent_hi": "निस्वार्थ करुणा और रचनात्मक उपचार; बिना शर्त प्रेम से मानवता का उत्थान करने के लिए जन्मे।"},
 }
 
 MATURITY_PREDICTIONS = {
@@ -3345,8 +3347,8 @@ def calculate_numerology(name: str, birth_date: str) -> dict:
     dob_digits = [int(c) for c in birth_date.replace("-", "") if c.isdigit() and c != "0"]
     loshu_data = _compute_loshu_grid(dob_digits)
 
-    birthday = _birthday_number(birth_date)
-    birthday_reduced = _reduce_to_single(birthday)
+    birthday_raw = int(birth_date[8:10])          # raw calendar day (1-31)
+    birthday_reduced = _birthday_number(birth_date)  # reduced to single/master
     maturity = _maturity_number(life_path, destiny)
 
     return {
@@ -3354,9 +3356,9 @@ def calculate_numerology(name: str, birth_date: str) -> dict:
         "destiny": destiny,
         "soul_urge": soul_urge,
         "personality": personality,
-        "birthday_number": birthday,
+        "birthday_number": birthday_raw,
         "birthday_reduced": birthday_reduced,
-        "birthday_prediction": BIRTHDAY_PREDICTIONS.get(birthday, BIRTHDAY_PREDICTIONS.get(birthday_reduced, {})),
+        "birthday_prediction": BIRTHDAY_PREDICTIONS.get(birthday_raw, BIRTHDAY_PREDICTIONS.get(birthday_reduced, {})),
         "maturity_number": maturity,
         "maturity_prediction": MATURITY_PREDICTIONS.get(maturity, {}),
         "predictions": predictions,
