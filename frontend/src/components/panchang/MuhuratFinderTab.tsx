@@ -524,6 +524,73 @@ export default function MuhuratFinderTab({ language, t, latitude, longitude }: P
                 </div>
               )}
 
+              {/* Marriage-specific data */}
+              {results?.activity?.key === 'marriage' && d.lagnasuddhi && (
+                <div className="text-xs mt-2 pt-2 border-t border-pink-200 space-y-1">
+                  <p className="font-bold text-pink-700">
+                    {language === 'hi' ? 'सर्वश्रेष्ठ लग्न' : 'Best Lagna'}: {d.lagnasuddhi.lagna} ({language === 'hi' ? 'स्वामी' : 'Lord'}: {d.lagnasuddhi.lord})
+                  </p>
+                  <p className="text-muted-foreground">
+                    {language === 'hi' ? 'गुणवत्ता स्कोर' : 'Quality Score'}:
+                    <span className={`font-bold ml-1 ${
+                      d.lagnasuddhi.score >= 75 ? 'text-green-600'
+                      : d.lagnasuddhi.score >= 60 ? 'text-yellow-600'
+                      : 'text-red-600'
+                    }`}>
+                      {d.lagnasuddhi.score}
+                    </span>
+                  </p>
+                </div>
+              )}
+
+              {results?.activity?.key === 'marriage' && d.vivaha_quality !== undefined && (
+                <div className="text-xs mt-2">
+                  <span className={`px-2 py-1 rounded font-bold inline-block ${
+                    d.vivaha_quality >= 85 ? 'bg-green-100 text-green-700'
+                    : d.vivaha_quality >= 70 ? 'bg-yellow-100 text-yellow-700'
+                    : 'bg-red-100 text-red-700'
+                  }`}>
+                    {language === 'hi' ? 'विवाह गुणवत्ता' : 'Vivaha Quality'}: {d.vivaha_quality}/100
+                    {d.vivaha_paryapta === false && (
+                      <span className="ml-1">⚠️ {language === 'hi' ? 'पर्याप्त से कम' : 'Below Paryapta'}</span>
+                    )}
+                  </span>
+                </div>
+              )}
+
+              {d.chandra_balam && (
+                <div className="text-xs mt-2 p-2 bg-blue-50 rounded text-blue-700 border border-blue-100">
+                  <p className="font-semibold mb-0.5">
+                    🌙 {language === 'hi' ? 'चन्द्र बल' : 'Chandra Balam'} ({language === 'hi' ? 'भाव' : 'House'} {d.chandra_balam.house})
+                  </p>
+                  <p>{language === 'hi' ? d.chandra_balam.interpretation_hi : d.chandra_balam.interpretation_en}</p>
+                </div>
+              )}
+
+              {d.tara_balam && (
+                <div className="text-xs mt-2 p-2 bg-purple-50 rounded text-purple-700 border border-purple-100">
+                  <p className="font-semibold mb-0.5">
+                    ⭐ {language === 'hi' ? 'तारा बल' : 'Tara Balam'} ({d.tara_balam.tara_name})
+                  </p>
+                  <p>{language === 'hi' ? d.tara_balam.interpretation_hi : d.tara_balam.interpretation_en}</p>
+                </div>
+              )}
+
+              {/* Business/shop hora windows */}
+              {(results?.activity?.key === 'business_start' || results?.activity?.key === 'shop_opening') &&
+               d.recommended_hora_windows && d.recommended_hora_windows.length > 0 && (
+                <div className="text-xs mt-2 p-2 bg-amber-50 border border-amber-200 rounded space-y-1">
+                  <p className="font-bold text-amber-700">
+                    🕐 {language === 'hi' ? 'सर्वश्रेष्ठ होरा खिड़कियाँ' : 'Best Hora Windows'}
+                  </p>
+                  {d.recommended_hora_windows.map((hw, i) => (
+                    <p key={i} className="text-amber-700">
+                      {hw.start} – {hw.end} ({hw.lord})
+                    </p>
+                  ))}
+                </div>
+              )}
+
               {/* Reasons good */}
               {d.reasons_good && d.reasons_good.length > 0 && (
                 <div className="space-y-0.5">
